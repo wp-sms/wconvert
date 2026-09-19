@@ -46,6 +46,16 @@ final class InspectorLabels
             'collapse' => __('Collapse', 'wconvert'),
             'expand' => __('Expand', 'wconvert'),
             'nothing' => __('This site has no Campaigns yet.', 'wconvert'),
+            'placement' => [
+                /* translators: %s: a logical overlay position, such as “Top” or “Bottom end”. */
+                'position' => __('Position: %s', 'wconvert'),
+                'block_start' => __('Top', 'wconvert'),
+                'block_end' => __('Bottom', 'wconvert'),
+                'block_start_inline_start' => __('Top start', 'wconvert'),
+                'block_start_inline_end' => __('Top end', 'wconvert'),
+                'block_end_inline_start' => __('Bottom start', 'wconvert'),
+                'block_end_inline_end' => __('Bottom end', 'wconvert'),
+            ],
 
             // ================================================================
             // THE FUNNEL. THE FIRST GATE THAT CLOSES IS THE ANSWER.

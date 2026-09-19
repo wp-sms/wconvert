@@ -4,6 +4,7 @@ import { Monitor, Smartphone, MousePointer2, X } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Preview } from './Preview';
 import { stepName } from './BlockRow';
+import { resolvedPlacement } from './PlacementControl';
 import type { SlotKey } from './slots';
 import type { Template } from '@renderer/types';
 
@@ -76,6 +77,7 @@ export function EditorCanvas({
   interactive = false,
   onStep,
   displayType,
+  placement,
 }: {
   template: Template;
   name: string;
@@ -86,6 +88,7 @@ export function EditorCanvas({
   interactive?: boolean;
   onStep: (step: number) => void;
   displayType: string;
+  placement?: unknown;
 }) {
   const stage = useRef<HTMLDivElement>(null);
   const page = useRef<HTMLDivElement>(null);
@@ -94,7 +97,8 @@ export function EditorCanvas({
   const [dismissed, setDismissed] = useState(false);
   const [message, setMessage] = useState('');
   const shown = Math.min(step, Math.max(template.tree.steps.length - 1, 0));
-  const measure = width === 'narrow' ? '22rem' : (template.tokens.width ?? '28rem');
+  const measure = width === 'narrow' ? '22rem' : (displayType === 'inline' ? (template.tokens.width ?? '40rem') : '48rem');
+  const resolved = resolvedPlacement(displayType, placement);
   useEffect(() => {
     if (typeof ResizeObserver === 'undefined') return;
     const read = () => {
@@ -168,35 +172,50 @@ export function EditorCanvas({
             style={{ width: size.width * scale, height: size.height * scale }}
           >
             <div
-              className="wconvert-canvas__document"
+              className="wconvert-canvas__document wconvert-site"
               ref={page}
+              data-display-type={displayType}
+              data-placement={resolved ?? undefined}
               style={{ width: measure, transform: `scale(${scale})` }}
             >
-              <Preview
-                template={template}
-                step={shown}
-                selected={interactive ? null : selected}
-                onSelect={interactive ? undefined : onSelect}
-                interactive={interactive}
-                onAdvance={() => {
-                  onStep(Math.min(shown + 1, template.tree.steps.length - 1));
-                  setMessage(__('Preview complete. No data was sent.', 'wconvert'));
-                }}
-              />
-              {displayType !== 'inline' && (
-                <button
-                  type="button"
-                  className="wconvert-canvas__close"
-                  aria-label={__('Close preview', 'wconvert')}
-                  onClick={() =>
-                    interactive
-                      ? setDismissed(true)
-                      : setMessage(__('Visitors can always close this Campaign.', 'wconvert'))
-                  }
-                >
-                  <X aria-hidden="true" />
-                </button>
-              )}
+              <div className="wconvert-site__page" aria-hidden="true">
+                <span className="wconvert-site__ghost" data-ghost="head" />
+                <span className="wconvert-site__ghost" />
+                <span className="wconvert-site__ghost" />
+                <span className="wconvert-site__ghost" data-ghost="block" />
+                <span className="wconvert-site__ghost" />
+              </div>
+              <div className="wconvert-site__slot">
+                <Preview
+                  template={template}
+                  step={shown}
+                  selected={interactive ? null : selected}
+                  onSelect={interactive ? undefined : onSelect}
+                  interactive={interactive}
+                  onAdvance={() => {
+                    onStep(Math.min(shown + 1, template.tree.steps.length - 1));
+                    setMessage(__('Preview complete. No data was sent.', 'wconvert'));
+                  }}
+                />
+                {displayType !== 'inline' && (
+                  <button
+                    type="button"
+                    className="wconvert-canvas__close"
+                    aria-label={__('Close preview', 'wconvert')}
+                    onClick={() =>
+                      interactive
+                        ? setDismissed(true)
+                        : setMessage(__('Visitors can always close this Campaign.', 'wconvert'))
+                    }
+                  >
+                    <X aria-hidden="true" />
+                  </button>
+                )}
+              </div>
+              <div className="wconvert-site__page" aria-hidden="true">
+                <span className="wconvert-site__ghost" />
+                <span className="wconvert-site__ghost" data-ghost="block" />
+              </div>
             </div>
           </div>
         )}

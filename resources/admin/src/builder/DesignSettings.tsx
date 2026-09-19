@@ -4,6 +4,7 @@ import { LayoutTemplate } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Themes, Tokens } from './Tokens';
 import { Preview } from './Preview';
+import { PlacementControl } from './PlacementControl';
 import type { TemplateLabels } from '../templates/api';
 import type { Template, Tokens as TokenBag } from '@renderer/types';
 
@@ -19,6 +20,9 @@ export function DesignSettings({
   onBrowse,
   browseRef,
   mobile,
+  displayType = 'popup',
+  placement,
+  onPlacementChange = () => undefined,
 }: {
   template: Template;
   labels: TemplateLabels;
@@ -31,6 +35,9 @@ export function DesignSettings({
   onBrowse: () => void;
   browseRef?: Ref<HTMLButtonElement>;
   mobile?: boolean;
+  displayType?: string;
+  placement?: unknown;
+  onPlacementChange?: (placement: string | null) => void;
 }) {
   return (
     <div className="wconvert-design-settings">
@@ -47,6 +54,7 @@ export function DesignSettings({
         <LayoutTemplate aria-hidden="true" />
         {__('Change design or format', 'wconvert')}
       </Button>
+      <PlacementControl displayType={displayType} value={placement} onChange={onPlacementChange} />
       {mobile && (
         <p className="wconvert-scope__narrow">
           {__(

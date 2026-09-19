@@ -86,7 +86,7 @@ designs.sort((a, b) => `${a.display_type}/${a.id}`.localeCompare(`${b.display_ty
  * than interpolated into DOM-building code: a design's placeholder copy is
  * arbitrary text and one apostrophe in it would otherwise end the script.
  */
-function page(design, direction, step) {
+function page(design, direction, step, placement) {
   const steps = design.tree.steps.length;
 
   return `<!DOCTYPE html>
@@ -106,18 +106,19 @@ ${containers}
 </style></head>
 <body>
 <div class="sheet">
-  <div class="caption"><b>${design.name}</b><span>${design.display_type}</span>
+  <div class="caption"><b>${design.name}</b><span>${design.display_type}${placement ? ` · ${placement}` : ''}</span>
     <em>${design.tier ?? 'free'} · step ${step + 1} of ${steps}</em></div>
   <div class="stage" id="stage"></div>
 </div>
 <script>${renderer}</script>
-<script id="design" type="application/json">${JSON.stringify({ tokens: design.tokens ?? {}, tree: design.tree, displayType: design.display_type, step })}</script>
+<script id="design" type="application/json">${JSON.stringify({ tokens: design.tokens ?? {}, tree: design.tree, displayType: design.display_type, placement, step })}</script>
 <script>
   (function () {
     var design = JSON.parse(document.getElementById('design').textContent);
     var stage = document.getElementById('stage');
 
     stage.className = 'stage wc-container-' + design.displayType;
+    if (design.placement) stage.dataset.placement = design.placement;
 
     // The container is a WRAPPER around the shadow host and never the host
     // itself. SHADOW_CSS opens with an all:initial !important rule on :host,
@@ -173,14 +174,28 @@ ${containers}
 
 let written = 0;
 
+const placementsFor = (displayType) => ({
+  floating_bar: ['block_start', 'block_end'],
+  slide_in: [
+    'block_start_inline_start',
+    'block_start_inline_end',
+    'block_end_inline_start',
+    'block_end_inline_end',
+  ],
+})[displayType] ?? [null];
+
+const placementSuffix = (placement) => placement ? `-${placement}` : '';
+
 for (const design of designs) {
   for (const direction of ['ltr', 'rtl']) {
-    for (let step = 0; step < design.tree.steps.length; step++) {
-      writeFileSync(
-        resolve(PREVIEWS, `design-${design.id}-${step}${direction === 'rtl' ? '-rtl' : ''}.html`),
-        page(design, direction, step),
-      );
-      written++;
+    for (const placement of placementsFor(design.display_type)) {
+      for (let step = 0; step < design.tree.steps.length; step++) {
+        writeFileSync(
+          resolve(PREVIEWS, `design-${design.id}-${step}${placementSuffix(placement)}${direction === 'rtl' ? '-rtl' : ''}.html`),
+          page(design, direction, step, placement),
+        );
+        written++;
+      }
     }
   }
 }
@@ -206,6 +221,7 @@ writeFileSync(
       display_type,
       tier: tier ?? 'free',
       steps: tree.steps.length,
+      placements: placementsFor(display_type),
     })),
     null,
     2,

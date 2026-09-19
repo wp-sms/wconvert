@@ -85,9 +85,9 @@ import { A_DESIGNS_OWN_WIDTH } from '@renderer/css';
  *
  * **`pointer-events: none` is belt and braces and not the mechanism.** What
  * keeps this box from covering the page with a transparent click-trap is
- * {@link boxWidth} making the box equal the design; this line is what protects
- * the block axis and anything a later placement leaves over. It does NOT
- * survive the shadow boundary on its own — see {@link boxWidth}'s third point
+ * the inline-size declaration below making the box equal the design; this line
+ * protects the block axis and anything a later placement leaves over. It does NOT
+ * survive the shadow boundary on its own — see the sizing argument below
  * for why, which is the whole reason the sizing carries the argument.
  */
 const POPOVER_ARMOUR: Readonly<Record<string, string>> = {
@@ -104,14 +104,13 @@ const POPOVER_ARMOUR: Readonly<Record<string, string>> = {
   'pointer-events': 'none',
 };
 
-/**
+/*
  * Where each of the two sits, and how much of the axis it may take.
  *
- * A bar pins to the block-end edge and may take the whole inline axis; a
- * slide-in takes the block-end/inline-end corner and may take a corner's worth
- * of it. The block-end edge for both, because it is the one that does not
- * cover a site's own header, and because a bar arriving over the navigation is
- * the single most common way this Display Type is experienced as breakage.
+ * Absence keeps the original positions: block-end for a bar and
+ * block-end/inline-end for a slide-in. ADR 0095 adds the other block edge and
+ * three logical corners without making a physical left/right value part of
+ * the contract.
  *
  * `26rem` is a statement about what a corner card IS rather than a number the
  * design has to live inside: the token decides the width up to it, and a
@@ -139,59 +138,14 @@ const POPOVER_ARMOUR: Readonly<Record<string, string>> = {
  * guess — the same argument that puts the close button here rather than in the
  * vocabulary.
  *
- * `cap` is written as `min()`'s ARGUMENT LIST rather than a finished `min()`,
- * so {@link boxWidth} appends the design's own width to it and the declaration
- * reads `min(100% - 2rem, 26rem, var(…))` rather than nesting one `min()`
- * inside another.
+ * The width declaration keeps the design token as the final `min()` argument,
+ * so a corner reads `min(100% - 2rem, 26rem, var(…))` without nesting one
+ * `min()` inside another.
  *
  * **Logical properties throughout**, so RTL is correct without a second
  * spelling: a slide-in on a `fa_IR` site enters from the corner that side of
  * the page actually has (ADR 0009).
  */
-const PLACEMENT: Readonly<
-  Record<
-    string,
-    {
-      readonly inset: Readonly<Record<string, string>>;
-      readonly cap: string;
-      /** Where it comes FROM, as a `translate` pair. {@link MOTION_CSS}. */
-      readonly from: string;
-    }
-  >
-> = {
-  floating_bar: {
-    inset: {
-      'inset-block-start': 'auto',
-      'inset-block-end': 'max(0px, env(safe-area-inset-bottom))',
-      'inset-inline-start': '0',
-      'inset-inline-end': '0',
-    },
-    cap: '100%',
-    // A bar RISES from the edge it is pinned to, so it is off screen by its own
-    // height and arrives at rest — the movement a visitor reads as "this came
-    // from down there" rather than "this appeared over the page".
-    from: '0 100%',
-  },
-  slide_in: {
-    inset: {
-      'inset-block-start': 'auto',
-      'inset-block-end': 'max(1rem, env(safe-area-inset-bottom))',
-      'inset-inline-start': 'auto',
-      'inset-inline-end': '1rem',
-    },
-    cap: '100% - 2rem, 26rem',
-    /*
-     * A corner card moves a little and fades, rather than sliding in from the
-     * side. `translate` is PHYSICAL — it has no logical spelling — so an
-     * inline-axis entry would have to be mirrored by hand for RTL, and a
-     * `fa_IR` slide-in would enter from the wrong side of the page the day
-     * somebody forgot. The block axis is the same in both directions, which is
-     * the same reasoning that put both of these on the block-end edge.
-     */
-    from: '0 1rem',
-  },
-};
-
 /**
  * The motion, and the one place in this product where anything moves.
  *
@@ -237,25 +191,12 @@ const PLACEMENT: Readonly<
  */
 const MOTION_STYLE_ID = 'wconvert-pro-motion';
 
-const MOTION_CSS = [
-  `.wconvert-popover{opacity:1;translate:0 0;transition:opacity var(${'--wcv-motion'},200ms) ease,translate var(${'--wcv-motion'},200ms) ease}`,
-  `@starting-style{.wconvert-popover:popover-open{opacity:0;translate:var(${'--wcv-from'},0 1rem)}}`,
-  `.wconvert-popover[data-leaving]{opacity:0;translate:var(${'--wcv-from'},0 1rem)}`,
-  `@media (prefers-reduced-motion:reduce){.wconvert-popover{transition-duration:.01ms}}`,
-].join('');
-
-/** Exactly one document-level `<style>`, however many popovers mount. */
-function motionStyle(): void {
-  if (document.getElementById(MOTION_STYLE_ID) !== null) {
-    return;
-  }
-
-  const style = document.createElement('style');
-
-  style.id = MOTION_STYLE_ID;
-  style.textContent = MOTION_CSS;
-  document.head.appendChild(style);
-}
+const MOTION_CSS =
+  '.wcv-p{--wcv-is:env(safe-area-inset-left);--wcv-ie:env(safe-area-inset-right);transition:opacity var(--wcv-m,200ms),translate var(--wcv-m,200ms)}' +
+  '.wcv-p:dir(rtl){--wcv-is:env(safe-area-inset-right);--wcv-ie:env(safe-area-inset-left)}' +
+  '@starting-style{.wcv-p:popover-open{opacity:0;translate:var(--wcv-f,0 1rem)}}' +
+  '.wcv-p[data-leaving]{opacity:0;translate:var(--wcv-f,0 1rem)}' +
+  '@media (prefers-reduced-motion:reduce){.wcv-p{transition-duration:.01ms}}';
 
 /**
  * The custom property the box holds the design's width in.
@@ -266,7 +207,7 @@ function motionStyle(): void {
  * could silently move a design's own token would be a container editing the
  * design.
  */
-const WIDTH = '--wcv-box-width';
+const WIDTH = '--wcv-w';
 
 /**
  * The two the motion reads, set on the box for the same reason {@link WIDTH}
@@ -277,8 +218,8 @@ const WIDTH = '--wcv-box-width';
  * the entry with it — one decision, not two. `from` is the CONTAINER's, because
  * where an overlay comes from is what the Display Type means.
  */
-const MOTION = '--wcv-motion';
-const FROM = '--wcv-from';
+const MOTION = '--wcv-m';
+const FROM = '--wcv-f';
 
 /**
  * The box's width, and it is the design's width, and that is not a
@@ -334,18 +275,6 @@ const FROM = '--wcv-from';
  * for safety: a custom property's value cannot introduce a second declaration,
  * which is the same door `mount()` already uses for `tokens.backdrop`.
  */
-function boxWidth(element: HTMLElement, cap: string, width: unknown): void {
-  if (typeof width === 'string' && width !== '') {
-    element.style.setProperty(WIDTH, width);
-  }
-
-  element.style.setProperty(
-    'inline-size',
-    `min(${cap}, var(${WIDTH}, ${A_DESIGNS_OWN_WIDTH}))`,
-    'important'
-  );
-}
-
 /**
  * How long a close may take before the element is removed regardless.
  *
@@ -355,9 +284,48 @@ function boxWidth(element: HTMLElement, cap: string, width: unknown): void {
  * the panel offers (400ms), and short enough that nobody watches it.
  */
 const LATEST_A_CLOSE_MAY_TAKE = 1000;
+const TOP_BAR_OFFSET = '--wconvert-top-bar-offset';
+const TOP_BAR_RESERVATION = 'data-wconvert-top-bar-reservation';
 
-/** The two Display Types this container draws. Anything else is not its business. */
-export const POPOVER_TYPES: ReadonlySet<string> = new Set(Object.keys(PLACEMENT));
+/**
+ * Put the top bar's occupied viewport strip back into document flow.
+ *
+ * The visual box stays in the top layer; this deliberately plain first child
+ * is only its flow counterpart. The custom property is the integration point
+ * for fixed theme chrome, which no generic loader can reposition safely.
+ */
+function reserveTopBar(element: HTMLElement): () => void {
+  const root = document.documentElement;
+  const previous = root.style.getPropertyValue(TOP_BAR_OFFSET);
+  const previousPriority = root.style.getPropertyPriority(TOP_BAR_OFFSET);
+  const spacer = document.createElement('div');
+  spacer.setAttribute(TOP_BAR_RESERVATION, '');
+  document.body.prepend(spacer);
+
+  const update = (): void => {
+    // `bottom` includes the top safe-area offset as well as the rendered bar,
+    // which is the whole viewport strip normal page content must stay below.
+    const value = `${Math.max(0, element.getBoundingClientRect().bottom)}px`;
+
+    spacer.style.setProperty('block-size', value, 'important');
+    root.style.setProperty(TOP_BAR_OFFSET, value, 'important');
+  };
+
+  const observer = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(update);
+
+  observer?.observe(element);
+  update();
+
+  return (): void => {
+    observer?.disconnect();
+    spacer.remove();
+    if (previous === '') {
+      root.style.removeProperty(TOP_BAR_OFFSET);
+    } else {
+      root.style.setProperty(TOP_BAR_OFFSET, previous, previousPriority);
+    }
+  };
+}
 
 /**
  * The rendered step is the one thing inside the box that a pointer may reach.
@@ -371,14 +339,21 @@ const takesPointers = (root: HTMLElement | null): void =>
   void root?.style.setProperty('pointer-events', 'auto', 'important');
 
 export function mountPopover(options: MountOptions): Mounted {
-  const placement = PLACEMENT[options.displayType ?? ''];
+  const displayType = options.displayType ?? '';
 
   // Not this container's Display Type. Mounting nothing rather than guessing,
   // the same answer free's `mount()` gives an unrecognised one — a value
   // nothing can place must not become an overlay somewhere arbitrary.
-  if (placement === undefined) {
+  const bar = displayType === 'floating_bar';
+
+  if (!bar && displayType !== 'slide_in') {
     return NOTHING;
   }
+
+  const corner = /^block_(start|end)_inline_(start|end)$/.exec(options.placement ?? '');
+  const top = bar ? options.placement === 'block_start' : corner?.[1] === 'start';
+  const start = !bar && corner?.[2] === 'start';
+  const reservesPage = bar && top;
 
   const element = document.createElement('div');
 
@@ -387,28 +362,47 @@ export function mountPopover(options: MountOptions): Mounted {
   // all. There the attribute is inert and the armour below is the whole
   // rendering; here it is what the top layer keys off.
   element.setAttribute('popover', 'manual');
-  element.className = 'wconvert-popover';
+  element.className = 'wcv-p';
 
   const chrome = closeButton(() => close(true));
   const parts = shell(options.template, chrome, options);
+  let releaseReservation: (() => void) | null = null;
 
   element.appendChild(parts.host);
 
-  for (const [property, value] of Object.entries({ ...POPOVER_ARMOUR, ...placement.inset })) {
+  for (const [property, value] of Object.entries(POPOVER_ARMOUR)) {
     element.style.setProperty(property, value, 'important');
   }
 
-  boxWidth(element, placement.cap, options.template.tokens.width);
-  element.style.setProperty(FROM, placement.from);
+  const width = options.template.tokens.width;
+  if (width) {
+    element.style.setProperty(WIDTH, width);
+  }
+  element.style.setProperty(
+    `inset-block-${top ? 'start' : 'end'}`,
+    `max(${bar ? '0px' : '1rem'}, env(safe-area-inset-${top ? 'top' : 'bottom'}))`,
+    'important',
+  );
+  element.style.setProperty(
+    bar ? 'inset-inline' : `inset-inline-${start ? 'start' : 'end'}`,
+    bar ? '0' : `max(1rem, var(--wcv-i${start ? 's' : 'e'}, 0px))`,
+    'important',
+  );
+  element.style.setProperty(
+    'inline-size',
+    `min(${bar ? '100%' : '100% - 2rem, 26rem'}, var(${WIDTH}, ${A_DESIGNS_OWN_WIDTH}))`,
+    'important',
+  );
+  element.style.setProperty(FROM, top ? `0 -${bar ? '100%' : '1rem'}` : `0 ${bar ? '100%' : '1rem'}`);
 
   // Through a custom property rather than interpolated into a declaration, the
-  // same door `boxWidth` argues for: a token's value is unvalidated, and a
-  // custom property cannot introduce a second declaration however it is
-  // written. A value CSS rejects makes the transition invalid and the overlay
-  // simply arrives without motion, which is the safe direction.
+  // same door the width custom property above argues for: a token's value is
+  // unvalidated, and a custom property cannot introduce a second declaration
+  // however it is written. A value CSS rejects makes the transition invalid
+  // and the overlay simply arrives without motion, which is the safe direction.
   const motion = options.template.tokens.motion;
 
-  if (typeof motion === 'string' && motion !== '') {
+  if (motion) {
     element.style.setProperty(MOTION, motion);
   }
 
@@ -458,6 +452,9 @@ export function mountPopover(options: MountOptions): Mounted {
       options.onDismiss?.();
     }
 
+    releaseReservation?.();
+    releaseReservation = null;
+
     // At once, and not when the element finally leaves: the overlay is over,
     // and a clock still ticking through the fade is a timer running for nobody.
     parts.stop();
@@ -490,15 +487,32 @@ export function mountPopover(options: MountOptions): Mounted {
     steps: options.template.tree.steps.length,
     show() {
       documentStyle();
-      motionStyle();
+      if (document.getElementById(MOTION_STYLE_ID) === null) {
+        const style = document.createElement('style');
+        style.id = MOTION_STYLE_ID;
+        style.textContent = MOTION_CSS;
+        document.head.appendChild(style);
+      }
       // Appended BEFORE promotion, because `showPopover()` on a disconnected
       // element throws — and a throw here runs inside a scroll handler or a
       // timer, where it is uncatchable from anywhere useful and takes every
       // Optin on the page with it (ADR 0004).
       document.body.appendChild(element);
-      element.showPopover?.();
+      try {
+        element.showPopover?.();
+      } catch {
+        // A broken popover implementation must degrade to the same visible
+        // fixed box as an engine with no popover support.
+        element.removeAttribute('popover');
+      }
+
+      if (reservesPage) {
+        releaseReservation = reserveTopBar(element);
+      }
     },
-    showStep: (step) => takesPointers(parts.step(step)),
+    showStep: (step) => {
+      takesPointers(parts.step(step));
+    },
     close: () => close(false),
   };
 }

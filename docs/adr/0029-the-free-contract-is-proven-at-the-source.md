@@ -177,6 +177,9 @@ check has an opt-out, the opt-out is what runs on the day it matters.
   original justification lost is the "2× the prototype" framing: 12,288 B is
   set against what the design vocabulary costs and what the field ships, not
   against a 2019 measurement of a loader that had no renderer in it.*
+  ***Amended again: the number is 12,800 B*** *— ADR 0095 adds the measured
+  512 B allowance for logical overlay placement and reversible top-bar page
+  reservation. The gate remains hard, per-build and flagless.*
 - **The payload budget is not a build gate.** It is generated per URL at runtime, so
   it has no artifact to weigh. It becomes a PHPUnit test that renders a worst-case
   published set and asserts the 2KB bound — *and* asserts the scaling property the

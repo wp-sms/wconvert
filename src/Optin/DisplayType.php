@@ -5,7 +5,7 @@ namespace WConvert\Optin;
 defined('ABSPATH') || exit;
 
 /**
- * How an [[Optin]] arrives on the page — the four placements, closed.
+ * How an [[Optin]] arrives on the page — the four containers, closed.
  *
  * ============================================================================
  * THE ONE PAYLOAD KEY THAT REACHED THE BROWSER WITHOUT BEING VALIDATED.

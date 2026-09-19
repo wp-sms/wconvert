@@ -62,9 +62,19 @@ const controls = (): OptinControls & { impressions: number; dismissals: number; 
 afterEach(() => {
   document.body.innerHTML = '';
   document.getElementById(DOCUMENT_STYLE_ID)?.remove();
+  document.documentElement.style.removeProperty('--wconvert-top-bar-offset');
 });
 
 const popover = () => document.querySelector<HTMLElement>('[popover]');
+
+it('carries a published placement from the payload into the container', () => {
+  proPresenter.show(entry({ display_type: 'floating_bar', placement: 'block_start' }), controls());
+
+  expect(popover()?.style.getPropertyValue('inset-block-start')).toBe(
+    'max(0px, env(safe-area-inset-top))',
+  );
+  expect(document.querySelector('[data-wconvert-top-bar-reservation]')).not.toBeNull();
+});
 
 describe.each(['floating_bar', 'slide_in'])('showing a %s', (displayType) => {
   it('draws it into the top layer as a manual popover', () => {

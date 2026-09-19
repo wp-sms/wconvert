@@ -532,6 +532,25 @@ place it. Two of the four are [[Pro]]'s in practice, but the enum says nothing
 about tier: a free install simply has no floating-bar or slide-in design to
 name.
 
+### Overlay Placement
+
+The logical viewport edge or corner where a non-modal overlay sits. A floating
+bar may use the block-start or block-end edge; a slide-in may use any
+block-start/block-end and inline-start/inline-end corner. Logical words are the
+stored contract so the same Optin follows the site's writing direction.
+
+Overlay Placement belongs to the container and is campaign configuration, not
+part of a [[Template]]'s tree or tokens. Absence means the original defaults:
+block-end for a floating bar and block-end/inline-end for a slide-in. Explicit
+defaults, unknown values, values belonging to another [[Display Type]], and all
+placement values on `popup` or `inline` are removed on write. Applying another
+design of the same Display Type keeps it; changing Display Type resets it.
+
+It is distinct from [[Targeting]] (which pages are eligible), [[Anchor]] (where
+an inline Optin was embedded), [[Trigger]] (when it appears), and [[Display
+Type]] (which container draws it). See [ADR
+0095](docs/adr/0095-overlay-placement-is-logical-container-configuration.md).
+
 ### Anchor
 
 Where an `inline` [[Optin]] was put — one empty element carrying one attribute

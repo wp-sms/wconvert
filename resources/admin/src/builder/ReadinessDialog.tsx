@@ -20,6 +20,8 @@ import { capturesTaken } from './structure/tree';
 import { convertingActOf } from './structure/guards';
 import { summarise } from './rules/summaries';
 import { PlacementGuidance } from './PlacementGuidance';
+import { physicalPlacementLabel, resolvedPlacement } from './PlacementControl';
+import { useDirection } from '../hooks/useDirection';
 import type { Path } from './panel';
 import type { RuleVocabulary } from './api';
 import type { DisplayRulesValue } from './rules/summaries';
@@ -42,6 +44,7 @@ export interface ReadinessDialogProps {
   readonly rules: DisplayRulesValue;
   readonly vocabulary: RuleVocabulary;
   readonly displayType: string;
+  readonly placement?: unknown;
   readonly bound: readonly string[];
   readonly template: Template | undefined;
   readonly destinations: readonly Destination[] | null;
@@ -70,6 +73,7 @@ export function ReadinessDialog({
   rules,
   vocabulary,
   displayType,
+  placement,
   bound,
   template,
   destinations,
@@ -84,6 +88,7 @@ export function ReadinessDialog({
   onPublish,
 }: ReadinessDialogProps) {
   const [open, setOpen] = useState(false);
+  const direction = useDirection();
   const [publishing, setPublishing] = useState(false);
   const [published, setPublished] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -91,6 +96,7 @@ export function ReadinessDialog({
   const afterClose = useRef<(() => void) | null>(null);
   const where = destinationsSaid(bound, destinations, capturedFields(template));
   const overlay = displayType !== 'inline';
+  const position = physicalPlacementLabel(displayType, placement, direction);
   const summaries = summarise(rules, vocabulary, overlay, template ? convertingActOf(template.tree)[0] : undefined);
   const hasDesign = template !== undefined && template.tree.steps.length > 0;
   const captures = hasDesign ? capturesTaken(template.tree) : [];
@@ -234,6 +240,16 @@ export function ReadinessDialog({
                   </p>
                 </ReviewSection>
                 <ReviewSection title={__('Placement & timing', 'wconvert')}>
+                  {position !== null && (
+                    <p>
+                      <button className="wconvert-readiness__go" onClick={() => jump(onGoToDesign)}>
+                        {sprintf(__('Position: %s', 'wconvert'), position)}
+                      </button>
+                      {displayType === 'floating_bar' && resolvedPlacement(displayType, placement) === 'block_start' && (
+                        <> {__('A top bar moves the page down; check it with your site header.', 'wconvert')}</>
+                      )}
+                    </p>
+                  )}
                   {!overlay && (
                     <p>{__('Appears where you place its block or shortcode, when these rules allow it.', 'wconvert')}</p>
                   )}
@@ -338,6 +354,7 @@ export function ReadinessDialog({
               <PlacementGuidance
                 optinId={optinId}
                 displayType={displayType}
+                placement={placement}
                 published={published || isPublished}
               />
             )}

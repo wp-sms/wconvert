@@ -555,6 +555,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
         interactive={previewing}
         onStep={setStep}
         displayType={displayTypeOf(config, templates)}
+        placement={config.placement}
       />
     );
   const shownStep = Math.min(step, Math.max((entry?.tree.steps.length ?? 1) - 1, 0));
@@ -656,6 +657,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
             rules={displayRules}
             vocabulary={vocabulary}
             displayType={displayTypeOf(config, templates)}
+            placement={config.placement}
             bound={bound}
             template={template}
             destinations={read(destinations)?.destinations ?? null}
@@ -756,6 +758,9 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
                             onChange={(next) => edit({ template: next })}
                             onError={report}
                             onBrowse={() => setBrowsing(true)}
+                            displayType={displayTypeOf(config, templates)}
+                            placement={config.placement}
+                            onPlacementChange={(placement) => edit({ placement })}
                           />
                         ) : (
                           <ScopeStyle
@@ -978,7 +983,17 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
           restoreBrowseFocus.current = true;
           const chosenDesign = gallery.templates.find((design) => design.id === picked);
           if (!chosenDesign) return;
-          edit({ template: prepared, template_id: picked, display_type: chosenDesign.display_type });
+          const changes: Config = {
+            template: prepared,
+            template_id: picked,
+            display_type: chosenDesign.display_type,
+          };
+
+          if (displayTypeOf(config, templates) !== chosenDesign.display_type) {
+            changes.placement = null;
+          }
+
+          edit(changes);
           setSelection(null);
           setStep(0);
           setBrowsing(false);

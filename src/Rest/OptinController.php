@@ -14,6 +14,7 @@ use WConvert\Optin\Frequency;
 use WConvert\Optin\InvalidSchedule;
 use WConvert\Optin\Optin;
 use WConvert\Optin\OptinRepository;
+use WConvert\Optin\OverlayPlacement;
 use WConvert\Optin\PublishedSet;
 use WConvert\Optin\Schedule;
 use WConvert\Optin\SiteFrequency;
@@ -744,6 +745,19 @@ final class OptinController implements RestController
                 unset($config['display_type']);
             } else {
                 $config['display_type'] = $type->value;
+            }
+        }
+
+        if (array_key_exists('placement', $config)) {
+            $placement = OverlayPlacement::normalize(
+                DisplayType::of($config['display_type'] ?? null) ?? DisplayType::Popup,
+                $config['placement']
+            );
+
+            if ($placement === null) {
+                unset($config['placement']);
+            } else {
+                $config['placement'] = $placement;
             }
         }
 

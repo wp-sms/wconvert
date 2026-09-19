@@ -75,20 +75,38 @@ const CONTAINERS = {
   },
   floating_bar: {
     source: 'pro/modules/display-types/loader/popover.ts',
-    holds: ["'inset-block-end': 'max(0px, env(safe-area-inset-bottom))'", "cap: '100%'"],
+    holds: [
+      "const bar = displayType === 'floating_bar';",
+      "`inset-block-${top ? 'start' : 'end'}`",
+      "bar ? '100%' : '100% - 2rem, 26rem'",
+    ],
     css: `
       .wc-container-floating_bar > .wc-box { position: absolute;
         inset-block-start: auto; inset-block-end: max(0px, env(safe-area-inset-bottom));
-        inset-inline-start: 0; inset-inline-end: 0; }`,
+        inset-inline-start: 0; inset-inline-end: 0; }
+      .wc-container-floating_bar[data-placement="block_start"] > .wc-box {
+        inset-block-start: max(0px, env(safe-area-inset-top)); inset-block-end: auto; }`,
   },
   slide_in: {
     source: 'pro/modules/display-types/loader/popover.ts',
-    holds: ["'inset-block-end': 'max(1rem, env(safe-area-inset-bottom))'", "cap: '100% - 2rem, 26rem'"],
+    holds: [
+      "/^block_(start|end)_inline_(start|end)$/.exec",
+      "`inset-inline-${start ? 'start' : 'end'}`",
+      "bar ? '0' : `max(1rem, var(--wcv-i${start ? 's' : 'e'}, 0px))`",
+    ],
     css: `
+      .wc-container-slide_in { --wcv-is: env(safe-area-inset-left);
+        --wcv-ie: env(safe-area-inset-right); }
+      .wc-container-slide_in:dir(rtl) { --wcv-is: env(safe-area-inset-right);
+        --wcv-ie: env(safe-area-inset-left); }
       .wc-container-slide_in > .wc-box { position: absolute;
         inset-block-start: auto; inset-block-end: max(1rem, env(safe-area-inset-bottom));
-        inset-inline-start: auto; inset-inline-end: 1rem;
-        inline-size: min(100% - 2rem, 26rem); }`,
+        inset-inline-start: auto; inset-inline-end: max(1rem, var(--wcv-ie, 0px));
+        inline-size: min(100% - 2rem, 26rem); }
+      .wc-container-slide_in[data-placement^="block_start"] > .wc-box {
+        inset-block-start: max(1rem, env(safe-area-inset-top)); inset-block-end: auto; }
+      .wc-container-slide_in[data-placement$="inline_start"] > .wc-box {
+        inset-inline-start: max(1rem, var(--wcv-is, 0px)); inset-inline-end: auto; }`,
   },
 };
 

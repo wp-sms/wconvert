@@ -64,8 +64,8 @@ const CHILD_KEYS = { list: ['children'], panes: ['start', 'end'] };
 const DISPLAY_TYPES = {
   popup: 'A modal over a backdrop, centred, `min(width, 100%)` wide.',
   inline: 'In the flow of the page, where the merchant placed the block.',
-  floating_bar: 'Pinned to the block-end edge, spanning the whole inline axis. **Pro.**',
-  slide_in: 'The block-end/inline-end corner, capped at 26rem. **Pro.**',
+  floating_bar: 'Pinned to the selected block-start or block-end edge, spanning the whole inline axis. **Pro.**',
+  slide_in: 'Pinned to one of four logical corners, capped at 26rem. **Pro.**',
 };
 
 const list = (values) => values.map((value) => `\`${value}\``).join(', ');

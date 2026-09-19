@@ -1,5 +1,5 @@
 import { beforeEach, expect, it, vi } from 'vitest';
-import { fireEvent, render, screen, within } from '@testing-library/react';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 
 const privacy = vi.hoisted(() => ({ readDataMap: vi.fn() }));
 vi.mock('../../resources/admin/src/privacy/api', () => privacy);
@@ -108,7 +108,7 @@ it('keeps a failed read inside the data-flow region and names a recovery', async
 
   render(<PrivacyDataMap />);
 
-  expect(await screen.findByText('Privacy details are unavailable.')).toBeVisible();
+  await waitFor(() => expect(screen.getByText('Privacy details are unavailable.')).toBeVisible());
   expect(disclosure()).toHaveAttribute('aria-expanded', 'true');
   expect(screen.getByText('Reload the page to try again.')).toBeVisible();
 });

@@ -119,7 +119,7 @@ collection and repeatable browser measurements for this pass.
 
 ### 1.7 A bar is not a narrow popup, and a slide-in is not a small one
 
-A `floating_bar` spans the whole inline axis at the block-end edge, over a page
+A `floating_bar` spans the whole inline axis at either block edge, over a page
 the visitor is still reading. Its main content is **one compact row**: an offer,
 at most one field and a CTA. A surrounding `stack` can put optional consent
 below that row. Let the row wrap at phone widths; do not squeeze in two fields
@@ -198,8 +198,8 @@ on six things and every one of them was cheap.
 `0 10px 40px rgba(0,0,0,.18)` spreads the blur outward from the full footprint
 and reads as grey haze under the panel. `0 18px 50px -12px rgba(15,23,42,.35)`
 pulls it back inside and reads as light. Tint it toward the ink, never pure
-black — a neutral shadow under a coloured panel reads as dirt. **A bar's casts
-upward**, because a bar sits at the block-end edge.
+black — a neutral shadow under a coloured panel reads as dirt. A bar may sit at
+either block edge, so its bundled shadow must read cleanly in both directions.
 
 **Anything at or above 1.5rem takes negative tracking.** `-0.02em` as a floor,
 `-0.045em` at display sizes. A large heading at default tracking is the single

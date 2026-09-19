@@ -51,6 +51,8 @@ export interface RuleReport {
 
 export interface EntryReport {
   readonly id: string;
+  readonly displayType?: string;
+  readonly placement?: string;
   readonly standing: Standing;
   readonly overlay: boolean;
   readonly triggers: readonly RuleReport[];
@@ -201,6 +203,8 @@ export function explain(decision: Decision): Explanation {
 
       return {
         id: entry.id,
+        displayType: entry.display_type,
+        placement: entry.placement,
         standing,
         overlay: isOverlay(entry),
         triggers: (entry.triggers ?? []).map((rule) => report(rule, answers, decision)),

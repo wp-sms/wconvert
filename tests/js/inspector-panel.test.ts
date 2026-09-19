@@ -33,6 +33,15 @@ const LABELS: Labels = {
   collapse: 'Collapse',
   expand: 'Expand',
   nothing: 'No Campaigns yet.',
+  placement: {
+    position: 'Position: %s',
+    block_start: 'Top',
+    block_end: 'Bottom',
+    block_start_inline_start: 'Top start',
+    block_start_inline_end: 'Top end',
+    block_end_inline_start: 'Bottom start',
+    block_end_inline_end: 'Bottom end',
+  },
   stopped: {
     blocked: 'Needs consent this visit has not given.',
     showing: 'Showing now.',
@@ -116,6 +125,15 @@ describe('the panel', () => {
 
     expect(root.mode).toBe('open');
     expect(root.querySelector('.panel')).not.toBeNull();
+  });
+
+  it('names the chosen overlay placement on the real page', () => {
+    const { root } = draw(
+      [optin()],
+      [entry({ displayType: 'slide_in', placement: 'block_start_inline_start' })],
+    );
+
+    expect(root.textContent).toContain('Position: Top start');
   });
 
   /**

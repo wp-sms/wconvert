@@ -1226,6 +1226,43 @@ describe('saving qualification choices without losing unfinished work', () => {
 });
 
 describe('whole-draft Undo and Redo', () => {
+  it('edits overlay placement as one undoable draft change and saves the non-default value', async () => {
+    builder.getOptin.mockResolvedValue(optin({
+      config: {
+        ...optin().config,
+        display_type: 'floating_bar',
+      },
+    }));
+    open();
+
+    await userEvent.click(await screen.findByRole('radio', { name: 'Top' }));
+
+    expect(screen.getByText(/moves the page down/)).toBeVisible();
+    expect(document.querySelector('.wconvert-site')?.getAttribute('data-placement')).toBe('block_start');
+    expect(screen.getByRole('button', { name: 'Undo draft edit' })).toBeEnabled();
+
+    await userEvent.click(screen.getByRole('button', { name: 'Undo draft edit' }));
+    expect(screen.getByRole('radio', { name: 'Bottom' })).toBeChecked();
+
+    await userEvent.click(screen.getByRole('button', { name: 'Redo draft edit' }));
+    expect(screen.getByRole('radio', { name: 'Top' })).toBeChecked();
+
+    await userEvent.click(screen.getByRole('button', { name: 'Review & publish' }));
+    const review = within(await screen.findByRole('dialog'));
+    expect(review.getByRole('button', { name: 'Position: Top' })).toBeVisible();
+    expect(review.getByText(/top bar moves the page down/)).toBeVisible();
+    await userEvent.keyboard('{Escape}');
+
+    await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
+    expect(builder.saveOptin).toHaveBeenCalledWith(
+      ID,
+      'Welcome discount',
+      expect.objectContaining({ display_type: 'floating_bar', placement: 'block_start' }),
+      undefined,
+      'centred-card',
+    );
+  });
+
   it('makes collect-only explicit and removes destination bindings in one undoable edit', async () => {
     builder.getOptin.mockResolvedValue(optin({ config: { ...optin().config, destinations: ['d1'] } }));
     open();
@@ -1297,7 +1334,14 @@ describe('whole-draft Undo and Redo', () => {
 
 describe('changing templates in the draft', () => {
   it('browses formats without editing, then applies format and design in one undoable edit', async () => {
-    templates.listTemplates.mockResolvedValue({ ...INDEX, templates: [CARD, {
+    builder.getOptin.mockResolvedValue(optin({ config: {
+      ...optin().config,
+      display_type: 'floating_bar',
+      placement: 'block_start',
+    } }));
+    templates.listTemplates.mockResolvedValue({ ...INDEX, templates: [{
+      ...CARD, display_type: 'floating_bar',
+    }, {
       ...CARD, id: ALTERNATE.id, name: ALTERNATE.name, display_type: 'inline',
     }] });
     templates.getTemplateTrees.mockResolvedValue({ templates: [ENTRY, ALTERNATE] });
@@ -1308,7 +1352,7 @@ describe('changing templates in the draft', () => {
     await userEvent.keyboard('{Escape}');
     expect(screen.getByRole('button', { name: 'Save draft' })).toBeDisabled();
     await userEvent.click(screen.getByRole('button', { name: 'Change design or format' }));
-    expect(screen.getByRole('combobox', { name: 'Format' })).toHaveValue('popup');
+    expect(screen.getByRole('combobox', { name: 'Format' })).toHaveValue('floating_bar');
     await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Format' }), 'inline');
     const picker = within(screen.getByRole('dialog'));
     await userEvent.click(within(picker.getByText(ALTERNATE.name).closest('li') as HTMLElement)
@@ -1316,12 +1360,41 @@ describe('changing templates in the draft', () => {
     await userEvent.click(picker.getByRole('button', { name: 'Use this design' }));
     await userEvent.click(screen.getByRole('button', { name: 'Undo draft edit' }));
     expect(screen.getByText(ENTRY.name)).toBeInTheDocument();
+    expect(screen.getByRole('radio', { name: 'Top' })).toBeChecked();
     expect(screen.getByRole('button', { name: 'Save draft' })).toBeDisabled();
     await userEvent.click(screen.getByRole('button', { name: 'Redo draft edit' }));
     await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
     expect(builder.saveOptin).toHaveBeenCalledWith(ID, 'Welcome discount', expect.objectContaining({
       display_type: 'inline', template_id: ALTERNATE.id,
+      placement: null,
       template: { tree: ALTERNATE.tree, tokens: ALTERNATE.tokens },
+    }), undefined, ALTERNATE.id);
+  });
+
+  it('preserves placement when applying another design of the same overlay format', async () => {
+    builder.getOptin.mockResolvedValue(optin({ config: {
+      ...optin().config,
+      display_type: 'floating_bar',
+      placement: 'block_start',
+    } }));
+    templates.listTemplates.mockResolvedValue({ ...INDEX, templates: [
+      { ...CARD, display_type: 'floating_bar' },
+      { ...CARD, id: ALTERNATE.id, name: ALTERNATE.name, display_type: 'floating_bar' },
+    ] });
+    templates.getTemplateTrees.mockResolvedValue({ templates: [ENTRY, ALTERNATE] });
+    templates.prepareTemplate.mockResolvedValue({ tree: ALTERNATE.tree, tokens: ALTERNATE.tokens });
+    open();
+
+    await userEvent.click(await screen.findByRole('button', { name: 'Change design or format' }));
+    const picker = within(screen.getByRole('dialog'));
+    await userEvent.click(within(picker.getByText(ALTERNATE.name).closest('li') as HTMLElement)
+      .getByRole('button', { name: 'Preview design' }));
+    await userEvent.click(picker.getByRole('button', { name: 'Use this design' }));
+    expect(screen.getByRole('radio', { name: 'Top' })).toBeChecked();
+
+    await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
+    expect(builder.saveOptin).toHaveBeenCalledWith(ID, 'Welcome discount', expect.objectContaining({
+      display_type: 'floating_bar', template_id: ALTERNATE.id, placement: 'block_start',
     }), undefined, ALTERNATE.id);
   });
 

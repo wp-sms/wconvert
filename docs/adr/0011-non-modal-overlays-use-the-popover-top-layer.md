@@ -2,6 +2,11 @@
 
 Amends [ADR 0009](0009-overlays-render-in-the-top-layer.md).
 
+Amended by [ADR 0095](0095-overlay-placement-is-logical-container-configuration.md):
+bars may use either block edge, slide-ins may use any logical corner, and a
+block-start bar keeps its visual box in the top layer while reserving its
+occupied strip in document flow.
+
 There are three containers, not one:
 
 | Display Type | Container |
