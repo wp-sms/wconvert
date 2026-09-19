@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { styleTokens, inheritedStyle } from '../../resources/admin/src/builder/styleTokens';
+import { styleTokens, styleGroups, inheritedStyle } from '../../resources/admin/src/builder/styleTokens';
 import { scopeChainOf } from '../../resources/admin/src/builder/panel';
 import type { Template } from '@renderer/types';
 import { urlIn } from '../../resources/admin/src/builder/themes';
@@ -79,5 +79,26 @@ describe('picture controls follow the content without discarding values', () => 
 
   it('keeps focus available for custom CSS image expressions', () => {
     expect(hasFocus({ ...template, tokens: { 'bg-image': 'var(--brand-art)' } }, null)).toBe(true);
+  });
+});
+
+
+describe('field order stays useful and stable', () => {
+  it.each([
+    ['heading', ['heading', 'space', 'color']],
+    ['text', ['type', 'space', 'color']],
+    ['button', ['color', 'type', 'space']],
+    ['field', ['color', 'type', 'space']],
+  ])('puts the everyday settings first for %s', (type, expected) => {
+    const value: Template = { tokens: {}, tree: { steps: [{ type }] } };
+    expect(styleGroups(value, [0], 'tokens').map(group => group.id)).toEqual(expected);
+  });
+
+  it('keeps section order while adding, removing or changing a box’s background picture', () => {
+    const empty: Template = { tokens: {}, tree: { steps: [{ type: 'panel', children: [] }] } };
+    const photo: Template = { tokens: {}, tree: { steps: [{ type: 'panel', tokens: { 'bg-image': 'url(photo.jpg)' }, children: [] }] } };
+    const ids = (value: Template) => styleGroups(value, [0], 'tokens').map(group => group.id);
+    expect(ids(empty)).toEqual(['space', 'color', 'image']);
+    expect(ids(photo)).toEqual(ids(empty));
   });
 });

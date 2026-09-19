@@ -5,7 +5,6 @@ import { AA_NORMAL, PAIR_READERS, READABLE_PAIRS, contrastOf, pairKey } from './
 import { nodesOf } from './structure/tree';
 import { TokenField, groupName } from './Tokens';
 import {
-  groupsOf,
   scopeChainOf,
   sourceOfToken,
   withScopeBag,
@@ -15,7 +14,7 @@ import {
   type TokenSource,
   type WidthBag,
 } from './panel';
-import { styleTokens, inheritedStyle } from './styleTokens';
+import { styleGroups, inheritedStyle } from './styleTokens';
 import { LEAVES } from './panel';
 import { REFERABLE } from '@renderer/render';
 import { isColor } from './themes';
@@ -65,7 +64,6 @@ export function ScopeStyle({
 
   const mobileOverrides = Object.keys(here.narrow);
   const source = (name: string): TokenSource => sourceOfToken(chain, template.tokens, name, width);
-  const pictureFirst = here.type === 'media' || here.type === 'image' || !['', 'none'].includes(source('bg-image').value);
 
   return (
     <div className="wconvert-scope">
@@ -87,12 +85,7 @@ export function ScopeStyle({
 
       <ScopeContrast chain={chain} template={template} labels={labels} width={width} />
 
-      {[...groupsOf(styleTokens(template, path, width))]
-        .sort(
-          (a, b) =>
-            Number(pictureFirst && b.id === 'image') - Number(pictureFirst && a.id === 'image'),
-        )
-        .map((group) => (
+      {styleGroups(template, path, width).map((group) => (
           <section key={group.id} className="wconvert-group" aria-label={groupName(group.id)}>
             <h5 className="wconvert-group__name">{groupName(group.id)}</h5>
 

@@ -802,6 +802,22 @@ describe('the inspector', () => {
    */
   const inspector = (name: string) => within(screen.getByRole('group', { name }));
 
+  it('keeps scroll and editing mode during changes, then starts a different element at its primary controls', async () => {
+    await structure();
+    await select('Headline');
+    await userEvent.click(screen.getByRole('tab', { name: 'Style' }));
+    const scroller = document.querySelector<HTMLElement>('.wconvert-pane--controls .wconvert-pane__body')!;
+    scroller.scrollTop = 280;
+    await userEvent.selectOptions(screen.getByRole('combobox', { name: 'heading-weight' }), '700');
+    expect(scroller.scrollTop).toBe(280);
+    await userEvent.click(screen.getByRole('button', { name: 'Mobile preview' }));
+    expect(scroller.scrollTop).toBe(280);
+    await select('Body text');
+    expect(scroller.scrollTop).toBe(0);
+    expect(screen.getByRole('tab', { name: 'Style' })).toHaveAttribute('aria-selected', 'true');
+    expect(within(screen.getByRole('group', { name: 'Body text' })).getAllByRole('region')[1]).toHaveAccessibleName('Body text');
+  });
+
   it('puts the selected block\u2019s own controls under the tree', async () => {
     await structure();
     await select('Fine print');

@@ -1,3 +1,4 @@
+import { StyleValueInput } from './StyleValueInput';
 import { SentenceEditor } from './SentenceEditor';
 import type { SentenceValue } from './sentence';
 import { __, sprintf } from '@wordpress/i18n';
@@ -449,12 +450,12 @@ export function MediaControl({
   return (
     <span className="wconvert-slot__media">
       {image && <img className="wconvert-media-preview" src={image} alt="" loading="lazy" />}
-      <input
+      <StyleValueInput
         id={id}
         type={type}
         className="widefat"
         value={value}
-        onChange={(event) => onChange(event.target.value)}
+        onCommit={onChange}
       />
       {media !== null && (
         <Button

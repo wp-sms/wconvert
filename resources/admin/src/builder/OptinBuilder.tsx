@@ -460,10 +460,12 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
     // a merchant away from: clicking a block asks to edit that block.
     setTab('design');
 
+    setOpenToken(null);
     setSelection({ path: pathOfKey(key), from: 'preview' });
   }, []);
 
   const chooseFromTree = useCallback((path: Path) => {
+    setOpenToken(null);
     setSelection({ path, from: 'tree' });
 
     if (typeof path[0] === 'number') {
@@ -779,6 +781,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
                           />
                         ) : (
                           <ScopeStyle
+                            key={selection.path.join('.')}
                             template={entry}
                             labels={gallery.labels}
                             path={selection.path}

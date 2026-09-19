@@ -10,7 +10,7 @@ Portaled React keyboard events still bubble through the layer tree. The tree han
 
 ## Style controls
 
-Numeric controls show amount and unit, and unit menus contain only units. Stored CSS expressions still receive a text editor; ordinary measurements no longer offer a Custom unit. Padding uses compact link and CSS icons beside its label, with separate sides arranged in two columns when space permits. Shadow uses a named preset select, an optional geometry disclosure, and a small CSS icon; unparseable authored shadows remain editable. Opening an adjustment writes nothing.
+Numeric controls show amount and unit, and unit menus contain only units. Stored CSS expressions still receive a text editor; ordinary measurements no longer offer a Custom unit. Padding uses compact link and CSS icons beside its label, with separate sides arranged in two columns when space permits. Shadow uses a named preset select, an optional geometry disclosure, and a small CSS icon; unparseable authored shadows remain editable. Named layered-shadow presets keep their CSS behind the edit icon; unrecognised custom shadows still show their authored value. Opening an adjustment writes nothing.
 
 This completes the progressive disclosure rule in [ADR 0054](0054-every-control-has-the-shape-of-its-value.md) and refines the measurement controls in [ADR 0075](0075-draft-history-and-template-content-choices-stay-predictable.md). It does not remove authored values, reset controls or inheritance.
 
@@ -20,11 +20,17 @@ Alignment and panel borders use compact icon rows with accessible names and hove
 
 Local overrides no longer print a bare “Custom” status below every field: the displayed value and reset action already communicate that state. Inheritance links, palette-follow actions and mobile override notices remain.
 
-The manifest groups body text, headings, pictures and effects separately and supplies field order within each section. Picture controls lead a picture scope. Gap and corner rounding share a row when at least 268px is available; other controls keep their full width. Numeric resets sit beside field labels, so changing a value does not squeeze its number and unit inputs. Image fit, shape and other element settings are visible at the top of Style, without an extra disclosure. Copy/paste styles follows the settings; mobile inheritance details use a compact disclosure with a visible override count.
+The manifest groups body text, headings, pictures and effects separately and supplies field order within each section. Picture controls lead picture scopes, typography leads text scopes, and spacing leads layout scopes. Button and form-field colors lead their scopes. This order depends on the element type, never a background value being edited, so replacing a picture cannot reorder the inspector. Gap and corner rounding share a row when at least 268px is available; other controls keep their full width. Numeric resets sit beside field labels, so changing a value does not squeeze its number and unit inputs. Image fit, shape and other element settings are visible at the top of Style, without an extra disclosure. Copy/paste styles follows the settings; mobile inheritance details use a compact disclosure with a visible override count.
 
 Picture focus appears only when the current scope or a descendant has a picture. The decision follows desktop/mobile background overrides and the renderer's panel/media background reset. The global control also considers pictures used only on mobile. Gradient-only and empty backgrounds do not need focus; custom CSS image expressions remain editable. Empty image elements keep their source control but hide fit and shape until a source is present. Hiding controls never clears their stored values.
 
-Labels use short familiar terms: Minimum height, Gap, Picture fit, Required field and Badge position. This changes wording only, not the manifest keys or saved values.
+Relative heading/text presets say Heading scale and Text scale to distinguish them from the numeric font size. Labels use short familiar terms: Minimum height, Gap, Picture fit, Required field and Badge position. This changes wording only, not the manifest keys or saved values.
+
+### Keeping your place
+
+Style numbers, custom choice values and picture addresses commit on Enter or blur, and Escape cancels unfinished text. Enter keeps focus in the input and a later blur does not commit twice. Custom choice editors stay mounted even when the value being typed matches a preset. Picture previews keep the existing image until its replacement address is committed.
+
+Ordinary edits and desktop/mobile preview changes keep the inspector scroller. Selecting another element resets it to the primary controls, closes the previous element's picker and resets local style-editing modes. The selected Content/Style tab remains useful across elements.
 
 ## Adding rules
 

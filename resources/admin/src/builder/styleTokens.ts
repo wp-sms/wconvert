@@ -1,5 +1,7 @@
 import {
   childKeysOf,
+  groupsOf,
+  type TokenGroupId,
   LEAVES,
   LAYOUTS,
   TOKENS,
@@ -26,6 +28,17 @@ export function styleTokens(template: Template, path: Path | null, width: WidthB
   if (node !== null) collect(node);
   const focus = hasPicture(template, path, width) || (path === null && hasPicture(template, null, 'narrow'));
   return TOKENS.filter(token => (path === null || used.has(token.name)) && (token.name !== 'image-position' || focus));
+}
+
+/** Order follows the selected element, never a value being edited. */
+export function styleGroups(template: Template, path: Path, width: WidthBag) {
+  const type = nodeAt(template.tree, path)?.type;
+  const first: TokenGroupId[] = type === 'media' || type === 'image' ? ['image', 'space']
+    : type === 'heading' ? ['heading', 'space']
+      : type !== undefined && LAYOUTS[type] ? ['space']
+        : ['text', 'eyebrow', 'consent', 'countdown'].includes(type ?? '') ? ['type', 'space'] : ['color', 'type', 'space'];
+  const priority = (id: TokenGroupId) => first.includes(id) ? first.indexOf(id) : first.length;
+  return [...groupsOf(styleTokens(template, path, width))].sort((a, b) => priority(a.id) - priority(b.id));
 }
 
 /** Clearing mobile means the same node's desktop value, then its ancestors. */

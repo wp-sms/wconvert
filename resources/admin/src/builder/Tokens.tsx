@@ -849,9 +849,9 @@ function ChoiceField({
       {offered.map(choice => <option key={choice} value={choice}>{nameOf(labels.tokenValues, `${token}.${choice}`)}</option>)}
       <option value="__custom">{__('Custom…', 'wconvert')}</option>
     </select>}
-    {custom && <input type="text" className="wconvert-token__typed"
+    {custom && <StyleValueInput type="text" className="wconvert-token__typed"
       aria-label={sprintf(__('%s value', 'wconvert'), label)} placeholder={fallback} value={value}
-      onChange={event => onChange(event.target.value)} />}
+      onFocus={() => setAsked(true)} onCommit={onChange} />}
   </div>;
 }
 

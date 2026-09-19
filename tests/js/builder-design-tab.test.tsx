@@ -252,6 +252,8 @@ describe('a background picture', () => {
     // KEYSTROKE. A merchant pastes an address anyway.
     await userEvent.click(box());
     await userEvent.paste('https://example.com/x.jpg');
+    expect(changed).not.toHaveBeenCalled();
+    await userEvent.keyboard('{Enter}');
 
     expect(changed).toHaveBeenLastCalledWith(
       expect.objectContaining({
@@ -569,7 +571,7 @@ describe('a token the manifest offers choices for', () => {
     const group = screen.getByRole('group', { name: 'Alignment' });
 
     await userEvent.click(within(group).getByRole('radio', { name: 'Custom' }));
-    await userEvent.type(screen.getByLabelText('Alignment value'), 'j');
+    await userEvent.type(screen.getByLabelText('Alignment value'), 'j{Enter}');
 
     expect(changed).toHaveBeenCalledWith(
       expect.objectContaining({ tokens: expect.objectContaining({ align: 'centerj' }) }),
