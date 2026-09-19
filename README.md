@@ -698,6 +698,9 @@ browser-local campaign state, short-lived anonymous-count rate limit and copies
 outside WConvert. The policy suggestion reads the same facts, while WordPress
 still leaves publication and legal review to the site owner
 ([ADR 0094](docs/adr/0094-privacy-guidance-reports-the-current-data-flow.md)).
+Its copy follows WordPress's collect/purpose, recipients, retention and rights
+structure; merchant-only customization guidance is omitted when WordPress
+copies the suggested text into a policy.
 
 **The eraser issues a `DELETE`, never an anonymising update.** Anonymising is
 an update, and [ADR 0002](docs/adr/0002-leads-are-immutable-by-schema.md) has

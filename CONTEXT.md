@@ -99,7 +99,8 @@ and backups remain an explicit merchant follow-up. See
 
 Data & privacy also presents a read-only Data Map of what this install can
 prove: saved retention, configured Destination types and declared fields,
-browser-local campaign state, and the short anonymous-count rate-limit window.
+browser-local campaign state and its fallback-cookie lifetime, and the short
+anonymous-count rate-limit window.
 The same facts feed WordPress's suggested privacy-policy text; they never expose
 credentials, publish policy wording, choose a legal basis or claim to erase
 external copies. See

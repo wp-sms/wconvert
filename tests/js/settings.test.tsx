@@ -32,7 +32,7 @@ beforeEach(() => {
   privacy.readDataMap.mockResolvedValue({
     retention_days: null,
     destinations: [],
-    browser: { key: 'wcv1', cookie_fallback: true, contains_contact_details: false, contains_visitor_identifier: false },
+    browser: { key: 'wcv1', local_storage_expiry_days: null, cookie_fallback: true, cookie_fallback_days: 365, contains_contact_details: false, contains_visitor_identifier: false },
     beacon_rate_limit_seconds: 60,
   });
 });

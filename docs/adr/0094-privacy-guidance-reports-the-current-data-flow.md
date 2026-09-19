@@ -23,6 +23,15 @@ translates the same facts into visitor-facing suggested wording. Internal route
 names stay out of the policy suggestion because they are operational labels,
 while configured service types are named because they may receive a copy.
 
+The policy suggestion follows WordPress's own reader questions rather than
+printing one undifferentiated block: information collected and why, browser
+storage and statistics, recipients, retention, and rights. A
+`privacy-policy-tutorial` note tells the merchant to add the purpose/legal basis,
+privacy contact, provider notices and transfer safeguards that WConvert cannot
+determine; WordPress omits that note when the suggested text is copied. The
+visitor-facing recipient list groups configured routes by service and names the
+declared fields without exposing internal route labels.
+
 ## Guidance is not an automated compliance claim
 
 WConvert does not select a legal basis, decide whether a purpose is necessary,
@@ -35,7 +44,8 @@ The guidance accurately distinguishes three storage boundaries:
 
 - retained Lead fields and consent wording in WConvert;
 - browser-local display/dismissal/conversion/A/B state, with no contact details
-  or WConvert-generated visitor identifier; and
+  or WConvert-generated visitor identifier; local storage has no set expiry,
+  while the same-name fallback cookie lasts up to one year; and
 - a site-specific one-way network-address hash kept for the short anonymous
   counting rate-limit window, while the raw network address is not stored.
 

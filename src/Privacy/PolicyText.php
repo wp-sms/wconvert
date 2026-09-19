@@ -49,39 +49,46 @@ final class PolicyText
     public function content(): string
     {
         $summary = $this->map->summary();
-        $paragraphs = [
-            __('When you submit a form displayed by WConvert, we store what you entered — which may include your email address, phone number, name, selections and messages — along with the campaign and the date. WConvert does not attach the page address, IP address or browser details to that submission.', 'wconvert'),
-            __('Where a form asked you to agree to something, we also store the wording of that agreement exactly as it was shown to you at the time, so that what you consented to can be established later.', 'wconvert'),
-            $this->retentionSentence($summary['retention_days']),
+        $browser = $summary['browser'];
+
+        $sections = [
+            '<p class="privacy-policy-tutorial">' . __('Before publishing, explain why each WConvert form collects information and which legal basis you rely on. Add a privacy contact, links to the privacy notices of configured services, and any international-transfer safeguards that apply to your site.', 'wconvert') . '</p>',
+            '<strong class="privacy-policy-tutorial">' . __('Suggested text:', 'wconvert') . '</strong>',
+            '<h2>' . __('WConvert forms and campaigns', 'wconvert') . '</h2>',
+            '<p>' . __('We use WConvert to display campaigns, including forms and messages, on this website. When a campaign includes a form, we use the information you submit for the purpose described in that form, such as responding to a request, providing a resource or managing a subscription.', 'wconvert') . '</p>',
+            '<h3>' . __('Information we collect', 'wconvert') . '</h3>',
+            '<p>' . __('When you submit a WConvert form, we collect the information shown in that form. Depending on the form, this may include your name, email address, phone number, selections and messages. We also record which campaign received the submission and the date and time it was submitted.', 'wconvert') . '</p>',
+            '<p>' . __('If a form asks for your consent, we save the exact consent statement shown when you submitted it. This lets us keep a record of what you agreed to.', 'wconvert') . '</p>',
+            '<p>' . __('We do not add the page address, IP address or browser details to the saved form submission.', 'wconvert') . '</p>',
+            '<h3>' . __('Browser storage and campaign statistics', 'wconvert') . '</h3>',
+            '<p>' . sprintf(
+                /* translators: %s: the browser storage key used by WConvert. */
+                __('Your browser remembers whether a campaign was shown, dismissed or completed, and which version was assigned during an A/B test. This helps avoid repeatedly showing the same campaign and keeps the assigned version consistent. The record is stored in local storage under the name %s. Local storage has no set expiry and remains until you clear the site data or the browser removes it.', 'wconvert'),
+                '<code>' . esc_html($browser['key']) . '</code>'
+            ) . '</p>',
+            '<p>' . sprintf(
+                /* translators: %s: how long the fallback browser cookie lasts, already pluralized. */
+                __('If local storage is unavailable, WConvert uses a cookie with the same name for up to %s. This browser record contains no name, email address, phone number or visitor identifier created by WConvert.', 'wconvert'),
+                $this->cookieDuration($browser['cookie_fallback_days'])
+            ) . '</p>',
+            '<p>' . __('WConvert records total campaign views, dismissals and completions by campaign and day. These totals are not linked to individual visitors.', 'wconvert') . '</p>',
+            '<p>' . sprintf(
+                /* translators: %s: the short lifetime of the campaign-counting rate-limit record. */
+                __('To limit repeated counting requests, WConvert temporarily keeps a site-specific one-way hash of the visitor’s IP address for %s. The IP address itself is not saved.', 'wconvert'),
+                $this->shortDuration($summary['beacon_rate_limit_seconds'])
+            ) . '</p>',
+            '<p>' . __('WConvert does not use form submissions for automated decision-making or to build visitor profiles.', 'wconvert') . '</p>',
+            '<h3>' . __('Who receives your information', 'wconvert') . '</h3>',
+            $this->destinationDisclosure($summary['destinations']),
+            '<p>' . __('Site administrators can also export form submissions to a CSV file. Connected services, exported files, email logs and backups keep separate copies and may follow different retention periods.', 'wconvert') . '</p>',
+            '<h3>' . __('How long we keep your information', 'wconvert') . '</h3>',
+            '<p>' . $this->retentionSentence($summary['retention_days']) . '</p>',
+            '<h3>' . __('Your choices and rights', 'wconvert') . '</h3>',
+            '<p>' . __('You may ask us for a copy of the personal information we hold from WConvert form submissions or ask us to delete it, subject to applicable legal requirements. We may need to verify your email address or phone number before completing the request.', 'wconvert') . '</p>',
+            '<p>' . __('Deleting a submission from WConvert does not automatically remove copies already sent to a connected service, included in an exported file or email log, or retained in a backup. Those copies are managed separately.', 'wconvert') . '</p>',
         ];
 
-        $destinationTypes = array_values(array_unique(array_map(
-            static fn (array $destination): string => $destination['type_label'],
-            $summary['destinations']
-        )));
-
-        if ($destinationTypes !== []) {
-            $paragraphs[] = sprintf(
-                /* translators: %s: comma-separated names of configured services, such as MailPoet and WP SMS contacts. */
-                __('Depending on the form, submitted data may also be copied to these configured destinations: %s. Copies there are controlled by the site owner and the destination service, and may remain after WConvert’s copy is deleted.', 'wconvert'),
-                implode(', ', array_map('esc_html', $destinationTypes))
-            );
-        }
-
-        $paragraphs[] = __('When you interact with a WConvert campaign, the browser stores display, dismissal, conversion and optional A/B assignment state in local storage, with a cookie fallback. This state contains no contact details and no visitor identifier generated by WConvert.', 'wconvert');
-        $paragraphs[] = sprintf(
-            /* translators: %s: the short lifetime of an anonymous analytics rate-limit record. */
-            __('To protect the anonymous campaign-counting endpoint, WConvert keeps a site-specific one-way hash derived from the network address for %s. The network address itself is not stored.', 'wconvert'),
-            sprintf(
-                /* translators: %s: a number of seconds. */
-                _n('%s second', '%s seconds', $summary['beacon_rate_limit_seconds'], 'wconvert'),
-                number_format_i18n($summary['beacon_rate_limit_seconds'])
-            )
-        );
-        $paragraphs[] = __('Site administrators can export these submissions to a spreadsheet file. Once a file has been exported it is held by the site owner, and this plugin can no longer reach it.', 'wconvert');
-        $paragraphs[] = __('You may ask the site owner for a copy of your retained WConvert submissions or for their deletion. Copies already sent to another service, exported, logged by email software or retained in backups must be handled separately.', 'wconvert');
-
-        return '<p>' . implode('</p>' . "\n" . '<p>', $paragraphs) . '</p>';
+        return implode("\n", $sections);
     }
 
     /**
@@ -90,17 +97,101 @@ final class PolicyText
     private function retentionSentence(?int $days): string
     {
         if ($days === null) {
-            return __('We keep these submissions until you delete them.', 'wconvert');
+            return __('We keep form submissions until a site administrator deletes them.', 'wconvert');
         }
 
         return sprintf(
             /* translators: %s: the configured retention period, already pluralised — "1 day", "90 days". */
-            __('We keep these submissions for %s, after which they are deleted automatically.', 'wconvert'),
-            sprintf(
-                /* translators: %s: a number of days. */
-                _n('%s day', '%s days', $days, 'wconvert'),
-                number_format_i18n($days)
-            )
+            __('We keep form submissions for %s after they are submitted, then delete them automatically.', 'wconvert'),
+            $this->days($days)
         );
+    }
+
+    /**
+     * The services a configured Destination may copy a submission to.
+     * Internal route labels are intentionally omitted from visitor-facing text.
+     *
+     * @param list<array{id: string, label: string, type: string, type_label: string, fields: list<string>|null}> $destinations
+     */
+    private function destinationDisclosure(array $destinations): string
+    {
+        if ($destinations === []) {
+            return '<p>' . __('We do not currently use WConvert to send form submissions to another configured destination.', 'wconvert') . '</p>';
+        }
+
+        /** @var array<string, array{label: string, fields: list<string>}> $services */
+        $services = [];
+
+        foreach ($destinations as $destination) {
+            $service = $services[$destination['type']] ?? [
+                'label' => $destination['type_label'],
+                'fields' => [],
+            ];
+
+            foreach ($destination['fields'] ?? [] as $field) {
+                if (!in_array($field, $service['fields'], true)) {
+                    $service['fields'][] = $field;
+                }
+            }
+
+            $services[$destination['type']] = $service;
+        }
+
+        $items = [];
+        foreach ($services as $service) {
+            $label = '<strong>' . esc_html($service['label']) . '</strong>';
+            $fields = array_map($this->fieldLabel(...), $service['fields']);
+            $items[] = '<li>' . ($fields === []
+                ? $label
+                : sprintf(
+                    /* translators: 1: destination service name, 2: comma-separated information it may receive. */
+                    __('%1$s: %2$s', 'wconvert'),
+                    $label,
+                    esc_html(implode(', ', $fields))
+                )) . '</li>';
+        }
+
+        return '<p>' . __('Depending on the form you submit, we may send a copy of your information to these configured services:', 'wconvert') . '</p>'
+            . "\n<ul>\n" . implode("\n", $items) . "\n</ul>";
+    }
+
+    private function fieldLabel(string $field): string
+    {
+        return match ($field) {
+            'email' => __('email address', 'wconvert'),
+            'phone' => __('phone number', 'wconvert'),
+            'name' => __('name', 'wconvert'),
+            'interest' => __('interest answer', 'wconvert'),
+            default => $field,
+        };
+    }
+
+    private function days(int $days): string
+    {
+        return sprintf(
+            /* translators: %s: a number of days. */
+            _n('%s day', '%s days', $days, 'wconvert'),
+            number_format_i18n($days)
+        );
+    }
+
+    private function shortDuration(int $seconds): string
+    {
+        if ($seconds === 60) {
+            return __('one minute', 'wconvert');
+        }
+
+        return sprintf(
+            /* translators: %s: a number of seconds. */
+            _n('%s second', '%s seconds', $seconds, 'wconvert'),
+            number_format_i18n($seconds)
+        );
+    }
+
+    private function cookieDuration(int $days): string
+    {
+        return $days === 365
+            ? __('one year', 'wconvert')
+            : $this->days($days);
     }
 }
