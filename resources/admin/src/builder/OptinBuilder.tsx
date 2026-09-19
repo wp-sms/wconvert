@@ -830,7 +830,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
               reveal={revealSection}
               placement={displayTypeOf(config, templates) === 'inline' ? {
                 summary: inlineSummary,
-                controls: <InlinePlacementSettings config={config} vocabulary={vocabulary} onChange={edit} />,
+                controls: <InlinePlacementSettings optinId={id} published={publishedAt !== null} config={config} vocabulary={vocabulary} onChange={edit} />,
               } : undefined}
             />
           </div>

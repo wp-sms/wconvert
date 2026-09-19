@@ -184,7 +184,7 @@ function instructionsFor(provided: InlineOptin[] | null): string {
     );
   }
 
-  return __('Choose which of your inline Campaigns appears at this point in the page.', 'wconvert');
+  return __('Choose which of your inline Campaigns appears at this location.', 'wconvert');
 }
 
 /** The disabled first option, which is the only one there is in two of the three states. */

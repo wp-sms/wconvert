@@ -243,7 +243,7 @@ final class AdminReplacementTest extends TestCase
         $this->assertCount(1, $settings, 'the replacement boots with no settings at all');
         $this->assertSame('before', $settings[0]['position'], 'the settings run after the bundle that reads them');
 
-        foreach (['exportUrl', 'policyUrl', 'homeUrl', 'inspectParam', 'dev'] as $key) {
+        foreach (['exportUrl', 'policyUrl', 'homeUrl', 'inspectParam', 'placementEditor', 'dev'] as $key) {
             $this->assertStringContainsString($key, $settings[0]['data'], $key . ' was lost in the swap');
         }
     }

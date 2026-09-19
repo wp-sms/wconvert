@@ -46,6 +46,14 @@ describe('the block editor and PHP agree about what things are called', () => {
     expect(metadata.name).toBe(phpConstant(read('src/Frontend/InlineOptinBlock.php'), 'NAME'));
   });
 
+  it('is discoverable for posts and theme-owned widget areas', () => {
+    const metadata = JSON.parse(read('resources/blocks/inline-optin/block.json'));
+
+    expect(metadata.category).toBe('widgets');
+    expect(metadata.keywords).toEqual(expect.arrayContaining(['widget', 'sidebar', 'footer']));
+    expect(metadata.description).toMatch(/page, post, sidebar, or footer/u);
+  });
+
   it('names the editor script handle PHP registers', () => {
     const metadata = JSON.parse(read('resources/blocks/inline-optin/block.json'));
 

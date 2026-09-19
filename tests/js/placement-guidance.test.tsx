@@ -4,6 +4,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { inlineShortcode, PlacementGuidance, siteCheckUrl } from '../../resources/admin/src/builder/PlacementGuidance';
+import { ManualPlacement } from '../../resources/admin/src/builder/ManualPlacement';
 
 const OPTIN = '01J00000000000000000000000';
 const OTHER = '01J00000000000000000000001';
@@ -101,6 +102,49 @@ describe('placing an inline Optin', () => {
     expect(screen.queryByRole('status')).toBeNull();
     finish();
     await waitFor(() => expect(screen.getByRole('status')).toHaveTextContent('Shortcode copied.'));
+  });
+});
+
+describe('placing an inline Campaign in theme-owned areas', () => {
+  it('links block themes to the Site Editor and keeps the shortcode fallback', () => {
+    window.wconvertAdmin = {
+      exportUrl: '',
+      placementEditor: { type: 'site_editor', url: 'https://example.org/wp-admin/site-editor.php' },
+    };
+
+    render(<ManualPlacement optinId={OPTIN} published />);
+
+    expect(screen.getByText(/template or template part/)).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: 'Open Site Editor' })).toHaveAttribute(
+      'href',
+      'https://example.org/wp-admin/site-editor.php',
+    );
+    expect(screen.getByRole('textbox', { name: 'Shortcode for other editors' })).toHaveValue(inlineShortcode(OPTIN));
+  });
+
+  it('links classic themes to their registered widget areas and explains the classic fallback', () => {
+    window.wconvertAdmin = {
+      exportUrl: '',
+      placementEditor: { type: 'widgets', url: 'https://example.org/wp-admin/widgets.php' },
+    };
+
+    render(<ManualPlacement optinId={OPTIN} published />);
+
+    expect(screen.getByText(/Choose a sidebar or footer area/)).toHaveTextContent('Text widget');
+    expect(screen.getByRole('link', { name: 'Open Widgets' })).toHaveAttribute(
+      'href',
+      'https://example.org/wp-admin/widgets.php',
+    );
+  });
+
+  it('does not invent a theme destination or hide the publish requirement', () => {
+    window.wconvertAdmin = { exportUrl: '' };
+
+    render(<ManualPlacement optinId={OPTIN} published={false} />);
+
+    expect(screen.getByText(/Publish this Campaign first/)).toBeInTheDocument();
+    expect(screen.queryByRole('link')).toBeNull();
+    expect(screen.getByText(/theme controls which site-wide areas exist/)).toBeInTheDocument();
   });
 });
 

@@ -65,6 +65,11 @@ export interface AdminSettings {
    * renders no panel, silently.
    */
   readonly inspectParam?: string;
+  /** Native WordPress layout editor available to this user and active theme. */
+  readonly placementEditor?: {
+    readonly type: 'site_editor' | 'widgets';
+    readonly url: string;
+  } | null;
   /**
    * What one design's snapshot may cost, gzipped — `DesignBudget::PER_DESIGN`.
    *

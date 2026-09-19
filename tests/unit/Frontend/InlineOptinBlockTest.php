@@ -41,6 +41,7 @@ final class InlineOptinBlockTest extends TestCase
         $GLOBALS['wconvertTestBlocks'] = [];
         $GLOBALS['wconvertTestShortcodes'] = [];
         $GLOBALS['wconvertTestInlineScripts'] = [];
+        $GLOBALS['wconvertTestWordPressVersion'] = '7.1';
 
         $this->db = new FakeConnection();
         $this->publishedSet = new PublishedSet(new FakeOptionStore());
@@ -50,6 +51,11 @@ final class InlineOptinBlockTest extends TestCase
             RuleVocabulary::fromManifest(__DIR__ . '/../../..'),
             new MilestoneStore(new FakeOptionStore()
         ));
+    }
+
+    protected function tearDown(): void
+    {
+        unset($GLOBALS['wconvertTestWordPressVersion']);
     }
 
     private function block(): InlineOptinBlock
@@ -120,6 +126,23 @@ final class InlineOptinBlockTest extends TestCase
 
         $this->assertSame(InlineOptinBlock::HANDLE, $this->metadata()['editorScript']);
         $this->assertTrue(wp_script_is(InlineOptinBlock::HANDLE, 'registered'));
+    }
+
+    #[\PHPUnit\Framework\Attributes\DataProvider('wordpressApiVersions')]
+    public function testItUsesTheBlockApiVersionSupportedByWordPress(string $wordpress, int $expected): void
+    {
+        $GLOBALS['wconvertTestWordPressVersion'] = $wordpress;
+        $this->block()->register();
+
+        $this->assertSame($expected, $GLOBALS['wconvertTestBlocks'][InlineOptinBlock::NAME]['api_version']);
+    }
+
+    /** @return iterable<string, array{string, int}> */
+    public static function wordpressApiVersions(): iterable
+    {
+        yield 'declared minimum' => ['6.2.6', 2];
+        yield 'first v3 release' => ['6.3', 3];
+        yield 'current release' => ['7.1', 3];
     }
 
     /**

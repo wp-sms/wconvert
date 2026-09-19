@@ -126,6 +126,24 @@ test('manual anchor for the same campaign wins over its automatic placeholder', 
   expect(rendered[0].children).toBeGreaterThan(0);
 });
 
+test('the native block widget renders a manual Campaign in a narrow classic-theme sidebar', async ({ page }) => {
+  await openFixture(page, 'widget', 'classic');
+  const read = () => page.evaluate(() => {
+    const area = document.querySelector('[data-inline-widget-area="true"]');
+    const anchor = area?.querySelector('[data-wconvert-optin]');
+    return {
+      area: area !== null,
+      width: area?.getBoundingClientRect().width ?? 0,
+      children: anchor?.childElementCount ?? 0,
+      overflow: area ? area.scrollWidth - area.clientWidth : 999,
+    };
+  });
+  await expect.poll(read).toMatchObject({ area: true, width: 280, children: 1 });
+  const state = await read();
+  expect(state.overflow).toBeLessThanOrEqual(1);
+  expect(await page.locator('[data-wconvert-auto]').count()).toBe(0);
+});
+
 test('recursive the_content from a secondary query does not duplicate automatic placement', async ({ page }) => {
   await openFixture(page, 'recursive', 'classic');
   await expect(page.locator('[data-inline-secondary="true"]')).toBeVisible();
@@ -174,6 +192,7 @@ test('automatic inline reports an impression on entry and captures a real lead',
     const email = root?.querySelector('input[name="email"]');
     if (!form || !email) throw new Error('Automatic inline form was not mounted');
     email.value = 'automatic-inline@example.test';
+    for (const checkbox of root.querySelectorAll('input[type="checkbox"][required]')) checkbox.checked = true;
     form.requestSubmit();
   });
   const captureRequest = await capture;
@@ -199,6 +218,24 @@ test('RTL mobile automatic inline has no horizontal overflow, autofocus jump, or
   expect(state.scrollY).toBe(0);
   expect(state.active).toBe('BODY');
   expect(state.cls).toBeLessThanOrEqual(0.1);
+});
+
+test('the Campaign picker loads in WordPress Widgets and Site Editor contexts', async ({ page }) => {
+  await openFixture(page, 'widget', 'classic');
+  await page.goto('/wp-login.php');
+  await page.getByLabel('Username or Email Address').fill('admin');
+  await page.getByLabel('Password', { exact: true }).fill('password');
+  await page.getByRole('button', { name: 'Log In', exact: true }).click();
+  await page.waitForURL('**/wp-admin/');
+
+  await page.goto('/wp-admin/widgets.php');
+  await expect.poll(() => page.evaluate(() => window.wp?.blocks?.getBlockType('wconvert/inline-optin')?.name ?? null)).toBe('wconvert/inline-optin');
+  await expect.poll(() => page.evaluate(() => Array.isArray(window.wconvertInlineOptins) ? window.wconvertInlineOptins.length : -1)).toBeGreaterThan(0);
+
+  await openFixture(page, 'widget', 'block');
+  await page.goto('/wp-admin/site-editor.php');
+  await expect.poll(() => page.evaluate(() => window.wp?.blocks?.getBlockType('wconvert/inline-optin')?.name ?? null)).toBe('wconvert/inline-optin');
+  await expect.poll(() => page.evaluate(() => Array.isArray(window.wconvertInlineOptins) ? window.wconvertInlineOptins.length : -1)).toBeGreaterThan(0);
 });
 
 editorTest('goal-first inline setup enables automatic placement and publishes', async ({ page }, info) => {

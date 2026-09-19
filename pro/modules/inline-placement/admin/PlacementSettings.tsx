@@ -4,9 +4,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { usesPageLoadOnly, type InlinePlacementProps } from '@/inlinePlacement';
 import type { Rule, Targeting } from '@/builder/api';
+import { ManualPlacement } from '@/builder/ManualPlacement';
 import './placement.css';
 
-export default function PlacementSettings({ config, vocabulary, onChange }: InlinePlacementProps) {
+export default function PlacementSettings({ optinId, published, config, vocabulary, onChange }: InlinePlacementProps) {
   const id = useId();
   const [confirm, setConfirm] = useState(false);
   const manualChoice = useRef<HTMLInputElement>(null);
@@ -30,6 +31,7 @@ export default function PlacementSettings({ config, vocabulary, onChange }: Inli
       <label className="wconvert-choice"><input className="sr-only" ref={manualChoice} type="radio" name={id} checked={!placement} onChange={() => { setConfirm(false); onChange({ inline_placement: null }); }} /><span className="wconvert-choice__label">{__('Manual — block or shortcode', 'wconvert')}</span></label>
       <label className="wconvert-choice"><input className="sr-only" ref={automaticChoice} type="radio" name={id} checked={!!placement} onChange={() => setConfirm(true)} /><span className="wconvert-choice__label">{__('Automatic', 'wconvert')}</span></label>
     </div>
+    {!placement && <ManualPlacement optinId={optinId} published={published} />}
     {confirm && <div className="wconvert-inline-placement__confirmation" role="group" aria-label={__('Enable automatic placement', 'wconvert')}>
       <p>{__('Automatic placement starts after content. It uses page load instead of other triggers; audience, schedule and frequency settings stay in place.', 'wconvert')}</p>
       {!targeting.include?.length && <p>{__('Your Pages setting will start with posts only. You can add pages under Display rules.', 'wconvert')}</p>}

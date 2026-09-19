@@ -5,8 +5,8 @@
   "title": "Inline Campaign",
   "category": "widgets",
   "icon": "feedback",
-  "description": "Place one of your published inline campaigns in the flow of this page.",
-  "keywords": ["campaign", "optin", "form", "lead", "signup", "wconvert"],
+  "description": "Place a published inline campaign in a page, post, sidebar, or footer.",
+  "keywords": ["campaign", "optin", "form", "lead", "signup", "widget", "sidebar", "footer", "wconvert"],
   "textdomain": "wconvert",
   "attributes": {
     "optinId": {

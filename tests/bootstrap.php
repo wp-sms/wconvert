@@ -130,12 +130,21 @@ if (!function_exists('is_admin')) {
  * @var list<string> $wconvertTestCapabilities
  */
 $GLOBALS['wconvertTestCapabilities'] = [];
+$GLOBALS['wconvertTestBlockTheme'] = false;
+$GLOBALS['wp_registered_sidebars'] = [];
 
 if (!function_exists('current_user_can')) {
     /** @param mixed ...$args */
     function current_user_can(string $capability, ...$args): bool
     {
         return in_array($capability, (array) $GLOBALS['wconvertTestCapabilities'], true);
+    }
+}
+
+if (!function_exists('wp_is_block_theme')) {
+    function wp_is_block_theme(): bool
+    {
+        return (bool) $GLOBALS['wconvertTestBlockTheme'];
     }
 }
 
@@ -1655,7 +1664,11 @@ if (!function_exists('wp_upload_dir')) {
 /** WordPress site metadata used by the shared admin frame. */
 function get_bloginfo(string $show = '', string $filter = 'raw'): string
 {
-    return $show === 'name' ? ($GLOBALS['wconvertTestSiteName'] ?? 'Example site') : '';
+    return match ($show) {
+        'name' => $GLOBALS['wconvertTestSiteName'] ?? 'Example site',
+        'version' => $GLOBALS['wconvertTestWordPressVersion'] ?? '7.1',
+        default => '',
+    };
 }
 
 function wp_specialchars_decode(string $text, int $quote_style = ENT_NOQUOTES): string

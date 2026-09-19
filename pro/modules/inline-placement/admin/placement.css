@@ -1,16 +1,3 @@
-#wconvert-admin .wconvert-inline-placement {
-  display: grid;
-  gap: .75rem;
-  min-inline-size: 0;
-}
-
-#wconvert-admin .wconvert-inline-placement p {
-  margin: 0;
-  color: var(--muted-foreground);
-  font-size: var(--text-note);
-  line-height: var(--text-note--line-height);
-}
-
 #wconvert-admin .wconvert-inline-placement .wconvert-choice-set {
   justify-self: start;
   max-inline-size: 100%;

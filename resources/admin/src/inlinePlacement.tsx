@@ -2,8 +2,11 @@ import { Suspense, type ComponentType } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import type { Rule, RuleVocabulary } from './builder/api';
 import { Button } from './components/ui/button';
+import { ManualPlacement } from './builder/ManualPlacement';
 
 export interface InlinePlacementProps {
+  optinId: string;
+  published: boolean;
   config: Record<string, unknown>;
   vocabulary: RuleVocabulary;
   onChange: (changes: Record<string, unknown>) => void;
@@ -32,10 +35,11 @@ export function inlinePlacementLabel(value: unknown): string | null {
 export function InlinePlacementSettings(props: InlinePlacementProps) {
   const Control = inlinePlacementControls.component;
   return Control ? <Suspense fallback={<p>{__('Loading placement settings…', 'wconvert')}</p>}><Control {...props} /></Suspense> : (
-    <div><p>{props.config.inline_placement
+    <div className="wconvert-inline-placement"><p>{props.config.inline_placement
       ? __('Automatic placement requires Pro. You can still place this Campaign manually with its block or shortcode.', 'wconvert')
       : __('Place this Campaign with its block or shortcode. Automatic placement is included in Pro.', 'wconvert')}</p>
       {props.config.inline_placement != null && <Button variant="outline" onClick={() => props.onChange({ inline_placement: null })}>{__('Use manual placement', 'wconvert')}</Button>}
+      {props.config.inline_placement == null && <ManualPlacement optinId={props.optinId} published={props.published} />}
     </div>
   );
 }
