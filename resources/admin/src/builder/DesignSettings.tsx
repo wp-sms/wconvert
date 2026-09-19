@@ -24,7 +24,7 @@ export function DesignSettings({
   mobile,
   displayType = 'popup',
   placement,
-  inlineControls,
+  inlineSummary,
   onPlacementChange = () => undefined,
 }: {
   template: Template;
@@ -40,7 +40,7 @@ export function DesignSettings({
   mobile?: boolean;
   displayType?: string;
   placement?: unknown;
-  inlineControls?: ReactNode;
+  inlineSummary?: ReactNode;
   onPlacementChange?: (placement: string | null) => void;
 }) {
   const direction = useDirection();
@@ -64,7 +64,7 @@ export function DesignSettings({
         {__('Browse designs and formats', 'wconvert')}
       </Button>
       <PlacementControl displayType={displayType} value={placement} onChange={onPlacementChange} />
-      {displayType === 'inline' && inlineControls}
+      {displayType === 'inline' && inlineSummary}
       {mobile && (
         <p className="wconvert-scope__narrow">
           {__(

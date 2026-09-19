@@ -47,6 +47,15 @@ async function open(overrides: Partial<ReadinessDialogProps> = {}) {
 afterEach(() => { delete window.wconvertAdmin; });
 
 describe('reviewing before publishing', () => {
+  it('links the inline placement recap to its placement settings', async () => {
+    const placement = vi.fn();
+    const { supplied } = await open({ displayType: 'inline', inlinePlacement: { position: 'after_content' }, onGoToPlacement: placement });
+    await userEvent.click(screen.getByRole('button', { name: 'Automatically after content' }));
+    expect(placement).toHaveBeenCalledOnce();
+    expect(supplied.onGoToDesign).not.toHaveBeenCalled();
+    expect(screen.queryByRole('dialog')).toBeNull();
+  });
+
   it('puts required fixes before the recap and keeps measurement guidance optional', async () => {
     const { supplied } = await open({ captureMode: 'connected' });
     const required = screen.getByRole('heading', { name: 'Before you can publish' });

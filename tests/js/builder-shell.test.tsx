@@ -258,6 +258,26 @@ const labelOf = (name: string | RegExp) =>
   within(screen.getByRole('row', { name })).getAllByRole('button')[0];
 
 describe('the builder shell', () => {
+  it('keeps inline placement in Display rules and links there from the Design summary', async () => {
+    builder.getOptin.mockResolvedValue(optin({ config: {
+      ...optin().config, display_type: 'inline', rules: [{ type: 'page_load' }],
+      inline_placement: { position: 'after_content' },
+    } }));
+    open();
+    const design = await screen.findByRole('tabpanel', { name: 'Design' });
+    expect(within(design).getByText('Automatically after content')).toBeVisible();
+    expect(within(design).queryByRole('button', { name: 'Use manual placement' })).toBeNull();
+    await userEvent.click(within(design).getByRole('button', { name: 'Change inline placement' }));
+    const rules = screen.getByRole('tabpanel', { name: 'Display rules' });
+    expect(within(rules).getByRole('button', { name: 'Placement Automatically after content' })).toHaveAttribute('aria-expanded', 'true');
+    await waitFor(() => expect(within(rules).getByRole('button', { name: 'Placement Automatically after content' })).toHaveFocus());
+    await userEvent.click(within(rules).getByRole('button', { name: 'Use manual placement' }));
+    await userEvent.click(screen.getByRole('tab', { name: 'Design' }));
+    expect(within(screen.getByRole('tabpanel', { name: 'Design' })).getByText('Manual — block or shortcode')).toBeVisible();
+    await userEvent.click(screen.getByRole('button', { name: 'Undo draft edit' }));
+    expect(within(screen.getByRole('tabpanel', { name: 'Design' })).getByText('Automatically after content')).toBeVisible();
+  });
+
   /**
    * **~~Four~~ ~~five~~ four, and the count has now moved three times.**
    *

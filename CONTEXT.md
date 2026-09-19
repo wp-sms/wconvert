@@ -574,7 +574,9 @@ Type]] (which container draws it). See [ADR
 Pro can create an Anchor automatically in rendered post/page content, before,
 after, or after a counted paragraph. `config.inline_placement` is distinct from
 Overlay Placement and Template JSON. Manual remains the default and takes
-precedence for the same campaign. PHP emits hidden candidates; browser eligibility
+precedence for the same campaign. Inline placement is edited under Display rules
+→ Placement; Design shows its summary with a link to those settings.
+PHP emits hidden candidates; browser eligibility
 and A/B assignment select at most one automatic winner, without changing saved
 articles or introducing another cache. See
 [ADR 0099](docs/adr/0099-automatic-inline-placement-uses-rendered-content.md).

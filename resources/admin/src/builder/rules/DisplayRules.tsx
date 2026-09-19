@@ -1,6 +1,6 @@
 import { __ } from '@wordpress/i18n';
 import type { ConvertingAct } from '../structure/catalogue';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import { entriesOffEveryAxis, entriesOn, visitorWith } from './axis';
 import { HowOften } from './HowOften';
 import { Section } from './Section';
@@ -63,12 +63,14 @@ export interface DisplayRulesProps {
   /**
    * Whether this Optin competes for the screen.
    *
-   * `arbitrate()` sorts overlays only, so on an `inline` design the priority
-   * control decides nothing and is not drawn.
+   * The priority under How often is for overlays only. Pro's automatic inline
+   * priority lives with its Placement controls instead.
    */
   readonly overlay: boolean;
   readonly act?: ConvertingAct;
   readonly onChange: (patch: Partial<DisplayRulesValue>) => void;
+  /** Optional placement authoring, composed by the builder without Pro imports. */
+  readonly placement?: { readonly summary: string; readonly controls: ReactNode };
   /**
    * A section the SCREEN has asked this panel to open, as a fresh object each
    * time it asks.
@@ -86,7 +88,7 @@ export interface DisplayRulesProps {
   readonly reveal?: { readonly id: string; readonly focus?: string } | null;
 }
 
-export function DisplayRules({ vocabulary, value, overlay, act = 'submit', onChange, reveal }: DisplayRulesProps) {
+export function DisplayRules({ vocabulary, value, overlay, act = 'submit', onChange, reveal, placement }: DisplayRulesProps) {
   const { rules, targeting, frequency, schedule, priority } = value;
   const client = [...vocabulary.triggers, ...vocabulary.conditions];
   const all = [...vocabulary.targeting, ...client];
@@ -210,6 +212,12 @@ export function DisplayRules({ vocabulary, value, overlay, act = 'submit', onCha
   return (
     <div className="wconvert-sections">
       <p className="m-0 mb-4 text-note text-muted-foreground">{__('Choose eligible pages and visitors, then the moment it appears. Schedule and frequency limits also apply.', 'wconvert')}</p>
+      {placement && (
+        <Section id="placement" eyebrow={__('Placement', 'wconvert')} summary={placement.summary}
+          open={open.has('placement')} onOpenChange={opener('placement')}>
+          {placement.controls}
+        </Section>
+      )}
       <Section
         id={where.id}
         eyebrow={where.eyebrow}

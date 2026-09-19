@@ -211,10 +211,16 @@ test('goal-first inline setup enables automatic placement and publishes', async 
   await expect(page.getByText('Inline form', { exact: true }).last()).toBeVisible();
   await page.getByRole('button', { name: 'Use this setup', exact: true }).click();
 
-  // The single-worker WordPress harness can queue this lazy chunk behind the
-  // editor's REST requests. Wait for editor/placement readiness separately from
-  // the control assertion, which must still fail if Automatic is absent.
+  // The placement authoring now belongs to Display rules. The Design tab keeps
+  // a summary and a route into that disclosure instead of mounting Pro's lazy
+  // control on the design surface.
   await expect(page.getByRole('tabpanel', { name: 'Design', exact: true })).toBeVisible();
+  await expect(page.getByText('Manual — block or shortcode', { exact: true })).toBeVisible();
+  await page.getByRole('button', { name: 'Change inline placement', exact: true }).click();
+  await expect(page.getByRole('tab', { name: 'Display rules', exact: true })).toHaveAttribute('aria-selected', 'true');
+  const placement = page.getByRole('button', { name: 'Placement Manual — block or shortcode', exact: true });
+  await expect(placement).toBeVisible();
+  await expect(placement).toHaveAttribute('aria-expanded', 'true');
   await expect(page.getByText('Loading placement settings…', { exact: true })).toBeHidden({ timeout: 30000 });
   const automatic = page.getByRole('radio', { name: 'Automatic', exact: true });
   await expect(automatic).toBeVisible();
@@ -227,6 +233,20 @@ test('goal-first inline setup enables automatic placement and publishes', async 
   await expect(page.getByLabel('Position in content', { exact: true })).toHaveValue('after_content');
   await expect(page.getByLabel('Automatic placement priority', { exact: true })).toHaveValue('0');
   await page.screenshot({ path: info.outputPath('inline-editor-automatic.png'), fullPage: true });
+
+  // Return to Design: the summary is the durable source of truth there, and
+  // the old Design-local Automatic controls must no longer be present.
+  await page.getByRole('tab', { name: 'Design', exact: true }).click();
+  await expect(page.getByText('Automatically after content', { exact: true })).toBeVisible();
+  await expect(page.getByRole('tabpanel', { name: 'Design', exact: true }).getByRole('radio', { name: 'Automatic', exact: true })).toHaveCount(0);
+
+  // Re-enter through Change to prove the placement survives the round trip.
+  await page.getByRole('button', { name: 'Change inline placement', exact: true }).click();
+  await expect(page.getByRole('tab', { name: 'Display rules', exact: true })).toHaveAttribute('aria-selected', 'true');
+  await expect(page.getByRole('button', { name: 'Placement Automatically after content', exact: true })).toBeVisible();
+  await expect(page.getByRole('radio', { name: 'Automatic', exact: true })).toBeChecked();
+  await expect(page.getByLabel('Position in content', { exact: true })).toHaveValue('after_content');
+  await expect(page.getByLabel('Automatic placement priority', { exact: true })).toHaveValue('0');
 
   // The disposable Playground has no connected service. Exercise the real
   // product's explicit local lead-storage choice so this test can publish

@@ -77,7 +77,7 @@ export function Section({
       onOpenChange={onOpenChange}
       data-attention={attention || undefined}
     >
-      <Collapsible.Trigger className="wconvert-section__summary">
+      <Collapsible.Trigger id={`wconvert-section-${id}-trigger`} className="wconvert-section__summary">
         <span className="wconvert-section__eyebrow text-micro uppercase text-muted-foreground">{eyebrow}</span>
         <span className="wconvert-section__sentence text-body">{summary}</span>
         {/*

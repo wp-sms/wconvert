@@ -12,7 +12,12 @@ These are campaign settings, not Template fields. Existing Template JSON and
 database schema are unchanged. Non-inline formats discard the setting. Changing
 format clears it in the same undoable edit; another inline design preserves it.
 
-The Design panel offers manual/automatic placement. Enabling is explicit and
+Display rules offers a Placement section before page and audience targeting,
+with manual/automatic placement, position, fallback and automatic priority.
+Design retains a read-only placement summary and a Change action that opens
+and focuses this section; publish-review placement links lead there too.
+The Pro controls load only when that section is opened, not on Design arrival.
+Enabling is explicit and
 explains replacing triggers with page load. It preserves conditions, frequency,
 schedule and exclusions. With unrestricted Pages it starts with posts only;
 deliberate existing includes remain intact. Pages stays the single targeting

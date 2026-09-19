@@ -273,7 +273,9 @@ export function ReadinessDialog({
                     </p>
                   )}
                   {!overlay && (
-                    <p>{inlinePlacementLabel(inlinePlacement) ?? __('Appears where you place its block or shortcode, when these rules allow it.', 'wconvert')}</p>
+                    <p><button className="wconvert-readiness__go" onClick={() => jump(onGoToPlacement)}>
+                      {inlinePlacementLabel(inlinePlacement) ?? __('Appears where you place its block or shortcode, when these rules allow it.', 'wconvert')}
+                    </button></p>
                   )}
                   <dl className="wconvert-launch-review__rules">
                     {summaries.map((summary) => (
