@@ -38,13 +38,16 @@ final class ContentInsertion
     {
         $stack = [];
         $ends = [];
-        $paragraphStart = null;
+        $paragraphText = null;
         $offset = 0;
         $length = strlen($html);
         if ($length > 2000000) {
             return null;
         }
         while (($start = strpos($html, '<', $offset)) !== false) {
+            if ($paragraphText !== null) {
+                $paragraphText .= substr($html, $offset, $start - $offset);
+            }
             if (substr($html, $start, 4) === '<!--') {
                 $end = strpos($html, '-->', $start + 4);
                 if ($end === false) {
@@ -59,6 +62,15 @@ final class ContentInsertion
             $tag = strtolower($match[2]);
             $closing = $match[1] === '/';
             $offset = $start + strlen($match[0]);
+            // These start tags implicitly close a paragraph in HTML. A
+            // source-balanced stack is not a rendered boundary in that case.
+            if (!$closing && in_array('p', $stack, true)
+                && in_array($tag, ['address', 'article', 'aside', 'blockquote', 'details', 'div', 'dl',
+                    'fieldset', 'figcaption', 'figure', 'footer', 'form', 'h1', 'h2', 'h3', 'h4', 'h5',
+                    'h6', 'header', 'hgroup', 'hr', 'main', 'menu', 'nav', 'ol', 'p', 'pre', 'search',
+                    'section', 'table', 'ul'], true)) {
+                return null;
+            }
             if (!$closing && in_array($tag, ['script', 'style', 'textarea', 'title'], true)) {
                 if (!preg_match('~</' . $tag . '\s*>~i', $html, $rawEnd, PREG_OFFSET_CAPTURE, $offset)) {
                     return null;
@@ -70,12 +82,12 @@ final class ContentInsertion
                 if (array_pop($stack) !== $tag) {
                     return null;
                 }
-                if ($tag === 'p' && $stack === [] && $paragraphStart !== null) {
-                    $text = html_entity_decode(strip_tags(substr($html, $paragraphStart, $start - $paragraphStart)), ENT_QUOTES | ENT_HTML5, 'UTF-8');
+                if ($tag === 'p' && $stack === [] && $paragraphText !== null) {
+                    $text = html_entity_decode($paragraphText, ENT_QUOTES | ENT_HTML5, 'UTF-8');
                     if (preg_match('/[^\s\p{Z}]/u', $text)) {
                         $ends[] = $offset;
                     }
-                    $paragraphStart = null;
+                    $paragraphText = null;
                 }
                 continue;
             }
@@ -83,7 +95,7 @@ final class ContentInsertion
                 continue;
             }
             if ($tag === 'p' && $stack === []) {
-                $paragraphStart = $offset;
+                $paragraphText = '';
             }
             $stack[] = $tag;
         }

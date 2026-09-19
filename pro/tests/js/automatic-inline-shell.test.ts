@@ -35,6 +35,17 @@ it('an assigned variant uses its own position but the parent manual anchor takes
   stop();
 });
 
+it('a manual A/B arm cannot consume an automatic family anchor when Basic has no arm assignment', () => {
+  document.body.innerHTML = '<div hidden data-wconvert-auto="parent"></div>';
+  const manualArm = { ...entry('variant', { anchor: 'parent' }), inline_placement: undefined };
+  const stop = start({ loader: proLoaderFor(BASIC_MODULES), presenter,
+    entries: [entry('parent'), manualArm],
+    store: { read: () => null, write() {} },
+  });
+  expect(document.querySelector('[data-wconvert-auto="parent"]')!.childElementCount).toBe(1);
+  stop();
+});
+
 it('the inspector uses the same selection and distinguishes missing placement from losing priority', () => {
   document.body.innerHTML = '<div hidden data-wconvert-auto="a"></div><div hidden data-wconvert-auto="b"></div>';
   const report = explain({ entries: [entry('a'), entry('b', { priority: 9 }), entry('missing')], evaluators: new Map([['page_load', { holds: () => true }]]), withheld: new Set(), shown: new Set(), overlayDone: false, state: {}, now: 1000, day: 0 }, { select: presenter.select, placement: automaticPlacementState });

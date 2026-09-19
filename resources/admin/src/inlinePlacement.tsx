@@ -1,6 +1,6 @@
 import { Suspense, type ComponentType } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
-import type { RuleVocabulary } from './builder/api';
+import type { Rule, RuleVocabulary } from './builder/api';
 
 export interface InlinePlacementProps {
   config: Record<string, unknown>;
@@ -10,6 +10,12 @@ export interface InlinePlacementProps {
 
 /** Composition-time slot: Free never imports premium authoring controls. */
 export const inlinePlacementControls: { component?: ComponentType<InlinePlacementProps> } = {};
+
+export function usesPageLoadOnly(rules: readonly Rule[], vocabulary: RuleVocabulary): boolean {
+  const names = new Set(vocabulary.triggers.map((rule) => rule.type));
+  const triggers = rules.filter((rule) => names.has(rule.type));
+  return triggers.length === 1 && triggers[0].type === 'page_load';
+}
 
 export function inlinePlacementLabel(value: unknown): string | null {
   if (!value || typeof value !== 'object' || !('position' in value)) return null;

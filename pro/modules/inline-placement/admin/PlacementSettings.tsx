@@ -2,7 +2,7 @@ import { useId, useState } from 'react';
 import { __ } from '@wordpress/i18n';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import type { InlinePlacementProps } from '@/inlinePlacement';
+import { usesPageLoadOnly, type InlinePlacementProps } from '@/inlinePlacement';
 import type { Rule, Targeting } from '@/builder/api';
 import './placement.css';
 
@@ -12,8 +12,7 @@ export default function PlacementSettings({ config, vocabulary, onChange }: Inli
   const placement = config.inline_placement as { position: string; paragraph?: number; fallback?: string } | null;
   const rules = (config.rules ?? []) as Rule[];
   const triggerNames = new Set(vocabulary.triggers.map((rule) => rule.type));
-  const triggers = rules.filter((rule) => triggerNames.has(rule.type));
-  const compatible = triggers.length === 1 && triggers[0].type === 'page_load';
+  const compatible = usesPageLoadOnly(rules, vocabulary);
   const validParagraph = Number.isInteger(placement?.paragraph) && (placement?.paragraph ?? 0) >= 1 && (placement?.paragraph ?? 0) <= 100;
   const targeting = (config.targeting ?? {}) as Targeting;
   const enable = () => {

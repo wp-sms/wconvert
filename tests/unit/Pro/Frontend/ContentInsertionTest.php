@@ -26,11 +26,14 @@ final class ContentInsertionTest extends TestCase
     public function test_unsafe_markup_is_unchanged_and_nested_raw_text_does_not_count(): void
     {
         $placement = ['position' => 'after_paragraph', 'paragraph' => 1];
-        foreach (['<p>Unclosed', '<div><p>Broken</div>', '<!-- broken', '<script>unclosed'] as $html) {
+        foreach (['<p>Unclosed', '<div><p>Broken</div>', '<!-- broken', '<script>unclosed',
+            '<p>One<div>Group</div></p><p>Two</p>', '<p><p>Nested</p></p><p>Two</p>'] as $html) {
             self::assertSame($html, ContentInsertion::insert($html, 'ANCHOR', $placement));
         }
         $html = '<script>const fake="<p>Fake</p>";</script><div><p>Nested</p></div><p> </p><p>Real<br>paragraph</p><p>Next</p>';
         self::assertSame(str_replace('<p>Next', 'ANCHOR<p>Next', $html), ContentInsertion::insert($html, 'ANCHOR', $placement));
+        $raw = '<p><script>console.log(1)</script><style>.x{color:red}</style><!-- comment --></p><p>Real</p><p>Next</p>';
+        self::assertSame(str_replace('<p>Next', 'ANCHOR<p>Next', $raw), ContentInsertion::insert($raw, 'ANCHOR', $placement));
     }
 
     public function test_before_and_after_preserve_the_original_article_bytes(): void

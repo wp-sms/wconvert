@@ -29,6 +29,9 @@ export function selectAutomatic(ready: readonly PayloadEntry[]): readonly Payloa
 /** Reuse Free's presenter; only Pro can turn an automatic placeholder into an anchor. */
 export function showAutomatic(entry: PayloadEntry, controls: OptinControls, base: Presenter): void {
   if (!configured(entry) || manual(entry)) {
+    // A build without A/B assignment can receive multiple family arms. A
+    // manual arm must not consume an anchor promoted for an automatic arm.
+    if (entry.display_type === 'inline' && !manual(entry)) return;
     base.show(entry, controls);
     return;
   }

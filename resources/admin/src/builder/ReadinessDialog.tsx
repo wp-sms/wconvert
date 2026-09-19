@@ -20,7 +20,7 @@ import { capturesTaken, nodeAt, nodesOf } from './structure/tree';
 import { convertingActOf } from './structure/guards';
 import { summarise } from './rules/summaries';
 import { PlacementGuidance } from './PlacementGuidance';
-import { inlinePlacementLabel } from '../inlinePlacement';
+import { inlinePlacementLabel, usesPageLoadOnly } from '../inlinePlacement';
 import { physicalPlacementLabel, resolvedPlacement } from './PlacementControl';
 import { useDirection } from '../hooks/useDirection';
 import type { Path } from './panel';
@@ -119,9 +119,7 @@ export function ReadinessDialog({
   const outcome = goal.status === 'ready' ? goal.data?.outcome : undefined;
   const goalIssue = outcome && hasDesign ? outcomeDesignIssue(outcome, template) : null;
   const handoffIssue = outcome ? outcomeHandoffIssue(outcome, bound, destinations, captureMode) : null;
-  const triggerNames = new Set(vocabulary.triggers.map((rule) => rule.type));
-  const triggers = rules.rules.filter((rule) => triggerNames.has(rule.type));
-  const inlineTriggerIssue = !overlay && inlinePlacement != null && (triggers.length !== 1 || triggers[0].type !== 'page_load');
+  const inlineTriggerIssue = !overlay && inlinePlacement != null && !usesPageLoadOnly(rules.rules, vocabulary);
   const blocking: { said: string; fix: () => void }[] = [
     ...(!overlay && inlinePlacement != null && inlinePlacementLabel(inlinePlacement) === null
       ? [{ said: __('Choose a valid inline position and a whole paragraph number from 1 to 100.', 'wconvert'), fix: onGoToPlacement }] : []),
