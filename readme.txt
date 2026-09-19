@@ -158,6 +158,11 @@ of ours and to no third party.
 
 WConvert registers with WordPress's own personal-data export and erasure tools.
 An erasure request deletes the lead rows rather than anonymising them.
+WordPress addresses those requests by email. For a verified phone-only request,
+search the complete phone number in **WConvert → Leads**, export the matching
+submissions if needed, then use the exact-match deletion action. It deletes all
+WConvert submissions directly carrying that phone across every campaign. Copies
+in destinations, downloaded files, email logs and backups must be handled there.
 
 = What happens to my data if I remove the plugin? =
 

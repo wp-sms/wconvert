@@ -3,7 +3,7 @@ import { act, fireEvent, render, screen, waitFor, within } from '@testing-librar
 import userEvent from '@testing-library/user-event';
 import type { LeadPage } from '../../resources/admin/src/leads/api';
 
-const log = vi.hoisted(() => ({ readLog: vi.fn(), readRetention: vi.fn(), saveRetention: vi.fn(), exportUrl: vi.fn() }));
+const log = vi.hoisted(() => ({ readLog: vi.fn(), readRetention: vi.fn(), saveRetention: vi.fn(), eraseIdentifier: vi.fn(), exportUrl: vi.fn() }));
 const optins = vi.hoisted(() => ({ listOptins: vi.fn() }));
 vi.mock('../../resources/admin/src/leads/api', () => log);
 vi.mock('../../resources/admin/src/optins/api', async (importOriginal) => ({
@@ -24,7 +24,8 @@ describe('capture history', () => {
     vi.clearAllMocks();
     log.readLog.mockImplementation((query: LeadPage) => Promise.resolve({ ...SEVEN, grouped: query.grouped === true }));
     log.readRetention.mockResolvedValue({ days: null, max_days: 3650 });
-    log.exportUrl.mockImplementation((query: LeadPage) => `https://example.test/export?_wpnonce=y&identifier=${query.identifier ?? ''}`);
+    log.eraseIdentifier.mockResolvedValue({ identifier: '+96899123456', removed: 7 });
+    log.exportUrl.mockImplementation((query: LeadPage) => `https://example.test/export?_wpnonce=y&identifier=${query.identifier ?? ''}&snapshot=${query.snapshot ?? ''}`);
     optins.listOptins.mockResolvedValue([OPTIN]);
   });
 
@@ -128,6 +129,37 @@ describe('capture history', () => {
     expect(screen.getByText('7 submissions')).toBeInTheDocument();
     expect(document.body.textContent).not.toMatch(/\d+\s+(people|persons|contacts)/i);
     expect(screen.getByText('Page 1 · 1 identifier group shown. Total above counts all matching submissions.')).toBeInTheDocument();
+  });
+
+  it('erases every direct match only from an unqualified exact identifier scope', async () => {
+    const exact = { ...SEVEN, leads: [{ ...CAPTURE, email: null, phone: '+96899123456' }] };
+    let finishPreview!: (value: typeof exact) => void;
+    const preview = new Promise<typeof exact>((resolve) => {
+      finishPreview = resolve;
+    });
+    log.readLog.mockResolvedValueOnce(exact).mockReturnValueOnce(preview).mockResolvedValueOnce({ ...exact, submissions: 0, leads: [] });
+    render(<LeadLog query={{ identifier: '+96899123456' }} />);
+    await screen.findByText('+96899123456');
+    await userEvent.click(screen.getByRole('button', { name: 'Delete matching submissions' }));
+    const dialog = screen.getByRole('alertdialog');
+    expect(within(dialog).getByText(/Checking every retained submission/)).toBeVisible();
+    expect(within(dialog).getByRole('button', { name: 'Permanently delete' })).toBeDisabled();
+
+    await act(async () => {
+      finishPreview(exact);
+    });
+
+    expect(await within(dialog).findByText(/all 7 retained submissions/)).toBeVisible();
+    expect(within(dialog).getByRole('link', { name: 'Export these submissions before deleting' })).toHaveAttribute('href', expect.stringContaining(`snapshot=${SNAPSHOT}`));
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Permanently delete' }));
+    await waitFor(() => expect(log.eraseIdentifier).toHaveBeenCalledWith('+96899123456'));
+    expect(await screen.findByText(/7 submissions were permanently deleted from WConvert/)).toBeInTheDocument();
+  });
+
+  it('never offers privacy erasure for a date-narrowed identifier result', async () => {
+    render(<LeadLog query={{ identifier: '+96899123456', from: '2026-09-01' }} />);
+    await screen.findByText('7 submissions');
+    expect(screen.queryByRole('button', { name: 'Delete matching submissions' })).not.toBeInTheDocument();
   });
 
   it('names soft-deleted Optins and nested A/B arms and links back to their editor', async () => {

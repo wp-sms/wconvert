@@ -312,26 +312,29 @@ final class LeadRepository
     }
 
     /**
-     * Erase every Lead carrying one email address.
+     * Erase every Lead directly carrying one canonical identifier.
      *
      * **A `DELETE`, never an anonymising update** (ADR 0018). Anonymising is
      * an update and ADR 0002 has no update path, so a delete lets that ADR
      * survive with no carve-out — and it buys almost nothing anyway: what
      * would remain is a conversion count, which the stats table already owns.
      *
-     * **Keyed on the email and on nothing else.** WordPress's privacy tools
-     * are email-addressed, and a Lead carrying only a phone number is
-     * therefore out of their reach. Following the identifier link — erasing
-     * every Lead sharing a phone with one of these — was considered and left
-     * out: that link is one WConvert COMPUTES at read (ADR 0021), never one
-     * the merchant asserted, so acting on it would delete rows the requested
-     * address never appears on. The grouping view may under-group with no
-     * consequence because nothing counts people; an eraser has no such
-     * latitude in the other direction.
+     * Email matches only `email`; phone matches only `phone`. A row carrying
+     * both is removed when either value is the requested identifier, because
+     * the value appears on that row. Nothing follows an inferred link from
+     * that row to another one (ADR 0021).
      */
+    public function eraseByIdentifier(string $identifier): int
+    {
+        return str_contains($identifier, '@')
+            ? $this->db->delete(Connection::TABLE_LEADS, 'DELETE FROM %i WHERE email = %s', $identifier)
+            : $this->db->delete(Connection::TABLE_LEADS, 'DELETE FROM %i WHERE phone = %s', $identifier);
+    }
+
+    /** Kept as the WordPress export/erasure adapter's explicit email spelling. */
     public function eraseByEmail(string $email): int
     {
-        return $this->db->delete(Connection::TABLE_LEADS, 'DELETE FROM %i WHERE email = %s', $email);
+        return $this->eraseByIdentifier($email);
     }
 
     /**

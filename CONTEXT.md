@@ -88,6 +88,15 @@ CSV takes all retained matches under the view's upper capture bound, not just
 the visible page. Newer captures require refresh; deletion can still remove
 earlier rows. See [ADR 0071](docs/adr/0071-reports-capture-history-and-recovery-form-a-connected-admin-flow.md).
 
+Privacy erasure is exact-identifier-wide, not per submission and not person
+resolution. After verifying a request outside WConvert, a merchant can export
+and permanently delete every retained Lead whose `email` or `phone` column
+directly contains that canonical identifier. No Campaign/date filter may narrow
+the deletion, and it never follows the other identifier to more rows. Related
+terminal-failure diagnostics are removed; downstream Contacts, exports, logs
+and backups remain an explicit merchant follow-up. See
+[ADR 0093](docs/adr/0093-privacy-erasure-is-bound-to-one-explicit-identifier.md).
+
 ### Analytics impact
 
 Analytics starts with compatible totals: captured submissions, offer clicks,

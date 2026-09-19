@@ -115,7 +115,7 @@ export function Settings({
                   </h3>
                   <p className="my-1 text-note text-muted-foreground">
                     {__(
-                      'Use WordPress’s existing tools for requests. Copies at other services are managed there.',
+                      'Use WordPress’s existing tools for email requests. For a verified phone-only request, find the exact phone in Leads, export it if needed, then permanently delete every matching submission. Copies at other services are managed there.',
                       'wconvert',
                     )}
                   </p>

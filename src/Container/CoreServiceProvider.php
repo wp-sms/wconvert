@@ -54,6 +54,7 @@ use WConvert\Optin\PublishedSet;
 use WConvert\Optin\SiteFrequency;
 use WConvert\Playbook\PlaybookLibrary;
 use WConvert\Playbook\Prefill;
+use WConvert\Privacy\LeadErasure;
 use WConvert\Queue\ActionSchedulerQueue;
 use WConvert\Queue\Queue;
 use WConvert\Rest\BeaconController;
@@ -445,7 +446,8 @@ final class CoreServiceProvider implements ServiceProvider
             LeadController::class,
             static fn (ServiceContainer $c): LeadController => new LeadController(
                 $c->resolve(LeadLog::class),
-                $c->resolve(RetentionPeriod::class)
+                $c->resolve(RetentionPeriod::class),
+                $c->resolve(LeadErasure::class)
             )
         );
 

@@ -697,9 +697,16 @@ an update, and [ADR 0002](docs/adr/0002-leads-are-immutable-by-schema.md) has
 no update path — `wconvert_leads` has no `status` and no `updated_at` precisely
 so a row cannot acquire mutable state without a migration a reviewer will see.
 
+The WordPress adapter remains email-addressed. A verified phone-only request
+uses capture history's exact-phone search and CSV, then deletes every Lead whose
+`phone` column directly carries that value. It never follows an email/phone link
+to another row, and the action cannot be narrowed by Campaign, date or an
+individual Lead ([ADR 0093](docs/adr/0093-privacy-erasure-is-bound-to-one-explicit-identifier.md)).
+
 ```bash
 tests/unit/Lead/NoLeadIsEverUpdatedTest.php   # no update() in either tree names the lead log
 tests/unit/Privacy/LeadEraserTest.php         # it deletes, retains nothing, and writes nothing
+tests/unit/Privacy/LeadErasureTest.php        # exact email/phone scope and diagnostic cleanup
 tests/unit/Privacy/LeadExporterTest.php       # the Consent Record travels; an absent one is not a refusal
 ```
 

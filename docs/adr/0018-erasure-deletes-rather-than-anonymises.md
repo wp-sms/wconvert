@@ -28,8 +28,10 @@ pattern to copy — five exporters, six erasers, and `wp_add_privacy_policy_cont
 **Its eraser-ordering hazard does not apply here.** WSMS registers its contact
 eraser at priority 99 because several of its erasers resolve an email to a phone
 number through the contact row first, and WordPress runs each eraser to
-completion before starting the next. WConvert has one eraser over one table and
-no such dependency. Copy the caveat only if a second eraser ever appears.
+completion before starting the next. WConvert registers one eraser and has no
+dependency on another eraser. Its later terminal-failure diagnostic cleanup is
+part of the same operation, not a second registered eraser. Copy the ordering
+caveat only if a second eraser ever appears.
 
 *Completed by [#25](https://github.com/navidkashani/wconvert/issues/25), which
 built it: the eraser is keyed on the **email address and nothing else**, which
@@ -42,6 +44,14 @@ appears on. The grouping view may under-group with no consequence because
 nothing counts people; an eraser has no such latitude in the other direction.
 The cost is stated rather than hidden: a Lead carrying only a phone number is
 out of the reach of an email-addressed request.*
+
+*Amended by
+[ADR 0093](0093-privacy-erasure-is-bound-to-one-explicit-identifier.md): the
+WordPress adapter remains email-addressed, but that limitation is no longer the
+whole erasure surface. A verified exact phone can now delete every Lead whose
+`phone` column directly contains it. The rejected behaviour remains rejected:
+neither email nor phone erasure follows the other identifier to additional
+rows, so the grouping relationship is still never treated as asserted identity.*
 
 ## Consequences
 
@@ -103,6 +113,12 @@ out of the reach of an email-addressed request.*
   prune behavior changes through this UI revision.*
 - Client-side visitor state is untouched by erasure, and correctly so — after
   [ADR 0017](0017-no-visitor-identifier.md) it contains no personal data.
+- **WConvert-owned terminal-failure diagnostics are removed with their Leads.**
+  [ADR 0093](0093-privacy-erasure-is-bound-to-one-explicit-identifier.md) adds
+  the exact-identifier erasure and scrubs bounded ring entries naming directly
+  matched Lead IDs. Queued pushes already carry no Lead data and stop when the
+  row is absent; external Contacts, exports, logs and backups remain the
+  merchant's follow-up rather than a lifecycle WConvert pretends to own.
 - **The prune is a range over the primary key, not over `created_at`.** See
   [ADR 0033](0033-the-lead-log-reads-without-a-new-index.md): a ULID's leading
   48 bits are the minting time, so the two name the same rows and only one of

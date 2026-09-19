@@ -4,6 +4,7 @@ namespace WConvert\Rest;
 
 use WConvert\Lead\LeadLog;
 use WConvert\Lead\LeadQuery;
+use WConvert\Privacy\LeadErasure;
 use InvalidArgumentException;
 use WP_Error;
 use WConvert\Retention\RetentionPeriod;
@@ -14,15 +15,13 @@ use WP_REST_Response;
 defined('ABSPATH') || exit;
 
 /**
- * REST for the [[Lead]] log: read it, group it, and set how long it is kept.
+ * REST for the [[Lead]] log: read it, group it, erase an exact identifier,
+ * and set how long it is kept.
  *
- * **Read-only over Leads, with no exception.** There is no create route, no
- * update route and no delete route, and that is not an oversight to fill in
- * later: a Lead has exactly one origin — a visitor submitting a form, in one
- * request, on a page WConvert served (ADR 0031) — and no lifecycle to edit
- * (ADR 0002). Removal happens through WordPress's own personal-data eraser
- * and through retention pruning, both of which are the site's decisions rather
- * than a row's.
+ * There is no create or update route: a Lead has exactly one origin and no
+ * lifecycle (ADR 0002, ADR 0031). The one destructive route is deliberately
+ * identifier-wide and exists for a verified privacy request. It deletes rows;
+ * it does not edit one Lead or create a Contact/person resource (ADR 0018).
  *
  * **One route serves both views**, because grouping is a presentation toggle
  * and not a different resource. A second route would be a second endpoint
@@ -38,6 +37,7 @@ final class LeadController implements RestController
     public function __construct(
         private readonly LeadLog $log,
         private readonly RetentionPeriod $retention,
+        private readonly LeadErasure $erasure,
     ) {
     }
 
@@ -99,6 +99,18 @@ final class LeadController implements RestController
                 ],
             ],
         ]);
+
+        register_rest_route(Routes::NAMESPACE, '/leads/identifier', [
+            [
+                'methods' => 'DELETE',
+                'callback' => [$this, 'eraseIdentifier'],
+                'permission_callback' => [Routes::class, 'canManage'],
+                'args' => [
+                    'identifier' => ['type' => 'string', 'required' => true, 'maxLength' => 254],
+                    'confirmed_identifier' => ['type' => 'string', 'required' => true, 'maxLength' => 254],
+                ],
+            ],
+        ]);
     }
 
     public function index(WP_REST_Request $request): WP_REST_Response|WP_Error
@@ -131,6 +143,28 @@ final class LeadController implements RestController
         $this->retention->set($days === null ? null : (int) $days);
 
         return new WP_REST_Response($this->retentionState());
+    }
+
+    public function eraseIdentifier(WP_REST_Request $request): WP_REST_Response|WP_Error
+    {
+        $identifier = (string) $request->get_param('identifier');
+        $confirmed = (string) $request->get_param('confirmed_identifier');
+        $canonical = LeadErasure::canonical($identifier);
+        $confirmation = LeadErasure::canonical($confirmed);
+
+        // Never let a missing/mismatched confirmation fall through to a
+        // broader action. Both values are canonicalised before anything is
+        // deleted, so spelling differences are harmless but a different
+        // person cannot be confirmed accidentally.
+        if ($canonical === null || $confirmation === null || $canonical !== $confirmation) {
+            return new WP_Error(
+                'wconvert_invalid_erasure_identifier',
+                __('Enter and confirm one complete email address or phone number with its country code.', 'wconvert'),
+                ['status' => 400]
+            );
+        }
+
+        return new WP_REST_Response($this->erasure->erase($canonical));
     }
 
     /**

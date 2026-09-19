@@ -28,6 +28,7 @@ declare(strict_types=1);
 use WConvert\Database\Connection;
 use WConvert\Database\Installer;
 use WConvert\Database\WpdbConnection;
+use WConvert\Destination\DeliveryFailures;
 use WConvert\Lead\LeadCsv;
 use WConvert\Lead\LeadLog;
 use WConvert\Lead\LeadRepository;
@@ -36,6 +37,7 @@ use WConvert\Milestone\MilestoneStore;
 use WConvert\Optin\OptinRepository;
 use WConvert\Optin\PublishedSet;
 use WConvert\Privacy\LeadEraser;
+use WConvert\Privacy\LeadErasure;
 use WConvert\Retention\LeadPruner;
 use WConvert\Retention\RetentionPeriod;
 use WConvert\Rules\RuleVocabulary;
@@ -189,7 +191,8 @@ $verify->check('a soft-deleted optin still supplies its name', true, $optins->de
 
 echo "Erasure\n";
 
-$eraser = new LeadEraser($leads);
+$leadErasure = new LeadErasure($leads, new DeliveryFailures($options));
+$eraser = new LeadEraser($leadErasure);
 $result = $eraser->erase('sarah@example.com');
 
 $verify->check('erasure reports rows removed', true, $result['items_removed']);
@@ -202,6 +205,14 @@ $verify->check('nothing else was touched', 2, (int) $wpdb->get_var("SELECT COUNT
 $verify->check('and the erased ids are gone rather than blanked', 0, (int) $wpdb->get_var(
     $wpdb->prepare("SELECT COUNT(*) FROM `{$leadTable}` WHERE id IN (%s, %s)", $sarahFirst->id, $sarahSecond->id)
 ));
+$phoneResult = $leadErasure->erase('+1 202 555 1234');
+$verify->check('an exact phone erasure reports its direct match', 1, $phoneResult['removed'] ?? null);
+$verify->check('no row carrying that phone survives', 0, (int) $wpdb->get_var(
+    $wpdb->prepare("SELECT COUNT(*) FROM `{$leadTable}` WHERE phone = %s", '+12025551234')
+));
+$verify->check('phone erasure does not take a row carrying another phone', 1, (int) $wpdb->get_var(
+    $wpdb->prepare("SELECT COUNT(*) FROM `{$leadTable}` WHERE id = %s", $bob->id)
+));
 
 echo "The retention prune\n";
 
@@ -209,7 +220,7 @@ $retention = new RetentionPeriod($options);
 $pruner = new LeadPruner($leads, $retention);
 
 $verify->check('with no period configured it removes nothing', 0, $pruner->run());
-$verify->check('and the log is untouched', 2, (int) $wpdb->get_var("SELECT COUNT(*) FROM `{$leadTable}`"));
+$verify->check('and the log is untouched', 1, (int) $wpdb->get_var("SELECT COUNT(*) FROM `{$leadTable}`"));
 
 // A capture that happened sixty days ago, INSERTED rather than aged by an
 // UPDATE. Rewriting a row's id would have been the quick way, and it is the
@@ -230,9 +241,9 @@ $db->insert(Connection::TABLE_LEADS, [
 
 $retention->set(30);
 
-$verify->check('the aged capture is in the log before the prune', 3, (int) $wpdb->get_var("SELECT COUNT(*) FROM `{$leadTable}`"));
+$verify->check('the aged capture is in the log before the prune', 2, (int) $wpdb->get_var("SELECT COUNT(*) FROM `{$leadTable}`"));
 $verify->check('a configured period removes what has outlived it', 1, $pruner->run());
-$verify->check('and leaves what has not', 2, (int) $wpdb->get_var("SELECT COUNT(*) FROM `{$leadTable}`"));
+$verify->check('and leaves what has not', 1, (int) $wpdb->get_var("SELECT COUNT(*) FROM `{$leadTable}`"));
 $verify->check('nothing recent was taken with it', 0, (int) $wpdb->get_var(
     $wpdb->prepare("SELECT COUNT(*) FROM `{$leadTable}` WHERE id = %s", $aged)
 ));

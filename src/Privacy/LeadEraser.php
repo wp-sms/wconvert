@@ -2,9 +2,6 @@
 
 namespace WConvert\Privacy;
 
-use WConvert\Lead\Identifier;
-use WConvert\Lead\LeadRepository;
-
 defined('ABSPATH') || exit;
 
 /**
@@ -38,7 +35,7 @@ final class LeadEraser
     public const ID = 'wconvert-leads';
 
     public function __construct(
-        private readonly LeadRepository $leads,
+        private readonly LeadErasure $erasure,
     ) {
     }
 
@@ -47,9 +44,10 @@ final class LeadEraser
         // Default priority, deliberately. WSMS registers its contact eraser at
         // 99 because several of its erasers resolve an email to a phone number
         // through the contact row first, and WordPress runs each eraser to
-        // completion before starting the next. WConvert has one eraser over
-        // one table and no such dependency (ADR 0018). Copy the caveat only if
-        // a second eraser ever appears.
+        // completion before starting the next. WConvert registers one eraser,
+        // and its Lead deletion plus diagnostic cleanup has no dependency on
+        // another eraser (ADR 0018, ADR 0093). Copy the caveat only if a
+        // second registered eraser ever appears.
         add_filter('wp_privacy_personal_data_erasers', [$this, 'register']);
     }
 
@@ -90,12 +88,11 @@ final class LeadEraser
         // long as the column's collation is case-insensitive. Under a `_bin`
         // collation this eraser would delete nothing and report `done`, which
         // is the worst possible way for an erasure to fail.
-        $canonical = Identifier::email($email);
-
         // An address that cannot be put in canonical form matches no stored
         // Lead, because no stored Lead was written from one. Nothing to erase
         // is a finished erasure, not an error.
-        $removed = $canonical === null ? 0 : $this->leads->eraseByEmail($canonical);
+        $result = $this->erasure->erase($email);
+        $removed = $result['removed'] ?? 0;
 
         return [
             'items_removed' => $removed > 0,

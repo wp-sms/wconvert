@@ -8,6 +8,8 @@ use WConvert\Lead\LeadLog;
 use WP_Error;
 use WP_REST_Request;
 use WConvert\Lead\LeadRepository;
+use WConvert\Destination\DeliveryFailures;
+use WConvert\Privacy\LeadErasure;
 use WConvert\Rest\LeadController;
 use WConvert\Rest\Routes;
 use WConvert\Retention\RetentionPeriod;
@@ -18,11 +20,13 @@ use WConvert\Tests\Unit\Support\FakeOptionStore;
  * The lead log's route REGISTRATION, which is where two of its guarantees live
  * and nowhere else.
  *
- * **There is no write route over Leads.** A Lead has exactly one origin — a
+ * **There is no create or update route over Leads.** A Lead has exactly one origin — a
  * visitor submitting a form, in one request, on a page WConvert served
  * (ADR 0031) — and no lifecycle to edit (ADR 0002). A `POST /leads` would be
  * the admin entry screen ADR 0031 forecloses, arriving as a REST route because
- * nobody thought of the route as a screen.
+ * nobody thought of the route as a screen. Exact-identifier erasure is the one
+ * destructive route and deletes capture events without giving one a lifecycle
+ * (ADR 0018, ADR 0093).
  *
  * **Grouping is one route's parameter, not a route of its own.** A second
  * endpoint is a second resource, and the resource a `/leads/people` would name
@@ -31,14 +35,24 @@ use WConvert\Tests\Unit\Support\FakeOptionStore;
 #[CoversClass(LeadController::class)]
 final class LeadControllerTest extends TestCase
 {
+    private static function controller(?FakeConnection $db = null): LeadController
+    {
+        $db ??= new FakeConnection();
+        $options = new FakeOptionStore();
+        $leads = new LeadRepository($db);
+
+        return new LeadController(
+            new LeadLog($leads),
+            new RetentionPeriod($options),
+            new LeadErasure($leads, new DeliveryFailures($options))
+        );
+    }
+
     protected function setUp(): void
     {
         $GLOBALS['wconvertTestRoutes'] = [];
 
-        $controller = new LeadController(
-            new LeadLog(new LeadRepository(new FakeConnection())),
-            new RetentionPeriod(new FakeOptionStore())
-        );
+        $controller = self::controller();
 
         $controller->registerRoutes();
     }
@@ -81,11 +95,16 @@ final class LeadControllerTest extends TestCase
      * The whole point of this file. A write route over Leads is the admin
      * entry screen ADR 0031 forecloses, arriving by a door nobody watches.
      */
-    public function testNoRouteHereWritesDeletesOrOtherwiseMutatesALead(): void
+    public function testTheLogRouteNeverCreatesOrUpdatesALead(): void
     {
         foreach (self::methodsOn('/leads') as $method) {
             $this->assertSame('GET', $method, 'ADR 0031: a Lead has exactly one origin, and it is not this');
         }
+    }
+
+    public function testExactIdentifierErasureIsASeparateDestructiveRoute(): void
+    {
+        $this->assertSame(['DELETE'], self::methodsOn('/leads/identifier'));
     }
 
     public function testGroupingIsAParameterOfTheLogRatherThanARouteOfItsOwn(): void
@@ -159,7 +178,7 @@ final class LeadControllerTest extends TestCase
     public function testAnInvalidCalendarDateReturnsAnActionableBadRequest(): void
     {
         $db = new FakeConnection();
-        $controller = new LeadController(new LeadLog(new LeadRepository($db)), new RetentionPeriod(new FakeOptionStore()));
+        $controller = self::controller($db);
         $request = new WP_REST_Request('GET', '/wconvert/v1/leads');
         $request->set_param('from', '2026-02-29');
         $response = $controller->index($request);
@@ -173,13 +192,45 @@ final class LeadControllerTest extends TestCase
     {
         $db = new FakeConnection();
         $db->answers = [[], []];
-        $controller = new LeadController(new LeadLog(new LeadRepository($db)), new RetentionPeriod(new FakeOptionStore()));
+        $controller = self::controller($db);
         $response = $controller->index(new WP_REST_Request('GET', '/wconvert/v1/leads'));
         $this->assertNotInstanceOf(WP_Error::class, $response);
         $payload = $response->get_data();
         $this->assertNull($payload['next_cursor']);
         $this->assertIsString($payload['snapshot']);
         $this->assertSame(51, $db->reads[1]['params'][1], '50 visible rows and one lookahead.');
+    }
+
+
+    public function testErasureRequiresTheSameCanonicalIdentifierToBeConfirmedBeforeDeleting(): void
+    {
+        $db = new FakeConnection();
+        $controller = self::controller($db);
+        $request = new WP_REST_Request('DELETE', '/wconvert/v1/leads/identifier');
+        $request->set_param('identifier', '+968 9912 3456');
+        $request->set_param('confirmed_identifier', '+968 9900 0000');
+
+        $response = $controller->eraseIdentifier($request);
+
+        $this->assertInstanceOf(WP_Error::class, $response);
+        $this->assertSame('wconvert_invalid_erasure_identifier', $response->get_error_code());
+        $this->assertSame([], $db->deletes);
+    }
+
+    public function testConfirmedPhoneErasureDeletesEveryDirectMatch(): void
+    {
+        $db = new FakeConnection();
+        $db->removes = 4;
+        $controller = self::controller($db);
+        $request = new WP_REST_Request('DELETE', '/wconvert/v1/leads/identifier');
+        $request->set_param('identifier', '+968 9912 3456');
+        $request->set_param('confirmed_identifier', '+96899123456');
+
+        $response = $controller->eraseIdentifier($request);
+
+        $this->assertNotInstanceOf(WP_Error::class, $response);
+        $this->assertSame(['identifier' => '+96899123456', 'removed' => 4], $response->get_data());
+        $this->assertSame('DELETE FROM %i WHERE phone = %s', $db->deletes[0]['sql']);
     }
 
 }

@@ -4,6 +4,8 @@ namespace WConvert\Container;
 
 use WConvert\Lead\LeadRepository;
 use WConvert\Optin\OptinRepository;
+use WConvert\Destination\DeliveryFailures;
+use WConvert\Privacy\LeadErasure;
 use WConvert\Privacy\LeadEraser;
 use WConvert\Privacy\LeadExporter;
 use WConvert\Privacy\PolicyText;
@@ -25,7 +27,8 @@ defined('ABSPATH') || exit;
  * WSMS's `src/Container/PrivacyServiceProvider.php` is the shape this copies —
  * five exporters, six erasers and a policy-text registration (ADR 0018) —
  * minus its priority-99 eraser ordering, which is a hazard WConvert does not
- * have. One eraser over one table has nothing to be ordered against.
+ * have. One registered eraser owns the Lead deletion and its diagnostic
+ * cleanup, with no second eraser to order it against.
  *
  * @since 0.1.0
  */
@@ -33,6 +36,14 @@ final class PrivacyServiceProvider implements ServiceProvider
 {
     public function register(ServiceContainer $container): void
     {
+        $container->register(
+            LeadErasure::class,
+            static fn (ServiceContainer $c): LeadErasure => new LeadErasure(
+                $c->resolve(LeadRepository::class),
+                $c->resolve(DeliveryFailures::class)
+            )
+        );
+
         $container->register(
             LeadExporter::class,
             static fn (ServiceContainer $c): LeadExporter => new LeadExporter(
@@ -43,7 +54,7 @@ final class PrivacyServiceProvider implements ServiceProvider
 
         $container->register(
             LeadEraser::class,
-            static fn (ServiceContainer $c): LeadEraser => new LeadEraser($c->resolve(LeadRepository::class))
+            static fn (ServiceContainer $c): LeadEraser => new LeadEraser($c->resolve(LeadErasure::class))
         );
 
         $container->register(
