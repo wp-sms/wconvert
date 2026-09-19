@@ -13,10 +13,13 @@ setup/measurement background is optional, while consequential warnings stay visi
 - Creation keeps section navigation and Back, but omits the redundant Campaigns
   heading band. The current question is its visible heading; the section heading
   stays available to assistive navigation. List/report headers remain unchanged.
-- Campaign setup cards show the real preview, task name, recommendation/collection
-  when present, and a short summary of actual format and timing. Inline cards name
-  the block/shortcode placement task. **Use this setup** still creates a draft
-  directly; it introduces no confirmation step.
+- Campaign setup cards show the real preview, task name, a compact format badge,
+  recommendation/collection when present, and a short summary of actual placement
+  and timing. Inline cards name the block/shortcode placement task. Format and
+  collection filters refine the already Goal-scoped results in the browser; neither
+  becomes an earlier or required choice. A filter combination with no matches offers
+  a direct reset. **Use this setup** still creates a draft directly; it introduces no
+  confirmation step.
 - **Setup details** opens one optional dialog for the selected setup, containing
   the full derived facts, measurement boundary, requirements, checklist and notes.
   Opening/closing details writes nothing and returns keyboard focus to its trigger.
@@ -24,12 +27,20 @@ setup/measurement background is optional, while consequential warnings stay visi
 - The Goal stays visible as a compact button in the editor's existing footer.
   Its measurement and Change/Duplicate action are in Campaign details, also
   reachable from the header. There is no permanent Goal/metric row above the canvas.
+- The Design tab names **How it appears** — current format, effective physical
+  placement where one exists, and design — before offering **Browse designs and
+  formats**. A draft without a design starts at that same goal-aware library rather
+  than presenting format as a new first question.
 - Browse designs keeps Format and source in the header; search, **For this goal /
-  All designs**, and **Filters** in the toolbar. Filter options are collapsed by
-  default. Active filter chips and the live result count remain visible.
-- Format-change consequences appear beside **Use this design**, including inline
-  placement, rather than as a permanent warning above every design. Browsing and
-  cancelling remain read-only; Apply/Undo semantics are unchanged.
+  All designs**, and **Filters** in the toolbar. When available, the fit control
+  names the actual Goal rather than the abstract phrase “this goal”. Format remains
+  a browsing filter within the selected Goal, not a mandatory creation step. Filter
+  options are collapsed by default. Active filter chips and the live result count
+  remain visible.
+- Format-change consequences appear beside Apply, including the old and new format,
+  the unchanged Goal, inline placement or reset overlay position as applicable.
+  The action names the format switch. Browsing and cancelling remain read-only;
+  Apply/Undo semantics are unchanged.
 - Shared dialog titles/descriptions explicitly reset host paragraph/heading margins.
   Header gaps come from the component, not doubled WordPress browser defaults.
 

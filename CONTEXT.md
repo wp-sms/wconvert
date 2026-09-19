@@ -525,7 +525,10 @@ Display Type is **not** the primary axis of the product. Users arrive via a
 [[Goal]], and the type is prefilled by the chosen [[Playbook]] — selectable as
 an override and a filter, never the first question asked. In the design library,
 browsing a format edits nothing; applying a design updates its identity, tree and
-Display Type atomically, undoable as one draft edit (ADR 0086).
+Display Type atomically, undoable as one draft edit (ADR 0086). The Design tab
+names the current format and effective physical placement before the merchant
+opens the library. Inside the library, the Goal names the default fit filter;
+switching format never changes the Goal.
 
 Three of the four are **overlays** — `popup`, `floating_bar`, `slide_in` — which
 compete for the visitor's screen, so at most one is shown per page view.
@@ -787,6 +790,12 @@ need review. A new Playbook draft continues to use its own copy, not those sampl
 > **Picture focus** uses the `image-position` token on backgrounds and image
 > leaves. It can be overridden in the same `narrow` bag, so a phone crop can
 > focus on a different part of the picture. The default remains centred.
+> The editor offers a nine-dot position picker, precise percentage adjustments,
+> and verbatim custom CSS. Focus appears only where a picture is present; hiding it preserves its value. Image fit and split ratios use visual previews of the
+> existing choices; opening a control never writes a value. Alignment and borders use compact icons; picture shape keeps a preview.
+> Textual choices, including typography, use selects and booleans use checkboxes. The inspector groups
+> picture, heading, body text and effect settings, pairing short measurements
+> where they fit. See [ADR 0078](docs/adr/0078-editor-choices-stay-compact-and-scrollable.md).
 >
 > **A scoped colour may name another colour rather than spell one**, and that
 > is what makes a scope survive a theme. `{"bg": "accent"}` follows whatever

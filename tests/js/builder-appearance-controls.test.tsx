@@ -2,6 +2,8 @@ import { useState } from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
+import { MediaControl } from '../../resources/admin/src/builder/SlotFields';
+import { CHOICES } from '../../resources/admin/src/builder/panel';
 import { TokenField } from '../../resources/admin/src/builder/Tokens';
 import type { TemplateLabels } from '../../resources/admin/src/templates/api';
 
@@ -26,7 +28,7 @@ describe('appearance values without CSS syntax for ordinary edits', () => {
     render(<Control initial="" changed={changed} />);
     expect(amount()).toHaveValue(28);
     expect(unit()).toHaveValue('rem');
-    await userEvent.selectOptions(unit(), 'custom');
+    expect(screen.queryByRole('option', { name: 'Custom…' })).not.toBeInTheDocument();
     expect(changed).not.toHaveBeenCalled();
     expect(screen.getByTestId('stored')).toHaveTextContent('');
   });
@@ -40,6 +42,9 @@ describe('appearance values without CSS syntax for ordinary edits', () => {
     expect(amount()).toHaveFocus();
     await userEvent.keyboard('{Enter}');
     expect(changed).toHaveBeenCalledExactlyOnceWith('32rem');
+    expect(amount()).toHaveFocus();
+    await userEvent.tab();
+    expect(changed).toHaveBeenCalledTimes(1);
     expect(screen.getByRole('slider', { name: 'Setting' })).toHaveValue('32');
   });
 
@@ -68,10 +73,8 @@ describe('appearance values without CSS syntax for ordinary edits', () => {
     await userEvent.clear(amount());
     await userEvent.type(amount(), '0{Enter}');
     expect(changed).toHaveBeenLastCalledWith('0rem');
-    await userEvent.selectOptions(unit(), 'custom');
-    await userEvent.clear(screen.getByLabelText('Setting value'));
-    await userEvent.keyboard('{Enter}');
-    expect(changed).toHaveBeenLastCalledWith('');
+    await userEvent.click(screen.getByRole('button', { name: 'Put Setting back to the design’s own' }));
+    expect(changed).toHaveBeenLastCalledWith('28rem');
     expect(amount()).toHaveValue(28);
   });
 
@@ -86,9 +89,8 @@ describe('appearance values without CSS syntax for ordinary edits', () => {
 
   it('keeps CSS expression typing focused and stores its exact text on completion', async () => {
     const changed = vi.fn();
-    render(<Control changed={changed} />);
-    await userEvent.selectOptions(unit(), 'custom');
-    const input = screen.getByLabelText('Setting value');
+    render(<Control initial="var(--size)" changed={changed} />);
+    const input = screen.getByLabelText('Setting');
     await userEvent.clear(input);
     await userEvent.type(input, 'clamp(20rem, 50vw, 30rem)');
     expect(input).toHaveFocus();
@@ -141,5 +143,83 @@ describe('appearance values without CSS syntax for ordinary edits', () => {
     expect(changed).not.toHaveBeenCalled();
     await userEvent.keyboard('{Escape}');
     expect(screen.getByRole('button', { name: /Choose a color/ })).toHaveAttribute('aria-expanded', 'false');
+  });
+});
+
+
+describe('staying in the field while editing', () => {
+  it('keeps custom choice text mounted when typing through a preset value', async () => {
+    const changed = vi.fn();
+    render(<Control token="leading" initial="1.55" fallback="1.5" changed={changed} />);
+    const input = screen.getByRole('textbox', { name: 'Setting value' });
+    await userEvent.clear(input);
+    await userEvent.type(input, '1.7');
+    expect(input).toHaveFocus();
+    expect(changed).not.toHaveBeenCalled();
+    await userEvent.keyboard('{Enter}');
+    expect(input).toHaveFocus();
+    expect(input).toHaveValue('1.7');
+    expect(changed).toHaveBeenCalledExactlyOnceWith('1.7');
+    await userEvent.type(input, '5');
+    await userEvent.keyboard('{Escape}');
+    expect(input).toHaveValue('1.7');
+    expect(changed).toHaveBeenCalledTimes(1);
+  });
+
+  it('commits a pending amount before changing its unit', async () => {
+    const changed = vi.fn();
+    render(<Control changed={changed} />);
+    await userEvent.clear(amount());
+    await userEvent.type(amount(), '32');
+    await userEvent.selectOptions(unit(), 'px');
+    expect(changed).toHaveBeenLastCalledWith('32px');
+    expect(unit()).toHaveFocus();
+    expect(amount()).toHaveValue(32);
+  });
+
+  it('does not expose CSS for a named layered shadow until explicitly opened', async () => {
+    const changed = vi.fn();
+    const layered = CHOICES.shadow.find(value => value.includes('),'))!;
+    render(<Control token="shadow" initial={layered} fallback="none" changed={changed} />);
+    expect(screen.queryByRole('textbox', { name: 'Setting value' })).not.toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'Edit shadow CSS' }));
+    expect(screen.getByRole('textbox', { name: 'Setting value' })).toHaveValue(layered);
+    expect(changed).not.toHaveBeenCalled();
+  });
+
+  it('keeps an authored shadow editor focused when its CSS becomes a named preset', async () => {
+    const changed = vi.fn();
+    const layered = CHOICES.shadow.find(value => value.includes('),'))!;
+    render(<Control token="shadow" initial="0 0 2px #111, 0 0 4px #222" fallback="none" changed={changed} />);
+    const input = screen.getByRole('textbox', { name: 'Setting value' });
+    await userEvent.clear(input);
+    await userEvent.type(input, layered);
+    await userEvent.keyboard('{Enter}');
+    expect(input).toHaveFocus();
+    expect(input).toHaveValue(layered);
+    expect(changed).toHaveBeenCalledExactlyOnceWith(layered);
+    await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Setting' }), 'none');
+    expect(screen.queryByRole('textbox', { name: 'Setting value' })).not.toBeInTheDocument();
+  });
+
+  it('keeps the picture while a replacement address is being typed, then commits once', async () => {
+    const changed = vi.fn();
+    function Picture() {
+      const [value, setValue] = useState('/old.jpg');
+      return <label htmlFor="test-picture-address">Picture address<MediaControl id="test-picture-address" label="Picture address" value={value}
+        onChange={next => { setValue(next); changed(next); }} /></label>;
+    }
+    render(<Picture />);
+    const address = screen.getByRole('textbox', { name: 'Picture address' });
+    await userEvent.clear(address);
+    await userEvent.type(address, '/new.jpg');
+    expect(document.querySelector('img')).toHaveAttribute('src', '/old.jpg');
+    expect(changed).not.toHaveBeenCalled();
+    await userEvent.keyboard('{Enter}');
+    expect(address).toHaveFocus();
+    expect(changed).toHaveBeenCalledExactlyOnceWith('/new.jpg');
+    expect(document.querySelector('img')).toHaveAttribute('src', '/new.jpg');
+    await userEvent.tab();
+    expect(changed).toHaveBeenCalledTimes(1);
   });
 });

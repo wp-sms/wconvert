@@ -1,4 +1,4 @@
-import { useEffect, useId, useMemo, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import { ArrowDown, ArrowUp, Blocks, Copy, MoreHorizontal, Plus, Trash2 } from 'lucide-react';
 import { Button } from '../components/ui/button';
@@ -89,6 +89,14 @@ export function StructureView({
   onDesign,
   step,
 }: StructureViewProps) {
+  const inspectorScroll = useRef<HTMLDivElement>(null);
+  const selectedKey = selected?.join('.') ?? 'design';
+  // Edits and preview-width changes keep the scroll position. Choosing another
+  // element starts at its primary controls, rather than halfway down its fields.
+  useLayoutEffect(() => {
+    if (inspectorScroll.current) inspectorScroll.current.scrollTop = 0;
+  }, [selectedKey]);
+
   const [said, setSaid] = useState<string | null>(null);
 
   const [focusOn, setFocusOn] = useState<{ path: Path; control: number } | null>(null);
@@ -278,7 +286,7 @@ export function StructureView({
 
         <div className="wconvert-pane wconvert-pane--controls">
           <div className="wconvert-pane__stick">
-            <div className="wconvert-pane__body">
+            <div ref={inspectorScroll} className="wconvert-pane__body">
               <BlockInspector
                 template={template}
                 labels={labels}

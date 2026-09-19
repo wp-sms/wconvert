@@ -52,7 +52,7 @@ it('does not offer a popup design for an inline draft', async () => {
   api.catalogStatus.mockResolvedValue(installed); api.previewPack.mockResolvedValue({ ...preview, templates: [{ ...preview.templates[0], display_type: 'popup' }] });
   const user = userEvent.setup(); render(<TemplatePacks displayType="inline" onInstalled={vi.fn()} onInspect={vi.fn()} />);
   await user.click(await screen.findByRole('button', { name: 'Explore designs in Reading pack' }));
-  await screen.findByText('Open a draft in Popup format to use this design. Your current draft is Inline.');
+  await screen.findByText('Open a draft in Popup format to use this design. Your current draft is Inline form.');
   expect(screen.queryByRole('button', { name: 'Continue with this design' })).not.toBeInTheDocument();
 });
 

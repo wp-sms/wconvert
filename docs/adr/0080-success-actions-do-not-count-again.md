@@ -35,6 +35,15 @@ object-position, using nine offered points or a custom value. The existing
 `narrow` bag can override it for mobile, independently of cover/contain. Layout
 controls now precede their appearance controls in the inspector.
 
+The editor presents the nine focus presets as a spatial dot grid with a named
+selection. A separate precise adjustment reveals horizontal/vertical percentages;
+other authored CSS positions remain editable verbatim. Opening either editor
+writes nothing. Image fit uses two previews of the same image (or an illustrative
+fallback), and split ratios use proportion diagrams with numbered panes. These
+remain native radio choices over the manifest values. Split diagrams follow
+reading direction; picture coordinates stay physical in RTL. These presentation
+changes add no renderer values or dependencies.
+
 The 12,288-byte loader limit remains enforced for all tiers. Narrow CSS mirrors
 are assembled once from literal closed names rather than repeating their full
 property spellings. Only renderer-produced `data-narrow` elements are retuned,

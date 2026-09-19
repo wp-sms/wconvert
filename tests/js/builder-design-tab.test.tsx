@@ -252,6 +252,8 @@ describe('a background picture', () => {
     // KEYSTROKE. A merchant pastes an address anyway.
     await userEvent.click(box());
     await userEvent.paste('https://example.com/x.jpg');
+    expect(changed).not.toHaveBeenCalled();
+    await userEvent.keyboard('{Enter}');
 
     expect(changed).toHaveBeenLastCalledWith(
       expect.objectContaining({
@@ -569,7 +571,7 @@ describe('a token the manifest offers choices for', () => {
     const group = screen.getByRole('group', { name: 'Alignment' });
 
     await userEvent.click(within(group).getByRole('radio', { name: 'Custom' }));
-    await userEvent.type(screen.getByLabelText('Alignment value'), 'j');
+    await userEvent.type(screen.getByLabelText('Alignment value'), 'j{Enter}');
 
     expect(changed).toHaveBeenCalledWith(
       expect.objectContaining({ tokens: expect.objectContaining({ align: 'centerj' }) }),
@@ -721,13 +723,13 @@ describe('a color the panel cannot parse', () => {
  * parser wanted a unit and read one component.
  */
 describe('a shadow', () => {
-  it('is chips rather than a box wanting a CSS box-shadow typed into it', () => {
+  it('offers named shadow presets without requiring CSS', () => {
     look({ design: {} });
 
     // Checked on the manifest's own fallback, which is the common case.
-    expect(screen.getByRole('radio', { name: 'Lifted' })).toBeChecked();
-    expect(screen.getByRole('radio', { name: 'None' })).toBeInTheDocument();
-    expect(screen.getByRole('radio', { name: 'Floating' })).toBeInTheDocument();
+    expect(within(screen.getByRole('combobox', { name: 'Shadow' })).getByRole<HTMLOptionElement>('option', { name: 'Lifted' }).selected).toBe(true);
+    expect(within(screen.getByRole('combobox', { name: 'Shadow' })).getByRole('option', { name: 'None' })).toBeInTheDocument();
+    expect(within(screen.getByRole('combobox', { name: 'Shadow' })).getByRole('option', { name: 'Floating' })).toBeInTheDocument();
   });
 
   /**
@@ -736,7 +738,7 @@ describe('a shadow', () => {
    * entry, `inline-cart-nudge` was handed a media picker asking for the address
    * of a picture. The token's own list is what breaks the tie.
    */
-  it('is still chips for the one value a background layer also spells', () => {
+  it('keeps the shadow select for the keyword shared with background pictures', () => {
     render(
       <Panel
         template={{ ...ENTRY, tokens: { ...ENTRY.tokens, shadow: 'none' } }}
@@ -747,7 +749,7 @@ describe('a shadow', () => {
       />,
     );
 
-    expect(screen.getByRole('radio', { name: 'None' })).toBeChecked();
+    expect(screen.getByRole('combobox', { name: 'Shadow' })).toHaveValue('none');
     // Not the media picker `isCssImage` would otherwise have handed it.
     expect(screen.queryByRole('textbox', { name: 'Shadow' })).toBeNull();
   });
@@ -775,9 +777,9 @@ describe('a shadow', () => {
     // Scoped to this token: every choice control on the tab has a Custom chip.
     const shadow = screen.getByText('Shadow').closest('.wconvert-token') as HTMLElement;
 
-    expect(within(shadow).getByRole('radio', { name: 'Custom' })).toBeChecked();
+    expect(within(shadow).getByRole('combobox', { name: 'Shadow' })).toHaveValue('__custom');
     expect(screen.queryByLabelText('Shadow value')).toBeNull();
-    await userEvent.click(within(shadow).getByRole('radio', { name: 'Custom' }));
+    await userEvent.click(within(shadow).getByRole('button', { name: 'Edit shadow CSS' }));
     expect(screen.getByLabelText('Shadow value')).toHaveValue(upward);
   });
 });

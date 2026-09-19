@@ -1,8 +1,9 @@
 import { useState } from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import { TokenField } from '../../resources/admin/src/builder/Tokens';
+import { ParamChoice } from '../../resources/admin/src/builder/ParamChoice';
 import { nodeAt } from '../../resources/admin/src/builder/structure/tree';
 import { ScopeStyle } from '../../resources/admin/src/builder/ScopeStyle';
 import { gradientOf } from '../../resources/admin/src/builder/gradient';
@@ -11,14 +12,98 @@ import type { TemplateLabels } from '../../resources/admin/src/templates/api';
 import type { Template } from '@renderer/types';
 
 const labels = { tokens: { pad: 'Padding', bg: 'Background' }, layouts: {}, tokenValues: {}, roles: {}, layoutNotes: {}, layoutParams: {}, layoutParamValues: {}, tokenGroups: {}, fields: {}, placeholders: {}, nodes: {}, params: {}, paramValues: {}, nodeNotes: {}, captures: {}, nodeParams: {}, nodeParamValues: {}, keys: {} } as TemplateLabels;
-function Control({ initial, token, changed }: { initial: string; token: string; changed: (value: string) => void }) {
-  const [value, setValue] = useState(initial);
+function Control({ initial, token, changed, inherited = false }: { initial: string; token: string; changed: (value: string) => void; inherited?: boolean }) {
+  const [value, setValue] = useState(inherited ? '' : initial);
   const [open, setOpen] = useState(false);
   return <TokenField label="Setting" token={token} labels={labels} value={value} fallback={initial} standard="1rem"
     design={initial} open={open} onOpenChange={setOpen} onChange={next => { setValue(next); changed(next); }} />;
 }
 
 describe('padding and gradients preserve authored values until an explicit edit', () => {
+  it('preserves an unlisted height in a select until a preset is explicitly chosen', async () => {
+    const changed = vi.fn();
+    render(<ParamChoice id="height" label="Minimum height" offered={['0', '10rem', '16rem']}
+      held="22rem" fallback="0" nameOfValue={value => value} onChange={changed} />);
+    const height = screen.getByRole('combobox', { name: 'Minimum height' });
+    expect(within(height).getByRole('option', { name: 'Current: 22rem' })).toBeInTheDocument();
+    expect(changed).not.toHaveBeenCalled();
+    await userEvent.selectOptions(height, '0');
+    expect(changed).toHaveBeenCalledExactlyOnceWith(0);
+  });
+  it.each([
+    ['heading-weight', '600', 'heading-weight.700', '700'],
+    ['tracking', 'normal', 'tracking.0.04em', '0.04em'],
+    ['leading', '1.5', 'leading.1.7', '1.7'],
+    ['align', 'start', 'align.center', 'center'],
+  ])('keeps inherited %s intact when opening Custom, then applies a preset', async (token, initial, choice, expected) => {
+    const changed = vi.fn();
+    render(<Control initial={initial} token={token} changed={changed} inherited />);
+    expect(changed).not.toHaveBeenCalled();
+    if (token === 'align') {
+      await userEvent.click(screen.getByRole('radio', { name: 'Custom' }));
+      expect(changed).not.toHaveBeenCalled();
+      await userEvent.click(screen.getByRole('radio', { name: choice }));
+    } else {
+      await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Setting' }), '__custom');
+      expect(changed).not.toHaveBeenCalled();
+      await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Setting' }), expected);
+    }
+    expect(changed).toHaveBeenCalledExactlyOnceWith(expected);
+    expect(screen.queryByRole('textbox', { name: 'Setting value' })).not.toBeInTheDocument();
+  });
+
+  it('groups picture and heading settings and omits unused effects without changing the draft', () => {
+    const template: Template = { tokens: {}, tree: { steps: [{ type: 'media', tokens: { 'bg-image': 'url(photo.jpg)' }, children: [{ type: 'heading', text: 'Hello' }] }] } };
+    const changed = vi.fn();
+    render(<ScopeStyle template={template} labels={labels} path={[0]} width="tokens" copied={null} onCopy={vi.fn()}
+      openToken={null} onOpenToken={vi.fn()} onSelect={vi.fn()} onChange={changed} />);
+    expect(within(screen.getByRole('region', { name: 'Picture' })).getByRole('group', { name: 'image-position' })).toBeInTheDocument();
+    expect(within(screen.getByRole('region', { name: 'Headings' })).getByRole('combobox', { name: 'heading-weight' })).toBeInTheDocument();
+    expect(screen.queryByRole('region', { name: 'Effects' })).not.toBeInTheDocument();
+    expect(changed).not.toHaveBeenCalled();
+  });
+  it('opens inherited picture focus without creating an override, then commits one coordinate', async () => {
+    const changed = vi.fn();
+    render(<Control initial="right top" token="image-position" changed={changed} inherited />);
+    await userEvent.click(screen.getByRole('button', { name: 'Adjust precisely…' }));
+    expect(changed).not.toHaveBeenCalled();
+    expect(screen.getByRole('spinbutton', { name: 'Horizontal %' })).toHaveValue(100);
+    const vertical = screen.getByRole('spinbutton', { name: 'Vertical %' });
+    await userEvent.clear(vertical);
+    expect(changed).not.toHaveBeenCalled();
+    await userEvent.type(vertical, '20{Enter}');
+    expect(changed).toHaveBeenCalledTimes(1);
+    expect(changed).toHaveBeenLastCalledWith('100% 20%');
+  });
+
+  it('preserves authored CSS focus and permits switching back to a preset', async () => {
+    const changed = vi.fn();
+    render(<Control initial="right 10px bottom 20px" token="image-position" changed={changed} />);
+    expect(screen.getByRole('textbox', { name: 'Setting value' })).toHaveValue('right 10px bottom 20px');
+    expect(screen.queryByRole('spinbutton')).not.toBeInTheDocument();
+    expect(changed).not.toHaveBeenCalled();
+    await userEvent.click(screen.getByRole('radio', { name: 'image-position.center' }));
+    expect(changed).toHaveBeenLastCalledWith('center');
+    expect(screen.queryByRole('textbox', { name: 'Setting value' })).not.toBeInTheDocument();
+  });
+
+  it('recognizes equivalent percentage focus without normalizing it and cancels unfinished input', async () => {
+    const changed = vi.fn();
+    render(<Control initial="0% 100%" token="image-position" changed={changed} />);
+    expect(screen.getByRole('radio', { name: 'image-position.left bottom' })).toBeChecked();
+    await userEvent.click(screen.getByRole('button', { name: 'Adjust precisely…' }));
+    const horizontal = screen.getByRole('spinbutton', { name: 'Horizontal %' });
+    await userEvent.clear(horizontal);
+    await userEvent.type(horizontal, '40{Escape}');
+    expect(horizontal).toHaveValue(0);
+    await userEvent.tab();
+    expect(changed).not.toHaveBeenCalled();
+    await userEvent.clear(horizontal);
+    await userEvent.type(horizontal, '120{Enter}');
+    expect(horizontal).toHaveValue(0);
+    expect(changed).not.toHaveBeenCalled();
+  });
+
   it('expands all CSS shorthand forms and leaves expressions custom', () => {
     expect(spacingSides('1rem 2px 3rem')).toEqual(['1rem', '2px', '3rem', '2px']);
     expect(spacingSides('1rem 2px 3rem 4px')).toEqual(['1rem', '2px', '3rem', '4px']);
@@ -99,6 +184,7 @@ it('lists local mobile overrides and resets only the selected element’s narrow
   }
   render(<Editor />);
   expect(screen.getByText('Mobile settings: Padding')).toBeInTheDocument();
+  await userEvent.click(screen.getByText('Editing mobile appearance. Unchanged values follow desktop.'));
   await userEvent.click(screen.getByRole('button', { name: 'Reset this element’s mobile overrides' }));
   const result = changed.mock.calls[0][0] as Template;
   expect(nodeAt(result.tree, [0, 'children', 0])).toMatchObject({ tokens: { pad: '2rem' } });

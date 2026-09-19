@@ -1,191 +1,89 @@
+import { useRef, useState, type KeyboardEvent } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
+import { Plus } from 'lucide-react';
+import { Button } from '../../components/ui/button';
+import { Popover, PopoverContent, PopoverTrigger } from '../../components/ui/popover';
+import { useDirection } from '../../hooks/useDirection';
 import { renderingFor, tierProductName, type Rendering } from '../../goals/availability';
 import { toRule } from '../presets';
 import type { Rule, RuleType } from '../api';
 
-/**
- * The add control: every type this install can run, and every legible shortcut
- * over it — plus an honest account of the ones it cannot, **in the menu.**
- *
- * One `<select>` with a group per type rather than a type picker followed by a
- * preset picker, because "after a few seconds" is one decision and asking for
- * it in two steps makes the merchant learn that it is `time_on_page`
- * underneath — which is exactly what a preset exists to spare them.
- *
- * ============================================================================
- * IT BRANCHES ON `renderingFor`, NOT ON TWO STRING LITERALS.
- * ============================================================================
- * `RulesEditor` tested `availability === 'ready'` and `=== 'locked'` and had no
- * third arm, so an `unavailable` type — a cart Condition on a site with no
- * store — was **silently absent**: not offered, not explained, not mentioned.
- * That is the one rendering ADR 0026 forbids on a settings list, and the Optin
- * list was already telling the same merchant about the same rule.
- *
- * The cascade is `goals/availability.ts`'s, shared with the goal screen and
- * the Destinations list rather than written out a third time. It has four
- * arms and this file handles three; `hide` is structurally unreachable from a
- * settings list, which is what makes the exhaustive branch honest rather than
- * defensive.
- *
- * ============================================================================
- * AND THE EXPLANATION IS IN THE DROPDOWN, WHICH IS WHERE THEY GO LOOKING.
- * ============================================================================
- * It used to be a permanent block of chips under the Add control — two
- * headings and up to six chips, drawn on every visit of every section, telling
- * a merchant who had not yet tried to add anything about the things they could
- * not add.
- *
- * ADR 0026 says a settings list EXPLAINS an absent capability rather than
- * hiding it, and that is unchanged. What was wrong is *which thing the list
- * is*: the merchant hunts through this **menu**, not through the tab. So the
- * absent types are `<optgroup disabled>` groups at the bottom of it — the same
- * explanation, at the moment it changes what they do next (ADR 0042 rule 2,
- * ADR 0054's amendment to ADR 0026).
- *
- * **A disabled `<option>` is metadata, not a control.** wp.org Guideline 9
- * fires on offering a real control the user cannot use; the premium code is
- * genuinely not in this bundle and there is nothing here to enable
- * (ADR 0015). The option carries the type's label from PHP and cannot be
- * chosen — and `bin/plugin-check.sh` on the built free ZIP is what confirms
- * that rather than this paragraph.
- *
- * **Two groups and never one.** `locked` is buyable from us and `unavailable`
- * is not. Collapsing them offers a merchant with no store a WooCommerce
- * licence we do not sell, and shows a paying Pro customer an advertisement for
- * Pro. The unavailable ones are grouped BY what they need, so an install
- * missing WooCommerce and WP SMS gets two honest lines rather than one lumped
- * *"not available on this site"* — ADR 0026's own argument applied to the
- * shape.
- */
 export interface AddRuleProps {
   readonly axis: readonly RuleType[];
   readonly label: string;
   readonly onAdd: (rule: Rule) => void;
 }
 
+/** Search types and their shortcuts in one step. Unavailable capabilities remain
+ * readable metadata, grouped by the product or dependency that supplies them.
+ * Opening, searching and closing never edit the draft.
+ */
 export function AddRule({ axis, label, onAdd }: AddRuleProps) {
-  const on = (rendering: Rendering): readonly RuleType[] =>
-    axis.filter((type) => renderingFor(type.availability, 'settings_list') === rendering);
+  const [open, setOpen] = useState(false);
+  const [query, setQuery] = useState('');
+  const search = useRef<HTMLInputElement>(null);
+  const results = useRef<HTMLDivElement>(null);
+  const direction = useDirection();
+  const words = query.trim().toLocaleLowerCase().split(/\s+/).filter(Boolean);
+  const matches = (...text: (string | null)[]) => {
+    const haystack = text.join(' ').toLocaleLowerCase();
+    return words.every(word => haystack.includes(word));
+  };
+  const on = (rendering: Rendering) => axis.filter(type => renderingFor(type.availability, 'settings_list') === rendering);
+  const offered = on('offer').map(type => ({
+    type,
+    choices: [...type.presets, null].filter(preset => matches(type.label, type.phrase, preset?.label ?? '', preset?.phrase ?? '')),
+  })).filter(group => group.choices.length > 0);
+  const unavailable = [
+    ...[...byTier(on('upsell'))].map(([product, types]) => ({
+      // translators: %s: the product that supplies these rules.
+      reason: sprintf(__('With %s', 'wconvert'), product), types,
+    })),
+    ...[...byDependency(on('explain'))].map(([needs, types]) => ({
+      // translators: %s: the plugin the site needs.
+      reason: sprintf(__('Needs %s', 'wconvert'), needs), types,
+    })),
+  ].map(group => ({ ...group, types: group.types.filter(type => matches(type.label, type.phrase, group.reason, ...type.presets.map(preset => preset.label))) }))
+    .filter(group => group.types.length > 0);
 
-  const offered = on('offer');
-  const locked = on('upsell');
-  const unavailable = on('explain');
+  const navigate = (event: KeyboardEvent) => {
+    const buttons = [...(results.current?.querySelectorAll<HTMLButtonElement>('button') ?? [])];
+    if (buttons.length === 0) return;
+    const at = buttons.indexOf(event.target as HTMLButtonElement);
+    if (event.target === search.current && !['ArrowDown', 'ArrowUp'].includes(event.key)) return;
+    const next = event.key === 'ArrowDown' ? Math.min(at + 1, buttons.length - 1)
+      : event.key === 'ArrowUp' ? (at < 0 ? buttons.length - 1 : at - 1)
+        : event.key === 'Home' ? 0 : event.key === 'End' ? buttons.length - 1 : null;
+    if (next === null) return;
+    event.preventDefault();
+    if (next < 0) search.current?.focus();
+    else buttons[next]?.focus();
+  };
 
-  // ==========================================================================
-  // THE CHOICES, BY KEY — NOT A TYPE AND A PRESET ID PACKED INTO ONE STRING.
-  // ==========================================================================
-  // An `<option value>` is a string, so a menu offering "type X with preset Y"
-  // has to key the pair somehow. It was `` `${type}|${preset}` `` and a
-  // `split('|')` on the way back, which is a wire format invented for one
-  // control — it makes the empty preset a trailing separator, and it breaks
-  // silently the day a manifest id contains the character.
-  //
-  // An index into a list the same render built has no format to get wrong.
-  const choices = offered.flatMap((type) => [
-    ...type.presets.map((preset) => ({ type, preset })),
-    { type, preset: null },
-  ]);
-
-  return (
-    <p>
-      <label>
-        {label}{' '}
-        <select
-          value=""
-          onChange={(event) => {
-            const chosen = choices[Number(event.target.value)];
-
-            if (chosen !== undefined) {
-              onAdd(toRule(chosen.type, chosen.preset, {}));
-            }
-          }}
-        >
-          <option value="">{__('Choose…', 'wconvert')}</option>
-
-          {/*
-            **A type with no shortcuts is a bare option, not a group of one.**
-            An `<optgroup>` labelled *Page load* holding one option labelled
-            *Page load* is the same word twice at two indent levels, and the
-            targeting axis is five of those — which is what a merchant would
-            have got when its two hand-rolled selects became this one.
-          */}
-          {choices.map((choice, at) =>
-            choice.type.presets.length > 0 ? null : (
-              <option key={choice.type.type} value={at}>
-                {choice.type.label}
-              </option>
-            ),
-          )}
-
-          {offered.map((type) =>
-            type.presets.length === 0 ? null : (
-              <optgroup key={type.type} label={type.label}>
-                {choices.map((choice, at) =>
-                  choice.type !== type ? null : (
-                    <option key={choice.preset?.id ?? ''} value={at}>
-                      {choice.preset !== null ? choice.preset.label : __('Set it myself', 'wconvert')}
-                    </option>
-                  ),
-                )}
-              </optgroup>
-            ),
-          )}
-
-          {/*
-            **The heading keeps the words.** *With WConvert Pro* is what named
-            this on screen before, and it is what `builder-editors.test.tsx`
-            reads — the test asserts that a premium type is NAMED, and it still
-            is. There is no link: the upgrade destination does not exist yet,
-            and "upgrade here" beside nothing to click is worse than silence.
-
-            **Grouped by the tier's PRODUCT NAME rather than by its slug**
-            (ADR 0056). Three rungs can lock a type and all three are called
-            "WConvert Pro" today, so grouping by slug would draw three
-            identical headings over one menu. Grouping by the words collapses
-            them into the one group this has always drawn, and separates only
-            when the names actually differ — which is the day the range is
-            split, and the day a merchant needs to be told which of two things
-            to buy.
-          */}
-          {[...byTier(locked)].map(([product, types]) => (
-            <optgroup
-              key={product}
-              disabled
-              label={sprintf(
-                /* translators: %s: the product that supplies them, e.g. “WConvert Pro”. */
-                __('With %s', 'wconvert'),
-                product,
-              )}
-            >
-              {types.map((type) => (
-                <option key={type.type} value="" disabled>
-                  {type.label}
-                </option>
-              ))}
-            </optgroup>
-          ))}
-
-          {[...byDependency(unavailable)].map(([needs, types]) => (
-            <optgroup
-              key={needs}
-              disabled
-              label={sprintf(
-                /* translators: %s: the plugin the site needs, e.g. “WooCommerce”. */
-                __('Needs %s', 'wconvert'),
-                needs,
-              )}
-            >
-              {types.map((type) => (
-                <option key={type.type} value="" disabled>
-                  {type.label}
-                </option>
-              ))}
-            </optgroup>
-          ))}
-        </select>
-      </label>
-    </p>
-  );
+  return <Popover open={open} onOpenChange={next => { setOpen(next); if (next) setQuery(''); }}>
+    <PopoverTrigger asChild>
+      <Button type="button" variant="outline" size="sm" className="mt-2" aria-label={label}><Plus aria-hidden="true" />{label}</Button>
+    </PopoverTrigger>
+    <PopoverContent align="start" dir={direction} aria-label={__('Choose a rule', 'wconvert')}
+      className="wconvert-rule-picker w-[min(360px,calc(100vw-32px))] max-h-(--radix-popover-content-available-height) overflow-hidden p-2"
+      onOpenAutoFocus={event => { event.preventDefault(); search.current?.focus(); }} onKeyDown={navigate}>
+      <input ref={search} type="search" value={query} aria-label={__('Find a rule', 'wconvert')}
+        placeholder={__('Search rules…', 'wconvert')} onChange={event => setQuery(event.target.value)} />
+      <div ref={results} className="wconvert-rule-picker__results">
+        {offered.map(({ type, choices }) => <div key={type.type} role="group" aria-label={type.label} data-available="true">
+          {type.presets.length > 0 && <p className="wconvert-rule-picker__heading">{type.label}</p>}
+          {choices.map(preset => <button key={preset?.id ?? ''} type="button" onClick={() => {
+            onAdd(toRule(type, preset, {})); setOpen(false);
+          }}>{preset?.label ?? (type.presets.length > 0 ? __('Set it myself', 'wconvert') : type.label)}</button>)}
+        </div>)}
+        {unavailable.map(({ reason, types }) => <div key={reason} role="group" aria-label={reason} data-available="false">
+          <p className="wconvert-rule-picker__heading">{reason}</p>
+          {types.map(type => <p key={type.type} className="wconvert-rule-picker__unavailable">{type.label}</p>)}
+        </div>)}
+        {offered.length === 0 && unavailable.length === 0 && <p role="status">{__('No matching rules.', 'wconvert')}</p>}
+      </div>
+    </PopoverContent>
+  </Popover>;
 }
 
 /**

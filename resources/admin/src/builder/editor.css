@@ -46,7 +46,8 @@ body.wconvert-fullscreen #wconvert-admin .wconvert-workspace {
   min-width: 80px;
   height: 32px;
   padding: 5px 8px;
-  margin: 0 8px 0 0;
+  margin: 0;
+  margin-inline-end: 8px;
   border: 1px solid transparent;
   border-inline-start-color: var(--editor-rule);
   border-radius: 4px;
@@ -344,7 +345,7 @@ body.wconvert-fullscreen #wconvert-admin .wconvert-workspace {
   .wconvert-workspace
   .wconvert-scope__token
   + .wconvert-scope__token {
-  margin-top: 12px;
+  margin-top: 0;
 }
 #wconvert-admin .wconvert-workspace .wconvert-palette .wconvert-scope__token {
   margin: 0;
@@ -484,11 +485,22 @@ body.wconvert-fullscreen #wconvert-admin .wconvert-workspace {
   font-weight: 600;
   display: block;
 }
+#wconvert-admin .wconvert-design-card__facts {
+  min-inline-size: 0;
+}
 #wconvert-admin .wconvert-design-card span {
   display: block;
   margin-top: 4px;
   font-size: var(--text-label);
   color: var(--muted-foreground);
+}
+#wconvert-admin .wconvert-design-card .wconvert-design-card__eyebrow {
+  margin-block: 0 3px;
+  color: var(--muted-foreground);
+  font-size: var(--text-meta);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 #wconvert-admin .wconvert-design-card__image {
   pointer-events: none;
@@ -508,9 +520,7 @@ body.wconvert-fullscreen #wconvert-admin .wconvert-workspace {
   display: flex;
   flex-direction: column;
   gap: 16px;
-  border-top: 1px solid var(--editor-rule);
-  padding-top: 20px;
-  margin-top: 24px;
+  margin-block-end: 16px;
 }
 #wconvert-admin .wconvert-workspace .wconvert-block {
   min-height: 35px;
@@ -871,12 +881,6 @@ body .wconvert-launch-review [data-slot='dialog-description'] { margin: 0; }
 #wconvert-admin .wconvert-canvas__bar label { flex: none; }
 
 
-#wconvert-admin .wconvert-shadow-presets { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; width: 100%; }
-#wconvert-admin .wconvert-shadow-preset > span { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 62px; gap: 6px; padding: 8px 4px; border: 1px solid var(--border); border-radius: 5px; cursor: pointer; font-size: var(--text-label); }
-#wconvert-admin .wconvert-shadow-preset input:checked + span { border-color: var(--primary); background: var(--accent); color: var(--primary); }
-#wconvert-admin .wconvert-shadow-preset input:focus-visible + span { outline: 2px solid var(--ring); outline-offset: 2px; }
-#wconvert-admin .wconvert-shadow-sample { display: grid; place-items: center; width: 40px; height: 24px; }
-#wconvert-admin .wconvert-shadow-sample > span { width: 24px; height: 16px; border-radius: 3px; background: white; border: 1px solid var(--border); }
 #wconvert-admin .wconvert-shadow-adjust { border: 1px solid var(--border); border-radius: 5px; padding: 10px; }
 #wconvert-admin .wconvert-shadow-values { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-block: 12px; }
 #wconvert-admin .wconvert-shadow-values label { min-width: 0; display: grid; gap: 5px; }
@@ -968,3 +972,129 @@ body .wconvert-launch-review [data-slot='dialog-description'] { margin: 0; }
 #wconvert-admin .wconvert-sentence-toolbar { flex-wrap: wrap; }
 
 #wconvert-admin .wconvert-workspace .wconvert-block__kind { font-size: var(--text-note); line-height: 1.45; }
+
+/* Related fields share a row only when both retain room for their controls. */
+.wconvert-fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 128px), 1fr));
+  gap: 16px 12px;
+  align-items: start;
+}
+.wconvert-fields__item { min-inline-size: 0; }
+.wconvert-fields > .wconvert-fields__item { grid-column: 1 / -1; }
+.wconvert-fields > .wconvert-fields__item[data-compact] { grid-column: auto; }
+.wconvert-field-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-block-size: 24px; }
+.wconvert-alignment-preview { display: flex; flex-direction: column; gap: 3px; inline-size: 18px; }
+.wconvert-alignment-preview > span { block-size: 2px; inline-size: 100%; background: currentColor; border-radius: 2px; }
+.wconvert-alignment-preview > span:nth-child(even) { inline-size: 65%; }
+.wconvert-alignment-preview[data-align='start'] { align-items: flex-start; }
+.wconvert-alignment-preview[data-align='center'] { align-items: center; }
+.wconvert-alignment-preview[data-align='end'] { align-items: flex-end; }
+.wconvert-shape-preview { display: grid; place-items: center; block-size: 40px; }
+.wconvert-shape-preview .wconvert-fit-preview { inline-size: 40px; block-size: 40px; }
+.wconvert-shape-preview[data-shape='circle'] .wconvert-fit-preview { border-radius: 50%; }
+.wconvert-border-preview { display: flex; flex-direction: column; justify-content: center; gap: 3px; inline-size: 24px; block-size: 22px; padding: 4px; border: 1.5px solid transparent; background: var(--muted); }
+.wconvert-border-preview > span { block-size: 1px; inline-size: 100%; background: currentColor; opacity: .5; }
+.wconvert-border-preview > span:last-child { inline-size: 65%; }
+.wconvert-border-preview[data-edges='all'] { border-color: currentColor; }
+.wconvert-border-preview[data-edges='block-start'] { border-block-start-color: currentColor; }
+.wconvert-style-context { margin-block-end: 12px; font-size: var(--text-note); color: var(--muted-foreground); }
+.wconvert-style-context summary { cursor: pointer; }
+.wconvert-style-context[open] summary { margin-block-end: 8px; }
+.wconvert-scope > .wconvert-style-advanced { margin-block-start: 20px; }
+
+.wconvert-fields .wconvert-token__slider { inline-size: 100%; min-inline-size: 0; }
+#wconvert-admin .wconvert-workspace .wconvert-fields__item[data-compact] .wconvert-token__exact { inline-size: 0; min-inline-size: 48px; }
+
+#wconvert-admin .wconvert-workspace .wconvert-fields__item[data-compact] input.wconvert-token__exact {
+  padding-inline: 6px;
+  appearance: textfield;
+}
+.wconvert-fields__item[data-compact] input.wconvert-token__exact::-webkit-inner-spin-button { appearance: none; margin: 0; }
+#wconvert-admin .wconvert-workspace .wconvert-fields__item[data-compact] select { max-inline-size: 58px; min-inline-size: 0; padding-inline: 6px 20px; }
+
+#wconvert-admin .wconvert-layout-params:empty { display: none; }
+
+/* Compact icon choices share one control-height row, including the CSS escape. */
+.wconvert-choice-set--icons {
+  display: inline-grid;
+  grid-auto-flow: column;
+  grid-auto-columns: 30px;
+  justify-self: start;
+  inline-size: max-content;
+  gap: 2px;
+  padding: 2px;
+}
+.wconvert-choice-set--icons .wconvert-choice { position: relative; }
+#wconvert-admin .wconvert-choice-set--icons .wconvert-choice__label {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  inline-size: 30px;
+  block-size: 30px;
+  min-block-size: 30px;
+  padding: 0;
+  gap: 0;
+}
+.wconvert-choice-set--icons .wconvert-choice__label > svg { inline-size: 16px; block-size: 16px; }
+.wconvert-setting-toggle { display: flex; align-items: center; gap: 8px; min-block-size: 32px; margin: 0; }
+.wconvert-setting-toggle input { margin: 0; flex: none; }
+#wconvert-admin .wconvert-token > select { block-size: 32px; min-block-size: 32px; margin: 0; font-size: var(--text-micro); }
+
+.wconvert-token .wconvert-fit-preview { block-size: 40px; }
+#wconvert-admin .wconvert-token .wconvert-font { block-size: 32px; min-block-size: 32px; }
+/* Reserve two label lines so paired sliders and inputs keep the same baseline. */
+.wconvert-fields__item[data-compact] .wconvert-field-heading { min-block-size: 32px; }
+
+/* Search stays visible while choices scroll; logical sizing also serves RTL. */
+body .wconvert-rule-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-block-size: 0;
+}
+body .wconvert-rule-picker input[type='search'] {
+  inline-size: 100%;
+  min-inline-size: 0;
+  min-block-size: 32px;
+  margin: 0;
+  font-size: var(--text-note);
+}
+body .wconvert-rule-picker__results {
+  max-block-size: 320px;
+  min-block-size: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+body .wconvert-rule-picker__heading {
+  margin: 8px 6px 4px;
+  font-size: var(--text-micro);
+  font-weight: 600;
+  color: var(--muted-foreground);
+}
+body .wconvert-rule-picker__results button {
+  display: block;
+  inline-size: 100%;
+  min-block-size: 32px;
+  padding: 6px 8px;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  text-align: start;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  font-size: var(--text-note);
+  cursor: pointer;
+}
+body .wconvert-rule-picker__results button:is(:hover, :focus-visible) {
+  background: var(--accent);
+  color: var(--accent-foreground);
+  outline: 2px solid var(--ring);
+  outline-offset: -2px;
+}
+body .wconvert-rule-picker__unavailable {
+  margin: 0;
+  padding: 6px 8px;
+  font-size: var(--text-note);
+  color: var(--muted-foreground);
+}

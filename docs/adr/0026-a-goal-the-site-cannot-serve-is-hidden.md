@@ -30,7 +30,7 @@ guarantee to the case where both reasons apply.
 > a permanent block on the tab, beside the rules the merchant actually has, so
 > every visit paid for an explanation of what could not be added by anyone who
 > had not yet tried to add anything. The list a merchant hunts through is the
-> **Add dropdown**; the tab is not. The absent types are `<optgroup disabled>`
+> **Add menu**; the tab is not. As refined by [ADR 0078](0078-editor-choices-stay-compact-and-scrollable.md), this is now a searchable popover; absent types are noninteractive text
 > groups inside it — *With WConvert Pro*, *Needs WooCommerce* — which is the
 > same `explain` rendering, moved to the moment it changes what they do next
 > ([ADR 0042](0042-the-admin-speaks-only-when-it-changes-what-you-do-next.md)

@@ -4,9 +4,12 @@ import { SpacingField } from './SpacingField';
 import { GradientField, DEFAULT_GRADIENT } from './GradientField';
 import { ColorField } from './ColorField';
 import { ShadowField } from './ShadowField';
+import { styleTokens } from './styleTokens';
+import { PositionField } from './PositionField';
 import { Button } from '../components/ui/button';
-import { ChevronDown, RotateCcw } from 'lucide-react';
+import { ChevronDown, CodeXml, RotateCcw } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '../components/ui/popover';
+import { AlignmentPreview } from './ChoicePreview';
 import { CHOICES, TOKENS, groupsOf, resolvedToken, withToken, type TokenGroupId } from './panel';
 import { getThemeTokens, type SiteFont } from './api';
 import { MediaControl } from './SlotFields';
@@ -246,7 +249,7 @@ export function Tokens({
   onError: (cause: unknown) => void;
 }) {
   const [copied, setCopied] = useState<number | null>(null);
-  const groups = groupsOf();
+  const groups = groupsOf(styleTokens(template, null));
   const hasDesign = Object.keys(design).length > 0;
 
   const write = (tokens: Readonly<Record<string, string>>) =>
@@ -323,23 +326,26 @@ export function Tokens({
               onChange={onChange}
             />
           ) : (
-            group.tokens.map((token) => (
-              <TokenField
-                key={token.name}
-                token={token.name}
-                label={nameOf(labels.tokens, token.name)}
-                labels={labels}
-                fallback={design[token.name] ?? token.fallback}
-                standard={token.fallback}
-                design={hasDesign ? (design[token.name] ?? '') : undefined}
-                value={template.tokens[token.name] ?? ''}
-                open={openToken === token.name}
-                onOpenChange={(open) => onOpenToken(open ? token.name : null)}
-                onChange={(value) =>
-                  onChange({ ...template, tokens: withToken(template.tokens, token.name, value) })
-                }
-              />
-            ))
+            <div className="wconvert-fields">
+              {group.tokens.map((token) => (
+                <div key={token.name} className="wconvert-fields__item" data-compact={['gap', 'radius'].includes(token.name) || undefined}>
+                  <TokenField
+                    token={token.name}
+                    label={nameOf(labels.tokens, token.name)}
+                    labels={labels}
+                    fallback={design[token.name] ?? token.fallback}
+                    standard={token.fallback}
+                    design={hasDesign ? (design[token.name] ?? '') : undefined}
+                    value={template.tokens[token.name] ?? ''}
+                    open={openToken === token.name}
+                    onOpenChange={(open) => onOpenToken(open ? token.name : null)}
+                    onChange={(value) =>
+                      onChange({ ...template, tokens: withToken(template.tokens, token.name, value) })
+                    }
+                  />
+                </div>
+              ))}
+            </div>
           )}
         </section>
       ))}
@@ -347,22 +353,19 @@ export function Tokens({
   );
 }
 
-/**
- * What a group of tokens is called.
- *
- * **In the bundle rather than in `TemplateLabels`, and that is the line.** A
- * group is a way of arranging one panel — chrome — while a Slot Role or a token
- * name is vocabulary two runtimes agree on. The manifest declares no groups and
- * is not asked to; a token it declares that this bundle recognises nothing
- * about lands under `other` and gets a text box, which is ADR 0010 kept rather
- * than a fifth cross-cutting list to maintain.
- */
+/** Section labels are editor chrome; membership and order come from the manifest. */
 export function groupName(id: TokenGroupId): string {
   switch (id) {
     case 'color':
       return __('Color', 'wconvert');
     case 'type':
-      return __('Type', 'wconvert');
+      return __('Body text', 'wconvert');
+    case 'heading':
+      return __('Headings', 'wconvert');
+    case 'image':
+      return __('Picture', 'wconvert');
+    case 'effects':
+      return __('Effects', 'wconvert');
     case 'space':
       return __('Size and space', 'wconvert');
     case 'other':
@@ -526,6 +529,8 @@ export function TokenField({
   const offered = CHOICES[token];
 
   const control = TOKENS.find(declaration => declaration.name === token)?.control;
+  if (control === 'position') return <PositionField label={label} shown={shown} offered={offered ?? []}
+    nameOfValue={choice => nameOf(labels.tokenValues, `${token}.${choice}`)} reset={reset} onChange={onChange} />;
   if (control === 'spacing') return <SpacingField label={label} shown={shown} fallback={fallback} standard={standard} reset={reset} onChange={onChange} />;
   if ((control === 'gradient' || control === 'image') && /gradient\(/i.test(shown)) {
     return <div className="grid gap-1"><GradientField label={label} shown={shown} reset={reset} open={open} onOpenChange={onOpenChange} onChange={onChange} />
@@ -643,8 +648,8 @@ export function TokenField({
       the name of the control beside it read out as part of its own.
     */
     <div className="wconvert-token">
-      <label htmlFor={field}>{label}</label>
-      {/* Multiple axes stack their numeric controls; reset stays beside the group. */}
+      <span className="wconvert-field-heading"><label htmlFor={field}>{label}</label>{reset}</span>
+      {/* Multiple axes stack their numeric controls; reset stays with the field label. */}
       <span className={`wconvert-token__row${measured ? ' items-start' : ''}`}>
         {measured ? (
           <MeasureField
@@ -668,7 +673,6 @@ export function TokenField({
             onCommit={onChange}
           />
         )}
-        {reset}
       </span>
     </div>
   );
@@ -791,39 +795,12 @@ function MeasureField({
       </label>)}
     </span>)}
     <MeasurementValue id={axes === null ? id : undefined} label={label}
-      rawLabel={sprintf(__('%s value', 'wconvert'), label)}
       fallback={fallback} standard={standard} value={value} onChange={onChange} />
   </div>;
 }
 
-/**
- * The values the manifest offers for this token, as a segmented control — with
- * the box that can still say something else.
- *
- * ============================================================================
- * NATIVE RADIOS IN A `role="group"`, AND BOTH HALVES ARE DELIBERATE.
- * ============================================================================
- * **Radios**, because one of these excludes the others and that is what a radio
- * group IS: arrow keys move between them, the set is announced as a set, and
- * only the checked one is a tab stop. Radix's `ToggleGroup` would buy roving
- * focus and arrow keys the browser already gives, at bundle bytes this admin
- * prints on every build.
- *
- * **`role="group"` and not a `<label>` around the three**, because a label
- * names ONE control. Wrapping the set made the token's name part of the
- * accessible name of whichever radio happened to be inside it.
- *
- * **Chips rather than a `<select>`**, an argument `font` made and then took
- * with it: reading *Serif* set in Georgia is the whole value of that control,
- * and `font-family` on an `<option>` is unreliable across browsers. `font` is a
- * popover list now, because its N is the site's rather than the manifest's
- * (ADR 0055); what is left here is every one-of-N the manifest does control,
- * where a strip of three or four is the right shape.
- *
- * **And the text box stays.** `choices` is what the panel offers, never what is
- * allowed — token values are unvalidated on both sides of the boundary — so a
- * merchant may type a fifth stack or a fourth alignment and nothing here
- * refuses it. When they do, no chip is checked, which is the honest picture.
+/** Word-based presets use selects; alignment uses compact logical-direction icons.
+ * Custom only changes local UI state until a value is explicitly edited.
  */
 function ChoiceField({
   id,
@@ -849,103 +826,33 @@ function ChoiceField({
   onChange: (value: string) => void;
 }) {
   const named = `${id}-name`;
-  /*
-    ==========================================================================
-    THE ESCAPE HATCH IS A CHOICE, NOT PERMANENT FURNITURE.
-    ==========================================================================
-    A text box sat under the three alignment chips on every visit, holding
-    `center`, labelled *"Alignment value"* — and a merchant looking at *Left ·
-    Centre · Right* has no idea what it is for or what would happen if they
-    typed in it. It is the escape hatch that keeps `choices` a suggestion rather
-    than validation, and that property is load-bearing (ADR 0010: token values
-    are unvalidated on both sides of the boundary) — but keeping the property
-    never required keeping the box on screen.
-
-    So it is a fourth option. **Custom** is checked whenever the stored value is
-    one the manifest never offered — which is also the honest picture of that
-    state, where before no chip was checked and the box quietly disagreed with a
-    control that looked authoritative — and also whenever the merchant has just
-    asked for it.
-
-    That second half needs local state, and the reason is worth a line: this
-    control is otherwise a pure function of the token's value, so pressing
-    Custom while the value is still `center` would write `center`, leave the
-    value on the list, and snap straight back to Centre. *"I want to type
-    something"* is a fact about the merchant rather than about the token, so it
-    is the only thing here that is not derived.
-  */
   const [asked, setAsked] = useState(false);
+  const alignment = TOKENS.find(declaration => declaration.name === token)?.control === 'alignment';
   const custom = !offered.includes(shown) || asked;
+  const choose = (choice: string) => { setAsked(false); onChange(choice); };
 
-  return (
-    <div className="wconvert-token">
-      <span id={named}>{label}</span>
-      <span className="wconvert-token__row">
-        <span role="group" aria-labelledby={named} className={TOKENS.find(item => item.name === token)?.control === 'position' ? 'wconvert-choice-set grid grid-cols-3 w-full' : 'wconvert-choice-set'}>
-          {offered.map((choice) => (
-            <label key={choice} className="wconvert-choice">
-              <input
-                type="radio"
-                className="sr-only"
-                name={id}
-                value={choice}
-                checked={!custom && shown === choice}
-                onChange={() => {
-                  setAsked(false);
-                  onChange(choice);
-                }}
-              />
-              {/*
-                Set in the face it names, which is the whole point of offering a
-                font as chips. `align` gets no such style — its own words are
-                the affordance, and words rather than mirrored icons is what
-                stops this control needing to know which way the admin reads.
-              */}
-              <span
-                className={TOKENS.find(item => item.name === token)?.control === 'position' ? 'wconvert-choice__label whitespace-normal text-center' : 'wconvert-choice__label'}
-                style={isFontStack(choice) ? { fontFamily: choice } : undefined}
-              >
-                {nameOf(labels.tokenValues, `${token}.${choice}`)}
-              </span>
-            </label>
-          ))}
-
-          <label className="wconvert-choice">
-            <input
-              type="radio"
-              className="sr-only"
-              name={id}
-              checked={custom}
-              /*
-                It writes nothing. The token keeps the value it had, which is
-                what the box then opens on — asking to type is not itself an
-                edit, and writing here would put a value in the box the merchant
-                did not choose.
-              */
-              onChange={() => setAsked(true)}
-            />
-            <span className="wconvert-choice__label">{__('Custom', 'wconvert')}</span>
-          </label>
-        </span>
-        {reset}
-      </span>
-
-      {custom && (
-        <input
-          type="text"
-          className="wconvert-token__typed"
-          aria-label={sprintf(
-            /* translators: %s: what the setting is for, e.g. “Alignment”. */
-            __('%s value', 'wconvert'),
-            label,
-          )}
-          placeholder={fallback}
-          value={value}
-          onChange={(event) => onChange(event.target.value)}
-        />
-      )}
-    </div>
-  );
+  return <div className="wconvert-token">
+    <span className="wconvert-field-heading"><label id={named} htmlFor={alignment ? undefined : id}>{label}</label>{reset}</span>
+    {alignment ? <span role="group" aria-labelledby={named} className="wconvert-choice-set wconvert-choice-set--icons">
+      {offered.map(choice => <label key={choice} className="wconvert-choice" title={nameOf(labels.tokenValues, `${token}.${choice}`)}>
+        <input type="radio" className="sr-only" name={id} checked={!custom && shown === choice} onChange={() => choose(choice)} />
+        <span className="wconvert-choice__label"><AlignmentPreview value={choice} /><span className="sr-only">{nameOf(labels.tokenValues, `${token}.${choice}`)}</span></span>
+      </label>)}
+      <label className="wconvert-choice" title={__('Custom', 'wconvert')}>
+        <input type="radio" className="sr-only" name={id} checked={custom} onChange={() => setAsked(true)} />
+        <span className="wconvert-choice__label"><CodeXml aria-hidden="true" /><span className="sr-only">{__('Custom', 'wconvert')}</span></span>
+      </label>
+    </span> : <select id={id} value={custom ? '__custom' : shown} onChange={event => {
+      if (event.target.value === '__custom') setAsked(true);
+      else choose(event.target.value);
+    }}>
+      {offered.map(choice => <option key={choice} value={choice}>{nameOf(labels.tokenValues, `${token}.${choice}`)}</option>)}
+      <option value="__custom">{__('Custom…', 'wconvert')}</option>
+    </select>}
+    {custom && <StyleValueInput type="text" className="wconvert-token__typed"
+      aria-label={sprintf(__('%s value', 'wconvert'), label)} placeholder={fallback} value={value}
+      onFocus={() => setAsked(true)} onCommit={onChange} />}
+  </div>;
 }
 
 /**

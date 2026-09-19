@@ -1,6 +1,6 @@
 import { CLICK_OUTCOME } from './support/outcomes';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { act, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { DOCUMENT_STYLE_ID } from '@renderer/mount';
 import { ruleTypes } from './support/rule-types';
@@ -10,8 +10,8 @@ import { ruleTypes } from './support/rule-types';
  *
  * **The goal screen is the front door**, so it *hides* what a settings list
  * would explain (ADR 0026), and it never advertises Pro for something Pro
- * would not supply. **The gallery filters on Goal only** — Display Type is
- * prefilled by the chosen [[Playbook]] and is never the first question
+ * would not supply. **The server query filters on Goal only**; the second step
+ * can refine those setups by Format without making it the first question
  * (CONTEXT.md, Display Type). **"Start from scratch" skips the Playbook, never
  * the Goal.** Browsing reads only. Customize creates a draft and opens the editor directly.
  */
@@ -174,6 +174,26 @@ describe('a goal then a draft', () => {
     expect(optins.createOptin).not.toHaveBeenCalled();
     expect(goals.prefill).not.toHaveBeenCalled();
     expect(screen.getByText('Creates a draft. Nothing goes live until you publish.')).toBeInTheDocument();
+    expect(screen.getByRole('combobox', { name: 'Format' })).toHaveDisplayValue('All formats');
+    expect(screen.getByText('Popup', { selector: '[data-slot="badge"]' })).toBeVisible();
+  });
+
+  it('labels every setup with its format and filters the goal-scoped choices', async () => {
+    const inline = { ...PLAYBOOK, id: 'inline-signup', name: 'Inline signup', display_type: 'inline',
+      setup: { ...PLAYBOOK.setup, display_type: 'inline' } };
+    goals.listPlaybooks.mockResolvedValue([PLAYBOOK, inline]);
+    render(<GoalScreen onCreated={vi.fn()} />);
+    await pickGoal();
+    const popupCard = (await screen.findByText('Welcome discount')).closest('li')!;
+    const inlineCard = screen.getByText('Inline signup').closest('li')!;
+    expect(within(popupCard).getByText('Popup', { selector: '[data-slot="badge"]' })).toBeVisible();
+    expect(within(inlineCard).getByText('Inline form', { selector: '[data-slot="badge"]' })).toBeVisible();
+
+    await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Format' }), 'inline');
+    expect(screen.queryByText('Welcome discount')).not.toBeInTheDocument();
+    expect(screen.getByText('Inline signup')).toBeVisible();
+    expect(goals.listPlaybooks).toHaveBeenCalledTimes(1);
+    expect(goals.prefill).not.toHaveBeenCalled();
   });
 
   it('keeps the real design preview and makes the long rationale optional', async () => {
@@ -420,6 +440,22 @@ it('filters installed starting points by collection and creates only the chosen 
   await customize();
   await waitFor(() => expect(goals.prefill).toHaveBeenCalledWith(GOALS[0].id, downloaded.id));
   expect(optins.createOptin).toHaveBeenCalledWith(DRAFT.name, DRAFT.goal, DRAFT.config);
+});
+
+it('recovers when collection and format filters have no setup in common', async () => {
+  const downloaded = { ...PLAYBOOK, id: 'pack-inline', name: 'Pack inline', display_type: 'inline',
+    setup: { ...PLAYBOOK.setup, display_type: 'inline' }, collection: { id: 'store', name: 'Store collection', version: '1.1.0' } };
+  goals.listPlaybooks.mockResolvedValue([PLAYBOOK, downloaded]);
+  render(<GoalScreen onCreated={vi.fn()} />);
+  await pickGoal();
+  await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Format' }), 'inline');
+  await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Collection' }), 'bundled');
+  expect(screen.getByText('No campaign setups match')).toBeVisible();
+  expect(screen.getByText('Try another format or collection.')).toBeVisible();
+  await userEvent.click(screen.getByRole('button', { name: 'Clear filters' }));
+  expect(screen.getAllByRole('button', { name: 'Use this setup' })).toHaveLength(2);
+  expect(screen.getByRole('combobox', { name: 'Format' })).toHaveValue('all');
+  expect(screen.getByRole('combobox', { name: 'Collection' })).toHaveValue('all');
 });
 
 it('installs a pack from creation, then returns to its starting points without creating a draft', async () => {

@@ -34,7 +34,9 @@ bundle. A rule that required a per-token entry in `Tokens.tsx` would be the
 second spelling this codebase refuses everywhere else, and every rule below is
 built to avoid needing one.
 
-> Extended by [ADR 0077](0077-editor-controls-make-placement-and-formatting-explicit.md): shadow presets now have visual samples and single pixel shadows expose geometry, color and inset controls. Complex CSS is still preserved verbatim.
+> Extended by [ADR 0077](0077-editor-controls-make-placement-and-formatting-explicit.md): single pixel shadows expose geometry, color and inset controls. Complex CSS is still preserved verbatim. The compact preset select and optional CSS edit icon are refined in [ADR 0078](0078-editor-choices-stay-compact-and-scrollable.md).
+
+> Refined by [ADR 0078](0078-editor-choices-stay-compact-and-scrollable.md): alignment and borders use compact icons, textual choices use selects, and booleans use checkboxes; manifest section membership and order keep related fields together. Unrecognised tokens still use value-based grouping.
 
 ## 2. A free-text box is an escape you opt into, never the control you land on
 

@@ -460,10 +460,12 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
     // a merchant away from: clicking a block asks to edit that block.
     setTab('design');
 
+    setOpenToken(null);
     setSelection({ path: pathOfKey(key), from: 'preview' });
   }, []);
 
   const chooseFromTree = useCallback((path: Path) => {
+    setOpenToken(null);
     setSelection({ path, from: 'tree' });
 
     if (typeof path[0] === 'number') {
@@ -705,14 +707,20 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
             {entry === null ? (
               <EmptyState
                 icon={Blocks}
-                title={__('Nothing to edit yet', 'wconvert')}
+                title={__('Choose how this campaign appears', 'wconvert')}
                 action={
                   <Button ref={browse} variant="outline" onClick={() => setBrowsing(true)}>
-                    {__('Pick a design', 'wconvert')}
+                    {__('Browse designs and formats', 'wconvert')}
                   </Button>
                 }
               >
-                {__('Choose a template to start editing.', 'wconvert')}
+                {entryOfGoal
+                  ? sprintf(
+                      /* translators: %s: campaign goal. */
+                      __('Start with a design that fits “%s”. You can explore other formats in the library.', 'wconvert'),
+                      entryOfGoal.label,
+                    )
+                  : __('Start with a design and format that fit this campaign.', 'wconvert')}
               </EmptyState>
             ) : (
               <>
@@ -779,6 +787,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
                           />
                         ) : (
                           <ScopeStyle
+                            key={selection.path.join('.')}
                             template={entry}
                             labels={gallery.labels}
                             path={selection.path}
@@ -988,6 +997,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
           sibling: siblingAct,
           act,
         }}
+        goalLabel={entryOfGoal?.label}
         busy={busy}
         onNear={want}
         failed={failedTrees}
@@ -1101,8 +1111,12 @@ function asConfigPatch(patch: Partial<DisplayRulesValue>): Record<string, unknow
 
 function displayTypeOf(config: Config, templates: readonly TemplateIndexEntry[] | undefined): string {
   const declared = config.display_type;
+  const templateId = config.template_id;
+  const chosen = typeof templateId === 'string'
+    ? templates?.find((entry) => entry.id === templateId)
+    : undefined;
 
-  return typeof declared === 'string' ? declared : (templates?.[0]?.display_type ?? EVERY_INSTALL_HAS);
+  return typeof declared === 'string' ? declared : (chosen?.display_type ?? EVERY_INSTALL_HAS);
 }
 
 function chosenName(

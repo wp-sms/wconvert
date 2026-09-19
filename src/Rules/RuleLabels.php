@@ -48,7 +48,7 @@ final class RuleLabels
             'url' => __('A URL path', 'wconvert'),
             'logged_in' => __('Signed-in visitors', 'wconvert'),
             'page_load' => __('Shows immediately', 'wconvert'),
-            'time_on_page' => __('Time on the page', 'wconvert'),
+            'time_on_page' => __('Time delay', 'wconvert'),
             'scroll_depth' => __('Scroll depth', 'wconvert'),
             'click_element' => __('Clicks an element', 'wconvert'),
             'exit_intent' => __('About to leave', 'wconvert'),

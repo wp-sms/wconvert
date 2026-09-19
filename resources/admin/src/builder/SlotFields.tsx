@@ -1,3 +1,4 @@
+import { StyleValueInput } from './StyleValueInput';
 import { SentenceEditor } from './SentenceEditor';
 import type { SentenceValue } from './sentence';
 import { __, sprintf } from '@wordpress/i18n';
@@ -5,6 +6,7 @@ import { CalendarClock, ImagePlus } from 'lucide-react';
 import { GLYPHS } from '@renderer/render';
 import { Button } from '../components/ui/button';
 import { ParamChoice } from './ParamChoice';
+import { ImageFitPreview, ImageShapePreview } from './ChoicePreview';
 import { InterestOptions } from './InterestOptions';
 import { readable, hasScheduleEnded } from '../lib/wallTime';
 import { adminSettings } from '../settings';
@@ -187,8 +189,12 @@ export function SlotFields({
           renderChoice={
             setting.param === 'name' && slot.type === 'icon'
               ? (choice) => <Glyph name={choice} />
-              : undefined
+              : setting.param === 'fit' && slot.type === 'image'
+                ? (choice) => <ImageFitPreview fit={choice} src={slot.values.src} />
+                : setting.param === 'shape' && slot.type === 'image'
+                  ? (choice) => <ImageShapePreview shape={choice} src={slot.values.src} /> : undefined
           }
+          columns={['fit', 'shape'].includes(setting.param) && slot.type === 'image' ? 2 : undefined}
           onChange={(value) => onParam(setting.param, value)}
         />
       ))}
@@ -444,12 +450,12 @@ export function MediaControl({
   return (
     <span className="wconvert-slot__media">
       {image && <img className="wconvert-media-preview" src={image} alt="" loading="lazy" />}
-      <input
+      <StyleValueInput
         id={id}
         type={type}
         className="widefat"
         value={value}
-        onChange={(event) => onChange(event.target.value)}
+        onCommit={onChange}
       />
       {media !== null && (
         <Button

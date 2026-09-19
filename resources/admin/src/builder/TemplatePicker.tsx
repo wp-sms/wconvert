@@ -26,6 +26,7 @@ export interface TemplatePickerProps {
   readonly currentDisplayType?: string;
   readonly chosen: string | undefined;
   readonly fit: Fit;
+  readonly goalLabel?: string;
   readonly busy: boolean;
   readonly active?: boolean;
   readonly initialInspectedId?: string;
@@ -38,7 +39,7 @@ export interface TemplatePickerProps {
 
 /** Browse by what the design does, inspect it, then apply it to the draft. */
 export function TemplatePicker({
-  index, trees, displayType, currentDisplayType, chosen, fit, busy, onChoose, onPrepare, onNear, failed, onRetry, active = true, initialInspectedId,
+  index, trees, displayType, currentDisplayType, chosen, fit, goalLabel, busy, onChoose, onPrepare, onNear, failed, onRetry, active = true, initialInspectedId,
 }: TemplatePickerProps) {
   const [chosenFacets, setChosenFacets] = useState<Chosen>({});
   const [query, setQuery] = useState('');
@@ -112,7 +113,9 @@ export function TemplatePicker({
             </label>
             {fit.outcome && <select className="wconvert-picker__select" aria-label={__('Design fit', 'wconvert')}
               value={goalFitOnly ? 'goal' : 'all'} onChange={(event) => setGoalFitOnly(event.target.value === 'goal')}>
-              <option value="goal">{__('For this goal', 'wconvert')}</option>
+              <option value="goal">{goalLabel
+                ? sprintf(/* translators: %s: campaign goal. */ __('For “%s”', 'wconvert'), goalLabel)
+                : __('For this goal', 'wconvert')}</option>
               <option value="all">{__('All designs', 'wconvert')}</option>
             </select>}
             <Button variant="outline" size="sm" className="wconvert-picker__more"
@@ -214,7 +217,7 @@ export function TemplatePicker({
       {inspected !== undefined && (
         <TemplateDesignDetail key={inspected.id} entry={inspected} template={trees.get(inspected.id)}
           currentDisplayType={currentDisplayType}
-          labels={index.labels} current={inspected.id === chosen} active={active} fit={fit} busy={busy}
+          labels={index.labels} current={inspected.id === chosen} active={active} fit={fit} goalLabel={goalLabel} busy={busy}
           loadError={failed?.has(inspected.id)} onRetry={onRetry ? () => onRetry(inspected.id) : undefined}
           onChoose={onChoose} onPrepare={onPrepare} onBack={() => {
             setInspectedId(null);

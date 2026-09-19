@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Button } from '../components/ui/button';
 import { TemplatePacks } from '../templates/TemplatePacks';
 import { __ } from '@wordpress/i18n';
+import { displayTypeOptions } from '../displayTypes';
 import {
   Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle,
 } from '../components/ui/dialog';
@@ -20,12 +21,6 @@ export function TemplatePickerDialog({ open, onOpenChange, onClosed, onCatalogIn
   const [inspectId, setInspectId] = useState<string | undefined>();
   const [selectedFormat, setSelectedFormat] = useState<string | null>(null);
   const displayType = selectedFormat ?? picker.displayType;
-  const formats: Record<string, string> = {
-    popup: __('Popup', 'wconvert'),
-    inline: __('Inline', 'wconvert'),
-    floating_bar: __('Floating bar', 'wconvert'),
-    slide_in: __('Slide-in', 'wconvert'),
-  };
   return (
     <Dialog open={open} onOpenChange={(next) => {
       if (!next) { setSelectedFormat(null); setInspectId(undefined); }
@@ -42,7 +37,7 @@ export function TemplatePickerDialog({ open, onOpenChange, onClosed, onCatalogIn
               {__('Format', 'wconvert')}
               <select className="wconvert-picker__select" value={displayType}
                 onChange={(event) => { setSelectedFormat(event.target.value); setInspectId(undefined); }}>
-                {Object.entries(formats).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
+                {displayTypeOptions().map(({ value, label }) => <option key={value} value={value}>{label}</option>)}
               </select>
             </label>
           </div>

@@ -377,7 +377,7 @@ describe('the builder shell', () => {
    */
   it('opens with design settings and keeps Layers optional', async () => {
     open();
-    await screen.findByRole('button', { name: 'Change design or format' });
+    await screen.findByRole('button', { name: 'Browse designs and formats' });
     expect(screen.queryByRole('treegrid')).toBeNull();
     expect(screen.getByRole('heading', { name: 'Design', level: 4 })).toBeInTheDocument();
     expect(screen.queryByRole('group', { name: 'Headline' })).toBeNull();
@@ -452,9 +452,33 @@ describe('the builder shell', () => {
 
     await userEvent.click(await screen.findByRole('tab', { name: 'Design' }));
 
-    expect(await screen.findByText('Centred card')).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Change design or format' })).toBeInTheDocument();
+    expect(await screen.findByText('How it appears')).toBeInTheDocument();
+    expect(screen.getByText('Popup')).toBeInTheDocument();
+    expect(screen.getByText('Centred over the page')).toBeInTheDocument();
+    expect(screen.getByText('Design: Centred card')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Browse designs and formats' })).toBeInTheDocument();
     expect(screen.queryByRole('button', { name: /Use this design/ })).toBeNull();
+  });
+
+  it('opens a blank goal-based draft in the popup library without treating format as a new creation step', async () => {
+    builder.getOptin.mockResolvedValue(optin({ config: {} }));
+    templates.listTemplates.mockResolvedValue({
+      ...INDEX,
+      templates: [
+        { ...CARD, id: 'first-premium-design', name: 'First premium design', display_type: 'floating_bar' },
+        CARD,
+      ],
+    });
+    open();
+
+    expect(await screen.findByText('Choose how this campaign appears')).toBeInTheDocument();
+    expect(screen.getByText('Start with a design that fits “Grow my email list”. You can explore other formats in the library.')).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'Browse designs and formats' }));
+
+    const picker = within(await screen.findByRole('dialog'));
+    expect(picker.getByRole('combobox', { name: 'Format' })).toHaveValue('popup');
+    expect(picker.getByRole('combobox', { name: 'Design fit' })).toHaveDisplayValue('For “Grow my email list”');
+    expect(builder.saveOptin).not.toHaveBeenCalled();
   });
 
   /**
@@ -469,11 +493,13 @@ describe('the builder shell', () => {
     open();
 
     await userEvent.click(await screen.findByRole('tab', { name: 'Design' }));
-    await userEvent.click(screen.getByRole('button', { name: 'Change design or format' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Browse designs and formats' }));
 
     const picker = within(await screen.findByRole('dialog'));
 
     expect(picker.getByText('Browse designs')).toBeInTheDocument();
+    expect(picker.getByRole('combobox', { name: 'Format' })).toHaveValue('popup');
+    expect(picker.getByRole('combobox', { name: 'Design fit' })).toHaveDisplayValue('For “Grow my email list”');
     expect(picker.queryByRole('button', { name: 'Use this design' })).not.toBeInTheDocument();
     await userEvent.click(picker.getByRole('button', { name: 'Preview design' }));
     expect(picker.getByText('Preview with your content')).toBeInTheDocument();
@@ -1235,9 +1261,13 @@ describe('whole-draft Undo and Redo', () => {
     }));
     open();
 
+    expect(await screen.findByText('How it appears')).toBeInTheDocument();
+    expect(screen.getByText('Floating bar')).toBeInTheDocument();
+    expect(screen.getByText('Bar at the page edge · Bottom')).toBeInTheDocument();
     await userEvent.click(await screen.findByRole('radio', { name: 'Top' }));
 
     expect(screen.getByText(/moves the page down/)).toBeVisible();
+    expect(screen.getByText('Bar at the page edge · Top')).toBeInTheDocument();
     expect(document.querySelector('.wconvert-site')?.getAttribute('data-placement')).toBe('block_start');
     expect(screen.getByRole('button', { name: 'Undo draft edit' })).toBeEnabled();
 
@@ -1347,19 +1377,19 @@ describe('changing templates in the draft', () => {
     templates.getTemplateTrees.mockResolvedValue({ templates: [ENTRY, ALTERNATE] });
     templates.prepareTemplate.mockResolvedValue({ tree: ALTERNATE.tree, tokens: ALTERNATE.tokens });
     open();
-    await userEvent.click(await screen.findByRole('button', { name: 'Change design or format' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Browse designs and formats' }));
     await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Format' }), 'inline');
     await userEvent.keyboard('{Escape}');
     expect(screen.getByRole('button', { name: 'Save draft' })).toBeDisabled();
-    await userEvent.click(screen.getByRole('button', { name: 'Change design or format' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Browse designs and formats' }));
     expect(screen.getByRole('combobox', { name: 'Format' })).toHaveValue('floating_bar');
     await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Format' }), 'inline');
     const picker = within(screen.getByRole('dialog'));
     await userEvent.click(within(picker.getByText(ALTERNATE.name).closest('li') as HTMLElement)
       .getByRole('button', { name: 'Preview design' }));
-    await userEvent.click(picker.getByRole('button', { name: 'Use this design' }));
+    await userEvent.click(picker.getByRole('button', { name: 'Switch to Inline form' }));
     await userEvent.click(screen.getByRole('button', { name: 'Undo draft edit' }));
-    expect(screen.getByText(ENTRY.name)).toBeInTheDocument();
+    expect(screen.getByText(`Design: ${ENTRY.name}`)).toBeInTheDocument();
     expect(screen.getByRole('radio', { name: 'Top' })).toBeChecked();
     expect(screen.getByRole('button', { name: 'Save draft' })).toBeDisabled();
     await userEvent.click(screen.getByRole('button', { name: 'Redo draft edit' }));
@@ -1385,7 +1415,7 @@ describe('changing templates in the draft', () => {
     templates.prepareTemplate.mockResolvedValue({ tree: ALTERNATE.tree, tokens: ALTERNATE.tokens });
     open();
 
-    await userEvent.click(await screen.findByRole('button', { name: 'Change design or format' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Browse designs and formats' }));
     const picker = within(screen.getByRole('dialog'));
     await userEvent.click(within(picker.getByText(ALTERNATE.name).closest('li') as HTMLElement)
       .getByRole('button', { name: 'Preview design' }));
@@ -1429,7 +1459,7 @@ describe('changing templates in the draft', () => {
     loadAlternate();
     templates.prepareTemplate.mockResolvedValue(prepared);
     open();
-    await userEvent.click(await screen.findByRole('button', { name: 'Change design or format' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Browse designs and formats' }));
     const picker = within(await screen.findByRole('dialog'));
     const alternateCard = picker.getByText(ALTERNATE.name).closest('li') as HTMLElement;
     await userEvent.click(within(alternateCard).getByRole('button', { name: 'Preview design' }));
@@ -1442,13 +1472,13 @@ describe('changing templates in the draft', () => {
     await waitFor(() => expect(templates.prepareTemplate).toHaveBeenCalledWith(ALTERNATE.id, { tree: ENTRY.tree, tokens: ENTRY.tokens }, ENTRY.id));
     expect(builder.saveOptin).not.toHaveBeenCalled();
     await waitFor(() => expect(screen.getByRole('button', { name: 'Undo draft edit' })).toBeEnabled());
-    await waitFor(() => expect(screen.getByRole('button', { name: 'Change design or format' })).toHaveFocus());
-    expect(screen.getByText(ALTERNATE.name)).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Browse designs and formats' })).toHaveFocus());
+    expect(screen.getByText(`Design: ${ALTERNATE.name}`)).toBeInTheDocument();
     await userEvent.click(screen.getByRole('button', { name: 'Undo draft edit' }));
-    expect(screen.getByText(ENTRY.name)).toBeInTheDocument();
+    expect(screen.getByText(`Design: ${ENTRY.name}`)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Save draft' })).toBeDisabled();
     await userEvent.click(screen.getByRole('button', { name: 'Redo draft edit' }));
-    expect(screen.getByText(ALTERNATE.name)).toBeInTheDocument();
+    expect(screen.getByText(`Design: ${ALTERNATE.name}`)).toBeInTheDocument();
     await userEvent.click(screen.getByRole('button', { name: /Choose a color for Background/ }));
     await userEvent.clear(screen.getByLabelText('Background value'));
     await userEvent.type(screen.getByLabelText('Background value'), '#123456');
@@ -1462,7 +1492,7 @@ describe('changing templates in the draft', () => {
     loadAlternate();
     templates.prepareTemplate.mockImplementation((_id, tree) => Promise.resolve(tree));
     open();
-    await userEvent.click(await screen.findByRole('button', { name: 'Change design or format' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Browse designs and formats' }));
     const picker = within(await screen.findByRole('dialog'));
     await userEvent.click(within(picker.getByText(ALTERNATE.name).closest('li') as HTMLElement)
       .getByRole('button', { name: 'Preview design' }));
@@ -1482,7 +1512,7 @@ describe('changing templates in the draft', () => {
     loadAlternate();
     templates.prepareTemplate.mockRejectedValue(new Error('The design could not be prepared. Try again.'));
     open();
-    await userEvent.click(await screen.findByRole('button', { name: 'Change design or format' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Browse designs and formats' }));
     const picker = within(await screen.findByRole('dialog'));
     const alternateCard = picker.getByText(ALTERNATE.name).closest('li') as HTMLElement;
     await userEvent.click(within(alternateCard).getByRole('button', { name: 'Preview design' }));
@@ -1492,8 +1522,8 @@ describe('changing templates in the draft', () => {
     await userEvent.click(picker.getByRole('button', { name: 'Back to designs' }));
     await waitFor(() => expect(within(alternateCard).getByRole('button', { name: 'Preview design' })).toHaveFocus());
     await userEvent.keyboard('{Escape}');
-    await waitFor(() => expect(screen.getByRole('button', { name: 'Change design or format' })).toHaveFocus());
-    expect(screen.getByText(ENTRY.name)).toBeInTheDocument();
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Browse designs and formats' })).toHaveFocus());
+    expect(screen.getByText(`Design: ${ENTRY.name}`)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Undo draft edit' })).toBeDisabled();
     expect(screen.getByRole('button', { name: 'Save draft' })).toBeDisabled();
     expect(builder.saveOptin).not.toHaveBeenCalled();
