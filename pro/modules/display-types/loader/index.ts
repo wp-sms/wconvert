@@ -9,8 +9,8 @@ export { proPresenter } from './present';
  * IT SUPPLIES A PRESENTER RATHER THAN RULE MODULES, AND THE EMPTY LIST IS REAL.
  * =============================================================================
  * Every other module answers "which rules can fire". This one answers "what can
- * be drawn": `floating_bar` and `slide_in` are the two Display Types free has no
- * container for, and `popover.ts` is the container (ADR 0011). No rule type is
+ * be drawn": `floating_bar`, `slide_in` and `fullscreen` are supplied by Pro's
+ * popover and fullscreen surfaces (ADRs 0011 and 0098). No rule type is
  * involved, so the module set below is empty — stated rather than omitted, so
  * that a tier entry composing every installed module's rules cannot silently
  * skip a module whose contribution is not a rule.

@@ -93,6 +93,9 @@ jobs:
       - run: npx playwright install --with-deps chromium
       - run: npm run build:admin
       - run: npm run test:visual
+      - name: Build Pro admin and visitor loaders for fullscreen contracts
+        run: npm run build:admin:pro && npm run build:loader && npm run build:loader:pro
+      - run: npm run test:visual:fullscreen
       - uses: actions/upload-artifact@v4
         if: always()
         with:

@@ -230,6 +230,18 @@ final class OptinWriteTest extends TestCase
         self::assertArrayNotHasKey('placement', $wrongShape['config']);
     }
 
+    public function testFullscreenSurvivesWriteWithoutAnOverlayPlacement(): void
+    {
+        $draft = $this->create(Goal::GrowEmailList, [
+            'display_type' => 'fullscreen',
+            'placement' => 'block_start',
+        ]);
+
+        self::assertIsArray($draft);
+        self::assertSame('fullscreen', $draft['config']['display_type']);
+        self::assertArrayNotHasKey('placement', $draft['config']);
+    }
+
     /** @param mixed $options
      * @return array<string, mixed>
      */

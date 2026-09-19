@@ -250,6 +250,9 @@ export function ReadinessDialog({
                   </p>
                 </ReviewSection>
                 <ReviewSection title={__('Placement & timing', 'wconvert')}>
+                  {displayType === 'fullscreen' && (
+                    <p>{__('Fullscreen covers the page until dismissed. Check mobile sizing, page targeting and frequency; prefer a visitor action or meaningful engagement over immediate display.', 'wconvert')}</p>
+                  )}
                   {position !== null && (
                     <p>
                       <button className="wconvert-readiness__go" onClick={() => jump(onGoToDesign)}>

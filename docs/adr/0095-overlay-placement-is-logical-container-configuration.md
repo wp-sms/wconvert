@@ -21,6 +21,9 @@ existing campaign and every campaign using the common position pays no payload
 bytes. Unknown values, placements belonging to another Display Type, and every
 placement on `popup` or `inline` are also removed at the write boundary.
 
+Extended by [ADR 0098](0098-fullscreen-is-a-pro-modal-surface.md): `fullscreen`
+also never retains placement; it occupies the entire viewport.
+
 Applying another design of the same Display Type preserves placement. Changing
 Display Type resets it in the same undoable draft edit. No database schema and
 no Template JSON migration are introduced; the existing Optin configuration
@@ -62,5 +65,8 @@ no-reflow choice.
   ceiling moves from 12,288 B to 12,800 B rather than weakening reservation,
   safe-area handling, or unrelated Elite cart validation. That remains 872 B
   below the smallest measured competitor runtime in ADR 0014.
+  [ADR 0098](0098-fullscreen-is-a-pro-modal-surface.md) subsequently adds
+  fullscreen and raises that hard ceiling to 13,500 B; the above measurement
+  describes the placement-only build.
 - Popup positioning, per-device placement, arbitrary offsets, teasers and new
   Display Types remain separate decisions.

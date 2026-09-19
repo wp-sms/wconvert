@@ -324,7 +324,20 @@ function remaining(ms: number): string {
   );
 }
 
+/** Shared modal lifecycle. Pro supplies its own geometry and step decoration. */
+export interface ModalSurface {
+  styles?: Readonly<Record<string, string>>;
+  prepare?: (root: HTMLElement) => void;
+  opened?: () => void;
+  closed?: () => void;
+  lightDismiss?: boolean;
+}
+
 function popup(options: MountOptions): Mounted {
+  return mountModal(options);
+}
+
+export function mountModal(options: MountOptions, surface: ModalSurface = {}): Mounted {
   const dialog = document.createElement('dialog');
 
   // `<dialog>` and `showModal()` are Baseline since March 2022, so this is the
@@ -350,7 +363,7 @@ function popup(options: MountOptions): Mounted {
   dialog.className = 'wconvert-dialog';
   dialog.appendChild(parts.host);
 
-  for (const [property, value] of Object.entries(DIALOG_ARMOUR)) {
+  for (const [property, value] of Object.entries({ ...DIALOG_ARMOUR, ...surface.styles })) {
     dialog.style.setProperty(property, value, 'important');
   }
 
@@ -371,7 +384,7 @@ function popup(options: MountOptions): Mounted {
   // the dialog itself landed outside the panel, because the panel is inside
   // the host div and the dialog has no padding of its own.
   dialog.addEventListener('click', (event) => {
-    if (event.target === dialog) {
+    if (surface.lightDismiss !== false && event.target === dialog) {
       dialog.close();
     }
   });
@@ -385,6 +398,7 @@ function popup(options: MountOptions): Mounted {
     // EVENT rather than beside each of them. A dialog stays in the document
     // after it closes, so nothing else would ever end the interval.
     parts.stop();
+    surface.closed?.();
 
     if (dismissible) {
       options.onDismiss?.();
@@ -398,12 +412,26 @@ function popup(options: MountOptions): Mounted {
     },
     steps: options.template.tree.steps.length,
     show() {
+      surface.prepare?.(parts.root);
+      dialog.setAttribute('aria-label', parts.root.querySelector('h1,h2')?.textContent || 'Campaign');
       documentStyle();
       document.body.appendChild(dialog);
       dialog.style.setProperty('display', 'block', 'important');
-      dialog.showModal();
+      try {
+        dialog.showModal();
+        surface.opened?.();
+      } catch (error) {
+        parts.stop();
+        surface.closed?.();
+        dialog.remove();
+        throw error;
+      }
     },
-    showStep: (step) => void parts.step(step),
+    showStep(step) {
+      const root = parts.step(step);
+      surface.prepare?.(root);
+      dialog.setAttribute('aria-label', root.querySelector('h1,h2')?.textContent || 'Campaign');
+    },
     close() {
       // The four ways a visitor dismisses are one thing; closing it OURSELVES
       // is not one of them. A conversion closes the Optin and is emphatically
@@ -411,6 +439,7 @@ function popup(options: MountOptions): Mounted {
       dismissible = false;
       parts.stop();
       dialog.close();
+      surface.closed?.();
     },
   };
 }

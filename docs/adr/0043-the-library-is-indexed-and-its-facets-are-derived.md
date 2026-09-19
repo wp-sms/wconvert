@@ -143,6 +143,11 @@ static thumbnails anywhere* survives this intact. There is no `disabled` "Use
 this design", which is what wp.org Guideline 9 fires on; an admin-side link to
 your own site is what Guideline 10 explicitly welcomes.
 
+Amended by [ADR 0098](0098-fullscreen-is-a-pro-modal-surface.md): the user approved
+informational Fullscreen cards before public previews are published. An absent
+`preview_url` renders "Included in Pro", never an empty anchor, fabricated URL,
+disabled action or a premium tree inside Free.
+
 `renderingFor(availability, surface)` is reused rather than a second rule being
 invented. Templates reach `ready` or `locked` only — no site capability makes a
 *design* absent, so `unavailable` does not arise

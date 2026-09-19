@@ -16,6 +16,10 @@ area, aligned work area and matching service footer. Display (44px, 36px on
 phones), brand (26px, 22px on phones), item (15px) and result (22px) are reusable
 type roles. Compact editor title and editing-furniture roles retain their sizes.
 DM Sans is bundled locally with its OFL license, including in the Pro build.
+App and portal headings explicitly inherit that stack: WordPress's RTL
+localization stylesheet otherwise assigns Arial directly to heading elements,
+overriding the shell's inherited font. The real-WordPress visual matrix guards
+the same heading font in both directions without changing WordPress chrome.
 Each font weight has a content-hashed URL; generic main.ttf names can swap weights
 between builds while a browser still has the old file cached.
 

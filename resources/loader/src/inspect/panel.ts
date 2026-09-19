@@ -183,6 +183,10 @@ function rowOf(row: Row, labels: Labels): HTMLElement {
   summary.append(name, verdict);
   details.append(summary, gatesOf(row, labels));
 
+  if (row.browser?.displayType === 'fullscreen') {
+    details.append(note(text(labels, 'fullscreen')));
+  }
+
   const placement = row.browser === null ? null : placementOf(row.browser);
   if (placement !== null) {
     const position = el('p', 'muted');

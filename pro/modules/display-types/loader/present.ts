@@ -1,9 +1,10 @@
 import type { OptinControls, PayloadEntry, Presenter } from '@loader/types';
 import { captureInto, templatePresenter } from '@loader/present';
 import { mountPopover } from './popover';
+import { mountFullscreen } from './fullscreen';
 
 /**
- * Pro's presenter: the two Display Types free has no container for, and
+ * Pro's presenter: the three Display Types free has no container for, and
  * free's presenter for everything else.
  *
  * ============================================================================
@@ -16,7 +17,7 @@ import { mountPopover } from './popover';
  * `pro/tests/js/loader-boundary.test.ts` guards one layer up, where Pro's
  * module list must carry every free module.
  *
- * So the branch is as narrow as it can be: two Display Types are Pro's, and
+ * So the branch is as narrow as it can be: three Display Types are Pro's, and
  * the `else` is free's presenter with the entry and the controls handed
  * through untouched. Everything free's presenter knows about a popup — the
  * missing snapshot that spends no allowance, the anchor an inline Optin needs,
@@ -34,13 +35,13 @@ import { mountPopover } from './popover';
  * live on this side of the boundary either way (ADR 0025).
  *
  * **The Impression is reported on show, with no viewport to wait for.**
- * `floating_bar` and `slide_in` are overlays: they render in the top layer, so
+ * Fullscreen, floating bars and slide-ins render in the top layer, so
  * being rendered is being on screen. `inline` is the one that waits, and it is
  * free's to draw (CONTEXT.md, Impression).
  */
 export const proPresenter: Presenter = {
   show(entry: PayloadEntry, controls: OptinControls): void {
-    if (entry.display_type !== 'floating_bar' && entry.display_type !== 'slide_in') {
+    if (entry.display_type !== 'floating_bar' && entry.display_type !== 'slide_in' && entry.display_type !== 'fullscreen') {
       templatePresenter.show(entry, controls);
 
       return;
@@ -56,7 +57,7 @@ export const proPresenter: Presenter = {
       return;
     }
 
-    const mounted = mountPopover({
+    const mounted = (entry.display_type === 'fullscreen' ? mountFullscreen : mountPopover)({
       displayType: entry.display_type,
       placement: entry.placement,
       template,
@@ -74,7 +75,12 @@ export const proPresenter: Presenter = {
       return;
     }
 
-    mounted.show();
+    try {
+      mounted.show();
+    } catch {
+      mounted.close();
+      return;
+    }
 
     captureInto(mounted, entry.id, controls);
 

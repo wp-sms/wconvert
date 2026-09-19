@@ -74,6 +74,26 @@ final class ProLibraryTest extends TestCase
         $this->assertSame([], array_keys($this->library()->locked()));
     }
 
+    public function testFullscreenSetupsRegisterWithTheirProDesignsAndBasicEntitlement(): void
+    {
+        $templates = $this->library();
+        $library = \WConvert\Playbook\PlaybookLibrary::fromDirectory(
+            $templates,
+            TemplateVocabulary::fromManifest(self::FREE_DIR),
+            \WConvert\Rules\RuleVocabulary::fromManifest(self::FREE_DIR),
+            self::FREE_DIR,
+            (new \WConvert\Pro\Template\ProPlaybooks(self::PRO_DIR))->entries()
+        );
+        self::assertSame([], $library->rejections());
+        foreach (['fullscreen-newsletter', 'fullscreen-guide', 'fullscreen-announcement'] as $id) {
+            $playbook = $library->find($id);
+            self::assertNotNull($playbook);
+            self::assertSame('fullscreen', $playbook->displayType);
+            self::assertSame('basic', $templates->find($playbook->templateId)['tier']);
+            self::assertNotContains('page_load', array_column($playbook->rules, 'type'));
+        }
+    }
+
     /**
      * And the same fact from the other end. A card and the design behind it are
      * two files written months apart — the stub in free's `locked.json`, the
@@ -90,6 +110,9 @@ final class ProLibraryTest extends TestCase
         $library = $this->library();
 
         $advertised = [
+            'fullscreen-editorial',
+            'fullscreen-split',
+            'fullscreen-poster',
             'bar-announcement',
             'bar-email-capture',
             'bar-countdown',

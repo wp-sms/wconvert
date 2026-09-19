@@ -72,12 +72,33 @@ const pageView = (entries: readonly PayloadEntry[], store: Store = fakeStore()) 
   });
 
 afterEach(() => {
+  document.querySelectorAll('dialog').forEach((dialog) => dialog.close());
   document.body.innerHTML = '';
   document.getElementById(DOCUMENT_STYLE_ID)?.remove();
 });
 
 const popovers = () => document.querySelectorAll('[popover]');
 const dialogs = () => document.querySelectorAll('dialog');
+
+it('fullscreen competes for the same single overlay slot', () => {
+  const stop = pageView([
+    optin('full', 'fullscreen', 20), optin('bar', 'floating_bar', 10), optin('pop', 'popup', 1),
+  ]);
+  expect(dialogs()).toHaveLength(1);
+  expect(popovers()).toHaveLength(0);
+  expect(dialogs()[0].style.blockSize).toBe('100dvh');
+  stop();
+});
+
+it('a dismissed fullscreen uses the existing allowance and lets the next overlay compete', () => {
+  const stop = pageView(
+    [optin('full', 'fullscreen', 20), optin('bar', 'floating_bar', 1)],
+    fakeStore(JSON.stringify({ full: { i: 1, l: 20_698, d: 1 } })),
+  );
+  expect(dialogs()).toHaveLength(0);
+  expect(popovers()).toHaveLength(1);
+  stop();
+});
 
 describe('a bar and a popup, both eligible on one page view', () => {
   it('shows one overlay and not two', () => {

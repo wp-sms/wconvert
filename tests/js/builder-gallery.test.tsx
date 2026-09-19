@@ -450,6 +450,13 @@ const LOCKED = card({
 });
 
 describe('a design this install does not have', () => {
+  it('shows an informational card when its public preview is not published yet', () => {
+    grid([{ ...LOCKED, preview_url: undefined }], undefined);
+    const locked = within(cardFor('Two-column offer'));
+    expect(locked.getByText('Included in Pro')).toBeInTheDocument();
+    expect(locked.queryByRole('link')).toBeNull();
+    expect(locked.queryByRole('button')).toBeNull();
+  });
   /**
    * ==========================================================================
    * THE ASSERTION THE WHOLE TIER STORY RESTS ON.

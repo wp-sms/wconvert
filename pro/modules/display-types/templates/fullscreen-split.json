@@ -1,0 +1,119 @@
+{
+  "id": "fullscreen-split",
+  "name": "Fullscreen split",
+  "display_type": "fullscreen",
+  "tier": "basic",
+  "tokens": {
+    "bg": "#edf1ef",
+    "fg": "#153a32",
+    "muted": "#50685f",
+    "accent": "#153a32",
+    "accent-fg": "#ffffff",
+    "heading-size": "clamp(1.75rem, 4vw, 3rem)",
+    "tracking": "-0.03em",
+    "width": "56rem",
+    "gap": "1.25rem"
+  },
+  "tree": {
+    "steps": [
+      {
+        "type": "split",
+        "basis": "20rem",
+        "start": [{
+          "type": "panel",
+          "tokens": {
+            "bg": "#153a32",
+            "fg": "#ffffff",
+            "muted": "#d9e6df",
+            "pad": "2rem",
+            "radius": "0.5rem"
+          },
+          "children": [
+            {
+              "type": "eyebrow",
+              "role": "eyebrow",
+              "text": "A practical field guide",
+              "id": "n1"
+            },
+            {
+              "type": "heading",
+              "role": "headline",
+              "text": "Make room\nfor better work.",
+              "id": "n2"
+            },
+            {
+              "type": "text",
+              "role": "body",
+              "text": "Seven practical ways to organise a calmer working week.",
+              "id": "n3"
+            }
+          ]
+        }],
+        "end": [{
+          "type": "panel",
+          "tokens": {
+            "bg": "#ffffff",
+            "pad": "2rem",
+            "radius": "0.5rem"
+          },
+          "children": [
+            {
+              "type": "field",
+              "name": "email",
+              "required": true,
+              "label": "Email address",
+              "placeholder": "you@example.com",
+              "id": "n4"
+            },
+            {
+              "type": "button",
+              "role": "cta_label",
+              "label": "Request the guide",
+              "action": "submit",
+              "id": "n5"
+            },
+            {
+              "type": "consent",
+              "role": "consent_text",
+              "text": "I agree to receive these emails.",
+              "hidden": true,
+              "id": "n6"
+            },
+            {
+              "type": "text",
+              "role": "fine_print",
+              "text": "We use your details for this request. %s",
+              "size": "s",
+              "link": {
+                "label": "Privacy Policy"
+              },
+              "id": "n7"
+            }
+          ]
+        }]
+      },
+      {
+        "type": "stack",
+        "children": [
+          {
+            "type": "icon",
+            "name": "check",
+            "id": "n8"
+          },
+          {
+            "type": "heading",
+            "role": "success_headline",
+            "text": "Request received",
+            "id": "n9"
+          },
+          {
+            "type": "text",
+            "role": "success_body",
+            "text": "Thank you for your request.",
+            "id": "n10"
+          }
+        ]
+      }
+    ]
+  }
+}

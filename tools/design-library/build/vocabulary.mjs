@@ -62,6 +62,7 @@ const CHILD_KEYS = { list: ['children'], panes: ['start', 'end'] };
 
 /** Every Display Type, and the container each one is judged in. */
 const DISPLAY_TYPES = {
+  fullscreen: 'A dismissible modal filling the viewport, with internally scrolling content. **Pro.**',
   popup: 'A modal over a backdrop, centred, `min(width, 100%)` wide.',
   inline: 'In the flow of the page, where the merchant placed the block.',
   floating_bar: 'Pinned to the selected block-start or block-end edge, spanning the whole inline axis. **Pro.**',

@@ -79,3 +79,10 @@ analytics controls, 16px help icons, white dialogs and symmetric destination
 headers. The CLI suite was discovered (68 cases), but was not executed in this
 agent session; browser interactions used the available Codex browser runner.
 The complete CLI run remains a CI validation step after these commits are pushed.
+# Fullscreen Pro checks
+
+After `npm run build`, run `npx playwright test -c tools/visual-tests/fullscreen.config.mjs`.
+This starts a separate disposable WordPress with both plugins on port 9414.
+Never mount the fixture mu-plugins into a saved site. Browser tests cover native
+modal behavior and real capture; device keyboard and screen-reader release QA
+remain manual.

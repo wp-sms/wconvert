@@ -1,0 +1,60 @@
+{
+  "id": "fullscreen-poster",
+  "name": "Fullscreen poster",
+  "display_type": "fullscreen",
+  "tier": "basic",
+  "tokens": {
+    "bg": "#201c35",
+    "fg": "#ffffff",
+    "muted": "#d2cce5",
+    "accent": "#e8d4ff",
+    "accent-fg": "#201c35",
+    "heading-size": "clamp(2.5rem, 6vw, 5rem)",
+    "tracking": "-0.045em",
+    "width": "48rem",
+    "gap": "1.5rem",
+    "align": "center"
+  },
+  "tree": {
+    "steps": [
+      {
+        "type": "stack",
+        "children": [
+          {
+            "type": "eyebrow",
+            "role": "eyebrow",
+            "text": "The new collection",
+            "id": "n1"
+          },
+          {
+            "type": "heading",
+            "role": "headline",
+            "text": "A fresh perspective.",
+            "id": "n2"
+          },
+          {
+            "type": "text",
+            "role": "body",
+            "text": "Explore the latest pieces, made for everyday living.",
+            "id": "n3"
+          },
+          {
+            "type": "button",
+            "role": "cta_label",
+            "label": "Explore the collection",
+            "action": "link",
+            "href": "https://example.com/collection",
+            "id": "n4"
+          },
+          {
+            "type": "text",
+            "role": "fine_print",
+            "text": "Explore the collection for current prices and availability.",
+            "size": "s",
+            "id": "n5"
+          }
+        ]
+      }
+    ]
+  }
+}

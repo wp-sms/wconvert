@@ -163,7 +163,9 @@ ${containers}
 
     style.textContent = WConvertRenderer.SHADOW_CSS;
     root.appendChild(style);
-    root.appendChild(WConvertRenderer.render(design.tree, design.tokens, design.step));
+    var rendered = WConvertRenderer.render(design.tree, design.tokens, design.step);
+    if (design.displayType === 'fullscreen') WConvertRenderer.decorateFullscreen(rendered, design.tokens.width, 'calc(100vh - 38px)');
+    root.appendChild(rendered);
 
     box.appendChild(host);
     stage.appendChild(box);

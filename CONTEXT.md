@@ -519,7 +519,7 @@ is a manufactured time limit under WCAG SC 2.2.1, which is Level A. See
 
 ### Display Type
 
-*How* an Optin appears: `popup`, `floating_bar`, `slide_in`, or `inline`.
+*How* an Optin appears: `popup`, `floating_bar`, `slide_in`, `fullscreen`, or `inline`.
 
 Display Type is **not** the primary axis of the product. Users arrive via a
 [[Goal]], and the type is prefilled by the chosen [[Playbook]] — selectable as
@@ -530,18 +530,23 @@ names the current format and effective physical placement before the merchant
 opens the library. Inside the library, the Goal names the default fit filter;
 switching format never changes the Goal.
 
-Three of the four are **overlays** — `popup`, `floating_bar`, `slide_in` — which
+Four of the five are **overlays** — `popup`, `floating_bar`, `slide_in`, `fullscreen` — which
 compete for the visitor's screen, so at most one is shown per page view.
 `inline` is not an overlay: it renders where it was embedded and never competes.
 
-**The four are a closed set in PHP** (`src/Optin/DisplayType.php`), enforced on
+**The five are a closed set in PHP** (`src/Optin/DisplayType.php`), enforced on
 the way in like every other closed vocabulary, and `popup` is what absence means
 on both sides — the renderer mounts an entry with no Display Type as a popup and
 the loader reads anything that is not `inline` as an overlay. So a value nothing
 recognises is dropped at the write rather than shipped to a page that cannot
-place it. Two of the four are [[Pro]]'s in practice, but the enum says nothing
-about tier: a free install simply has no floating-bar or slide-in design to
+place it. Three of the five are [[Pro]]'s in practice, but the enum says nothing
+about tier: a free install simply has no fullscreen, floating-bar or slide-in design to
 name.
+
+Fullscreen is a viewport-filling modal, not a new Goal or a scrolling welcome
+mat. All paid tiers supply it. Its container owns safe-area padding, scrolling,
+focus and dismissal; `width` remains the content measure. Existing Template
+JSON needs no new token or schema. See [ADR 0098](docs/adr/0098-fullscreen-is-a-pro-modal-surface.md).
 
 ### Overlay Placement
 

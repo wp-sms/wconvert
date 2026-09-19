@@ -2,6 +2,12 @@
 
 One PHP file per entry, each `return`ing an array.
 
+Setups whose default design is supplied by Pro live under
+`pro/modules/<module>/playbooks/`, beside that module's templates. Pro composes
+them through the additional-entries seam, retaining installed pack entries.
+Do not put them here: Free cannot register a setup against a metadata-only
+locked card (ADR 0098).
+
 **PHP rather than JSON, and that is the whole reason this directory is not
 `resources/playbooks/*.json` beside `resources/templates/library/*.json`.** A
 [[Playbook]] supplies visible words, and `wp i18n make-pot` cannot see a JSON

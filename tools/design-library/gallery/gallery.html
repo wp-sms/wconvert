@@ -438,6 +438,7 @@
       // a one-line bar then floated in twice its own height of blank grid.
       inline: { w: 760, min: 0 },
       popup: { w: 620, min: 0 },
+      fullscreen: { w: 760, min: 512 },
     };
 
     function stageFor(design) {
@@ -481,7 +482,9 @@
 
       var step = Math.min(state.step, design.tree.steps.length - 1);
 
-      root.appendChild(WConvertRenderer.render(design.tree, design.tokens || {}, step));
+      var rendered = WConvertRenderer.render(design.tree, design.tokens || {}, step);
+      if (design.display_type === 'fullscreen') WConvertRenderer.decorateFullscreen(rendered, (design.tokens || {}).width, '32rem');
+      root.appendChild(rendered);
 
       box.appendChild(host);
       scale.appendChild(box);

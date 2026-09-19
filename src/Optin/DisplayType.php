@@ -5,7 +5,7 @@ namespace WConvert\Optin;
 defined('ABSPATH') || exit;
 
 /**
- * How an [[Optin]] arrives on the page — the four containers, closed.
+ * How an [[Optin]] arrives on the page — five Display Types, closed.
  *
  * ============================================================================
  * THE ONE PAYLOAD KEY THAT REACHED THE BROWSER WITHOUT BEING VALIDATED.
@@ -32,8 +32,8 @@ defined('ABSPATH') || exit;
  * ============================================================================
  * TIER IS NOT DECLARED HERE, AND THAT IS DELIBERATE.
  * ============================================================================
- * Two of these four are [[Pro]]'s: a free install ships no floating-bar or
- * slide-in TREE, only the locked card that advertises one
+ * Three of these five are [[Pro]]'s: a free install ships no fullscreen,
+ * floating-bar or slide-in TREE, only the locked card that advertises one
  * ({@see \WConvert\Template\LockedTemplates}). Putting `tier` beside each case
  * would be a second entitlement list to keep in step with the library, and
  * ADR 0015 answers "can this install do it" by which code registered rather
@@ -62,6 +62,9 @@ enum DisplayType: string
 
     /** Enters from a corner. Pro supplies the designs. */
     case SlideIn = 'slide_in';
+
+    /** A modal covering the viewport. Pro supplies the container and designs. */
+    case Fullscreen = 'fullscreen';
 
     /**
      * The stored spelling of a Display Type, or null where the value is not
