@@ -583,6 +583,14 @@ body:has(#wconvert-admin) #wpbody-content {
   cursor: pointer;
 }
 
+/* WordPress's l10n.css assigns Arial directly to RTL headings. Restate
+ * inheritance on our headings so the shell/portal font reaches them too;
+ * leave the surrounding WordPress toolbar and menu untouched. */
+:is(#wconvert-admin, [data-radix-popper-content-wrapper], [data-slot="dialog-content"], [data-slot="alert-dialog-content"])
+  :is(h1, h2, h3, h4, h5, h6) {
+  font-family: inherit;
+}
+
 /*
  * wp-admin's toolbar sits at z-index 99999, which is the number these have to
  * clear. A confirm dialog that opens behind the toolbar is a confirm dialog a
