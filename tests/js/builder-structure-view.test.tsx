@@ -207,7 +207,7 @@ async function structure() {
  */
 async function designLook() {
   render(<OptinBuilder id={ID} onClose={vi.fn()} />);
-  await screen.findByRole('button', { name: 'Change design or format' });
+  await screen.findByRole('button', { name: 'Browse designs and formats' });
 }
 
 /**

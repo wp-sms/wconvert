@@ -1,4 +1,5 @@
 import { __ } from '@wordpress/i18n';
+import { displayTypeDescription } from '../displayTypes';
 import { entriesOn } from '../builder/rules/axis';
 import { howOftenSummary, whenSummary, whoSummary } from '../builder/rules/sentence';
 import { targetingSummary } from '../builder/rules/targetingSummary';
@@ -6,15 +7,6 @@ import { convertingActOf } from '../builder/structure/guards';
 import { nodesOf } from '../builder/structure/tree';
 import type { RuleVocabulary } from '../builder/api';
 import type { GoalEntry, PlaybookEntry } from './api';
-
-function placementOf(displayType: string): string {
-  return ({
-    popup: __('Popup over the page', 'wconvert'),
-    inline: __('Inside the page', 'wconvert'),
-    floating_bar: __('Bar at the page edge', 'wconvert'),
-    slide_in: __('Panel in a page corner', 'wconvert'),
-  } as Record<string, string>)[displayType] ?? displayType;
-}
 
 /** Only the differences needed to choose; the full setup is available on demand. */
 export function StartingPointSummary({ playbook, vocabulary }: {
@@ -26,7 +18,7 @@ export function StartingPointSummary({ playbook, vocabulary }: {
     : playbook.setup && vocabulary ? whenSummary(entriesOn(playbook.setup.rules ?? [], vocabulary.triggers),
       [...vocabulary.targeting, ...vocabulary.triggers, ...vocabulary.conditions]).text : null;
   return <p className="m-0 text-note text-muted-foreground">
-    <span>{placementOf(displayType)}</span>{timing && <> · {timing}</>}
+    <span>{displayTypeDescription(displayType)}</span>{timing && <> · {timing}</>}
   </p>;
 }
 
@@ -39,7 +31,7 @@ export function StartingPointFacts({ playbook, goal, vocabulary }: {
   const setup = playbook.setup;
   const action = playbook.template ? convertingActOf(playbook.template.tree)[0] : goal.outcome.action;
   const displayType = setup?.display_type ?? playbook.display_type;
-  const placement = placementOf(displayType);
+  const placement = displayTypeDescription(displayType);
   const facts: { label: string; text: string }[] = [
     { label: __('Counts', 'wconvert'), text: goal.headline_label },
     { label: __('Visitor action', 'wconvert'), text: action === 'submit'

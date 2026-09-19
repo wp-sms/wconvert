@@ -4,6 +4,7 @@ import { ArrowLeft, Monitor, Smartphone } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 import { Skeleton } from '../components/ui/skeleton';
+import { displayTypeLabel } from '../displayTypes';
 import { Preview } from './Preview';
 import { A_DESIGNS_OWN_WIDTH } from '@renderer/css';
 import { actChangeOf, refusalFor, type Fit } from './Gallery';
@@ -21,6 +22,7 @@ export interface TemplateDesignDetailProps {
   readonly currentDisplayType?: string;
   readonly active?: boolean;
   readonly fit: Fit;
+  readonly goalLabel?: string;
   readonly busy: boolean;
   readonly onChoose: (id: string, prepared?: Template) => void;
   readonly onPrepare?: PrepareDesign;
@@ -34,7 +36,7 @@ const DESKTOP_CONTENT_WIDTH = '64rem';
 
 /** Inspect the exact normalized candidate before replacing the working draft. */
 export function TemplateDesignDetail({
-  entry, template: sample, labels, current, currentDisplayType, fit, busy, onChoose, onPrepare, onBack, loadError = false, onRetry, active = true,
+  entry, template: sample, labels, current, currentDisplayType, fit, goalLabel, busy, onChoose, onPrepare, onBack, loadError = false, onRetry, active = true,
 }: TemplateDesignDetailProps) {
   const [mode, setMode] = useState<TemplateContentMode>('keep');
   const [attempt, setAttempt] = useState(0);
@@ -110,6 +112,32 @@ export function TemplateDesignDetail({
   const unavailable = entry.availability !== 'ready';
   const isCurrent = current && !(prepares && mode === 'sample');
   const cannotApply = !active || isCurrent || refused !== null || unavailable || template === undefined;
+  const changesFormat = currentDisplayType !== undefined && entry.display_type !== currentDisplayType;
+  const fromFormat = displayTypeLabel(currentDisplayType);
+  const toFormat = displayTypeLabel(entry.display_type);
+  const formatNotice = !changesFormat ? null : goalLabel
+    ? entry.display_type === 'inline'
+      ? sprintf(
+          /* translators: 1: current format, 2: new format, 3: campaign goal. */
+          __('Changes this campaign from %1$s to %2$s. Its Goal remains “%3$s”. Place its block or shortcode before publishing.', 'wconvert'),
+          fromFormat, toFormat, goalLabel,
+        )
+      : sprintf(
+          /* translators: 1: current format, 2: new format, 3: campaign goal. */
+          __('Changes this campaign from %1$s to %2$s. Its Goal remains “%3$s”. Any saved position resets to the new format’s default; review display rules before publishing.', 'wconvert'),
+          fromFormat, toFormat, goalLabel,
+        )
+    : entry.display_type === 'inline'
+      ? sprintf(
+          /* translators: 1: current format, 2: new format. */
+          __('Changes this campaign from %1$s to %2$s. Place its block or shortcode before publishing.', 'wconvert'),
+          fromFormat, toFormat,
+        )
+      : sprintf(
+          /* translators: 1: current format, 2: new format. */
+          __('Changes this campaign from %1$s to %2$s. Any saved position resets to the new format’s default; review display rules before publishing.', 'wconvert'),
+          fromFormat, toFormat,
+        );
   const fieldNames = entry.facets.captures.map((field) =>
     labels.fields?.[field] ?? labels.facetValues[`captures.${field}`] ?? field,
   );
@@ -118,7 +146,7 @@ export function TemplateDesignDetail({
     isCurrent ? `${id}-current` : null,
     refused !== null ? `${id}-refusal` : null,
     changed !== null ? `${id}-change` : null,
-    currentDisplayType !== undefined && entry.display_type !== currentDisplayType ? `${id}-format` : null,
+    changesFormat ? `${id}-format` : null,
     template === undefined ? `${id}-load` : null,
     unavailable ? `${id}-unavailable` : null,
   ].filter(Boolean).join(' ');
@@ -220,11 +248,7 @@ export function TemplateDesignDetail({
             </div>
           )}
           <div className="wconvert-design-detail__actions">
-            {currentDisplayType !== undefined && entry.display_type !== currentDisplayType && <p id={`${id}-format`} className="text-note text-warning">
-              {entry.display_type === 'inline'
-                ? __('Changes this campaign to Inline. Place its block or shortcode on a page before publishing.', 'wconvert')
-                : __('Changes this campaign’s format. Review display rules before publishing.', 'wconvert')}
-            </p>}
+            {formatNotice && <p id={`${id}-format`} className="text-note text-warning">{formatNotice}</p>}
             <p id={`${id}-replacement`} className="text-note text-muted-foreground">
               {prepares && mode === 'sample'
                 ? __('Replaces the layout and content in your draft with the preview shown here. Undo restores your previous draft.', 'wconvert')
@@ -235,7 +259,11 @@ export function TemplateDesignDetail({
             {unavailable && <p id={`${id}-unavailable`} className="text-note text-muted-foreground">{__('This design is not installed here.', 'wconvert')}</p>}
             <Button disabled={busy} aria-disabled={cannotApply} aria-describedby={describedBy}
               onClick={cannotApply || busy ? undefined : () => prepares ? onChoose(entry.id, { tree: template.tree, tokens: template.tokens }) : onChoose(entry.id)}>
-              {busy ? __('Applying design…', 'wconvert') : isCurrent ? __('Current design', 'wconvert') : __('Use this design', 'wconvert')}
+              {busy ? __('Applying design…', 'wconvert')
+                : isCurrent ? __('Current design', 'wconvert')
+                : changesFormat
+                  ? sprintf(/* translators: %s: new campaign format. */ __('Switch to %s', 'wconvert'), toFormat)
+                  : __('Use this design', 'wconvert')}
             </Button>
           </div>
         </div>

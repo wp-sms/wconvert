@@ -4,14 +4,10 @@ import { ArrowLeft, ArrowRight, Check, Download, Monitor, Smartphone } from 'luc
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 import { Preview } from '../builder/Preview';
+import { displayTypeLabel } from '../displayTypes';
 import { A_DESIGNS_OWN_WIDTH } from '@renderer/css';
 import type { TemplateEntry } from './api';
 import type { PackPreview } from './catalog';
-
-const formatName = (type: string) => ({
-  popup: __('Popup', 'wconvert'), inline: __('Inline', 'wconvert'),
-  floating_bar: __('Floating bar', 'wconvert'), slide_in: __('Slide-in', 'wconvert'),
-})[type] ?? type;
 
 export function TemplatePackDetail({ pack, displayType, installedVersion, busy, installing, error, onBack, onInstall, onContinue, goal, onChooseStartingPoints }: {
   pack: PackPreview;
@@ -41,7 +37,7 @@ export function TemplatePackDetail({ pack, displayType, installedVersion, busy, 
   const relevantStarts = starts.filter((entry) => entry.goal === goal);
   const matching = pack.templates.filter((entry) => entry.display_type === displayType).length;
   const groups = [
-    { title: creating ? __('Included designs', 'wconvert') : sprintf(__('For your %s draft', 'wconvert'), formatName(displayType)), matches: true },
+    { title: creating ? __('Included designs', 'wconvert') : sprintf(__('For your %s draft', 'wconvert'), displayTypeLabel(displayType)), matches: true },
     { title: __('Other formats', 'wconvert'), matches: false },
   ].map((group) => ({ ...group, entries: pack.templates.map((entry, index) => ({ entry, index }))
     .filter(({ entry }) => (creating || entry.display_type === displayType) === group.matches) }));
@@ -67,7 +63,7 @@ export function TemplatePackDetail({ pack, displayType, installedVersion, busy, 
             {group.entries.map(({ entry, index }) => <button type="button" key={entry.id} className="wconvert-pack-design"
               aria-pressed={design === index} disabled={busy} onClick={() => { setDesign(index); setStep(0); }}>
               <span className="wconvert-pack-design__name">{entry.name}{design === index && <Check size={15} aria-hidden="true" />}</span>
-              <span className="wconvert-pack-design__meta">{formatName(entry.display_type)}<span aria-hidden="true"> · </span>
+              <span className="wconvert-pack-design__meta">{displayTypeLabel(entry.display_type)}<span aria-hidden="true"> · </span>
                 {entry.tree.steps.length > 1 ? __('Form + success', 'wconvert') : __('Single screen', 'wconvert')}</span>
             </button>)}
           </div>;
@@ -79,7 +75,7 @@ export function TemplatePackDetail({ pack, displayType, installedVersion, busy, 
           <select id={designSelect} value={design} disabled={busy} onChange={(event) => { setDesign(Number(event.target.value)); setStep(0); }}>
             {groups.map((group) => {
               return group.entries.length > 0 && <optgroup key={group.title} label={group.title}>
-                {group.entries.map(({ entry, index }) => <option key={entry.id} value={index}>{entry.name} · {formatName(entry.display_type)}</option>)}
+                {group.entries.map(({ entry, index }) => <option key={entry.id} value={index}>{entry.name} · {displayTypeLabel(entry.display_type)}</option>)}
               </optgroup>;
             })}
           </select>
@@ -120,9 +116,9 @@ export function TemplatePackDetail({ pack, displayType, installedVersion, busy, 
           {!(installed && compatible) && <p className="font-medium">{installed ? __('This design uses a different format', 'wconvert') : installedVersion ? __('Update this collection', 'wconvert') : __('Add this collection to your library', 'wconvert')}</p>}
           <p className="text-sm text-muted-foreground">{installed ? compatible
             ? __('Next, choose your content and review the design before applying.', 'wconvert')
-            : sprintf(__('Open a draft in %1$s format to use this design. Your current draft is %2$s.', 'wconvert'), formatName(template.display_type), formatName(displayType))
+            : sprintf(__('Open a draft in %1$s format to use this design. Your current draft is %2$s.', 'wconvert'), displayTypeLabel(template.display_type), displayTypeLabel(displayType))
             : creating && relevantStarts.length === 0 ? __('This pack has no campaign setups for your selected goal. Install it to use its designs in the editor.', 'wconvert')
-              : !creating && matching === 0 ? sprintf(__('This pack has no %s designs. Install it to use in other draft formats.', 'wconvert'), formatName(displayType))
+              : !creating && matching === 0 ? sprintf(__('This pack has no %s designs. Install it to use in other draft formats.', 'wconvert'), displayTypeLabel(displayType))
               : sprintf(_n('Adds %d design. Existing drafts stay unchanged.', 'Adds all %d designs. Existing drafts stay unchanged.', count, 'wconvert'), count)}</p>
         </div>
         {installed ? compatible && <Button disabled={busy} onClick={() => onContinue(template.id)}>

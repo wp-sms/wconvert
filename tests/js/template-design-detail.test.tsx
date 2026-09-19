@@ -61,10 +61,15 @@ describe('inspecting a design before replacing the draft', () => {
   });
 
   it('explains a format change beside Apply, including inline placement', () => {
-    const { onChoose } = detail({ entry: { ...ENTRY, display_type: 'inline' }, currentDisplayType: 'popup' });
-    const warning = screen.getByText('Changes this campaign to Inline. Place its block or shortcode on a page before publishing.');
+    const { onChoose } = detail({
+      entry: { ...ENTRY, display_type: 'inline' },
+      currentDisplayType: 'popup',
+      goalLabel: 'Grow my email list',
+    });
+    const warning = screen.getByText('Changes this campaign from Popup to Inline form. Its Goal remains “Grow my email list”. Place its block or shortcode before publishing.');
     expect(warning).toBeVisible();
-    expect(screen.getByRole('button', { name: 'Use this design' })).toHaveAttribute('aria-describedby', expect.stringContaining(warning.id));
+    expect(screen.getByRole('button', { name: 'Switch to Inline form' }))
+      .toHaveAttribute('aria-describedby', expect.stringContaining(warning.id));
     expect(onChoose).not.toHaveBeenCalled();
   });
 

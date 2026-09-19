@@ -1,10 +1,12 @@
 import type { Ref } from 'react';
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import { LayoutTemplate } from 'lucide-react';
 import { Button } from '../components/ui/button';
+import { displayTypeDescription, displayTypeLabel } from '../displayTypes';
+import { useDirection } from '../hooks/useDirection';
 import { Themes, Tokens } from './Tokens';
 import { Preview } from './Preview';
-import { PlacementControl } from './PlacementControl';
+import { physicalPlacementLabel, PlacementControl } from './PlacementControl';
 import type { TemplateLabels } from '../templates/api';
 import type { Template, Tokens as TokenBag } from '@renderer/types';
 
@@ -39,20 +41,25 @@ export function DesignSettings({
   placement?: unknown;
   onPlacementChange?: (placement: string | null) => void;
 }) {
+  const direction = useDirection();
+  const position = physicalPlacementLabel(displayType, placement, direction);
+
   return (
     <div className="wconvert-design-settings">
       <div className="wconvert-design-card">
         <div className="wconvert-design-card__image" aria-hidden="true">
           <Preview template={template} />
         </div>
-        <div>
-          <strong>{name}</strong>
-          <span>{__('Applies to both screens', 'wconvert')}</span>
+        <div className="wconvert-design-card__facts">
+          <span className="wconvert-design-card__eyebrow">{__('How it appears', 'wconvert')}</span>
+          <strong>{displayTypeLabel(displayType)}</strong>
+          <span>{displayTypeDescription(displayType)}{position ? ` · ${position}` : ''}</span>
+          <span>{sprintf(/* translators: %s: design name. */ __('Design: %s', 'wconvert'), name)}</span>
         </div>
       </div>
       <Button ref={browseRef} variant="outline" onClick={onBrowse}>
         <LayoutTemplate aria-hidden="true" />
-        {__('Change design or format', 'wconvert')}
+        {__('Browse designs and formats', 'wconvert')}
       </Button>
       <PlacementControl displayType={displayType} value={placement} onChange={onPlacementChange} />
       {mobile && (
