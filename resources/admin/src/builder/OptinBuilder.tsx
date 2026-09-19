@@ -475,9 +475,9 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
 
   const prepareDesign = useCallback((picked: string, mode: 'keep' | 'sample', sample: Template) =>
     mode === 'sample'
-      ? prepareTemplate(picked, { tree: sample.tree, tokens: sample.tokens }, picked)
-      : prepareTemplate(picked, template ?? { tree: { steps: [] }, tokens: {} }, templateId),
-  [template, templateId]);
+      ? prepareTemplate(picked, { tree: sample.tree, tokens: sample.tokens }, picked, goal ?? undefined)
+      : prepareTemplate(picked, template ?? { tree: { steps: [] }, tokens: {} }, templateId, goal ?? undefined),
+  [template, templateId, goal]);
 
   const stepping = useCallback(
     (move: (held: History<DraftSnapshot>) => History<DraftSnapshot>) => () => {

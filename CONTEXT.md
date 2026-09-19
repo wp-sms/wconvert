@@ -107,12 +107,16 @@ external copies. See
 [ADR 0094](docs/adr/0094-privacy-guidance-reports-the-current-data-flow.md).
 
 Privacy Guidance is a site-wide authoring preference, on by default. It adds
-short purpose-specific policy notices to new Campaign setups and checks them in
-the editor's readiness review. Turning it off removes that automatic help only
-from future drafts; existing Campaign snapshots, manual controls, export,
-erasure, retention, Consent Records, the Data Map and WordPress policy tools do
-not change. See
-[ADR 0096](docs/adr/0096-privacy-authoring-help-is-progressive-and-snapshotted.md).
+short purpose-specific privacy defaults to new Campaign setups and checks them
+in the editor's readiness review. A form used for one request starts with a
+policy notice; a Campaign growing an ongoing email or SMS list also starts with
+explicit consent visible; a click-only Campaign has neither because it captures
+no visitor data. The Goal's outcome decides this, never the chosen Template.
+Turning guidance off removes that automatic help only from future drafts;
+existing Campaign snapshots, manual controls, export, erasure, retention,
+Consent Records, the Data Map and WordPress policy tools do not change. See
+[ADR 0096](docs/adr/0096-privacy-authoring-help-is-progressive-and-snapshotted.md)
+and [ADR 0099](docs/adr/0099-privacy-defaults-follow-campaign-purpose.md).
 
 ### Analytics impact
 
@@ -767,6 +771,12 @@ candidate, changes only the draft, and is undoable. Sample offers and links stil
 need review. A new Playbook draft continues to use its own copy, not those samples
 ([ADR 0075](docs/adr/0075-draft-history-and-template-content-choices-stay-predictable.md)).
 
+A submit Template also supplies a hidden consent control as a capability, not a
+decision that the Campaign needs it. With Privacy Guidance on, Campaign setup
+reveals that control for ongoing marketing Goals and keeps it hidden for
+one-time requests. Choosing another Template reapplies the same purpose-based
+starting point; the design never acquires a Goal tag (ADR 0099).
+
 > **"How it is styled" has a scope.** The design sets its tokens for the
 > whole of itself, and **layouts and leaves may re-declare the same names for their own appearance** by carrying a `tokens` bag of its own — which is how one design
 > holds a cream panel beside a dark one, or gives the form a different ground
@@ -1003,6 +1013,13 @@ than the Template's sample content (ADR 0081).
 Because copy is snapshotted separately from design, a Playbook keys its words to
 [[Slot Role]]s rather than to one Template's structure — so the words survive
 switching Template, and a Playbook is not married to a single design.
+
+Privacy visibility follows the Goal's outcome at that same snapshot boundary.
+Playbooks for ongoing email or SMS lists supply explicit `consent_text` and
+start with the Template's consent control visible. One-time enquiries and lead
+magnet delivery start with their policy notice only; click-only setups capture
+nothing. These are editable defaults, not a legal-basis decision or a publish
+gate (ADR 0099).
 
 Choice content follows the same seam: `interest_options` holds a named
 `{options: [{value, label}]}` wrapper. The labels are translated words; the

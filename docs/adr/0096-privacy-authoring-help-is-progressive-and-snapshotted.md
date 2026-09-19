@@ -10,12 +10,13 @@ drafts and the editor; it does not disable personal-data export or erasure,
 retention, Consent Records, WordPress's privacy-policy suggestion, or the
 read-only Data Map from [ADR 0094](0094-privacy-guidance-reports-the-current-data-flow.md).
 
-## The preference applies at the Playbook boundary
+## The preference applies at Campaign snapshot boundaries
 
 A Playbook is copied into an editable Optin snapshot. Privacy guidance is
-applied during that prefill operation and nowhere later, so changing the site
-preference affects only Campaigns created afterwards. Existing drafts and
-published Campaigns keep the words and controls the merchant already reviewed.
+applied during that prefill operation and when the merchant explicitly chooses
+another Template. Changing the site preference does not rewrite an existing
+draft or published Campaign; it only affects a newly created setup or the new
+design the merchant deliberately applies.
 
 When guidance is off, a new setup omits the Playbook's automatic consent copy
 and policy-linked fine print. Repeated fine-print roles keep their positions so
@@ -48,6 +49,11 @@ review points to WordPress's existing policy setting.
 
 With guidance off, that review section is absent. The Campaign editor is
 simpler, while manual design controls and all operational privacy tools remain.
+
+*Extended by [ADR 0099](0099-privacy-defaults-follow-campaign-purpose.md): the
+Goal's outcome decides whether a new setup shows notice only, notice plus
+explicit consent, or no form privacy UI. Template choice does not decide the
+Campaign's purpose.*
 
 ## Consequences
 

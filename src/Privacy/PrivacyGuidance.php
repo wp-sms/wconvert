@@ -2,7 +2,9 @@
 
 namespace WConvert\Privacy;
 
+use WConvert\Goal\Goal;
 use WConvert\Storage\OptionStore;
+use WConvert\Template\TemplateTree;
 
 defined('ABSPATH') || exit;
 
@@ -83,6 +85,50 @@ final class PrivacyGuidance
         }
 
         return $copy;
+    }
+
+    /**
+     * Apply the Goal's privacy starting point to a newly selected design.
+     *
+     * The Template only supplies the control; the Campaign purpose decides
+     * whether that control starts visible. Ongoing email and SMS lists show
+     * explicit consent. One-time requests keep the same control available in
+     * the editor but hidden, and click-only designs have no such node to edit.
+     *
+     * This runs only at a draft's existing snapshot boundaries. It never
+     * changes an already saved Campaign behind the merchant's back.
+     *
+     * @param array<string, mixed> $tree
+     * @return array<string, mixed>
+     */
+    public function treeFor(array $tree, Goal $goal): array
+    {
+        if (!$this->enabled()) {
+            return $tree;
+        }
+
+        $showConsent = $goal->outcome()->audienceChannel !== null;
+        $payload = TemplateTree::rewrittenIn(
+            ['template' => ['tree' => $tree]],
+            static function (array $node) use ($showConsent): array {
+                if (($node['type'] ?? null) !== 'consent') {
+                    return $node;
+                }
+
+                // A third-party starting point may omit consent wording. Do
+                // not reveal a blank required checkbox merely because its Goal
+                // grows a list; the publish review will point that omission out.
+                $hasWords = is_string($node['text'] ?? null) && trim($node['text']) !== '';
+                $node['hidden'] = !$showConsent || !$hasWords;
+
+                return $node;
+            }
+        );
+
+        /** @var array<string, mixed> $rewritten */
+        $rewritten = $payload['template']['tree'];
+
+        return $rewritten;
     }
 
     /** @param mixed $words */

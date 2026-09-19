@@ -506,7 +506,7 @@ describe('the builder shell', () => {
     const current = picker.getByRole('button', { name: 'Current design' });
     expect(current).toHaveAttribute('aria-disabled', 'true');
     expect(current).toHaveAccessibleDescription(/Replaces your draft’s layout.*Undo restores your previous draft/);
-    expect(templates.prepareTemplate).toHaveBeenCalledWith(ENTRY.id, { tree: ENTRY.tree, tokens: ENTRY.tokens }, ENTRY.id);
+    expect(templates.prepareTemplate).toHaveBeenCalledWith(ENTRY.id, { tree: ENTRY.tree, tokens: ENTRY.tokens }, ENTRY.id, GOAL.id);
     expect(builder.saveOptin).not.toHaveBeenCalled();
   });
 
@@ -1466,10 +1466,10 @@ describe('changing templates in the draft', () => {
     expect(picker.getByRole('heading', { name: ALTERNATE.name })).toHaveFocus();
     await userEvent.click(picker.getByRole('button', { name: 'Mobile' }));
     await userEvent.click(picker.getByRole('button', { name: 'Success screen' }));
-    expect(templates.prepareTemplate).toHaveBeenCalledExactlyOnceWith(ALTERNATE.id, { tree: ENTRY.tree, tokens: ENTRY.tokens }, ENTRY.id);
+    expect(templates.prepareTemplate).toHaveBeenCalledExactlyOnceWith(ALTERNATE.id, { tree: ENTRY.tree, tokens: ENTRY.tokens }, ENTRY.id, GOAL.id);
     expect(builder.saveOptin).not.toHaveBeenCalled();
     await userEvent.click(picker.getByRole('button', { name: 'Use this design' }));
-    await waitFor(() => expect(templates.prepareTemplate).toHaveBeenCalledWith(ALTERNATE.id, { tree: ENTRY.tree, tokens: ENTRY.tokens }, ENTRY.id));
+    await waitFor(() => expect(templates.prepareTemplate).toHaveBeenCalledWith(ALTERNATE.id, { tree: ENTRY.tree, tokens: ENTRY.tokens }, ENTRY.id, GOAL.id));
     expect(builder.saveOptin).not.toHaveBeenCalled();
     await waitFor(() => expect(screen.getByRole('button', { name: 'Undo draft edit' })).toBeEnabled());
     await waitFor(() => expect(screen.getByRole('button', { name: 'Browse designs and formats' })).toHaveFocus());
@@ -1499,7 +1499,7 @@ describe('changing templates in the draft', () => {
     await userEvent.click(picker.getByRole('radio', { name: /Use this design's sample content/ }));
     await waitFor(() => expect(picker.getByRole('button', { name: 'Use this design' })).toHaveAttribute('aria-disabled', 'false'));
     expect(templates.prepareTemplate).toHaveBeenLastCalledWith(ALTERNATE.id,
-      { tree: ALTERNATE.tree, tokens: ALTERNATE.tokens }, ALTERNATE.id);
+      { tree: ALTERNATE.tree, tokens: ALTERNATE.tokens }, ALTERNATE.id, GOAL.id);
     await userEvent.click(picker.getByRole('button', { name: 'Use this design' }));
     expect(templates.prepareTemplate).toHaveBeenCalledTimes(2);
     await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));

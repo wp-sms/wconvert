@@ -5,9 +5,8 @@
  *
  * The third entry under this [[Goal]] and the only one that asks for two
  * things. That costs conversions and is worth it in exactly one case: when the
- * thing being delivered is addressed to a person and the follow-up sequence
- * uses the name. If a merchant is not going to use it, they should start from
- * `guide-download` instead, and the notes say so.
+ * thing being delivered is addressed to a person. If a merchant will not use
+ * it in that delivery, they should start from `guide-download` instead.
  *
  * Twenty seconds rather than `guide-download`'s scroll Trigger, because the two
  * are answering different questions about the same visitor: scroll asks *how
@@ -22,7 +21,7 @@ return [
     'name' => __('Download with name and email', 'wconvert'),
     'goal' => 'deliver_lead_magnet',
     'template_id' => 'name-and-email',
-    'notes' => __('Asks for a first name as well as an address. Only pick this if you will use the name in the delivery email or follow-ups. Configure a delivery destination and add the guide before publishing.', 'wconvert'),
+    'notes' => __('Asks for a first name as well as an address. Only pick this if you will use the name in the delivery email. Configure a delivery destination and add the guide before publishing.', 'wconvert'),
     'copy' => [
         'headline' => __('The forty-page guide, free', 'wconvert'),
         'body' => __('Everything we know about getting started, in one PDF.', 'wconvert'),
@@ -33,7 +32,7 @@ return [
         'cta_label' => __('Send me the guide', 'wconvert'),
         'fine_print' => [
             /* translators: %s: the label of a link to the site's privacy policy. */
-            'text' => __('The guide and occasional emails. %s', 'wconvert'),
+            'text' => __('One guide email. No newsletter. %s', 'wconvert'),
             'link' => ['label' => __('Privacy Policy', 'wconvert')],
         ],
         'success_headline' => __('Request received', 'wconvert'),

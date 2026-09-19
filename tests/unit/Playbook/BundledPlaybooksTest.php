@@ -136,6 +136,19 @@ final class BundledPlaybooksTest extends TestCase
         }
     }
 
+    public function testEveryBundledMarketingListProvidesExplicitConsentWording(): void
+    {
+        foreach ([Goal::GrowEmailList, Goal::GrowSmsList] as $goal) {
+            foreach (self::library()->servicing($goal) as $playbook) {
+                $this->assertArrayHasKey(
+                    'consent_text',
+                    $playbook->copy,
+                    "{$playbook->id} cannot show the consent its Goal expects"
+                );
+            }
+        }
+    }
+
     /**
      * **The CTA carries a label and no destination**, which is how a generic
      * entry asks the site for the one thing it cannot know. The way back to

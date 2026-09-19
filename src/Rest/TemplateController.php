@@ -2,6 +2,8 @@
 
 namespace WConvert\Rest;
 
+use WConvert\Goal\Goal;
+use WConvert\Privacy\PrivacyGuidance;
 use WConvert\Support\Availability;
 use WConvert\Support\ProPresence;
 use WConvert\Support\Tier;
@@ -66,6 +68,7 @@ final class TemplateController implements RestController
         private readonly TemplateLibrary $templates,
         private readonly TemplateVocabulary $vocabulary,
         private readonly ProPresence $pro,
+        private readonly ?PrivacyGuidance $privacyGuidance = null,
     ) {
     }
 
@@ -75,10 +78,11 @@ final class TemplateController implements RestController
             'methods' => 'POST',
             'callback' => [$this, 'snapshot'],
             'permission_callback' => [Routes::class, 'canManage'],
-            'args' => [
-                'id' => ['type' => 'string', 'required' => true],
-                'source' => ['type' => 'string'],
-                'template' => ['type' => 'object', 'default' => []],
+                'args' => [
+                    'id' => ['type' => 'string', 'required' => true],
+                    'source' => ['type' => 'string'],
+                    'goal' => ['type' => 'string'],
+                    'template' => ['type' => 'object', 'default' => []],
             ],
         ]);
 
@@ -197,6 +201,14 @@ final class TemplateController implements RestController
             'template_id' => $id,
             'template' => $this->vocabulary->normalize($request->get_param('template')),
         ], is_string($source) ? $source : null);
+
+        $goal = Goal::tryFrom((string) $request->get_param('goal'));
+        if ($goal !== null && $this->privacyGuidance !== null) {
+            $config['template']['tree'] = $this->privacyGuidance->treeFor(
+                $config['template']['tree'] ?? [],
+                $goal
+            );
+        }
 
         $transfer = PictureTransfer::prepare(
             $this->vocabulary->normalize($request->get_param('template')),

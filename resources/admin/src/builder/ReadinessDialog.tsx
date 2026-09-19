@@ -104,14 +104,17 @@ export function ReadinessDialog({
   const summaries = summarise(rules, vocabulary, overlay, template ? convertingActOf(template.tree)[0] : undefined);
   const hasDesign = template !== undefined && template.tree.steps.length > 0;
   const captures = hasDesign ? capturesTaken(template.tree) : [];
+  const outcome = goal.status === 'ready' ? goal.data?.outcome : undefined;
   const privacyPath = template ? visiblePolicyLinkIn(template, policyUrl) : null;
-  const consentPath = template ? visibleConsentIn(template) : null;
+  const consentPath = template ? consentIn(template) : null;
+  const visibleConsentPath = template ? consentIn(template, true) : null;
   const reviewsPrivacy = privacyGuidance && captures.length > 0;
+  const expectsConsent = reviewsPrivacy && outcome?.audience_channel != null;
   const missingPolicyPage = reviewsPrivacy && !policyUrl;
   const missingNotice = reviewsPrivacy && privacyPath === null;
+  const missingConsent = expectsConsent && visibleConsentPath === null;
   const problems = hasDesign ? problemsIn(template, rules.schedule.ends_at) : [];
   const needsCapture = bound.length > 0;
-  const outcome = goal.status === 'ready' ? goal.data?.outcome : undefined;
   const goalIssue = outcome && hasDesign ? outcomeDesignIssue(outcome, template) : null;
   const handoffIssue = outcome ? outcomeHandoffIssue(outcome, bound, destinations, captureMode) : null;
   const blocking: { said: string; fix: () => void }[] = [
@@ -129,7 +132,7 @@ export function ReadinessDialog({
   ];
   const warnings = problems.filter((problem) => problem.check !== 'converts' && !problem.blocksPublish);
   const reviewCount = blocking.length + warnings.length + where.problems.length
-    + (missingPolicyPage ? 1 : 0) + (missingNotice ? 1 : 0);
+    + (missingPolicyPage ? 1 : 0) + (missingNotice ? 1 : 0) + (missingConsent ? 1 : 0);
   const isPublished = optin.published_at !== null;
   const current = isPublished && !dirty && !optin.has_unpublished_changes;
   const canPublish = blocking.length === 0 && optin.deleted_at === null && !current;
@@ -333,10 +336,16 @@ export function ReadinessDialog({
                 {reviewsPrivacy && (
                   <ReviewSection
                     title={__('Privacy', 'wconvert')}
-                    action={privacyPath === null ? __('Edit design', 'wconvert') : __('Edit notice', 'wconvert')}
-                    onAction={() => privacyPath === null
-                      ? jump(onEditDesign)
-                      : jump(() => onGoTo(privacyPath))}
+                    action={missingNotice
+                      ? __('Edit design', 'wconvert')
+                      : missingConsent
+                        ? consentPath === null ? __('Edit design', 'wconvert') : __('Edit consent', 'wconvert')
+                        : __('Edit notice', 'wconvert')}
+                    onAction={() => {
+                      if (missingNotice || (missingConsent && consentPath === null)) jump(onEditDesign);
+                      else if (missingConsent && consentPath !== null) jump(() => onGoTo(consentPath));
+                      else if (privacyPath !== null) jump(() => onGoTo(privacyPath));
+                    }}
                   >
                     <p>
                       {privacyPath === null
@@ -345,9 +354,11 @@ export function ReadinessDialog({
                           ? __('This form links to your Privacy Policy.', 'wconvert')
                           : __('This form includes a Privacy Policy notice.', 'wconvert')}
                     </p>
-                    {consentPath !== null && (
-                      <p>{__('A required consent checkbox is enabled.', 'wconvert')}</p>
-                    )}
+                    {expectsConsent
+                      ? visibleConsentPath === null
+                        ? <p className="wconvert-launch-review__notice">{__('No consent checkbox is shown for this marketing list.', 'wconvert')}</p>
+                        : <p>{__('Required consent is shown for this marketing list.', 'wconvert')}</p>
+                      : <p>{__('This starting point uses a privacy notice without a consent checkbox.', 'wconvert')}</p>}
                     {missingPolicyPage && (
                       <p className="wconvert-launch-review__notice">
                         {__('WordPress has no Privacy Policy page selected, so the form cannot link to it.', 'wconvert')}{' '}
@@ -451,8 +462,8 @@ function visiblePolicyLinkIn(template: Template, policyUrl?: string): Path | nul
   return null;
 }
 
-function visibleConsentIn(template: Template): Path | null {
-  return nodesOf(template.tree).find((block) => block.type === 'consent' && !block.hidden)?.path ?? null;
+function consentIn(template: Template, visibleOnly = false): Path | null {
+  return nodesOf(template.tree).find((block) => block.type === 'consent' && (!visibleOnly || !block.hidden))?.path ?? null;
 }
 
 function ReviewSection({

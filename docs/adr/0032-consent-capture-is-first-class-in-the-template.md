@@ -10,8 +10,11 @@ into the [[Lead]]'s existing `fields` JSON.
 *Clarified by [ADR 0076](0076-an-enquiry-captures-one-optional-choice-before-handoff.md):
 an optional service choice is a `field`, not this checkbox. Selecting a service
 does not assert consent or a marketing subscription. The enquiry Playbook uses
-request-specific privacy and consent wording; its consent node still ships
-hidden and becomes required when enabled, with the existing evidence contract.*
+request-specific privacy wording; its consent node stays hidden by default and
+becomes required only when a merchant enables it, with the existing evidence
+contract. [ADR 0099](0099-privacy-defaults-follow-campaign-purpose.md) makes the
+same distinction across all Goals: ongoing marketing starts visible, while a
+one-time request starts with notice only.*
 
 Records a decision from
 [#11](https://github.com/navidkashani/wconvert/issues/11) that had no ADR of its
@@ -32,8 +35,10 @@ puts the checkbox in the gallery's hands and its sentence in the Playbook's.
 
 ## Off by default, required once present
 
-Defaulting it on would put a checkbox on the roughly 90% of installs that do not
-want one and cost conversions for no gain.
+Defaulting it on for every form would put a checkbox on requests that do not
+need one and cost conversions for no gain. Templates therefore remain hidden by
+default; Campaign setup reveals the control only for an ongoing marketing Goal
+when Privacy Guidance is enabled (ADR 0099).
 
 Once added it is **required, not optional**. An optional consent checkbox
 captures Leads whose consent was explicitly *refused*, which is worse than never

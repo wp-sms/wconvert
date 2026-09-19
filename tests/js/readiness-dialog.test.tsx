@@ -20,6 +20,12 @@ const GOAL: GoalEntry = {
   outcome: CAPTURE_OUTCOME, headline_kind: 'conversion', headline_label: 'Conversions',
   tier: 'free', availability: 'ready',
 };
+const NOTICE_GOAL: GoalEntry = {
+  ...GOAL,
+  id: 'collect-enquiries',
+  label: 'Collect enquiries',
+  outcome: { ...CAPTURE_OUTCOME, audience_channel: null },
+};
 
 function props(overrides: Partial<ReadinessDialogProps> = {}): ReadinessDialogProps {
   return {
@@ -177,10 +183,16 @@ describe('reviewing before publishing', () => {
       { type: 'button', action: 'submit', label: 'Send' },
       { type: 'text', role: 'fine_print', text: 'We use your email to reply. %s', link: { label: 'Privacy Policy' } },
     ] }, { type: 'stack', children: [] }] } };
-    const { supplied } = await open({ template, privacyGuidance: true, policyUrl: 'https://example.test/privacy/' });
+    const { supplied } = await open({
+      template,
+      goal: ready(NOTICE_GOAL),
+      privacyGuidance: true,
+      policyUrl: 'https://example.test/privacy/',
+    });
 
     expect(screen.getByRole('heading', { name: 'Privacy' })).toBeInTheDocument();
     expect(screen.getByText('This form links to your Privacy Policy.')).toBeInTheDocument();
+    expect(screen.getByText('This starting point uses a privacy notice without a consent checkbox.')).toBeInTheDocument();
     expect(screen.queryByText(/no Privacy Policy page selected/)).toBeNull();
 
     await userEvent.click(screen.getByRole('button', { name: 'Edit notice' }));
@@ -193,11 +205,39 @@ describe('reviewing before publishing', () => {
       { type: 'button', action: 'submit', label: 'Send' },
       { type: 'text', role: 'fine_print', text: 'We use your email to reply. %s', link: { label: 'Privacy Policy' } },
     ] }, { type: 'stack', children: [] }] } };
-    await open({ template, privacyGuidance: true });
+    await open({ template, goal: ready(NOTICE_GOAL), privacyGuidance: true });
 
     expect(screen.getByText('This form includes a Privacy Policy notice.')).toBeInTheDocument();
     expect(screen.queryByText('This form links to your Privacy Policy.')).toBeNull();
     expect(screen.getByText(/WordPress has no Privacy Policy page selected/)).toBeInTheDocument();
+  });
+
+  it('flags missing consent for an ongoing marketing list and opens that exact control', async () => {
+    const template: Template = { tokens: FORM.tokens, tree: { steps: [{ type: 'stack', children: [
+      { type: 'field', name: 'email', required: true },
+      { type: 'consent', role: 'consent_text', hidden: true, text: 'Send me weekly updates. %s', link: { label: 'Privacy Policy' } },
+      { type: 'button', action: 'submit', label: 'Join' },
+      { type: 'text', role: 'fine_print', text: 'Weekly emails. %s', link: { label: 'Privacy Policy' } },
+    ] }, { type: 'stack', children: [] }] } };
+    const { supplied } = await open({ template, privacyGuidance: true, policyUrl: 'https://example.test/privacy/' });
+
+    expect(screen.getByText('No consent checkbox is shown for this marketing list.')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Publish Campaign' })).toBeEnabled();
+    await userEvent.click(screen.getByRole('button', { name: 'Edit consent' }));
+    expect(supplied.onGoTo).toHaveBeenCalledExactlyOnceWith([0, 'children', 1]);
+  });
+
+  it('confirms visible consent for an ongoing marketing list', async () => {
+    const template: Template = { tokens: FORM.tokens, tree: { steps: [{ type: 'stack', children: [
+      { type: 'field', name: 'email', required: true },
+      { type: 'consent', role: 'consent_text', hidden: false, text: 'Send me weekly updates. %s', link: { label: 'Privacy Policy' } },
+      { type: 'button', action: 'submit', label: 'Join' },
+      { type: 'text', role: 'fine_print', text: 'Weekly emails. %s', link: { label: 'Privacy Policy' } },
+    ] }, { type: 'stack', children: [] }] } };
+    await open({ template, privacyGuidance: true, policyUrl: 'https://example.test/privacy/' });
+
+    expect(screen.getByText('Required consent is shown for this marketing list.')).toBeInTheDocument();
+    expect(screen.queryByText('No consent checkbox is shown for this marketing list.')).toBeNull();
   });
 
   it('keeps privacy guidance advisory and hides it when the site preference is off', async () => {

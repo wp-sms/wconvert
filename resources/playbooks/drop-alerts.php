@@ -23,6 +23,11 @@ return [
         'phone_label' => __('Mobile number', 'wconvert'),
         'phone_placeholder' => __('+44 7700 900000', 'wconvert'),
         'cta_label' => __('Sign me up', 'wconvert'),
+        'consent_text' => [
+            /* translators: %s: the label of a link to the site's privacy policy. */
+            'text' => __('Send me new-release text alerts. %s', 'wconvert'),
+            'link' => ['label' => __('Privacy Policy', 'wconvert')],
+        ],
         'fine_print' => [
             /* translators: %s: the label of a link to the site's privacy policy. */
             'text' => __('Text alerts. Message rates may apply. Stop anytime. %s', 'wconvert'),

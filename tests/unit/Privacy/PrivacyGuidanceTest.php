@@ -4,12 +4,35 @@ namespace WConvert\Tests\Unit\Privacy;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
+use WConvert\Goal\Goal;
 use WConvert\Privacy\PrivacyGuidance;
 use WConvert\Tests\Unit\Support\FakeOptionStore;
 
 #[CoversClass(PrivacyGuidance::class)]
 final class PrivacyGuidanceTest extends TestCase
 {
+    /** @param array<string, mixed> $tree
+     * @return array<string, mixed>|null
+     */
+    private static function consentIn(array $tree): ?array
+    {
+        $stack = $tree['steps'] ?? [];
+
+        while ($stack !== []) {
+            $node = array_pop($stack);
+            if (($node['type'] ?? null) === 'consent') {
+                return $node;
+            }
+            foreach (\WConvert\Template\TemplateTree::childrenOf($node) as $child) {
+                if (is_array($child)) {
+                    $stack[] = $child;
+                }
+            }
+        }
+
+        return null;
+    }
+
     public function testGuidanceIsOnUntilTheMerchantTurnsItOff(): void
     {
         $options = new FakeOptionStore();
@@ -70,5 +93,51 @@ final class PrivacyGuidanceTest extends TestCase
         ]);
 
         $this->assertArrayNotHasKey('fine_print', $copy);
+    }
+
+    public function testOngoingMarketingShowsConsentButOneTimeRequestsDoNot(): void
+    {
+        $guidance = new PrivacyGuidance(new FakeOptionStore());
+        $tree = ['steps' => [[
+            'type' => 'stack',
+            'children' => [[
+                'type' => 'consent',
+                'role' => 'consent_text',
+                'hidden' => true,
+                'text' => 'Send me weekly news.',
+            ]],
+        ]]];
+
+        $marketing = self::consentIn($guidance->treeFor($tree, Goal::GrowEmailList));
+        $request = self::consentIn($guidance->treeFor($tree, Goal::CollectEnquiries));
+        $download = self::consentIn($guidance->treeFor($tree, Goal::DeliverLeadMagnet));
+
+        $this->assertFalse($marketing['hidden'] ?? true);
+        $this->assertTrue($request['hidden'] ?? false);
+        $this->assertTrue($download['hidden'] ?? false);
+    }
+
+    public function testMarketingNeverRevealsABlankConsentControl(): void
+    {
+        $guidance = new PrivacyGuidance(new FakeOptionStore());
+        $tree = ['steps' => [['type' => 'consent', 'role' => 'consent_text', 'hidden' => true]]];
+
+        $consent = self::consentIn($guidance->treeFor($tree, Goal::GrowSmsList));
+
+        $this->assertTrue($consent['hidden'] ?? false);
+    }
+
+    public function testTurningGuidanceOffLeavesMerchantVisibilityAlone(): void
+    {
+        $guidance = new PrivacyGuidance(new FakeOptionStore());
+        $guidance->set(false);
+        $tree = ['steps' => [[
+            'type' => 'consent',
+            'role' => 'consent_text',
+            'hidden' => false,
+            'text' => 'Keep this choice.',
+        ]]];
+
+        $this->assertSame($tree, $guidance->treeFor($tree, Goal::CollectEnquiries));
     }
 }

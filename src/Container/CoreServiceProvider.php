@@ -638,7 +638,8 @@ final class CoreServiceProvider implements ServiceProvider
             static fn (ServiceContainer $c): TemplateController => new TemplateController(
                 $c->resolve(TemplateLibrary::class),
                 $c->resolve(TemplateVocabulary::class),
-                $c->resolve(ProPresence::class)
+                $c->resolve(ProPresence::class),
+                $c->resolve(PrivacyGuidance::class)
             )
         );
 

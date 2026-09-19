@@ -53,6 +53,31 @@ final class EnquiryPrefillTest extends TestCase
         return $draft;
     }
 
+    /** @param array<string, mixed> $tree
+     * @return array<string, mixed>|null
+     */
+    private static function consentIn(array $tree): ?array
+    {
+        $stack = $tree['steps'] ?? [];
+
+        while ($stack !== []) {
+            $node = array_pop($stack);
+            if (!is_array($node)) {
+                continue;
+            }
+            if (($node['type'] ?? null) === 'consent') {
+                return $node;
+            }
+            foreach (TemplateTree::childrenOf($node) as $child) {
+                if (is_array($child)) {
+                    $stack[] = $child;
+                }
+            }
+        }
+
+        return null;
+    }
+
     /**
      * @param array<string, mixed> $tree
      * @return array<string, array<string, mixed>>
@@ -143,6 +168,30 @@ final class EnquiryPrefillTest extends TestCase
         $this->assertArrayNotHasKey('consent_text', $copy);
         $this->assertArrayNotHasKey('fine_print', $copy);
         $this->assertSame('Let us help with your next project', $copy['headline']);
+    }
+
+    public function testCampaignPurposeSetsConsentVisibilityAtThePrefillSnapshot(): void
+    {
+        $playbooks = PlaybookLibrary::fromDirectory(
+            $this->templates,
+            $this->vocabulary,
+            RuleVocabulary::fromManifest(self::PLUGIN_DIR),
+            self::PLUGIN_DIR
+        );
+        $prefill = new Prefill(
+            $playbooks,
+            $this->templates,
+            $this->vocabulary,
+            InstalledRules::free(),
+            new PrivacyGuidance(new FakeOptionStore())
+        );
+        $marketing = $prefill->fromPlaybook('one-line-invite');
+        $request = $prefill->fromPlaybook('request-a-quote');
+
+        $this->assertNotNull($marketing);
+        $this->assertNotNull($request);
+        $this->assertFalse(self::consentIn($marketing['config']['template']['tree'])['hidden'] ?? true);
+        $this->assertTrue(self::consentIn($request['config']['template']['tree'])['hidden'] ?? false);
     }
 
     public function testChoiceOptionsRoundTripAsOneStructuredRoleWithStableValuesAndTranslatedLabels(): void

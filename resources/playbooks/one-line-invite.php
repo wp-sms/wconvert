@@ -12,9 +12,9 @@
  * offers no incentive at all. A site with nothing to discount has somewhere to
  * start.
  *
- * The consent line lives on the design's `consent` node, which ships hidden —
- * so a merchant who needs it switches it on and this entry does not have to
- * carry a sentence there is no slot for (ADR 0032).
+ * The consent line lives on the design's `consent` node. Templates keep that
+ * node hidden as a visual default; Campaign setup reveals it because this
+ * Playbook grows an ongoing email list.
  */
 
 defined('ABSPATH') || exit;
@@ -30,6 +30,11 @@ return [
         'email_label' => __('Email address', 'wconvert'),
         'email_placeholder' => __('you@example.com', 'wconvert'),
         'cta_label' => __('Send me the weekly idea', 'wconvert'),
+        'consent_text' => [
+            /* translators: %s: the label of a link to the site's privacy policy. */
+            'text' => __('Send me one useful idea every week. %s', 'wconvert'),
+            'link' => ['label' => __('Privacy Policy', 'wconvert')],
+        ],
         'fine_print' => [
             /* translators: %s: the label of a link to the site's privacy policy. */
             'text' => __('Weekly emails. Unsubscribe anytime. %s', 'wconvert'),

@@ -101,6 +101,12 @@ final class Prefill
             $copy,
             $this->vocabulary
         );
+        if ($this->privacyGuidance !== null) {
+            $config['template']['tree'] = $this->privacyGuidance->treeFor(
+                $config['template']['tree'],
+                $playbook->goal
+            );
+        }
 
         // Validated exactly as a save would validate it, so what prefill hands
         // back is byte-identical to what storing it produces. Anything else

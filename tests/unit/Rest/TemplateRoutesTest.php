@@ -4,12 +4,14 @@ namespace WConvert\Tests\Unit\Rest;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
+use WConvert\Privacy\PrivacyGuidance;
 use WConvert\Rest\Routes;
 use WConvert\Rest\TemplateController;
 use WConvert\Template\TemplateLibrary;
 use WConvert\Template\TemplateVocabulary;
 use WConvert\Support\Tier;
 use WConvert\Tests\Unit\Support\FakeProPresence;
+use WConvert\Tests\Unit\Support\FakeOptionStore;
 use WP_REST_Request;
 
 /**
@@ -36,14 +38,40 @@ final class TemplateRoutesTest extends TestCase
         $GLOBALS['wconvertTestRoutes'] = [];
     }
 
-    private static function controller(bool $pro = false): TemplateController
+    /** @param array<string, mixed> $tree
+     * @return array<string, mixed>|null
+     */
+    private static function consentIn(array $tree): ?array
+    {
+        $stack = $tree['steps'] ?? [];
+
+        while ($stack !== []) {
+            $node = array_pop($stack);
+            if (!is_array($node)) {
+                continue;
+            }
+            if (($node['type'] ?? null) === 'consent') {
+                return $node;
+            }
+            foreach (\WConvert\Template\TemplateTree::childrenOf($node) as $child) {
+                if (is_array($child)) {
+                    $stack[] = $child;
+                }
+            }
+        }
+
+        return null;
+    }
+
+    private static function controller(bool $pro = false, bool $privacyDefaults = false): TemplateController
     {
         $vocabulary = TemplateVocabulary::fromManifest(self::PLUGIN_DIR);
 
         return new TemplateController(
             TemplateLibrary::fromDirectory($vocabulary, self::PLUGIN_DIR),
             $vocabulary,
-            new FakeProPresence($pro ? Tier::Elite : Tier::Free)
+            new FakeProPresence($pro ? Tier::Elite : Tier::Free),
+            $privacyDefaults ? new PrivacyGuidance(new FakeOptionStore()) : null
         );
     }
 
@@ -106,6 +134,29 @@ final class TemplateRoutesTest extends TestCase
         $this->assertNotSame('#abcdef', $data['tokens']['bg']);
         $this->assertSame('split', $data['tree']['steps'][0]['type']);
         $this->assertArrayNotHasKey('id', $data);
+    }
+
+    public function testPreparingANewDesignUsesTheCampaignPurposeForConsent(): void
+    {
+        $template = TemplateLibrary::fromDirectory(
+            TemplateVocabulary::fromManifest(self::PLUGIN_DIR),
+            self::PLUGIN_DIR
+        )->find('fieldwork');
+        $this->assertNotNull($template);
+
+        $request = new WP_REST_Request();
+        $request->set_param('id', 'fieldwork');
+        $request->set_param('source', 'fieldwork');
+        $request->set_param('goal', 'grow_email_list');
+        $request->set_param('template', ['tree' => $template['tree'], 'tokens' => $template['tokens']]);
+
+        $prepared = self::controller(privacyDefaults: true)->snapshot($request);
+
+        $this->assertInstanceOf(\WP_REST_Response::class, $prepared);
+        $data = $prepared->get_data();
+        $consent = self::consentIn($data['tree']);
+        $this->assertNotNull($consent);
+        $this->assertFalse($consent['hidden'] ?? true);
     }
 
     public function testAnUnavailableTemplateCannotBePrepared(): void
