@@ -19,8 +19,6 @@
 #wconvert-admin .wc-brand-plan { align-self:stretch; display:flex; align-items:center; color:var(--frame-muted); }
 #wconvert-admin .wc-header-tools { margin-inline-start:auto; display:flex; align-items:center; gap:10px; }
 #wconvert-admin .wc-header-tools .wc-explore-pro { color:var(--frame-text); font-size:var(--text-note); font-weight:500; text-decoration:none; white-space:nowrap; }
-#wconvert-admin .wc-header-tools .wc-account-link { display:grid; place-items:center; inline-size:34px; block-size:34px; border-radius:50%; border:1px solid #64857f; background:transparent; color:var(--frame-muted); }
-#wconvert-admin .wc-account-link svg { inline-size:16px; block-size:16px; }
 #wconvert-admin .wc-notifications-trigger { position:relative; }
 #wconvert-admin .wc-notification-dot { position:absolute; inset-block-start:4px; inset-inline-end:5px; inline-size:5px; block-size:5px; border-radius:50%; background:#e6b95e; }
 #wconvert-admin .wc-page-heading { padding:42px var(--frame-gutter) 34px; }
@@ -94,7 +92,7 @@
   #wconvert-admin .wc-service-help { inline-size:100%; }
 }
 @media(pointer:coarse) {
-  #wconvert-admin .wc-header-tools .wc-account-link, #wconvert-admin .wc-service-resource a, #wconvert-admin .wc-publisher { min-block-size:44px; min-inline-size:44px; }
+  #wconvert-admin .wc-service-resource a, #wconvert-admin .wc-publisher { min-block-size:44px; min-inline-size:44px; }
 }
 .wc-header-popover { max-inline-size:calc(100vw - 32px); }
 .wc-header-popover h2 { margin:0 0 12px; font-size:var(--text-heading); font-weight:600; }

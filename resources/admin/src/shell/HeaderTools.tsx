@@ -113,15 +113,17 @@ export function HeaderTools() {
         </PopoverContent>
       </Popover>
       {/* Account destination is intentionally a # placeholder until login is integrated. */}
-      {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-      <a
-        className="wc-account-link"
-        href="#"
-        onClick={(event) => event.preventDefault()}
-        aria-label={__('Sign in to WConvert', 'wconvert')}
-      >
-        <UserRound aria-hidden="true" />
-      </a>
+      <Button asChild variant="ghost" size="icon-sm">
+        {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
+        <a
+          className="wc-account-link"
+          href="#"
+          onClick={(event) => event.preventDefault()}
+          aria-label={__('Sign in to WConvert', 'wconvert')}
+        >
+          <UserRound aria-hidden="true" />
+        </a>
+      </Button>
     </div>
   );
 }
