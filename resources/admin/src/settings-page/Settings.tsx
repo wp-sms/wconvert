@@ -6,6 +6,7 @@ import { Input } from '../components/ui/input';
 import { settingsHref, type SettingsGroup } from '../nav';
 import { SiteAllowance } from '../optins/SiteAllowance';
 import { LeadRetention } from '../leads/LeadRetention';
+import { PrivacyDataMap } from '../privacy/PrivacyDataMap';
 import { Destinations } from '../destinations/Destinations';
 import type { SettingsEditing } from './useSettingsEditing';
 import { Region, RegionBody, RegionHeader } from '../shell/Region';
@@ -87,6 +88,7 @@ export function Settings({
               expanded
               onEditingStateChange={onEditingStateChange}
             />
+            <PrivacyDataMap />
             <Region>
               <RegionHeader
                 title={__('Export and personal data', 'wconvert')}
@@ -115,7 +117,7 @@ export function Settings({
                   </h3>
                   <p className="my-1 text-note text-muted-foreground">
                     {__(
-                      'Use WordPress’s existing tools for requests. Copies at other services are managed there.',
+                      'Use WordPress’s existing tools for email requests. For a verified phone-only request, find the exact phone in Leads, export it if needed, then permanently delete every matching submission. Copies at other services are managed there.',
                       'wconvert',
                     )}
                   </p>

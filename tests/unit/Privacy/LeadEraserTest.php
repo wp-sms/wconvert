@@ -5,9 +5,12 @@ namespace WConvert\Tests\Unit\Privacy;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use WConvert\Database\Connection;
+use WConvert\Destination\DeliveryFailures;
 use WConvert\Lead\LeadRepository;
 use WConvert\Privacy\LeadEraser;
+use WConvert\Privacy\LeadErasure;
 use WConvert\Tests\Unit\Support\FakeConnection;
+use WConvert\Tests\Unit\Support\FakeOptionStore;
 
 /**
  * The personal-data eraser, and the decision it exists to carry:
@@ -36,7 +39,10 @@ final class LeadEraserTest extends TestCase
         $GLOBALS['wconvertTestFilters'] = [];
 
         $this->db = new FakeConnection();
-        $this->eraser = new LeadEraser(new LeadRepository($this->db));
+        $this->eraser = new LeadEraser(new LeadErasure(
+            new LeadRepository($this->db),
+            new DeliveryFailures(new FakeOptionStore())
+        ));
     }
 
     /**
@@ -132,14 +138,16 @@ final class LeadEraserTest extends TestCase
     }
 
     /**
-     * **One eraser, over one table, at the default priority.**
+     * **One registered eraser, at the default priority.**
      *
      * WSMS registers its contact eraser at priority 99 because several of its
      * erasers resolve an email to a phone number through the contact row
      * first, and WordPress runs each eraser to completion before starting the
      * next. WConvert has no such dependency, so copying the caveat would be
-     * carrying WSMS's ordering hazard into a plugin that does not have it
-     * (ADR 0018). The day a second eraser appears, copy it then.
+     * carrying WSMS's ordering hazard into a plugin that does not have it.
+     * Diagnostic cleanup belongs to this same operation and is not a second
+     * WordPress eraser (ADR 0018, ADR 0093). The day a second one is
+     * registered, copy the ordering caveat then.
      */
     public function testItRegistersExactlyOneEraserAndNeedsNoOrderingCaveat(): void
     {

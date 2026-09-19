@@ -145,7 +145,9 @@ on every page they are targeted at.
 No. There is no visitor identifier of any kind, and no IP geolocation. The
 analytics are daily counters per Optin, and the five setup dates WConvert keeps
 are facts about the site rather than about anybody — you can read exactly what
-they are on the Analytics screen. Deleting the plugin deletes all of it.
+they are on the Analytics screen. A site-specific one-way hash derived from the
+network address is kept for one minute to rate-limit anonymous counting; the
+network address itself is not stored. Deleting the plugin deletes all of it.
 
 = Where does the data go when someone converts? =
 
@@ -158,6 +160,17 @@ of ours and to no third party.
 
 WConvert registers with WordPress's own personal-data export and erasure tools.
 An erasure request deletes the lead rows rather than anonymising them.
+WordPress addresses those requests by email. For a verified phone-only request,
+search the complete phone number in **WConvert → Leads**, export the matching
+submissions if needed, then use the exact-match deletion action. It deletes all
+WConvert submissions directly carrying that phone across every campaign. Copies
+in destinations, downloaded files, email logs and backups must be handled there.
+
+Under **WConvert → Settings → Data & privacy**, “Your data flow” gives
+administrators a read-only explanation of this site's saved retention,
+configured destinations, browser-local state and copies outside WConvert. The
+same current facts inform WConvert's suggested text in WordPress's privacy-policy
+guide; the site owner still reviews and publishes the policy that applies.
 
 = What happens to my data if I remove the plugin? =
 

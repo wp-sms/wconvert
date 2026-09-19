@@ -58,6 +58,9 @@ final class FakeDestinationType implements DestinationType
     /** How many times the schema was asked for. */
     public int $schemaReads = 0;
 
+    /** Provider field use declared for the scenario under test. */
+    public ?DestinationRequirements $declaredRequirements = null;
+
     /** @var list<array<string, mixed>> The credentials each schema read arrived with, in order. */
     public array $schemaCredentials = [];
 
@@ -129,7 +132,7 @@ final class FakeDestinationType implements DestinationType
 
     public function requirements(): DestinationRequirements
     {
-        return new DestinationRequirements();
+        return $this->declaredRequirements ?? new DestinationRequirements();
     }
 
     public function throughput(): int

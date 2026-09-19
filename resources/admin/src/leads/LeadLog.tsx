@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
-import { Download, Inbox, Info, RefreshCw, Search, SlidersHorizontal } from 'lucide-react';
+import { Download, Inbox, Info, RefreshCw, Search, SlidersHorizontal, Trash2 } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '../components/ui/popover';
 import { Button } from '../components/ui/button';
 import { Checkbox } from '../components/ui/checkbox';
@@ -8,6 +8,7 @@ import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../components/ui/dialog';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '../components/ui/alert-dialog';
 import { DataTable, DataTableBody, DataTableCell, DataTableColumn, DataTableHead, DataTableRow } from '../shell/DataTable';
 import { EmptyState } from '../shell/EmptyState';
 import { PageAction } from '../shell/PageActions';
@@ -15,7 +16,7 @@ import { Region, RegionBody, RegionError, RegionErrorState, RegionFooter } from 
 import { TableSkeleton } from '../shell/TableSkeleton';
 import { Toolbar, ToolbarCount } from '../shell/Toolbar';
 import { LOADING, failed, messageOf, ready, type Loadable } from '../shell/loadable';
-import { exportUrl, readLog, type LeadGroup, type LeadLog as LeadLogPayload, type LeadPage, type LeadQuery } from './api';
+import { eraseIdentifier, exportUrl, readLog, type LeadGroup, type LeadLog as LeadLogPayload, type LeadPage, type LeadQuery } from './api';
 import { EventTable } from './EventTable';
 import { RetentionSummary } from './RetentionSummary';
 import { flattened, listOptins, type OptinSummary } from '../optins/api';
@@ -59,6 +60,11 @@ export function LeadLog({ query, onQueryChange, onRefresh }: LeadLogProps) {
   const [namesError, setNamesError] = useState<string | null>(null);
   const [namesRetry, setNamesRetry] = useState(0);
   const [selectedGroup, setSelectedGroup] = useState<{ group: LeadGroup; query: LeadPage } | null>(null);
+  const [erasureOpen, setErasureOpen] = useState(false);
+  const [erasurePreview, setErasurePreview] = useState<{ identifier: string; submissions: number; snapshot: string } | null>(null);
+  const [erasing, setErasing] = useState(false);
+  const [erasureError, setErasureError] = useState<string | null>(null);
+  const [erasureNotice, setErasureNotice] = useState<string | null>(null);
 
   useEffect(() => {
     let active = true;
@@ -103,6 +109,10 @@ export function LeadLog({ query, onQueryChange, onRefresh }: LeadLogProps) {
   const hasAppliedFilters = queryKeyOf(applied.query) !== '{}';
   const rows = data === null ? 0 : shownGrouped ? data.groups.length : data.leads.length;
   const showingPrevious = data !== null && (queryKeyOf(applied.query) !== queryKey || shownGrouped !== grouped || applied.query.cursor !== cursor);
+  const privacyIdentifier = !showingPrevious && data !== null && data.submissions > 0
+    ? exactIdentifierScope(applied.query)
+    : null;
+  const erasureCsv = erasurePreview === null ? null : exportUrl({ identifier: erasurePreview.identifier, snapshot: erasurePreview.snapshot });
   const next = () => {
     if (!data?.next_cursor) return;
     setPaging({ scope, cursor: data.next_cursor, snapshot: data.snapshot,
@@ -128,7 +138,7 @@ export function LeadLog({ query, onQueryChange, onRefresh }: LeadLogProps) {
         </div>
         <HistoryFilters key={queryKey} query={requested} optins={optins} onApply={changeQuery} />
       </RegionBody>
-      <Toolbar trailing={data === null ? undefined : <div className="flex items-center gap-1"><ToolbarCount hint={__('The total counts submissions, never people.', 'wconvert')}>
+      <Toolbar trailing={data === null ? undefined : <div className="flex flex-wrap items-center justify-end gap-1"><ToolbarCount hint={__('The total counts submissions, never people.', 'wconvert')}>
         {submissionCount(data.submissions)}
       </ToolbarCount><Popover>
         <PopoverTrigger asChild><Button variant="ghost" size="icon-sm" aria-label={__('About this count and export', 'wconvert')}><Info aria-hidden="true" /></Button></PopoverTrigger>
@@ -137,7 +147,14 @@ export function LeadLog({ query, onQueryChange, onRefresh }: LeadLogProps) {
           <p>{__('The total counts submissions, never people.', 'wconvert')}</p>
           <p className="mb-0 text-muted-foreground">{__('CSV includes all retained matching submissions captured before this view loaded, across all pages. Grouping does not change the export.', 'wconvert')}</p>
         </PopoverContent>
-      </Popover></div>}>
+      </Popover>{privacyIdentifier !== null && <Button variant="outline" size="sm" className="text-destructive" onClick={() => {
+        setErasurePreview(null);
+        setErasureError(null);
+        setErasureOpen(true);
+        void readLog({ identifier: privacyIdentifier, grouped: false }).then((preview) => {
+          setErasurePreview({ identifier: privacyIdentifier, submissions: preview.submissions, snapshot: preview.snapshot });
+        }).catch((cause: unknown) => setErasureError(messageOf(cause)));
+      }}><Trash2 aria-hidden="true" />{__('Delete matching submissions', 'wconvert')}</Button>}</div>}>
         <span className="wconvert-check"><Checkbox id="wconvert-lead-grouped" checked={grouped}
           onCheckedChange={(checked) => setGrouped(checked === true)} />
         <Label htmlFor="wconvert-lead-grouped">{__('Group by email or phone', 'wconvert')}</Label></span>
@@ -145,6 +162,7 @@ export function LeadLog({ query, onQueryChange, onRefresh }: LeadLogProps) {
       </Toolbar>
       {updating && <RegionBody><p role="status" className="m-0 text-note">{data ? __('Updating submissions…', 'wconvert') : __('Loading submissions…', 'wconvert')}</p></RegionBody>}
       {showingPrevious && <RegionBody><p className="m-0 text-note">{__('The table and export still show the last successful filters until the new results load.', 'wconvert')}</p></RegionBody>}
+      {erasureNotice !== null && <RegionBody><p role="status" className="m-0 rounded-md border border-border bg-muted/40 p-3 text-note">{erasureNotice}</p></RegionBody>}
       {error !== null && data !== null && <RegionError message={error} />}
       {namesError !== null && <RegionError message={namesError} />}
       {(error !== null || namesError !== null) && <RegionBody><Button variant="outline" onClick={() => {
@@ -179,13 +197,69 @@ export function LeadLog({ query, onQueryChange, onRefresh }: LeadLogProps) {
       </RegionFooter>}
     </Region>
     <RetentionSummary />
-    <Dialog open={selectedGroup !== null} onOpenChange={(open) => { if (!open) setSelectedGroup(null); }}>
+      <Dialog open={selectedGroup !== null} onOpenChange={(open) => { if (!open) setSelectedGroup(null); }}>
       <DialogContent className="max-h-[85dvh] overflow-auto sm:max-w-5xl">
         <DialogHeader><DialogTitle>{__('Submission history', 'wconvert')}</DialogTitle><DialogDescription>{selectedGroup?.group.identifier}</DialogDescription></DialogHeader>
         {selectedGroup !== null && <GroupEvents key={`${selectedGroup.group.identifier}:${selectedGroup.query.snapshot}`} group={selectedGroup.group} query={selectedGroup.query} nameOf={nameOf} goalOf={goalOf} onRelated={(identifier) => { setSelectedGroup(null); setGrouped(false); changeQuery({ identifier }); }} />}
       </DialogContent>
-    </Dialog>
-  </div>;
+      </Dialog>
+      <AlertDialog open={erasureOpen} onOpenChange={(open) => { if (!erasing) setErasureOpen(open); }}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>{sprintf(__('Permanently delete %s?', 'wconvert'), erasurePreview?.identifier ?? privacyIdentifier ?? '')}</AlertDialogTitle>
+            <AlertDialogDescription>
+              {erasurePreview === null ? __('Checking every retained submission carrying this identifier…', 'wconvert') : sprintf(
+                _n(
+                  'This deletes the retained submission directly carrying this identifier across every Campaign.',
+                  'This deletes all %s retained submissions directly carrying this identifier across every Campaign.',
+                  erasurePreview.submissions,
+                  'wconvert',
+                ),
+                String(erasurePreview.submissions),
+              )}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <p className="m-0 text-note text-muted-foreground">{__('Only WConvert’s copies are deleted. Handle copies in destinations, email logs, downloaded CSV files and backups separately.', 'wconvert')}</p>
+          {erasureCsv !== null && <a className="text-note underline underline-offset-2" href={erasureCsv}>{__('Export these submissions before deleting', 'wconvert')}</a>}
+          {erasureError !== null && <p role="alert" className="m-0 text-note text-destructive">{erasureError}</p>}
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={erasing}>{__('Cancel', 'wconvert')}</AlertDialogCancel>
+            <AlertDialogAction
+              variant="destructive"
+              disabled={erasing || erasurePreview === null}
+              onClick={(event) => {
+                event.preventDefault();
+                if (erasurePreview === null) return;
+                setErasing(true);
+                setErasureError(null);
+                void eraseIdentifier(erasurePreview.identifier).then((result) => {
+                  setErasureOpen(false);
+                  setErasurePreview(null);
+                  setErasureNotice(sprintf(
+                    _n('%s submission was permanently deleted from WConvert. Check destinations, exports and backups separately.', '%s submissions were permanently deleted from WConvert. Check destinations, exports and backups separately.', result.removed, 'wconvert'),
+                    String(result.removed),
+                  ));
+                  setPaging({ scope, previous: [] });
+                  setRetry((value) => value + 1);
+                  onRefresh?.();
+                }).catch((cause: unknown) => setErasureError(messageOf(cause))).finally(() => setErasing(false));
+              }}
+            >
+              {erasing ? __('Deleting…', 'wconvert') : __('Permanently delete', 'wconvert')}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </div>;
+}
+
+/** Privacy erasure is identifier-wide; ordinary filters must never narrow it. */
+function exactIdentifierScope(query: LeadPage): string | null {
+  if (!query.identifier || query.optinId || query.leadId || query.search || query.purpose || query.from || query.to || query.groupIdentifier) {
+    return null;
+  }
+
+  return query.identifier;
 }
 
 function HistoryFilters({ query, optins, onApply }: { query: LeadQuery; optins: OptinSummary[]; onApply: (query: LeadQuery) => void }) {

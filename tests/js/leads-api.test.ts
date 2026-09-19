@@ -1,6 +1,6 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import apiFetch from '@wordpress/api-fetch';
-import { exportUrl, readLog } from '../../resources/admin/src/leads/api';
+import { eraseIdentifier, exportUrl, readLog } from '../../resources/admin/src/leads/api';
 vi.mock('@wordpress/api-fetch', () => ({ default: vi.fn().mockResolvedValue({}) }));
 
 afterEach(() => { delete window.wconvertAdmin; vi.clearAllMocks(); });
@@ -50,5 +50,14 @@ describe('history request and export scope', () => {
 
   it('does not invent an export endpoint or authentication when settings are unavailable', () => {
     expect(exportUrl({ identifier: 'sarah@example.com' })).toBeNull();
+  });
+
+  it('sends an exact identifier twice as an explicit destructive confirmation', async () => {
+    await eraseIdentifier('+96899123456');
+    expect(apiFetch).toHaveBeenCalledWith({
+      path: '/wconvert/v1/leads/identifier',
+      method: 'DELETE',
+      data: { identifier: '+96899123456', confirmed_identifier: '+96899123456' },
+    });
   });
 });

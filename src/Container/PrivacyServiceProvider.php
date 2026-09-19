@@ -4,6 +4,11 @@ namespace WConvert\Container;
 
 use WConvert\Lead\LeadRepository;
 use WConvert\Optin\OptinRepository;
+use WConvert\Destination\DeliveryFailures;
+use WConvert\Destination\DestinationRegistry;
+use WConvert\Destination\DestinationStore;
+use WConvert\Privacy\DataMap;
+use WConvert\Privacy\LeadErasure;
 use WConvert\Privacy\LeadEraser;
 use WConvert\Privacy\LeadExporter;
 use WConvert\Privacy\PolicyText;
@@ -14,9 +19,9 @@ defined('ABSPATH') || exit;
 
 /**
  * The personal-data surface: the exporter, the eraser, the suggested
- * privacy-policy text, and the retention pruning job.
+ * privacy-policy text, the shared Data Map, and the retention pruning job.
  *
- * **All four boot on every request, admin or not.** The exporter and eraser
+ * **The three hook-owning services boot on every request, admin or not.** The exporter and eraser
  * are filters WordPress applies inside its own privacy tools, so registering
  * them behind `is_admin()` would work today and break the moment those tools
  * are driven by WP-CLI or by a cron request. The pruner has to be registered
@@ -25,7 +30,8 @@ defined('ABSPATH') || exit;
  * WSMS's `src/Container/PrivacyServiceProvider.php` is the shape this copies —
  * five exporters, six erasers and a policy-text registration (ADR 0018) —
  * minus its priority-99 eraser ordering, which is a hazard WConvert does not
- * have. One eraser over one table has nothing to be ordered against.
+ * have. One registered eraser owns the Lead deletion and its diagnostic
+ * cleanup, with no second eraser to order it against.
  *
  * @since 0.1.0
  */
@@ -33,6 +39,23 @@ final class PrivacyServiceProvider implements ServiceProvider
 {
     public function register(ServiceContainer $container): void
     {
+        $container->register(
+            DataMap::class,
+            static fn (ServiceContainer $c): DataMap => new DataMap(
+                $c->resolve(RetentionPeriod::class),
+                $c->resolve(DestinationStore::class),
+                $c->resolve(DestinationRegistry::class)
+            )
+        );
+
+        $container->register(
+            LeadErasure::class,
+            static fn (ServiceContainer $c): LeadErasure => new LeadErasure(
+                $c->resolve(LeadRepository::class),
+                $c->resolve(DeliveryFailures::class)
+            )
+        );
+
         $container->register(
             LeadExporter::class,
             static fn (ServiceContainer $c): LeadExporter => new LeadExporter(
@@ -43,12 +66,12 @@ final class PrivacyServiceProvider implements ServiceProvider
 
         $container->register(
             LeadEraser::class,
-            static fn (ServiceContainer $c): LeadEraser => new LeadEraser($c->resolve(LeadRepository::class))
+            static fn (ServiceContainer $c): LeadEraser => new LeadEraser($c->resolve(LeadErasure::class))
         );
 
         $container->register(
             PolicyText::class,
-            static fn (ServiceContainer $c): PolicyText => new PolicyText($c->resolve(RetentionPeriod::class))
+            static fn (ServiceContainer $c): PolicyText => new PolicyText($c->resolve(DataMap::class))
         );
 
         $container->register(

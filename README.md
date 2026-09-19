@@ -692,15 +692,30 @@ WConvert registers a WordPress exporter, an eraser and suggested
 privacy-policy text
 ([ADR 0018](docs/adr/0018-erasure-deletes-rather-than-anonymises.md)).
 
+Data & privacy also shows a read-only, site-specific data map. It explains the
+stored Lead fields, saved retention period, configured destination types,
+browser-local campaign state, short-lived anonymous-count rate limit and copies
+outside WConvert. The policy suggestion reads the same facts, while WordPress
+still leaves publication and legal review to the site owner
+([ADR 0094](docs/adr/0094-privacy-guidance-reports-the-current-data-flow.md)).
+
 **The eraser issues a `DELETE`, never an anonymising update.** Anonymising is
 an update, and [ADR 0002](docs/adr/0002-leads-are-immutable-by-schema.md) has
 no update path — `wconvert_leads` has no `status` and no `updated_at` precisely
 so a row cannot acquire mutable state without a migration a reviewer will see.
 
+The WordPress adapter remains email-addressed. A verified phone-only request
+uses capture history's exact-phone search and CSV, then deletes every Lead whose
+`phone` column directly carries that value. It never follows an email/phone link
+to another row, and the action cannot be narrowed by Campaign, date or an
+individual Lead ([ADR 0093](docs/adr/0093-privacy-erasure-is-bound-to-one-explicit-identifier.md)).
+
 ```bash
 tests/unit/Lead/NoLeadIsEverUpdatedTest.php   # no update() in either tree names the lead log
 tests/unit/Privacy/LeadEraserTest.php         # it deletes, retains nothing, and writes nothing
+tests/unit/Privacy/LeadErasureTest.php        # exact email/phone scope and diagnostic cleanup
 tests/unit/Privacy/LeadExporterTest.php       # the Consent Record travels; an absent one is not a refusal
+tests/unit/Privacy/DataMapTest.php             # only provable configured facts; no credentials
 ```
 
 Retention ships as **keep forever with pruning off**, and the WP-Cron job

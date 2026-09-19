@@ -86,4 +86,22 @@ final class DeliveryFailures
 
         $this->options->set(self::OPTION, array_slice($entries, 0, self::KEPT));
     }
+
+    /**
+     * Remove diagnostics that still identify Leads erased from the log.
+     *
+     * @param list<string> $leadIds
+     */
+    public function forgetLeads(array $leadIds): void
+    {
+        if ($leadIds === []) {
+            return;
+        }
+
+        $remove = array_fill_keys($leadIds, true);
+        $this->options->set(self::OPTION, array_values(array_filter(
+            $this->all(),
+            static fn (array $entry): bool => !isset($remove[$entry['lead']])
+        )));
+    }
 }

@@ -88,6 +88,23 @@ CSV takes all retained matches under the view's upper capture bound, not just
 the visible page. Newer captures require refresh; deletion can still remove
 earlier rows. See [ADR 0071](docs/adr/0071-reports-capture-history-and-recovery-form-a-connected-admin-flow.md).
 
+Privacy erasure is exact-identifier-wide, not per submission and not person
+resolution. After verifying a request outside WConvert, a merchant can export
+and permanently delete every retained Lead whose `email` or `phone` column
+directly contains that canonical identifier. No Campaign/date filter may narrow
+the deletion, and it never follows the other identifier to more rows. Related
+terminal-failure diagnostics are removed; downstream Contacts, exports, logs
+and backups remain an explicit merchant follow-up. See
+[ADR 0093](docs/adr/0093-privacy-erasure-is-bound-to-one-explicit-identifier.md).
+
+Data & privacy also presents a read-only Data Map of what this install can
+prove: saved retention, configured Destination types and declared fields,
+browser-local campaign state, and the short anonymous-count rate-limit window.
+The same facts feed WordPress's suggested privacy-policy text; they never expose
+credentials, publish policy wording, choose a legal basis or claim to erase
+external copies. See
+[ADR 0094](docs/adr/0094-privacy-guidance-reports-the-current-data-flow.md).
+
 ### Analytics impact
 
 Analytics starts with compatible totals: captured submissions, offer clicks,
@@ -300,8 +317,9 @@ Clearing it is *keep forever*, never *keep zero days*. The two readings differ
 by the whole log.
 
 A Retention Period is disclosed: the privacy-policy text WConvert registers
-states the configured period, so setting one writes the merchant's disclosure
-for them.
+states the configured period. The text is a WordPress policy-guide suggestion
+for the merchant to review, not a published policy; the same saved fact appears
+in Data & privacy's Data Map.
 
 The admin's controls are a draft until **Save retention**. Enabling or changing
 automatic deletion confirms the actual chosen days before writing; typing,

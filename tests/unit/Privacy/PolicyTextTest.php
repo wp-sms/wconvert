@@ -4,9 +4,15 @@ namespace WConvert\Tests\Unit\Privacy;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
+use WConvert\Destination\DestinationRegistry;
+use WConvert\Destination\DestinationStore;
+use WConvert\Privacy\DataMap;
 use WConvert\Privacy\PolicyText;
 use WConvert\Retention\RetentionPeriod;
+use WConvert\Tests\Unit\Support\FakeDestinationType;
 use WConvert\Tests\Unit\Support\FakeOptionStore;
+use WConvert\Tests\Unit\Support\FakeProPresence;
+use WConvert\Tests\Unit\Support\FakeSitePresence;
 
 /**
  * The privacy-policy text WConvert suggests, and the two things it has to say.
@@ -25,14 +31,21 @@ final class PolicyTextTest extends TestCase
 {
     private RetentionPeriod $retention;
 
+    private DestinationStore $destinations;
+
+    private DestinationRegistry $types;
+
     private PolicyText $policy;
 
     protected function setUp(): void
     {
         $GLOBALS['wconvertTestPolicyContent'] = [];
 
-        $this->retention = new RetentionPeriod(new FakeOptionStore());
-        $this->policy = new PolicyText($this->retention);
+        $options = new FakeOptionStore();
+        $this->retention = new RetentionPeriod($options);
+        $this->destinations = new DestinationStore($options);
+        $this->types = new DestinationRegistry(new FakeProPresence(), new FakeSitePresence());
+        $this->policy = new PolicyText(new DataMap($this->retention, $this->destinations, $this->types));
     }
 
     public function testWithNoPeriodConfiguredItSaysLeadsAreKeptUntilDeleted(): void
@@ -74,6 +87,44 @@ final class PolicyTextTest extends TestCase
     public function testItDisclosesThatTheConsentWordingIsStored(): void
     {
         $this->assertStringContainsString('consent', strtolower($this->policy->content()));
+    }
+
+    public function testItAccuratelyDescribesBrowserStateAndTheShortLivedRateLimit(): void
+    {
+        $text = $this->policy->content();
+
+        $this->assertStringContainsString('local storage', $text);
+        $this->assertStringContainsString('cookie fallback', $text);
+        $this->assertStringContainsString('60 seconds', $text);
+        $this->assertStringContainsString('one-way hash', $text);
+        $this->assertStringContainsString('network address itself is not stored', $text);
+    }
+
+    public function testItDoesNotClaimThatTheSubmissionStoresItsPageAddress(): void
+    {
+        $text = $this->policy->content();
+
+        $this->assertStringContainsString('does not attach the page address', $text);
+        $this->assertStringNotContainsString('page it came from', $text);
+    }
+
+    public function testItExplainsThatCopiesOutsideWConvertNeedSeparateHandling(): void
+    {
+        $text = $this->policy->content();
+
+        $this->assertStringContainsString('another service', $text);
+        $this->assertStringContainsString('backups must be handled separately', $text);
+    }
+
+    public function testItNamesConfiguredDestinationTypesWithoutPublishingInternalRouteNames(): void
+    {
+        $this->types->register(new FakeDestinationType('mailing'));
+        $this->destinations->save(null, 'mailing', 'Internal launch list', null, []);
+
+        $text = $this->policy->content();
+
+        $this->assertStringContainsString('Fake', $text);
+        $this->assertStringNotContainsString('Internal launch list', $text);
     }
 
     public function testItRegistersItsSuggestionUnderThePluginsName(): void

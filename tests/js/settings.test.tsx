@@ -10,6 +10,13 @@ const api = vi.hoisted(() => ({
   saveSiteAllowance: vi.fn(),
 }));
 vi.mock('../../resources/admin/src/optins/api', () => api);
+const leads = vi.hoisted(() => ({
+  readRetention: vi.fn(),
+  saveRetention: vi.fn(),
+}));
+vi.mock('../../resources/admin/src/leads/api', () => leads);
+const privacy = vi.hoisted(() => ({ readDataMap: vi.fn() }));
+vi.mock('../../resources/admin/src/privacy/api', () => privacy);
 const OFF = {
   maxImpressions: null,
   cooldownDays: null,
@@ -20,6 +27,14 @@ beforeEach(() => {
   vi.clearAllMocks();
   api.readSiteAllowance.mockResolvedValue(OFF);
   api.saveSiteAllowance.mockImplementation(async (next) => next);
+  leads.readRetention.mockResolvedValue({ days: null, max_days: 3650 });
+  leads.saveRetention.mockImplementation(async (days) => ({ days, max_days: 3650 }));
+  privacy.readDataMap.mockResolvedValue({
+    retention_days: null,
+    destinations: [],
+    browser: { key: 'wcv1', cookie_fallback: true, contains_contact_details: false, contains_visitor_identifier: false },
+    beacon_rate_limit_seconds: 60,
+  });
 });
 
 it('finds a settings category by the task without replacing the active form', async () => {
@@ -83,4 +98,12 @@ it('keeps site-wide limits as a complete draft until an explicit save', async ()
     screen.getByRole('button', { name: 'Save display limits' }),
   ).toBeDisabled();
   expect(screen.queryByText('Unsaved changes')).not.toBeInTheDocument();
+});
+
+it('keeps the site-specific data map with retention and personal-data actions', async () => {
+  render(<Settings group="data" />);
+
+  expect(await screen.findByRole('heading', { name: 'Your data flow' })).toBeInTheDocument();
+  expect(screen.getByRole('heading', { name: 'Data & privacy' })).toBeInTheDocument();
+  expect(screen.getByRole('heading', { name: 'Export and personal data' })).toBeInTheDocument();
 });

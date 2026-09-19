@@ -69,6 +69,11 @@ export interface Retention {
   max_days: number;
 }
 
+export interface ErasureResult {
+  identifier: string;
+  removed: number;
+}
+
 const query = (params: Record<string, string>) => new URLSearchParams(params).toString();
 
 export const leadParams = (filter: LeadPage): Record<string, string> => Object.fromEntries(
@@ -91,6 +96,14 @@ export const readRetention = () => apiFetch<Retention>({ path: '/wconvert/v1/lea
 
 export const saveRetention = (days: number | null) =>
   apiFetch<Retention>({ path: '/wconvert/v1/leads/retention', method: 'POST', data: { days } });
+
+/** Exact-identifier privacy erasure; the repeated value is the destructive confirmation. */
+export const eraseIdentifier = (identifier: string) =>
+  apiFetch<ErasureResult>({
+    path: '/wconvert/v1/leads/identifier',
+    method: 'DELETE',
+    data: { identifier, confirmed_identifier: identifier },
+  });
 
 /**
  * The CSV download, as a URL rather than a fetch.
