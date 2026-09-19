@@ -13,10 +13,13 @@ setup/measurement background is optional, while consequential warnings stay visi
 - Creation keeps section navigation and Back, but omits the redundant Campaigns
   heading band. The current question is its visible heading; the section heading
   stays available to assistive navigation. List/report headers remain unchanged.
-- Campaign setup cards show the real preview, task name, recommendation/collection
-  when present, and a short summary of actual format and timing. Inline cards name
-  the block/shortcode placement task. **Use this setup** still creates a draft
-  directly; it introduces no confirmation step.
+- Campaign setup cards show the real preview, task name, a compact format badge,
+  recommendation/collection when present, and a short summary of actual placement
+  and timing. Inline cards name the block/shortcode placement task. Format and
+  collection filters refine the already Goal-scoped results in the browser; neither
+  becomes an earlier or required choice. A filter combination with no matches offers
+  a direct reset. **Use this setup** still creates a draft directly; it introduces no
+  confirmation step.
 - **Setup details** opens one optional dialog for the selected setup, containing
   the full derived facts, measurement boundary, requirements, checklist and notes.
   Opening/closing details writes nothing and returns keyboard focus to its trigger.

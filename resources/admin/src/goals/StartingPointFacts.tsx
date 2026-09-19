@@ -8,12 +8,16 @@ import { nodesOf } from '../builder/structure/tree';
 import type { RuleVocabulary } from '../builder/api';
 import type { GoalEntry, PlaybookEntry } from './api';
 
+export function startingPointDisplayType(playbook: PlaybookEntry): string {
+  return playbook.setup?.display_type ?? playbook.display_type;
+}
+
 /** Only the differences needed to choose; the full setup is available on demand. */
 export function StartingPointSummary({ playbook, vocabulary }: {
   playbook: PlaybookEntry;
   vocabulary: RuleVocabulary | null;
 }) {
-  const displayType = playbook.setup?.display_type ?? playbook.display_type;
+  const displayType = startingPointDisplayType(playbook);
   const timing = displayType === 'inline' ? __('Place with a block or shortcode', 'wconvert')
     : playbook.setup && vocabulary ? whenSummary(entriesOn(playbook.setup.rules ?? [], vocabulary.triggers),
       [...vocabulary.targeting, ...vocabulary.triggers, ...vocabulary.conditions]).text : null;
@@ -30,7 +34,7 @@ export function StartingPointFacts({ playbook, goal, vocabulary }: {
 }) {
   const setup = playbook.setup;
   const action = playbook.template ? convertingActOf(playbook.template.tree)[0] : goal.outcome.action;
-  const displayType = setup?.display_type ?? playbook.display_type;
+  const displayType = startingPointDisplayType(playbook);
   const placement = displayTypeDescription(displayType);
   const facts: { label: string; text: string }[] = [
     { label: __('Counts', 'wconvert'), text: goal.headline_label },
