@@ -787,6 +787,9 @@ need review. A new Playbook draft continues to use its own copy, not those sampl
 > **Picture focus** uses the `image-position` token on backgrounds and image
 > leaves. It can be overridden in the same `narrow` bag, so a phone crop can
 > focus on a different part of the picture. The default remains centred.
+> The editor offers a nine-dot position picker, precise percentage adjustments,
+> and verbatim custom CSS. Image fit and split ratios use visual previews of the
+> existing choices; opening a control never writes a value.
 >
 > **A scoped colour may name another colour rather than spell one**, and that
 > is what makes a scope survive a theme. `{"bg": "accent"}` follows whatever

@@ -4,6 +4,7 @@ import { SpacingField } from './SpacingField';
 import { GradientField, DEFAULT_GRADIENT } from './GradientField';
 import { ColorField } from './ColorField';
 import { ShadowField } from './ShadowField';
+import { PositionField } from './PositionField';
 import { Button } from '../components/ui/button';
 import { ChevronDown, RotateCcw } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '../components/ui/popover';
@@ -526,6 +527,8 @@ export function TokenField({
   const offered = CHOICES[token];
 
   const control = TOKENS.find(declaration => declaration.name === token)?.control;
+  if (control === 'position') return <PositionField label={label} shown={shown} offered={offered ?? []}
+    nameOfValue={choice => nameOf(labels.tokenValues, `${token}.${choice}`)} reset={reset} onChange={onChange} />;
   if (control === 'spacing') return <SpacingField label={label} shown={shown} fallback={fallback} standard={standard} reset={reset} onChange={onChange} />;
   if ((control === 'gradient' || control === 'image') && /gradient\(/i.test(shown)) {
     return <div className="grid gap-1"><GradientField label={label} shown={shown} reset={reset} open={open} onOpenChange={onOpenChange} onChange={onChange} />
@@ -881,7 +884,7 @@ function ChoiceField({
     <div className="wconvert-token">
       <span id={named}>{label}</span>
       <span className="wconvert-token__row">
-        <span role="group" aria-labelledby={named} className={TOKENS.find(item => item.name === token)?.control === 'position' ? 'wconvert-choice-set grid grid-cols-3 w-full' : 'wconvert-choice-set'}>
+        <span role="group" aria-labelledby={named} className="wconvert-choice-set">
           {offered.map((choice) => (
             <label key={choice} className="wconvert-choice">
               <input
@@ -902,7 +905,7 @@ function ChoiceField({
                 stops this control needing to know which way the admin reads.
               */}
               <span
-                className={TOKENS.find(item => item.name === token)?.control === 'position' ? 'wconvert-choice__label whitespace-normal text-center' : 'wconvert-choice__label'}
+                className="wconvert-choice__label"
                 style={isFontStack(choice) ? { fontFamily: choice } : undefined}
               >
                 {nameOf(labels.tokenValues, `${token}.${choice}`)}

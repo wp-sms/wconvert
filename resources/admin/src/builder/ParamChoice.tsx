@@ -53,6 +53,7 @@ export function ParamChoice({
   fallback,
   nameOfValue,
   renderChoice,
+  columns,
   onChange,
 }: {
   /** A stable key for the radio group — never a translated string. */
@@ -77,6 +78,8 @@ export function ParamChoice({
    * *"check, Free shipping"* is noise.
    */
   readonly renderChoice?: (choice: string) => ReactNode;
+  /** Wider previews get equal-sized tiles; ordinary choices remain compact chips. */
+  readonly columns?: 2 | 3;
   readonly onChange: (value: unknown) => void;
 }) {
   if (offered.length === 0) {
@@ -92,7 +95,7 @@ export function ParamChoice({
         question they answer — and the question is the whole of what
         distinguishes *Required* from *Optional*.
       */}
-      <span role="group" aria-labelledby={`wconvert-param-${id}`} className="wconvert-choice-set">
+      <span role="group" aria-labelledby={`wconvert-param-${id}`} className={columns ? 'wconvert-choice-set wconvert-choice-set--tiles' : 'wconvert-choice-set'} style={columns ? { gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` } : undefined}>
         {offered.map((choice) => (
           <label key={choice} className="wconvert-choice">
             <input

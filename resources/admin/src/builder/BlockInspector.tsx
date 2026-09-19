@@ -10,6 +10,7 @@ import {
 } from '../components/ui/dropdown-menu';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { ParamChoice } from './ParamChoice';
+import { ImageFitPreview, SplitRatioPreview } from './ChoicePreview';
 import { SlotFields } from './SlotFields';
 import { nameOfBlock, stepName } from './BlockRow';
 import { LAYOUTS, slotsOf, withHidden, withValue, type Path, type Slot } from './panel';
@@ -181,6 +182,9 @@ export function BlockInspector({
                   nameOfValue={(choice) =>
                     nameOf(labels.nodeParamValues, `${slot.type}.${setting.param}.${choice}`)
                   }
+                  columns={slot.type === 'image' && setting.param === 'fit' ? 2 : undefined}
+                  renderChoice={slot.type === 'image' && setting.param === 'fit'
+                    ? choice => <ImageFitPreview fit={choice} src={slot.values.src} /> : undefined}
                   onChange={(value) =>
                     onChange({ ...template, tree: withValue(template.tree, path, setting.param, value) })
                   }
@@ -300,6 +304,9 @@ function LayoutParams({
           held={valueOf(param)}
           fallback={declared?.defaults?.[param]}
           nameOfValue={(choice) => nameOf(labels.layoutParamValues, `${type}.${param}.${choice}`)}
+          columns={type === 'split' && param === 'ratio' ? 3 : undefined}
+          renderChoice={type === 'split' && param === 'ratio'
+            ? choice => <SplitRatioPreview ratio={choice} /> : undefined}
           onChange={(value) => onParam(param, value)}
         />
       ))}

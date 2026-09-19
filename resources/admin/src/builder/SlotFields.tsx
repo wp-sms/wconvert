@@ -5,6 +5,7 @@ import { CalendarClock, ImagePlus } from 'lucide-react';
 import { GLYPHS } from '@renderer/render';
 import { Button } from '../components/ui/button';
 import { ParamChoice } from './ParamChoice';
+import { ImageFitPreview } from './ChoicePreview';
 import { InterestOptions } from './InterestOptions';
 import { readable, hasScheduleEnded } from '../lib/wallTime';
 import { adminSettings } from '../settings';
@@ -187,8 +188,11 @@ export function SlotFields({
           renderChoice={
             setting.param === 'name' && slot.type === 'icon'
               ? (choice) => <Glyph name={choice} />
+              : setting.param === 'fit' && slot.type === 'image'
+                ? (choice) => <ImageFitPreview fit={choice} src={slot.values.src} />
               : undefined
           }
+          columns={setting.param === 'fit' && slot.type === 'image' ? 2 : undefined}
           onChange={(value) => onParam(setting.param, value)}
         />
       ))}

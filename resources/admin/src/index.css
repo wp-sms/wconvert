@@ -4464,6 +4464,186 @@
   color: inherit;
 }
 
+/* Spatial choices show the result, while preserving the native radio inputs. */
+.wconvert-choice-set--tiles {
+  display: grid;
+  inline-size: 100%;
+  gap: 4px;
+  padding: 4px;
+}
+
+.wconvert-choice-set--tiles .wconvert-choice {
+  position: relative;
+  min-inline-size: 0;
+  align-items: stretch;
+}
+
+.wconvert-choice-set--tiles .wconvert-choice__label {
+  inline-size: 100%;
+  min-inline-size: 0;
+  gap: 8px;
+  padding: 8px 4px;
+  white-space: normal;
+  text-align: center;
+  line-height: 1.4;
+}
+
+.wconvert-fit-preview {
+  display: block;
+  inline-size: 100%;
+  block-size: 56px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: var(--card);
+  color: var(--primary);
+}
+
+.wconvert-fit-preview :is(img, svg) {
+  display: block;
+  inline-size: 100%;
+  block-size: 100%;
+  max-inline-size: none;
+}
+
+.wconvert-split-preview {
+  display: flex;
+  gap: 3px;
+  inline-size: 100%;
+  block-size: 40px;
+}
+
+.wconvert-split-preview > span {
+  display: grid;
+  place-items: center;
+  min-inline-size: 0;
+  border: 1px solid var(--border);
+  border-radius: 3px;
+  background: var(--card);
+  color: var(--foreground);
+  font-size: var(--text-micro);
+}
+
+.wconvert-split-preview > span:first-child {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: var(--primary-foreground);
+}
+
+.wconvert-position {
+  min-inline-size: 0;
+}
+
+.wconvert-position__heading,
+.wconvert-position__row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.wconvert-position__heading {
+  justify-content: space-between;
+}
+
+.wconvert-position__grid {
+  display: grid;
+  grid-template-columns: repeat(3, 28px);
+  grid-template-rows: repeat(3, 28px);
+  flex: none;
+  gap: 3px;
+  padding: 5px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  background: var(--muted);
+  /* CSS image-position is physical, even in an RTL editor. */
+  direction: ltr;
+}
+
+.wconvert-position__target {
+  position: relative;
+  display: block;
+  margin: 0;
+  cursor: pointer;
+}
+
+.wconvert-position__target > span {
+  display: grid;
+  place-items: center;
+  inline-size: 100%;
+  block-size: 100%;
+  border: 1px solid transparent;
+  border-radius: 4px;
+}
+
+.wconvert-position__target > span > span {
+  inline-size: 6px;
+  block-size: 6px;
+  border-radius: 50%;
+  background: var(--muted-foreground);
+}
+
+.wconvert-position__target:hover > span {
+  background: var(--card);
+}
+
+.wconvert-position__target > input:checked + span {
+  background: var(--primary);
+  border-color: var(--primary);
+}
+
+.wconvert-position__target > input:checked + span > span {
+  background: var(--primary-foreground);
+}
+
+.wconvert-position__target > input:focus-visible + span {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+}
+
+.wconvert-position__summary {
+  display: grid;
+  justify-items: start;
+  gap: 6px;
+  min-inline-size: 0;
+  font-size: var(--text-note);
+}
+
+.wconvert-position__adjust {
+  display: grid;
+  gap: 10px;
+}
+
+.wconvert-position__coordinates {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.wconvert-position__coordinates label {
+  display: grid;
+  gap: 4px;
+  font-size: var(--text-micro);
+}
+
+.wconvert-position__adjust input {
+  inline-size: 100%;
+  min-inline-size: 0;
+}
+
+.wconvert-position__css summary {
+  font-size: var(--text-micro);
+  cursor: pointer;
+  margin-block-end: 4px;
+}
+
+@media (pointer: coarse) {
+  .wconvert-position__row { flex-wrap: wrap; }
+  .wconvert-position__grid {
+    grid-template-columns: repeat(3, 44px);
+    grid-template-rows: repeat(3, 44px);
+  }
+}
+
 /*
  * **The typed box stays, under the chips.** `choices` is what the panel offers
  * and never what is allowed — token values are unvalidated on both sides of the
