@@ -24,7 +24,13 @@ import { presenter, proLoaderFor } from './compose';
 export function bootProLoader(modules: readonly LoaderModule[], narrow?: PayloadNarrowing) {
   const loader = proLoaderFor(modules);
 
-  boot(loader, presenter, narrow);
+  // Insertion and manual precedence need the whole document, including a
+  // manually placed sidebar/footer anchor when an optimizer moves JS to head.
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => boot(loader, presenter, narrow), { once: true });
+  } else {
+    boot(loader, presenter, narrow);
+  }
 
   return loader;
 }

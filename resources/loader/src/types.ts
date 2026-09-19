@@ -189,5 +189,7 @@ export interface OptinControls {
 
 /** Whatever turns a decision into something on screen. */
 export interface Presenter {
+  /** Optional container selection after visitor eligibility, shared with diagnostics. */
+  select?(ready: readonly PayloadEntry[]): readonly PayloadEntry[];
   show(entry: PayloadEntry, controls: OptinControls): void;
 }

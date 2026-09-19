@@ -183,6 +183,9 @@ check has an opt-out, the opt-out is what runs on the day it matters.
   ***Amended by [ADR 0098](0098-fullscreen-is-a-pro-modal-surface.md): the number
   is 13,500 B.*** Fullscreen adds 777 B to the largest previous build. A module
   marker additionally proves fullscreen is absent from Free's visitor loader.
+  ***Amended by [ADR 0099](0099-automatic-inline-placement-uses-rendered-content.md):
+  the current ceiling is 14,012 B.*** Automatic inline adds a paid-tier module
+  marker and about 311 B to Elite, with no Free runtime or bypass.
 - **The payload budget is not a build gate.** It is generated per URL at runtime, so
   it has no artifact to weigh. It becomes a PHPUnit test that renders a worst-case
   published set and asserts the 2KB bound — *and* asserts the scaling property the

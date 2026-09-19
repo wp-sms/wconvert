@@ -37,6 +37,7 @@ import { PayloadMeter } from './PayloadMeter';
 import { ScopeStyle } from './ScopeStyle';
 import { StructureView } from './StructureView';
 import { DesignSettings } from './DesignSettings';
+import { InlinePlacementSettings, inlinePlacementLabel } from '../inlinePlacement';
 import { EditorCanvas, ScreenControls, DeviceControls } from './EditorCanvas';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../components/ui/dialog';
 import { canRedo, canUndo, historyOf, redo, remember, undo, type History } from './structure/history';
@@ -583,6 +584,14 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
     setSelection(null);
     setOpenToken(null);
   };
+  const inlineSummary = config.inline_placement == null
+    ? __('Manual — block or shortcode', 'wconvert')
+    : inlinePlacementLabel(config.inline_placement) ?? __('Automatic — check placement settings', 'wconvert');
+  const goToInlinePlacement = () => {
+    setTab('rules');
+    setPreviewing(false);
+    setRevealSection({ id: 'placement', focus: 'wconvert-section-placement-trigger' });
+  };
 
   return (
     <Tabs
@@ -673,6 +682,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
             vocabulary={vocabulary}
             displayType={displayTypeOf(config, templates)}
             placement={config.placement}
+            inlinePlacement={config.inline_placement}
             bound={bound}
             template={template}
             destinations={read(destinations)?.destinations ?? null}
@@ -683,6 +693,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
             onPreview={() => { setTab('design'); setPreviewing(true); setSelection(null); previewButton.current?.focus(); }}
             onEditDesign={() => { setTab('design'); setPreviewing(false); setShowLayers(true); layersButton.current?.focus(); }}
             onGoToDesign={() => { setTab('design'); setPreviewing(false); setBrowsing(true); }}
+            onGoToPlacement={goToInlinePlacement}
             onGoToDestinations={() => { setTab('destinations'); destinationsTab.current?.focus(); }}
             onGoToRules={(section) => { setTab('rules'); setRevealSection({ id: section }); }}
             onGoTo={goTo}
@@ -817,6 +828,10 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
               overlay={overlay}
               onChange={(patch) => edit(asConfigPatch(patch) as Config)}
               reveal={revealSection}
+              placement={displayTypeOf(config, templates) === 'inline' ? {
+                summary: inlineSummary,
+                controls: <InlinePlacementSettings config={config} vocabulary={vocabulary} onChange={edit} />,
+              } : undefined}
             />
           </div>
           {previewPane}
@@ -1017,6 +1032,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
 
           if (displayTypeOf(config, templates) !== chosenDesign.display_type) {
             changes.placement = null;
+            changes.inline_placement = null;
           }
 
           edit(changes);

@@ -24,6 +24,10 @@ placement on `popup` or `inline` are also removed at the write boundary.
 Extended by [ADR 0098](0098-fullscreen-is-a-pro-modal-surface.md): `fullscreen`
 also never retains placement; it occupies the entire viewport.
 
+Extended by [ADR 0099](0099-automatic-inline-placement-uses-rendered-content.md):
+inline automation uses the separate `inline_placement` setting, not this logical
+overlay `placement`. Template JSON still does not change.
+
 Applying another design of the same Display Type preserves placement. Changing
 Display Type resets it in the same undoable draft edit. No database schema and
 no Template JSON migration are introduced; the existing Optin configuration

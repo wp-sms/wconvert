@@ -4,6 +4,7 @@ import {
   AB_TESTING_MODULES,
   CART_MODULES,
   DISPLAY_TYPE_MODULES,
+  INLINE_PLACEMENT_MODULES,
   MODULES_AT,
   PREMIUM_TRIGGER_MODULES,
 } from '../../resources/loader/src/modules';
@@ -42,6 +43,7 @@ import type { LoaderModule } from '@loader/types';
  */
 const MODULE_DIRECTORIES: Readonly<Record<string, readonly LoaderModule[]>> = {
   'display-types': DISPLAY_TYPE_MODULES,
+  'inline-placement': INLINE_PLACEMENT_MODULES,
   'premium-triggers': PREMIUM_TRIGGER_MODULES,
   'ab-testing': AB_TESTING_MODULES,
   'cart-recovery': CART_MODULES,

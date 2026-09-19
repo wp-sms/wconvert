@@ -1,5 +1,5 @@
 import { createPanel } from './panel';
-import { explain } from './explain';
+import { explain, type PresentationChecks } from './explain';
 import { funnel } from './report';
 import { readArrival } from './arrival';
 import type { PayloadNarrowing } from '../boot';
@@ -71,7 +71,7 @@ const INSPECTOR_ELEMENT_ID = 'wconvert-inspector';
  * distinction the row above already makes (ADR 0047's reasoning about a
  * seventh `Standing`, one screen over).
  */
-export function runInspector(loader: Loader, narrow?: PayloadNarrowing): void {
+export function runInspector(loader: Loader, narrow?: PayloadNarrowing, presentation?: PresentationChecks): void {
   const server = readServerReport();
 
   if (server === null) {
@@ -125,7 +125,7 @@ export function runInspector(loader: Loader, narrow?: PayloadNarrowing): void {
       now: instant,
       shown: new Set(),
       overlayDone: false,
-    });
+    }, presentation);
 
     panel.render(funnel(server as ServerReport, report, reached, arrival));
   }

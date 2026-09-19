@@ -2,6 +2,7 @@ import type { OptinControls, PayloadEntry, Presenter } from '@loader/types';
 import { captureInto, templatePresenter } from '@loader/present';
 import { mountPopover } from './popover';
 import { mountFullscreen } from './fullscreen';
+import { selectAutomatic, showAutomatic } from '../../inline-placement/loader';
 
 /**
  * Pro's presenter: the three Display Types free has no container for, and
@@ -40,9 +41,10 @@ import { mountFullscreen } from './fullscreen';
  * free's to draw (CONTEXT.md, Impression).
  */
 export const proPresenter: Presenter = {
+  select: selectAutomatic,
   show(entry: PayloadEntry, controls: OptinControls): void {
     if (entry.display_type !== 'floating_bar' && entry.display_type !== 'slide_in' && entry.display_type !== 'fullscreen') {
-      templatePresenter.show(entry, controls);
+      showAutomatic(entry, controls, templatePresenter);
 
       return;
     }

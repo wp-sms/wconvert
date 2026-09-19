@@ -242,6 +242,37 @@ final class OptinWriteTest extends TestCase
         self::assertArrayNotHasKey('placement', $draft['config']);
     }
 
+    public function testAutomaticInlineRejectsDelayedTriggersAndOtherFormatsDropTheSetting(): void
+    {
+        $draft = $this->create(Goal::GrowEmailList, ['display_type' => 'inline',
+            'inline_placement' => ['position' => 'after_paragraph', 'paragraph' => 3]]);
+        self::assertIsArray($draft);
+        self::assertSame('after_content', $draft['config']['inline_placement']['fallback']);
+        $delayed = $this->create(Goal::GrowEmailList, ['display_type' => 'inline',
+            'inline_placement' => ['position' => 'after_content'], 'rules' => [['type' => 'time_on_page', 'seconds' => 10]]]);
+        self::assertInstanceOf(WP_Error::class, $delayed);
+        self::assertSame('wconvert_inline_trigger', $delayed->get_error_code());
+        $popup = $this->create(Goal::GrowEmailList, ['display_type' => 'popup', 'inline_placement' => ['position' => 'after_content']]);
+        self::assertIsArray($popup);
+        self::assertArrayNotHasKey('inline_placement', $popup['config']);
+    }
+
+    public function testPublishRechecksAutomaticPlacementEvenForADraftWrittenOutsideRest(): void
+    {
+        $created = $this->create(Goal::GrowEmailList, ['template_id' => 'reading-slip', 'display_type' => 'inline',
+            'capture_mode' => 'local', 'inline_placement' => ['position' => 'after_content']]);
+        self::assertIsArray($created);
+        $config = $created['config'];
+        $config['rules'] = [['type' => 'time_on_page', 'seconds' => 10]];
+        $this->optins->saveDraft($created['id'], null, null, $config);
+        $request = new WP_REST_Request();
+        $request->set_param('id', $created['id']);
+        $response = $this->controller->publish($request);
+        self::assertInstanceOf(WP_Error::class, $response);
+        self::assertSame('wconvert_inline_trigger', $response->get_error_code());
+        self::assertNull($this->optins->find($created['id'])?->publishedAt);
+    }
+
     /** @param mixed $options
      * @return array<string, mixed>
      */
