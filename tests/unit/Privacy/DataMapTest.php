@@ -31,7 +31,9 @@ final class DataMapTest extends TestCase
             'destinations' => [],
             'browser' => [
                 'key' => 'wcv1',
+                'local_storage_expiry_days' => null,
                 'cookie_fallback' => true,
+                'cookie_fallback_days' => 365,
                 'contains_contact_details' => false,
                 'contains_visitor_identifier' => false,
             ],

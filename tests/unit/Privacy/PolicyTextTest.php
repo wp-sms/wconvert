@@ -5,6 +5,7 @@ namespace WConvert\Tests\Unit\Privacy;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use WConvert\Destination\DestinationRegistry;
+use WConvert\Destination\DestinationRequirements;
 use WConvert\Destination\DestinationStore;
 use WConvert\Privacy\DataMap;
 use WConvert\Privacy\PolicyText;
@@ -52,8 +53,22 @@ final class PolicyTextTest extends TestCase
     {
         $text = $this->policy->content();
 
-        $this->assertStringContainsString('until you delete them', $text);
-        $this->assertStringNotContainsString('days', $text);
+        $this->assertStringContainsString('until a site administrator deletes them', $text);
+        $this->assertStringNotContainsString('We keep form submissions for', $text);
+    }
+
+    public function testItUsesReaderQuestionsAndKeepsMerchantInstructionsOutOfSuggestedCopy(): void
+    {
+        $text = $this->policy->content();
+
+        $this->assertStringContainsString('<p class="privacy-policy-tutorial">', $text);
+        $this->assertStringContainsString('Before publishing', $text);
+        $this->assertStringContainsString('<strong class="privacy-policy-tutorial">Suggested text:</strong>', $text);
+        $this->assertStringContainsString('<h2>WConvert forms and campaigns</h2>', $text);
+        $this->assertStringContainsString('<h3>Information we collect</h3>', $text);
+        $this->assertStringContainsString('<h3>Who receives your information</h3>', $text);
+        $this->assertStringContainsString('<h3>How long we keep your information</h3>', $text);
+        $this->assertStringContainsString('<h3>Your choices and rights</h3>', $text);
     }
 
     /**
@@ -94,17 +109,20 @@ final class PolicyTextTest extends TestCase
         $text = $this->policy->content();
 
         $this->assertStringContainsString('local storage', $text);
-        $this->assertStringContainsString('cookie fallback', $text);
-        $this->assertStringContainsString('60 seconds', $text);
+        $this->assertStringContainsString('wcv1', $text);
+        $this->assertStringContainsString('cookie', $text);
+        $this->assertStringContainsString('one year', $text);
+        $this->assertStringContainsString('one minute', $text);
         $this->assertStringContainsString('one-way hash', $text);
-        $this->assertStringContainsString('network address itself is not stored', $text);
+        $this->assertStringContainsString('IP address itself is not saved', $text);
+        $this->assertStringContainsString('not linked to individual visitors', $text);
     }
 
     public function testItDoesNotClaimThatTheSubmissionStoresItsPageAddress(): void
     {
         $text = $this->policy->content();
 
-        $this->assertStringContainsString('does not attach the page address', $text);
+        $this->assertStringContainsString('do not add the page address', $text);
         $this->assertStringNotContainsString('page it came from', $text);
     }
 
@@ -112,18 +130,31 @@ final class PolicyTextTest extends TestCase
     {
         $text = $this->policy->content();
 
-        $this->assertStringContainsString('another service', $text);
-        $this->assertStringContainsString('backups must be handled separately', $text);
+        $this->assertStringContainsString('different retention periods', $text);
+        $this->assertStringContainsString('does not automatically remove copies', $text);
+        $this->assertStringContainsString('Those copies are managed separately', $text);
     }
 
     public function testItNamesConfiguredDestinationTypesWithoutPublishingInternalRouteNames(): void
     {
-        $this->types->register(new FakeDestinationType('mailing'));
-        $this->destinations->save(null, 'mailing', 'Internal launch list', null, []);
+        $type = new FakeDestinationType('mailing');
+        $type->declaredRequirements = new DestinationRequirements(
+            fields: ['email', 'name'],
+            mappedFields: ['interest' => [
+                'setting' => 'interest_field',
+                'label' => 'Interest',
+                'scope' => 'New subscribers only.',
+            ]]
+        );
+        $this->types->register($type);
+        $this->destinations->save(null, 'mailing', 'Internal launch list', null, [
+            'interest_field' => 'custom-interest',
+        ]);
 
         $text = $this->policy->content();
 
         $this->assertStringContainsString('Fake', $text);
+        $this->assertStringContainsString('email address, name, interest answer', $text);
         $this->assertStringNotContainsString('Internal launch list', $text);
     }
 
@@ -136,6 +167,6 @@ final class PolicyTextTest extends TestCase
 
         $this->assertCount(1, $suggested);
         $this->assertSame('WConvert', $suggested[0]['plugin']);
-        $this->assertStringContainsString('until you delete them', $suggested[0]['content']);
+        $this->assertStringContainsString('until a site administrator deletes them', $suggested[0]['content']);
     }
 }

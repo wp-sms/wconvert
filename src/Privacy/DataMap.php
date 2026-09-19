@@ -33,8 +33,8 @@ final class DataMap
     /**
      * @return array{
      *   retention_days: int|null,
-     *   destinations: list<array<string, mixed>>,
-     *   browser: array{key: string, cookie_fallback: bool, contains_contact_details: bool, contains_visitor_identifier: bool},
+     *   destinations: list<array{id: string, label: string, type: string, type_label: string, fields: list<string>|null}>,
+     *   browser: array{key: string, local_storage_expiry_days: null, cookie_fallback: bool, cookie_fallback_days: int, contains_contact_details: bool, contains_visitor_identifier: bool},
      *   beacon_rate_limit_seconds: int
      * }
      */
@@ -45,7 +45,9 @@ final class DataMap
             'destinations' => $this->configuredDestinations(),
             'browser' => [
                 'key' => 'wcv1',
+                'local_storage_expiry_days' => null,
                 'cookie_fallback' => true,
+                'cookie_fallback_days' => 365,
                 'contains_contact_details' => false,
                 'contains_visitor_identifier' => false,
             ],

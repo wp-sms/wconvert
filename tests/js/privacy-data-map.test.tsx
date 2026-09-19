@@ -19,7 +19,9 @@ const MAP = {
   ],
   browser: {
     key: 'wcv1',
+    local_storage_expiry_days: null,
     cookie_fallback: true,
+    cookie_fallback_days: 365,
     contains_contact_details: false,
     contains_visitor_identifier: false,
   },
@@ -44,6 +46,7 @@ it('explains this site’s actual WConvert storage and configured routes in merc
   expect(within(region).getByText('MailPoet')).toBeVisible();
   expect(within(region).getByText(/Email address, name, interest answer/i)).toBeVisible();
   expect(within(region).getByText(/local storage/i)).toBeVisible();
+  expect(within(region).getByText(/one year/i)).toBeVisible();
   expect(within(region).getByText(/one minute/i)).toBeVisible();
   expect(within(region).getByText(/CSV files, destination copies, email logs or backups/i)).toBeVisible();
 });

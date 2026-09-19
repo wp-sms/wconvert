@@ -39,6 +39,14 @@ const rateLimitText = (seconds: number) => seconds === 60
     seconds.toLocaleString(),
   );
 
+const cookieDurationText = (days: number) => days === 365
+  ? __('one year', 'wconvert')
+  : sprintf(
+    /* translators: %s: number of days. */
+    _n('%s day', '%s days', days, 'wconvert'),
+    days.toLocaleString(),
+  );
+
 /** A read-only explanation of this install's actual personal-data boundaries. */
 export function PrivacyDataMap() {
   const [state, setState] = useState<Loadable<DataMap>>(LOADING);
@@ -101,7 +109,11 @@ export function PrivacyDataMap() {
             {__('Browser and anonymous counts', 'wconvert')}
           </h3>
           <Description className="mt-1">
-            {__('The visitor’s browser keeps display, dismissal, conversion and optional A/B assignment state in local storage, with a cookie fallback. It contains no contact details and no WConvert-generated visitor identifier.', 'wconvert')}
+            {sprintf(
+              /* translators: %s: the fallback cookie lifetime in days. */
+              __('The visitor’s browser keeps display, dismissal, conversion and optional A/B assignment state in local storage, which has no set expiry. If local storage is unavailable, a cookie fallback lasts up to %s. It contains no contact details and no WConvert-generated visitor identifier.', 'wconvert'),
+              cookieDurationText(data.browser.cookie_fallback_days),
+            )}
           </Description>
           <Description className="mt-2">
             {sprintf(
