@@ -5,6 +5,9 @@ namespace WConvert\Container;
 use WConvert\Lead\LeadRepository;
 use WConvert\Optin\OptinRepository;
 use WConvert\Destination\DeliveryFailures;
+use WConvert\Destination\DestinationRegistry;
+use WConvert\Destination\DestinationStore;
+use WConvert\Privacy\DataMap;
 use WConvert\Privacy\LeadErasure;
 use WConvert\Privacy\LeadEraser;
 use WConvert\Privacy\LeadExporter;
@@ -16,9 +19,9 @@ defined('ABSPATH') || exit;
 
 /**
  * The personal-data surface: the exporter, the eraser, the suggested
- * privacy-policy text, and the retention pruning job.
+ * privacy-policy text, the shared Data Map, and the retention pruning job.
  *
- * **All four boot on every request, admin or not.** The exporter and eraser
+ * **The three hook-owning services boot on every request, admin or not.** The exporter and eraser
  * are filters WordPress applies inside its own privacy tools, so registering
  * them behind `is_admin()` would work today and break the moment those tools
  * are driven by WP-CLI or by a cron request. The pruner has to be registered
@@ -36,6 +39,15 @@ final class PrivacyServiceProvider implements ServiceProvider
 {
     public function register(ServiceContainer $container): void
     {
+        $container->register(
+            DataMap::class,
+            static fn (ServiceContainer $c): DataMap => new DataMap(
+                $c->resolve(RetentionPeriod::class),
+                $c->resolve(DestinationStore::class),
+                $c->resolve(DestinationRegistry::class)
+            )
+        );
+
         $container->register(
             LeadErasure::class,
             static fn (ServiceContainer $c): LeadErasure => new LeadErasure(
@@ -59,7 +71,7 @@ final class PrivacyServiceProvider implements ServiceProvider
 
         $container->register(
             PolicyText::class,
-            static fn (ServiceContainer $c): PolicyText => new PolicyText($c->resolve(RetentionPeriod::class))
+            static fn (ServiceContainer $c): PolicyText => new PolicyText($c->resolve(DataMap::class))
         );
 
         $container->register(

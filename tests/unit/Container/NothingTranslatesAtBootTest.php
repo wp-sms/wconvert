@@ -102,6 +102,7 @@ final class NothingTranslatesAtBootTest extends TestCase
         MonthlyTargetsController::class => '/monthly-targets',
         MilestoneController::class => '/milestones',
         DestinationController::class => '/destinations',
+        \WConvert\Rest\PrivacyController::class => '/privacy/data-map',
     ];
 
     /**

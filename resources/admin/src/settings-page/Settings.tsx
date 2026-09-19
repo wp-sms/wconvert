@@ -6,6 +6,7 @@ import { Input } from '../components/ui/input';
 import { settingsHref, type SettingsGroup } from '../nav';
 import { SiteAllowance } from '../optins/SiteAllowance';
 import { LeadRetention } from '../leads/LeadRetention';
+import { PrivacyDataMap } from '../privacy/PrivacyDataMap';
 import { Destinations } from '../destinations/Destinations';
 import type { SettingsEditing } from './useSettingsEditing';
 import { Region, RegionBody, RegionHeader } from '../shell/Region';
@@ -87,6 +88,7 @@ export function Settings({
               expanded
               onEditingStateChange={onEditingStateChange}
             />
+            <PrivacyDataMap />
             <Region>
               <RegionHeader
                 title={__('Export and personal data', 'wconvert')}

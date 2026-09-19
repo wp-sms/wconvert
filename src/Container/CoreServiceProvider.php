@@ -66,6 +66,7 @@ use WConvert\Rest\LeadController;
 use WConvert\Rest\MilestoneController;
 use WConvert\Rest\OptinController;
 use WConvert\Rest\PlaybookController;
+use WConvert\Rest\PrivacyController;
 use WConvert\Rest\RateLimit;
 use WConvert\Rest\RestController;
 use WConvert\Rest\RuleController;
@@ -135,6 +136,7 @@ final class CoreServiceProvider implements ServiceProvider
         MonthlyTargetsController::class,
         MilestoneController::class,
         DestinationController::class,
+        PrivacyController::class,
     ];
 
     public function register(ServiceContainer $container): void
@@ -572,6 +574,13 @@ final class CoreServiceProvider implements ServiceProvider
                 // second path that would prove itself and nothing else (#88).
                 $c->resolve(PushDispatcher::class),
                 new \WConvert\Destination\DestinationUsage($c->resolve(\WConvert\Database\Connection::class))
+            )
+        );
+
+        $container->register(
+            PrivacyController::class,
+            static fn (ServiceContainer $c): PrivacyController => new PrivacyController(
+                $c->resolve(\WConvert\Privacy\DataMap::class)
             )
         );
 

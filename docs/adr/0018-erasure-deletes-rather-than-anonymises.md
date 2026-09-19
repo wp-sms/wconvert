@@ -94,6 +94,13 @@ rows, so the grouping relationship is still never treated as asserted identity.*
   boundary is computed from the moment the job runs rather than from the moment
   it was scheduled. The "exists from day one and has nothing to do" half is
   unchanged and is the part that mattered.*
+  *Completed by
+  [ADR 0094](0094-privacy-guidance-reports-the-current-data-flow.md): retention
+  is now one fact in a shared read-only Data Map. The WordPress suggestion also
+  names configured destination types and accurately discloses browser-local
+  campaign state and the short-lived anonymous-count rate-limit hash. It remains
+  suggested text for the merchant to review, never an automatically published
+  policy or a compliance claim.*
 - **The retention period is one non-autoloaded WordPress option, not a column.**
   It is a single integer for the whole site, read once a day by the pruner and
   once per render by the settings panel — the table-free alternative the

@@ -53,6 +53,15 @@ search and CSV, then confirms deletion of every retained Lead whose `phone`
 column directly contains it. The destructive control lives with that exact
 result scope, not as a second request inbox or a per-Lead row action.*
 
+*Amended by
+[ADR 0094](0094-privacy-guidance-reports-the-current-data-flow.md): Data &
+privacy also contains a read-only “Your data flow” region between retention and
+the existing export/request actions. It reports this install's saved retention,
+configured destination types, browser-local state, anonymous-count rate limit
+and external-copy boundary using the shared region/loading/error vocabulary.
+It links back to the existing settings owners and does not add an overview,
+request inbox or separate compliance dashboard.*
+
 ## Submissions and operational recovery
 
 Submissions is the default Leads workspace, not one of two peer tabs. No view
