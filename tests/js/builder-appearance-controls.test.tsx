@@ -187,6 +187,21 @@ describe('staying in the field while editing', () => {
     expect(changed).not.toHaveBeenCalled();
   });
 
+  it('keeps an authored shadow editor focused when its CSS becomes a named preset', async () => {
+    const changed = vi.fn();
+    const layered = CHOICES.shadow.find(value => value.includes('),'))!;
+    render(<Control token="shadow" initial="0 0 2px #111, 0 0 4px #222" fallback="none" changed={changed} />);
+    const input = screen.getByRole('textbox', { name: 'Setting value' });
+    await userEvent.clear(input);
+    await userEvent.type(input, layered);
+    await userEvent.keyboard('{Enter}');
+    expect(input).toHaveFocus();
+    expect(input).toHaveValue(layered);
+    expect(changed).toHaveBeenCalledExactlyOnceWith(layered);
+    await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Setting' }), 'none');
+    expect(screen.queryByRole('textbox', { name: 'Setting value' })).not.toBeInTheDocument();
+  });
+
   it('keeps the picture while a replacement address is being typed, then commits once', async () => {
     const changed = vi.fn();
     function Picture() {
