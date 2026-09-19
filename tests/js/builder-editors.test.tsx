@@ -93,33 +93,16 @@ const open = async (eyebrow: string) => {
   }
 };
 
-/**
- * Which rule types an add control is offering.
- *
- * Read off the `<optgroup>` labels rather than through `getByRole`: an
- * `optgroup` maps to the ARIA `group` role and Testing Library does not expose
- * it inside a `<select>`, so a query for one is null whether it is there or
- * not — which would make the assertions below pass on a control offering
- * nothing at all.
- */
-const offered = (label: string): string[] => {
-  const control = screen.getByLabelText(label);
-
-  return [
-    // A type with shortcuts is a group; one without is a bare option, because
-    // a group of one is the same word at two indent levels.
-    ...[...control.querySelectorAll('optgroup:not([disabled])')].map((group) => (group as HTMLOptGroupElement).label),
-    ...[...control.querySelectorAll(':scope > option')]
-      .filter((option) => (option as HTMLOptionElement).value !== '')
-      .map((option) => option.textContent ?? ''),
-  ];
+/** Read the actual searchable picker, including unavailable metadata. */
+const ruleMenu = async (label: string) => {
+  const trigger = screen.getByRole('button', { name: label });
+  if (trigger.getAttribute('aria-expanded') !== 'true') await userEvent.click(trigger);
+  return screen.getByRole('dialog', { name: 'Choose a rule' });
 };
-
-/** What the menu says this install CANNOT run, as its disabled group labels. */
-const absent = (label: string): string[] =>
-  [...screen.getByLabelText(label).querySelectorAll('optgroup[disabled]')].map(
-    (group) => (group as HTMLOptGroupElement).label,
-  );
+const offered = async (label: string): Promise<string[]> =>
+  [...(await ruleMenu(label)).querySelectorAll('[data-available="true"]')].map(group => group.getAttribute('aria-label') ?? '');
+const absent = async (label: string): Promise<string[]> =>
+  [...(await ruleMenu(label)).querySelectorAll('[data-available="false"]')].map(group => group.getAttribute('aria-label') ?? '');
 
 describe('the four sections', () => {
   it('asks Where, When, Who and How often, in that order', () => {
@@ -331,7 +314,7 @@ describe('when it shows and who sees it', () => {
 
     await open('When it appears');
 
-    expect(offered('Add a trigger')).not.toContain(type);
+    expect(await offered('Add a trigger')).not.toContain(type);
   });
 
   /**
@@ -345,9 +328,9 @@ describe('when it shows and who sees it', () => {
 
     await open('When it appears');
 
-    expect(offered('Add a trigger')).not.toContain('time_on_page');
+    expect(await offered('Add a trigger')).not.toContain('time_on_page');
     // ...and the ones that ARE two different things stay on offer.
-    expect(offered('Add a trigger')).toContain('scroll_depth');
+    expect(await offered('Add a trigger')).toContain('scroll_depth');
   });
 
   it('keeps offering a trigger whose params say WHICH thing', async () => {
@@ -355,7 +338,7 @@ describe('when it shows and who sees it', () => {
 
     await open('When it appears');
 
-    expect(offered('Add a trigger')).toContain('click_element');
+    expect(await offered('Add a trigger')).toContain('click_element');
   });
 
   /**
@@ -372,8 +355,8 @@ describe('when it shows and who sees it', () => {
 
     await open('Audience');
 
-    expect(offered('Add a condition')).not.toContain('device');
-    expect(offered('Add a condition')).toContain('query_param');
+    expect(await offered('Add a condition')).not.toContain('device');
+    expect(await offered('Add a condition')).toContain('query_param');
   });
 
   /** A pair already stored is shown and explained, never hidden. */
@@ -419,9 +402,9 @@ describe('when it shows and who sees it', () => {
 
     await open('When it appears');
 
-    const add = screen.getByLabelText('Add a trigger');
+    const add = await ruleMenu('Add a trigger');
 
-    expect(within(add).queryByRole('option', { name: 'page_load' })).toBeNull();
+    expect(within(add).queryByRole('button', { name: 'page_load' })).toBeNull();
   });
 
   /**
@@ -665,22 +648,22 @@ describe('a rule type this install cannot run', () => {
 
     await open('When it appears');
 
-    expect(offered('Add a trigger')).not.toContain('click_element');
+    expect(await offered('Add a trigger')).not.toContain('click_element');
     // ==========================================================================
     // NAMED IN THE MENU, WHICH IS WHERE THE MERCHANT WENT LOOKING FOR IT.
     // ==========================================================================
     // It was a permanent block of chips under the Add control, drawn on every
     // visit of every section. ADR 0026's `explain` is unchanged; what moved is
     // which thing the list is (ADR 0054).
-    expect(absent('Add a trigger')).toContain('With WConvert Pro');
+    expect(await absent('Add a trigger')).toContain('With WConvert Pro');
 
-    const menu = screen.getByLabelText('Add a trigger');
-    const pro = menu.querySelector('optgroup[disabled][label="With WConvert Pro"]') as HTMLElement;
+    const menu = await ruleMenu('Add a trigger');
+    const pro = menu.querySelector('[data-available="false"][aria-label="With WConvert Pro"]') as HTMLElement;
 
     expect(within(pro).getByText('click_element')).toBeInTheDocument();
     // Metadata, never a control: Guideline 9 fires on a real control the user
     // cannot use, and there is nothing here a click could reach (ADR 0015).
-    expect(within(pro).getByText('click_element')).toBeDisabled();
+    expect(within(pro).queryByRole('button')).toBeNull();
   });
 
   /**
@@ -715,13 +698,13 @@ describe('a rule type this install cannot run', () => {
     // Grouping BY what is missing is ADR 0026's own argument applied to the
     // shape: an install missing two plugins gets two honest lines rather than
     // one lumped "not available on this site".
-    const menu = screen.getByLabelText('Add a condition');
-    const woo = menu.querySelector('optgroup[disabled][label="Needs WooCommerce"]') as HTMLElement;
+    const menu = await ruleMenu('Add a condition');
+    const woo = menu.querySelector('[data-available="false"][aria-label="Needs WooCommerce"]') as HTMLElement;
 
     expect(within(woo).getByText('cart_has_items')).toBeInTheDocument();
     expect(within(woo).getByText('cart_value_min')).toBeInTheDocument();
     // Never an upsell: a rule the SITE cannot serve is not ours to sell.
-    expect(absent('Add a condition')).not.toContain('With WConvert Pro');
+    expect(await absent('Add a condition')).not.toContain('With WConvert Pro');
   });
 
   /**
@@ -733,7 +716,7 @@ describe('a rule type this install cannot run', () => {
 
     await open('Audience');
 
-    expect(absent('Add a condition')).toEqual([]);
+    expect(await absent('Add a condition')).toEqual([]);
   });
 
   /** And a rule already ON the Optin says the same thing on its own row. */
@@ -761,14 +744,15 @@ describe('where it shows', () => {
     await open('Pages');
 
     for (const list of screen.getAllByLabelText('Add')) {
-      expect(within(list).getAllByRole('option').map((option) => option.textContent)).toEqual([
-        'Choose…',
+      await userEvent.click(list);
+      expect(within(screen.getByRole('dialog')).getAllByRole('button').map(button => button.textContent)).toEqual([
         'post',
         'singular',
         'archive',
         'term',
         'url',
       ]);
+      await userEvent.keyboard('{Escape}');
     }
   });
 
@@ -800,10 +784,11 @@ describe('where it shows', () => {
     for (const list of screen.getAllByLabelText('Add')) {
       // Named, and unreachable — the same rendering the other three axes give
       // a locked type, from the same `renderingFor` cascade.
-      expect(within(list).getByText('url')).toBeDisabled();
-      expect(
-        [...list.querySelectorAll('optgroup[disabled]')].map((group) => (group as HTMLOptGroupElement).label),
-      ).toContain('With WConvert Pro');
+      await userEvent.click(list);
+      const reason = screen.getByRole('group', { name: 'With WConvert Pro' });
+      expect(within(reason).getByText('url')).toBeInTheDocument();
+      expect(within(reason).queryByRole('button')).toBeNull();
+      await userEvent.keyboard('{Escape}');
     }
   });
 
@@ -820,7 +805,9 @@ describe('where it shows', () => {
     await open('Pages');
 
     for (const list of screen.getAllByLabelText('Add')) {
-      expect(within(list).queryByRole('option', { name: 'logged_in' })).toBeNull();
+      await userEvent.click(list);
+      expect(within(screen.getByRole('dialog')).queryByRole('button', { name: 'logged_in' })).toBeNull();
+      await userEvent.keyboard('{Escape}');
     }
 
     expect(screen.queryByLabelText('logged_in')).toBeNull();

@@ -16,11 +16,21 @@ This completes the progressive disclosure rule in [ADR 0054](0054-every-control-
 
 ### Visual choices and field arrangement
 
-Alignment and panel borders use compact icon rows with accessible names and hover titles. Alignment's Custom CSS icon sits in the same row. Image fit, shape and column proportions retain previews because their meaning is visual. Textual choices, including heading weight, letter spacing, line spacing, animation and least height, use native selects. Boolean settings use checkboxes. An off-list parameter remains visible as the current value until a preset is chosen, without coercing or replacing stored data.
+Alignment and panel borders use compact icon rows with accessible names and hover titles. Alignment's Custom CSS icon sits in the same row. Image fit, shape and column proportions retain previews because their meaning is visual. Textual choices, including heading weight, letter spacing, line spacing, animation and minimum height, use native selects. Boolean settings use checkboxes. An off-list parameter remains visible as the current value until a preset is chosen, without coercing or replacing stored data.
 
 Local overrides no longer print a bare “Custom” status below every field: the displayed value and reset action already communicate that state. Inheritance links, palette-follow actions and mobile override notices remain.
 
 The manifest groups body text, headings, pictures and effects separately and supplies field order within each section. Picture controls lead a picture scope. Gap and corner rounding share a row when at least 268px is available; other controls keep their full width. Numeric resets sit beside field labels, so changing a value does not squeeze its number and unit inputs. Image fit, shape and other element settings are visible at the top of Style, without an extra disclosure. Copy/paste styles follows the settings; mobile inheritance details use a compact disclosure with a visible override count.
+
+Picture focus appears only when the current scope or a descendant has a picture. The decision follows desktop/mobile background overrides and the renderer's panel/media background reset. The global control also considers pictures used only on mobile. Gradient-only and empty backgrounds do not need focus; custom CSS image expressions remain editable. Empty image elements keep their source control but hide fit and shape until a source is present. Hiding controls never clears their stored values.
+
+Labels use short familiar terms: Minimum height, Gap, Picture fit, Required field and Badge position. This changes wording only, not the manifest keys or saved values.
+
+## Adding rules
+
+The Add rule control opens a searchable, viewport-bounded popover. Type labels, preset labels and phrases are searchable together; Time delay makes “delay” discoverable. A preset or the general form is still one selection. Pro-only and missing-dependency types remain searchable, noninteractive text grouped under their distinct explanations, refining the menu presentation in [ADR 0026](0026-a-goal-the-site-cannot-serve-is-hidden.md).
+
+Search receives focus on opening. Arrow keys move between results, Home/End reach the ends, and Escape closes and returns focus to Add. Opening, searching and closing write nothing. Content follows the document's RTL direction, uses logical spacing, wraps long labels and scrolls independently below the search field.
 
 ## Starting points
 

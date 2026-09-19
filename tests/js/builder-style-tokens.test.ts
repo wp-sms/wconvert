@@ -41,3 +41,43 @@ describe('contextual appearance', () => {
     expect(inheritedStyle(chain, template, 'fg', 'narrow')).toBe('#222');
   });
 });
+
+
+describe('picture controls follow the content without discarding values', () => {
+  const hasFocus = (value: Template, path: (string | number)[] | null, width: 'tokens' | 'narrow' = 'tokens') =>
+    styleTokens(value, path, width).some(token => token.name === 'image-position');
+
+  it('hides focus on empty and gradient-only designs, preserving the saved crop', () => {
+    const value: Template = { ...template, tokens: { 'image-position': '80% 20%', 'bg-image': 'linear-gradient(red, blue)' } };
+    const before = JSON.stringify(value);
+    expect(hasFocus(value, null)).toBe(false);
+    expect(hasFocus(value, [0])).toBe(false);
+    expect(JSON.stringify(value)).toBe(before);
+    expect(hasFocus({ ...value, tokens: { ...value.tokens, 'bg-image': 'url(photo.jpg)' } }, null)).toBe(true);
+  });
+
+  it('offers focus for descendant photos and hides it when their source is cleared', () => {
+    const value: Template = { tokens: {}, tree: { steps: [{ type: 'stack', children: [{ type: 'image', src: '/photo.jpg', alt: '' }] }] } };
+    expect(hasFocus(value, null)).toBe(true);
+    expect(hasFocus(value, [0])).toBe(true);
+    expect(hasFocus(value, [0, 'children', 0])).toBe(true);
+    const empty: Template = { ...value, tree: { steps: [{ type: 'stack', children: [{ type: 'image', src: '', alt: '' }] }] } };
+    expect(hasFocus(empty, [0])).toBe(false);
+  });
+
+  it('matches the renderer’s background reset and mobile override', () => {
+    const value: Template = { tokens: { 'bg-image': 'url(global.jpg)' }, tree: { steps: [{ type: 'media', children: [], narrow: { 'bg-image': 'url(mobile.jpg)' } }] } };
+    expect(hasFocus(value, null)).toBe(true);
+    expect(hasFocus(value, [0])).toBe(false);
+    expect(hasFocus(value, [0], 'narrow')).toBe(true);
+    const onlyMobile: Template = { ...value, tokens: {} };
+    expect(hasFocus(onlyMobile, null)).toBe(true);
+    const hiddenOnMobile: Template = { tokens: {}, tree: { steps: [{ type: 'panel', children: [], tokens: { 'bg-image': 'url(photo.jpg)' }, narrow: { 'bg-image': 'none' } }] } };
+    expect(hasFocus(hiddenOnMobile, [0])).toBe(true);
+    expect(hasFocus(hiddenOnMobile, [0], 'narrow')).toBe(false);
+  });
+
+  it('keeps focus available for custom CSS image expressions', () => {
+    expect(hasFocus({ ...template, tokens: { 'bg-image': 'var(--brand-art)' } }, null)).toBe(true);
+  });
+});

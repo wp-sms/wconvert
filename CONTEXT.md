@@ -788,7 +788,7 @@ need review. A new Playbook draft continues to use its own copy, not those sampl
 > leaves. It can be overridden in the same `narrow` bag, so a phone crop can
 > focus on a different part of the picture. The default remains centred.
 > The editor offers a nine-dot position picker, precise percentage adjustments,
-> and verbatim custom CSS. Image fit and split ratios use visual previews of the
+> and verbatim custom CSS. Focus appears only where a picture is present; hiding it preserves its value. Image fit and split ratios use visual previews of the
 > existing choices; opening a control never writes a value. Alignment and borders use compact icons; picture shape keeps a preview.
 > Textual choices, including typography, use selects and booleans use checkboxes. The inspector groups
 > picture, heading, body text and effect settings, pairing short measurements

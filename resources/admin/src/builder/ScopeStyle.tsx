@@ -87,7 +87,7 @@ export function ScopeStyle({
 
       <ScopeContrast chain={chain} template={template} labels={labels} width={width} />
 
-      {[...groupsOf(styleTokens(template, path))]
+      {[...groupsOf(styleTokens(template, path, width))]
         .sort(
           (a, b) =>
             Number(pictureFirst && b.id === 'image') - Number(pictureFirst && a.id === 'image'),

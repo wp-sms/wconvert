@@ -4,6 +4,7 @@ import { SpacingField } from './SpacingField';
 import { GradientField, DEFAULT_GRADIENT } from './GradientField';
 import { ColorField } from './ColorField';
 import { ShadowField } from './ShadowField';
+import { styleTokens } from './styleTokens';
 import { PositionField } from './PositionField';
 import { Button } from '../components/ui/button';
 import { ChevronDown, CodeXml, RotateCcw } from 'lucide-react';
@@ -248,7 +249,7 @@ export function Tokens({
   onError: (cause: unknown) => void;
 }) {
   const [copied, setCopied] = useState<number | null>(null);
-  const groups = groupsOf();
+  const groups = groupsOf(styleTokens(template, null));
   const hasDesign = Object.keys(design).length > 0;
 
   const write = (tokens: Readonly<Record<string, string>>) =>

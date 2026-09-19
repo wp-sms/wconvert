@@ -46,7 +46,8 @@ body.wconvert-fullscreen #wconvert-admin .wconvert-workspace {
   min-width: 80px;
   height: 32px;
   padding: 5px 8px;
-  margin: 0 8px 0 0;
+  margin: 0;
+  margin-inline-end: 8px;
   border: 1px solid transparent;
   border-inline-start-color: var(--editor-rule);
   border-radius: 4px;
@@ -1033,3 +1034,56 @@ body .wconvert-launch-review [data-slot='dialog-description'] { margin: 0; }
 #wconvert-admin .wconvert-token .wconvert-font { block-size: 32px; min-block-size: 32px; }
 /* Reserve two label lines so paired sliders and inputs keep the same baseline. */
 .wconvert-fields__item[data-compact] .wconvert-field-heading { min-block-size: 32px; }
+
+/* Search stays visible while choices scroll; logical sizing also serves RTL. */
+body .wconvert-rule-picker {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-block-size: 0;
+}
+body .wconvert-rule-picker input[type='search'] {
+  inline-size: 100%;
+  min-inline-size: 0;
+  min-block-size: 32px;
+  margin: 0;
+  font-size: var(--text-note);
+}
+body .wconvert-rule-picker__results {
+  max-block-size: 320px;
+  min-block-size: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+body .wconvert-rule-picker__heading {
+  margin: 8px 6px 4px;
+  font-size: var(--text-micro);
+  font-weight: 600;
+  color: var(--muted-foreground);
+}
+body .wconvert-rule-picker__results button {
+  display: block;
+  inline-size: 100%;
+  min-block-size: 32px;
+  padding: 6px 8px;
+  border: 0;
+  border-radius: 4px;
+  background: transparent;
+  text-align: start;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  font-size: var(--text-note);
+  cursor: pointer;
+}
+body .wconvert-rule-picker__results button:is(:hover, :focus-visible) {
+  background: var(--accent);
+  color: var(--accent-foreground);
+  outline: 2px solid var(--ring);
+  outline-offset: -2px;
+}
+body .wconvert-rule-picker__unavailable {
+  margin: 0;
+  padding: 6px 8px;
+  font-size: var(--text-note);
+  color: var(--muted-foreground);
+}

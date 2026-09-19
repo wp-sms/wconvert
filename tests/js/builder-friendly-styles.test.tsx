@@ -22,9 +22,9 @@ function Control({ initial, token, changed, inherited = false }: { initial: stri
 describe('padding and gradients preserve authored values until an explicit edit', () => {
   it('preserves an unlisted height in a select until a preset is explicitly chosen', async () => {
     const changed = vi.fn();
-    render(<ParamChoice id="height" label="Least height" offered={['0', '10rem', '16rem']}
+    render(<ParamChoice id="height" label="Minimum height" offered={['0', '10rem', '16rem']}
       held="22rem" fallback="0" nameOfValue={value => value} onChange={changed} />);
-    const height = screen.getByRole('combobox', { name: 'Least height' });
+    const height = screen.getByRole('combobox', { name: 'Minimum height' });
     expect(within(height).getByRole('option', { name: 'Current: 22rem' })).toBeInTheDocument();
     expect(changed).not.toHaveBeenCalled();
     await userEvent.selectOptions(height, '0');
@@ -53,7 +53,7 @@ describe('padding and gradients preserve authored values until an explicit edit'
   });
 
   it('groups picture and heading settings and omits unused effects without changing the draft', () => {
-    const template: Template = { tokens: {}, tree: { steps: [{ type: 'media', children: [{ type: 'heading', text: 'Hello' }] }] } };
+    const template: Template = { tokens: {}, tree: { steps: [{ type: 'media', tokens: { 'bg-image': 'url(photo.jpg)' }, children: [{ type: 'heading', text: 'Hello' }] }] } };
     const changed = vi.fn();
     render(<ScopeStyle template={template} labels={labels} path={[0]} width="tokens" copied={null} onCopy={vi.fn()}
       openToken={null} onOpenToken={vi.fn()} onSelect={vi.fn()} onChange={changed} />);

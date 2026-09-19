@@ -63,7 +63,7 @@ export function BlockInspector({
     path === null ? null : (nodesOf(template.tree).find((each) => samePath(each.path, path)) ?? null);
   const slot =
     path === null ? null : (slotsOf(template.tree).find((each) => samePath(each.path, path)) ?? null);
-  const styleSettings = slot?.settings.filter((setting) => STYLE_PARAMS.includes(setting.param)) ?? [];
+  const styleSettings = slot?.settings.filter((setting) => STYLE_PARAMS.includes(setting.param) && (slot.type !== 'image' || (typeof slot.values.src === 'string' && slot.values.src.trim() !== ''))) ?? [];
 
   if (block === null || path === null) {
     return (
