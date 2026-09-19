@@ -8,6 +8,9 @@ Data & privacy and WordPress's suggested privacy-policy text.
 This completes [ADR 0018](0018-erasure-deletes-rather-than-anonymises.md) and
 amends [ADR 0091](0091-shared-settings-and-submission-workflows-have-distinct-homes.md).
 
+The factual Data Map remains read-only. [ADR 0096](0096-privacy-authoring-help-is-progressive-and-snapshotted.md)
+adds a separate preference for privacy help while authoring new Campaigns.
+
 ## Facts and wording remain separate
 
 The Data Map reports only what WConvert can prove: the saved Retention Period,

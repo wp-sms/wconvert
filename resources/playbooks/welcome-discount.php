@@ -19,7 +19,7 @@ Room to grow.', 'wconvert'),
         'email_placeholder' => __('you@example.com', 'wconvert'),
         'consent_text' => [
             /* translators: %s: the label of a link to the site's privacy policy. */
-            'text' => __('Email me the monthly plant note and shop news. I can unsubscribe at any time. %s', 'wconvert'),
+            'text' => __('Email me monthly plant and shop news. %s', 'wconvert'),
             'link' => [
                 'label' => __('Privacy Policy', 'wconvert'),
             ],
@@ -28,7 +28,7 @@ Room to grow.', 'wconvert'),
         'fine_print' => [
             [
                 /* translators: %s: the label of a link to the site's privacy policy. */
-                'text' => __('One email a month. Unsubscribe at any time. First order only; gift cards excluded. %s', 'wconvert'),
+                'text' => __('Monthly emails. Unsubscribe anytime. First order only; gift cards excluded. %s', 'wconvert'),
                 'link' => [
                     'label' => __('Privacy Policy', 'wconvert'),
                 ],

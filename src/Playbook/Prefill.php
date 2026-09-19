@@ -3,6 +3,7 @@
 namespace WConvert\Playbook;
 
 use WConvert\Goal\Goal;
+use WConvert\Privacy\PrivacyGuidance;
 use WConvert\Rules\Degradation;
 use WConvert\Template\SlotRoles;
 use WConvert\Template\TemplateLibrary;
@@ -69,6 +70,7 @@ final class Prefill
         private readonly TemplateLibrary $templates,
         private readonly TemplateVocabulary $vocabulary,
         private readonly Degradation $degradation,
+        private readonly ?PrivacyGuidance $privacyGuidance = null,
     ) {
     }
 
@@ -93,9 +95,10 @@ final class Prefill
         // Then the words, bound to [[Slot Role]]s rather than to this
         // Template's nodes — which is what lets the merchant switch Template
         // afterwards and keep them (CONTEXT.md, Slot Role).
+        $copy = $this->privacyGuidance?->copyFor($playbook->copy) ?? $playbook->copy;
         $config['template']['tree'] = SlotRoles::bind(
             $config['template']['tree'] ?? [],
-            $playbook->copy,
+            $copy,
             $this->vocabulary
         );
 

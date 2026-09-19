@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import './settings.css';
 import { __ } from '@wordpress/i18n';
 import { Eye, Plug, Search, Shield } from 'lucide-react';
@@ -7,8 +7,10 @@ import { settingsHref, type SettingsGroup } from '../nav';
 import { SiteAllowance } from '../optins/SiteAllowance';
 import { LeadRetention } from '../leads/LeadRetention';
 import { PrivacyDataMap } from '../privacy/PrivacyDataMap';
+import { PrivacyGuidanceSettings } from '../privacy/PrivacyGuidanceSettings';
 import { Destinations } from '../destinations/Destinations';
 import type { SettingsEditing } from './useSettingsEditing';
+import type { EditingState } from '../hooks/useAdminNavigation';
 import { Region, RegionBody, RegionHeader } from '../shell/Region';
 
 /** A persistent category rail; the chosen category goes straight to its controls. */
@@ -42,7 +44,7 @@ export function Settings({
       label: __('Data & privacy', 'wconvert'),
       description: __('Retention and personal data', 'wconvert'),
       icon: Shield,
-      terms: __('retention delete export erase personal data', 'wconvert'),
+      terms: __('retention delete export erase personal data privacy guidance notice consent campaign editor policy', 'wconvert'),
     },
   ] as const;
   const matching = categories.filter((category) => search.trim().toLocaleLowerCase().split(/\s+/).every((word) => `${category.label} ${category.description} ${category.terms}`.toLocaleLowerCase().includes(word)));
@@ -83,65 +85,81 @@ export function Settings({
           />
         )}
         {group === 'data' && (
-          <div className="flex flex-col gap-4">
-            <LeadRetention
-              expanded
-              onEditingStateChange={onEditingStateChange}
-            />
-            <PrivacyDataMap />
-            <Region>
-              <RegionHeader
-                title={__('Export and personal data', 'wconvert')}
-              />
-              <RegionBody className="flex flex-col gap-4">
-                <div>
-                  <h3 className="m-0 text-body font-medium">
-                    {__('Export submissions', 'wconvert')}
-                  </h3>
-                  <p className="my-1 text-note text-muted-foreground">
-                    {__(
-                      'Choose the relevant records and dates in Leads.',
-                      'wconvert',
-                    )}
-                  </p>
-                  <a
-                    className="text-note underline underline-offset-2"
-                    href="#leads"
-                  >
-                    {__('Go to Leads', 'wconvert')}
-                  </a>
-                </div>
-                <div className="border-t border-border pt-4">
-                  <h3 className="m-0 text-body font-medium">
-                    {__('Personal data requests', 'wconvert')}
-                  </h3>
-                  <p className="my-1 text-note text-muted-foreground">
-                    {__(
-                      'Use WordPress’s existing tools for email requests. For a verified phone-only request, find the exact phone in Leads, export it if needed, then permanently delete every matching submission. Copies at other services are managed there.',
-                      'wconvert',
-                    )}
-                  </p>
-                  <div className="flex flex-wrap gap-x-4 gap-y-2 text-note">
-                    <a
-                      className="underline underline-offset-2"
-                      href="export-personal-data.php"
-                    >
-                      {__('Export personal data', 'wconvert')}
-                    </a>
-                    <a
-                      className="underline underline-offset-2"
-                      href="erase-personal-data.php"
-                    >
-                      {__('Erase personal data', 'wconvert')}
-                    </a>
-                  </div>
-                </div>
-              </RegionBody>
-            </Region>
-          </div>
+          <DataPrivacySettings onEditingStateChange={onEditingStateChange} />
         )}
       </div>
       <footer className="border-t border-border pt-4 text-note text-muted-foreground lg:col-span-2">{__('Settings apply to this WordPress site.', 'wconvert')}</footer>
+    </div>
+  );
+}
+
+/** Two editable privacy regions report one navigation state to the page shell. */
+function DataPrivacySettings({ onEditingStateChange }: { onEditingStateChange?: SettingsEditing }) {
+  const [guidanceEditing, setGuidanceEditing] = useState<EditingState>({ dirty: false, busy: false });
+  const [retentionEditing, setRetentionEditing] = useState<EditingState>({ dirty: false, busy: false });
+
+  useEffect(() => {
+    onEditingStateChange?.({
+      dirty: guidanceEditing.dirty || retentionEditing.dirty,
+      busy: guidanceEditing.busy || retentionEditing.busy,
+    });
+    return () => onEditingStateChange?.({ dirty: false, busy: false });
+  }, [guidanceEditing, retentionEditing, onEditingStateChange]);
+
+  return (
+    <div className="flex flex-col gap-4">
+      <PrivacyGuidanceSettings onEditingStateChange={setGuidanceEditing} />
+      <LeadRetention onEditingStateChange={setRetentionEditing} />
+      <PrivacyDataMap />
+      <Region>
+        <RegionHeader
+          title={__('Export and personal data', 'wconvert')}
+        />
+        <RegionBody className="flex flex-col gap-4">
+          <div>
+            <h3 className="m-0 text-body font-medium">
+              {__('Export submissions', 'wconvert')}
+            </h3>
+            <p className="my-1 text-note text-muted-foreground">
+              {__(
+                'Choose the relevant records and dates in Leads.',
+                'wconvert',
+              )}
+            </p>
+            <a
+              className="text-note underline underline-offset-2"
+              href="#leads"
+            >
+              {__('Go to Leads', 'wconvert')}
+            </a>
+          </div>
+          <div className="border-t border-border pt-4">
+            <h3 className="m-0 text-body font-medium">
+              {__('Personal data requests', 'wconvert')}
+            </h3>
+            <p className="my-1 text-note text-muted-foreground">
+              {__(
+                'Use WordPress’s existing tools for email requests. For a verified phone-only request, find the exact phone in Leads, export it if needed, then permanently delete every matching submission. Copies at other services are managed there.',
+                'wconvert',
+              )}
+            </p>
+            <div className="flex flex-wrap gap-x-4 gap-y-2 text-note">
+              <a
+                className="underline underline-offset-2"
+                href="export-personal-data.php"
+              >
+                {__('Export personal data', 'wconvert')}
+              </a>
+              <a
+                className="underline underline-offset-2"
+                href="erase-personal-data.php"
+              >
+                {__('Erase personal data', 'wconvert')}
+              </a>
+            </div>
+          </div>
+        </RegionBody>
+      </Region>
     </div>
   );
 }

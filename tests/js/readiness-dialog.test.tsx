@@ -30,6 +30,7 @@ function props(overrides: Partial<ReadinessDialogProps> = {}): ReadinessDialogPr
     rules: { rules: [], targeting: {}, frequency: {}, schedule: {}, priority: 0 },
     vocabulary: ruleTypes(), displayType: 'popup', bound: [], template: FORM,
     destinations: [], captureMode: 'local', fieldLabels: { email: 'Email address', phone: 'Phone number' },
+    privacyGuidance: false,
     onGoTo: vi.fn(), onGoToSchedule: vi.fn(), onGoToRules: vi.fn(), onGoToDestinations: vi.fn(),
     onGoToDesign: vi.fn(), onEditDesign: vi.fn(), onPreview: vi.fn(), onPublish: vi.fn().mockResolvedValue(undefined),
     ...overrides,
@@ -168,6 +169,46 @@ describe('reviewing before publishing', () => {
     expect(screen.getByText(/Destination details could not be checked/)).toBeInTheDocument();
     expect(screen.getByText(/Publishing does not test delivery/)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Publish Campaign' })).toBeEnabled();
+  });
+
+  it('shows a compact privacy review and opens the existing notice control', async () => {
+    const template: Template = { tokens: FORM.tokens, tree: { steps: [{ type: 'stack', children: [
+      { type: 'field', name: 'email', required: true },
+      { type: 'button', action: 'submit', label: 'Send' },
+      { type: 'text', role: 'fine_print', text: 'We use your email to reply. %s', link: { label: 'Privacy Policy' } },
+    ] }, { type: 'stack', children: [] }] } };
+    const { supplied } = await open({ template, privacyGuidance: true, policyUrl: 'https://example.test/privacy/' });
+
+    expect(screen.getByRole('heading', { name: 'Privacy' })).toBeInTheDocument();
+    expect(screen.getByText('This form links to your Privacy Policy.')).toBeInTheDocument();
+    expect(screen.queryByText(/no Privacy Policy page selected/)).toBeNull();
+
+    await userEvent.click(screen.getByRole('button', { name: 'Edit notice' }));
+    expect(supplied.onGoTo).toHaveBeenCalledExactlyOnceWith([0, 'children', 2]);
+  });
+
+  it('does not claim an unresolved notice already links somewhere', async () => {
+    const template: Template = { tokens: FORM.tokens, tree: { steps: [{ type: 'stack', children: [
+      { type: 'field', name: 'email', required: true },
+      { type: 'button', action: 'submit', label: 'Send' },
+      { type: 'text', role: 'fine_print', text: 'We use your email to reply. %s', link: { label: 'Privacy Policy' } },
+    ] }, { type: 'stack', children: [] }] } };
+    await open({ template, privacyGuidance: true });
+
+    expect(screen.getByText('This form includes a Privacy Policy notice.')).toBeInTheDocument();
+    expect(screen.queryByText('This form links to your Privacy Policy.')).toBeNull();
+    expect(screen.getByText(/WordPress has no Privacy Policy page selected/)).toBeInTheDocument();
+  });
+
+  it('keeps privacy guidance advisory and hides it when the site preference is off', async () => {
+    const { rerender, supplied } = await open({ privacyGuidance: true });
+
+    expect(screen.getByText('No Privacy Policy notice is shown on this form.')).toBeInTheDocument();
+    expect(screen.getByText(/WordPress has no Privacy Policy page selected/)).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Publish Campaign' })).toBeEnabled();
+
+    rerender(<ReadinessDialog {...supplied} privacyGuidance={false} />);
+    expect(screen.queryByRole('heading', { name: 'Privacy' })).toBeNull();
   });
 });
 

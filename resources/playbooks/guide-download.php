@@ -38,14 +38,14 @@ Happier plants.', 'wconvert'),
         'fine_print' => [
             [
                 /* translators: %s: the label of a link to the site's privacy policy. */
-                'text' => __('One email with the guide. No newsletter subscription. %s', 'wconvert'),
+                'text' => __('One guide email. No newsletter. %s', 'wconvert'),
                 'link' => [
                     'label' => __('Privacy Policy', 'wconvert'),
                 ],
             ],
             [
                 /* translators: %s: the label of a link to the site's privacy policy. */
-                'text' => __('Your details are used for this guide request. %s', 'wconvert'),
+                'text' => __('We’ll use your details for this request. %s', 'wconvert'),
                 'link' => [
                     'label' => __('Privacy Policy', 'wconvert'),
                 ],

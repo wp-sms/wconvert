@@ -37,6 +37,11 @@ return [
         'email_label' => __('Email address', 'wconvert'),
         'email_placeholder' => __('you@example.com', 'wconvert'),
         'cta_label' => __('Email me the checklist', 'wconvert'),
+        'fine_print' => [
+            /* translators: %s: the label of a link to the site's privacy policy. */
+            'text' => __('One checklist email. No newsletter. %s', 'wconvert'),
+            'link' => ['label' => __('Privacy Policy', 'wconvert')],
+        ],
         'success_headline' => __('Request received', 'wconvert'),
         'success_body' => __('Thank you. We have received your request for the checklist.', 'wconvert'),
     ],

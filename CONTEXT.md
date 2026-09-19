@@ -106,6 +106,14 @@ credentials, publish policy wording, choose a legal basis or claim to erase
 external copies. See
 [ADR 0094](docs/adr/0094-privacy-guidance-reports-the-current-data-flow.md).
 
+Privacy Guidance is a site-wide authoring preference, on by default. It adds
+short purpose-specific policy notices to new Campaign setups and checks them in
+the editor's readiness review. Turning it off removes that automatic help only
+from future drafts; existing Campaign snapshots, manual controls, export,
+erasure, retention, Consent Records, the Data Map and WordPress policy tools do
+not change. See
+[ADR 0096](docs/adr/0096-privacy-authoring-help-is-progressive-and-snapshotted.md).
+
 ### Analytics impact
 
 Analytics starts with compatible totals: captured submissions, offer clicks,

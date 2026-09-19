@@ -702,6 +702,14 @@ Its copy follows WordPress's collect/purpose, recipients, retention and rights
 structure; merchant-only customization guidance is omitted when WordPress
 copies the suggested text into a policy.
 
+Privacy guidance is on by default. It adds a short, purpose-specific Privacy
+Policy notice to new Campaign setups and checks that notice in the editor's
+readiness review. A merchant can turn that authoring help off under Data &
+privacy for a simpler editor and simpler future drafts. Existing Campaigns do
+not change, and export, erasure, retention, Consent Records, the Data Map and
+WordPress privacy-policy tools remain active
+([ADR 0096](docs/adr/0096-privacy-authoring-help-is-progressive-and-snapshotted.md)).
+
 **The eraser issues a `DELETE`, never an anonymising update.** Anonymising is
 an update, and [ADR 0002](docs/adr/0002-leads-are-immutable-by-schema.md) has
 no update path — `wconvert_leads` has no `status` and no `updated_at` precisely

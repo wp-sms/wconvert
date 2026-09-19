@@ -25,7 +25,7 @@ return [
         'cta_label' => __('Sign me up', 'wconvert'),
         'fine_print' => [
             /* translators: %s: the label of a link to the site's privacy policy. */
-            'text' => __('Message rates may apply, and you can stop at any time. See our %s.', 'wconvert'),
+            'text' => __('Text alerts. Message rates may apply. Stop anytime. %s', 'wconvert'),
             'link' => ['label' => __('Privacy Policy', 'wconvert')],
         ],
         'success_headline' => __('Request received', 'wconvert'),

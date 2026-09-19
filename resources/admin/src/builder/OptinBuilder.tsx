@@ -71,6 +71,7 @@ import { numbersByOptin, readDashboard, type OptinNumbers } from '../stats/api';
 import { formatCount, formatRate } from '../stats/format';
 import { readDestinations, type DestinationsPayload } from '../destinations/api';
 import { adminSettings } from '../settings';
+import { readPrivacyGuidance } from '../privacy/api';
 import { createOptin, publishOptin } from '../optins/api';
 import { editorHref } from '../nav';
 import type { EditingState } from '../hooks/useAdminNavigation';
@@ -171,6 +172,8 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
   const [playbook, setPlaybook] = useState<Loadable<string | null>>(LOADING);
 
   const [destinations, setDestinations] = useState<Loadable<DestinationsPayload>>(LOADING);
+
+  const [privacyGuidance, setPrivacyGuidance] = useState(false);
 
   const [focusRow, setFocusRow] = useState<{ path: Path } | null>(null);
 
@@ -299,6 +302,16 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
     refreshDestinations();
     return () => { requests.current++; };
   }, [refreshDestinations]);
+
+  useEffect(() => {
+    let active = true;
+    void readPrivacyGuidance()
+      .then(({ enabled }) => { if (active) setPrivacyGuidance(enabled); })
+      // Guidance is additive. A failed preference read must not block editing
+      // or publishing, and it must not guess that the merchant enabled it.
+      .catch(() => undefined);
+    return () => { active = false; };
+  }, []);
 
   useEffect(() => {
     if (config === null) return;
@@ -662,6 +675,8 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
             template={template}
             destinations={read(destinations)?.destinations ?? null}
             fieldLabels={gallery.labels.fields}
+            privacyGuidance={privacyGuidance}
+            policyUrl={adminSettings()?.policyUrl}
             onPublish={publish}
             onPreview={() => { setTab('design'); setPreviewing(true); setSelection(null); previewButton.current?.focus(); }}
             onEditDesign={() => { setTab('design'); setPreviewing(false); setShowLayers(true); layersButton.current?.focus(); }}

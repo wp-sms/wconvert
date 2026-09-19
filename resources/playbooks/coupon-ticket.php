@@ -20,7 +20,7 @@ return [
         'email_placeholder' => __('you@example.com', 'wconvert'),
         'consent_text' => [
             /* translators: %s: the label of a link to the site's privacy policy. */
-            'text' => __('Send me the monthly shop email. I can unsubscribe at any time. %s', 'wconvert'),
+            'text' => __('Send me the monthly shop email. %s', 'wconvert'),
             'link' => [
                 'label' => __('Privacy Policy', 'wconvert'),
             ],
@@ -29,7 +29,7 @@ return [
         'fine_print' => [
             [
                 /* translators: %s: the label of a link to the site's privacy policy. */
-                'text' => __('Monthly shop emails. Unsubscribe at any time. Full-price items only; bundles excluded. %s', 'wconvert'),
+                'text' => __('Monthly emails. Unsubscribe anytime. Full-price items only; bundles excluded. %s', 'wconvert'),
                 'link' => [
                     'label' => __('Privacy Policy', 'wconvert'),
                 ],
