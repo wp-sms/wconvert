@@ -1,4 +1,4 @@
-import { useId, useState } from 'react';
+import { useId, useRef, useState } from 'react';
 import { __ } from '@wordpress/i18n';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -9,6 +9,8 @@ import './placement.css';
 export default function PlacementSettings({ config, vocabulary, onChange }: InlinePlacementProps) {
   const id = useId();
   const [confirm, setConfirm] = useState(false);
+  const manualChoice = useRef<HTMLInputElement>(null);
+  const automaticChoice = useRef<HTMLInputElement>(null);
   const placement = config.inline_placement as { position: string; paragraph?: number; fallback?: string } | null;
   const rules = (config.rules ?? []) as Rule[];
   const triggerNames = new Set(vocabulary.triggers.map((rule) => rule.type));
@@ -21,16 +23,17 @@ export default function PlacementSettings({ config, vocabulary, onChange }: Inli
       ...(!targeting.include?.length ? { targeting: { ...targeting, include: [{ type: 'singular', value: 'post' }] } } : {}),
     });
     setConfirm(false);
+    automaticChoice.current?.focus();
   };
   return <fieldset className="wconvert-overlay-placement wconvert-inline-placement">
     <legend>{__('Inline placement', 'wconvert')}</legend>
-    <label><input type="radio" name={id} checked={!placement} onChange={() => { setConfirm(false); onChange({ inline_placement: null }); }} /> {__('Manual — block or shortcode', 'wconvert')}</label>
-    <label><input type="radio" name={id} checked={!!placement} onChange={() => setConfirm(true)} /> {__('Automatic', 'wconvert')}</label>
+    <label><input ref={manualChoice} type="radio" name={id} checked={!placement} onChange={() => { setConfirm(false); onChange({ inline_placement: null }); }} /> {__('Manual — block or shortcode', 'wconvert')}</label>
+    <label><input ref={automaticChoice} type="radio" name={id} checked={!!placement} onChange={() => setConfirm(true)} /> {__('Automatic', 'wconvert')}</label>
     {confirm && <div role="group" aria-label={__('Enable automatic placement', 'wconvert')}>
       <p>{__('Automatic placement starts after content. It uses page load instead of other triggers; audience, schedule and frequency settings stay in place.', 'wconvert')}</p>
       {!targeting.include?.length && <p>{__('Your Pages setting will start with posts only. You can add pages under Display rules.', 'wconvert')}</p>}
       <Button onClick={enable}>{__('Enable automatic placement', 'wconvert')}</Button>
-      <Button variant="ghost" onClick={() => setConfirm(false)}>{__('Cancel', 'wconvert')}</Button>
+      <Button variant="ghost" onClick={() => { setConfirm(false); manualChoice.current?.focus(); }}>{__('Cancel', 'wconvert')}</Button>
     </div>}
     {placement && <>
       <label htmlFor={`${id}-position`}>{__('Position in content', 'wconvert')}</label>

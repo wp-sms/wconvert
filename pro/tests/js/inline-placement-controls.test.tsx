@@ -20,6 +20,7 @@ it('makes trigger replacement and post-only defaults explicit, preserves other s
   expect(screen.getByText(/page load instead of other triggers/)).toBeInTheDocument();
   expect(screen.getByTestId('config')).toHaveTextContent('time_on_page');
   await user.click(screen.getByRole('button', { name: 'Enable automatic placement' }));
+  expect(screen.getByRole('radio', { name: 'Automatic' })).toHaveFocus();
   const current = () => JSON.parse(screen.getByTestId('config').textContent!);
   expect(current()).toMatchObject({ inline_placement: { position: 'after_content' }, rules: [{ type: 'device', value: 'mobile' }, { type: 'page_load' }], targeting: { include: [{ type: 'singular', value: 'post' }], exclude: [{ type: 'post', value: 4 }] }, frequency: { maxImpressions: 2 } });
   await user.selectOptions(screen.getByLabelText('Position in content'), 'after_paragraph');
