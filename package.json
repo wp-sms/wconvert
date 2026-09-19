@@ -28,7 +28,8 @@
     "prototype:editor": "vite --config tools/design-system/editor-prototype/vite.config.mjs",
     "visual:serve": "node tools/visual-tests/server.mjs",
     "test:visual": "playwright test -c tools/visual-tests/playwright.config.mjs",
-    "test:visual:fullscreen": "playwright test -c tools/visual-tests/fullscreen.config.mjs"
+    "test:visual:fullscreen": "playwright test -c tools/visual-tests/fullscreen.config.mjs",
+    "test:visual:inline": "playwright test -c tools/visual-tests/inline.config.mjs"
   },
   "dependencies": {
     "@atlaskit/pragmatic-drag-and-drop": "^3.0.0",

@@ -1,5 +1,5 @@
 import { decide, isOverlay, isSiteCapped, rulesOf, type Decision, type Standing, type Verdict } from '../decide';
-import type { PayloadEntry, Rule } from '../types';
+import type { PayloadEntry, Presenter, Rule } from '../types';
 
 /**
  * Why each Optin on this page is where it is — **from the real decision, not
@@ -50,6 +50,7 @@ export interface RuleReport {
 }
 
 export interface EntryReport {
+  readonly placementStatus?: string;
   readonly id: string;
   readonly displayType?: string;
   readonly placement?: string;
@@ -135,7 +136,12 @@ export interface Explanation extends BrowserReport {
   readonly verdict: Verdict;
 }
 
-export function explain(decision: Decision): Explanation {
+export interface PresentationChecks {
+  select?: Presenter['select'];
+  placement?: (entry: PayloadEntry) => string | undefined;
+}
+
+export function explain(decision: Decision, presentation: PresentationChecks = {}): Explanation {
   const answers = new Map<Rule, boolean>();
 
   // ==========================================================================
@@ -171,7 +177,8 @@ export function explain(decision: Decision): Explanation {
     ]),
   );
 
-  const verdict = decide({ ...decision, evaluators: watched });
+  const decided = decide({ ...decision, evaluators: watched });
+  const verdict = { ...decided, show: presentation.select?.(decided.show) ?? decided.show };
   const showing = new Set(verdict.show.map((entry) => entry.id));
   // One fact about the page, asked once, from the same predicate the decision
   // was taken with rather than from a second spelling of it.
@@ -205,6 +212,7 @@ export function explain(decision: Decision): Explanation {
         id: entry.id,
         displayType: entry.display_type,
         placement: entry.placement,
+        placementStatus: presentation.placement?.(entry),
         standing,
         overlay: isOverlay(entry),
         triggers: (entry.triggers ?? []).map((rule) => report(rule, answers, decision)),

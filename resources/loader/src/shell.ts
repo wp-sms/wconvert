@@ -162,7 +162,7 @@ export function start(options: ShellOptions): () => void {
         overlayDone,
       });
 
-      for (const entry of verdict.show) {
+      for (const entry of presenter.select?.(verdict.show) ?? verdict.show) {
         // Both of these are settled by the DECISION, not by what the presenter
         // does with it. `overlayDone` in particular is set on show and never on
         // dismissal, which is what makes "no runner-up after a dismissal"

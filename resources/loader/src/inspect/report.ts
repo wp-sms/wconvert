@@ -327,7 +327,8 @@ function stoppedAt(
   }
 
   if (entry.lostArbitration) {
-    return { gate: 'won', reason: 'lost' };
+    return { gate: 'won', reason: entry.placementStatus === 'automatic_missing' ? 'automatic_missing'
+      : entry.placementStatus === 'automatic_ready' ? 'automatic_lost' : 'lost' };
   }
 
   if (entry.standing === 'ready') {

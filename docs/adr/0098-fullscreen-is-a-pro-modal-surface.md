@@ -59,6 +59,10 @@ for the added behavior. Raise the hard per-build gate from 12,800 to 13,500 B;
 no warning-only mode, chunking or bypass. Free measures 10,482 B. A `fullscreen`
 bundle marker now guards the premium container boundary as well as source scans.
 
+Amended by [ADR 0099](0099-automatic-inline-placement-uses-rendered-content.md):
+automatic inline raises the current hard ceiling to 14,012 B; the figures above
+describe the fullscreen-only build.
+
 Tests cover the closed type, placement removal, tier/library registration,
 preview parity, focus/step lifecycle, exact style restoration, failure without
 impressions, and existing overlay arbitration. Disposable WordPress Playground

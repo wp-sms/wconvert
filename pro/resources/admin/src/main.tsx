@@ -1,12 +1,14 @@
-import { StrictMode } from 'react';
+import { lazy, StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { App } from '@/App';
 import '@/index.css';
 import { PRO_SCREENS } from './screens';
 import { previewSurfaces } from '@/previewSurfaces';
 import { decorateFullscreen } from '../../../modules/display-types/loader/surface';
+import { inlinePlacementControls } from '@/inlinePlacement';
 
 previewSurfaces.fullscreen = decorateFullscreen;
+inlinePlacementControls.component = lazy(() => import('../../../modules/inline-placement/admin/PlacementSettings'));
 
 /**
  * WConvert Pro's admin entry — free's screens plus Pro's, in ONE bundle.

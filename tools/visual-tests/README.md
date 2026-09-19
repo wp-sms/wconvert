@@ -86,3 +86,11 @@ This starts a separate disposable WordPress with both plugins on port 9414.
 Never mount the fixture mu-plugins into a saved site. Browser tests cover native
 modal behavior and real capture; device keyboard and screen-reader release QA
 remain manual.
+
+## Automatic inline Pro checks
+
+After `npm run build`, run `npm run test:visual:inline`. This starts a separate
+disposable WordPress with both plugins on port 9415. The fixture exercises real
+content hooks; it never edits a saved Local site. Automatic placement uses the
+existing viewport-based impression and capture paths. Normal-flow insertion can
+shift article content; mobile and real-theme checks remain important.

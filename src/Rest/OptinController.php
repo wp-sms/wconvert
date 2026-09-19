@@ -362,6 +362,9 @@ final class OptinController implements RestController
         // back — the Template's design with a [[Playbook]]'s words written
         // into it — and re-snapshotting would take the words straight back
         // out, which is a blank popup and a merchant who watched it happen.
+        if (($refusal = $this->refuseInlinePlacement($config)) !== null) {
+            return $refusal;
+        }
         try {
             $normalized = $this->normalizeConfig($config, self::optionalString($config['template_id'] ?? null));
         } catch (InvalidSchedule $refused) {
@@ -442,6 +445,9 @@ final class OptinController implements RestController
             $pickedBefore = $source;
         }
 
+        if (is_array($config) && ($refusal = $this->refuseInlinePlacement($config)) !== null) {
+            return $refusal;
+        }
         try {
             $normalized = is_array($config) ? $this->normalizeConfig($config, $pickedBefore) : null;
         } catch (InvalidSchedule $refused) {
@@ -566,6 +572,11 @@ final class OptinController implements RestController
                 __('Choose a design before publishing. You can keep saving this Campaign as a draft.', 'wconvert'),
                 ['status' => 400]
             );
+        }
+
+        $placementError = $this->refuseInlinePlacement($optin->config);
+        if ($placementError !== null) {
+            return $placementError;
         }
 
         $issue = \WConvert\Template\TemplateForm::issue($optin->config['template'] ?? null);
@@ -761,6 +772,16 @@ final class OptinController implements RestController
             }
         }
 
+        if (array_key_exists('inline_placement', $config)) {
+            $inlinePlacement = ($config['display_type'] ?? null) === 'inline'
+                ? \WConvert\Optin\InlinePlacement::normalize($config['inline_placement']) : null;
+            if ($inlinePlacement === null) {
+                unset($config['inline_placement']);
+            } else {
+                $config['inline_placement'] = $inlinePlacement;
+            }
+        }
+
         // **The allowance, which reached the browser unvalidated until now.**
         // The loader has honoured all four fields since #3 and nothing has
         // ever written them, so `frequency` travelled out of the config blob
@@ -857,6 +878,24 @@ final class OptinController implements RestController
         }
 
         return $config;
+    }
+
+    /** @param array<string, mixed> $config */
+    private function refuseInlinePlacement(array $config): ?WP_Error
+    {
+        if (($config['display_type'] ?? null) !== 'inline' || ($config['inline_placement'] ?? null) === null) {
+            return null;
+        }
+        if (\WConvert\Optin\InlinePlacement::normalize($config['inline_placement']) === null) {
+            return new WP_Error('wconvert_inline_placement',
+                __('Choose a valid inline position and a paragraph number from 1 to 100.', 'wconvert'), ['status' => 400]);
+        }
+        $triggers = $this->vocabulary->partition($config['rules'] ?? [])['triggers'];
+        if (count($triggers) !== 1 || ($triggers[0]['type'] ?? null) !== 'page_load') {
+            return new WP_Error('wconvert_inline_trigger',
+                __('Automatic inline placement requires only the page-load trigger. Change When it appears, or use manual placement.', 'wconvert'), ['status' => 400]);
+        }
+        return null;
     }
 
     /**

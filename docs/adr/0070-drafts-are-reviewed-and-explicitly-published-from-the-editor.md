@@ -83,6 +83,11 @@ the published version in the current signed-in session; it neither previews
 draft edits nor simulates an anonymous visitor. Inline forms still need a check
 on the actual page where their block or shortcode was placed.
 
+Amended by [ADR 0099](0099-automatic-inline-placement-uses-rendered-content.md):
+automatically placed inline campaigns show their content position instead of
+requiring an embed. They still need a check on a matching published article;
+manual guidance remains unchanged.
+
 Published means a snapshot is available to the loader. Rules, schedule, visitor
 state and placement still determine whether it appears. A local preview, a
 published snapshot, a provider push and inbox receipt remain different facts.

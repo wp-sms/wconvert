@@ -242,6 +242,21 @@ final class OptinWriteTest extends TestCase
         self::assertArrayNotHasKey('placement', $draft['config']);
     }
 
+    public function testAutomaticInlineRejectsDelayedTriggersAndOtherFormatsDropTheSetting(): void
+    {
+        $draft = $this->create(Goal::GrowEmailList, ['display_type' => 'inline',
+            'inline_placement' => ['position' => 'after_paragraph', 'paragraph' => 3]]);
+        self::assertIsArray($draft);
+        self::assertSame('after_content', $draft['config']['inline_placement']['fallback']);
+        $delayed = $this->create(Goal::GrowEmailList, ['display_type' => 'inline',
+            'inline_placement' => ['position' => 'after_content'], 'rules' => [['type' => 'time_on_page', 'seconds' => 10]]]);
+        self::assertInstanceOf(WP_Error::class, $delayed);
+        self::assertSame('wconvert_inline_trigger', $delayed->get_error_code());
+        $popup = $this->create(Goal::GrowEmailList, ['display_type' => 'popup', 'inline_placement' => ['position' => 'after_content']]);
+        self::assertIsArray($popup);
+        self::assertArrayNotHasKey('inline_placement', $popup['config']);
+    }
+
     /** @param mixed $options
      * @return array<string, mixed>
      */

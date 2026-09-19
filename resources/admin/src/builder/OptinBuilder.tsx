@@ -37,6 +37,7 @@ import { PayloadMeter } from './PayloadMeter';
 import { ScopeStyle } from './ScopeStyle';
 import { StructureView } from './StructureView';
 import { DesignSettings } from './DesignSettings';
+import { InlinePlacementSettings } from '../inlinePlacement';
 import { EditorCanvas, ScreenControls, DeviceControls } from './EditorCanvas';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../components/ui/dialog';
 import { canRedo, canUndo, historyOf, redo, remember, undo, type History } from './structure/history';
@@ -673,6 +674,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
             vocabulary={vocabulary}
             displayType={displayTypeOf(config, templates)}
             placement={config.placement}
+            inlinePlacement={config.inline_placement}
             bound={bound}
             template={template}
             destinations={read(destinations)?.destinations ?? null}
@@ -683,6 +685,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
             onPreview={() => { setTab('design'); setPreviewing(true); setSelection(null); previewButton.current?.focus(); }}
             onEditDesign={() => { setTab('design'); setPreviewing(false); setShowLayers(true); layersButton.current?.focus(); }}
             onGoToDesign={() => { setTab('design'); setPreviewing(false); setBrowsing(true); }}
+            onGoToPlacement={() => { setTab('design'); setPreviewing(false); designSettings(); }}
             onGoToDestinations={() => { setTab('destinations'); destinationsTab.current?.focus(); }}
             onGoToRules={(section) => { setTab('rules'); setRevealSection({ id: section }); }}
             onGoTo={goTo}
@@ -784,6 +787,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
                             displayType={displayTypeOf(config, templates)}
                             placement={config.placement}
                             onPlacementChange={(placement) => edit({ placement })}
+                            inlineControls={<InlinePlacementSettings config={config} vocabulary={vocabulary} onChange={edit} />}
                           />
                         ) : (
                           <ScopeStyle
@@ -1017,6 +1021,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
 
           if (displayTypeOf(config, templates) !== chosenDesign.display_type) {
             changes.placement = null;
+            changes.inline_placement = null;
           }
 
           edit(changes);

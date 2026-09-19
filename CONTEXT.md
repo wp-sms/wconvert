@@ -532,7 +532,9 @@ switching format never changes the Goal.
 
 Four of the five are **overlays** — `popup`, `floating_bar`, `slide_in`, `fullscreen` — which
 compete for the visitor's screen, so at most one is shown per page view.
-`inline` is not an overlay: it renders where it was embedded and never competes.
+`inline` is not an overlay: it renders in content. Manual embeds never compete;
+Pro's automatic placements have their own one-per-page priority selection after
+eligibility, separate from overlays (ADR 0099).
 
 **The five are a closed set in PHP** (`src/Optin/DisplayType.php`), enforced on
 the way in like every other closed vocabulary, and `popup` is what absence means
@@ -569,13 +571,21 @@ Type]] (which container draws it). See [ADR
 
 ### Anchor
 
+Pro can create an Anchor automatically in rendered post/page content, before,
+after, or after a counted paragraph. `config.inline_placement` is distinct from
+Overlay Placement and Template JSON. Manual remains the default and takes
+precedence for the same campaign. PHP emits hidden candidates; browser eligibility
+and A/B assignment select at most one automatic winner, without changing saved
+articles or introducing another cache. See
+[ADR 0099](docs/adr/0099-automatic-inline-placement-uses-rendered-content.md).
+
 Where an `inline` [[Optin]] was put — one empty element carrying one attribute
 and the Optin's id, and **the whole contract between authoring and rendering**.
 
 `inline` is the one [[Display Type]] that is not an overlay: it renders where
 it was embedded and never competes for the screen, which is why it alone needs
-somewhere on the page to go while the other three mount themselves. So the two
-ways a merchant places one — a Gutenberg block and a shortcode — do not differ
+somewhere on the page to go while the other four mount themselves. So the two
+manual ways a merchant places one — a Gutenberg block and a shortcode — do not differ
 in what they emit. They differ only in where a merchant is standing when they
 write it.
 
