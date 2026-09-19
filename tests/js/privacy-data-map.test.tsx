@@ -33,22 +33,29 @@ beforeEach(() => {
   privacy.readDataMap.mockResolvedValue(MAP);
 });
 
-it('explains this site’s actual WConvert storage and configured routes in merchant language', async () => {
+it('explains where visitor data goes in direct merchant language', async () => {
   render(<PrivacyDataMap />);
 
   await screen.findByText('Newsletter subscribers');
-  const region = screen.getByRole('heading', { name: 'Your data flow' }).closest('section');
+  const region = screen.getByRole('heading', { name: 'Where visitor data goes' }).closest('section');
   expect(region).not.toBeNull();
   if (region === null) return;
-  expect(within(region).getByText(/email address, phone number, name, form answers and consent wording/i)).toBeVisible();
-  expect(within(region).getByText(/kept until you delete them/i)).toBeVisible();
+  expect(within(region).getByRole('heading', { name: 'Saved in WConvert' })).toBeVisible();
+  expect(within(region).getByText(/information a visitor enters in a form/i)).toBeVisible();
+  expect(within(region).getByText(/does not include the page URL, IP address or browser details/i)).toBeVisible();
+  expect(within(region).getByText(/Automatic deletion is off/i)).toBeVisible();
+  expect(within(region).getByRole('heading', { name: 'Saved in the visitor’s browser' })).toBeVisible();
+  expect(within(region).getByText(/does not set an expiry/i)).toBeVisible();
+  expect(within(region).getByText(/up to one year/i)).toBeVisible();
+  expect(within(region).getByRole('heading', { name: 'Anonymous campaign totals' })).toBeVisible();
+  expect(within(region).getByText(/not linked to individual visitors/i)).toBeVisible();
+  expect(within(region).getByText(/one minute/i)).toBeVisible();
+  expect(within(region).getByRole('heading', { name: 'Sent to other services' })).toBeVisible();
   expect(within(region).getByText('Newsletter subscribers')).toBeVisible();
   expect(within(region).getByText('MailPoet')).toBeVisible();
-  expect(within(region).getByText(/Email address, name, interest answer/i)).toBeVisible();
-  expect(within(region).getByText(/local storage/i)).toBeVisible();
-  expect(within(region).getByText(/one year/i)).toBeVisible();
-  expect(within(region).getByText(/one minute/i)).toBeVisible();
-  expect(within(region).getByText(/CSV files, destination copies, email logs or backups/i)).toBeVisible();
+  expect(within(region).getByText(/Can receive: Email address, Name, Interest answer/i)).toBeVisible();
+  expect(within(region).getByRole('heading', { name: 'Copies you must manage separately' })).toBeVisible();
+  expect(within(region).getByText(/remove those copies from each place too/i)).toBeVisible();
 });
 
 it('shows a shape-matched loading state without claiming the site has no destinations', () => {
@@ -57,7 +64,7 @@ it('shows a shape-matched loading state without claiming the site has no destina
   render(<PrivacyDataMap />);
 
   expect(screen.getByRole('status')).toHaveTextContent('Loading');
-  expect(screen.queryByText(/No destinations are configured/)).not.toBeInTheDocument();
+  expect(screen.queryByText(/No destinations are set up/)).not.toBeInTheDocument();
 });
 
 it('gives an empty configured-route list a direct way to connections', async () => {
@@ -65,10 +72,10 @@ it('gives an empty configured-route list a direct way to connections', async () 
 
   render(<PrivacyDataMap />);
 
-  expect(await screen.findByText(/deleted automatically after 90 days/i)).toBeVisible();
-  expect(screen.queryByText('No automatic deletion')).not.toBeInTheDocument();
-  expect(screen.getByText(/No destinations are configured/)).toBeVisible();
-  expect(screen.getByRole('link', { name: 'Set up destinations' })).toHaveAttribute('href', '#settings?group=connections');
+  expect(await screen.findByText(/deleted automatically 90 days after they are submitted/i)).toBeVisible();
+  expect(screen.queryByText('Kept until you delete them')).not.toBeInTheDocument();
+  expect(screen.getByText(/No destinations are set up/)).toBeVisible();
+  expect(screen.getByRole('link', { name: 'Set up a destination' })).toHaveAttribute('href', '#settings?group=connections');
 });
 
 it('keeps an unavailable configured route visible without guessing its fields', async () => {
@@ -83,8 +90,8 @@ it('keeps an unavailable configured route visible without guessing its fields', 
   render(<PrivacyDataMap />);
 
   expect(await screen.findByText('Old automation')).toBeVisible();
-  expect(screen.getByText(/data details could not be read/i)).toBeVisible();
-  expect(screen.queryByText(/May receive:/)).not.toBeInTheDocument();
+  expect(screen.getByText(/cannot show which information it receives/i)).toBeVisible();
+  expect(screen.queryByText(/Can receive:/)).not.toBeInTheDocument();
 });
 
 it('keeps a failed read inside the data-flow region and names a recovery', async () => {

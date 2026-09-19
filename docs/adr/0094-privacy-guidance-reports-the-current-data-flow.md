@@ -51,13 +51,18 @@ The guidance accurately distinguishes three storage boundaries:
 
 ## Settings follows the existing interface grammar
 
-“Your data flow” is a normal Data & privacy region between retention and the
-existing export/request actions. It uses the shared region header, loading,
-failure, warning, typography and responsive layout patterns. Loading never
-looks like an empty configuration. Indefinite retention receives a warning;
-finite retention is stated without manufacturing a warning. The screen is
-read-only and links to the existing owners for destination setup and request
-work rather than creating another compliance dashboard.
+“Where visitor data goes” is a normal Data & privacy region between retention
+and the existing export/request actions. It uses the shared region header,
+loading, failure, warning, typography and responsive layout patterns. Its
+merchant copy names locations and responsibilities directly: saved in WConvert,
+saved in the visitor's browser, anonymous campaign totals, sent to other
+services, and copies the merchant must manage separately. Browser storage and
+server-side anonymous totals stay in separate sections because they have
+different locations and lifetimes. Loading never looks like an empty
+configuration. Indefinite retention receives a warning; finite retention is
+stated without manufacturing a warning. The screen is read-only and links to
+the existing owners for destination setup and request work rather than creating
+another compliance dashboard.
 
 ## Consequences
 

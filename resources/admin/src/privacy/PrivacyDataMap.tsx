@@ -20,10 +20,10 @@ const FIELD_NAMES: Readonly<Record<string, string>> = {
 const fieldName = (field: string) => FIELD_NAMES[field] ?? field;
 
 const retentionText = (days: number | null) => days === null
-  ? __('Submissions are kept until you delete them. Automatic deletion is not enabled.', 'wconvert')
+  ? __('Automatic deletion is off.', 'wconvert')
   : sprintf(
     /* translators: %s: configured retention period, already pluralized. */
-    __('Submissions are deleted automatically after %s.', 'wconvert'),
+    __('Submissions are deleted automatically %s after they are submitted.', 'wconvert'),
     sprintf(
       /* translators: %s: number of days. */
       _n('%s day', '%s days', days, 'wconvert'),
@@ -60,15 +60,15 @@ export function PrivacyDataMap() {
   }, []);
 
   if (state.status === 'loading') {
-    return <RegionSkeleton label={__('Your data flow', 'wconvert')} lines={4} />;
+    return <RegionSkeleton label={__('Where visitor data goes', 'wconvert')} lines={5} />;
   }
 
   if (state.status === 'failed') {
     return (
       <Region>
         <RegionHeader
-          title={__('Your data flow', 'wconvert')}
-          description={__('What this site keeps and where configured copies can go.', 'wconvert')}
+          title={__('Where visitor data goes', 'wconvert')}
+          description={__('See what WConvert saves, what stays in a visitor’s browser and which copies you must manage elsewhere.', 'wconvert')}
         />
         <RegionErrorState message={state.message} />
       </Region>
@@ -80,21 +80,21 @@ export function PrivacyDataMap() {
   return (
     <Region>
       <RegionHeader
-        title={__('Your data flow', 'wconvert')}
-        description={__('What this site keeps and where configured copies can go.', 'wconvert')}
+        title={__('Where visitor data goes', 'wconvert')}
+        description={__('See what WConvert saves, what stays in a visitor’s browser and which copies you must manage elsewhere.', 'wconvert')}
       />
       <RegionBody className="flex flex-col gap-5">
         <section aria-labelledby="wconvert-stored-data">
           <h3 id="wconvert-stored-data" className="m-0 text-body font-medium">
-            {__('Stored by WConvert', 'wconvert')}
+            {__('Saved in WConvert', 'wconvert')}
           </h3>
           <Description className="mt-1">
-            {__('A submission can contain an email address, phone number, name, form answers and consent wording, together with its Campaign and submission time. WConvert does not attach the page address, network address or browser details to the submission.', 'wconvert')}
+            {__('WConvert saves the information a visitor enters in a form. This can include their name, email address, phone number, answers and the consent wording they saw. Each submission also records which Campaign collected it and when. It does not include the page URL, IP address or browser details.', 'wconvert')}
           </Description>
           {data.retention_days === null ? (
             <Alert className="mt-3 border-warning/30 bg-warning/5 text-warning">
               <TriangleAlert />
-              <AlertTitle className="line-clamp-none">{__('No automatic deletion', 'wconvert')}</AlertTitle>
+              <AlertTitle className="line-clamp-none">{__('Kept until you delete them', 'wconvert')}</AlertTitle>
               <AlertDescription className="text-warning">
                 {retentionText(null)}
               </AlertDescription>
@@ -106,19 +106,31 @@ export function PrivacyDataMap() {
 
         <section aria-labelledby="wconvert-browser-data" className="border-t border-border pt-5">
           <h3 id="wconvert-browser-data" className="m-0 text-body font-medium">
-            {__('Browser and anonymous counts', 'wconvert')}
+            {__('Saved in the visitor’s browser', 'wconvert')}
           </h3>
           <Description className="mt-1">
+            {__('A visitor’s browser remembers whether they saw, dismissed or completed a Campaign, and which A/B test version they received. WConvert does not set an expiry for this local-storage record; it stays until the visitor or browser clears it.', 'wconvert')}
+          </Description>
+          <Description className="mt-2">
             {sprintf(
               /* translators: %s: the fallback cookie lifetime in days. */
-              __('The visitor’s browser keeps display, dismissal, conversion and optional A/B assignment state in local storage, which has no set expiry. If local storage is unavailable, a cookie fallback lasts up to %s. It contains no contact details and no WConvert-generated visitor identifier.', 'wconvert'),
+              __('If local storage is unavailable, a cookie keeps the same information for up to %s. Neither record contains contact details or a WConvert visitor ID.', 'wconvert'),
               cookieDurationText(data.browser.cookie_fallback_days),
             )}
+          </Description>
+        </section>
+
+        <section aria-labelledby="wconvert-anonymous-counts" className="border-t border-border pt-5">
+          <h3 id="wconvert-anonymous-counts" className="m-0 text-body font-medium">
+            {__('Anonymous campaign totals', 'wconvert')}
+          </h3>
+          <Description className="mt-1">
+            {__('WConvert keeps daily totals of Campaign views, dismissals and completions. These totals are not linked to individual visitors.', 'wconvert')}
           </Description>
           <Description className="mt-2">
             {sprintf(
               /* translators: %s: a short duration such as “one minute”. */
-              __('For anonymous campaign counting, a site-specific one-way hash derived from the network address is kept for %s. The network address itself is not stored.', 'wconvert'),
+              __('To avoid counting the same activity repeatedly, WConvert keeps a one-way code made from the visitor’s IP address for %s. The code then expires, and the IP address itself is not saved.', 'wconvert'),
               rateLimitText(data.beacon_rate_limit_seconds),
             )}
           </Description>
@@ -126,13 +138,13 @@ export function PrivacyDataMap() {
 
         <section aria-labelledby="wconvert-destination-data" className="border-t border-border pt-5">
           <h3 id="wconvert-destination-data" className="m-0 text-body font-medium">
-            {__('Configured destinations', 'wconvert')}
+            {__('Sent to other services', 'wconvert')}
           </h3>
           {data.destinations.length === 0 ? (
             <div className="mt-2 rounded-md border border-dashed border-border p-4">
-              <p className="m-0 text-body">{__('No destinations are configured. Submissions stay in WConvert unless an administrator exports them.', 'wconvert')}</p>
+              <p className="m-0 text-body">{__('No destinations are set up. Submissions stay in WConvert unless you export them.', 'wconvert')}</p>
               <a className="mt-2 inline-block text-note underline underline-offset-2" href={settingsHref('connections')}>
-                {__('Set up destinations', 'wconvert')}
+                {__('Set up a destination', 'wconvert')}
               </a>
             </div>
           ) : (
@@ -145,13 +157,13 @@ export function PrivacyDataMap() {
                   </div>
                   {destination.fields === null ? (
                     <Description className="mt-1 text-warning">
-                      {__('This destination type is not available here, so its data details could not be read. Review or remove it under Connections & destinations.', 'wconvert')}
+                      {__('This saved destination is unavailable, so WConvert cannot show which information it receives. Review or remove it under Connections & destinations.', 'wconvert')}
                     </Description>
                   ) : (
                     <Description className="mt-1">
                       {sprintf(
                         /* translators: %s: comma-separated personal-data fields. */
-                        __('May receive: %s', 'wconvert'),
+                        __('Can receive: %s', 'wconvert'),
                         destination.fields.map(fieldName).join(', '),
                       )}
                     </Description>
@@ -169,10 +181,10 @@ export function PrivacyDataMap() {
 
         <section aria-labelledby="wconvert-external-copies" className="border-t border-border pt-5">
           <h3 id="wconvert-external-copies" className="m-0 text-body font-medium">
-            {__('Copies outside WConvert', 'wconvert')}
+            {__('Copies you must manage separately', 'wconvert')}
           </h3>
           <Description className="mt-1">
-            {__('Deleting a WConvert submission does not remove CSV files, destination copies, email logs or backups. Review and delete those separately when a request requires it.', 'wconvert')}
+            {__('Deleting a submission from WConvert does not delete copies already sent to other services or saved in CSV exports, email logs or backups. If someone asks you to delete their data, remove those copies from each place too.', 'wconvert')}
           </Description>
         </section>
       </RegionBody>

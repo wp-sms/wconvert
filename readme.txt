@@ -166,7 +166,7 @@ submissions if needed, then use the exact-match deletion action. It deletes all
 WConvert submissions directly carrying that phone across every campaign. Copies
 in destinations, downloaded files, email logs and backups must be handled there.
 
-Under **WConvert → Settings → Data & privacy**, “Your data flow” gives
+Under **WConvert → Settings → Data & privacy**, “Where visitor data goes” gives
 administrators a read-only explanation of this site's saved retention,
 configured destinations, browser-local state and copies outside WConvert. The
 same current facts inform WConvert's suggested text in WordPress's privacy-policy

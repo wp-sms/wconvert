@@ -103,7 +103,7 @@ it('keeps site-wide limits as a complete draft until an explicit save', async ()
 it('keeps the site-specific data map with retention and personal-data actions', async () => {
   render(<Settings group="data" />);
 
-  expect(await screen.findByRole('heading', { name: 'Your data flow' })).toBeInTheDocument();
+  expect(await screen.findByRole('heading', { name: 'Where visitor data goes' })).toBeInTheDocument();
   expect(screen.getByRole('heading', { name: 'Data & privacy' })).toBeInTheDocument();
   expect(screen.getByRole('heading', { name: 'Export and personal data' })).toBeInTheDocument();
 });
