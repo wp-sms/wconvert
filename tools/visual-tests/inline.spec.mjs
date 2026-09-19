@@ -211,6 +211,11 @@ test('goal-first inline setup enables automatic placement and publishes', async 
   await expect(page.getByText('Inline form', { exact: true }).last()).toBeVisible();
   await page.getByRole('button', { name: 'Use this setup', exact: true }).click();
 
+  // The single-worker WordPress harness can queue this lazy chunk behind the
+  // editor's REST requests. Wait for editor/placement readiness separately from
+  // the control assertion, which must still fail if Automatic is absent.
+  await expect(page.getByRole('tabpanel', { name: 'Design', exact: true })).toBeVisible();
+  await expect(page.getByText('Loading placement settings…', { exact: true })).toBeHidden({ timeout: 30000 });
   const automatic = page.getByRole('radio', { name: 'Automatic', exact: true });
   await expect(automatic).toBeVisible();
   // The editor intentionally leaves the radio unchecked until the explicit
