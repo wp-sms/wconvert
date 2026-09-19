@@ -51,6 +51,14 @@ it('Free explains availability without carrying the premium controls', () => {
   expect(screen.queryByRole('radio')).toBeNull();
 });
 
+it('Free can explicitly return a previously automatic campaign to manual placement', async () => {
+  const user = userEvent.setup();
+  let changes: Record<string, unknown> = {};
+  render(<InlinePlacementSettings config={{ inline_placement: { position: 'after_content' } }} vocabulary={vocabulary} onChange={(patch) => { changes = patch; }} />);
+  await user.click(screen.getByRole('button', { name: 'Use manual placement' }));
+  expect(changes).toEqual({ inline_placement: null });
+});
+
 it('automatic publish guidance does not tell merchants to insert a shortcode', () => {
   render(<PlacementGuidance optinId="example" displayType="inline" inlinePlacement={{ position: 'after_paragraph', paragraph: 3 }} published />);
   expect(screen.getByText('Automatically after paragraph 3')).toBeInTheDocument();
