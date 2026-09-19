@@ -269,6 +269,10 @@ third-party ones. Under configuration they are properties of the one renderer.
   to let go stale. What changed is when a real card renders: `TemplateCard`
   mounts its preview only while near the viewport, because forty on one screen
   is forty closed shadow roots nobody has scrolled to.*
+  *Amended by [ADR 0098](0098-fullscreen-is-a-pro-modal-surface.md): until a
+  fullscreen design's public preview exists, its Free card says "Included in
+  Pro" with no link. Pro previews share the shipping fullscreen content surface;
+  no template schema or tokens are added.*
 - **That module must stay dependency-free.** Two consumers, two bundles — React
   inside it would drag the admin's dependencies into the loader budget.
 - **The renderer and vocabulary are a live reference; a template's tree and tokens

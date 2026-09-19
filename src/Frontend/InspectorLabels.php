@@ -46,6 +46,7 @@ final class InspectorLabels
             'collapse' => __('Collapse', 'wconvert'),
             'expand' => __('Expand', 'wconvert'),
             'nothing' => __('This site has no Campaigns yet.', 'wconvert'),
+            'fullscreen' => __('Format: Fullscreen — covers the viewport until dismissed.', 'wconvert'),
             'placement' => [
                 /* translators: %s: a logical overlay position, such as “Top” or “Bottom end”. */
                 'position' => __('Position: %s', 'wconvert'),

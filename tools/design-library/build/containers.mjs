@@ -57,6 +57,13 @@ const PLUGIN = process.env.WCONVERT_PLUGIN ?? process.cwd();
  * reordered object literal and teach everyone to delete this check.
  */
 const CONTAINERS = {
+  fullscreen: {
+    source: 'pro/modules/display-types/loader/fullscreen.ts',
+    holds: ["'inline-size': '100%'", "'block-size': '100dvh'"],
+    css: `
+      .wc-container-fullscreen { padding: 0; }
+      .wc-container-fullscreen > .wc-box { inline-size: 100%; }`,
+  },
   popup: {
     source: 'resources/renderer/src/mount.ts',
     holds: ["position: 'fixed'", "inset: '0'", "margin: 'auto'"],

@@ -174,7 +174,13 @@ final class TemplateRoutesTest extends TestCase
             // (ADR 0056). At launch every rung displays as "Pro" regardless.
             $this->assertSame('basic', $card['tier']);
             $this->assertArrayNotHasKey('tree', $card);
-            $this->assertNotEmpty($card['preview_url'] ?? null, $card['id'] . ' is locked with nowhere to send the merchant');
+            // Fullscreen previews are not published yet (ADR 0098). Its
+            // cards are informational, never a fabricated or inert link.
+            if (in_array($card['id'], ['fullscreen-editorial', 'fullscreen-split', 'fullscreen-poster'], true)) {
+                $this->assertEmpty($card['preview_url'] ?? null);
+            } else {
+                $this->assertNotEmpty($card['preview_url'] ?? null, $card['id'] . ' is locked with nowhere to send the merchant');
+            }
         }
     }
 

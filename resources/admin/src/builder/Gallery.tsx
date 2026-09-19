@@ -217,6 +217,7 @@ export function Gallery({
 
         return (
           <TemplateCard
+            displayType={entry.display_type}
             key={entry.id}
             id={entry.id}
             name={entry.name}
@@ -255,7 +256,9 @@ export function Gallery({
               ) : undefined
             }
             action={(describedBy) =>
-              locked ? (
+              locked && !entry.preview_url ? (
+                <span className="text-sm text-muted-foreground">{__('Included in Pro', 'wconvert')}</span>
+              ) : locked ? (
                 /*
                   **A link, never a `disabled` button.** The design is not on
                   this install to be used, so an "unavailable" control would be

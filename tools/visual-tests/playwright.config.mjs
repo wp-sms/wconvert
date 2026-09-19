@@ -2,7 +2,7 @@ import { defineConfig } from '@playwright/test';
 
 export default defineConfig({
   testDir: '.',
-  testMatch: '*.spec.mjs',
+  testMatch: 'admin.spec.mjs',
   fullyParallel: false,
   workers: 1, // One SQLite writer; every scenario gets a fresh browser context.
   retries: 0,

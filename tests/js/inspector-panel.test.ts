@@ -33,6 +33,7 @@ const LABELS: Labels = {
   collapse: 'Collapse',
   expand: 'Expand',
   nothing: 'No Campaigns yet.',
+  fullscreen: 'Format: Fullscreen — covers the viewport until dismissed.',
   placement: {
     position: 'Position: %s',
     block_start: 'Top',
@@ -116,6 +117,11 @@ function draw(optins: ServerOptin[] = [optin()], entries: EntryReport[] = [entry
 afterEach(() => document.getElementById('wconvert-inspector-panel')?.remove());
 
 describe('the panel', () => {
+  it('names fullscreen without inventing a placement', () => {
+    const { root } = draw(undefined, [entry({ displayType: 'fullscreen' })]);
+    expect(root.textContent).toContain('Format: Fullscreen');
+    expect(root.textContent).not.toContain('Position:');
+  });
   /**
    * **Open, not closed.** This is a diagnostic: a closed root would put the
    * report out of reach of the devtools of the person debugging with it.

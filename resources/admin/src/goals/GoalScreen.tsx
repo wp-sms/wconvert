@@ -229,6 +229,7 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins }: GoalScree
         </div>}
         <ul className={`wconvert-gallery${singleStartingPoint ? ' wconvert-gallery--single-start' : ''}`}>{entries.map((playbook) => <TemplateCard
           key={playbook.id} id={playbook.id} name={playbook.name} template={playbook.template}
+          displayType={startingPointDisplayType(playbook)}
           featured={singleStartingPoint}
           absent={playbook.template === undefined ? <p>{__('This design is not available on this site. Choose a design after opening the draft.', 'wconvert')}</p> : undefined}
           action={(describedBy) => <div className="flex w-full flex-col items-start gap-2">

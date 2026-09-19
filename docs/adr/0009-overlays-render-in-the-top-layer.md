@@ -6,6 +6,11 @@ template's markup and CSS live inside the shadow root. Exactly one `<style>`
 element is added to the document, holding `@font-face` rules and one `::backdrop`
 rule.
 
+Amended by [ADR 0098](0098-fullscreen-is-a-pro-modal-surface.md): Pro's fullscreen
+surface shares the modal lifecycle, supplies viewport geometry and page scroll
+locking, names the dialog across the shadow boundary, and initially focuses its
+heading rather than a capture input. Non-modal types still follow ADR 0011.
+
 Two containers, because they solve two different problems and neither solves the
 other's.
 

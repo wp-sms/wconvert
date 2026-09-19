@@ -216,7 +216,7 @@ export function TemplateDesignDetail({
               style={{ inlineSize: size === null ? measure : size.width * scale, blockSize: size === null ? undefined : size.height * scale }}>
               <div ref={page} className="wconvert-design-detail__preview" data-step={shown} inert aria-hidden="true"
                 style={{ inlineSize: measure, transform: `scale(${scale})` }}>
-                <Preview template={template} step={shown} />
+                <Preview template={template} step={shown} displayType={entry.display_type} />
               </div>
             </div>
           ) : loadError || preparationError !== undefined ? (

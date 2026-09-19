@@ -11,9 +11,13 @@ There are three containers, not one:
 
 | Display Type | Container |
 |---|---|
-| `popup` | `<dialog>` + `showModal()` — top layer, modal |
+| `popup`, `fullscreen` | `<dialog>` + `showModal()` — top layer, modal |
 | `floating_bar`, `slide_in` | `[popover=manual]` — top layer, **non-modal** |
 | `inline` | closed shadow root only, in flow, no top layer |
+
+Amended by [ADR 0098](0098-fullscreen-is-a-pro-modal-surface.md): Fullscreen is
+Pro's viewport-filling surface on the shared modal lifecycle. Bars and slide-ins
+remain non-modal; fullscreen does not add a fourth container mechanism.
 
 ## Why 0009 needed amending
 

@@ -188,6 +188,7 @@ export function EditorCanvas({
               <div className="wconvert-site__slot">
                 <Preview
                   template={template}
+                  displayType={displayType}
                   step={shown}
                   selected={interactive ? null : selected}
                   onSelect={interactive ? undefined : onSelect}

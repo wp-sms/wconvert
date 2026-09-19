@@ -72,6 +72,7 @@ import type { Template } from '@renderer/types';
 const NEARBY = '600px';
 
 export interface TemplateCardProps {
+  readonly displayType?: string;
   /** Namespaces the ids this card owns, so forty cards do not collide. */
   readonly id: string;
   readonly name: string;
@@ -137,6 +138,7 @@ export interface TemplateCardProps {
 }
 
 export function TemplateCard({
+  displayType,
   id,
   name,
   template,
@@ -240,7 +242,7 @@ export function TemplateCard({
         <div className="wconvert-gallery__absent">{absent}</div>
       ) : near && template !== undefined ? (
         <div className="wconvert-gallery__preview flex min-w-0 flex-1" inert aria-hidden="true">
-          <Preview template={template} />
+          <Preview template={template} displayType={displayType} />
         </div>
       ) : loadError ? (
         <div className="wconvert-gallery__waiting wconvert-gallery__error">

@@ -23,6 +23,7 @@ final class OverlayPlacementTest extends TestCase
         yield 'a bar cannot retain a slide-in corner' => [DisplayType::FloatingBar, 'block_start_inline_start', null];
         yield 'a slide-in cannot retain a bar edge' => [DisplayType::SlideIn, 'block_start', null];
         yield 'popup has no placement' => [DisplayType::Popup, 'block_start', null];
+        yield 'fullscreen has no placement' => [DisplayType::Fullscreen, 'block_start', null];
         yield 'inline has no placement' => [DisplayType::Inline, 'block_start_inline_end', null];
         yield 'unknown values are removed' => [DisplayType::SlideIn, 'centre', null];
         yield 'non-string values are removed' => [DisplayType::FloatingBar, ['block_start'], null];

@@ -149,6 +149,22 @@ final class ProServiceProvider implements ServiceProvider
                 $c->resolve(\WConvert\Template\Catalog\InstalledPacks::class),
             )
         );
+
+        // Keep premium setups beside their trees. Free cannot validate a
+        // Playbook against a locked metadata-only card, and must not ship the tree.
+        $container->register(
+            \WConvert\Playbook\PlaybookLibrary::class,
+            static fn (ServiceContainer $c): \WConvert\Playbook\PlaybookLibrary => \WConvert\Playbook\PlaybookLibrary::fromDirectory(
+                $c->resolve(TemplateLibrary::class),
+                $c->resolve(TemplateVocabulary::class),
+                $c->resolve(RuleVocabulary::class),
+                WCONVERT_DIR,
+                array_merge(
+                    (new \WConvert\Pro\Template\ProPlaybooks(WCONVERT_PRO_DIR))->entries(),
+                    $c->resolve(\WConvert\Template\Catalog\InstalledPacks::class)->playbooks()
+                )
+            )
+        );
     }
 
     public function boot(ServiceContainer $container): void

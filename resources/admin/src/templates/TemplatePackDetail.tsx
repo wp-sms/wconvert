@@ -157,7 +157,7 @@ function PackPreviewStage({ template, step, mobile }: { template: TemplateEntry;
   return <div ref={stage} className="wconvert-pack-stage" aria-label={__('Design preview', 'wconvert')}>
     <div className="wconvert-pack-stage__measure" style={{ width: size.width ? size.width * scale : width, height: size.height ? size.height * scale : undefined }}>
       <div ref={paper} className="wconvert-pack-stage__paper" inert aria-hidden="true" style={{ width, transform: `scale(${scale})` }}>
-        <Preview template={template} step={step} />
+        <Preview template={template} step={step} displayType={template.display_type} />
       </div>
     </div>
   </div>;

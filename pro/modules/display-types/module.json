@@ -1,5 +1,6 @@
 {
   "slug": "display-types",
-  "name": "Floating bars and slide-ins",
-  "description": "The two Display Types free has no container for, the popover that draws them, and the eight designs that come with them."
+  "name": "Fullscreen, floating bars and slide-ins",
+  "description": "Premium display containers and their reusable designs.",
+  "bundle_marker": "fullscreen"
 }

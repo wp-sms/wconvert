@@ -13,7 +13,7 @@
 // Two assertions, and neither is optional:
 //
 //   1. THE BYTE BUDGET, HARD. Free's and Pro's shipped loader, gzip -9, fail
-//      at 12800 bytes, per build. It blocks rather than warns, and there is no
+//      at 13500 bytes, per build. It blocks rather than warns, and there is no
 //      second warn band nobody would read.
 //
 //      IT WAS 8192, AND THE NUMBER MOVED ONCE, ON PURPOSE. The original was
@@ -26,7 +26,8 @@
 //      smallest shipped runtime in the field is Icegram Lite at 13,672 B, so a
 //      ceiling below that keeps "smaller than anything in the market"
 //      literally sayable while leaving the gallery and container behavior room
-//      to be real. ADR 0095 records the later 512 B placement amendment.
+//      to be real. ADR 0095 records the later 512 B placement amendment;
+//      ADR 0098 adds the shared modal lifecycle and Pro fullscreen surface.
 //
 //      WHAT DID NOT CHANGE IS THAT IT IS HARD AND FLAGLESS (ADR 0029). A
 //      number moved with an argument attached is not an opt-out; the moment
@@ -85,7 +86,7 @@ const ROOT = process.argv[2] ? resolve(process.argv[2]) : REPO_ROOT;
  * limit is about what every visitor of every matching page downloads, and that
  * bundle is enqueued only for an administrator who asked for it.
  */
-const BYTE_BUDGET = 12800;
+const BYTE_BUDGET = 13500;
 
 const MANIFEST = 'resources/rules/manifest.json';
 

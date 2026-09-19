@@ -366,6 +366,7 @@
         bottom with nowhere to grow.
       */
       popup: { page: '', box: '' },
+      fullscreen: { page: '', box: 'position:absolute;inset:0;overflow:auto' },
       inline: { page: '', box: 'padding:1.5rem 1rem' },
       floating_bar: {
         page: '',
@@ -603,7 +604,9 @@
       root.appendChild(style);
 
       try {
-        root.appendChild(WConvertRenderer.render(state.entry.tree, state.tokens, state.step));
+        var rendered = WConvertRenderer.render(state.entry.tree, state.tokens, state.step);
+        if (state.container === 'fullscreen') WConvertRenderer.decorateFullscreen(rendered, state.tokens.width, '620px');
+        root.appendChild(rendered);
         say('');
       } catch (error) {
         say('The renderer threw: ' + error.message, true);

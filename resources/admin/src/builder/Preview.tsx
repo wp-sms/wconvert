@@ -5,6 +5,7 @@ import { A_DESIGNS_OWN_WIDTH } from '@renderer/css';
 import { SLOT_SELECTOR, keyOfElement, type SlotKey } from './slots';
 import { policyUrl, withPolicyLink } from './policy';
 import type { Template } from '@renderer/types';
+import { previewSurfaces } from '../previewSurfaces';
 
 /**
  * A design, drawn by **the renderer the loader imports** — and, in the
@@ -164,6 +165,7 @@ function nextInChain(chain: readonly SlotKey[]): SlotKey | null {
 const A_PREVIEW_DEADLINE = Date.now() + 2 * 60 * 60 * 1000;
 
 export interface PreviewProps {
+  readonly displayType?: string;
   readonly template: Template;
   readonly step?: number;
   readonly interactive?: boolean;
@@ -182,7 +184,7 @@ export interface PreviewProps {
   readonly onSelect?: (key: SlotKey) => void;
 }
 
-export function Preview({ template, step = 0, selected = null, onSelect, interactive = false, onAdvance }: PreviewProps) {
+export function Preview({ template, displayType = 'inline', step = 0, selected = null, onSelect, interactive = false, onAdvance }: PreviewProps) {
   const anchor = useRef<HTMLDivElement>(null);
   /*
    * State rather than a ref, because the two effects below have to run again
@@ -267,13 +269,14 @@ export function Preview({ template, step = 0, selected = null, onSelect, interac
     // Read AFTER the swap: `root` is a getter over whichever step is currently
     // rendered, because `showStep` replaces the element rather than editing it.
     if (mounted.root) mounted.root.style.maxBlockSize = 'none';
+    if (mounted.root) previewSurfaces[displayType]?.(mounted.root, drawn.tokens.width, '32rem');
     setRoot(mounted.root);
 
     return () => {
       mounted.close();
       setRoot(null);
     };
-  }, [drawn, step, selectable]);
+  }, [drawn, step, selectable, displayType]);
 
   useEffect(() => {
     if (root === null || onSelect === undefined) {
@@ -471,7 +474,7 @@ export function Preview({ template, step = 0, selected = null, onSelect, interac
     <div className="wconvert-preview">
       <div
         ref={anchor}
-        style={{ inlineSize: template.tokens.width ?? A_DESIGNS_OWN_WIDTH, maxInlineSize: '100%' }}
+        style={{ inlineSize: previewSurfaces[displayType] ? '100%' : template.tokens.width ?? A_DESIGNS_OWN_WIDTH, maxInlineSize: '100%' }}
       />
     </div>
   );

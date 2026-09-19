@@ -44,6 +44,7 @@ writeFileSync(
   entry,
   [
     `export { render, SHADOW_CSS } from '${resolve(PLUGIN, 'resources/renderer/src/mount')}';`,
+    `export { decorateFullscreen } from '${resolve(PLUGIN, 'pro/modules/display-types/loader/surface')}';`,
     /*
      * The themes ride along so the Bench switches between the SHIPPING presets
      * rather than a copy of them — the same reason the renderer is bundled

@@ -137,6 +137,9 @@ ever sees that queue's output.*
   that behavior or unrelated Elite cart validation, so the hard gate moved by
   512 B instead. It remains 872 B below Icegram Lite, the smallest measured
   competitor runtime above; the gate is still per build, hard and flagless.*
+  ***Amended by [ADR 0098](0098-fullscreen-is-a-pro-modal-surface.md): the ceiling
+  is 13,500 B.*** The largest build is 13,331 B with fullscreen's accessible
+  modal surface. Historical competitor figures are not a current market claim.
 - **No public `registerRule` seam**, therefore no partial-registration failure mode
   and no documented extension point that immediately becomes a compatibility
   surface.

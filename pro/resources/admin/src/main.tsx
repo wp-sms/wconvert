@@ -3,6 +3,10 @@ import { createRoot } from 'react-dom/client';
 import { App } from '@/App';
 import '@/index.css';
 import { PRO_SCREENS } from './screens';
+import { previewSurfaces } from '@/previewSurfaces';
+import { decorateFullscreen } from '../../../modules/display-types/loader/surface';
+
+previewSurfaces.fullscreen = decorateFullscreen;
 
 /**
  * WConvert Pro's admin entry — free's screens plus Pro's, in ONE bundle.
