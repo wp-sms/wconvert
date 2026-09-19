@@ -54,6 +54,7 @@ add_filter('rest_post_dispatch', static function ($response, $server, $request) 
             $data['impact'] = array_map(static function ($item) { $item['count'] = 0; return $item; }, $data['impact']);
             break;
         case '/wconvert/v1/leads':
+        case '/wconvert/v1/leads/query':
             $data['leads'] = [];
             $data['groups'] = [];
             $data['submissions'] = 0;
