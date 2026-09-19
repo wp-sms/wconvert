@@ -847,6 +847,10 @@ ul.wconvert-launch-review__notice { padding-inline-start: 28px; list-style: disc
 .wconvert-placement__steps li { margin-block: 8px; }
 .wconvert-placement__copy { display: flex; align-items: center; gap: 8px; }
 .wconvert-placement__shortcode { min-width: 0; font-family: monospace; font-size: var(--text-note); }
+.wconvert-inline-placement, .wconvert-manual-placement { display: grid; gap: 12px; min-inline-size: 0; }
+.wconvert-inline-placement p, .wconvert-manual-placement p { margin: 0; color: var(--muted-foreground); font-size: var(--text-note); line-height: var(--text-note--line-height); }
+.wconvert-manual-placement > [data-slot='button'] { justify-self: start; }
+.wconvert-manual-placement .wconvert-placement__embed { display: grid; gap: 6px; margin: 0; }
 @media (max-width: 1350px) {
   #wconvert-admin .wconvert-workspace__header { flex-wrap: wrap; }
   #wconvert-admin .wconvert-workspace__navigation { order: 3; flex-basis: 100%; inline-size: 100%; }

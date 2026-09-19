@@ -253,6 +253,11 @@ final class AdminMenu
             'homeUrl' => (string) home_url('/'),
             'siteName' => wp_specialchars_decode((string) get_bloginfo('name'), ENT_QUOTES),
             'inspectParam' => InspectorEnqueue::PARAM,
+            // WordPress owns site-wide layout. WConvert only names the native
+            // editor this theme actually exposes, and only when the current
+            // user may edit that layout. A classic theme with no registered
+            // widget areas has nowhere useful for widgets.php to lead.
+            'placementEditor' => self::placementEditor(),
             'timezone' => wp_timezone_string(),
             // **What one design may cost, so the builder can draw a meter.**
             // The same constant `LibraryLintTest` caps a shipped design at, sent
@@ -288,6 +293,30 @@ final class AdminMenu
             // card names {@see self::VARIANT_MODULE}'s rung.
             'variants' => self::whetherTestsCanRun($manifest, new WpProPresence($manifest)),
         ];
+    }
+
+    /**
+     * The native WordPress surface that can place a block site-wide.
+     *
+     * @return array{type: 'site_editor'|'widgets', url: string}|null
+     */
+    private static function placementEditor(): ?array
+    {
+        if (!current_user_can('edit_theme_options')) {
+            return null;
+        }
+
+        if (function_exists('wp_is_block_theme') && wp_is_block_theme()) {
+            return ['type' => 'site_editor', 'url' => admin_url('site-editor.php')];
+        }
+
+        global $wp_registered_sidebars;
+
+        if (is_array($wp_registered_sidebars) && $wp_registered_sidebars !== []) {
+            return ['type' => 'widgets', 'url' => admin_url('widgets.php')];
+        }
+
+        return null;
     }
 
     /**

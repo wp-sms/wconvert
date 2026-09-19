@@ -14,6 +14,9 @@ final class AdminSettingsTest extends TestCase
     protected function tearDown(): void
     {
         unset($GLOBALS['wconvertTestTimezoneString'], $GLOBALS['wconvertTestSiteName']);
+        $GLOBALS['wconvertTestCapabilities'] = [];
+        $GLOBALS['wconvertTestBlockTheme'] = false;
+        $GLOBALS['wp_registered_sidebars'] = [];
     }
 
     /** @return iterable<string, array{string}> */
@@ -41,5 +44,36 @@ final class AdminSettingsTest extends TestCase
     {
         $GLOBALS['wconvertTestSiteName'] = 'A &amp; B';
         $this->assertSame('A & B', AdminMenu::settings()['siteName']);
+    }
+
+    public function testBlockThemesLeadToTheSiteEditorWhenTheUserMayEditTheTheme(): void
+    {
+        $GLOBALS['wconvertTestCapabilities'] = ['edit_theme_options'];
+        $GLOBALS['wconvertTestBlockTheme'] = true;
+
+        $this->assertSame(
+            ['type' => 'site_editor', 'url' => 'https://example.test/wp-admin/site-editor.php'],
+            AdminMenu::settings()['placementEditor']
+        );
+    }
+
+    public function testClassicThemesLeadToWidgetsOnlyWhenTheySupplyAWidgetArea(): void
+    {
+        $GLOBALS['wconvertTestCapabilities'] = ['edit_theme_options'];
+        $GLOBALS['wp_registered_sidebars'] = ['footer' => ['name' => 'Footer']];
+
+        $this->assertSame(
+            ['type' => 'widgets', 'url' => 'https://example.test/wp-admin/widgets.php'],
+            AdminMenu::settings()['placementEditor']
+        );
+
+        $GLOBALS['wp_registered_sidebars'] = [];
+        $this->assertNull(AdminMenu::settings()['placementEditor']);
+    }
+
+    public function testPlacementEditorIsNotOfferedWithoutThemeEditingPermission(): void
+    {
+        $GLOBALS['wconvertTestBlockTheme'] = true;
+        $this->assertNull(AdminMenu::settings()['placementEditor']);
     }
 }

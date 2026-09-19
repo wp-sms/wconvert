@@ -10,7 +10,7 @@ import type { RuleVocabulary } from '@/builder/api';
 const vocabulary = { triggers: [{ type: 'page_load' }, { type: 'time_on_page' }], conditions: [], targeting: [], bundles: [] } as unknown as RuleVocabulary;
 
 it('groups the placement choices without repeating the section heading', () => {
-  render(<PlacementSettings config={{}} vocabulary={vocabulary} onChange={() => undefined} />);
+  render(<PlacementSettings optinId="example" published config={{}} vocabulary={vocabulary} onChange={() => undefined} />);
   const choices = screen.getByRole('group', { name: 'Placement method' });
   expect(within(choices).getByRole('radio', { name: 'Manual — block or shortcode' })).toBeChecked();
   expect(within(choices).getByRole('radio', { name: 'Automatic' })).not.toBeChecked();
@@ -21,7 +21,7 @@ it('makes trigger replacement and post-only defaults explicit, preserves other s
   const user = userEvent.setup();
   function Editor() {
     const [config, setConfig] = useState<Record<string, unknown>>({ rules: [{ type: 'time_on_page', seconds: 10 }, { type: 'device', value: 'mobile' }], targeting: { exclude: [{ type: 'post', value: 4 }] }, frequency: { maxImpressions: 2 } });
-    return <><PlacementSettings config={config} vocabulary={vocabulary} onChange={(patch) => setConfig({ ...config, ...patch })} /><output data-testid="config">{JSON.stringify(config)}</output></>;
+    return <><PlacementSettings optinId="example" published config={config} vocabulary={vocabulary} onChange={(patch) => setConfig({ ...config, ...patch })} /><output data-testid="config">{JSON.stringify(config)}</output></>;
   }
   render(<Editor />);
   await user.click(screen.getByRole('radio', { name: 'Automatic' }));
@@ -47,7 +47,7 @@ it('makes trigger replacement and post-only defaults explicit, preserves other s
 it('preserves deliberate page targeting and warns about incompatible triggers', async () => {
   const user = userEvent.setup();
   let changes: Record<string, unknown> = {};
-  render(<PlacementSettings config={{ targeting: { include: [{ type: 'post', value: 99 }] }, rules: [{ type: 'page_load' }] }} vocabulary={vocabulary} onChange={(patch) => { changes = patch; }} />);
+  render(<PlacementSettings optinId="example" published config={{ targeting: { include: [{ type: 'post', value: 99 }] }, rules: [{ type: 'page_load' }] }} vocabulary={vocabulary} onChange={(patch) => { changes = patch; }} />);
   await user.click(screen.getByRole('radio', { name: 'Automatic' }));
   expect(screen.queryByText(/posts only/)).toBeNull();
   await user.click(screen.getByRole('button', { name: 'Enable automatic placement' }));
@@ -55,7 +55,7 @@ it('preserves deliberate page targeting and warns about incompatible triggers', 
 });
 
 it('Free explains availability without carrying the premium controls', () => {
-  render(<InlinePlacementSettings config={{}} vocabulary={vocabulary} onChange={() => undefined} />);
+  render(<InlinePlacementSettings optinId="example" published config={{}} vocabulary={vocabulary} onChange={() => undefined} />);
   expect(screen.getByText(/Automatic placement is included in Pro/)).toBeInTheDocument();
   expect(screen.queryByRole('radio')).toBeNull();
 });
@@ -63,7 +63,7 @@ it('Free explains availability without carrying the premium controls', () => {
 it('Free can explicitly return a previously automatic campaign to manual placement', async () => {
   const user = userEvent.setup();
   let changes: Record<string, unknown> = {};
-  render(<InlinePlacementSettings config={{ inline_placement: { position: 'after_content' } }} vocabulary={vocabulary} onChange={(patch) => { changes = patch; }} />);
+  render(<InlinePlacementSettings optinId="example" published config={{ inline_placement: { position: 'after_content' } }} vocabulary={vocabulary} onChange={(patch) => { changes = patch; }} />);
   await user.click(screen.getByRole('button', { name: 'Use manual placement' }));
   expect(changes).toEqual({ inline_placement: null });
 });

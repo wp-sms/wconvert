@@ -603,6 +603,13 @@ and A/B assignment select at most one automatic winner, without changing saved
 articles or introducing another cache. See
 [ADR 0099](docs/adr/0099-automatic-inline-placement-uses-rendered-content.md).
 
+Manual Anchors also use WordPress's existing layout surfaces: the same block in
+post content, classic-theme widget areas, and block-theme templates/template
+parts, with the shortcode as the legacy/page-builder fallback. WordPress owns
+which sidebars, footers and template parts exist; WConvert neither registers nor
+chooses one. Placement guidance lives under Display rules, not Design. See
+[ADR 0100](docs/adr/0100-manual-inline-placement-uses-wordpress-layout-surfaces.md).
+
 Where an `inline` [[Optin]] was put — one empty element carrying one attribute
 and the Optin's id, and **the whole contract between authoring and rendering**.
 

@@ -1,12 +1,14 @@
-import { useId, useRef, useState } from 'react';
+import { useId } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
-import { Check, Copy, ExternalLink } from 'lucide-react';
+import { ExternalLink } from 'lucide-react';
 import { Button } from '../components/ui/button';
-import { Input } from '../components/ui/input';
 import { adminSettings } from '../settings';
 import { useDirection } from '../hooks/useDirection';
 import { physicalPlacementLabel } from './PlacementControl';
 import { inlinePlacementLabel } from '../inlinePlacement';
+import { Shortcode } from './ManualPlacement';
+
+export { inlineShortcode } from './ManualPlacement';
 
 export interface PlacementGuidanceProps {
   readonly optinId: string;
@@ -16,11 +18,6 @@ export interface PlacementGuidanceProps {
   readonly inlinePlacement?: unknown;
   /** A published version exists; this does not assert that it can show on any page. */
   readonly published: boolean;
-}
-
-/** Kept in parity with InlineOptinShortcode::TAG by the placement contract test. */
-export function inlineShortcode(optinId: string): string {
-  return `[wconvert_optin id="${optinId}"]`;
 }
 
 /** Open the existing real-page inspector, using WordPress's subdirectory-aware home URL. */
@@ -91,48 +88,5 @@ export function PlacementGuidance({ optinId, optinName, displayType, placement, 
       )}
       {!published && <p className="text-note text-muted-foreground">{__('The editor preview shows your draft. Check the actual page after publishing.', 'wconvert')}</p>}
     </section>
-  );
-}
-
-function Shortcode({ optinId }: { readonly optinId: string }) {
-  const id = useId();
-  const input = useRef<HTMLInputElement>(null);
-  const value = inlineShortcode(optinId);
-  const [result, setResult] = useState<{ value: string; status: 'copying' | 'copied' | 'failed' } | null>(null);
-  const status = result?.value === value ? result.status : null;
-
-  const copy = async () => {
-    setResult({ value, status: 'copying' });
-    try {
-      if (navigator.clipboard?.writeText === undefined) throw new Error('Clipboard unavailable');
-      await navigator.clipboard.writeText(value);
-      setResult({ value, status: 'copied' });
-    } catch {
-      setResult({ value, status: 'failed' });
-      // A refused clipboard request still leaves an ordinary manual-copy path.
-      if (input.current?.value === value) {
-        input.current.focus();
-        input.current.select();
-      }
-    }
-  };
-
-  return (
-    <div className="wconvert-placement__embed">
-      <label htmlFor={id}>{__('Shortcode for other editors', 'wconvert')}</label>
-      <p id={`${id}-help`} className="text-note text-muted-foreground">
-        {__('Use a Shortcode block or your page builder’s shortcode element.', 'wconvert')}
-      </p>
-      <div className="wconvert-placement__copy">
-        <Input ref={input} id={id} value={value} readOnly aria-describedby={`${id}-help`}
-          className="wconvert-placement__shortcode font-mono" onFocus={(event) => event.currentTarget.select()} />
-        <Button type="button" variant="outline" size="sm" disabled={status === 'copying'} onClick={() => { void copy(); }}>
-          {status === 'copied' ? <Check aria-hidden="true" /> : <Copy aria-hidden="true" />}
-          {status === 'copied' ? __('Copied', 'wconvert') : __('Copy shortcode', 'wconvert')}
-        </Button>
-      </div>
-      {status === 'copied' && <p role="status" className="text-note">{__('Shortcode copied.', 'wconvert')}</p>}
-      {status === 'failed' && <p role="alert" className="text-note">{__('Could not copy automatically. The shortcode is selected; copy it with your keyboard or context menu.', 'wconvert')}</p>}
-    </div>
   );
 }

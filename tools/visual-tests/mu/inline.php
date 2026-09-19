@@ -24,13 +24,22 @@ add_action('init', static function (): void {
         wp_mkdir_p($themeDir);
         if (!is_file($themeDir . '/style.css')) {
             file_put_contents($themeDir . '/style.css', "/*\nTheme Name: WConvert Inline Classic Fixture\nVersion: 1.0\n*/\n");
-            file_put_contents($themeDir . '/index.php', "<!doctype html>\n<html <?php language_attributes(); ?>><head><meta charset=\"<?php bloginfo('charset'); ?>\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><?php wp_head(); ?></head>\n<body <?php body_class(); ?>><?php wp_body_open(); ?><main><article><div class=\"entry-content\"><?php while (have_posts()) : the_post(); the_content(); endwhile; ?></div></article></main><?php wp_footer(); ?></body></html>");
+            file_put_contents($themeDir . '/functions.php', "<?php\nadd_action('widgets_init', static function (): void { register_sidebar(['id' => 'wconvert-test-sidebar', 'name' => 'Test sidebar', 'before_widget' => '<section class=\"widget\">', 'after_widget' => '</section>']); });\n");
+            file_put_contents($themeDir . '/index.php', "<!doctype html>\n<html <?php language_attributes(); ?>><head><meta charset=\"<?php bloginfo('charset'); ?>\"><meta name=\"viewport\" content=\"width=device-width,initial-scale=1\"><?php wp_head(); ?></head>\n<body <?php body_class(); ?>><?php wp_body_open(); ?><main><article><div class=\"entry-content\"><?php while (have_posts()) : the_post(); the_content(); endwhile; ?></div></article><aside data-inline-widget-area=\"true\" style=\"inline-size:min(280px,100%);max-inline-size:100%;margin-block-start:2000px\"><?php \$block = get_option('wconvert_inline_fixture_widget', ''); if (is_string(\$block) && \$block !== '') { try { the_widget('WP_Widget_Block', ['content' => \$block], ['before_widget' => '<section class=\"widget\">', 'after_widget' => '</section>']); } catch (Throwable \$error) { wp_die(esc_html(\$error->getMessage())); } } else { dynamic_sidebar('wconvert-test-sidebar'); } ?></aside></main><?php wp_footer(); ?></body></html>");
         }
         wp_clean_themes_cache();
     }
     $themes = wp_get_themes();
     if (isset($themes[$theme])) {
         switch_theme($theme);
+    }
+    if ($theme === 'wconvert-inline-classic' && !is_registered_sidebar('wconvert-test-sidebar')) {
+        register_sidebar([
+            'id' => 'wconvert-test-sidebar',
+            'name' => 'Test sidebar',
+            'before_widget' => '<section class="widget">',
+            'after_widget' => '</section>',
+        ]);
     }
 
     if (isset($_GET['rtl'])) {
@@ -70,10 +79,14 @@ add_action('init', static function (): void {
     }
 
     $campaigns = [];
-    $make = static function (string $name, array $placement, array $rules = [], int $priority = 0) use ($prefill, $repository): string {
+    $make = static function (string $name, ?array $placement, array $rules = [], int $priority = 0) use ($prefill, $repository): string {
         $config = $prefill['config'];
         $config['display_type'] = 'inline';
-        $config['inline_placement'] = $placement;
+        if ($placement === null) {
+            unset($config['inline_placement']);
+        } else {
+            $config['inline_placement'] = $placement;
+        }
         $config['rules'] = $rules !== [] ? $rules : [['type' => 'page_load']];
         if ($priority !== 0) {
             $config['priority'] = $priority;
@@ -87,6 +100,7 @@ add_action('init', static function (): void {
     };
 
     $manual = false;
+    $widget = false;
     $recursive = false;
     $paragraphs = [
         '<p data-inline-paragraph="one">First paragraph with enough text to make the article boundary obvious.</p>',
@@ -114,6 +128,10 @@ add_action('init', static function (): void {
         case 'manual':
             $campaigns[] = $make('Inline manual precedence', ['position' => 'after_content']);
             $manual = true;
+            break;
+        case 'widget':
+            $campaigns[] = $make('Inline widget placement', null);
+            $widget = true;
             break;
         case 'priority':
             $campaigns[] = $make('Inline mobile priority', ['position' => 'before_content'], [
@@ -146,6 +164,15 @@ add_action('init', static function (): void {
     if (is_wp_error($postId)) {
         wp_die('Automatic inline fixture could not create its post');
     }
+
+    // Render Core's own block widget with this request's Campaign. Using the
+    // instance directly avoids stale widget-option instances across scenarios
+    // while exercising the same WP_Widget_Block render path.
+    update_option(
+        'wconvert_inline_fixture_widget',
+        $widget ? '<!-- wp:wconvert/inline-optin {"optinId":"' . esc_attr($campaigns[0]) . '"} /-->' : '',
+        false
+    );
 
     if ($recursive) {
         $secondary = wp_insert_post([
