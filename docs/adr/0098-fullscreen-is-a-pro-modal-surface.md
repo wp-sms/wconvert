@@ -53,7 +53,7 @@ separate website work.
 
 ## Size and verification
 
-The measured largest loader is 13,331 B gzip-9, versus 12,567 B before this phase.
+The measured largest loader is 13,344 B gzip-9, versus 12,567 B before this phase.
 The shared modal lifecycle, accessible focus/exit and scroll restoration account
 for the added behavior. Raise the hard per-build gate from 12,800 to 13,500 B;
 no warning-only mode, chunking or bypass. Free measures 10,482 B. A `fullscreen`

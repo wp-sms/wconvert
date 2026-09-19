@@ -5,8 +5,10 @@ test.beforeEach(async ({ page }) => {
   await page.addInitScript(() => {
     const attach = Element.prototype.attachShadow;
     window.testShadows = [];
+    window.testFocus = [];
     Element.prototype.attachShadow = function (options) {
       const shadow = attach.call(this, options);
+      shadow.addEventListener('focusin', (event) => window.testFocus.push(event.target.tagName));
       window.testShadows.push(shadow);
       return shadow;
     };
@@ -34,6 +36,7 @@ for (const width of [320, 768, 1440]) for (const rtl of [false, true]) {
     expect(state).toMatchObject({ x: 0, y: 0, width, height: 800, focused: 'H2', closed: true, lock: 'hidden' });
     expect(state.overflow).toBeLessThanOrEqual(1);
     expect(state.font).not.toContain('Comic');
+    expect(await page.evaluate(() => window.testFocus)).not.toContain('INPUT');
     await page.keyboard.press('Tab');
     expect(await page.evaluate(() => window.fullShadow.activeElement?.tagName)).toBe('INPUT');
     for (let index = 0; index < 8; index++) {
@@ -104,7 +107,7 @@ test('goal-first setup filtering creates a fullscreen draft with a viewport prev
   await page.goto('/wp-admin/admin.php?page=wconvert#optins');
   await page.getByRole('button', { name: 'Create campaign', exact: true }).click();
   await page.getByRole('listitem').filter({ has: page.getByRole('heading', { name: 'Grow my email list', exact: true }) }).getByRole('button', { name: 'Choose', exact: true }).click();
-  await page.getByLabel('Format', { exact: true }).selectOption('fullscreen');
+  await page.getByRole('combobox', { name: 'Format', exact: true }).selectOption('fullscreen');
   await expect(page.getByText('Offer a weekly email in fullscreen', { exact: true })).toBeVisible();
   await expect(page.getByText('Fullscreen', { exact: true }).last()).toBeVisible();
   await page.getByRole('button', { name: 'Use this setup', exact: true }).click();

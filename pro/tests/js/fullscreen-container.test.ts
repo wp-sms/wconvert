@@ -4,6 +4,7 @@ import { mountFullscreen } from '../../modules/display-types/loader/fullscreen';
 import { proPresenter } from '../../modules/display-types/loader/present';
 import { decorateFullscreen } from '../../modules/display-types/loader/surface';
 import editorial from '../../modules/display-types/templates/fullscreen-editorial.json';
+import poster from '../../modules/display-types/templates/fullscreen-poster.json';
 import type { Template } from '@renderer/types';
 
 const template = editorial as Template;
@@ -20,6 +21,18 @@ afterEach(() => {
 
 it('Free never renders the premium format, even with a snapshot', () => {
   expect(mount({ displayType: 'fullscreen', template }).mounted).toBe(false);
+});
+
+it('keeps link conversion separate from visitor dismissal', () => {
+  const convert = vi.fn();
+  const dismiss = vi.fn();
+  const shown = mountFullscreen({ template: poster as Template, onConvert: convert, onDismiss: dismiss });
+  shown.show();
+  const link = shown.root!.querySelector<HTMLAnchorElement>('a[data-convert]')!;
+  link.addEventListener('click', (event) => event.preventDefault());
+  link.click();
+  expect(convert).toHaveBeenCalledOnce();
+  expect(dismiss).not.toHaveBeenCalled();
 });
 
 it('fills the viewport with an armoured modal and preserves authored tokens', () => {
@@ -40,6 +53,7 @@ it('names the modal across its closed shadow boundary and focuses the heading, n
   const shown = mountFullscreen({ template });
   shown.show();
   expect(dialog().getAttribute('aria-label')).toContain('One useful idea.');
+  expect(shown.root!.querySelector('h2')).toHaveAttribute('autofocus');
   expect(shadow(shown.root).activeElement).toBe(shown.root!.querySelector('h2'));
   expect(shadow(shown.root).host.shadowRoot).toBeNull();
 });
@@ -93,6 +107,7 @@ it('uses the same content surface in admin previews without mutating the snapsho
   shown.show();
   const content = shown.root!.cloneNode(true) as HTMLElement;
   content.querySelector('h2')?.removeAttribute('tabindex');
+  content.querySelector('h2')?.removeAttribute('autofocus');
   expect(content.innerHTML).toBe(preview.root!.innerHTML);
   expect(preview.root!.style.minBlockSize).toBe('32rem');
   preview.close();

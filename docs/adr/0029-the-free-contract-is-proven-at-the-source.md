@@ -181,7 +181,7 @@ check has an opt-out, the opt-out is what runs on the day it matters.
   512 B allowance for logical overlay placement and reversible top-bar page
   reservation. The gate remains hard, per-build and flagless.*
   ***Amended by [ADR 0098](0098-fullscreen-is-a-pro-modal-surface.md): the number
-  is 13,500 B.*** Fullscreen adds 764 B to the largest previous build. A module
+  is 13,500 B.*** Fullscreen adds 777 B to the largest previous build. A module
   marker additionally proves fullscreen is absent from Free's visitor loader.
 - **The payload budget is not a build gate.** It is generated per URL at runtime, so
   it has no artifact to weigh. It becomes a PHPUnit test that renders a worst-case

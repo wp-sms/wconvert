@@ -24,6 +24,11 @@ export function mountFullscreen(options: MountOptions): Mounted {
     },
     prepare(root) {
       decorateFullscreen(root, options.template.tokens.width);
+      // showModal runs its own focusing steps before opened(). Give it the
+      // heading now so a capture input is never transiently focused first.
+      const heading = root.querySelector<HTMLElement>('h1,h2') ?? root;
+      heading.tabIndex = -1;
+      heading.setAttribute('autofocus', '');
       // Outside the size-contained root: otherwise it becomes the containing
       // block for a fixed child, and the way out scrolls offscreen with it.
       const close = root.querySelector<HTMLElement>('.wc-close');
