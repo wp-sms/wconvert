@@ -25,6 +25,11 @@ it('makes trigger replacement and post-only defaults explicit, preserves other s
   await user.selectOptions(screen.getByLabelText('Position in content'), 'after_paragraph');
   await user.selectOptions(screen.getByLabelText('If there are fewer paragraphs'), 'skip');
   expect(current().inline_placement).toEqual({ position: 'after_paragraph', paragraph: 3, fallback: 'skip' });
+  await user.clear(screen.getByLabelText('Paragraph number'));
+  expect(screen.getByRole('alert')).toHaveTextContent('Enter a whole paragraph number');
+  await user.type(screen.getByLabelText('Paragraph number'), '10');
+  expect(current().inline_placement.paragraph).toBe(10);
+  expect(screen.queryByRole('alert')).toBeNull();
   await user.click(screen.getByRole('radio', { name: 'Manual — block or shortcode' }));
   expect(current().inline_placement).toBeNull();
   expect(current().rules).toContainEqual({ type: 'page_load' });

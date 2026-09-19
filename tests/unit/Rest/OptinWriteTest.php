@@ -257,6 +257,22 @@ final class OptinWriteTest extends TestCase
         self::assertArrayNotHasKey('inline_placement', $popup['config']);
     }
 
+    public function testPublishRechecksAutomaticPlacementEvenForADraftWrittenOutsideRest(): void
+    {
+        $created = $this->create(Goal::GrowEmailList, ['template_id' => 'reading-slip', 'display_type' => 'inline',
+            'capture_mode' => 'local', 'inline_placement' => ['position' => 'after_content']]);
+        self::assertIsArray($created);
+        $config = $created['config'];
+        $config['rules'] = [['type' => 'time_on_page', 'seconds' => 10]];
+        $this->optins->saveDraft($created['id'], null, null, $config);
+        $request = new WP_REST_Request();
+        $request->set_param('id', $created['id']);
+        $response = $this->controller->publish($request);
+        self::assertInstanceOf(WP_Error::class, $response);
+        self::assertSame('wconvert_inline_trigger', $response->get_error_code());
+        self::assertNull($this->optins->find($created['id'])?->publishedAt);
+    }
+
     /** @param mixed $options
      * @return array<string, mixed>
      */
