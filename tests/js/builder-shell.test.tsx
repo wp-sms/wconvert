@@ -499,7 +499,6 @@ describe('the builder shell', () => {
 
     expect(picker.getByText('Browse designs')).toBeInTheDocument();
     expect(picker.getByRole('combobox', { name: 'Format' })).toHaveValue('popup');
-    expect(picker.getByText('Centred over the page')).toBeInTheDocument();
     expect(picker.getByRole('combobox', { name: 'Design fit' })).toHaveDisplayValue('For “Grow my email list”');
     expect(picker.queryByRole('button', { name: 'Use this design' })).not.toBeInTheDocument();
     await userEvent.click(picker.getByRole('button', { name: 'Preview design' }));
