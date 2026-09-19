@@ -24,12 +24,20 @@ setup/measurement background is optional, while consequential warnings stay visi
 - The Goal stays visible as a compact button in the editor's existing footer.
   Its measurement and Change/Duplicate action are in Campaign details, also
   reachable from the header. There is no permanent Goal/metric row above the canvas.
+- The Design tab names **How it appears** — current format, effective physical
+  placement where one exists, and design — before offering **Browse designs and
+  formats**. A draft without a design starts at that same goal-aware library rather
+  than presenting format as a new first question.
 - Browse designs keeps Format and source in the header; search, **For this goal /
-  All designs**, and **Filters** in the toolbar. Filter options are collapsed by
-  default. Active filter chips and the live result count remain visible.
-- Format-change consequences appear beside **Use this design**, including inline
-  placement, rather than as a permanent warning above every design. Browsing and
-  cancelling remain read-only; Apply/Undo semantics are unchanged.
+  All designs**, and **Filters** in the toolbar. When available, the fit control
+  names the actual Goal rather than the abstract phrase “this goal”. Format remains
+  a browsing filter within the selected Goal, not a mandatory creation step. Filter
+  options are collapsed by default. Active filter chips and the live result count
+  remain visible.
+- Format-change consequences appear beside Apply, including the old and new format,
+  the unchanged Goal, inline placement or reset overlay position as applicable.
+  The action names the format switch. Browsing and cancelling remain read-only;
+  Apply/Undo semantics are unchanged.
 - Shared dialog titles/descriptions explicitly reset host paragraph/heading margins.
   Header gaps come from the component, not doubled WordPress browser defaults.
 

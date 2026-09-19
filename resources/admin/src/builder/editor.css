@@ -484,11 +484,22 @@ body.wconvert-fullscreen #wconvert-admin .wconvert-workspace {
   font-weight: 600;
   display: block;
 }
+#wconvert-admin .wconvert-design-card__facts {
+  min-inline-size: 0;
+}
 #wconvert-admin .wconvert-design-card span {
   display: block;
   margin-top: 4px;
   font-size: var(--text-label);
   color: var(--muted-foreground);
+}
+#wconvert-admin .wconvert-design-card .wconvert-design-card__eyebrow {
+  margin-block: 0 3px;
+  color: var(--muted-foreground);
+  font-size: var(--text-meta);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
 }
 #wconvert-admin .wconvert-design-card__image {
   pointer-events: none;

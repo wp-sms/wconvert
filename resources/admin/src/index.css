@@ -1887,7 +1887,13 @@
 
 .wconvert-picker__header > :is(h2, p),
 .wconvert-picker__identity h2 { margin: 0; }
+.wconvert-picker__heading { min-inline-size: 0; }
 .wconvert-picker__identity { display: flex; align-items: center; flex-wrap: wrap; gap: 0.625rem; }
+.wconvert-picker__format-description {
+  margin: 0.25rem 0 0;
+  color: var(--muted-foreground);
+  font-size: var(--text-note);
+}
 .wconvert-picker select.wconvert-picker__select {
   min-block-size: 2.25rem;
   block-size: 2.25rem;

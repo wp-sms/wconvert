@@ -38,6 +38,7 @@ import {
 } from '../components/ui/dialog';
 import { listGoals } from '../goals/api';
 import { tierProductName } from '../goals/availability';
+import { displayTypeLabel } from '../displayTypes';
 import { adminSettings } from '../settings';
 import { ConfirmDialog } from '../shell/ConfirmDialog';
 import { EmptyState } from '../shell/EmptyState';
@@ -84,14 +85,6 @@ type Decision = {
   row: OptinSummary;
   parent?: OptinSummary;
 };
-const displayLabel = (type?: string) =>
-  ({
-    popup: __('Popup', 'wconvert'),
-    inline: __('Inline form', 'wconvert'),
-    floating_bar: __('Floating bar', 'wconvert'),
-    slide_in: __('Slide-in', 'wconvert'),
-  })[type ?? ''] ?? '';
-
 /** Campaign management owns its layout; existing reads and mutation routes own the facts. */
 export function OptinList({
   onEdit,
@@ -336,7 +329,7 @@ export function OptinList({
               {row.name}
             </button>
             <p className="wc-campaign-meta">
-              {displayLabel(previews[row.id]?.display_type)}
+              {displayTypeLabel(previews[row.id]?.display_type)}
               {previews[row.id] && labels?.[row.goal] ? ' · ' : ''}
               {labels?.[row.goal] ?? (labelsError ? __('Goal unavailable', 'wconvert') : labels === null ? null : <code>{row.goal}</code>)}
             </p>
@@ -670,7 +663,7 @@ export function OptinList({
                 </p>
               )}
               <p>
-                {displayLabel(previews[selected.id]?.display_type)}
+                {displayTypeLabel(previews[selected.id]?.display_type)}
                 {previews[selected.id] && labels?.[selected.goal] ? ' · ' : ''}
                 {labels?.[selected.goal]}
               </p>

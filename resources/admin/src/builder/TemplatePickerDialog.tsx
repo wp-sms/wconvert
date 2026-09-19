@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import { Button } from '../components/ui/button';
 import { TemplatePacks } from '../templates/TemplatePacks';
 import { __ } from '@wordpress/i18n';
+import { displayTypeDescription, displayTypeOptions } from '../displayTypes';
 import {
   Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle,
 } from '../components/ui/dialog';
@@ -20,12 +21,7 @@ export function TemplatePickerDialog({ open, onOpenChange, onClosed, onCatalogIn
   const [inspectId, setInspectId] = useState<string | undefined>();
   const [selectedFormat, setSelectedFormat] = useState<string | null>(null);
   const displayType = selectedFormat ?? picker.displayType;
-  const formats: Record<string, string> = {
-    popup: __('Popup', 'wconvert'),
-    inline: __('Inline', 'wconvert'),
-    floating_bar: __('Floating bar', 'wconvert'),
-    slide_in: __('Slide-in', 'wconvert'),
-  };
+  const formatDescriptionId = useId();
   return (
     <Dialog open={open} onOpenChange={(next) => {
       if (!next) { setSelectedFormat(null); setInspectId(undefined); }
@@ -36,15 +32,21 @@ export function TemplatePickerDialog({ open, onOpenChange, onClosed, onCatalogIn
           if (onClosed) { event.preventDefault(); onClosed(); }
         }}>
         <DialogHeader className="wconvert-picker__header flex-row flex-wrap items-center justify-between gap-x-6 gap-y-3 text-start">
-          <div className="wconvert-picker__identity">
-            <DialogTitle>{__('Browse designs', 'wconvert')}</DialogTitle>
-            <label className="flex items-center gap-2 text-note">
-              {__('Format', 'wconvert')}
-              <select className="wconvert-picker__select" value={displayType}
+          <div className="wconvert-picker__heading">
+            <div className="wconvert-picker__identity">
+              <DialogTitle>{__('Browse designs', 'wconvert')}</DialogTitle>
+              <label className="flex items-center gap-2 text-note">
+                {__('Format', 'wconvert')}
+                <select className="wconvert-picker__select" value={displayType}
+                  aria-describedby={formatDescriptionId}
                 onChange={(event) => { setSelectedFormat(event.target.value); setInspectId(undefined); }}>
-                {Object.entries(formats).map(([value, label]) => <option key={value} value={value}>{label}</option>)}
-              </select>
-            </label>
+                  {displayTypeOptions().map(({ value, label }) => <option key={value} value={value}>{label}</option>)}
+                </select>
+              </label>
+            </div>
+            <p id={formatDescriptionId} className="wconvert-picker__format-description">
+              {displayTypeDescription(displayType)}
+            </p>
           </div>
           <DialogDescription className="sr-only">{__('Preview every screen before applying a design.', 'wconvert')}</DialogDescription>
           {onCatalogInstalled && <div className="wconvert-segmented inline-flex" role="group" aria-label={__('Library source', 'wconvert')}>
