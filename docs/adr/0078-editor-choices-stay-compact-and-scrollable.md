@@ -10,13 +10,15 @@ Portaled React keyboard events still bubble through the layer tree. The tree han
 
 ## Style controls
 
-The repeated Custom CSS value disclosures are removed. Numeric controls keep amount and unit as their ordinary form; choosing Custom… in the unit selector opens text entry, with a route back to numbers. A stored expression still gets an editable value. Shadow geometry stays visual; raw CSS appears only when the shadow cannot be decomposed or Custom is explicitly chosen. Opening either route writes nothing.
+Numeric controls show amount and unit, and unit menus contain only units. Stored CSS expressions still receive a text editor; ordinary measurements no longer offer a Custom unit. Padding uses compact link and CSS icons beside its label, with separate sides arranged in two columns when space permits. Shadow uses a named preset select, an optional geometry disclosure, and a small CSS icon; unparseable authored shadows remain editable. Opening an adjustment writes nothing.
 
 This completes the progressive disclosure rule in [ADR 0054](0054-every-control-has-the-shape-of-its-value.md) and refines the measurement controls in [ADR 0075](0075-draft-history-and-template-content-choices-stay-predictable.md). It does not remove authored values, reset controls or inheritance.
 
 ### Visual choices and field arrangement
 
-Alignment uses logical-direction line icons with accessible names and hover titles. Image shape and panel borders use small previews; heading weight, letter spacing and body line spacing show samples above their choice labels. Native radios keep keyboard selection and the existing Custom route. Opening a control never changes a stored value.
+Alignment and panel borders use compact icon rows with accessible names and hover titles. Alignment's Custom CSS icon sits in the same row. Image fit, shape and column proportions retain previews because their meaning is visual. Textual choices, including heading weight, letter spacing, line spacing, animation and least height, use native selects. Boolean settings use checkboxes. An off-list parameter remains visible as the current value until a preset is chosen, without coercing or replacing stored data.
+
+Local overrides no longer print a bare “Custom” status below every field: the displayed value and reset action already communicate that state. Inheritance links, palette-follow actions and mobile override notices remain.
 
 The manifest groups body text, headings, pictures and effects separately and supplies field order within each section. Picture controls lead a picture scope. Gap and corner rounding share a row when at least 268px is available; other controls keep their full width. Numeric resets sit beside field labels, so changing a value does not squeeze its number and unit inputs. Image fit, shape and other element settings are visible at the top of Style, without an extra disclosure. Copy/paste styles follows the settings; mobile inheritance details use a compact disclosure with a visible override count.
 

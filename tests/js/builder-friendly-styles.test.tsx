@@ -3,6 +3,7 @@ import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import { TokenField } from '../../resources/admin/src/builder/Tokens';
+import { ParamChoice } from '../../resources/admin/src/builder/ParamChoice';
 import { nodeAt } from '../../resources/admin/src/builder/structure/tree';
 import { ScopeStyle } from '../../resources/admin/src/builder/ScopeStyle';
 import { gradientOf } from '../../resources/admin/src/builder/gradient';
@@ -19,18 +20,34 @@ function Control({ initial, token, changed, inherited = false }: { initial: stri
 }
 
 describe('padding and gradients preserve authored values until an explicit edit', () => {
+  it('preserves an unlisted height in a select until a preset is explicitly chosen', async () => {
+    const changed = vi.fn();
+    render(<ParamChoice id="height" label="Least height" offered={['0', '10rem', '16rem']}
+      held="22rem" fallback="0" nameOfValue={value => value} onChange={changed} />);
+    const height = screen.getByRole('combobox', { name: 'Least height' });
+    expect(within(height).getByRole('option', { name: 'Current: 22rem' })).toBeInTheDocument();
+    expect(changed).not.toHaveBeenCalled();
+    await userEvent.selectOptions(height, '0');
+    expect(changed).toHaveBeenCalledExactlyOnceWith(0);
+  });
   it.each([
     ['heading-weight', '600', 'heading-weight.700', '700'],
     ['tracking', 'normal', 'tracking.0.04em', '0.04em'],
     ['leading', '1.5', 'leading.1.7', '1.7'],
     ['align', 'start', 'align.center', 'center'],
-  ])('keeps inherited %s intact when opening Custom, then applies a visual preset', async (token, initial, choice, expected) => {
+  ])('keeps inherited %s intact when opening Custom, then applies a preset', async (token, initial, choice, expected) => {
     const changed = vi.fn();
     render(<Control initial={initial} token={token} changed={changed} inherited />);
     expect(changed).not.toHaveBeenCalled();
-    await userEvent.click(screen.getByRole('radio', { name: 'Custom' }));
-    expect(changed).not.toHaveBeenCalled();
-    await userEvent.click(screen.getByRole('radio', { name: choice }));
+    if (token === 'align') {
+      await userEvent.click(screen.getByRole('radio', { name: 'Custom' }));
+      expect(changed).not.toHaveBeenCalled();
+      await userEvent.click(screen.getByRole('radio', { name: choice }));
+    } else {
+      await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Setting' }), '__custom');
+      expect(changed).not.toHaveBeenCalled();
+      await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Setting' }), expected);
+    }
     expect(changed).toHaveBeenCalledExactlyOnceWith(expected);
     expect(screen.queryByRole('textbox', { name: 'Setting value' })).not.toBeInTheDocument();
   });
@@ -41,7 +58,7 @@ describe('padding and gradients preserve authored values until an explicit edit'
     render(<ScopeStyle template={template} labels={labels} path={[0]} width="tokens" copied={null} onCopy={vi.fn()}
       openToken={null} onOpenToken={vi.fn()} onSelect={vi.fn()} onChange={changed} />);
     expect(within(screen.getByRole('region', { name: 'Picture' })).getByRole('group', { name: 'image-position' })).toBeInTheDocument();
-    expect(within(screen.getByRole('region', { name: 'Headings' })).getByRole('group', { name: 'heading-weight' })).toBeInTheDocument();
+    expect(within(screen.getByRole('region', { name: 'Headings' })).getByRole('combobox', { name: 'heading-weight' })).toBeInTheDocument();
     expect(screen.queryByRole('region', { name: 'Effects' })).not.toBeInTheDocument();
     expect(changed).not.toHaveBeenCalled();
   });

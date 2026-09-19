@@ -26,7 +26,7 @@ describe('appearance values without CSS syntax for ordinary edits', () => {
     render(<Control initial="" changed={changed} />);
     expect(amount()).toHaveValue(28);
     expect(unit()).toHaveValue('rem');
-    await userEvent.selectOptions(unit(), 'custom');
+    expect(screen.queryByRole('option', { name: 'Custom…' })).not.toBeInTheDocument();
     expect(changed).not.toHaveBeenCalled();
     expect(screen.getByTestId('stored')).toHaveTextContent('');
   });
@@ -68,10 +68,8 @@ describe('appearance values without CSS syntax for ordinary edits', () => {
     await userEvent.clear(amount());
     await userEvent.type(amount(), '0{Enter}');
     expect(changed).toHaveBeenLastCalledWith('0rem');
-    await userEvent.selectOptions(unit(), 'custom');
-    await userEvent.clear(screen.getByLabelText('Setting value'));
-    await userEvent.keyboard('{Enter}');
-    expect(changed).toHaveBeenLastCalledWith('');
+    await userEvent.click(screen.getByRole('button', { name: 'Put Setting back to the design’s own' }));
+    expect(changed).toHaveBeenLastCalledWith('28rem');
     expect(amount()).toHaveValue(28);
   });
 
@@ -86,9 +84,8 @@ describe('appearance values without CSS syntax for ordinary edits', () => {
 
   it('keeps CSS expression typing focused and stores its exact text on completion', async () => {
     const changed = vi.fn();
-    render(<Control changed={changed} />);
-    await userEvent.selectOptions(unit(), 'custom');
-    const input = screen.getByLabelText('Setting value');
+    render(<Control initial="var(--size)" changed={changed} />);
+    const input = screen.getByLabelText('Setting');
     await userEvent.clear(input);
     await userEvent.type(input, 'clamp(20rem, 50vw, 30rem)');
     expect(input).toHaveFocus();

@@ -209,7 +209,7 @@ function SourceNote({
     REFERABLE.includes(token) &&
     follows(token) !== null;
 
-  if (from.from === 'design' || from.from === 'default') {
+  if (from.from === 'design' || from.from === 'default' || (from.from === 'here' && !literal)) {
     return null;
   }
 
@@ -219,11 +219,9 @@ function SourceNote({
         <button type="button" className="wconvert-linkish" onClick={() => onSelect(scope.path)}>
           {sprintf(__('From %s', 'wconvert'), nameOf(labels.layouts, scope.type))}
         </button>
-      ) : (
-        <span data-set={from.from}>
-          {from.from === 'narrow' ? __('Mobile override', 'wconvert') : __('Custom', 'wconvert')}
-        </span>
-      )}
+      ) : from.from === 'narrow' ? (
+        <span data-set={from.from}>{__('Mobile override', 'wconvert')}</span>
+      ) : null}
 
       {literal && (
         <button

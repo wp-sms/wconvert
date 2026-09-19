@@ -6,9 +6,9 @@ import { ColorField } from './ColorField';
 import { ShadowField } from './ShadowField';
 import { PositionField } from './PositionField';
 import { Button } from '../components/ui/button';
-import { ChevronDown, RotateCcw } from 'lucide-react';
+import { ChevronDown, CodeXml, RotateCcw } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '../components/ui/popover';
-import { TokenChoicePreview, hasTokenPreview } from './ChoicePreview';
+import { AlignmentPreview } from './ChoicePreview';
 import { CHOICES, TOKENS, groupsOf, resolvedToken, withToken, type TokenGroupId } from './panel';
 import { getThemeTokens, type SiteFont } from './api';
 import { MediaControl } from './SlotFields';
@@ -794,39 +794,12 @@ function MeasureField({
       </label>)}
     </span>)}
     <MeasurementValue id={axes === null ? id : undefined} label={label}
-      rawLabel={sprintf(__('%s value', 'wconvert'), label)}
       fallback={fallback} standard={standard} value={value} onChange={onChange} />
   </div>;
 }
 
-/**
- * The values the manifest offers for this token, as a segmented control — with
- * the box that can still say something else.
- *
- * ============================================================================
- * NATIVE RADIOS IN A `role="group"`, AND BOTH HALVES ARE DELIBERATE.
- * ============================================================================
- * **Radios**, because one of these excludes the others and that is what a radio
- * group IS: arrow keys move between them, the set is announced as a set, and
- * only the checked one is a tab stop. Radix's `ToggleGroup` would buy roving
- * focus and arrow keys the browser already gives, at bundle bytes this admin
- * prints on every build.
- *
- * **`role="group"` and not a `<label>` around the three**, because a label
- * names ONE control. Wrapping the set made the token's name part of the
- * accessible name of whichever radio happened to be inside it.
- *
- * **Chips rather than a `<select>`**, an argument `font` made and then took
- * with it: reading *Serif* set in Georgia is the whole value of that control,
- * and `font-family` on an `<option>` is unreliable across browsers. `font` is a
- * popover list now, because its N is the site's rather than the manifest's
- * (ADR 0055); what is left here is every one-of-N the manifest does control,
- * where a strip of three or four is the right shape.
- *
- * **And the text box stays.** `choices` is what the panel offers, never what is
- * allowed — token values are unvalidated on both sides of the boundary — so a
- * merchant may type a fifth stack or a fourth alignment and nothing here
- * refuses it. When they do, no chip is checked, which is the honest picture.
+/** Word-based presets use selects; alignment uses compact logical-direction icons.
+ * Custom only changes local UI state until a value is explicitly edited.
  */
 function ChoiceField({
   id,
@@ -852,78 +825,33 @@ function ChoiceField({
   onChange: (value: string) => void;
 }) {
   const named = `${id}-name`;
-  // Opening Custom is local UI state and must never create an override.
   const [asked, setAsked] = useState(false);
-  const preview = TOKENS.find(declaration => declaration.name === token)?.control;
-  const pictured = hasTokenPreview(preview);
-  const columns = Math.min(offered.length, 4);
+  const alignment = TOKENS.find(declaration => declaration.name === token)?.control === 'alignment';
   const custom = !offered.includes(shown) || asked;
+  const choose = (choice: string) => { setAsked(false); onChange(choice); };
 
-  return (
-    <div className="wconvert-token">
-      <span className="wconvert-field-heading"><span id={named}>{label}</span>{reset}</span>
-      <span className="wconvert-token__row">
-        <span role="group" aria-labelledby={named}
-          className={pictured ? `wconvert-choice-set wconvert-choice-set--tiles wconvert-choice-set--samples${preview === "alignment" ? " wconvert-choice-set--alignment" : ""}` : "wconvert-choice-set"}
-          style={pictured ? { gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` } : undefined}>
-          {offered.map((choice) => (
-            <label key={choice} className="wconvert-choice" title={preview === "alignment" ? nameOf(labels.tokenValues, `${token}.${choice}`) : undefined}>
-              <input
-                type="radio"
-                className="sr-only"
-                name={id}
-                value={choice}
-                checked={!custom && shown === choice}
-                onChange={() => {
-                  setAsked(false);
-                  onChange(choice);
-                }}
-              />
-              <span
-                className={pictured ? "wconvert-choice__label wconvert-choice__label--pictured" : "wconvert-choice__label"}
-                style={isFontStack(choice) ? { fontFamily: choice } : undefined}
-              >
-                {pictured && <TokenChoicePreview control={preview!} value={choice} />}
-                <span className={preview === "alignment" ? "sr-only" : undefined}>{nameOf(labels.tokenValues, `${token}.${choice}`)}</span>
-              </span>
-            </label>
-          ))}
-
-          <label className={pictured ? "wconvert-choice wconvert-choice--custom" : "wconvert-choice"}>
-            <input
-              type="radio"
-              className="sr-only"
-              name={id}
-              checked={custom}
-              /*
-                It writes nothing. The token keeps the value it had, which is
-                what the box then opens on — asking to type is not itself an
-                edit, and writing here would put a value in the box the merchant
-                did not choose.
-              */
-              onChange={() => setAsked(true)}
-            />
-            <span className="wconvert-choice__label">{__('Custom', 'wconvert')}</span>
-          </label>
-        </span>
-      </span>
-
-      {custom && (
-        <input
-          type="text"
-          className="wconvert-token__typed"
-          aria-label={sprintf(
-            /* translators: %s: what the setting is for, e.g. “Alignment”. */
-            __('%s value', 'wconvert'),
-            label,
-          )}
-          placeholder={fallback}
-          value={value}
-          onChange={(event) => onChange(event.target.value)}
-        />
-      )}
-    </div>
-  );
+  return <div className="wconvert-token">
+    <span className="wconvert-field-heading"><label id={named} htmlFor={alignment ? undefined : id}>{label}</label>{reset}</span>
+    {alignment ? <span role="group" aria-labelledby={named} className="wconvert-choice-set wconvert-choice-set--icons">
+      {offered.map(choice => <label key={choice} className="wconvert-choice" title={nameOf(labels.tokenValues, `${token}.${choice}`)}>
+        <input type="radio" className="sr-only" name={id} checked={!custom && shown === choice} onChange={() => choose(choice)} />
+        <span className="wconvert-choice__label"><AlignmentPreview value={choice} /><span className="sr-only">{nameOf(labels.tokenValues, `${token}.${choice}`)}</span></span>
+      </label>)}
+      <label className="wconvert-choice" title={__('Custom', 'wconvert')}>
+        <input type="radio" className="sr-only" name={id} checked={custom} onChange={() => setAsked(true)} />
+        <span className="wconvert-choice__label"><CodeXml aria-hidden="true" /><span className="sr-only">{__('Custom', 'wconvert')}</span></span>
+      </label>
+    </span> : <select id={id} value={custom ? '__custom' : shown} onChange={event => {
+      if (event.target.value === '__custom') setAsked(true);
+      else choose(event.target.value);
+    }}>
+      {offered.map(choice => <option key={choice} value={choice}>{nameOf(labels.tokenValues, `${token}.${choice}`)}</option>)}
+      <option value="__custom">{__('Custom…', 'wconvert')}</option>
+    </select>}
+    {custom && <input type="text" className="wconvert-token__typed"
+      aria-label={sprintf(__('%s value', 'wconvert'), label)} placeholder={fallback} value={value}
+      onChange={event => onChange(event.target.value)} />}
+  </div>;
 }
 
 /**

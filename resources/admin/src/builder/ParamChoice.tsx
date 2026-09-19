@@ -1,49 +1,11 @@
+import { __, sprintf } from '@wordpress/i18n';
 import type { ReactNode } from 'react';
 import { isChoiceHeld, valueOfChoice } from './panel';
 
-/**
- * One setting of a block, as the closed list the manifest offers for it.
- *
- * ============================================================================
- * ONE CONTROL FOR BOTH LEVELS OF THE VOCABULARY, BECAUSE THERE IS ONE QUESTION.
- * ============================================================================
- * A layout's `split.ratio` and a leaf's `heading.level`, `image.fit` and
- * `field.required` are the same shape: a param, a handful of offered values,
- * and words for each that the merchant reads instead of the value. The layout
- * half shipped first and lived inside {@see BlockInspector}; writing the leaf
- * half beside it would have been a second radio group with its own idea of
- * what *selected* looks like — which is the failure ADR 0042 rule 5 names, and
- * this screen has already had four of.
- *
- * So it is one component and the caller supplies the words. That is also what
- * keeps the two label maps apart where they belong: a layout's are keyed
- * `"{layout}.{param}"` and a leaf's `"{node}.{param}"`, and neither this file
- * nor its callers spell a param or a value of their own.
- *
- * ============================================================================
- * ABSENT IS AN ANSWER. OFF-LIST IS NOT.
- * ============================================================================
- * `choices` is what the panel OFFERS and never what is allowed — the vocabulary
- * does not validate a param's value, so a design shipping `ratio: 0.4` or
- * `fit: "none"` keeps it. The control then has no answer to highlight, and the
- * honest thing is to highlight none: checking the nearest one would be the
- * screen quietly telling the merchant their design is something it is not.
- *
- * **An ABSENT key is the opposite case and was being given the same answer.**
- * No shipped [[Template]] carries a `level`, so every heading in the library
- * drew two chips with neither ticked while the renderer drew an unambiguous
- * `h2`. `fallback` is the manifest's declared default — what the renderer does
- * with nothing — and it is what a merchant is actually looking at.
- *
- * ============================================================================
- * AND A CLOSED SET OF PICTURES IS PICKED AS PICTURES ({@link renderChoice}).
- * ============================================================================
- * `icon.name` offers six glyphs and this control offered six NOUNS, so a
- * merchant chose *Delivery van* and found out what it drew by looking at the
- * preview (ADR 0054 rule 3). One optional callback rather than a branch on the
- * param, because this file names no param and no value and is not about to
- * start — the caller knows which of its settings has pictures, and every other
- * one is untouched.
+/** One manifest setting: checkbox for booleans, select for words, radios for pictures.
+ * Preserve unlisted stored values and use the manifest default only when absent.
+ * Every explicit selection passes through valueOfChoice so numbers and flags keep
+ * the types expected by the renderer and capture endpoint.
  */
 export function ParamChoice({
   id,
@@ -54,6 +16,7 @@ export function ParamChoice({
   nameOfValue,
   renderChoice,
   columns,
+  compact = false,
   onChange,
 }: {
   /** A stable key for the radio group — never a translated string. */
@@ -80,10 +43,30 @@ export function ParamChoice({
   readonly renderChoice?: (choice: string) => ReactNode;
   /** Wider previews get equal-sized tiles; ordinary choices remain compact chips. */
   readonly columns?: 2 | 3;
+  /** Icon-only choices retain accessible names and hover titles. */
+  readonly compact?: boolean;
   readonly onChange: (value: unknown) => void;
 }) {
   if (offered.length === 0) {
     return null;
+  }
+
+  const selected = offered.find(choice => isChoiceHeld(held, choice, fallback));
+  if (renderChoice === undefined) {
+    if (offered.length === 2 && offered.includes('true') && offered.includes('false') && selected !== undefined) {
+      return <label className="wconvert-setting-toggle">
+        <input type="checkbox" checked={selected === 'true'} onChange={event => onChange(event.target.checked)} />
+        {label}
+      </label>;
+    }
+    return <div className="wconvert-token">
+      <label htmlFor={`wconvert-param-${id}`}>{label}</label>
+      <select id={`wconvert-param-${id}`} value={selected ?? '__current'} onChange={event => onChange(valueOfChoice(event.target.value))}>
+        {selected === undefined && <option value="__current" disabled>{held === undefined && fallback === undefined
+          ? __('Choose…', 'wconvert') : sprintf(__('Current: %s', 'wconvert'), String(held ?? fallback))}</option>}
+        {offered.map(choice => <option key={choice} value={choice}>{nameOfValue(choice)}</option>)}
+      </select>
+    </div>;
   }
 
   return (
@@ -95,9 +78,9 @@ export function ParamChoice({
         question they answer — and the question is the whole of what
         distinguishes *Required* from *Optional*.
       */}
-      <span role="group" aria-labelledby={`wconvert-param-${id}`} className={columns ? 'wconvert-choice-set wconvert-choice-set--tiles' : 'wconvert-choice-set'} style={columns ? { gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` } : undefined}>
+      <span role="group" aria-labelledby={`wconvert-param-${id}`} className={compact ? 'wconvert-choice-set wconvert-choice-set--icons' : columns ? 'wconvert-choice-set wconvert-choice-set--tiles' : 'wconvert-choice-set'} style={!compact && columns ? { gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))` } : undefined}>
         {offered.map((choice) => (
-          <label key={choice} className="wconvert-choice">
+          <label key={choice} className="wconvert-choice" title={compact ? nameOfValue(choice) : undefined}>
             <input
               type="radio"
               className="sr-only"
@@ -114,7 +97,7 @@ export function ParamChoice({
               }
             >
               {renderChoice?.(choice)}
-              {nameOfValue(choice)}
+              <span className={compact ? "sr-only" : undefined}>{nameOfValue(choice)}</span>
             </span>
           </label>
         ))}

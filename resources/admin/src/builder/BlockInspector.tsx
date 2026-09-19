@@ -306,6 +306,7 @@ function LayoutParams({
           held={valueOf(param)}
           fallback={declared?.defaults?.[param]}
           nameOfValue={(choice) => nameOf(labels.layoutParamValues, `${type}.${param}.${choice}`)}
+          compact={type === 'panel' && param === 'edges'}
           columns={(type === 'split' && param === 'ratio') || (type === 'panel' && param === 'edges') ? 3 : undefined}
           renderChoice={type === 'split' && param === 'ratio'
             ? choice => <SplitRatioPreview ratio={choice} />

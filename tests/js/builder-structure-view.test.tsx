@@ -1618,9 +1618,9 @@ describe('a leaf’s own settings', () => {
   it('offers a heading the rank the renderer has always read', async () => {
     await selecting('Headline');
 
-    const group = screen.getByRole('group', { name: 'Heading rank' });
+    const group = screen.getByRole('combobox', { name: 'Heading rank' });
 
-    expect(within(group).getAllByRole('radio')).toHaveLength(2);
+    expect(within(group).getAllByRole('option')).toHaveLength(2);
     /*
       **The declared default is checked.** No shipped design carries a `level`
       at all — `"level"` appears zero times in the twelve library templates — so
@@ -1629,13 +1629,13 @@ describe('a leaf’s own settings', () => {
       `tests/js/renderer-manifest-parity.test.ts` is what holds the manifest's
       declared default to what the renderer actually does with an absent key.
     */
-    expect(within(group).getByRole('radio', { name: 'Main heading' })).toBeChecked();
+    expect(group).toHaveValue('1');
   });
 
   it('writes a heading rank as the number the renderer compares', async () => {
     await selecting('Headline');
 
-    await userEvent.click(screen.getByRole('radio', { name: 'Sub-heading' }));
+    await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Heading rank' }), '2');
     await save();
 
     // `render.ts` reads `node.level === 2`; the string "2" is not that.
@@ -1651,12 +1651,12 @@ describe('a leaf’s own settings', () => {
   it('writes a field’s requiredness as the boolean the capture endpoint reads', async () => {
     await selecting('Email address');
 
-    const group = screen.getByRole('group', { name: 'Must they fill this in?' });
+    const required = screen.getByRole('checkbox', { name: 'Must they fill this in?' });
 
     // `centred-card` ships `required: true`, so the panel starts on it.
-    expect(within(group).getByRole('radio', { name: 'Required' })).toBeChecked();
+    expect(required).toBeChecked();
 
-    await userEvent.click(within(group).getByRole('radio', { name: 'Optional' }));
+    await userEvent.click(required);
     await save();
 
     const field = formChildren(savedTree()).find((node) => node.type === 'row') as unknown as {
@@ -1728,7 +1728,7 @@ describe('a leaf’s own settings', () => {
     await userEvent.click(screen.getByRole('tab', { name: 'Content' }));
     await userEvent.type(screen.getByRole('textbox', { name: 'Text' }), '!');
     await userEvent.click(screen.getByRole('tab', { name: 'Style' }));
-    await userEvent.click(screen.getByRole('radio', { name: 'Sub-heading' }));
+    await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Heading rank' }), '2');
     await userEvent.click(screen.getByRole('button', { name: 'Undo draft edit' }));
     await save();
 
@@ -1923,7 +1923,7 @@ describe('the icon picker', () => {
     await userEvent.click(within(row('Headline')).getAllByRole('button')[0]);
 
     await userEvent.click(screen.getByRole('tab', { name: 'Style' }));
-    const group = screen.getByRole('group', { name: 'Heading rank' });
+    const group = screen.getByRole('combobox', { name: 'Heading rank' });
 
     expect(group.querySelectorAll('.wconvert-choice__glyph')).toHaveLength(0);
   });

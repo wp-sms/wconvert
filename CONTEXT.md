@@ -789,8 +789,8 @@ need review. A new Playbook draft continues to use its own copy, not those sampl
 > focus on a different part of the picture. The default remains centred.
 > The editor offers a nine-dot position picker, precise percentage adjustments,
 > and verbatim custom CSS. Image fit and split ratios use visual previews of the
-> existing choices; opening a control never writes a value. Alignment, picture
-> shape, borders and typography also show visual choices. The inspector groups
+> existing choices; opening a control never writes a value. Alignment and borders use compact icons; picture shape keeps a preview.
+> Textual choices, including typography, use selects and booleans use checkboxes. The inspector groups
 > picture, heading, body text and effect settings, pairing short measurements
 > where they fit. See [ADR 0078](docs/adr/0078-editor-choices-stay-compact-and-scrollable.md).
 >

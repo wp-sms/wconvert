@@ -12,7 +12,7 @@ Field creation offers the capture kinds from the manifest explicitly. Already-us
 
 Color pickers use their own CSS namespace, bounded portal size, and an alpha-capable picker. They display inherited values without creating overrides and preserve custom CSS text. Short/long hex alpha and comma/space RGB syntax are converted only for the visual control; opening a picker never rewrites a token. Opacity is now an explicit choice for every color; translucent foreground/background pairs continue to report no contrast reading rather than claiming a pass. Shadow-color popovers share the panel’s controlled open state so switching tabs closes them too.
 
-The manifest declares the shadow control alongside the image control. Shadow presets have visual samples. A single pixel shadow exposes horizontal/vertical offset, blur, spread, color and inset. Other units, layered shadows and expressions stay verbatim behind Custom CSS. Opening controls never renormalizes a shipped shadow.
+The manifest declares the shadow control alongside the image control. Shadow presets use a compact named select, as refined by [ADR 0078](0078-editor-choices-stay-compact-and-scrollable.md). A single pixel shadow exposes horizontal/vertical offset, blur, spread, color and inset. Other units, layered shadows and expressions stay verbatim behind Custom CSS. Opening controls never renormalizes a shipped shadow.
 
 > Refined by [ADR 0078](0078-editor-choices-stay-compact-and-scrollable.md): repeated CSS disclosures are removed; custom entry is an explicit choice. All submenu levels are portaled and scrollable.
 
