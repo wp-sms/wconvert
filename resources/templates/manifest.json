@@ -739,24 +739,29 @@
     ],
     "type": [
       "font",
-      "heading-font",
-      "heading-size",
-      "heading-weight",
-      "tracking",
       "text-size",
       "leading"
     ],
     "space": [
+      "width",
       "pad",
       "gap",
-      "width",
       "radius",
       "align"
     ],
-    "other": [
+    "other": [],
+    "heading": [
+      "heading-font",
+      "heading-size",
+      "heading-weight",
+      "tracking"
+    ],
+    "image": [
       "bg-image",
       "image-position",
-      "overlay",
+      "overlay"
+    ],
+    "effects": [
       "shadow",
       "motion"
     ]
@@ -766,7 +771,11 @@
     "overlay": "gradient",
     "pad": "spacing",
     "shadow": "shadow",
-    "image-position": "position"
+    "image-position": "position",
+    "align": "alignment",
+    "heading-weight": "weight",
+    "tracking": "tracking",
+    "leading": "leading"
   },
   "field_options": {
     "max_items": 12,

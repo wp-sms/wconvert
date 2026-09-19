@@ -1606,7 +1606,6 @@ describe('a leaf’s own settings', () => {
     await userEvent.click(within(row(name)).getAllByRole('button')[0]);
     if (name === 'Headline' || name === 'Image') {
       await userEvent.click(screen.getByRole('tab', { name: 'Style' }));
-      await userEvent.click(screen.getByText('Element options'));
     }
   }
 
@@ -1729,7 +1728,6 @@ describe('a leaf’s own settings', () => {
     await userEvent.click(screen.getByRole('tab', { name: 'Content' }));
     await userEvent.type(screen.getByRole('textbox', { name: 'Text' }), '!');
     await userEvent.click(screen.getByRole('tab', { name: 'Style' }));
-    await userEvent.click(screen.getByText('Element options'));
     await userEvent.click(screen.getByRole('radio', { name: 'Sub-heading' }));
     await userEvent.click(screen.getByRole('button', { name: 'Undo draft edit' }));
     await save();
@@ -1925,7 +1923,6 @@ describe('the icon picker', () => {
     await userEvent.click(within(row('Headline')).getAllByRole('button')[0]);
 
     await userEvent.click(screen.getByRole('tab', { name: 'Style' }));
-    await userEvent.click(screen.getByText('Element options'));
     const group = screen.getByRole('group', { name: 'Heading rank' });
 
     expect(group.querySelectorAll('.wconvert-choice__glyph')).toHaveLength(0);

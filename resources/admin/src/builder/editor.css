@@ -344,7 +344,7 @@ body.wconvert-fullscreen #wconvert-admin .wconvert-workspace {
   .wconvert-workspace
   .wconvert-scope__token
   + .wconvert-scope__token {
-  margin-top: 12px;
+  margin-top: 0;
 }
 #wconvert-admin .wconvert-workspace .wconvert-palette .wconvert-scope__token {
   margin: 0;
@@ -508,9 +508,7 @@ body.wconvert-fullscreen #wconvert-admin .wconvert-workspace {
   display: flex;
   flex-direction: column;
   gap: 16px;
-  border-top: 1px solid var(--editor-rule);
-  padding-top: 20px;
-  margin-top: 24px;
+  margin-block-end: 16px;
 }
 #wconvert-admin .wconvert-workspace .wconvert-block {
   min-height: 35px;
@@ -968,3 +966,53 @@ body .wconvert-launch-review [data-slot='dialog-description'] { margin: 0; }
 #wconvert-admin .wconvert-sentence-toolbar { flex-wrap: wrap; }
 
 #wconvert-admin .wconvert-workspace .wconvert-block__kind { font-size: var(--text-note); line-height: 1.45; }
+
+/* Related fields share a row only when both retain room for their controls. */
+.wconvert-fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 128px), 1fr));
+  gap: 16px 12px;
+  align-items: start;
+}
+.wconvert-fields__item { min-inline-size: 0; }
+.wconvert-fields > .wconvert-fields__item { grid-column: 1 / -1; }
+.wconvert-fields > .wconvert-fields__item[data-compact] { grid-column: auto; }
+.wconvert-field-heading { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-block-size: 24px; }
+.wconvert-choice-set--samples { inline-size: 100%; }
+.wconvert-choice--custom { grid-column: 1 / -1; }
+.wconvert-choice-set--samples .wconvert-choice--custom .wconvert-choice__label { padding-block: 4px; font-size: var(--text-micro); }
+.wconvert-type-preview { display: grid; place-items: center; block-size: 36px; font-size: var(--text-heading); line-height: 1; }
+.wconvert-leading-preview { display: grid; align-content: center; min-block-size: 66px; font-size: var(--text-micro); font-weight: 400; }
+.wconvert-leading-preview > span { display: block; }
+.wconvert-alignment-preview { display: flex; flex-direction: column; gap: 4px; inline-size: 28px; padding-block: 4px; }
+.wconvert-alignment-preview > span { block-size: 2px; inline-size: 100%; background: currentColor; border-radius: 2px; }
+.wconvert-alignment-preview > span:nth-child(even) { inline-size: 65%; }
+.wconvert-alignment-preview[data-align='start'] { align-items: flex-start; }
+.wconvert-alignment-preview[data-align='center'] { align-items: center; }
+.wconvert-alignment-preview[data-align='end'] { align-items: flex-end; }
+.wconvert-shape-preview { display: grid; place-items: center; block-size: 56px; }
+.wconvert-shape-preview .wconvert-fit-preview { inline-size: 56px; block-size: 56px; }
+.wconvert-shape-preview[data-shape='circle'] .wconvert-fit-preview { border-radius: 50%; }
+.wconvert-border-preview { display: flex; flex-direction: column; justify-content: center; gap: 5px; inline-size: 52px; block-size: 42px; padding: 8px; border: 2px solid transparent; background: var(--muted); }
+.wconvert-border-preview > span { block-size: 2px; inline-size: 100%; background: currentColor; opacity: .5; }
+.wconvert-border-preview > span:last-child { inline-size: 65%; }
+.wconvert-border-preview[data-edges='all'] { border-color: currentColor; }
+.wconvert-border-preview[data-edges='block-start'] { border-block-start-color: currentColor; }
+.wconvert-style-context { margin-block-end: 12px; font-size: var(--text-note); color: var(--muted-foreground); }
+.wconvert-style-context summary { cursor: pointer; }
+.wconvert-style-context[open] summary { margin-block-end: 8px; }
+.wconvert-scope > .wconvert-style-advanced { margin-block-start: 20px; }
+
+.wconvert-fields .wconvert-token__slider { inline-size: 100%; min-inline-size: 0; }
+#wconvert-admin .wconvert-workspace .wconvert-fields__item[data-compact] .wconvert-token__exact { inline-size: 0; min-inline-size: 48px; }
+.wconvert-fields__item[data-compact] select { max-inline-size: 64px; min-inline-size: 0; }
+
+.wconvert-choice-set--alignment .wconvert-choice__label--pictured { gap: 0; padding-block: 6px; }
+#wconvert-admin .wconvert-workspace .wconvert-fields__item[data-compact] input.wconvert-token__exact {
+  padding-inline: 6px;
+  appearance: textfield;
+}
+.wconvert-fields__item[data-compact] input.wconvert-token__exact::-webkit-inner-spin-button { appearance: none; margin: 0; }
+#wconvert-admin .wconvert-workspace .wconvert-fields__item[data-compact] select { max-inline-size: 54px; padding-inline: 6px 18px; }
+
+#wconvert-admin .wconvert-layout-params:empty { display: none; }

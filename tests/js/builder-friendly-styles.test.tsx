@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { render, screen } from '@testing-library/react';
+import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
 import { TokenField } from '../../resources/admin/src/builder/Tokens';
@@ -19,6 +19,32 @@ function Control({ initial, token, changed, inherited = false }: { initial: stri
 }
 
 describe('padding and gradients preserve authored values until an explicit edit', () => {
+  it.each([
+    ['heading-weight', '600', 'heading-weight.700', '700'],
+    ['tracking', 'normal', 'tracking.0.04em', '0.04em'],
+    ['leading', '1.5', 'leading.1.7', '1.7'],
+    ['align', 'start', 'align.center', 'center'],
+  ])('keeps inherited %s intact when opening Custom, then applies a visual preset', async (token, initial, choice, expected) => {
+    const changed = vi.fn();
+    render(<Control initial={initial} token={token} changed={changed} inherited />);
+    expect(changed).not.toHaveBeenCalled();
+    await userEvent.click(screen.getByRole('radio', { name: 'Custom' }));
+    expect(changed).not.toHaveBeenCalled();
+    await userEvent.click(screen.getByRole('radio', { name: choice }));
+    expect(changed).toHaveBeenCalledExactlyOnceWith(expected);
+    expect(screen.queryByRole('textbox', { name: 'Setting value' })).not.toBeInTheDocument();
+  });
+
+  it('groups picture and heading settings and omits unused effects without changing the draft', () => {
+    const template: Template = { tokens: {}, tree: { steps: [{ type: 'media', children: [{ type: 'heading', text: 'Hello' }] }] } };
+    const changed = vi.fn();
+    render(<ScopeStyle template={template} labels={labels} path={[0]} width="tokens" copied={null} onCopy={vi.fn()}
+      openToken={null} onOpenToken={vi.fn()} onSelect={vi.fn()} onChange={changed} />);
+    expect(within(screen.getByRole('region', { name: 'Picture' })).getByRole('group', { name: 'image-position' })).toBeInTheDocument();
+    expect(within(screen.getByRole('region', { name: 'Headings' })).getByRole('group', { name: 'heading-weight' })).toBeInTheDocument();
+    expect(screen.queryByRole('region', { name: 'Effects' })).not.toBeInTheDocument();
+    expect(changed).not.toHaveBeenCalled();
+  });
   it('opens inherited picture focus without creating an override, then commits one coordinate', async () => {
     const changed = vi.fn();
     render(<Control initial="right top" token="image-position" changed={changed} inherited />);
@@ -141,6 +167,7 @@ it('lists local mobile overrides and resets only the selected element’s narrow
   }
   render(<Editor />);
   expect(screen.getByText('Mobile settings: Padding')).toBeInTheDocument();
+  await userEvent.click(screen.getByText('Editing mobile appearance. Unchanged values follow desktop.'));
   await userEvent.click(screen.getByRole('button', { name: 'Reset this element’s mobile overrides' }));
   const result = changed.mock.calls[0][0] as Template;
   expect(nodeAt(result.tree, [0, 'children', 0])).toMatchObject({ tokens: { pad: '2rem' } });

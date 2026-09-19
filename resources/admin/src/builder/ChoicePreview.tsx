@@ -22,3 +22,36 @@ export function SplitRatioPreview({ ratio }: { ratio: string }) {
     <span style={{ flex: first }}>1</span><span style={{ flex: 1 - first }}>2</span>
   </span>;
 }
+
+export function ImageShapePreview({ shape, src }: { shape: string; src: unknown }) {
+  return <span className="wconvert-shape-preview" data-shape={shape} aria-hidden="true">
+    <ImageFitPreview fit="cover" src={src} />
+  </span>;
+}
+
+export function BorderPreview({ edges }: { edges: string }) {
+  return <span className="wconvert-border-preview" data-edges={edges} aria-hidden="true">
+    <span /><span /><span />
+  </span>;
+}
+
+export const hasTokenPreview = (control: string | undefined): boolean =>
+  ['alignment', 'weight', 'tracking', 'leading'].includes(control ?? '');
+
+/** Logical alignment mirrors with the panel; samples stay out of accessible names. */
+export function TokenChoicePreview({ control, value }: { control: string; value: string }) {
+  if (control === 'alignment') {
+    return <span className="wconvert-alignment-preview" data-align={value} aria-hidden="true">
+      <span /><span /><span /><span />
+    </span>;
+  }
+  if (control === 'leading') {
+    return <span className="wconvert-leading-preview" aria-hidden="true" style={{ lineHeight: value }}>
+      <span>Aa abc</span><span>Aa abc</span><span>Aa abc</span>
+    </span>;
+  }
+  return <span className="wconvert-type-preview" aria-hidden="true"
+    style={control === 'weight' ? { fontWeight: Number(value) } : { letterSpacing: value }}>
+    Aa
+  </span>;
+}

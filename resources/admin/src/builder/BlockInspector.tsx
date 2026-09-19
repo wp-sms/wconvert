@@ -10,7 +10,7 @@ import {
 } from '../components/ui/dropdown-menu';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
 import { ParamChoice } from './ParamChoice';
-import { ImageFitPreview, SplitRatioPreview } from './ChoicePreview';
+import { BorderPreview, ImageFitPreview, ImageShapePreview, SplitRatioPreview } from './ChoicePreview';
 import { SlotFields } from './SlotFields';
 import { nameOfBlock, stepName } from './BlockRow';
 import { LAYOUTS, slotsOf, withHidden, withValue, type Path, type Slot } from './panel';
@@ -167,10 +167,9 @@ export function BlockInspector({
           )}
         </TabsContent>
         <TabsContent value="style">
-          {look}
           {styleSettings.length > 0 && (
-            <details className="wconvert-style-advanced">
-              <summary>{__('Element options', 'wconvert')}</summary>
+            <section className="wconvert-group" aria-label={__('Element appearance', 'wconvert')}>
+              <h5 className="wconvert-group__name">{__('Element appearance', 'wconvert')}</h5>
               {styleSettings.map((setting) => (
                 <ParamChoice
                   key={setting.param}
@@ -182,16 +181,19 @@ export function BlockInspector({
                   nameOfValue={(choice) =>
                     nameOf(labels.nodeParamValues, `${slot.type}.${setting.param}.${choice}`)
                   }
-                  columns={slot.type === 'image' && setting.param === 'fit' ? 2 : undefined}
+                  columns={slot.type === 'image' && ['fit', 'shape'].includes(setting.param) ? 2 : undefined}
                   renderChoice={slot.type === 'image' && setting.param === 'fit'
-                    ? choice => <ImageFitPreview fit={choice} src={slot.values.src} /> : undefined}
+                    ? choice => <ImageFitPreview fit={choice} src={slot.values.src} />
+                    : slot.type === 'image' && setting.param === 'shape'
+                      ? choice => <ImageShapePreview shape={choice} src={slot.values.src} /> : undefined}
                   onChange={(value) =>
                     onChange({ ...template, tree: withValue(template.tree, path, setting.param, value) })
                   }
                 />
               ))}
-            </details>
+            </section>
           )}
+          {look}
         </TabsContent>
       </div>
     </Tabs>
@@ -304,9 +306,10 @@ function LayoutParams({
           held={valueOf(param)}
           fallback={declared?.defaults?.[param]}
           nameOfValue={(choice) => nameOf(labels.layoutParamValues, `${type}.${param}.${choice}`)}
-          columns={type === 'split' && param === 'ratio' ? 3 : undefined}
+          columns={(type === 'split' && param === 'ratio') || (type === 'panel' && param === 'edges') ? 3 : undefined}
           renderChoice={type === 'split' && param === 'ratio'
-            ? choice => <SplitRatioPreview ratio={choice} /> : undefined}
+            ? choice => <SplitRatioPreview ratio={choice} />
+            : type === 'panel' && param === 'edges' ? choice => <BorderPreview edges={choice} /> : undefined}
           onChange={(value) => onParam(param, value)}
         />
       ))}

@@ -36,6 +36,8 @@ built to avoid needing one.
 
 > Extended by [ADR 0077](0077-editor-controls-make-placement-and-formatting-explicit.md): shadow presets now have visual samples and single pixel shadows expose geometry, color and inset controls. Complex CSS is still preserved verbatim.
 
+> Refined by [ADR 0078](0078-editor-choices-stay-compact-and-scrollable.md): manifest control metadata selects alignment and typography samples, while manifest section membership and order keep related fields together. Unrecognised tokens still use value-based grouping.
+
 ## 2. A free-text box is an escape you opt into, never the control you land on
 
 **Where a shape cannot be inferred, the manifest enumerates it.**

@@ -65,24 +65,75 @@ export function ScopeStyle({
 
   const mobileOverrides = Object.keys(here.narrow);
   const source = (name: string): TokenSource => sourceOfToken(chain, template.tokens, name, width);
+  const pictureFirst = here.type === 'media' || here.type === 'image' || !['', 'none'].includes(source('bg-image').value);
 
   return (
     <div className="wconvert-scope">
-      <Description>
-        {sprintf(
-          __('Appearance for %s. Unchanged values follow the surrounding design.', 'wconvert'),
-          nameOf(LEAVES[here.type] ? labels.nodes : labels.layouts, here.type),
-        )}
-      </Description>
-
-      <div className="mb-3 rounded-md border bg-muted/40 p-3 text-note">
-        <strong>{width === 'narrow' ? __('Editing mobile appearance. Unchanged values follow desktop.', 'wconvert') : __('Editing desktop', 'wconvert')}</strong>
+      <details className="wconvert-style-context">
+        <summary>{width === 'narrow' ? __('Editing mobile appearance. Unchanged values follow desktop.', 'wconvert') : __('Editing desktop', 'wconvert')}
+          {mobileOverrides.length > 0 && <span> · {sprintf(__('%d mobile setting(s)', 'wconvert'), mobileOverrides.length)}</span>}
+        </summary>
+        <Description>
+          {sprintf(
+            __('Appearance for %s. Unchanged values follow the surrounding design.', 'wconvert'),
+            nameOf(LEAVES[here.type] ? labels.nodes : labels.layouts, here.type),
+          )}
+        </Description>
         <p className="m-0 mt-1">{mobileOverrides.length === 0
           ? __('No mobile overrides on this element. It follows the surrounding design.', 'wconvert')
           : sprintf(__('Mobile settings: %s', 'wconvert'), mobileOverrides.map(token => nameOf(labels.tokens, token)).join(', '))}</p>
         {width === 'narrow' && mobileOverrides.length > 0 && <Button type="button" variant="ghost" size="xs" className="mt-1" onClick={() => onChange({ ...template, tree: withScopeBag(template.tree, here.path, {}, 'narrow') })}>{__('Reset this element’s mobile overrides', 'wconvert')}</Button>}
-      </div>
+      </details>
 
+      <ScopeContrast chain={chain} template={template} labels={labels} width={width} />
+
+      {[...groupsOf(styleTokens(template, path))]
+        .sort(
+          (a, b) =>
+            Number(pictureFirst && b.id === 'image') - Number(pictureFirst && a.id === 'image'),
+        )
+        .map((group) => (
+          <section key={group.id} className="wconvert-group" aria-label={groupName(group.id)}>
+            <h5 className="wconvert-group__name">{groupName(group.id)}</h5>
+
+            <div className={group.id === 'color' ? 'wconvert-palette' : 'wconvert-fields'}>
+              {group.tokens.map((token) => {
+                const from = source(token.name);
+                const label = nameOf(labels.tokens, token.name);
+
+                return (
+                  <div key={token.name} className="wconvert-scope__token wconvert-fields__item" data-compact={['gap', 'radius'].includes(token.name) || undefined}>
+                    <TokenField
+                      token={token.name}
+                      label={label}
+                      labels={labels}
+                      fallback={
+                        from.from === 'here' || from.from === 'narrow'
+                          ? inheritedStyle(chain, template, token.name, width)
+                          : from.value
+                      }
+                      standard={token.fallback}
+                      design=""
+                      value={bagOf(here, width)[token.name] ?? ''}
+                      open={openToken === token.name}
+                      onOpenChange={(open) => onOpenToken(open ? token.name : null)}
+                      onChange={write(token.name)}
+                      resetSaid={sprintf(__('Let %s be inherited again', 'wconvert'), label)}
+                    />
+                    {width === 'tokens' && Object.hasOwn(here.narrow, token.name) && sourceOfToken(chain, template.tokens, token.name, 'narrow').value !== from.value && <p className="m-0 text-note text-primary">{__('Different on mobile', 'wconvert')}</p>}
+                    <SourceNote
+                      from={from}
+                      token={token.name}
+                      labels={labels}
+                      onSelect={onSelect}
+                      onRefer={() => write(token.name)(follows(token.name) ?? '')}
+                    />
+                  </div>
+                );
+              })}
+            </div>
+          </section>
+        ))}
       <details className="wconvert-style-advanced">
         <summary>{__('Copy or paste styles', 'wconvert')}</summary>
         <div className="wconvert-scope__clipboard">
@@ -115,57 +166,6 @@ export function ScopeStyle({
           )}
         </div>
       </details>
-
-      <ScopeContrast chain={chain} template={template} labels={labels} width={width} />
-
-      {[...groupsOf(styleTokens(template, path))]
-        .sort(
-          (a, b) =>
-            Number(b.tokens.some((token) => token.name === 'bg-image')) -
-            Number(a.tokens.some((token) => token.name === 'bg-image')),
-        )
-        .map((group) => (
-          <section key={group.id} className="wconvert-group" aria-label={groupName(group.id)}>
-            <h5 className="wconvert-group__name">{groupName(group.id)}</h5>
-
-            <div className={group.id === 'color' ? 'wconvert-palette' : undefined}>
-              {group.tokens.map((token) => {
-                const from = source(token.name);
-                const label = nameOf(labels.tokens, token.name);
-
-                return (
-                  <div key={token.name} className="wconvert-scope__token">
-                    <TokenField
-                      token={token.name}
-                      label={label}
-                      labels={labels}
-                      fallback={
-                        from.from === 'here' || from.from === 'narrow'
-                          ? inheritedStyle(chain, template, token.name, width)
-                          : from.value
-                      }
-                      standard={token.fallback}
-                      design=""
-                      value={bagOf(here, width)[token.name] ?? ''}
-                      open={openToken === token.name}
-                      onOpenChange={(open) => onOpenToken(open ? token.name : null)}
-                      onChange={write(token.name)}
-                      resetSaid={sprintf(__('Let %s be inherited again', 'wconvert'), label)}
-                    />
-                    {width === 'tokens' && Object.hasOwn(here.narrow, token.name) && sourceOfToken(chain, template.tokens, token.name, 'narrow').value !== from.value && <p className="m-0 text-note text-primary">{__('Different on mobile', 'wconvert')}</p>}
-                    <SourceNote
-                      from={from}
-                      token={token.name}
-                      labels={labels}
-                      onSelect={onSelect}
-                      onRefer={() => write(token.name)(follows(token.name) ?? '')}
-                    />
-                  </div>
-                );
-              })}
-            </div>
-          </section>
-        ))}
     </div>
   );
 }

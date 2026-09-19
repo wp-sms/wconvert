@@ -14,6 +14,12 @@ The repeated Custom CSS value disclosures are removed. Numeric controls keep amo
 
 This completes the progressive disclosure rule in [ADR 0054](0054-every-control-has-the-shape-of-its-value.md) and refines the measurement controls in [ADR 0075](0075-draft-history-and-template-content-choices-stay-predictable.md). It does not remove authored values, reset controls or inheritance.
 
+### Visual choices and field arrangement
+
+Alignment uses logical-direction line icons with accessible names and hover titles. Image shape and panel borders use small previews; heading weight, letter spacing and body line spacing show samples above their choice labels. Native radios keep keyboard selection and the existing Custom route. Opening a control never changes a stored value.
+
+The manifest groups body text, headings, pictures and effects separately and supplies field order within each section. Picture controls lead a picture scope. Gap and corner rounding share a row when at least 268px is available; other controls keep their full width. Numeric resets sit beside field labels, so changing a value does not squeeze its number and unit inputs. Image fit, shape and other element settings are visible at the top of Style, without an extra disclosure. Copy/paste styles follows the settings; mobile inheritance details use a compact disclosure with a visible override count.
+
 ## Starting points
 
 The Display rules panel has a short introduction and Browse starting points button. One dialog holds search, a responsive card grid and a before/after review step. Choosing a card changes only the dialog; Replace these rules writes the selected sections as one undoable draft edit and closes the dialog. Back to choices restores the card's focus; closing returns to Browse starting points.
