@@ -8,8 +8,8 @@
   opacity: 0.6;
 }
 .wconvert-analytics h2 {
-  font-size: var(--text-title);
-  font-weight: 650;
+  font-size: var(--text-section);
+  font-weight: 600;
   line-height: 1.3;
   letter-spacing: -0.5px;
   margin: 0 0 8px;
@@ -53,7 +53,7 @@
 .wa-header-actions {
   display: flex;
   align-items: center;
-  gap: 8px;
+  gap: 12px;
   flex-wrap: wrap;
 }
 .wa-header-actions select,
@@ -75,7 +75,7 @@
   padding: 16px 20px;
   margin-bottom: 8px;
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: calc(var(--radius) + 2px);
   background: var(--card);
 }
 .wa-date-caption {
@@ -88,7 +88,7 @@
 }
 .wa-date-scope strong {
   display: block;
-  font-weight: 550;
+  font-weight: 500;
   font-size: var(--text-body);
   font-variant-numeric: tabular-nums;
 }
@@ -144,41 +144,6 @@
 #wconvert-admin .wa-date-comparison input[role='switch']:checked::before {
   left: 14px;
 }
-.wa-date-help {
-  position: relative;
-  line-height: 1;
-}
-.wa-date-help summary {
-  display: grid;
-  place-items: center;
-  list-style: none;
-  width: 17px;
-  height: 17px;
-  border: 1px solid var(--muted-foreground);
-  border-radius: 50%;
-  font-size: 10px;
-  font-weight: 600;
-  cursor: pointer;
-}
-.wa-date-help summary::-webkit-details-marker {
-  display: none;
-}
-.wconvert-analytics .wa-date-help p {
-  position: absolute;
-  z-index: 20;
-  top: 25px;
-  inset-inline-start: -100px;
-  width: 280px;
-  padding: 13px 15px;
-  margin: 0;
-  border: 1px solid var(--border);
-  border-radius: 7px;
-  background: var(--card);
-  box-shadow: 0 5px 18px #203b4014;
-  font-size: var(--text-note);
-  line-height: 1.6;
-  color: var(--foreground);
-}
 .wa-impact-grid {
   display: grid;
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -193,7 +158,7 @@
   text-align: start;
   background: var(--card);
   border: 1px solid var(--border);
-  border-radius: 9px;
+  border-radius: calc(var(--radius) + 2px);
   padding: 20px;
   min-height: 185px;
 }
@@ -206,7 +171,7 @@
   justify-content: space-between;
   gap: 10px;
   font-size: var(--text-note);
-  font-weight: 550;
+  font-weight: 500;
 }
 .wa-impact-label svg {
   width: 18px;
@@ -215,31 +180,31 @@
   flex-shrink: 0;
 }
 .wa-impact strong {
-  font-size: 36px;
+  font-size: var(--text-metric);
   line-height: 1.3;
-  font-weight: 620;
+  font-weight: 600;
   letter-spacing: -1px;
   font-variant-numeric: tabular-nums;
   margin: 12px 0 4px;
 }
 .wa-impact small {
-  font-size: var(--text-micro);
+  font-size: var(--text-note);
   line-height: 1.5;
   color: var(--muted-foreground);
   margin-top: 14px;
 }
 .wa-impact-primary {
-  background: color-mix(in srgb, var(--primary) 5%, var(--card));
+  background: var(--card);
 }
 .wa-impact-primary strong {
   color: var(--primary);
 }
 .wa-change {
   font-size: var(--text-micro);
-  color: #32715c;
+  color: var(--success);
 }
 .wa-change-down {
-  color: #94602e;
+  color: var(--warning);
 }
 .wa-section-heading {
   display: flex;
@@ -262,7 +227,7 @@
   gap: 15px;
   align-items: center;
   border: 1px solid var(--border);
-  border-radius: 8px;
+  border-radius: calc(var(--radius) + 2px);
   background: var(--card);
   padding: 20px;
   text-decoration: none !important;
@@ -271,9 +236,9 @@
 .wa-goal-icon {
   display: grid;
   place-items: center;
-  background: var(--muted);
+  background: var(--secondary);
   color: var(--primary);
-  border-radius: 8px;
+  border-radius: calc(var(--radius) + 2px);
   width: 38px;
   height: 38px;
   flex-shrink: 0;
@@ -288,21 +253,21 @@
   gap: 6px;
 }
 .wa-goal-card b {
-  font-size: var(--text-note);
+  font-size: var(--text-item);
   font-weight: 600;
 }
 .wa-goal-card strong {
-  font-size: 22px;
+  font-size: var(--text-result);
   color: var(--foreground);
   margin-inline-end: 4px;
-  font-weight: 650;
+  font-weight: 600;
 }
 .wa-goal-card span > span {
   font-size: var(--text-note);
   color: var(--muted-foreground);
 }
 .wa-goal-card small {
-  font-size: var(--text-micro);
+  font-size: var(--text-note);
   color: var(--muted-foreground);
 }
 .wa-goal-arrow {
@@ -317,7 +282,7 @@
 }
 .wa-panel {
   border: 1px solid var(--border);
-  border-radius: 9px;
+  border-radius: calc(var(--radius) + 2px);
   background: var(--card);
   overflow: hidden;
   margin: 18px 0;
@@ -334,13 +299,13 @@
   padding: 4px 8px;
   border-radius: 20px;
   font-size: var(--text-micro);
-  background: #eff4f2;
-  color: #417060;
+  background: color-mix(in srgb, var(--success) 10%, var(--card));
+  color: var(--success);
   white-space: nowrap;
 }
 .wa-status-paused {
-  background: #fbf4e7;
-  color: #90703c;
+  background: color-mix(in srgb, var(--warning) 10%, var(--card));
+  color: var(--warning);
 }
 .wa-status-historical {
   background: var(--muted);
@@ -365,8 +330,8 @@
 }
 .wa-numbers dd {
   margin: 0;
-  font-size: 32px;
-  font-weight: 650;
+  font-size: var(--text-figure);
+  font-weight: 600;
   letter-spacing: -1px;
   font-variant-numeric: tabular-nums;
 }
@@ -432,7 +397,7 @@
 }
 .wa-chart text {
   fill: var(--muted-foreground);
-  font-size: 10px;
+  font-size: var(--text-label);
 }
 .wa-chart path {
   fill: none;
@@ -486,7 +451,7 @@
   gap: 8px 22px;
   flex-wrap: wrap;
   padding: 16px 24px;
-  background: var(--background);
+  background: var(--surface);
   border-top: 1px solid var(--border);
   font-size: var(--text-note);
   color: var(--muted-foreground);
@@ -520,9 +485,9 @@
 }
 .wa-campaign-table thead th {
   font-size: var(--text-micro);
-  font-weight: 550;
+  font-weight: 500;
   color: var(--muted-foreground);
-  background: var(--background);
+  background: var(--surface);
   text-align: start;
   padding: 11px 20px;
   border-bottom: 1px solid var(--border);
@@ -567,7 +532,7 @@
 .wconvert-analytics .wa-notice {
   background: var(--muted);
   border: 1px solid var(--border);
-  border-radius: 7px;
+  border-radius: calc(var(--radius) + 2px);
   padding: 15px 20px;
   margin: 16px 0;
   font-size: var(--text-note);
@@ -595,7 +560,7 @@
 }
 .wa-handoff strong {
   display: block;
-  font-size: 28px;
+  font-size: var(--text-figure);
 }
 .wa-handoff span {
   display: block;
@@ -635,7 +600,7 @@
   gap: 12px;
 }
 .wa-arm .wa-numbers dd {
-  font-size: 26px;
+  font-size: var(--text-figure);
 }
 @media (max-width: 1100px) {
   .wa-impact-grid {
@@ -659,7 +624,7 @@
     gap: 12px;
   }
   .wa-numbers dd {
-    font-size: 26px;
+    font-size: var(--text-figure);
   }
   .wa-trend {
     padding: 16px;
@@ -690,16 +655,12 @@
     border-inline-start: 0;
     border-top: 1px solid var(--border);
   }
-  .wconvert-analytics .wa-date-help p {
-    width: 250px;
-    inset-inline-start: -110px;
-  }
   .wa-impact {
     padding: 16px;
     min-height: 175px;
   }
   .wa-impact strong {
-    font-size: 30px;
+    font-size: var(--text-metric);
   }
   .wa-impact-grid {
     gap: 9px;
@@ -716,4 +677,13 @@
   .wa-goal-card {
     padding: 16px;
   }
+}
+
+/* A native picker and a shared Button follow the same page-action baseline. */
+.wa-header-actions > label { display:flex; margin:0; min-inline-size:0; }
+.wa-header-actions { max-inline-size:100%; }
+@media(max-width:600px) {
+  .wa-header-actions { inline-size:100%; gap:10px; }
+  .wa-header-actions > label, .wa-header-actions > button { flex:1 1 100%; inline-size:100%; }
+  .wa-header-actions select { inline-size:100%; }
 }

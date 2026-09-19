@@ -175,7 +175,7 @@ export function EventTable({
                     ),
                 )}
               </dl>
-              {(selected.email || selected.phone) && <div className="rounded-md border border-border bg-muted/30 p-4">
+              {(selected.email || selected.phone) && <div className="rounded-md border border-border bg-surface p-4">
                 {onRelated ? <Button variant="link" className="h-auto p-0 text-start whitespace-normal" onClick={() => { const identifier = selected.email || selected.phone!; setSelected(null); onRelated(identifier); }}>{selected.email ? __('View submissions using this email', 'wconvert') : __('View submissions using this phone', 'wconvert')}<ChevronRight aria-hidden="true" className="size-4" /></Button>
                   : <a className="text-primary" href={leadsHref({ identifier: selected.email || selected.phone! })}>{__('View submissions using this identifier', 'wconvert')}</a>}
                 <p className="mb-0 mt-1 text-note text-muted-foreground">{__('Search all retained captures, outside the current filters. These remain separate submissions, not a merged contact.', 'wconvert')}</p>

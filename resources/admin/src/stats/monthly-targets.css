@@ -11,7 +11,7 @@
   margin-bottom: 17px;
 }
 .wa-targets-heading h2 {
-  font-size: var(--text-title);
+  font-size: var(--text-section);
   margin-bottom: 5px;
   font-weight: 600;
 }
@@ -29,9 +29,9 @@
 .wa-target-card {
   min-width: 0;
   padding: 22px;
-  background: color-mix(in srgb, var(--primary) 6%, var(--card));
+  background: var(--card);
   border: 1px solid var(--border);
-  border-radius: 7px;
+  border-radius: calc(var(--radius) + 2px);
 }
 .wa-target-card:only-child {
   max-width: 480px;
@@ -46,41 +46,6 @@
   font-weight: 600;
   color: var(--foreground);
 }
-.wa-target-info {
-  position: relative;
-  flex-shrink: 0;
-}
-.wa-target-info summary {
-  display: grid;
-  place-items: center;
-  height: 28px;
-  width: 28px;
-  border: 1px solid var(--border);
-  border-radius: 50%;
-  color: var(--muted-foreground);
-  cursor: pointer;
-  list-style: none;
-}
-.wa-target-info summary::-webkit-details-marker {
-  display: none;
-}
-.wa-target-info[open] summary {
-  background: var(--accent);
-}
-.wa-target-info p {
-  position: absolute;
-  z-index: 10;
-  top: 34px;
-  right: 0;
-  width: min(260px, 70vw);
-  padding: 12px 14px;
-  border: 1px solid var(--border);
-  border-radius: 6px;
-  background: var(--card);
-  color: var(--foreground);
-  font-size: var(--text-note);
-  line-height: 1.65;
-}
 .wa-target-number {
   display: flex;
   align-items: baseline;
@@ -90,11 +55,11 @@
   overflow-wrap: anywhere;
 }
 .wa-target-number strong {
-  font-size: 48px;
+  font-size: var(--text-metric);
   line-height: 1;
-  letter-spacing: -2px;
+  letter-spacing: -.04em;
   color: var(--primary);
-  font-weight: 550;
+  font-weight: 600;
   font-variant-numeric: tabular-nums;
 }
 .wa-target-number > span {
@@ -220,7 +185,6 @@
   font-size: var(--text-note);
   margin: 12px 0;
 }
-.wa-target-info summary:focus-visible,
 .wa-target-field input:focus-visible {
   outline: 2px solid var(--ring);
   outline-offset: 3px;
@@ -239,7 +203,7 @@
     margin: 18px 0;
   }
   .wa-target-number strong {
-    font-size: 42px;
+    font-size: var(--text-metric);
   }
   .wa-target-field {
     gap: 12px;

@@ -1,12 +1,12 @@
 /* Campaign layout extends shared table and control contracts (ADR 0092). */
-#wconvert-admin .wc-campaign-filterbar { display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-block-end:16px; }
+#wconvert-admin .wc-campaign-filterbar { display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; padding:20px 24px 16px; margin:0; }
 #wconvert-admin .wc-campaign-filters { display:flex; flex-wrap:wrap; gap:3px; }
 #wconvert-admin .wc-campaign-filters label { display:flex; align-items:center; gap:7px; min-block-size:var(--control-height-sm); padding:6px 10px; border:1px solid transparent; border-radius:var(--radius); font-size:var(--text-note); font-weight:500; color:var(--muted-foreground); background:transparent; cursor:pointer; }
-#wconvert-admin .wc-campaign-filters label:has(input:checked) { color:var(--foreground); background:var(--card); border-color:var(--border); }
+#wconvert-admin .wc-campaign-filters label:has(input:checked) { color:var(--foreground); background:var(--secondary); border-color:transparent; color:var(--primary); }
 #wconvert-admin .wc-campaign-filters label span { font-size:var(--text-micro); font-variant-numeric:tabular-nums; color:var(--muted-foreground); }
 #wconvert-admin .wc-campaign-period { display:flex; align-items:center; gap:6px; font-size:var(--text-note); color:var(--muted-foreground); }
 #wconvert-admin .wc-campaign-workspace select { border:1px solid var(--input); border-radius:var(--radius); padding-block:0.25rem; padding-inline:0.5rem 1.5rem; background-color:var(--card); color:var(--foreground); font-size:var(--text-note); line-height:1.25; min-block-size:var(--control-height-sm); max-inline-size:100%; }
-#wconvert-admin .wc-campaign-toolbar { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; padding:13px 16px; border-block-end:1px solid var(--border); }
+#wconvert-admin .wc-campaign-toolbar { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:10px; padding:16px 24px; border-block-end:1px solid var(--border); }
 #wconvert-admin .wc-campaign-search { display:flex; align-items:center; gap:8px; color:var(--muted-foreground); flex:1; max-inline-size:310px; min-inline-size:150px; }
 #wconvert-admin .wc-campaign-search svg { inline-size:16px; block-size:16px; flex:none; }
 #wconvert-admin .wc-campaign-search input { margin:0; min-inline-size:0; inline-size:100%; padding:4px 8px; min-block-size:var(--control-height-sm); border:1px solid var(--input); border-radius:var(--radius); background:var(--card); color:var(--foreground); font-size:var(--text-body); line-height:1.25; }
@@ -17,9 +17,9 @@
 #wconvert-admin .wc-campaign-layout label:has(input:checked) { color:var(--primary); background:var(--secondary); }
 #wconvert-admin .wc-campaign-layout svg { inline-size:17px; block-size:17px; }
 #wconvert-admin .wc-campaign-table { inline-size:100%; border-collapse:collapse; margin:0; }
-#wconvert-admin .wc-campaign-table tr { display:grid; grid-template-columns:minmax(200px,1fr) 140px 110px 200px; align-items:center; gap:16px; padding:17px; border-block-end:1px solid var(--border); }
+#wconvert-admin .wc-campaign-table tr { display:grid; grid-template-columns:minmax(200px,1fr) 140px 110px 200px; align-items:center; gap:16px; padding:20px 24px; border-block-end:1px solid var(--border); }
 #wconvert-admin .wc-campaign-table th { text-align:start; font-size:var(--text-micro); font-weight:500; color:var(--muted-foreground); padding:0; }
-#wconvert-admin .wc-campaign-table thead tr { padding-block:11px; }
+#wconvert-admin .wc-campaign-table thead tr { padding-block:12px; }
 #wconvert-admin .wc-campaign-table th:nth-child(n+3) { text-align:end; }
 #wconvert-admin .wc-campaign-table td { min-inline-size:0; padding:0; border:0; }
 #wconvert-admin .wc-campaign-table tbody tr:last-child { border-block-end:0; }
@@ -35,11 +35,11 @@
 #wconvert-admin .wc-campaign-results strong { display:block; font-size:var(--text-heading); font-weight:600; line-height:1.3; }
 #wconvert-admin .wc-campaign-results span { display:block; margin-block-start:4px; font-size:var(--text-micro); color:var(--muted-foreground); }
 #wconvert-admin .wc-campaign-table .wc-campaign-actions { display:flex; justify-content:flex-end; align-items:center; gap:4px; }
-.wc-campaign-thumbnail { inline-size:72px; block-size:53px; flex:none; overflow:hidden; border:1px solid var(--border); border-radius:var(--radius); background:var(--background); }
+.wc-campaign-thumbnail { inline-size:72px; block-size:53px; flex:none; overflow:hidden; border:1px solid var(--border); border-radius:var(--radius); background:var(--surface); }
 #wconvert-admin .wc-preview-button { display:block; border:0; padding:0; border-radius:var(--radius); background:transparent; cursor:pointer; flex:none; }
 .wc-design-frame { display:grid; grid-template-columns:minmax(0,1fr); grid-template-rows:minmax(0,1fr); place-items:center; position:relative; inline-size:100%; block-size:100%; overflow:hidden; }
 .wc-design-anchor { position:relative; transform:scale(.1); transform-origin:center; pointer-events:none; }
-.wc-preview-placeholder { inline-size:100%; block-size:100%; display:grid; place-items:center; color:var(--muted-foreground); background:var(--background); }
+.wc-preview-placeholder { inline-size:100%; block-size:100%; display:grid; place-items:center; color:var(--muted-foreground); background:var(--surface); }
 .wc-preview-placeholder svg { inline-size:18px; block-size:18px; }
 #wconvert-admin .wc-family-toggle { display:flex; align-items:center; gap:3px; margin-block-start:6px; color:var(--primary); font-size:var(--text-micro); cursor:pointer; }
 #wconvert-admin .wc-family-toggle svg { inline-size:13px; block-size:13px; }
@@ -122,7 +122,7 @@
 
 /* Grid tracks own column widths; DataTable's intrinsic 1% action hint is for tables. */
 #wconvert-admin .wconvert-table.wc-campaign-table > :is(thead,tbody) > tr > :is(th,td) { inline-size:auto; padding:0; border:0; }
-#wconvert-admin .wconvert-table.wc-campaign-table > thead { background:var(--background); }
+#wconvert-admin .wconvert-table.wc-campaign-table > thead { background:var(--surface); }
 #wconvert-admin .wconvert-table.wc-campaign-table > thead > tr > th { background:transparent; }
 #wconvert-admin .wconvert-table.wc-campaign-table .wconvert-table__actions-row { inline-size:100%; min-inline-size:0; flex-wrap:wrap; }
 @media(max-width:900px) {
@@ -131,3 +131,25 @@
 }
 
 #wconvert-admin :is(.wc-family-toggle,.wc-campaign-name) { min-block-size:1.5rem; }
+
+/* Harbor keeps Campaigns in one white work surface. */
+#wconvert-admin .wc-campaign-workspace { background:var(--card); border:1px solid var(--border); border-radius:calc(var(--radius) + 2px); overflow:hidden; }
+#wconvert-admin .wc-campaign-thumbnail { inline-size:94px; block-size:68px; }
+#wconvert-admin .wc-campaign-name { font-size:var(--text-item); letter-spacing:-.02em; }
+#wconvert-admin .wc-campaign-results strong { font-size:var(--text-result); font-weight:500; letter-spacing:-.03em; }
+#wconvert-admin .wc-campaign-footer { padding:18px 24px; margin:0; border-block-start:1px solid var(--border); }
+@layer utilities {
+  #wconvert-admin .wc-campaign-workspace > section { border:0 !important; border-radius:0 !important; box-shadow:none !important; }
+  #wconvert-admin .wc-campaign-actions [data-slot=button] { background:transparent !important; border-color:transparent !important; box-shadow:none !important; color:var(--primary) !important; }
+  #wconvert-admin .wc-campaign-actions [data-slot=button]:hover { background:var(--secondary) !important; }
+  #wconvert-admin .wc-campaign-state [data-slot=badge] { border:0 !important; background:transparent !important; padding:0 !important; gap:7px !important; border-radius:0 !important; }
+  #wconvert-admin .wc-campaign-state [data-variant=secondary] { color:var(--muted-foreground) !important; }
+}
+#wconvert-admin .wc-campaign-state [data-slot=badge]::before { content:''; inline-size:5px; block-size:5px; flex:none; background:currentColor; border-radius:50%; }
+@media(max-width:900px) {
+  #wconvert-admin .wc-campaign-table > tbody > tr { border:0; border-block-end:1px solid var(--border); border-radius:0; margin:0; }
+}
+@media(max-width:600px) {
+  #wconvert-admin :is(.wc-campaign-filterbar,.wc-campaign-toolbar,.wc-campaign-footer,.wc-campaign-table tr) { padding-inline:18px; }
+  #wconvert-admin .wc-campaign-thumbnail { inline-size:70px; block-size:54px; }
+}

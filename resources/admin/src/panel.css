@@ -1,6 +1,5 @@
 /* Reading pages share the editor's quiet chrome; the editor owns its own frame. */
 #wconvert-admin .wconvert-panel:not([data-measure='wide']) { --wconvert-measure: 80rem; }
-#wconvert-admin .wconvert-panel-nav { background: var(--card); border-block-end: 1px solid var(--border); }
 #wconvert-admin .wconvert-panel-heading { background: var(--background); }
 /* WordPress reduces its own content gutter on small screens. */
 @media (max-width: 782px) {
@@ -24,7 +23,7 @@
 #wconvert-admin .wconvert-panel-filters button > span { font-size: var(--text-micro); font-variant-numeric: tabular-nums; }
 #wconvert-admin .wconvert-panel-search { position: relative; margin-inline-start: auto; inline-size: 15rem; max-inline-size: 100%; }
 #wconvert-admin .wconvert-panel-search > svg { position: absolute; inset-inline-start: .75rem; inset-block-start: 50%; transform: translateY(-50%); inline-size: 1rem; block-size: 1rem; color: var(--muted-foreground); pointer-events: none; }
-#wconvert-admin .wconvert-report-chart { background: var(--background); border: 1px solid var(--border); border-radius: .375rem; padding: 1rem; }
+#wconvert-admin .wconvert-report-chart { background: var(--surface); border: 1px solid var(--border); border-radius: .375rem; padding: 1rem; }
 #wconvert-admin .wconvert-report-chart svg { inline-size: 100%; block-size: 9rem; display: block; overflow: visible; }
 #wconvert-admin .wconvert-report-chart line { stroke: var(--border); stroke-dasharray: 3 4; }
 #wconvert-admin .wconvert-report-chart rect { fill: var(--primary); }
@@ -34,11 +33,9 @@
 #wconvert-admin .wconvert-panel-details > summary { cursor: pointer; padding: .875rem 1.25rem; font-weight: 500; color: var(--foreground); }
 #wconvert-admin .wconvert-panel-details > summary:hover { background: var(--muted); }
 #wconvert-admin .wconvert-panel-details > summary:focus-visible { outline: 2px solid var(--ring); outline-offset: -3px; }
-#wconvert-admin .wconvert-route-settings { background: var(--background); }
-#wconvert-admin .wconvert-route-heading { display: flex; align-items: flex-start; gap: .875rem; padding: 1.25rem; }
-#wconvert-admin .wconvert-route-icon { display: grid; place-items: center; inline-size: 2.5rem; block-size: 2.5rem; flex: none; color: var(--primary); background: var(--secondary); border-radius: .5rem; }
-#wconvert-admin .wconvert-route-icon svg { inline-size: 1.25rem; block-size: 1.25rem; }
-#wconvert-admin .wconvert-route-heading__body { flex: 1; min-inline-size: 0; }
+#wconvert-admin .wconvert-route-settings { background: var(--card); }
+#wconvert-admin .wconvert-region-icon { display: grid; place-items: center; inline-size: 2.5rem; block-size: 2.5rem; flex: none; color: var(--primary); background: var(--secondary); border-radius: .5rem; }
+#wconvert-admin .wconvert-region-icon svg { inline-size: 1.25rem; block-size: 1.25rem; }
 #wconvert-admin .wconvert-daily-numbers { inline-size: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
 #wconvert-admin .wconvert-daily-numbers :is(th, td) { padding: .5rem; text-align: start; border-block-end: 1px solid var(--border); }
 #wconvert-admin .wconvert-daily-numbers td { text-align: end; }
@@ -51,11 +48,11 @@
 
 /* These override important utility sizes and therefore share their layer. */
 @layer utilities {
-  #wconvert-admin .wconvert-route-heading__body > div { border: 0 !important; padding: 0 !important; }
-  #wconvert-admin .wconvert-panel-heading .wconvert-measure { padding-block-start: 1.75rem !important; padding-block-end: .5rem !important; }
-  #wconvert-admin .wconvert-panel-main { padding-block-start: 1.25rem !important; }
+  /* A header followed directly by a footer owns their single shared divider. */
+  #wconvert-admin :is([data-slot="region-header"] + .wconvert-footer,
+    [data-slot="region-header"] + [hidden] + .wconvert-footer) { border-block-start-width:0 !important; }
   #wconvert-admin .wconvert-panel-search input { padding-inline-start: 2.25rem !important; }
-  #wconvert-admin .wconvert-panel .wconvert-table > thead > tr > th { background: var(--background); }
+  #wconvert-admin .wconvert-panel .wconvert-table > thead > tr > th { background: var(--surface); }
   @media (min-width: 901px) {
     #wconvert-admin .wconvert-optin-list .wconvert-table > tbody > tr > td { padding-block: 1rem; }
   }
@@ -64,5 +61,4 @@
   #wconvert-admin .wconvert-optin-list .wconvert-toolbar > div { inline-size: 100%; }
   #wconvert-admin .wconvert-panel-search { inline-size: 100%; }
   #wconvert-admin .wconvert-table .wconvert-table__actions-row { inline-size: auto; }
-  #wconvert-admin .wconvert-route-heading { flex-wrap: wrap; }
 }

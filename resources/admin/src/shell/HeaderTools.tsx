@@ -57,12 +57,7 @@ export function HeaderTools() {
           </Button>
         </PopoverTrigger>
         <PopoverContent align="end" className="wc-header-popover">
-          <h2>{__('Help and support', 'wconvert')}</h2>
-          <a href={settingsHref('experience')}>{__('Visitor experience settings', 'wconvert')}</a>
-          <a href={settingsHref('connections')}>{__('Connections & destinations', 'wconvert')}</a>
-          <a href="https://wconvert.io/" target="_blank" rel="noreferrer">
-            {__('WConvert website', 'wconvert')} <ExternalLink aria-hidden="true" />
-          </a>
+          <HelpLinks />
         </PopoverContent>
       </Popover>
       <Popover
@@ -129,4 +124,16 @@ export function HeaderTools() {
       </a>
     </div>
   );
+}
+
+/** Shared destinations keep header and footer help in sync. */
+export function HelpLinks() {
+  return <>
+    <h2>{__('Help and support', 'wconvert')}</h2>
+    <a href={settingsHref('experience')}>{__('Visitor experience settings', 'wconvert')}</a>
+    <a href={settingsHref('connections')}>{__('Connections & destinations', 'wconvert')}</a>
+    <a href="https://wconvert.io/" target="_blank" rel="noreferrer">
+      {__('WConvert website', 'wconvert')} <ExternalLink aria-hidden="true" />
+    </a>
+  </>;
 }

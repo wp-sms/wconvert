@@ -62,7 +62,7 @@ export function SendTestDialog({
             {__('Review the sample and destination before sending. This is a real action in the receiving service.', 'wconvert')}
           </DialogDescription>
         </DialogHeader>
-        <div className="rounded-md border border-border bg-muted/40 p-3">
+        <div className="rounded-md border border-border bg-surface p-3">
           {type && <p className="m-0 font-medium">{type.label}</p>}
           {target !== null && <p className="m-0">{target}</p>}
           <Description>{__('Uses this destination’s saved settings.', 'wconvert')}</Description>
@@ -90,7 +90,7 @@ export function SendTestDialog({
           </div>
           {error !== null && <p role="alert" className="m-0 rounded-md border border-destructive/30 bg-destructive/5 p-3 text-destructive">{error}</p>}
           {result !== null && <p role={result.outcome === 'failed' ? 'alert' : 'status'}
-            className={`m-0 rounded-md border p-3 ${result.outcome === 'failed' ? 'border-destructive/30 bg-destructive/5 text-destructive' : 'border-border bg-muted/40'}`}>
+            className={`m-0 rounded-md border p-3 ${result.outcome === 'failed' ? 'border-destructive/30 bg-destructive/5 text-destructive' : 'border-border bg-surface'}`}>
             {result.message}
           </p>}
           <DialogFooter>

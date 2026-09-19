@@ -12,16 +12,9 @@
 }
 .wconvert-settings > nav > a[aria-current] { border-color: var(--border) !important; }
 .wconvert-settings > .min-w-0 { max-width: 900px !important; }
-.wconvert-settings section > div:first-child:has(h2) {
-  border-bottom: 0 !important;
-  padding: 25px 28px 10px !important;
-}
-.wconvert-settings section h2 { font-size: 20px !important; line-height: 1.4 !important; }
-.wconvert-settings section > .px-4,
-.wconvert-settings section > form > .px-4 { padding-inline: 28px !important; }
-.wconvert-settings .wconvert-footer { padding-block: 18px !important; }
-@media (max-width: 640px) {
-  .wconvert-settings section > div:first-child:has(h2),
-  .wconvert-settings section > .px-4,
-  .wconvert-settings section > form > .px-4 { padding-inline: 16px !important; }
+/* RegionHeader, RegionBody and RegionFooter own card spacing on every screen. */
+
+@layer utilities {
+  #wconvert-admin .wconvert-settings > nav > a[aria-current] { background:var(--card) !important; border-color:var(--primary) !important; }
+  #wconvert-admin .wconvert-settings > nav > a:not([aria-current]):hover { background:var(--secondary) !important; }
 }

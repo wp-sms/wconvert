@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
-import { Info } from 'lucide-react';
+import { InfoTip } from '../shell/InfoTip';
 import { Button } from '../components/ui/button';
 import {
   Dialog,
@@ -156,17 +156,9 @@ export function MonthlyTargets({
                 <article className="wa-target-card" key={metric.id}>
                   <div className="wa-target-card-heading">
                     <h3>{metric.label}</h3>
-                    <details className="wa-target-info">
-                      <summary
-                        aria-label={sprintf(
-                          __('What counts toward %s?', 'wconvert'),
-                          metric.label,
-                        )}
-                      >
-                        <Info size={15} aria-hidden="true" />
-                      </summary>
+                    <InfoTip label={sprintf(__('What counts toward %s?', 'wconvert'), metric.label)}>
                       <p>{metric.note}</p>
-                    </details>
+                    </InfoTip>
                   </div>
                   <div className="wa-target-number">
                     <strong>{formatCount(metric.actual)}</strong>

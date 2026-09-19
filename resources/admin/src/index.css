@@ -23,16 +23,11 @@
  */
 @import 'tailwindcss' important;
 
-/*
- * The entry animations the vendored layers reference by class (`animate-in`,
- * `fade-in-0`, `slide-in-from-top-2`). They are
- * Tailwind 4's replacement for `tailwindcss-animate` and shadcn's components
- * are written against them, so without this import those classes compile to
- * nothing and every overlay in the admin snaps rather than opens. Dismissal is
- * deliberately immediate; ADR 0036 records why.
- */
+/* Vendored animation utilities remain available, but Harbor's shared policy
+ * below disables runtime motion, including portaled layers (ADR 0097). */
 @import 'tw-animate-css';
 @import './panel.css';
+@import './shell/fonts.css';
 
 /*
  * **`dark:` is bound to a class, and no element carries it.**
@@ -102,29 +97,15 @@
   --color-sidebar-ring: var(--sidebar-ring);
   --color-surface: var(--surface);
 
-  /*
-   * **The whole scale is a hard offset, not only the named token.**
-   *
-   * ADR 0037 keeps WSMS's `4px 4px 0` deliberately — a tight radius and a hard
-   * shadow are the two things about the sibling's surface a person could
-   * describe from memory, and they are what carries the family resemblance
-   * once the colour stops doing it. Declaring `--shadow-brutalist` alone would
-   * have left that as decoration: every vendored component asks for
-   * `shadow-xs`, `shadow-sm` or `shadow-md`, so the shadow that actually
-   * rendered would have been Tailwind's soft blurred default and the house
-   * style would appear nowhere on the screen.
-   *
-   * Depth is offset distance rather than blur, so the scale reads as one idea
-   * at four sizes and the top of it IS the `4px 4px 0` the ADR names.
-   */
-  --shadow-2xs: 1px 1px 0 var(--border);
-  --shadow-xs: 1px 1px 0 var(--border);
-  --shadow-sm: 2px 2px 0 var(--border);
-  --shadow-md: 2px 2px 0 var(--border);
-  --shadow-lg: 3px 3px 0 var(--border);
-  --shadow-xl: 4px 4px 0 var(--border);
-  --shadow-2xl: 4px 4px 0 var(--border);
-  --shadow-brutalist: 4px 4px 0 var(--border);
+  /* Harbor uses surface contrast and borders for depth (ADR 0097). */
+  --shadow-2xs: none;
+  --shadow-xs: none;
+  --shadow-sm: none;
+  --shadow-md: none;
+  --shadow-lg: none;
+  --shadow-xl: none;
+  --shadow-2xl: none;
+  --shadow-brutalist: none;
 
   /*
    * **Two control heights, and which one applies is a question of scope**
@@ -205,7 +186,7 @@
 
 /*
  * ============================================================================
- * THE TYPE SCALE. EIGHT ROLES, AND EVERY SIZE IN THE ADMIN IS ONE OF THEM.
+ * THE TYPE SCALE. SHARED ROLES FOR READING PAGES AND THE EDITOR.
  * ============================================================================
  * **The block above owns colour, radius, shadow and control height, and never
  * owned type** — so every `text-*` in this admin was stock Tailwind, chosen per
@@ -330,9 +311,23 @@
   --text-heading: 1rem;
   --text-heading--line-height: 1.25rem;
 
-  /* 24 — the page title, and only that. */
+  /* 24 — compact editor title and service-footer wordmark. */
   --text-title: 1.5rem;
   --text-title--line-height: 1.875rem;
+
+  /* Harbor adds shared reading-page roles without changing compact editor titles. */
+  --text-display: 2.75rem;
+  --text-display--line-height: 1.1;
+  --text-brand: 1.625rem;
+  --text-brand--line-height: 1;
+  --text-item: 0.9375rem;
+  --text-item--line-height: 1.4;
+  --text-result: 1.375rem;
+  --text-result--line-height: 1.3;
+  --text-section: 1.25rem;
+  --text-section--line-height: 1.4;
+  --text-metric: 2.25rem;
+  --text-metric--line-height: 1.1;
 
   /* 30 — the one emphasised figure per Goal (see {@see Stat}'s `emphasis`). */
   --text-figure: 1.875rem;
@@ -340,45 +335,28 @@
 }
 
 :root {
-  /*
-   * Taken from WSMS deliberately: a tight radius and a hard offset shadow are
-   * the two things about the sibling's surface a person could describe from
-   * memory, and keeping them is what carries the family resemblance once the
-   * colour stops doing it (ADR 0037).
-   */
-  --radius: 0.25rem;
-
-  /*
-   * Petrol. Cool against the sibling's warm burnt orange, so the two are
-   * obviously related and obviously not the same — and it leaves green, amber
-   * and red entirely free to mean *converted*, *dismissed* and *failed* on the
-   * screen this product is sold on. Green as a primary was refused for exactly
-   * that collision (ADR 0037).
-   *
-   * 5.95:1 against white, measured rather than assumed: petrol text on white
-   * and a white label on a petrol button both clear AA in both directions
-   * without a second shade.
-   */
-  --primary: #0f6e79;
+  /* Harbor palette and corners supersede the original values (ADR 0097). */
+  --radius: 0.375rem;
+  --primary: #205c57;
   --primary-foreground: #ffffff;
 
-  --background: #f6f9f9;
-  --foreground: #12242b;
+  --background: #eaf0ed;
+  --foreground: #243b37;
   --card: #ffffff;
-  --card-foreground: #12242b;
+  --card-foreground: #243b37;
   --popover: #ffffff;
-  --popover-foreground: #12242b;
-  --surface: #eef3f4;
+  --popover-foreground: #243b37;
+  --surface: #f3f6f4;
 
-  --secondary: #eef3f4;
-  --secondary-foreground: #12242b;
-  --muted: #eef3f4;
-  --muted-foreground: #55666d;
-  --accent: #e3edee;
-  --accent-foreground: #0b545c;
+  --secondary: #dce9e2;
+  --secondary-foreground: #32594e;
+  --muted: #f3f6f4;
+  --muted-foreground: #53675e;
+  --accent: #e3ede7;
+  --accent-foreground: #24483b;
 
   /*
-   * The semantic trio, and the reason the primary is not green. Each is
+   * Semantic colors retain their meaning independently of the brand palette. Each is
    * measured against white rather than eyeballed: destructive 6.57:1, success
    * 6.13:1, warning 5.93:1, info 6.46:1 — AA in both directions, so each works
    * as text on a card and as a solid fill under a white label.
@@ -394,12 +372,11 @@
    * draws the edge of a control, which is *"visual information required to
    * identify a user interface component"* and therefore owes 3:1 under WCAG
    * 1.4.11 (ADR 0038 sets AA as the bar). They are two tokens because they are
-   * two jobs — 3.25:1 on a card and 3.07:1 on the background for the one that
-   * has to clear it.
+   * two jobs — The Harbor input edge clears 3:1 on both white and the mist canvas.
    */
-  --border: #d3e0e2;
-  --input: #7e9299;
-  --ring: #0f6e79;
+  --border: #cad6cf;
+  --input: #74877d;
+  --ring: #205c57;
 
   /*
    * The chart ramp is the analytics screen's vocabulary, in the order ADR 0019
@@ -407,7 +384,7 @@
    * delivery failures ADR 0021 counts beside them, then a neutral for anything
    * with no meaning of its own.
    */
-  --chart-1: #0f6e79;
+  --chart-1: var(--primary);
   --chart-2: #17703f;
   --chart-3: #8a5a00;
   --chart-4: #b42318;
@@ -419,15 +396,15 @@
    * sidebar (ADR 0036) — these exist so a drop-in never resolves to nothing.
    */
   --sidebar: #ffffff;
-  --sidebar-foreground: #12242b;
-  --sidebar-primary: #0f6e79;
+  --sidebar-foreground: var(--foreground);
+  --sidebar-primary: var(--primary);
   --sidebar-primary-foreground: #ffffff;
-  --sidebar-accent: #e3edee;
-  --sidebar-accent-foreground: #0b545c;
-  --sidebar-border: #d3e0e2;
-  --sidebar-ring: #0f6e79;
+  --sidebar-accent: var(--accent);
+  --sidebar-accent-foreground: var(--accent-foreground);
+  --sidebar-border: var(--border);
+  --sidebar-ring: var(--ring);
 
-  --font-sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+  --font-sans: "DM Sans", -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
     Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas,
     "Liberation Mono", monospace;
@@ -461,11 +438,8 @@
  * WordPress screen from the admin menu and is exactly the frame this screen
  * stopped drawing.
  *
- * **WordPress's footer stays.** WSMS hides `#wpfooter`; this does not. ADR
- * 0035 owns the PAGE and names the menu, the toolbar and the footer as the
- * parts WordPress still owns — a footer that vanishes on one plugin's screen
- * is the plugin reaching past its own boundary, and it is one of the three
- * things this ticket is checked against on a real install.
+ * Harbor owns the footer on WConvert screens (ADR 0097). WordPress keeps
+ * its toolbar and menu; its duplicate footer is hidden only on our page.
  */
 #wconvert-admin {
   @apply relative bg-background text-foreground;
@@ -495,29 +469,10 @@
    */
   min-block-size: calc(100vh - var(--wp-admin--admin-bar--height, 32px));
 
-  /*
-   * **The room WordPress's footer needs, given back — inside our surface
-   * rather than under it.**
-   *
-   * `#wpfooter` is `position: absolute; bottom: 0`, so it is out of the flow
-   * and lands on whatever is at the bottom of the document. wp-admin reserves
-   * space for it with 65px of padding on `#wpbody-content`, and the rule below
-   * takes that away so our background can run all the way down — which it does,
-   * and which also dropped the footer straight on top of the last 40px of every
-   * screen. Reported from a real install: "Thank you for creating with
-   * WordPress" printed across a region's own footer row.
-   *
-   * Padding HERE rather than restoring it on `#wpbody-content` is the whole
-   * point: our background is painted on this element, so the reserved strip is
-   * ours and the footer sits on it. Restoring it outside would put wp-admin's
-   * grey back under the page and re-open the seam the rule below closed.
-   *
-   * 65px is WordPress's own number for this, not one invented here — the
-   * footer is 40px on one line and this is what wp-admin budgets for it
-   * wrapping.
-   */
-  padding-block-end: 65px;
+  padding-block-end: 0;
 }
+
+body:has(#wconvert-admin) #wpfooter { display:none; }
 
 /*
  * **The builder is the one screen that is a place rather than a list, so it
@@ -552,16 +507,8 @@
   max-inline-size: var(--wconvert-measure);
 }
 
-/*
- * The 65px this reserves is the gap wp-admin leaves between a screen and the
- * footer. Our surface runs to the footer instead, so the reservation is the
- * seam. The footer itself is untouched and keeps its own backdrop.
- *
- * **The reservation is not deleted, it is moved** — see the `padding-block-end`
- * on `#wconvert-admin` above. Taking it away without giving it back is what put
- * an absolutely positioned footer on top of the bottom of every screen.
- */
-#wpbody-content {
+/* The shared service footer replaces wp-admin's footer on WConvert screens. */
+body:has(#wconvert-admin) #wpbody-content {
   padding-bottom: 0;
 }
 
@@ -6281,4 +6228,42 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
 @layer utilities {
   #wconvert-admin :is(.wconvert-toolbar, .wconvert-table, .wconvert-footer, .wconvert-page-actions)
     :is(select, input[type="search"]) { line-height: 1.25 !important; }
+}
+
+/* Harbor is static, including layers portaled outside the mount node (ADR 0097). */
+@layer utilities {
+  #wconvert-admin *, #wconvert-admin *::before, #wconvert-admin *::after,
+  body:has(#wconvert-admin) [data-slot], body:has(#wconvert-admin) [data-slot] *,
+  body:has(#wconvert-admin) [data-slot]::before, body:has(#wconvert-admin) [data-slot]::after {
+    animation:none !important;
+    transition:none !important;
+    scroll-behavior:auto !important;
+  }
+}
+
+/* Native selects keep one explicit chevron in both the app and its portals.
+ * A background shorthand in a feature must not erase this affordance. */
+@layer utilities {
+  :is(#wconvert-admin, [data-slot="dialog-content"], [data-slot="alert-dialog-content"], [data-slot="popover-content"])
+    select:not([multiple]):not([size]:not([size="1"])) {
+    appearance: none !important;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2353675e' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") !important;
+    background-repeat: no-repeat !important;
+    background-position: right 10px center !important;
+    background-size: 16px 16px !important;
+    padding-inline-end: 34px !important;
+  }
+  :is(#wconvert-admin, [data-slot="dialog-content"], [data-slot="alert-dialog-content"], [data-slot="popover-content"])
+    select:not([multiple]):not([size]:not([size="1"])):dir(rtl) {
+    background-position: left 10px center !important;
+  }
+  #wconvert-admin .wconvert-info-trigger { flex-shrink:0 !important; color:var(--muted-foreground) !important; }
+  .wconvert-info-content p { margin:0 !important; }
+  .wconvert-info-content p + p { margin-block-start:8px !important; }
+}
+@layer utilities {
+  @media (forced-colors: active) {
+    :is(#wconvert-admin, [data-slot="dialog-content"], [data-slot="alert-dialog-content"], [data-slot="popover-content"])
+      select:not([multiple]):not([size]:not([size="1"])) { appearance:auto !important; background-image:none !important; }
+  }
 }

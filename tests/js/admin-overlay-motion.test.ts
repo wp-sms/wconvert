@@ -35,6 +35,8 @@ import { describe, expect, it } from 'vitest';
  * check nobody was owed rather than one they were.
  */
 
+// ADR 0097 disables runtime motion, including these retained vendored classes.
+// These source checks do not assert the computed animation behavior.
 const UI = resolve(import.meta.dirname, '../../resources/admin/src/components/ui');
 
 /** tailwindcss-animate's four exit families, each with any suffix. */
@@ -59,7 +61,7 @@ describe('admin overlay motion', () => {
     expect(readFileSync(resolve(UI, component), 'utf8')).not.toMatch(EXIT_ANIMATION);
   });
 
-  it.each(arrivals)('%s animates its arrival', (component) => {
+  it.each(arrivals)('%s retains vendored arrival classes (the admin stylesheet disables motion)', (component) => {
     expect(readFileSync(resolve(UI, component), 'utf8')).toContain(
       'data-[state=open]:animate-in',
     );

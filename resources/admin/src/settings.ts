@@ -54,6 +54,8 @@ export interface AdminSettings {
    * confusion is about.
    */
   readonly homeUrl?: string;
+  /** Plain-text WordPress site title for workspace identity. */
+  readonly siteName?: string;
   /**
    * The query parameter that turns the inspector on, spelled in PHP.
    *

@@ -5,10 +5,11 @@ import { adminSettings } from '../settings';
 import { Description } from './Description';
 import { PageActionSlotProvider } from './PageActions';
 import './header.css';
-import { tierName } from '../goals/availability';
+import { BrandMark, PlanBadge } from './Brand';
 import { HeaderTools } from './HeaderTools';
+import { Footer } from './Footer';
 
-/** Shared 56px masthead, page heading and aligned content measure (ADR 0092). */
+/** Harbor shared frame: dark navigation, light page heading and service footer (ADR 0097). */
 export function Shell({
   section,
   actions,
@@ -39,68 +40,56 @@ export function Shell({
         data-section={section}
         className="wconvert-panel font-sans text-body leading-normal text-foreground"
       >
-        <div className="wconvert-panel-nav">
+        <header className="wconvert-panel-nav">
           <div className="wconvert-measure wc-masthead mx-auto w-full">
             <div className="wc-brand">
-              <span className="wc-brand-mark" aria-hidden="true">
-                w
-              </span>
+              <BrandMark />
               <span>{__('WConvert', 'wconvert')}</span>
-              <span className="wc-brand-plan">
-                {tier === 'free'
-                  ? __('Free', 'wconvert')
-                  : tierName(tier)}
-              </span>
             </div>
-            {section !== undefined && (
-              <>
-                <nav className="wc-section-nav" aria-label={__('WConvert sections', 'wconvert')}>
-                  <ul>
-                    {SECTIONS.map((entry) => (
-                      <li key={entry.id}>
-                        <a
-                          href={hashFor(entry.id)}
-                          aria-current={section === entry.id ? 'page' : undefined}
-                        >
-                          {entry.label}
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </nav>
-                <HeaderTools />
-              </>
-            )}
+            {section !== undefined && <HeaderTools />}
           </div>
-        </div>
+          {section !== undefined && (
+            <div className="wconvert-measure wc-navigation-row mx-auto w-full">
+              <nav className="wc-section-nav" aria-label={__('WConvert sections', 'wconvert')}>
+                <ul>{SECTIONS.map((entry) => (
+                  <li key={entry.id}>
+                    <a href={hashFor(entry.id)} aria-current={section === entry.id ? 'page' : undefined}>
+                      {entry.label}
+                    </a>
+                  </li>
+                ))}</ul>
+              </nav>
+              <span className="wc-brand-plan"><PlanBadge tier={tier} /></span>
+            </div>
+          )}
+        </header>
         {banded && (
           <div className="wconvert-panel-heading">
-            <div className="wconvert-measure mx-auto w-full px-4 py-4 sm:px-6">
+            <div className="wconvert-measure wc-page-heading mx-auto w-full">
               {section === undefined ? (
                 <div ref={setTarget} />
               ) : (
-                <>
-                  <div className="wconvert-page-actions flex flex-wrap items-center gap-x-3 gap-y-2">
-                    <h1 className="m-0 me-auto text-title font-semibold leading-tight tracking-tight text-foreground">
+                <div className="wconvert-page-actions flex flex-wrap items-center gap-x-3 gap-y-2">
+                  <div className="wc-page-copy">
+                    <h1 className="m-0 wc-page-title text-foreground">
                       {pageTitle ?? SECTIONS.find((entry) => entry.id === section)?.label}
                     </h1>
-                    {actions}
-                    <div ref={setTarget} className="contents" />
+                    {!hideDescription && <Description className="wc-page-description">{descriptionFor(section)}</Description>}
                   </div>
-                  {!hideDescription && (
-                    <Description className="mt-1">{descriptionFor(section)}</Description>
-                  )}
-                </>
+                  {actions}
+                  <div ref={setTarget} className="contents" />
+                </div>
               )}
             </div>
           </div>
         )}
-        <main className="wconvert-panel-main wconvert-measure mx-auto w-full px-4 py-5 sm:px-6">
+        <main className="wconvert-panel-main wconvert-measure mx-auto w-full">
           {hidePageHeading && section && (
             <h1 className="sr-only">{SECTIONS.find((entry) => entry.id === section)?.label}</h1>
           )}
           {children}
         </main>
+        {section !== undefined && !hidePageHeading && <Footer />}
       </div>
     </PageActionSlotProvider>
   );

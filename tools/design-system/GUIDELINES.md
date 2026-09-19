@@ -17,23 +17,31 @@ create a screen-specific exception merely to reproduce a prototype measurement.
 
 ## 1. The frame
 
-Three bands, and they are the whole page:
+**Harbor is the approved shared frame (ADR 0097).**
 
-1. **Brand band** — white with petrol accents, carries the wordmark and, on a section screen, the
-   four-item nav. Its shared masthead is at least **56px** on desktop and
-   wraps navigation onto a second row on narrow screens. Help, issue notifications,
-   installed-plan identity and the account entry belong here, in shell-owned CSS.
-2. **Title band** — pale, carries the `h1`, one line of description, and the
-   page actions. Present on a section screen; absent inside the builder.
-3. **`main`** — the regions.
+1. **Brand header** — solid deep teal, with wordmark, Help,
+   issue notifications and account entry. The top row is at least 78px.
+   Four-section navigation sits on its own row, with the current section
+   underlined and a compact, bordered installed-plan badge at the opposite edge.
+2. **Light title area** — `h1`, useful description and page action on the mist
+   canvas. Headline and CTA stay outside the dark header. The primary page
+   action is a solid teal button with a white label.
+3. **Main work area** — white work surfaces against mist. Campaign filters,
+   controls, rows and metadata form a single sheet.
+4. **Service footer** — matching deep teal, shared WConvert mark and wordmark, plan
+   badge, a useful resource link and Help. A quiet centered bottom row credits
+   VeronaLabs with a muted monochrome logo. Publisher attribution has no hover
+   underline; keyboard focus remains visible. Creation and the editor omit this reading-page footer.
+   WordPress retains its toolbar and menu. Its footer and footer reservation are
+   removed only on WConvert screens. Site names and URLs are not footer branding.
 
-All three read one width token: `--wconvert-measure`, **80rem** on reading screens and
-**90rem** under `data-measure="wide"`. It is set once on the app root. A screen
-that wants to be wide asks once; a region never asks.
+All four share `--wconvert-measure`: **80rem** on reading screens and **90rem**
+when wide. Shell gutters are 48px, 28px below 900px and 20px below 600px. The
+main work area can use a 12px outer inset on phones. Use logical layout and
+wrapping; the footer stacks on narrow screens.
 
-**There is no sidebar.** The admin is four sections across a header. The
-`--sidebar-*` tokens exist only so a component vendored from shadcn that happens
-to reference one does not resolve to nothing.
+**There is no sidebar.** Four sections remain across the header. `--sidebar-*`
+tokens exist for compatible vendored components, not a proposed second menu.
 
 ## 2. A screen is regions
 
@@ -45,8 +53,9 @@ decides how tall its controls are.
 
 | Height | For | How it is applied |
 |---|---|---|
-| **2.25rem** | What the merchant came to the screen to use — a page action, a field in a settings region | the default |
-| **2rem** | What *qualifies* what is already on screen — a toolbar filter, a row action, a control inside a table or footer | being inside `.wconvert-toolbar`, `.wconvert-table`, `.wconvert-footer` or `.wconvert-page-actions` |
+| **3rem** | Reading-page heading buttons and period/select controls | shared shell action scope |
+| **2.25rem** | Fields and ordinary form actions | the default |
+| **2rem** | What *qualifies* what is already on screen — a toolbar filter, a row action, a control inside a table or footer | being inside `.wconvert-toolbar`, `.wconvert-table`, `.wconvert-footer` or compact `.wconvert-page-actions` outside the reading-page heading |
 
 Never pass `size="sm"` to make a toolbar control small. The container decides.
 A rule about the toolbar belongs to the toolbar, not to each control that lands
@@ -56,7 +65,7 @@ The builder also has a **1.5rem** `--control-height-xs` for editing furniture
 (ADR 0066). It is not a reading-page density option. On coarse pointers, shared
 controls have a **2.75rem / 44px** floor, including menus and native inputs.
 
-## 4. Eight type roles, six for reading pages
+## 4. Shared type roles
 
 | Role | Size | For |
 |---|---|---|
@@ -64,37 +73,66 @@ controls have a **2.75rem / 44px** floor, including menus and native inputs.
 | `note` | 13 | descriptions, notes, help text |
 | `body` | 14 | the body of the admin |
 | `heading` | 16 | a region heading, a card title, a section in an editor |
-| `title` | 24 | the page title, and only that |
+| `section` | 20 / 600 | reading-page section headings |
+| `metric` | 36 / 600 | dashboard impact and target totals |
+| `title` | 24 | compact editor title and footer wordmark |
+| `display` | 44 / 500; 36 on phones | reading-page heading |
+| `brand` | 26 / 600; 22 on phones | header wordmark |
+| `item` | 15 / 600 | campaign and goal identity |
+| `result` | 22 / 500 | compact result figure |
 | `figure` | 30 | the one emphasised figure per Goal |
-| `label` | 11 | builder editing furniture only |
+| `label` | 11 | builder furniture and quiet frame metadata |
 | `meta` | 9 | tracked builder furniture captions only |
 
-Do not reach for a Tailwind size outside this list. Before the roles existed,
+DM Sans is self-hosted with its OFL license. The system fallback covers missing
+glyphs. Font assets use content-hashed URLs so different weights cannot share
+stale cache entries. Do not reach for a Tailwind size outside this list. Before the roles existed,
 103 of ~115 text elements on the builder were 14px and nine sizes were in use;
 headings, body, labels and descriptions were separated only by weight and
 colour.
 
 ## 5. Colour means something
 
-- **Petrol `#0f6e79`** is the primary. Cool against WP SMS's warm burnt orange,
-  so the two read as related and not the same.
-- **The semantic four are reserved**: `destructive` failure, `success`
-  converted, `warning` suspended or nearly-limit, `info` neutral fact. The primary
-  is not green precisely so green can mean *converted* on the screen this
-  product is sold on.
+- **Teal `#205c57`** is the primary action/link color. **Deep teal `#183c40`**
+  frames the app; **mist `#EAF0ED`** is the canvas and work surfaces are white.
+- **Surface roles are shared across screens.** Use `--card` (white) for cards,
+  including goals and monthly targets. Use `--surface` (`#F3F6F4`) for inset
+  content and table headers, `--secondary` for icon wells, and `--accent` for
+  interaction states. Do not tint whole cards nearly the same color as the canvas.
+  `--border` (`#CAD6CF`) separates surfaces; muted text is `#53675E`.
+- **Semantic colors retain their meaning**: destructive failure, success
+  converted, warning suspended or nearly-limit, info neutral fact. Status always
+  includes text; do not use hue alone to distinguish it from the brand.
 - **Two edge tokens, because they are two jobs.** `--border` draws dividers and
   card edges, which are decoration. `--input` draws the edge of a control,
   which is information a user needs to identify a component and owes 3:1 under
   WCAG 1.4.11.
 - Every contrast figure in the Foundations card is measured, not estimated.
 
-## 6. Depth is offset, never blur
+## 6. Quiet surfaces
 
-`shadow-xs` through `shadow-2xl` are all hard offsets — `1px 1px 0` up to
-`4px 4px 0` — against `--border`. A tight radius (`0.25rem`) and a hard shadow
-are the two things about WP SMS's surface a person could describe from memory,
-and keeping them is what carries the family resemblance once the colour stops
-doing it. There is no blurred shadow anywhere in this admin.
+Shared shadow tokens are `none`. Use surface contrast and fine borders for depth,
+with 6px control corners and 8px work surfaces. No gradients or decorative motion.
+This supersedes the earlier hard-offset shadow direction (ADR 0097).
+
+Expanded destination settings remain white. Place usage notices inside the form's
+padding, on a solid `--surface` inset, and keep fields on the card surface. Do not
+stack edge-to-edge tinted panels or repeat the same shared-change warning.
+
+### Shared implementation contracts
+
+- `RegionHeader` owns symmetric header padding and its optional leading icon.
+  Do not target descendant headings with screen-specific padding overrides.
+- `DialogContent` and `AlertDialogContent` default to `--card`, including portals
+  outside the admin mount. Popovers and menus use the white `--popover` surface.
+  Neutral inset notices use solid `--surface`, not translucent `bg-muted/*` fills.
+- Native single-select fields share an explicit chevron, logical end padding and
+  RTL placement. Multi-select/listbox controls keep their own affordance.
+- `InfoTip` owns contextual help in Analytics and Leads: a 16px Info glyph in a
+  32px control, expanded for coarse pointers by the shared control rules. Its
+  popover handles viewport edges, Escape dismissal and returning keyboard focus.
+- The header navigation divider spans the row; individual navigation and plan
+  elements do not draw disconnected pieces of the same line.
 
 ## 7. Every control has the shape of its value
 
@@ -144,8 +182,10 @@ value shown beside it, an onboarding tour on a working screen.
 | `Popover` | an explanation they asked for; never a substitute for a control the screen should have shown |
 | `DropdownMenu` | row actions past the first two |
 
-**Entry animates, dismissal is immediate**, on every one of them. A test guards
-it (`tests/js/admin-overlay-motion.test.ts`).
+**Entry and dismissal are immediate.** A shared no-motion rule includes portaled
+admin layers and overrides retained vendored animation classes. Focus, keyboard
+behavior and dismissal semantics remain unchanged. Verify computed styles in the
+browser, since a class-name test cannot establish the final cascade.
 
 ## 10. Tables
 
@@ -443,7 +483,7 @@ Not gaps. Each was decided:
 | Toasts | a message worth showing stays on the screen |
 | WordPress admin notices | suppressed; the admin owns its page |
 | `toggle-group`, `radio-group` | native radios already do it, for free |
-| Blurred shadows | the whole scale is a hard offset |
+| Decorative shadows, gradients and motion | Harbor uses solid surfaces and clear hierarchy |
 | A dismiss control on a region's error | it clears when the next fetch succeeds |
 | A loading state on Milestones | the honest placeholder for nothing is nothing |
 

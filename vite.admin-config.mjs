@@ -3,6 +3,8 @@ import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 import { gzipSync } from 'node:zlib';
 import { resolve } from 'node:path';
+import { readFileSync } from 'node:fs';
+import { URL } from 'node:url';
 
 /**
  * The two WordPress packages this bundle imports and never carries.
@@ -215,7 +217,13 @@ function reportBundleSize() {
  */
 export function adminConfig({ entry, outDir }) {
   return defineConfig({
-    plugins: [react(), tailwindcss(), wordpressGlobals(), reportBundleSize()],
+    plugins: [react(), tailwindcss(), wordpressGlobals(), reportBundleSize(), {
+      name: 'wconvert:font-license',
+      generateBundle() {
+        this.emitFile({ type: 'asset', fileName: 'fonts/OFL-DM-Sans.txt',
+          source: readFileSync(new URL('./resources/admin/src/assets/fonts/OFL-DM-Sans.txt', import.meta.url), 'utf8') });
+      },
+    }],
     resolve: {
       alias: {
         // The same renderer the loader imports. Gallery cards and previews
@@ -287,7 +295,9 @@ export function adminConfig({ entry, outDir }) {
           // halves of that are commented against each other.
           entryFileNames: 'main-[hash].js',
           chunkFileNames: 'builder-[hash].js',
-          assetFileNames: 'main[extname]',
+          // Each font weight needs a stable, cache-safe identity across builds.
+          assetFileNames: (asset) => /\.(ttf|woff2?)$/.test(asset.names[0] ?? '')
+            ? 'fonts/[name]-[hash][extname]' : /\.css$/.test(asset.names[0] ?? '') ? 'main.css' : 'assets/[name]-[hash][extname]',
         },
         // **A name the shim does not export is a build failure, not a warning.**
         // `wordpressGlobals()` spells @wordpress/i18n's surface by hand, so the

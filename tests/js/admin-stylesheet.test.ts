@@ -404,7 +404,7 @@ describe('the type scale', () => {
    * lowered — ADR 0038 sets contrast ratios, pointer targets and viewports, and
    * has never set a minimum font size.
    */
-  const ROLES = ['meta', 'label', 'micro', 'note', 'body', 'heading', 'title', 'figure'];
+  const ROLES = ['meta', 'label', 'micro', 'note', 'body', 'heading', 'title', 'figure', 'display', 'brand', 'item', 'result', 'section', 'metric'];
 
   /** Declarations only — a comment naming a size is prose about one. */
   const DECLARATIONS = CSS.replace(/\/\*[\s\S]*?\*\//g, '');
@@ -421,7 +421,7 @@ describe('the type scale', () => {
    * (ADR 0042 rule 6). What this test is about is which ROLE was spelled, and
    * the flag says nothing about that.
    */
-  it('states every font-size as one of the eight roles, or as inherit', () => {
+  it('states every font-size as a shared role, or as inherit', () => {
     const sizes = [...DECLARATIONS.matchAll(/font-size:\s*([^;}]+)/g)].map(([, value]) =>
       value.trim(),
     );

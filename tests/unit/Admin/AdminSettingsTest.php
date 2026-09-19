@@ -13,7 +13,7 @@ final class AdminSettingsTest extends TestCase
 {
     protected function tearDown(): void
     {
-        unset($GLOBALS['wconvertTestTimezoneString']);
+        unset($GLOBALS['wconvertTestTimezoneString'], $GLOBALS['wconvertTestSiteName']);
     }
 
     /** @return iterable<string, array{string}> */
@@ -36,5 +36,10 @@ final class AdminSettingsTest extends TestCase
         $this->assertIsString($json);
         $settings = json_decode($json, true, 512, JSON_THROW_ON_ERROR);
         $this->assertSame($zone, $settings['timezone']);
+    }
+    public function testWorkspaceIdentityUsesTheDecodedWordPressSiteTitle(): void
+    {
+        $GLOBALS['wconvertTestSiteName'] = 'A &amp; B';
+        $this->assertSame('A & B', AdminMenu::settings()['siteName']);
     }
 }

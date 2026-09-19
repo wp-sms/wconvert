@@ -27,6 +27,7 @@ import { formatCount } from './format';
 import { families, rangeLabel, reportCSV } from './reporting';
 import { CampaignTable, Change, Experiment, GoalDetail } from './ReportDetails';
 import './analytics.css';
+import { InfoTip } from '../shell/InfoTip';
 import {
   MonthlyTargets,
   useMonthlyTargets,
@@ -467,17 +468,14 @@ function DateScope({
       <div>
         <div className="wa-date-caption">
           {__('Reporting period', 'wconvert')}
-          <details className="wa-date-help">
-            <summary aria-label={__('About reporting dates', 'wconvert')}>
-              i
-            </summary>
+          <InfoTip label={__('About reporting dates', 'wconvert')}>
             <p>
               {__(
                 'Today is excluded because it is still in progress. Comparisons use the same number of complete days immediately before your selected period.',
                 'wconvert',
               )}
             </p>
-          </details>
+          </InfoTip>
         </div>
         <strong>
           {payload.days === 0

@@ -654,10 +654,8 @@ function Configured({
       */}
       {error !== null && <RegionError message={error} />}
 
-      <div className="wconvert-route-heading">
-      <span className="wconvert-route-icon"><TypeIcon aria-hidden="true" /></span>
-      <div className="wconvert-route-heading__body">
       <RegionHeader
+        icon={<TypeIcon />}
         title={destination.label}
         /*
           **`locked` and `unavailable` are two sentences, not one.** They were
@@ -706,9 +704,6 @@ function Configured({
           )
         }
       />
-
-      </div>
-      </div>
       {reporting && (
         <RegionBody className="flex flex-col gap-3">
           {failing ? (
@@ -844,13 +839,12 @@ function Configured({
         and whose schema therefore arrives empty.
       */}
       <div hidden={mode !== 'settings' || !settingsOpen} className="wconvert-route-settings" id={`wconvert-settings-${destination.id}`}>
-        <DestinationUsageNotice usage={destination.usage} />
+      <RegionBody className="flex flex-col gap-5 p-5">
+        <div id={`wconvert-shared-${destination.id}`}>
+          <DestinationUsageNotice usage={destination.usage} />
+        </div>
         {settingsProblems(type?.requirements, fromDraft(schema, draft), schema).map((problem) =>
           <p key={problem} className="m-0 text-note text-warning">{problem}</p>)}
-      <RegionBody className="flex flex-col gap-4 border-t border-border">
-        <Description id={`wconvert-shared-${destination.id}`}>
-          {__('This destination is shared across the site. Saving changes affects every Campaign using it, including published Campaigns.', 'wconvert')}
-        </Description>
         <div className="flex max-w-xl flex-col gap-1.5">
           <Label htmlFor={`wconvert-${destination.id}-label`}>{__('Name', 'wconvert')}</Label>
           <Input
@@ -1144,7 +1138,7 @@ function Types({
  */
 const TEST_RENDERING: Record<TestReport['outcome'], { className: string; icon: LucideIcon }> = {
   success: { className: 'border-success/30 bg-success/5 text-success', icon: CircleCheck },
-  skipped: { className: 'border-border bg-muted/40 text-muted-foreground', icon: Info },
+  skipped: { className: 'border-border bg-surface text-muted-foreground', icon: Info },
   failed: { className: 'border-destructive/30 bg-destructive/5 text-destructive', icon: CircleAlert },
 };
 

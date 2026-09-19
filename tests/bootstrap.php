@@ -1646,3 +1646,14 @@ if (!function_exists('wp_upload_dir')) {
         return ['basedir' => sys_get_temp_dir() . '/wconvert-unit-no-installed-packs', 'error' => false];
     }
 }
+
+/** WordPress site metadata used by the shared admin frame. */
+function get_bloginfo(string $show = '', string $filter = 'raw'): string
+{
+    return $show === 'name' ? ($GLOBALS['wconvertTestSiteName'] ?? 'Example site') : '';
+}
+
+function wp_specialchars_decode(string $text, int $quote_style = ENT_NOQUOTES): string
+{
+    return html_entity_decode($text, $quote_style, 'UTF-8');
+}

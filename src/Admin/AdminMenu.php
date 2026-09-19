@@ -251,6 +251,7 @@ final class AdminMenu
             // root — which is the same `/blog/pricing` confusion half the real
             // Targeting tickets are about.
             'homeUrl' => (string) home_url('/'),
+            'siteName' => wp_specialchars_decode((string) get_bloginfo('name'), ENT_QUOTES),
             'inspectParam' => InspectorEnqueue::PARAM,
             'timezone' => wp_timezone_string(),
             // **What one design may cost, so the builder can draw a meter.**

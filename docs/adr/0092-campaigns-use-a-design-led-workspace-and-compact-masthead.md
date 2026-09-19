@@ -1,5 +1,9 @@
 # Campaigns use a design-led workspace and compact masthead
 
+**Visual frame superseded by [ADR 0097](0097-harbor-is-the-shared-admin-frame.md).**
+The campaign workflows and data contracts below remain in force. The 56px white
+masthead and earlier visual measurements are historical.
+
 The approved Campaigns prototype supplies the management hierarchy and interactions.
 **Amended after guideline review:** production uses the shared design system;
 prototype measurements do not establish exceptions to it. The
