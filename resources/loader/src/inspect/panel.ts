@@ -1,6 +1,6 @@
 import { GATES } from './report';
 import type { Funnel, Labels, Row, TargetingRow } from './report';
-import type { RuleReport } from './explain';
+import type { EntryReport, RuleReport } from './explain';
 
 /**
  * The panel: the only thing in the inspector that touches the screen.
@@ -183,6 +183,16 @@ function rowOf(row: Row, labels: Labels): HTMLElement {
   summary.append(name, verdict);
   details.append(summary, gatesOf(row, labels));
 
+  const placement = row.browser === null ? null : placementOf(row.browser);
+  if (placement !== null) {
+    const position = el('p', 'muted');
+    position.textContent = text(labels, 'placement', 'position').replace(
+      '%s',
+      text(labels, 'placement', placement),
+    );
+    details.append(position);
+  }
+
   if (row.optin.targeting !== null) {
     details.append(targetingOf(row, labels));
   }
@@ -199,6 +209,22 @@ function rowOf(row: Row, labels: Labels): HTMLElement {
   );
 
   return details;
+}
+
+function placementOf(entry: EntryReport): string | null {
+  if (entry.displayType === 'floating_bar') {
+    return entry.placement === 'block_start' ? 'block_start' : 'block_end';
+  }
+  if (entry.displayType === 'slide_in') {
+    return [
+      'block_start_inline_start',
+      'block_start_inline_end',
+      'block_end_inline_start',
+    ].includes(entry.placement ?? '')
+      ? entry.placement ?? null
+      : 'block_end_inline_end';
+  }
+  return null;
 }
 
 /**

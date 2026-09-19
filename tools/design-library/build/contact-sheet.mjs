@@ -76,19 +76,19 @@ for (const viewport of VIEWPORTS) {
         sheets: [
           {
             name: `contact-sheet-${viewport.width}-${direction}`,
-            title: `WConvert designs — ${viewport.width}px — ${direction.toUpperCase()} — ${designs.length} designs, ${designs.reduce((total, design) => total + design.steps, 0)} screens`,
+            title: `WConvert designs — ${viewport.width}px — ${direction.toUpperCase()} — ${designs.length} designs, ${designs.reduce((total, design) => total + design.steps * design.placements.length, 0)} screens`,
             /*
              * One cell per STEP, not per design. A step is a screen, and a
              * cell holds one screen — stacking both into one card clipped
              * every popup taller than half a cell, which read as two designs
              * colliding rather than as a card that was too short.
              */
-            cells: designs.flatMap((design) =>
+            cells: designs.flatMap((design) => design.placements.flatMap((placement) =>
               Array.from({ length: design.steps }, (unused, step) => ({
-                label: `${design.name}${design.tier === 'free' ? '' : ' ⭑'} · ${design.steps === 1 ? design.display_type : `step ${step + 1}`}`,
-                file: `design-${design.id}-${step}${direction === 'rtl' ? '-rtl' : ''}.html`,
+                label: `${design.name}${design.tier === 'free' ? '' : ' ⭑'} · ${placement ?? design.display_type}${design.steps === 1 ? '' : ` · step ${step + 1}`}`,
+                file: `design-${design.id}-${step}${placement ? `-${placement}` : ''}${direction === 'rtl' ? '-rtl' : ''}.html`,
               })),
-            ),
+            )),
           },
         ],
       })),

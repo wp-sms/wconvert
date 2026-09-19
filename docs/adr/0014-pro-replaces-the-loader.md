@@ -129,6 +129,14 @@ ever sees that queue's output.*
   [ADR 0004](0004-the-loader-survives-optimizers-not-just-caches.md) catalogued,
   where an optimiser reordered scripts and killed every popup silently with
   nothing in any log.*
+
+  ***Amended again by [ADR 0095](0095-overlay-placement-is-logical-container-configuration.md):
+  the ceiling is 12,800 B.*** *The complete logical-placement matrix, exact RTL
+  safe-area mapping, and reversible top-bar flow reservation put the largest
+  tier at 12,567 B. Removing the 279 B above the former ceiling meant weakening
+  that behavior or unrelated Elite cart validation, so the hard gate moved by
+  512 B instead. It remains 872 B below Icegram Lite, the smallest measured
+  competitor runtime above; the gate is still per build, hard and flagless.*
 - **No public `registerRule` seam**, therefore no partial-registration failure mode
   and no documented extension point that immediately becomes a compatibility
   surface.

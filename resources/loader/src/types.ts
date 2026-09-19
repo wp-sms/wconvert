@@ -97,6 +97,8 @@ export interface Frequency {
 export interface PayloadEntry {
   readonly id: string;
   readonly display_type?: string;
+  /** Non-default logical edge or corner for a non-modal overlay. */
+  readonly placement?: string;
   /**
    * The Optin's COPY of its Template — tree and tokens, snapshotted when the
    * Template was picked. The renderer and the vocabulary stay a live

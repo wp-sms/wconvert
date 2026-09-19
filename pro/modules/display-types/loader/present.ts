@@ -1,6 +1,6 @@
 import type { OptinControls, PayloadEntry, Presenter } from '@loader/types';
 import { captureInto, templatePresenter } from '@loader/present';
-import { POPOVER_TYPES, mountPopover } from './popover';
+import { mountPopover } from './popover';
 
 /**
  * Pro's presenter: the two Display Types free has no container for, and
@@ -40,10 +40,7 @@ import { POPOVER_TYPES, mountPopover } from './popover';
  */
 export const proPresenter: Presenter = {
   show(entry: PayloadEntry, controls: OptinControls): void {
-    // Asked of the container's own set rather than by comparing two strings
-    // here. A second spelling of "which types are popovers" is a second thing
-    // to keep in step with `PLACEMENT`, and the one that drifts is this one.
-    if (!POPOVER_TYPES.has(entry.display_type ?? '')) {
+    if (entry.display_type !== 'floating_bar' && entry.display_type !== 'slide_in') {
       templatePresenter.show(entry, controls);
 
       return;
@@ -61,6 +58,7 @@ export const proPresenter: Presenter = {
 
     const mounted = mountPopover({
       displayType: entry.display_type,
+      placement: entry.placement,
       template,
       // As free's presenter does, and it is one line rather than a shared
       // helper for the same reason the other four are: this branch is as narrow

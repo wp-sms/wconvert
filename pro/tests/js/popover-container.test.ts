@@ -39,10 +39,21 @@ const TEMPLATE: Template = {
 afterEach(() => {
   document.body.innerHTML = '';
   document.getElementById(DOCUMENT_STYLE_ID)?.remove();
+  document.documentElement.style.removeProperty('--wconvert-top-bar-offset');
+  vi.unstubAllGlobals();
   vi.restoreAllMocks();
 });
 
 const popover = () => document.querySelector<HTMLElement>('[popover]');
+
+it('mounts nothing for a Display Type this container does not own', () => {
+  const mounted = mountPopover({ displayType: 'popup', template: TEMPLATE });
+
+  mounted.show();
+
+  expect(mounted.mounted).toBe(false);
+  expect(popover()).toBeNull();
+});
 
 /**
  * =============================================================================
@@ -494,15 +505,61 @@ describe('the box', () => {
   it('pins the bar to the block-end edge, free to take the whole inline axis', () => {
     const box = boxOf('floating_bar');
 
-    expect(box.style.getPropertyValue('inset-inline-start')).toBe('0');
-    expect(box.style.getPropertyValue('inset-inline-end')).toBe('0');
+    expect(box.style.getPropertyValue('inset-inline')).toBe('0');
+  });
+
+  it('pins a top bar to the safe block-start edge and sends it in from above', () => {
+    mountPopover({
+      displayType: 'floating_bar',
+      placement: 'block_start',
+      template: TEMPLATE,
+    }).show();
+
+    const box = popover() as HTMLElement;
+
+    expect(box.style.getPropertyValue('inset-block-start')).toBe('max(0px, env(safe-area-inset-top))');
+    expect(box.style.getPropertyValue('inset-block-end')).toBe('');
+    expect(box.style.getPropertyValue('--wcv-f')).toBe('0 -100%');
   });
 
   it('gives the slide-in a corner, bounded to a corner’s worth of the axis', () => {
     const box = boxOf('slide_in');
 
-    expect(box.style.getPropertyValue('inset-inline-start')).toBe('auto');
-    expect(box.style.getPropertyValue('inset-inline-end')).toBe('1rem');
+    expect(box.style.getPropertyValue('inset-inline-start')).toBe('');
+    expect(box.style.getPropertyValue('inset-inline-end')).toBe(
+      'max(1rem, var(--wcv-ie, 0px))',
+    );
+  });
+
+  it.each([
+    ['block_start_inline_start', 'max(1rem, env(safe-area-inset-top))', '', 'max(1rem, var(--wcv-is, 0px))', '', '0 -1rem'],
+    ['block_start_inline_end', 'max(1rem, env(safe-area-inset-top))', '', '', 'max(1rem, var(--wcv-ie, 0px))', '0 -1rem'],
+    ['block_end_inline_start', '', 'max(1rem, env(safe-area-inset-bottom))', 'max(1rem, var(--wcv-is, 0px))', '', '0 1rem'],
+    ['block_end_inline_end', '', 'max(1rem, env(safe-area-inset-bottom))', '', 'max(1rem, var(--wcv-ie, 0px))', '0 1rem'],
+  ])(
+    'places a slide-in at %s using logical insets',
+    (placement, blockStart, blockEnd, inlineStart, inlineEnd, from) => {
+      mountPopover({ displayType: 'slide_in', placement, template: TEMPLATE }).show();
+
+      const box = popover() as HTMLElement;
+
+      expect(box.style.getPropertyValue('inset-block-start')).toBe(blockStart);
+      expect(box.style.getPropertyValue('inset-block-end')).toBe(blockEnd);
+      expect(box.style.getPropertyValue('inset-inline-start')).toBe(inlineStart);
+      expect(box.style.getPropertyValue('inset-inline-end')).toBe(inlineEnd);
+      expect(box.style.getPropertyValue('--wcv-f')).toBe(from);
+    },
+  );
+
+  it('falls back to the current bottom-end corner for an unknown placement', () => {
+    mountPopover({ displayType: 'slide_in', placement: 'centre', template: TEMPLATE }).show();
+
+    const box = popover() as HTMLElement;
+
+    expect(box.style.getPropertyValue('inset-block-end')).toBe('max(1rem, env(safe-area-inset-bottom))');
+    expect(box.style.getPropertyValue('inset-inline-end')).toBe(
+      'max(1rem, var(--wcv-ie, 0px))',
+    );
   });
 
   /**
@@ -549,8 +606,8 @@ describe('the box', () => {
    * from the box, so the token would decide nothing (233px against 352px).
    */
   it.each([
-    ['floating_bar', 'min(100%, var(--wcv-box-width, 28rem))'],
-    ['slide_in', 'min(100% - 2rem, 26rem, var(--wcv-box-width, 28rem))'],
+    ['floating_bar', 'min(100%, var(--wcv-w, 28rem))'],
+    ['slide_in', 'min(100% - 2rem, 26rem, var(--wcv-w, 28rem))'],
   ])('sizes the %s box by the same question its design asks', (displayType, expected) => {
     expect(boxOf(displayType).style.getPropertyValue('inline-size')).toBe(expected);
   });
@@ -575,7 +632,7 @@ describe('the box', () => {
         template: { ...TEMPLATE, tokens: { ...TEMPLATE.tokens, width } },
       }).show();
 
-      expect(popover()?.style.getPropertyValue('--wcv-box-width')).toBe(width);
+      expect(popover()?.style.getPropertyValue('--wcv-w')).toBe(width);
     },
   );
 
@@ -606,8 +663,8 @@ describe('the box', () => {
   it('falls back to the width the design itself would have used', () => {
     const box = boxOf('slide_in');
 
-    expect(box.style.getPropertyValue('--wcv-box-width')).toBe('');
-    expect(box.style.getPropertyValue('inline-size')).toContain(`var(--wcv-box-width, ${A_DESIGNS_OWN_WIDTH})`);
+    expect(box.style.getPropertyValue('--wcv-w')).toBe('');
+    expect(box.style.getPropertyValue('inline-size')).toContain(`var(--wcv-w, ${A_DESIGNS_OWN_WIDTH})`);
     expect(SHADOW_CSS).toContain(`min(var(--wc-width,${A_DESIGNS_OWN_WIDTH}),100%)`);
   });
 
@@ -625,5 +682,70 @@ describe('the box', () => {
     for (const physical of ['left:', 'right:', 'top:', 'bottom:']) {
       expect(style).not.toContain(physical);
     }
+  });
+});
+
+describe('a top bar page reservation', () => {
+  it('reserves its measured block size, follows changes, and restores the page on close', () => {
+    let bottom = 56;
+    let changed: ResizeObserverCallback | undefined;
+    const disconnect = vi.fn();
+
+    vi.spyOn(HTMLElement.prototype, 'getBoundingClientRect').mockImplementation(function () {
+      return {
+        x: 0,
+        y: 0,
+        top: 0,
+        right: 0,
+        bottom,
+        left: 0,
+        width: 0,
+        height: bottom,
+        toJSON: () => ({}),
+      };
+    });
+    vi.stubGlobal(
+      'ResizeObserver',
+      class {
+        constructor(callback: ResizeObserverCallback) {
+          changed = callback;
+        }
+        observe() {}
+        disconnect = disconnect;
+      },
+    );
+    document.documentElement.style.setProperty('--wconvert-top-bar-offset', '12px', 'important');
+
+    const mounted = mountPopover({
+      displayType: 'floating_bar',
+      placement: 'block_start',
+      template: TEMPLATE,
+    });
+
+    mounted.show();
+
+    const reservation = document.querySelector<HTMLElement>('[data-wconvert-top-bar-reservation]');
+
+    expect(reservation?.style.getPropertyValue('block-size')).toBe('56px');
+    expect(document.documentElement.style.getPropertyValue('--wconvert-top-bar-offset')).toBe('56px');
+
+    bottom = 84;
+    changed?.([], {} as ResizeObserver);
+
+    expect(reservation?.style.getPropertyValue('block-size')).toBe('84px');
+    expect(document.documentElement.style.getPropertyValue('--wconvert-top-bar-offset')).toBe('84px');
+
+    mounted.close();
+
+    expect(document.querySelector('[data-wconvert-top-bar-reservation]')).toBeNull();
+    expect(document.documentElement.style.getPropertyValue('--wconvert-top-bar-offset')).toBe('12px');
+    expect(disconnect).toHaveBeenCalledOnce();
+  });
+
+  it('does not reserve space for the default bottom bar', () => {
+    mountPopover({ displayType: 'floating_bar', template: TEMPLATE }).show();
+
+    expect(document.querySelector('[data-wconvert-top-bar-reservation]')).toBeNull();
+    expect(document.documentElement.style.getPropertyValue('--wconvert-top-bar-offset')).toBe('');
   });
 });

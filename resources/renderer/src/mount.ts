@@ -77,6 +77,8 @@ const DIALOG_ARMOUR: Readonly<Record<string, string>> = {
 export interface MountOptions {
   /** `popup` or `inline`. Anything else mounts nothing rather than guessing. */
   readonly displayType?: string;
+  /** Non-default viewport edge or corner for Pro's non-modal containers. */
+  readonly placement?: string;
   readonly template: Template;
   /**
    * When this Optin's window shuts, as an absolute instant in milliseconds —

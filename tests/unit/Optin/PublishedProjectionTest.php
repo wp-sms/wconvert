@@ -139,7 +139,8 @@ final class PublishedProjectionTest extends TestCase
             'targeting' => ['include' => [['type' => 'url', 'value' => '/*']]],
             'rules' => [['type' => 'page_load']],
             'template' => ['tree' => ['steps' => []], 'tokens' => []],
-            'display_type' => 'popup',
+            'display_type' => 'floating_bar',
+            'placement' => 'block_start',
             // The shape `resources/loader/src/types.ts` declares and
             // `frequency.ts` reads — which this fixture did NOT carry until
             // the allowance gained an author. It said
@@ -184,7 +185,7 @@ final class PublishedProjectionTest extends TestCase
         $payload = self::build([self::row(['published_config' => (string) json_encode($config)])])[0]['payload'];
 
         $this->assertSame(
-            ['template', 'display_type', 'frequency', 'priority', 'triggers', 'conditions'],
+            ['template', 'display_type', 'placement', 'frequency', 'priority', 'triggers', 'conditions'],
             array_keys($payload),
             'a key reaching the browser is a decision; add it here and say why it renders'
         );

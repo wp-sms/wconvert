@@ -4,11 +4,14 @@ import { Check, Copy, ExternalLink } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { adminSettings } from '../settings';
+import { useDirection } from '../hooks/useDirection';
+import { physicalPlacementLabel } from './PlacementControl';
 
 export interface PlacementGuidanceProps {
   readonly optinId: string;
   readonly optinName?: string;
   readonly displayType: string;
+  readonly placement?: unknown;
   /** A published version exists; this does not assert that it can show on any page. */
   readonly published: boolean;
 }
@@ -32,9 +35,11 @@ export function siteCheckUrl(homeUrl?: string, inspectParam?: string): string | 
 }
 
 /** Placement instructions shared by draft review and the result of publishing. */
-export function PlacementGuidance({ optinId, optinName, displayType, published }: PlacementGuidanceProps) {
+export function PlacementGuidance({ optinId, optinName, displayType, placement, published }: PlacementGuidanceProps) {
   const id = useId();
+  const direction = useDirection();
   const inline = displayType === 'inline';
+  const position = physicalPlacementLabel(displayType, placement, direction);
   const settings = adminSettings();
   const siteCheck = published ? siteCheckUrl(settings?.homeUrl, settings?.inspectParam) : null;
 
@@ -57,9 +62,12 @@ export function PlacementGuidance({ optinId, optinName, displayType, published }
           </p>
         </>
       ) : (
-        <p>{published
-          ? __('Your published version can appear on pages that match its display rules. Its schedule, triggers and visitor settings still decide when it shows.', 'wconvert')
-          : __('After publishing, this Campaign can appear on pages that match its display rules. Its schedule, triggers and visitor settings decide when it shows.', 'wconvert')}</p>
+        <>
+          {position !== null && <p>{sprintf(__('Position: %s.', 'wconvert'), position)}</p>}
+          <p>{published
+            ? __('Your published version can appear on pages that match its display rules. Its schedule, triggers and visitor settings still decide when it shows.', 'wconvert')
+            : __('After publishing, this Campaign can appear on pages that match its display rules. Its schedule, triggers and visitor settings decide when it shows.', 'wconvert')}</p>
+        </>
       )}
       {siteCheck !== null && (
         <div className="wconvert-placement__check">

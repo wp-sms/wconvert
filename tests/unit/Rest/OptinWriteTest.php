@@ -207,6 +207,29 @@ final class OptinWriteTest extends TestCase
         return $data;
     }
 
+    public function testPlacementIsNormalizedAgainstTheDisplayTypeOnWrite(): void
+    {
+        $topBar = $this->create(Goal::GrowEmailList, [
+            'display_type' => 'floating_bar',
+            'placement' => 'block_start',
+        ]);
+        $bottomBar = $this->create(Goal::GrowEmailList, [
+            'display_type' => 'floating_bar',
+            'placement' => 'block_end',
+        ]);
+        $wrongShape = $this->create(Goal::GrowEmailList, [
+            'display_type' => 'slide_in',
+            'placement' => 'block_start',
+        ]);
+
+        self::assertIsArray($topBar);
+        self::assertSame('block_start', $topBar['config']['placement']);
+        self::assertIsArray($bottomBar);
+        self::assertArrayNotHasKey('placement', $bottomBar['config']);
+        self::assertIsArray($wrongShape);
+        self::assertArrayNotHasKey('placement', $wrongShape['config']);
+    }
+
     /** @param mixed $options
      * @return array<string, mixed>
      */
