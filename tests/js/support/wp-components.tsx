@@ -7,7 +7,7 @@
  * labelled `<select>` (a `combobox`), `Notice` is an `alert`, `Placeholder` is
  * a region with a heading.
  */
-import type { ReactNode } from 'react';
+import { forwardRef, type ReactNode } from 'react';
 
 export function Placeholder({
   label,
@@ -60,9 +60,11 @@ export function SelectControl({
   );
 }
 
-export function Button({ children, onClick, disabled, 'aria-label': label }: { children?: ReactNode; onClick(): void; disabled?: boolean; 'aria-label'?: string }) {
-  return <button aria-label={label} disabled={disabled} onClick={onClick}>{children}</button>;
-}
+export const Button = forwardRef<HTMLButtonElement, { children?: ReactNode; onClick(): void; disabled?: boolean; 'aria-label'?: string }>(function Button({ children, onClick, disabled, 'aria-label': label }, ref) {
+  return <button ref={ref} aria-label={label} disabled={disabled} onClick={onClick}>{children}</button>;
+});
 export function ComboboxControl({ label, value, options, onChange }: { label: string; value: string | null; options: {label: string; value: string}[]; onChange(value: string): void }) {
-  return <SelectControl label={label} value={value ?? ''} options={[{label: 'Choose', value: ''}, ...options]} onChange={onChange} />;
+  return <label>{label}<select role="combobox" value={value ?? ''} onChange={event => onChange(event.target.value)}>
+    {[{ label: 'Choose', value: '' }, ...options].map(option => <option key={option.value} value={option.value}>{option.label}</option>)}
+  </select></label>;
 }

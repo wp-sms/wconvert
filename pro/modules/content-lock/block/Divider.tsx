@@ -3,6 +3,7 @@ import { BlockControls, InspectorControls, useBlockProps } from '@wordpress/bloc
 import { Button, Notice, PanelBody, ToolbarButton } from '@wordpress/components';
 import { useSelect, useDispatch } from '@wordpress/data';
 import { __, sprintf, _n } from '@wordpress/i18n';
+import { useState } from '@wordpress/element';
 import { CampaignPickerFields, CampaignStatus, useCampaignChoices } from './CampaignPicker';
 import { ALLOWED_BLOCKS, DIVIDER_BLOCK, LOCK_BLOCK, lockCount, supportedContent } from './selection';
 
@@ -16,7 +17,9 @@ registerBlockType(DIVIDER_BLOCK, {
     }, [clientId]);
     const { removeBlocks, selectBlock } = useDispatch('core/block-editor');
     const { enableComplementaryArea } = useDispatch('core/interface');
-    const openSettings = () => { selectBlock(clientId); enableComplementaryArea('core', 'edit-post/block'); };
+    const [focusRequested, setFocusRequested] = useState(false);
+    const [settingsOpen, setSettingsOpen] = useState(true);
+    const openSettings = () => { setSettingsOpen(true); setFocusRequested(true); selectBlock(clientId); enableComplementaryArea('core', 'edit-post/block'); };
     const state = useCampaignChoices();
     const value = attributes.optinId ?? '';
     const selected = state.data?.campaigns.find(item => item.id === value);
@@ -41,9 +44,9 @@ registerBlockType(DIVIDER_BLOCK, {
               : /<(?:form|iframe|script|video|audio|object|embed)\b|\[\/?[a-zA-Z]/i.test(html)
                 ? __('Content below includes an embed or shortcode. Move it above the divider. The remainder stays public.', 'wconvert')
               : null;
-    const picker = <CampaignPickerFields value={value} onChange={optinId => setAttributes({ optinId })} state={state} />;
+    const picker = <CampaignPickerFields value={value} onChange={optinId => setAttributes({ optinId })} state={state} focusRequested={focusRequested} onFocusHandled={() => setFocusRequested(false)} />;
     return <div {...useBlockProps({ className: 'wconvert-lock-divider' })}>
-      <InspectorControls><PanelBody title={__('Lock from here', 'wconvert')} initialOpen>
+      <InspectorControls><PanelBody title={__('Lock from here', 'wconvert')} opened={settingsOpen} onToggle={setSettingsOpen}>
         {picker}
         <p className="wconvert-lock-settings__hint">{__('Locks to the end of this article, including new content.', 'wconvert')}</p>
         <details className="wconvert-lock-settings__help"><summary>{__('Setup tips', 'wconvert')}</summary>

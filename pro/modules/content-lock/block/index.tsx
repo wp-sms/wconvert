@@ -3,6 +3,7 @@ import { BlockControls, InspectorControls, InnerBlocks, useBlockProps } from '@w
 import { Button, Notice, PanelBody, ToolbarButton } from '@wordpress/components';
 import { select, useSelect, useDispatch } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
+import { useState } from '@wordpress/element';
 import { CampaignPickerFields, CampaignStatus, useCampaignChoices } from './CampaignPicker';
 import './editor.css';
 import './Divider';
@@ -26,14 +27,16 @@ registerBlockType(LOCK_BLOCK, {
     }, [clientId]);
     const { replaceBlocks, selectBlock } = useDispatch('core/block-editor');
     const { enableComplementaryArea } = useDispatch('core/interface');
-    const openSettings = () => { selectBlock(clientId); enableComplementaryArea('core', 'edit-post/block'); };
+    const [focusRequested, setFocusRequested] = useState(false);
+    const [settingsOpen, setSettingsOpen] = useState(true);
+    const openSettings = () => { setSettingsOpen(true); setFocusRequested(true); selectBlock(clientId); enableComplementaryArea('core', 'edit-post/block'); };
     const state = useCampaignChoices();
     const value = attributes.optinId ?? '';
     const selected = state.data?.campaigns.find(item => item.id === value);
-    const picker = <CampaignPickerFields value={value} onChange={optinId => setAttributes({ optinId })} state={state} />;
+    const picker = <CampaignPickerFields value={value} onChange={optinId => setAttributes({ optinId })} state={state} focusRequested={focusRequested} onFocusHandled={() => setFocusRequested(false)} />;
     return <div {...useBlockProps({ className: 'wconvert-lock-editor' })}>
       <InspectorControls>
-        <PanelBody title={__('Content lock', 'wconvert')} initialOpen>
+        <PanelBody title={__('Content lock', 'wconvert')} opened={settingsOpen} onToggle={setSettingsOpen}>
           {picker}
           <p>{__('Only content inside this section is locked.', 'wconvert')}</p>
         </PanelBody>

@@ -7,11 +7,12 @@ implemented and verified; retain a PR link when closing them.
 
 ## Next candidates
 
-- [ ] **Finish content-lock documentation and real-use validation.** Follow the
-  [remaining-work plan](plans/content-lock-followups.md): short setup guide,
-  observed author workflows, manual accessibility/device checks and the supported
-  WordPress version decision. Keep optional end markers, automatic locking and
-  additional presentation modes parked until evidence justifies them.
+- [ ] **Finish content-lock human validation and the WordPress support decision.**
+  The [setup guide](guides/content-lock.md) is complete. Follow the
+  [remaining-work plan](plans/content-lock-followups.md) for observed author
+  workflows, actual screen-reader/phone checks and the supported WordPress floor.
+  Keep optional end markers, automatic locking and additional presentation modes
+  parked until evidence justifies them.
 
 - [ ] **Resolve shared colors in readability checks.** Follow color references
   through the selected element's desktop/mobile styles before measuring contrast.

@@ -1041,6 +1041,9 @@ neither release cycle constrains the other
 
 ## Content lock (Pro)
 
+See the [Content lock setup guide](docs/guides/content-lock.md) for the two block
+workflows, screenshots, supported content and troubleshooting.
+
 Use Content lock for a public bonus, checklist, or article section revealed after
 form submission. In Display rules → Placement choose **Content lock**, use a
 complete two-screen inline submission design, then publish. In your WordPress
