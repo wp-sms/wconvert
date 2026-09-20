@@ -121,3 +121,37 @@ test('real editor loads Pro controls, simulates reopening, and saves draft setti
   await text.scrollIntoViewIfNeeded();
   await page.screenshot({ path: info.outputPath('reopen-editor.png'), fullPage: true });
 });
+
+test('a real capture completes while minimized without expanding or submitting twice', async ({ page }) => {
+  await open(page, 'capture');
+  await expect(page.locator('dialog')).toBeVisible();
+  const endpoint = await page.locator('#wconvert-payload').getAttribute('data-capture');
+  let release;
+  const held = new Promise(resolve => { release = resolve; });
+  let requests = 0;
+  await page.route(endpoint, async route => { requests++; await held; await route.continue(); });
+  const sent = page.waitForRequest(endpoint);
+  await page.evaluate(() => {
+    const form = window.testShadows.flatMap(root => [...root.querySelectorAll('form')])[0];
+    form.querySelector('input[type=email]').value = 'recovery@example.com';
+    form.requestSubmit();
+  });
+  await sent;
+  await page.keyboard.press('Escape');
+  await expect(page.locator('[data-wconvert-reopen]')).toBeVisible();
+  await page.evaluate(() => window.testShadows.find(root => root.host.hasAttribute('data-wconvert-reopen')).querySelector('button').click());
+  await page.evaluate(() => window.testShadows.flatMap(root => [...root.querySelectorAll('form')])[0].requestSubmit());
+  await page.keyboard.press('Escape');
+  const captured = page.waitForResponse(endpoint);
+  release();
+  expect((await captured).status()).toBe(201);
+  await expect.poll(() => page.evaluate(() => window.testShadows.find(root => root.host.hasAttribute('data-wconvert-reopen')).querySelector('button').textContent)).toBe('Submission received — View details');
+  await expect(page.locator('dialog[open]')).toHaveCount(0);
+  await page.evaluate(() => window.testShadows.find(root => root.host.hasAttribute('data-wconvert-reopen')).querySelector('button').click());
+  await expect(page.locator('dialog')).toBeVisible();
+  expect(await page.evaluate(() => window.testShadows.some(root => root.textContent.includes('Submission received')))).toBe(true);
+  expect(requests).toBe(1);
+  await page.keyboard.press('Escape');
+  await page.reload();
+  await expect(page.locator('[data-wconvert-reopen],dialog[open]')).toHaveCount(0);
+});
