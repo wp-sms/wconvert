@@ -1,59 +1,30 @@
-import { useEffect, useId, useRef, useState, type ReactNode } from 'react';
+import { useId } from 'react';
 import { __ } from '@wordpress/i18n';
 import type { ReopenProps } from '@/reopenControls';
 import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { physicalPlacementLabel } from '@/builder/PlacementControl';
 import { useDirection } from '@/hooks/useDirection';
-import { Preview } from '@/builder/Preview';
-import { reminder, type Teaser } from '../loader/reminder';
+import { InfoTip } from '@/shell/InfoTip';
+import { type Teaser } from '../loader/reminder';
 
 const corners = ['block_start_inline_start', 'block_start_inline_end', 'block_end_inline_start', 'block_end_inline_end'];
-
-/** A real desktop/mobile layout width, scaled to the settings panel. */
-function PreviewViewport({ mobile, children }: { mobile: boolean; children: ReactNode }) {
-  const outer = useRef<HTMLDivElement>(null);
-  const inner = useRef<HTMLDivElement>(null);
-  const [size, setSize] = useState({ available: 320, height: 256 });
-  const width = mobile ? 352 : 768;
-  useEffect(() => {
-    if (typeof ResizeObserver === 'undefined') return;
-    const observer = new ResizeObserver(() => {
-      if (outer.current && inner.current) setSize({ available: outer.current.clientWidth, height: inner.current.offsetHeight });
-    });
-    if (outer.current) observer.observe(outer.current);
-    if (inner.current) observer.observe(inner.current);
-    return () => observer.disconnect();
-  }, []);
-  const scale = Math.min(1, size.available / width);
-  return <div ref={outer} className="relative overflow-hidden" style={{ height: size.height * scale }}><div ref={inner} style={{ position: 'absolute', left: 0, top: 0, width, transform: `scale(${scale})`, transformOrigin: 'top left', direction: 'inherit' }}>{children}</div></div>;
-}
 
 export default function ReopenSettings({ value, template, onChange }: ReopenProps) {
   const id = useId();
   const direction = useDirection();
   const config = value && typeof value === 'object' && 'label' in value ? value as Teaser : null;
-  const [mode, setMode] = useState('reminder');
-  const [mobile, setMobile] = useState(false);
-  const container = useRef<HTMLDivElement>(null);
   const update = (changes: Partial<Teaser>) => onChange({ ...config, ...changes });
   const updateMobile = (changes: Partial<NonNullable<Teaser['mobile']>>) => update({ mobile: { ...config?.mobile, ...changes } });
-  useEffect(() => {
-    const parent = container.current;
-    if (!parent || !config || mode !== 'reminder') return;
-    const view = reminder(config, template.tokens, [__('Dismiss reminder', 'wconvert'), __('Submission received — View details', 'wconvert')]);
-    view.host.removeAttribute('popover');
-    const visible = view.layout(mobile);
-    view.host.style.setProperty('position', 'absolute', 'important');
-    view.button.addEventListener('click', () => setMode('campaign'));
-    view.close.addEventListener('click', () => setMode('closed'));
-    if (visible) parent.appendChild(view.host);
-    return () => view.host.remove();
-  }, [config, template, mode, mobile, direction]);
   const position = (value: string | undefined, change: (value: string) => void, name: string) => <label className="block">{name}<select className="w-full" value={value ?? 'block_end_inline_end'} onChange={event => change(event.target.value)}>{corners.map(corner => <option key={corner} value={corner}>{physicalPlacementLabel('slide_in', corner, direction)}</option>)}</select></label>;
   return <section className="space-y-3 border-t pt-4">
-    <label className="flex items-center gap-2"><input type="checkbox" checked={config !== null} onChange={event => onChange(event.target.checked ? { label: __('View offer', 'wconvert') } : null)} />{__('Reopen button', 'wconvert')}</label>
-    <p>{__('After visitors close this Campaign, show a small button so they can return to it. It follows eligible pages in this browser tab. Closing the button or completing the Campaign stops it for this session.', 'wconvert')}</p>
+    <div className="flex items-center gap-1">
+      <label className="wconvert-reopen-toggle"><input type="checkbox" checked={config !== null} onChange={event => onChange(event.target.checked ? { label: __('View offer', 'wconvert') } : null)} />{__('Reopen button', 'wconvert')}</label>
+      <InfoTip label={__('About reopen buttons', 'wconvert')}>
+        <p>{__('After visitors close this Campaign, a small button lets them return on eligible pages in the same tab. Closing the button or completing the Campaign removes it for the session.', 'wconvert')}</p>
+        <p>{__('Reopening respects targeting, schedules, consent and completion settings. Automatic view limits and dismissal settings do not block a visitor’s click.', 'wconvert')}</p>
+      </InfoTip>
+    </div>
     {config && <>
       <label htmlFor={`${id}-label`}>{__('Button text', 'wconvert')}</label>
       <Input id={`${id}-label`} value={config.label} onChange={event => update({ label: [...event.target.value].slice(0, 80).join('') })} aria-invalid={!config.label.trim()} />
@@ -69,10 +40,6 @@ export default function ReopenSettings({ value, template, onChange }: ReopenProp
         <label className="block">{__('Mobile distance from edges', 'wconvert')}<Input type="number" min={8} max={96} value={config.mobile?.gap ?? config.gap ?? 16} onChange={event => updateMobile({ gap: Math.max(8, Math.min(96, Number(event.target.value))) })} /></label>
         <Button variant="outline" onClick={() => update({ mobile: undefined })}>{__('Reset mobile overrides', 'wconvert')}</Button>
       </div></details>
-      <p>{__('Reopening respects targeting, schedules, consent and completion settings. Automatic view limits and dismissal settings do not block a visitor’s click. Check its position beside cookie notices, chat and sticky checkout controls.', 'wconvert')}</p>
-      <label className="block">{__('Preview', 'wconvert')}<select value={mode} onChange={event => setMode(event.target.value)}><option value="campaign">{__('Campaign', 'wconvert')}</option><option value="reminder">{__('Reopen button', 'wconvert')}</option><option value="success">{__('Success', 'wconvert')}</option><option value="closed">{__('Dismissed', 'wconvert')}</option></select></label>
-      <label className="flex items-center gap-2"><input type="checkbox" checked={mobile} onChange={event => setMobile(event.target.checked)} />{__('Mobile preview', 'wconvert')}</label>
-      <PreviewViewport mobile={mobile}>{mode === 'reminder' ? <div ref={container} className="relative h-64 rounded border bg-muted">{mobile && config.mobile?.visible === false && <p>{__('Hidden on mobile', 'wconvert')}</p>}</div> : mode === 'closed' ? <p>{__('Reminder dismissed for this preview.', 'wconvert')}</p> : <div><Preview template={template} interactive onAdvance={() => setMode('success')} step={mode === 'success' ? template.tree.steps.length - 1 : 0} /><Button variant="outline" onClick={() => setMode(mode === 'success' ? 'closed' : 'reminder')}>{__('Close preview', 'wconvert')}</Button></div>}</PreviewViewport>
     </>}
   </section>;
 }

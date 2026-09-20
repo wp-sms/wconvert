@@ -7,7 +7,21 @@ export interface ReopenProps {
   template: Template;
   onChange(value: unknown): void;
 }
-export const reopenControls: { component?: ComponentType<ReopenProps> } = {};
+export interface ReopenPreviewProps {
+  value: unknown;
+  template: Template;
+  mobile: boolean;
+  onReopen(): void;
+}
+export const reopenControls: {
+  component?: ComponentType<ReopenProps>;
+  preview?: ComponentType<ReopenPreviewProps>;
+} = {};
+
+export function ReopenPreview(props: ReopenPreviewProps) {
+  const Preview = reopenControls.preview;
+  return Preview ? <Suspense fallback={null}><Preview {...props} /></Suspense> : null;
+}
 
 export function ReopenSettings(props: ReopenProps) {
   const Control = reopenControls.component;

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { __ } from '@wordpress/i18n';
 import { Monitor, Smartphone, MousePointer2, X } from 'lucide-react';
 import { Button } from '../components/ui/button';
@@ -13,10 +13,12 @@ export function ScreenControls({
   template,
   step,
   onChange,
+  extra,
 }: {
   template: Template;
   step: number;
   onChange: (step: number) => void;
+  extra?: { label: string; selected: boolean; onSelect(): void };
 }) {
   return (
     <div className="wconvert-segmented" aria-label={__('Campaign screen', 'wconvert')}>
@@ -25,12 +27,13 @@ export function ScreenControls({
           key={index}
           variant="ghost"
           size="sm"
-          aria-pressed={step === index}
+          aria-pressed={!extra?.selected && step === index}
           onClick={() => onChange(index)}
         >
           {stepName(index + 1)}
         </Button>
       ))}
+      {extra && <Button variant="ghost" size="sm" aria-pressed={extra.selected} onClick={extra.onSelect}>{extra.label}</Button>}
     </div>
   );
 }
@@ -78,6 +81,8 @@ export function EditorCanvas({
   onStep,
   displayType,
   placement,
+  screen,
+  onClose,
 }: {
   template: Template;
   name: string;
@@ -89,6 +94,8 @@ export function EditorCanvas({
   onStep: (step: number) => void;
   displayType: string;
   placement?: unknown;
+  screen?: { label: string; content: ReactNode };
+  onClose?: () => void;
 }) {
   const stage = useRef<HTMLDivElement>(null);
   const page = useRef<HTMLDivElement>(null);
@@ -96,6 +103,7 @@ export function EditorCanvas({
   const [zoom, setZoom] = useState('fit');
   const [dismissed, setDismissed] = useState(false);
   const [message, setMessage] = useState('');
+  const [completed, setCompleted] = useState(false);
   const shown = Math.min(step, Math.max(template.tree.steps.length - 1, 0));
   const measure = width === 'narrow' ? '22rem' : (displayType === 'inline' ? (template.tokens.width ?? '40rem') : '48rem');
   const resolved = resolvedPlacement(displayType, placement);
@@ -125,7 +133,8 @@ export function EditorCanvas({
   }, [dismissed]);
   useEffect(() => {
     setDismissed(false);
-  }, [interactive, step]);
+    setCompleted(false);
+  }, [interactive, step, screen?.label]);
   useEffect(() => {
     setMessage('');
   }, [interactive]);
@@ -143,7 +152,7 @@ export function EditorCanvas({
         <span>
           {name}
           <span aria-hidden="true">›</span>
-          {stepName(shown + 1)}
+          {screen?.label ?? stepName(shown + 1)}
         </span>
         <label>
           <span className="sr-only">{__('Canvas zoom', 'wconvert')}</span>
@@ -174,7 +183,7 @@ export function EditorCanvas({
             <div
               className="wconvert-canvas__document wconvert-site"
               ref={page}
-              data-display-type={displayType}
+              data-display-type={screen ? 'preview' : displayType}
               data-placement={resolved ?? undefined}
               style={{ width: measure, transform: `scale(${scale})` }}
             >
@@ -185,7 +194,7 @@ export function EditorCanvas({
                 <span className="wconvert-site__ghost" data-ghost="block" />
                 <span className="wconvert-site__ghost" />
               </div>
-              <div className="wconvert-site__slot">
+              {screen ? <div className="wconvert-canvas__alternate">{screen.content}</div> : <div className="wconvert-site__slot">
                 <Preview
                   template={template}
                   displayType={displayType}
@@ -194,6 +203,7 @@ export function EditorCanvas({
                   onSelect={interactive ? undefined : onSelect}
                   interactive={interactive}
                   onAdvance={() => {
+                    setCompleted(true);
                     onStep(Math.min(shown + 1, template.tree.steps.length - 1));
                     setMessage(__('Preview complete. No data was sent.', 'wconvert'));
                   }}
@@ -205,14 +215,14 @@ export function EditorCanvas({
                     aria-label={__('Close preview', 'wconvert')}
                     onClick={() =>
                       interactive
-                        ? setDismissed(true)
+                        ? onClose && !completed ? onClose() : setDismissed(true)
                         : setMessage(__('Visitors can always close this Campaign.', 'wconvert'))
                     }
                   >
                     <X aria-hidden="true" />
                   </button>
                 )}
-              </div>
+              </div>}
               <div className="wconvert-site__page" aria-hidden="true">
                 <span className="wconvert-site__ghost" />
                 <span className="wconvert-site__ghost" data-ghost="block" />
@@ -223,7 +233,7 @@ export function EditorCanvas({
       </div>
       <div className="wconvert-canvas__hint" role="status">
         {message ||
-          (interactive ? (
+          (interactive || screen ? (
             __('Preview mode', 'wconvert')
           ) : (
             <>

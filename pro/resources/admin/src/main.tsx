@@ -9,6 +9,7 @@ import { reopenControls } from '@/reopenControls';
 import { inlinePlacementControls } from '@/inlinePlacement';
 
 reopenControls.component = lazy(() => import('../../../modules/display-types/admin/ReopenSettings'));
+reopenControls.preview = lazy(() => import('../../../modules/display-types/admin/ReopenPreview'));
 previewSurfaces.fullscreen = decorateFullscreen;
 inlinePlacementControls.component = lazy(() => import('../../../modules/inline-placement/admin/PlacementSettings'));
 

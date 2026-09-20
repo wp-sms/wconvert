@@ -20,6 +20,8 @@ keyboard controls. Form and success screens and desktop/mobile widths have
 explicit controls. Fit scales the canvas visually without changing the template
 width or triggering a different responsive layout.
 
+**Extended by [ADR 0101](0101-reopen-buttons-preserve-an-explicit-visitor-choice.md):** enabled Pro popup and slide-in Campaigns add a Reopen button screen beside the form and success controls. It shares the canvas, zoom, and Desktop/Mobile controls; its settings panel contains authoring controls and on-demand help.
+
 A click selects the deepest element under the pointer. Repeated clicks keep it
 selected. Breadcrumbs expose its ancestors, and Design settings returns to the
 whole design. A leaf has Content and Style; a container offers its appearance
