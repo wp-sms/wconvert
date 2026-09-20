@@ -5,9 +5,9 @@ namespace WConvert\Rest;
 defined('ABSPATH') || exit;
 
 /**
- * What every WConvert REST route shares: one namespace, one permission.
+ * Shared REST namespace and explicit permissions for each surface.
  *
- * Both are here rather than on whichever controller happened to be written
+ * These are here rather than on whichever controller happened to be written
  * first. A second controller reaching for `OptinController::NAMESPACE` reads
  * as though Optins own the namespace, and the day a third route wants a
  * different capability the answer should be a change to this file rather than
@@ -31,15 +31,19 @@ final class Routes
     public const MANAGE_CAPABILITY = 'manage_options';
 
     /**
-     * Everything WConvert exposes is an administration surface, so one
-     * capability covers all of it — with exactly two exceptions,
-     * {@see self::canCapture()} and {@see self::canBeacon()} below. Both are
-     * public for the same structural reason and neither is public by
-     * omission.
+     * Campaign management uses one capability. Capture and beacons are public
+     * by nature. The separate canPlaceCampaign permission allows post authors
+     * to read only published picker choices, never Campaign management data.
      */
     public static function canManage(): bool
     {
         return current_user_can(self::MANAGE_CAPABILITY);
+    }
+
+    /** Read-only published Campaign choices for WordPress post/page authors. */
+    public static function canPlaceCampaign(): bool
+    {
+        return current_user_can('edit_posts') || current_user_can('edit_pages');
     }
 
     /**

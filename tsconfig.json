@@ -26,6 +26,7 @@
   "include": [
     "resources",
     "pro/resources",
+    "pro/modules",
     "tests/js",
     "pro/tests/js",
     "vitest.config.ts"

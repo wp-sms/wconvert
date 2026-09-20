@@ -8,7 +8,7 @@ export default {
     outDir: resolve(import.meta.dirname, 'pro/public/blocks'),
     lib: {
       entry: resolve(import.meta.dirname, 'pro/modules/content-lock/block/index.tsx'),
-      formats: ['iife'], name: 'wconvertContentLockBlock', fileName: () => 'content-lock.js',
+      cssFileName: 'content-lock', formats: ['iife'], name: 'wconvertContentLockBlock', fileName: () => 'content-lock.js',
     },
   },
 };

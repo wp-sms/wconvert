@@ -211,7 +211,7 @@ export function DisplayRules({ vocabulary, value, overlay, act = 'submit', onCha
 
   return (
     <div className="wconvert-sections">
-      <p className="m-0 mb-4 text-note text-muted-foreground">{__('Choose eligible pages and visitors, then the moment it appears. Schedule and frequency limits also apply.', 'wconvert')}</p>
+      <p className="m-0 mb-4 text-note text-muted-foreground">{__('Choose where, when and to whom this Campaign appears.', 'wconvert')}</p>
       {placement && (
         <Section id="placement" eyebrow={__('Placement', 'wconvert')} summary={placement.summary}
           open={open.has('placement')} onOpenChange={opener('placement')}>

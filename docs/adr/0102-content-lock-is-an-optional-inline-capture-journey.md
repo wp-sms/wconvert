@@ -38,6 +38,85 @@ eligibility and schedule loss and opens without relocking. Its own Impression
 must not invalidate it through frequency caps. A pending capture can settle after
 the form closes; a real acknowledgement still counts. No auto retry occurs.
 
+## Authoring and preview follow-up
+
+The same block now appears in WordPress's native **Transform to** menu for
+supported selected blocks. It wraps cloned block objects, preserving attributes,
+formatting and nested list/button content. The grouping hook is the one used by
+WordPress's Group block on the supported API versions. Unsupported or locked
+content is not transformed. Native Undo/Redo and ungroup are retained; an explicit
+**Remove lock, keep content** action also preserves children and respects the
+editor's removal permission. Duplicate regions receive an editor warning.
+
+Pro supplies a separate published Campaign picker, leaving the ordinary inline
+picker unchanged. New selections offer only lock-enabled, currently available
+published Campaigns; saved unavailable selections are retained with an explanation.
+The published projection remains authoritative, including mixed A/B-family
+handling. Readiness does not override visitor targeting, schedules or frequency.
+
+The initial choices are delivered with the block-editor assets. The authenticated
+read-only `GET /wconvert/v1/content-lock-campaigns` refreshes them without reloading
+or saving the post. `Routes::canPlaceCampaign()` requires `edit_posts` or
+`edit_pages`; it grants no Campaign-management capability. Responses contain only
+published inline IDs, names and ready/disabled/unavailable status, plus a management
+link for users who already have `manage_options`. They contain no drafts, designs,
+Destination details or Leads, and use `Cache-Control: no-store`. This is an explicit
+post-author exception to the management permission, separate from public capture
+and beacons. Free does not register this Pro route.
+
+Both authoring blocks keep Campaign selection in native InspectorControls,
+including the empty state. A canvas **Choose Campaign** button opens the block
+settings when the sidebar is closed. A selected Campaign uses a wrapping name
+card with Change and Clear actions; unavailable selections remain repairable.
+Refresh and permission-aware management links are secondary actions. Compact editor-only start/end labels identify the region and
+selected Campaign without inheriting the theme's article font size. An empty
+region starts with a writable paragraph. The native block toolbar holds
+**Remove lock, keep content**; warnings remain visible in the canvas. Saved
+InnerBlocks markup and the runtime rendering contract are unchanged.
+
+The manual **Lock from here** divider is now implemented as
+`wconvert/content-lock-divider`, registered only by Pro. It saves a self-closing
+block comment and no inner content. Writers retain ordinary top-level blocks
+before and after it. Native movement, deletion and Undo affect the marker; no
+saved article content is reparented or migrated. All Campaign setup and changes
+live in the inspector. Extra guidance is collapsed under Setup tips. The canvas always
+states that the rest of the article is included. Appended content is included.
+The marker is limited to one by the inserter; pasted duplicates are also checked.
+
+Before WordPress's `do_blocks`, Pro examines only singular main post/page content
+with the queried post ID. One top-level divider and a supported, nonempty static
+remainder become a transient `ContentRegion` for that render. Existing capture,
+receipts, eligibility and readable failure behavior are reused. No saved post is
+rewritten and no whole-page DOM selector is introduced. Footer/comments outside
+post content remain outside the region. The shared static-block schema is read
+by PHP and the editor, and required by the artifact contract.
+
+Nested/duplicate dividers, a selected Content lock section anywhere in the post,
+its enclosing shortcode, More/Page Break, unsupported descendants or dynamic
+bindings, active embeds/shortcodes in the remainder, invalid Campaign IDs and an
+empty remainder leave divider content readable. An explicit section keeps its
+existing behavior. Missing/unpublished/disabled/unavailable Campaigns remain
+readable through the existing loader rules. Draft previews, feeds, REST,
+secondary loops and password-protected contexts do not activate the divider.
+Without Pro, WordPress ignores the marker while ordinary following blocks render.
+If a malformed marker carries saved content, it is preserved and not gated.
+
+The divider is the recommended article workflow. The selected-section block and
+paired shortcode remain for bounded bonuses and Classic Editor. Supported content
+is still the documented static set; Groups, Columns, synced patterns and third-party
+blocks are not promised compatible. Automatic insertion across posts stays deferred.
+The user-selected prototype was removed; plan section 19 records the decision.
+
+Content lock simulation uses the existing right-hand Campaign canvas on Display
+rules, with Locked, Unlocked and Form unavailable controls outside the scaled
+preview. At narrow editor widths it stacks below settings. It renders example
+content, not the linked WordPress page; its state is separate from the Campaign
+and the Design step. The form preview sends no capture or analytics requests and
+writes no unlock receipt. Setup details and a copyable enclosing shortcode remain
+in placement help. Advanced documentation links are omitted until real WConvert
+docs exist. Actual page gating is checked on a published page; WordPress draft
+preview contexts intentionally remain readable.
+
 ## Acknowledged capture, never subscriber verification
 
 Only the existing acknowledged capture callback reveals success and records one

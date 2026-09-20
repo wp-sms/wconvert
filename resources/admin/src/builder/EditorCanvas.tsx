@@ -94,7 +94,7 @@ export function EditorCanvas({
   onStep: (step: number) => void;
   displayType: string;
   placement?: unknown;
-  screen?: { label: string; content: ReactNode };
+  screen?: { label: string; content: ReactNode; controls?: ReactNode; inFlow?: boolean };
   onClose?: () => void;
 }) {
   const stage = useRef<HTMLDivElement>(null);
@@ -165,7 +165,8 @@ export function EditorCanvas({
           </select>
         </label>
       </div>
-      {interactive && (
+      {screen?.controls}
+      {interactive && !screen && (
         <p className="wconvert-preview-notice">
           {__('Try the form as a visitor. No data is sent.', 'wconvert')}
         </p>
@@ -183,17 +184,18 @@ export function EditorCanvas({
             <div
               className="wconvert-canvas__document wconvert-site"
               ref={page}
+              data-screen-flow={screen?.inFlow || undefined}
               data-display-type={screen ? 'preview' : displayType}
               data-placement={resolved ?? undefined}
               style={{ width: measure, transform: `scale(${scale})` }}
             >
-              <div className="wconvert-site__page" aria-hidden="true">
+              {!screen?.inFlow && <div className="wconvert-site__page" aria-hidden="true">
                 <span className="wconvert-site__ghost" data-ghost="head" />
                 <span className="wconvert-site__ghost" />
                 <span className="wconvert-site__ghost" />
                 <span className="wconvert-site__ghost" data-ghost="block" />
                 <span className="wconvert-site__ghost" />
-              </div>
+              </div>}
               {screen ? <div className="wconvert-canvas__alternate">{screen.content}</div> : <div className="wconvert-site__slot">
                 <Preview
                   template={template}
@@ -223,10 +225,10 @@ export function EditorCanvas({
                   </button>
                 )}
               </div>}
-              <div className="wconvert-site__page" aria-hidden="true">
+              {!screen?.inFlow && <div className="wconvert-site__page" aria-hidden="true">
                 <span className="wconvert-site__ghost" />
                 <span className="wconvert-site__ghost" data-ghost="block" />
-              </div>
+              </div>}
             </div>
           </div>
         )}

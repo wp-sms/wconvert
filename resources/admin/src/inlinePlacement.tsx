@@ -14,8 +14,24 @@ export interface InlinePlacementProps {
   onChange: (changes: Record<string, unknown>) => void;
 }
 
-/** Composition-time slot: Free never imports premium authoring controls. */
-export const inlinePlacementControls: { component?: ComponentType<InlinePlacementProps> } = {};
+export type ContentLockPreviewState = 'locked' | 'unlocked' | 'unavailable';
+export interface ContentLockPreviewProps {
+  template: Template;
+  state: ContentLockPreviewState;
+  onStateChange(state: ContentLockPreviewState): void;
+}
+
+/** Composition-time slots: Free never imports premium authoring controls. */
+export const inlinePlacementControls: {
+  component?: ComponentType<InlinePlacementProps>;
+  preview?: ComponentType<ContentLockPreviewProps>;
+  previewControls?: ComponentType<ContentLockPreviewProps>;
+} = {};
+
+export function ContentLockPreview(props: ContentLockPreviewProps & { controls?: boolean }) {
+  const Component = props.controls ? inlinePlacementControls.previewControls : inlinePlacementControls.preview;
+  return Component ? <Suspense fallback={null}><Component {...props} /></Suspense> : null;
+}
 
 export function usesPageLoadOnly(rules: readonly Rule[], vocabulary: RuleVocabulary): boolean {
   const names = new Set(vocabulary.triggers.map((rule) => rule.type));

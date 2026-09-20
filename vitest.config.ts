@@ -19,6 +19,7 @@ export default defineConfig({
        * installed, the admin bundle imports it for real, and an alias would
        * replace it for the whole suite.
        */
+      '@wordpress/element': 'react',
       '@wordpress/block-editor': resolve(import.meta.dirname, 'tests/js/support/wp-block-editor.tsx'),
       '@wordpress/components': resolve(import.meta.dirname, 'tests/js/support/wp-components.tsx'),
     },

@@ -33,7 +33,10 @@ precedence over automatic placement.
 Placement help belongs under Display rules → Placement and in publish review,
 never in Design. The WConvert screen uses Harbor controls; the block itself uses
 WordPress's native Placeholder, Notice and SelectControl. The post, Widgets and
-Site editors choose only which published inline Campaign an Anchor names. They
+Site editors choose only which published inline Campaign an ordinary Anchor names.
+As detailed in ADR 0102, Pro Content lock uses a separate readiness-aware picker
+with an authenticated post-author refresh endpoint; the ordinary picker remains
+enqueue-only. They
 do not load the Campaign renderer or become a second design surface.
 
 The block remains dynamic and shares `InlineAnchor` with the shortcode. Repeated

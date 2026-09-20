@@ -59,3 +59,10 @@ export function SelectControl({
     </label>
   );
 }
+
+export function Button({ children, onClick, disabled, 'aria-label': label }: { children?: ReactNode; onClick(): void; disabled?: boolean; 'aria-label'?: string }) {
+  return <button aria-label={label} disabled={disabled} onClick={onClick}>{children}</button>;
+}
+export function ComboboxControl({ label, value, options, onChange }: { label: string; value: string | null; options: {label: string; value: string}[]; onChange(value: string): void }) {
+  return <SelectControl label={label} value={value ?? ''} options={[{label: 'Choose', value: ''}, ...options]} onChange={onChange} />;
+}

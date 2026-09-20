@@ -71,7 +71,7 @@ export function DesignSettings({
       {mobile && (
         <p className="wconvert-scope__narrow">
           {__(
-            'Design settings apply to all sizes. Select an element to adjust its mobile appearance.',
+            'Design settings affect all sizes. Select an element for mobile overrides.',
             'wconvert',
           )}
         </p>

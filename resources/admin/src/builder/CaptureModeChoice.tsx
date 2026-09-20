@@ -12,9 +12,9 @@ export function CaptureModeChoice({ mode, onChange, selectedCount = 0, disabled 
     </div>
     <div className="flex items-start gap-2">
       <input id={`${id}-local`} aria-describedby={`${id}-local-help`} type="radio" name={id} value="local" checked={mode === 'local'} onChange={() => onChange('local')} />
-      <div><label htmlFor={`${id}-local`} className="font-medium">{__('Collect only in WConvert', 'wconvert')}</label><p id={`${id}-local-help`} className="m-0 text-note text-muted-foreground">{__('Save in Leads for review or export. No automatic sending.', 'wconvert')}{selectedCount > 0 && <> {__('Removes selected destinations from this draft; Undo restores them.', 'wconvert')}</>}</p></div>
+      <div><label htmlFor={`${id}-local`} className="font-medium">{__('Collect only in WConvert', 'wconvert')}</label><p id={`${id}-local-help`} className="m-0 text-note text-muted-foreground">{__('Save in Leads for review or export. No automatic sending.', 'wconvert')}{selectedCount > 0 && <> {__('Clears selected destinations. Undo restores them.', 'wconvert')}</>}</p></div>
     </div>
-    {mode === 'local' && <p role="status" className="mb-0 text-note">{__('Before publishing, review the form copy: do not promise automatic emails or texts without arranging how you will send them.', 'wconvert')}</p>}
+    {mode === 'local' && <p role="status" className="mb-0 text-note">{__('Check your form copy. Automatic emails and texts need a separate sending setup.', 'wconvert')}</p>}
     {mode !== 'local' && <p className="mb-0 text-note text-muted-foreground">{__('Your service handles subscriptions, confirmation and messages.', 'wconvert')}</p>}
   </fieldset>;
 }

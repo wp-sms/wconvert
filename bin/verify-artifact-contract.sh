@@ -228,6 +228,8 @@ if [ "$tier" = "free" ]; then
     require_file "$readme" "the wp.org listing, and the source claim (d) makes true, live in it" || true
 else
     require_file public/blocks/content-lock.js "the content-region editor is built for every Pro tier" || true
+    require_file public/blocks/content-lock.css "content-lock editor styles must load in the WordPress iframe" || true
+    require_file modules/content-lock/static-blocks.json "the divider renderer reads the supported static block schema" || true
 fi
 
 verdict

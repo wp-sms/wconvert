@@ -36,9 +36,12 @@ export function ManualPlacement({ optinId, published }: { readonly optinId: stri
 
 /** One selectable shortcode with an accessible clipboard fallback. */
 export function Shortcode({ optinId }: { readonly optinId: string }) {
+  return <ShortcodeCopy value={inlineShortcode(optinId)} label={__('Shortcode for other editors', 'wconvert')} help={__('Use a Shortcode block, a classic Text widget, or your page builder’s shortcode element.', 'wconvert')} />;
+}
+
+export function ShortcodeCopy({ value, label, help }: { value: string; label: string; help: string }) {
   const id = useId();
   const input = useRef<HTMLInputElement>(null);
-  const value = inlineShortcode(optinId);
   const [result, setResult] = useState<{ value: string; status: 'copying' | 'copied' | 'failed' } | null>(null);
   const status = result?.value === value ? result.status : null;
 
@@ -58,9 +61,9 @@ export function Shortcode({ optinId }: { readonly optinId: string }) {
   };
 
   return <div className="wconvert-placement__embed">
-    <label htmlFor={id}>{__('Shortcode for other editors', 'wconvert')}</label>
+    <label htmlFor={id}>{label}</label>
     <p id={`${id}-help`} className="text-note text-muted-foreground">
-      {__('Use a Shortcode block, a classic Text widget, or your page builder’s shortcode element.', 'wconvert')}
+      {help}
     </p>
     <div className="wconvert-placement__copy">
       <Input ref={input} id={id} value={value} readOnly aria-describedby={`${id}-help`}

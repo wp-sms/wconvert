@@ -11,11 +11,15 @@ final class ContentLock
 {
     public static function hooks(): void
     {
+        ContentDivider::hooks();
         add_filter('register_block_type_args', static function (array $args, string $name): array {
             if ($name === ContentRegion::BLOCK) {
                 wp_register_script('wconvert-content-lock-editor', WCONVERT_PRO_URL . 'public/blocks/content-lock.js',
-                    ['wp-blocks', 'wp-block-editor', 'wp-components', 'wp-element', 'wp-i18n', InlineOptinBlock::HANDLE],
+                    ['wp-data', 'wp-api-fetch', 'wp-blocks', 'wp-block-editor', 'wp-components', 'wp-element', 'wp-i18n', InlineOptinBlock::HANDLE],
                     BuiltAsset::version(WCONVERT_PRO_DIR . 'public/blocks/content-lock.js'), true);
+                wp_register_style('wconvert-content-lock-editor', WCONVERT_PRO_URL . 'public/blocks/content-lock.css',
+                    [], BuiltAsset::version(WCONVERT_PRO_DIR . 'public/blocks/content-lock.css'));
+                $args['editor_style'] = 'wconvert-content-lock-editor';
                 wp_set_script_translations('wconvert-content-lock-editor', 'wconvert');
                 $args['editor_script'] = 'wconvert-content-lock-editor';
                 $args['supports']['inserter'] = true;

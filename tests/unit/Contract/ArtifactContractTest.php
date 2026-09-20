@@ -181,6 +181,8 @@ final class ArtifactContractTest extends TestCase
             'wconvert-pro.php' => "<?php\n// the plugin\n",
             'src/Bootstrap.php' => "<?php\nnamespace WConvert\\Pro;\nfinal class Bootstrap {}\n",
             'public/blocks/content-lock.js' => "console.log('block');\n",
+            'public/blocks/content-lock.css' => '.wconvert-lock-divider { display: block; }',
+            'modules/content-lock/static-blocks.json' => '{"top": [], "children": {}}',
             'public/loader/loader.js' => "console.log('pro loader');\n",
             'public/inspector/inspector.js' => "console.log('pro inspector');\n",
             // Pro's admin bundle, both halves. Pro replaces free's on the same
@@ -237,6 +239,15 @@ final class ArtifactContractTest extends TestCase
     // The happy paths, which are here to make the failures below mean something
     // — not because either is interesting on its own.
     // =========================================================================
+
+    public function testProRequiresTheDividerStylesAndRuntimeSchema(): void
+    {
+        foreach (['public/blocks/content-lock.css', 'modules/content-lock/static-blocks.json'] as $file) {
+            $result = $this->verify($this->stagedPro([$file => null]));
+            $this->assertNotSame(0, $result['status']);
+            $this->assertStringContainsString($file, $result['output']);
+        }
+    }
 
     public function testPassesOnAFreeTreeThatCarriesNoProPathAndAllOfItsSource(): void
     {

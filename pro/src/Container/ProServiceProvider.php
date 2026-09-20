@@ -172,6 +172,11 @@ final class ProServiceProvider implements ServiceProvider
     {
         if (class_exists(\WConvert\Pro\Module\ContentLock\ContentLock::class)) {
             \WConvert\Pro\Module\ContentLock\ContentLock::hooks();
+            (new \WConvert\Pro\Module\ContentLock\ContentLockCampaigns(
+                $container->resolve(PublishedSet::class),
+                $container->resolve(OptinRepository::class),
+                $container->resolve(\WConvert\Rules\Degradation::class),
+            ))->hooks();
         }
         if (class_exists(\WConvert\Pro\Module\InlinePlacement\AutomaticInline::class)) {
             add_action('init', static function () use ($container): void {
