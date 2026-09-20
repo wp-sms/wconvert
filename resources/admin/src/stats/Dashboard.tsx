@@ -425,30 +425,28 @@ export function Dashboard({
       {payload && payload.goals.length > 0 && (
         <details className="wa-help">
           <summary>{__('How these numbers work', 'wconvert')}</summary>
-          <p>
-            {__(
-              'Leads count form submissions, not unique people or confirmed subscribers. Each submission counts once even when sent to multiple destinations; repeat submissions count again. Offer and cart clicks are separate, not purchases or recovered revenue.',
-              'wconvert',
-            )}
-          </p>
-          <p>
-            {__(
-              'Rates use visitor actions divided by campaign appearances, including repeats. A dash means no appearances were recorded. Inline forms count when they enter the visitor’s view.',
-              'wconvert',
-            )}
-          </p>
-          <p>
-            {__(
-              'Pausing or deleting a campaign preserves its historical counters. Goals are fixed after first publication. Lead retention can remove captured records without removing these totals.',
-              'wconvert',
-            )}
-          </p>
-          <p>
-            {__(
-              'Email handoffs are separate send events and can occur on a later day. Resends can count again. Acceptance for sending does not prove inbox arrival or a file download.',
-              'wconvert',
-            )}
-          </p>
+          <div className="wa-help-notes">
+            <p>
+              <strong>{__('Leads:', 'wconvert')}</strong>{' '}
+              {__('One per form submission, even with multiple destinations. Repeat submissions count again; leads are not unique people or confirmed subscribers.', 'wconvert')}
+            </p>
+            <p>
+              <strong>{__('Clicks:', 'wconvert')}</strong>{' '}
+              {__('Offer and cart clicks show interest, not confirmed purchases or recovered revenue.', 'wconvert')}
+            </p>
+            <p>
+              <strong>{__('Rates:', 'wconvert')}</strong>{' '}
+              {__('Submissions or clicks ÷ campaign appearances × 100. For example, 5 submissions from 100 appearances = 5%. Repeats count. A dash means no appearances; embedded forms count when they come into view.', 'wconvert')}
+            </p>
+            <p>
+              <strong>{__('Email handoffs:', 'wconvert')}</strong>{' '}
+              {__('Emails accepted for sending, not confirmed inbox arrivals or downloads. Counted on the send day, which may be later than the submission. Resends can count again.', 'wconvert')}
+            </p>
+            <p>
+              <strong>{__('History:', 'wconvert')}</strong>{' '}
+              {__('Past totals stay when campaigns are paused or deleted, or old lead records are removed. A campaign’s goal stays fixed after first publication.', 'wconvert')}
+            </p>
+          </div>
         </details>
       )}
     </div>

@@ -575,14 +575,35 @@
 }
 .wa-help {
   border-top: 1px solid var(--border);
-  margin-top: 25px;
-  padding-top: 17px;
+  margin-top: 24px;
+  padding-top: 12px;
   font-size: var(--text-note);
   color: var(--muted-foreground);
 }
+.wa-help summary {
+  width: fit-content;
+  max-width: 100%;
+  color: var(--foreground);
+  font-weight: 500;
+}
+.wa-help summary:focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 3px;
+}
+.wa-help-notes {
+  margin-top: 10px;
+  max-width: 110ch;
+}
 .wa-help p {
-  margin: 15px 0;
-  max-width: 850px;
+  margin: 0;
+  line-height: 1.6;
+}
+.wa-help p + p {
+  margin-top: 6px;
+}
+.wa-help strong {
+  color: var(--foreground);
+  font-weight: 600;
 }
 .wa-experiment-grid {
   display: grid;
