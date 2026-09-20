@@ -76,6 +76,9 @@ final class PolicyText
             ...($browser['cart_recovery'] !== null ? [
                 '<p>' . __('Cart recovery stores the cart item count and total in a browser cookie until the WooCommerce cart session ends. It does not store product or contact details.', 'wconvert') . '</p>',
             ] : []),
+            ...($browser['content_unlock'] !== null ? [
+                '<p>' . __('Content locks remember a successful submission for the same Campaign in this browser for 30 days. This site-scoped local storage holds at most 64 Campaign IDs and expiry days, with no contact details or visitor identifier. If storage is blocked, access is remembered only on the current page.', 'wconvert') . '</p>',
+            ] : []),
             ...($browser['reopen_session'] !== null ? [
                 '<p>' . __('When a reopen button is enabled, WConvert uses session storage to remember the Campaign and your reminder dismissals in this browser tab. It contains no contact details or visitor identifier. It lasts for the browser page session; browsers may copy it to duplicated tabs or restore it when restoring a session. If storage is unavailable, recovery lasts only on the current page.', 'wconvert') . '</p>',
             ] : []),

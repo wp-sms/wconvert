@@ -286,6 +286,28 @@ final class OptinWriteTest extends TestCase
         self::assertNull($this->optins->find($created['id'])?->publishedAt);
     }
 
+    public function testContentLockPublicationChecksFormAndAllVariantDrafts(): void
+    {
+        $parent = $this->create(Goal::GrowEmailList, array_merge(self::choiceDraft([['value' => 'guide', 'label' => 'Guide']]), ['display_type' => 'inline', 'capture_mode' => 'local', 'rules' => [['type' => 'page_load']]]));
+        self::assertIsArray($parent);
+        $arm = $this->optins->createVariant($parent['id']);
+        self::assertNotNull($arm);
+        $config = $parent['config'];
+        $config['content_lock'] = ['mode' => 'hide'];
+        $this->optins->saveDraft($parent['id'], null, null, $config);
+        $request = new WP_REST_Request(); $request->set_param('id', $parent['id']);
+        $refused = $this->controller->publish($request);
+        self::assertInstanceOf(WP_Error::class, $refused);
+        self::assertSame('wconvert_content_lock_family', $refused->get_error_code());
+        $this->optins->saveDraft($arm->id, null, null, $config);
+        self::assertNotInstanceOf(WP_Error::class, $this->controller->publish($request));
+        $config['rules'] = [['type' => 'time_on_page', 'seconds' => 10]];
+        $this->optins->saveDraft($parent['id'], null, null, $config);
+        $refused = $this->controller->publish($request);
+        self::assertInstanceOf(WP_Error::class, $refused);
+        self::assertSame('wconvert_content_lock', $refused->get_error_code());
+    }
+
     /** @param mixed $options
      * @return array<string, mixed>
      */

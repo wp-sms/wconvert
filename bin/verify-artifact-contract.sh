@@ -209,7 +209,7 @@ if [ "$tier" = "free" ]; then
     # inspects below, so a tree without it is a tree that check cannot speak
     # for.
     require_file vendor/autoload.php "free's plugin file cannot boot without Composer's autoloader" || true
-    # THE BLOCK EDITOR'S BUNDLE, AND FREE ONLY — Pro has no block of its own.
+    # The ordinary inline block bundle belongs to Free.
     #
     # `inline` is the one Display Type that is not an overlay, so it is the one
     # that needs somewhere on the page to go, and the block is one of the two
@@ -226,6 +226,8 @@ if [ "$tier" = "free" ]; then
     # has no module identity to keep stable and BuiltAsset's `?ver` is enough.
     require_file public/blocks/inline-optin.js "the block editor bundle is built, never committed — run the build" || true
     require_file "$readme" "the wp.org listing, and the source claim (d) makes true, live in it" || true
+else
+    require_file public/blocks/content-lock.js "the content-region editor is built for every Pro tier" || true
 fi
 
 verdict

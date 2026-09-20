@@ -1,5 +1,7 @@
 # Automatic inline placement uses rendered content
 
+**Extended by [ADR 0102](0102-content-lock-is-an-optional-inline-capture-journey.md):** optional Content lock is a third placement choice, mutually exclusive with automatic placement. It owns an explicit readable region and preserves first manual Anchor precedence.
+
 Phase 3 of #165. All paid Pro tiers supply automatic placement; manual block
 and shortcode placement remains Free. Goal-first campaign creation is unchanged.
 

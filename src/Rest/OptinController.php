@@ -578,7 +578,7 @@ final class OptinController implements RestController
             );
         }
 
-        $placementError = $this->refuseInlinePlacement($optin->config);
+        $placementError = $this->refuseInlinePlacement($optin->config) ?? $this->refuseContentLock($optin->config, $id);
         if ($placementError !== null) {
             return $placementError;
         }
@@ -887,7 +887,29 @@ final class OptinController implements RestController
             else $config['teaser'] = $teaser;
         }
 
+        if (array_key_exists('content_lock', $config)) {
+            $lock = ($config['display_type'] ?? null) === 'inline' ? \WConvert\Optin\ContentLock::normalize($config['content_lock']) : null;
+            if ($lock === null) unset($config['content_lock']);
+            else $config['content_lock'] = $lock;
+        }
         return $config;
+    }
+
+    /** @param array<string, mixed> $config */
+    private function refuseContentLock(array $config, string $id): ?WP_Error
+    {
+        $enabled = \WConvert\Optin\ContentLock::normalize($config['content_lock'] ?? null) !== null;
+        if ($enabled && !\WConvert\Optin\ContentLock::compatible($config, $this->vocabulary->partition($config['rules'] ?? [])['triggers'])) {
+            return new WP_Error('wconvert_content_lock', __('Content lock requires a complete inline submission form, manual placement, and only the page-load trigger.', 'wconvert'), ['status' => 400]);
+        }
+        foreach ($this->optins->otherArmsOf($id) as $arm) {
+            $other = $arm->config;
+            $otherEnabled = \WConvert\Optin\ContentLock::normalize($other['content_lock'] ?? null) !== null;
+            if ($enabled !== $otherEnabled || ($otherEnabled && !\WConvert\Optin\ContentLock::compatible($other, $this->vocabulary->partition($other['rules'] ?? [])['triggers']))) {
+                return new WP_Error('wconvert_content_lock_family', __('Every A/B variant must use the same content-lock mode and a compatible inline submission form.', 'wconvert'), ['status' => 400]);
+            }
+        }
+        return null;
     }
 
     /** @param array<string, mixed> $config */

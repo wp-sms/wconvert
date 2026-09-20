@@ -170,6 +170,9 @@ final class ProServiceProvider implements ServiceProvider
 
     public function boot(ServiceContainer $container): void
     {
+        if (class_exists(\WConvert\Pro\Module\ContentLock\ContentLock::class)) {
+            \WConvert\Pro\Module\ContentLock\ContentLock::hooks();
+        }
         if (class_exists(\WConvert\Pro\Module\InlinePlacement\AutomaticInline::class)) {
             add_action('init', static function () use ($container): void {
                 (new \WConvert\Pro\Module\InlinePlacement\AutomaticInline(
@@ -238,6 +241,7 @@ final class ProServiceProvider implements ServiceProvider
         // Every paid build supplies the display-types module.
         add_filter('wconvert_privacy_browser_storage', static function (array $browser): array {
             $browser['reopen_session'] = 'wcv_teaser1:';
+            $browser['content_unlock'] = 'wcv_unlock1:';
             return $browser;
         });
 

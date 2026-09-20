@@ -48,6 +48,26 @@ final class PublishedProjectionTest extends TestCase
         ], $overrides);
     }
 
+    public function testMixedPublishedLockModesStayReadableUntilTheFamilyAgrees(): void
+    {
+        $config = ['display_type' => 'inline', 'rules' => [['type' => 'page_load']], 'content_lock' => ['mode' => 'hide'],
+            'template' => ['tokens' => [], 'tree' => ['steps' => [
+                ['type' => 'stack', 'children' => [['type' => 'field', 'name' => 'email'], ['type' => 'button', 'action' => 'submit', 'label' => 'Unlock']]],
+                ['type' => 'stack', 'children' => [['type' => 'heading', 'text' => 'Thanks']]],
+            ]]]];
+        $parent = self::row(['published_config' => json_encode($config)]);
+        $child = self::row(['id' => '01JQ0000000000000000000002', 'parent_id' => $parent['id']]);
+        $mixed = self::build([$parent, $child]);
+        self::assertArrayNotHasKey('content_lock', $mixed[0]['payload']);
+        $child['published_config'] = json_encode($config);
+        $ready = self::build([$parent, $child]);
+        self::assertSame(['mode' => 'hide'], $ready[0]['payload']['content_lock']);
+        self::assertSame($parent['id'], $ready[1]['payload']['campaign']);
+        $alone = self::build([$child]);
+        self::assertSame($parent['id'], $alone[0]['payload']['anchor']);
+        self::assertSame($parent['id'], $alone[0]['payload']['campaign']);
+    }
+
     public function testAPublishedRowProjectsItsTargetingSeparablyFromItsPayload(): void
     {
         $set = self::build([self::row()]);

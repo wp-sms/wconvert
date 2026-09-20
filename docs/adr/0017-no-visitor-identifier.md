@@ -1,5 +1,7 @@
 # WConvert mints no visitor identifier
 
+**Extended by [ADR 0102](0102-content-lock-is-an-optional-inline-capture-journey.md):** Content lock stores bounded Campaign-family unlock receipts with expiry days in site-scoped localStorage. No visitor identifier or submitted value is stored; storage failure leaves the current page usable.
+
 **WConvert never generates, stores or transmits a per-visitor identifier.** No
 visitor id cookie, no device id, no hashed fingerprint, and no id on an analytics
 beacon. Per-visitor state exists, but it is the *record itself* — which Optins

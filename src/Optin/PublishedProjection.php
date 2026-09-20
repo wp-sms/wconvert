@@ -90,7 +90,7 @@ final class PublishedProjection
      *   `tests/unit/Optin/PublishedProjectionTest.php` the same way the copy
      *   list is.
      */
-    private const SHIPPED = ['template', 'display_type', 'placement', 'inline_placement', 'teaser', 'frequency', 'priority'];
+    private const SHIPPED = ['template', 'display_type', 'placement', 'inline_placement', 'content_lock', 'teaser', 'frequency', 'priority'];
 
     /**
      * The arm this entry is, of the test it belongs to:
@@ -191,6 +191,23 @@ final class PublishedProjection
             }
         }
 
+        // During sequential A/B publication, keep every region readable until
+        // all published arms agree. Never expose a partially gated family.
+        $modes = [];
+        foreach ($set as $entry) {
+            $payload = $entry['payload'];
+            $family = $payload[self::ARM][0] ?? $payload['campaign'] ?? $entry['id'];
+            $modes[$family][] = isset($payload['content_lock']);
+        }
+        foreach ($set as &$entry) {
+            $payload = &$entry['payload'];
+            $family = $payload[self::ARM][0] ?? $payload['campaign'] ?? $entry['id'];
+            if (in_array(false, $modes[$family], true)) {
+                unset($payload['content_lock']);
+                if (!isset($payload['teaser'])) unset($payload['campaign']);
+            }
+        }
+        unset($entry, $payload);
         return $set;
     }
 
@@ -369,6 +386,20 @@ final class PublishedProjection
             }
         }
 
+        if (isset($payload['content_lock'])) {
+            $lock = ContentLock::normalize($payload['content_lock']);
+            if ($lock === null || !ContentLock::compatible($published, $vocabulary->partition($rules)['triggers'])) {
+                unset($payload['content_lock']);
+            } else {
+                $payload['content_lock'] = $lock;
+                $parent = (string) ($row['parent_id'] ?? '');
+                if ($parent !== '') {
+                    $payload['campaign'] = $parent;
+                    $payload[self::ANCHOR] = $parent;
+                }
+            }
+        }
+
         // ====================================================================
         // AND THE ARM, WHICH IS THE ONE PAYLOAD KEY THAT IS NOT A FACT ABOUT
         // THIS ROW ALONE.
@@ -388,7 +419,7 @@ final class PublishedProjection
 
         if ($arm !== null) {
             $payload[self::ARM] = $arm;
-            if (isset($payload['teaser'])) $payload['campaign'] = $arm[0];
+            if (isset($payload['teaser']) || isset($payload['content_lock'])) $payload['campaign'] = $arm[0];
 
             // Only a child, and only where it renders in place. The parent's
             // anchor IS its own id, so writing this for it would be the same

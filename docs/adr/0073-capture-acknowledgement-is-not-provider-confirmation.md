@@ -1,5 +1,7 @@
 # Capture acknowledgement is not provider confirmation
 
+**Extended by [ADR 0102](0102-content-lock-is-an-optional-inline-capture-journey.md):** an acknowledged local capture can reveal an owned WordPress content region and remember access. An unconfirmed capture opens a readable fallback without claiming success or provider confirmation.
+
 The visitor's form completes when WConvert acknowledges its local [[Lead]]
 capture. A queued [[Destination]] push happens separately. The success screen
 must not turn that acknowledgement into a claim that an email arrived, a file

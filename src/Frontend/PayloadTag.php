@@ -140,6 +140,11 @@ final class PayloadTag
         $localized = $hasReopen && $reopenLabels !== ['Dismiss reminder', 'Submission received — View details']
             ? ' data-reopen="' . esc_attr((string) json_encode($reopenLabels, JSON_UNESCAPED_UNICODE)) . '"' : '';
 
+        $lockLabels = [__('Content unlocked.', 'wconvert'), __('Continue to content', 'wconvert'), __('Your submission could not be confirmed. The content is available below.', 'wconvert')];
+        if (array_filter($entries, static fn (array $entry): bool => isset($entry['content_lock'])) !== []
+            && $lockLabels !== ['Content unlocked.', 'Continue to content', 'Your submission could not be confirmed. The content is available below.']) {
+            $localized .= ' data-content-lock="' . esc_attr((string) json_encode($lockLabels, JSON_UNESCAPED_UNICODE)) . '"';
+        }
         return sprintf(
             '<script type="application/json" id="%s" %s="%s" %s="%s" %s="%s"%s%s>%s</script>',
             self::ELEMENT_ID,

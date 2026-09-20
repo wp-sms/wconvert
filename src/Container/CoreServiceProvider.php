@@ -800,6 +800,7 @@ final class CoreServiceProvider implements ServiceProvider
         add_action('init', static function () use ($container): void {
             $container->resolve(InlineOptinBlock::class)->register();
             $container->resolve(InlineOptinShortcode::class)->register();
+            \WConvert\Frontend\ContentRegion::register();
         });
 
         // On EVERY request, admin included, and not behind `is_admin()`. The

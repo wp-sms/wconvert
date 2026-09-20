@@ -8,7 +8,7 @@
     "build": "npm run build:admin && npm run build:admin:pro && npm run build:block && npm run build:loader && npm run build:loader:pro && npm run build:inspector && npm run build:inspector:pro",
     "build:admin": "vite build -c vite.config.admin.mjs",
     "build:admin:pro": "vite build -c vite.config.admin-pro.mjs",
-    "build:block": "vite build -c vite.config.block.mjs",
+    "build:block": "vite build -c vite.config.block.mjs && vite build -c vite.config.block-pro.mjs",
     "build:loader": "vite build -c vite.config.loader.mjs",
     "build:loader:pro": "npm run build:loader:pro:basic && npm run build:loader:pro:pro && npm run build:loader:pro:elite",
     "build:loader:pro:basic": "vite build -c vite.config.loader-pro-basic.mjs",
@@ -31,6 +31,7 @@
     "test:visual:popup": "playwright test -c tools/visual-tests/popup.config.mjs",
     "test:visual:fullscreen": "playwright test -c tools/visual-tests/fullscreen.config.mjs",
     "test:visual:inline": "playwright test -c tools/visual-tests/inline.config.mjs",
+    "test:visual:content-lock": "playwright test -c tools/visual-tests/content-lock.config.mjs",
     "test:visual:reopen": "playwright test -c tools/visual-tests/reopen.config.mjs"
   },
   "dependencies": {

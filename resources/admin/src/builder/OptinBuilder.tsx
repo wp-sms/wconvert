@@ -598,7 +598,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
     setSelection(null);
     setOpenToken(null);
   };
-  const inlineSummary = config.inline_placement == null
+  const inlineSummary = config.content_lock != null ? __('Content lock — selected WordPress region', 'wconvert') : config.inline_placement == null
     ? __('Manual — block or shortcode', 'wconvert')
     : inlinePlacementLabel(config.inline_placement) ?? __('Automatic — check placement settings', 'wconvert');
   const goToInlinePlacement = () => {
@@ -696,6 +696,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
             vocabulary={vocabulary}
             displayType={displayTypeOf(config, templates)}
             placement={config.placement}
+            contentLock={config.content_lock}
             teaser={config.teaser}
             inlinePlacement={config.inline_placement}
             bound={bound}
@@ -1024,6 +1025,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
         displayType={displayTypeOf(config, templates)}
         chosen={templateId}
         hasCurrentDesign={template !== undefined}
+        contentLock={config.content_lock != null}
         fit={{
           outcome: entryOfGoal?.outcome,
           bound: bound.length > 0,
@@ -1050,9 +1052,11 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
           if (displayTypeOf(config, templates) !== chosenDesign.display_type) {
             changes.placement = null;
             changes.inline_placement = null;
+            changes.content_lock = null;
             if (!['popup', 'slide_in'].includes(chosenDesign.display_type)) changes.teaser = null;
           }
 
+          if (config.content_lock != null && (chosenDesign.display_type !== 'inline' || convertingActOf(prepared.tree).join() !== 'submit' || prepared.tree.steps.length !== 2)) changes.content_lock = null;
           edit(changes);
           setSelection(null);
           setStep(0);
