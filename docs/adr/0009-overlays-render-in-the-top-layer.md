@@ -109,7 +109,10 @@ top layer does not enter the auction.
   Popup mounting passes a temporary token copy to the shared shell, so this
   contract holds on every screen. The stored template and authored descendant
   token and narrow bags remain unchanged. Inline and non-modal containers retain
-  their own sizing contracts.
+  their own sizing contracts. `tools/visual-tests/popup.spec.mjs` verifies the
+  resulting dialog and campaign-surface geometry in real Chromium at phone and
+  desktop widths, in LTR and RTL, under a theme that attempts to force the
+  dialog back to a full-viewport top-left box.
 - **`inline` Optins are outside this decision.** They render where they were
   embedded, so a clipping ancestor clips them whatever the container — measured
   identically across all eleven modes. That is a placement question, not a rendering

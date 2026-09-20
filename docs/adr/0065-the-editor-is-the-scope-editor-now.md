@@ -250,16 +250,20 @@ booting plugin.
   rewriting free's — three rounds of "the CSS did not change" before the
   stylesheet URL was read out of the page.
 
-### One defect found and deliberately not fixed
+### One defect found here and resolved later
 
-**A `popup` renders pinned to the top-left of the viewport rather than
-centred**, and it is not this work's: verified identical with `main`'s loader
-built from the merge-base. `DIALOG_ARMOUR` in `mount.ts` sets `inline-size:
-auto` and `block-size: auto` beside `inset: 0` and `margin: auto`, and for a
-fixed-position box that means *stretch to the inset box* — so `margin: auto`
-has nothing to distribute and the design sits at the start of a
-viewport-sized dialog. Fixing the shipped popup container is a decision of its
-own and needs verifying across all four [[Display Type]]s.
+At the time of this work a `popup` rendered pinned to the top-left of the
+viewport. The then-current `DIALOG_ARMOUR` set `inline-size: auto` and
+`block-size: auto` beside `inset: 0` and `margin: auto`, stretching the dialog
+to the viewport and leaving the design at its start.
+
+The later explicit-width contract recorded in [ADR 0009](0009-overlays-render-in-the-top-layer.md)
+resolved that defect: the dialog now owns the design width, caps it to the
+viewport, and uses intrinsic block size while the inner root fills the dialog.
+`tools/visual-tests/popup.spec.mjs` guards the result in real Chromium against
+a hostile theme at phone and desktop widths, in both LTR and RTL. It measures
+both the dialog and the campaign surface and requires their centres to match
+the viewport on both axes.
 
 ## What it cost
 
