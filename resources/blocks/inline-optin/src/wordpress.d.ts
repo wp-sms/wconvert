@@ -24,10 +24,28 @@
  */
 
 declare module '@wordpress/blocks' {
+  export interface BlockInstance {
+    clientId: string;
+    name: string;
+    attributes: Record<string, unknown>;
+    innerBlocks: BlockInstance[];
+    isValid?: boolean;
+  }
+  export function getBlockType(name: string): { title: string } | undefined;
+  export function serialize(blocks: BlockInstance[]): string;
+  export function cloneBlock(block: BlockInstance): BlockInstance;
+  export function createBlock(name: string, attributes?: Record<string, unknown>, innerBlocks?: BlockInstance[]): BlockInstance;
   export function registerBlockType(
     name: string,
     settings: {
+      icon?: string;
+      keywords?: string[];
+      transforms?: {
+        from: { type: 'block'; blocks: string[]; isMultiBlock: boolean; isMatch(attributes: unknown, blocks: BlockInstance[]): boolean; __experimentalConvert(blocks: BlockInstance[]): BlockInstance }[];
+        ungroup(attributes: unknown, blocks: BlockInstance[]): BlockInstance[];
+      };
       edit: (props: {
+        clientId: string;
         attributes: { optinId?: string };
         setAttributes: (next: { optinId?: string }) => void;
       }) => JSX.Element;
@@ -37,7 +55,7 @@ declare module '@wordpress/blocks' {
 }
 
 declare module '@wordpress/block-editor' {
-  export const InnerBlocks: ((props: { allowedBlocks?: string[] }) => React.JSX.Element) & { Content: () => React.JSX.Element };
+  export const InnerBlocks: ((props: { allowedBlocks?: string[]; template?: [string, Record<string, unknown>][] }) => React.JSX.Element) & { Content: () => React.JSX.Element };
   export function useBlockProps(props?: Record<string, unknown>): Record<string, unknown>;
 }
 
@@ -76,3 +94,41 @@ declare module '@wordpress/components' {
  * for will look exactly like the four above: declare only what nothing in this
  * repository installs.
  */
+
+
+declare module '@wordpress/element' {
+  export { useState } from 'react';
+}
+
+declare module '@wordpress/data' {
+  interface BlockEditorStore {
+    canRemoveBlocks(clientIds: string[]): boolean;
+    getBlocks(rootClientId?: string): import('@wordpress/blocks').BlockInstance[];
+  }
+  export function select(store: 'core/block-editor'): BlockEditorStore;
+  export function useSelect<T>(callback: (select: (store: 'core/block-editor') => BlockEditorStore) => T, dependencies: unknown[]): T;
+  export function useDispatch(store: 'core/interface'): { enableComplementaryArea(scope: string, area: string): void };
+  export function useDispatch(store: 'core/block-editor'): {
+    selectBlock(clientId: string): void;
+    removeBlocks(clientIds: string[]): void;
+    replaceBlocks(clientIds: string | string[], blocks: import('@wordpress/blocks').BlockInstance[]): void;
+  };
+}
+
+declare module '@wordpress/components' {
+  export const Button: (props: { variant?: string; disabled?: boolean; 'aria-label'?: string; onClick(): void; children?: React.ReactNode }) => React.JSX.Element;
+  export const ComboboxControl: (props: {
+    label: string; value: string | null; options: { label: string; value: string }[];
+    onFilterValueChange(value: string): void; onChange(value: string | null | undefined): void;
+  }) => React.JSX.Element;
+}
+
+
+declare module '@wordpress/block-editor' {
+  export const InspectorControls: (props: { children: React.ReactNode }) => React.JSX.Element;
+  export const BlockControls: (props: { group?: string; children: React.ReactNode }) => React.JSX.Element;
+}
+declare module '@wordpress/components' {
+  export const PanelBody: (props: { title: string; initialOpen?: boolean; children: React.ReactNode }) => React.JSX.Element;
+  export const ToolbarButton: (props: { disabled?: boolean; onClick(): void; children: React.ReactNode }) => React.JSX.Element;
+}

@@ -59,7 +59,7 @@ const WCONVERT_DS_SECRET = 'design-system-capture';
  */
 require_once WP_CONTENT_DIR . '/plugins/wconvert/wconvert.php';
 
-if (file_exists(WP_CONTENT_DIR . '/plugins/wconvert-pro/wconvert-pro.php')) {
+if (!defined('WCONVERT_DS_SKIP_PRO') && file_exists(WP_CONTENT_DIR . '/plugins/wconvert-pro/wconvert-pro.php')) {
     require_once WP_CONTENT_DIR . '/plugins/wconvert-pro/wconvert-pro.php';
 }
 

@@ -31,15 +31,15 @@ export default function PlacementSettings({ optinId, published, config, vocabula
   };
   return <div className="wconvert-inline-placement">
     <div role="group" aria-label={__('Placement method', 'wconvert')} className="wconvert-choice-set">
-      <label className="wconvert-choice"><input className="sr-only" ref={manualChoice} type="radio" name={id} checked={!placement && !locked} onChange={() => { setConfirm(false); onChange({ inline_placement: null, content_lock: null }); }} /><span className="wconvert-choice__label">{__('Manual — block or shortcode', 'wconvert')}</span></label>
+      <label className="wconvert-choice"><input className="sr-only" ref={manualChoice} type="radio" name={id} checked={!placement && !locked} onChange={() => { setConfirm(false); onChange({ inline_placement: null, content_lock: null }); }} /><span className="wconvert-choice__label">{__('Manual', 'wconvert')}</span></label>
       <label className="wconvert-choice"><input className="sr-only" ref={automaticChoice} type="radio" name={id} checked={!!placement} onChange={() => setConfirm('automatic')} /><span className="wconvert-choice__label">{__('Automatic', 'wconvert')}</span></label>
       <label className="wconvert-choice"><input className="sr-only" ref={lockChoice} type="radio" name={id} checked={locked} onChange={() => setConfirm('lock')} /><span className="wconvert-choice__label">{__('Content lock', 'wconvert')}</span></label>
     </div>
     {locked && <LockSettings optinId={optinId} published={published} config={config} vocabulary={vocabulary} onChange={onChange} />}
     {!placement && !locked && <ManualPlacement optinId={optinId} published={published} />}
     {confirm && <div className="wconvert-inline-placement__confirmation" role="group" aria-label={confirm === 'lock' ? __('Enable content lock', 'wconvert') : __('Enable automatic placement', 'wconvert')}>
-      <p>{confirm === 'lock' ? __('Content lock uses page load instead of other triggers and an explicit region you place in WordPress. Audience, schedule and frequency settings stay in place.', 'wconvert') : __('Automatic placement starts after content. It uses page load instead of other triggers; audience, schedule and frequency settings stay in place.', 'wconvert')}</p>
-      {confirm !== 'lock' && !targeting.include?.length && <p>{__('Your Pages setting will start with posts only. You can add pages under Display rules.', 'wconvert')}</p>}
+      <p>{confirm === 'lock' ? __('Use a content region and replace existing triggers with page load. Keep other display rules.', 'wconvert') : __('Place after content and replace existing triggers with page load. Keep other display rules.', 'wconvert')}</p>
+      {confirm !== 'lock' && !targeting.include?.length && <p>{__('Start on posts only. Add pages in Display rules.', 'wconvert')}</p>}
       <Button onClick={enable}>{confirm === 'lock' ? __('Enable content lock', 'wconvert') : __('Enable automatic placement', 'wconvert')}</Button>
       <Button variant="ghost" onClick={() => { setConfirm(false); manualChoice.current?.focus(); }}>{__('Cancel', 'wconvert')}</Button>
     </div>}
@@ -59,12 +59,12 @@ export default function PlacementSettings({ optinId, published, config, vocabula
           <option value="after_content">{__('Place after content', 'wconvert')}</option>
           <option value="skip">{__('Do not show on this page', 'wconvert')}</option>
         </select>
-        <p>{__('Counts non-empty paragraphs directly in the article, not paragraphs inside groups, columns, quotes, lists or tables.', 'wconvert')}</p>
+        <p>{__('Counts top-level, non-empty paragraphs only.', 'wconvert')}</p>
       </>}
       <label htmlFor={`${id}-priority`}>{__('Automatic placement priority', 'wconvert')}</label>
       <Input id={`${id}-priority`} type="number" min={0} max={100} value={Number(config.priority ?? 0)} onChange={(event) => onChange({ priority: Math.max(0, Math.min(100, Math.trunc(Number(event.target.value) || 0))) })} />
-      <p>{__('Only one eligible automatic Campaign appears per page; higher priority wins. A manual block or shortcode for this Campaign takes precedence.', 'wconvert')}</p>
-      <p>{__('Works in standard WordPress post and page content. For page builders and custom layouts, use manual placement. Check the published page on mobile too.', 'wconvert')}</p>
+      <p>{__('One automatic Campaign per page. Higher priority wins; manual embeds take precedence.', 'wconvert')}</p>
+      <p>{__('For page builders or custom layouts, use manual placement.', 'wconvert')}</p>
       {!compatible && <p role="alert">{__('Automatic placement requires page load as its only trigger. Update When it appears in Display rules, or choose manual placement.', 'wconvert')}</p>}
     </>}
   </div>;

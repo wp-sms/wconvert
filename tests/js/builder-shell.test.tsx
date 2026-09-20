@@ -274,7 +274,7 @@ describe('the builder shell', () => {
     expect(within(rules).getByRole('button', { name: 'Placement Automatically after content' })).toHaveAttribute('aria-expanded', 'true');
     await userEvent.click(within(rules).getByRole('button', { name: 'Use manual placement' }));
     await userEvent.click(screen.getByRole('tab', { name: 'Design' }));
-    expect(within(screen.getByRole('tabpanel', { name: 'Design' })).queryByText('Manual — block or shortcode')).toBeNull();
+    expect(within(screen.getByRole('tabpanel', { name: 'Design' })).queryByText('Manual')).toBeNull();
     await userEvent.click(screen.getByRole('button', { name: 'Undo draft edit' }));
     await userEvent.click(screen.getByRole('tab', { name: 'Display rules' }));
     expect(screen.getByRole('button', { name: 'Placement Automatically after content' })).toBeVisible();
@@ -1321,7 +1321,7 @@ describe('whole-draft Undo and Redo', () => {
     await userEvent.click(await screen.findByRole('tab', { name: 'Destinations' }));
     expect(screen.getByRole('radio', { name: /Send to a service/ })).toBeChecked();
     await userEvent.click(screen.getByRole('radio', { name: /Collect only in WConvert/ }));
-    expect(screen.getByText(/do not promise automatic emails or texts/)).toBeVisible();
+    expect(screen.getByText(/Automatic emails and texts need a separate sending setup/)).toBeVisible();
     await userEvent.click(screen.getByRole('button', { name: 'Undo draft edit' }));
     expect(screen.getByRole('radio', { name: /Send to a service/ })).toBeChecked();
     await userEvent.click(screen.getByRole('button', { name: 'Redo draft edit' }));

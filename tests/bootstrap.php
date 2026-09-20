@@ -1354,8 +1354,11 @@ if (!class_exists('wpdb')) {
 if (!class_exists('WP_REST_Response')) {
     class WP_REST_Response
     {
-        /** @param mixed $data */
-        public function __construct(private $data = null, private int $status = 200)
+        /**
+         * @param mixed $data
+         * @param array<string, string> $headers
+         */
+        public function __construct(private $data = null, private int $status = 200, private array $headers = [])
         {
         }
 
@@ -1368,6 +1371,12 @@ if (!class_exists('WP_REST_Response')) {
         public function get_status(): int
         {
             return $this->status;
+        }
+
+        /** @return array<string, string> */
+        public function get_headers(): array
+        {
+            return $this->headers;
         }
     }
 }

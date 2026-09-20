@@ -12,7 +12,7 @@ const vocabulary = { triggers: [{ type: 'page_load' }, { type: 'time_on_page' }]
 it('groups the placement choices without repeating the section heading', () => {
   render(<PlacementSettings optinId="example" published config={{}} vocabulary={vocabulary} onChange={() => undefined} />);
   const choices = screen.getByRole('group', { name: 'Placement method' });
-  expect(within(choices).getByRole('radio', { name: 'Manual — block or shortcode' })).toBeChecked();
+  expect(within(choices).getByRole('radio', { name: 'Manual' })).toBeChecked();
   expect(within(choices).getByRole('radio', { name: 'Automatic' })).not.toBeChecked();
   expect(screen.queryByText('Inline placement')).toBeNull();
 });
@@ -25,7 +25,7 @@ it('makes trigger replacement and post-only defaults explicit, preserves other s
   }
   render(<Editor />);
   await user.click(screen.getByRole('radio', { name: 'Automatic' }));
-  expect(screen.getByText(/page load instead of other triggers/)).toBeInTheDocument();
+  expect(screen.getByText(/replace existing triggers with page load/)).toBeInTheDocument();
   expect(screen.getByTestId('config')).toHaveTextContent('time_on_page');
   await user.click(screen.getByRole('button', { name: 'Enable automatic placement' }));
   expect(screen.getByRole('radio', { name: 'Automatic' })).toHaveFocus();
@@ -39,7 +39,7 @@ it('makes trigger replacement and post-only defaults explicit, preserves other s
   await user.type(screen.getByLabelText('Paragraph number'), '10');
   expect(current().inline_placement.paragraph).toBe(10);
   expect(screen.queryByRole('alert')).toBeNull();
-  await user.click(screen.getByRole('radio', { name: 'Manual — block or shortcode' }));
+  await user.click(screen.getByRole('radio', { name: 'Manual' }));
   expect(current().inline_placement).toBeNull();
   expect(current().rules).toContainEqual({ type: 'page_load' });
 });
@@ -77,7 +77,7 @@ it('automatic publish guidance does not tell merchants to insert a shortcode', (
 
 it('hands a published content lock off to its region block and enclosing shortcode', () => {
   render(<PlacementGuidance optinId="example" displayType="inline" contentLock={{ mode: 'hide' }} published />);
-  expect(screen.getByText(/Add the “WConvert Content lock” block/)).toBeVisible();
+  expect(screen.getByText(/Add the “WConvert Lock from here” divider/)).toBeVisible();
   expect(screen.getByText('[wconvert_content_lock id="example"]…[/wconvert_content_lock]')).toBeVisible();
   expect(screen.queryByText(/Add the “Inline Campaign” block/)).toBeNull();
 });

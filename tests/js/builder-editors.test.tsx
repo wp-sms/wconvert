@@ -830,7 +830,7 @@ describe('where it shows', () => {
     await open('Pages');
 
     expect(screen.getByText('Shown everywhere on the site.')).toBeInTheDocument();
-    expect(screen.queryByText(/exclusions always win/i)).toBeNull();
+    expect(screen.queryByText(/exclusions override included pages/i)).toBeNull();
   });
 
   it('says which list wins only once both of them hold something', async () => {
@@ -843,7 +843,7 @@ describe('where it shows', () => {
 
     await open('Pages');
 
-    expect(screen.getByText(/exclusions always win/i)).toBeInTheDocument();
+    expect(screen.getByText(/exclusions override included pages/i)).toBeInTheDocument();
   });
 
   /**

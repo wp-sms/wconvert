@@ -2,6 +2,10 @@
 /** Disposable WordPress fixtures; never mount this directory into a saved site. */
 add_action('init', static function (): void {
     if (!isset($_GET['wconvert_lock'])) return;
+    if (!username_exists('lock-author')) {
+        $author = wp_create_user('lock-author', 'author-fixture', 'lock-author@example.test');
+        if (!is_wp_error($author)) (new WP_User($author))->set_role('author');
+    }
     $kind = sanitize_key((string) $_GET['wconvert_lock']);
     $container = \WConvert\Bootstrap::container();
     $repository = $container->get(\WConvert\Optin\OptinRepository::class);
@@ -17,27 +21,39 @@ add_action('init', static function (): void {
                 ['type' => 'stack', 'children' => [['type' => 'heading', 'text' => 'Request received']]],
             ]]],
         ];
-        if ($kind === 'off') unset($config['content_lock']);
+        if ($kind === 'off' || $kind === 'divider-off') unset($config['content_lock']);
         $ids[$kind] = $repository->create('Content lock ' . $kind, 'grow_email_list', $config)->id;
         update_option('wconvert_lock_fixtures', $ids);
     }
-    if ($kind !== 'missing') $repository->publish($ids[$kind]);
+    if ($kind !== 'missing' && $kind !== 'divider-missing') $repository->publish($ids[$kind]);
     $id = $ids[$kind];
     $bonus = '<!-- wp:heading --><h2 class="wp-block-heading">Bonus checklist</h2><!-- /wp:heading --><!-- wp:paragraph --><p><a id="bonus-link" href="#end">Download your bonus</a></p><!-- /wp:paragraph -->';
     $region = $kind === 'shortcode'
         ? '[wconvert_content_lock id="' . $id . '"]' . $bonus . '[/wconvert_content_lock]'
         : '<!-- wp:wconvert/content-lock {"optinId":"' . $id . '"} -->' . $bonus . '<!-- /wp:wconvert/content-lock -->';
+    if (str_starts_with($kind, 'divider')) {
+        $marker = '<!-- wp:wconvert/content-lock-divider {"optinId":"' . $id . '"} /-->';
+        $region = $marker . $bonus;
+        if ($kind === 'divider-duplicate') $region .= $marker;
+        if ($kind === 'divider-nested') $region = '<!-- wp:group --><div class="wp-block-group">' . $marker . $bonus . '</div><!-- /wp:group -->';
+        if ($kind === 'divider-unsupported') $region .= '<!-- wp:html --><form><input aria-label="Public external form"></form><!-- /wp:html -->';
+        if ($kind === 'divider-conflict') $region .= '<!-- wp:wconvert/content-lock {"optinId":"' . $id . '"} -->' . $bonus . '<!-- /wp:wconvert/content-lock -->';
+        if ($kind === 'divider-pagination') $region = '<!-- wp:nextpage --><!--nextpage--><!-- /wp:nextpage -->' . $region;
+        if ($kind === 'divider-shortcode') $region .= '<!-- wp:paragraph --><p>[example_shortcode]</p><!-- /wp:paragraph -->';
+        if ($kind === 'divider-empty') $region = '<!-- wp:paragraph --><p>Public end of article.</p><!-- /wp:paragraph -->' . $marker;
+    }
     $postId = (int) get_option('wconvert_lock_post', 0);
     $post = ['post_title' => 'Content lock fixture', 'post_content' => '<!-- wp:paragraph --><p>Read this public introduction.</p><!-- /wp:paragraph -->' . $region
-        . ($kind === 'duplicate' ? $region : '') . '<!-- wp:paragraph --><p id="end">Public end of article.</p><!-- /wp:paragraph -->',
-        'post_status' => 'publish', 'post_type' => 'post'];
+        . ($kind === 'duplicate' ? $region : '') . ($kind === 'divider-empty' ? '' : '<!-- wp:paragraph --><p id="end">Public end of article.</p><!-- /wp:paragraph -->'),
+        'post_status' => $kind === 'divider-preview' ? 'draft' : 'publish', 'post_type' => 'post'];
     if ($postId) $post['ID'] = $postId;
     $postId = wp_insert_post($post);
     update_option('wconvert_lock_post', $postId);
+    add_action('wp_head', static function () use ($postId): void { echo '<meta name="wconvert-lock-post" content="' . (int) $postId . '">'; });
     if (($_GET['theme'] ?? '') === 'classic') {
         $dir = WP_CONTENT_DIR . '/themes/wconvert-lock-classic'; wp_mkdir_p($dir);
         file_put_contents($dir . '/style.css', "/* Theme Name: Content Lock Fixture */\n");
-        file_put_contents($dir . '/index.php', '<!doctype html><html <?php language_attributes(); ?>><head><meta name="viewport" content="width=device-width,initial-scale=1"><?php wp_head(); ?></head><body><main><?php while(have_posts()): the_post(); the_content(); endwhile; ?></main><?php wp_footer(); ?></body></html>');
+        file_put_contents($dir . '/index.php', '<!doctype html><html <?php language_attributes(); ?>><head><meta name="viewport" content="width=device-width,initial-scale=1"><?php wp_head(); ?></head><body><main><?php while(have_posts()): the_post(); the_content(); endwhile; ?></main><footer id="site-footer">Public site footer.</footer><?php wp_footer(); ?></body></html>');
         wp_clean_themes_cache(); switch_theme('wconvert-lock-classic');
     } else switch_theme('twentytwentyfive');
     add_filter('request', static function (array $query) use ($postId): array {

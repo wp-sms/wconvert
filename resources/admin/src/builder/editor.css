@@ -1113,3 +1113,17 @@ body .wconvert-rule-picker__unavailable {
   font-weight: 400;
 }
 #wconvert-admin .wconvert-canvas__alternate { position: absolute; inset: 0; z-index: 1; }
+
+#wconvert-admin .wconvert-canvas__document[data-screen-flow] .wconvert-canvas__alternate { position: relative; }
+
+@media (max-width: 1000px) {
+  #wconvert-admin .wconvert-workspace__secondary[data-content-lock] {
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: auto minmax(480px, 1fr);
+    overflow: auto;
+  }
+  #wconvert-admin .wconvert-workspace__secondary[data-content-lock] .wconvert-workspace__settings {
+    overflow: visible;
+    border-inline-end: 0;
+  }
+}

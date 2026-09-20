@@ -38,7 +38,7 @@ import { PayloadMeter } from './PayloadMeter';
 import { ScopeStyle } from './ScopeStyle';
 import { StructureView } from './StructureView';
 import { DesignSettings } from './DesignSettings';
-import { InlinePlacementSettings, inlinePlacementLabel } from '../inlinePlacement';
+import { InlinePlacementSettings, inlinePlacementLabel, inlinePlacementControls, ContentLockPreview, type ContentLockPreviewState } from '../inlinePlacement';
 import { ReopenPreview, reopenControls } from '../reopenControls';
 import { EditorCanvas, ScreenControls, DeviceControls } from './EditorCanvas';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../components/ui/dialog';
@@ -140,6 +140,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
   useEffect(() => { onEditingStateChange?.({ dirty, busy }); }, [dirty, busy, onEditingStateChange]);
   const [showLayers, setShowLayers] = useState(false);
   const [previewing, setPreviewing] = useState(false);
+  const [lockPreview, setLockPreview] = useState<ContentLockPreviewState>('locked');
   useEffect(() => {
     if (!browsing && !busy && restoreBrowseFocus.current) {
       restoreBrowseFocus.current = false;
@@ -571,6 +572,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
     setSelection(null);
     setOpenToken(null);
   };
+  const showingLock = tab === 'rules' && config.content_lock != null && displayTypeOf(config, templates) === 'inline' && !!inlinePlacementControls.preview;
   const previewPane =
     entry === null ? null : (
       <EditorCanvas
@@ -584,7 +586,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
         onStep={setStep}
         displayType={displayTypeOf(config, templates)}
         placement={config.placement}
-        screen={showingReopen ? { label: reopenLabel, content: <ReopenPreview value={config.teaser} template={entry} mobile={width === 'narrow'} onReopen={() => { setReopenScreen(false); setStep(0); }} /> } : undefined}
+        screen={showingLock ? { inFlow: true, label: __('Content lock', 'wconvert'), controls: <ContentLockPreview controls template={entry} state={lockPreview} onStateChange={setLockPreview} />, content: <ContentLockPreview template={entry} state={lockPreview} onStateChange={setLockPreview} /> } : showingReopen ? { label: reopenLabel, content: <ReopenPreview value={config.teaser} template={entry} mobile={width === 'narrow'} onReopen={() => { setReopenScreen(false); setStep(0); }} /> } : undefined}
         onClose={canPreviewReopen && step === 0 ? showReopen : undefined}
       />
     );
@@ -599,9 +601,9 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
     setSelection(null);
     setOpenToken(null);
   };
-  const inlineSummary = config.content_lock != null ? __('Content lock — selected WordPress region', 'wconvert') : config.inline_placement == null
-    ? __('Manual — block or shortcode', 'wconvert')
-    : inlinePlacementLabel(config.inline_placement) ?? __('Automatic — check placement settings', 'wconvert');
+  const inlineSummary = config.content_lock != null ? __('Content lock', 'wconvert') : config.inline_placement == null
+    ? __('Manual', 'wconvert')
+    : inlinePlacementLabel(config.inline_placement) ?? __('Check automatic placement', 'wconvert');
   const goToInlinePlacement = () => {
     setTab('rules');
     setPreviewing(false);
@@ -838,7 +840,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
             )}
           </Activity>
         </TabsContent>
-        <TabsContent value="rules" className="wconvert-workspace__secondary">
+        <TabsContent value="rules" className="wconvert-workspace__secondary" data-content-lock={showingLock || undefined}>
           <div className="wconvert-workspace__settings">
             <DisplayRules
               act={act}

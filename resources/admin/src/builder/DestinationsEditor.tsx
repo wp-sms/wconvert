@@ -193,7 +193,7 @@ export function DestinationsEditor({
           <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-warning/30 bg-warning/5 p-3">
             <div>
               <p className="m-0 font-medium">{sprintf(_n('%d selected destination has been deleted.', '%d selected destinations have been deleted.', missing.length, 'wconvert'), missing.length)}</p>
-              <Description>{__('Remove these references from this Campaign’s draft, then choose another destination if needed.', 'wconvert')}</Description>
+              <Description>{__('Remove deleted destinations, then choose replacements if needed.', 'wconvert')}</Description>
             </div>
             <Button variant="outline" size="sm" onClick={() => onChange(bound.filter((id) => !missing.includes(id)))}>
               {__('Remove missing destinations', 'wconvert')}

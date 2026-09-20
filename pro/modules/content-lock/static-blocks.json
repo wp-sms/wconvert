@@ -1,0 +1,9 @@
+{
+  "top": ["core/paragraph", "core/heading", "core/list", "core/image", "core/table", "core/quote", "core/buttons", "core/separator", "core/spacer"],
+  "children": {
+    "core/list": ["core/list-item"],
+    "core/list-item": ["core/list"],
+    "core/buttons": ["core/button"],
+    "core/quote": ["core/paragraph"]
+  }
+}

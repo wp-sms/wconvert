@@ -1,8 +1,8 @@
-# Inline content locking — research and proposed implementation plan
+# Inline content locking: implementation and UX follow-up plan
 
 Date: 20 September 2026. Parent: [#165](https://github.com/wp-sms/wconvert/issues/165).
 
-Status: implementation authorized on 20 September 2026. This is the implementation contract. Competitor findings are documentation research, not runtime testing.
+Status: the original implementation was delivered through #180 / PR #181. The UX follow-up in section 15 was researched and authorized on 20 September 2026. Local implementation and verification are recorded in sections 17–19. The manual divider in section 19 supersedes the earlier prototype-only scope. Earlier sections record the original feature contract, with authoring guidance updated to match the follow-up. Competitor findings are documentation research, not runtime testing. This plan update is local only; PR changes require user confirmation.
 
 ## 1. Recommendation
 
@@ -22,8 +22,9 @@ Sources were reviewed on the date above. These are documented capabilities, not 
 |---|---|---|
 | [OptinMonster content locking](https://optinmonster.com/docs/optinmonsters-content-blocking-feature/) | Inline campaigns can blur or remove content below the embed, within the same container. The feature is documented for Plus and higher. Success-cookie duration controls remembered access; global success settings can unlock across the site. The troubleshooting section explicitly calls out page-builder container boundaries. | Reuse inline; make the content boundary explicit. Remember successful access, but do not couple every resource to an unrelated site's conversion by default. |
 | [Thrive Leads shortcode documentation](https://thrivethemes.com/docs/how-to-use-thriveboxes-and-shortcode-forms/) and [official tutorial](https://thrivethemes.com/thrive-leads-content-lock/) | A Lead Shortcode wraps the selected content. Hide and Blur modes are available. The tutorial demonstrates immediate reveal after submitting and retention after reload; it does not establish a precise retention contract for this comparison. | An explicit region maps well to WordPress authoring and avoids guessing which following elements belong to an offer. Reload continuity is part of a complete journey. |
-| [Bloom locked-content documentation](https://help.elegantthemes.com/en/articles/8607755-using-the-bloom-locked-content-opt-in) | Locked Content is a distinct opt-in type. Its generated shortcode encloses a resource link or article section. Setup includes selecting an email service/list. The reviewed page does not specify retry, storage-failure, or remembered-access details. | Adopt the explicit boundary without adding a sixth WConvert Display Type or requiring a Destination for local capture. |
+| [Bloom locked-content documentation](https://help.elegantthemes.com/en/articles/8607755-using-the-bloom-locked-content-opt-in) and [shortcode setup](https://help.elegantthemes.com/en/articles/8600681-creating-and-using-shortcodes-in-bloom) | Locked Content is a distinct opt-in type. Its generated shortcode encloses a resource link or article section. Setup includes selecting an email service/list. The reviewed page does not specify retry, storage-failure, or remembered-access details. | Adopt the explicit boundary without adding a sixth WConvert Display Type or requiring a Destination for local capture. |
 | [MailOptin content-locking documentation](https://mailoptin.io/article/setup-wordpress-content-locking/) | In-post campaigns hide or blur content below the form; additional CSS selectors can be specified. Automatic top/middle placement and manual block/shortcode embedding are documented. Local lead storage is an alternative to an email integration. Global success-cookie settings can unlock site content. | Broad selectors and automatic article gating offer convenience, but greatly expand failure and layout scope. Keep these as later evaluated extensions. |
+| [Gravity Wiz Submit to Access](https://gravitywiz.com/documentation/gravity-forms-submit-to-access/) | Its documentation lists version 1.0.17, updated 7 May 2026. Authors enable gating in post or individual block settings and choose the required form. Shortcode placement is also supported. Its access-control scope is broader than WConvert promotional gating. | Make existing-content setup possible directly from the selected blocks. Borrow the low-friction authoring idea without implying equivalent protected access or payment support. |
 | [Elementor content-lock popup documentation](https://elementor.com/help/how-to-create-a-content-lock-popup/) | An adjacent pattern uses a Yes/No popup, disables ordinary close routes, closes on Yes, and directs No elsewhere. This is a button-choice gate rather than the inline Lead-capture journey. | Whole-page blocking and confirmation buttons solve a different need. They should not determine this feature's conversion or accessibility contract. |
 
 The common useful behaviors are a clear content boundary, immediate reward delivery, a reusable form, and recognition of a prior successful interaction. Competitors differ on scope, visual treatment, and recognition. We should specify those differences rather than treating “content locking” as one universal contract.
@@ -74,10 +75,10 @@ Proposed stored shape: `config.content_lock = { mode: "hide" }`; absence means o
 3. Explain the exchange: “Show this content after a successful form submission. If the form cannot load, the content stays available.” Show the same-browser remembering rule and the public-content limitation here.
 4. Enabling requires the page-load trigger. Present trigger replacement as part of the explicit, undoable mode change; do not silently carry delay, scroll, click, or exit triggers into a content gate. Preserve page targeting, conditions, consent requirements, schedules, and frequency controls.
 5. Edit form and success copy in the existing Design workspace. Offer a suitable inline starting point only if a review shows existing designs are inadequate. “Content unlocked” is accurate after reveal; “Subscription confirmed” is not.
-6. In the WordPress post/page editor, insert **WConvert Content lock**, choose the published Campaign by name, and add or move the selected content into it. The block displays the boundary and ordinary editable child content; it does not introduce a second WConvert form designer.
+6. In the WordPress post/page editor, insert **WConvert Content lock**, choose a published, lock-enabled Campaign by name, and add content inside it. For existing supported blocks, **Transform to → WConvert Content lock** performs the enclosing step in place; it must preserve content and support Undo. The block displays the boundary and ordinary editable child content; it does not introduce a second WConvert form designer.
 7. Classic-editor users copy an enclosing shortcode from the placement guidance: `[wconvert_content_lock id="…"]…content…[/wconvert_content_lock]`. The existing empty `[wconvert_optin]` shortcode is unchanged.
-8. Preview Locked, Unlocked, and Form unavailable states. The Campaign editor uses representative article content; the WordPress preview/real-page inspector shows the actual region. Preview never writes unlock receipts, Leads, or analytics.
-9. Publication review names the placement, trigger rule, browser remembering behavior, and public fallback. It links to the real-page inspector and SEO integration guidance. It must not pretend a global scan proved that every page contains a correct wrapper.
+8. Preview Locked, Unlocked, and Form unavailable states in the existing right-hand Campaign preview, with a visible sample-content label. WordPress editing/preview shows the actual content and layout, but preview contexts intentionally remain readable; test actual gating on a published page with an eligible fresh visitor and the real-page inspector. Campaign simulation never writes unlock receipts, Leads, or analytics.
+9. Publication review names the placement and gives the next action: add or wrap the content in the WordPress page editor. Keep remembering, fallback and SEO details in expandable help or future WConvert documentation. The Google guidance link was admin-only and has been removed in the local UI cleanup. Until real documentation exists, use in-product help rather than a dead `#` link. Do not imply a global scan proved that every page contains a correct wrapper.
 
 Use ordinary WordPress post-editing capabilities for placing and editing the region. An author who can embed an existing Campaign does not thereby gain permission to modify its design, publishing state, or site settings. Preserve standard child-block sanitization and supported WordPress-version behavior.
 
@@ -201,14 +202,14 @@ Record the final decision in a new ADR and amend affected records inline in the 
 
 ## 12. Delivery sequence
 
-Each implementation slice must produce a complete, reviewable behavior with its own tests. The overall feature is complete only after all release slices below.
+Historical delivery sequence for #180 / PR #181. These slices describe the original feature, not new work to repeat. Section 15 defines the next UX work.
 
 1. **Prove the explicit-region journey.** Finalize the proposed ADR/config contract; deliver the native block, saved-content fallback, compatible Campaign setting, actual capture/reveal, basic inspector states, and Free/Pro boundaries. Verify one real WordPress page through success, field refusal, missing Campaign, and Pro deactivation. Demonstrates a full journey across authoring, publishing, runtime, and capture.
 2. **Complete return visits and experiment behavior.** Add bounded family receipts, reload/cross-page continuity, blocked storage behavior, compatible A/B family validation, first-anchor conflicts, duplicate/nested wrapper handling, and terminal per-document state. Demonstrate two pages and a returning reader without an extra Lead.
 3. **Complete resilience and classic authoring.** Add the paired shortcode using the same region contract, typed technical-failure fallback, live loss of eligibility, pending-request behavior, optimizer/cached-page handling, and back/forward lifecycle. Demonstrate an outage and a delayed loader without stranded content.
 4. **Complete merchant guidance and release verification.** Finish the three preview states, publication guidance, accessibility review, privacy/storage and SEO guidance, full browser/WordPress fixtures, regression coverage, production builds, and required CI. Include real examples of a bonus region and an article remainder.
 
-Before starting slice 1, turn this reviewed plan into a separate implementation ticket under #165, with the agreed scope and acceptance criteria. Do not mark #165's evaluation item complete merely because a prototype renders a form. No lower-priority Display Types are included.
+The original implementation ticket was #180 under #165. Do not reopen or repeat that work as part of the UX follow-up. No lower-priority Display Types are included.
 
 ## 13. Verification and acceptance
 
@@ -250,4 +251,324 @@ Completion means a merchant can publish a clearly bounded inline gate, a visitor
 - Rich embed/script deferral, private download delivery, account login, payment, subscription verification, email confirmation, and cross-device entitlements.
 - New Display Types, forced fullscreen gates, social/share gates, and new analytics funnels.
 
-The principal trade-off to review is explicit: this first release prioritizes a predictable selected region and readable failure behavior over automatic whole-article gating and strict access enforcement. The proposed defaults above resolve the initial product choices; they can be revised in the implementation ticket before code begins.
+The principal trade-off to review is explicit: this first release prioritizes a predictable selected region and readable failure behavior over automatic whole-article gating and strict access enforcement. The implemented runtime defaults remain in force. Section 15 improves authoring without changing those defaults.
+
+
+## 15. UX follow-up: make selecting and placing content easier
+
+### Evidence and decision
+
+Research refreshed on 20 September 2026 against the official sources in section 2 and the WordPress sources below. Retrieval date does not mean every vendor recently changed its product. This is a design recommendation to validate with users, not a measured usability result.
+
+Keep the explicit content container as the underlying model. Promote **select existing blocks, wrap them, choose a Campaign** into the next delivery scope rather than leaving it as an unspecified future convenience. New content still starts with an empty Content lock block. No manual copying or rewriting should be required for supported existing content.
+
+WordPress already teaches selecting multiple blocks and grouping them in its [Group block documentation](https://wordpress.org/documentation/article/group-block/). Its [block transforms reference](https://developer.wordpress.org/block-editor/reference-guides/block-api/block-transforms/) documents multi-block transforms and ungrouping (page last updated 17 August 2026). Prefer that native interaction where it preserves the selected block objects; verify the exact extension point on supported versions before committing to a custom toolbar action. These APIs establish feasibility, not a guarantee that our mixed-block wrapping implementation already works.
+
+Thrive and Bloom support an explicit enclosing region. OptinMonster and MailOptin provide convenient content-below placement, with different container and selector rules. Gravity Wiz demonstrates a more direct authoring entry point on existing blocks. Our inference: reduce the work of making an explicit selection before adding automatic article-wide behavior.
+
+### Baseline before the UX follow-up
+
+- Implemented: saved InnerBlocks container, enclosing shortcode, capture/reveal, remembered access, readable fallback and ordinary inline form reuse.
+- Local cleanup complete: settings overflow fixed, helper copy shortened, detailed setup collapsed, placement em dashes removed, Google button removed. Those changes remain unpushed.
+- Pending at that baseline: moving the example to the right-hand preview, wrapping/unwrapping selected blocks, and better Campaign selection/recovery. These are now implemented locally; see section 17.
+- Before this follow-up, the block called `publishedInlineOptins()`, which supplies only IDs and names for all published inline Campaigns. It cannot identify lock-ready Campaigns, distinguish temporary suspension, or refresh after another tab publishes one. Its generic instruction is not a substitute for readiness information.
+- `InnerBlocks.allowedBlocks` limits direct children, as the [WordPress nested-block documentation](https://developer.wordpress.org/block-editor/how-to-guides/block-tutorial/nested-blocks-inner-blocks/) explains. It does not prove that pasted or transformed descendants are supported. Preserve the current static-content boundary; validate complete selections before wrapping.
+
+### Recommended authoring experience
+
+| Situation | Planned experience |
+|---|---|
+| New bonus content | Insert Content lock, choose the Campaign, write inside the clearly labelled region. Keep the public introduction outside. |
+| Existing article section | Select supported sibling blocks, choose **Transform to → WConvert Content lock**, then choose the Campaign. Preserve order, attributes, links, formatting and nested list/button children. One Undo restores the previous structure. |
+| Remove a lock | Offer a native ungroup/unwrap action that keeps all child content. Removing the entire block retains normal WordPress delete behavior; distinguish these actions clearly. |
+| One eligible Campaign | Keep the choice explicit, with a single obvious named option; do not silently connect a Campaign just because it is the only one. |
+| Many Campaigns | Offer search by name using a native accessible WordPress control. Keep the ordinary inline picker unchanged. |
+| No suitable Campaign | Explain **No published Content lock Campaigns yet**. Users with Campaign-management permission can open the Campaign list in a new tab and create one; authors without it get an instruction to ask the site administrator. Content remains editable. |
+| Newly published Campaign in another tab | Provide **Refresh Campaigns** without reloading the post editor or losing unsaved content. Specify the narrow read permission and data delivery before implementation; do not reuse an admin-only API for Authors. |
+| Previously selected Campaign changed or disappeared | Keep its saved ID and content. Explain unpublished, locking-disabled, temporarily unavailable and unreadable-list states accurately, with a repair action appropriate to the user's permissions. Never silently substitute another Campaign. |
+| Duplicate or nested region | Explain the one-region limit in the editor before publication. Do not discard pasted content or claim a second region will be locked. Keep the existing runtime fallback. |
+| Unsupported blocks, Group/Columns, synced patterns or active embeds | Do not offer a transform that drops or flattens content. Initial wrapping supports the existing validated set. Preserve an unsupported selection and explain the limit. Broader layout support requires a separate preservation/compatibility check. |
+| Classic Editor | Keep the enclosing shortcode under **Classic editor**, with a copy action and a short example. Both ends must enclose one complete region. |
+| Elementor/Divi or a private download | Do not claim Gutenberg coverage applies. Test builder-specific placement separately; private delivery remains a different feature. For a simple public download, first consider the existing success-step link. |
+
+Campaign readiness comes from the published snapshot and existing compatibility/family rules, not the current draft. Offer ready published lock Campaigns for new selection; retain an existing unavailable selection with its status. Readiness here means configured for locking, not guaranteed eligible for every visitor. Schedule, audience and frequency can still leave content readable.
+
+### Preview and copy
+
+Use one preview in the existing right-hand workspace. Place **Locked**, **Unlocked**, and **Form unavailable** controls above it when inspecting Content lock placement. Reuse the form renderer; preserve the normal Design editing workflow and avoid a second simultaneous form preview. Preview-state changes are simulation state only and do not dirty the Campaign or alter its design step.
+
+Show sample introduction/content around the form and label it **Example content**. WConvert cannot know the actual page content from a reusable Campaign alone. Viewing a WordPress draft confirms content layout; verifying visitor gating requires the actual published page. At narrower supported editor widths, stack or use the existing preview switcher instead of squeezing a full form into the settings column. Preserve keyboard navigation and focus when switching views.
+
+Keep the initial placement help to an action and one material limitation:
+
+> Publish this Campaign, then add a Content lock block to your page or wrap existing blocks. Choose this Campaign and update the page.
+>
+> Content stays readable if the form is unavailable. Private content is not protected.
+
+Use the published variant without the first publishing instruction. Keep 30-day browser remembering, one-region guidance, shortcode help and targeting exceptions under **Setup details**, with the one-region constraint also shown contextually when violated. Do not remove information the user needs to correct a problem. Avoid em dashes in new UI copy.
+
+Use **WConvert Content lock** or **Wrap in Content lock** for the action; do not reuse WordPress’s generic Lock control, which concerns editing/moving blocks. The post-editor region gets a compact **Revealed after submission** label and selected Campaign name. Explain “Enable Content lock in the Campaign” only for that actual configuration problem, not as a permanent notice on every valid block. Future WConvert docs can hold SEO and advanced compatibility guidance. Until those pages exist, omit the external link; a `#` link does not provide help.
+
+### Delivery order and implementation seams
+
+1. **Unify preview and placement help.** Move the local settings example into the existing right-hand preview with the three simulation states and sample-content label. Keep the overflow regression and verify normal inline/Design preview behavior. No visitor-runtime changes.
+2. **Make Campaign selection trustworthy.** Extend the block-editor list service with the smallest published readiness/status metadata. Specify and implement the permission-limited refresh path, empty/recovery states, and permission-aware create/edit links. Reuse existing Campaign creation and publishing; no nested form designer or automatic publication. Record any change from enqueue-only list delivery in the relevant ADR alongside implementation.
+3. **Make existing content easy to wrap and unwrap.** First prove native transform/ungroup behavior on representative mixed selections. Implement one undoable mutation of the current post draft only. Keep child objects/serialization and never flatten HTML to recreate the selection. Do not mutate other posts, infer an article boundary, or auto-enable a shared Campaign. Update ADR 0102 authoring details if implementation changes its supported content contract.
+4. **Verify the two end-to-end authoring paths and prepare concise help.** Cover new content and an existing article section, then the permission/recovery cases below. Keep website documentation drafts local until a real hosting destination exists. PR creation or updates still require user confirmation.
+
+Primary seams: `pro/modules/content-lock/block/index.tsx`, the block-editor list in `src/Frontend/InlineOptinBlock.php` / `resources/blocks/inline-optin/src/optins.ts`, `LockSettings.tsx`, and the existing Campaign preview composition. Preserve premium boundaries, ordinary manual embed behavior and saved-content fallback. No new storage, visitor entitlement model or global content scan.
+
+### Acceptance and usability checks
+
+- A first-time editor can complete both **new checklist** and **lock an existing article section** using on-screen instructions, without writing a shortcode or rebuilding the content. Conduct a small observed usability check; record task completion, wrong turns and requests for help. This has not yet been done.
+- Wrapping, unwrapping, Undo/Redo, saving and reopening preserve all supported content and its order/attributes. Reject unsupported transforms before mutation. Verify list view, keyboard selection and focus recovery.
+- Cover zero, one and many eligible Campaigns; missing list data; refresh failure; unpublished/deleted/lock-disabled Campaigns; temporary suspension; and a Campaign published in another tab while the post has unsaved edits. No content or selection loss.
+- Authors can place a ready Campaign without gaining permission to edit or publish it. Refresh exposes only allowed picker data. Ordinary inline blocks keep their existing list and behavior.
+- Test narrow and wide editor layouts, RTL, zoom and all three preview states. Preview simulation writes no Leads, receipts or analytics. Changing tabs preserves Campaign and preview state appropriately.
+- Verify the published page for an eligible fresh visitor, acknowledged submission, return visit and unavailable form. A readable WordPress draft preview must not be mistaken for a failed lock.
+- Check block APIs against the declared WordPress 6.2 floor and the currently supported release. The browser fixture is pinned to 6.8.3, so it alone cannot establish both. ADR 0100 already records an activation dependency mismatch below 6.5; report that blocker separately rather than silently raising the floor or claiming full minimum-version coverage.
+
+Automatic remainder locking, blur, arbitrary block toggles, Group/Columns expansion, native page-builder widgets and protected downloads stay outside this follow-up. Revisit automatic placement if observed authoring difficulty remains after wrapping is available or users need repeated rules across many articles.
+
+
+## 16. Block reuse and automatic remainder locking
+
+### One block type, many placements
+
+There is one registered **WConvert Content lock** block type, not a separate block type for each Campaign. Each inserted instance stores its selected Campaign ID and its own child content. A Campaign supplies the form and locking configuration; the post owns the content. One published Campaign can therefore be selected on multiple pages without copying the content or creating new block types.
+
+The current supported limit is one active locked region per page across all Campaigns. Repeated or nested regions are not independent working gates; preserve the existing readable fallback and make the limit visible while authoring. A saved block is not automatically a synced pattern, and changing content on one page does not change another page. Updating the Campaign's published form affects its placements, subject to the existing serving/cache lifecycle.
+
+| Scenario | Expected behavior |
+|---|---|
+| Ten articles share the same newsletter offer | Select the same Campaign in one region on each article. Each region owns different article content. A successful unlock is remembered for that Campaign family across eligible pages in the same browser for 30 days. |
+| Two resources should ask separately | Use separate Campaigns on their respective pages. A receipt for Campaign A does not unlock Campaign B. A/B arms retain their existing shared family receipt. |
+| Two unrelated offers on one page | Multiple ordinary inline forms are possible; two independent active content gates are outside current scope. Do not present two lock blocks as supported independent gates. |
+| An editor duplicates a page | Its copied block still names the original Campaign, so it shares remembered access. Explain this when relevant; a copied page does not create a new Campaign. |
+| Campaign design changes | The page's gated content stays in the post. Publishing a form change updates the reusable Campaign, not the saved article content. |
+| The same subscriber uses another device | No identity lookup or cross-device unlock. The browser receipt model remains explicit. |
+
+### Distinguish three different placement ideas
+
+| Approach | Merchant action | Assessment |
+|---|---|---|
+| Explicit region, current model | Add a container or transform selected blocks into WConvert Content lock. | Implemented default, with local UX improvements in section 17. Predictable for a bonus section or selected article remainder. |
+| Manually placed start marker | Insert a marker that gates following content to the article boundary. | Easier initial placement but still requires editing every article. Adds ambiguous end boundaries and future-content behavior. The manual divider was prototyped in section 18 and implemented locally after approval in section 19. |
+| Automatic article remainder | Choose a Campaign, eligible posts/categories and an insertion point such as after three paragraphs. | Valuable for publishers applying the same exchange across many standard articles. Recommended as a separately scoped later option, disabled by default; not implemented or part of the current UX delivery. |
+
+A possible later automatic flow is **Content lock → Automatic article remainder → After 3 paragraphs → Choose posts/categories → Review representative pages → Publish**. The reader sees the introduction, then the form; the supported article remainder is hidden until acknowledged capture. Navigation, sidebars, footer and comments outside that article region stay available. No saved post is rewritten. This requires an explicit amendment to the current rule that automatic placement and Content lock are mutually exclusive; the existing Automatic option only places a form and must not start gating because of this plan.
+
+OptinMonster documents gating below its inline embed within the same container, with page-builder container limitations. MailOptin documents automatic top/middle insertion plus additional selectors. These are evidence of the convenience and compatibility trade-off, not proof of demand or a tested WConvert implementation. See the official source links in section 2.
+
+Before implementing automatic remainder locking, establish these acceptance boundaries:
+
+- One precisely owned main article region, a documented paragraph-count rule, and a safe end boundary. Never hide arbitrary later page DOM. If a safe boundary cannot be established, leave content readable and explain why in the inspector.
+- Posts/categories are an explicit merchant choice. Provide exclusions and an actual-page inspection path; the generic Campaign preview cannot certify every article layout.
+- A short article with fewer than the selected paragraph count, or no meaningful remainder, stays ungated. Do not unexpectedly gate the whole article or place an empty reward behind the form.
+- Initially limit compatibility to validated standard post content. Embedded applications, forms, nested layouts and builder output need specific checks; skip unsupported regions rather than breaking them.
+- An explicit content region takes precedence on that page. Resolve competing automatic Campaigns to one winner using documented priority; keep ordinary manual-anchor precedence and the one-active-lock rule. Final precedence must be specified and regression-tested before changing runtime behavior.
+- Reuse acknowledged capture, remembered access and readable failure behavior. Eligibility/frequency rules can leave content readable. No global subscriber recognition or protected-content claim.
+- Verify representative long/short posts, plugin-inserted content, cached pages, delayed scripts, accessibility and deactivation. Validate with publishers who need repeated article gating before committing to the feature.
+
+Decision: ship the explicit-region UX improvements first. Keep automatic article remainder as a named follow-up for bulk publishing needs, with the above boundaries, rather than rejecting it permanently or quietly including it in the current implementation.
+
+
+## 17. Local UX implementation and verification
+
+Implemented on 20 September 2026 in the local `codex/content-lock-ui-cleanup` checkout. No PR or remote branch has been updated.
+
+### What changed
+
+- Content lock now uses the right-hand Campaign canvas on **Display rules → Placement → Content lock**. The controls simulate Locked, Unlocked and Form unavailable. The form uses the shared preview renderer, surrounded by labelled example content. These controls hold separate local state and do not change the Campaign design or visitor state. Narrow layouts stack the settings and canvas.
+- Placement help is shorter, with secondary details collapsed. Related Design, Destinations and Display rules helper copy was shortened. The admin-only Google guidance button and placement em dashes were removed. No dead documentation link was added.
+- One reusable **WConvert Content lock** block still owns a selected Campaign ID and its child content. A native multi-block transform wraps supported existing content. WordPress Undo/Redo and **Remove lock, keep content** preserve that content. Wrapping rejects unsupported selections and a second region; pasted duplicates receive an authoring warning. Unwrapping respects WordPress removal permission.
+- The searchable picker offers published, lock-ready Campaigns. Refresh reads a narrow authenticated endpoint without editing the post. Missing, disabled and temporarily unavailable selections remain visible for repair. Authors can place Campaigns without receiving Campaign-management permission; authorized managers can open the existing Campaign list in a new tab.
+- The original readable fallback, one active region per page, Campaign-scoped browser receipt and supported static-content boundary remain the runtime contract. Automatic article-remainder locking remains deferred under section 16.
+
+### Setup in plain language
+
+1. Create an inline Campaign, enable **Content lock** in Display rules, and publish it.
+2. Edit the post or page in WordPress. Add **WConvert Content lock**, or select supported existing blocks and use **Transform to → WConvert Content lock**.
+3. Choose the published Campaign. Put the content to reveal inside the block and keep the public introduction outside.
+4. Save or update the page. Check the published page in a fresh browser session to try submission and reveal.
+
+If the Campaign was published in another tab, use **Refresh Campaigns**. To keep the content and stop gating that region, use **Remove lock, keep content**.
+
+### Verification completed
+
+- Full JavaScript suite: 122 files, 2,580 tests passed. Focused picker and selection tests cover refresh failure, preserving a saved selection, missing data, supported mixed descendants and refusing unsupported selections.
+- Full PHP suite passed with 2,001 tests and 9,772 assertions. A subsequent focused run also passed the added temporary-suspension/permission case (3 picker tests, 12 assertions). Type checking, lint, PHPStan and source-boundary checks passed. Admin, Pro admin and block production bundles were rebuilt.
+- WordPress 6.8.3: the Campaign setup/publication journey passed with the right-hand preview, all three simulated states and narrow layout. The six visitor-runtime browser checks passed. All three editor checks passed: registration/readable serialization, mixed-content wrapping with Undo/Redo and unwrapping, and author-only refresh with unsaved content followed by save/reopen.
+- WordPress 7.1.1 (resolved by the Playground `latest` fixture, confirmed from the running installation): both wrapping/Undo/unwrap and author refresh/save/reopen browser journeys passed.
+- Native mixed-block transform behavior was checked against the WordPress Group implementation for 6.2 and 6.8. The implementation uses the same conversion hook and clones complete block subtrees instead of rebuilding HTML.
+
+### Remaining validation limits
+
+Observed usability sessions, a manual screen-reader pass, the full RTL/zoom matrix and full runtime coverage on the declared WordPress 6.2 floor have not been completed by this follow-up. The previously documented activation dependency mismatch below WordPress 6.5 still prevents claiming a verified 6.2 installation. No external documentation site or automatic remainder-locking feature was published.
+
+
+## 18. Writing-first container and manual-divider experiment
+
+Authorized after reviewing the actual Gutenberg screenshot on 20 September 2026.
+The screenshot exposed excessive editor chrome and ambiguous inside/outside
+writing prompts. Passing serialization tests did not establish easy authoring.
+
+### Local plugin change
+
+Keep the explicit selected-section container. Move Campaign settings to the
+native block inspector after initial inline setup, use compact start/end markers
+with the Campaign name, start empty regions with a writable paragraph, and move
+**Remove lock, keep content** to the native toolbar. Warnings stay visible in the
+canvas. Scope CSS to editor chrome so the theme still controls actual content.
+No visitor behavior or block-compatibility expansion is implied.
+
+### Prototype, not a production divider
+
+The manual divider is brought forward for interaction review. Compare three
+approaches at `http://127.0.0.1:5191/content-lock.html?variant=B`, started with
+`npm run prototype:content-lock`: A selected section, B article divider, C
+individual block choices in a sidebar. This follows the existing local editor
+prototype convention. The standalone simulation is necessary to compare boundary
+models without registering experimental blocks in saved WordPress posts.
+
+Try an existing article, writing a new article, and a bonus with a public
+conclusion. Controls support moving the boundary, editing/reordering/appending
+blocks, Undo, removing the lock, choosing a sample Campaign, and simulating
+before submission, after submission and unavailable form. All edits live in
+memory. The prototype uses only paragraphs/headings and an embed placeholder;
+it does not prove Gutenberg or third-party block compatibility.
+
+The proposed divider covers subsequent top-level post content through the end
+of the article. Appended content is included. Footer/comments remain outside.
+One region per page remains the intended limit. Unsupported content must receive
+an actionable explanation, with readable fallback; no blind page-DOM hiding.
+Existing selected sections must not silently migrate. Automatic placement across
+multiple posts remains deferred.
+
+The initial interaction comparison supports B for article remainders and A for
+bounded bonuses. C adds per-block bookkeeping and is retained only as a comparison.
+Observed team usability testing is still pending. Durable experiment notes and
+promotion checks are in `tools/design-system/editor-prototype/CONTENT-LOCK-NOTES.md`.
+The comparison code was retired after the decision. Section 19 records the real
+WordPress divider implementation that replaced it.
+
+Verification for this follow-up: block production builds, type checking, lint,
+PHPStan and source contracts passed. The four focused picker/selection unit tests
+passed. WordPress 6.8.3 passed registration/serialization, mixed wrapping with
+Undo/unwrap, author refresh/save/reopen, and initial Campaign selection followed
+by typing into an empty region with a public conclusion outside. The latter two
+journeys also passed the current `latest` WordPress fixture. The writing test
+checks that boundary text remains 13px under the block theme's larger article
+styles. Prototype interactions were checked manually in the browser; no claim of
+observed content-team usability or universal block compatibility is made.
+
+
+## 19. Option B: real Gutenberg divider
+
+The user selected B on 20 September 2026. This supersedes section 18's
+prototype-only scope and the earlier decision to defer a manually placed marker.
+Automatic placement across posts remains deferred. All changes remain local;
+PR updates and pushes still require confirmation.
+
+### Setup
+
+1. Publish an inline Campaign with Content lock enabled.
+2. In Gutenberg, add **WConvert Lock from here** after the public introduction.
+3. Choose the Campaign. Write or retain ordinary blocks below the divider.
+4. Update the article and try the published page in a fresh browser session.
+
+The divider contains no content input and no InnerBlocks. Following blocks keep
+their original structure and formatting. Moving it changes the boundary. New
+content appended below is included. Removing it preserves all article blocks;
+native Undo restores it. Campaign changes affect only the marker's selection.
+Keep the existing selected-section block for a bonus followed by a public
+conclusion. Do not migrate existing sections automatically.
+
+### Scenario decisions
+
+| Scenario | Behavior |
+|---|---|
+| Existing article | Insert one divider between top-level blocks; no dragging content into a container. |
+| New article | Insert the marker, then continue writing normal blocks below it. |
+| Long public introduction | Move the marker with WordPress's native controls. |
+| Newly appended content | Included in the same article remainder; visible guidance explains this. |
+| Empty remainder | Show an authoring prompt; do not activate an empty gate. |
+| Another divider | Inserter prevents ordinary duplicates; pasted duplicates warn and stay public. |
+| Selected lock section or enclosing shortcode already present | Divider stays inactive; preserve the existing section behavior and explain the conflict. |
+| Marker inside Group/Columns/pattern | Ask the writer to move it into the main article; do not infer a nested boundary. |
+| Unsupported block below | Name the block and offer **Find unsupported block**. The remainder stays public. |
+| Embeds, forms, shortcodes or dynamic bindings | Remain unsupported inside the remainder; do not hide active content blindly. |
+| More / Page Break | Divider stays inactive; use a bounded section instead. |
+| Missing/disabled/unavailable Campaign | Preserve saved selection and article content with existing repair guidance. |
+| Draft preview / feed / REST / password protection / secondary loop | Readable fallback. Verify actual gating on the published main article. |
+| Missing Pro / JavaScript / unavailable form | Article remains readable. |
+| Footer and comments | Outside the main post-content region, so stay public. |
+| Public conclusion after a bonus | Use the selected-section block; the article-remainder divider intentionally includes the conclusion. |
+
+### Implementation and review
+
+The Pro-only divider is saved as a marker. A bounded `the_content` pass at priority
+8 prepares a transient region before WordPress renders blocks at priority 9. It
+never updates saved post content. Validation uses a shared static-block schema;
+the existing region renderer and capture/receipt runtime perform gating.
+Publication guidance now names the real divider. The comparison prototype and
+startup command have been removed; the outcome is retained in the design notes.
+
+No claim of universal block compatibility, private-content security or observed
+team usability is made. The WordPress 6.2 activation dependency limitation recorded
+in ADR 0100 remains unresolved.
+
+### Verification
+
+The full JavaScript suite passes (122 files, 2,580 tests), as does the PHP suite
+(2,006 tests, 9,802 assertions). Type checking, lint, PHPStan and source contracts
+pass. All three staged Pro packages pass their artifact contracts, including
+required divider CSS and the runtime static-block schema. The contract tests
+also reject a package missing either file.
+
+The disposable WordPress 6.8.3 checks passed divider capture/reveal in classic
+and block themes, remembered access, normal-block writing, moving the divider,
+save/reopen, removal and Undo. Invalid scopes, missing/disabled Campaigns, no
+JavaScript, an authenticated draft preview and Pro absence remain readable.
+
+The full 16-test browser regression suite also passes against the current
+Playground `latest` WordPress build, covering existing sections and the new
+divider. This includes the actionable unsupported-block warning and its jump
+button. The captured real-editor view is
+`tools/visual-tests/out/content-lock/content-lock-writers-inser-0d018-e-it-without-losing-content/divider-editor.png`.
+
+The final authoring rerun also verifies that the following paragraph sits below
+the divider after WordPress's Undo movement animation settles; the resulting
+screenshot was inspected visually.
+
+
+## 20. Consistent sidebar setup and shorter guidance
+
+Campaign setup now lives in the sidebar for both the empty and selected states,
+for both authoring blocks. The canvas uses a **Choose Campaign** button to open
+WordPress Block settings when needed, keeping form controls out of article
+content. This follows WordPress's documented
+[complementary-area action](https://developer.wordpress.org/block-editor/reference-guides/packages/packages-interface/).
+
+A selected Campaign displays its full wrapping name with Change and Clear
+controls. Change can be cancelled without editing the post; clearing returns to
+the same sidebar picker. Refresh and management remain secondary actions, and
+management links remain unavailable to post authors without that capability.
+The article boundary remains compact, with empty-content help shown as plain
+text rather than a large notice. Repair warnings retain their cause and action.
+Extra preview and section guidance is under **Setup tips**.
+
+There are still two authoring choices: **Lock from here** for the article
+remainder, and **Content lock** for a bounded section with public content after
+it. No standalone end marker is added in this follow-up. The recommendation is
+to retain the bounded section for that use case, avoiding a third overlapping
+workflow and missing, duplicate, moved or nested start/end pairing rules.
+
+Verification: the original canvas-only empty picker was reproduced in WordPress
+before the fix. Five focused picker/selection tests pass, as do production block
+builds, type checking and lint. Three real WordPress authoring journeys pass on
+6.8.3 and the current Playground `latest` build: initial sidebar setup and writing,
+post-author refresh/save/reopen without added management access, and divider
+setup with a closed sidebar, Change/Cancel/Clear, movement, save/reopen and Undo.
+The editor typography assertion waits for the iframe stylesheet to settle.
+Empty and selected sidebar screenshots were inspected. No PR update or push.

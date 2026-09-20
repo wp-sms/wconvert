@@ -2,6 +2,9 @@
 /** Disposable visual-test site only. This file is never packaged with WConvert. */
 declare(strict_types=1);
 
+// Per-request absence check on this disposable site only.
+if (isset($_GET['wconvert_visual_free_only'])) define('WCONVERT_DS_SKIP_PRO', true);
+
 require_once WP_CONTENT_DIR . '/plugins/wconvert/tools/design-system/seed/wconvert-ds-harness.php';
 
 // Nothing on this test site may send mail, including a accidentally selected destination.

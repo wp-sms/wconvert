@@ -7,6 +7,12 @@ implemented and verified; retain a PR link when closing them.
 
 ## Next candidates
 
+- [ ] **Finish content-lock documentation and real-use validation.** Follow the
+  [remaining-work plan](plans/content-lock-followups.md): short setup guide,
+  observed author workflows, manual accessibility/device checks and the supported
+  WordPress version decision. Keep optional end markers, automatic locking and
+  additional presentation modes parked until evidence justifies them.
+
 - [ ] **Resolve shared colors in readability checks.** Follow color references
   through the selected element's desktop/mobile styles before measuring contrast.
   Example: `input-bg: bg` should use the actual background color. Cover inherited

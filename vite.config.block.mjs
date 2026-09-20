@@ -27,6 +27,8 @@ const root = import.meta.dirname;
  * to say why.
  */
 const WORDPRESS_GLOBALS = {
+  '@wordpress/data': 'wp.data',
+  '@wordpress/api-fetch': 'wp.apiFetch',
   '@wordpress/blocks': 'wp.blocks',
   '@wordpress/block-editor': 'wp.blockEditor',
   '@wordpress/components': 'wp.components',

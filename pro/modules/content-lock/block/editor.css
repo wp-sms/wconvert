@@ -1,0 +1,65 @@
+/* Editor chrome stays compact even when the theme uses large article type. */
+.wp-block-wconvert-content-lock.wconvert-lock-editor {
+  border-inline-start: 2px solid #c3d4d1;
+  padding: 0 12px;
+}
+:is(.wconvert-lock-editor, .wconvert-lock-divider) .wconvert-lock-editor__boundary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 12px;
+  align-items: baseline;
+  padding: 8px 0;
+  border-block-end: 1px solid #dcdcde;
+  color: #385a53;
+  font: 13px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  overflow-wrap: anywhere;
+}
+.wconvert-lock-editor .wconvert-lock-editor__end {
+  border-block-start: 1px solid #dcdcde;
+  border-block-end: 0;
+}
+:is(.wconvert-lock-editor, .wconvert-lock-divider) .wconvert-lock-editor__setup {
+  padding: 12px 0;
+  font: 13px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+:is(.wconvert-lock-editor, .wconvert-lock-divider) .wconvert-lock-editor__setup p,
+:is(.wconvert-lock-editor, .wconvert-lock-divider) .components-notice p {
+  font: inherit;
+  margin-block: 8px;
+}
+.wconvert-lock-picker .components-base-control { margin-block-end: 12px; }
+
+.wp-block-wconvert-content-lock-divider.wconvert-lock-divider {
+  border-block: 1px solid #a6c0b8;
+  padding: 10px 14px;
+  background: #f0f6f3;
+  color: #385a53;
+  font: 13px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+.wconvert-lock-divider .wconvert-lock-editor__boundary { border: 0; padding: 0; }
+.wconvert-lock-divider p.wconvert-lock-divider__scope { font: inherit; margin: 4px 0; }
+.wconvert-lock-divider__count { font: inherit; color: #526d65; }
+
+.wconvert-lock-picker__selected {
+  border: 1px solid #dcdcde;
+  border-radius: 4px;
+  padding: 12px;
+  background: #f6f7f7;
+}
+.wconvert-lock-picker__label {
+  display: block;
+  margin-block-end: 8px;
+  color: #50575e;
+  font-size: 11px;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+.wconvert-lock-picker__selected strong { display: block; overflow-wrap: anywhere; }
+.wconvert-lock-picker__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; margin-block-start: 8px; }
+.wconvert-lock-picker__actions .components-button { height: auto; min-height: 28px; padding: 4px 0; }
+.wconvert-lock-picker__actions p { margin: 0; }
+.wconvert-lock-settings__hint { color: #50575e; margin-block: 16px 8px; }
+.wconvert-lock-settings__help summary { cursor: pointer; color: #1e1e1e; }
+.wconvert-lock-settings__help p { color: #50575e; }
+.wconvert-lock-divider__count { display: block; margin-block-start: 4px; }
+.wconvert-lock-divider > .components-button { margin-block: 6px; }

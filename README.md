@@ -1044,10 +1044,19 @@ neither release cycle constrains the other
 Use Content lock for a public bonus, checklist, or article section revealed after
 form submission. In Display rules → Placement choose **Content lock**, use a
 complete two-screen inline submission design, then publish. In your WordPress
-post/page, insert **WConvert Content lock**, select the Campaign and put the
-content to reveal inside. Keep a useful public introduction outside. The classic
-editor equivalent is `[wconvert_content_lock id="CAMPAIGN_ID"]Your content[/wconvert_content_lock]`.
-Use one complete region per page; do not split shortcode halves between widgets.
+post/page, add **WConvert Lock from here** after the public introduction. Choose
+the Campaign in the block settings sidebar, then write ordinary blocks below the
+divider. Everything below it, including content added later, belongs to the lock.
+Moving or removing the divider preserves those content blocks.
+
+For a bonus followed by a public conclusion, use **WConvert Content lock** instead
+and put only the bonus inside that section. Both blocks use the sidebar Campaign
+picker, with Change and Clear actions for an existing selection. Use one lock per
+page. No separate end marker is needed for the section block.
+
+The classic editor equivalent is
+`[wconvert_content_lock id="CAMPAIGN_ID"]Your content[/wconvert_content_lock]`.
+Keep both shortcode tags around the complete region; do not split them between widgets.
 
 Test the published page in a fresh browser, submit, then reload. Access is remembered
 for 30 days for that Campaign family in the same browser. Reuse the same Campaign

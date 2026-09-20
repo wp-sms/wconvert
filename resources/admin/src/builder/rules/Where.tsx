@@ -81,7 +81,7 @@ export function Where({ types, targeting, onChange }: WhereProps) {
       */}
       {include.length > 0 && exclude.length > 0 && (
         <Description className="mt-3">
-          {__('A page in both lists is kept off — exclusions always win.', 'wconvert')}
+          {__('Exclusions override included pages.', 'wconvert')}
         </Description>
       )}
     </>

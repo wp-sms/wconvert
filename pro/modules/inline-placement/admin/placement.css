@@ -16,3 +16,49 @@
   background: var(--surface);
   border-radius: var(--radius-md);
 }
+
+#wconvert-admin .wconvert-inline-placement {
+  grid-template-columns: minmax(0, 1fr);
+}
+
+#wconvert-admin .wconvert-content-lock-example {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 12px;
+  min-inline-size: 0;
+}
+
+#wconvert-admin .wconvert-placement-help {
+  min-inline-size: 0;
+  font-size: var(--text-note);
+  line-height: var(--text-note--line-height);
+}
+
+#wconvert-admin .wconvert-placement-help summary {
+  cursor: pointer;
+  color: var(--foreground);
+}
+
+#wconvert-admin .wconvert-placement-help p {
+  margin-block-start: 8px;
+}
+
+#wconvert-admin .wconvert-placement-help code {
+  overflow-wrap: anywhere;
+}
+
+#wconvert-admin .wconvert-content-lock-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 20px;
+  font-size: var(--text-note);
+}
+#wconvert-admin .wconvert-content-lock-controls select {
+  inline-size: auto;
+  max-inline-size: 100%;
+}
+#wconvert-admin .wconvert-content-lock-controls span {
+  color: var(--muted-foreground);
+}
