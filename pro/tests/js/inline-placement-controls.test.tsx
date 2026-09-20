@@ -74,3 +74,10 @@ it('automatic publish guidance does not tell merchants to insert a shortcode', (
   expect(screen.queryByRole('textbox')).toBeNull();
   expect(screen.getByText(/No block or shortcode is needed/)).toBeInTheDocument();
 });
+
+it('hands a published content lock off to its region block and enclosing shortcode', () => {
+  render(<PlacementGuidance optinId="example" displayType="inline" contentLock={{ mode: 'hide' }} published />);
+  expect(screen.getByText(/Add the “WConvert Content lock” block/)).toBeVisible();
+  expect(screen.getByText('[wconvert_content_lock id="example"]…[/wconvert_content_lock]')).toBeVisible();
+  expect(screen.queryByText(/Add the “Inline Campaign” block/)).toBeNull();
+});

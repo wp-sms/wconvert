@@ -281,8 +281,8 @@ editorTest('goal-first inline setup enables automatic placement and publishes', 
   const automatic = method.getByRole('radio', { name: 'Automatic', exact: true });
   await expect(automatic).toBeVisible();
   const choices = method.locator('label.wconvert-choice');
-  await expect(choices).toHaveCount(2);
-  for (let index = 0; index < 2; index++) {
+  await expect(choices).toHaveCount(3);
+  for (let index = 0; index < 3; index++) {
     const box = await choices.nth(index).boundingBox();
     expect(box?.height ?? 0).toBeGreaterThanOrEqual(44);
   }
@@ -307,7 +307,7 @@ editorTest('goal-first inline setup enables automatic placement and publishes', 
   // The editor intentionally leaves the radio unchecked until the explicit
   // confirmation button commits automatic placement.
   await manual.focus();
-  await page.keyboard.press('ArrowRight');
+  await page.keyboard.press('ArrowLeft'); // Forward through native radios in RTL.
   await expect(automatic).toBeFocused();
   const enable = page.getByRole('group', { name: 'Enable automatic placement' });
   await expect(enable).toBeVisible();
@@ -351,6 +351,29 @@ editorTest('goal-first inline setup enables automatic placement and publishes', 
   await expect(publish).toBeEnabled();
   await publish.click();
   await expect(page.getByRole('status')).toContainText('Saved and published');
+
+  await page.getByRole('button', { name: 'Done', exact: true }).click();
+
+  // The same published inline Campaign can explicitly switch from automatic
+  // placement to a content region, preview fallback, and publish that choice.
+  await rulesTab.click();
+  const updatedPlacement = page.getByRole('button', { name: 'Placement Automatically after content', exact: true });
+  if (await updatedPlacement.getAttribute('aria-expanded') !== 'true') await updatedPlacement.click();
+  await method.getByText('Content lock', { exact: true }).click();
+  await page.getByRole('group', { name: 'Enable content lock', exact: true }).getByRole('button', { name: 'Enable content lock', exact: true }).click();
+  await expect(page.getByRole('radio', { name: 'Content lock', exact: true })).toBeChecked();
+  await expect(page.getByRole('radio', { name: 'Automatic', exact: true })).not.toBeChecked();
+  const preview = page.getByLabel('Preview content lock', { exact: true });
+  await preview.selectOption('unavailable');
+  await expect(page.getByText('No successful submission is recorded for this fallback.', { exact: true })).toBeVisible();
+  await preview.selectOption('locked');
+  await page.getByRole('button', { name: 'Review & publish', exact: true }).click();
+  await expect(review).toContainText('Content lock: selected region');
+  await expect(publish).toBeEnabled();
+  const published = page.waitForResponse(response => response.url().includes('/publish') && response.request().method() === 'POST');
+  await publish.click(); expect((await published).ok()).toBe(true);
+  await expect(page.getByRole('status')).toContainText('Saved and published');
+  await expect(page.getByRole('dialog')).toContainText('Add the “WConvert Content lock” block');
 });
 
 test.afterEach(async ({ page }, info) => {

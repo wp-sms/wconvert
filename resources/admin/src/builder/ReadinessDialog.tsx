@@ -426,6 +426,7 @@ export function ReadinessDialog({
                 displayType={displayType}
                 placement={placement}
                 inlinePlacement={inlinePlacement}
+                contentLock={contentLock}
                 published={published || isPublished}
               />
             )}
