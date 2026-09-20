@@ -180,6 +180,7 @@ final class ArtifactContractTest extends TestCase
         return $this->tree([
             'wconvert-pro.php' => "<?php\n// the plugin\n",
             'src/Bootstrap.php' => "<?php\nnamespace WConvert\\Pro;\nfinal class Bootstrap {}\n",
+            'public/blocks/content-lock.js' => "console.log('block');\n",
             'public/loader/loader.js' => "console.log('pro loader');\n",
             'public/inspector/inspector.js' => "console.log('pro inspector');\n",
             // Pro's admin bundle, both halves. Pro replaces free's on the same
@@ -198,6 +199,7 @@ final class ArtifactContractTest extends TestCase
             // nothing that could be too high. The tests that assert the
             // per-tier rules build lower rungs explicitly.
             'modules/display-types/module.json' => "{\"slug\":\"display-types\"}\n",
+            'modules/content-lock/module.json' => "{\"slug\":\"content-lock\"}\n",
             'modules/inline-placement/module.json' => "{\"slug\":\"inline-placement\"}\n",
             'modules/premium-triggers/module.json' => "{\"slug\":\"premium-triggers\"}\n",
             'modules/ab-testing/module.json' => "{\"slug\":\"ab-testing\"}\n",

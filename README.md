@@ -1038,3 +1038,32 @@ From WSMS 8 — PHP 8.1+, DI container, service providers, Vite + React admin,
 PHPStan, PHPUnit. Read it; copy it; never modify it. **No code is shared**, and
 neither release cycle constrains the other
 ([ADR 0030](docs/adr/0030-free-and-pro-release-on-independent-tags.md)).
+
+## Content lock (Pro)
+
+Use Content lock for a public bonus, checklist, or article section revealed after
+form submission. In Display rules → Placement choose **Content lock**, use a
+complete two-screen inline submission design, then publish. In your WordPress
+post/page, insert **WConvert Content lock**, select the Campaign and put the
+content to reveal inside. Keep a useful public introduction outside. The classic
+editor equivalent is `[wconvert_content_lock id="CAMPAIGN_ID"]Your content[/wconvert_content_lock]`.
+Use one complete region per page; do not split shortcode halves between widgets.
+
+Test the published page in a fresh browser, submit, then reload. Access is remembered
+for 30 days for that Campaign family in the same browser. Reuse the same Campaign
+on several pages to share that access. Another device or an existing subscription
+elsewhere is not recognized. Display rules, frequency limits, unavailable Pro,
+missing JavaScript or technical capture failures can leave the content readable.
+Ordinary field validation keeps the form available for correction.
+
+Support is for standard post/page content with text, static images, lists, tables
+and links. Place media embeds, interactive forms and scripts outside. After
+changing campaigns or plugin availability, clear page/CDN caches and check the real
+page; cached HTML can retain its previous payload. Review the Inspector and Privacy
+Data map for the active behavior and site-scoped `wcv_unlock1:` storage.
+
+This is promotional gating: HTML and download URLs are public. Use a dedicated
+access-control system for private files or paid membership. Review your excerpts,
+feeds and search presentation; WConvert does not generate restricted-content
+schema or guarantee indexing outcomes. The [research and implementation plan](docs/plans/165-inline-content-locking.md)
+records competitor documentation, supported scenarios and deferred capabilities.

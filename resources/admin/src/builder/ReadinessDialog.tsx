@@ -46,6 +46,7 @@ export interface ReadinessDialogProps {
   readonly vocabulary: RuleVocabulary;
   readonly displayType: string;
   readonly placement?: unknown;
+  readonly contentLock?: unknown;
   readonly teaser?: unknown;
   readonly inlinePlacement?: unknown;
   readonly bound: readonly string[];
@@ -80,6 +81,7 @@ export function ReadinessDialog({
   vocabulary,
   displayType,
   placement,
+  contentLock,
   teaser,
   inlinePlacement,
   bound,
@@ -124,11 +126,13 @@ export function ReadinessDialog({
   const needsCapture = bound.length > 0;
   const goalIssue = outcome && hasDesign ? outcomeDesignIssue(outcome, template) : null;
   const handoffIssue = outcome ? outcomeHandoffIssue(outcome, bound, destinations, captureMode) : null;
-  const inlineTriggerIssue = !overlay && inlinePlacement != null && !usesPageLoadOnly(rules.rules, vocabulary);
+  const inlineTriggerIssue = !overlay && (inlinePlacement != null || contentLock != null) && !usesPageLoadOnly(rules.rules, vocabulary);
   const blocking: { said: string; fix: () => void }[] = [
+    ...(contentLock != null && (overlay || inlinePlacement != null || !template || convertingActOf(template.tree)[0] !== 'submit')
+      ? [{ said: __('Content lock requires an inline submission form and manual placement.', 'wconvert'), fix: onGoToPlacement }] : []),
     ...(!overlay && inlinePlacement != null && inlinePlacementLabel(inlinePlacement) === null
       ? [{ said: __('Choose a valid inline position and a whole paragraph number from 1 to 100.', 'wconvert'), fix: onGoToPlacement }] : []),
-    ...(inlineTriggerIssue ? [{ said: __('Automatic placement requires page load as its only trigger. Change When it appears or use manual placement.', 'wconvert'), fix: () => onGoToRules('when') }] : []),
+    ...(inlineTriggerIssue ? [{ said: __('This placement requires page load as its only trigger. Change When it appears or use manual placement.', 'wconvert'), fix: () => onGoToRules('when') }] : []),
     ...(!outcome ? [{ said: __('Goal requirements could not be checked. Reload before publishing.', 'wconvert'), fix: onGoToDesign }] : []),
     ...(goalIssue ? [{ said: goalIssue, fix: template && convertingActOf(template.tree)[0] === outcome?.action ? onEditDesign : onGoToDesign }] : []),
     ...(handoffIssue ? [{ said: handoffIssue, fix: onGoToDestinations }] : []),
@@ -280,7 +284,7 @@ export function ReadinessDialog({
                   {teaser != null && ['popup', 'slide_in'].includes(displayType) && <p><button className="wconvert-readiness__go" onClick={() => jump(onGoToDesign)}>{__('Reopen button enabled: follows eligible pages in this tab after dismissal. Check mobile placement beside checkout, chat and cookie controls.', 'wconvert')}</button></p>}
                   {!overlay && (
                     <p><button className="wconvert-readiness__go" onClick={() => jump(onGoToPlacement)}>
-                      {inlinePlacementLabel(inlinePlacement) ?? __('Appears where you place its block or shortcode, when these rules allow it.', 'wconvert')}
+                      {contentLock != null ? __('Content lock: selected region, remembered for 30 days in this browser. Content stays readable if the form is unavailable. Check the actual page before sharing it.', 'wconvert') : inlinePlacementLabel(inlinePlacement) ?? __('Appears where you place its block or shortcode, when these rules allow it.', 'wconvert')}
                     </button></p>
                   )}
                   <dl className="wconvert-launch-review__rules">
@@ -422,6 +426,7 @@ export function ReadinessDialog({
                 displayType={displayType}
                 placement={placement}
                 inlinePlacement={inlinePlacement}
+                contentLock={contentLock}
                 published={published || isPublished}
               />
             )}

@@ -26,6 +26,7 @@ export interface TemplatePickerProps {
   readonly currentDisplayType?: string;
   readonly chosen: string | undefined;
   readonly hasCurrentDesign?: boolean;
+  readonly contentLock?: boolean;
   readonly fit: Fit;
   readonly goalLabel?: string;
   readonly busy: boolean;
@@ -40,7 +41,7 @@ export interface TemplatePickerProps {
 
 /** Browse by what the design does, inspect it, then apply it to the draft. */
 export function TemplatePicker({
-  index, trees, displayType, currentDisplayType, chosen, fit, goalLabel, busy, onChoose, onPrepare, onNear, failed, onRetry, active = true, initialInspectedId, hasCurrentDesign = true,
+  index, trees, displayType, currentDisplayType, chosen, fit, goalLabel, busy, onChoose, onPrepare, onNear, failed, onRetry, active = true, initialInspectedId, hasCurrentDesign = true, contentLock = false,
 }: TemplatePickerProps) {
   const [chosenFacets, setChosenFacets] = useState<Chosen>({});
   const [query, setQuery] = useState('');
@@ -217,7 +218,7 @@ export function TemplatePicker({
       </div>
       {inspected !== undefined && (
         <TemplateDesignDetail key={inspected.id} entry={inspected} template={trees.get(inspected.id)}
-          currentDisplayType={currentDisplayType} hasCurrentDesign={hasCurrentDesign}
+          currentDisplayType={currentDisplayType} hasCurrentDesign={hasCurrentDesign} contentLock={contentLock}
           labels={index.labels} current={inspected.id === chosen} active={active} fit={fit} goalLabel={goalLabel} busy={busy}
           loadError={failed?.has(inspected.id)} onRetry={onRetry ? () => onRetry(inspected.id) : undefined}
           onChoose={onChoose} onPrepare={onPrepare} onBack={() => {

@@ -1,3 +1,4 @@
+import { contentLockDesignCompatible } from '../inlinePlacement';
 import { useEffect, useId, useRef, useState } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import { ArrowLeft, Monitor, Smartphone } from 'lucide-react';
@@ -20,6 +21,7 @@ export interface TemplateDesignDetailProps {
   readonly labels: TemplateLabelsWithFacets;
   readonly current: boolean;
   readonly hasCurrentDesign?: boolean;
+  readonly contentLock?: boolean;
   readonly currentDisplayType?: string;
   readonly active?: boolean;
   readonly fit: Fit;
@@ -37,8 +39,9 @@ const DESKTOP_CONTENT_WIDTH = '64rem';
 
 /** Inspect the exact normalized candidate before replacing the working draft. */
 export function TemplateDesignDetail({
-  entry, template: sample, labels, current, currentDisplayType, fit, goalLabel, busy, onChoose, onPrepare, onBack, loadError = false, onRetry, active = true, hasCurrentDesign = true,
+  entry, template: sample, labels, current, currentDisplayType, fit, goalLabel, busy, onChoose, onPrepare, onBack, loadError = false, onRetry, active = true, hasCurrentDesign = true, contentLock = false,
 }: TemplateDesignDetailProps) {
+  const [disableLock, setDisableLock] = useState(false);
   const [mode, setMode] = useState<TemplateContentMode>(hasCurrentDesign ? 'keep' : 'sample');
   const [attempt, setAttempt] = useState(0);
   const [prepared, setPrepared] = useState<{
@@ -112,7 +115,8 @@ export function TemplateDesignDetail({
   const scale = size === null ? 1 : Math.min(1, size.availableWidth / size.width);
   const unavailable = entry.availability !== 'ready';
   const isCurrent = current && !(prepares && mode === 'sample');
-  const cannotApply = !active || isCurrent || refused !== null || unavailable || template === undefined;
+  const incompatibleLock = contentLock && template !== undefined && !contentLockDesignCompatible(entry.display_type, template);
+  const cannotApply = incompatibleLock && !disableLock || !active || isCurrent || refused !== null || unavailable || template === undefined;
   const changesFormat = currentDisplayType !== undefined && entry.display_type !== currentDisplayType;
   const fromFormat = displayTypeLabel(currentDisplayType);
   const toFormat = displayTypeLabel(entry.display_type);
@@ -249,6 +253,7 @@ export function TemplateDesignDetail({
             </div>
           )}
           <div className="wconvert-design-detail__actions">
+            {incompatibleLock && <label className="flex gap-2 text-note"><input type="checkbox" checked={disableLock} onChange={event => setDisableLock(event.target.checked)} />{__('Turn off Content lock to use this design. The selected WordPress content will remain readable.', 'wconvert')}</label>}
             {formatNotice && <p id={`${id}-format`} className="text-note text-warning">{formatNotice}</p>}
             <p id={`${id}-replacement`} className="text-note text-muted-foreground">
               {prepares && mode === 'sample'

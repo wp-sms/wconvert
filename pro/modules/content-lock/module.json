@@ -1,0 +1,6 @@
+{
+  "slug": "content-lock",
+  "name": "Inline content locking",
+  "description": "Reveal a selected content region after capture, remembering access in this browser.",
+  "bundle_marker": "data-wconvert-content-lock"
+}

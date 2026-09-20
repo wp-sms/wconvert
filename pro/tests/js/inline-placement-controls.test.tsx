@@ -65,7 +65,7 @@ it('Free can explicitly return a previously automatic campaign to manual placeme
   let changes: Record<string, unknown> = {};
   render(<InlinePlacementSettings optinId="example" published config={{ inline_placement: { position: 'after_content' } }} vocabulary={vocabulary} onChange={(patch) => { changes = patch; }} />);
   await user.click(screen.getByRole('button', { name: 'Use manual placement' }));
-  expect(changes).toEqual({ inline_placement: null });
+  expect(changes).toEqual({ inline_placement: null, content_lock: null });
 });
 
 it('automatic publish guidance does not tell merchants to insert a shortcode', () => {
@@ -73,4 +73,11 @@ it('automatic publish guidance does not tell merchants to insert a shortcode', (
   expect(screen.getByText('Automatically after paragraph 3')).toBeInTheDocument();
   expect(screen.queryByRole('textbox')).toBeNull();
   expect(screen.getByText(/No block or shortcode is needed/)).toBeInTheDocument();
+});
+
+it('hands a published content lock off to its region block and enclosing shortcode', () => {
+  render(<PlacementGuidance optinId="example" displayType="inline" contentLock={{ mode: 'hide' }} published />);
+  expect(screen.getByText(/Add the “WConvert Content lock” block/)).toBeVisible();
+  expect(screen.getByText('[wconvert_content_lock id="example"]…[/wconvert_content_lock]')).toBeVisible();
+  expect(screen.queryByText(/Add the “Inline Campaign” block/)).toBeNull();
 });

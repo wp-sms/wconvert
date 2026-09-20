@@ -1,5 +1,7 @@
 # Manual inline placement uses WordPress layout surfaces
 
+**Extended by [ADR 0102](0102-content-lock-is-an-optional-inline-capture-journey.md):** the ordinary manual block remains unchanged. Pro additionally offers a content-region container block with saved InnerBlocks and a paired shortcode; this separate journey extends configuration and payload without changing Template JSON or the schema.
+
 Phase 4 of #165 makes the existing manual inline Campaign block usable and
 discoverable in the places WordPress already owns. It does not introduce a
 sixth Display Type, a WConvert widget, or automatic sidebar selection.

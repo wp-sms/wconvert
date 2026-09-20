@@ -6,36 +6,41 @@ import { usesPageLoadOnly, type InlinePlacementProps } from '@/inlinePlacement';
 import type { Rule, Targeting } from '@/builder/api';
 import { ManualPlacement } from '@/builder/ManualPlacement';
 import './placement.css';
+import LockSettings from '../../content-lock/admin/LockSettings';
 
 export default function PlacementSettings({ optinId, published, config, vocabulary, onChange }: InlinePlacementProps) {
   const id = useId();
-  const [confirm, setConfirm] = useState(false);
+  const [confirm, setConfirm] = useState<'automatic' | 'lock' | false>(false);
   const manualChoice = useRef<HTMLInputElement>(null);
   const automaticChoice = useRef<HTMLInputElement>(null);
+  const lockChoice = useRef<HTMLInputElement>(null);
   const placement = config.inline_placement as { position: string; paragraph?: number; fallback?: string } | null;
+  const locked = config.content_lock != null;
   const rules = (config.rules ?? []) as Rule[];
   const triggerNames = new Set(vocabulary.triggers.map((rule) => rule.type));
   const compatible = usesPageLoadOnly(rules, vocabulary);
   const validParagraph = Number.isInteger(placement?.paragraph) && (placement?.paragraph ?? 0) >= 1 && (placement?.paragraph ?? 0) <= 100;
   const targeting = (config.targeting ?? {}) as Targeting;
   const enable = () => {
-    onChange({ inline_placement: { position: 'after_content' },
+    onChange({ inline_placement: confirm === 'lock' ? null : { position: 'after_content' }, content_lock: confirm === 'lock' ? { mode: 'hide' } : null,
       rules: [...rules.filter((rule) => !triggerNames.has(rule.type)), { type: 'page_load' }],
-      ...(!targeting.include?.length ? { targeting: { ...targeting, include: [{ type: 'singular', value: 'post' }] } } : {}),
+      ...(confirm !== 'lock' && !targeting.include?.length ? { targeting: { ...targeting, include: [{ type: 'singular', value: 'post' }] } } : {}),
     });
     setConfirm(false);
-    automaticChoice.current?.focus();
+    (confirm === 'lock' ? lockChoice : automaticChoice).current?.focus();
   };
   return <div className="wconvert-inline-placement">
     <div role="group" aria-label={__('Placement method', 'wconvert')} className="wconvert-choice-set">
-      <label className="wconvert-choice"><input className="sr-only" ref={manualChoice} type="radio" name={id} checked={!placement} onChange={() => { setConfirm(false); onChange({ inline_placement: null }); }} /><span className="wconvert-choice__label">{__('Manual — block or shortcode', 'wconvert')}</span></label>
-      <label className="wconvert-choice"><input className="sr-only" ref={automaticChoice} type="radio" name={id} checked={!!placement} onChange={() => setConfirm(true)} /><span className="wconvert-choice__label">{__('Automatic', 'wconvert')}</span></label>
+      <label className="wconvert-choice"><input className="sr-only" ref={manualChoice} type="radio" name={id} checked={!placement && !locked} onChange={() => { setConfirm(false); onChange({ inline_placement: null, content_lock: null }); }} /><span className="wconvert-choice__label">{__('Manual — block or shortcode', 'wconvert')}</span></label>
+      <label className="wconvert-choice"><input className="sr-only" ref={automaticChoice} type="radio" name={id} checked={!!placement} onChange={() => setConfirm('automatic')} /><span className="wconvert-choice__label">{__('Automatic', 'wconvert')}</span></label>
+      <label className="wconvert-choice"><input className="sr-only" ref={lockChoice} type="radio" name={id} checked={locked} onChange={() => setConfirm('lock')} /><span className="wconvert-choice__label">{__('Content lock', 'wconvert')}</span></label>
     </div>
-    {!placement && <ManualPlacement optinId={optinId} published={published} />}
-    {confirm && <div className="wconvert-inline-placement__confirmation" role="group" aria-label={__('Enable automatic placement', 'wconvert')}>
-      <p>{__('Automatic placement starts after content. It uses page load instead of other triggers; audience, schedule and frequency settings stay in place.', 'wconvert')}</p>
-      {!targeting.include?.length && <p>{__('Your Pages setting will start with posts only. You can add pages under Display rules.', 'wconvert')}</p>}
-      <Button onClick={enable}>{__('Enable automatic placement', 'wconvert')}</Button>
+    {locked && <LockSettings optinId={optinId} published={published} config={config} vocabulary={vocabulary} onChange={onChange} />}
+    {!placement && !locked && <ManualPlacement optinId={optinId} published={published} />}
+    {confirm && <div className="wconvert-inline-placement__confirmation" role="group" aria-label={confirm === 'lock' ? __('Enable content lock', 'wconvert') : __('Enable automatic placement', 'wconvert')}>
+      <p>{confirm === 'lock' ? __('Content lock uses page load instead of other triggers and an explicit region you place in WordPress. Audience, schedule and frequency settings stay in place.', 'wconvert') : __('Automatic placement starts after content. It uses page load instead of other triggers; audience, schedule and frequency settings stay in place.', 'wconvert')}</p>
+      {confirm !== 'lock' && !targeting.include?.length && <p>{__('Your Pages setting will start with posts only. You can add pages under Display rules.', 'wconvert')}</p>}
+      <Button onClick={enable}>{confirm === 'lock' ? __('Enable content lock', 'wconvert') : __('Enable automatic placement', 'wconvert')}</Button>
       <Button variant="ghost" onClick={() => { setConfirm(false); manualChoice.current?.focus(); }}>{__('Cancel', 'wconvert')}</Button>
     </div>}
     {placement && <>

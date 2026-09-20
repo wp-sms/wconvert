@@ -135,7 +135,7 @@ function anchorFor(id: string): Element | null {
   }
 }
 
-function whenInViewport(element: Element, report: () => void): void {
+export function whenInViewport(element: Element, report: () => void): () => void {
   const Observer = window.IntersectionObserver;
 
   // No observer means no way to tell "on the page" from "on the screen". The
@@ -145,7 +145,7 @@ function whenInViewport(element: Element, report: () => void): void {
   if (typeof Observer !== 'function') {
     report();
 
-    return;
+    return () => {};
   }
 
   const observer = new Observer((entries) => {
@@ -158,4 +158,5 @@ function whenInViewport(element: Element, report: () => void): void {
   });
 
   observer.observe(element);
+  return () => observer.disconnect();
 }

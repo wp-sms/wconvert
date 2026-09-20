@@ -43,6 +43,7 @@ export interface CaptureOptions {
   readonly endpoint: string | null;
   /** The [[Conversion]]: the capture succeeded. Not called for a refusal. */
   readonly onCaptured: () => void;
+  readonly onRefused?: (kind: 'correctable' | 'unconfirmed') => void;
 }
 
 /**
@@ -51,6 +52,7 @@ export interface CaptureOptions {
  * JSON it arrives in.
  */
 interface RefusalBody {
+  readonly code?: unknown;
   readonly message?: unknown;
   readonly data?: { readonly field?: unknown };
 }
@@ -101,6 +103,7 @@ export function bindCapture(root: HTMLElement, options: CaptureOptions): void {
 
     if (options.endpoint === null) {
       refuse(root, NO_RESPONSE, null);
+      options.onRefused?.('unconfirmed');
 
       return;
     }
@@ -126,6 +129,10 @@ export function bindCapture(root: HTMLElement, options: CaptureOptions): void {
         }
 
         refuse(root, text(refusal.message) ?? NO_RESPONSE, text(refusal.data?.field));
+        options.onRefused?.(typeof refusal.code === 'string' && [
+          'wconvert_consent_required', 'wconvert_field_required', 'wconvert_field_too_long',
+          'wconvert_choice_invalid', 'wconvert_uncanonicalisable_identifier', 'wconvert_no_identifier',
+        ].includes(refusal.code) ? 'correctable' : 'unconfirmed');
       });
   });
 }

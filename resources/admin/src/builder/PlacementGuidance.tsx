@@ -16,6 +16,7 @@ export interface PlacementGuidanceProps {
   readonly displayType: string;
   readonly placement?: unknown;
   readonly inlinePlacement?: unknown;
+  readonly contentLock?: unknown;
   /** A published version exists; this does not assert that it can show on any page. */
   readonly published: boolean;
 }
@@ -34,7 +35,7 @@ export function siteCheckUrl(homeUrl?: string, inspectParam?: string): string | 
 }
 
 /** Placement instructions shared by draft review and the result of publishing. */
-export function PlacementGuidance({ optinId, optinName, displayType, placement, inlinePlacement, published }: PlacementGuidanceProps) {
+export function PlacementGuidance({ optinId, optinName, displayType, placement, inlinePlacement, contentLock, published }: PlacementGuidanceProps) {
   const id = useId();
   const direction = useDirection();
   const inline = displayType === 'inline';
@@ -46,7 +47,12 @@ export function PlacementGuidance({ optinId, optinName, displayType, placement, 
   return (
     <section className="wconvert-placement" aria-labelledby={`${id}-title`}>
       <h3 id={`${id}-title`}>{inline ? __('Place this Campaign on a page', 'wconvert') : __('Check where it appears', 'wconvert')}</h3>
-      {automatic ? <>
+      {inline && contentLock != null ? <>
+        <p>{__('Add the “WConvert Content lock” block in your post or page, choose this Campaign, and put the content to reveal inside it.', 'wconvert')}</p>
+        <p>{__('Keep a public introduction outside the region. Use one locked region per page and check it after publishing.', 'wconvert')}</p>
+        <p>{__('For the classic editor, wrap a complete region with:', 'wconvert')} <code>{`[wconvert_content_lock id="${optinId}"]…[/wconvert_content_lock]`}</code></p>
+        <p>{__('The selected content stays readable when the form is unavailable. Successful access is remembered in this browser for 30 days.', 'wconvert')}</p>
+      </> : automatic ? <>
         <p>{automatic}</p>
         <p>{__('After publishing, Pro places this Campaign in matching WordPress posts and pages when its display rules allow it. No block or shortcode is needed. A manual embed takes precedence.', 'wconvert')}</p>
         <p>{__('Check a matching article on your site. Page builders and custom layouts may need manual placement.', 'wconvert')}</p>

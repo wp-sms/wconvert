@@ -4,6 +4,7 @@ import { mountPopover } from './popover';
 import { mountFullscreen } from './fullscreen';
 import { selectAutomatic, showAutomatic } from '../../inline-placement/loader';
 import { connectRecovery } from './recovery';
+import { connectContentLock } from '../../content-lock/loader';
 
 /**
  * Pro's presenter: the three Display Types free has no container for, and
@@ -42,7 +43,7 @@ import { connectRecovery } from './recovery';
  * free's to draw (CONTEXT.md, Impression).
  */
 export const proPresenter: Presenter = {
-  connect: ({ entries, changed }) => connectRecovery(proPresenter, entries, changed),
+  connect: ({ entries, changed }) => connectContentLock(connectRecovery(proPresenter, entries, changed), entries, changed),
   select: selectAutomatic,
   show(entry: PayloadEntry, controls: OptinControls): void {
     if (entry.display_type !== 'floating_bar' && entry.display_type !== 'slide_in' && entry.display_type !== 'fullscreen') {

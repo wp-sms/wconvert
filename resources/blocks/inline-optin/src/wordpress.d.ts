@@ -31,12 +31,13 @@ declare module '@wordpress/blocks' {
         attributes: { optinId?: string };
         setAttributes: (next: { optinId?: string }) => void;
       }) => JSX.Element;
-      save: () => null;
+      save: () => React.ReactNode;
     },
   ): void;
 }
 
 declare module '@wordpress/block-editor' {
+  export const InnerBlocks: ((props: { allowedBlocks?: string[] }) => React.JSX.Element) & { Content: () => React.JSX.Element };
   export function useBlockProps(props?: Record<string, unknown>): Record<string, unknown>;
 }
 

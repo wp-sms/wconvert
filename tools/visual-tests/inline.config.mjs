@@ -1,3 +1,4 @@
+import { fileURLToPath } from 'node:url';
 import { defineConfig } from '@playwright/test';
 
 export default defineConfig({
@@ -8,10 +9,10 @@ export default defineConfig({
   timeout: 60000,
   expect: { timeout: 10000 },
   outputDir: './out/inline',
-  reporter: [['list'], ['html', { outputFolder: 'tools/visual-tests/out/inline-report', open: 'never' }]],
+  reporter: [['list'], ['html', { outputFolder: './out/inline-report', open: 'never' }]],
   use: { baseURL: 'http://127.0.0.1:9415', browserName: 'chromium', trace: 'retain-on-failure' },
   webServer: {
-    cwd: new URL('../..', import.meta.url).pathname,
+    cwd: fileURLToPath(new URL('../..', import.meta.url)),
     command: 'WCONVERT_VISUAL_PRO=1 WCONVERT_VISUAL_INLINE=1 node tools/visual-tests/server.mjs',
     url: 'http://127.0.0.1:9415/wp-login.php',
     timeout: 180000,
