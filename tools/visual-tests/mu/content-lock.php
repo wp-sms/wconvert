@@ -37,7 +37,7 @@ add_action('init', static function (): void {
     if (($_GET['theme'] ?? '') === 'classic') {
         $dir = WP_CONTENT_DIR . '/themes/wconvert-lock-classic'; wp_mkdir_p($dir);
         file_put_contents($dir . '/style.css', "/* Theme Name: Content Lock Fixture */\n");
-        file_put_contents($dir . '/index.php', '<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><?php wp_head(); ?></head><body><main><?php while(have_posts()): the_post(); the_content(); endwhile; ?></main><?php wp_footer(); ?></body></html>');
+        file_put_contents($dir . '/index.php', '<!doctype html><html <?php language_attributes(); ?>><head><meta name="viewport" content="width=device-width,initial-scale=1"><?php wp_head(); ?></head><body><main><?php while(have_posts()): the_post(); the_content(); endwhile; ?></main><?php wp_footer(); ?></body></html>');
         wp_clean_themes_cache(); switch_theme('wconvert-lock-classic');
     } else switch_theme('twentytwentyfive');
     add_filter('request', static function (array $query) use ($postId): array {

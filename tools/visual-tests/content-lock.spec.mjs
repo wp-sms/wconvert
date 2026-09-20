@@ -39,12 +39,15 @@ for (const theme of ['classic', 'block']) test(`WordPress ${theme} block capture
 test('shortcode hides only its region at 320px in RTL and preserves public content', async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 700 });
   await open(page, 'shortcode', '&theme=classic&rtl=1');
+  await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
   await expect(region(page)).toBeHidden();
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth)).toBe(true);
   // A descendant of the hidden region cannot receive focus.
   await page.locator('#bonus-link').evaluate(node => node.focus());
   expect(await page.locator('#bonus-link').evaluate(node => node === document.activeElement)).toBe(false);
   await submit(page); await expect(region(page)).toBeVisible();
+  await page.evaluate(() => window.testShadows.flatMap(root => [...root.querySelectorAll('button')]).find(button => button.textContent === 'Continue to content').click());
+  expect(await region(page).evaluate(node => document.activeElement === node)).toBe(true);
   await page.screenshot({ path: 'tools/visual-tests/out/content-lock/mobile-unlocked.png', fullPage: true });
 });
 test('technical failure opens content with no unlock receipt', async ({ page }) => {
