@@ -127,7 +127,7 @@ export function connectContentLock(base: PresentationSession, entries: readonly 
                   const message = document.createElement('p');
                   message.textContent = labels()[0]; message.setAttribute('role', 'status'); message.tabIndex = -1;
                   view.root.append(message);
-                  const button = document.createElement('button'); button.type = 'button'; button.textContent = labels()[1];
+                  const button = document.createElement('button'); button.type = 'button'; button.className = 'wc-button'; button.textContent = labels()[1];
                   button.onclick = () => { content.tabIndex = -1; content.focus(); content.addEventListener('blur', () => content.removeAttribute('tabindex'), { once: true }); };
                   view.root.append(button);
                   if (ownedFocus) message.focus({ preventScroll: true });

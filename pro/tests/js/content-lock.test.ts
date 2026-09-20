@@ -166,3 +166,25 @@ it.each([true, false])('never opens another Campaign’s gate when an ordinary f
   await vi.waitFor(() => success ? expect(localStorage.length).toBe(1) : expect(form().textContent).toContain('Submission not confirmed'));
   expect(content.hidden).toBe(true);
 });
+
+it('opens at the schedule boundary and never relocks on a page restore', async () => {
+  vi.useFakeTimers(); const content = page();
+  stop = start({ loader: createLoader(FREE_MODULES), entries: [{ ...campaign, ends_at: Date.now() + 1000 }], presenter: proPresenter, store: { read: () => null, write() {} } });
+  expect(content.hidden).toBe(true); await vi.advanceTimersByTimeAsync(1001); expect(content.hidden).toBe(false);
+  window.dispatchEvent(new Event('pageshow')); expect(content.hidden).toBe(false);
+  vi.useRealTimers();
+});
+
+it('opens for a cross-tab receipt without reporting another conversion', async () => {
+  const { unlockStore } = await import('../../modules/content-lock/loader/state');
+  const content = page(); const beacon = run(); const store = unlockStore(); store.remember(campaign.id);
+  window.dispatchEvent(new StorageEvent('storage', { key: store.key }));
+  expect(content.hidden).toBe(false);
+  expect(beacon.report.mock.calls.filter(call => call[1] === 'conversion')).toHaveLength(0);
+});
+
+it('never hides focused content or nested content regions', () => {
+  const content = page(); content.querySelector('a')!.focus(); run(); expect(content.hidden).toBe(false); stop!();
+  const outer = page(); outer.append(outer.parentElement!.cloneNode(true)); run();
+  for (const region of document.querySelectorAll<HTMLElement>('[data-wconvert-locked-content]')) expect(region.hidden).toBe(false);
+});
