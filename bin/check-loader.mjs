@@ -12,8 +12,8 @@
 //
 // Two assertions, and neither is optional:
 //
-//   1. THE BYTE BUDGET, HARD. Free's and Pro's shipped loader, gzip -9, fail
-//      at 14012 bytes, per build. It blocks rather than warns, and there is no
+//   1. THE BYTE BUDGET, HARD. gzip -9: Free 14012 B; paid 18432 B
+//      (ADR 0101, explicitly approved for recovery), per build. It blocks rather than warns, and there is no
 //      second warn band nobody would read.
 //
 //      IT WAS 8192, AND THE NUMBER MOVED ONCE, ON PURPOSE. The original was
@@ -87,7 +87,8 @@ const ROOT = process.argv[2] ? resolve(process.argv[2]) : REPO_ROOT;
  * limit is about what every visitor of every matching page downloads, and that
  * bundle is enqueued only for an administrator who asked for it.
  */
-const BYTE_BUDGET = 14012;
+const FREE_BYTE_BUDGET = 14012;
+const PAID_BYTE_BUDGET = 18432;
 
 const MANIFEST = 'resources/rules/manifest.json';
 
@@ -303,6 +304,7 @@ for (const bundle of BUNDLES) {
     continue;
   }
 
+  const BYTE_BUDGET = bundle.path.startsWith('pro/') ? PAID_BYTE_BUDGET : FREE_BYTE_BUDGET;
   const gzipped = gzipSync(source, { level: 9 }).length;
   const verdict = gzipped > BYTE_BUDGET ? '✗' : '✓';
 

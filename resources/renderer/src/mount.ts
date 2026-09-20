@@ -203,6 +203,7 @@ export function shell(template: Template, chrome: HTMLElement | null, options: M
   root: HTMLElement;
   step: (step: number) => HTMLElement;
   stop: () => void;
+  resume: () => void;
 } {
   const host = document.createElement('div');
   const shadow = host.attachShadow({ mode: 'closed' });
@@ -277,8 +278,7 @@ export function shell(template: Template, chrome: HTMLElement | null, options: M
    * string once a second is a timer running on every page view of every Optin
    * nobody scheduled.
    */
-  const ticking =
-    options.endsAt === undefined ? undefined : setInterval(() => paint(root), 1000);
+  let ticking = options.endsAt === undefined ? undefined : setInterval(() => paint(root), 1000);
 
   return {
     host,
@@ -294,8 +294,13 @@ export function shell(template: Template, chrome: HTMLElement | null, options: M
 
       return next;
     },
+    resume(): void {
+      paint(root);
+      if (options.endsAt !== undefined && ticking === undefined) ticking = setInterval(() => paint(root), 1000);
+    },
     stop(): void {
       clearInterval(ticking);
+      ticking = undefined;
     },
   };
 }
@@ -412,6 +417,8 @@ export function mountModal(options: MountOptions, surface: ModalSurface = {}): M
     },
     steps: options.template.tree.steps.length,
     show() {
+      dismissible = true;
+      parts.resume();
       surface.prepare?.(parts.root);
       dialog.setAttribute('aria-label', parts.root.querySelector('h1,h2')?.textContent || 'Campaign');
       documentStyle();

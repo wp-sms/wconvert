@@ -27,6 +27,7 @@
  */
 
 import type { Template } from '@renderer/types';
+import type { Decision, Verdict } from './decide';
 
 /** WHEN it fires, or WHETHER the visitor is eligible. Fixed per type (ADR 0005). */
 export type RuleKind = 'trigger' | 'condition';
@@ -189,7 +190,16 @@ export interface OptinControls {
 
 /** Whatever turns a decision into something on screen. */
 export interface Presenter {
+  /** A per-document presentation lifecycle; shared engine, composed implementations. */
+  connect?(context: { entries: readonly PayloadEntry[]; changed: () => void }): PresentationSession;
   /** Optional container selection after visitor eligibility, shared with diagnostics. */
   select?(ready: readonly PayloadEntry[]): readonly PayloadEntry[];
-  show(entry: PayloadEntry, controls: OptinControls): void;
+  show(entry: PayloadEntry, controls: OptinControls): void | boolean;
+}
+
+export interface PresentationSession extends Presenter {
+  decide?(decision: Decision): Verdict;
+  /** Conditions still needed by a presentation after its initial triggers settle. */
+  watch?(): readonly Rule[];
+  dispose?(): void;
 }

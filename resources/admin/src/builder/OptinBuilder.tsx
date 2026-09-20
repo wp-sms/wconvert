@@ -682,6 +682,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
             vocabulary={vocabulary}
             displayType={displayTypeOf(config, templates)}
             placement={config.placement}
+            teaser={config.teaser}
             inlinePlacement={config.inline_placement}
             bound={bound}
             template={template}
@@ -793,6 +794,8 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
                             onError={report}
                             onBrowse={() => setBrowsing(true)}
                             displayType={displayTypeOf(config, templates)}
+                            teaser={config.teaser}
+                            onTeaserChange={(teaser) => edit({ teaser })}
                             placement={config.placement}
                             onPlacementChange={(placement) => edit({ placement })}
                           />
@@ -1033,6 +1036,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
           if (displayTypeOf(config, templates) !== chosenDesign.display_type) {
             changes.placement = null;
             changes.inline_placement = null;
+            if (!['popup', 'slide_in'].includes(chosenDesign.display_type)) changes.teaser = null;
           }
 
           edit(changes);

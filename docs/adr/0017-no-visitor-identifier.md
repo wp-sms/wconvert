@@ -139,6 +139,7 @@ value that identifies a browser rather than a person.
   the site-wide allowance is a reserved entry inside it,
   [`SITE_SLOT`](../../resources/loader/src/state.ts), under a name no ULID can
   take. Same ladder, same fail-open, no second consent call.)*
+  **Amended by [ADR 0101](0101-reopen-buttons-preserve-an-explicit-visitor-choice.md):** opt-in Pro recovery also uses bounded, site-scoped sessionStorage for explicit visitor choices. It is tab-session functional state, with no identity or form values, and does not replace the persistent `wcv1` record.
   *Built by [#92](https://github.com/navidkashani/wconvert/issues/92), and the
   one thing that had to be decided at the write rather than at the read: **the
   slot is filled only where the site has an allowance to spend.** All four

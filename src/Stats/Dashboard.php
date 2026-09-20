@@ -23,10 +23,9 @@ defined('ABSPATH') || exit;
  * unexpressible rather than merely discouraged. Comparison is offered within a
  * Goal and within an Optin over time — both carry their own daily series.
  *
- * **There is no "left without converting" figure either.** It is already
- * `impressions − conversions − dismissals`, and naming it invites a screen
- * reporting two numbers where one is the arithmetic of the other
- * (CONTEXT.md, Dismissal).
+ * **There is no "left without converting" figure either.** A visitor can
+ * dismiss, reopen and convert on the same document. These overlapping daily
+ * counters cannot reconstruct abandonment (ADR 0101).
  *
  * Compatible impact counts are computed here: captured submissions, offer
  * clicks, cart clicks and appearances. Email send events remain separate

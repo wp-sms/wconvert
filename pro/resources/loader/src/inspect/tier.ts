@@ -2,6 +2,7 @@ import { runInspector } from '@loader/inspect/run';
 import type { PayloadNarrowing } from '@loader/boot';
 import type { LoaderModule } from '@loader/types';
 import { presenter, proLoaderFor } from '../compose';
+import { recoveryExplanation } from '../../../../modules/display-types/loader/recovery-inspect';
 import { automaticPlacementState } from '../../../../modules/inline-placement/loader';
 
 /**
@@ -31,7 +32,7 @@ import { automaticPlacementState } from '../../../../modules/inline-placement/lo
  */
 export function bootProInspector(modules: readonly LoaderModule[], narrow?: PayloadNarrowing) {
   const loader = proLoaderFor(modules);
-  const presentation = { select: presenter.select, placement: automaticPlacementState };
+  const presentation = { select: presenter.select, placement: automaticPlacementState, recovery: recoveryExplanation };
 
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => runInspector(loader, narrow, presentation), {

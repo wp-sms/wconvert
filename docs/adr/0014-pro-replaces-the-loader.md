@@ -1,5 +1,7 @@
 # Pro replaces the loader rather than augmenting it
 
+**Budget amendment — [ADR 0101](0101-reopen-buttons-preserve-an-explicit-visitor-choice.md):** Free remains capped at 14,012 B gzip; paid loaders have an explicitly approved 18,432 B cap for complete recovery behavior. The 2 KiB per-page payload limit and hard fail-closed checks remain.
+
 The [[Pro]] add-on ships a **complete replacement front-end loader** and dequeues
 the free one. There is no registration seam, no second script, and never two
 loaders on one page.

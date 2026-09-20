@@ -1,5 +1,7 @@
 # The free contract is proven at the source, not at the artifact
 
+**Budget amendment — [ADR 0101](0101-reopen-buttons-preserve-an-explicit-visitor-choice.md):** Free remains capped at 14,012 B gzip; paid loaders have an explicitly approved 18,432 B cap for complete recovery behavior. The 2 KiB per-page payload limit and hard fail-closed checks remain.
+
 Four checks guard the free artifact, and the one that carries the guarantee needs
 **no build at all**: no file in free's tree may import a `pro/` path or the Pro
 namespace. It runs on every pull request. The artifact-level checks confirm at

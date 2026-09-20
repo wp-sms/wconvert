@@ -1,3 +1,4 @@
+import { ReopenSettings } from '../reopenControls';
 import type { Ref } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import { LayoutTemplate } from 'lucide-react';
@@ -24,6 +25,8 @@ export function DesignSettings({
   mobile,
   displayType = 'popup',
   placement,
+  teaser,
+  onTeaserChange = () => undefined,
   onPlacementChange = () => undefined,
 }: {
   template: Template;
@@ -39,6 +42,8 @@ export function DesignSettings({
   mobile?: boolean;
   displayType?: string;
   placement?: unknown;
+  teaser?: unknown;
+  onTeaserChange?: (value: unknown) => void;
   onPlacementChange?: (placement: string | null) => void;
 }) {
   const direction = useDirection();
@@ -62,6 +67,7 @@ export function DesignSettings({
         {__('Browse designs and formats', 'wconvert')}
       </Button>
       <PlacementControl displayType={displayType} value={placement} onChange={onPlacementChange} />
+      {['popup', 'slide_in'].includes(displayType) && <ReopenSettings value={teaser} template={template} onChange={onTeaserChange} />}
       {mobile && (
         <p className="wconvert-scope__narrow">
           {__(

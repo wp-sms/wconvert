@@ -1,4 +1,4 @@
-# There is no visitor-facing error state; a teaser is deferred
+# There is no visitor-facing error state; reopen buttons are presentation
 
 A [[Template]]'s tree is `{ steps: [...] }` — a form step, and for a
 submit-metered design a terminal success step
@@ -6,9 +6,7 @@ submit-metered design a terminal success step
 at that shape from the competitor survey, they look like one question, and they
 have opposite answers.
 
-**An error step is refused, permanently and on principle.** **A teaser is
-deferred**, scoped to two [[Display Type]]s, with the condition it will be
-measured against written down.
+**An error step is refused, permanently and on principle.** **A teaser is now implemented** for popup and slide-in as an opt-in Pro reopen button, under [ADR 0101](0101-reopen-buttons-preserve-an-explicit-visitor-choice.md). It is presentation, never another Template step.
 
 ## The market evidence is thinner than it first reads
 
@@ -79,7 +77,7 @@ sounds so reasonable that a future session says yes to it in an afternoon, and
 the thing that arrives is a design surface for an outage plus a code path that
 lies to the visitor whenever the retry would have worked.
 
-## The teaser is a different question and stays open
+## The teaser is a different presentation
 
 A teaser is not an outage. It is a visitor who dismissed something and might
 want it back, which is a real journey state — and it interacts with a rule this
@@ -96,12 +94,7 @@ Two facts already in the model scope it before anything is built:
   persistent thing at the edge of the viewport. A teaser for a bar is a bar for
   a bar.
 
-So it is `popup` + `slide_in`, and both live in the popover top layer
-([ADR 0011](0011-non-modal-overlays-use-the-popover-top-layer.md)) — which means
-it cannot be designed before
-[#34](https://github.com/navidkashani/wconvert/issues/34) gives `slide_in`
-somewhere to live. It is deferred to there, and the condition it is judged
-against is **the payload budget measured at that point**, not a guess made now.
+**Amended by [ADR 0101](0101-reopen-buttons-preserve-an-explicit-visitor-choice.md):** popup remains a modal dialog; slide-in and the reopen button use the non-modal popover top layer. Recovery follows eligible pages in the browser tab and only expands on a visitor click. The earlier teaser deferral is resolved by #178, with explicit paid-loader budget approval.
 
 ## Consequences
 

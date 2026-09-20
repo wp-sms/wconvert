@@ -158,7 +158,9 @@ about what the visitor meant that they did not make.
 
 ## How the two scopes compose
 
-Site scope is checked **first**, and it is a veto, not a vote. If the site
+**Amended by [ADR 0101](0101-reopen-buttons-preserve-an-explicit-visitor-choice.md):** this veto governs automatic presentation. An explicit recovery click bypasses trigger, dismissal, cap and cooldown gates at both scopes; stop-after-conversion, consent, conditions and schedule still apply.
+
+For automatic presentation, site scope is checked **first**, and it is a veto, not a vote. If the site
 allowance is spent nothing shows, whatever any individual Optin's own Frequency
 says. An Optin cannot opt out of the site-wide rule — that would be a per-Optin
 setting called *ignore the site setting*, which is the configuration this exists

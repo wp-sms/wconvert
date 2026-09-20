@@ -116,6 +116,13 @@ final class PayloadTag
             return '';
         }
 
+        foreach ($entries as &$entry) {
+            if (isset($entry['teaser']) && is_array($entry['teaser'])) {
+                $entry['teaser'] = \WConvert\Optin\Teaser::forPayload($entry['teaser']);
+            }
+        }
+        unset($entry);
+
         // JSON_HEX_TAG is not optional. Without it a headline containing
         // `</script>` closes this element early and the rest of the payload
         // becomes markup. JSON_UNESCAPED_SLASHES and _UNICODE are there for
