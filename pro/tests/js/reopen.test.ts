@@ -207,3 +207,56 @@ it('suppresses only teaser-enabled campaigns when the bounded stop set overflows
   expect(document.querySelector('dialog')!.open).toBe(true);
   expect(options.beacon.report).toHaveBeenCalledOnce();
 });
+
+it('reloads tab refusal on BFCache pageshow without reopening the remembered document', async () => {
+  const options = optionsFor([campaign]);
+  stop = start(options); document.querySelector('dialog')!.close();
+  const { recoveryStore } = await import('../../modules/display-types/loader/recovery-state');
+  // A later document in this tab dismisses the reminder, then Back restores this one.
+  recoveryStore().stop(campaign);
+  window.dispatchEvent(new Event('pageshow'));
+  expect(document.querySelector('[data-wconvert-reopen]')).toBeNull();
+});
+
+it('a successfully shown ordinary overlay replaces dormant recovery', () => {
+  const options = optionsFor([campaign]);
+  stop = start(options); document.querySelector('dialog')!.close();
+  stop(); document.body.innerHTML = '';
+  options.entries = [{ ...campaign, id: '01JQ0000000000000000000002', teaser: undefined } as PayloadEntry];
+  stop = start(options);
+  expect(document.querySelector('dialog')!.open).toBe(true);
+  expect(JSON.parse(sessionStorage.getItem(sessionStorage.key(0)!)!).active).toBeUndefined();
+});
+
+it('partial compact mobile overrides inherit the remaining desktop position', async () => {
+  const { unpack } = await import('../../modules/display-types/loader/reopen');
+  const { reminder } = await import('../../modules/display-types/loader/reminder');
+  const entry = unpack({ ...campaign, teaser: ['Offer', 0, 48, null, null, [null, null, 24]] } as unknown as PayloadEntry);
+  const view = reminder(entry.teaser!, {}); view.layout(true);
+  expect(view.host.style.getPropertyValue('inset-block-start')).toContain('24px');
+  expect(view.host.style.getPropertyValue('inset-inline-start')).toContain('24px');
+});
+
+it('closing successful content ends presentation even across responsive changes', async () => {
+  const ui = shadowAccess();
+  const changes: (() => void)[] = [];
+  vi.stubGlobal('matchMedia', () => ({ matches: false, addEventListener: (_: string, handler: () => void) => changes.push(handler), removeEventListener: vi.fn() }));
+  const tag = document.createElement('script'); tag.id = 'wconvert-payload'; tag.setAttribute('data-capture', '/capture'); document.body.append(tag);
+  vi.stubGlobal('fetch', vi.fn(async () => ({ ok: true, json: async () => ({ id: 'lead' }) })));
+  stop = start(optionsFor([campaign]));
+  ui.roots.flatMap(root => [...root.querySelectorAll('form')])[0].dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
+  await vi.waitFor(() => expect(ui.roots.some(root => root.textContent?.includes('Thank you'))).toBe(true));
+  document.querySelector('dialog')!.close();
+  changes.forEach(changed => changed());
+  expect(document.querySelector('[data-wconvert-reopen]')).toBeNull();
+});
+
+it('uses server-translated reminder names and confirmation text as plain text', async () => {
+  const { reminder } = await import('../../modules/display-types/loader/reminder');
+  const tag = document.createElement('script'); tag.id = 'wconvert-payload'; tag.setAttribute('data-reopen', JSON.stringify(['یادآوری را ببندید', 'ارسال شد — مشاهده جزئیات'])); document.body.append(tag);
+  const { reminderLabels } = await import('../../modules/display-types/loader/reopen');
+  const view = reminder({ label: 'Offer <b>text</b>' }, {}, reminderLabels());
+  expect(view.close.getAttribute('aria-label')).toBe('یادآوری را ببندید');
+  expect(view.confirmation).toBe('ارسال شد — مشاهده جزئیات');
+  expect(view.button.children).toHaveLength(0);
+});

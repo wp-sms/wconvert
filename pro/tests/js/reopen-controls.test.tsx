@@ -19,7 +19,7 @@ it('authors optional settings and previews without visitor storage or requests',
   }
   render(<Editor />);
   expect(screen.queryByLabelText('Button text')).toBeNull();
-  await user.click(screen.getByRole('checkbox', { name: 'Reopen button', exact: true }));
+  await user.click(screen.getByRole('checkbox', { name: 'Reopen button' }));
   await user.clear(screen.getByLabelText('Button text'));
   expect(screen.getByRole('alert')).toHaveTextContent('Enter button text');
   await user.type(screen.getByLabelText('Button text'), 'Get the offer');

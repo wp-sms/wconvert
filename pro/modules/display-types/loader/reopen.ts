@@ -1,9 +1,18 @@
+import { PAYLOAD_ELEMENT_ID } from '@loader/payload';
 import type { OptinControls, PayloadEntry } from '@loader/types';
 import { mount } from '@renderer/mount';
 import { captureInto } from '@loader/present';
 import { mountPopover } from './popover';
 
 import { reminder, type Teaser } from './reminder';
+
+export function reminderLabels(): [string, string] {
+  const fallback: [string, string] = ['Dismiss reminder', 'Submission received — View details'];
+  try {
+    const value: unknown = JSON.parse(document.getElementById(PAYLOAD_ELEMENT_ID)?.getAttribute('data-reopen') ?? 'null');
+    return Array.isArray(value) && value.length === 2 && value.every(item => typeof item === 'string') ? value as [string, string] : fallback;
+  } catch { return fallback; }
+}
 
 export type Recoverable = PayloadEntry & { teaser?: Teaser };
 /** Decode the compact published representation at Pro's composition boundary. */
@@ -33,7 +42,7 @@ export function showReopen(entry: Recoverable, controls: OptinControls, recovery
   const once = (kind: keyof OptinControls) => {
     if (!seen.has(kind)) { seen.add(kind); controls[kind](); }
   };
-  const { host, button, close, media, layout } = reminder(entry.teaser, entry.template.tokens);
+  const { host, button, close, media, layout, confirmation } = reminder(entry.teaser, entry.template.tokens, reminderLabels());
   let returnFocus: HTMLElement | null = null;
   const origin = document.activeElement instanceof HTMLElement ? document.activeElement : null;
   const hide = () => { host.hidePopover?.(); host.remove(); };
@@ -45,12 +54,12 @@ export function showReopen(entry: Recoverable, controls: OptinControls, recovery
   const convert = () => {
     if (completed) return;
     completed = true; recovery?.stopped(); once('convert');
-    if (!expanded && !removed) { button.textContent = 'Submission received — View details'; remind(); }
+    if (!expanded && !removed) { button.textContent = confirmation; remind(); }
     else hide();
   };
   const mounted = (entry.display_type === 'slide_in' ? mountPopover : mount)({
     displayType: entry.display_type, placement: entry.placement, template: entry.template, endsAt: entry.ends_at,
-    onDismiss: () => { expanded = false; if (!completed) { recovery?.minimized(); once('dismiss'); remind(); if (returnFocus) button.focus(); } },
+    onDismiss: () => { expanded = false; if (completed) { removed = true; hide(); } else { recovery?.minimized(); once('dismiss'); remind(); if (returnFocus) button.focus(); } },
     onConvert: convert,
   });
   if (!mounted.mounted) return false;

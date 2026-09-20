@@ -134,7 +134,7 @@ export function PrivacyDataMap() {
               cookieDurationText(data.browser.cookie_fallback_days),
             )}
           </Description>
-          <Description className="mt-2">{__('When a Pro reopen button is enabled, this tab also remembers the Campaign and reminder dismissals until its browser session ends. This session storage contains no contact details or visitor ID. Browsers may restore it when restoring tabs; blocked storage limits recovery to the current page.', 'wconvert')}</Description>
+          {data.browser.reopen_session != null && <Description className="mt-2">{__('When a Pro reopen button is enabled, this tab also remembers the Campaign and reminder dismissals until its browser session ends. This session storage contains no contact details or visitor ID. Browsers may restore it when restoring tabs; blocked storage limits recovery to the current page.', 'wconvert')}</Description>}
           {data.browser.cart_recovery !== null && <Description className="mt-2">
             {__('Cart recovery keeps the cart item count and total until the WooCommerce cart session ends. It does not store product or contact details.', 'wconvert')}
           </Description>}

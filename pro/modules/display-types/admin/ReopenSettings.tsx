@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState, type ReactNode } from 'react';
 import { __ } from '@wordpress/i18n';
 import type { ReopenProps } from '@/reopenControls';
 import { Input } from '@/components/ui/input';
@@ -9,6 +9,25 @@ import { Preview } from '@/builder/Preview';
 import { reminder, type Teaser } from '../loader/reminder';
 
 const corners = ['block_start_inline_start', 'block_start_inline_end', 'block_end_inline_start', 'block_end_inline_end'];
+
+/** A real desktop/mobile layout width, scaled to the settings panel. */
+function PreviewViewport({ mobile, children }: { mobile: boolean; children: ReactNode }) {
+  const outer = useRef<HTMLDivElement>(null);
+  const inner = useRef<HTMLDivElement>(null);
+  const [size, setSize] = useState({ available: 320, height: 256 });
+  const width = mobile ? 352 : 768;
+  useEffect(() => {
+    if (typeof ResizeObserver === 'undefined') return;
+    const observer = new ResizeObserver(() => {
+      if (outer.current && inner.current) setSize({ available: outer.current.clientWidth, height: inner.current.offsetHeight });
+    });
+    if (outer.current) observer.observe(outer.current);
+    if (inner.current) observer.observe(inner.current);
+    return () => observer.disconnect();
+  }, []);
+  const scale = Math.min(1, size.available / width);
+  return <div ref={outer} className="relative overflow-hidden" style={{ height: size.height * scale }}><div ref={inner} style={{ position: 'absolute', left: 0, top: 0, width, transform: `scale(${scale})`, transformOrigin: 'top left', direction: 'inherit' }}>{children}</div></div>;
+}
 
 export default function ReopenSettings({ value, template, onChange }: ReopenProps) {
   const id = useId();
@@ -22,11 +41,12 @@ export default function ReopenSettings({ value, template, onChange }: ReopenProp
   useEffect(() => {
     const parent = container.current;
     if (!parent || !config || mode !== 'reminder') return;
-    const view = reminder(config, template.tokens);
+    const view = reminder(config, template.tokens, [__('Dismiss reminder', 'wconvert'), __('Submission received — View details', 'wconvert')]);
     view.host.removeAttribute('popover');
     const visible = view.layout(mobile);
     view.host.style.setProperty('position', 'absolute', 'important');
-    view.button.disabled = true; view.close.disabled = true;
+    view.button.addEventListener('click', () => setMode('campaign'));
+    view.close.addEventListener('click', () => setMode('closed'));
     if (visible) parent.appendChild(view.host);
     return () => view.host.remove();
   }, [config, template, mode, mobile, direction]);
@@ -50,9 +70,9 @@ export default function ReopenSettings({ value, template, onChange }: ReopenProp
         <Button variant="outline" onClick={() => update({ mobile: undefined })}>{__('Reset mobile overrides', 'wconvert')}</Button>
       </div></details>
       <p>{__('Reopening respects targeting, schedules, consent and completion settings. Automatic view limits and dismissal settings do not block a visitor’s click. Check its position beside cookie notices, chat and sticky checkout controls.', 'wconvert')}</p>
-      <label className="block">{__('Preview', 'wconvert')}<select value={mode} onChange={event => setMode(event.target.value)}><option value="campaign">{__('Campaign', 'wconvert')}</option><option value="reminder">{__('Reopen button', 'wconvert')}</option><option value="success">{__('Success', 'wconvert')}</option></select></label>
+      <label className="block">{__('Preview', 'wconvert')}<select value={mode} onChange={event => setMode(event.target.value)}><option value="campaign">{__('Campaign', 'wconvert')}</option><option value="reminder">{__('Reopen button', 'wconvert')}</option><option value="success">{__('Success', 'wconvert')}</option><option value="closed">{__('Dismissed', 'wconvert')}</option></select></label>
       <label className="flex items-center gap-2"><input type="checkbox" checked={mobile} onChange={event => setMobile(event.target.checked)} />{__('Mobile preview', 'wconvert')}</label>
-      {mode === 'reminder' ? <div ref={container} className="relative h-64 rounded border bg-muted" style={{ maxWidth: mobile ? '24rem' : undefined }}>{mobile && config.mobile?.visible === false && <p>{__('Hidden on mobile', 'wconvert')}</p>}</div> : <Preview template={template} step={mode === 'success' ? template.tree.steps.length - 1 : 0} />}
+      <PreviewViewport mobile={mobile}>{mode === 'reminder' ? <div ref={container} className="relative h-64 rounded border bg-muted">{mobile && config.mobile?.visible === false && <p>{__('Hidden on mobile', 'wconvert')}</p>}</div> : mode === 'closed' ? <p>{__('Reminder dismissed for this preview.', 'wconvert')}</p> : <div><Preview template={template} interactive onAdvance={() => setMode('success')} step={mode === 'success' ? template.tree.steps.length - 1 : 0} /><Button variant="outline" onClick={() => setMode(mode === 'success' ? 'closed' : 'reminder')}>{__('Close preview', 'wconvert')}</Button></div>}</PreviewViewport>
     </>}
   </section>;
 }

@@ -17,7 +17,7 @@ final class Teaser
             return null;
         }
         $value = is_array($value) ? $value : [];
-        $label = is_string($value['label'] ?? null) ? trim(strip_tags($value['label'])) : '';
+        $label = is_string($value['label'] ?? null) ? (preg_replace('/^\s+|\s+$/u', '', strip_tags($value['label'])) ?? '') : '';
         $length = preg_match_all('/./us', $label);
         if ($label === '' || $length === false || $length > 80) {
             throw new \InvalidArgumentException('Reopen button text must contain 1–80 characters.');

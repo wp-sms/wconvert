@@ -11,22 +11,24 @@ export function supportsRecovery(entry: Recoverable): boolean {
 }
 
 /** Same eligibility for live presentation and diagnostics. Pacing is automatic-only. */
-export function recoveryAllowed(entry: Recoverable, decision: Decision): boolean {
-  if (!supportsRecovery(entry) || !isWithinWindow(entry, decision.now)) return false;
-  if (entry.frequency?.stopAfterConversion !== false && decision.state[entry.id]?.c === 1) return false;
-  if (decision.siteFrequency && decision.siteFrequency.stopAfterConversion !== false && decision.state[SITE_SLOT]?.c === 1) return false;
-  if (rulesOf(entry).some(rule => decision.withheld.has(rule.type))) return false;
+export function recoveryBlock(entry: Recoverable, decision: Decision): string | null {
+  if (!supportsRecovery(entry)) return 'configuration';
+  if (!isWithinWindow(entry, decision.now)) return 'schedule';
+  if (entry.frequency?.stopAfterConversion !== false && decision.state[entry.id]?.c === 1) return 'conversion';
+  if (decision.siteFrequency && decision.siteFrequency.stopAfterConversion !== false && decision.state[SITE_SLOT]?.c === 1) return 'site_conversion';
+  if (rulesOf(entry).some(rule => decision.withheld.has(rule.type))) return 'consent';
   return (entry.conditions ?? []).every(rule => {
     try { return decision.evaluators.get(rule.type)?.holds(rule) === true; } catch { return false; }
-  });
+  }) ? null : 'condition';
 }
+export const recoveryAllowed = (entry: Recoverable, decision: Decision): boolean => recoveryBlock(entry, decision) === null;
 
 export function connectRecovery(base: Presenter, entries: readonly Recoverable[], changed: () => void): PresentationSession {
   entries = entries.map(unpack);
-  if (!entries.some(supportsRecovery)) return base;
+  const store = recoveryStore();
+  if (!entries.some(supportsRecovery) && !store.active) return base;
   // On a build without arm assignment, preserve the existing stable primary.
   entries = entries.filter(entry => !supportsRecovery(entry) || !entries.some(other => familyOf(other) === familyOf(entry) && other.id < entry.id));
-  const store = recoveryStore();
   const media = matchMedia(`(max-width: ${A_NARROW_DESIGN})`);
   let current: Recoverable | undefined;
   let view: ReopenView | undefined;
@@ -34,7 +36,7 @@ export function connectRecovery(base: Presenter, entries: readonly Recoverable[]
   let restoring = false;
   let timer: ReturnType<typeof setTimeout> | undefined;
   const active = () => entries.find(entry => entry.id === store.active?.[0]);
-  const notify = () => changed();
+  const notify = () => { store.refresh(); changed(); };
   media.addEventListener('change', notify);
   window.addEventListener('pageshow', notify);
   window.addEventListener('storage', notify);
@@ -63,12 +65,23 @@ export function connectRecovery(base: Presenter, entries: readonly Recoverable[]
     },
     watch: () => (current ?? active())?.conditions ?? [],
     show(entry, controls) {
-      if (!supportsRecovery(entry)) return base.show(entry, controls);
+      if (!supportsRecovery(entry)) {
+        let presented = false;
+        try {
+          const result = base.show(entry, { ...controls, impression() {
+            presented = true;
+            if (isOverlay(entry)) store.clear();
+            controls.impression();
+          } });
+          return isOverlay(entry) ? presented : result;
+        } catch { return false; }
+      }
       const wasRestoring = restoring;
+      let recovering = wasRestoring;
       const result = showReopen(entry, controls, {
         restoring: wasRestoring,
-        allowed: () => { changed(); return !store.stopped(entry) && recoveryAllowed(entry, latest); },
-        minimized: () => store.remember(entry),
+        allowed: () => { changed(); return (!recovering || store.active?.[0] === entry.id) && !store.stopped(entry) && recoveryAllowed(entry, latest); },
+        minimized: () => { recovering = true; store.remember(entry); },
         stopped: () => { store.stop(entry); changed(); },
         opened: () => { if (!wasRestoring) store.clear(); },
       });

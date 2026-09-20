@@ -111,12 +111,6 @@ Two facts already in the model scope it before anything is built:
   outage is actionable. ADR 0007 carries the inline note. The corresponding
   success screen acknowledges local capture; it cannot claim provider
   subscription, confirmation or delivery (ADR 0073).
-- **The teaser question is reopened by
-  [#34](https://github.com/navidkashani/wconvert/issues/34)**, scoped to `popup`
-  and `slide_in`, and measured against the payload budget as #34 leaves it.
-  `tests/unit/Frontend/PayloadBudgetTest.php` is the number.
-- **`steps[]` stays an object with a named key.** It was already, and that is
-  now load-bearing for a reason: it is what makes the deferred half of this
-  decision cost nothing to defer.
+- **The teaser deferral is resolved by [ADR 0101](0101-reopen-buttons-preserve-an-explicit-visitor-choice.md).** It remains outside the Template tree and adds no error step.
 - `CONTEXT.md`'s [[Destination]] entry gains the sentence, since the definition
   was carrying it silently.

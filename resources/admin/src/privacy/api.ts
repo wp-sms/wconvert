@@ -20,6 +20,7 @@ export interface PrivacyDataMap {
     contains_contact_details: boolean;
     contains_visitor_identifier: boolean;
     stores_ab_assignment: boolean;
+    reopen_session: string | null;
     cart_recovery: null | {
       key: string;
       expires_with_cart_session: boolean;

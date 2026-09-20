@@ -91,3 +91,33 @@ test('slide-in remains usable after rapid reopen', async ({ page }) => {
   const state = await page.evaluate(() => { const input = window.testShadows.flatMap(root => [...root.querySelectorAll('input[type=email]')])[0]; return { connected: input.isConnected, pointers: getComputedStyle(input).pointerEvents, width: input.getBoundingClientRect().width }; });
   expect(state.connected).toBe(true); expect(state.pointers).not.toBe('none'); expect(state.width).toBeGreaterThan(0);
 });
+
+test('real editor loads Pro controls, simulates reopening, and saves draft settings', async ({ page }, info) => {
+  await open(page);
+  const id = await page.locator('#wconvert-payload').evaluate(node => JSON.parse(node.textContent)[0].id);
+  await page.goto('/wp-login.php');
+  await page.getByLabel('Username or Email Address').fill('admin');
+  await page.getByLabel('Password', { exact: true }).fill('password');
+  await page.getByRole('button', { name: 'Log In', exact: true }).click();
+  await page.waitForURL('**/wp-admin/');
+  await page.goto(`/wp-admin/admin.php?page=wconvert#optins?edit=${id}`);
+  await page.getByRole('button', { name: 'Design settings', exact: true }).click();
+  const text = page.getByLabel('Button text', { exact: true });
+  await expect(text).toHaveValue('Get my discount');
+  await page.evaluate(() => window.testShadows.find(root => root.host.hasAttribute('data-wconvert-reopen') && root.host.isConnected).querySelector('button').click());
+  await expect(page.getByRole('combobox', { name: 'Preview', exact: true })).toHaveValue('campaign');
+  await page.locator('section').filter({ has: page.getByRole('combobox', { name: 'Preview', exact: true }) }).getByRole('button', { name: 'Close preview', exact: true }).click();
+  await expect(page.getByRole('combobox', { name: 'Preview', exact: true })).toHaveValue('reminder');
+  await text.fill('Save my offer');
+  await page.getByRole('button', { name: 'Undo draft edit', exact: true }).click();
+  await expect(text).toHaveValue('Get my discount');
+  await text.fill('Save my offer');
+  const saved = page.waitForResponse(response => decodeURIComponent(response.url()).includes(`/optins/${id}`) && response.request().method() !== 'GET');
+  await page.getByRole('button', { name: 'Save draft', exact: true }).click();
+  expect((await saved).ok()).toBe(true);
+  await page.reload();
+  await page.getByRole('button', { name: 'Design settings', exact: true }).click();
+  await expect(text).toHaveValue('Save my offer');
+  await text.scrollIntoViewIfNeeded();
+  await page.screenshot({ path: info.outputPath('reopen-editor.png'), fullPage: true });
+});

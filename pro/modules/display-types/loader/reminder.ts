@@ -11,7 +11,7 @@ export interface Teaser {
 }
 
 /** Shared by visitor presentation and the isolated editor preview. No storage. */
-export function reminder(config: Teaser, tokens: Tokens) {
+export function reminder(config: Teaser, tokens: Tokens, labels: [string, string] = ['Dismiss reminder', 'Submission received — View details']) {
   const host = document.createElement('div');
   host.setAttribute('popover', 'manual');
   host.setAttribute('data-wconvert-reopen', '');
@@ -31,11 +31,11 @@ export function reminder(config: Teaser, tokens: Tokens) {
   const button = document.createElement('button');
   button.type = 'button'; button.textContent = config.label;
   const close = document.createElement('button');
-  close.type = 'button'; close.textContent = '×'; close.setAttribute('aria-label', 'Dismiss reminder');
+  close.type = 'button'; close.textContent = '×'; close.setAttribute('aria-label', labels[0]);
   row.append(button, close); shadow.append(style, row);
   const media = matchMedia(`(max-width: ${A_NARROW_DESIGN})`);
   function layout(narrow = media.matches) {
-    const settings = narrow ? { ...config, ...config.mobile } : config;
+    const settings = narrow ? { placement: config.mobile?.placement ?? config.placement, gap: config.mobile?.gap ?? config.gap } : config;
     const placement = settings.placement ?? 'block_end_inline_end';
     const gap = Math.max(8, Math.min(96, settings.gap ?? 16));
     const top = placement.startsWith('block_start');
@@ -51,5 +51,5 @@ export function reminder(config: Teaser, tokens: Tokens) {
     })) host.style.setProperty(key, value, 'important');
     return !narrow || config.mobile?.visible !== false;
   }
-  return { host, button, close, media, layout };
+  return { host, button, close, media, layout, confirmation: labels[1] };
 }

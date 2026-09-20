@@ -235,6 +235,11 @@ final class ProServiceProvider implements ServiceProvider
          * it reads.
          */
         $site = $container->resolve(SitePresence::class);
+        // Every paid build supplies the display-types module.
+        add_filter('wconvert_privacy_browser_storage', static function (array $browser): array {
+            $browser['reopen_session'] = 'wcv_teaser1:';
+            return $browser;
+        });
 
         if (class_exists(AbTestController::class)) {
             add_filter('wconvert_privacy_browser_storage', static function (array $browser): array {

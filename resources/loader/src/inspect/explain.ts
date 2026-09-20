@@ -215,7 +215,8 @@ export function explain(decision: Decision, presentation: PresentationChecks = {
         displayType: entry.display_type,
         placement: entry.placement,
         placementStatus: presentation.placement?.(entry),
-        recoveryStatus: presentation.recovery?.(entry, decision),
+        recoveryStatus: presentation.recovery ? presentation.recovery(entry, decision)
+          : (entry as PayloadEntry & { teaser?: unknown }).teaser ? 'Reopen settings are saved; this feature requires Pro.' : undefined,
         standing,
         overlay: isOverlay(entry),
         triggers: (entry.triggers ?? []).map((rule) => report(rule, answers, decision)),
