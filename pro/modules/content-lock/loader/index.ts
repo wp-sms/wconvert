@@ -105,6 +105,7 @@ export function connectContentLock(base: PresentationSession, entries: readonly 
         && !(window.getSelection()?.anchorNode && content.contains(window.getSelection()!.anchorNode));
       if (region) region.dataset.wconvertLockState = !validRegion ? 'invalid' : claimed ? 'another' : 'fallback';
       if (ownAnchor === anchor && !canLock) return true;
+      const reveal = (status: string) => { if (active?.entry.id === entry.id) open(status); };
       let mounted: Mounted | undefined;
       try {
         mounted = mount({ displayType: 'inline', template: entry.template, anchor, endsAt: entry.ends_at });
@@ -117,7 +118,7 @@ export function connectContentLock(base: PresentationSession, entries: readonly 
           onCaptured() {
             const focus = view.root?.getRootNode() as ShadowRoot;
             const ownedFocus = !!focus.activeElement;
-            open('captured');
+            reveal('captured');
             store.remember(lockFamily(entry));
             try { controls.convert(); } finally {
               if (!disposed) {
@@ -137,7 +138,7 @@ export function connectContentLock(base: PresentationSession, entries: readonly 
           },
           onRefused(kind) {
             if (kind === 'unconfirmed') {
-              open('fallback');
+              reveal('fallback');
               const error = view.root?.querySelector('.wc-error');
               if (error && canLock) error.textContent = labels()[2];
               notify();
@@ -148,7 +149,7 @@ export function connectContentLock(base: PresentationSession, entries: readonly 
         if (canLock && region && content) {
           active = { entry, region, content, mounted: view };
           content.hidden = true; content.style.setProperty('display', 'none', 'important');
-          if (getComputedStyle(content).display !== 'none') { open('fallback'); view.close(); return false; }
+          if (getComputedStyle(content).display !== 'none') { reveal('fallback'); view.close(); return false; }
           claimed = true; region.dataset.wconvertLockState = 'locked';
           observer = new MutationObserver(notify);
           observer.observe(region, { childList: true, subtree: true });
@@ -156,7 +157,7 @@ export function connectContentLock(base: PresentationSession, entries: readonly 
         releases.push(whenInViewport(anchor, () => controls.impression()));
         queueMicrotask(notify);
         return true;
-      } catch { open('fallback'); mounted?.close(); return false; }
+      } catch { reveal('fallback'); mounted?.close(); return false; }
     },
     dispose() {
       disposed = true; open('fallback'); clearTimeout(timer); releases.forEach(release => release());

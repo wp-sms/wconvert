@@ -42,6 +42,7 @@ final class DataMapTest extends TestCase
                 'contains_contact_details' => false,
                 'contains_visitor_identifier' => false,
                 'stores_ab_assignment' => false,
+                'content_unlock' => null,
                 'reopen_session' => null,
                 'cart_recovery' => null,
             ],

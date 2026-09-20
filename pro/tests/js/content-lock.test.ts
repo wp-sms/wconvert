@@ -154,3 +154,15 @@ it('retains an in-flight acknowledgement after eligibility loss without reopenin
   await vi.waitFor(() => expect(localStorage.length).toBe(1));
   expect(beacon.report.mock.calls.filter(call => call[1] === 'conversion')).toHaveLength(1);
 });
+
+it.each([true, false])('never opens another Campaign’s gate when an ordinary form settles (success: %s)', async success => {
+  const form = formAccess();
+  vi.stubGlobal('fetch', vi.fn(async () => ({ ok: success, status: success ? 200 : 503, json: async () => success ? { id: 'lead' } : {} })));
+  const content = page();
+  const other = { ...campaign, id: '01JQ0000000000000000000002' };
+  const anchor = document.createElement('div'); anchor.setAttribute('data-wconvert-optin', other.id); document.body.prepend(anchor);
+  stop = start({ loader: createLoader(FREE_MODULES), entries: [campaign, other], presenter: proPresenter, store: { read: () => null, write() {} } });
+  expect(content.hidden).toBe(true); submit(form());
+  await vi.waitFor(() => success ? expect(localStorage.length).toBe(1) : expect(form().textContent).toContain('Submission not confirmed'));
+  expect(content.hidden).toBe(true);
+});

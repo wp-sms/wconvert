@@ -1,3 +1,4 @@
+import { contentLockDesignCompatible } from '../inlinePlacement';
 import './editor.css';
 import { Activity, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { flushSync } from 'react-dom';
@@ -1056,7 +1057,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
             if (!['popup', 'slide_in'].includes(chosenDesign.display_type)) changes.teaser = null;
           }
 
-          if (config.content_lock != null && (chosenDesign.display_type !== 'inline' || convertingActOf(prepared.tree).join() !== 'submit' || prepared.tree.steps.length !== 2)) changes.content_lock = null;
+          if (config.content_lock != null && !contentLockDesignCompatible(chosenDesign.display_type, prepared)) changes.content_lock = null;
           edit(changes);
           setSelection(null);
           setStep(0);

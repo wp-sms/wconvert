@@ -1,3 +1,4 @@
+import { contentLockDesignCompatible } from '../inlinePlacement';
 import { useEffect, useId, useRef, useState } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import { ArrowLeft, Monitor, Smartphone } from 'lucide-react';
@@ -9,7 +10,6 @@ import { Preview } from './Preview';
 import { A_DESIGNS_OWN_WIDTH } from '@renderer/css';
 import { actChangeOf, refusalFor, type Fit } from './Gallery';
 import type { PreparedTemplate, TemplateIndexEntry, TemplateLabelsWithFacets } from '../templates/api';
-import { convertingActOf } from './structure/guards';
 import type { Template } from '@renderer/types';
 
 export type TemplateContentMode = 'keep' | 'sample';
@@ -115,7 +115,7 @@ export function TemplateDesignDetail({
   const scale = size === null ? 1 : Math.min(1, size.availableWidth / size.width);
   const unavailable = entry.availability !== 'ready';
   const isCurrent = current && !(prepares && mode === 'sample');
-  const incompatibleLock = contentLock && template !== undefined && (entry.display_type !== 'inline' || convertingActOf(template.tree).join() !== 'submit' || template.tree.steps.length !== 2);
+  const incompatibleLock = contentLock && template !== undefined && !contentLockDesignCompatible(entry.display_type, template);
   const cannotApply = incompatibleLock && !disableLock || !active || isCurrent || refused !== null || unavailable || template === undefined;
   const changesFormat = currentDisplayType !== undefined && entry.display_type !== currentDisplayType;
   const fromFormat = displayTypeLabel(currentDisplayType);

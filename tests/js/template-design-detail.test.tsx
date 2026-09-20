@@ -47,6 +47,17 @@ describe('inspecting a design before replacing the draft', () => {
     return { ...view, onChoose, onBack };
   };
 
+  it('requires an explicit choice before an incompatible design turns off Content lock', async () => {
+    const { onChoose } = detail({ contentLock: true, currentDisplayType: 'inline' });
+    const apply = screen.getByRole('button', { name: 'Switch to Popup' });
+    expect(apply).toHaveAttribute('aria-disabled', 'true');
+    await userEvent.click(apply); expect(onChoose).not.toHaveBeenCalled();
+    await userEvent.click(screen.getByRole('checkbox', { name: /Turn off Content lock/ }));
+    expect(apply).toHaveAttribute('aria-disabled', 'false');
+    await userEvent.click(apply);
+    expect(onChoose).toHaveBeenCalledExactlyOnceWith(ENTRY.id);
+  });
+
   it('starts a blank draft with sample content instead of carrying an empty form', async () => {
     const onPrepare = vi.fn().mockResolvedValue(TEMPLATE);
     const { onChoose } = detail({ onPrepare, hasCurrentDesign: false });

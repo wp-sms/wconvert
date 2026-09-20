@@ -14,7 +14,7 @@ it('bounds storage and isolates sites by the capture endpoint', () => {
   for (let n = 0; n < 70; n++) store.remember(String(n).padStart(26, '0'));
   const saved = localStorage.getItem(store.key)!;
   expect(Object.keys(JSON.parse(saved))).toHaveLength(64); expect(saved.length).toBeLessThan(8192);
-  store.remember(id);
+  store.remember(id); expect(store.has(id)).toBe(true); expect(unlockStore().has(id)).toBe(true);
   document.body.innerHTML = '<script id="wconvert-payload" data-capture="/other-site/wp-json/wconvert/v1/capture"></script>';
   expect(unlockStore().has(id)).toBe(false);
 });

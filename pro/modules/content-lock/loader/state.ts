@@ -21,7 +21,7 @@ export function unlockStore() {
     key,
     has: (id: string) => (read()[id] ?? 0) > day(),
     remember(id: string) {
-      memory = { ...read(), [id]: day() + 30 };
+      memory = { [id]: day() + 30, ...Object.fromEntries(Object.entries(read()).filter(([saved]) => saved !== id)) };
       memory = Object.fromEntries(Object.entries(memory).filter(([, expiry]) => expiry > day())
         .sort((a, b) => b[1] - a[1]).slice(0, 64));
       try { localStorage.setItem(key, JSON.stringify(memory)); } catch { /* Memory holds this document. */ }

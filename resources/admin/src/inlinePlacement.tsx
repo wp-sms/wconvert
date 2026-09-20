@@ -1,3 +1,5 @@
+import type { Template } from '@renderer/types';
+import { convertingActOf } from './builder/structure/guards';
 import { Suspense, type ComponentType } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import type { Rule, RuleVocabulary } from './builder/api';
@@ -42,4 +44,8 @@ export function InlinePlacementSettings(props: InlinePlacementProps) {
       {props.config.inline_placement == null && <ManualPlacement optinId={props.optinId} published={props.published} />}
     </div>
   );
+}
+
+export function contentLockDesignCompatible(displayType: string, template: Template): boolean {
+  return displayType === 'inline' && convertingActOf(template.tree).join() === 'submit' && template.tree.steps.length === 2;
 }

@@ -65,7 +65,7 @@ it('Free can explicitly return a previously automatic campaign to manual placeme
   let changes: Record<string, unknown> = {};
   render(<InlinePlacementSettings optinId="example" published config={{ inline_placement: { position: 'after_content' } }} vocabulary={vocabulary} onChange={(patch) => { changes = patch; }} />);
   await user.click(screen.getByRole('button', { name: 'Use manual placement' }));
-  expect(changes).toEqual({ inline_placement: null });
+  expect(changes).toEqual({ inline_placement: null, content_lock: null });
 });
 
 it('automatic publish guidance does not tell merchants to insert a shortcode', () => {
