@@ -63,7 +63,8 @@ export default defineConfig({
      * SECOND React beside the editor's own, and every `wp.components` element
      * rendered through it would throw on its first hook. WordPress registers a
      * `react-jsx-runtime` script exposing that module on a global, which would
-     * solve it, and it arrived in **6.6**: this plugin's floor is 6.2.
+     * also solve it on the supported WordPress 6.8+ range. The existing
+     * classic JSX transform remains a direct reference to WordPress React.
      *
      * So JSX compiles to `wp.element.createElement`, which is WordPress's own
      * React and has been on every install since 5.0. `tsconfig.json` keeps

@@ -46,7 +46,7 @@ ES equivalent. An external in an ES build is emitted as
 and no import map can supply it here, because WordPress ships both packages as
 **classic scripts** rather than script modules. (That is also why
 `wp_enqueue_script_module()`, added in 6.5, would not have helped even if the
-plugin's floor were not 6.2: a script module cannot declare a dependency on a
+plugin's original floor had already been 6.8: a script module cannot declare a dependency on a
 classic script.)
 
 They must stay out of the bundle, and the reason is not size:
@@ -87,15 +87,19 @@ busts its cache. Two details are load-bearing enough to be commented in the code
 - **The stylesheet keeps its `?ver`.** A stylesheet has no module identity and
   nothing imports it, so `BuiltAsset::version()` is still right there.
 
-## Enqueuing it needs `script_loader_tag`, at this floor
+## Enqueuing it preserves classic script dependencies
 
 An ES build is inert in a classic `<script src>`: the browser parses it as a
 script, reaches `export`, and throws before a line runs. WordPress has no API
-for the `type="module"` attribute at **6.2**, which is this plugin's floor —
+for the `type="module"` attribute at the original **6.2** floor —
 `wp_script_add_data()` carries a `strategy` since 6.3 and no type ever — so the
 tag is filtered, which every version since 3.0 supports. The existing `type` is
 stripped rather than joined, since WordPress writes `type='text/javascript'` on
 any theme without HTML5 script support and two of them is the first one winning.
+
+The minimum is now **6.8** (ADR 0100). The filter remains because the admin
+depends on classic WordPress scripts; raising the minimum does not convert those
+dependencies into script modules.
 
 A module is deferred, which is what `$in_footer` already wanted, and
 `wp_add_inline_script(…, 'before')` still runs first because a classic inline

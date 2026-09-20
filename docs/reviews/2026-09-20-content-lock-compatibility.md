@@ -6,15 +6,16 @@ an mu-plugin to require WConvert during the request.
 
 ## Result
 
-The current WordPress 6.2 claim is false for the packaged dependency. Normal
+The previous WordPress 6.2 claim was false for the packaged dependency. Normal
 activation fails before WConvert can become active. WordPress 6.8 is the lowest
 version supported by the bundled Action Scheduler 4.1.0 metadata, and normal
 activation, WConvert admin boot and a post-editor authoring smoke check passed on
 6.8. Current WordPress 7.1.1 passed the same activation and admin checks.
 
-The evidence supports WordPress 6.8 as the candidate floor for this package. It
-does not support changing metadata as part of this review without the separate
-release decision requested in the follow-up plan.
+The user subsequently authorized WordPress 6.8 as the minimum. Free, Pro and
+readme metadata are now aligned locally, and the old block API v2 fallback is
+removed. A packaging check rejects a lower minimum than the bundled dependency
+and a mismatched Free readme; source coverage keeps Pro and Free aligned.
 
 ## Dependency provenance
 
@@ -68,24 +69,28 @@ npx @wp-playground/cli server --workers=1 --port=9425 \
 
 Open `http://127.0.0.1:9425/wp-admin/plugins.php`, sign in to the disposable
 site with `admin` / `password`, and activate WConvert. WordPress displays the
-fatal and leaves the plugin inactive.
+incompatibility notice and refuses activation with the corrected 6.8 header.
+The fatal above was observed before the metadata correction.
 
 Repeat on port 9426 with `--wp=6.8`, then with `--wp=latest`. Activate WConvert
 and WConvert Pro from the plugin screen. Open `admin.php?page=wconvert` and
 `post-new.php`. The 6.8 and current results above are visible without a bootstrap
 harness or manual `require`.
 
-## Resolution proposal
+## Implemented correction
 
-For the next release decision, align Free, Pro and WordPress.org metadata to a
-minimum of WordPress 6.8, then keep the existing PHP 8.1 floor. Update the README
-explanation and ADR 0100 at the same time so documentation no longer presents
-6.2 or the historical 6.5 runtime boundary as supported.
+Free, Pro and WordPress.org metadata now declare WordPress 6.8. PHP stays at 8.1.
+The README and ADR 0100 explain the new minimum. The artifact contract invokes
+`bin/verify-wordpress-requirements.php` against the staged Free dependency, so a
+future Composer update cannot silently require a newer WordPress than advertised.
+Missing, malformed and ambiguous dependency headers also fail the check.
 
-Also add a packaging check that compares the bundled Action Scheduler `Requires
-at least` header with WConvert's declared WordPress minimum. The open Composer
-constraint can resolve to a later 4.x release with a newer WordPress floor, so
-the check should inspect the locked, packaged dependency on every update.
+After the correction, fresh disposable WordPress 6.8/PHP 8.1 activation passed
+for Free and Pro, and the editor registered all three inline/content-lock blocks
+with API v3. WordPress 6.2 showed **Cannot Activate** for both plugins with no
+activation link. Local validation passed: 60 artifact-contract tests, 12 inline
+block tests, 3 divider tests, PHPStan and the source contract. The earlier 7.1.1
+result above predates this metadata correction.
 
 Do not downgrade Action Scheduler or add a one-function compatibility shim only
 to preserve the 6.2 label. A downgrade would need an explicit supported release,

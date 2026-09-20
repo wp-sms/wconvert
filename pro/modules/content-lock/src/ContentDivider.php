@@ -18,7 +18,7 @@ final class ContentDivider
     {
         add_action('init', static function (): void {
             register_block_type(self::BLOCK, [
-                'api_version' => version_compare((string) get_bloginfo('version'), '6.3', '>=') ? 3 : 2,
+                'api_version' => 3,
                 'title' => __('WConvert Lock from here', 'wconvert'),
                 'description' => __('Reveal the rest of this article after a successful form submission.', 'wconvert'),
                 'category' => 'widgets',

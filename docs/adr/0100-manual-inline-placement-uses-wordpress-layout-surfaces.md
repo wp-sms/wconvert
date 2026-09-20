@@ -44,16 +44,17 @@ manual placement of the same Campaign keeps the established contract: the first
 Anchor renders, later duplicates stay empty, and one Impression is possible.
 Different Campaigns remain independent.
 
-The block metadata declares API v3 for current WordPress. Registration supplies
-API v2 on WordPress 6.2, where v3 did not exist, and v3 from WordPress 6.3 onward.
-This compatibility bridge changes no saved block markup. A separate dependency
-issue makes the advertised WordPress 6.2 minimum inaccurate: normal activation
-fails in Action Scheduler because `wp_is_serving_rest_request()` is unavailable.
-The historical 6.5 function boundary is not a supported-version promise. The
-currently bundled Action Scheduler 4.1.0 declares a WordPress 6.8 minimum;
-normal activation and editor smoke checks pass on 6.8 and 7.1.1. See the
-[compatibility review](../reviews/2026-09-20-content-lock-compatibility.md).
-Aligning the global plugin metadata remains a separate release support decision.
+Free, Pro and the WordPress.org readme now require WordPress 6.8, matching the
+bundled Action Scheduler 4.1.0 minimum. Normal activation and editor smoke checks
+pass on 6.8 and 7.1.1. The old 6.2 claim failed during dependency activation;
+the historical 6.5 function boundary was never sufficient evidence of support.
+See the [compatibility review](../reviews/2026-09-20-content-lock-compatibility.md).
+
+Every supported WordPress version provides block API v3. The ordinary inline,
+content-region and divider registrations use v3 without the old v2 fallback.
+Saved block markup is unchanged. The artifact contract rejects a Free package
+whose declared minimum is below its bundled Action Scheduler requirement, or
+whose readme disagrees; a source test also keeps Free and Pro aligned.
 
 Template JSON, the database schema, the published payload, and the visitor
 loader contract do not change.

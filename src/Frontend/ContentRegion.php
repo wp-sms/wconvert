@@ -12,7 +12,7 @@ final class ContentRegion
     public static function register(): void
     {
         register_block_type(self::BLOCK, [
-            'api_version' => version_compare((string) get_bloginfo('version'), '6.3', '>=') ? 3 : 2,
+            'api_version' => 3,
             'title' => __('WConvert Content lock', 'wconvert'),
             'category' => 'widgets',
             'attributes' => ['optinId' => ['type' => 'string', 'default' => '']],

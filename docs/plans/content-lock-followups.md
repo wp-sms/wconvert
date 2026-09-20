@@ -17,7 +17,8 @@ and [normal activation compatibility](../reviews/2026-09-20-content-lock-compati
    supported content and readable-fallback guidance. Validate its clarity with a
    content writer using the session below. Reuse it on the future website; add
    a public help link only once that page exists.
-2. **Observe authors using real articles.** Cover an existing long article, a new
+2. **Author feedback deferred at the user’s request.** If revisited, observe
+   authors using real articles. Cover an existing long article, a new
    article, and a bonus followed by a public conclusion. Ask an editor to select
    a Campaign, move the boundary, change the selection and remove the lock. Record
    hesitation, errors and unexpected public/locked content. Turn observed problems
@@ -38,14 +39,12 @@ and [normal activation compatibility](../reviews/2026-09-20-content-lock-compati
    The human-check script retains actual
    screen-reader, browser zoom and physical-device checks; automated semantics
    and emulation do not establish those outcomes.
-4. **Resolve the minimum WordPress version claim.** Reproduce the existing
-   WordPress 6.2 activation/dependency limitation recorded in ADR 0100, decide
-   the supported floor, and align dependency versions, metadata and documentation.
-   Verify activation and authoring on the chosen minimum and current WordPress.
-   Do not broaden the compatibility promise from newer-version tests alone.
-   Normal activation on WordPress 6.2 reproduces an Action Scheduler fatal error;
-   see the [compatibility review](../reviews/2026-09-20-content-lock-compatibility.md).
-   The global minimum-version metadata remains unchanged pending that decision.
+4. **WordPress minimum aligned to 6.8.** Free, Pro and readme metadata
+   now match the bundled Action Scheduler requirement. A packaging guard catches
+   future dependency/header mismatches. See the
+   [compatibility review](../reviews/2026-09-20-content-lock-compatibility.md).
+   Committed directly to local `main` at the user’s request; release publication
+   is separate.
 5. **Run release checks when a release is requested.** Exercise all packaged Pro
    tiers and readable behavior without Pro, then verify published-page caching
    and the chosen delivery providers with explicitly authorized test recipients.
@@ -68,7 +67,7 @@ or start all lower-priority formats together.
 
 ## Recommended order
 
-Review the guide and automated findings, run observed author sessions and the
-remaining manual accessibility checks, resolve the supported WordPress floor,
+Review the guide and automated findings, complete the remaining manual
+accessibility checks and publish the WordPress minimum correction,
 then prepare a release when requested.
 Revisit parked features only after those steps provide evidence for them.

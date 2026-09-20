@@ -7,10 +7,11 @@ implemented and verified; retain a PR link when closing them.
 
 ## Next candidates
 
-- [ ] **Finish content-lock human validation and the WordPress support decision.**
+- [ ] **Finish content-lock manual accessibility and publish the WordPress minimum correction.**
   The [setup guide](guides/content-lock.md) is complete. Follow the
   [remaining-work plan](plans/content-lock-followups.md) for observed author
-  workflows, actual screen-reader/phone checks and the supported WordPress floor.
+  workflows (deferred by request) and actual screen-reader/phone checks. The
+  WordPress 6.8 metadata correction and packaging guard are implemented locally.
   Keep optional end markers, automatic locking and additional presentation modes
   parked until evidence justifies them.
 

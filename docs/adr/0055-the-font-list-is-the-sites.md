@@ -72,7 +72,8 @@ document-level `@font-face` rules the theme already printed for its own pages.
 **In wp-admin the faces have to be asked for.** Core prints them on the front
 end; the admin gets them only where something calls
 `wp_print_font_faces()` — core's own, since 6.4, guarded because this plugin's
-floor is 6.2. Where it is absent a row falls back to the next family in its
+original floor was 6.2. The minimum is now 6.8 (ADR 0100); the availability
+check is retained. Where the function is absent a row falls back to the next family in its
 stack and the control still works. That call prints the **site's** faces, or
 none; it fetches nothing.
 

@@ -153,8 +153,8 @@ final class UninstallTest extends TestCase
      *
      * `$wpdb->prefix . $table` interpolated into the statement would be the
      * one thing `WConvert\Database\WpdbConnection` exists to make
-     * inexpressible, in the one file that runs outside it. `%i` is why the
-     * plugin's floor is WordPress 6.2, and this is the place a reviewer is
+     * inexpressible, in the one file that runs outside it. `%i` has existed
+     * since WordPress 6.2, and this is the place a reviewer is
      * least likely to look.
      */
     public function testTheTableNameIsBoundAsAnIdentifierRatherThanInterpolated(): void

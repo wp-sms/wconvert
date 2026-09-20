@@ -900,7 +900,14 @@ the code moves.
 [ADR 0029](docs/adr/0029-the-free-contract-is-proven-at-the-source.md) records
 which form is sanctioned and why, and `bin/plugin-check.sh` gained no flag.
 
-### Why WordPress 6.2
+### Why WordPress 6.8
+
+Free and Pro require WordPress **6.8 or later** and PHP **8.1 or later**. The
+bundled Action Scheduler 4.1.0 sets the WordPress minimum. Normal activation,
+admin boot and editor smoke checks passed on WordPress 6.8 and 7.1.1; see the
+[compatibility review](docs/reviews/2026-09-20-content-lock-compatibility.md).
+The artifact check compares the packaged dependency requirement with the plugin
+header, and verifies that the Free readme agrees.
 
 `WConvert\Database\Connection` takes its SQL as a `literal-string` and its
 table as a separate argument, passed to `$wpdb->prepare()` through the `%i`

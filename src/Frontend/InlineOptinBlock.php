@@ -135,11 +135,8 @@ final class InlineOptinBlock
         // attribute — is declared in `block.json` and read by the editor
         // bundle from the same file, so there is no second spelling to drift.
         register_block_type(WCONVERT_DIR . self::METADATA, [
-            // Block API v3 was introduced in WordPress 6.3, while WConvert's
-            // declared floor is 6.2. Passing the supported value over the
-            // metadata keeps 6.2 from rejecting the whole block; newer sites
-            // retain v3 and its iframe-ready contract.
-            'api_version' => version_compare((string) get_bloginfo('version'), '6.3', '>=') ? 3 : 2,
+            // All supported WordPress versions provide block API v3.
+            'api_version' => 3,
             'render_callback' => [self::class, 'render'],
         ]);
 

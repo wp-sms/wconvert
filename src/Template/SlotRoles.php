@@ -207,10 +207,11 @@ final class SlotRoles
      * arrays holds only where the keys, their order and the values all match,
      * so it is true for `[]` and for `0, 1, 2` and false for every map.
      *
-     * The builtin says it better and cost a release gate. `array_is_list()` is
-     * **PHP 8.1**, this plugin declares `Requires PHP: 8.1`, and WordPress
-     * polyfills it anyway — but Plugin Check reads it against
-     * `Requires at least: 6.2` and reports an ERROR, because core's polyfill
+     * Historical context (the minimum is now WordPress 6.8):
+     * the builtin says it better and cost a release gate. `array_is_list()` is
+     * **PHP 8.1**, the plugin declared `Requires PHP: 8.1`, and WordPress
+     * polyfills it anyway — but Plugin Check read it against
+     * `Requires at least: 6.2` and reported an ERROR, because core's polyfill
      * landed in 6.5 and the check does not look at the PHP header beside it. It
      * is wrong about this plugin and it is what wp.org runs on submission, so
      * the argument is unwinnable in the place it matters (#96).

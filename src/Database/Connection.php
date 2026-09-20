@@ -49,7 +49,7 @@ defined('ABSPATH') || exit;
  * or column name unexpressible rather than merely discouraged: static analysis
  * rejects any SQL that a variable helped build, at the call site, before it
  * reaches a database. The `%i` identifier placeholder that makes this possible
- * is why the plugin requires WordPress 6.2.
+ * was introduced in WordPress 6.2, before the current 6.8 minimum.
  *
  * @since 0.1.0
  */

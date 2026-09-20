@@ -244,13 +244,12 @@ final class ViteHelper
      * `<script src>`: the browser parses it as a script, hits `export`, and
      * throws a syntax error before a line of it runs.
      *
-     * WordPress has no API for this at the version this plugin supports.
      * `wp_enqueue_script_module()` is 6.5 and would not help anyway — the
      * `wp-i18n` and `wp-api-fetch` this depends on are classic scripts, not
      * script modules, and a module cannot declare a dependency on one.
      * `wp_script_add_data()` carries a `strategy` since 6.3 and no type at all.
-     * The plugin's floor is **6.2**, so the tag is filtered, which every version
-     * since 3.0 supports.
+     * The tag filter preserves those classic dependencies on the supported
+     * WordPress 6.8+ range.
      *
      * The existing `type` is stripped rather than left beside the new one:
      * WordPress writes `type='text/javascript'` on any theme that does not

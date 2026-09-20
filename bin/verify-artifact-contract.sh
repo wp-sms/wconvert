@@ -235,6 +235,13 @@ fi
 verdict
 
 # --- [2] NOTHING THAT MUST NEVER SHIP ----------------------------------------
+# Requirements must describe the dependency actually packaged in this ZIP.
+if ! REQUIREMENTS="$(php "$SCRIPT_DIR/verify-wordpress-requirements.php" "$TREE" 2>&1)"; then
+    fail "$REQUIREMENTS"
+    verdict
+fi
+pass "WordPress requirements match the packaged dependency"
+
 #
 # Two names, and deliberately only two. This is not a denylist of untidy
 # things — `tests/` and `bin/` shipping is untidy and harmless, and wp.org

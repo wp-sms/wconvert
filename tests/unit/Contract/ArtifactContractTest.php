@@ -136,8 +136,9 @@ final class ArtifactContractTest extends TestCase
     private function stagedFree(array $overrides = []): string
     {
         return $this->tree([
-            'wconvert.php' => "<?php\n// the plugin\n",
-            'readme.txt' => "=== WConvert ===\nStable tag: 1.0.0\n",
+            'wconvert.php' => "<?php\n// Requires at least: 6.8\n",
+            'readme.txt' => "=== WConvert ===\nRequires at least: 6.8\nStable tag: 1.0.0\n",
+            'vendor/woocommerce/action-scheduler/action-scheduler.php' => "<?php\n// Requires at least: 6.8\n",
             'src/Bootstrap.php' => "<?php\nnamespace WConvert;\nfinal class Bootstrap {}\n",
             'vendor/autoload.php' => "<?php\n// composer\n",
             'vendor/composer/autoload_psr4.php' => "<?php\nreturn array('WConvert\\\\' => array('/src'));\n",
@@ -178,7 +179,7 @@ final class ArtifactContractTest extends TestCase
     private function stagedPro(array $overrides = []): string
     {
         return $this->tree([
-            'wconvert-pro.php' => "<?php\n// the plugin\n",
+            'wconvert-pro.php' => "<?php\n// Requires at least: 6.8\n",
             'src/Bootstrap.php' => "<?php\nnamespace WConvert\\Pro;\nfinal class Bootstrap {}\n",
             'public/blocks/content-lock.js' => "console.log('block');\n",
             'public/blocks/content-lock.css' => '.wconvert-lock-divider { display: block; }',
@@ -247,6 +248,41 @@ final class ArtifactContractTest extends TestCase
             $this->assertNotSame(0, $result['status']);
             $this->assertStringContainsString($file, $result['output']);
         }
+    }
+
+    public function testRejectsAWordPressMinimumBelowThePackagedDependency(): void
+    {
+        $result = $this->verify($this->stagedFree([
+            'vendor/woocommerce/action-scheduler/action-scheduler.php' => "<?php\n// Requires at least: 6.9\n",
+        ]));
+        $this->assertNotSame(0, $result['status']);
+        $this->assertStringContainsString('below bundled Action Scheduler requirement 6.9', $result['output']);
+    }
+
+    public function testRejectsUnreadableOrInvalidDependencyRequirementsAndReadmeDrift(): void
+    {
+        foreach ([
+            ['readme.txt' => "Requires at least: 6.2\n"],
+            ['vendor/woocommerce/action-scheduler/action-scheduler.php' => null],
+            ['vendor/woocommerce/action-scheduler/action-scheduler.php' => "<?php\n// no header\n"],
+            ['vendor/woocommerce/action-scheduler/action-scheduler.php' => "<?php\n// Requires at least: latest\n"],
+            ['vendor/woocommerce/action-scheduler/action-scheduler.php' => "<?php\n// Requires at least: 6.8\n// Requires at least: 6.9\n"],
+        ] as $files) {
+            $result = $this->verify($this->stagedFree($files));
+            $this->assertNotSame(0, $result['status'], $result['output']);
+            $this->assertStringContainsString('verify-artifact-contract FAILED', $result['output']);
+        }
+    }
+
+    public function testSourceRequirementsMatchTheInstalledDependencyAndBothPlugins(): void
+    {
+        require_once __DIR__ . '/../../../bin/verify-wordpress-requirements.php';
+        $root = dirname(__DIR__, 3);
+        \wconvertVerifyWordPressRequirements($root);
+        $this->assertSame(
+            \wconvertMinimumWordPress($root . '/wconvert.php'),
+            \wconvertMinimumWordPress($root . '/pro/wconvert-pro.php')
+        );
     }
 
     public function testPassesOnAFreeTreeThatCarriesNoProPathAndAllOfItsSource(): void

@@ -30,7 +30,7 @@ final class ContentInsertion
     /**
      * A conservative HTML tokenizer, not a DOM serializer: retain every input
      * byte and only return explicit, balanced top-level paragraph boundaries.
-     * Works on WP 6.2/PHP 8.1 without requiring the optional DOM extension.
+     * Works on supported WP 6.8+/PHP 8.1 without requiring the optional DOM extension.
      * Nested layouts are deliberately not paragraph insertion locations.
      * @return list<int>|null
      */

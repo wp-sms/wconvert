@@ -114,7 +114,7 @@ if (is_dir($wconvertPackDirectory) && !is_link($wconvertPackDirectory)) {
  * The prefixed name goes through `%i`, the identifier placeholder, rather than
  * being concatenated into the statement — the same rule
  * `WConvert\Database\WpdbConnection` follows for every query it makes, and the
- * reason the plugin's floor is WordPress 6.2. `Connection` itself is not used:
+ * available since WordPress 6.2. `Connection` itself is not used:
  * it has no `drop()`, its `delete()` refuses anything that is not a `DELETE`,
  * and widening that interface for a file that runs with the plugin unloaded
  * would be a third widening its own docblock argues against.
