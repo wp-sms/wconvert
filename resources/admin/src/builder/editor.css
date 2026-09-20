@@ -1110,6 +1110,6 @@ body .wconvert-rule-picker__unavailable {
   gap: 8px;
   min-height: 36px;
   font-size: var(--text-body);
-  font-weight: 600;
+  font-weight: 400;
 }
 #wconvert-admin .wconvert-canvas__alternate { position: absolute; inset: 0; z-index: 1; }
