@@ -196,9 +196,7 @@ system records one, which is why it is counted rather than derived.
 A visitor closing an [[Optin]] **deliberately** — the close button, `Esc`, the
 backdrop, or the browser's own light-dismiss.
 
-Leaving without converting is not a Dismissal. It is not an act at all, and it is
-already `impressions − conversions − dismissals`; naming it would invite a screen
-that reports two numbers where one is the arithmetic of the other.
+Leaving without converting is not a Dismissal. Dismissal and conversion can overlap when a visitor reopens a Campaign; daily totals cannot reconstruct abandonment by subtraction (ADR 0101).
 
 The four ways of dismissing are one thing, not four. No merchant acts differently
 on "closed with Escape" than on "clicked the X".
@@ -292,8 +290,7 @@ its name because three documents once described storage WConvert does not have.
 `localStorage['wcv1']` holds a map of [[Optin]] id to that Optin's record —
 impressions, the day of the last one, dismissed, converted — written through a
 `localStorage → cookie → in-memory` ladder that fails open
-(`resources/loader/src/state.ts`). There is no key per Optin and no second key:
-a new kind of per-visitor fact is a reserved slot or a new field inside `wcv1`.
+(`resources/loader/src/state.ts`). There is no persistent key per Optin. ADR 0101 adds one site-scoped sessionStorage key for explicit recovery choices: an active Campaign/arm and at most 64 stopped families, never form values or identity. Blocked session storage limits recovery to the current document.
 
 The first such slot is `site`, which holds the site-wide [[Frequency]] — the
 same four fields, once for the whole site. It is `functional` for the reason
@@ -430,6 +427,10 @@ A Variant is [[Pro]]'s, at the `pro` rung. See
 [ADR 0058](docs/adr/0058-a-test-ends-when-the-merchant-says-so.md) for how a
 test runs and ends.
 
+### Reopen button
+
+An optional Pro presentation for popup and slide-in. After deliberate full dismissal, a compact, dismissible button lets the visitor return to the same eligible Campaign across pages in the current browser tab session. It never auto-expands. Closing the button or conversion stops recovery for the family during that session. The mounted form and pending capture survive same-page hiding; confirmed hidden success becomes a dismissible “View details” reminder without stealing focus. It is not a Template step or Display Type. An eligible restored reminder owns the single overlay slot ahead of fresh automatic campaigns; explicit activation bypasses automatic pacing while retaining conditions, consent, schedule and stop-after-conversion. See [ADR 0101](docs/adr/0101-reopen-buttons-preserve-an-explicit-visitor-choice.md).
+
 ### Frequency
 
 The allowance — how often this device may be shown something — checked before any
@@ -444,11 +445,13 @@ site and **all of them default off**, because reading one dismissal as "show me
 nothing anywhere for a week" is a claim about what the visitor meant that they
 did not make.
 
-Site scope is a **veto**, checked first: an Optin cannot opt out of it, since a
+For automatic presentation, site scope is a **veto**, checked first: an Optin cannot opt out of it, since a
 per-Optin *ignore the site setting* is the configuration having two scopes exists
 to delete. A visitor stopped by either scope is `capped` — the standing
 `resources/loader/src/decide.ts` already gives an Optin whose allowance is spent
 and cannot change on this page view — and never a seventh word.
+
+An explicit [[Reopen button]] click bypasses automatic pacing at both scopes, while stop-after-conversion still applies (ADR 0101).
 
 Frequency is not a [[Trigger]] or a [[Condition]]: it is not a question about
 this page view, it is what this device has already been shown. Nor is it a

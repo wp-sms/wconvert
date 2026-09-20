@@ -90,7 +90,7 @@ final class PublishedProjection
      *   `tests/unit/Optin/PublishedProjectionTest.php` the same way the copy
      *   list is.
      */
-    private const SHIPPED = ['template', 'display_type', 'placement', 'inline_placement', 'frequency', 'priority'];
+    private const SHIPPED = ['template', 'display_type', 'placement', 'inline_placement', 'teaser', 'frequency', 'priority'];
 
     /**
      * The arm this entry is, of the test it belongs to:
@@ -388,6 +388,7 @@ final class PublishedProjection
 
         if ($arm !== null) {
             $payload[self::ARM] = $arm;
+            if (isset($payload['teaser'])) $payload['campaign'] = $arm[0];
 
             // Only a child, and only where it renders in place. The parent's
             // anchor IS its own id, so writing this for it would be the same

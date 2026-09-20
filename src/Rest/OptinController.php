@@ -369,6 +369,8 @@ final class OptinController implements RestController
             $normalized = $this->normalizeConfig($config, self::optionalString($config['template_id'] ?? null));
         } catch (InvalidSchedule $refused) {
             return self::refuseTheSchedule($refused);
+        } catch (\InvalidArgumentException $refused) {
+            return new WP_Error('wconvert_teaser', __('Reopen button text must contain 1–80 characters.', 'wconvert'), ['status' => 400]);
         }
 
         if (!$this->vocabulary->hasTrigger($normalized['rules'] ?? [])) {
@@ -452,6 +454,8 @@ final class OptinController implements RestController
             $normalized = is_array($config) ? $this->normalizeConfig($config, $pickedBefore) : null;
         } catch (InvalidSchedule $refused) {
             return self::refuseTheSchedule($refused);
+        } catch (\InvalidArgumentException $refused) {
+            return new WP_Error('wconvert_teaser', __('Reopen button text must contain 1–80 characters.', 'wconvert'), ['status' => 400]);
         }
 
         // Checked against the config that ARRIVED, because `saveDraft()`
@@ -875,6 +879,12 @@ final class OptinController implements RestController
             // left to enforce is that every node, token, param and Slot Role
             // is one the vocabulary declares.
             $config['template'] = $this->templates->normalize($config['template']);
+        }
+
+        if (array_key_exists('teaser', $config)) {
+            $teaser = \WConvert\Optin\Teaser::normalize((string) ($config['display_type'] ?? 'popup'), $config['teaser']);
+            if ($teaser === null) unset($config['teaser']);
+            else $config['teaser'] = $teaser;
         }
 
         return $config;

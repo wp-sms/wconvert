@@ -12,6 +12,8 @@ off a recorded act except which [[Optin]] it happened on and what kind it was, s
 the only thing a raw row carries that a daily counter does not is the intra-day
 timestamp.
 
+**Amended by [ADR 0101](0101-reopen-buttons-preserve-an-explicit-visitor-choice.md):** an Optin reopened on the same document can record both dismissal and conversion. Each act is guarded once before state and beacon writes. Reminder visibility and reminder closure produce no stats. Daily totals cannot yield an exclusive abandonment group by subtraction.
+
 ## The arithmetic
 
 A modest site — 10k pageviews a day, one popup sitewide — writes **~3.65M raw

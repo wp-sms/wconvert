@@ -1,4 +1,4 @@
-import type { Frequency, Loader, PayloadEntry, Presenter, RuleEvaluator, VisitorState } from './types';
+import type { Frequency, Loader, PayloadEntry, Presenter, PresentationSession, RuleEvaluator, VisitorState } from './types';
 import type { Store } from './storage';
 import type { Beacon } from './beacon';
 import { createBeacon, reporting } from './beacon';
@@ -65,7 +65,7 @@ export interface ShellOptions {
 }
 
 /** Every rule type this page's payload actually names, across both axes. */
-function typesInPlay(entries: readonly PayloadEntry[]): ReadonlySet<string> {
+function typesInPlay(entries: readonly PayloadEntry[]): Set<string> {
   const types = new Set<string>();
 
   for (const entry of entries) {
@@ -105,7 +105,10 @@ export function start(options: ShellOptions): () => void {
   let stopped = false;
   let deciding = false;
 
-  const inPlay = typesInPlay(entries);
+  const session: PresentationSession = presenter.connect?.({ entries, changed: () => {
+    state = loadState(store);
+    run();
+  } }) ?? presenter;
 
   /**
    * Instantiate the modules this page needs and this visitor allows.
@@ -115,6 +118,11 @@ export function start(options: ShellOptions): () => void {
    * (issue #11).
    */
   function attach(): void {
+    const inPlay = typesInPlay(entries.filter(entry => !shown.has(entry.id) && (!overlayDone || !isOverlay(entry))));
+    for (const rule of session.watch?.() ?? []) inPlay.add(rule.type);
+    for (const [type, evaluator] of evaluators) {
+      if (!inPlay.has(type) || withheld.has(type)) { evaluator.stop?.(); evaluators.delete(type); }
+    }
     for (const module of loader.modules) {
       if (!inPlay.has(module.id) || withheld.has(module.id) || evaluators.has(module.id)) {
         continue;
@@ -130,7 +138,7 @@ export function start(options: ShellOptions): () => void {
   }
 
   function record(change: (state: VisitorState) => VisitorState): void {
-    state = change(state);
+    state = change(loadState(store));
     saveState(store, state);
   }
 
@@ -150,7 +158,7 @@ export function start(options: ShellOptions): () => void {
       // from after — which is one of those bugs that happens once a night.
       const instant = now();
 
-      const verdict = decide({
+      const verdict = (session.decide ?? decide)({
         entries,
         evaluators,
         withheld,
@@ -162,14 +170,14 @@ export function start(options: ShellOptions): () => void {
         overlayDone,
       });
 
-      for (const entry of presenter.select?.(verdict.show) ?? verdict.show) {
+      let failed = false;
+      for (const entry of session.select?.(verdict.show) ?? verdict.show) {
         // Both of these are settled by the DECISION, not by what the presenter
         // does with it. `overlayDone` in particular is set on show and never on
         // dismissal, which is what makes "no runner-up after a dismissal"
         // structurally impossible rather than a setting someone can
         // misconfigure (issue #3).
         shown.add(entry.id);
-        overlayDone = overlayDone || isOverlay(entry);
 
         // **Two records, one act.** The device's own record answers "should
         // this Optin show again here", and the site's counters answer "how is
@@ -177,7 +185,7 @@ export function start(options: ShellOptions): () => void {
         // first is `functional` storage while the second is no storage on the
         // device at all (ADR 0017). Wrapping rather than calling the beacon
         // inline keeps the shell's three callbacks about the state they own.
-        presenter.show(entry, reporting(beacon, entry.id, {
+        const accepted = session.show(entry, reporting(beacon, entry.id, {
           // The Impression is the presenter's to report, because it has two
           // moments and only a renderer can tell them apart — shown, for an
           // overlay; entered the viewport, for `inline` (CONTEXT.md).
@@ -197,10 +205,16 @@ export function start(options: ShellOptions): () => void {
             run();
           },
         }));
+        if (accepted === false) failed = true;
+        else overlayDone = overlayDone || isOverlay(entry);
       }
 
-      if (!verdict.live) {
+      if (failed) {
+        queueMicrotask(run);
+      } else if (!verdict.live) {
         stop();
+      } else {
+        attach();
       }
     } finally {
       deciding = false;
@@ -234,5 +248,5 @@ export function start(options: ShellOptions): () => void {
   attach();
   run();
 
-  return stop;
+  return () => { stop(); session.dispose?.(); };
 }

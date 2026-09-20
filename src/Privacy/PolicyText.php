@@ -76,6 +76,9 @@ final class PolicyText
             ...($browser['cart_recovery'] !== null ? [
                 '<p>' . __('Cart recovery stores the cart item count and total in a browser cookie until the WooCommerce cart session ends. It does not store product or contact details.', 'wconvert') . '</p>',
             ] : []),
+            ...($browser['reopen_session'] !== null ? [
+                '<p>' . __('When a reopen button is enabled, WConvert uses session storage to remember the Campaign and your reminder dismissals in this browser tab. It contains no contact details or visitor identifier. It lasts for the browser page session; browsers may copy it to duplicated tabs or restore it when restoring a session. If storage is unavailable, recovery lasts only on the current page.', 'wconvert') . '</p>',
+            ] : []),
             '<p>' . __('WConvert records total campaign views, dismissals and completions by campaign and day. These totals are not linked to individual visitors.', 'wconvert') . '</p>',
             '<p>' . sprintf(
                 /* translators: %s: the short lifetime of the campaign-counting rate-limit record. */

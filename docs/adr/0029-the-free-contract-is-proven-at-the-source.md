@@ -1,5 +1,7 @@
 # The free contract is proven at the source, not at the artifact
 
+**Budget amendment — [ADR 0101](0101-reopen-buttons-preserve-an-explicit-visitor-choice.md):** Free remains capped at 14,012 B gzip; paid loaders have an explicitly approved 18,432 B cap for complete recovery behavior. The 2 KiB per-page payload limit and hard fail-closed checks remain.
+
 Four checks guard the free artifact, and the one that carries the guarantee needs
 **no build at all**: no file in free's tree may import a `pro/` path or the Pro
 namespace. It runs on every pull request. The artifact-level checks confirm at
@@ -184,7 +186,7 @@ check has an opt-out, the opt-out is what runs on the day it matters.
   is 13,500 B.*** Fullscreen adds 777 B to the largest previous build. A module
   marker additionally proves fullscreen is absent from Free's visitor loader.
   ***Amended by [ADR 0099](0099-automatic-inline-placement-uses-rendered-content.md):
-  the current ceiling is 14,012 B.*** Automatic inline adds a paid-tier module
+  the ceiling became 14,012 B. ADR 0101 retains that for Free and explicitly raises paid loaders to 18,432 B.*** Automatic inline adds a paid-tier module
   marker and about 311 B to Elite, with no Free runtime or bypass.
 - **The payload budget is not a build gate.** It is generated per URL at runtime, so
   it has no artifact to weigh. It becomes a PHPUnit test that renders a worst-case

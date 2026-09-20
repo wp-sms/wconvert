@@ -1102,3 +1102,14 @@ body .wconvert-rule-picker__unavailable {
   font-size: var(--text-note);
   color: var(--muted-foreground);
 }
+
+/* The feature title is a control label, not the small field-caption style. */
+#wconvert-admin .wconvert-workspace .wconvert-inspector__body .wconvert-reopen-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 36px;
+  font-size: var(--text-body);
+  font-weight: 400;
+}
+#wconvert-admin .wconvert-canvas__alternate { position: absolute; inset: 0; z-index: 1; }

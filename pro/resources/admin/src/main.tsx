@@ -5,8 +5,11 @@ import '@/index.css';
 import { PRO_SCREENS } from './screens';
 import { previewSurfaces } from '@/previewSurfaces';
 import { decorateFullscreen } from '../../../modules/display-types/loader/surface';
+import { reopenControls } from '@/reopenControls';
 import { inlinePlacementControls } from '@/inlinePlacement';
 
+reopenControls.component = lazy(() => import('../../../modules/display-types/admin/ReopenSettings'));
+reopenControls.preview = lazy(() => import('../../../modules/display-types/admin/ReopenPreview'));
 previewSurfaces.fullscreen = decorateFullscreen;
 inlinePlacementControls.component = lazy(() => import('../../../modules/inline-placement/admin/PlacementSettings'));
 

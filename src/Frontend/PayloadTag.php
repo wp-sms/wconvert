@@ -116,6 +116,15 @@ final class PayloadTag
             return '';
         }
 
+        $hasReopen = false;
+        foreach ($entries as &$entry) {
+            if (isset($entry['teaser']) && is_array($entry['teaser'])) {
+                $entry['teaser'] = \WConvert\Optin\Teaser::forPayload($entry['teaser']);
+                $hasReopen = true;
+            }
+        }
+        unset($entry);
+
         // JSON_HEX_TAG is not optional. Without it a headline containing
         // `</script>` closes this element early and the rest of the payload
         // becomes markup. JSON_UNESCAPED_SLASHES and _UNICODE are there for
@@ -127,8 +136,12 @@ final class PayloadTag
             return '';
         }
 
+        $reopenLabels = [__('Dismiss reminder', 'wconvert'), __('Submission received — View details', 'wconvert')];
+        $localized = $hasReopen && $reopenLabels !== ['Dismiss reminder', 'Submission received — View details']
+            ? ' data-reopen="' . esc_attr((string) json_encode($reopenLabels, JSON_UNESCAPED_UNICODE)) . '"' : '';
+
         return sprintf(
-            '<script type="application/json" id="%s" %s="%s" %s="%s" %s="%s"%s>%s</script>',
+            '<script type="application/json" id="%s" %s="%s" %s="%s" %s="%s"%s%s>%s</script>',
             self::ELEMENT_ID,
             self::CAPTURE_ATTRIBUTE,
             esc_url($captureUrl),
@@ -141,6 +154,7 @@ final class PayloadTag
             // Last of the three, because it is the one that prints its own
             // leading space or nothing at all.
             self::siteAllowanceAttribute($siteAllowance),
+            $localized,
             $json
         );
     }

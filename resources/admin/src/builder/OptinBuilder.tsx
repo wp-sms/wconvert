@@ -38,6 +38,7 @@ import { ScopeStyle } from './ScopeStyle';
 import { StructureView } from './StructureView';
 import { DesignSettings } from './DesignSettings';
 import { InlinePlacementSettings, inlinePlacementLabel } from '../inlinePlacement';
+import { ReopenPreview, reopenControls } from '../reopenControls';
 import { EditorCanvas, ScreenControls, DeviceControls } from './EditorCanvas';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../components/ui/dialog';
 import { canRedo, canUndo, historyOf, redo, remember, undo, type History } from './structure/history';
@@ -156,6 +157,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
 
   const [copiedLook, setCopiedLook] = useState<TokenBag | null>(null);
   const [step, setStep] = useState(0);
+  const [reopenScreen, setReopenScreen] = useState(false);
   const [width, setWidth] = useState<Width>('own');
   const [selection, setSelection] = useState<Selection | null>(null);
 
@@ -466,6 +468,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
   }, []);
 
   const chooseFromTree = useCallback((path: Path) => {
+    setReopenScreen(false);
     setOpenToken(null);
     setSelection({ path, from: 'tree' });
 
@@ -559,6 +562,14 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
     return <BuilderSkeleton onClose={onClose} backLabel={backLabel} />;
   }
 
+  const canPreviewReopen = !!reopenControls.preview && !!config.teaser && ['popup', 'slide_in'].includes(displayTypeOf(config, templates));
+  const showingReopen = canPreviewReopen && reopenScreen;
+  const reopenLabel = __('Reopen button', 'wconvert');
+  const showReopen = () => {
+    setReopenScreen(true);
+    setSelection(null);
+    setOpenToken(null);
+  };
   const previewPane =
     entry === null ? null : (
       <EditorCanvas
@@ -572,10 +583,13 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
         onStep={setStep}
         displayType={displayTypeOf(config, templates)}
         placement={config.placement}
+        screen={showingReopen ? { label: reopenLabel, content: <ReopenPreview value={config.teaser} template={entry} mobile={width === 'narrow'} onReopen={() => { setReopenScreen(false); setStep(0); }} /> } : undefined}
+        onClose={canPreviewReopen && step === 0 ? showReopen : undefined}
       />
     );
   const shownStep = Math.min(step, Math.max((entry?.tree.steps.length ?? 1) - 1, 0));
   const chooseStep = (next: number) => {
+    setReopenScreen(false);
     setStep(next);
     setSelection(null);
     setOpenToken(null);
@@ -682,6 +696,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
             vocabulary={vocabulary}
             displayType={displayTypeOf(config, templates)}
             placement={config.placement}
+            teaser={config.teaser}
             inlinePlacement={config.inline_placement}
             bound={bound}
             template={template}
@@ -752,7 +767,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
                       {__('Design settings', 'wconvert')}
                     </Button>
                   </div>
-                  <ScreenControls template={entry} step={shownStep} onChange={chooseStep} />
+                  <ScreenControls template={entry} step={shownStep} onChange={chooseStep} extra={canPreviewReopen ? { label: reopenLabel, selected: showingReopen, onSelect: showReopen } : undefined} />
                   <div>
                     <DeviceControls width={width} onChange={setWidth} />
                     <Fullscreen />
@@ -793,6 +808,8 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
                             onError={report}
                             onBrowse={() => setBrowsing(true)}
                             displayType={displayTypeOf(config, templates)}
+                            teaser={config.teaser}
+                            onTeaserChange={(teaser) => { edit({ teaser }); setReopenScreen(!!teaser); }}
                             placement={config.placement}
                             onPlacementChange={(placement) => edit({ placement })}
                           />
@@ -1033,6 +1050,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
           if (displayTypeOf(config, templates) !== chosenDesign.display_type) {
             changes.placement = null;
             changes.inline_placement = null;
+            if (!['popup', 'slide_in'].includes(chosenDesign.display_type)) changes.teaser = null;
           }
 
           edit(changes);

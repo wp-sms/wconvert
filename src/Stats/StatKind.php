@@ -40,8 +40,8 @@ enum StatKind: string
      * A **deliberate** close — the button, `Esc`, the backdrop, or the
      * browser's own light-dismiss. The four gestures are one thing, not four:
      * no merchant acts differently on "closed with Escape" than on "clicked
-     * the X". Leaving without converting is not one of them, and is already
-     * `impressions − conversions − dismissals` (CONTEXT.md, Dismissal).
+     * the X". Dismissal and conversion may overlap after reopening, so daily
+     * counters cannot reconstruct abandonment (ADR 0101).
      */
     case Dismiss = 'dismiss';
 

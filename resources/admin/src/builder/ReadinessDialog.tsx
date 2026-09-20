@@ -46,6 +46,7 @@ export interface ReadinessDialogProps {
   readonly vocabulary: RuleVocabulary;
   readonly displayType: string;
   readonly placement?: unknown;
+  readonly teaser?: unknown;
   readonly inlinePlacement?: unknown;
   readonly bound: readonly string[];
   readonly template: Template | undefined;
@@ -79,6 +80,7 @@ export function ReadinessDialog({
   vocabulary,
   displayType,
   placement,
+  teaser,
   inlinePlacement,
   bound,
   template,
@@ -275,6 +277,7 @@ export function ReadinessDialog({
                       )}
                     </p>
                   )}
+                  {teaser != null && ['popup', 'slide_in'].includes(displayType) && <p><button className="wconvert-readiness__go" onClick={() => jump(onGoToDesign)}>{__('Reopen button enabled: follows eligible pages in this tab after dismissal. Check mobile placement beside checkout, chat and cookie controls.', 'wconvert')}</button></p>}
                   {!overlay && (
                     <p><button className="wconvert-readiness__go" onClick={() => jump(onGoToPlacement)}>
                       {inlinePlacementLabel(inlinePlacement) ?? __('Appears where you place its block or shortcode, when these rules allow it.', 'wconvert')}

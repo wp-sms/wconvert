@@ -207,6 +207,8 @@ function rowOf(row: Row, labels: Labels): HTMLElement {
     return details;
   }
 
+  if (row.browser.recoveryStatus) details.append(note(row.browser.recoveryStatus));
+
   details.append(
     ruleTable(text(labels, 'sections', 'triggers'), row.browser.triggers, labels),
     ruleTable(text(labels, 'sections', 'conditions'), row.browser.conditions, labels),

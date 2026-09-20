@@ -58,6 +58,19 @@ final class OptinWriteTest extends TestCase
 {
     private const PLUGIN_DIR = __DIR__ . '/../../..';
 
+    public function testReopenSettingsAreNormalizedAndInvalidLabelsRefused(): void
+    {
+        $draft = $this->create(Goal::GrowEmailList, ['template_id' => 'centred-card', 'teaser' => ['label' => ' Save ', 'gap' => 16]]);
+        self::assertIsArray($draft);
+        self::assertSame(['label' => 'Save'], $draft['config']['teaser']);
+        $invalid = $this->create(Goal::GrowEmailList, ['teaser' => ['label' => ' ']]);
+        self::assertInstanceOf(WP_Error::class, $invalid);
+        self::assertSame('wconvert_teaser', $invalid->get_error_code());
+        $inline = $this->create(Goal::GrowEmailList, ['display_type' => 'inline', 'teaser' => ['label' => 'Save']]);
+        self::assertIsArray($inline);
+        self::assertArrayNotHasKey('teaser', $inline['config']);
+    }
+
     public function testAnEmailOnlySmsDraftSavesButCannotBePublished(): void
     {
         $draft = $this->create(Goal::GrowSmsList, ['template_id' => 'centred-card']);

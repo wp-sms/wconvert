@@ -443,7 +443,9 @@ export function mountPopover(options: MountOptions): Mounted {
    * no `popover` support there is nothing to hide, and an element still in the
    * document is an overlay still on the page.
    */
+  let cancelClose = () => {};
   function close(byTheVisitor: boolean): void {
+    if (!byTheVisitor) parts.stop();
     if (!element.isConnected || element.hasAttribute('data-leaving')) {
       return;
     }
@@ -469,12 +471,15 @@ export function mountPopover(options: MountOptions): Mounted {
         return;
       }
 
+      cancelClose();
       element.hidePopover?.();
       element.remove();
     };
 
     element.addEventListener('transitionend', finish, { once: true });
-    window.setTimeout(finish, LATEST_A_CLOSE_MAY_TAKE);
+    const timer = window.setTimeout(finish, LATEST_A_CLOSE_MAY_TAKE);
+    cancelClose = () => { window.clearTimeout(timer); element.removeEventListener('transitionend', finish); };
+    if (!byTheVisitor) finish();
   }
 
   takesPointers(parts.root);
@@ -486,6 +491,10 @@ export function mountPopover(options: MountOptions): Mounted {
     },
     steps: options.template.tree.steps.length,
     show() {
+      cancelClose();
+      element.removeAttribute('data-leaving');
+      takesPointers(parts.root);
+      parts.resume();
       documentStyle();
       if (document.getElementById(MOTION_STYLE_ID) === null) {
         const style = document.createElement('style');

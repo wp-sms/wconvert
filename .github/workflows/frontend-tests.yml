@@ -97,6 +97,7 @@ jobs:
         run: npm run build:admin:pro && npm run build:loader && npm run build:loader:pro
       - run: npm run test:visual:popup
       - run: npm run test:visual:fullscreen
+      - run: npm run test:visual:reopen
       - name: Build block and inspectors for inline contracts
         run: npm run build:block && npm run build:inspector && npm run build:inspector:pro
       - run: npm run test:visual:inline

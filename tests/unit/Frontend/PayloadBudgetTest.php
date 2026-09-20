@@ -306,6 +306,20 @@ final class PayloadBudgetTest extends TestCase
      * The other side of it, so the assertion above cannot be satisfied by a
      * payload that is small because the trees never reached it.
      */
+    public function testEnabledReopenButtonsFitTheUnchangedPageBudget(): void
+    {
+        $labels = ['Get my discount', 'Read the free guide', 'Join our next workshop', 'See subscriber benefits', 'Claim a welcome gift'];
+        $optins = [];
+        foreach (self::worstCase() as $i => $entry) {
+            $teaser = ['label' => $labels[$i], 'gap' => 20 + $i, 'placement' => 'block_start_inline_start',
+                'background' => sprintf('#%06x', 0x12505a + $i * 100), 'color' => '#ffffff',
+                'mobile' => ['placement' => 'block_end_inline_start', 'gap' => 24 + $i]];
+            $optins[] = new PublishedOptin($entry->id, $entry->targeting, $entry->payload + ['teaser' => $teaser], $entry->goal);
+        }
+        $bytes = self::pageBytes($optins);
+        self::assertLessThanOrEqual(self::BUDGET, $bytes, "Enabled reopen payload: {$bytes} B gzip");
+    }
+
     public function testTheMeasuredPayloadActuallyCarriesTheTrees(): void
     {
         $entries = Payload::forRequest(self::worstCase(), new RequestContext(path: '/pricing/'), InstalledRules::free());

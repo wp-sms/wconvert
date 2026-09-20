@@ -7,6 +7,8 @@ bars may use either block edge, slide-ins may use any logical corner, and a
 block-start bar keeps its visual box in the top layer while reserving its
 occupied strip in document flow.
 
+**Amended by [ADR 0101](0101-reopen-buttons-preserve-an-explicit-visitor-choice.md):** an eligible recovery reminder owns the same overlay slot, before new automatic overlays. It is non-modal and adds no Display Type. Closing it never releases that document’s slot. Reusable mounts resume clocks and cancel stale close transitions.
+
 There are three containers, not one:
 
 | Display Type | Container |

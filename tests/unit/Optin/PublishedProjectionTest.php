@@ -178,6 +178,12 @@ final class PublishedProjectionTest extends TestCase
      * budget it protects is real — ≤2KB gzipped per page, measured
      * (ADR 0010).
      */
+    public function testReopenConfigurationReachesTheVisitorOutsideTheTemplate(): void
+    {
+        $set = self::build([self::row(['published_config' => json_encode(['display_type' => 'popup', 'teaser' => ['label' => 'Return to offer']])])]);
+        self::assertSame(['label' => 'Return to offer'], $set[0]['payload']['teaser']);
+    }
+
     public function testThePayloadCarriesOnlyTheKeysSomebodyWroteDown(): void
     {
         $config = self::everythingAnOptinCanHold();

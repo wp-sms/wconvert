@@ -65,9 +65,8 @@ export interface OptinReport extends Numbers {
  * Goal, which is what makes a leaderboard unexpressible rather than merely
  * discouraged.
  *
- * There is also no "left without converting": it is already
- * `impressions − conversions − dismissals`, and naming it would put two
- * numbers on screen where one is the arithmetic of the other.
+ * Dismissals and conversions can overlap when a visitor reopens a Campaign.
+ * Daily counters cannot reconstruct an exclusive abandonment group.
  *
  * Analytics presents `conversions` and `deliveries` separately. Neither their
  * difference nor a send event proves a failed delivery or inbox arrival.

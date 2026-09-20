@@ -51,6 +51,7 @@ export interface RuleReport {
 
 export interface EntryReport {
   readonly placementStatus?: string;
+  readonly recoveryStatus?: string;
   readonly id: string;
   readonly displayType?: string;
   readonly placement?: string;
@@ -138,6 +139,7 @@ export interface Explanation extends BrowserReport {
 
 export interface PresentationChecks {
   select?: Presenter['select'];
+  recovery?: (entry: PayloadEntry, decision: Decision) => string | undefined;
   placement?: (entry: PayloadEntry) => string | undefined;
 }
 
@@ -213,6 +215,8 @@ export function explain(decision: Decision, presentation: PresentationChecks = {
         displayType: entry.display_type,
         placement: entry.placement,
         placementStatus: presentation.placement?.(entry),
+        recoveryStatus: presentation.recovery ? presentation.recovery(entry, decision)
+          : (entry as PayloadEntry & { teaser?: unknown }).teaser ? 'Reopen settings are saved; this feature requires Pro.' : undefined,
         standing,
         overlay: isOverlay(entry),
         triggers: (entry.triggers ?? []).map((rule) => report(rule, answers, decision)),

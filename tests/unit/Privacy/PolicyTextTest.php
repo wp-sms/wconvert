@@ -126,6 +126,7 @@ final class PolicyTextTest extends TestCase
     {
         add_filter('wconvert_privacy_browser_storage', static function (array $browser): array {
             $browser['stores_ab_assignment'] = true;
+            $browser['reopen_session'] = 'wcv_teaser1:';
             $browser['cart_recovery'] = ['key' => 'wconvert_cart'];
 
             return $browser;
@@ -134,6 +135,8 @@ final class PolicyTextTest extends TestCase
         $text = $this->policy->content();
 
         $this->assertStringContainsString('A/B test', $text);
+        $this->assertStringContainsString('uses session storage', $text);
+        $this->assertStringContainsString('duplicated tabs', $text);
         $this->assertStringContainsString('Cart recovery stores the cart item count and total', $text);
         $this->assertStringContainsString('does not store product or contact details', $text);
     }

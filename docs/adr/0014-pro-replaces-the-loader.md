@@ -1,5 +1,7 @@
 # Pro replaces the loader rather than augmenting it
 
+**Budget amendment — [ADR 0101](0101-reopen-buttons-preserve-an-explicit-visitor-choice.md):** Free remains capped at 14,012 B gzip; paid loaders have an explicitly approved 18,432 B cap for complete recovery behavior. The 2 KiB per-page payload limit and hard fail-closed checks remain.
+
 The [[Pro]] add-on ships a **complete replacement front-end loader** and dequeues
 the free one. There is no registration seam, no second script, and never two
 loaders on one page.
@@ -141,7 +143,7 @@ ever sees that queue's output.*
   is 13,500 B.*** The largest build is 13,344 B with fullscreen's accessible
   modal surface. Historical competitor figures are not a current market claim.
   ***Amended by [ADR 0099](0099-automatic-inline-placement-uses-rendered-content.md):
-  the current ceiling is 14,012 B.*** Automatic inline selection and DOM/manual
+  the ceiling became 14,012 B. ADR 0101 retains that for Free and explicitly raises paid loaders to 18,432 B.*** Automatic inline selection and DOM/manual
   precedence add about 311 B at Elite; the gate remains hard and flagless.
 - **No public `registerRule` seam**, therefore no partial-registration failure mode
   and no documented extension point that immediately becomes a compatibility
