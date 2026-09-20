@@ -3,6 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { beforeEach, expect, it, vi } from 'vitest';
 import apiFetch from '@wordpress/api-fetch';
 import { CampaignPicker } from '../../modules/content-lock/block/CampaignPicker';
+import { useState } from 'react';
 
 vi.mock('@wordpress/api-fetch', () => ({ default: vi.fn() }));
 beforeEach(() => { vi.mocked(apiFetch).mockReset(); });
@@ -67,4 +68,51 @@ it.each([
   rerender(<CampaignPicker value="saved" onChange={change} />);
   await userEvent.click(screen.getByRole('button', { name: 'Clear Campaign' }));
   expect(change).toHaveBeenLastCalledWith('');
+});
+
+it('moves keyboard focus into the picker after Change and back after Cancel', async () => {
+  window.wconvertContentLockEditor = { campaigns: [{ id: 'saved', name: 'Saved bonus', status: 'ready' }], manageUrl: null };
+  render(<CampaignPicker value="saved" onChange={vi.fn()} />);
+  const user = userEvent.setup();
+  screen.getByRole('button', { name: 'Change Campaign' }).focus();
+  await user.keyboard('{Enter}');
+  expect(screen.getByRole('combobox', { name: 'Campaign' })).toHaveFocus();
+  await user.click(screen.getByRole('button', { name: 'Cancel' }));
+  expect(screen.getByRole('button', { name: 'Change Campaign' })).toHaveFocus();
+});
+
+it('honors a canvas request to focus settings once without refocusing on unrelated renders', () => {
+  window.wconvertContentLockEditor = { campaigns: [], manageUrl: null };
+  const handled = vi.fn();
+  const change = vi.fn();
+  const { rerender } = render(<CampaignPicker value="" onChange={change} />);
+  const picker = screen.getByRole('combobox', { name: 'Campaign' });
+  expect(picker).not.toHaveFocus();
+  rerender(<CampaignPicker value="" onChange={change} focusRequested onFocusHandled={handled} />);
+  expect(picker).toHaveFocus();
+  expect(handled).toHaveBeenCalledOnce();
+  screen.getByRole('button', { name: 'Refresh Campaigns' }).focus();
+  rerender(<CampaignPicker value="" onChange={change} focusRequested={false} onFocusHandled={handled} />);
+  expect(picker).not.toHaveFocus();
+  expect(handled).toHaveBeenCalledOnce();
+});
+
+it('keeps focus usable after selecting or clearing a Campaign without stealing it on mount or refresh', async () => {
+  window.wconvertContentLockEditor = { campaigns: [{ id: 'saved', name: 'Saved bonus', status: 'ready' }], manageUrl: null };
+  function Picker() {
+    const [value, setValue] = useState('');
+    return <CampaignPicker value={value} onChange={setValue} />;
+  }
+  render(<Picker />);
+  expect(screen.getByRole('combobox', { name: 'Campaign' })).not.toHaveFocus();
+  const user = userEvent.setup();
+  await user.selectOptions(screen.getByRole('combobox', { name: 'Campaign' }), 'saved');
+  expect(screen.getByRole('button', { name: 'Change Campaign' })).toHaveFocus();
+  screen.getByRole('button', { name: 'Clear Campaign' }).focus();
+  await user.keyboard('{Enter}');
+  expect(screen.getByRole('combobox', { name: 'Campaign' })).toHaveFocus();
+  vi.mocked(apiFetch).mockResolvedValue(window.wconvertContentLockEditor);
+  await user.click(screen.getByRole('button', { name: 'Refresh Campaigns' }));
+  expect(await screen.findByRole('status')).toHaveTextContent('Campaign choices updated.');
+  expect(screen.getByRole('combobox', { name: 'Campaign' })).not.toHaveFocus();
 });

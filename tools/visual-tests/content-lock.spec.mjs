@@ -301,10 +301,14 @@ test('writers insert a divider, keep ordinary blocks, move it, save and remove i
   await expect(marker.locator('[contenteditable=true]')).toHaveCount(0);
   await expect(marker.getByRole('combobox', { name: 'Campaign', exact: true })).toHaveCount(0);
   // Setup remains available when the sidebar is closed, including on narrow screens.
+  await page.getByRole('button', { name: 'Lock from here', exact: true }).click();
+  await expect(page.getByRole('combobox', { name: 'Campaign', exact: true })).toHaveCount(0);
+  await marker.getByRole('button', { name: 'Choose Campaign', exact: true }).click();
+  await expect(page.getByRole('combobox', { name: 'Campaign', exact: true })).toBeFocused();
   await page.setViewportSize({ width: 420, height: 900 });
   await page.evaluate(() => window.wp.data.dispatch('core/interface').disableComplementaryArea('core'));
   await marker.getByRole('button', { name: 'Choose Campaign', exact: true }).click();
-  await expect(page.getByRole('combobox', { name: 'Campaign', exact: true })).toBeVisible();
+  await expect(page.getByRole('combobox', { name: 'Campaign', exact: true })).toBeFocused();
   await editorScreenshot(page, info.outputPath('divider-empty-sidebar.png'));
   const initialPicker = page.getByRole('combobox', { name: 'Campaign', exact: true });
   await initialPicker.fill('divider');
@@ -315,10 +319,14 @@ test('writers insert a divider, keep ordinary blocks, move it, save and remove i
   await expect(marker.getByRole('combobox', { name: 'Campaign', exact: true })).toHaveCount(0);
   await expect(page.locator('.wconvert-lock-picker__selected')).toContainText('Content lock divider');
   await page.getByRole('button', { name: 'Change Campaign', exact: true }).click();
-  await expect(page.getByRole('combobox', { name: 'Campaign', exact: true })).toHaveValue('Content lock divider');
+  // WordPress clears the search text on focus while retaining the saved choice.
+  await expect(page.getByRole('combobox', { name: 'Campaign', exact: true })).toBeFocused();
+  await expect(page.getByRole('option', { name: 'Content lock divider', exact: true })).toBeVisible();
+  expect(await page.evaluate(() => window.wp.data.select('core/block-editor').getBlocks().find(block => block.name === 'wconvert/content-lock-divider')?.attributes.optinId)).toBe(campaignId);
   await page.getByRole('button', { name: 'Cancel', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Change Campaign', exact: true })).toBeFocused();
   await page.getByRole('button', { name: 'Clear Campaign', exact: true }).click();
-  await expect(page.getByRole('combobox', { name: 'Campaign', exact: true })).toBeVisible();
+  await expect(page.getByRole('combobox', { name: 'Campaign', exact: true })).toBeFocused();
   await expect(marker.getByText('Not set up', { exact: true })).toBeVisible();
   await page.getByRole('combobox', { name: 'Campaign', exact: true }).fill('divider');
   await page.getByRole('option', { name: 'Content lock divider', exact: true }).click();

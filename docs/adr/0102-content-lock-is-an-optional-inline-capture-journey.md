@@ -66,8 +66,13 @@ and beacons. Free does not register this Pro route.
 
 Both authoring blocks keep Campaign selection in native InspectorControls,
 including the empty state. A canvas **Choose Campaign** button opens the block
-settings when the sidebar is closed. A selected Campaign uses a wrapping name
+settings when the sidebar is closed, expands a collapsed settings panel, and
+moves focus to the Campaign picker.
+A selected Campaign uses a wrapping name
 card with Change and Clear actions; unavailable selections remain repairable.
+Change and Clear move keyboard focus into the picker. Selecting a Campaign or
+cancelling returns focus to Change. Mounting the block or refreshing choices
+does not request focus.
 Refresh and permission-aware management links are secondary actions. Compact editor-only start/end labels identify the region and
 selected Campaign without inheriting the theme's article font size. An empty
 region starts with a writable paragraph. The native block toolbar holds

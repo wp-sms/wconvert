@@ -647,8 +647,9 @@ substitutable.
 
 An optional Pro inline [[Campaign]] journey that reveals a merchant-selected
 WordPress content region after acknowledged [[Lead]] capture. It uses a saved
-container block or paired shortcode, with one active region per document and a
-30-day browser-local Campaign-family receipt. It creates no [[Contact]] identity
+container block, an article-remainder divider, or paired shortcode, with one
+active region per document and a 30-day browser-local Campaign-family receipt.
+It creates no [[Contact]] identity
 or subscription state. If the form cannot operate, the region stays readable;
 its HTML and direct file links are public. Automatic placement and Content lock
 are mutually exclusive. See [ADR 0102](docs/adr/0102-content-lock-is-an-optional-inline-capture-journey.md).

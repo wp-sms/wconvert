@@ -1,25 +1,30 @@
 # Remaining content-lock and placement work
 
 20 September 2026. Follow-up plan after the reviewed divider/sidebar changes.
-This document records work to schedule; it does not authorize implementing every
-item or publishing a release. The user authorized merging the reviewed changes.
-See [the validation report](../reviews/2026-09-20-content-lock-followup.md) and
+The reviewed divider/sidebar changes were merged in PR #182. The subsequent
+user request authorized the guide, writing-workflow checks and accessibility/
+compatibility review using Sol (high) and Luna (xhigh). Release publication and
+parked features remain separate work.
+See [the merged validation report](../reviews/2026-09-20-content-lock-followup.md) and
 [the original plan](165-inline-content-locking.md) for completed behavior.
+This follow-up records [browser QA](../reviews/2026-09-20-content-lock-browser-qa.md)
+and [normal activation compatibility](../reviews/2026-09-20-content-lock-compatibility.md).
 
 ## Next: documentation and real use
 
-1. **Write the short user guide in `docs/guides/content-lock.md`.** Link it from
-   the README. Explain when to choose Lock from here versus Content lock, how to
-   publish/select a Campaign, where to write, and how to test in a private window.
-   Include one screenshot per block, the static-block compatibility limits and
-   the readable-fallback behavior. Keep technical implementation details out of
-   setup steps. Reuse the guide on the future website; add a public help link only
-   once that page exists. Done when a new author can complete setup from the guide.
+1. **Guide complete:** [Content lock setup](../guides/content-lock.md),
+   linked from the README, with one screenshot per block, setup/testing steps,
+   supported content and readable-fallback guidance. Validate its clarity with a
+   content writer using the session below. Reuse it on the future website; add
+   a public help link only once that page exists.
 2. **Observe authors using real articles.** Cover an existing long article, a new
    article, and a bonus followed by a public conclusion. Ask an editor to select
    a Campaign, move the boundary, change the selection and remove the lock. Record
    hesitation, errors and unexpected public/locked content. Turn observed problems
    into focused fixes; do not add a new block based only on hypothetical demand.
+   The [human-check script](../reviews/content-lock-human-checks.md) provides
+   tasks and success criteria. Automated article scenarios do not complete an
+   observed session with a content writer.
 
 ## Before release: accessibility and supported versions
 
@@ -27,12 +32,20 @@ See [the validation report](../reviews/2026-09-20-content-lock-followup.md) and
    Change/Clear/Cancel, screen-reader labels and reveal announcements, 200% zoom,
    RTL, a physical phone, long Campaign names and repair warnings. Include both
    the article editor and visitor form. Automated 420px keyboard and browser tests
-   already pass; these manual checks cover what those tests do not establish.
+   already pass. This follow-up fixed focus loss when Change/Clear/Cancel or a
+   selection replaces a picker control, and moves focus into settings when
+   Choose Campaign opens the sidebar or expands a collapsed settings panel.
+   The human-check script retains actual
+   screen-reader, browser zoom and physical-device checks; automated semantics
+   and emulation do not establish those outcomes.
 4. **Resolve the minimum WordPress version claim.** Reproduce the existing
    WordPress 6.2 activation/dependency limitation recorded in ADR 0100, decide
    the supported floor, and align dependency versions, metadata and documentation.
    Verify activation and authoring on the chosen minimum and current WordPress.
    Do not broaden the compatibility promise from newer-version tests alone.
+   Normal activation on WordPress 6.2 reproduces an Action Scheduler fatal error;
+   see the [compatibility review](../reviews/2026-09-20-content-lock-compatibility.md).
+   The global minimum-version metadata remains unchanged pending that decision.
 5. **Run release checks when a release is requested.** Exercise all packaged Pro
    tiers and readable behavior without Pro, then verify published-page caching
    and the chosen delivery providers with explicitly authorized test recipients.
@@ -55,6 +68,7 @@ or start all lower-priority formats together.
 
 ## Recommended order
 
-User guide, observed author sessions, focused fixes from those sessions, manual
-accessibility/version validation, then release preparation when requested.
+Review the guide and automated findings, run observed author sessions and the
+remaining manual accessibility checks, resolve the supported WordPress floor,
+then prepare a release when requested.
 Revisit parked features only after those steps provide evidence for them.

@@ -1,4 +1,4 @@
-import { useState } from '@wordpress/element';
+import { useLayoutEffect, useRef, useState } from '@wordpress/element';
 import { Button, ComboboxControl, Notice } from '@wordpress/components';
 import apiFetch from '@wordpress/api-fetch';
 import { __ } from '@wordpress/i18n';
@@ -32,6 +32,7 @@ export function useCampaignChoices() {
 }
 
 type PickerState = ReturnType<typeof useCampaignChoices>;
+type PickerProps = { value: string; onChange(value: string): void; focusRequested?: boolean; onFocusHandled?(): void };
 
 /** Used in the canvas as well as settings, so repair guidance never disappears. */
 export function CampaignStatus({ value, state }: { value: string; state: PickerState }) {
@@ -47,28 +48,43 @@ export function CampaignStatus({ value, state }: { value: string; state: PickerS
   </>;
 }
 
-export function CampaignPickerFields({ value, onChange, state }: { value: string; onChange(value: string): void; state: PickerState }) {
+export function CampaignPickerFields({ value, onChange, state, focusRequested, onFocusHandled }: PickerProps & { state: PickerState }) {
   const { data, busy, result, refresh } = state;
   const [filter, setFilter] = useState('');
   const [editing, setEditing] = useState(false);
+  const picker = useRef<HTMLDivElement>(null);
+  const changeButton = useRef<HTMLButtonElement>(null);
+  const pendingFocus = useRef<'picker' | 'change' | null>(null);
+  // These controls replace one another. Move focus only after a user action,
+  // never when the block mounts or Campaign choices refresh.
+  useLayoutEffect(() => {
+    const target = focusRequested || pendingFocus.current === 'picker'
+      ? picker.current?.querySelector<HTMLElement>('[role="combobox"]')
+      : pendingFocus.current === 'change' ? changeButton.current : null;
+    if (target) {
+      target.focus();
+      pendingFocus.current = null;
+      if (focusRequested) onFocusHandled?.();
+    }
+  });
   const selected = data?.campaigns.find(item => item.id === value);
   const ready = data?.campaigns.filter(item => item.status === 'ready') ?? [];
   const options = ready.filter(item => item.id === value || item.name.toLocaleLowerCase().includes(filter.toLocaleLowerCase()))
     .map(item => ({ value: item.id, label: item.name }));
   // Preserve unavailable selections visibly. Refresh never edits the post.
   if (value && selected?.status !== 'ready') options.unshift({ value, label: selected?.name ?? __('Previously selected Campaign', 'wconvert') });
-  return <div className="wconvert-lock-picker">
+  return <div className="wconvert-lock-picker" ref={picker}>
     {value && !editing ? <div className="wconvert-lock-picker__selected">
       <span className="wconvert-lock-picker__label">{__('Campaign', 'wconvert')}</span>
       <strong>{selected?.name ?? __('Previously selected Campaign', 'wconvert')}</strong>
       <div className="wconvert-lock-picker__actions">
-        <Button variant="tertiary" aria-label={__('Change Campaign', 'wconvert')} onClick={() => setEditing(true)}>{__('Change', 'wconvert')}</Button>
-        <Button variant="tertiary" aria-label={__('Clear Campaign', 'wconvert')} onClick={() => { setFilter(''); setEditing(false); onChange(''); }}>{__('Clear', 'wconvert')}</Button>
+        <Button ref={changeButton} variant="tertiary" aria-label={__('Change Campaign', 'wconvert')} onClick={() => { pendingFocus.current = 'picker'; setEditing(true); }}>{__('Change', 'wconvert')}</Button>
+        <Button variant="tertiary" aria-label={__('Clear Campaign', 'wconvert')} onClick={() => { pendingFocus.current = 'picker'; setFilter(''); setEditing(false); onChange(''); }}>{__('Clear', 'wconvert')}</Button>
       </div>
     </div> : <>
       <ComboboxControl label={__('Campaign', 'wconvert')} value={value || null} options={options}
-        onFilterValueChange={setFilter} onChange={next => { setFilter(''); setEditing(false); onChange(next ?? ''); }} />
-      {editing && value && <Button variant="tertiary" onClick={() => { setFilter(''); setEditing(false); }}>{__('Cancel', 'wconvert')}</Button>}
+        onFilterValueChange={setFilter} onChange={next => { pendingFocus.current = next ? 'change' : 'picker'; setFilter(''); setEditing(false); onChange(next ?? ''); }} />
+      {editing && value && <Button variant="tertiary" onClick={() => { pendingFocus.current = 'change'; setFilter(''); setEditing(false); }}>{__('Cancel', 'wconvert')}</Button>}
     </>}
     <CampaignStatus value={value} state={state} />
     {data !== null && ready.length === 0 && <p>{data.campaigns.some(item => item.status === 'unavailable')
@@ -82,7 +98,7 @@ export function CampaignPickerFields({ value, onChange, state }: { value: string
   </div>;
 }
 
-export function CampaignPicker(props: { value: string; onChange(value: string): void }) {
+export function CampaignPicker(props: PickerProps) {
   const state = useCampaignChoices();
   return <CampaignPickerFields {...props} state={state} />;
 }

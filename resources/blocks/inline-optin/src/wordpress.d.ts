@@ -97,7 +97,7 @@ declare module '@wordpress/components' {
 
 
 declare module '@wordpress/element' {
-  export { useState } from 'react';
+  export { useLayoutEffect, useRef, useState } from 'react';
 }
 
 declare module '@wordpress/data' {
@@ -116,7 +116,7 @@ declare module '@wordpress/data' {
 }
 
 declare module '@wordpress/components' {
-  export const Button: (props: { variant?: string; disabled?: boolean; 'aria-label'?: string; onClick(): void; children?: React.ReactNode }) => React.JSX.Element;
+  export const Button: (props: { ref?: React.Ref<HTMLButtonElement>; variant?: string; disabled?: boolean; 'aria-label'?: string; onClick(): void; children?: React.ReactNode }) => React.JSX.Element;
   export const ComboboxControl: (props: {
     label: string; value: string | null; options: { label: string; value: string }[];
     onFilterValueChange(value: string): void; onChange(value: string | null | undefined): void;
@@ -129,6 +129,6 @@ declare module '@wordpress/block-editor' {
   export const BlockControls: (props: { group?: string; children: React.ReactNode }) => React.JSX.Element;
 }
 declare module '@wordpress/components' {
-  export const PanelBody: (props: { title: string; initialOpen?: boolean; children: React.ReactNode }) => React.JSX.Element;
+  export const PanelBody: (props: { title: string; initialOpen?: boolean; opened?: boolean; onToggle?(opened: boolean): void; children: React.ReactNode }) => React.JSX.Element;
   export const ToolbarButton: (props: { disabled?: boolean; onClick(): void; children: React.ReactNode }) => React.JSX.Element;
 }

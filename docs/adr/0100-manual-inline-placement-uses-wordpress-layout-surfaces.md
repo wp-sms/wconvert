@@ -47,9 +47,13 @@ Different Campaigns remain independent.
 The block metadata declares API v3 for current WordPress. Registration supplies
 API v2 on WordPress 6.2, where v3 did not exist, and v3 from WordPress 6.3 onward.
 This compatibility bridge changes no saved block markup. A separate dependency
-compatibility issue currently prevents the bundled Action Scheduler from
-activating on WordPress below 6.5; that release-floor mismatch is not hidden by
-this placement feature.
+issue makes the advertised WordPress 6.2 minimum inaccurate: normal activation
+fails in Action Scheduler because `wp_is_serving_rest_request()` is unavailable.
+The historical 6.5 function boundary is not a supported-version promise. The
+currently bundled Action Scheduler 4.1.0 declares a WordPress 6.8 minimum;
+normal activation and editor smoke checks pass on 6.8 and 7.1.1. See the
+[compatibility review](../reviews/2026-09-20-content-lock-compatibility.md).
+Aligning the global plugin metadata remains a separate release support decision.
 
 Template JSON, the database schema, the published payload, and the visitor
 loader contract do not change.
