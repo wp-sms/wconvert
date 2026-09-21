@@ -6,6 +6,7 @@ use WConvert\Lead\Lead;
 use WConvert\Lead\LeadCapture;
 use WConvert\Optin\OptinRepository;
 use WConvert\Queue\Queue;
+use WConvert\Queue\QueueFailure;
 
 defined('ABSPATH') || exit;
 
@@ -86,7 +87,14 @@ final class PushDispatcher
                 continue;
             }
 
-            $this->queue->dispatch(PushJob::HOOK, (new PushJob($lead->id, $destinationId))->toArgs());
+            try {
+                $this->queue->dispatch(PushJob::HOOK, (new PushJob($lead->id, $destinationId))->toArgs());
+            } catch (QueueFailure $failure) {
+                // The Lead is already stored, so this is Destination health,
+                // not a failed capture. Keep walking: one rejected action must
+                // not suppress every Destination bound after it.
+                $this->health->failed($destinationId, $failure->getMessage(), current_time('mysql'));
+            }
         }
     }
 

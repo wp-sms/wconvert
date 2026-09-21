@@ -44,7 +44,27 @@ final class TemplateLibrary
         private readonly array $templates,
         private readonly array $locked = [],
         private readonly array $rejections = [],
+        private readonly ?\Closure $build = null,
     ) {
+    }
+
+    private ?self $loaded = null;
+
+    /**
+     * A library whose sources are not read until a consumer asks for data.
+     *
+     * Route registration constructs every REST controller, including the
+     * authoring controllers, on public capture and beacon requests. Keeping
+     * the deferral inside the library preserves those controllers' typed
+     * dependencies while avoiding a directory scan for a route that will not
+     * use the gallery. Only a successfully built library is retained; an
+     * exception leaves the deferred instance retryable.
+     *
+     * @param \Closure(): self $build
+     */
+    public static function deferred(TemplateVocabulary $vocabulary, \Closure $build): self
+    {
+        return new self($vocabulary, [], [], [], $build);
     }
 
     /**
@@ -149,6 +169,11 @@ final class TemplateLibrary
      */
     public function all(): array
     {
+        $loaded = $this->materialized();
+        if ($loaded !== $this) {
+            return $loaded->all();
+        }
+
         return $this->templates;
     }
 
@@ -171,6 +196,11 @@ final class TemplateLibrary
      */
     public function locked(): array
     {
+        $loaded = $this->materialized();
+        if ($loaded !== $this) {
+            return $loaded->locked();
+        }
+
         return array_diff_key($this->locked, $this->templates);
     }
 
@@ -186,6 +216,11 @@ final class TemplateLibrary
      */
     public function rejections(): array
     {
+        $loaded = $this->materialized();
+        if ($loaded !== $this) {
+            return $loaded->rejections();
+        }
+
         return $this->rejections;
     }
 
@@ -194,6 +229,11 @@ final class TemplateLibrary
      */
     public function find(string $id): ?array
     {
+        $loaded = $this->materialized();
+        if ($loaded !== $this) {
+            return $loaded->find($id);
+        }
+
         return $this->templates[$id] ?? null;
     }
 
@@ -280,6 +320,11 @@ final class TemplateLibrary
             return $config;
         }
 
+        $loaded = $this->materialized();
+        if ($loaded !== $this) {
+            return $loaded->snapshotInto($config, $pickedBefore);
+        }
+
         $entry = $this->find($id);
 
         // A `template_id` naming nothing this install ships is left alone
@@ -325,6 +370,23 @@ final class TemplateLibrary
         )['template'];
 
         return $config;
+    }
+
+    private function materialized(): self
+    {
+        if ($this->build === null) {
+            return $this;
+        }
+
+        if ($this->loaded === null) {
+            $loaded = ($this->build)();
+            if ($loaded === $this) {
+                throw new \LogicException('A deferred template library cannot build itself.');
+            }
+            $this->loaded = $loaded;
+        }
+
+        return $this->loaded;
     }
 
     /**

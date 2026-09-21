@@ -4,6 +4,7 @@ namespace WConvert\Tests\Unit\Database;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
+use WConvert\Database\DatabaseException;
 use WConvert\Database\WpdbConnection;
 use WConvert\Lead\LeadRepository;
 use WConvert\Milestone\MilestoneStore;
@@ -46,6 +47,87 @@ use WConvert\Tests\Unit\Support\FakeOptionStore;
 final class WpdbConnectionTest extends TestCase
 {
     private const TABLE = 'wp_wconvert_leads';
+
+    public function testARejectedInsertIsReportedAsADatabaseFailure(): void
+    {
+        $wpdb = new class extends \wpdb {
+            public function insert(string $table, array $data): int|false
+            {
+                $this->last_error = 'Duplicate value from sarah@example.com in INSERT INTO wp_wconvert_leads';
+
+                return false;
+            }
+        };
+
+        try {
+            (new WpdbConnection($wpdb))->insert('wconvert_leads', ['email' => 'sarah@example.com']);
+            self::fail('A failed insert must not be reported as a stored Lead.');
+        } catch (DatabaseException $failure) {
+            self::assertSame('WConvert could not complete a database operation.', $failure->getMessage());
+            self::assertStringNotContainsString('sarah@example.com', $failure->getMessage());
+            self::assertStringNotContainsString('INSERT', $failure->getMessage());
+        }
+    }
+
+    public function testAReadErrorIsNotReportedAsAnEmptyResult(): void
+    {
+        $wpdb = new class extends \wpdb {
+            public function get_results(string $sql, string $output = 'OBJECT'): ?array
+            {
+                $this->last_error = 'Table wp_wconvert_leads does not exist';
+
+                return null;
+            }
+        };
+
+        $this->expectException(DatabaseException::class);
+        $this->expectExceptionMessage('WConvert could not complete a database operation.');
+
+        (new WpdbConnection($wpdb))->results('wconvert_leads', 'SELECT id FROM %i');
+    }
+
+    public function testZeroAffectedRowsRemainASuccessfulWrite(): void
+    {
+        $wpdb = new class extends \wpdb {
+            public function update(string $table, array $data, array $where): int
+            {
+                return 0;
+            }
+
+            public function query(string $sql): int
+            {
+                return 0;
+            }
+        };
+        $connection = new WpdbConnection($wpdb);
+
+        $connection->update('wconvert_optins', ['name' => 'Same'], ['id' => '01J']);
+
+        self::assertSame(
+            0,
+            $connection->delete('wconvert_leads', 'DELETE FROM %i WHERE email = %s', 'missing@example.com')
+        );
+    }
+
+    public function testARejectedDeleteIsNotReportedAsZeroRowsRemoved(): void
+    {
+        $wpdb = new class extends \wpdb {
+            public function query(string $sql): int|false
+            {
+                $this->last_error = 'DELETE failed for missing table';
+
+                return false;
+            }
+        };
+
+        $this->expectException(DatabaseException::class);
+
+        (new WpdbConnection($wpdb))->delete(
+            'wconvert_leads',
+            'DELETE FROM %i WHERE email = %s',
+            'sarah@example.com'
+        );
+    }
 
     /**
      * The shape that broke: two `%i`, each followed by a value.

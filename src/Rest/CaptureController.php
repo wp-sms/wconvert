@@ -2,6 +2,7 @@
 
 namespace WConvert\Rest;
 
+use WConvert\Database\DatabaseException;
 use WConvert\Lead\CaptureForm;
 use WConvert\Lead\LeadCapture;
 use WConvert\Lead\Refusal;
@@ -130,7 +131,19 @@ final class CaptureController implements RestController
             return self::refuse($result);
         }
 
-        $lead = $this->capture->record($optin->id, $result);
+        try {
+            $lead = $this->capture->record($optin->id, $result);
+        } catch (DatabaseException) {
+            // A database error can contain the statement and captured values.
+            // The adapter deliberately withholds those details; keep the
+            // public response equally narrow and, critically, do not answer
+            // 201 for a Lead that never reached the local log.
+            return new WP_Error(
+                'wconvert_capture_storage_failed',
+                __('This submission could not be saved. Please try again.', 'wconvert'),
+                ['status' => 500]
+            );
+        }
 
         // 201 and the id of what was created, which is what a REST create
         // says. It is the visitor's own submission coming back to them, and

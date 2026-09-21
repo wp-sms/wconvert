@@ -44,6 +44,30 @@ if (!function_exists('wp_json_encode')) {
     }
 }
 
+/* Action Scheduler's enqueue boundary, controllable by queue adapter tests. */
+$GLOBALS['wconvertTestActionSchedulerId'] = 1;
+$GLOBALS['wconvertTestScheduledActions'] = [];
+
+if (!function_exists('as_enqueue_async_action')) {
+    /** @param array<mixed> $args */
+    function as_enqueue_async_action(string $hook, array $args = [], string $group = '', bool $unique = false, int $priority = 10): int
+    {
+        $GLOBALS['wconvertTestScheduledActions'][] = compact('hook', 'args', 'group', 'unique', 'priority');
+
+        return (int) $GLOBALS['wconvertTestActionSchedulerId'];
+    }
+}
+
+if (!function_exists('as_schedule_single_action')) {
+    /** @param array<mixed> $args */
+    function as_schedule_single_action(int $timestamp, string $hook, array $args = [], string $group = '', bool $unique = false, int $priority = 10): int
+    {
+        $GLOBALS['wconvertTestScheduledActions'][] = compact('timestamp', 'hook', 'args', 'group', 'unique', 'priority');
+
+        return (int) $GLOBALS['wconvertTestActionSchedulerId'];
+    }
+}
+
 /*
  * The action hook, and only the action hook.
  *
@@ -1266,6 +1290,8 @@ if (!function_exists('wp_timezone_string')) {
  * loudly against a real database and silently against a fake that ignores SQL
  * text.
  */
+defined('ARRAY_A') || define('ARRAY_A', 'ARRAY_A');
+
 if (!class_exists('wpdb')) {
     class wpdb
     {
@@ -1289,7 +1315,7 @@ if (!class_exists('wpdb')) {
             return $query;
         }
 
-        public function query(string $sql): int
+        public function query(string $sql): int|false
         {
             $this->queries[] = $sql;
 
@@ -1299,7 +1325,7 @@ if (!class_exists('wpdb')) {
         /**
          * @return list<array<string, string|null>>
          */
-        public function get_results(string $sql, string $output = 'OBJECT'): array
+        public function get_results(string $sql, string $output = 'OBJECT'): ?array
         {
             $this->queries[] = $sql;
 
@@ -1319,7 +1345,7 @@ if (!class_exists('wpdb')) {
         /**
          * @param array<string, mixed> $data
          */
-        public function insert(string $table, array $data): int
+        public function insert(string $table, array $data): int|false
         {
             return 1;
         }
@@ -1328,7 +1354,7 @@ if (!class_exists('wpdb')) {
          * @param array<string, mixed> $data
          * @param array<string, mixed> $where
          */
-        public function update(string $table, array $data, array $where): int
+        public function update(string $table, array $data, array $where): int|false
         {
             return 1;
         }

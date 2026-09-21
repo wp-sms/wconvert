@@ -33,7 +33,7 @@ final class ActionSchedulerQueue implements Queue
      */
     public function dispatch(string $hook, array $args): void
     {
-        as_enqueue_async_action($hook, [$args], self::GROUP);
+        $this->assertEnqueued(as_enqueue_async_action($hook, [$args], self::GROUP));
     }
 
     /**
@@ -41,6 +41,16 @@ final class ActionSchedulerQueue implements Queue
      */
     public function schedule(int $timestamp, string $hook, array $args): void
     {
-        as_schedule_single_action($timestamp, $hook, [$args], self::GROUP);
+        $this->assertEnqueued(as_schedule_single_action($timestamp, $hook, [$args], self::GROUP));
+    }
+
+    private function assertEnqueued(int $actionId): void
+    {
+        // Action Scheduler uses zero when the store rejects an action. Treat
+        // that as a failed operation rather than reporting a job that does not
+        // exist; callers decide whether the surrounding operation can proceed.
+        if ($actionId === 0) {
+            throw new QueueFailure('WConvert could not enqueue a scheduled action.');
+        }
     }
 }

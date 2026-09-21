@@ -41,6 +41,7 @@ use WConvert\Tests\Unit\Support\FakeQueue;
 use WConvert\Tests\Unit\Support\FakeSitePresence;
 use WConvert\Tests\Unit\Support\FakeTransientStore;
 use WConvert\Tests\Unit\Support\PhpSource;
+use WP_REST_Request;
 
 /**
  * =============================================================================
@@ -252,6 +253,68 @@ final class NothingTranslatesAtBootTest extends TestCase
             array_values(array_unique(array_column($GLOBALS['wconvertTestRoutes'], 'namespace'))),
             'every WConvert route shares one namespace'
         );
+    }
+
+    public function testRegisteringRoutesAndServingABeaconNeverReadsTheAuthoringCatalog(): void
+    {
+        $this->boot();
+        $GLOBALS['wconvertTestInitHasFired'] = false;
+        $hadRemoteAddress = array_key_exists('REMOTE_ADDR', $_SERVER);
+        $remoteAddress = $_SERVER['REMOTE_ADDR'] ?? null;
+        $_SERVER['REMOTE_ADDR'] = '198.51.100.24';
+
+        try {
+            do_action('rest_api_init');
+
+            $beacon = null;
+            foreach ($GLOBALS['wconvertTestRoutes'] as $registered) {
+                if ($registered['route'] === '/beacon') {
+                    $beacon = $registered['args'][0]['callback'];
+                    break;
+                }
+            }
+
+            $this->assertIsCallable($beacon, 'the public beacon route was not registered');
+            $request = new WP_REST_Request('POST', '/wconvert/v1/beacon');
+            $request->set_header('user-agent', 'Mozilla/5.0');
+            $request->set_body('{"events":[]}');
+            $response = $beacon($request);
+
+            $this->assertSame(204, $response->get_status());
+        } finally {
+            $GLOBALS['wconvertTestInitHasFired'] = true;
+            if ($hadRemoteAddress) {
+                $_SERVER['REMOTE_ADDR'] = $remoteAddress;
+            } else {
+                unset($_SERVER['REMOTE_ADDR']);
+            }
+        }
+    }
+
+    public function testAuthoringRoutesLoadTheCombinedFreeAndProCatalogOnDemand(): void
+    {
+        $this->boot();
+        do_action('rest_api_init');
+
+        $callbacks = [];
+        foreach ($GLOBALS['wconvertTestRoutes'] as $registered) {
+            if (in_array($registered['route'], ['/templates', '/playbooks'], true)) {
+                $callbacks[$registered['route']] = $registered['args'][0]['callback'];
+            }
+        }
+
+        $this->assertIsCallable($callbacks['/templates'] ?? null);
+        $templates = $callbacks['/templates']()->get_data()['templates'];
+        $templateIds = array_column($templates, 'id');
+        $this->assertContains('reading-slip', $templateIds, 'free designs disappeared from the composed gallery');
+        $this->assertContains('fullscreen-editorial', $templateIds, 'Pro designs were not composed into the gallery');
+
+        $this->assertIsCallable($callbacks['/playbooks'] ?? null);
+        $request = new WP_REST_Request('GET', '/wconvert/v1/playbooks');
+        $request->set_param('goal', 'grow_email_list');
+        $playbooks = $callbacks['/playbooks']($request)->get_data();
+        $this->assertContains('welcome-discount', array_column($playbooks, 'id'));
+        $this->assertContains('fullscreen-newsletter', array_column($playbooks, 'id'));
     }
 
     /**

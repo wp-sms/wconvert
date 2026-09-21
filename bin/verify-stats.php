@@ -3,7 +3,7 @@
 /**
  * verify-stats.php — the counters, against a real MySQL.
  *
- *     wp eval-file bin/verify-stats.php
+ *     wp eval-file bin/verify-stats.php --use-include
  *
  * Exit 0 = every check passed, 1 = a check failed, 2 = it declined to run.
  *
@@ -22,7 +22,7 @@
  * it at Local:
  *
  *     php -d mysqli.default_socket="$HOME/Library/Application Support/Local/run/<id>/mysql/mysqld.sock" \
- *       "$(which wp)" eval-file bin/verify-stats.php
+ *       "$(which wp)" eval-file bin/verify-stats.php --use-include
  *
  * IT REFUSES TO RUN ON A SITE THAT ALREADY HAS COUNTS. The counters can never
  * be recomputed — there is no raw data behind them — so a merchant's numbers
@@ -68,7 +68,7 @@ use WConvert\Template\TemplateLibrary;
 use WConvert\Template\TemplateVocabulary;
 
 if (!defined('ABSPATH')) {
-    fwrite(STDERR, "Run this through WordPress: wp eval-file bin/verify-stats.php\n");
+    fwrite(STDERR, "Run this through WordPress: wp eval-file bin/verify-stats.php --use-include\n");
 
     exit(2);
 }
@@ -607,9 +607,13 @@ echo "The beacon endpoint\n";
 // socket. Nothing else can prove the controller wires its three collaborators
 // together, because a `WP_REST_Request` faithful enough to prove it is a
 // WordPress install with extra steps.
-$design = TemplateLibrary::fromDirectory(TemplateVocabulary::fromManifest())->snapshotInto(['template_id' => 'offer-panel']);
+$design = TemplateLibrary::fromDirectory(TemplateVocabulary::fromManifest())->snapshotInto(['template_id' => 'name-and-email']);
 $published = $optins->create('Beacon check', 'grow_email_list', $design);
-$optins->publish($published->id);
+$verify->check(
+    'the beacon fixture is a valid capture design and publishes',
+    $published->id,
+    $optins->publish($published->id)?->id
+);
 $unpublished = $optins->create('Never published', 'grow_email_list', []);
 
 // A beacon always arrives over HTTP and therefore always has these. WP-CLI has
@@ -764,6 +768,11 @@ $verify->check('no address was stored anywhere, in a key or in a value', 0, (int
 )));
 
 echo "The milestones\n";
+
+// The published beacon and rate-limit fixtures above correctly record the
+// site's first publish. The next section verifies that record from its empty
+// boundary, so reset only this throwaway fixture option at that boundary.
+delete_option(MilestoneStore::OPTION);
 
 // ==========================================================================
 // FOUR OF THE FIVE ARE A DATE RECORDED ONCE (#94).

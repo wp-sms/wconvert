@@ -13,6 +13,8 @@ use WConvert\Lead\Lead;
 use WConvert\Milestone\MilestoneStore;
 use WConvert\Optin\OptinRepository;
 use WConvert\Optin\PublishedSet;
+use WConvert\Queue\Queue;
+use WConvert\Queue\QueueFailure;
 use WConvert\Rules\RuleVocabulary;
 use WConvert\Support\Ulid;
 use WConvert\Tests\Unit\Support\FakeConnection;
@@ -125,6 +127,62 @@ final class JobPayloadTest extends TestCase
                 'Personal data in a job argument outlives every retention policy WConvert has.'
             );
         }
+    }
+
+    public function testARejectedEnqueueIsRecordedAndDoesNotSuppressLaterDestinations(): void
+    {
+        $destinations = new DestinationStore($this->options);
+        $secondDestinationId = $destinations->save(null, 'fake', 'Second', null, [])->id;
+        $this->db->rows[$this->optinId]['published_config'] = (string) json_encode([
+            'destinations' => [$this->destinationId, $secondDestinationId],
+        ]);
+
+        $queue = new class implements Queue {
+            /** @var list<string> */
+            public array $attempted = [];
+
+            public function dispatch(string $hook, array $args): void
+            {
+                unset($hook);
+                $this->attempted[] = (string) $args['destination'];
+
+                if (count($this->attempted) === 1) {
+                    throw new QueueFailure('WConvert could not enqueue a scheduled action.');
+                }
+            }
+
+            public function schedule(int $timestamp, string $hook, array $args): void
+            {
+                unset($timestamp, $hook, $args);
+            }
+        };
+        $health = new HealthStore($this->options);
+        $registry = (new DestinationRegistry(new FakeProPresence(), new FakeSitePresence()))
+            ->register(new FakeDestinationType());
+
+        (new PushDispatcher(
+            $registry,
+            $destinations,
+            new OptinRepository($this->db, new PublishedSet($this->options), RuleVocabulary::fromManifest(dirname(__DIR__, 3)), new MilestoneStore($this->options)),
+            $health,
+            $queue,
+            new ConnectionStore($this->options)
+        ))->dispatch(new Lead(
+            Ulid::generate(),
+            $this->optinId,
+            self::EMAIL,
+            self::PHONE,
+            ['name' => self::NAME],
+            '2026-08-25 10:00:00'
+        ));
+
+        self::assertSame([$this->destinationId, $secondDestinationId], $queue->attempted);
+        self::assertSame(1, $health->of($this->destinationId)->consecutiveFailures);
+        self::assertSame(
+            'WConvert could not enqueue a scheduled action.',
+            $health->of($this->destinationId)->lastError
+        );
+        self::assertSame(0, $health->of($secondDestinationId)->consecutiveFailures);
     }
 
     /**

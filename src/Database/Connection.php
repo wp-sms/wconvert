@@ -51,6 +51,9 @@ defined('ABSPATH') || exit;
  * reaches a database. The `%i` identifier placeholder that makes this possible
  * was introduced in WordPress 6.2, before the current 6.8 minimum.
  *
+ * Operations throw {@see DatabaseException} when WordPress reports a database
+ * error. Empty reads and zero affected rows remain successful results.
+ *
  * @since 0.1.0
  */
 interface Connection

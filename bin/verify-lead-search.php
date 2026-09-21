@@ -1,6 +1,6 @@
 <?php
 
-/** Read-only SQL verification: wp eval-file bin/verify-lead-search.php. No fixture rows are stored. */
+/** Read-only SQL verification: wp eval-file bin/verify-lead-search.php --use-include. No fixture rows are stored. */
 declare(strict_types=1);
 
 use WConvert\Lead\LeadQuery;

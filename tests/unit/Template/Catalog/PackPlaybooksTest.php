@@ -27,6 +27,53 @@ final class PackPlaybooksTest extends TestCase
             'playbooks' => [require WCONVERT_DIR . 'resources/playbooks/welcome-discount.php']];
     }
 
+    public function testPackConsumersReuseOneReadAndARepairOrInstallRefreshesIt(): void
+    {
+        $directory = sys_get_temp_dir() . '/wconvert-pack-cache-' . bin2hex(random_bytes(8));
+        $installed = new InstalledPacks($directory, PackValidator::shipping());
+
+        try {
+            $pack = $this->pack();
+            $json = json_encode($pack, JSON_THROW_ON_ERROR);
+            $saved = $installed->install($json);
+            $this->assertCount(1, $installed->entries());
+
+            file_put_contents($directory . '/' . $saved['digest'] . '.json', 'broken');
+            $this->assertCount(1, $installed->playbooks(), 'a second consumer rescanned the same request-local archive');
+            $this->assertSame(
+                [],
+                (new InstalledPacks($directory, PackValidator::shipping()))->playbooks(),
+                'a corrupt archive must be ignored by the next request'
+            );
+
+            $installed->install($json);
+            $pack['version'] = '1.1.0';
+            $pack['playbooks'][0]['rules'][0]['seconds'] = 15;
+            $installed->install(json_encode($pack, JSON_THROW_ON_ERROR));
+
+            $this->assertSame(15, $installed->playbooks()[0]['rules'][0]['seconds']);
+
+            $pack['version'] = '1.2.0';
+            $pack['playbooks'][0]['rules'][0]['seconds'] = 20;
+            (new InstalledPacks($directory, PackValidator::shipping()))
+                ->install(json_encode($pack, JSON_THROW_ON_ERROR));
+
+            $pack['version'] = '1.1.1';
+            $pack['playbooks'][0]['rules'][0]['seconds'] = 18;
+            try {
+                $installed->install(json_encode($pack, JSON_THROW_ON_ERROR));
+                $this->fail('A stale request-local snapshot replaced a newer install.');
+            } catch (RuntimeException $error) {
+                $this->assertStringContainsString('already installed', $error->getMessage());
+            }
+
+            $this->assertSame(20, $installed->playbooks()[0]['rules'][0]['seconds']);
+        } finally {
+            foreach (glob($directory . '/*.json') ?: [] as $file) unlink($file);
+            if (is_dir($directory)) rmdir($directory);
+        }
+    }
+
     public function testInstalledStartsUseTheSharedPrefillAndUpdatesDoNotChangeExistingSnapshots(): void
     {
         $directory = sys_get_temp_dir() . '/wconvert-starts-' . bin2hex(random_bytes(8));

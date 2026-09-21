@@ -303,7 +303,7 @@ the authority on what a database does.
 So the queries are proven where queries can be proven:
 
 ```bash
-wp eval-file bin/verify-lead-log.php   # against a real WordPress and a real database
+wp eval-file bin/verify-lead-log.php --use-include   # against a real WordPress and database
 ```
 
 It writes a small fixture, checks that two rows sharing an identifier really do
@@ -451,7 +451,7 @@ the database**. That is a claim about MySQL rather than about PHP, so it is
 proven against MySQL:
 
 ```bash
-wp eval-file bin/verify-stats.php   # against a real WordPress and a real MySQL
+wp eval-file bin/verify-stats.php --use-include   # against a real WordPress and MySQL
 ```
 
 It fires two increments concurrently on two connections — the second blocking
@@ -513,6 +513,26 @@ translates it, and three increments on one key really do land as one row with
 `count = 3`. So the counters can be exercised under Playground; what cannot be
 is the claim the statement exists to make, which is that two writers in the
 same instant produce two.
+
+### Verifying database behavior safely
+
+CI installs a fresh WordPress 6.8 on MySQL 8.4 and runs the stats, lead-log and
+literal-search verifiers under PHP 8.2. Together they check MySQL's counter
+atomicity, the lead log's grouping/erasure/pruning SQL, and captured-value
+search escaping. Run the same checks only against a throwaway MySQL-backed
+WordPress with the free plugin active:
+
+```bash
+WP_PATH=/absolute/path/to/throwaway-wordpress
+wp eval-file "$PWD/bin/verify-stats.php" --use-include --path="$WP_PATH"
+wp eval-file "$PWD/bin/verify-lead-log.php" --use-include --path="$WP_PATH"
+wp eval-file "$PWD/bin/verify-lead-search.php" --use-include --path="$WP_PATH"
+```
+
+`--use-include` preserves the scripts' `strict_types` declaration under WP-CLI
+2.12. Both write and delete fixtures: the stats verifier refuses existing
+counters or Leads, and the lead-log verifier refuses existing Leads. Never
+point them at a live or valued site.
 
 **The beacon is stateless** — no visitor id, no device id, no hashed
 fingerprint ([ADR 0017](docs/adr/0017-no-visitor-identifier.md)) — so there is

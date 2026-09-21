@@ -3,7 +3,7 @@
 /**
  * verify-lead-log.php — the lead log's SQL, against a real database.
  *
- *     wp eval-file bin/verify-lead-log.php
+ *     wp eval-file bin/verify-lead-log.php --use-include
  *
  * Exit 0 = every check passed, 1 = a check failed, 2 = it declined to run.
  *
@@ -46,7 +46,7 @@ use WConvert\Support\Ulid;
 use WConvert\Template\TemplateVocabulary;
 
 if (!defined('ABSPATH')) {
-    fwrite(STDERR, "Run this through WordPress: wp eval-file bin/verify-lead-log.php\n");
+    fwrite(STDERR, "Run this through WordPress: wp eval-file bin/verify-lead-log.php --use-include\n");
 
     exit(2);
 }
