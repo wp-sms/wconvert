@@ -249,7 +249,7 @@ editorTest('goal-first inline setup enables automatic placement and publishes', 
   await page.goto('/wp-admin/admin.php?page=wconvert#optins');
   await page.getByRole('button', { name: 'Create campaign', exact: true }).click();
   await page.getByRole('listitem').filter({ has: page.getByRole('heading', { name: 'Grow my email list', exact: true }) }).getByRole('button', { name: 'Choose', exact: true }).click();
-  await page.getByRole('combobox', { name: 'Format', exact: true }).selectOption('inline');
+  await page.getByRole('button', { name: 'Inline form', exact: true }).click();
   await expect(page.getByText('Newsletter signup after an article', { exact: true })).toBeVisible();
   await expect(page.getByText('Inline form', { exact: true }).last()).toBeVisible();
   await page.getByRole('button', { name: 'Use this setup', exact: true }).click();
