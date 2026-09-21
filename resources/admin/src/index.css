@@ -1957,7 +1957,7 @@ body:has(#wconvert-admin) #wpbody-content {
 /* Match the layer of the shared components’ important Tailwind utilities. */
 @layer utilities {
 .wconvert-creation > [data-slot='region-header'] { padding: 1.25rem 1.5rem 1.5rem !important; }
-.wconvert-creation > [data-slot='region-header'] h2 { font-size: 1.5rem !important; line-height: 1.3 !important; }
+.wconvert-creation > [data-slot='region-header'] h2 { font-size: var(--text-title) !important; line-height: 1.3 !important; }
 .wconvert-creation > [data-slot='region-header'] p { margin-block-start: 0.5rem !important; }
 .wconvert-creation__goals { padding: 1.5rem !important; }
 .wconvert-creation__goals > ul { grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr)) !important; }
@@ -1969,7 +1969,7 @@ body:has(#wconvert-admin) #wpbody-content {
 @media (max-width: 640px) {
 .wconvert-creation > [data-slot='region-header'], .wconvert-creation__goals,
   .wconvert-creation > .wconvert-picker__controls, .wconvert-creation__reassurance { padding: 1rem !important; }
-.wconvert-creation > [data-slot='region-header'] h2 { font-size: 1.25rem !important; }
+.wconvert-creation > [data-slot='region-header'] h2 { font-size: var(--text-section) !important; }
 }
 }
 
