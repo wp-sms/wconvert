@@ -173,8 +173,8 @@ describe('a goal then a draft', () => {
     expect(screen.getByText('Choice 2 of 2')).toBeInTheDocument();
     expect(optins.createOptin).not.toHaveBeenCalled();
     expect(goals.prefill).not.toHaveBeenCalled();
-    expect(screen.getByText('Creates a draft. Nothing goes live until you publish.')).toBeInTheDocument();
-    expect(screen.getByRole('combobox', { name: 'Format' })).toHaveDisplayValue('All formats');
+    expect(screen.getByText('Nothing goes live until you publish.')).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'All formats' })).toHaveAttribute('aria-pressed', 'true');
     expect(screen.getByText('Popup', { selector: '[data-slot="badge"]' })).toBeVisible();
   });
 
@@ -189,7 +189,7 @@ describe('a goal then a draft', () => {
     expect(within(popupCard).getByText('Popup', { selector: '[data-slot="badge"]' })).toBeVisible();
     expect(within(inlineCard).getByText('Inline form', { selector: '[data-slot="badge"]' })).toBeVisible();
 
-    await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Format' }), 'inline');
+    await userEvent.click(screen.getByRole('button', { name: 'Inline form' }));
     expect(screen.queryByText('Welcome discount')).not.toBeInTheDocument();
     expect(screen.getByText('Inline signup')).toBeVisible();
     expect(goals.listPlaybooks).toHaveBeenCalledTimes(1);
@@ -448,14 +448,52 @@ it('recovers when collection and format filters have no setup in common', async 
   goals.listPlaybooks.mockResolvedValue([PLAYBOOK, downloaded]);
   render(<GoalScreen onCreated={vi.fn()} />);
   await pickGoal();
-  await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Format' }), 'inline');
+  await userEvent.click(screen.getByRole('button', { name: 'Inline form' }));
   await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Collection' }), 'bundled');
   expect(screen.getByText('No campaign setups match')).toBeVisible();
-  expect(screen.getByText('Try another format or collection.')).toBeVisible();
+  expect(screen.getByText('Try another search, format or collection.')).toBeVisible();
   await userEvent.click(screen.getByRole('button', { name: 'Clear filters' }));
   expect(screen.getAllByRole('button', { name: 'Use this setup' })).toHaveLength(2);
-  expect(screen.getByRole('combobox', { name: 'Format' })).toHaveValue('all');
+  expect(screen.getByRole('button', { name: 'All formats' })).toHaveAttribute('aria-pressed', 'true');
   expect(screen.getByRole('combobox', { name: 'Collection' })).toHaveValue('all');
+});
+
+it('combines search with collection and format filters, and removes each independently', async () => {
+  const collection = { id: 'store', name: 'Store collection', version: '1.0' };
+  goals.listPlaybooks.mockResolvedValue([
+    PLAYBOOK,
+    { ...PLAYBOOK, id: 'inline', name: 'Inline welcome', collection, setup: { ...PLAYBOOK.setup, display_type: 'inline' } },
+    { ...PLAYBOOK, id: 'seasonal', name: 'Seasonal offer', notes: 'A seasonal campaign', collection },
+  ]);
+  render(<GoalScreen onCreated={vi.fn()} />);
+  await pickGoal();
+  await userEvent.type(screen.getByRole('searchbox', { name: 'Search campaign setups' }), '  WELCOME  ');
+  await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Collection' }), 'store');
+  expect(screen.getByText('1 of 3 campaign setups')).toBeVisible();
+  expect(screen.getByRole('button', { name: 'Popup' })).toBeDisabled();
+  await userEvent.click(screen.getByRole('button', { name: 'Inline form' }));
+  expect(screen.getByRole('button', { name: 'Inline form' })).toHaveAttribute('aria-pressed', 'true');
+  expect(screen.getByText('Inline welcome')).toBeVisible();
+  await userEvent.click(screen.getByRole('button', { name: 'Remove filter: Inline form' }));
+  await userEvent.click(screen.getByRole('button', { name: 'Remove filter: Store collection' }));
+  expect(screen.getByText('2 of 3 campaign setups')).toBeVisible();
+  await userEvent.click(screen.getByRole('button', { name: 'Clear filters' }));
+  expect(screen.getByText('3 of 3 campaign setups')).toBeVisible();
+  expect(screen.getByRole('searchbox')).toHaveValue('');
+  expect(goals.listPlaybooks).toHaveBeenCalledTimes(1);
+  expect(goals.prefill).not.toHaveBeenCalled();
+  expect(optins.createOptin).not.toHaveBeenCalled();
+});
+
+it('clears a previous search when switching goals', async () => {
+  render(<GoalScreen onCreated={vi.fn()} />);
+  await pickGoal();
+  await userEvent.type(screen.getByRole('searchbox'), 'nothing matches');
+  expect(screen.getByText('No campaign setups match')).toBeVisible();
+  await userEvent.click(screen.getByRole('button', { name: 'Choose a different goal' }));
+  await pickGoal();
+  expect(screen.getByRole('searchbox')).toHaveValue('');
+  expect(await screen.findByRole('button', { name: 'Use this setup' })).toBeVisible();
 });
 
 it('installs a pack from creation, then returns to its starting points without creating a draft', async () => {
@@ -467,6 +505,7 @@ it('installs a pack from creation, then returns to its starting points without c
   goals.listPlaybooks.mockResolvedValueOnce([PLAYBOOK]).mockResolvedValue([{ ...PLAYBOOK, id: 'pack-start', collection: { id: 'store', name: pack.name, version: pack.version } }]);
   render(<GoalScreen onCreated={vi.fn()} />);
   await pickGoal();
+  await userEvent.type(screen.getByRole('searchbox'), 'nothing matches');
   await userEvent.click(await screen.findByRole('button', { name: 'Browse template packs' }));
   await userEvent.click(await screen.findByRole('button', { name: 'Preview Store collection' }));
   await userEvent.click(await screen.findByRole('button', { name: 'Install pack' }));
@@ -474,6 +513,7 @@ it('installs a pack from creation, then returns to its starting points without c
   await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
   expect(screen.getByRole('combobox', { name: 'Collection' })).toHaveValue('store');
   expect(screen.getByRole('combobox', { name: 'Collection' })).toHaveFocus();
+  expect(screen.getByRole('searchbox')).toHaveValue('');
   await screen.findByRole('button', { name: 'Use this setup' });
   expect(optins.createOptin).not.toHaveBeenCalled();
   expect(goals.prefill).not.toHaveBeenCalled();
