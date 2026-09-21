@@ -1,5 +1,5 @@
 import { __, sprintf } from '@wordpress/i18n';
-import { Lock } from 'lucide-react';
+import { ArrowRight, Download, Lock, Mail, MessageSquare, MousePointerClick, Target } from 'lucide-react';
 import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
 import { ChoiceCard } from '../shell/ChoiceGrid';
@@ -100,10 +100,16 @@ export function GoalCard({
   onChoose,
 }: GoalCardProps) {
   const rendering = renderingFor(goal.availability, surface);
+  const Icon = goal.outcome.audience_channel === 'email' ? Mail
+    : goal.outcome.audience_channel === 'phone' ? MessageSquare
+    : goal.outcome.destination_type !== null ? Download
+    : goal.outcome.action === 'click' ? MousePointerClick : Target;
 
   return (
     <ChoiceCard
       id={goal.id}
+      className={`wconvert-goal-card${rendering === 'upsell' ? ' wconvert-goal-card--locked' : ''}`}
+      icon={<span className="wconvert-goal-card__icon" aria-hidden="true"><Icon size={24} strokeWidth={1.6} /></span>}
       title={goal.label}
       notes={goal.description}
       /*
@@ -164,10 +170,12 @@ export function GoalCard({
           <Button
             aria-describedby={describedBy}
             aria-disabled={current || refused !== null}
-            variant={current ? 'secondary' : 'default'}
+            variant={current ? 'secondary' : 'ghost'}
+            className="wconvert-goal-card__action"
             onClick={current || refused !== null ? undefined : () => onChoose(goal)}
           >
             {current ? __('In use', 'wconvert') : choose}
+            {!current && <ArrowRight size={16} aria-hidden="true" className="rtl:-scale-x-100" />}
           </Button>
         )
       }

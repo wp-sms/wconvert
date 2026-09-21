@@ -44,11 +44,15 @@ export function ChoiceCard({
   reason = null,
   badge,
   current = false,
+  icon,
+  className = '',
   action,
 }: {
   id: string;
   title: string;
   notes: string;
+  icon?: ReactNode;
+  className?: string;
   /**
    * Why the action on this card would be refused, or null.
    *
@@ -87,8 +91,9 @@ export function ChoiceCard({
   return (
     <li
       aria-current={current ? 'true' : undefined}
-      className={`wconvert-choice flex flex-col gap-2 rounded-md border border-border bg-card p-4${current ? ' is-chosen' : ''}`}
+      className={`wconvert-choice flex flex-col gap-2 rounded-md border border-border bg-card p-4${current ? ' is-chosen' : ''} ${className}`}
     >
+      {icon}
       <div className="flex flex-wrap items-start justify-between gap-x-3 gap-y-1">
         <h3
           id={titleId}

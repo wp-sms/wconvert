@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
-import { ArrowLeft, Sparkles } from 'lucide-react';
+import { ArrowLeft, Check, LayoutTemplate, Search, Sparkles, X } from 'lucide-react';
+import { Input } from '../components/ui/input';
 import { Badge } from '../components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '../components/ui/dialog';
 import { TemplatePacks } from '../templates/TemplatePacks';
@@ -39,6 +40,7 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins }: GoalScree
   const detailTrigger = useRef<HTMLButtonElement | null>(null);
   const [collectionId, setCollectionId] = useState('all');
   const [formatId, setFormatId] = useState('all');
+  const [query, setQuery] = useState('');
   const packTrigger = useRef<HTMLButtonElement>(null);
   const collectionPicker = useRef<HTMLSelectElement>(null);
   const choseCollection = useRef(false);
@@ -105,6 +107,7 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins }: GoalScree
     setGoal(chosen);
     setCollectionId('all');
     setFormatId('all');
+    setQuery('');
     setPlaybooks(LOADING);
     setError(null);
     setCreateUnconfirmed(false);
@@ -142,19 +145,22 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins }: GoalScree
 
   if (goal === null) {
     const shown = goals.status === 'ready' ? offerableGoals(goals.data, 'creation_flow') : [];
-    return <Region>
+    return <Region className="wconvert-creation wconvert-creation--goals">
+      <Step at={1} />
       <RegionHeader title={__('What do you want to achieve?', 'wconvert')}
-        description={__('Choose a goal, then a campaign setup. You can customize the design and decide when to publish in the editor.', 'wconvert')}
-        trailing={<Step at={1} />} />
+        description={__('Start with a goal. We’ll help you find a campaign setup to match.', 'wconvert')} />
       {goals.status === 'failed' ? <>
         <RegionErrorState message={goals.message} hint={__('Try loading the goals again below.', 'wconvert')} />
         <RegionFooter><Button variant="outline" onClick={() => setGoalsRetry((value) => value + 1)}>{__('Retry loading goals', 'wconvert')}</Button></RegionFooter>
-      </> : <RegionBody>{goals.status === 'loading' ? <ChoiceSkeleton /> : shown.length === 0 ?
+      </> : <RegionBody className="wconvert-creation__goals">{goals.status === 'loading' ? <ChoiceSkeleton /> : shown.length === 0 ?
         <EmptyState icon={Sparkles} title={__('No goals available', 'wconvert')}>
           {__('There are no available goals on this site. Goals are provided by WConvert and the plugins that extend it.', 'wconvert')}
         </EmptyState> : <ChoiceGrid>{shown.map((entry) => <GoalCard key={entry.id} goal={entry}
           surface="creation_flow" choose={__('Choose', 'wconvert')} onChoose={choose} />)}</ChoiceGrid>}
       </RegionBody>}
+      <RegionFooter className="wconvert-creation__reassurance"><Check size={15} aria-hidden="true" />
+        {__('Make it yours in the editor. Nothing goes live until you publish.', 'wconvert')}
+      </RegionFooter>
     </Region>;
   }
 
@@ -162,35 +168,69 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins }: GoalScree
   const collections = new Map(allEntries.flatMap((entry) => entry.collection ? [[entry.collection.id, entry.collection.name] as const] : []));
   const availableFormats = new Set(allEntries.map(startingPointDisplayType));
   const formatOptions = displayTypeOptions().filter(({ value }) => availableFormats.has(value));
-  const entries = allEntries.filter((entry) =>
+  const search = query.trim().toLocaleLowerCase();
+  const matchingCollection = allEntries.filter((entry) =>
     (collectionId === 'all' || (collectionId === 'bundled' ? !entry.collection : entry.collection?.id === collectionId))
-    && (formatId === 'all' || startingPointDisplayType(entry) === formatId));
+    && (!search || [entry.name, entry.notes, entry.recommendation, entry.collection?.name, displayTypeLabel(startingPointDisplayType(entry))]
+      .some((text) => text?.toLocaleLowerCase().includes(search))));
+  const entries = matchingCollection.filter((entry) => formatId === 'all' || startingPointDisplayType(entry) === formatId);
+  const clearFilters = () => { setCollectionId('all'); setFormatId('all'); setQuery(''); };
+  const activeFilters = [
+    ...(query ? [{ id: 'query', label: query, remove: () => setQuery('') }] : []),
+    ...(formatId !== 'all' ? [{ id: 'format', label: displayTypeLabel(formatId), remove: () => setFormatId('all') }] : []),
+    ...(collectionId !== 'all' ? [{ id: 'collection', label: collectionId === 'bundled'
+      ? __('Included with WConvert', 'wconvert') : collections.get(collectionId) ?? __('Selected pack', 'wconvert'), remove: () => setCollectionId('all') }] : []),
+  ];
   const singleStartingPoint = entries.length === 1;
-  return <Region>
+  return <Region className="wconvert-creation">
+    <Step at={2} />
     <RegionHeader title={__('Choose a campaign setup', 'wconvert')}
-      description={sprintf(__('For “%s”. Customize it next.', 'wconvert'), goal.label)}
-      trailing={<Step at={2} />} />
-    <RegionBody className="flex flex-wrap items-center justify-between gap-3 pb-0">
-      <div className="flex flex-wrap items-center gap-3">
+      description={sprintf(__('For “%s”. Customize it next.', 'wconvert'), goal.label)} />
+    <div className="wconvert-picker__controls">
+      <div className="wconvert-picker__search-row">
+        <label className="wconvert-picker__search">
+          <Search size={17} aria-hidden="true" />
+          <span className="sr-only">{__('Search campaign setups', 'wconvert')}</span>
+          <Input type="search" className="ps-9" value={query} disabled={starting !== null}
+            placeholder={__('Search campaign setups', 'wconvert')} onChange={(event) => setQuery(event.target.value)} />
+        </label>
         <label className="flex items-center gap-2 text-note">{__('Collection', 'wconvert')}
-          <select ref={collectionPicker} value={collectionId} disabled={starting !== null} onChange={(event) => setCollectionId(event.target.value)}>
+          <select className="wconvert-picker__select" ref={collectionPicker} value={collectionId} disabled={starting !== null} onChange={(event) => setCollectionId(event.target.value)}>
             <option value="all">{__('All campaign setups', 'wconvert')}</option>
             <option value="bundled">{__('Included with WConvert', 'wconvert')}</option>
             {[...collections].map(([id, name]) => <option key={id} value={id}>{name}</option>)}
             {collectionId !== 'all' && collectionId !== 'bundled' && !collections.has(collectionId) && <option value={collectionId}>{__('Selected pack', 'wconvert')}</option>}
           </select>
         </label>
-        <label className="flex items-center gap-2 text-note">{__('Format', 'wconvert')}
-          <select value={formatId} disabled={starting !== null} onChange={(event) => setFormatId(event.target.value)}>
-            <option value="all">{__('All formats', 'wconvert')}</option>
-            {formatOptions.map(({ value, label }) => <option key={value} value={value}>{label}</option>)}
-            {formatId !== 'all' && !availableFormats.has(formatId) && <option value={formatId}>{displayTypeLabel(formatId)}</option>}
-          </select>
-        </label>
+        <Button ref={packTrigger} variant="outline" disabled={starting !== null} onClick={() => { choseCollection.current = false; setPacksOpen(true); }}>
+          <LayoutTemplate size={16} aria-hidden="true" />{__('Browse template packs', 'wconvert')}
+        </Button>
       </div>
-      <span className="text-note text-muted-foreground">{__('Creates a draft. Nothing goes live until you publish.', 'wconvert')}</span>
-      <Button ref={packTrigger} variant="outline" disabled={starting !== null} onClick={() => { choseCollection.current = false; setPacksOpen(true); }}>{__('Browse template packs', 'wconvert')}</Button>
-    </RegionBody>
+      <div className="wconvert-picker__facet" role="group" aria-label={__('Format', 'wconvert')}>
+        <span>{__('Format', 'wconvert')}</span>
+        {[{ value: 'all', label: __('All formats', 'wconvert') }, ...formatOptions,
+          ...(formatId !== 'all' && !availableFormats.has(formatId) ? [{ value: formatId, label: displayTypeLabel(formatId) }] : [])]
+          .map(({ value, label }) => {
+            const count = value === 'all' ? matchingCollection.length : matchingCollection.filter((entry) => startingPointDisplayType(entry) === value).length;
+            return <Button key={value} variant="outline" size="sm" className="wconvert-picker__filter"
+              aria-pressed={formatId === value} disabled={starting !== null || (count === 0 && formatId !== value)}
+              onClick={() => setFormatId(value)}>{label}<span aria-hidden="true" className="wconvert-picker__option-count">{count}</span></Button>;
+          })}
+      </div>
+      <div className="wconvert-picker__results">
+        <span role="status">{playbooks.status === 'ready' ? sprintf(
+          /* translators: 1: matching setups, 2: setups for the selected goal. */
+          __('%1$s of %2$s campaign setups', 'wconvert'), String(entries.length), String(allEntries.length))
+          : playbooks.status === 'loading' ? __('Loading campaign setups…', 'wconvert') : __('Campaign setups could not be loaded.', 'wconvert')}</span>
+        {activeFilters.length > 0 && <div className="wconvert-picker__active">
+          {activeFilters.map(({ id, label, remove }) => <button key={id} type="button" className="wconvert-picker__active-filter"
+            disabled={starting !== null} aria-label={sprintf(__('Remove filter: %s', 'wconvert'), label)} onClick={remove}>
+            {label}<X size={12} aria-hidden="true" />
+          </button>)}
+          <Button variant="link" size="sm" disabled={starting !== null} onClick={clearFilters}>{__('Clear filters', 'wconvert')}</Button>
+        </div>}
+      </div>
+    </div>
     <Dialog open={packsOpen} onOpenChange={setPacksOpen}>
       <DialogContent className="wconvert-picker gap-0 overflow-hidden p-0 sm:max-w-[80rem]" onCloseAutoFocus={(event) => {
         event.preventDefault();
@@ -201,7 +241,7 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins }: GoalScree
         </DialogHeader>
         <TemplatePacks displayType="" goal={goal.id}
           onInstalled={async () => { setPlaybooksRetry((value) => value + 1); }}
-          onChooseStartingPoints={(id) => { choseCollection.current = true; setCollectionId(id); setFormatId('all'); setPacksOpen(false); }} />
+          onChooseStartingPoints={(id) => { choseCollection.current = true; setCollectionId(id); setFormatId('all'); setQuery(''); setPacksOpen(false); }} />
       </DialogContent>
     </Dialog>
     {!editorFits && <RegionBody><p className="m-0 text-note text-muted-foreground">
@@ -220,8 +260,8 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins }: GoalScree
       : allEntries.length === 0 ? <EmptyState icon={Sparkles} title={__('No campaign setups available', 'wconvert')}>
         {__('You can create a blank draft for this goal and choose a design in the editor.', 'wconvert')}
       </EmptyState> : entries.length === 0 ? <EmptyState icon={Sparkles} title={__('No campaign setups match', 'wconvert')}
-        action={<Button variant="outline" onClick={() => { setCollectionId('all'); setFormatId('all'); }}>{__('Clear filters', 'wconvert')}</Button>}>
-        {__('Try another format or collection.', 'wconvert')}
+        action={<Button variant="outline" disabled={starting !== null} onClick={clearFilters}>{__('Show all campaign setups', 'wconvert')}</Button>}>
+        {__('Try another search, format or collection.', 'wconvert')}
       </EmptyState> : <RegionBody>
         {vocabulary.status === 'failed' && <div className="mb-4 flex flex-wrap items-center gap-2 text-note">
           <span>{__('Setup details could not be loaded. You can still choose a campaign setup and review its rules in the editor.', 'wconvert')}</span>
@@ -273,12 +313,19 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins }: GoalScree
       }}><ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />{__('Choose a different goal', 'wconvert')}</Button>
       <div className="flex flex-col items-start gap-1">
         <Button variant="outline" disabled={starting !== null} onClick={() => { void start(); }}>{starting === 'scratch' ? __('Creating draft…', 'wconvert') : __('Start with a blank draft', 'wconvert')}</Button>
-        <span className="text-note text-muted-foreground">{__('Keep this goal and choose a design in the editor.', 'wconvert')}</span>
+        <span className="text-note text-muted-foreground">{__('Nothing goes live until you publish.', 'wconvert')}</span>
       </div>
     </RegionFooter>
   </Region>;
 }
 
 function Step({ at }: { at: 1 | 2 }) {
-  return <span className="shrink-0 text-note text-muted-foreground">{sprintf(__('Choice %1$s of %2$s', 'wconvert'), String(at), '2')}</span>;
+  return <nav className="wconvert-creation__steps" aria-label={sprintf(__('Choice %1$s of %2$s', 'wconvert'), String(at), '2')}>
+    <span className="sr-only">{sprintf(__('Choice %1$s of %2$s', 'wconvert'), String(at), '2')}</span>
+    <ol>
+      {[__('Choose a goal', 'wconvert'), __('Choose a setup', 'wconvert')].map((label, index) => <li key={label} aria-current={at === index + 1 ? 'step' : undefined}>
+        <span className="wconvert-creation__step-number" aria-hidden="true">{index + 1 < at ? <Check size={14} /> : index + 1}</span>{label}
+      </li>)}
+    </ol>
+  </nav>;
 }
