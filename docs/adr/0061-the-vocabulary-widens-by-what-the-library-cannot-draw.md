@@ -63,7 +63,7 @@ is the first step onto exactly that ladder: every node grows a style bag, the
 settings panel stops being 22 controls and becomes a per-node inspector, and
 `PayloadBudgetTest` starts arguing with the design library over the same bytes.
 It would also amend
-[ADR 0010](0010-template-model-is-node-tree-plus-tokens.md)'s central bargain —
+[ADR 0010](0010-templates-are-configuration-not-documents.md)'s central bargain —
 *configuration, not a document* — for a payoff the market says is not where this
 product wins.
 
@@ -182,6 +182,11 @@ padding.
   loader consequences (a two-step click reveal is a trigger, an impression
   question and a dismissal question), not a design change, and it does not
   belong in a ticket about growing a library.
+  *Reopened for a dedicated feature by
+  [ADR 0103](0103-progressive-capture-keeps-one-lead-per-journey.md): offer-first
+  journeys, multi-screen enquiries, and email followed by optional SMS supply
+  concrete use cases. The accepted feature includes editable linear screens,
+  with navigation and capture explicitly distinct. It is pending implementation.*
 - **Per-node styling**, above.
 
 ## What would reopen rung 3

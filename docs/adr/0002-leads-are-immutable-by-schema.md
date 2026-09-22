@@ -7,6 +7,15 @@ no `updated_at` column**. A row with no mutable state cannot acquire a lifecycle
 without a migration a reviewer will see. `created_at` alone also makes retention
 pruning a range delete.
 
+*Amended for the planned progressive capture feature by
+[ADR 0103](0103-progressive-capture-keeps-one-lead-per-journey.md): the user chose
+one Lead per capture journey, saved at the first submission and extended by
+later explicit submissions in that same journey. Absolute immutability no
+longer defines the planned boundary; general profile editing and Contact
+lifecycle changes remain outside it. The current code is still immutable;
+storage and continuation authorization are specified in the companion
+[plan](../plans/184-progressive-capture/storage.md).*
+
 *Amended by [ADR 0033](0033-the-lead-log-reads-without-a-new-index.md): the
 range delete is real but it is **not over `created_at`**. A [[Lead]]'s id is a
 ULID whose leading 48 bits are the millisecond it was minted in, stamped in the
@@ -16,6 +25,11 @@ over an `idx_created` that would have cost a third write per capture for a job
 that runs once a day. `created_at` keeps its place regardless: it is the
 [[Consent Record]]'s timestamp, to the same second, and there is no second
 one (ADR 0032).*
+
+*The consent-time claim is amended by
+[ADR 0103](0103-progressive-capture-keeps-one-lead-per-journey.md): a later SMS
+acceptance needs its own evidence and acceptance time, distinct from the first
+email capture. Retention remains anchored to the first capture; later additions do not renew it.*
 
 *Completed by [ADR 0031](0031-a-lead-has-exactly-one-origin.md): the guard also
 assumes every row arrives one submission at a time. A bulk-write path — a CSV
@@ -54,6 +68,10 @@ for Action Scheduler jobs.
   simply be removed: an Optin's soft delete IS an update. See
   [ADR 0018](0018-erasure-deletes-rather-than-anonymises.md) for why erasure
   deletes rather than anonymises.
+  *Amended by [ADR 0103](0103-progressive-capture-keeps-one-lead-per-journey.md):
+  implementing same-journey additions must replace this blanket source test
+  with tests that permit only the authorized continuation path and still
+  prohibit general anonymous Lead editing. No such path is implemented yet.*
 - Deleting an Optin **soft-deletes** it (`deleted_at`) rather than cascading.
   Leads are never destroyed by an Optin delete, and the Optin's name survives
   for CSV export without denormalising it onto every Lead row.

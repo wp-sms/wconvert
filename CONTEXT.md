@@ -13,10 +13,18 @@ profile or job managed by WConvert.
 
 ### Lead
 
-A single capture **event** — one person submitted one form, at one time, on one
-page, into one [[Optin]]. A Lead has no lifecycle: it is never "confirmed",
-"unsubscribed", "bounced", or "re-engaged". It is a row in a log, not a record
-under management.
+A capture record from one visitor's [[Capture journey]] into one [[Optin]].
+Its first accepted submission creates it; explicitly submitted additions in the
+same journey can add details and separate consent evidence. A Lead has no
+Contact lifecycle: it is never "confirmed", "unsubscribed", "bounced", or
+"re-engaged". It is not a managed person profile.
+
+Submitted details and their consent evidence stay fixed; later submissions add
+to them. Going Back may review submitted details but cannot replace them.
+
+The progressive journey contract is accepted for implementation in
+[ADR 0103](docs/adr/0103-progressive-capture-keeps-one-lead-per-journey.md).
+The current runtime still captures a single submitting screen.
 
 "Never confirmed" is the sharpest case, because it is the one every competitor
 gets wrong: **WConvert has no double opt-in and never will.** Confirming an
@@ -32,8 +40,9 @@ claim that a Contact is subscribed or confirmed, or that a message or resource
 was delivered. Shipped examples follow that rule; existing merchant copy is
 not bulk rewritten. See [ADR 0073](docs/adr/0073-capture-acknowledgement-is-not-provider-confirmation.md).
 
-**Leads are never deduplicated.** One person submitting two forms produces two
-Leads, because they did two things. That two Leads are one person is a question
+**Independent captures are never deduplicated.** One person completing two
+separate capture journeys produces two Leads. Further submissions in one
+journey add to its Lead rather than creating another. That two Leads are one person is a question
 answered when the lead log is *read* — a grouping over the identifier the Leads
 carry — and never a stored fact. Storing it would give a Lead a person to belong
 to, and a person is the one thing that can then acquire a status: it is the same
@@ -57,7 +66,8 @@ still on the page, since the alternative is a capture that appears to succeed an
 fails later where nobody is watching.
 
 That rule is total because a Lead has **exactly one origin**: a visitor
-submitting a form, in one request, on a page WConvert served. Nothing else writes
+explicitly submitting details on a page WConvert served. A progressive journey
+can contribute more than one submission to its Lead. Nothing else creates
 one — no admin entry screen, no CSV import, no import from another plugin. A row
 arriving any other way would be asserting a capture event that never happened
 here, and would carry no [[Consent Record]], which is the half that cannot be
@@ -162,6 +172,12 @@ through to an offer is another.
 Every [[Lead]] is a Conversion; the reverse does not hold. Assuming it does
 makes any Goal measured by clicks report zero forever.
 
+A progressive [[Capture journey]] converts at its first accepted capture.
+Later submissions in that journey add to the same Lead without another
+Conversion. Next, Back and Skip do not convert. This is the accepted product
+contract in [ADR 0103](docs/adr/0103-progressive-capture-keeps-one-lead-per-journey.md),
+pending implementation.
+
 **One Optin has exactly one converting act**, and its ~~[[Goal]]~~ **design**
 decides which: a design whose button submits converts on the submit, and one
 whose button links away converts on the click. A [[Template]] offering both is
@@ -253,8 +269,12 @@ What the visitor agreed to at the moment they submitted — the consent text
 
 A snapshot rather than a pointer to the template that produced it, because the
 merchant will edit that wording, and consent evidence that silently rewrites
-itself to match the current copy is evidence of nothing. The Lead's `created_at`
-is the consent timestamp; there is no second one.
+itself to match the current copy is evidence of nothing. Each acceptance has
+its own channel or purpose, exact wording, and time. Email and SMS accepted at
+different points in one journey have separate evidence; later evidence does
+not rewrite the earlier record. The current single-submit implementation uses
+the Lead's creation time; progressive capture follows
+[ADR 0103](docs/adr/0103-progressive-capture-keeps-one-lead-per-journey.md).
 
 A Consent Record is not a consent *lifecycle*. It records one act at one instant
 and is never revisited — the opposite of the [[Contact]] state above, and the
@@ -802,6 +822,22 @@ quote** remains an inline email form with an optional service choice.
 
 See [ADR 0085](docs/adr/0085-goals-have-publish-contracts-and-stable-history.md).
 
+### Capture journey
+
+One visitor's sequence of screens and explicit submissions within one [[Optin]].
+The first accepted submission creates one [[Lead]] and counts one [[Conversion]];
+later accepted submissions in that journey add to that Lead. Navigation alone
+captures nothing. Ordinary forms submit once at the end; a primary marketing
+signup may offer one optional signup for the other channel. A saved signup
+survives abandonment of that optional follow-up.
+This accepted contract is pending implementation under
+[ADR 0103](docs/adr/0103-progressive-capture-keeps-one-lead-per-journey.md).
+
+A journey is linear: the merchant can arrange its screens and submission
+points, including a screen that explains an offer before asking for details.
+It does not branch based on answers. This is a Free core capability; using
+a Pro Display Type or integration still requires that capability's own tier.
+
 ### Template
 
 The reusable structure and look of an [[Optin]], with sample content for the
@@ -1264,6 +1300,14 @@ subscribed, and it reads nothing at all on the capture path. Admin-time metadata
 reads are permitted and expected: listing a provider's audiences or custom fields
 to populate the configuration UI, and testing a connection. Those are reads of
 the provider's *shape*, never of a person's state.
+
+In a progressive [[Capture journey]], each completed signup starts its handoff
+after it is saved, without waiting for optional later screens. A later SMS
+submission must not repeat an email welcome or resource delivery. This accepted
+behavior is pending implementation under
+[ADR 0103](docs/adr/0103-progressive-capture-keeps-one-lead-per-journey.md);
+The companion [storage plan](docs/plans/184-progressive-capture/storage.md)
+specifies submission routing and recovery.
 
 A Destination failing is **invisible to the visitor**. That is what "fallible
 without the capture failing" means followed through: the [[Lead]] is already

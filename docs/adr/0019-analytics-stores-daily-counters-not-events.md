@@ -6,6 +6,12 @@ the framing: *"raw event rows grow without bound."* **We store only the rollup.*
 There is no event table, and `wconvert_stats` holds one row per
 `(optin_id, kind, stat_date)` with a `count`.
 
+**Planned amendment by [ADR 0103](0103-progressive-capture-keeps-one-lead-per-journey.md):**
+the user approved adding `scope` to this existing table and its primary key.
+Empty scope retains Campaign totals; bounded channel and revision/screen scopes
+support capture-journey reports. This still stores daily counters, not raw events.
+The schema and reader changes are pending implementation.
+
 The row was already almost a counter.
 [ADR 0020](0020-conversions-are-interpreted-at-read.md) strips every dimension
 off a recorded act except which [[Optin]] it happened on and what kind it was, so
@@ -20,6 +26,11 @@ A modest site — 10k pageviews a day, one popup sitewide — writes **~3.65M ra
 rows a year**. The same site as daily counters, at 20 active Optins across four
 kinds, writes **~29k rows a year**, and the index stays in the buffer pool
 permanently.
+
+**Planned amendment by [ADR 0103](0103-progressive-capture-keeps-one-lead-per-journey.md):**
+channel/screen scopes and retained flow revisions increase this estimate. Measure
+representative history and report queries before relying on the original row
+budget; the approved change includes no new secondary index or table.
 
 That gap is why the conventional design loses here. It is not a close call at any
 site size a wp.org plugin will meet.
@@ -60,6 +71,10 @@ is what makes the upsert atomic, and it serves the dashboard's only query shape 
 an id set, a date range, grouped by kind — with no secondary index and no
 surrogate `id`.
 
+**Planned amendment by [ADR 0103](0103-progressive-capture-keeps-one-lead-per-journey.md):**
+the key becomes `(optin_id, stat_date, kind, scope)`. Existing aggregate readers
+must explicitly select empty scope so screen/channel totals cannot inflate them.
+
 *Corrected by [ADR 0034](0034-the-dashboard-joins-in-php.md), which wrote that
 query. It is **a date range across every Optin**, not an id set — the dashboard
 reports on all of them, so an `optin_id IN (…)` filter would exclude nothing,
@@ -99,6 +114,10 @@ be paid on every beacon for a read one admin takes on demand.*
   with no exception, because a write route against a table nothing can repair is
   a route that can destroy a merchant's history permanently. The only writer of
   a counter remains the beacon, counting one act.*
+  **Planned amendment by [ADR 0103](0103-progressive-capture-keeps-one-lead-per-journey.md):**
+  accepted capture and channel counts move into the server capture transaction.
+  The browser must stop duplicating form Conversions; click and anonymous screen
+  activity keep their appropriate beacon paths. Reporting routes remain read-only.
 - **There is no hour-of-day breakdown, ever.** "Today so far" works, because the
   day's row updates live; an intra-day curve does not and cannot be added
   retroactively.
@@ -124,6 +143,10 @@ be paid on every beacon for a read one admin takes on demand.*
   ([0005](0005-the-rule-model-is-three-flat-closed-axes.md),
   [0012](0012-degradation-substitutes-triggers-and-drops-conditions.md),
   [0015](0015-enforcement-is-by-non-registration.md)).
+  **Planned amendment by [ADR 0103](0103-progressive-capture-keeps-one-lead-per-journey.md):**
+  the enum remains closed but gains explicit screen-progress acts. Valid scope/kind
+  combinations are server-owned; public clients cannot create arbitrary dimensions
+  or claim accepted captures.
   *Extended by [#27](https://github.com/navidkashani/wconvert/issues/27), which
   makes a [[Goal]] the **fifth** — [`Goal`](../../src/Goal/Goal.php) is an enum
   plus data, with `tier` and the site dependency declared on each member, and no

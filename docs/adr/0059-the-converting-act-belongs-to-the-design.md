@@ -5,6 +5,13 @@ words, and the grouping on Analytics. It no longer declares the converting act.
 Which act an [[Optin]] converts on is read from the design it holds, and from
 nowhere else.
 
+*Amended for planned progressive capture by
+[ADR 0103](0103-progressive-capture-keeps-one-lead-per-journey.md): the design
+still defines the converting act, but the first accepted capture in a journey
+counts once. Subsequent submissions can add to its Lead without counting again.
+Submission-button count and screen count therefore cannot define the number
+of Conversions. The runtime and the two-screen rules below are not yet updated.*
+
 > **Amended by [ADR 0085](0085-goals-have-publish-contracts-and-stable-history.md):** Runtime act detection still belongs to the design. An Outcome contract now checks Goal/action/channel compatibility at publication, while allowing incomplete drafts.
 
 `Goal::convertingAct()` is deleted. Every refusal that existed to keep a Goal
@@ -216,6 +223,11 @@ has two steps because the post-submit success state is a terminal step; a
 click-metered one has one (`ConvertingAct::steps()`, ADR 0025). Flipping the
 `action` param alone leaves a config the save rejects whichever way it went.
 
+**Planned amendment by [ADR 0103](0103-progressive-capture-keeps-one-lead-per-journey.md):**
+explicit flow validation replaces the fixed capture step count. Capture journeys
+may span more screens and still count one Conversion. This does not enable mixing
+converting links and capture actions or make an action-only flip valid.
+
 Turning it on is the Success Action feature and a separate ticket: it has to add
 or drop that step and carry its words, which is a document edit rather than a
 param edit.
@@ -231,6 +243,8 @@ param edit.
   It now just works where the merchant asked for it.
 - **`TemplateLibrary::refuse()`'s step-count rule.** Design-internal, unchanged,
   and now the only thing holding the act↔steps relationship.
+  **Planned amendment by [ADR 0103](0103-progressive-capture-keeps-one-lead-per-journey.md):**
+  replace this rule with the explicit flow contract during implementation.
 - **Suspension, Frequency, Schedule, Targeting.** No Goal involvement.
 
 ## Consequences

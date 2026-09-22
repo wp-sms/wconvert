@@ -1,0 +1,28 @@
+{
+  "flow": {
+    "tree_version": 2,
+    "capability": "capture-journey:1",
+    "screen_kinds": [
+      "content",
+      "input",
+      "acknowledgement"
+    ],
+    "actions": [
+      "next",
+      "back",
+      "submit",
+      "skip",
+      "close",
+      "link"
+    ],
+    "capture_purposes": [
+      "request",
+      "email_marketing",
+      "sms_marketing"
+    ],
+    "limits": {
+      "max_pre_acknowledgement_screens": 6,
+      "max_submissions": 2
+    }
+  }
+}

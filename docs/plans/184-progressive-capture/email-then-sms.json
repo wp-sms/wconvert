@@ -1,0 +1,158 @@
+{
+  "id": "email-then-sms",
+  "name": "Email with optional SMS",
+  "display_type": "popup",
+  "tier": "free",
+  "tokens": {
+    "width": "28rem",
+    "pad": "1.5rem",
+    "gap": "1rem",
+    "align": "start"
+  },
+  "tree": {
+    "v": 2,
+    "submissions": [
+      {
+        "id": "email-signup",
+        "required": true,
+        "fields": [
+          "n_email"
+        ],
+        "consents": [
+          "n_email_consent"
+        ]
+      },
+      {
+        "id": "sms-signup",
+        "required": false,
+        "fields": [
+          "n_phone"
+        ],
+        "consents": [
+          "n_sms_consent"
+        ]
+      }
+    ],
+    "steps": [
+      {
+        "id": "email",
+        "name": "Email signup",
+        "kind": "input",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "heading",
+              "id": "n_email_title",
+              "role": "headline",
+              "text": "Get our email updates"
+            },
+            {
+              "type": "field",
+              "id": "n_email",
+              "name": "email",
+              "label": "Email address",
+              "required": true
+            },
+            {
+              "type": "consent",
+              "id": "n_email_consent",
+              "role": "consent_text",
+              "hidden": false,
+              "text": "Email me news and offers."
+            },
+            {
+              "type": "button",
+              "id": "n_email_submit",
+              "role": "cta_label",
+              "label": "Sign up for email",
+              "action": "submit",
+              "submission": "email-signup"
+            }
+          ]
+        }
+      },
+      {
+        "id": "sms",
+        "name": "Optional SMS signup",
+        "kind": "input",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "heading",
+              "id": "n_sms_title",
+              "role": "headline",
+              "text": "Would you also like text updates?"
+            },
+            {
+              "type": "text",
+              "id": "n_email_received",
+              "role": "body",
+              "text": "Your email signup request was received. This next step is optional."
+            },
+            {
+              "type": "field",
+              "id": "n_phone",
+              "name": "phone",
+              "label": "Phone number",
+              "required": true
+            },
+            {
+              "type": "consent",
+              "id": "n_sms_consent",
+              "role": "consent_text",
+              "hidden": false,
+              "text": "Send me news and offers by text message."
+            },
+            {
+              "type": "button",
+              "id": "n_sms_back",
+              "role": "cta_label",
+              "label": "Review email",
+              "action": "back"
+            },
+            {
+              "type": "button",
+              "id": "n_sms_submit",
+              "role": "cta_label",
+              "label": "Sign up for SMS",
+              "action": "submit",
+              "submission": "sms-signup"
+            },
+            {
+              "type": "button",
+              "id": "n_sms_skip",
+              "role": "cta_label",
+              "label": "Finish without SMS",
+              "action": "skip",
+              "submission": "sms-signup"
+            }
+          ]
+        }
+      },
+      {
+        "id": "received",
+        "name": "Acknowledgement",
+        "kind": "acknowledgement",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "heading",
+              "id": "n_received_title",
+              "role": "success_headline",
+              "text": "Details received"
+            },
+            {
+              "type": "text",
+              "id": "n_received_body",
+              "role": "success_body",
+              "text": "Thank you. We have received the details you submitted."
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

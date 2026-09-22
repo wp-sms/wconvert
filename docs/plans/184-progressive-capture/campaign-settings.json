@@ -1,0 +1,46 @@
+{
+  "email-only": {
+    "goal": "grow_email_list",
+    "capture_mode": "local",
+    "submission_settings": {
+      "email-signup": {
+        "purpose": "email_marketing",
+        "destination_ids": []
+      }
+    }
+  },
+  "offer-first": {
+    "goal": "grow_email_list",
+    "capture_mode": "local",
+    "submission_settings": {
+      "email-signup": {
+        "purpose": "email_marketing",
+        "destination_ids": []
+      }
+    }
+  },
+  "enquiry": {
+    "goal": "collect_enquiries",
+    "capture_mode": "local",
+    "submission_settings": {
+      "enquiry-request": {
+        "purpose": "request",
+        "destination_ids": []
+      }
+    }
+  },
+  "email-then-sms": {
+    "goal": "grow_email_list",
+    "capture_mode": "local",
+    "submission_settings": {
+      "email-signup": {
+        "purpose": "email_marketing",
+        "destination_ids": []
+      },
+      "sms-signup": {
+        "purpose": "sms_marketing",
+        "destination_ids": []
+      }
+    }
+  }
+}
