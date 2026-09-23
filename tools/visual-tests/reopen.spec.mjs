@@ -96,6 +96,7 @@ test('real editor loads Pro controls, simulates reopening, and saves draft setti
   await open(page);
   const id = await page.locator('#wconvert-payload').evaluate(node => JSON.parse(node.textContent)[0].id);
   await page.goto('/wp-login.php');
+  await expect(page.getByLabel('Username or Email Address')).toBeFocused();
   await page.getByLabel('Username or Email Address').fill('admin');
   await page.getByLabel('Password', { exact: true }).fill('password');
   await page.getByRole('button', { name: 'Log In', exact: true }).click();

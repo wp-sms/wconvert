@@ -20,7 +20,7 @@ for (const width of [320, 768, 1440]) for (const rtl of [false, true]) {
     await page.setViewportSize({ width, height: 800 });
     const errors = [];
     page.on('pageerror', (error) => errors.push(error.message));
-    await page.goto(`/?wconvert_fullscreen=fullscreen-guide${rtl ? '&rtl=1' : ''}`);
+    await page.goto(`/?wconvert_fullscreen=fullscreen-guide${rtl ? '&rtl=1' : ''}`, { waitUntil: 'domcontentloaded' });
     await expect(page.locator('dialog[open]')).toBeVisible();
     const state = await page.evaluate(() => {
       const dialog = document.querySelector('dialog');
@@ -81,7 +81,7 @@ test('all starter designs, short viewport, enlarged text and reduced motion', as
   await page.setViewportSize({ width: 320, height: 420 });
   await page.emulateMedia({ reducedMotion: 'reduce' });
   for (const setup of ['fullscreen-newsletter', 'fullscreen-guide', 'fullscreen-announcement']) {
-    await page.goto(`/?wconvert_fullscreen=${setup}`);
+    await page.goto(`/?wconvert_fullscreen=${setup}`, { waitUntil: 'domcontentloaded' });
     await expect(page.locator('dialog[open]')).toBeVisible();
     await page.evaluate(() => { document.documentElement.style.fontSize = '32px'; });
     const geometry = await page.evaluate(() => {
@@ -100,6 +100,7 @@ test('all starter designs, short viewport, enlarged text and reduced motion', as
 
 test('goal-first setup filtering creates a fullscreen draft with a viewport preview', async ({ page }, info) => {
   await page.goto('/wp-login.php');
+  await expect(page.getByLabel('Username or Email Address')).toBeFocused();
   await page.getByLabel('Username or Email Address').fill('admin');
   await page.getByLabel('Password', { exact: true }).fill('password');
   await page.getByRole('button', { name: 'Log In', exact: true }).click();
