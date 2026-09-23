@@ -466,17 +466,23 @@
       "params": [
         "name",
         "required",
+        "phone_country",
+        "phone_dropdown",
         "tokens",
         "narrow"
       ],
       "roles": [],
       "choices": {
+        "phone_country": ["site"],
+        "phone_dropdown": ["true", "false"],
         "required": [
           "true",
           "false"
         ]
       },
       "defaults": {
+        "phone_country": "site",
+        "phone_dropdown": "true",
         "required": "false"
       },
       "style_tokens": [

@@ -123,7 +123,7 @@ final class ProLoaderEnqueue
         wp_enqueue_script(
             self::HANDLE,
             $this->pluginUrl . self::DIST,
-            [],
+            wp_script_is(LoaderEnqueue::PHONE_HANDLE, 'enqueued') ? [LoaderEnqueue::PHONE_HANDLE] : [],
             BuiltAsset::version($dist),
             true
         );

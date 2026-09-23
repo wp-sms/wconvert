@@ -932,6 +932,10 @@ function field(node: FieldNode): HTMLElement | null {
   input.name = name;
   if (node.id) input.dataset.captureId = node.id;
   input.required = node.required === true;
+  if (name === 'phone') {
+    input.dataset.pc = node.phone_country || '';
+    input.dataset.pd = node.phone_dropdown === false ? '0' : '';
+  }
   input.autocomplete = kind.autocomplete;
   if (input instanceof HTMLSelectElement) {
     input.add(new Option(node.placeholder || 'Choose an option', ''));
@@ -964,6 +968,15 @@ function field(node: FieldNode): HTMLElement | null {
 
   wrapper.className = 'wc-field';
   wrapper.append(label, input);
+  if (name === 'phone') {
+    const hint = document.createElement('small');
+    hint.className = 'wc-phone-fallback';
+    hint.textContent = (window as Window & { __wcPhoneLabels?: Record<string, string> }).__wcPhoneLabels?.fallback
+      || 'Include + and the country code, for example +1 202 555 0123.';
+    hint.id = `${input.id}-hint`;
+    input.setAttribute('aria-describedby', hint.id);
+    wrapper.appendChild(hint);
+  }
 
   return wrapper;
 }

@@ -12,6 +12,7 @@ use WConvert\Rules\Degradation;
 use WConvert\Targeting\RoleRegistry;
 use WConvert\Template\CartLink;
 use WConvert\Template\PolicyLink;
+use WConvert\Template\TemplateTree;
 
 defined('ABSPATH') || exit;
 
@@ -31,6 +32,7 @@ defined('ABSPATH') || exit;
 final class LoaderEnqueue
 {
     public const HANDLE = 'wconvert-loader';
+    public const PHONE_HANDLE = 'wconvert-phone';
 
     /**
      * When this runs on `wp_enqueue_scripts`.
@@ -148,10 +150,31 @@ final class LoaderEnqueue
             return;
         }
 
+        $phoneDist = WCONVERT_DIR . 'public/phone/phone.js';
+        if (is_file($phoneDist) && self::hasPhoneField($entries)) {
+            wp_enqueue_script(self::PHONE_HANDLE, WCONVERT_URL . 'public/phone/phone.js', [], BuiltAsset::version($phoneDist), true);
+            wp_add_inline_script(self::PHONE_HANDLE, 'window.__wcPhoneLabels=' . wp_json_encode([
+                'fallback' => __('Include + and the country code, for example +1 202 555 0123.', 'wconvert'),
+                'select' => __('Select country', 'wconvert'),
+                'trigger' => __('Select country: %1$s (+%2$s)', 'wconvert'),
+                'closeSelector' => __('Close country selector', 'wconvert'),
+                'close' => __('Close', 'wconvert'),
+                'search' => __('Search…', 'wconvert'),
+                'searchCountries' => __('Search countries', 'wconvert'),
+                'countries' => __('Countries', 'wconvert'),
+                'oneResult' => __('%s result', 'wconvert'),
+                'manyResults' => __('%s results', 'wconvert'),
+                'too_short' => __('Enter a longer phone number.', 'wconvert'),
+                'too_long' => __('This phone number is too long.', 'wconvert'),
+                'invalid_length' => __('Check the phone number length.', 'wconvert'),
+                'invalid_country' => __('Choose a supported country or check the country code.', 'wconvert'),
+            ], JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT) . ';', 'before');
+        }
+
         wp_enqueue_script(
             self::HANDLE,
             WCONVERT_URL . self::DIST,
-            [],
+            wp_script_is(self::PHONE_HANDLE, 'enqueued') ? [self::PHONE_HANDLE] : [],
             BuiltAsset::version($dist),
             true
         );
@@ -205,6 +228,23 @@ final class LoaderEnqueue
             // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- PayloadTag::render() escapes for this context: JSON_HEX_TAG on the body, esc_url() on the attributes.
             echo PayloadTag::render($entries, $captureUrl, $beaconUrl, $siteAllowance, $timezone);
         }, 5);
+    }
+
+    /**
+     * The feature bundle is loaded only on a page with a matching phone campaign.
+     * @param list<array<string, mixed>> $entries
+     */
+    private static function hasPhoneField(array $entries): bool
+    {
+        foreach ($entries as $entry) {
+            $found = false;
+            TemplateTree::rewrittenIn($entry, static function (array $node) use (&$found): array {
+                if (($node['type'] ?? null) === 'field' && ($node['name'] ?? null) === 'phone' && !empty($node['phone_country'])) $found = true;
+                return $node;
+            });
+            if ($found) return true;
+        }
+        return false;
     }
 
     /**

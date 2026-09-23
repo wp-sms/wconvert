@@ -1,0 +1,9 @@
+# Phone input is a conditional shared asset
+
+Accepted 2026-09-23. Implements the [phone-input plan](../plans/phone-input/README.md) with `lite-phone-input` pinned to 0.6.0.
+
+Phone is a Free field used by every tier. A site setting chooses its starting country, and a phone field may override it. Publication resolves `site` into a country code in `published_config`; changing the site setting does not change a live Campaign until it is republished. All countries remain available in the picker. The field can hide the picker, which does not restrict what the server accepts. The capture endpoint keeps its E.164 acceptance rule; browser-side length plausibility is guidance, not authorization.
+
+The country library and its CSS are built into one separate asset. Free enqueues it before the loader only when a matching published Campaign has a resolved phone field. Pro replaces Free's main loader but uses the same Free phone asset. The shared renderer calls a small enhancement hook inside each closed shadow root; the phone adapter owns its DOM, value normalization and cleanup. If the feature asset is missing, the plain `tel` input remains usable for international numbers. The feature asset has a hard 16 KiB gzip cap and the build reports combined page cost.
+
+Measured at gzip level 9, the base loaders changed from 13,104 / 19,242 / 20,237 / 20,425 bytes (Free / Basic / Pro / Elite) to 13,398 / 19,543 / 20,546 / 20,729 bytes. The optional phone asset is 14,573 bytes. Free and Basic remain under their existing caps. Pro's hard cap moves 80 bytes to 20,560; Elite's moves 256 bytes to 20,736. These are measured amendments to [ADR 0104](0104-display-workspace-uses-bounded-groups-and-fresh-gestures.md), not flags or waivers. No country data or widget implementation enters a base loader. Phone-enabled pages cost 27,971 / 34,116 / 35,119 / 35,302 bytes of JavaScript gzip across the four tiers.

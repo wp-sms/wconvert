@@ -5,7 +5,8 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { problemsIn } from '../../resources/admin/src/builder/structure/problems';
-import { withRemoved } from '../../resources/admin/src/builder/structure/tree';
+import { nodesOf, withRemoved } from '../../resources/admin/src/builder/structure/tree';
+import { withValue } from '../../resources/admin/src/builder/panel';
 import type { TemplateEntry } from '../../resources/admin/src/templates/api';
 import type { Template, TemplateNode, TemplateTree } from '@renderer/types';
 
@@ -270,7 +271,9 @@ describe('resource link readiness', () => {
 describe('journey readiness', () => {
   it('accepts fields across screens and a resource after primary capture', () => {
     for (const source of [enquiry, optionalSignup]) {
-      const template = structuredClone(source) as Template;
+      let template = structuredClone(source) as Template;
+      const phone = nodesOf(template.tree).find(node => node.captures === 'phone');
+      if (phone) template = { ...template, tree: withValue(template.tree, phone.path, 'phone_country', 'US') };
       const acknowledgement = template.tree.steps.at(-1)!.content as unknown as { children: unknown[] };
       acknowledgement.children.push({ type: 'followup', label: 'Open guide', href: '/guide.pdf' });
       const problems = problemsIn(template, undefined);

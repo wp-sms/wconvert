@@ -766,10 +766,13 @@ final class OptinRepository
             return null;
         }
 
+        $publishedConfig = PhoneCountry::resolved($optin->config);
+        if ($publishedConfig === null) return null;
+
         $now = current_time('mysql');
 
         $this->db->update(Connection::TABLE_OPTINS, [
-            'published_config' => (string) wp_json_encode($optin->config),
+            'published_config' => (string) wp_json_encode($publishedConfig),
             'published_at' => $now,
         ], ['id' => $id]);
 

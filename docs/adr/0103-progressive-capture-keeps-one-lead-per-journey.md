@@ -139,6 +139,8 @@ Free retains its 14,012 B loader cap. Paid loaders were capped at 19,456 B (19 K
 
 > **Amended by [ADR 0104](0104-display-workspace-uses-bounded-groups-and-fresh-gestures.md):** With explicit user approval, paid loaders now cap at 20,480 B (20 KiB); other budgets remain unchanged. The measurements below describe progressive capture before Display workspace.
 
+> **Further amended by [ADR 0105](0105-phone-input-is-a-conditional-shared-asset.md):** Basic caps at 20,480 B, Pro at 20,560 B and Elite at 20,736 B. Phone code has a separate 16 KiB cap and loads only on matching phone pages.
+
 Historical measurement:
 shared journey handling plus existing recovery/content-lock code exceeded the
 18 KiB limit by roughly 0.6 KiB at Elite. No feature is moved into an unmeasured

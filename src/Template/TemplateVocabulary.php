@@ -424,6 +424,16 @@ final class TemplateVocabulary
                 continue;
             }
 
+            if ($type === 'field' && $key === 'phone_country') {
+                if (($node['name'] ?? null) === 'phone' && ($node[$key] === 'site' || \WConvert\Optin\PhoneCountry::valid($node[$key]))) $kept[$key] = $node[$key];
+                continue;
+            }
+
+            if ($type === 'field' && $key === 'phone_dropdown') {
+                if (($node['name'] ?? null) === 'phone' && is_bool($node[$key])) $kept[$key] = $node[$key];
+                continue;
+            }
+
             if ($key === 'link') {
                 $kept[$key] = $this->link($node[$key]);
 

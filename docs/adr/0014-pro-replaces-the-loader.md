@@ -1,11 +1,11 @@
 # Pro replaces the loader rather than augmenting it
 
-**Current budget amendment — [ADR 0103](0103-progressive-capture-keeps-one-lead-per-journey.md):** The page payload cap is 2,560 B gzip (per-design 1,280 B). Free loaders remain 14,012 B; paid loaders cap at 20,480 B after the approved 1 KiB increase in [ADR 0104](0104-display-workspace-uses-bounded-groups-and-fresh-gestures.md). Earlier measurements below are historical. All remain hard checks.
+**Current budget amendment — [ADR 0105](0105-phone-input-is-a-conditional-shared-asset.md):** The page payload cap is 2,560 B gzip (per-design 1,280 B). Free loaders remain 14,012 B; Basic caps at 20,480 B, Pro at 20,560 B, Elite at 20,736 B. The optional phone asset caps at 16 KiB. Earlier measurements below are historical. All remain hard checks.
 
 **Budget amendment — [ADR 0101](0101-reopen-buttons-preserve-an-explicit-visitor-choice.md):** Free remains capped at 14,012 B gzip; paid loaders have an explicitly approved 18,432 B cap for complete recovery behavior. The 2 KiB per-page payload limit and hard fail-closed checks remain.
 
 The [[Pro]] add-on ships a **complete replacement front-end loader** and dequeues
-the free one. There is no registration seam, no second script, and never two
+the free one. There is no registration seam, no second main loader script, and never two
 loaders on one page.
 
 ***Extended by [ADR 0056](0056-the-tier-ladder-is-a-manifest.md) to the ADMIN

@@ -10,6 +10,8 @@ import { ImageFitPreview, ImageShapePreview } from './ChoicePreview';
 import { InterestOptions } from './InterestOptions';
 import { readable, hasScheduleEnded } from '../lib/wallTime';
 import { adminSettings } from '../settings';
+import countries from '../../../phone/countries.json';
+import { phoneSiteCountry } from '../phoneSiteCountry';
 import { nameOf, type TemplateLabels } from '../templates/api';
 import type { Slot } from './panel';
 
@@ -165,7 +167,16 @@ export function SlotFields({
         ({@see Slot.settings}) and neither the params nor their values are
         spelled in this bundle.
       */}
-      {slot.settings.map((setting) => (
+      {slot.type === 'field' && slot.captures === 'phone' && (
+        <label className="wconvert-slot__key">
+          {__('Starting country', 'wconvert')}
+          <select value={String(slot.settings.find(setting => setting.param === 'phone_country')?.held ?? 'site')} onChange={event => onParam('phone_country', event.target.value)}>
+            <option value="site">{__('Use site setting', 'wconvert')}{phoneSiteCountry() ? ` (${phoneSiteCountry()})` : ''}</option>
+            {countries.map(country => <option key={country.code} value={country.code}>{country.name}</option>)}
+          </select>
+        </label>
+      )}
+      {slot.settings.filter(setting => !['phone_country'].includes(setting.param) && (slot.captures === 'phone' || setting.param !== 'phone_dropdown')).map((setting) => (
         <ParamChoice
           key={setting.param}
           id={`${slot.type}-${setting.param}`}
@@ -213,7 +224,7 @@ export function SlotFields({
       {slot.type === 'countdown' && <Countdown endsAt={endsAt} onSetEndDate={onSetEndDate} />}
 
       {slot.type === 'field' && slot.captures === 'phone' && (
-        <p className="description">{__('Phone numbers need a country code, for example +44 7700 900000. Include one in your example.', 'wconvert')}</p>
+        <p className="description">{__('Visitors can choose a country and enter a local number. The saved number includes its country code. Changing the site setting affects this campaign after you publish it again.', 'wconvert')}</p>
       )}
 
       {(slot.role === 'success_headline' || slot.role === 'success_body') && (
