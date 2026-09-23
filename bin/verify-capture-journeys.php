@@ -17,6 +17,7 @@ use WConvert\Destination\SubmissionDispatcher;
 use WConvert\Lead\JourneyCapture;
 use WConvert\Lead\LeadRepository;
 use WConvert\Optin\OptinRepository;
+use WConvert\Optin\PhoneCountry;
 use WConvert\Queue\ActionSchedulerQueue;
 use WConvert\Queue\Queue;
 use WConvert\Rest\CaptureController;
@@ -63,6 +64,9 @@ $c->resolve(DestinationRegistry::class)->register($provider);
 $emailRoute = $destinations->save(null, $provider->id(), 'Verification email', null, []);
 $smsRoute = $destinations->save(null, $provider->id(), 'Verification SMS', null, []);
 $template = json_decode((string) file_get_contents(dirname(__DIR__) . '/resources/templates/library/journey-email-then-sms.json'), true, 32, JSON_THROW_ON_ERROR);
+$resolvedTemplate = PhoneCountry::resolved(['template' => $template], 'US');
+if ($resolvedTemplate === null) throw new RuntimeException('Journey verification needs a valid phone starting country');
+$template = $resolvedTemplate['template'];
 $config = ['template' => $template, 'display_type' => 'popup', 'display_rules' => \WConvert\Rules\DisplayPlan::immediate(),
     'destinations' => [$emailRoute->id], 'submission_settings' => ['sms-signup' => ['destination_ids' => [$smsRoute->id]]]];
 $optin = $optins->create('Journey verification', 'grow_email_list', $config);
