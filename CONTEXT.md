@@ -22,9 +22,10 @@ Contact lifecycle: it is never "confirmed", "unsubscribed", "bounced", or
 Submitted details and their consent evidence stay fixed; later submissions add
 to them. Going Back may review submitted details but cannot replace them.
 
-The progressive journey contract is accepted for implementation in
+The implemented progressive journey contract is recorded in
 [ADR 0103](docs/adr/0103-progressive-capture-keeps-one-lead-per-journey.md).
-The current runtime still captures a single submitting screen.
+The runtime supports linear screens with one primary submission and an optional
+other-channel signup, saved independently within the same capture journey.
 
 "Never confirmed" is the sharpest case, because it is the one every competitor
 gets wrong: **WConvert has no double opt-in and never will.** Confirming an

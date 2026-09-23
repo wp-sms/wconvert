@@ -1,9 +1,10 @@
 import { __, sprintf } from '@wordpress/i18n';
 import type { TemplateTree, TemplateNode, TemplateScreen } from '@renderer/types';
 
-export function walkNodes(node: TemplateNode): TemplateNode[] {
+export function walkNodes(node: TemplateNode, includeHidden = true): TemplateNode[] {
+  if (!includeHidden && 'hidden' in node && node.hidden) return [];
   const b = node as { children?: TemplateNode[]; start?: TemplateNode[]; end?: TemplateNode[] };
-  return [node, ...[...(b.children ?? []), ...(b.start ?? []), ...(b.end ?? [])].flatMap(walkNodes)];
+  return [node, ...[...(b.children ?? []), ...(b.start ?? []), ...(b.end ?? [])].flatMap(child => walkNodes(child, includeHidden))];
 }
 
 /** The explicit acceptance boundary for one declared submission. */

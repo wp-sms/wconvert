@@ -8,7 +8,7 @@ import { Dialog, DialogTrigger, DialogContent, DialogTitle, DialogDescription, D
 import { JourneyScreenCard } from './JourneyScreenCard';
 import { __, sprintf } from '@wordpress/i18n';
 import { Button } from '../components/ui/button';
-import type { TemplateTree, Tokens } from '@renderer/types';
+import type { TemplateTree, TemplateNode, Tokens } from '@renderer/types';
 import { duplicateScreen, freshScreen, referencedJourney, walkNodes, submissionScreen, movedScreen, screenRemoval, removedScreen } from './structure/journey';
 
 export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChange, onSelect }: {
@@ -53,8 +53,14 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
   const addOptional = () => {
     const channel = primaryChannel === 'sms' ? 'email' : 'phone';
     const id = channel === 'email' ? 'email-signup' : 'sms-signup';
+    // Keep an earned reward visible before asking for an optional channel.
+    // Leave the original in acknowledgement so removing SMS cannot remove it.
+    const rewards = walkNodes(tree.steps[tree.steps.length - 1].content, false)
+      .filter(node => ['code', 'followup'].includes(node.type) && !('hidden' in node && node.hidden))
+      .map(node => { const copy = { ...node } as Record<string, unknown>; delete copy.id; return copy as unknown as TemplateNode; });
     const screen = { ...freshScreen(tree, 'input'), name: channel === 'email' ? __('Optional email signup', 'wconvert') : __('Optional SMS signup', 'wconvert'), content: { type: 'stack', children: [
       { type: 'heading', text: __('Your signup was received', 'wconvert'), role: 'headline' },
+      ...rewards,
       { type: 'text', text: channel === 'email' ? __('Would you also like email updates?', 'wconvert') : __('Would you also like text updates?', 'wconvert'), role: 'body' },
       { type: 'field', name: channel, required: true, label: channel === 'email' ? __('Email address', 'wconvert') : __('Phone number', 'wconvert') },
       { type: 'consent', text: channel === 'email' ? __('Send me email updates. %s', 'wconvert') : __('Send me text updates. %s', 'wconvert'), link: { label: __('Privacy Policy', 'wconvert') }, hidden: false, role: 'consent_text' },

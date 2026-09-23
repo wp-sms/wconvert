@@ -146,3 +146,49 @@ it('removes Back when deleting an introductory screen makes the signup first', (
   expect(walkNodes(next.steps[0].content).some(n => 'action' in n && n.action === 'back')).toBe(false);
   expect(next.submissions).toEqual(base.submissions);
 });
+
+
+it('reveals the earned coupon immediately when adding SMS and preserves it when SMS is deleted', async () => {
+  const { default: coupon } = await import('../../resources/templates/library/code-reveal.json');
+  const user = userEvent.setup();
+  const initial = structuredClone(coupon.tree) as TemplateTree;
+  const thanks = initial.steps[1].content as unknown as { children: import('@renderer/types').TemplateNode[] };
+  thanks.children.push({ type: 'stack', hidden: true, children: [{ type: 'code', text: 'HIDDEN-REWARD' }] } as import('@renderer/types').TemplateNode);
+  render(<Editor initial={initial} />);
+  await user.click(screen.getByRole('button', { name: 'Manage screens' }));
+  await user.click(screen.getByRole('button', { name: 'Add screen' }));
+  await user.click(screen.getByRole('menuitem', { name: 'Add optional signup' }));
+  const tree = draft();
+  const reward = walkNodes(tree.steps[1].content).find(n => n.type === 'code');
+  expect(reward).toMatchObject({ text: 'WELCOME10', copy: true });
+  expect(JSON.stringify(tree.steps[1])).not.toContain('HIDDEN-REWARD');
+  const ids = tree.steps.flatMap(s => walkNodes(s.content)).flatMap(n => 'id' in n ? [n.id] : []);
+  expect(new Set(ids).size).toBe(ids.length);
+
+  const { mount } = await import('@renderer/mount');
+  const { bindJourney } = await import('@loader/journey');
+  const tag = document.createElement('script'); tag.id = 'wconvert-payload'; tag.setAttribute('data-capture', '/capture'); document.body.append(tag);
+  const anchor = document.createElement('div'); document.body.append(anchor);
+  const template = { tree, tokens: coupon.tokens };
+  const mounted = mount({ template, displayType: 'inline', anchor }); mounted.show();
+  const captured = vi.fn();
+  const fetcher = vi.fn().mockResolvedValueOnce({ ok: true, json: async () => ({ grant: 'secret' }) })
+    .mockResolvedValueOnce({ ok: true, json: async () => ({ id: 'lead' }) });
+  vi.stubGlobal('fetch', fetcher);
+  bindJourney(mounted, { id: 'campaign', template, capture_contract: 'contract' }, { onCaptured: captured });
+  mounted.root!.querySelector<HTMLInputElement>('[name="email"]')!.value = 'visitor@example.com';
+  const consent = mounted.root!.querySelector<HTMLInputElement>('[name="consent"]');
+  if (consent) consent.checked = true;
+  mounted.root!.querySelector<HTMLButtonElement>('[data-action="submit"]')!.click();
+  for (let i = 0; i < 12; i++) await Promise.resolve();
+  expect(mounted.root!.textContent).toContain('WELCOME10');
+  expect(mounted.root!.querySelector('[name="phone"]')).not.toBeNull();
+  mounted.close();
+  expect(captured).toHaveBeenCalledOnce();
+  expect(fetcher).toHaveBeenCalledTimes(2);
+  anchor.remove(); tag.remove();
+
+  await user.click(screen.getByRole('button', { name: 'Delete screen' }));
+  expect(draft().submissions).toHaveLength(1);
+  expect(walkNodes(draft().steps[1].content).find(n => n.type === 'code')).toMatchObject({ text: 'WELCOME10' });
+});
