@@ -111,7 +111,13 @@ final class CaptureJourney
             if ($button['action'] === 'skip' && (($button['submission'] ?? '') !== ($submissions[1]['id'] ?? null)
                 || $at <= self::submitScreen($tree, $submissions[0]['id']))) { return 'navigation'; }
         }
-        return $previous === count($steps) - 2 ? null : 'navigation';
+        // Offers may remain after removing an optional signup. They contain no
+        // further capture and must still provide a route to acknowledgement.
+        for ($at = $previous + 1; $at < count($steps) - 1; $at++) {
+            $actions = array_column(array_map(static fn (array $entry): array => $entry[0], array_filter($buttons, static fn (array $entry): bool => $entry[1] === $at)), 'action');
+            if ($steps[$at]['kind'] !== 'content' || !in_array('next', $actions, true)) { return 'navigation'; }
+        }
+        return null;
     }
 
     /** @param mixed $value */

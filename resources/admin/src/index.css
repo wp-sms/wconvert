@@ -621,8 +621,8 @@ body:has(#wconvert-admin) #wpbody-content {
  * THE REGION TABLE, AND WHAT IT BECOMES BELOW 640px.
  *
  * **640px is the table's own breakpoint and is neither number ADR 0038 owns**
- * (ADR 0039). 782px is the *builder's* floor — a sticky preview beside a
- * settings panel — and 360px is a *floor* rather than a breakpoint, the width
+ * (ADR 0039). The builder now uses adaptive drawers. 360px is a *floor*
+ * rather than a breakpoint, the width
  * the reading screens must survive rather than the width at which they change
  * shape. Reusing either would make one number mean two things.
  *
@@ -2219,8 +2219,8 @@ body:has(#wconvert-admin) #wpbody-content {
  * column of its own beside all four tabs.
  *
  * One column below 1024px, because the second one has nowhere to go: the
- * builder's own floor is 782px (ADR 0038), and between the two a 22rem aside
- * would squeeze the controls narrower than the fields inside them.
+ * old side-by-side builder would squeeze controls below their usable width.
+ * The current workspace uses adaptive drawers (ADR 0038).
  * ------------------------------------------------------------------------- */
 .wconvert-builder {
   display: grid;
@@ -6244,7 +6244,7 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
  * that is already this admin's floor (ADR 0038, and the 9px in the reference
  * tool fails the bar)."* **ADR 0038 states no minimum font size.** Its floors
  * are contrast ratios, a blocking `jsx-a11y` lint, 24 × 24 pointer targets and
- * the 360/782px viewports — and none of them is about type. The citation was
+ * the reading/editor viewports — and none of them is about type. The citation was
  * wrong, and it is the reason the whole strip stayed a wall of monospace across
  * the top of the tab for one release longer than it had to.
  *

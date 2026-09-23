@@ -135,8 +135,8 @@ export function EditorCanvas({
       ? 1
       : Math.min(
           1,
-          Math.max(0.3, (size.availableWidth - 64) / Math.max(1, size.width)),
-          Math.max(0.45, (size.availableHeight - 64) / Math.max(1, size.height)),
+          Math.max(0.1, (size.availableWidth - 32) / Math.max(1, size.width)),
+          Math.max(0.1, (size.availableHeight - 32) / Math.max(1, size.height)),
         );
   return (
     <section className="wconvert-canvas" data-width={width} aria-label={__('Design canvas', 'wconvert')}>

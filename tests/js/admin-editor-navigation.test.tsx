@@ -199,32 +199,31 @@ describe('App navigation through the real lazy editor', () => {
     await waitFor(() => expect(window.location.hash).toBe(other));
   });
 
-  it('keeps a draft mounted but keyboard-inactive across the supported-width boundary', async () => {
+  it('keeps the same editable draft when the viewport narrows', async () => {
     const name = await openEditor();
     await userEvent.type(name, ' revised');
     await resize(600);
     expect(name).toBeInTheDocument();
-    expect(name.closest('[hidden]')).not.toBeNull();
-    expect(name.closest('[inert]')).not.toBeNull();
-    expect(screen.queryByRole('textbox', { name: 'Name' })).toBeNull();
+    expect(name.closest('[hidden]')).toBeNull();
+    expect(name.closest('[inert]')).toBeNull();
+    expect(screen.getByRole('textbox', { name: 'Name' })).toBe(name);
     await resize(1200);
     expect(await screen.findByRole('textbox', { name: 'Name' })).toBe(name);
     expect(name).toHaveValue('Welcome offer revised');
     expect(api.getOptin).toHaveBeenCalledTimes(1);
   });
 
-  it('does not fetch or mount the editor until an initially narrow viewport becomes wide', async () => {
+  it('opens the editor directly in an initially narrow viewport', async () => {
     window.innerWidth = 600;
     window.history.replaceState({}, '', `/wp-admin/admin.php?page=wconvert${EDITOR}`);
     render(<App />);
-    expect(api.getOptin).not.toHaveBeenCalled();
-    expect(screen.queryByRole('textbox', { name: 'Name', hidden: true })).toBeNull();
+    expect(await screen.findByRole('textbox', { name: 'Name' })).toHaveValue('Welcome offer');
     await resize(1200);
     expect(await screen.findByRole('textbox', { name: 'Name' })).toHaveValue('Welcome offer');
     expect(api.getOptin).toHaveBeenCalledTimes(1);
   });
 
-  it('guards the narrow notice Back button without discarding the mounted draft on Cancel', async () => {
+  it('guards the narrow editor Back button without discarding the mounted draft on Cancel', async () => {
     const name = await openEditor();
     await userEvent.type(name, ' revised');
     await resize(600);

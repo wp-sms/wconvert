@@ -1969,3 +1969,45 @@ describe('the visible Add element picker', () => {
     expect(rowNames()).toContain('Phone number');
   });
 });
+
+
+describe('adaptive editor and signup deletion', () => {
+  afterEach(() => vi.unstubAllGlobals());
+  it('opens selected layer controls in a drawer on a phone and saves the edit', async () => {
+    const originalWidth = window.innerWidth;
+    window.innerWidth = 390;
+    try {
+      await structure();
+      expect(screen.getByRole('dialog', { name: 'Layers' })).toBeInTheDocument();
+      await userEvent.click(screen.getByRole('button', { name: 'Headline Get 10% off your first order' }));
+      const dialog = screen.getByRole('dialog', { name: 'Design settings' });
+      const text = within(dialog).getByRole('textbox', { name: 'Text' });
+      await userEvent.clear(text);
+      await userEvent.type(text, 'Edited on a phone');
+      await userEvent.keyboard('{Escape}');
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+      await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
+      expect(JSON.stringify(savedTree())).toContain('Edited on a phone');
+    } finally { window.innerWidth = originalWidth; }
+  });
+
+  it('removes an optional signup and its routing together, and Undo restores both', async () => {
+    vi.stubGlobal('ResizeObserver', class { observe() {} unobserve() {} disconnect() {} });
+    const { default: journey } = await import('../../resources/templates/library/journey-email-then-sms.json');
+    const config = { template_id: ENTRY.id, template: journey, submission_settings: { 'sms-signup': { destination_ids: ['sms-route'] } } };
+    builder.getOptin.mockResolvedValue(optin({ config }));
+    render(<OptinBuilder id={ID} onClose={vi.fn()} />);
+    await userEvent.click(await screen.findByRole('button', { name: 'Manage screens' }));
+    await userEvent.click(screen.getByRole('button', { name: /Optional SMS signup Save/ }));
+    await userEvent.click(screen.getByRole('button', { name: 'Delete screen' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Done' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
+    expect(savedTree().submissions).toHaveLength(1);
+    expect(builder.saveOptin.mock.calls.at(-1)?.[2].submission_settings).toEqual({});
+    await screen.findByRole('button', { name: 'Save draft' });
+    await userEvent.click(screen.getByRole('button', { name: 'Undo draft edit' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
+    expect(savedTree().submissions).toHaveLength(2);
+    expect(builder.saveOptin.mock.calls.at(-1)?.[2].submission_settings).toEqual(config.submission_settings);
+  });
+});

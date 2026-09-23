@@ -1,5 +1,6 @@
-import { useId, useState } from 'react';
+import { useId, useRef, useState } from 'react';
 import { ArrowLeft, ArrowRight, ChevronDown, Copy, FilePlus2, ListPlus, Plus, Trash2, Workflow, X } from 'lucide-react';
+import { ConfirmDialog } from '../shell/ConfirmDialog';
 import { Input } from '../components/ui/input';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../components/ui/tooltip';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '../components/ui/dropdown-menu';
@@ -8,7 +9,7 @@ import { JourneyScreenCard } from './JourneyScreenCard';
 import { __, sprintf } from '@wordpress/i18n';
 import { Button } from '../components/ui/button';
 import type { TemplateTree, Tokens } from '@renderer/types';
-import { duplicateScreen, freshScreen, referencedJourney, walkNodes, submissionScreen, movedScreen } from './structure/journey';
+import { duplicateScreen, freshScreen, referencedJourney, walkNodes, submissionScreen, movedScreen, screenRemoval, removedScreen } from './structure/journey';
 
 export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChange, onSelect }: {
   tokens?: Tokens; primaryChannel?: string | null; tree: TemplateTree; step: number; onChange(tree: TemplateTree): void; onSelect(step: number): void;
@@ -16,6 +17,8 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
   const id = useId();
   const [open, setOpen] = useState(false);
   const [said, setSaid] = useState('');
+  const [confirmRemoval, setConfirmRemoval] = useState(false);
+  const deleteButton = useRef<HTMLButtonElement>(null);
   const current = tree.steps[step];
   if (!current || tree.submissions.length === 0) return null;
   const write = (next: TemplateTree, index: number) => { onChange(referencedJourney(next)); onSelect(index); };
@@ -62,11 +65,11 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
     const steps = [...tree.steps]; steps.splice(steps.length - 1, 0, screen);
     write({ ...tree, steps, submissions: [...tree.submissions, { id, required: false, fields: [], consents: [] }] }, steps.length - 2);
   };
-  const removeOptional = () => {
-    const primary = tree.submissions[0].id;
-    const end = tree.steps.findIndex(s => walkNodes(s.content).some(n => n.type === 'button' && 'action' in n && n.action === 'submit' && 'submission' in n && n.submission === primary));
-    if (end < 0) return;
-    write({ ...tree, submissions: tree.submissions.slice(0, 1), steps: [...tree.steps.slice(0, end + 1), tree.steps[tree.steps.length - 1]] }, end);
+  const removal = screenRemoval(tree, step);
+  const remove = () => {
+    const next = removedScreen(tree, step);
+    write(next, Math.min(step, next.steps.length - 1));
+    setSaid(__('Screen removed. Undo brings it back.', 'wconvert'));
   };
   const submission = saving(step);
   return <TooltipProvider delayDuration={300}>
@@ -147,24 +150,26 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
               }} />
               <ScreenAction label={__('Move earlier', 'wconvert')} icon={ArrowLeft} directional disabled={movedScreen(tree, step, step - 1) === tree} onClick={() => move(step, step - 1)} />
               <ScreenAction label={__('Move later', 'wconvert')} icon={ArrowRight} directional disabled={movedScreen(tree, step, step + 1) === tree} onClick={() => move(step, step + 1)} />
-              <ScreenAction label={__('Delete screen', 'wconvert')} icon={Trash2} destructive disabled={current.kind === 'acknowledgement' || tree.steps.length <= 2} onClick={() => write({ ...tree, steps: tree.steps.filter((_, i) => i !== step) }, Math.max(0, step - 1))} />
+              <ScreenAction label={__('Delete screen', 'wconvert')} icon={Trash2} destructive buttonRef={deleteButton} disabled={removal.screens.length === 0} onClick={() => removal.screens.length > 1 ? setConfirmRemoval(true) : remove()} />
             </div>
             <Button type="button" onClick={() => setOpen(false)}>{__('Edit this screen’s design', 'wconvert')}<ArrowRight aria-hidden="true" className="rtl:rotate-180" /></Button>
           </div>
-          {primaryChannel && tree.submissions.length > 1 && <Button type="button" size="sm" variant="ghost" onClick={removeOptional}>{__('Remove optional signup screens', 'wconvert')}</Button>}
         </div>
         <div className="wconvert-journey-dialog__footer"><p role="status">{said || __('Changes are part of your campaign draft. Save the draft to keep them.', 'wconvert')}</p><DialogClose asChild><Button variant="outline">{__('Done', 'wconvert')}</Button></DialogClose></div>
+        <ConfirmDialog open={confirmRemoval} onOpenChange={setConfirmRemoval} title={__('Remove this optional signup?', 'wconvert')}
+          description={sprintf(__('These screens collect details for the same signup and will be removed: %s. Other screens stay. Undo brings them back.', 'wconvert'), tree.steps.filter(s => removal.screens.includes(s.id)).map(s => s.name).join(', '))}
+          confirmLabel={__('Remove signup screens', 'wconvert')} onConfirm={remove} returnFocusTo={deleteButton} />
       </DialogContent>
     </Dialog>
   </TooltipProvider>;
 }
 /** Refused actions stay focusable so their labels are available by keyboard. */
-function ScreenAction({ label, icon: Icon, disabled, directional, destructive, onClick }: {
-  label: string; icon: typeof Copy; disabled: boolean; directional?: boolean; destructive?: boolean; onClick(): void;
+function ScreenAction({ label, icon: Icon, disabled, directional, destructive, onClick, buttonRef }: {
+  label: string; icon: typeof Copy; disabled: boolean; directional?: boolean; destructive?: boolean; onClick(): void; buttonRef?: React.RefObject<HTMLButtonElement | null>;
 }) {
   return <Tooltip>
     <TooltipTrigger asChild>
-      <Button type="button" size="icon-sm" variant="ghost" aria-label={label} aria-disabled={disabled}
+      <Button ref={buttonRef} type="button" size="icon-sm" variant="ghost" aria-label={label} aria-disabled={disabled}
         className={destructive ? 'wconvert-journey__delete' : undefined}
         onClick={() => { if (!disabled) onClick(); }}>
         <Icon aria-hidden="true" className={directional ? 'rtl:rotate-180' : undefined} />

@@ -3,6 +3,7 @@ import { mount } from '@renderer/mount';
 import { bindJourney } from '@loader/journey';
 import type { Template } from '@renderer/types';
 import source from '../../resources/templates/library/journey-email-then-sms.json';
+import { removedScreen, referencedJourney } from '../../resources/admin/src/builder/structure/journey';
 import enquiry from '../../resources/templates/library/journey-enquiry.json';
 
 afterEach(() => { document.body.replaceChildren(); vi.unstubAllGlobals(); });
@@ -89,6 +90,28 @@ it('offers the earned guide while SMS is still optional without another capture'
   expect(link).not.toBeNull();
   expect(link.hasAttribute('data-convert')).toBe(false);
   expect(mounted.root!.querySelector('[name="phone"]')).not.toBeNull();
+  expect(fetcher).toHaveBeenCalledTimes(2);
+  expect(captured).toHaveBeenCalledOnce();
+});
+
+
+it('keeps an offer reachable after removing SMS and sends only the email signup', async () => {
+  const template = structuredClone(source) as Template;
+  const tree = referencedJourney({ ...template.tree, steps: [template.tree.steps[0], {
+    id: 'earned-offer', name: 'Your offer', kind: 'content', content: { type: 'stack', children: [
+      { type: 'text', text: 'Your saved offer' }, { type: 'button', action: 'next', label: 'Continue' },
+    ] },
+  }, ...template.tree.steps.slice(1)] });
+  const fetcher = vi.fn().mockResolvedValueOnce({ ok: true, json: async () => ({ grant: 'secret' }) })
+    .mockResolvedValueOnce({ ok: true, json: async () => ({ id: 'lead' }) });
+  vi.stubGlobal('fetch', fetcher);
+  const { mounted, captured } = setup({ ...template, tree: removedScreen(tree, 2) });
+  mounted.root!.querySelector<HTMLInputElement>('[name="email"]')!.value = 'visitor@example.com';
+  mounted.root!.querySelector<HTMLInputElement>('[name="consent"]')!.checked = true;
+  mounted.root!.querySelector<HTMLButtonElement>('[data-action="submit"]')!.click(); await settle();
+  expect(mounted.root!.textContent).toContain('Your saved offer');
+  mounted.root!.querySelector<HTMLButtonElement>('[data-action="next"]')!.click();
+  expect(mounted.root!.textContent).toContain('Details received');
   expect(fetcher).toHaveBeenCalledTimes(2);
   expect(captured).toHaveBeenCalledOnce();
 });

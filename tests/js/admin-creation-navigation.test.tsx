@@ -95,10 +95,10 @@ describe('creation and its owning admin page', () => {
     expect(screen.queryByText('Report content')).not.toBeInTheDocument();
   });
 
-  it('explains the wider-screen editor requirement before creating on a phone', async () => {
+  it('can create a draft and open its editor on a phone', async () => {
     window.innerWidth = 390;
-    await openCreation();
-    expect(screen.getByText('You can save a draft here. Open it on a wider screen to customize the design and publish.')).toBeInTheDocument();
-    expect(api.createOptin).not.toHaveBeenCalled();
+    await userEvent.click(await openCreation());
+    expect(await screen.findByText('New draft editor')).toBeInTheDocument();
+    expect(api.createOptin).toHaveBeenCalledTimes(1);
   });
 });

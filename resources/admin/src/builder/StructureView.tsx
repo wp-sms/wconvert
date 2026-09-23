@@ -2,6 +2,7 @@ import { referencedJourney } from './structure/journey';
 import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import { ArrowDown, ArrowUp, Blocks, Copy, MoreHorizontal, Plus, Trash2 } from 'lucide-react';
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from '../components/ui/dialog';
 import { Button } from '../components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '../components/ui/popover';
 import {
@@ -69,6 +70,10 @@ export interface StructureViewProps {
   readonly onShowLayers?: () => void;
   readonly onDesign?: () => void;
   readonly step?: number;
+  readonly compact?: boolean;
+  readonly drawer?: 'layers' | 'settings' | null;
+  readonly onCloseDrawer?: () => void;
+  readonly onDrawerFocusReturn?: (panel: 'layers' | 'settings') => void;
 }
 
 export function StructureView({
@@ -89,7 +94,11 @@ export function StructureView({
   onShowLayers,
   onDesign,
   step,
+  compact = false, drawer = null, onCloseDrawer, onDrawerFocusReturn,
 }: StructureViewProps) {
+  const panes = useRef<HTMLDivElement>(null);
+  const lastDrawer = useRef<'layers' | 'settings'>('settings');
+  if (drawer) lastDrawer.current = drawer;
   const inspectorScroll = useRef<HTMLDivElement>(null);
   const selectedKey = selected?.join('.') ?? 'design';
   // Edits and preview-width changes keep the scroll position. Choosing another
@@ -235,16 +244,7 @@ export function StructureView({
     );
   }
 
-  return (
-    <>
-      {toolbar}
-
-      <p role="status" aria-label={__('Layer changes', 'wconvert')} className="sr-only">
-        {said}
-      </p>
-
-      <div className="wconvert-panes" data-layers={showLayers ? 'true' : 'false'}>
-        {showLayers && (
+  const layersPane = (
           <div className="wconvert-pane wconvert-pane--layers">
             <div className="wconvert-pane__stick">
               <div className="wconvert-pane__head">
@@ -279,12 +279,8 @@ export function StructureView({
               </div>
             </div>
           </div>
-        )}
-
-        <div className="wconvert-pane wconvert-pane--render">
-          <div className="wconvert-pane__stick">{preview}</div>
-        </div>
-
+  );
+  const controlsPane = (
         <div className="wconvert-pane wconvert-pane--controls">
           <div className="wconvert-pane__stick">
             <div ref={inspectorScroll} className="wconvert-pane__body">
@@ -308,6 +304,30 @@ export function StructureView({
             </div>
           </div>
         </div>
+  );
+  return (
+    <>
+      {toolbar}
+
+      <p role="status" aria-label={__('Layer changes', 'wconvert')} className="sr-only">
+        {said}
+      </p>
+
+      <div ref={panes} className="wconvert-panes" data-compact={compact || undefined} data-layers={showLayers ? 'true' : 'false'}>
+        {!compact && showLayers && layersPane}
+
+        <div className="wconvert-pane wconvert-pane--render">
+          <div className="wconvert-pane__stick">{preview}</div>
+        </div>
+
+        {!compact && controlsPane}
+        {compact && <Dialog open={drawer !== null} onOpenChange={open => { if (!open) onCloseDrawer?.(); }}>
+          <DialogContent container={panes.current} className="wconvert-editor-drawer" onCloseAutoFocus={event => { event.preventDefault(); onDrawerFocusReturn?.(lastDrawer.current); }}>
+            <DialogTitle>{drawer === 'layers' ? __('Layers', 'wconvert') : __('Design settings', 'wconvert')}</DialogTitle>
+            <DialogDescription className="sr-only">{__('Edit this campaign, then close the panel to return to the canvas.', 'wconvert')}</DialogDescription>
+            {drawer === 'layers' ? layersPane : controlsPane}
+          </DialogContent>
+        </Dialog>}
       </div>
 
       {checks}

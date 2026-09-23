@@ -56,18 +56,8 @@ export function BuilderSkeleton({ onClose, backLabel }: { onClose: () => void; b
  * skeleton above and {@see OptinBuilder} render the same component, in the same
  * band, and the way out does not move when the wait ends.
  *
- * {@see App} draws its own below 782px and again over the creation flow, and
- * those are not in the header band: they sit in the page body, so they carry
- * the spacing of where they stand. There is exactly one of the three on screen
- * at a time.
- *
- * **All three are now this component**, which is what makes that sentence
- * true rather than aspirational — App spelled the button out twice, so a
- * change to the way back was a change in three places and the two copies had
- * already drifted a `size` apart from this one. `-ms-3` travels with the
- * control, because pulling a ghost button's padding back so its label starts
- * on the text edge is a fact about the button; `className` is the caller's,
- * because how much room sits under it is a fact about where it stands.
+ * App also uses this over the creation flow. Narrow editors use the same
+ * header and navigation guard as wide editors.
  *
  * It takes a ref because it is what the unsaved-changes confirm has to put the
  * caret back on — a triggerless dialog restores focus to nothing, which leaves

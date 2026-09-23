@@ -54,7 +54,28 @@ and keyboard-accessible move buttons share the same order constraints: the
 primary signup precedes the optional signup and the acknowledgement stays last.
 Selecting a card exposes its name and completion behavior; editing its design
 returns to the full-height canvas. Changes use the existing campaign draft and
-Undo history. This changes neither the Template JSON contract nor storage.
+Undo history. This changes neither the Template JSON shape nor storage.
+
+The follow-up removes the separate bulk-removal action. Deleting an optional
+submission screen removes that declaration, its configured Destination routes,
+and screens holding its owned fields/consent. A confirmation names all affected
+screens when more than one is involved. Independent content screens stay in
+order, and buttons referring to the removed optional signup are cleaned up.
+Undo restores the tree and routes together. The primary submission and final
+acknowledgement cannot be deleted through this control.
+
+Content-only screens may follow the last submission before acknowledgement;
+each requires a visible Next action. This keeps a retained offer reachable after
+optional signup removal without adding a capture or changing the submission
+boundary. Unowned input/consent remains invalid. The viewport gate is replaced
+with an adaptive editor as recorded in [ADR 0038](0038-the-admin-holds-different-floors-to-the-loader.md).
+
+Conditional screens remain a future, separately scoped improvement. The proposed
+starting point is “Show this screen when…” based on earlier answers, useful for
+qualification and relevant offers. No branching engine, UI, JSON fields or
+release commitment is introduced here. A future plan must cover skipped required
+fields, consent/submission ownership, Back after changing an answer, and reports
+for different paths before implementation.
 
 Reports include the overall Conversion count, separate email/SMS capture totals,
 and anonymous screen progress counts. Repeated screen visits are not unique

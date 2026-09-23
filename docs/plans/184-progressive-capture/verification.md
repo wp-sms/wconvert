@@ -114,3 +114,30 @@ Real local WordPress checks covered modal opening/closing, screen selection,
 actual preview sizing, adding and dragging a screen, Undo back to the original
 draft, and 1440px/1024px layouts. The modal scrolls at shorter heights without
 reducing the canvas. The saved Campaign was not changed by these checks.
+
+## Adaptive editor and optional signup removal
+
+The 782px gate is removed from editor loading and campaign creation. At widths
+up to 1000px, Layers and settings use one accessible modal drawer; phone layouts
+move history and campaign details into an actions menu. Display rules and
+Destinations occupy the available width. Resizing preserves the editable draft.
+
+The separate “Remove optional signup screens” action is removed. Delete on an
+optional submission now removes its owned input screens, declaration, dependent
+Skip buttons and Destination settings together. When several screens are
+involved, a confirmation lists them. Independent offers remain in order. Undo
+restores both the journey and its routes. The primary submission and final
+acknowledgement are protected. Removing an intro also repairs a now-invalid Back
+button on the first screen. Content-only screens after the last accepted signup
+are valid when they provide Next, so preserving an offer does not block publish.
+No tables, columns or Template JSON shape changes were needed.
+
+Verification: full PHPUnit passes (2,073 tests, 10,120 assertions); PHPStan and all
+57 template registrations pass. Full frontend coverage plus focused reruns pass,
+including mobile editing/saving, resize/navigation guards, multi-screen removal
+confirmation, route cleanup with Undo, and visitor progression through a retained
+offer without duplicate capture. TypeScript, ESLint and Free/Pro admin builds
+pass. Real local WordPress checks at 390px, the natural 731px panel, and 1440px
+cover canvas, drawers, screen management, Display rules, Destinations and
+add-offer/delete-SMS/Undo. The saved campaign was left unchanged. Conditional
+screens remain a documented future improvement, not an implemented feature.

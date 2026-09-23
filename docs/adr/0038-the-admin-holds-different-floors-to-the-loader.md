@@ -6,7 +6,7 @@ The admin bundle has **no gate at all** — its size is printed on every build a
 blocks nothing. The two are not inconsistent, and this ADR is why.
 
 Alongside it, the other floors the admin holds: **WCAG 2.1 AA**, enforced by
-lint; **360px on the reading screens and 782px on the builder**; and **no dark
+lint; **360px on reading screens and adaptive editing at narrow widths**; and **no dark
 mode in 0.1.0**.
 
 *The responsive range is split at both ends. The ceiling — 1280px on the reading
@@ -63,15 +63,18 @@ it changes what is loaded rather than arguing about what may be.
 - **Reading screens work to 360px.** Checking a conversion count or yesterday's
   leads from a phone is a real thing people do, and those screens are lists and
   numbers — the things that reflow.
-- **The builder is desktop-only, and says so below 782px.** It is a sticky live
-  preview beside a settings panel; there is no arrangement of those two that
-  works on a 375px viewport, and pretending otherwise means real work producing
-  something nobody can use.
+- **The builder adapts instead of refusing a narrow viewport.** Amended on
+  2026-09-23 alongside [ADR 0103](0103-progressive-capture-keeps-one-lead-per-journey.md):
+  the user approved replacing the 782px gate with a canvas and one modal editing
+  drawer at widths up to 1000px. Layers and settings share that drawer. At phone
+  widths the campaign actions menu holds Undo/Redo and campaign details; preview
+  width choices use a menu. Display rules and Destinations use the available
+  width without a side-by-side preview. Drafts remain editable during resizing.
 
-782px is where wp-admin's own menu collapses, so it is the line WordPress already
-draws and the honest place to draw this one. **Saying so on screen is the load-
-bearing half** — a builder that silently degrades on a narrow viewport is a bug
-report; one that says what it needs is a product decision the merchant can act on.
+The earlier 782px threshold followed WordPress's menu breakpoint. It was a
+layout choice, not a requirement of capture or template rendering. The adaptive
+editor removes that restriction from both initial loading and campaign creation.
+The builder remains lazy-loaded when its route is opened.
 
 ## The measure is split for the same reason the floor is
 
@@ -258,8 +261,8 @@ failure, not a line of new code.
   real and is what made #73 a ticket; ADR 0041 is the three changes it took.
   The boundary itself is `resources/admin/src/builder/lazy.tsx`, and that is
   where anything heavy lands.*
-- **A 782px message is a shipped string** and therefore translatable, and it needs
-  to say what the merchant should do rather than that something is unsupported.
+- **Narrow windows open the same editor.** Accessible modal drawers provide
+  focus containment, Escape dismissal and a return to the editing toolbar.
 - **A per-screen measure is one prop and one custom property**, not a fork.
   `Shell` takes `wide` and `--wconvert-measure` answers it, and the masthead,
   the page-header band and `<main>` all read the same property — the three used

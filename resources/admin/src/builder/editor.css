@@ -1190,3 +1190,53 @@ body .wconvert-rule-picker__unavailable {
   .wconvert-journey__delete:not([aria-disabled='true']):hover { color: var(--destructive) !important; }
   .wconvert-journey-dialog [data-slot='dialog-title'] { font-size: var(--text-title) !important; }
 }
+
+/* A narrow workspace keeps the canvas visible and opens one editing drawer. */
+#wconvert-admin .wconvert-workspace .wconvert-panes[data-compact] { grid-template-columns: minmax(0, 1fr); }
+@layer utilities {
+  #wconvert-admin .wconvert-workspace .wconvert-editor-drawer {
+    display: flex !important; flex-direction: column; gap: 12px !important;
+    inset-block: 12px !important; inset-inline-start: auto !important; inset-inline-end: 12px !important;
+    transform: none !important; translate: none !important; inline-size: min(420px, calc(100vw - 24px)) !important;
+    max-inline-size: none !important; block-size: calc(100dvh - 24px); padding: 20px 0 0 !important;
+  }
+  #wconvert-admin .wconvert-editor-drawer > [data-slot='dialog-title'] { padding-inline: 20px 44px !important; }
+}
+#wconvert-admin .wconvert-workspace .wconvert-editor-drawer .wconvert-pane {
+  position: relative; inset: auto; inline-size: 100%; flex: 1; min-block-size: 0; box-shadow: none; border: 0;
+}
+#wconvert-admin .wconvert-editor-drawer .wconvert-pane__stick { display: flex; flex-direction: column; }
+#wconvert-admin .wconvert-editor-drawer .wconvert-pane__body { overflow: auto; }
+@media (max-width: 1000px) {
+  #wconvert-admin .wconvert-workspace__secondary { grid-template-columns: minmax(0, 1fr); overflow: auto; }
+  #wconvert-admin .wconvert-workspace__secondary > .wconvert-canvas { display: none; }
+  #wconvert-admin .wconvert-workspace__settings { border: 0; min-inline-size: 0; padding: 16px; }
+  #wconvert-admin .wconvert-workspace__header { padding: 8px; }
+  #wconvert-admin .wconvert-workspace__brand-mark { display: none; }
+  #wconvert-admin .wconvert-canvas__bar { flex-wrap: wrap; gap: 8px; padding: 10px; }
+  #wconvert-admin .wconvert-canvas__bar > span { overflow-wrap: anywhere; min-inline-size: 0; }
+}
+@media (max-width: 640px) {
+  #wconvert-admin .wconvert-workspace__header { gap: 6px; }
+  #wconvert-admin input.wconvert-workspace__name { flex: 1; inline-size: 180px; margin: 0; }
+  #wconvert-admin .wconvert-workspace__actions { flex-basis: 100%; justify-content: space-between; }
+  #wconvert-admin .wconvert-workspace__actions > button { padding-inline: 8px; }
+  #wconvert-admin .wconvert-workspace__navigation button { padding-inline: 8px; }
+  #wconvert-admin .wconvert-workspace__toolbar { grid-template-columns: minmax(0, 1fr) auto; padding: 6px 8px; }
+  #wconvert-admin .wconvert-workspace__screens { grid-column: 1 / -1; grid-row: 1; justify-content: space-between; }
+  #wconvert-admin .wconvert-screen-controls { flex: 1; }
+  #wconvert-admin .wconvert-screen-controls select { max-inline-size: none; }
+  #wconvert-admin .wconvert-screen-controls > button { display: none; }
+  #wconvert-admin .wconvert-workspace__footer { padding-inline: 8px; }
+  #wconvert-admin .wconvert-canvas__bar > span { display: none; }
+  #wconvert-admin .wconvert-canvas__bar { justify-content: flex-end; }
+  .wconvert-journey-dialog__header { gap: 10px; }
+  .wconvert-journey-dialog__header-actions { inline-size: 100%; justify-content: space-between; }
+  .wconvert-journey-dialog__screens { max-block-size: 220px; }
+  .wconvert-journey-card { flex-basis: 175px; }
+  .wconvert-journey-card__preview { block-size: 85px; }
+  .wconvert-journey-dialog__footer { padding: 12px 18px; }
+}
+@media (max-width: 640px) {
+  #wconvert-admin .wconvert-workspace__settings [data-slot='region-header'] { flex-direction: column; gap: 12px !important; }
+}

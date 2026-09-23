@@ -17,7 +17,6 @@ import { createOptin } from '../optins/api';
 import { GoalCard, offerableGoals } from './GoalCard';
 import { listGoals, listPlaybooks, prefill, type GoalEntry, type PlaybookEntry } from './api';
 import { StartingPointFacts, StartingPointSummary, startingPointDisplayType } from './StartingPointFacts';
-import { useBuilderViewport } from '../hooks/useBuilderViewport';
 import { displayTypeLabel, displayTypeOptions } from '../displayTypes';
 
 /**
@@ -33,7 +32,6 @@ export interface GoalScreenProps {
 }
 
 export function GoalScreen({ onCreated, onBusyChange, onCheckOptins }: GoalScreenProps) {
-  const editorFits = useBuilderViewport();
   const [goals, setGoals] = useState<Loadable<GoalEntry[]>>(LOADING);
   const [packsOpen, setPacksOpen] = useState(false);
   const [inspected, setInspected] = useState<PlaybookEntry | null>(null);
@@ -244,9 +242,6 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins }: GoalScree
           onChooseStartingPoints={(id) => { choseCollection.current = true; setCollectionId(id); setFormatId('all'); setQuery(''); setPacksOpen(false); }} />
       </DialogContent>
     </Dialog>
-    {!editorFits && <RegionBody><p className="m-0 text-note text-muted-foreground">
-      {__('You can save a draft here. Open it on a wider screen to customize the design and publish.', 'wconvert')}
-    </p></RegionBody>}
     {error !== null && <RegionError message={error} />}
     {createUnconfirmed && <RegionBody><p className="m-0 text-note">
       {__('Draft creation could not be confirmed. Check your Campaigns before trying again to avoid creating a second draft.', 'wconvert')}

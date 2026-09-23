@@ -17,6 +17,22 @@ final class CaptureJourneyTest extends TestCase
         self::assertSame('followup', CaptureJourney::issue($template['tree']));
     }
 
+    public function testContentAfterTheLastSignupMustStillReachAcknowledgement(): void
+    {
+        $template = json_decode((string) file_get_contents(dirname(__DIR__, 3) . '/resources/templates/library/journey-email-only.json'), true);
+        $offer = ['id' => 'offer', 'name' => 'Your offer', 'kind' => 'content', 'content' => ['type' => 'stack', 'children' => [
+            ['type' => 'text', 'text' => 'Your signup is saved'],
+            ['type' => 'button', 'action' => 'next', 'label' => 'Continue'],
+        ]]];
+        array_splice($template['tree']['steps'], 1, 0, [$offer]);
+        self::assertNull(CaptureJourney::issue($template['tree']));
+        $template['tree']['steps'][1]['content']['children'][1]['hidden'] = true;
+        self::assertSame('navigation', CaptureJourney::issue($template['tree']));
+        $template['tree']['steps'][1]['content']['children'][1]['hidden'] = false;
+        $template['tree']['steps'][1]['kind'] = 'input';
+        self::assertSame('navigation', CaptureJourney::issue($template['tree']));
+    }
+
     public function testNavigationActionsMatchTheProductionManifest(): void
     {
         $manifest = \WConvert\Template\TemplateManifest::load(dirname(__DIR__, 3));

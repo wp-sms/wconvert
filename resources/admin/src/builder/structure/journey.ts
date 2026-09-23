@@ -69,3 +69,31 @@ export function movedScreen(tree: TemplateTree, from: number, to: number): Templ
   if (ends.some((end, index) => index > 0 && end <= ends[index - 1])) return tree;
   return referencedJourney(next);
 }
+
+/** Removing a signup also removes the screens collecting its declared details.
+ * Content-only offers between those screens are independent and stay in place. */
+export function screenRemoval(tree: TemplateTree, index: number): { screens: string[]; submission?: string } {
+  const screen = tree.steps[index];
+  if (!screen || screen.kind === 'acknowledgement' || tree.steps.length <= 2) return { screens: [] };
+  const submission = tree.submissions.find(sub => submissionScreen(tree, sub.id) === index);
+  if (submission?.required) return { screens: [] };
+  if (!submission) return { screens: [screen.id] };
+  const owned = new Set([...submission.fields, ...submission.consents]);
+  return { submission: submission.id, screens: tree.steps.filter(s => s.id === screen.id || walkNodes(s.content).some(n => 'id' in n && owned.has(n.id as string))).map(s => s.id) };
+}
+
+export function removedScreen(tree: TemplateTree, index: number): TemplateTree {
+  const removal = screenRemoval(tree, index);
+  if (!removal.screens.length) return tree;
+  const clean = (node: TemplateNode, first: boolean): TemplateNode => {
+    const n = { ...node } as Record<string, unknown>;
+    for (const key of ['children', 'start', 'end']) if (Array.isArray(n[key])) {
+      n[key] = (n[key] as TemplateNode[]).filter(child => !(child.type === 'button' && 'action' in child && ((first && child.action === 'back') || (child.action === 'skip' && 'submission' in child && child.submission === removal.submission)))).map(child => clean(child, first));
+    }
+    return n as unknown as TemplateNode;
+  };
+  return referencedJourney({ ...tree,
+    steps: tree.steps.filter(s => !removal.screens.includes(s.id)).map((s, at) => ({ ...s, content: clean(s.content, at === 0) })),
+    submissions: tree.submissions.filter(sub => sub.id !== removal.submission),
+  });
+}

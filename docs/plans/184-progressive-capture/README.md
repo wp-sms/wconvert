@@ -172,3 +172,15 @@ The primary submission uses existing `config.destinations`. Only the optional
 submission uses `config.submission_settings[submissionId].destination_ids`.
 Purpose is server-derived, never a merchant-supplied permission flag. Local
 capture sends neither submission to an external Destination.
+
+
+### Editor follow-up
+
+Screen management uses the approved visual modal. The editor adapts to narrow
+windows with settings/layers drawers; there is no 782px loading gate. Deleting an
+optional submission cleans up its owned screens and delivery settings while
+preserving independent content. Content-only screens may follow the final
+submission if they have a visible Next action to continue toward acknowledgement.
+The JSON remains v2; these screens still use the existing `content` kind and
+`next` action. See ADR 0103 and the verification record for the deletion and Undo
+rules. Conditional screens remain outside the implemented linear model.

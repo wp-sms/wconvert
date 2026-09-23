@@ -1,3 +1,5 @@
+import { useCompactEditor } from '../hooks/useCompactEditor';
+import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '../components/ui/dropdown-menu';
 import { SubmissionSettings } from './SubmissionSettings';
 import { JourneyEditor } from './JourneyEditor';
 import { JourneyReport } from './JourneyReport';
@@ -142,6 +144,10 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
   const [baseline, setBaseline] = useState('');
   const dirty = config !== null && baseline !== JSON.stringify({ name, config });
   useEffect(() => { onEditingStateChange?.({ dirty, busy }); }, [dirty, busy, onEditingStateChange]);
+  const compact = useCompactEditor();
+  const small = useCompactEditor(640);
+  const [drawer, setDrawer] = useState<'layers' | 'settings' | null>(null);
+  const designButton = useRef<HTMLButtonElement>(null);
   const [showLayers, setShowLayers] = useState(false);
   const [previewing, setPreviewing] = useState(false);
   const [lockPreview, setLockPreview] = useState<ContentLockPreviewState>('locked');
@@ -394,7 +400,15 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
     const changedTemplate = changes.template as Template | undefined;
     if (changedTemplate) changes = { ...changes, template: { tree: referencedJourney(changedTemplate.tree), tokens: changedTemplate.tokens } };
 
-    setConfig((current) => (current === null ? current : { ...current, ...changes }));
+    setConfig((current) => {
+      if (current === null) return current;
+      const next = { ...current, ...changes };
+      if (changedTemplate && next.submission_settings && typeof next.submission_settings === 'object') {
+        const kept = new Set(changedTemplate.tree.submissions.map(sub => sub.id));
+        next.submission_settings = Object.fromEntries(Object.entries(next.submission_settings).filter(([id]) => kept.has(id)));
+      }
+      return next;
+    });
     setSaved(false);
   }, []);
 
@@ -470,12 +484,14 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
 
     setOpenToken(null);
     setSelection({ path: pathOfKey(key), from: 'preview' });
+    setDrawer('settings');
   }, []);
 
   const chooseFromTree = useCallback((path: Path) => {
     setReopenScreen(false);
     setOpenToken(null);
     setSelection({ path, from: 'tree' });
+    setDrawer('settings');
 
     if (typeof path[0] === 'number') {
       setStep(path[0]);
@@ -601,6 +617,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
     setOpenToken(null);
   };
   const designSettings = () => {
+    setDrawer('settings');
     setSelection(null);
     setOpenToken(null);
   };
@@ -667,12 +684,15 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
         </TabsList>
         <div className="wconvert-workspace__actions">
 
-          <HistoryControls
+          {!small && <HistoryControls
             history={{ ...history, canUndo: !busy && history.canUndo, canRedo: !busy && history.canRedo }}
-          />
+          />}
           <Button
             variant="outline"
             ref={previewButton}
+            size={small ? 'icon-sm' : 'default'}
+            aria-label={previewing ? __('Edit', 'wconvert') : __('Preview', 'wconvert')}
+            title={previewing ? __('Edit', 'wconvert') : __('Preview', 'wconvert')}
             disabled={entry === null || busy}
             onClick={() => {
               setTab('design');
@@ -681,7 +701,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
             }}
           >
             {previewing ? <MousePointer2 aria-hidden="true" /> : <Eye aria-hidden="true" />}
-            {previewing ? __('Edit', 'wconvert') : __('Preview', 'wconvert')}
+            {!small && (previewing ? __('Edit', 'wconvert') : __('Preview', 'wconvert'))}
           </Button>
           <Button variant="outline" disabled={busy || !dirty} onClick={() => void save()}>
             {busy
@@ -713,7 +733,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
             policyUrl={adminSettings()?.policyUrl}
             onPublish={publish}
             onPreview={() => { setTab('design'); setPreviewing(true); setSelection(null); previewButton.current?.focus(); }}
-            onEditDesign={() => { setTab('design'); setPreviewing(false); setShowLayers(true); layersButton.current?.focus(); }}
+            onEditDesign={() => { setTab('design'); setPreviewing(false); setShowLayers(true); setDrawer('layers'); layersButton.current?.focus(); }}
             onGoToDesign={() => { setTab('design'); setPreviewing(false); setBrowsing(true); }}
             onGoToPlacement={goToInlinePlacement}
             onGoToDestinations={() => { setTab('destinations'); destinationsTab.current?.focus(); }}
@@ -721,7 +741,13 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
             onGoTo={goTo}
             onGoToSchedule={goToSchedule}
           />
-          <Button
+          {small ? <DropdownMenu><DropdownMenuTrigger asChild><Button variant="ghost" size="icon-sm" aria-label={__('Campaign actions', 'wconvert')}><MoreHorizontal aria-hidden="true" /></Button></DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem disabled={busy || !history.canUndo} onSelect={history.undo}>{__('Undo draft edit', 'wconvert')}</DropdownMenuItem>
+              <DropdownMenuItem disabled={busy || !history.canRedo} onSelect={history.redo}>{__('Redo draft edit', 'wconvert')}</DropdownMenuItem>
+              <DropdownMenuItem disabled={busy} onSelect={() => { detailsTrigger.current = previewButton.current; setDetails(true); }}>{__('Campaign details', 'wconvert')}</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu> : (<Button
             variant="ghost"
             size="icon-sm"
             ref={changeGoal}
@@ -730,7 +756,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
             onClick={(event) => { detailsTrigger.current = event.currentTarget; setDetails(true); }}
           >
             <MoreHorizontal aria-hidden="true" />
-          </Button>
+          </Button>)}
         </div>
       </header>
       {error !== null && <PageError message={error} />}
@@ -762,14 +788,14 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
                     <Button
                       variant="ghost"
                       ref={layersButton}
-                      aria-pressed={showLayers}
-                      onClick={() => setShowLayers(!showLayers)}
+                      aria-pressed={compact ? drawer === 'layers' : showLayers}
+                      onClick={() => compact ? setDrawer('layers') : setShowLayers(!showLayers)}
                       disabled={previewing}
                     >
                       <Layers aria-hidden="true" />
                       {__('Layers', 'wconvert')}
                     </Button>
-                    <Button variant="ghost" onClick={designSettings} disabled={previewing}>
+                    <Button ref={designButton} variant="ghost" onClick={designSettings} disabled={previewing}>
                       <SlidersHorizontal aria-hidden="true" />
                       {__('Design settings', 'wconvert')}
                     </Button>
@@ -778,7 +804,9 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
                     {!previewing && <JourneyEditor primaryChannel={entryOfGoal?.outcome.audience_channel} tree={entry.tree} tokens={entry.tokens} step={shownStep} onChange={tree => edit({ template: { ...entry, tree } })} onSelect={chooseStep} />}
                   </div>
                   <div>
-                    <DeviceControls width={width} onChange={setWidth} />
+                    {compact ? <DropdownMenu><DropdownMenuTrigger asChild><Button variant="ghost" size="icon-sm" aria-label={__('Preview options', 'wconvert')}><MoreHorizontal aria-hidden="true" /></Button></DropdownMenuTrigger>
+                      <DropdownMenuContent align="end"><DropdownMenuItem onSelect={() => setWidth('own')}>{__('Desktop preview', 'wconvert')}</DropdownMenuItem><DropdownMenuItem onSelect={() => setWidth('narrow')}>{__('Mobile preview', 'wconvert')}</DropdownMenuItem></DropdownMenuContent>
+                    </DropdownMenu> : <DeviceControls width={width} onChange={setWidth} />}
                     <Fullscreen />
                   </div>
                 </div>
@@ -795,8 +823,10 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
                     focus={focusRow}
                     endsAt={displayRules.schedule.ends_at}
                     onSetEndDate={goToSchedule}
+                    compact={compact} drawer={drawer} onCloseDrawer={() => setDrawer(null)}
+                    onDrawerFocusReturn={panel => (panel === 'layers' ? layersButton : designButton).current?.focus()}
                     showLayers={showLayers}
-                    onShowLayers={() => setShowLayers(true)}
+                    onShowLayers={() => compact ? setDrawer('layers') : setShowLayers(true)}
                     onDesign={designSettings}
                     step={shownStep}
                     width={width === 'narrow' ? 'narrow' : 'tokens'}
