@@ -368,22 +368,46 @@ editorTest('goal-first inline setup enables automatic placement and publishes', 
   await page.getByRole('group', { name: 'Enable content lock', exact: true }).getByRole('button', { name: 'Enable content lock', exact: true }).click();
   await expect(page.getByRole('radio', { name: 'Content lock', exact: true })).toBeChecked();
   await expect(page.getByRole('radio', { name: 'Automatic', exact: true })).not.toBeChecked();
-  const canvas = page.getByRole('tabpanel', { name: 'Display rules', exact: true }).getByRole('region', { name: 'Design canvas', exact: true });
+  const rulesPanel = page.getByRole('tabpanel', { name: 'Display rules', exact: true });
+  const canvas = rulesPanel.getByRole('region', { name: 'Design canvas', exact: true });
   const preview = canvas.getByLabel('Preview content lock', { exact: true });
-  await expect(preview).toBeVisible();
   await expect(placementPanel.getByLabel('Preview content lock', { exact: true })).toHaveCount(0);
-  // The live form preview must fit the narrow settings column, including
-  // its controls and the long shortcode when setup help is expanded.
+  // The preview stays available through a dialog when compact Display rules
+  // gives the settings the full pane.
   for (const width of [1440, 782]) {
     await page.setViewportSize({ width, height: 1000 });
+    let activeCanvas = canvas;
+    let activePreview = preview;
+    let previewDialog;
+    let compactPreviewButton;
+    if (width === 1440) {
+      await expect(activePreview).toBeVisible();
+    } else {
+      await expect(preview).toHaveCount(0);
+      compactPreviewButton = page.getByRole('button', { name: 'Preview campaign', exact: true });
+      await compactPreviewButton.click();
+      previewDialog = page.getByRole('dialog', { name: 'Preview campaign', exact: true });
+      await expect(previewDialog).toBeVisible();
+      activeCanvas = previewDialog.getByRole('region', { name: 'Design canvas', exact: true });
+      activePreview = activeCanvas.getByLabel('Preview content lock', { exact: true });
+      await expect(activePreview).toBeVisible();
+    }
     for (const direction of ['ltr', 'rtl']) {
       await page.evaluate(dir => { document.documentElement.dir = dir; }, direction);
       for (const state of ['locked', 'unlocked', 'unavailable']) {
-        await preview.selectOption(state);
-        await expect.poll(() => placementPanel.evaluate(panel => panel.scrollWidth - panel.clientWidth)).toBeLessThanOrEqual(1);
-        const example = canvas.getByLabel('Content lock example', { exact: true });
+        await activePreview.selectOption(state);
+        const example = activeCanvas.getByLabel('Content lock example', { exact: true });
         await expect.poll(() => example.evaluate(node => node.scrollWidth - node.clientWidth)).toBeLessThanOrEqual(1);
       }
+    }
+    if (previewDialog) {
+      await page.keyboard.press('Escape');
+      await expect(previewDialog).toBeHidden();
+      await expect(compactPreviewButton).toBeFocused();
+    }
+    for (const direction of ['ltr', 'rtl']) {
+      await page.evaluate(dir => { document.documentElement.dir = dir; }, direction);
+      await expect.poll(() => placementPanel.evaluate(panel => panel.scrollWidth - panel.clientWidth)).toBeLessThanOrEqual(1);
       const help = placementPanel.locator('details').filter({ has: page.getByText('Setup details', { exact: true }) });
       await help.getByText('Setup details', { exact: true }).click();
       await expect.poll(() => placementPanel.evaluate(panel => panel.scrollWidth - panel.clientWidth)).toBeLessThanOrEqual(1);

@@ -653,6 +653,16 @@ body.wconvert-fullscreen #wconvert-admin .wconvert-workspace {
   overflow: auto;
   border-inline-end: 1px solid var(--editor-rule);
 }
+#wconvert-admin .wconvert-workspace__preview-action { display: flex; justify-content: flex-end; margin-block-end: 16px; }
+.wconvert-preview-dialog {
+  display: flex;
+  flex-direction: column;
+  width: min(80rem, calc(100vw - 32px));
+  height: min(60rem, calc(100dvh - 32px));
+  max-height: calc(100dvh - 32px);
+  overflow: auto;
+}
+.wconvert-preview-dialog > .wconvert-canvas { min-height: 0; flex: 1; height: auto; }
 #wconvert-admin .wconvert-workspace__footer {
   display: flex;
   align-items: center;
@@ -1119,7 +1129,7 @@ body .wconvert-rule-picker__unavailable {
 @media (max-width: 1000px) {
   #wconvert-admin .wconvert-workspace__secondary[data-content-lock] {
     grid-template-columns: minmax(0, 1fr);
-    grid-template-rows: auto minmax(480px, 1fr);
+    grid-template-rows: auto;
     overflow: auto;
   }
   #wconvert-admin .wconvert-workspace__secondary[data-content-lock] .wconvert-workspace__settings {

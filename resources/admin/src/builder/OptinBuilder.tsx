@@ -150,6 +150,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
   const designButton = useRef<HTMLButtonElement>(null);
   const [showLayers, setShowLayers] = useState(false);
   const [previewing, setPreviewing] = useState(false);
+  const [previewDialogOpen, setPreviewDialogOpen] = useState(false);
   const [lockPreview, setLockPreview] = useState<ContentLockPreviewState>('locked');
   useEffect(() => {
     if (!browsing && !busy && restoreBrowseFocus.current) {
@@ -197,6 +198,8 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
   const back = useRef<HTMLButtonElement>(null);
   const destinationsTab = useRef<HTMLButtonElement>(null);
   const previewButton = useRef<HTMLButtonElement>(null);
+  const previewDialogTrigger = useRef<HTMLButtonElement>(null);
+  const previewPortalContainer = useRef<HTMLDivElement>(null);
   const layersButton = useRef<HTMLButtonElement>(null);
 
   const coalescing = useRef<string | null>(null);
@@ -877,6 +880,14 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
         </TabsContent>
         <TabsContent value="rules" className="wconvert-workspace__secondary" data-content-lock={showingLock || undefined}>
           <div className="wconvert-workspace__settings">
+            {compact && entry && <div className="wconvert-workspace__preview-action">
+              <Button ref={previewDialogTrigger} type="button" variant="outline" onClick={(event) => {
+                previewDialogTrigger.current = event.currentTarget;
+                setPreviewDialogOpen(true);
+              }}>
+                <Eye aria-hidden="true" />{__('Preview campaign', 'wconvert')}
+              </Button>
+            </div>}
             <DisplayRules
               act={act}
               vocabulary={vocabulary}
@@ -890,10 +901,18 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
               } : undefined}
             />
           </div>
-          {previewPane}
+          {!compact && previewPane}
         </TabsContent>
         <TabsContent value="destinations" className="wconvert-workspace__secondary">
           <div className="wconvert-workspace__settings">
+            {compact && entry && <div className="wconvert-workspace__preview-action">
+              <Button ref={previewDialogTrigger} type="button" variant="outline" onClick={(event) => {
+                previewDialogTrigger.current = event.currentTarget;
+                setPreviewDialogOpen(true);
+              }}>
+                <Eye aria-hidden="true" />{__('Preview campaign', 'wconvert')}
+              </Button>
+            </div>}
             {entryOfGoal?.outcome.audience_channel && <CaptureModeChoice disabled={busy} selectedCount={bound.length} mode={config.capture_mode === 'local' ? 'local' : 'connected'}
               onChange={(mode) => edit({ capture_mode: mode, ...(mode === 'local' ? { destinations: [] } : {}) })} />}
             {entryOfGoal?.outcome.audience_channel && config.capture_mode === 'local' ? null :
@@ -927,7 +946,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
             }
             <SubmissionSettings template={template} primaryChannel={entryOfGoal?.outcome.audience_channel} config={config} destinations={read(destinations)?.destinations ?? []} onChange={edit} />
           </div>
-          {previewPane}
+          {!compact && previewPane}
         </TabsContent>
       </div>
       <footer className="wconvert-workspace__footer">
@@ -955,6 +974,21 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
                     : __('Draft', 'wconvert')}
           </span>
       </footer>
+      <Dialog open={previewDialogOpen} onOpenChange={setPreviewDialogOpen}>
+        <DialogContent container={previewPortalContainer.current} className="wconvert-preview-dialog sm:max-w-[80rem]" onCloseAutoFocus={(event) => {
+          const opener = previewDialogTrigger.current ?? previewButton.current;
+          if (opener) {
+            event.preventDefault();
+            opener.focus();
+          }
+        }}>
+          <DialogHeader>
+            <DialogTitle>{__('Preview campaign', 'wconvert')}</DialogTitle>
+            <DialogDescription>{__('See how this Campaign appears to visitors. No data is sent.', 'wconvert')}</DialogDescription>
+          </DialogHeader>
+          {previewPane}
+        </DialogContent>
+      </Dialog>
       <Dialog open={details} onOpenChange={setDetails}>
         <DialogContent className="wconvert-optin-details" onCloseAutoFocus={(event) => {
           event.preventDefault();
@@ -1132,6 +1166,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
             .finally(() => setBusy(false));
         }}
       />
+      <div ref={previewPortalContainer} />
     </Tabs>
   );
 }
