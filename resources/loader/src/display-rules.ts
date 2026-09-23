@@ -14,27 +14,23 @@ export interface DisplayPlan { readonly audience: Audience; readonly opening: Op
 export type Answer = boolean | 'blocked';
 export type ReadRule = (rule: Rule) => Answer;
 
-/** Empty or malformed groups never become a wider audience. */
-export function groupMatches(group: RuleGroup, read: ReadRule): Answer {
-  if (!group.rules.length || !['all', 'any'].includes(group.match)) return false;
+/** Shared three-valued ALL/ANY reduction, including empty-group rejection. */
+function combine<T>(rules: readonly T[], match: 'all' | 'any', read: (rule: T) => Answer): Answer {
+  if (!rules.length || !['all', 'any'].includes(match)) return false;
   let blocked = false;
-  for (const rule of group.rules) {
+  for (const rule of rules) {
     const answer = read(rule);
     if (answer === 'blocked') blocked = true;
-    else if (group.match === 'all' && !answer) return false;
-    else if (group.match === 'any' && answer) return true;
+    else if (match === 'all' && !answer) return false;
+    else if (match === 'any' && answer) return true;
   }
-  return blocked ? 'blocked' : group.match === 'all';
+  return blocked ? 'blocked' : match === 'all';
+}
+export function groupMatches(group: RuleGroup, read: ReadRule): Answer {
+  return combine(group.rules, group.match, read);
 }
 export function audienceMatches(audience: Audience, read: ReadRule): Answer {
-  if (audience.mode === 'everyone') return true;
-  let blocked = false;
-  for (const group of audience.groups) {
-    const answer = groupMatches(group, read);
-    if (answer === true) return true;
-    if (answer === 'blocked') blocked = true;
-  }
-  return blocked ? 'blocked' : false;
+  return audience.mode === 'everyone' || combine(audience.groups, 'any', group => groupMatches(group, read));
 }
 export function openingMatches(opening: Opening, read: ReadRule, elapsedSeconds: number): Answer {
   if (opening.mode === 'immediate') return true;

@@ -242,8 +242,8 @@ formats. Unit tests alone are not proof that the plugin boots or a popup opens.
 - TypeScript, ESLint, source contract and all 57 template registrations pass.
 - Full Free/Pro admin, block, loader and inspector builds pass. Release staging
   and artifact checks pass for Free, Basic, Pro and Elite.
-- Gzip loader sizes: Free 13,124 B / Basic 19,265 B / Pro 20,250 B /
-  Elite 20,447 B. All fit their enforced caps (14,012 / 20,480 B).
+- Gzip loader sizes with CI’s Node 22: Free 13,152 B / Basic 19,278 B /
+  Pro 20,276 B / Elite 20,465 B. All fit their enforced caps (14,012 / 20,480 B).
 - Real WordPress: create, edit an ALL time-and-scroll opening, save, reload,
   publish, wait-and-scroll appearance, then reload with session allowance
   exhausted. Published inspector reflects both waiting and capped states.
