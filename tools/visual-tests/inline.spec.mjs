@@ -7,6 +7,7 @@ test.beforeEach(async ({ page }) => {
     const attach = Element.prototype.attachShadow;
     window.testShadows = [];
     window.testBeacons = [];
+    window.testBeaconEvents = [];
     window.testLayoutShift = 0;
     Element.prototype.attachShadow = function (options) {
       const shadow = attach.call(this, options);
@@ -16,6 +17,7 @@ test.beforeEach(async ({ page }) => {
     const sendBeacon = navigator.sendBeacon?.bind(navigator);
     navigator.sendBeacon = (url, data) => {
       window.testBeacons.push(String(url));
+      if (String(url).includes("/wconvert/v1/beacon") && data instanceof Blob) void data.text().then(text => window.testBeaconEvents.push(...JSON.parse(text).events));
       return sendBeacon ? sendBeacon(url, data) : false;
     };
     if (window.PerformanceObserver?.supportedEntryTypes?.includes('layout-shift')) {
@@ -178,14 +180,15 @@ test('automatic inline reports an impression on entry and captures a real lead',
 
   // Chromium exposes a sendBeacon request without postData(), but the real
   // endpoint and POST method still prove the forwarded impression left the
-  // browser. The test-only wrapper also lets us assert exact beacon count.
+  // browser. The wrapper distinguishes Campaign impressions from screen activity.
   const impression = page.waitForRequest((request) => request.url().includes('/wconvert/v1/beacon') && request.method() === 'POST');
   await page.locator('[data-wconvert-auto]').scrollIntoViewIfNeeded();
   const impressionRequest = await impression;
   expect(impressionRequest.method()).toBe('POST');
-  await expect.poll(() => page.evaluate(() => window.testBeacons.filter((url) => url.includes('/wconvert/v1/beacon')).length)).toBe(1);
+  await expect.poll(() => page.evaluate(() => window.testBeaconEvents.filter(event => event.kind === 'impression').length)).toBe(1);
+  await expect.poll(() => page.evaluate(() => window.testBeaconEvents.filter(event => event.kind === 'screen_shown').length)).toBe(1);
 
-  const capture = page.waitForRequest((request) => request.url().includes('/wconvert/v1/capture') && request.method() === 'POST');
+  const capture = page.waitForRequest((request) => request.url().includes('/wconvert/v1/capture') && request.method() === 'POST' && Boolean(request.postDataJSON()?.submission));
   await page.evaluate(() => {
     const root = window.testShadows.find((shadow) => shadow.querySelector('.wc-root'));
     const form = root?.querySelector('form');
