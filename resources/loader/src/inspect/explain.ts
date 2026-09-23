@@ -1,3 +1,4 @@
+import { openingRules, audienceRules, groupMatches, openingMatches, type Answer as MatchAnswer } from '../display-rules';
 import { decide, isOverlay, isSiteCapped, rulesOf, type Decision, type Standing, type Verdict } from '../decide';
 import type { PayloadEntry, Presenter, Rule } from '../types';
 
@@ -50,6 +51,8 @@ export interface RuleReport {
 }
 
 export interface EntryReport {
+  readonly groups?: readonly { match: string; answer: MatchAnswer; rules: readonly RuleReport[] }[];
+  readonly opening?: { mode: string; match: string; minimum: number; answer: MatchAnswer };
   readonly placementStatus?: string;
   readonly recoveryStatus?: string;
   readonly id: string;
@@ -191,14 +194,14 @@ export function explain(decision: Decision, presentation: PresentationChecks = {
   // where an answer cannot change it. A merchant looking at a `capped` Optin
   // still wants to know whether their rules would have passed.
   for (const entry of decision.entries) {
-    if (withheldOn(entry, decision)) {
+    if (!entry.display_rules) {
       // NOT EVALUATED, and it stays that way. This is the whole reason
       // `Answer` has three values.
       continue;
     }
 
     for (const rule of rulesOf(entry)) {
-      if (!answers.has(rule) && decision.evaluators.has(rule.type)) {
+      if (!decision.withheld.has(rule.type) && !answers.has(rule) && decision.evaluators.has(rule.type)) {
         answers.set(rule, held(decision, rule));
       }
     }
@@ -218,9 +221,11 @@ export function explain(decision: Decision, presentation: PresentationChecks = {
         recoveryStatus: presentation.recovery ? presentation.recovery(entry, decision)
           : (entry as PayloadEntry & { teaser?: unknown }).teaser ? 'Reopen settings are saved; this feature requires Pro.' : undefined,
         standing,
+        groups: entry.display_rules?.audience.mode === 'groups' ? entry.display_rules.audience.groups.map(group => ({ match: group.match, answer: groupMatches(group, rule => decision.withheld.has(rule.type) ? 'blocked' : answers.get(rule) ?? false), rules: group.rules.map(rule => report(rule, answers, decision)) })) : [],
+        opening: entry.display_rules ? { mode: entry.display_rules.opening.mode, match: entry.display_rules.opening.mode === 'automatic' ? entry.display_rules.opening.match : 'any', minimum: entry.display_rules.opening.mode === 'automatic' ? entry.display_rules.opening.minimum_seconds ?? 0 : 0, answer: openingMatches(entry.display_rules.opening, rule => decision.withheld.has(rule.type) ? 'blocked' : answers.get(rule) ?? false, decision.elapsedSeconds ?? 0) } : undefined,
         overlay: isOverlay(entry),
-        triggers: (entry.triggers ?? []).map((rule) => report(rule, answers, decision)),
-        conditions: (entry.conditions ?? []).map((rule) => report(rule, answers, decision)),
+        triggers: (entry.display_rules ? openingRules(entry.display_rules) : []).map((rule) => report(rule, answers, decision)),
+        conditions: (entry.display_rules ? [...audienceRules(entry.display_rules), ...(entry.required_rules ?? [])] : []).map((rule) => report(rule, answers, decision)),
         lostArbitration: standing === 'ready' && !showing.has(entry.id),
         schedule: sideOfWindow(entry, decision.now),
       };
@@ -243,10 +248,6 @@ function sideOfWindow(entry: PayloadEntry, now: number): 'before' | 'after' | nu
   return entry.starts_at !== undefined && now < entry.starts_at ? 'before' : null;
 }
 
-/** Does any rule on this entry need consent this visitor has withheld? */
-const withheldOn = (entry: PayloadEntry, decision: Decision): boolean =>
-  rulesOf(entry).some((rule) => decision.withheld.has(rule.type));
-
 /**
  * Ask one rule, outside the decision.
  *
@@ -264,5 +265,5 @@ function held(decision: Decision, rule: Rule): boolean {
 const report = (rule: Rule, answers: ReadonlyMap<Rule, boolean>, decision: Decision): RuleReport => ({
   rule,
   answer: answers.has(rule) ? (answers.get(rule) as boolean) : null,
-  unsupported: !decision.evaluators.has(rule.type),
+  unsupported: !decision.evaluators.has(rule.type) && !decision.withheld.has(rule.type),
 });

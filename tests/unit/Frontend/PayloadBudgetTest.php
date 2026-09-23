@@ -148,7 +148,7 @@ final class PayloadBudgetTest extends TestCase
             $set[] = [
                 'id' => sprintf('01JQ%022d', $i),
                 'targeting' => ['include' => [['type' => 'url', 'value' => '/pricing']]],
-                'payload' => [
+                'payload' => \WConvert\Tests\Unit\Support\DisplayFixture::entry([
                     'display_type' => 'popup',
                     'template_id' => $id,
                     'priority' => $i,
@@ -160,7 +160,7 @@ final class PayloadBudgetTest extends TestCase
                     'triggers' => [['type' => 'time_on_page', 'seconds' => 5 + $i]],
                     'conditions' => [['type' => 'device', 'in' => ['mobile', 'tablet']]],
                     'frequency' => ['maxImpressions' => 3, 'cooldownDays' => 7, 'stopAfterDismiss' => true],
-                ],
+                ]),
             ];
         }
 

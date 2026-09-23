@@ -89,7 +89,7 @@ final class PackPlaybooksTest extends TestCase
             $playbooks = PlaybookLibrary::fromEntries($installed->playbooks(), $templates, $vocabulary, RuleVocabulary::fromManifest());
             $prefill = new Prefill($playbooks, $templates, $vocabulary, InstalledRules::withPro());
             $draft = $prefill->fromPlaybook($entry['id']);
-            $this->assertSame([['type' => 'time_on_page', 'seconds' => 8]], $draft['config']['rules']);
+            $this->assertSame(\WConvert\Tests\Unit\Support\DisplayFixture::plan([['type' => 'time_on_page', 'seconds' => 8]]), $draft['config']['display_rules']);
             $this->assertSame('grow_email_list', $draft['goal']);
             $this->assertArrayNotHasKey('destination_ids', $draft['config']);
             $this->assertArrayNotHasKey('status', $draft);

@@ -45,6 +45,7 @@ final class Targeting
         public readonly array $exclude = [],
         public readonly ?bool $loggedIn = null,
         public readonly ?array $roles = null,
+        public readonly bool $selected = false,
     ) {
     }
 
@@ -59,6 +60,7 @@ final class Targeting
             // Unset means "do not ask", which is not the same as false.
             isset($config['logged_in']) ? (bool) $config['logged_in'] : null,
             self::roles($config['roles'] ?? null),
+            ($config['mode'] ?? '') === 'selected',
         );
     }
 
@@ -93,7 +95,7 @@ final class Targeting
      */
     public function toArray(): array
     {
-        $out = [];
+        $out = $this->selected ? ['mode' => 'selected'] : [];
 
         if ($this->include !== []) {
             $out['include'] = array_map(static fn (TargetingRule $r): array => $r->toArray(), $this->include);

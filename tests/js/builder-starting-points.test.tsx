@@ -1,3 +1,4 @@
+import { displayPlan } from './support/display-entry';
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
@@ -6,7 +7,7 @@ import { ruleBundle, ruleTypes } from './support/rule-types';
 import type { DisplayRulesValue } from '../../resources/admin/src/builder/rules/summaries';
 
 const current: DisplayRulesValue = {
-  rules: [{ type: 'time_on_page', seconds: 12 }, { type: 'new_visitor' }, { type: 'future_condition', flag: true }],
+  display_rules: displayPlan([{ type: 'time_on_page', seconds: 12 }], [{ type: 'device', in: ['mobile'] }]),
   targeting: { include: [{ type: 'url', value: '/offers' }], logged_in: true, roles: ['subscriber'] },
   frequency: { maxImpressions: 3 },
   schedule: { starts_at: '2099-09-10 09:00', ends_at: '2099-09-11 09:00' },
@@ -38,7 +39,7 @@ describe('reviewing a display-rule display rule set', () => {
     expect(within(dialog).getByText('Audience')).toBeInTheDocument();
     expect(within(dialog).getByText('URL path: /offers')).toBeInTheDocument();
     expect(within(dialog).getByText(/On every page/)).toBeInTheDocument();
-    expect(within(dialog).getByText(/signed in/)).toBeInTheDocument();
+    expect(within(dialog).getAllByText(/mobile/)).toHaveLength(2);
     expect(within(dialog).getByText(/Undo can restore/)).toBeInTheDocument();
     expect(onChange).not.toHaveBeenCalled();
     await userEvent.click(within(dialog).getByRole('button', { name: 'Back to choices' }));
@@ -83,12 +84,12 @@ describe('reviewing a display-rule display rule set', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Browse display rule sets' }));
     await userEvent.click(screen.getByRole('button', { name: /Show immediately/ }));
     const dialog = screen.getByRole('dialog', { name: 'Choose a display rule set' });
-    expect(within(dialog).getByText('When it appears')).toBeInTheDocument();
-    expect(within(dialog).getByText('Schedule & frequency')).toBeInTheDocument();
+    expect(within(dialog).getByText('Opening moment')).toBeInTheDocument();
+    expect(within(dialog).getByText('Schedule & limits')).toBeInTheDocument();
     expect(within(dialog).queryByText('Pages')).toBeNull();
     await userEvent.click(within(dialog).getByRole('button', { name: 'Replace these rules' }));
     expect(onChange).toHaveBeenCalledExactlyOnceWith({
-      rules: [current.rules[1], current.rules[2], { type: 'page_load' }], frequency: {},
+      display_rules: { ...current.display_rules, opening: { mode: 'immediate' } }, frequency: {},
     });
   });
 });

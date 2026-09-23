@@ -1,3 +1,4 @@
+import { displayPlan } from './support/display-entry';
 import { treeFixture } from './support/journey';
 import { CLICK_OUTCOME } from './support/outcomes';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -76,7 +77,7 @@ const PLAYBOOK = {
   rules: [],
   targeting: {},
   destination_hint: {},
-  setup: { display_type: 'popup', rules: [{ type: 'time_on_page', seconds: 8 }], targeting: {} },
+  setup: { display_type: 'popup', display_rules: displayPlan([{ type: 'time_on_page', seconds: 8 }]), targeting: {} },
   notes: 'A first-order discount is the highest-converting trade there is.',
   /**
    * **The design this Playbook would prefill, with its words already in it.**
@@ -359,7 +360,7 @@ describe('a goal then a draft', () => {
 
   it('uses resolved setup rules instead of raw authored rules for timing', async () => {
     goals.listPlaybooks.mockResolvedValue([{ ...PLAYBOOK, rules: [{ type: 'exit_intent' }],
-      setup: { ...PLAYBOOK.setup, rules: [{ type: 'time_on_page', seconds: 15, degraded_from: 'exit_intent' }] } }]);
+      setup: { ...PLAYBOOK.setup, display_rules: displayPlan([{ type: 'time_on_page', seconds: 15, degraded_from: 'exit_intent' }]) } }]);
     render(<GoalScreen onCreated={vi.fn()} />); await pickGoal();
     expect(await screen.findByText(/after_a_read/)).toBeInTheDocument();
     expect(screen.queryByText(/exit_intent/)).not.toBeInTheDocument();
@@ -370,7 +371,7 @@ describe('a goal then a draft', () => {
       template: { ...PLAYBOOK.template, tree: treeFixture({ steps: [{ type: 'stack', children: [
         { type: 'button', label: 'View the offer', action: 'link', href: '/offer' },
       ] }] }) },
-      setup: { ...PLAYBOOK.setup, targeting: { logged_in: false }, frequency: { cooldownDays: 2 } },
+      setup: { ...PLAYBOOK.setup, display_rules: displayPlan([{ type: 'time_on_page', seconds: 8 }], [{ type: 'logged_in', value: false }]), frequency: { cooldownDays: 2 } },
     }]);
     render(<GoalScreen onCreated={vi.fn()} />); await pickGoal();
     await userEvent.click(await screen.findByRole('button', { name: 'Setup details for Welcome discount' }));

@@ -1,3 +1,4 @@
+import { displayPlan } from '../../../tests/js/support/display-entry';
 import { useState } from 'react';
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -20,7 +21,7 @@ it('groups the placement choices without repeating the section heading', () => {
 it('makes trigger replacement and post-only defaults explicit, preserves other settings and can return to manual', async () => {
   const user = userEvent.setup();
   function Editor() {
-    const [config, setConfig] = useState<Record<string, unknown>>({ rules: [{ type: 'time_on_page', seconds: 10 }, { type: 'device', value: 'mobile' }], targeting: { exclude: [{ type: 'post', value: 4 }] }, frequency: { maxImpressions: 2 } });
+    const [config, setConfig] = useState<Record<string, unknown>>({ display_rules: displayPlan([{ type: 'time_on_page', seconds: 10 }], [{ type: 'device', value: ['mobile'] }]), targeting: { exclude: [{ type: 'post', value: 4 }] }, frequency: { maxImpressions: 2 } });
     return <><PlacementSettings optinId="example" published config={config} vocabulary={vocabulary} onChange={(patch) => setConfig({ ...config, ...patch })} /><output data-testid="config">{JSON.stringify(config)}</output></>;
   }
   render(<Editor />);
@@ -30,7 +31,7 @@ it('makes trigger replacement and post-only defaults explicit, preserves other s
   await user.click(screen.getByRole('button', { name: 'Enable automatic placement' }));
   expect(screen.getByRole('radio', { name: 'Automatic' })).toHaveFocus();
   const current = () => JSON.parse(screen.getByTestId('config').textContent!);
-  expect(current()).toMatchObject({ inline_placement: { position: 'after_content' }, rules: [{ type: 'device', value: 'mobile' }, { type: 'page_load' }], targeting: { include: [{ type: 'singular', value: 'post' }], exclude: [{ type: 'post', value: 4 }] }, frequency: { maxImpressions: 2 } });
+  expect(current()).toMatchObject({ inline_placement: { position: 'after_content' }, display_rules: displayPlan([{ type: 'page_load' }], [{ type: 'device', value: ['mobile'] }]), targeting: { include: [{ type: 'singular', value: 'post' }], exclude: [{ type: 'post', value: 4 }] }, frequency: { maxImpressions: 2 } });
   await user.selectOptions(screen.getByLabelText('Position in content'), 'after_paragraph');
   await user.selectOptions(screen.getByLabelText('If there are fewer paragraphs'), 'skip');
   expect(current().inline_placement).toEqual({ position: 'after_paragraph', paragraph: 3, fallback: 'skip' });
@@ -41,7 +42,7 @@ it('makes trigger replacement and post-only defaults explicit, preserves other s
   expect(screen.queryByRole('alert')).toBeNull();
   await user.click(screen.getByRole('radio', { name: 'Manual' }));
   expect(current().inline_placement).toBeNull();
-  expect(current().rules).toContainEqual({ type: 'page_load' });
+  expect(current().display_rules.opening).toEqual({ mode: 'immediate' });
 });
 
 it('preserves deliberate page targeting and warns about incompatible triggers', async () => {

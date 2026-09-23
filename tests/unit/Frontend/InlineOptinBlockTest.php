@@ -81,7 +81,7 @@ final class InlineOptinBlockTest extends TestCase
     private function publishInline(string $name, string $displayType = 'inline'): string
     {
         $optin = $this->optins->create($name, 'promote_offer', [
-            'display_type' => $displayType,
+            'display_type' => $displayType, 'display_rules' => \WConvert\Rules\DisplayPlan::immediate(),
             'template' => OptinDesign::template(),
         ]);
 
@@ -184,7 +184,7 @@ final class InlineOptinBlockTest extends TestCase
      */
     public function testItOffersNoDraft(): void
     {
-        $this->optins->create('Not published yet', 'grow_email_list', ['display_type' => 'inline']);
+        $this->optins->create('Not published yet', 'grow_email_list', ['display_type' => 'inline', 'display_rules' => \WConvert\Rules\DisplayPlan::immediate()]);
 
         $this->assertSame([], $this->offered());
     }
@@ -278,8 +278,8 @@ final class InlineOptinBlockTest extends TestCase
             'name' => $name,
             'goal' => 'grow_email_list',
             'parent_id' => null,
-            'config' => (string) wp_json_encode(['display_type' => 'inline']),
-            'published_config' => (string) wp_json_encode(['display_type' => 'inline']),
+            'config' => (string) wp_json_encode(['display_type' => 'inline', 'display_rules' => \WConvert\Rules\DisplayPlan::immediate()]),
+            'published_config' => (string) wp_json_encode(['display_type' => 'inline', 'display_rules' => \WConvert\Rules\DisplayPlan::immediate()]),
             'published_at' => '2026-01-01 00:00:00',
             'deleted_at' => null,
         ]);

@@ -134,7 +134,7 @@ final class PlaybookController implements RestController
         // This is a subset of the existing Prefill result, not another prefill.
         if (is_array($config)) {
             $entry['setup'] = array_intersect_key($config, array_flip([
-                'display_type', 'rules', 'targeting', 'frequency', 'destination_hint',
+                'display_type', 'display_rules', 'targeting', 'frequency', 'destination_hint',
             ]));
         }
 

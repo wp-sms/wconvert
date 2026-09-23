@@ -227,7 +227,7 @@ enum EditedPart: string
                 'tokens' => $config['template']['tokens'] ?? null,
                 'arrangement' => $vocabulary->withoutCopy($tree),
             ],
-            self::Rules => $config['rules'] ?? null,
+            self::Rules => [$config['display_rules'] ?? null, $config['frequency'] ?? null],
             self::Targeting => $config['targeting'] ?? null,
             self::Copy => SlotRoles::copyFrom($tree, $vocabulary),
         };

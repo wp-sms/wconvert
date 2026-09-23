@@ -5,6 +5,7 @@ import { createBeacon, reporting } from './beacon';
 import { beaconEndpoint, siteAllowance } from './payload';
 import { decide, isOverlay, rulesOf } from './decide';
 import { onConsentChange, withheldTypes } from './consent';
+import { sessionCounts } from './session-counts';
 import { persistentStore } from './storage';
 import {
   SITE_SLOT,
@@ -102,6 +103,9 @@ export function start(options: ShellOptions): () => void {
   let state: VisitorState = loadState(store);
   let withheld = withheldTypes(loader.modules);
   let overlayDone = false;
+  let activeOverlay: string | undefined;
+  const pacing = sessionCounts();
+  let wake: ReturnType<typeof setTimeout> | undefined;
   let stopped = false;
   let deciding = false;
 
@@ -118,7 +122,7 @@ export function start(options: ShellOptions): () => void {
    * (issue #11).
    */
   function attach(): void {
-    const inPlay = typesInPlay(entries.filter(entry => !shown.has(entry.id) && (!overlayDone || !isOverlay(entry))));
+    const inPlay = typesInPlay(entries.filter(entry => entry.display_rules?.opening.mode === 'click' || (!shown.has(entry.id) && (!overlayDone || !isOverlay(entry)))));
     for (const rule of session.watch?.() ?? []) inPlay.add(rule.type);
     for (const [type, evaluator] of evaluators) {
       if (!inPlay.has(type) || withheld.has(type)) { evaluator.stop?.(); evaluators.delete(type); }
@@ -168,8 +172,18 @@ export function start(options: ShellOptions): () => void {
         now: instant,
         shown,
         overlayDone,
+        activeOverlay: session.activeOverlay ? session.activeOverlay() : activeOverlay,
+        sessionCounts: pacing.read(),
+        elapsedSeconds: performance.now() / 1000,
+        visible: !document.hidden,
       });
 
+      clearTimeout(wake);
+      const deadlines = entries.flatMap(entry => [entry.starts_at, entry.ends_at].filter((at): at is number => at !== undefined && at > instant));
+      const dwell = entries.flatMap(entry => entry.display_rules?.opening.mode === 'automatic' && (entry.display_rules.opening.minimum_seconds ?? 0) * 1000 > performance.now()
+        ? [instant + entry.display_rules.opening.minimum_seconds! * 1000 - performance.now()] : []);
+      const next = Math.min(...deadlines, ...dwell);
+      if (Number.isFinite(next)) wake = setTimeout(run, Math.min(Math.max(1, next - instant), 2147483647));
       let failed = false;
       for (const entry of session.select?.(verdict.show) ?? verdict.show) {
         // Both of these are settled by the DECISION, not by what the presenter
@@ -185,18 +199,21 @@ export function start(options: ShellOptions): () => void {
         // first is `functional` storage while the second is no storage on the
         // device at all (ADR 0017). Wrapping rather than calling the beacon
         // inline keeps the shell's three callbacks about the state they own.
+        if (isOverlay(entry)) activeOverlay = entry.id;
         const accepted = session.show(entry, reporting(beacon, entry.id, {
           // The Impression is the presenter's to report, because it has two
           // moments and only a renderer can tell them apart — shown, for an
           // overlay; entered the viewport, for `inline` (CONTEXT.md).
           impression: () => {
             const day = dayOf(now());
+            if (entry.frequency?.maxPerSession !== undefined) pacing.increment(entry.campaign ?? entry.id);
 
             record((current) =>
               scopesOf(entry.id).reduce((state, slot) => withImpression(state, slot, day), current),
             );
           },
           dismiss: () => {
+            if (activeOverlay === entry.id) activeOverlay = undefined;
             record((current) => scopesOf(entry.id).reduce(withDismissal, current));
             run();
           },
@@ -205,7 +222,7 @@ export function start(options: ShellOptions): () => void {
             run();
           },
         }, (entry.template?.tree.submissions.length ?? 0) > 0));
-        if (accepted === false) failed = true;
+        if (accepted === false) { failed = true; if (activeOverlay === entry.id) activeOverlay = undefined; }
         else overlayDone = overlayDone || isOverlay(entry);
       }
 
@@ -224,6 +241,8 @@ export function start(options: ShellOptions): () => void {
   function stop(): void {
     stopped = true;
     releaseConsent();
+    clearTimeout(wake);
+    document.removeEventListener('visibilitychange', run);
 
     // The beacon OUTLIVES this. Teardown happens the moment every candidate is
     // settled — on a page with one `page_load` Optin that is immediately — and
@@ -245,6 +264,7 @@ export function start(options: ShellOptions): () => void {
     run();
   });
 
+  document.addEventListener('visibilitychange', run);
   attach();
   run();
 

@@ -26,6 +26,7 @@
  *   A shared `Signals` interface in free's tree would have to (ADR 0028).
  */
 
+import type { DisplayPlan } from './display-rules';
 import type { Template } from '@renderer/types';
 import type { Decision, Verdict } from './decide';
 
@@ -83,6 +84,7 @@ export interface Loader {
  * rather than a rule, because it is not a question about this page view.
  */
 export interface Frequency {
+  readonly maxPerSession?: number;
   readonly maxImpressions?: number;
   readonly cooldownDays?: number;
   readonly stopAfterDismiss?: boolean;
@@ -109,6 +111,9 @@ export interface PayloadEntry {
    */
   readonly template?: Template | null;
   readonly priority?: number;
+  readonly display_rules?: DisplayPlan;
+  readonly required_rules?: readonly Rule[];
+  readonly campaign?: string;
   readonly triggers?: readonly Rule[];
   readonly conditions?: readonly Rule[];
   readonly frequency?: Frequency;
@@ -199,6 +204,8 @@ export interface Presenter {
 }
 
 export interface PresentationSession extends Presenter {
+  /** When supplied, the authoritative visible overlay; undefined means none is open. */
+  activeOverlay?(): string | undefined;
   decide?(decision: Decision): Verdict;
   /** Conditions still needed by a presentation after its initial triggers settle. */
   watch?(): readonly Rule[];

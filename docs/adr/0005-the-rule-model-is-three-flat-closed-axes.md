@@ -60,6 +60,8 @@ loader prototype and is what made the multi-Optin case behave sensibly.
 
 ## The nesting ceiling is deliberate and permanent
 
+> **Amended by [ADR 0104](0104-display-workspace-uses-bounded-groups-and-fresh-gestures.md):** Saved Campaigns now use bounded audience groups (OR between groups, ALL/ANY within) and a separate opening mode. Recursive nesting remains forbidden. Server login/role predicates are leaves inside audience groups; page exclusions remain universal. The flat-axis ceiling and global account predicate below are historical.
+
 The original argument against expressiveness was the 15KB budget. That budget is
 retired — the prototype measured the *entire* v1 rule vocabulary at 1.3KB
 gzipped inside a 3.9KB loader — so the ceiling stands on different ground:

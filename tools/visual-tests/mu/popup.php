@@ -12,7 +12,7 @@ add_action('init', static function (): void {
     if ($draft === null) wp_die('Popup setup failed to register');
 
     // Only the test makes this immediate. Shipping setups wait for engagement.
-    $draft['config']['rules'] = [['type' => 'page_load']];
+    $draft['config']['display_rules'] = \WConvert\Rules\DisplayPlan::immediate();
     $optin = $repository->create($draft['name'], $draft['goal'], $draft['config']);
     $repository->publish($optin->id);
     update_option('wconvert_popup_fixture', $optin->id);

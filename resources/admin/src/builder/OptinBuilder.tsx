@@ -37,6 +37,7 @@ import { DestinationsEditor } from './DestinationsEditor';
 import { CaptureModeChoice } from './CaptureModeChoice';
 import { ReadinessDialog } from './ReadinessDialog';
 import { hintIn, hintSaid } from './destinations';
+import { planFrom } from './rules/plan';
 import { DisplayRules, type DisplayRulesValue } from './rules/DisplayRules';
 import { DevExport } from './DevExport';
 import { Fullscreen } from './Fullscreen';
@@ -63,7 +64,6 @@ import {
   getRules,
   saveOptin,
   type Frequency,
-  type Rule,
   type RuleVocabulary,
   type Targeting,
 } from './api';
@@ -220,8 +220,9 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
 
   const bound = Array.isArray(config?.destinations) ? (config.destinations as string[]) : [];
 
+  const [displaySection, setDisplaySection] = useState<string>();
   const displayRules = {
-    rules: Array.isArray(config?.rules) ? (config.rules as Rule[]) : [],
+    display_rules: planFrom(config?.display_rules),
     targeting: (config?.targeting ?? {}) as Targeting,
     frequency: (config?.frequency ?? {}) as Frequency,
     // **Two flat keys, read into one value.** They are stored beside
@@ -878,9 +879,9 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
             )}
           </Activity>
         </TabsContent>
-        <TabsContent value="rules" className="wconvert-workspace__secondary" data-content-lock={showingLock || undefined}>
+        <TabsContent value="rules" className="wconvert-workspace__secondary wconvert-workspace__display" data-content-lock={showingLock || undefined}>
           <div className="wconvert-workspace__settings">
-            {compact && entry && <div className="wconvert-workspace__preview-action">
+            {entry && <div className="wconvert-workspace__preview-action">
               <Button ref={previewDialogTrigger} type="button" variant="outline" onClick={(event) => {
                 previewDialogTrigger.current = event.currentTarget;
                 setPreviewDialogOpen(true);
@@ -889,11 +890,14 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
               </Button>
             </div>}
             <DisplayRules
+              audienceRequirement={entryOfGoal?.audience_requirement}
+              initialSection={displaySection}
+              onSectionChange={setDisplaySection}
               act={act}
               vocabulary={vocabulary}
               value={displayRules}
               overlay={overlay}
-              onChange={(patch) => edit(asConfigPatch(patch) as Config)}
+              onChange={(patch) => edit({ ...asConfigPatch(patch), ...(patch.display_rules ? { rules: undefined } : {}) } as Config)}
               reveal={revealSection}
               placement={displayTypeOf(config, templates) === 'inline' ? {
                 summary: inlineSummary,
@@ -901,7 +905,6 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
               } : undefined}
             />
           </div>
-          {!compact && previewPane}
         </TabsContent>
         <TabsContent value="destinations" className="wconvert-workspace__secondary">
           <div className="wconvert-workspace__settings">

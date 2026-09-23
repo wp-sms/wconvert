@@ -1,6 +1,6 @@
 # Reopen buttons preserve an explicit visitor choice
 
-**Current budget amendment — [ADR 0103](0103-progressive-capture-keeps-one-lead-per-journey.md):** The page payload cap is 2,560 B gzip (per-design 1,280 B). Free loaders remain 14,012 B; paid loaders cap at 19,456 B. Earlier measurements below are historical. All remain hard checks.
+**Current budget amendment — [ADR 0103](0103-progressive-capture-keeps-one-lead-per-journey.md):** The page payload cap is 2,560 B gzip (per-design 1,280 B). Free loaders remain 14,012 B; paid loaders cap at 20,480 B after the approved 1 KiB increase in [ADR 0104](0104-display-workspace-uses-bounded-groups-and-fresh-gestures.md). Earlier measurements below are historical. All remain hard checks.
 
 Implements [#178](https://github.com/wp-sms/wconvert/issues/178), part of [#165](https://github.com/wp-sms/wconvert/issues/165). Amends ADRs [0011](0011-non-modal-overlays-use-the-popover-top-layer.md), [0017](0017-no-visitor-identifier.md), [0019](0019-analytics-stores-daily-counters-not-events.md), [0044](0044-there-is-no-visitor-facing-error-state.md), [0047](0047-site-wide-frequency-is-the-same-shape-at-a-second-scope.md), [0014](0014-pro-replaces-the-loader.md) and [0029](0029-the-free-contract-is-proven-at-the-source.md).
 
@@ -19,6 +19,8 @@ One eligible restored reminder claims the overlay slot before any new automatic 
 The versioned `wcv_teaser1:<capture endpoint>` sessionStorage key is scoped to the site's existing REST endpoint. It contains an active Campaign/arm pair and at most 64 stopped Campaign families. Exceeding that bound suppresses teaser-enabled Campaigns for the tab session; it does not suppress inline or non-teaser campaigns. It stores no contact values, cached template, visitor ID, or random identifier. Corrupt storage is ignored; blocked storage falls back to current-document memory. Browsers can copy sessionStorage when duplicating tabs or restore it with a session; this is browser page-session scope, not a promise that closing a physical tab erases everything.
 
 This is functional state recording explicit dismissal/recovery choices, and an exception to ADR 0017's single **persistent** key. `wcv1` and its fallback ladder remain unchanged.
+
+> **Amended by [ADR 0104](0104-display-workspace-uses-bounded-groups-and-fresh-gestures.md):** Explicit click activation and Reopen share collision and eligibility checks. Physical visibility is separate from counted-once dismissal; repeated close/reopen cannot leave a stale owner. Schedule expiry prevents a new opening but preserves a capture already open.
 
 Hiding and reopening retain the mounted form and pending request on the same document. Navigation does not store or replay fields or a request. A late successful capture becomes a same-document “Submission received — View details” reminder without expanding or stealing focus. Explicit reminder dismissal prevents resurrection. It opens the existing success content and cannot submit again. Unconfirmed response behavior remains ADR 0073's existing contract.
 

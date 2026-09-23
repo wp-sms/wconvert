@@ -1250,3 +1250,34 @@ body .wconvert-rule-picker__unavailable {
 @media (max-width: 640px) {
   #wconvert-admin .wconvert-workspace__settings [data-slot='region-header'] { flex-direction: column; gap: 12px !important; }
 }
+
+/* Display workspace: responds to its available panel width, including wp-admin. */
+#wconvert-admin .wconvert-display { container-type: inline-size; min-width: 0; }
+#wconvert-admin .wconvert-display-header { display: flex; justify-content: space-between; align-items: start; gap: 1rem; margin-bottom: 1.5rem; }
+#wconvert-admin .wconvert-display-header h2 { margin: 0; font-size: var(--text-section); }
+#wconvert-admin .wconvert-display-header p { margin: .4rem 0 0; color: var(--muted-foreground); }
+#wconvert-admin .wconvert-display-grid { display: grid; grid-template-columns: 180px minmax(0, 1fr) 250px; gap: 1.5rem; align-items: start; }
+#wconvert-admin .wconvert-display nav { display: grid; gap: .4rem; }
+#wconvert-admin .wconvert-display nav button { display: flex; gap: .65rem; text-align: start; border: 1px solid transparent; border-radius: .6rem; padding: .85rem; background: transparent; cursor: pointer; color: inherit; }
+#wconvert-admin .wconvert-display nav button[aria-current] { background: var(--accent); border-color: var(--border); font-weight: 600; }
+#wconvert-admin .wconvert-display nav small { display: block; margin-top: .25rem; font-weight: 400; color: var(--muted-foreground); }
+#wconvert-admin .wconvert-display-step { border: 1px solid var(--border); border-radius: 50%; width: 1.5rem; height: 1.5rem; text-align: center; flex-shrink: 0; }
+#wconvert-admin .wconvert-display-editor { padding: 1.5rem; border: 1px solid var(--border); border-radius: .8rem; min-width: 0; background: var(--background); }
+#wconvert-admin .wconvert-display-editor h3 { margin: 0 0 1rem; font-size: var(--text-section); }
+#wconvert-admin .wconvert-display-summary { background: var(--muted); border: 1px solid var(--border); border-radius: .8rem; padding: 1.25rem; overflow-wrap: anywhere; }
+#wconvert-admin .wconvert-display-summary summary { margin: 0 0 1rem; font-size: var(--text-body); font-weight: 600; cursor: pointer; }
+#wconvert-admin .wconvert-display-summary dl { display: grid; gap: 1rem; }
+#wconvert-admin .wconvert-display-summary dt button { background: transparent; border: 0; padding: 0; cursor: pointer; font-weight: 600; color: inherit; text-align: start; }
+#wconvert-admin .wconvert-display-summary dd { margin: .35rem 0 0; line-height: 1.6; }
+#wconvert-admin .wconvert-display-choices { display: grid; gap: .7rem; border: 0; padding: 0; margin: 1.25rem 0; }
+#wconvert-admin .wconvert-display-choices legend { font-weight: 600; margin-bottom: .65rem; }
+#wconvert-admin .wconvert-display-choices label { display: flex; gap: .6rem; align-items: center; }
+#wconvert-admin .wconvert-display-match { display: block; margin-bottom: 1rem; }
+#wconvert-admin .wconvert-display-group { padding: 1rem; border: 1px solid var(--border); border-radius: .6rem; }
+#wconvert-admin .wconvert-display-group-title { display: flex; justify-content: space-between; align-items: center; }
+#wconvert-admin .wconvert-display-or { text-align: center; color: var(--muted-foreground); font-size: var(--text-note); font-weight: 600; }
+#wconvert-admin .wconvert-display-repair, #wconvert-admin .wconvert-display-test-result { padding: 1rem; margin-bottom: 1rem; background: var(--muted); border-radius: .6rem; }
+#wconvert-admin .wconvert-workspace__secondary.wconvert-workspace__display { display: block; }
+#wconvert-admin .wconvert-workspace__display > .wconvert-workspace__settings { max-width: none; }
+@container (max-width: 1050px) { #wconvert-admin .wconvert-display-grid { grid-template-columns: 165px minmax(0, 1fr); } #wconvert-admin .wconvert-display-summary { grid-column: 2; } }
+@container (max-width: 680px) { #wconvert-admin .wconvert-display-grid { display: flex; flex-direction: column; gap: 1rem; } #wconvert-admin .wconvert-display nav { grid-template-columns: repeat(2, minmax(0, 1fr)); width: 100%; } #wconvert-admin .wconvert-display-editor, #wconvert-admin .wconvert-display-summary { width: 100%; padding: 1rem; } #wconvert-admin .wconvert-display-header { flex-direction: column; } }

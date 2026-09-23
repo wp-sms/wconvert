@@ -38,6 +38,8 @@ that can afford that. The server's three tables, its nine options and the
 published set have no such escape hatch, which is where the pre-release audit
 spent its attention instead.*
 
+> **Amended by [ADR 0104](0104-display-workspace-uses-bounded-groups-and-fresh-gestures.md):** Campaigns add a bounded tab-session appearance cap; site scope retains its four fields. New interruptive drafts explicitly start at one per tab session, dismissal-stop off and completion-stop on. Explicit clicks and Reopen bypass automatic pacing while retaining completion. Existing absent-field semantics remain unchanged.
+
 ## No new vocabulary is needed, and that is the finding
 
 OptinMonster ships exactly two site-wide rules: a **global interaction cookie**

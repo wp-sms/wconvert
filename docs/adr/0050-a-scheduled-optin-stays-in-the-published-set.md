@@ -25,6 +25,8 @@ never appeared.
 
 So the Optin ships, carrying its window, and the **browser** decides.
 
+> **Completed by [ADR 0104](0104-display-workspace-uses-bounded-groups-and-fresh-gestures.md):** A future start is waiting, with a scheduled wake-up and visibility gate. End time prevents new openings; it does not discard an already open capture journey. Fresh gestures before a start/minimum time are not replayed.
+
 The far end is the same argument in reverse and is worth stating separately,
 because "drop it once it is over" sounds harmless. A page cached *while the
 window was open* still holds the payload and its loader still runs; the only

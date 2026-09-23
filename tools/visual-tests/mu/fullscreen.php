@@ -11,7 +11,7 @@ add_action('init', static function (): void {
     $draft = $container->get(\WConvert\Playbook\Prefill::class)->fromPlaybook($playbook);
     if ($draft === null) wp_die('Fullscreen setup failed to register');
     // Only the test makes this immediate. Shipping setups wait for engagement.
-    $draft['config']['rules'] = [['type' => 'page_load']];
+    $draft['config']['display_rules'] = \WConvert\Rules\DisplayPlan::immediate();
     $optin = $repository->create($draft['name'], $draft['goal'], $draft['config']);
     $repository->publish($optin->id);
     update_option('wconvert_fullscreen_fixture', $optin->id);

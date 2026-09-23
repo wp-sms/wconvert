@@ -135,7 +135,11 @@ The measurement descends screen wrappers and varies Campaign fingerprints.
 This is an explicit implementation tradeoff for the agreed feature, not a claim
 that the previous fixture still passes unchanged.
 
-Free retains its 14,012 B loader cap. Paid loaders now cap at 19,456 B (19 KiB):
+Free retains its 14,012 B loader cap. Paid loaders were capped at 19,456 B (19 KiB).
+
+> **Amended by [ADR 0104](0104-display-workspace-uses-bounded-groups-and-fresh-gestures.md):** With explicit user approval, paid loaders now cap at 20,480 B (20 KiB); other budgets remain unchanged. The measurements below describe progressive capture before Display workspace.
+
+Historical measurement:
 shared journey handling plus existing recovery/content-lock code exceeded the
 18 KiB limit by roughly 0.6 KiB at Elite. No feature is moved into an unmeasured
 lazy download. Final gzip sizes are recorded with verification. These budget

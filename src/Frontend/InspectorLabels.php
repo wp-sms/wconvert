@@ -39,7 +39,7 @@ final class InspectorLabels
         return [
             'title' => __('Why each popup did or did not show', 'wconvert'),
             'intro' => __(
-                'This page only. Nothing here is stored, and only you can see it.',
+                'Published rules on this page, with browser allowances as the page began. Unsaved draft changes are not included. Only you can see this report.',
                 'wconvert'
             ),
             'close' => __('Close', 'wconvert'),
@@ -90,6 +90,7 @@ final class InspectorLabels
              * draft would leave the likeliest cause unsaid.
              */
             'stopped' => [
+                'audience_server' => __('The published audience groups do not match the signed-in status or roles of this request.', 'wconvert'),
                 'automatic_missing' => __('No automatic placement location was generated on this page. Check supported post/page content, paragraph fallback, and page-builder compatibility; use a manual block or shortcode if needed.', 'wconvert'),
                 'automatic_lost' => __('Another eligible automatic Campaign won this page’s inline placement. Check automatic placement priority.', 'wconvert'),
                 'draft' => __('Not published yet, so it shows nowhere.', 'wconvert'),
@@ -187,6 +188,14 @@ final class InspectorLabels
                 'unsupported' => __('No module on this site evaluates this rule', 'wconvert'),
             ],
 
+            'display' => [
+                'group' => __('Audience group', 'wconvert'),
+                'opening' => __('Opening moment', 'wconvert'),
+                'all' => __('ALL', 'wconvert'), 'any' => __('ANY', 'wconvert'),
+                'true' => __('Matches', 'wconvert'), 'false' => __('Does not match', 'wconvert'), 'blocked' => __('Waiting for consent', 'wconvert'),
+                'immediate' => __('Immediately', 'wconvert'), 'automatic' => __('Automatic', 'wconvert'), 'click' => __('Explicit click', 'wconvert'),
+                'minimum' => __('Minimum seconds on page', 'wconvert'),
+            ],
             'sections' => [
                 'request' => __('This page, as the server sees it', 'wconvert'),
                 'targeting' => __('Where it is allowed', 'wconvert'),

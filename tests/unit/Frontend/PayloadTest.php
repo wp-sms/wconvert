@@ -40,7 +40,7 @@ final class PayloadTest extends TestCase
     private static function projection(string $id, array $targeting): array
     {
         return PublishedOptin::fromSet([
-            ['id' => $id, 'targeting' => $targeting, 'payload' => ['display_type' => 'popup']],
+            ['id' => $id, 'targeting' => $targeting, 'payload' => ['display_rules' => \WConvert\Rules\DisplayPlan::immediate(), 'display_type' => 'popup']],
         ]);
     }
 
@@ -62,7 +62,7 @@ final class PayloadTest extends TestCase
 
         $entries = Payload::forRequest($set, $context, InstalledRules::free());
 
-        $this->assertSame([['id' => '01A', 'display_type' => 'popup']], $entries);
+        $this->assertSame([['id' => '01A', 'display_rules' => \WConvert\Rules\DisplayPlan::immediate(), 'display_type' => 'popup']], $entries);
         $this->assertStringNotContainsString('secret-staging-path', PayloadTag::render($entries, self::CAPTURE, self::BEACON, null, self::ZONE));
     }
 
@@ -81,7 +81,7 @@ final class PayloadTest extends TestCase
         $set = PublishedOptin::fromSet([[
             'id' => '01A',
             'targeting' => ['roles' => ['plan_gold']],
-            'payload' => ['display_type' => 'popup'],
+            'payload' => ['display_rules' => \WConvert\Rules\DisplayPlan::immediate(), 'display_type' => 'popup'],
         ]]);
 
         $holder = new RequestContext(path: '/pricing/', isLoggedIn: true, roles: ['plan_gold']);
@@ -89,7 +89,7 @@ final class PayloadTest extends TestCase
 
         $entries = Payload::forRequest($set, $holder, InstalledRules::free());
 
-        $this->assertSame([['id' => '01A', 'display_type' => 'popup']], $entries);
+        $this->assertSame([['id' => '01A', 'display_rules' => \WConvert\Rules\DisplayPlan::immediate(), 'display_type' => 'popup']], $entries);
         $this->assertStringNotContainsString(
             'plan_gold',
             PayloadTag::render($entries, self::CAPTURE, self::BEACON, null, self::ZONE)
@@ -106,7 +106,7 @@ final class PayloadTest extends TestCase
      */
     public function testThePayloadTravelsAsAJsonScriptTag(): void
     {
-        $tag = PayloadTag::render([['id' => '01A', 'display_type' => 'popup']], self::CAPTURE, self::BEACON, null, self::ZONE);
+        $tag = PayloadTag::render([['id' => '01A', 'display_rules' => \WConvert\Rules\DisplayPlan::immediate(), 'display_type' => 'popup']], self::CAPTURE, self::BEACON, null, self::ZONE);
 
         $this->assertStringStartsWith('<script type="application/json" id="wconvert-payload" ', $tag);
         $this->assertStringEndsWith('</script>', $tag);
@@ -121,7 +121,7 @@ final class PayloadTest extends TestCase
      */
     public function testThePayloadCarriesWhereToPostACapture(): void
     {
-        $tag = PayloadTag::render([['id' => '01A', 'display_type' => 'popup']], self::CAPTURE, self::BEACON, null, self::ZONE);
+        $tag = PayloadTag::render([['id' => '01A', 'display_rules' => \WConvert\Rules\DisplayPlan::immediate(), 'display_type' => 'popup']], self::CAPTURE, self::BEACON, null, self::ZONE);
 
         $this->assertStringContainsString(sprintf('data-capture="%s"', self::CAPTURE), $tag);
         $this->assertSame(1, substr_count($tag, 'data-capture'));
@@ -135,7 +135,7 @@ final class PayloadTest extends TestCase
      */
     public function testThePayloadCarriesWhereToPostABeacon(): void
     {
-        $tag = PayloadTag::render([['id' => '01A', 'display_type' => 'popup']], self::CAPTURE, self::BEACON, null, self::ZONE);
+        $tag = PayloadTag::render([['id' => '01A', 'display_rules' => \WConvert\Rules\DisplayPlan::immediate(), 'display_type' => 'popup']], self::CAPTURE, self::BEACON, null, self::ZONE);
 
         $this->assertStringContainsString(sprintf('data-beacon="%s"', self::BEACON), $tag);
         $this->assertSame(1, substr_count($tag, 'data-beacon'));
@@ -152,7 +152,7 @@ final class PayloadTest extends TestCase
      */
     public function testThePayloadCarriesTheSiteWideAllowanceOnlyOnceThereIsOne(): void
     {
-        $entries = [['id' => '01A', 'display_type' => 'popup']];
+        $entries = [['id' => '01A', 'display_rules' => \WConvert\Rules\DisplayPlan::immediate(), 'display_type' => 'popup']];
 
         $this->assertStringNotContainsString(
             'data-allowance',
@@ -181,7 +181,7 @@ final class PayloadTest extends TestCase
     public function testAnAllowanceWithNoKeysStillTravelsAsAnObject(): void
     {
         $tag = PayloadTag::render(
-            [['id' => '01A', 'display_type' => 'popup']],
+            [['id' => '01A', 'display_rules' => \WConvert\Rules\DisplayPlan::immediate(), 'display_type' => 'popup']],
             self::CAPTURE,
             self::BEACON,
             [],
@@ -199,7 +199,7 @@ final class PayloadTest extends TestCase
     public function testTheSiteAllowanceCannotBreakOutOfItsAttribute(): void
     {
         $tag = PayloadTag::render(
-            [['id' => '01A', 'display_type' => 'popup']],
+            [['id' => '01A', 'display_rules' => \WConvert\Rules\DisplayPlan::immediate(), 'display_type' => 'popup']],
             self::CAPTURE,
             self::BEACON,
             ['maxImpressions' => 2],
@@ -227,7 +227,7 @@ final class PayloadTest extends TestCase
     public function testThePayloadCarriesTheSitesOwnClock(): void
     {
         $tag = PayloadTag::render(
-            [['id' => '01A', 'display_type' => 'popup']],
+            [['id' => '01A', 'display_rules' => \WConvert\Rules\DisplayPlan::immediate(), 'display_type' => 'popup']],
             self::CAPTURE,
             self::BEACON,
             null,
@@ -246,7 +246,7 @@ final class PayloadTest extends TestCase
     public function testAFixedOffsetTravelsAsItIsStored(): void
     {
         $tag = PayloadTag::render(
-            [['id' => '01A', 'display_type' => 'popup']],
+            [['id' => '01A', 'display_rules' => \WConvert\Rules\DisplayPlan::immediate(), 'display_type' => 'popup']],
             self::CAPTURE,
             self::BEACON,
             null,
@@ -270,7 +270,7 @@ final class PayloadTest extends TestCase
     public function testTheRouteAttributesCannotBreakOutOfTheirAttribute(): void
     {
         $tag = PayloadTag::render(
-            [['id' => '01A', 'display_type' => 'popup']],
+            [['id' => '01A', 'display_rules' => \WConvert\Rules\DisplayPlan::immediate(), 'display_type' => 'popup']],
             'https://example.com/wp-json/wconvert/v1/capture?x="><script>alert(1)</script>',
             self::BEACON,
             null,
@@ -311,8 +311,8 @@ final class PayloadTest extends TestCase
     public function testAnEntryWithNoIdIsDroppedRatherThanShipped(): void
     {
         $set = PublishedOptin::fromSet([
-            ['targeting' => [], 'payload' => ['display_type' => 'popup']],
-            ['id' => '01A', 'targeting' => [], 'payload' => ['display_type' => 'popup']],
+            ['targeting' => [], 'payload' => ['display_rules' => \WConvert\Rules\DisplayPlan::immediate(), 'display_type' => 'popup']],
+            ['id' => '01A', 'targeting' => [], 'payload' => ['display_rules' => \WConvert\Rules\DisplayPlan::immediate(), 'display_type' => 'popup']],
         ]);
 
         $this->assertSame(['01A'], array_column(Payload::forRequest($set, self::at('/'), InstalledRules::free()), 'id'));
@@ -331,14 +331,14 @@ final class PayloadTest extends TestCase
     public function testTheGoalIsReadByPhpAndNeverShippedToTheBrowser(): void
     {
         $set = PublishedOptin::fromSet([
-            ['id' => '01A', 'goal' => 'recover_cart', 'targeting' => [], 'payload' => ['display_type' => 'popup']],
+            ['id' => '01A', 'goal' => 'recover_cart', 'targeting' => [], 'payload' => ['display_rules' => \WConvert\Rules\DisplayPlan::immediate(), 'display_type' => 'popup']],
         ]);
 
         $this->assertSame(\WConvert\Goal\Goal::RecoverCart, $set[0]->goal);
 
         $entries = Payload::forRequest($set, self::at('/'), InstalledRules::withPro());
 
-        $this->assertSame([['id' => '01A', 'display_type' => 'popup']], $entries);
+        $this->assertSame([['id' => '01A', 'display_rules' => \WConvert\Rules\DisplayPlan::immediate(), 'display_type' => 'popup']], $entries);
         $this->assertStringNotContainsString('recover_cart', PayloadTag::render($entries, self::CAPTURE, self::BEACON, null, self::ZONE));
     }
 
@@ -355,7 +355,7 @@ final class PayloadTest extends TestCase
     private static function optin(string $goal, array $payload = []): array
     {
         return PublishedOptin::fromSet([
-            ['id' => '01A', 'goal' => $goal, 'targeting' => [], 'payload' => $payload + self::ctaOnly()],
+            ['id' => '01A', 'goal' => $goal, 'targeting' => [], 'payload' => $payload + ['display_rules' => \WConvert\Rules\DisplayPlan::immediate()] + self::ctaOnly()],
         ]);
     }
 

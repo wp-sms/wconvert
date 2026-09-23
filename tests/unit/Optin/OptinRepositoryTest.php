@@ -57,7 +57,7 @@ final class OptinRepositoryTest extends TestCase
      */
     private function anOptin(array $config = ['targeting' => ['include' => [['type' => 'post', 'value' => 12]]]]): Optin
     {
-        return $this->repository->create('Spring sale', 'promote_offer', $config + ['template' => OptinDesign::template()]);
+        return $this->repository->create('Spring sale', 'promote_offer', $config + ['template' => OptinDesign::template(), 'display_rules' => \WConvert\Rules\DisplayPlan::immediate()]);
     }
 
     public function testPublishPromotesTheDraftAndRebuildsTheSetInOneCall(): void

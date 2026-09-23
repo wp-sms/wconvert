@@ -305,7 +305,7 @@ the visitor themselves made — that they dismissed this [[Optin]] — is
 `functional` and never withheld, because withholding it means the popup reappears
 after they closed it.
 
-**All of free's per-visitor state lives in one key**, and it is worth knowing
+**Free's persistent per-visitor state lives in one key**, and it is worth knowing
 its name because three documents once described storage WConvert does not have.
 `localStorage['wcv1']` holds a map of [[Optin]] id to that Optin's record —
 impressions, the day of the last one, dismissed, converted — written through a
@@ -454,9 +454,16 @@ An optional Pro presentation for popup and slide-in. After deliberate full dismi
 ### Frequency
 
 The allowance — how often this device may be shown something — checked before any
-[[Trigger]] or [[Condition]] is evaluated. Four fields: a maximum number of
+[[Trigger]] or [[Condition]] is evaluated. The shared persistent fields are: a maximum number of
 impressions, a cooldown in days, stop after a [[Dismissal]], and stop after a
 [[Conversion]].
+
+Campaigns also support `maxPerSession` (1–100) in a bounded, site-scoped
+`wcv_display_session_v1:<capture endpoint path>` sessionStorage record, shared
+across A/B arms. Only counted appearances with a configured cap write it. It
+holds up to 128 families; denied storage lasts for the current document only.
+New interruptive drafts explicitly use one per tab session, dismissal-stop off
+and completion-stop on. Site scope does not add this field. See [ADR 0104](docs/adr/0104-display-workspace-uses-bounded-groups-and-fresh-gestures.md).
 
 It has **two scopes and one shape**. Per [[Optin]], the two switches default *on*
 and the two numbers *off*, because a visitor who closed something said stop
@@ -679,24 +686,14 @@ are mutually exclusive. See [ADR 0102](docs/adr/0102-content-lock-is-an-optional
 *Where* an [[Optin]] is allowed to appear: the set of pages it may show on, as
 an include list and an exclude list, with exclude winning.
 
-Targeting is the one part of an Optin's rules evaluated on the **server**, at
-asset-enqueue time — so it never reaches the browser, and an Optin that does not
-match the current page costs the page nothing. Every other rule is a
-[[Trigger]] or a [[Condition]] and is evaluated client-side.
+Targeting is evaluated on the **server** at asset-enqueue time. The five page
+rules are `post`, `singular`, `archive`, `term`, and `url`. Page exclusions
+always win, outside audience OR groups.
 
-Five page rules — `post`, `singular`, `archive`, `term`, `url` — plus **two**
-visitor predicates, `logged_in` and `role`, which live on this axis **only**
-because the client cannot read WordPress's HttpOnly auth cookie. The two kinds
-are held apart in storage: the lists are a union of page sets, so a visitor rule
-dropped into an include list would widen the Optin to the whole site rather than
-narrow it.
-
-Each visitor predicate is its own **field** on `Targeting`, and that is the
-whole of holding them apart. `TargetingType` enumerates the page rules and
-nothing else, so there is no way to build a visitor rule inside a list at all —
-which matters because that failure is silent: a *"subscribers only, on the
-pricing page"* Optin dropped into the include list shows to every subscriber on
-every page, and nothing anywhere says so.
+Account predicates (`logged_in` and `role`) live inside `display_rules` audience
+groups. PHP reduces those leaves for the current request while preserving the
+group's ALL/ANY meaning, because the browser cannot read WordPress's HttpOnly
+auth cookie. They are never global Targeting gates. See [ADR 0104](docs/adr/0104-display-workspace-uses-bounded-groups-and-fresh-gestures.md).
 
 `role` is **one predicate over several systems**, not one per system. WordPress
 roles are one answer to *what is this visitor*; a membership level, a plan or an
@@ -712,9 +709,9 @@ term's own archive, and a singular post carrying it. A merchant choosing "News"
 means both, and splitting that into two rule types makes the obvious choice the
 wrong one half the time.
 
-An **empty include list is "everywhere"**, not "nowhere". It is the only
-reading under which an exclude-only Optin — everywhere except the checkout —
-means anything.
+The explicit **entire site** mode allows an empty include list, so exclusions
+can stand alone. **Selected pages** with an empty list is an incomplete draft
+and cannot publish.
 
 > **Why not "Placement":** in adtech that means position on the page, which is
 > what [[Display Type]] already covers. **Why not "Audience":** WSMS's
@@ -724,51 +721,26 @@ means anything.
 
 *When* an [[Optin]] fires — time on page, scroll depth, exit intent.
 
-An Optin fires when **any one** of its Triggers fires. Every Optin has at least
-one; "shows immediately" is the explicit `page_load` Trigger, never an empty
-list.
+A Campaign's `display_rules.opening` is Immediate, Automatic (ALL/ANY requirements,
+with optional minimum elapsed seconds), or an explicit Click. Immediate is its
+own mode; an empty automatic or click group is incomplete, never immediate.
 
-**`page_load` is not one Trigger among many — it is the absence of a wait, and
-it subsumes every other Trigger on the Optin.** Its evaluator holds constantly,
-and Triggers are ORed, so an Optin carrying it fires the instant its
-[[Condition]]s hold and no other Trigger can ever be the reason it fired.
-*"Shows immediately AND after a few seconds"* is therefore not a preference, it
-is a mistake: the seconds decide nothing.
-
-That generalises within a type, and only within one. **Across** types which
-fires first is a fact about one visitor — whether they scroll past half way
-before eight seconds elapse is not knowable here — so two different types are a
-real choice. Within one type it is decidable: a threshold is crossed once and
-the lowest wins, so *"after 8 seconds or after 20 seconds"* is *"after 8
-seconds"*; and a Trigger with no params has one spelling, so a second is the
-same rule.
-
-**So a rule type is offered once**, and the exception is a type whose params
-say WHICH thing rather than how much: two `click_element`s are two selectors
-and two `query_param`s are two parameters, both real. Everything else — two
-thresholds, two of a type with no params — is one rule written twice, and the
-merchant is not offered the mistake rather than being told about it after they
-make it. A pair already stored is still shown, with a note, because a rule in
-`config` with nothing on screen to act on is worse than a rule that reads
-oddly.
-
-The mirror holds on the [[Condition]] axis and the trap there is sharper: they
-are ANDed, so a second of a kind NARROWS the first — `device [mobile]` beside
-`device [desktop]` holds for nobody. One rule carrying several values is what
-that merchant meant, which is what a set-valued scalar is for (ADR 0005).
-
-So the authoring surface asks **whether it waits** before it asks what for, and
-the two answers are `page_load` and a list. The model is unchanged — still one
-flat, ORed axis — and an Optin that already carries both still shows every rule
-it has, each saying that it never runs. Hiding one would be a rule still in
-`config`, still saved back, with nothing on screen to act on.
+Time and scroll-depth thresholds remain achieved after crossing. Inactivity is a
+live visible-page state reset by activity and visibility changes. Exit, scroll-up
+and click are fresh gestures evaluated synchronously; an early gesture cannot
+be replayed when a timer later expires. Multiple fresh gestures or inactivity
+plus a leaving gesture cannot be required together. The manifest records these
+semantics. See [ADR 0104](docs/adr/0104-display-workspace-uses-bounded-groups-and-fresh-gestures.md).
 
 ### Condition
 
 *Whether* a visitor is eligible to see an [[Optin]] — device, referrer, cart
 state, time of day.
 
-**All** Conditions must hold at the instant a [[Trigger]] fires. They are not
+Audience is Everyone or up to five alternative groups. A group requires ALL or
+ANY of up to eight Conditions/account leaves; the groups combine with OR.
+Required Goal predicates are outside those alternatives. The chosen expression
+must hold at the instant the opening requirements are met. They are not
 evaluated ahead of time and held: an Optin whose cart emptied while its ten
 second timer ran does not show.
 
@@ -1039,7 +1011,7 @@ starting-point replacement (ADR 0075).
 The review compares current and proposed values for the sections supplied.
 Replacing frequency does not replace campaign dates or overlay priority; those
 fields are absent from a rule bundle. Applying changes the working draft and
-does not save or publish it. This does not add nested groups or change the flat
+does not save or publish it. [ADR 0104](docs/adr/0104-display-workspace-uses-bounded-groups-and-fresh-gestures.md) adds bounded groups and supersedes the flat
 Trigger/Condition/Targeting semantics.
 
 > *That reason has a second case: changing an Optin's [[Goal]] confirms too, and
@@ -1481,20 +1453,10 @@ WooCommerce was.
 Not a state the merchant chose, which is what separates it from a draft or a paused
 Optin, and the reason it is always displayed with its cause.
 
-Suspension exists because dropping an unavailable [[Condition]] is only safe while the
-Optin's *words* do not depend on it. Widening the audience for a `device` rule is a
-softer targeting decision; widening it for a cart rule makes the Optin say *"you left 3
-items in your cart"* to someone who has never added anything. A Condition whose
-guarantee the copy asserts is **load-bearing**, and an Optin holding an unavailable one
-is suspended rather than degraded.
-
-The other way in is a [[Trigger]] with no honest substitute. A premium Trigger is
-normally substituted, because an Optin with none can never fire — but `click_element`
-names a selector only one site has, so there is nothing to put in its place. It is
-dropped like any other, and an Optin that loses its **last** Trigger that way is
-suspended rather than left running and unable to fire. Both roads lead here for the
-same reason: suspension is what a silent failure looks like once it has a cause the
-merchant can read.
+Any missing implementation in an authored display policy suspends the entire
+Campaign. This includes a missing leaf in an ANY group; losing a dependency must
+not widen the authored policy. Catalog suggestions can still be adapted before
+Prefill, but runtime substitution/drop is forbidden. See [ADR 0104](docs/adr/0104-display-workspace-uses-bounded-groups-and-fresh-gestures.md).
 
 A suspended Optin **emits nothing** — no [[Impression]], no [[Conversion]] — so its
 history stays comparable rather than filling with zeroes against a live denominator.

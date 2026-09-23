@@ -1,5 +1,5 @@
 import type { LoaderModule, PayloadEntry, PresentationSession } from '@loader/types';
-import { decide, type Decision } from '@loader/decide';
+import { decide, audienceAnswer, rulesOf, type Decision } from '@loader/decide';
 import { isWithinWindow } from '@loader/schedule';
 import { captureEndpoint, PAYLOAD_ELEMENT_ID } from '@loader/payload';
 import { bindJourney } from '@loader/journey';
@@ -19,9 +19,8 @@ export function lockRegion(entry: Entry): HTMLElement | undefined {
 }
 export function lockAvailable(entry: Entry, input: Decision): boolean {
   return entry.display_type === 'inline' && entry.inline_placement == null && !!entry.template
-    && entry.triggers?.length === 1 && entry.triggers[0].type === 'page_load'
-    && isWithinWindow(entry, input.now) && !(entry.conditions ?? []).some(rule => input.withheld.has(rule.type))
-    && (entry.conditions ?? []).every(rule => { try { return input.evaluators.get(rule.type)?.holds(rule) === true; } catch { return false; } });
+    && entry.display_rules?.opening.mode === 'immediate'
+    && isWithinWindow(entry, input.now) && audienceAnswer(entry, input) === true;
 }
 function labels(): string[] {
   try {
@@ -61,6 +60,7 @@ export function connectContentLock(base: PresentationSession, entries: readonly 
   window.addEventListener('pageshow', notify);
   return {
     select: base.select,
+    activeOverlay: base.activeOverlay,
     decide(input) {
       latest = input;
       if (active && (!lockAvailable(active.entry, input) || !active.region.isConnected || !active.mounted.root?.isConnected)) {
@@ -91,7 +91,7 @@ export function connectContentLock(base: PresentationSession, entries: readonly 
       });
       return { ...verdict, show: [...show.filter(entry => !lockConfigured(entry)), ...lockers], live: verdict.live || !!active || lockers.length > 0 };
     },
-    watch: () => [...(base.watch?.() ?? []), ...(active?.entry.conditions ?? [])],
+    watch: () => [...(base.watch?.() ?? []), ...(active ? rulesOf(active.entry) : [])],
     show(entry: Entry, controls) {
       if (!lockConfigured(entry)) return base.show(entry, controls);
       const region = lockRegion(entry);

@@ -120,7 +120,8 @@ final class Prefill
         // premium [[Trigger]] is substituted and marked, and a premium
         // [[Condition]] is dropped — which only widens the audience, the safe
         // direction to fail in (ADR 0012).
-        $config['rules'] = $this->degradation->intoConfig($playbook->rules);
+        $config['display_rules'] = $this->degradation->intoDisplayConfig($playbook->rules);
+        if ($playbook->displayType !== 'inline') $config['frequency'] = ['maxPerSession' => 1, 'stopAfterDismiss' => false];
 
         if ($playbook->targeting !== []) {
             $config['targeting'] = $playbook->targeting;
@@ -157,7 +158,7 @@ final class Prefill
         return [
             'name' => $goal->label(),
             'goal' => $goal->value,
-            'config' => ['rules' => [['type' => 'page_load']]],
+            'config' => ['display_rules' => \WConvert\Rules\DisplayPlan::immediate(), 'frequency' => ['maxPerSession' => 1, 'stopAfterDismiss' => false]],
         ];
     }
 }

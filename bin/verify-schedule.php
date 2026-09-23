@@ -154,7 +154,7 @@ $retimezone('Asia/Kolkata');
 
 $sale = $optins->create('Black Friday', 'promote_offer', [
     'template' => $design['template'],
-    'rules' => [['type' => 'page_load']],
+    'display_rules' => \WConvert\Rules\DisplayPlan::immediate(),
     'display_type' => 'popup',
     // Far enough ahead that "not started" is not a race with the clock.
     'starts_at' => '2099-11-27 09:00',
@@ -213,7 +213,7 @@ echo "\nA window that has closed\n";
 
 $over = $optins->create('Last summer', 'promote_offer', [
     'template' => $design['template'],
-    'rules' => [['type' => 'page_load']],
+    'display_rules' => \WConvert\Rules\DisplayPlan::immediate(),
     'display_type' => 'popup',
     'starts_at' => '2020-06-01 00:00',
     'ends_at' => '2020-09-01 00:00',
@@ -289,7 +289,7 @@ $request = new WP_REST_Request('POST', '/wconvert/v1/optins');
 $request->set_param('name', 'Backwards');
 $request->set_param('goal', 'promote_offer');
 $request->set_param('config', [
-    'rules' => [['type' => 'page_load']],
+    'display_rules' => \WConvert\Rules\DisplayPlan::immediate(),
     'starts_at' => '2099-11-30 09:00',
     'ends_at' => '2099-11-27 09:00',
 ]);

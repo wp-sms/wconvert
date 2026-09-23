@@ -286,6 +286,6 @@ final class PrefillSnapshotTest extends TestCase
         $this->assertSame('promote_offer', $draft['goal']);
         $this->assertArrayNotHasKey('playbook_id', $draft['config']);
         $this->assertArrayNotHasKey('template_id', $draft['config']);
-        $this->assertSame([['type' => 'page_load']], $draft['config']['rules']);
+        $this->assertSame(\WConvert\Rules\DisplayPlan::immediate(), $draft['config']['display_rules']);
     }
 }

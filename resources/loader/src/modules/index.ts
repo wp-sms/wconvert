@@ -1,4 +1,5 @@
 import type { LoaderModule } from '../types';
+import { inactivity } from './inactivity';
 import { device } from './device';
 import { pageLoad } from './page-load';
 import { scrollDepth } from './scroll-depth';
@@ -22,4 +23,4 @@ import { timeOnPage } from './time-on-page';
  * `bin/verify-source-contract.sh` proves without a build, on every pull request
  * (ADR 0028, ADR 0029).
  */
-export const FREE_MODULES: readonly LoaderModule[] = [pageLoad, timeOnPage, scrollDepth, device, timeOfDay];
+export const FREE_MODULES: readonly LoaderModule[] = [inactivity, pageLoad, timeOnPage, scrollDepth, device, timeOfDay];

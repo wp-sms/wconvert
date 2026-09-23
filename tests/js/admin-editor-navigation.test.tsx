@@ -1,3 +1,4 @@
+import { displayPlan } from './support/display-entry';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { act, render, screen, waitFor } from '@testing-library/react';
@@ -50,7 +51,7 @@ const EDITOR = editorHref('OPTIN1', REPORT);
 function savedOptin() {
   return { id: 'OPTIN1', name: 'Welcome offer', goal: null, published_at: null, has_unpublished_changes: false,
     deleted_at: null, suspended: null, sibling_act: null,
-    config: { template_id: ENTRY.id, template: { tree: ENTRY.tree, tokens: ENTRY.tokens } } };
+    config: { display_rules: displayPlan([{ type: 'page_load' }]), template_id: ENTRY.id, template: { tree: ENTRY.tree, tokens: ENTRY.tokens } } };
 }
 
 beforeEach(() => {

@@ -1,3 +1,4 @@
+import { displayPlan } from './support/display-entry';
 import { treeFixture } from './support/journey';
 import { CAPTURE_OUTCOME } from './support/outcomes';
 import { readFileSync } from 'node:fs';
@@ -165,7 +166,7 @@ function optin(over: Record<string, unknown> = {}) {
     deleted_at: null,
     suspended: null,
     has_unpublished_changes: false,
-    config: { template_id: 'centred-card', template: { tree: ENTRY.tree, tokens: ENTRY.tokens } },
+    config: { display_rules: displayPlan([{ type: 'page_load' }]), template_id: 'centred-card', template: { tree: ENTRY.tree, tokens: ENTRY.tokens } },
     ...over,
   };
 }
@@ -1542,7 +1543,7 @@ describe('a layout’s own settings', () => {
   it('checks nothing on a split the manifest does not offer', async () => {
     builder.getOptin.mockResolvedValue(
       optin({
-        config: {
+        config: { display_rules: displayPlan([{ type: 'page_load' }]),
           template_id: 'centred-card',
           template: {
             tokens: ENTRY.tokens,
@@ -1688,7 +1689,7 @@ describe('a leaf’s own settings', () => {
   it('reads a picture’s fit off the design and writes the other one back', async () => {
     builder.getOptin.mockResolvedValue(
       optin({
-        config: {
+        config: { display_rules: displayPlan([{ type: 'page_load' }]),
           template_id: 'centred-card',
           template: {
             tokens: ENTRY.tokens,
@@ -1783,7 +1784,7 @@ describe('a countdown’s inspector', () => {
    */
   const withClock = (config: Record<string, unknown> = {}) =>
     optin({
-      config: {
+      config: { display_rules: displayPlan([{ type: 'page_load' }]),
         template_id: 'centred-card',
         template: {
           tree: treeFixture({
@@ -1887,7 +1888,7 @@ describe('a countdown’s inspector', () => {
 describe('the icon picker', () => {
   const withIcon = () =>
     optin({
-      config: {
+      config: { display_rules: displayPlan([{ type: 'page_load' }]),
         template_id: 'centred-card',
         template: {
           tree: treeFixture({

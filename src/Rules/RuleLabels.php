@@ -48,6 +48,7 @@ final class RuleLabels
             'url' => __('A URL path', 'wconvert'),
             'logged_in' => __('Signed-in visitors', 'wconvert'),
             'page_load' => __('Shows immediately', 'wconvert'),
+            'inactivity' => __('No recent activity', 'wconvert'),
             'time_on_page' => __('Time delay', 'wconvert'),
             'scroll_depth' => __('Scroll depth', 'wconvert'),
             'click_element' => __('Clicks an element', 'wconvert'),
@@ -87,6 +88,7 @@ final class RuleLabels
             'term.value' => __('Term ID', 'wconvert'),
             'url.value' => __('Path, with * as a wildcard', 'wconvert'),
             'logged_in.value' => __('Signed in', 'wconvert'),
+            'inactivity.seconds' => __('Seconds without input', 'wconvert'),
             'time_on_page.seconds' => __('Seconds', 'wconvert'),
             'scroll_depth.percent' => __('Percent of the page', 'wconvert'),
             'click_element.selector' => __('CSS selector', 'wconvert'),
@@ -184,6 +186,7 @@ final class RuleLabels
         return [
             'page_load' => __('as soon as the page loads', 'wconvert'),
             /* translators: %1$s: a number of seconds. */
+            'inactivity' => __('after %1$s seconds without input', 'wconvert'),
             'time_on_page' => __('after %1$s seconds on the page', 'wconvert'),
             /* translators: %1$s: a percentage of the page height, without the sign. */
             'scroll_depth' => __('once they scroll %1$s%% down the page', 'wconvert'),

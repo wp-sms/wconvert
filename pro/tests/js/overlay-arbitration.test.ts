@@ -1,3 +1,4 @@
+import { displayEntry } from '../../../tests/js/support/display-entry';
 import { treeFixture } from '../../../tests/js/support/journey';
 import { afterEach, describe, expect, it } from 'vitest';
 import { start } from '@loader/shell';
@@ -48,14 +49,14 @@ const TEMPLATE = {
   tokens: { bg: '#fff' },
 };
 
-const optin = (id: string, displayType: string, priority?: number): PayloadEntry => ({
+const optin = (id: string, displayType: string, priority?: number): PayloadEntry => (displayEntry({
   id,
   display_type: displayType,
   template: TEMPLATE,
   priority,
   triggers: [{ type: 'page_load' }],
   conditions: [],
-});
+}));
 
 /** A store that starts with whatever this test seeded and never touches localStorage. */
 const fakeStore = (held: string | null = null): Store => ({

@@ -120,7 +120,7 @@ final class EnquiryPrefillTest extends TestCase
         $this->assertSame(Goal::CollectEnquiries->value, $draft['goal']);
         $this->assertSame('Request a quote', $draft['name']);
         $this->assertSame('inline', $config['display_type']);
-        $this->assertSame([['type' => 'page_load']], $config['rules']);
+        $this->assertSame(\WConvert\Rules\DisplayPlan::immediate(), $config['display_rules']);
         $this->assertFalse($fields['name']['required']);
         $this->assertTrue($fields['email']['required']);
         $this->assertFalse($fields['interest']['required']);

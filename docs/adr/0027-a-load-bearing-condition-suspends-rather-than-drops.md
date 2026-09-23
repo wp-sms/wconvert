@@ -23,6 +23,8 @@ the Trigger axis. Recorded inline on ADR 0012's first bullet too.*
 
 ## The case ADR 0012 did not see
 
+> **Amended by [ADR 0104](0104-display-workspace-uses-bounded-groups-and-fresh-gestures.md):** Every authored missing leaf now suspends the whole Campaign, including optional OR branches and triggers with catalog substitutes. Suspension still emits nothing and self-heals when dependencies return.
+
 *"You left 3 items in your cart"* is guaranteed by `cart_has_items`. Drop it and the
 sentence shows to visitors who have never added anything.
 

@@ -17,6 +17,7 @@ final class TargetingEvaluator
 {
     public static function matches(Targeting $targeting, RequestContext $context): bool
     {
+        if ($targeting->selected && $targeting->include === []) return false;
         if ($targeting->loggedIn !== null && $targeting->loggedIn !== $context->isLoggedIn) {
             return false;
         }

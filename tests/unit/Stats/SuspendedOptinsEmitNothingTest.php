@@ -80,7 +80,7 @@ final class SuspendedOptinsEmitNothingTest extends TestCase
      */
     private function publish(array $rules): string
     {
-        $optin = $this->optins->create('Spring sale', 'promote_offer', ['rules' => $rules, 'template' => OptinDesign::template()]);
+        $optin = $this->optins->create('Spring sale', 'promote_offer', ['display_rules' => \WConvert\Tests\Unit\Support\DisplayFixture::plan($rules), 'template' => OptinDesign::template()]);
         $this->optins->publish($optin->id);
 
         return $optin->id;
@@ -147,12 +147,12 @@ final class SuspendedOptinsEmitNothingTest extends TestCase
      * [[Conversion]]s to report, and dropping those would punish the merchant
      * for the plugin they removed rather than the popup they built.
      */
-    public function testADegradedOptinKeepsCounting(): void
+    public function testAMissingExitModuleAlsoStopsCounting(): void
     {
         $id = $this->publish([['type' => 'exit_intent']]);
 
         $this->beacon($id, InstalledRules::free());
 
-        $this->assertCount(3, $this->stats->upserts);
+        $this->assertSame([], $this->stats->upserts);
     }
 }

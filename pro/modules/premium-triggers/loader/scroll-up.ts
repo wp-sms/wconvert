@@ -67,7 +67,7 @@ export const scrollUp: LoaderModule = {
 
       rose = true;
       // Once, on the transition — the same reason `exit_intent` reports once.
-      changed();
+      try { changed(); } finally { rose = false; deepest = y; }
     };
 
     window.addEventListener('scroll', onScroll, { passive: true });

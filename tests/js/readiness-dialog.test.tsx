@@ -34,7 +34,7 @@ function props(overrides: Partial<ReadinessDialogProps> = {}): ReadinessDialogPr
     optin: { published_at: null, deleted_at: null, suspended: null, has_unpublished_changes: false },
     dirty: false, busy: false, goal: ready(GOAL), goalId: GOAL.id,
     playbook: ready(null), playbookId: '',
-    rules: { rules: [], targeting: {}, frequency: {}, schedule: {}, priority: 0 },
+    rules: { display_rules: { audience: { mode: 'everyone' }, opening: { mode: 'immediate' } }, targeting: {}, frequency: {}, schedule: {}, priority: 0 },
     vocabulary: ruleTypes(), displayType: 'popup', bound: [], template: FORM,
     destinations: [], captureMode: 'local', fieldLabels: { email: 'Email address', phone: 'Phone number' },
     privacyGuidance: false,
@@ -321,7 +321,7 @@ describe('publication progress and recovery', () => {
 
 describe('review actions return to the place that can resolve them', () => {
   it.each([
-    ['Pages', 'where'], ['When it appears', 'when'], ['Audience', 'who'], ['Schedule & frequency', 'how-often'],
+    ['Pages', 'where'], ['Opening moment', 'when'], ['Audience', 'who'], ['Schedule & limits', 'how-often'],
   ])('opens the %s rules and closes review', async (label, section) => {
     const { supplied } = await open();
     await userEvent.click(screen.getByRole('button', { name: label }));

@@ -1,3 +1,4 @@
+import { displayEntry } from './support/display-entry';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Beacon } from '@loader/beacon';
 import { createLoader } from '@loader/engine';
@@ -33,13 +34,13 @@ function fakeStore(): Store {
 }
 
 
-const optin = (overrides: Partial<PayloadEntry> = {}): PayloadEntry => ({
+const optin = (overrides: Partial<PayloadEntry> = {}): PayloadEntry => (displayEntry({
   id: 'a',
   display_type: 'popup',
   triggers: [{ type: 'page_load' }],
   conditions: [],
   ...overrides,
-});
+}));
 
 /** One page view over an unchanging payload — the cached HTML, re-parsed. */
 function pageView(entries: readonly PayloadEntry[], store: Store, at: number) {

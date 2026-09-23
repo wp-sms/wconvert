@@ -1,0 +1,6 @@
+[
+  ["#signup", true], [".offer-button", true], ["button.buy", true], ["[data-offer]", true],
+  ["a[href^=\"/offer\"]", true], ["#header > .offer, .footer a", true], ["button + a", true],
+  ["", false], ["   ", false], ["((", false], ["#", false], [".buy,", false], ["[data-offer", false],
+  ["button:not(.disabled)", false], ["[data-offer=]", false], ["body { display:none }", false]
+]

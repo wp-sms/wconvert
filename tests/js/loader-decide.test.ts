@@ -1,3 +1,4 @@
+import { displayEntry } from './support/display-entry';
 import { describe, expect, it } from 'vitest';
 import { decide } from '@loader/decide';
 import type { PayloadEntry, Rule, RuleEvaluator, VisitorState } from '@loader/types';
@@ -26,13 +27,13 @@ function evaluators(map: Record<string, () => boolean>): ReadonlyMap<string, Rul
 const rule = (type: string): Rule => ({ type });
 
 function entry(overrides: Partial<PayloadEntry> = {}): PayloadEntry {
-  return {
+  return displayEntry({
     id: '01JQ0000000000000000000001',
     display_type: 'popup',
     triggers: [rule('time_on_page')],
     conditions: [rule('device')],
     ...overrides,
-  };
+  });
 }
 
 function input(overrides: Partial<Parameters<typeof decide>[0]> = {}) {
@@ -174,7 +175,7 @@ describe('decide', () => {
    * the known one can still fire, and a degraded install is meant to keep
    * working (ADR 0012).
    */
-  it('is not inert while one trigger is still firable', () => {
+  it('suspends the authored policy when any trigger module is missing', () => {
     const verdict = decide(
       input({
         entries: [entry({ triggers: [rule('exit_intent'), rule('time_on_page')], conditions: [] })],
@@ -182,8 +183,8 @@ describe('decide', () => {
       }),
     );
 
-    expect(standings(verdict)).toEqual({ '01JQ0000000000000000000001': 'waiting' });
-    expect(verdict.live).toBe(true);
+    expect(standings(verdict)).toEqual({ '01JQ0000000000000000000001': 'inert' });
+    expect(verdict.live).toBe(false);
   });
 
   describe('the contest between overlays', () => {
@@ -379,7 +380,7 @@ describe('a schedule', () => {
   it('holds an Optin back before its window opens', () => {
     const verdict = decide(input({ entries: [entry({ starts_at: NOW + 3 * day })] }));
 
-    expect(standings(verdict)).toEqual({ '01JQ0000000000000000000001': 'capped' });
+    expect(standings(verdict)).toEqual({ '01JQ0000000000000000000001': 'waiting' });
     expect(verdict.show).toEqual([]);
   });
 
@@ -425,8 +426,8 @@ describe('a schedule', () => {
    * holding only a not-yet-started Optin releases its scroll handler and its
    * timer instead of re-asking for the rest of the visit.
    */
-  it('leaves nothing live on the page', () => {
-    expect(decide(input({ entries: [entry({ starts_at: NOW + 3 * day })] })).live).toBe(false);
+  it('keeps a future schedule live on the page', () => {
+    expect(decide(input({ entries: [entry({ starts_at: NOW + 3 * day })] })).live).toBe(true);
   });
 });
 

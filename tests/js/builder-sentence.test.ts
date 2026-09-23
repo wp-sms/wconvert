@@ -465,8 +465,8 @@ describe('one rule, read', () => {
   });
 
   /** It names every missing setting, not just the first. */
-  it('names both settings when a general form is missing two', () => {
-    expect(phraseOf({ type: 'query_param' }, types).text).toBe('query_param — needs key and value');
+  it('requires the query key while an empty value means any value', () => {
+    expect(phraseOf({ type: 'query_param' }, types).text).toBe('query_param — needs key');
   });
 
   /**
@@ -535,6 +535,11 @@ describe('how often', () => {
    * So an untouched Optin already stops, and a summary reading "Every time"
    * would be a lie on the commonest Optin there is.
    */
+  it('states the tab-session limit and keeps a completion-only sentence grammatical', () => {
+    expect(howOftenSummary({ maxPerSession: 1, stopAfterDismiss: false }, {}, 0, true, 'click').text)
+      .toBe('Shows automatically at most 1 time per tab session, and stops once they click the main button');
+  });
+
   it('reads an untouched allowance as stopping, not as unlimited', () => {
     expect(howOftenSummary({}, {}, 0, true).text).toBe('Every time, until they close it or submit the form');
   });

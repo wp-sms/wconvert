@@ -127,7 +127,7 @@ final class DegradationTest extends TestCase
         $free = InstalledRules::free();
 
         $this->assertSame('click_element', $free->suspendedBy([['type' => 'click_element', 'selector' => '#buy']]));
-        $this->assertNull($free->intoPayload(['id' => '01A', 'triggers' => [['type' => 'click_element', 'selector' => '#buy']]]));
+        $this->assertNull($free->intoPayload(\WConvert\Tests\Unit\Support\DisplayFixture::entry(['id' => '01A', 'triggers' => [['type' => 'click_element', 'selector' => '#buy']]])));
     }
 
     /**
@@ -172,7 +172,7 @@ final class DegradationTest extends TestCase
     {
         $free = InstalledRules::free();
 
-        $this->assertNull($free->intoPayload(['id' => '01A', 'triggers' => [['type' => 'click_element']]]));
+        $this->assertNull($free->intoPayload(\WConvert\Tests\Unit\Support\DisplayFixture::entry(['id' => '01A', 'triggers' => [['type' => 'click_element']]])));
     }
 
     /**
@@ -184,17 +184,13 @@ final class DegradationTest extends TestCase
      * remove and an upgrade makes it work; the PAGE does not, because free's
      * loader has no module for it and the bytes would buy nothing.
      */
-    public function testDroppingATriggerIsFineWhileAnotherOneSurvives(): void
+    public function testAnUnavailableAuthoredRuleSuspendsEvenWithOtherRules(): void
     {
-        $free = InstalledRules::free();
-        $rules = [['type' => 'click_element', 'selector' => '#buy'], ['type' => 'page_load']];
-
-        $this->assertNull($free->suspendedBy($rules));
-        $this->assertSame($rules, $free->intoConfig($rules), 'the merchant lost a rule they could act on');
-
-        $entry = $free->intoPayload(['id' => '01A', 'triggers' => $rules]);
-
-        $this->assertSame([['type' => 'page_load']], $entry['triggers'] ?? null);
+        $entry = \WConvert\Tests\Unit\Support\DisplayFixture::entry(['id' => '01A',
+            'triggers' => [['type' => 'time_on_page', 'seconds' => 10]],
+            'conditions' => [['type' => 'query_param', 'key' => 'source']]]);
+        $this->assertSame('query_param', InstalledRules::free()->suspendedIn($entry));
+        $this->assertNull(InstalledRules::free()->intoPayload($entry));
     }
 
     /**
@@ -263,20 +259,20 @@ final class DegradationTest extends TestCase
         $rules = [['type' => 'page_load'], ['type' => 'cart_has_items']];
 
         $this->assertSame('cart_has_items', $free->suspendedBy($rules));
-        $this->assertNull($free->intoPayload([
+        $this->assertNull($free->intoPayload(\WConvert\Tests\Unit\Support\DisplayFixture::entry([
             'id' => '01A',
             'triggers' => [['type' => 'page_load']],
             'conditions' => [['type' => 'cart_has_items']],
-        ]));
+        ])));
     }
 
     /** An entry omitting the field behaves as ADR 0012's rule: it is dropped. */
-    public function testAnEntryOmittingOnAbsenceIsDropped(): void
+    public function testOnAbsenceDoesNotWeakenAuthoredPolicies(): void
     {
         $free = InstalledRules::free(self::withACartCondition([]));
         $rules = [['type' => 'page_load'], ['type' => 'cart_has_items']];
 
-        $this->assertNull($free->suspendedBy($rules));
+        $this->assertSame('cart_has_items', $free->suspendedBy($rules));
         $this->assertSame([['type' => 'page_load']], $free->intoConfig($rules));
     }
 
@@ -331,24 +327,16 @@ final class DegradationTest extends TestCase
     // THE ENQUEUE HALF: A PAYLOAD ENTRY IN, A PAYLOAD ENTRY OUT.
     // ========================================================================
 
-    public function testTheEntryComesBackWithBothAxesRepartitionedAroundTheSubstitution(): void
+    public function testAuthoredRulesAreNotSubstitutedOnTheFrontend(): void
     {
-        $entry = [
+        $entry = \WConvert\Tests\Unit\Support\DisplayFixture::entry([
             'id' => '01A',
             'display_type' => 'popup',
             'triggers' => [['type' => 'exit_intent']],
             'conditions' => [['type' => 'query_param', 'key' => 'utm_source']],
-        ];
+        ]);
 
-        $this->assertSame(
-            [
-                'id' => '01A',
-                'display_type' => 'popup',
-                'triggers' => [['type' => 'time_on_page', 'seconds' => 15]],
-                'conditions' => [],
-            ],
-            InstalledRules::free()->intoPayload($entry)
-        );
+        $this->assertNull(InstalledRules::free()->intoPayload($entry));
     }
 
     /**
@@ -356,20 +344,20 @@ final class DegradationTest extends TestCase
      * that renders an Optin reads it — on the page it would be bytes with no
      * reader, inlined into every matching page against a 2KB budget.
      */
-    public function testThePayloadCarriesNoRecordOfTheSubstitution(): void
+    public function testAnUnavailableTriggerProducesNoPayload(): void
     {
-        $entry = InstalledRules::free()->intoPayload([
+        $entry = InstalledRules::free()->intoPayload(\WConvert\Tests\Unit\Support\DisplayFixture::entry([
             'id' => '01A',
             'triggers' => [['type' => 'exit_intent']],
-        ]);
+        ]));
 
-        $this->assertSame([['type' => 'time_on_page', 'seconds' => 15]], $entry['triggers'] ?? null);
+        $this->assertNull($entry);
     }
 
     /** An entry that needed nothing doing to it comes back as it went in. */
     public function testAnEntryWithNothingToDegradeIsUnchanged(): void
     {
-        $entry = ['id' => '01A', 'triggers' => [['type' => 'page_load']], 'conditions' => []];
+        $entry = \WConvert\Tests\Unit\Support\DisplayFixture::entry(['id' => '01A', 'triggers' => [['type' => 'page_load']], 'conditions' => []]);
 
         $this->assertSame($entry, InstalledRules::free()->intoPayload($entry));
     }

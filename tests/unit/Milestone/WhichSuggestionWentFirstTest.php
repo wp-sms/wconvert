@@ -126,7 +126,7 @@ final class WhichSuggestionWentFirstTest extends TestCase
     public function testChangingWhenItShowsIsARulesChange(): void
     {
         $edited = $this->suggested;
-        $edited['rules'] = [['type' => 'exit_intent']];
+        $edited['display_rules'] = \WConvert\Tests\Unit\Support\DisplayFixture::plan([['type' => 'exit_intent']]);
 
         $this->assertSame(EditedPart::Rules, $this->change($edited));
     }
@@ -160,7 +160,7 @@ final class WhichSuggestionWentFirstTest extends TestCase
         $withCopy['template']['tree'] = SlotRoles::bind($withCopy['template']['tree'], ['headline' => 'Ten percent off'], $this->templates);
 
         $andRules = $withCopy;
-        $andRules['rules'] = [['type' => 'exit_intent']];
+        $andRules['display_rules'] = \WConvert\Tests\Unit\Support\DisplayFixture::plan([['type' => 'exit_intent']]);
 
         $andDesign = $andRules;
         $andDesign['template']['tokens']['color.accent'] = '#ff0055';
@@ -182,12 +182,11 @@ final class WhichSuggestionWentFirstTest extends TestCase
      * working rather than failing, and recording it as a rejected suggestion
      * would poison the one signal this milestone exists to collect.
      */
-    public function testBindingADestinationOrCappingFrequencyIsNotAnOverride(): void
+    public function testSettingsNotSuggestedByThePlaybookAreNotAnOverride(): void
     {
         foreach (
             [
                 'destinations' => ['01J0000000000000000000000A'],
-                'frequency' => ['maxImpressions' => 3],
                 'starts_at' => '2026-03-04T09:00',
                 'priority' => 5,
             ] as $key => $value
@@ -237,7 +236,7 @@ final class WhichSuggestionWentFirstTest extends TestCase
         $design['template']['tokens']['color.accent'] = '#ff0055';
 
         $rules = $this->suggested;
-        $rules['rules'] = [['type' => 'exit_intent']];
+        $rules['display_rules'] = \WConvert\Tests\Unit\Support\DisplayFixture::plan([['type' => 'exit_intent']]);
 
         $targeting = $this->suggested;
         $targeting['targeting'] = ['include' => [['type' => 'front_page']]];

@@ -268,17 +268,16 @@ editorTest('goal-first inline setup enables automatic placement and publishes', 
   const rulesTab = page.getByRole('tab', { name: 'Display rules', exact: true });
   await rulesTab.click();
   await expect(rulesTab).toHaveAttribute('aria-selected', 'true');
-  const placement = page.getByRole('button', { name: 'Placement Manual', exact: true });
-  await expect(placement).toBeVisible();
-  await expect(placement).toHaveAttribute('aria-expanded', 'false');
-  await placement.click();
-  await expect(placement).toHaveAttribute('aria-expanded', 'true');
+  const rulesPanel = page.getByRole('tabpanel', { name: 'Display rules', exact: true });
+  const pages = rulesPanel.getByRole('navigation', { name: 'Display setup sections', exact: true }).getByRole('button', { name: /Pages/ });
+  await pages.click();
+  await expect(pages).toHaveAttribute('aria-current', 'step');
   await expect(page.getByText('Loading placement settings…', { exact: true })).toBeHidden({ timeout: 30000 });
-  const placementPanel = page.locator('#wconvert-section-placement');
+  const placementPanel = rulesPanel.getByRole('heading', { name: 'Placement', exact: true }).locator('..');
   const method = placementPanel.getByRole('group', { name: 'Placement method', exact: true });
   await expect(method).toBeVisible();
   await expect(placementPanel.getByText('Inline placement', { exact: true })).toHaveCount(0);
-  await expect(placementPanel.getByRole('heading')).toHaveCount(0);
+  await expect(placementPanel.getByRole('heading', { name: 'Placement', exact: true })).toBeVisible();
   await expect(placementPanel.locator('fieldset')).toHaveCount(0);
   await expect(placementPanel.locator('.wconvert-overlay-placement')).toHaveCount(0);
   await expect(method).toHaveClass(/wconvert-choice-set/);
@@ -295,13 +294,12 @@ editorTest('goal-first inline setup enables automatic placement and publishes', 
   // The builder floor must wrap the shared labels without horizontal overflow;
   // RTL exercises logical padding/flow and the same coarse hit targets.
   await page.evaluate(() => { document.documentElement.dir = 'rtl'; });
-  const narrow = await page.evaluate(() => {
-    const panel = document.querySelector('#wconvert-section-placement');
-    return panel ? {
+  const narrow = await placementPanel.evaluate(panel => {
+    return {
       overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
       panelOverflow: panel.scrollWidth - panel.clientWidth,
       whiteSpace: getComputedStyle(panel.querySelector('.wconvert-choice__label')).whiteSpace,
-    } : null;
+    };
   });
   expect(narrow).not.toBeNull();
   expect(narrow.overflow).toBeLessThanOrEqual(1);
@@ -332,10 +330,9 @@ editorTest('goal-first inline setup enables automatic placement and publishes', 
   // Return to Display rules to prove the placement survives the tab round trip.
   await rulesTab.click();
   await expect(rulesTab).toHaveAttribute('aria-selected', 'true');
-  const persistedPlacement = page.getByRole('button', { name: 'Placement Automatically after content', exact: true });
-  await expect(persistedPlacement).toBeVisible();
-  if (await persistedPlacement.getAttribute('aria-expanded') !== 'true') await persistedPlacement.click();
-  await expect(persistedPlacement).toHaveAttribute('aria-expanded', 'true');
+  await pages.click();
+  await expect(pages).toHaveAttribute('aria-current', 'step');
+  await expect(placementPanel).toBeVisible();
   await expect(page.getByText('Loading placement settings…', { exact: true })).toBeHidden({ timeout: 30000 });
   await expect(page.getByRole('radio', { name: 'Automatic', exact: true })).toBeChecked();
   await expect(page.getByLabel('Position in content', { exact: true })).toHaveValue('after_content');
@@ -362,49 +359,35 @@ editorTest('goal-first inline setup enables automatic placement and publishes', 
   // The same published inline Campaign can explicitly switch from automatic
   // placement to a content region, preview fallback, and publish that choice.
   await rulesTab.click();
-  const updatedPlacement = page.getByRole('button', { name: 'Placement Automatically after content', exact: true });
-  if (await updatedPlacement.getAttribute('aria-expanded') !== 'true') await updatedPlacement.click();
+  await pages.click();
   await method.getByText('Content lock', { exact: true }).click();
   await page.getByRole('group', { name: 'Enable content lock', exact: true }).getByRole('button', { name: 'Enable content lock', exact: true }).click();
   await expect(page.getByRole('radio', { name: 'Content lock', exact: true })).toBeChecked();
   await expect(page.getByRole('radio', { name: 'Automatic', exact: true })).not.toBeChecked();
-  const rulesPanel = page.getByRole('tabpanel', { name: 'Display rules', exact: true });
-  const canvas = rulesPanel.getByRole('region', { name: 'Design canvas', exact: true });
+  const previewButton = page.getByRole('button', { name: 'Preview campaign', exact: true });
+  const previewDialog = page.getByRole('dialog', { name: 'Preview campaign', exact: true });
+  const canvas = previewDialog.getByRole('region', { name: 'Design canvas', exact: true });
   const preview = canvas.getByLabel('Preview content lock', { exact: true });
   await expect(placementPanel.getByLabel('Preview content lock', { exact: true })).toHaveCount(0);
-  // The preview stays available through a dialog when compact Display rules
-  // gives the settings the full pane.
+  // Display setup owns the full pane at every width; its preview opens in the
+  // same dialog on desktop and at the builder floor.
   for (const width of [1440, 782]) {
     await page.setViewportSize({ width, height: 1000 });
-    let activeCanvas = canvas;
-    let activePreview = preview;
-    let previewDialog;
-    let compactPreviewButton;
-    if (width === 1440) {
-      await expect(activePreview).toBeVisible();
-    } else {
-      await expect(preview).toHaveCount(0);
-      compactPreviewButton = page.getByRole('button', { name: 'Preview campaign', exact: true });
-      await compactPreviewButton.click();
-      previewDialog = page.getByRole('dialog', { name: 'Preview campaign', exact: true });
-      await expect(previewDialog).toBeVisible();
-      activeCanvas = previewDialog.getByRole('region', { name: 'Design canvas', exact: true });
-      activePreview = activeCanvas.getByLabel('Preview content lock', { exact: true });
-      await expect(activePreview).toBeVisible();
-    }
+    await expect(rulesPanel.getByRole('region', { name: 'Design canvas', exact: true })).toHaveCount(0);
+    await previewButton.click();
+    await expect(previewDialog).toBeVisible();
+    await expect(preview).toBeVisible();
     for (const direction of ['ltr', 'rtl']) {
       await page.evaluate(dir => { document.documentElement.dir = dir; }, direction);
       for (const state of ['locked', 'unlocked', 'unavailable']) {
-        await activePreview.selectOption(state);
-        const example = activeCanvas.getByLabel('Content lock example', { exact: true });
+        await preview.selectOption(state);
+        const example = canvas.getByLabel('Content lock example', { exact: true });
         await expect.poll(() => example.evaluate(node => node.scrollWidth - node.clientWidth)).toBeLessThanOrEqual(1);
       }
     }
-    if (previewDialog) {
-      await page.keyboard.press('Escape');
-      await expect(previewDialog).toBeHidden();
-      await expect(compactPreviewButton).toBeFocused();
-    }
+    await page.keyboard.press('Escape');
+    await expect(previewDialog).toBeHidden();
+    await expect(previewButton).toBeFocused();
     for (const direction of ['ltr', 'rtl']) {
       await page.evaluate(dir => { document.documentElement.dir = dir; }, direction);
       await expect.poll(() => placementPanel.evaluate(panel => panel.scrollWidth - panel.clientWidth)).toBeLessThanOrEqual(1);
@@ -416,14 +399,18 @@ editorTest('goal-first inline setup enables automatic placement and publishes', 
   }
   await page.setViewportSize({ width: 1440, height: 1000 });
   await page.evaluate(() => { document.documentElement.dir = 'ltr'; });
+  await expect(placementPanel.getByRole('button', { name: /Google/ })).toHaveCount(0);
+  await expect(placementPanel).not.toContainText('—');
+  await previewButton.click();
+  await expect(previewDialog).toBeVisible();
   await preview.selectOption('locked');
   await preview.scrollIntoViewIfNeeded();
   await page.screenshot({ path: info.outputPath('content-lock-workspace.png'), fullPage: true });
-  await expect(placementPanel.getByRole('button', { name: /Google/ })).toHaveCount(0);
-  await expect(placementPanel).not.toContainText('—');
   await preview.selectOption('unavailable');
   await expect(canvas.getByText('No submission recorded.', { exact: true })).toBeVisible();
   await preview.selectOption('locked');
+  await page.keyboard.press('Escape');
+  await expect(previewDialog).toBeHidden();
   await page.getByRole('button', { name: 'Review & publish', exact: true }).click();
   await expect(review).toContainText('Content lock: selected region');
   await expect(publish).toBeEnabled();

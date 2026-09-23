@@ -1,3 +1,4 @@
+import { displayEntry } from '../../../tests/js/support/display-entry';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { FREE_MODULES } from '@loader/modules';
 import { start } from '@loader/shell';
@@ -95,12 +96,12 @@ describe("Pro's loader entry", () => {
  * what a device is.
  */
 describe('one Optin carrying both premium Triggers', () => {
-  const bothGestures = (): PayloadEntry => ({
+  const bothGestures = (): PayloadEntry => (displayEntry({
     id: 'a',
     display_type: 'popup',
     triggers: [{ type: 'exit_intent' }, { type: 'scroll_up' }],
     conditions: [],
-  });
+  }));
 
   /** A store that starts empty and stays on this test, never localStorage. */
   const fakeStore = (): Store => {

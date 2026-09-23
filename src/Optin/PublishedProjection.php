@@ -9,11 +9,8 @@ defined('ABSPATH') || exit;
 /**
  * Rows in, published set out — pure (ADR 0003).
  *
- * This is also **publish time**, which is where ADR 0005 puts the one thing
- * PHP does with the two client axes: an Optin's flat rule list is split into
- * `triggers` and `conditions` here rather than by the loader on every page
- * view. Kind is a fixed property of the type, so the manifest already knows
- * the answer.
+ * The canonical grouped display plan is validated here and shipped without
+ * flattening. Account leaves are reduced later for each request (ADR 0104).
  *
  * The vocabulary is passed in rather than read here. It is the manifest, and
  * a projection that reads a file off disk is no longer pure — which is the
@@ -204,7 +201,7 @@ final class PublishedProjection
             $family = $payload[self::ARM][0] ?? $payload['campaign'] ?? $entry['id'];
             if (in_array(false, $modes[$family], true)) {
                 unset($payload['content_lock']);
-                if (!isset($payload['teaser'])) unset($payload['campaign']);
+                // Family pacing survives even when lock modes cannot be composed.
             }
         }
         unset($entry, $payload);
@@ -364,12 +361,10 @@ final class PublishedProjection
         // (ADR 0005).
         $targeting = $published['targeting'] ?? [];
 
-        // The flat list is CONSUMED, not shipped beside its own partition:
-        // two spellings of one rule set in one payload is a second source of
-        // truth the loader would have to choose between, and bytes on every
-        // page view. It is not in `SHIPPED`, so the consumption is now
-        // structural rather than an `unset()` somebody has to keep.
-        $rules = $published['rules'] ?? [];
+        // Only the canonical saved plan can publish; old development drafts
+        // must be repaired explicitly in the builder (ADR 0104).
+        $plan = $published['display_rules'] ?? [];
+        if (!is_array($plan) || \WConvert\Rules\DisplayPlan::issues($plan, $vocabulary) !== []) return null;
 
         // ONLY THE KEYS SOMEBODY WROTE DOWN. Everything a merchant, a
         // [[Playbook]] or a future ticket has put in `config` stays on the
@@ -395,7 +390,7 @@ final class PublishedProjection
 
         if (isset($payload['content_lock'])) {
             $lock = ContentLock::normalize($payload['content_lock']);
-            if ($lock === null || !ContentLock::compatible($published, $vocabulary->partition($rules)['triggers'])) {
+            if ($lock === null || !ContentLock::compatible($published, \WConvert\Rules\DisplayPlan::compatibilityTriggers($plan))) {
                 unset($payload['content_lock']);
             } else {
                 $payload['content_lock'] = $lock;
@@ -426,7 +421,7 @@ final class PublishedProjection
 
         if ($arm !== null) {
             $payload[self::ARM] = $arm;
-            if (isset($payload['teaser']) || isset($payload['content_lock'])) $payload['campaign'] = $arm[0];
+            $payload['campaign'] = $arm[0];
 
             // Only a child, and only where it renders in place. The parent's
             // anchor IS its own id, so writing this for it would be the same
@@ -461,7 +456,8 @@ final class PublishedProjection
             'payload' => array_merge(
                 $payload,
                 Schedule::windowIn($published, $siteZone),
-                $vocabulary->partition($rules)
+                ['display_rules' => $plan],
+                ($row['goal'] ?? '') === \WConvert\Goal\Goal::RecoverCart->value ? ['required_rules' => [['type' => 'cart_has_items']]] : []
             ),
         ];
     }

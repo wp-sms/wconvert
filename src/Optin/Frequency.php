@@ -60,6 +60,7 @@ final class Frequency
          */
         public readonly bool $stopAfterDismiss = true,
         public readonly bool $stopAfterConversion = true,
+        public readonly ?int $maxPerSession = null,
     ) {
     }
 
@@ -73,6 +74,7 @@ final class Frequency
             self::positive($config['cooldownDays'] ?? null),
             ($config['stopAfterDismiss'] ?? true) !== false,
             ($config['stopAfterConversion'] ?? true) !== false,
+            self::positive($config['maxPerSession'] ?? null),
         );
     }
 
@@ -102,6 +104,7 @@ final class Frequency
     {
         return $this->maxImpressions === null
             && $this->cooldownDays === null
+            && $this->maxPerSession === null
             && !$this->stopAfterDismiss
             && !$this->stopAfterConversion;
     }
@@ -122,7 +125,7 @@ final class Frequency
      */
     public function toArray(): array
     {
-        $out = [];
+        $out = $this->maxPerSession === null ? [] : ['maxPerSession' => $this->maxPerSession];
 
         if ($this->maxImpressions !== null) {
             $out['maxImpressions'] = $this->maxImpressions;

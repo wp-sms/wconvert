@@ -1,3 +1,4 @@
+import { sessionCounts } from '../session-counts';
 import { createPanel } from './panel';
 import { explain, type PresentationChecks } from './explain';
 import { funnel } from './report';
@@ -50,6 +51,7 @@ import type { ServerReport } from './report';
  * bundle BEFORE the loader for the same reason, so the snapshot is taken
  * before the loader's own `boot()` can write to it.
  */
+const SESSION_AT_START = sessionCounts().read();
 const AT_THE_START: VisitorState = loadState(persistentStore(STATE_KEY));
 
 const INSPECTOR_ELEMENT_ID = 'wconvert-inspector';
@@ -123,6 +125,9 @@ export function runInspector(loader: Loader, narrow?: PayloadNarrowing, presenta
       siteFrequency,
       day: dayOf(instant),
       now: instant,
+      sessionCounts: SESSION_AT_START,
+      elapsedSeconds: performance.now() / 1000,
+      visible: !document.hidden,
       shown: new Set(),
       overlayDone: false,
     }, presentation);
@@ -138,6 +143,9 @@ export function runInspector(loader: Loader, narrow?: PayloadNarrowing, presenta
 
   attach();
   render();
+  document.addEventListener('visibilitychange', render);
+  const deadlines = entries.flatMap(entry => [entry.starts_at, entry.ends_at, entry.display_rules?.opening.mode === 'automatic' ? Date.now() + (entry.display_rules.opening.minimum_seconds ?? 0) * 1000 - performance.now() : undefined]);
+  for (const at of deadlines) if (at !== undefined && at > Date.now()) setTimeout(render, Math.min(at - Date.now(), 2147483647));
 }
 
 /**

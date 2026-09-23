@@ -1,6 +1,6 @@
 import type { Frequency, PayloadEntry, Rule, RuleEvaluator, VisitorState } from './types';
 import { isAllowed } from './frequency';
-import { isWithinWindow } from './schedule';
+import { audienceMatches, audienceRules, openingMatches, openingRules, type Answer } from './display-rules';
 import { SITE_SLOT } from './state';
 
 /**
@@ -94,6 +94,10 @@ export interface Decision {
   readonly shown: ReadonlySet<string>;
   /** Has an overlay already had this page view? Set on SHOW, so a dismissal cannot un-set it. */
   readonly overlayDone: boolean;
+  readonly elapsedSeconds?: number;
+  readonly visible?: boolean;
+  readonly sessionCounts?: Readonly<Record<string, number>>;
+  readonly activeOverlay?: string;
 }
 
 /**
@@ -113,10 +117,29 @@ export const isOverlay = (entry: PayloadEntry): boolean => entry.display_type !=
  * Trigger, all Conditions. Questions about the rules themselves, like which
  * modules this page needs or which need consent, are asked of all of them.
  */
-export const rulesOf = (entry: PayloadEntry): readonly Rule[] => [
-  ...(entry.triggers ?? []),
-  ...(entry.conditions ?? []),
-];
+export const rulesOf = (entry: PayloadEntry): readonly Rule[] => entry.display_rules
+  ? [...openingRules(entry.display_rules), ...audienceRules(entry.display_rules), ...(entry.required_rules ?? [])] : [];
+
+/** Shared by automatic opening, explicit activation, recovery, and diagnostics. */
+export function audienceAnswer(entry: PayloadEntry, decision: Decision): Answer {
+  if (!entry.display_rules) return false;
+  const read = (rule: Rule): Answer => readRule(rule, decision);
+  const required = entry.required_rules ?? [];
+  for (const rule of required) { const answer = read(rule); if (answer !== true) return answer; }
+  return audienceMatches(entry.display_rules.audience, read);
+}
+export function readRule(rule: Rule, decision: Decision): Answer {
+  if (decision.withheld.has(rule.type)) return 'blocked';
+  try { return decision.evaluators.get(rule.type)?.holds(rule) === true; } catch { return false; }
+}
+export function explicitBlock(entry: PayloadEntry, decision: Decision): string | null {
+  if ((entry.starts_at !== undefined && decision.now < entry.starts_at) || (entry.ends_at !== undefined && decision.now >= entry.ends_at)) return 'schedule';
+  if (entry.frequency?.stopAfterConversion !== false && decision.state[entry.id]?.c === 1) return 'conversion';
+  if (decision.siteFrequency && decision.siteFrequency.stopAfterConversion !== false && decision.state[SITE_SLOT]?.c === 1) return 'site_conversion';
+  if (decision.activeOverlay && decision.activeOverlay !== entry.id) return 'collision';
+  const answer = audienceAnswer(entry, decision);
+  return answer === true ? null : answer === 'blocked' ? 'consent' : 'condition';
+}
 
 /** Nothing is live except what could still change, so `capped`, `inert` and `shown` are not. */
 const STILL_LIVE: ReadonlySet<Standing> = new Set<Standing>(['ready', 'waiting', 'ineligible', 'blocked']);
@@ -153,7 +176,8 @@ export function decide(decision: Decision): Verdict {
     }
   }
 
-  const show = arbitrate(ready, decision.overlayDone);
+  const explicit = ready.filter(entry => entry.display_rules?.opening.mode === 'click');
+  const show = arbitrate(explicit.length ? explicit : ready, Boolean(decision.activeOverlay) || (decision.overlayDone && !explicit.length));
   const showing = new Set(show.map((entry) => entry.id));
   const overlayClosed = decision.overlayDone || show.some(isOverlay);
 
@@ -166,86 +190,32 @@ export function decide(decision: Decision): Verdict {
     live: candidates.some(
       (candidate) =>
         STILL_LIVE.has(candidate.standing) &&
-        !showing.has(candidate.id) &&
-        (!candidate.overlay || !overlayClosed),
+        (!showing.has(candidate.id) || decision.entries.find(entry => entry.id === candidate.id)?.display_rules?.opening.mode === 'click') &&
+        (!candidate.overlay || !overlayClosed || decision.entries.find(entry => entry.id === candidate.id)?.display_rules?.opening.mode === 'click'),
     ),
     candidates,
   };
 }
 
 function standingOf(entry: PayloadEntry, decision: Decision, siteCapped: boolean): Standing {
-  if (decision.shown.has(entry.id)) {
-    return 'shown';
-  }
-
-  // ==========================================================================
-  // THE SCHEDULE AND THE TWO SCOPES OF THE ALLOWANCE. ALL THREE ARE `capped`.
-  // ==========================================================================
-  // `capped` already means *the allowance is spent, and this cannot change on
-  // this page view*, which is what being outside a scheduled window is. A
-  // seventh member of `Standing` distinguishing the two is the thing to
-  // resist: it widens a vocabulary the whole design keeps closed, to carry a
-  // distinction `inspect/explain.ts` renders as a sentence beside the one word
-  // (ADR 0047).
-  //
-  // The schedule is asked FIRST because it is the more surprising answer and
-  // the one the merchant can act on: "your sale has not started" sends them to
-  // a date they set, where "this browser has had its allowance" is a fact
-  // about one device. The inspector reports whichever gate this order picked.
-  //
-  // The SITE's allowance is asked before the Optin's own, and that order is
-  // the veto written down: it holds whatever this Optin's own Frequency says,
-  // so reporting the Optin's would send a merchant to a setting that decided
-  // nothing.
-  if (
-    !isWithinWindow(entry, decision.now) ||
-    siteCapped ||
-    !isAllowed(entry.frequency, decision.state[entry.id], decision.day)
-  ) {
-    return 'capped';
-  }
-
-  const triggers = entry.triggers ?? [];
-  const conditions = entry.conditions ?? [];
-
-  // Consent is asked before evaluation, not folded into it. An Optin whose
-  // rules need a category the visitor has withheld is NOT EVALUATED rather
-  // than evaluated-as-false, so it can still fire later in the same page view
-  // when consent arrives (issue #11).
-  if (rulesOf(entry).some((rule) => decision.withheld.has(rule.type))) {
-    return 'blocked';
-  }
-
-  // ADR 0012's zero-trigger loss, named rather than hidden inside "waiting".
-  // An Optin with an empty trigger list, or whose every trigger names a type
-  // this build has no module for, can NEVER fire — so calling it "waiting"
-  // holds a timer open for the rest of the visit waiting for a moment that
-  // cannot arrive. Checked before the conditions, because a failing condition
-  // is temporary and this is not.
-  if (!triggers.some((rule) => decision.evaluators.has(rule.type))) {
-    return 'inert';
-  }
-
-  const holds = (rule: Rule): boolean => {
-    try {
-      return decision.evaluators.get(rule.type)?.holds(rule) === true;
-    } catch {
-      // One rule reaching for something this browser does not have must not
-      // take every Optin on the page down with it. That is ADR 0004's failure
-      // mode exactly — silent, total, one line in a console nobody reads — and
-      // `decide` runs inside scroll handlers and timers where a throw is
-      // uncatchable from anywhere useful. A rule that cannot answer does not
-      // hold, which is the same fail-shut rule an unknown type already gets.
-      return false;
-    }
-  };
-
-  // Conditions first, and re-read on every call: this is the instant.
-  if (!conditions.every(holds)) {
-    return 'ineligible';
-  }
-
-  return triggers.some(holds) ? 'ready' : 'waiting';
+  const plan = entry.display_rules;
+  if (!plan || (plan.opening.mode !== 'immediate' && !plan.opening.rules.length)) return 'inert';
+  const explicit = plan.opening.mode === 'click';
+  if (!explicit && decision.shown.has(entry.id)) return 'shown';
+  // Loss of any supplied implementation suspends the whole authored policy.
+  if (rulesOf(entry).some(rule => !decision.evaluators.has(rule.type) && !decision.withheld.has(rule.type))) return 'inert';
+  if (entry.ends_at !== undefined && decision.now >= entry.ends_at) return 'capped';
+  if (entry.starts_at !== undefined && decision.now < entry.starts_at) return 'waiting';
+  if (explicit) {
+    const block = explicitBlock(entry, decision);
+    if (block) return block === 'consent' ? 'blocked' : 'ineligible';
+  } else if (siteCapped || !isAllowed(entry.frequency, decision.state[entry.id], decision.day)
+    || (entry.frequency?.maxPerSession !== undefined && (decision.sessionCounts?.[entry.campaign ?? entry.id] ?? 0) >= entry.frequency.maxPerSession)) return 'capped';
+  const audience = audienceAnswer(entry, decision);
+  if (audience !== true) return audience === 'blocked' ? 'blocked' : 'ineligible';
+  if (decision.visible === false) return 'waiting';
+  const opening = openingMatches(plan.opening, rule => readRule(rule, decision), decision.elapsedSeconds ?? 0);
+  return opening === true ? 'ready' : opening === 'blocked' ? 'blocked' : 'waiting';
 }
 
 /**

@@ -74,6 +74,9 @@ final class Payload
             // nothing was destroyed. The Optin list is where the merchant
             // reads why (ADR 0027).
             if ($entry !== null) {
+                $plan = \WConvert\Rules\DisplayPlan::forRequest($entry['display_rules'], $context);
+                if ($plan === null) continue;
+                $entry['display_rules'] = $plan;
                 $entries[] = $entry;
             }
         }

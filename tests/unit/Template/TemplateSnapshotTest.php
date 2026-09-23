@@ -139,7 +139,7 @@ final class TemplateSnapshotTest extends TestCase
         $set = PublishedProjection::build(
             [[
                 'id' => '01JQ00000000000000000000AA',
-                'published_config' => (string) json_encode($config),
+                'published_config' => (string) json_encode($config + ['display_rules' => \WConvert\Rules\DisplayPlan::immediate()]),
                 'published_at' => '2026-08-25 09:00:00',
                 'deleted_at' => null,
             ]],

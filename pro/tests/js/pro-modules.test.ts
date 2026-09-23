@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import manifest from '../../../resources/rules/manifest.json';
 import { ELITE_MODULES } from '../../resources/loader/src/modules';
-import type { LoaderModule } from '@loader/types';
+import type { LoaderModule, Rule } from '@loader/types';
 
 /**
  * What Pro's modules actually answer.
@@ -46,92 +46,34 @@ const scrollTo = (y: number): void => {
   window.dispatchEvent(new Event('scroll'));
 };
 
+/** Observe during the synchronous gesture, then prove it cannot be replayed. */
+function pulse(type: string, rule: Rule = { type }) {
+  const answers: boolean[] = [];
+  const evaluator = moduleFor(type).create(() => answers.push(evaluator.holds(rule)));
+  return { answers, evaluator };
+}
 describe('click_element', () => {
-  const clickOn = (html: string, selector: string): { fired: boolean; stop: () => void } => {
+  it.each([
+    ['<button id="target" class="buy">Buy</button>', '.buy', true],
+    ['<button class="buy"><span id="target">Buy</span></button>', '.buy', true],
+    ['<button id="target">Elsewhere</button>', '.buy', false],
+    ['<button id="target">Buy</button>', '', false],
+    ['<button id="target">Buy</button>', '   ', false],
+    ['<button id="target">Buy</button>', '((', false],
+  ])('evaluates selector %s %s only during the click', (html, selector, expected) => {
     document.body.innerHTML = html;
-
-    const evaluator = moduleFor('click_element').create(vi.fn());
-
-    document.querySelector('#target')?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-
-    return { fired: evaluator.holds({ type: 'click_element', selector }), stop: () => evaluator.stop?.() };
-  };
-
-  it('fires once the visitor clicks something the selector matches', () => {
-    expect(clickOn('<button id="target" class="buy">Buy</button>', '.buy').fired).toBe(true);
-  });
-
-  /**
-   * A click on a child of the named element counts, which is what `closest`
-   * buys: a merchant naming `.buy` means the button, and a visitor clicking
-   * the word inside it has clicked the button.
-   */
-  it('fires when the click lands inside what the selector matches', () => {
-    expect(clickOn('<button class="buy"><span id="target">Buy</span></button>', '.buy').fired).toBe(true);
-  });
-
-  it('does not fire on a click somewhere else', () => {
-    expect(clickOn('<a id="target" href="#x">Elsewhere</a><button class="buy">Buy</button>', '.buy').fired).toBe(false);
-  });
-
-  /**
-   * **The selector is author-only, and a blank one never fires** (ADR 0012).
-   * The alternatives are "fires on any click", which is a popup on the first
-   * click anywhere, and refusing to save, which would refuse the very state
-   * prefill hands the merchant to complete.
-   */
-  it('never fires while the selector is blank', () => {
-    document.body.innerHTML = '<button id="target">Buy</button>';
-
-    const evaluator = moduleFor('click_element').create(vi.fn());
-
-    document.querySelector('#target')?.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-
-    expect(evaluator.holds({ type: 'click_element' })).toBe(false);
-    expect(evaluator.holds({ type: 'click_element', selector: '   ' })).toBe(false);
-  });
-
-  /**
-   * A selector a merchant typed, which `closest` throws on rather than
-   * returning null for. False, not a crash that takes every other Optin on
-   * the page down with it.
-   */
-  it('answers false for a selector that is not one, rather than throwing', () => {
-    expect(clickOn('<button id="target" class="buy">Buy</button>', '((').fired).toBe(false);
-  });
-
-  /**
-   * Capture phase, so a theme handler that stops propagation on the
-   * merchant's own button cannot make the Trigger it was chosen for
-   * unfireable.
-   */
-  it('fires even where the page stops the click propagating', () => {
-    document.body.innerHTML = '<button id="target" class="buy">Buy</button>';
-
-    const button = document.querySelector('#target') as HTMLElement;
-
-    button.addEventListener('click', (event) => event.stopPropagation());
-
-    const evaluator = moduleFor('click_element').create(vi.fn());
-
+    const rule = { type: 'click_element', selector };
+    const { answers, evaluator } = pulse('click_element', rule);
+    const button = document.querySelector('#target')!;
+    button.addEventListener('click', event => event.stopPropagation());
     button.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-
-    expect(evaluator.holds({ type: 'click_element', selector: '.buy' })).toBe(true);
-  });
-
-  it('asks the shell to decide again when something is clicked, and detaches when told to', () => {
-    document.body.innerHTML = '<button id="target" class="buy">Buy</button>';
-
-    const changed = vi.fn();
-    const evaluator = moduleFor('click_element').create(changed);
-    const button = document.querySelector('#target') as HTMLElement;
-
+    expect(answers).toEqual([expected]);
+    expect(evaluator.holds(rule)).toBe(false);
     button.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-    expect(changed).toHaveBeenCalledTimes(1);
-
+    expect(answers).toEqual([expected, expected]);
     evaluator.stop?.();
     button.dispatchEvent(new MouseEvent('click', { bubbles: true }));
-    expect(changed).toHaveBeenCalledTimes(1);
+    expect(answers).toHaveLength(2);
   });
 });
 
@@ -190,227 +132,47 @@ describe('query_param', () => {
   });
 });
 
-describe('exit_intent', () => {
-  /**
-   * The gesture is the pointer leaving through the TOP of the viewport — the
-   * direction the tab strip, the address bar and the close button are in.
-   * Leaving through a side or the bottom is reaching for a scrollbar or the
-   * dock.
-   */
-  it('fires once the pointer leaves through the top of the viewport', () => {
-    const evaluator = moduleFor('exit_intent').create(vi.fn());
-
-    expect(evaluator.holds({ type: 'exit_intent' })).toBe(false);
-
-    leaveThroughTheTop();
-
-    expect(evaluator.holds({ type: 'exit_intent' })).toBe(true);
-    evaluator.stop?.();
-  });
-
-  /**
-   * `mouseout` fires on every move between two elements on the page, which is
-   * most of what a mouse does. A move that has somewhere to go is not a
-   * departure, and reading it as one would fire on the first hover.
-   */
-  it('does not fire on a move from one element to another', () => {
-    const evaluator = moduleFor('exit_intent').create(vi.fn());
-
-    document.body.innerHTML = '<a id="link" href="#x">Elsewhere</a>';
-    document.dispatchEvent(
-      new MouseEvent('mouseout', { clientY: 0, relatedTarget: document.querySelector('#link') }),
-    );
-
-    expect(evaluator.holds({ type: 'exit_intent' })).toBe(false);
-    evaluator.stop?.();
-  });
-
-  it('does not fire on the pointer leaving through a side or the bottom', () => {
-    const evaluator = moduleFor('exit_intent').create(vi.fn());
-
+describe('fresh exit and scroll-up gestures', () => {
+  it('signals each top exit, never a side exit or movement between elements', () => {
+    const { answers, evaluator } = pulse('exit_intent');
+    document.body.innerHTML = '<button id="inside">Inside</button>';
+    document.dispatchEvent(new MouseEvent('mouseout', { clientY: 0, relatedTarget: document.querySelector('#inside') }));
     document.dispatchEvent(new MouseEvent('mouseout', { clientY: 400, relatedTarget: null }));
-
+    expect(answers).toEqual([]);
+    leaveThroughTheTop(); leaveThroughTheTop();
+    expect(answers).toEqual([true, true]);
     expect(evaluator.holds({ type: 'exit_intent' })).toBe(false);
-    evaluator.stop?.();
+    evaluator.stop?.(); leaveThroughTheTop();
+    expect(answers).toHaveLength(2);
   });
-
-  /**
-   * The same high-water posture `scroll_depth` takes, for the same reason:
-   * coming back does not un-intend leaving, and a Trigger that un-fired would
-   * be answerable differently depending on where the mouse happened to be at
-   * the instant a Condition became true.
-   */
-  it('stays fired once it has fired', () => {
-    const evaluator = moduleFor('exit_intent').create(vi.fn());
-
-    leaveThroughTheTop();
-    document.dispatchEvent(new MouseEvent('mouseover', {}));
-
-    expect(evaluator.holds({ type: 'exit_intent' })).toBe(true);
-    evaluator.stop?.();
-  });
-
-  /**
-   * Once, on the transition. `scroll_depth` asks on every scroll because each
-   * rule carries its own threshold; this one is a boolean with no params, so
-   * a second ask has nothing new to answer.
-   */
-  it('asks the shell to decide again on the gesture, and detaches when told to', () => {
-    const changed = vi.fn();
-    const evaluator = moduleFor('exit_intent').create(changed);
-
-    leaveThroughTheTop();
-    leaveThroughTheTop();
-    expect(changed).toHaveBeenCalledTimes(1);
-
-    evaluator.stop?.();
-    leaveThroughTheTop();
-    expect(changed).toHaveBeenCalledTimes(1);
-  });
-});
-
-describe('scroll_up', () => {
-  it('does not fire while the visitor is still going down', () => {
+  it('requires a substantial upward movement after reaching depth', () => {
     scrolledTo(0);
-    const evaluator = moduleFor('scroll_up').create(vi.fn());
-
+    const { answers, evaluator } = pulse('scroll_up');
+    scrollTo(250); scrollTo(0); scrollTo(1200); scrollTo(1150);
+    expect(answers).toEqual([]);
+    scrollTo(900);
+    expect(answers).toEqual([true]);
+    expect(evaluator.holds({ type: 'scroll_up' })).toBe(false);
     scrollTo(600);
-    scrollTo(1_200);
-
-    expect(evaluator.holds({ type: 'scroll_up' })).toBe(false);
+    expect(answers).toEqual([true, true]);
+    evaluator.stop?.(); scrollTo(1600); scrollTo(1000);
+    expect(answers).toHaveLength(2);
+  });
+  it('uses the existing depth when delayed scripts attach', () => {
+    scrolledTo(1500);
+    const { answers, evaluator } = pulse('scroll_up');
+    scrollTo(1200);
+    expect(answers).toEqual([true]);
     evaluator.stop?.();
   });
-
-  it('fires once they turn back and rise far enough from the deepest point', () => {
+  it('does not replay exit on a later scroll gesture', () => {
     scrolledTo(0);
-    const evaluator = moduleFor('scroll_up').create(vi.fn());
-
-    scrollTo(1_200);
-    scrollTo(900);
-
-    expect(evaluator.holds({ type: 'scroll_up' })).toBe(true);
-    evaluator.stop?.();
-  });
-
-  /**
-   * A few pixels back up is reading, not leaving. Without a rise threshold
-   * this fires on the first overshoot of a tap-scroll, which on a phone is
-   * every scroll.
-   */
-  it('does not fire on a small correction', () => {
-    scrolledTo(0);
-    const evaluator = moduleFor('scroll_up').create(vi.fn());
-
-    scrollTo(1_200);
-    scrollTo(1_150);
-
-    expect(evaluator.holds({ type: 'scroll_up' })).toBe(false);
-    evaluator.stop?.();
-  });
-
-  /**
-   * Near the top there is nothing to come back FROM. A visitor who has barely
-   * entered the page and nudges up is arriving, and firing there makes this a
-   * page-load Trigger wearing a gesture's name.
-   */
-  it('does not fire for a visitor who never went deep', () => {
-    scrolledTo(0);
-    const evaluator = moduleFor('scroll_up').create(vi.fn());
-
-    scrollTo(250);
-    scrollTo(0);
-
-    expect(evaluator.holds({ type: 'scroll_up' })).toBe(false);
-    evaluator.stop?.();
-  });
-
-  /**
-   * Read at instantiation, before any listener is attached — the same finding
-   * `scroll_depth` is built on. Under delayed JS the visitor is already deep
-   * when the loader runs, and the scrolls we missed are never replayed, so a
-   * module starting from 0 would read their first rise as a descent.
-   */
-  it('starts from where the visitor already is, not from the top', () => {
-    scrolledTo(1_500);
-    const evaluator = moduleFor('scroll_up').create(vi.fn());
-
-    scrollTo(1_200);
-
-    expect(evaluator.holds({ type: 'scroll_up' })).toBe(true);
-    evaluator.stop?.();
-  });
-
-  it('stays fired once it has fired', () => {
-    scrolledTo(0);
-    const evaluator = moduleFor('scroll_up').create(vi.fn());
-
-    scrollTo(1_200);
-    scrollTo(900);
-    scrollTo(1_600);
-
-    expect(evaluator.holds({ type: 'scroll_up' })).toBe(true);
-    evaluator.stop?.();
-  });
-
-  it('asks the shell to decide again on the gesture, and detaches when told to', () => {
-    scrolledTo(0);
-    const changed = vi.fn();
-    const evaluator = moduleFor('scroll_up').create(changed);
-
-    scrollTo(1_200);
-    scrollTo(900);
-    scrollTo(600);
-    expect(changed).toHaveBeenCalledTimes(1);
-
-    evaluator.stop?.();
-    scrollTo(1_600);
-    scrollTo(1_000);
-    expect(changed).toHaveBeenCalledTimes(1);
-  });
-});
-
-/**
- * ============================================================================
- * TWO TYPES, NOT ONE TYPE WITH TWO MEANINGS.
- * ============================================================================
- * `scroll_up` is `exit_intent`'s **distinct mobile sibling** (#32), and the
- * specific mistake this pair exists not to make is a single `exit_intent`
- * type that quietly means `mouseout` on a desktop and an upward scroll on a
- * phone. That type would be unreportable — "why didn't my popup show" has no
- * per-rule answer when one row means two things — and unpairable, because a
- * merchant could never ask for one without the other.
- *
- * So they evaluate independently, and both may sit on one Optin: the gesture
- * a visitor's device can actually make is the one that fires, and the other
- * simply never does. Neither is device-guarded, deliberately — a merchant who
- * wants one confined to a phone pairs it with the `device` Condition, which is
- * what the second client axis is for (ADR 0005).
- */
-describe('exit_intent and scroll_up on one Optin', () => {
-  it('evaluate independently, and each answers only for its own gesture', () => {
-    scrolledTo(0);
-    const exit = moduleFor('exit_intent').create(vi.fn());
-    const up = moduleFor('scroll_up').create(vi.fn());
-
+    const exit = pulse('exit_intent'); const up = pulse('scroll_up');
     leaveThroughTheTop();
-
-    expect(exit.holds({ type: 'exit_intent' })).toBe(true);
-    expect(up.holds({ type: 'scroll_up' })).toBe(false);
-
-    scrollTo(1_200);
-    scrollTo(900);
-
-    expect(up.holds({ type: 'scroll_up' })).toBe(true);
-
-    exit.stop?.();
-    up.stop?.();
-  });
-
-  it('are two entries in the module set, with two ids', () => {
-    const ids = ELITE_MODULES.map((module) => module.id);
-
-    expect(ids).toContain('exit_intent');
-    expect(ids).toContain('scroll_up');
+    expect(exit.answers).toEqual([true]); expect(up.answers).toEqual([]);
+    scrollTo(1200); scrollTo(900);
+    expect(up.answers).toEqual([true]); expect(exit.evaluator.holds({ type: 'exit_intent' })).toBe(false);
+    exit.evaluator.stop?.(); up.evaluator.stop?.();
   });
 });
 

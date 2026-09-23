@@ -115,6 +115,8 @@ signals PHP does not have: `matchMedia`, `performance.now()`, scroll position. A
 "simulated visitor state" form makes the merchant supply the answer to their own
 question.
 
+> **Amended by [ADR 0104](0104-display-workspace-uses-bounded-groups-and-fresh-gestures.md):** This objection remains correct for live diagnosis. A separate, clearly hypothetical draft tester now shares the pure matcher and performs no live-page requests or writes. Live inspection still requires the actual authenticated request, reports published rules and initial browser allowance, and explains groups and withheld leaves separately.
+
 **A REST route** — and that is load-bearing rather than incidental. Four tests
 assert exact route counts (`DestinationRoutesTest`, `BeaconControllerTest`,
 `CaptureControllerTest`, `BuilderRoutesTest`) and

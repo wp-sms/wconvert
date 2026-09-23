@@ -1,3 +1,4 @@
+import { displayPlan } from './support/display-entry';
 import { CAPTURE_OUTCOME, CLICK_OUTCOME } from './support/outcomes';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
@@ -180,7 +181,7 @@ function optin(over: Record<string, unknown> = {}) {
     deleted_at: null,
     suspended: null,
     sibling_act: null,
-    config: { template_id: 'centred-card', template: { tree: ENTRY.tree, tokens: ENTRY.tokens } },
+    config: { display_rules: displayPlan([{ type: 'page_load' }]), template_id: 'centred-card', template: { tree: ENTRY.tree, tokens: ENTRY.tokens } },
     ...over,
   };
 }
@@ -387,7 +388,7 @@ describe('the goal picker', () => {
   it('allows choosing a draft Goal before adjusting its design', async () => {
     builder.getOptin.mockResolvedValue(
       optin({
-        config: { template_id: 'offer-panel', template: { tree: OFFER.tree, tokens: OFFER.tokens } },
+        config: { display_rules: displayPlan([{ type: 'page_load' }]), template_id: 'offer-panel', template: { tree: OFFER.tree, tokens: OFFER.tokens } },
       }),
     );
 
@@ -428,7 +429,7 @@ describe('a goal that collects contacts, over a design that asks for nothing', (
   it('cannot publish a capture Goal with a click-only design', async () => {
     builder.getOptin.mockResolvedValue(
       optin({
-        config: { template_id: 'offer-panel', template: { tree: OFFER.tree, tokens: OFFER.tokens } },
+        config: { display_rules: displayPlan([{ type: 'page_load' }]), template_id: 'offer-panel', template: { tree: OFFER.tree, tokens: OFFER.tokens } },
       }),
     );
 
@@ -445,7 +446,7 @@ describe('a goal that collects contacts, over a design that asks for nothing', (
     builder.getOptin.mockResolvedValue(
       optin({
         goal: 'promote_offer',
-        config: { template_id: 'offer-panel', template: { tree: OFFER.tree, tokens: OFFER.tokens } },
+        config: { display_rules: displayPlan([{ type: 'page_load' }]), template_id: 'offer-panel', template: { tree: OFFER.tree, tokens: OFFER.tokens } },
       }),
     );
 

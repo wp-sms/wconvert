@@ -87,7 +87,7 @@ add_action('init', static function (): void {
         } else {
             $config['inline_placement'] = $placement;
         }
-        $config['rules'] = $rules !== [] ? $rules : [['type' => 'page_load']];
+        $config['display_rules'] = \WConvert\Rules\DisplayPlan::fromCatalogue($rules !== [] ? $rules : [['type' => 'page_load']], \WConvert\Rules\RuleVocabulary::fromManifest());
         if ($priority !== 0) {
             $config['priority'] = $priority;
         }

@@ -1,3 +1,4 @@
+import { displayEntry } from './support/display-entry';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { boot } from '@loader/boot';
 import { createLoader } from '@loader/engine';
@@ -26,12 +27,12 @@ function inlinePayload(entries: readonly PayloadEntry[], text?: string): void {
   document.body.appendChild(element);
 }
 
-const showsAtOnce = (id: string): PayloadEntry => ({
+const showsAtOnce = (id: string): PayloadEntry => (displayEntry({
   id,
   display_type: 'popup',
   triggers: [{ type: 'page_load' }],
   conditions: [],
-});
+}));
 
 function pretendDocumentIsStillParsing(): void {
   vi.spyOn(document, 'readyState', 'get').mockReturnValue('loading');
@@ -136,7 +137,7 @@ describe('time on page, when the loader executes seconds late', () => {
 
     const presenter = recordingPresenter();
     inlinePayload([
-      { id: 'a', display_type: 'popup', triggers: [{ type: 'time_on_page', seconds: 5 }], conditions: [] },
+      displayEntry({ id: 'a', display_type: 'popup', triggers: [{ type: 'time_on_page', seconds: 5 }], conditions: [] }),
     ]);
 
     boot(loader, presenter);
@@ -149,7 +150,7 @@ describe('time on page, when the loader executes seconds late', () => {
 
     const presenter = recordingPresenter();
     inlinePayload([
-      { id: 'a', display_type: 'popup', triggers: [{ type: 'time_on_page', seconds: 5 }], conditions: [] },
+      displayEntry({ id: 'a', display_type: 'popup', triggers: [{ type: 'time_on_page', seconds: 5 }], conditions: [] }),
     ]);
 
     boot(loader, presenter);

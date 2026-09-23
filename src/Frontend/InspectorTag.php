@@ -127,9 +127,11 @@ final class InspectorTag
         RequestContext $context
     ): array {
         $targeting = [];
+        $audience = [];
 
         foreach (PublishedOptin::fromSet($publishedSet) as $optin) {
             $targeting[$optin->id] = $optin->targeting;
+            if (is_array($optin->payload['display_rules'] ?? null)) $audience[$optin->id] = \WConvert\Rules\DisplayPlan::forRequest($optin->payload['display_rules'], $context) !== null;
         }
 
         $rows = [];
@@ -157,6 +159,7 @@ final class InspectorTag
                 // Null for a draft: there is no published Targeting to
                 // evaluate, and an unpublished Optin has not reached the gate
                 // this would answer.
+                'audienceAllowed' => $audience[$id] ?? true,
                 'targeting' => isset($targeting[$id])
                     ? TargetingExplainer::explain($targeting[$id], $context)
                     : null,
