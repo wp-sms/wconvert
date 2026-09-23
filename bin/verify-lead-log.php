@@ -122,6 +122,10 @@ $bob = $leads->record($otherOptinId, new Submission('bob@example.com', '+4420712
 $phoneOnly = $leads->record($optinId, new Submission(null, '+12025551234', ['consent_text' => 'Email me offers.']));
 $sarahSecond = $leads->record($optinId, new Submission('sarah@example.com', null, []));
 
+// Paging intentionally excludes the current millisecond. Let the final fixture
+// enter that window before comparing grouped and ungrouped reads.
+usleep(2000);
+
 echo "The grouping view\n";
 
 $grouped = $log->read(null, true, 50);
