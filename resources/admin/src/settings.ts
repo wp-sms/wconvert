@@ -14,6 +14,7 @@
  */
 
 export interface AdminSettings {
+  readonly phoneDefaultCountry?: string;
   readonly installedTier?: 'free' | 'basic' | 'pro' | 'elite';
   /** WordPress site timezone, including fixed-offset zones. */
   readonly timezone?: string;

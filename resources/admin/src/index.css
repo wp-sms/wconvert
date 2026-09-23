@@ -6518,3 +6518,81 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
       select:not([multiple]):not([size]:not([size="1"])) { appearance:auto !important; background-image:none !important; }
   }
 }
+
+/* The admin and editor share one country picker; search appears only when opened. */
+#wconvert-admin .wconvert-phone-country-picker {
+  display: grid;
+  gap: 0.25rem;
+  max-inline-size: 24rem;
+}
+#wconvert-admin .wconvert-phone-country-picker__label {
+  color: var(--muted-foreground);
+  font-size: var(--text-label);
+  font-weight: 600;
+}
+#wconvert-admin .wconvert-phone-country-picker__trigger {
+  inline-size: 100%;
+  min-inline-size: 0;
+  text-align: start;
+}
+.wconvert-phone-country-picker__popup {
+  padding: 0.5rem;
+}
+/* Button and Popover supply important width/alignment utilities. */
+@layer utilities {
+  #wconvert-admin .wconvert-phone-country-picker__trigger {
+    justify-content: space-between !important;
+    font-weight: 400 !important;
+  }
+  .wconvert-phone-country-picker__popup {
+    inline-size: min(24rem, calc(100vw - 2rem)) !important;
+  }
+}
+.wconvert-phone-country-picker__popup > input {
+  display: block;
+  inline-size: 100%;
+  min-block-size: 2.25rem;
+  margin: 0;
+  padding: 0.4rem 0.65rem;
+  border: 1px solid var(--input);
+  border-radius: var(--radius);
+  background: var(--card);
+  color: var(--foreground);
+  line-height: 1.25;
+}
+.wconvert-phone-country-picker__popup > input:focus-visible {
+  border-color: var(--ring);
+  outline: 2px solid var(--ring);
+  outline-offset: 1px;
+}
+.wconvert-phone-country-picker__results {
+  max-block-size: min(18rem, 45vh);
+  overflow-y: auto;
+  margin-block-start: 0.35rem;
+}
+.wconvert-phone-country-picker__results > button {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  inline-size: 100%;
+  min-block-size: 2rem;
+  margin: 0;
+  padding: 0.35rem 0.6rem;
+  border: 0;
+  border-radius: var(--radius);
+  background: transparent;
+  color: var(--foreground);
+  text-align: start;
+  cursor: pointer;
+}
+.wconvert-phone-country-picker__results > button:hover,
+.wconvert-phone-country-picker__results > button:focus-visible {
+  background: var(--accent);
+  outline: none;
+}
+.wconvert-phone-country-picker__results > p {
+  margin: 0;
+  padding: 0.5rem;
+  color: var(--muted-foreground);
+}

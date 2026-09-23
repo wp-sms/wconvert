@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import { mount } from '@renderer/mount';
+import { enhancePhones } from '../../../phone/src/enhance';
+import { phoneSiteCountry } from '../phoneSiteCountry';
 import { A_DESIGNS_OWN_WIDTH } from '@renderer/css';
 import { SLOT_SELECTOR, keyOfElement, type SlotKey } from './slots';
 import { policyUrl, withPolicyLink } from './policy';
@@ -249,6 +251,24 @@ export function Preview({ template, displayType = 'inline', step = 0, selected =
   );
 
   useEffect(() => {
+    (window as Window & { __wcPhoneLabels?: Record<string, string> }).__wcPhoneLabels = {
+      fallback: __('Include + and the country code, for example +1 202 555 0123.', 'wconvert'),
+      select: __('Select country', 'wconvert'),
+      trigger: __('Select country: %1$s (+%2$s)', 'wconvert'),
+      closeSelector: __('Close country selector', 'wconvert'),
+      close: __('Close', 'wconvert'),
+      search: __('Search…', 'wconvert'),
+      searchCountries: __('Search countries', 'wconvert'),
+      countries: __('Countries', 'wconvert'),
+      oneResult: __('%s result', 'wconvert'),
+      manyResults: __('%s results', 'wconvert'),
+      too_short: __('Enter a longer phone number.', 'wconvert'),
+      too_long: __('This phone number is too long.', 'wconvert'),
+      invalid_length: __('Check the phone number length.', 'wconvert'),
+      invalid_country: __('Choose a supported country or check the country code.', 'wconvert'),
+    };
+    (window as Window & { __wcPhone?: (root: HTMLElement) => void }).__wcPhone =
+      root => { enhancePhones(root, root.getRootNode() as ShadowRoot, phoneSiteCountry()); };
     const mounted = mount({
       displayType: 'inline',
       template: drawn,

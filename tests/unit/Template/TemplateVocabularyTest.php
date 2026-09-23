@@ -233,6 +233,24 @@ final class TemplateVocabularyTest extends TestCase
         $this->assertSame(['type' => 'image', 'src' => '/tote.png', 'alt' => 'A tote bag', 'id' => 'n3'], $image);
     }
 
+    public function testPhoneSettingsOnlySurviveOnPhoneFieldsWithSupportedValues(): void
+    {
+        $normalized = self::normalize(['tree' => \WConvert\Tests\Unit\Support\JourneyFixture::tree(['steps' => [[
+            'type' => 'stack', 'children' => [
+                ['type' => 'field', 'name' => 'phone', 'phone_country' => 'OM', 'phone_dropdown' => false],
+                ['type' => 'field', 'name' => 'email', 'phone_country' => 'US', 'phone_dropdown' => false],
+                ['type' => 'field', 'name' => 'phone', 'phone_country' => 'ZZ', 'phone_dropdown' => 'false'],
+            ],
+        ]]])]);
+        [$phone, $email, $invalid] = $normalized['tree']['steps'][0]['content']['children'];
+        $this->assertSame('OM', $phone['phone_country']);
+        $this->assertFalse($phone['phone_dropdown']);
+        $this->assertArrayNotHasKey('phone_country', $email);
+        $this->assertArrayNotHasKey('phone_dropdown', $email);
+        $this->assertArrayNotHasKey('phone_country', $invalid);
+        $this->assertArrayNotHasKey('phone_dropdown', $invalid);
+    }
+
     /**
      * **Slot visibility is a param, and which leaves may carry it is a
      * decision, not an oversight.**

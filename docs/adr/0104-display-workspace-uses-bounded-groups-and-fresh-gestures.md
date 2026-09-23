@@ -63,4 +63,6 @@ opens or visit is recorded.
 
 The user explicitly approved a **1 KiB increase to the existing paid-loader cap**, from 19,456 to 20,480 bytes gzip, after measured safe minifier trials could not fit the added behavior. Free remains 14,012 bytes. CI remains a hard, flagless check per tier. Payload and per-design caps are unchanged. No simulation or admin UI code enters visitor bundles.
 
+> **Amended by [ADR 0105](0105-phone-input-is-a-conditional-shared-asset.md):** Basic remains at 20,480 bytes; Pro caps at 20,608 and Elite at 20,784 after the full phone-field integration. Free remains at 14,012 bytes. The optional phone asset has its own 16 KiB cap.
+
 This amends ADRs 0005 (grouping), 0012/0027 (authored availability), 0047 (Campaign session cap), 0048 (draft simulation beside live inspection), 0050 (schedule wake/active capture), 0101 (explicit activation/collision/expiry) and 0103 (paid-loader cap). Their relevant passages are annotated inline.

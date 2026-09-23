@@ -43,6 +43,20 @@ it('keeps enquiry answers on the page and sends nothing when Next or Back is cli
   expect(mounted.root!.querySelector<HTMLSelectElement>('[name="interest"]')!.value).toBe('quote');
   expect(fetcher).not.toHaveBeenCalled();
 });
+it('does not advance past an optional phone number that needs correction', () => {
+  const template = structuredClone(enquiry) as Template;
+  const first = template.tree.steps[0].content as unknown as { children: Array<Record<string, unknown>> };
+  first.children[1] = { type: 'field', id: 'n2', name: 'phone', label: 'Phone', required: false, phone_country: 'US' };
+  const { mounted } = setup(template);
+  const phone = mounted.root!.querySelector<HTMLInputElement>('[name="phone"]')!;
+  phone.value = '202';
+  phone.setCustomValidity('Enter a longer phone number.');
+  mounted.root!.querySelector<HTMLButtonElement>('[data-action="next"]')!.click();
+  expect(mounted.root!.querySelector('[name="phone"]')).toBe(phone);
+  phone.setCustomValidity('');
+  mounted.root!.querySelector<HTMLButtonElement>('[data-action="next"]')!.click();
+  expect(mounted.root!.textContent).toContain('How can we contact you?');
+});
 it('advances an offer screen without sending visitor data', async () => {
   const { default: offer } = await import('../../resources/templates/library/journey-offer-first.json');
   const fetcher = vi.fn(); vi.stubGlobal('fetch', fetcher);
@@ -72,6 +86,28 @@ it('retries an unconfirmed SMS response with the same grant and never repeats em
   expect(fetcher.mock.calls[2][1].body).toBe(fetcher.mock.calls[3][1].body);
   expect(JSON.parse(fetcher.mock.calls[3][1].body)).toMatchObject({grant: 'secret', submission: 'sms-signup', fields: {phone: '+12025551234'}});
   expect(mounted.root!.textContent).toContain('Details received');
+});
+
+it('submits the phone enhancer’s international value instead of its visible local text', async () => {
+  vi.stubGlobal('__wcPhone', (root: HTMLElement) => {
+    const input = root.querySelector<HTMLInputElement>('input[name="phone"]') as (HTMLInputElement & { __p?: (value: string) => void }) | null;
+    if (!input) return;
+    input.value = '202 555 1234';
+    input.dataset.e164 = '+12025551234';
+    input.__p = value => { input.dataset.e164 = value; };
+  });
+  const fetcher = vi.fn().mockResolvedValueOnce({ ok: true, json: async () => ({ grant: 'secret' }) })
+    .mockResolvedValueOnce({ ok: true, json: async () => ({ id: 'lead' }) })
+    .mockResolvedValueOnce({ ok: true, json: async () => ({ id: 'lead' }) });
+  vi.stubGlobal('fetch', fetcher);
+  const { mounted } = setup(source as Template);
+  mounted.root!.querySelector<HTMLInputElement>('[name="email"]')!.value = 'visitor@example.com';
+  mounted.root!.querySelector<HTMLInputElement>('[name="consent"]')!.checked = true;
+  mounted.root!.querySelector<HTMLButtonElement>('[data-action="submit"]')!.click(); await settle();
+  expect(mounted.root!.querySelector<HTMLInputElement>('[name="phone"]')!.value).toBe('202 555 1234');
+  mounted.root!.querySelector<HTMLInputElement>('[name="consent"]')!.checked = true;
+  mounted.root!.querySelector<HTMLButtonElement>('[data-action="submit"]')!.click(); await settle();
+  expect(JSON.parse(fetcher.mock.calls[2][1].body).fields.phone).toBe('+12025551234');
 });
 
 it('offers the earned guide while SMS is still optional without another capture', async () => {

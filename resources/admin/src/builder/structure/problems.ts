@@ -9,6 +9,7 @@ import { validInterestOptions } from '../InterestOptions';
 import { safeHref } from '@renderer/render';
 import type { FollowupNode, FieldNode } from '@renderer/types';
 import type { Template } from '@renderer/types';
+import { phoneSiteCountry } from '../../phoneSiteCountry';
 
 /**
  * What is wrong with this design **right now**, as sentences a merchant can act
@@ -212,6 +213,12 @@ function whatHasIncompleteFields(template: Template): Problem[] {
   for (const field of fields.filter((field) => field.captures === 'interest')) {
     if (!validInterestOptions((nodeAt(template.tree, field.path) as FieldNode | null)?.options)) {
       issues.push({ said: __('Set up the interest choices: every choice needs a label and a unique valid sent value.', 'wconvert'), path: field.path, check: 'captures', blocksPublish: true });
+    }
+  }
+  for (const field of fields.filter((field) => field.captures === 'phone')) {
+    const country = (nodeAt(template.tree, field.path) as FieldNode | null)?.phone_country;
+    if ((!country || country === 'site') && !phoneSiteCountry()) {
+      issues.push({ said: __('Choose a site-wide default country in Settings, or choose a starting country for this phone field.', 'wconvert'), path: field.path, check: 'captures', blocksPublish: true });
     }
   }
   return issues;

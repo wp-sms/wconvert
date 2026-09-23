@@ -15,6 +15,7 @@ use WConvert\Optin\InvalidSchedule;
 use WConvert\Optin\Optin;
 use WConvert\Optin\OptinRepository;
 use WConvert\Optin\OverlayPlacement;
+use WConvert\Optin\PhoneCountry;
 use WConvert\Optin\PublishedSet;
 use WConvert\Optin\Schedule;
 use WConvert\Optin\SiteFrequency;
@@ -125,6 +126,11 @@ final class OptinController implements RestController
                 // normalised by {@see SiteFrequency}, which is the one place
                 // this scope's reading of an absent key lives.
             ],
+        ]);
+
+        register_rest_route(Routes::NAMESPACE, '/optins/phone-country', [
+            ['methods' => 'GET', 'callback' => static fn (): WP_REST_Response => new WP_REST_Response(['country' => PhoneCountry::siteDefault(), 'countries' => PhoneCountry::all()]), 'permission_callback' => [Routes::class, 'canManage']],
+            ['methods' => 'POST', 'callback' => [$this, 'updatePhoneCountry'], 'permission_callback' => [Routes::class, 'canManage']],
         ]);
 
         register_rest_route(Routes::NAMESPACE, '/optins/' . self::ID_PATTERN, [
@@ -622,6 +628,10 @@ final class OptinController implements RestController
             return new WP_Error('wconvert_optin_goal_incomplete', $goalIssue, ['status' => 400]);
         }
 
+        if (PhoneCountry::resolved($optin->config) === null) {
+            return new WP_Error('wconvert_phone_country_required', __('Choose a site-wide starting country in Settings, or choose one for this phone field, before publishing.', 'wconvert'), ['status' => 400]);
+        }
+
         $submissions = $optin->config['template']['tree']['submissions'] ?? [];
         $primarySubmission = $submissions[0]['id'] ?? '';
         foreach (\WConvert\Template\CaptureContract::settings($optin->config, $optin->goal) as $submissionId => $setting) {
@@ -721,6 +731,15 @@ final class OptinController implements RestController
         $this->siteFrequency->set($request->get_params());
 
         return new WP_REST_Response($this->siteFrequency->authored());
+    }
+
+    public function updatePhoneCountry(WP_REST_Request $request): WP_REST_Response|WP_Error
+    {
+        $country = $request->get_param('country');
+        if (!is_string($country) || !PhoneCountry::setSiteDefault($country)) {
+            return new WP_Error('wconvert_phone_country', __('Choose a supported country.', 'wconvert'), ['status' => 400]);
+        }
+        return new WP_REST_Response(['country' => PhoneCountry::siteDefault(), 'countries' => PhoneCountry::all()]);
     }
 
     /** Refuse entered choices before normalization could silently discard them.

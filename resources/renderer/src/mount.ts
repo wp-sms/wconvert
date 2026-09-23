@@ -214,8 +214,8 @@ export function shell(template: Template, chrome: HTMLElement | null, options: M
 
   let root = render(template.tree, template.tokens, 0, { paths: options.paths });
 
-  bind(root);
   shadow.appendChild(root);
+  bind(root);
 
   /**
    * The two acts the container owns beside dismissal, bound to whichever step
@@ -228,6 +228,16 @@ export function shell(template: Template, chrome: HTMLElement | null, options: M
    * own ticket; preventing the navigation is this ticket's business.
    */
   function bind(element: HTMLElement): void {
+    const api = window as Window & { __wcPhone?: (root: HTMLElement) => void };
+    if (api.__wcPhone) api.__wcPhone(element);
+    else if (element.querySelector('input[name="phone"]')) {
+      const ready = () => {
+        const input = element.querySelector<HTMLInputElement>('input[name="phone"]');
+        if (input && !input.value && shadow.activeElement !== input) api.__wcPhone?.(element);
+      };
+      window.addEventListener('wconvert:phone-ready', ready, { once: true });
+      element.addEventListener('wconvert:closed', () => window.removeEventListener('wconvert:phone-ready', ready), { once: true });
+    }
     if (chrome !== null) {
       element.appendChild(chrome);
     }
@@ -288,10 +298,10 @@ export function shell(template: Template, chrome: HTMLElement | null, options: M
     step(index: number): HTMLElement {
       const next = render(template.tree, template.tokens, index, { paths: options.paths });
 
-      bind(next);
       root.dispatchEvent(new Event('wconvert:closed'));
       root.replaceWith(next);
       root = next;
+      bind(next);
 
       return next;
     },

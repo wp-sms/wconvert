@@ -143,6 +143,7 @@ final class ArtifactContractTest extends TestCase
             'vendor/autoload.php' => "<?php\n// composer\n",
             'vendor/composer/autoload_psr4.php' => "<?php\nreturn array('WConvert\\\\' => array('/src'));\n",
             'public/loader/loader.js' => "console.log('loader');\n",
+            'public/phone/phone.js' => "console.log('phone');\n",
             // Pro replaces this one on the same hook it replaces the loader
             // (ADR 0048), so a ZIP missing it on EITHER tier is a real
             // failure — and free's inspector on a Pro install would report
@@ -156,6 +157,8 @@ final class ArtifactContractTest extends TestCase
             // that has to be caught instead.
             'public/blocks/inline-optin.js' => "console.log('block');\n",
             'resources/loader/src/main.ts' => "export const boot = () => {};\n",
+            'resources/phone/src/main.ts' => "export const enhance = () => {};\n",
+            'resources/phone/countries.json' => "[{\"code\":\"US\",\"name\":\"United States\"}]\n",
             'resources/admin/src/main.tsx' => "export const App = () => null;\n",
             'resources/renderer/src/render.ts' => "export const render = () => {};\n",
             'resources/blocks/inline-optin/src/index.tsx' => "export const block = null;\n",

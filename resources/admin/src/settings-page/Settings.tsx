@@ -5,6 +5,7 @@ import { Eye, Plug, Search, Shield } from 'lucide-react';
 import { Input } from '../components/ui/input';
 import { settingsHref, type SettingsGroup } from '../nav';
 import { SiteAllowance } from '../optins/SiteAllowance';
+import { SitePhoneCountry } from './SitePhoneCountry';
 import { LeadRetention } from '../leads/LeadRetention';
 import { PrivacyDataMap } from '../privacy/PrivacyDataMap';
 import { PrivacyGuidanceSettings } from '../privacy/PrivacyGuidanceSettings';
@@ -28,9 +29,9 @@ export function Settings({
     {
       id: 'experience',
       label: __('Visitor experience', 'wconvert'),
-      description: __('Site-wide display limits', 'wconvert'),
+      description: __('Site-wide display and phone settings', 'wconvert'),
       icon: Eye,
-      terms: __('frequency appearances wait close conversion timing', 'wconvert'),
+      terms: __('frequency appearances wait close conversion timing phone country', 'wconvert'),
     },
     {
       id: 'connections',
@@ -76,7 +77,7 @@ export function Settings({
       </nav>
       <div className="min-w-0">
         {group === 'experience' && (
-          <SiteAllowance onEditingStateChange={onEditingStateChange} />
+          <div className="grid gap-6"><SiteAllowance onEditingStateChange={onEditingStateChange} /><SitePhoneCountry /></div>
         )}
         {group === 'connections' && (
           <Destinations

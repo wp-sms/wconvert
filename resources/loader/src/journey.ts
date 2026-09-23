@@ -6,6 +6,7 @@ import { createBeacon, type BeaconKind } from './beacon';
 import { clear, pending, refuse } from './capture';
 
 type Input = HTMLInputElement | HTMLSelectElement;
+type PhoneControl = HTMLInputElement & { __p?: (value: string) => void; __r?: () => void };
 interface Reply { id?: string; grant?: string; message?: string; data?: { field?: string }; }
 interface Options { onCaptured(): void; onDismiss?(): void; onRefused?(kind: 'correctable' | 'unconfirmed'): void; }
 
@@ -34,6 +35,7 @@ export function bindJourney(mounted: Mounted, entry: PayloadEntry, options: Opti
   const answers = new Map<string, string | boolean>();
   const accepted = new Set<string>();
   const fixed = new Set<string>();
+  const cleared = new Set<string>();
   const nodes = new Map<string, { node: TemplateNode; screen: number }>();
   function collect(node: TemplateNode, screen: number) {
     if ('id' in node && typeof node.id === 'string') nodes.set(node.id, { node, screen });
@@ -43,7 +45,7 @@ export function bindJourney(mounted: Mounted, entry: PayloadEntry, options: Opti
   tree.steps.forEach((screen, i) => collect(screen.content, i));
   const submitScreen = (id: string) => [...nodes.values()].find(({ node }) => node.type === 'button' && 'submission' in node && node.submission === id && 'action' in node && node.action === 'submit')?.screen ?? -1;
   const controls = () => [...(mounted.root?.querySelectorAll<Input>('[data-capture-id]') ?? [])];
-  const save = () => { for (const input of controls()) if (!fixed.has(input.dataset.captureId!)) answers.set(input.dataset.captureId!, input instanceof HTMLInputElement && input.type === 'checkbox' ? input.checked : input.value); };
+  const save = () => { for (const input of controls()) if (!fixed.has(input.dataset.captureId!)) answers.set(input.dataset.captureId!, input instanceof HTMLInputElement && input.type === 'checkbox' ? input.checked : input.dataset.e164 ?? input.value); };
   function show(index: number) {
     if (index < 0 || index >= tree!.steps.length) return;
     step = index; mounted.showStep(index); bind();
@@ -76,7 +78,12 @@ export function bindJourney(mounted: Mounted, entry: PayloadEntry, options: Opti
       const id = input.dataset.captureId!;
       const value = answers.get(id);
       if (input instanceof HTMLInputElement && input.type === 'checkbox') input.checked = value === true;
-      else if (typeof value === 'string') input.value = value;
+      else if (typeof value === 'string') {
+        const widget = (input as PhoneControl).__p;
+        if (widget) widget(value);
+        else input.value = value;
+      }
+      else if (cleared.delete(id)) (input as PhoneControl).__r?.();
       if (fixed.has(id)) {
         input.required = false;
         if (input instanceof HTMLSelectElement || (input instanceof HTMLInputElement && input.type === 'checkbox')) input.disabled = true;
@@ -93,6 +100,10 @@ export function bindJourney(mounted: Mounted, entry: PayloadEntry, options: Opti
       if (!button || button.dataset.action === 'submit' || (button.dataset.action === 'next' && root instanceof HTMLFormElement)) return;
       event.preventDefault();
       if (busy) return;
+      if (button.dataset.action === 'next') {
+        const invalid = controls().find(input => !input.checkValidity());
+        if (invalid) { invalid.reportValidity(); invalid.focus(); return; }
+      }
       save();
       if (button.dataset.action === 'next') { report('screen_advanced'); show(step + 1); }
       if (button.dataset.action === 'back') show(step - 1);
@@ -100,7 +111,7 @@ export function bindJourney(mounted: Mounted, entry: PayloadEntry, options: Opti
       if (button.dataset.action === 'skip') {
         const submission = tree!.submissions.find(s => s.id === button.dataset.submission && !s.required);
         if (!submission || accepted.has(submission.id)) return;
-        [...submission.fields, ...submission.consents].forEach(id => answers.delete(id));
+        [...submission.fields, ...submission.consents].forEach(id => { answers.delete(id); cleared.add(id); });
         report('screen_skipped'); show(submitScreen(submission.id) + 1);
       }
     });

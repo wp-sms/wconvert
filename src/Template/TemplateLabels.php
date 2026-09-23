@@ -472,6 +472,8 @@ final class TemplateLabels
             'code.copy' => __('Copy button', 'wconvert'),
             /* translators: whether a visitor must fill a form field in before they can submit. */
             'field.required' => __('Required field', 'wconvert'),
+            'field.phone_country' => __('Starting country', 'wconvert'),
+            'field.phone_dropdown' => __('Country dropdown', 'wconvert'),
             /* translators: how many of the five stars are filled in. */
             'rating.value' => __('How many stars', 'wconvert'),
             /* translators: which of the six pictures an Icon block draws. */
@@ -573,6 +575,9 @@ final class TemplateLabels
 
             /* translators: a form field a visitor cannot leave empty. */
             'field.required.true' => __('Required', 'wconvert'),
+            'field.phone_country.site' => __('Use site setting', 'wconvert'),
+            'field.phone_dropdown.true' => __('Show country list', 'wconvert'),
+            'field.phone_dropdown.false' => __('Hide country list', 'wconvert'),
             /* translators: a form field a visitor may leave empty. */
             'field.required.false' => __('Optional', 'wconvert'),
 

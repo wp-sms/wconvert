@@ -172,6 +172,9 @@ require_populated_dir "$TREE" src '*.php' "this artifact ships no PHP" || true
 # leaves every page with no loader at all — "the same silent, total loss of
 # function 0004 exists to prevent, arriving through a missing file".
 require_file public/loader/loader.js "the shipped loader is built, never committed — run the build" || true
+if [ "$slug" = "wconvert" ]; then
+    require_file public/phone/phone.js "phone campaigns need the built optional input bundle" || true
+fi
 
 # THE ELIGIBILITY INSPECTOR, BOTH TIERS, AND PRO'S IS NOT OPTIONAL EITHER.
 # Pro dequeues free's inspector and enqueues its own for the same reason it
@@ -360,6 +363,7 @@ if [ "$tier" = "free" ]; then
     # The sources behind the two shipped bundles, plus the renderer both of
     # them import (vite.config.admin.mjs aliases @renderer at it).
     require_populated_dir "$TREE" resources/loader/src '*.ts' "public/loader/loader.js is built from it" || true
+    require_populated_dir "$TREE" resources/phone/src '*.ts' "public/phone/phone.js is built from it" || true
     require_populated_dir "$TREE" resources/admin/src '*.tsx' "public/admin/main-*.js is built from it" || true
     require_populated_dir "$TREE" resources/renderer/src '*.ts' "both bundles import it" || true
     require_populated_dir "$TREE" resources/blocks/inline-optin/src '*.tsx' "public/blocks/inline-optin.js is built from it" || true
@@ -375,6 +379,7 @@ if [ "$tier" = "free" ]; then
     # sentence being written about WConvert.
     require_file tiers.json "WConvert\\Support\\TierManifest::PATH reads it" || true
     require_file resources/templates/manifest.json "WConvert\\Template\\TemplateManifest::PATH reads it" || true
+    require_file resources/phone/countries.json "WConvert\\Optin\\PhoneCountry reads it" || true
     require_populated_dir "$TREE" resources/templates/library '*.json' "WConvert\\Template\\BundledTemplates::PATH reads it" || true
     require_file resources/templates/locked.json "WConvert\\Template\\LockedTemplates::PATH reads it" || true
     # The block's metadata, which is runtime data in the strictest sense:

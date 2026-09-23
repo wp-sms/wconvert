@@ -428,6 +428,9 @@ export interface FieldNode extends BaseNode {
   readonly label?: string;
   readonly placeholder?: string;
   readonly required?: boolean;
+  /** Resolved at publication; drafts may use `site` until then. */
+  readonly phone_country?: string;
+  readonly phone_dropdown?: boolean;
   readonly options?: readonly { readonly value: string; readonly label: string }[];
 }
 

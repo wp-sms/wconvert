@@ -10,6 +10,9 @@ import { ImageFitPreview, ImageShapePreview } from './ChoicePreview';
 import { InterestOptions } from './InterestOptions';
 import { readable, hasScheduleEnded } from '../lib/wallTime';
 import { adminSettings } from '../settings';
+import countries from '../../../phone/countries.json';
+import { phoneSiteCountry } from '../phoneSiteCountry';
+import { PhoneCountryPicker } from '../PhoneCountryPicker';
 import { nameOf, type TemplateLabels } from '../templates/api';
 import type { Slot } from './panel';
 
@@ -165,7 +168,12 @@ export function SlotFields({
         ({@see Slot.settings}) and neither the params nor their values are
         spelled in this bundle.
       */}
-      {slot.settings.map((setting) => (
+      {slot.type === 'field' && slot.captures === 'phone' && (
+        <PhoneCountryPicker label={__('Starting country', 'wconvert')}
+          value={String(slot.settings.find(setting => setting.param === 'phone_country')?.held ?? 'site')}
+          siteCountry={phoneSiteCountry()} countries={countries} onChange={country => onParam('phone_country', country)} />
+      )}
+      {slot.settings.filter(setting => !['phone_country'].includes(setting.param) && (slot.captures === 'phone' || setting.param !== 'phone_dropdown')).map((setting) => (
         <ParamChoice
           key={setting.param}
           id={`${slot.type}-${setting.param}`}
@@ -213,7 +221,7 @@ export function SlotFields({
       {slot.type === 'countdown' && <Countdown endsAt={endsAt} onSetEndDate={onSetEndDate} />}
 
       {slot.type === 'field' && slot.captures === 'phone' && (
-        <p className="description">{__('Phone numbers need a country code, for example +44 7700 900000. Include one in your example.', 'wconvert')}</p>
+        <p className="description">{__('Numbers are saved with their country code.', 'wconvert')}</p>
       )}
 
       {(slot.role === 'success_headline' || slot.role === 'success_body') && (
