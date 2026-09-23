@@ -25,7 +25,6 @@ final class ContentLock
             && ($config['inline_placement'] ?? null) === null
             && count($triggers) === 1 && ($triggers[0]['type'] ?? null) === 'page_load'
             && ConvertingAct::offeredIn($config['template']['tree'] ?? null) === [ConvertingAct::Submit]
-            && count($config['template']['tree']['steps'] ?? []) === 2
             && TemplateForm::issue($config['template'] ?? null) === null;
     }
 }

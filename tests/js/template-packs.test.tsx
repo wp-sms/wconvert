@@ -1,3 +1,4 @@
+import { treeFixture } from './support/journey';
 import { beforeEach, expect, it, vi } from 'vitest';
 import { StrictMode } from 'react';
 import { act, render, screen, waitFor, within } from '@testing-library/react';
@@ -10,7 +11,7 @@ vi.mock('../../resources/admin/src/builder/Preview', () => ({ Preview: ({ step }
 const { TemplatePacks } = await import('../../resources/admin/src/templates/TemplatePacks');
 const initial: CatalogStatus = { configured: true, source: 'https://catalog.example/index.json', checked_at: null, packs: [] };
 const listed: CatalogStatus = { ...initial, checked_at: '2026-09-11T14:00:00Z', packs: [{ id: 'reading', name: 'Reading pack', description: 'A reading design.', version: '1.0.0', installed_version: null, state: 'available' }] };
-const preview: PackPreview = { id: 'reading', name: 'Reading pack', version: '1.0.0', digest: 'reviewed-digest', templates: [{ id: 'pack-hash-reading-slip', name: 'Reading slip', display_type: 'inline', tree: { steps: [{ type: 'stack', children: [] }] }, tokens: {} }] };
+const preview: PackPreview = { id: 'reading', name: 'Reading pack', version: '1.0.0', digest: 'reviewed-digest', templates: [{ id: 'pack-hash-reading-slip', name: 'Reading slip', display_type: 'inline', tree: treeFixture({ steps: [{ type: 'stack', children: [] }] }), tokens: {} }] };
 const installed: CatalogStatus = { ...listed, packs: [{ ...listed.packs[0], installed_version: '1.0.0', state: 'installed' }] };
 beforeEach(() => { vi.resetAllMocks(); api.catalogStatus.mockResolvedValue(initial); api.refreshCatalog.mockResolvedValue(listed); api.previewPack.mockResolvedValue(preview); api.installPack.mockResolvedValue(installed); });
 
@@ -99,7 +100,7 @@ it('starts with a matching design, explains other formats and resets the screen 
   api.catalogStatus.mockResolvedValue(installed);
   api.previewPack.mockResolvedValue({ ...preview, templates: [
     { ...preview.templates[0], id: 'popup', name: 'Popup design', display_type: 'popup' },
-    { ...preview.templates[0], name: 'Inline design', tree: { steps: [{ type: 'stack', children: [] }, { type: 'stack', children: [] }] } },
+    { ...preview.templates[0], name: 'Inline design', tree: treeFixture({ steps: [{ type: 'stack', children: [] }, { type: 'stack', children: [] }] }) },
   ] });
   const user = userEvent.setup();
   render(<TemplatePacks displayType="inline" onInstalled={vi.fn()} onInspect={vi.fn()} />);

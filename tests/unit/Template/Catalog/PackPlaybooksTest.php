@@ -21,10 +21,57 @@ final class PackPlaybooksTest extends TestCase
         $source = file_get_contents(WCONVERT_DIR . 'resources/templates/library/fieldwork.json');
         $this->assertIsString($source);
         return ['schema' => 1, 'id' => 'store', 'version' => '1.0.0', 'name' => 'Store', 'description' => 'Store starts',
-            'requires' => ['plugin' => '0.1.0', 'tree' => 1, 'capabilities' => ['template-tree:1', 'success-actions:1', 'campaign-starts:1']],
+            'requires' => ['plugin' => '0.1.0', 'tree' => 2, 'capabilities' => ['template-tree:2', 'capture-journey:1', 'success-actions:1', 'campaign-starts:1']],
             'assets' => [],
             'templates' => [json_decode($source, true)],
             'playbooks' => [require WCONVERT_DIR . 'resources/playbooks/welcome-discount.php']];
+    }
+
+    public function testPackConsumersReuseOneReadAndARepairOrInstallRefreshesIt(): void
+    {
+        $directory = sys_get_temp_dir() . '/wconvert-pack-cache-' . bin2hex(random_bytes(8));
+        $installed = new InstalledPacks($directory, PackValidator::shipping());
+
+        try {
+            $pack = $this->pack();
+            $json = json_encode($pack, JSON_THROW_ON_ERROR);
+            $saved = $installed->install($json);
+            $this->assertCount(1, $installed->entries());
+
+            file_put_contents($directory . '/' . $saved['digest'] . '.json', 'broken');
+            $this->assertCount(1, $installed->playbooks(), 'a second consumer rescanned the same request-local archive');
+            $this->assertSame(
+                [],
+                (new InstalledPacks($directory, PackValidator::shipping()))->playbooks(),
+                'a corrupt archive must be ignored by the next request'
+            );
+
+            $installed->install($json);
+            $pack['version'] = '1.1.0';
+            $pack['playbooks'][0]['rules'][0]['seconds'] = 15;
+            $installed->install(json_encode($pack, JSON_THROW_ON_ERROR));
+
+            $this->assertSame(15, $installed->playbooks()[0]['rules'][0]['seconds']);
+
+            $pack['version'] = '1.2.0';
+            $pack['playbooks'][0]['rules'][0]['seconds'] = 20;
+            (new InstalledPacks($directory, PackValidator::shipping()))
+                ->install(json_encode($pack, JSON_THROW_ON_ERROR));
+
+            $pack['version'] = '1.1.1';
+            $pack['playbooks'][0]['rules'][0]['seconds'] = 18;
+            try {
+                $installed->install(json_encode($pack, JSON_THROW_ON_ERROR));
+                $this->fail('A stale request-local snapshot replaced a newer install.');
+            } catch (RuntimeException $error) {
+                $this->assertStringContainsString('already installed', $error->getMessage());
+            }
+
+            $this->assertSame(20, $installed->playbooks()[0]['rules'][0]['seconds']);
+        } finally {
+            foreach (glob($directory . '/*.json') ?: [] as $file) unlink($file);
+            if (is_dir($directory)) rmdir($directory);
+        }
     }
 
     public function testInstalledStartsUseTheSharedPrefillAndUpdatesDoNotChangeExistingSnapshots(): void
@@ -69,7 +116,7 @@ final class PackPlaybooksTest extends TestCase
     public function testRemoteStartingPointsRejectUnsafeUnsupportedAndSilentlyDroppedContent(): void
     {
         $changes = [
-            'missing capability' => static function (&$p) { $p['requires']['capabilities'] = ['template-tree:1', 'success-actions:1']; },
+            'missing capability' => static function (&$p) { $p['requires']['capabilities'] = ['template-tree:2', 'capture-journey:1', 'success-actions:1']; },
             'duplicate id' => static function (&$p) { $p['playbooks'][] = $p['playbooks'][0]; },
             'too many starts' => static function (&$p) { $p['playbooks'] = array_fill(0, 13, $p['playbooks'][0]); },
             'unknown goal' => static function (&$p) { $p['playbooks'][0]['goal'] = 'unknown'; },

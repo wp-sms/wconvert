@@ -1,9 +1,10 @@
+import { treeFixture } from './support/journey';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { render } from '@renderer/render';
 import { mount } from '@renderer/mount';
 import type { Template } from '@renderer/types';
 
-const template: Template = { tokens: {}, tree: { steps: [
+const template: Template = { tokens: {}, tree: treeFixture({ steps: [
   { type: 'stack', children: [
     { type: 'field', name: 'email' }, { type: 'button', label: 'Send', action: 'submit' },
   ] },
@@ -11,7 +12,7 @@ const template: Template = { tokens: {}, tree: { steps: [
     { type: 'code', text: 'HELLO10', copy: true, copy_label: 'Copy this code', copied_label: 'Ready to use', copy_failed_label: 'Select HELLO10 manually' },
     { type: 'followup', label: 'Open guide', href: '#guide' },
   ] },
-] } };
+] }) };
 
 afterEach(() => { vi.unstubAllGlobals(); document.body.replaceChildren(); });
 
@@ -60,7 +61,7 @@ describe('actions after submission', () => {
 
   it('retains the counted click for the original converting button', () => {
     const onConvert = vi.fn(); const anchor = document.createElement('div'); document.body.append(anchor);
-    const mounted = mount({ displayType: 'inline', anchor, onConvert, template: { tokens: {}, tree: { steps: [{ type: 'button', action: 'link', href: '#offer', label: 'Offer' }] } } });
+    const mounted = mount({ displayType: 'inline', anchor, onConvert, template: { tokens: {}, tree: treeFixture({ steps: [{ type: 'button', action: 'link', href: '#offer', label: 'Offer' }] }) } });
     mounted.show();
     const button = mounted.root!.querySelector('a')!; button.addEventListener('click', event => event.preventDefault()); button.click();
     expect(onConvert).toHaveBeenCalledOnce();
@@ -69,7 +70,7 @@ describe('actions after submission', () => {
 
   it('uses the existing safe URL boundary for resource links', () => {
     for (const href of ['javascript:alert(1)', 'data:text/html,hello']) {
-      const root = render({ steps: [{ type: 'followup', label: 'Resource', href }] }, {});
+      const root = render(treeFixture({ steps: [{ type: 'followup', label: 'Resource', href }] }), {});
       expect(root.querySelector('a')?.hasAttribute('href')).toBe(false);
     }
   });

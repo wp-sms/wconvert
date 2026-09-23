@@ -87,7 +87,7 @@ export const proPresenter: Presenter = {
       return;
     }
 
-    captureInto(mounted, entry.id, controls);
+    captureInto(mounted, entry, controls);
 
     controls.impression();
   },

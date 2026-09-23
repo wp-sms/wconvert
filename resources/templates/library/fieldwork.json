@@ -27,215 +27,239 @@
   "tree": {
     "steps": [
       {
-        "type": "split",
-        "ratio": 0.5,
-        "start": [
-          {
-            "type": "media",
-            "tokens": {
-              "bg": "#7e896e",
-              "fg": "#ffffff",
-              "bg-image": "linear-gradient(135deg, #bcc3a3, #61785d)",
-              "overlay": "linear-gradient(180deg, #21372c8c, #21372c9e)",
-              "pad": "2rem 1.75rem",
-              "gap": "2rem",
-              "radius": "0"
-            },
-            "children": [
-              {
-                "type": "heading",
-                "id": "n1",
-                "level": 2,
-                "size": "xs",
-                "role": "wordmark",
-                "text": "Fern & Form"
+        "id": "s1",
+        "name": "Details",
+        "kind": "input",
+        "content": {
+          "type": "split",
+          "ratio": 0.5,
+          "start": [
+            {
+              "type": "media",
+              "tokens": {
+                "bg": "#7e896e",
+                "fg": "#ffffff",
+                "bg-image": "linear-gradient(135deg, #bcc3a3, #61785d)",
+                "overlay": "linear-gradient(180deg, #21372c8c, #21372c9e)",
+                "pad": "2rem 1.75rem",
+                "gap": "2rem",
+                "radius": "0"
               },
-              {
-                "type": "heading",
-                "id": "n2",
-                "size": "xl",
-                "role": "headline",
-                "text": "10% off.\nRoom to grow."
-              }
-            ],
-            "narrow": {
-              "pad": "1.25rem",
-              "heading-size": "1.5rem",
-              "gap": "1rem"
-            }
-          }
-        ],
-        "end": [
-          {
-            "type": "panel",
-            "tokens": {
-              "pad": "2.25rem 1.75rem",
-              "gap": "1rem",
-              "radius": "0"
-            },
-            "children": [
-              {
-                "type": "eyebrow",
-                "id": "n3",
-                "role": "eyebrow",
-                "text": "A welcome from us",
-                "tokens": {
-                  "text-size": "1.0834rem"
-                }
-              },
-              {
-                "type": "text",
-                "id": "n4",
-                "role": "body",
-                "text": "A little welcome for your home. Leave your email to reveal a code for %b your first order.",
-                "emphasis": "10% off"
-              },
-              {
-                "type": "field",
-                "id": "n5",
-                "name": "email",
-                "label": "Email address",
-                "placeholder": "you@example.com",
-                "required": true
-              },
-              {
-                "type": "consent",
-                "id": "n6",
-                "role": "consent_text",
-                "hidden": true,
-                "text": "Email me plant notes and offers. %s",
-                "link": {
-                  "label": "Privacy Policy"
+              "children": [
+                {
+                  "type": "heading",
+                  "id": "n1",
+                  "level": 2,
+                  "size": "xs",
+                  "role": "wordmark",
+                  "text": "Fern & Form"
                 },
-                "tokens": {
-                  "text-size": "1.125rem"
+                {
+                  "type": "heading",
+                  "id": "n2",
+                  "size": "xl",
+                  "role": "headline",
+                  "text": "10% off.\nRoom to grow."
                 }
-              },
-              {
-                "type": "button",
-                "id": "n7",
-                "role": "cta_label",
-                "label": "Reveal my code",
-                "action": "submit"
-              },
-              {
-                "type": "text",
-                "id": "n8",
-                "role": "fine_print",
-                "size": "s",
-                "text": "Monthly plant notes and offers. Unsubscribe any time. First order only; gift cards excluded. %s",
-                "link": {
-                  "label": "Privacy Policy"
-                },
-                "tokens": {
-                  "text-size": "1.167rem"
-                }
+              ],
+              "narrow": {
+                "pad": "1.25rem",
+                "heading-size": "1.5rem",
+                "gap": "1rem"
               }
-            ],
-            "narrow": {
-              "pad": "1.5rem 1.25rem",
-              "gap": "0.875rem"
             }
-          }
-        ],
-        "basis": "16rem"
+          ],
+          "end": [
+            {
+              "type": "panel",
+              "tokens": {
+                "pad": "2.25rem 1.75rem",
+                "gap": "1rem",
+                "radius": "0"
+              },
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "id": "n3",
+                  "role": "eyebrow",
+                  "text": "A welcome from us",
+                  "tokens": {
+                    "text-size": "1.0834rem"
+                  }
+                },
+                {
+                  "type": "text",
+                  "id": "n4",
+                  "role": "body",
+                  "text": "A little welcome for your home. Leave your email to reveal a code for %b your first order.",
+                  "emphasis": "10% off"
+                },
+                {
+                  "type": "field",
+                  "id": "n5",
+                  "name": "email",
+                  "label": "Email address",
+                  "placeholder": "you@example.com",
+                  "required": true
+                },
+                {
+                  "type": "consent",
+                  "id": "n6",
+                  "role": "consent_text",
+                  "hidden": true,
+                  "text": "Email me plant notes and offers. %s",
+                  "link": {
+                    "label": "Privacy Policy"
+                  },
+                  "tokens": {
+                    "text-size": "1.125rem"
+                  }
+                },
+                {
+                  "type": "button",
+                  "id": "n7",
+                  "role": "cta_label",
+                  "label": "Reveal my code",
+                  "action": "submit",
+                  "submission": "primary"
+                },
+                {
+                  "type": "text",
+                  "id": "n8",
+                  "role": "fine_print",
+                  "size": "s",
+                  "text": "Monthly plant notes and offers. Unsubscribe any time. First order only; gift cards excluded. %s",
+                  "link": {
+                    "label": "Privacy Policy"
+                  },
+                  "tokens": {
+                    "text-size": "1.167rem"
+                  }
+                }
+              ],
+              "narrow": {
+                "pad": "1.5rem 1.25rem",
+                "gap": "0.875rem"
+              }
+            }
+          ],
+          "basis": "16rem"
+        }
       },
       {
-        "type": "split",
-        "ratio": 0.5,
-        "start": [
-          {
-            "type": "media",
-            "tokens": {
-              "bg": "#7e896e",
-              "fg": "#ffffff",
-              "bg-image": "linear-gradient(135deg, #bcc3a3, #61785d)",
-              "overlay": "linear-gradient(180deg, #21372c8c, #21372c9e)",
-              "pad": "2rem 1.75rem",
-              "gap": "2rem",
-              "radius": "0"
-            },
-            "children": [
-              {
-                "type": "heading",
-                "id": "n10",
-                "level": 2,
-                "size": "xs",
-                "role": "wordmark",
-                "text": "Fern & Form"
+        "id": "s2",
+        "name": "Received",
+        "kind": "acknowledgement",
+        "content": {
+          "type": "split",
+          "ratio": 0.5,
+          "start": [
+            {
+              "type": "media",
+              "tokens": {
+                "bg": "#7e896e",
+                "fg": "#ffffff",
+                "bg-image": "linear-gradient(135deg, #bcc3a3, #61785d)",
+                "overlay": "linear-gradient(180deg, #21372c8c, #21372c9e)",
+                "pad": "2rem 1.75rem",
+                "gap": "2rem",
+                "radius": "0"
               },
-              {
-                "type": "heading",
-                "id": "n11",
-                "size": "xl",
-                "role": "success_headline",
-                "text": "A little more\ngreen, for less."
-              }
-            ],
-            "narrow": {
-              "pad": "1.25rem",
-              "heading-size": "1.5rem",
-              "gap": "1rem"
-            }
-          }
-        ],
-        "end": [
-          {
-            "type": "panel",
-            "tokens": {
-              "pad": "2.25rem 1.75rem",
-              "gap": "1rem",
-              "radius": "0"
-            },
-            "children": [
-              {
-                "type": "badge",
-                "id": "n12",
-                "role": "badge",
-                "text": "Request received",
-                "tokens": {
-                  "text-size": "1.0834rem"
-                }
-              },
-              {
-                "type": "text",
-                "id": "n13",
-                "role": "success_body",
-                "text": "Thank you for sharing your details. Use the code below for %b your first order.",
-                "emphasis": "10% off"
-              },
-              {
-                "type": "code",
-                "id": "n14",
-                "role": "code_value",
-                "text": "HELLO10",
-                "tokens": {
-                  "text-size": "1.25rem",
-                  "tracking": "0.1em"
+              "children": [
+                {
+                  "type": "heading",
+                  "id": "n10",
+                  "level": 2,
+                  "size": "xs",
+                  "role": "wordmark",
+                  "text": "Fern & Form"
                 },
-                "copy": true,
-                "copy_label": "Copy code",
-                "copied_label": "Copied — ready to use.",
-                "copy_failed_label": "Copy unavailable. Select and copy the code above."
-              },
-              {
-                "type": "text",
-                "id": "n15",
-                "role": "fine_print",
-                "size": "s",
-                "text": "Apply at checkout. First order only; gift cards excluded.",
-                "tokens": {
-                  "text-size": "1.167rem"
+                {
+                  "type": "heading",
+                  "id": "n11",
+                  "size": "xl",
+                  "role": "success_headline",
+                  "text": "A little more\ngreen, for less."
                 }
+              ],
+              "narrow": {
+                "pad": "1.25rem",
+                "heading-size": "1.5rem",
+                "gap": "1rem"
               }
-            ],
-            "narrow": {
-              "pad": "1.5rem 1.25rem",
-              "gap": "0.875rem"
             }
-          }
+          ],
+          "end": [
+            {
+              "type": "panel",
+              "tokens": {
+                "pad": "2.25rem 1.75rem",
+                "gap": "1rem",
+                "radius": "0"
+              },
+              "children": [
+                {
+                  "type": "badge",
+                  "id": "n12",
+                  "role": "badge",
+                  "text": "Request received",
+                  "tokens": {
+                    "text-size": "1.0834rem"
+                  }
+                },
+                {
+                  "type": "text",
+                  "id": "n13",
+                  "role": "success_body",
+                  "text": "Thank you for sharing your details. Use the code below for %b your first order.",
+                  "emphasis": "10% off"
+                },
+                {
+                  "type": "code",
+                  "id": "n14",
+                  "role": "code_value",
+                  "text": "HELLO10",
+                  "tokens": {
+                    "text-size": "1.25rem",
+                    "tracking": "0.1em"
+                  },
+                  "copy": true,
+                  "copy_label": "Copy code",
+                  "copied_label": "Copied \u2014 ready to use.",
+                  "copy_failed_label": "Copy unavailable. Select and copy the code above."
+                },
+                {
+                  "type": "text",
+                  "id": "n15",
+                  "role": "fine_print",
+                  "size": "s",
+                  "text": "Apply at checkout. First order only; gift cards excluded.",
+                  "tokens": {
+                    "text-size": "1.167rem"
+                  }
+                }
+              ],
+              "narrow": {
+                "pad": "1.5rem 1.25rem",
+                "gap": "0.875rem"
+              }
+            }
+          ],
+          "basis": "16rem"
+        }
+      }
+    ],
+    "v": 2,
+    "submissions": [
+      {
+        "id": "primary",
+        "required": true,
+        "fields": [
+          "n5"
         ],
-        "basis": "16rem"
+        "consents": [
+          "n6"
+        ]
       }
     ]
   }

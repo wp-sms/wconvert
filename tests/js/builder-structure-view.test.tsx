@@ -1,3 +1,4 @@
+import { treeFixture } from './support/journey';
 import { CAPTURE_OUTCOME } from './support/outcomes';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
@@ -280,7 +281,7 @@ const typesIn = (nodes: readonly TemplateNode[] | undefined): string[] =>
   (nodes ?? []).map((node) => node.type);
 
 const formChildren = (tree: TemplateTree): readonly TemplateNode[] =>
-  (tree.steps[0] as unknown as { children: readonly TemplateNode[] }).children;
+  (tree.steps[0].content as unknown as { children: readonly TemplateNode[] }).children;
 
 describe('moving a block', () => {
   /**
@@ -712,7 +713,7 @@ describe('adding a block', () => {
   });
 
   /** One Optin has exactly one converting act (CONTEXT.md, Conversion). */
-  it('refuses a second button, with the reason where the pointer is', async () => {
+  it('offers navigation buttons beside the submission button', async () => {
     await structure();
 
     await userEvent.click(
@@ -720,7 +721,7 @@ describe('adding a block', () => {
     );
     await userEvent.click(screen.getByRole('menuitem', { name: 'Add a block after this' }));
 
-    expect(await screen.findByRole('menuitem', { name: /Button/ })).toHaveTextContent('exactly one');
+    expect(await screen.findByRole('menuitem', { name: /Button/ })).not.toHaveAttribute('aria-disabled', 'true');
   });
 
   it('puts the new block where it was asked for, and announces it', async () => {
@@ -766,7 +767,7 @@ describe('adding a block', () => {
    */
   it('refuses a field on the step that is not the form', async () => {
     await structure();
-    await userEvent.click(screen.getByRole('button', { name: 'After they submit' }));
+    await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Campaign screen' }), '1');
 
     await userEvent.click(
       within(row('Headline after they submit')).getByRole('button', {
@@ -775,7 +776,7 @@ describe('adding a block', () => {
     );
     await userEvent.click(screen.getByRole('menuitem', { name: 'Add a block after this' }));
 
-    expect(await screen.findByRole('menuitem', { name: /Field/ })).toHaveTextContent('submit button');
+    expect(await screen.findByRole('menuitem', { name: /Field/ })).toHaveTextContent('question screen');
   });
 });
 
@@ -1068,15 +1069,12 @@ describe('the inspector', () => {
    */
   it('takes the preview to the step the selected block lives on', async () => {
     await structure();
-    await userEvent.click(screen.getByRole('button', { name: 'After they submit' }));
+    await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Campaign screen' }), '1');
     await select('Headline after they submit');
 
-    expect(screen.getByRole('region', { name: 'Design canvas' })).toHaveTextContent('After they submit');
+    expect(screen.getByRole('region', { name: 'Design canvas' })).toHaveTextContent('Received');
 
-    expect(within(screen.getByLabelText('Campaign screen')).getByRole('button', { name: 'After they submit' })).toHaveAttribute(
-      'aria-pressed',
-      'true',
-    );
+    expect(screen.getByRole('combobox', { name: 'Campaign screen' })).toHaveValue('1');
   });
 
   /**
@@ -1553,14 +1551,14 @@ describe('a layout’s own settings', () => {
               the step's own row ("The form"), so a `split` there has no row of
               its own to select.
             */
-            tree: {
+            tree: treeFixture({
               steps: [
                 {
                   type: 'stack',
                   children: [{ type: 'split', ratio: 0.4, start: [], end: [] }],
                 },
               ],
-            },
+            }),
           },
         },
       }),
@@ -1694,14 +1692,14 @@ describe('a leaf’s own settings', () => {
           template_id: 'centred-card',
           template: {
             tokens: ENTRY.tokens,
-            tree: {
+            tree: treeFixture({
               steps: [
                 {
                   type: 'stack',
                   children: [{ type: 'image', id: 'n1', src: '/x.png', alt: '', fit: 'cover' }],
                 },
               ],
-            },
+            }),
           },
         },
       }),
@@ -1788,20 +1786,20 @@ describe('a countdown’s inspector', () => {
       config: {
         template_id: 'centred-card',
         template: {
-          tree: {
+          tree: treeFixture({
             ...ENTRY.tree,
             steps: ENTRY.tree.steps.map((step, at) =>
               at === 0
                 ? {
-                    ...step,
+                    ...step.content,
                     children: [
                       { type: 'countdown' },
-                      ...((step as { children?: unknown[] }).children ?? []),
+                      ...((step.content as { children?: unknown[] }).children ?? []),
                     ],
                   }
                 : step,
             ),
-          },
+          }),
           tokens: ENTRY.tokens,
         },
         ...config,
@@ -1892,7 +1890,7 @@ describe('the icon picker', () => {
       config: {
         template_id: 'centred-card',
         template: {
-          tree: {
+          tree: treeFixture({
             ...ENTRY.tree,
             /*
              * Step 0 gains the icon this test is about; every OTHER step is
@@ -1903,15 +1901,15 @@ describe('the icon picker', () => {
              * reason that had nothing to do with the picker.
              */
             steps: ENTRY.tree.steps.map((step, at) => {
-              const children = ((step as { children?: { type?: string }[] }).children ?? []).filter(
+              const children = ((step.content as { children?: { type?: string }[] }).children ?? []).filter(
                 (child) => child.type !== 'icon',
               );
 
               return at === 0
-                ? { ...step, children: [{ type: 'icon', name: 'gift' }, ...children] }
-                : { ...step, children };
+                ? { ...step.content, children: [{ type: 'icon', name: 'gift' }, ...children] }
+                : { ...step.content, children };
             }),
-          },
+          }),
           tokens: ENTRY.tokens,
         },
       },
@@ -1969,5 +1967,47 @@ describe('the visible Add element picker', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Phone number' }));
     expect(screen.getByRole('textbox', { name: 'Field label' })).toHaveValue('Phone number');
     expect(rowNames()).toContain('Phone number');
+  });
+});
+
+
+describe('adaptive editor and signup deletion', () => {
+  afterEach(() => vi.unstubAllGlobals());
+  it('opens selected layer controls in a drawer on a phone and saves the edit', async () => {
+    const originalWidth = window.innerWidth;
+    window.innerWidth = 390;
+    try {
+      await structure();
+      expect(screen.getByRole('dialog', { name: 'Layers' })).toBeInTheDocument();
+      await userEvent.click(screen.getByRole('button', { name: 'Headline Get 10% off your first order' }));
+      const dialog = screen.getByRole('dialog', { name: 'Design settings' });
+      const text = within(dialog).getByRole('textbox', { name: 'Text' });
+      await userEvent.clear(text);
+      await userEvent.type(text, 'Edited on a phone');
+      await userEvent.keyboard('{Escape}');
+      expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+      await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
+      expect(JSON.stringify(savedTree())).toContain('Edited on a phone');
+    } finally { window.innerWidth = originalWidth; }
+  });
+
+  it('removes an optional signup and its routing together, and Undo restores both', async () => {
+    vi.stubGlobal('ResizeObserver', class { observe() {} unobserve() {} disconnect() {} });
+    const { default: journey } = await import('../../resources/templates/library/journey-email-then-sms.json');
+    const config = { template_id: ENTRY.id, template: journey, submission_settings: { 'sms-signup': { destination_ids: ['sms-route'] } } };
+    builder.getOptin.mockResolvedValue(optin({ config }));
+    render(<OptinBuilder id={ID} onClose={vi.fn()} />);
+    await userEvent.click(await screen.findByRole('button', { name: 'Manage screens' }));
+    await userEvent.click(screen.getByRole('button', { name: /Optional SMS signup Save/ }));
+    await userEvent.click(screen.getByRole('button', { name: 'Delete screen' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Done' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
+    expect(savedTree().submissions).toHaveLength(1);
+    expect(builder.saveOptin.mock.calls.at(-1)?.[2].submission_settings).toEqual({});
+    await screen.findByRole('button', { name: 'Save draft' });
+    await userEvent.click(screen.getByRole('button', { name: 'Undo draft edit' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
+    expect(savedTree().submissions).toHaveLength(2);
+    expect(builder.saveOptin.mock.calls.at(-1)?.[2].submission_settings).toEqual(config.submission_settings);
   });
 });

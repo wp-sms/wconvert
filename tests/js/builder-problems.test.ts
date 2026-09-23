@@ -1,3 +1,6 @@
+import enquiry from '../../resources/templates/library/journey-enquiry.json';
+import optionalSignup from '../../resources/templates/library/journey-email-then-sms.json';
+import { treeFixture } from './support/journey';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
@@ -78,7 +81,7 @@ describe('the converting act', () => {
 });
 
 /** A one-step design that converts on a click and asks for nothing. */
-const CLICKS: TemplateTree = {
+const CLICKS: TemplateTree = treeFixture({
   steps: [
     {
       type: 'stack',
@@ -88,7 +91,7 @@ const CLICKS: TemplateTree = {
       ],
     } as unknown as TemplateNode,
   ],
-};
+});
 
 /**
  * `render.ts` makes the step holding a non-`link` button the `<form>`, and that
@@ -103,7 +106,7 @@ describe('a form that captures nothing anybody reads', () => {
   });
 
   it('says so for a field stranded on a step that is not the form', () => {
-    const stranded: TemplateTree = {
+    const stranded: TemplateTree = treeFixture({
       steps: [
         ENTRY.tree.steps[0],
         {
@@ -111,10 +114,10 @@ describe('a form that captures nothing anybody reads', () => {
           children: [{ type: 'field', name: 'name', label: 'Name' }],
         } as unknown as TemplateNode,
       ],
-    };
+    });
 
     expect(said({ tree: stranded, tokens: ENTRY.tokens })).toContainEqual(
-      expect.stringMatching(/not on the step that submits/),
+      expect.stringMatching(/Assign this field to a submission/),
     );
   });
 });
@@ -126,18 +129,18 @@ describe('a form that captures nothing anybody reads', () => {
  */
 describe('words a design switch would throw away', () => {
   it('counts the blocks with no name of their own', () => {
-    const extra: TemplateTree = {
+    const extra: TemplateTree = treeFixture({
       steps: [
         {
-          ...(ENTRY.tree.steps[0] as unknown as { children: TemplateNode[] }),
+          ...(ENTRY.tree.steps[0].content as unknown as { children: TemplateNode[] }),
           children: [
-            ...(ENTRY.tree.steps[0] as unknown as { children: TemplateNode[] }).children,
+            ...(ENTRY.tree.steps[0].content as unknown as { children: TemplateNode[] }).children,
             { type: 'text', text: 'A second paragraph' } as TemplateNode,
           ],
         } as unknown as TemplateNode,
         ENTRY.tree.steps[1],
       ],
-    };
+    });
 
     expect(said({ tree: extra, tokens: ENTRY.tokens })).toContainEqual(
       expect.stringMatching(/1 block has no name of its own/),
@@ -185,14 +188,14 @@ describe('a countdown with no end date', () => {
   // The real entry with a clock added at the top of its first step, so
   // everything else about it stays a design with nothing wrong.
   const withClock: Template = {
-    tree: {
+    tree: treeFixture({
       ...ENTRY.tree,
       steps: ENTRY.tree.steps.map((step, at) =>
         at === 0
-          ? { ...step, children: [{ type: 'countdown' }, ...((step as { children?: unknown[] }).children ?? [])] }
+          ? { ...step.content, children: [{ type: 'countdown' }, ...((step.content as { children?: unknown[] }).children ?? [])] }
           : step,
       ) as Template['tree']['steps'],
-    },
+    }),
     tokens: ENTRY.tokens,
   };
 
@@ -249,10 +252,10 @@ describe('resource link readiness', () => {
   it('requires a reachable success screen, a label and a safe address', () => {
     const link = { type: 'followup' as const, label: 'Read guide', href: '/guide.pdf' };
     const check = (node: typeof link & { hidden?: boolean }, step = 1) => {
-      const tree: TemplateTree = { steps: [
+      const tree: TemplateTree = treeFixture({ steps: [
         { type: 'stack', children: [{ type: 'field', name: 'email' }, { type: 'button', label: 'Send' }, ...(step === 0 ? [node] : [])] },
         { type: 'stack', children: step === 1 ? [node] : [] },
-      ] };
+      ] });
       return problemsIn({ tree, tokens: ENTRY.tokens }, undefined).filter(problem => problem.said.includes('resource link'));
     };
     expect(check(link)).toEqual([]);
@@ -261,5 +264,17 @@ describe('resource link readiness', () => {
     expect(check({ ...link, label: '' })[0]?.blocksPublish).toBe(true);
     expect(check(link, 0)[0]?.blocksPublish).toBe(true);
     expect(check({ ...link, href: '', hidden: true })).toEqual([]);
+  });
+});
+
+describe('journey readiness', () => {
+  it('accepts fields across screens and a resource after primary capture', () => {
+    for (const source of [enquiry, optionalSignup]) {
+      const template = structuredClone(source) as Template;
+      const acknowledgement = template.tree.steps.at(-1)!.content as unknown as { children: unknown[] };
+      acknowledgement.children.push({ type: 'followup', label: 'Open guide', href: '/guide.pdf' });
+      const problems = problemsIn(template, undefined);
+      expect(problems.filter(p => p.check === 'captures' || p.said.includes('resource link'))).toEqual([]);
+    }
   });
 });

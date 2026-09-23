@@ -76,7 +76,7 @@ final class LeadCsv
             $captured[] = 'interest_label';
         }
 
-        return $this->columns ??= array_merge(self::LEADING_COLUMNS, $captured, [self::CONSENT_COLUMN]);
+        return $this->columns ??= array_merge(self::LEADING_COLUMNS, $captured, [self::CONSENT_COLUMN, 'email_consent_text', 'email_accepted_at', 'sms_consent_text', 'sms_accepted_at']);
     }
 
     /**

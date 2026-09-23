@@ -30,7 +30,7 @@ defined('ABSPATH') || exit;
  * ({@see \WConvert\Admin\AdminMenu::settings()}).
  *
  * ============================================================================
- * THE PER-PAGE BUDGET IS NOT RAISED, AND THAT WAS A CORRECTION. TWICE.
+ * HISTORICAL MEASUREMENTS BEFORE THE JSON V2 JOURNEY CONTRACT.
  * ============================================================================
  * An early reading of this work claimed ten rich designs came to ~2,320 B
  * against 2,048 and that the budget therefore had to grow. The fixture actually
@@ -53,9 +53,11 @@ final class DesignBudget
     /**
      * The whole page's payload, gzipped, however many Optins are on it.
      *
-     * ADR 0010's number, unchanged, and the one a visitor actually pays.
+     * ADR 0103 adds measured flow metadata to the earlier ADR 0010 cap.
      */
-    public const PER_PAGE = 2048;
+    // ADR 0103: screen/submission identities and per-Campaign fingerprints add
+    // fixed metadata. The five-Campaign fixture includes distinct fingerprints.
+    public const PER_PAGE = 2560;
 
     /**
      * One design's own snapshot — tree plus tokens — gzipped, on its own.

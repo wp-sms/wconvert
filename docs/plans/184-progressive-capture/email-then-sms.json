@@ -1,0 +1,166 @@
+{
+  "id": "journey-email-then-sms",
+  "name": "Email with optional SMS",
+  "display_type": "popup",
+  "tier": "free",
+  "tokens": {
+    "width": "28rem",
+    "pad": "1.5rem",
+    "gap": "1rem",
+    "align": "start"
+  },
+  "tree": {
+    "v": 2,
+    "submissions": [
+      {
+        "id": "email-signup",
+        "required": true,
+        "fields": [
+          "n2"
+        ],
+        "consents": [
+          "n3"
+        ]
+      },
+      {
+        "id": "sms-signup",
+        "required": false,
+        "fields": [
+          "n7"
+        ],
+        "consents": [
+          "n8"
+        ]
+      }
+    ],
+    "steps": [
+      {
+        "id": "email",
+        "name": "Email signup",
+        "kind": "input",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "heading",
+              "id": "n1",
+              "role": "headline",
+              "text": "Get our email updates"
+            },
+            {
+              "type": "field",
+              "id": "n2",
+              "name": "email",
+              "label": "Email address",
+              "required": true
+            },
+            {
+              "type": "consent",
+              "id": "n3",
+              "role": "consent_text",
+              "hidden": false,
+              "text": "Email me news and offers."
+            },
+            {
+              "type": "button",
+              "id": "n4",
+              "role": "cta_label",
+              "label": "Sign up for email",
+              "action": "submit",
+              "submission": "email-signup"
+            }
+          ]
+        }
+      },
+      {
+        "id": "sms",
+        "name": "Optional SMS signup",
+        "kind": "input",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "heading",
+              "id": "n5",
+              "role": "headline",
+              "text": "Would you also like text updates?"
+            },
+            {
+              "type": "text",
+              "id": "n6",
+              "role": "body",
+              "text": "Your email signup request was received. This next step is optional."
+            },
+            {
+              "type": "field",
+              "id": "n7",
+              "name": "phone",
+              "label": "Phone number",
+              "required": true
+            },
+            {
+              "type": "consent",
+              "id": "n8",
+              "role": "consent_text",
+              "hidden": false,
+              "text": "Send me news and offers by text message."
+            },
+            {
+              "type": "button",
+              "id": "n9",
+              "role": "back_label",
+              "label": "Review email",
+              "action": "back",
+              "tokens": {
+                "accent": "transparent",
+                "accent-fg": "#475569"
+              }
+            },
+            {
+              "type": "button",
+              "id": "n10",
+              "role": "cta_label",
+              "label": "Sign up for SMS",
+              "action": "submit",
+              "submission": "sms-signup"
+            },
+            {
+              "type": "button",
+              "id": "n11",
+              "role": "skip_label",
+              "label": "Finish without SMS",
+              "action": "skip",
+              "submission": "sms-signup",
+              "tokens": {
+                "accent": "transparent",
+                "accent-fg": "#475569"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "received",
+        "name": "Acknowledgement",
+        "kind": "acknowledgement",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "heading",
+              "id": "n12",
+              "role": "success_headline",
+              "text": "Details received"
+            },
+            {
+              "type": "text",
+              "id": "n13",
+              "role": "success_body",
+              "text": "Thank you. We have received the details you submitted."
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

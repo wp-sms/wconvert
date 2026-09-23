@@ -505,7 +505,7 @@ export interface Setting {
 export function slotsOf(tree: TemplateTree): Slot[] {
   const slots: Slot[] = [];
 
-  tree.steps.forEach((step, index) => collect(step, [index], slots));
+  tree.steps.forEach((step, index) => collect(step.content, [index], slots));
 
   return numbered(slots);
 }
@@ -763,7 +763,7 @@ const heldBy = (scope: Scope, name: string, width: WidthBag): string | undefined
  */
 function nodeOf(tree: TemplateTree, path: Path): (TemplateNode & { tokens?: Tokens }) | null {
   const [step, ...rest] = path;
-  let node = (typeof step === 'number' ? tree.steps[step] : undefined) ?? null;
+  let node = (typeof step === 'number' ? tree.steps[step]?.content : undefined) ?? null;
 
   for (let at = 0; at < rest.length && node !== null; at += 2) {
     const children = typeof rest[at] === 'string' ? (node as Record<string, unknown>)[rest[at]] : null;
@@ -905,7 +905,8 @@ function editNode(tree: TemplateTree, path: Path, edit: (node: TemplateNode) => 
   }
 
   return {
-    steps: tree.steps.map((step, at) => (at === index ? replace(step, rest, edit) : step)),
+    ...tree,
+    steps: tree.steps.map((step, at) => (at === index ? { ...step, content: replace(step.content, rest, edit) } : step)),
   };
 }
 

@@ -20,6 +20,8 @@ test.beforeAll(async ({ browser, request }) => {
   expect(await seed.text()).toContain('seeded');
   const page = await browser.newPage({ baseURL });
   await page.goto('/wp-login.php');
+  // WordPress defers initial focus; wait before typing so it cannot redirect a fill.
+  await expect(page.getByLabel('Username or Email Address')).toBeFocused();
   await page.getByLabel('Username or Email Address').fill('admin');
   await page.getByLabel('Password', { exact: true }).fill('password');
   await page.getByRole('button', { name: 'Log In', exact: true }).click();

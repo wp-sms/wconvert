@@ -36,7 +36,7 @@ a usable Optin must not require rebuilding its layout.
    `pro/modules/display-types/templates/`. The `id` must be unique across
    **both**.
    Give each shipped leaf a stable `n1`…`n9999` id, unique within its tree, and
-   preserve that id when reordering it. Do not author `v` or derived facets.
+   preserve that id when reordering it. Author `tree.v: 2`; do not author derived facets.
    PHP mints missing ids on newly added draft leaves; that fallback is not a
    reason to renumber shipped leaves and lose translation identity (ADR 0010).
 3. **`composer verify:templates`.** Not optional — see below.
@@ -86,12 +86,17 @@ re-validating, so it cannot drift from the validator.
 Unlike the six above, these are **refusals** — the design is not registered at
 all, so it is missing from the gallery entirely.
 
-- **Exactly one converting act.** One `button`, with `action` either `submit`
-  or `link`. Two is refused, none is refused.
-- **The step count follows from the act.** `submit` → **2 steps** (the second
-  is the terminal capture acknowledgement). `link` → **1 step**, because the click
-  navigates the visitor away and an interstitial is worse than the navigation
-  it delays (ADR 0025).
+- **Explicit linear flow.** Use screen wrappers `{id, name, kind, content}` and
+  `tree.submissions` with stable field/consent references. At most six screens
+  precede one terminal acknowledgement, with one required submission and at most
+  one optional signup for the other marketing channel. Click-only designs retain
+  one content screen, one link button and no submissions.
+- **Navigation is separate.** Next/Back do not save; Submit names its submission;
+  every optional screen offers Skip for that submission. Use navigation Roles
+  (`next_label`, `back_label`, `skip_label`, `close_label`) so copy transfer cannot
+  turn a signup CTA into a Back label. Style Back/Skip/Close as secondary actions.
+- **Every screen is reviewed.** Inspect mobile, desktop and RTL renders; verify
+  actual navigation, fixed submitted fields and immediate primary acknowledgement.
 
 **Success wording describes capture, not delivery.** Use *Request received* or
 thank the visitor for the specific request. A form response does not prove

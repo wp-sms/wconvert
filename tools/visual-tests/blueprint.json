@@ -1,0 +1,21 @@
+{
+  "steps": [
+    {
+      "step": "defineWpConfigConsts",
+      "method": "rewrite-wp-config",
+      "consts": {
+        "DISABLE_WP_CRON": true,
+        "AUTOMATIC_UPDATER_DISABLED": true,
+        "WP_AUTO_UPDATE_CORE": false,
+        "AUTH_KEY": "wconvert-disposable-visual-site-auth-key",
+        "SECURE_AUTH_KEY": "wconvert-disposable-visual-site-secure-auth-key",
+        "LOGGED_IN_KEY": "wconvert-disposable-visual-site-logged-in-key",
+        "NONCE_KEY": "wconvert-disposable-visual-site-nonce-key",
+        "AUTH_SALT": "wconvert-disposable-visual-site-auth-salt",
+        "SECURE_AUTH_SALT": "wconvert-disposable-visual-site-secure-auth-salt",
+        "LOGGED_IN_SALT": "wconvert-disposable-visual-site-logged-in-salt",
+        "NONCE_SALT": "wconvert-disposable-visual-site-nonce-salt"
+      }
+    }
+  ]
+}

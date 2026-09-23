@@ -157,7 +157,7 @@ Six keys, exactly. One JSON file per design, in
   "display_type": ${list(Object.keys(DISPLAY_TYPES))},
   "tier": "free | basic | pro | elite",
   "tokens": { },
-  "tree": { "steps": [ ] }
+  "tree": { "v": 2, "steps": [ ], "submissions": [ ] }
 }
 \`\`\`
 
@@ -166,28 +166,32 @@ ${table(
   Object.entries(DISPLAY_TYPES).map(([type, note]) => [`\`${type}\``, note]),
 )}
 
-**Do not author \`facets\` or \`v\`.** Facets are derived from the tree and
-\`v\` is stamped by PHP. Shipped leaf nodes carry unique stable ids (\`n1\`,
-\`n2\`, …), which keep their translation names stable. PHP mints any missing
-ids when a draft is saved; layouts do not carry ids.
+**Do not author facets.** They are derived. Author tree version 2 and unique leaf
+IDs (n1, n2, …); input and consent references must name those IDs.
 
-## 2. The tree, and how many steps it has
+## 2. Linear capture journeys
 
-\`steps\` is an array of **root layout nodes**, one per step, and how many is not
-a choice — it follows from the converting act:
+Each screen is an object with a stable id, merchant-facing name, kind
+(content, input, or acknowledgement), and one root layout under content.
+The flow vocabulary is generated from the same manifest as the validator:
 
-| The design's button | \`steps\` | Why |
-|---|---|---|
-| \`"action": "submit"\` | **2** | Step 0 is the form; step 1 is the terminal success state. |
-| \`"action": "link"\` | **1** | The click navigates the visitor away, and an interstitial is worse than the navigation it delays. |
+${JSON.stringify(manifest.flow, null, 2)}
 
-**Exactly one converting act per design.** A tree with two buttons, or with
-none, is refused at registration — not dropped, refused, so the design is
-missing from the gallery entirely.
+A click-only design has one content screen and no submissions. A capture design
+has up to six screens followed by one acknowledgement. It has one required
+submission and may have one optional signup for the other marketing channel.
+Each submission declares id, required, fields (node IDs), and consents (node IDs).
 
-The step holding the submit button **is** the \`<form>\`. So every \`field\` and
-every \`consent\` node must live in that step. A field on any other step draws,
-takes typing, and is read by nothing.
+Next and Back keep answers on the current page. Submit names its submission and
+saves all of its declared answers. Earlier input screens use Next; a Submit
+screen cannot also offer Next. Every optional screen must offer Skip naming the
+optional submission. Close always remains available through the display chrome.
+An input belongs to exactly one submission. Identifiers are required, consent
+wording belongs to its own signup, and a saved answer cannot be edited later.
+
+Use resources/templates/library/journey-email-then-sms.json for a complete
+example. Enquiries normally collect answers across screens and submit once.
+Multiple buttons are allowed; mixing counted links and capture submissions is not.
 
 ## 3. The ${Object.keys(manifest.layouts).length} layouts
 

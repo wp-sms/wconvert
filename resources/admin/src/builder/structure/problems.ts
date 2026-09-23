@@ -1,8 +1,9 @@
 import { __, _n, sprintf } from '@wordpress/i18n';
 import { AA_NORMAL, READABLE_PAIRS, contrastOf, pairKey } from '../contrast';
 import { resolvedToken, type Path } from '../panel';
-import { formStep, losesWordsOnSwitch } from './catalogue';
+import { losesWordsOnSwitch } from './catalogue';
 import { convertingActOf } from './guards';
+import { submissionScreen } from './journey';
 import { nodesOf, nodeAt } from './tree';
 import { validInterestOptions } from '../InterestOptions';
 import { safeHref } from '@renderer/render';
@@ -187,21 +188,26 @@ export function problemsIn(
 }
 
 function whatHasIncompleteFollowups(template: Template): Problem[] {
-  const afterForm = formStep(template.tree) === 0;
+  const acceptedAt = submissionScreen(template.tree, template.tree.submissions[0]?.id);
   return nodesOf(template.tree).filter(node => node.type === 'followup' && !node.hidden).flatMap(node => {
     const link = nodeAt(template.tree, node.path) as FollowupNode;
-    if (afterForm && node.path[0] === 1 && link.label?.trim() && safeHref(link.href?.trim()) !== null) return [];
+    if (acceptedAt >= 0 && Number(node.path[0]) > acceptedAt && link.label?.trim() && safeHref(link.href?.trim()) !== null) return [];
     return [{ said: __('Give this resource link a label and address, and place it after the form.', 'wconvert'), path: node.path, check: 'words' as const, blocksPublish: true }];
   });
 }
 
 function whatHasIncompleteFields(template: Template): Problem[] {
-  const step = formStep(template.tree);
-  if (step === null) return [];
-  const fields = nodesOf(template.tree).filter((node) => node.type === 'field' && node.path[0] === step);
+  const fields = nodesOf(template.tree).filter(node => node.type === 'field');
   const issues: Problem[] = [];
-  if (!fields.some((field) => field.captures === 'email' || field.captures === 'phone')) {
-    issues.push({ said: __('Add an email or phone field so this form can capture a lead.', 'wconvert'), path: null, check: 'captures', blocksPublish: true });
+  for (const submission of template.tree.submissions) {
+    if (submissionScreen(template.tree, submission.id) < 0) continue;
+    const identifiers = fields.filter(field => {
+      const node = nodeAt(template.tree, field.path) as FieldNode;
+      return node.id && submission.fields.includes(node.id) && (field.captures === 'email' || field.captures === 'phone');
+    });
+    if (identifiers.length === 0) {
+      issues.push({ said: __('Add an email or phone field so this form can capture a lead.', 'wconvert'), path: null, check: 'captures', blocksPublish: true });
+    }
   }
   for (const field of fields.filter((field) => field.captures === 'interest')) {
     if (!validInterestOptions((nodeAt(template.tree, field.path) as FieldNode | null)?.options)) {
@@ -246,38 +252,23 @@ function whatCannotConvert(template: Template): Problem[] {
   ];
 }
 
-/**
- * A form that captures nothing anybody reads.
- *
- * `render.ts` makes the step holding a non-`link` button the `<form>`, and that
- * follows from the tree rather than from a flag — so a field on any other step
- * is an input inside a `<div>`: it draws, it takes typing, and nothing on earth
- * reads it. The editor refuses to ADD one there; a design can still arrive with
- * one, and a merchant who deleted the button leaves every field behind.
- */
+/** A field must belong to a reachable submission after its input screen. */
 function whatCapturesNothing(template: Template): Problem[] {
-  const form = formStep(template.tree);
-  const stranded = nodesOf(template.tree).filter(
-    (block) => block.captures !== null && block.path[0] !== form,
-  );
-
-  if (stranded.length === 0) {
-    return [];
-  }
-
-  return stranded.map((block) => ({
-    said:
-      form === null
-        ? __(
-            'This design captures something but has no button that submits, so what a visitor types goes nowhere.',
-            'wconvert',
-          )
-        : __(
-            'This field is not on the step that submits, so it draws and is read by nothing. Move it onto the form.',
-            'wconvert',
-          ),
+  const boundaries = template.tree.submissions.map(submission => submissionScreen(template.tree, submission.id));
+  const stranded = nodesOf(template.tree).filter(block => {
+    if (block.captures === null) return false;
+    const node = nodeAt(template.tree, block.path) as FieldNode;
+    return !template.tree.submissions.some((submission, index) =>
+      node.id && submission.fields.includes(node.id) && Number(block.path[0]) > (index === 0 ? -1 : boundaries[index - 1])
+      && Number(block.path[0]) <= boundaries[index] && template.tree.steps[Number(block.path[0])].kind === 'input');
+  });
+  return stranded.map(block => ({
+    said: boundaries.every(at => at < 0)
+      ? __('This design captures something but has no button that submits, so what a visitor types goes nowhere.', 'wconvert')
+      : __('Assign this field to a submission after its screen so the answer can be saved.', 'wconvert'),
     path: block.path,
     check: 'captures',
+    blocksPublish: true,
   }));
 }
 

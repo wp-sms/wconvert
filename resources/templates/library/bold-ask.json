@@ -27,80 +27,104 @@
   "tree": {
     "steps": [
       {
-        "type": "stack",
-        "children": [
-          {
-            "type": "heading",
-            "id": "n1",
-            "role": "headline",
-            "text": "One good idea. Every week.",
-            "tokens": {
-              "heading-size": "clamp(2.25rem, 10cqi, 3.25rem)"
-            }
-          },
-          {
-            "type": "field",
-            "id": "n2",
-            "name": "email",
-            "label": "Email address",
-            "placeholder": "you@example.com",
-            "required": true
-          },
-          {
-            "type": "button",
-            "id": "n3",
-            "role": "cta_label",
-            "label": "Send me the weekly idea",
-            "action": "submit"
-          },
-          {
-            "type": "consent",
-            "id": "n4",
-            "role": "consent_text",
-            "hidden": true,
-            "text": "Email me offers and news. %s",
-            "link": {
-              "label": "Privacy Policy"
+        "id": "s1",
+        "name": "Details",
+        "kind": "input",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "heading",
+              "id": "n1",
+              "role": "headline",
+              "text": "One good idea. Every week.",
+              "tokens": {
+                "heading-size": "clamp(2.25rem, 10cqi, 3.25rem)"
+              }
             },
-            "tokens": {
-              "text-size": "1.125rem"
+            {
+              "type": "field",
+              "id": "n2",
+              "name": "email",
+              "label": "Email address",
+              "placeholder": "you@example.com",
+              "required": true
+            },
+            {
+              "type": "button",
+              "id": "n3",
+              "role": "cta_label",
+              "label": "Send me the weekly idea",
+              "action": "submit",
+              "submission": "primary"
+            },
+            {
+              "type": "consent",
+              "id": "n4",
+              "role": "consent_text",
+              "hidden": true,
+              "text": "Email me offers and news. %s",
+              "link": {
+                "label": "Privacy Policy"
+              },
+              "tokens": {
+                "text-size": "1.125rem"
+              }
+            },
+            {
+              "type": "text",
+              "id": "n8",
+              "role": "fine_print",
+              "text": "Weekly emails. %s",
+              "size": "s",
+              "link": {
+                "label": "Privacy Policy"
+              }
             }
-          },
-          {
-            "type": "text",
-            "id": "n8",
-            "role": "fine_print",
-            "text": "Weekly emails. %s",
-            "size": "s",
-            "link": {
-              "label": "Privacy Policy"
-            }
-          }
-        ]
+          ]
+        }
       },
       {
-        "type": "stack",
-        "children": [
-          {
-            "type": "icon",
-            "id": "n7",
-            "name": "check"
-          },
-          {
-            "type": "heading",
-            "id": "n5",
-            "role": "success_headline",
-            "text": "Request received.",
-            "tokens": {
-              "heading-size": "clamp(2.25rem, 10cqi, 3.25rem)"
+        "id": "s2",
+        "name": "Received",
+        "kind": "acknowledgement",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "icon",
+              "id": "n7",
+              "name": "check"
+            },
+            {
+              "type": "heading",
+              "id": "n5",
+              "role": "success_headline",
+              "text": "Request received.",
+              "tokens": {
+                "heading-size": "clamp(2.25rem, 10cqi, 3.25rem)"
+              }
+            },
+            {
+              "type": "text",
+              "id": "n6",
+              "role": "success_body",
+              "text": "Thank you for asking for the next weekly idea."
             }
-          },
-          {
-            "type": "text",
-            "id": "n6",
-            "role": "success_body",
-            "text": "Thank you for asking for the next weekly idea."
-          }
+          ]
+        }
+      }
+    ],
+    "v": 2,
+    "submissions": [
+      {
+        "id": "primary",
+        "required": true,
+        "fields": [
+          "n2"
+        ],
+        "consents": [
+          "n4"
         ]
       }
     ]

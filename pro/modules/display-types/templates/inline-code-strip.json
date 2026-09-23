@@ -25,81 +25,105 @@
   "tree": {
     "steps": [
       {
-        "type": "stack",
-        "children": [
-          {
-            "type": "heading",
-            "id": "n1",
-            "role": "headline",
-            "text": "A little welcome. 10% off."
-          },
-          {
-            "type": "row",
-            "children": [
-              {
-                "type": "field",
-                "id": "n2",
-                "name": "email",
-                "label": "Email address",
-                "placeholder": "you@example.com",
-                "required": true
-              },
-              {
-                "type": "button",
-                "id": "n3",
-                "role": "cta_label",
-                "label": "Reveal the code",
-                "action": "submit"
-              }
-            ]
-          },
-          {
-            "type": "consent",
-            "id": "n4",
-            "role": "consent_text",
-            "hidden": true,
-            "text": "Email me offers and news. %s",
-            "link": {
-              "label": "Privacy Policy"
+        "id": "s1",
+        "name": "Details",
+        "kind": "input",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "heading",
+              "id": "n1",
+              "role": "headline",
+              "text": "A little welcome. 10% off."
             },
-            "tokens": {
-              "text-size": "1.125rem"
+            {
+              "type": "row",
+              "children": [
+                {
+                  "type": "field",
+                  "id": "n2",
+                  "name": "email",
+                  "label": "Email address",
+                  "placeholder": "you@example.com",
+                  "required": true
+                },
+                {
+                  "type": "button",
+                  "id": "n3",
+                  "role": "cta_label",
+                  "label": "Reveal the code",
+                  "action": "submit",
+                  "submission": "primary"
+                }
+              ]
+            },
+            {
+              "type": "consent",
+              "id": "n4",
+              "role": "consent_text",
+              "hidden": true,
+              "text": "Email me offers and news. %s",
+              "link": {
+                "label": "Privacy Policy"
+              },
+              "tokens": {
+                "text-size": "1.125rem"
+              }
+            },
+            {
+              "type": "text",
+              "id": "n5",
+              "role": "fine_print",
+              "text": "First order only. One use per customer.",
+              "size": "s",
+              "tokens": {
+                "text-size": "1.167rem"
+              }
             }
-          },
-          {
-            "type": "text",
-            "id": "n5",
-            "role": "fine_print",
-            "text": "First order only. One use per customer.",
-            "size": "s",
-            "tokens": {
-              "text-size": "1.167rem"
-            }
-          }
-        ]
+          ]
+        }
       },
       {
-        "type": "stack",
-        "children": [
-          {
-            "type": "heading",
-            "id": "n6",
-            "role": "success_headline",
-            "text": "Here it is"
-          },
-          {
-            "type": "code",
-            "id": "n7",
-            "role": "code_value",
-            "text": "PAGE10",
-            "copy": true
-          },
-          {
-            "type": "text",
-            "id": "n8",
-            "role": "success_body",
-            "text": "Enter it at the checkout."
-          }
+        "id": "s2",
+        "name": "Received",
+        "kind": "acknowledgement",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "heading",
+              "id": "n6",
+              "role": "success_headline",
+              "text": "Here it is"
+            },
+            {
+              "type": "code",
+              "id": "n7",
+              "role": "code_value",
+              "text": "PAGE10",
+              "copy": true
+            },
+            {
+              "type": "text",
+              "id": "n8",
+              "role": "success_body",
+              "text": "Enter it at the checkout."
+            }
+          ]
+        }
+      }
+    ],
+    "v": 2,
+    "submissions": [
+      {
+        "id": "primary",
+        "required": true,
+        "fields": [
+          "n2"
+        ],
+        "consents": [
+          "n4"
         ]
       }
     ]

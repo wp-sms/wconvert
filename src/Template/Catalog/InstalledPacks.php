@@ -6,9 +6,17 @@ use WConvert\Template\TemplateSource;
 
 defined('ABSPATH') || exit;
 
-/** Immutable JSON copies. The highest installed version supplies new designs. */
+/**
+ * Immutable JSON copies. The highest installed version supplies new designs.
+ * One instance represents one request, so its validated archive snapshot is
+ * shared by template, Playbook and catalog consumers and refreshed after a
+ * successful install or repair.
+ */
 final class InstalledPacks implements TemplateSource
 {
+    /** @var list<array<string, mixed>>|null */
+    private ?array $cachedPacks = null;
+
     public function __construct(private readonly string $directory, private readonly PackValidator $validator)
     {
     }
@@ -16,6 +24,10 @@ final class InstalledPacks implements TemplateSource
     /** @return list<array<string, mixed>> */
     public function packs(): array
     {
+        if ($this->cachedPacks !== null) {
+            return $this->cachedPacks;
+        }
+
         $packs = [];
         foreach (array_slice(glob($this->directory . '/*.json') ?: [], 0, 128) as $file) {
             if (!is_readable($file) || filesize($file) > PackValidator::MAX_BYTES) continue;
@@ -31,7 +43,7 @@ final class InstalledPacks implements TemplateSource
             }
         }
         usort($packs, static fn (array $a, array $b): int => version_compare($b['version'], $a['version']));
-        return $packs;
+        return $this->cachedPacks = $packs;
     }
 
     /** @return list<array<string, mixed>> */
@@ -83,6 +95,10 @@ final class InstalledPacks implements TemplateSource
     {
         $pack = $this->validator->decode($json);
         $pack['digest'] = hash('sha256', $json);
+        // Writes are rare and may race another request. Refresh before every
+        // version decision so an older request-local snapshot cannot replace
+        // a newer release another request just installed.
+        $this->cachedPacks = null;
         $files = glob($this->directory . '/*.json') ?: [];
         $path = $this->directory . '/' . $pack['digest'] . '.json';
         if (is_file($path) && hash_file('sha256', $path) === $pack['digest']) return $pack;
@@ -97,6 +113,7 @@ final class InstalledPacks implements TemplateSource
         try {
             PackValidator::check(@file_put_contents($temporary, $json, LOCK_EX) === strlen($json), __('The template pack could not be written.', 'wconvert'));
             PackValidator::check(@rename($temporary, $path), __('The template pack could not be installed.', 'wconvert'));
+            $this->cachedPacks = null;
         } finally {
             if (is_file($temporary)) unlink($temporary);
         }

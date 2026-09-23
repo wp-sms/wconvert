@@ -1,3 +1,4 @@
+import { treeFixture } from './support/journey';
 import { describe, expect, it } from 'vitest';
 import { styleTokens, styleGroups, inheritedStyle } from '../../resources/admin/src/builder/styleTokens';
 import { scopeChainOf } from '../../resources/admin/src/builder/panel';
@@ -6,10 +7,10 @@ import { urlIn } from '../../resources/admin/src/builder/themes';
 
 const template: Template = {
   tokens: { fg: '#111', 'heading-size': '2rem' },
-  tree: { steps: [{ type: 'stack', narrow: { fg: '#222' }, children: [
+  tree: treeFixture({ steps: [{ type: 'stack', narrow: { fg: '#222' }, children: [
     { type: 'heading', text: 'Title', tokens: { 'heading-size': '3rem' }, narrow: { 'heading-size': '1.5rem' } },
     { type: 'field', name: 'email', label: 'Email', placeholder: '', required: true },
-  ] }] },
+  ] }] }),
 };
 
 describe('contextual appearance', () => {
@@ -57,22 +58,22 @@ describe('picture controls follow the content without discarding values', () => 
   });
 
   it('offers focus for descendant photos and hides it when their source is cleared', () => {
-    const value: Template = { tokens: {}, tree: { steps: [{ type: 'stack', children: [{ type: 'image', src: '/photo.jpg', alt: '' }] }] } };
+    const value: Template = { tokens: {}, tree: treeFixture({ steps: [{ type: 'stack', children: [{ type: 'image', src: '/photo.jpg', alt: '' }] }] }) };
     expect(hasFocus(value, null)).toBe(true);
     expect(hasFocus(value, [0])).toBe(true);
     expect(hasFocus(value, [0, 'children', 0])).toBe(true);
-    const empty: Template = { ...value, tree: { steps: [{ type: 'stack', children: [{ type: 'image', src: '', alt: '' }] }] } };
+    const empty: Template = { ...value, tree: treeFixture({ steps: [{ type: 'stack', children: [{ type: 'image', src: '', alt: '' }] }] }) };
     expect(hasFocus(empty, [0])).toBe(false);
   });
 
   it('matches the renderer’s background reset and mobile override', () => {
-    const value: Template = { tokens: { 'bg-image': 'url(global.jpg)' }, tree: { steps: [{ type: 'media', children: [], narrow: { 'bg-image': 'url(mobile.jpg)' } }] } };
+    const value: Template = { tokens: { 'bg-image': 'url(global.jpg)' }, tree: treeFixture({ steps: [{ type: 'media', children: [], narrow: { 'bg-image': 'url(mobile.jpg)' } }] }) };
     expect(hasFocus(value, null)).toBe(true);
     expect(hasFocus(value, [0])).toBe(false);
     expect(hasFocus(value, [0], 'narrow')).toBe(true);
     const onlyMobile: Template = { ...value, tokens: {} };
     expect(hasFocus(onlyMobile, null)).toBe(true);
-    const hiddenOnMobile: Template = { tokens: {}, tree: { steps: [{ type: 'panel', children: [], tokens: { 'bg-image': 'url(photo.jpg)' }, narrow: { 'bg-image': 'none' } }] } };
+    const hiddenOnMobile: Template = { tokens: {}, tree: treeFixture({ steps: [{ type: 'panel', children: [], tokens: { 'bg-image': 'url(photo.jpg)' }, narrow: { 'bg-image': 'none' } }] }) };
     expect(hasFocus(hiddenOnMobile, [0])).toBe(true);
     expect(hasFocus(hiddenOnMobile, [0], 'narrow')).toBe(false);
   });
@@ -90,13 +91,13 @@ describe('field order stays useful and stable', () => {
     ['button', ['color', 'type', 'space']],
     ['field', ['color', 'type', 'space']],
   ])('puts the everyday settings first for %s', (type, expected) => {
-    const value: Template = { tokens: {}, tree: { steps: [{ type }] } };
+    const value: Template = { tokens: {}, tree: treeFixture({ steps: [{ type }] }) };
     expect(styleGroups(value, [0], 'tokens').map(group => group.id)).toEqual(expected);
   });
 
   it('keeps section order while adding, removing or changing a box’s background picture', () => {
-    const empty: Template = { tokens: {}, tree: { steps: [{ type: 'panel', children: [] }] } };
-    const photo: Template = { tokens: {}, tree: { steps: [{ type: 'panel', tokens: { 'bg-image': 'url(photo.jpg)' }, children: [] }] } };
+    const empty: Template = { tokens: {}, tree: treeFixture({ steps: [{ type: 'panel', children: [] }] }) };
+    const photo: Template = { tokens: {}, tree: treeFixture({ steps: [{ type: 'panel', tokens: { 'bg-image': 'url(photo.jpg)' }, children: [] }] }) };
     const ids = (value: Template) => styleGroups(value, [0], 'tokens').map(group => group.id);
     expect(ids(empty)).toEqual(['space', 'color', 'image']);
     expect(ids(photo)).toEqual(ids(empty));

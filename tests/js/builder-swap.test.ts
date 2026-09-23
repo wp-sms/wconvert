@@ -1,3 +1,4 @@
+import { treeFixture } from './support/journey';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
@@ -72,17 +73,17 @@ describe('what a block may become', () => {
   it('refuses a kind the form already captures, and says why', () => {
     const withPhone = withSwapped(ENTRY.tree, FIELD, 'phone', 'submit', LABELS);
     // Two fields now: the swapped one, and a copy of it left as email.
-    const two: TemplateTree = {
+    const two: TemplateTree = treeFixture({
       steps: [
         {
-          ...(withPhone.steps[0] as unknown as { children: TemplateNode[] }),
+          ...(withPhone.steps[0].content as unknown as { children: TemplateNode[] }),
           children: [
-            ...(withPhone.steps[0] as unknown as { children: TemplateNode[] }).children,
+            ...(withPhone.steps[0].content as unknown as { children: TemplateNode[] }).children,
             { type: 'field', name: 'email' } as TemplateNode,
           ],
         } as unknown as TemplateNode,
       ],
-    };
+    });
 
     expect(offered(two, FIELD).email).toMatch(/already captures/);
     expect(offered(two, FIELD).phone).toBeNull();
@@ -121,14 +122,14 @@ describe('what a button may do', () => {
      * The other way round needs a button that is already a link, because a
      * refusal is never reported against what the block ALREADY is.
      */
-    const clicky: TemplateTree = {
+    const clicky: TemplateTree = treeFixture({
       steps: [
         {
           type: 'stack',
           children: [{ type: 'button', action: 'link', label: 'Shop the sale' }],
         } as unknown as TemplateNode,
       ],
-    };
+    });
 
     expect(offered(clicky, [0, 'children', 0], 'click').submit).toMatch(/second step/);
     expect(offered(clicky, [0, 'children', 0], 'click').link).toBeNull();
@@ -144,9 +145,9 @@ describe('what a button may do', () => {
   });
 
   it('allows a link once nothing is being captured', () => {
-    const noFields: TemplateTree = {
+    const noFields: TemplateTree = treeFixture({
       steps: [{ type: 'stack', children: [{ type: 'button', action: 'submit' }] } as unknown as TemplateNode],
-    };
+    });
 
     expect(offered(noFields, [0, 'children', 0], 'click').link).toBeNull();
   });
@@ -169,7 +170,7 @@ describe('changing a field', () => {
   });
 
   it('keeps wording the merchant wrote, and does not touch the rest of the node', () => {
-    const mine: TemplateTree = {
+    const mine: TemplateTree = treeFixture({
       steps: [
         {
           type: 'stack',
@@ -179,7 +180,7 @@ describe('changing a field', () => {
           ],
         } as unknown as TemplateNode,
       ],
-    };
+    });
     const swapped = withSwapped(mine, [0, 'children', 0], 'phone', 'submit', LABELS);
 
     expect(at(swapped, [0, 'children', 0]).label).toBe('Where do we send it?');
@@ -192,11 +193,11 @@ describe('changing a field', () => {
 
   /** An empty value is the absence of wording, not wording worth keeping. */
   it('fills wording that was not there at all', () => {
-    const bare: TemplateTree = {
+    const bare: TemplateTree = treeFixture({
       steps: [
         { type: 'stack', children: [{ type: 'field', name: 'email' }] } as unknown as TemplateNode,
       ],
-    };
+    });
     const swapped = withSwapped(bare, [0, 'children', 0], 'name', 'submit', LABELS);
 
     expect(at(swapped, [0, 'children', 0]).label).toBe('Name');
@@ -216,14 +217,14 @@ describe('changing a field', () => {
 
 describe('changing what a button does', () => {
   it('writes the action and nothing else', () => {
-    const noFields: TemplateTree = {
+    const noFields: TemplateTree = treeFixture({
       steps: [
         {
           type: 'stack',
           children: [{ type: 'button', role: 'cta_label', label: 'Shop the sale', action: 'submit' }],
         } as unknown as TemplateNode,
       ],
-    };
+    });
     const swapped = withSwapped(noFields, [0, 'children', 0], 'link', 'click', LABELS);
 
     expect(at(swapped, [0, 'children', 0]).action).toBe('link');

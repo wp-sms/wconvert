@@ -27,12 +27,13 @@ final class BeaconEvent
     public function __construct(
         public readonly string $optinId,
         public readonly StatKind $kind,
+        public readonly string $scope = '',
     ) {
     }
 
     /** How this event de-duplicates within one batch. */
     public function key(): string
     {
-        return $this->optinId . '|' . $this->kind->value;
+        return $this->optinId . '|' . $this->kind->value . '|' . $this->scope;
     }
 }

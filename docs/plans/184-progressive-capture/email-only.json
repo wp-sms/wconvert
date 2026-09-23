@@ -1,0 +1,89 @@
+{
+  "id": "journey-email-only",
+  "name": "Email signup",
+  "display_type": "popup",
+  "tier": "free",
+  "tokens": {
+    "width": "28rem",
+    "pad": "1.5rem",
+    "gap": "1rem",
+    "align": "start"
+  },
+  "tree": {
+    "v": 2,
+    "submissions": [
+      {
+        "id": "email-signup",
+        "required": true,
+        "fields": [
+          "n2"
+        ],
+        "consents": [
+          "n3"
+        ]
+      }
+    ],
+    "steps": [
+      {
+        "id": "email",
+        "name": "Email signup",
+        "kind": "input",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "heading",
+              "id": "n1",
+              "role": "headline",
+              "text": "Get our email updates"
+            },
+            {
+              "type": "field",
+              "id": "n2",
+              "name": "email",
+              "label": "Email address",
+              "required": true
+            },
+            {
+              "type": "consent",
+              "id": "n3",
+              "role": "consent_text",
+              "hidden": false,
+              "text": "Email me news and offers."
+            },
+            {
+              "type": "button",
+              "id": "n4",
+              "role": "cta_label",
+              "label": "Sign up for email",
+              "action": "submit",
+              "submission": "email-signup"
+            }
+          ]
+        }
+      },
+      {
+        "id": "received",
+        "name": "Acknowledgement",
+        "kind": "acknowledgement",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "heading",
+              "id": "n5",
+              "role": "success_headline",
+              "text": "Details received"
+            },
+            {
+              "type": "text",
+              "id": "n6",
+              "role": "success_body",
+              "text": "Thank you. We have received the details you submitted."
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

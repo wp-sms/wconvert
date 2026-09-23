@@ -100,7 +100,7 @@ final class PictureTransfer
         $slots = [];
         $ordinals = [];
         if (($template['tokens']['bg-image'] ?? 'none') !== 'none') self::addSlot($slots, $ordinals, $template, [], -1, 'background');
-        foreach ($template['tree']['steps'] ?? [] as $index => $step) self::walk($slots, $ordinals, $step, ['tree', 'steps', $index], $index);
+        foreach ($template['tree']['steps'] ?? [] as $index => $step) self::walk($slots, $ordinals, $step['content'] ?? [], ['tree', 'steps', $index, 'content'], $index);
         return $slots;
     }
 

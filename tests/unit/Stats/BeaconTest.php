@@ -168,7 +168,7 @@ final class BeaconTest extends TestCase
         ]));
 
         $this->assertCount(1, $events);
-        $this->assertSame(['optinId', 'kind'], array_keys(get_object_vars($events[0])));
+        $this->assertSame(['optinId', 'kind', 'scope'], array_keys(get_object_vars($events[0])));
     }
 
     /**

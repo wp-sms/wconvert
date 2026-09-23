@@ -27,82 +27,106 @@
   "tree": {
     "steps": [
       {
-        "type": "stack",
-        "children": [
-          {
-            "type": "row",
-            "children": [
-              {
-                "type": "icon",
-                "id": "n1",
-                "name": "gift"
-              },
-              {
-                "type": "heading",
-                "id": "n2",
-                "role": "headline",
-                "level": 2,
-                "text": "Ten percent off your first order"
-              },
-              {
-                "type": "field",
-                "id": "n3",
-                "name": "email",
-                "label": "Email address",
-                "placeholder": "you@example.com",
-                "required": true,
-                "tokens": {
-                  "fg": "#1e1b4b",
-                  "muted": "#eef2ff"
+        "id": "s1",
+        "name": "Details",
+        "kind": "input",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "row",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "n1",
+                  "name": "gift"
+                },
+                {
+                  "type": "heading",
+                  "id": "n2",
+                  "role": "headline",
+                  "level": 2,
+                  "text": "Ten percent off your first order"
+                },
+                {
+                  "type": "field",
+                  "id": "n3",
+                  "name": "email",
+                  "label": "Email address",
+                  "placeholder": "you@example.com",
+                  "required": true,
+                  "tokens": {
+                    "fg": "#1e1b4b",
+                    "muted": "#eef2ff"
+                  }
+                },
+                {
+                  "type": "button",
+                  "id": "n4",
+                  "role": "cta_label",
+                  "label": "Get my code",
+                  "action": "submit",
+                  "submission": "primary"
                 }
-              },
-              {
-                "type": "button",
-                "id": "n4",
-                "role": "cta_label",
-                "label": "Get my code",
-                "action": "submit"
-              }
-            ]
-          },
-          {
-            "type": "consent",
-            "id": "n5",
-            "role": "consent_text",
-            "hidden": true,
-            "text": "Email me offers and news. %s",
-            "link": {
-              "label": "Privacy Policy"
+              ]
             },
-            "tokens": {
-              "text-size": "1.125rem"
+            {
+              "type": "consent",
+              "id": "n5",
+              "role": "consent_text",
+              "hidden": true,
+              "text": "Email me offers and news. %s",
+              "link": {
+                "label": "Privacy Policy"
+              },
+              "tokens": {
+                "text-size": "1.125rem"
+              }
             }
-          }
-        ]
+          ]
+        }
       },
       {
-        "type": "row",
-        "children": [
-          {
-            "type": "heading",
-            "id": "n6",
-            "role": "success_headline",
-            "level": 2,
-            "text": "Here is your code"
-          },
-          {
-            "type": "code",
-            "id": "n7",
-            "role": "code_value",
-            "text": "WELCOME10",
-            "copy": true
-          },
-          {
-            "type": "text",
-            "id": "n8",
-            "role": "success_body",
-            "text": "Use it at the checkout."
-          }
+        "id": "s2",
+        "name": "Received",
+        "kind": "acknowledgement",
+        "content": {
+          "type": "row",
+          "children": [
+            {
+              "type": "heading",
+              "id": "n6",
+              "role": "success_headline",
+              "level": 2,
+              "text": "Here is your code"
+            },
+            {
+              "type": "code",
+              "id": "n7",
+              "role": "code_value",
+              "text": "WELCOME10",
+              "copy": true
+            },
+            {
+              "type": "text",
+              "id": "n8",
+              "role": "success_body",
+              "text": "Use it at the checkout."
+            }
+          ]
+        }
+      }
+    ],
+    "v": 2,
+    "submissions": [
+      {
+        "id": "primary",
+        "required": true,
+        "fields": [
+          "n3"
+        ],
+        "consents": [
+          "n5"
         ]
       }
     ]

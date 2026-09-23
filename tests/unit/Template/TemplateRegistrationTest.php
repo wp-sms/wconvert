@@ -59,7 +59,7 @@ final class TemplateRegistrationTest extends TestCase
             'name' => ucfirst($id),
             'display_type' => 'popup',
             'tokens' => ['bg' => '#ffffff'],
-            'tree' => ['steps' => $steps],
+            'tree' => \WConvert\Tests\Unit\Support\JourneyFixture::tree(['steps' => $steps]),
         ]));
     }
 
@@ -90,7 +90,7 @@ final class TemplateRegistrationTest extends TestCase
     public function testATemplateWithOneConvertingActRegisters(): void
     {
         $this->ship('one-act', [
-            self::step([['type' => 'button', 'label' => 'Join', 'action' => 'submit']]),
+            self::step([['type' => 'field', 'name' => 'email', 'required' => true], ['type' => 'button', 'label' => 'Join', 'action' => 'submit']]),
             self::successStep(),
         ]);
 

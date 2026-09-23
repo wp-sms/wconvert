@@ -152,6 +152,7 @@ final class PayloadBudgetTest extends TestCase
                     'display_type' => 'popup',
                     'template_id' => $id,
                     'priority' => $i,
+                    'capture_contract' => hash('sha256', $id . '/' . $i),
                     'template' => [
                         'tree' => self::withCopy($template['tree'], $i),
                         'tokens' => ['accent' => sprintf('#%06x', 0x2563EB + $i * 4919)] + $template['tokens'],
@@ -280,7 +281,9 @@ final class PayloadBudgetTest extends TestCase
             return $node;
         };
 
-        return ['steps' => array_map($fill, $tree['steps'])];
+        return [...$tree, 'steps' => array_map(static function (array $screen) use ($fill): array {
+            $screen['content'] = $fill($screen['content']); return $screen;
+        }, $tree['steps'])];
     }
 
     public function testTheCostliestDesignOnAFullPageFitsTheGzippedPayloadBudget(): void

@@ -29,232 +29,256 @@
   "tree": {
     "steps": [
       {
-        "type": "panel",
-        "tokens": {
-          "pad": "2rem 2.25rem",
-          "gap": "0.875rem",
-          "align": "start"
-        },
-        "narrow": {
-          "pad": "1.5rem 1.25rem",
-          "heading-size": "1.5rem",
-          "gap": "0.75rem"
-        },
-        "children": [
-          {
-            "type": "heading",
-            "id": "n1",
-            "level": 2,
-            "role": "wordmark",
-            "text": "The Sunday Margin",
-            "size": "s",
-            "tokens": {
-              "align": "center"
-            }
+        "id": "s1",
+        "name": "Details",
+        "kind": "input",
+        "content": {
+          "type": "panel",
+          "tokens": {
+            "pad": "2rem 2.25rem",
+            "gap": "0.875rem",
+            "align": "start"
           },
-          {
-            "type": "divider",
-            "id": "n2"
+          "narrow": {
+            "pad": "1.5rem 1.25rem",
+            "heading-size": "1.5rem",
+            "gap": "0.75rem"
           },
-          {
-            "type": "row",
-            "tokens": {
-              "gap": "0.5rem"
-            },
-            "children": [
-              {
-                "type": "text",
-                "id": "n3",
-                "size": "s",
-                "role": "body",
-                "text": "An essay to keep",
-                "tokens": {
-                  "text-size": "1.167rem"
-                }
-              },
-              {
-                "type": "text",
-                "id": "n4",
-                "size": "s",
-                "role": "body",
-                "text": "Every Sunday",
-                "tokens": {
-                  "text-size": "1.167rem"
-                }
+          "children": [
+            {
+              "type": "heading",
+              "id": "n1",
+              "level": 2,
+              "role": "wordmark",
+              "text": "The Sunday Margin",
+              "size": "s",
+              "tokens": {
+                "align": "center"
               }
-            ]
-          },
-          {
-            "type": "divider",
-            "id": "n5"
-          },
-          {
-            "type": "heading",
-            "id": "n6",
-            "size": "xl",
-            "role": "headline",
-            "text": "One good essay.\nA slower Sunday."
-          },
-          {
-            "type": "text",
-            "id": "n7",
-            "role": "body",
-            "text": "Books, places and the things we nearly miss. One thoughtful read in your inbox every Sunday."
-          },
-          {
-            "type": "panel",
-            "edges": "all",
-            "tokens": {
-              "pad": "1rem",
-              "gap": "0.5rem",
-              "radius": "0.125rem"
             },
-            "children": [
-              {
-                "type": "eyebrow",
-                "id": "n8",
-                "role": "eyebrow",
-                "text": "A taste of the letter",
-                "tokens": {
-                  "text-size": "1.0834rem"
-                }
+            {
+              "type": "divider",
+              "id": "n2"
+            },
+            {
+              "type": "row",
+              "tokens": {
+                "gap": "0.5rem"
               },
-              {
-                "type": "text",
-                "id": "n9",
-                "role": "body",
-                "text": "%i",
-                "italic": "The best bookshops leave a little room for getting lost.",
-                "tokens": {
-                  "font": "Georgia, 'Times New Roman', serif"
+              "children": [
+                {
+                  "type": "text",
+                  "id": "n3",
+                  "size": "s",
+                  "role": "body",
+                  "text": "An essay to keep",
+                  "tokens": {
+                    "text-size": "1.167rem"
+                  }
+                },
+                {
+                  "type": "text",
+                  "id": "n4",
+                  "size": "s",
+                  "role": "body",
+                  "text": "Every Sunday",
+                  "tokens": {
+                    "text-size": "1.167rem"
+                  }
                 }
+              ]
+            },
+            {
+              "type": "divider",
+              "id": "n5"
+            },
+            {
+              "type": "heading",
+              "id": "n6",
+              "size": "xl",
+              "role": "headline",
+              "text": "One good essay.\nA slower Sunday."
+            },
+            {
+              "type": "text",
+              "id": "n7",
+              "role": "body",
+              "text": "Books, places and the things we nearly miss. One thoughtful read in your inbox every Sunday."
+            },
+            {
+              "type": "panel",
+              "edges": "all",
+              "tokens": {
+                "pad": "1rem",
+                "gap": "0.5rem",
+                "radius": "0.125rem"
+              },
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "id": "n8",
+                  "role": "eyebrow",
+                  "text": "A taste of the letter",
+                  "tokens": {
+                    "text-size": "1.0834rem"
+                  }
+                },
+                {
+                  "type": "text",
+                  "id": "n9",
+                  "role": "body",
+                  "text": "%i",
+                  "italic": "The best bookshops leave a little room for getting lost.",
+                  "tokens": {
+                    "font": "Georgia, 'Times New Roman', serif"
+                  }
+                }
+              ],
+              "narrow": {
+                "pad": "1.25rem",
+                "gap": "0.875rem"
               }
-            ],
-            "narrow": {
-              "pad": "1.25rem",
-              "gap": "0.875rem"
-            }
-          },
-          {
-            "type": "field",
-            "id": "n10",
-            "name": "email",
-            "label": "Email address",
-            "placeholder": "you@example.com",
-            "required": true
-          },
-          {
-            "type": "consent",
-            "id": "n11",
-            "role": "consent_text",
-            "hidden": true,
-            "text": "Send me the Sunday letter. %s",
-            "link": {
-              "label": "Privacy Policy"
             },
-            "tokens": {
-              "text-size": "1.125rem"
-            }
-          },
-          {
-            "type": "button",
-            "id": "n12",
-            "role": "cta_label",
-            "label": "Send me the Sunday letter",
-            "action": "submit"
-          },
-          {
-            "type": "text",
-            "id": "n13",
-            "size": "s",
-            "role": "fine_print",
-            "text": "Free to read. A letter every Sunday. Unsubscribe any time. %s",
-            "link": {
-              "label": "Privacy Policy"
+            {
+              "type": "field",
+              "id": "n10",
+              "name": "email",
+              "label": "Email address",
+              "placeholder": "you@example.com",
+              "required": true
             },
-            "tokens": {
-              "text-size": "1.167rem"
+            {
+              "type": "consent",
+              "id": "n11",
+              "role": "consent_text",
+              "hidden": true,
+              "text": "Send me the Sunday letter. %s",
+              "link": {
+                "label": "Privacy Policy"
+              },
+              "tokens": {
+                "text-size": "1.125rem"
+              }
+            },
+            {
+              "type": "button",
+              "id": "n12",
+              "role": "cta_label",
+              "label": "Send me the Sunday letter",
+              "action": "submit",
+              "submission": "primary"
+            },
+            {
+              "type": "text",
+              "id": "n13",
+              "size": "s",
+              "role": "fine_print",
+              "text": "Free to read. A letter every Sunday. Unsubscribe any time. %s",
+              "link": {
+                "label": "Privacy Policy"
+              },
+              "tokens": {
+                "text-size": "1.167rem"
+              }
             }
-          }
-        ]
+          ]
+        }
       },
       {
-        "type": "panel",
-        "tokens": {
-          "pad": "2rem 2.25rem",
-          "gap": "0.875rem"
-        },
-        "narrow": {
-          "pad": "1.5rem 1.25rem",
-          "heading-size": "1.5rem",
-          "gap": "0.75rem"
-        },
-        "children": [
-          {
-            "type": "heading",
-            "id": "n20",
-            "level": 2,
-            "role": "wordmark",
-            "text": "The Sunday Margin",
-            "size": "s"
+        "id": "s2",
+        "name": "Received",
+        "kind": "acknowledgement",
+        "content": {
+          "type": "panel",
+          "tokens": {
+            "pad": "2rem 2.25rem",
+            "gap": "0.875rem"
           },
-          {
-            "type": "divider",
-            "id": "n21"
+          "narrow": {
+            "pad": "1.5rem 1.25rem",
+            "heading-size": "1.5rem",
+            "gap": "0.75rem"
           },
-          {
-            "type": "icon",
-            "id": "n25",
-            "name": "check"
-          },
-          {
-            "type": "heading",
-            "id": "n26",
-            "size": "xl",
-            "role": "success_headline",
-            "text": "Your request\nis in."
-          },
-          {
-            "type": "text",
-            "id": "n27",
-            "role": "success_body",
-            "text": "Thank you for asking for %b. We have received your details.",
-            "emphasis": "the Sunday letter"
-          },
-          {
-            "type": "divider",
-            "id": "n28"
-          },
-          {
-            "type": "eyebrow",
-            "id": "n29",
-            "role": "eyebrow",
-            "text": "Made for a quieter moment",
-            "tokens": {
-              "text-size": "1.0834rem"
+          "children": [
+            {
+              "type": "heading",
+              "id": "n20",
+              "level": 2,
+              "role": "wordmark",
+              "text": "The Sunday Margin",
+              "size": "s"
+            },
+            {
+              "type": "divider",
+              "id": "n21"
+            },
+            {
+              "type": "icon",
+              "id": "n25",
+              "name": "check"
+            },
+            {
+              "type": "heading",
+              "id": "n26",
+              "size": "xl",
+              "role": "success_headline",
+              "text": "Your request\nis in."
+            },
+            {
+              "type": "text",
+              "id": "n27",
+              "role": "success_body",
+              "text": "Thank you for asking for %b. We have received your details.",
+              "emphasis": "the Sunday letter"
+            },
+            {
+              "type": "divider",
+              "id": "n28"
+            },
+            {
+              "type": "eyebrow",
+              "id": "n29",
+              "role": "eyebrow",
+              "text": "Made for a quieter moment",
+              "tokens": {
+                "text-size": "1.0834rem"
+              }
+            },
+            {
+              "type": "text",
+              "id": "n30",
+              "size": "m",
+              "role": "success_body",
+              "text": "A good read. A cup of something. A little room to think."
+            },
+            {
+              "type": "divider",
+              "id": "n31"
+            },
+            {
+              "type": "text",
+              "id": "n33",
+              "size": "s",
+              "role": "fine_print",
+              "text": "Every Sunday. Always time to unsubscribe.",
+              "tokens": {
+                "text-size": "1.167rem"
+              }
             }
-          },
-          {
-            "type": "text",
-            "id": "n30",
-            "size": "m",
-            "role": "success_body",
-            "text": "A good read. A cup of something. A little room to think."
-          },
-          {
-            "type": "divider",
-            "id": "n31"
-          },
-          {
-            "type": "text",
-            "id": "n33",
-            "size": "s",
-            "role": "fine_print",
-            "text": "Every Sunday. Always time to unsubscribe.",
-            "tokens": {
-              "text-size": "1.167rem"
-            }
-          }
+          ]
+        }
+      }
+    ],
+    "v": 2,
+    "submissions": [
+      {
+        "id": "primary",
+        "required": true,
+        "fields": [
+          "n10"
+        ],
+        "consents": [
+          "n11"
         ]
       }
     ]

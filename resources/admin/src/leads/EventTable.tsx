@@ -146,7 +146,7 @@ export function EventTable({
                       name !== 'name' &&
                       name !== 'message' &&
                       name !== 'interest_label' &&
-                      name !== 'consent_text',
+                      !['consent_text', 'email_consent_text', 'sms_consent_text', 'email_accepted_at', 'sms_accepted_at'].includes(name),
                   ),
                 ].map(
                   ([name, value]) =>
@@ -184,13 +184,14 @@ export function EventTable({
                 <summary className="cursor-pointer font-medium">
                   {__('Consent at capture', 'wconvert')}
                 </summary>
-                <p className="mb-0 break-words whitespace-pre-wrap text-note">
-                  {selected.fields.consent_text ||
-                    __(
-                      'No consent text was recorded with this submission.',
-                      'wconvert',
-                    )}
-                </p>
+                {selected.fields.email_consent_text || selected.fields.sms_consent_text ?
+                  (['email', 'sms'] as const).map(channel => selected.fields[`${channel}_consent_text`] && <section key={channel} className="mt-3">
+                    <h4 className="m-0 text-note font-medium">{channel === 'email' ? __('Email signup', 'wconvert') : __('SMS signup', 'wconvert')}</h4>
+                    <p className="mb-0 break-words whitespace-pre-wrap text-note">{selected.fields[`${channel}_consent_text`]}</p>
+                    <p className="mb-0 text-note text-muted-foreground">{sprintf(__('Accepted: %s', 'wconvert'), selected.fields[`${channel}_accepted_at`] ?? '')}</p>
+                  </section>) : <p className="mb-0 break-words whitespace-pre-wrap text-note">
+                    {selected.fields.consent_text || __('No consent text was recorded with this submission.', 'wconvert')}
+                  </p>}
                 <p className="mb-0 text-note text-muted-foreground">{__('This records the wording at submission, not a current subscription status.', 'wconvert')}</p>
               </details>
               <div className="border-t border-border pt-3 text-note text-muted-foreground">

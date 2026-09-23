@@ -482,8 +482,7 @@ final class OptinController implements RestController
         // would only ever refuse an edit for a state the merchant is not
         // creating.
         if ($normalized !== null) {
-            $refusal = $this->refuseAnArmMeteredDifferently($normalized, $id)
-                ?? self::refuseADesignThatCannotConvert($normalized);
+            $refusal = $this->refuseAnArmMeteredDifferently($normalized, $id);
 
             if ($refusal !== null) {
                 return $refusal;
@@ -583,12 +582,13 @@ final class OptinController implements RestController
             return $placementError;
         }
 
-        $issue = \WConvert\Template\TemplateForm::issue($optin->config['template'] ?? null);
+        $issue = \WConvert\Template\CaptureContract::issue($optin->config, $optin->goal, get_privacy_policy_url());
         if ($issue !== null) {
             $message = match ($issue) {
                 'choices' => __('Add at least one choice to the interest field before publishing. You can keep saving this Campaign as a draft.', 'wconvert'),
                 'followup' => __('Give each resource link a label and address, and place it after the form. You can keep saving this Campaign as a draft.', 'wconvert'),
-                default => __('Add an email or phone field before publishing this form. You can keep saving this Campaign as a draft.', 'wconvert'),
+                'consent' => __('Each signup needs its required contact field and its own consent wording.', 'wconvert'),
+                default => __('Complete the screen order, navigation and submission fields before publishing. You can keep saving this Campaign as a draft.', 'wconvert'),
             };
             return new WP_Error('wconvert_optin_form_incomplete', $message, ['status' => 400]);
         }
@@ -611,6 +611,38 @@ final class OptinController implements RestController
         }
         if ($goalIssue !== null) {
             return new WP_Error('wconvert_optin_goal_incomplete', $goalIssue, ['status' => 400]);
+        }
+
+        $submissions = $optin->config['template']['tree']['submissions'] ?? [];
+        $primarySubmission = $submissions[0]['id'] ?? '';
+        foreach (\WConvert\Template\CaptureContract::settings($optin->config, $optin->goal) as $submissionId => $setting) {
+            if (($optin->config['capture_mode'] ?? '') === 'local') { continue; }
+            if ($setting['purpose'] !== 'request' && $setting['destination_ids'] === []) {
+                return new WP_Error('wconvert_signup_destination', __('Choose a service for each signup or collect only in WConvert.', 'wconvert'), ['status' => 400]);
+            }
+            $requiredValues = [];
+            foreach ($submissions as $definition) {
+                if ($definition['id'] !== $submissionId) { continue; }
+                foreach ($optin->config['template']['tree']['steps'] as $screen) {
+                    foreach (\WConvert\Template\CaptureJourney::nodes($screen['content']) as $node) {
+                        if (in_array($node['id'] ?? null, $definition['fields'], true) && ($node['required'] ?? false)) {
+                            $requiredValues[$node['name']] = 'present';
+                        }
+                    }
+                }
+            }
+            foreach ($setting['destination_ids'] as $destinationId) {
+                $destination = $this->destinations->find($destinationId);
+                $type = $destination === null ? null : $this->destinationTypes->find($destination->type);
+                $channel = $setting['purpose'] === 'email_marketing' ? 'email' : 'sms';
+                if ($destination === null || $type === null || !$this->destinationTypes->isDispatchable($destination->type)
+                    || $type->requirements()->missingSettings($destination->settings) !== []
+                    || !$type->requirements()->acceptsCapture($requiredValues)
+                    || ($setting['purpose'] !== 'request' && !in_array($channel, $type->requirements()->audienceChannels, true)
+                        && ($submissionId !== $primarySubmission || $type->requirements()->audienceChannels !== []))) {
+                    return new WP_Error('wconvert_signup_destination', __('A selected signup service is unavailable or does not support its channel.', 'wconvert'), ['status' => 400]);
+                }
+            }
         }
 
         $published = $this->optins->publish($id);
@@ -687,6 +719,11 @@ final class OptinController implements RestController
      */
     private function refuseMalformedChoices($template): ?WP_Error
     {
+        if (is_array($template) && is_array($template['tree'] ?? null)
+            && ($template['tree']['v'] ?? null) !== \WConvert\Template\TemplateTree::VERSION) {
+            return new WP_Error('wconvert_template_version', __('This design uses an unsupported format. Choose a current design.', 'wconvert'), ['status' => 400]);
+        }
+
         $steps = is_array($template) && is_array($template['tree']['steps'] ?? null) ? $template['tree']['steps'] : [];
         $invalid = function (array $node) use (&$invalid): bool {
             if (($node['type'] ?? null) === 'field' && ($node['name'] ?? null) === 'interest' && array_key_exists('options', $node)) {
@@ -704,6 +741,12 @@ final class OptinController implements RestController
             return false;
         };
         foreach ($steps as $step) {
+            foreach (\WConvert\Template\CaptureJourney::nodes(is_array($step) ? $step : []) as $node) {
+                if (($node['type'] ?? '') === 'button' && array_key_exists('action', $node)
+                    && !in_array($node['action'], \WConvert\Template\CaptureJourney::ACTIONS, true)) {
+                    return new WP_Error('wconvert_template_action', __('Choose a supported button action before saving.', 'wconvert'), ['status' => 400]);
+                }
+            }
             if (is_array($step) && $invalid($step)) {
                 return new WP_Error('wconvert_optin_choices_invalid',
                     __('Fix the interest choices before saving: each entered choice needs a label and a unique valid sent value. Your changes are still here.', 'wconvert'),
@@ -879,6 +922,14 @@ final class OptinController implements RestController
             // left to enforce is that every node, token, param and Slot Role
             // is one the vocabulary declares.
             $config['template'] = $this->templates->normalize($config['template']);
+            $settings = [];
+            foreach (array_slice($config['template']['tree']['submissions'], 1) as $submission) {
+                $setting = $config['submission_settings'][$submission['id']] ?? [];
+                $settings[$submission['id']] = ['destination_ids' => OptinBinding::ids(['destinations' => $setting['destination_ids'] ?? []])];
+            }
+            if ($settings === []) { unset($config['submission_settings']); }
+            else { $config['submission_settings'] = $settings; }
+
         }
 
         if (array_key_exists('teaser', $config)) {

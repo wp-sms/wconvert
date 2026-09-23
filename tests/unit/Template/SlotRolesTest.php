@@ -39,11 +39,11 @@ final class SlotRolesTest extends TestCase
 
     /**
      * @param list<array<string, mixed>> $children
-     * @return array{steps: list<array<string, mixed>>}
+     * @return array<string, mixed>
      */
     private static function tree(array $children): array
     {
-        return ['steps' => [['type' => 'stack', 'children' => $children]]];
+        return \WConvert\Tests\Unit\Support\JourneyFixture::tree(['steps' => [['type' => 'stack', 'children' => $children]]]);
     }
 
     public function testANodeCarryingARoleDeclaresIt(): void
@@ -72,13 +72,13 @@ final class SlotRolesTest extends TestCase
      */
     public function testRolesAreCollectedAcrossEveryStepAndEveryPane(): void
     {
-        $tree = ['steps' => [
+        $tree = \WConvert\Tests\Unit\Support\JourneyFixture::tree(['steps' => [
             ['type' => 'split',
                 'start' => [['type' => 'heading', 'role' => 'headline', 'text' => 'x']],
                 'end' => [['type' => 'text', 'role' => 'fine_print', 'text' => 'y']],
             ],
             ['type' => 'stack', 'children' => [['type' => 'heading', 'role' => 'success_headline', 'text' => 'z']]],
-        ]];
+        ]]);
 
         $this->assertSame(
             ['headline', 'fine_print', 'success_headline'],
@@ -115,7 +115,7 @@ final class SlotRolesTest extends TestCase
             'email_placeholder' => 'you@example.com',
         ], $this->vocabulary());
 
-        [$heading, $field] = $bound['steps'][0]['children'];
+        [$heading, $field] = $bound['steps'][0]['content']['children'];
 
         $this->assertSame('Ten percent off', $heading['text']);
         $this->assertSame('Email address', $field['label']);
@@ -135,7 +135,7 @@ final class SlotRolesTest extends TestCase
             'fine_print' => ['text' => 'See our %s', 'link' => ['label' => 'Privacy Policy']],
         ], $this->vocabulary());
 
-        $node = $bound['steps'][0]['children'][0];
+        $node = $bound['steps'][0]['content']['children'][0];
 
         $this->assertSame('See our %s', $node['text']);
         $this->assertSame(['label' => 'Privacy Policy'], $node['link']);
@@ -154,8 +154,8 @@ final class SlotRolesTest extends TestCase
 
         $bound = SlotRoles::bind($tree, ['headline' => 'Hi', 'success_body' => 'Nowhere to put this'], $this->vocabulary());
 
-        $this->assertSame('Hi', $bound['steps'][0]['children'][0]['text']);
-        $this->assertCount(1, $bound['steps'][0]['children']);
+        $this->assertSame('Hi', $bound['steps'][0]['content']['children'][0]['text']);
+        $this->assertCount(1, $bound['steps'][0]['content']['children']);
     }
 
     /**
@@ -183,7 +183,7 @@ final class SlotRolesTest extends TestCase
 
         $this->assertSame(
             ['Free shipping', 'Early drops', '48h returns'],
-            array_column($bound['steps'][0]['children'], 'text')
+            array_column($bound['steps'][0]['content']['children'], 'text')
         );
     }
 
@@ -203,8 +203,8 @@ final class SlotRolesTest extends TestCase
 
         $bound = SlotRoles::bind($tree, ['body' => 'Only this one'], $this->vocabulary());
 
-        $this->assertSame('Only this one', $bound['steps'][0]['children'][0]['text']);
-        $this->assertArrayNotHasKey('text', $bound['steps'][0]['children'][1]);
+        $this->assertSame('Only this one', $bound['steps'][0]['content']['children'][0]['text']);
+        $this->assertArrayNotHasKey('text', $bound['steps'][0]['content']['children'][1]);
     }
 
     /**
@@ -219,8 +219,8 @@ final class SlotRolesTest extends TestCase
 
         $bound = SlotRoles::bind($tree, ['body' => ['First', 'Second']], $this->vocabulary());
 
-        $this->assertSame('First', $bound['steps'][0]['children'][0]['text']);
-        $this->assertCount(1, $bound['steps'][0]['children']);
+        $this->assertSame('First', $bound['steps'][0]['content']['children'][0]['text']);
+        $this->assertCount(1, $bound['steps'][0]['content']['children']);
     }
 
     /**
@@ -243,8 +243,8 @@ final class SlotRolesTest extends TestCase
             'fine_print' => ['text' => 'See our %s', 'link' => ['label' => 'Privacy Policy']],
         ], $this->vocabulary());
 
-        $this->assertSame('See our %s', $bound['steps'][0]['children'][0]['text']);
-        $this->assertArrayNotHasKey('text', $bound['steps'][0]['children'][1]);
+        $this->assertSame('See our %s', $bound['steps'][0]['content']['children'][0]['text']);
+        $this->assertArrayNotHasKey('text', $bound['steps'][0]['content']['children'][1]);
     }
 
     /**
@@ -292,15 +292,15 @@ final class SlotRolesTest extends TestCase
         // A different design, offering the same two Roles in the same order and
         // carrying no words of its own — which is what a snapshot looks like.
         $bound = SlotRoles::bind(
-            ['steps' => [['type' => 'row', 'children' => [
+            \WConvert\Tests\Unit\Support\JourneyFixture::tree(['steps' => [['type' => 'row', 'children' => [
                 ['type' => 'text', 'role' => 'body'],
                 ['type' => 'text', 'role' => 'body'],
-            ]]]],
+            ]]]]),
             SlotRoles::copyFrom($written, $vocabulary),
             $vocabulary
         );
 
-        $this->assertSame(['First', 'Second'], array_column($bound['steps'][0]['children'], 'text'));
+        $this->assertSame(['First', 'Second'], array_column($bound['steps'][0]['content']['children'], 'text'));
     }
 
     /**
@@ -324,7 +324,7 @@ final class SlotRolesTest extends TestCase
 
         $bound = SlotRoles::bind($tree, ['body' => []], $this->vocabulary());
 
-        $this->assertArrayNotHasKey('text', $bound['steps'][0]['children'][0]);
+        $this->assertArrayNotHasKey('text', $bound['steps'][0]['content']['children'][0]);
     }
 
     /**
@@ -346,8 +346,8 @@ final class SlotRolesTest extends TestCase
         // goes to the first node as one slot's keys — where `1` names no
         // content key, so nothing is written at all. Both nodes empty is the
         // map reading, and it is the only one either node can produce.
-        $this->assertArrayNotHasKey('text', $bound['steps'][0]['children'][0]);
-        $this->assertArrayNotHasKey('text', $bound['steps'][0]['children'][1]);
+        $this->assertArrayNotHasKey('text', $bound['steps'][0]['content']['children'][0]);
+        $this->assertArrayNotHasKey('text', $bound['steps'][0]['content']['children'][1]);
     }
 }
 

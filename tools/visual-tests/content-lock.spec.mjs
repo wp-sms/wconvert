@@ -77,7 +77,7 @@ test('a missing campaign, disabled lock and absent JavaScript leave content read
   await open(page, 'missing'); await expect(region(page)).toBeVisible();
   await open(page, 'off'); await expect(region(page)).toBeVisible();
   const context = await browser.newContext({ javaScriptEnabled: false });
-  const noScript = await context.newPage(); await noScript.goto('http://127.0.0.1:9421/?wconvert_lock=basic');
+  const noScript = await context.newPage(); await noScript.goto(new URL('/?wconvert_lock=basic', page.url()).href);
   await expect(region(noScript)).toBeVisible(); await context.close();
 });
 test('a duplicate wrapper cannot hide another region', async ({ page }) => {
@@ -386,7 +386,7 @@ test('divider content stays readable with missing Campaigns, disabled locking, n
   }
   const context = await browser.newContext({ javaScriptEnabled: false });
   const noScript = await context.newPage();
-  await noScript.goto('http://127.0.0.1:9421/?wconvert_lock=divider&theme=classic', { waitUntil: 'domcontentloaded' });
+  await noScript.goto(new URL('/?wconvert_lock=divider&theme=classic', page.url()).href, { waitUntil: 'domcontentloaded' });
   await expect(region(noScript)).toBeVisible();
   await context.close();
   await page.goto('/wp-login.php');

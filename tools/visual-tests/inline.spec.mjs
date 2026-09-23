@@ -7,6 +7,7 @@ test.beforeEach(async ({ page }) => {
     const attach = Element.prototype.attachShadow;
     window.testShadows = [];
     window.testBeacons = [];
+    window.testBeaconEvents = [];
     window.testLayoutShift = 0;
     Element.prototype.attachShadow = function (options) {
       const shadow = attach.call(this, options);
@@ -16,6 +17,7 @@ test.beforeEach(async ({ page }) => {
     const sendBeacon = navigator.sendBeacon?.bind(navigator);
     navigator.sendBeacon = (url, data) => {
       window.testBeacons.push(String(url));
+      if (String(url).includes("/wconvert/v1/beacon") && data instanceof Blob) void data.text().then(text => window.testBeaconEvents.push(...JSON.parse(text).events));
       return sendBeacon ? sendBeacon(url, data) : false;
     };
     if (window.PerformanceObserver?.supportedEntryTypes?.includes('layout-shift')) {
@@ -178,14 +180,15 @@ test('automatic inline reports an impression on entry and captures a real lead',
 
   // Chromium exposes a sendBeacon request without postData(), but the real
   // endpoint and POST method still prove the forwarded impression left the
-  // browser. The test-only wrapper also lets us assert exact beacon count.
+  // browser. The wrapper distinguishes Campaign impressions from screen activity.
   const impression = page.waitForRequest((request) => request.url().includes('/wconvert/v1/beacon') && request.method() === 'POST');
   await page.locator('[data-wconvert-auto]').scrollIntoViewIfNeeded();
   const impressionRequest = await impression;
   expect(impressionRequest.method()).toBe('POST');
-  await expect.poll(() => page.evaluate(() => window.testBeacons.filter((url) => url.includes('/wconvert/v1/beacon')).length)).toBe(1);
+  await expect.poll(() => page.evaluate(() => window.testBeaconEvents.filter(event => event.kind === 'impression').length)).toBe(1);
+  await expect.poll(() => page.evaluate(() => window.testBeaconEvents.filter(event => event.kind === 'screen_shown').length)).toBe(1);
 
-  const capture = page.waitForRequest((request) => request.url().includes('/wconvert/v1/capture') && request.method() === 'POST');
+  const capture = page.waitForRequest((request) => request.url().includes('/wconvert/v1/capture') && request.method() === 'POST' && Boolean(request.postDataJSON()?.submission));
   await page.evaluate(() => {
     const root = window.testShadows.find((shadow) => shadow.querySelector('.wc-root'));
     const form = root?.querySelector('form');
@@ -365,22 +368,46 @@ editorTest('goal-first inline setup enables automatic placement and publishes', 
   await page.getByRole('group', { name: 'Enable content lock', exact: true }).getByRole('button', { name: 'Enable content lock', exact: true }).click();
   await expect(page.getByRole('radio', { name: 'Content lock', exact: true })).toBeChecked();
   await expect(page.getByRole('radio', { name: 'Automatic', exact: true })).not.toBeChecked();
-  const canvas = page.getByRole('tabpanel', { name: 'Display rules', exact: true }).getByRole('region', { name: 'Design canvas', exact: true });
+  const rulesPanel = page.getByRole('tabpanel', { name: 'Display rules', exact: true });
+  const canvas = rulesPanel.getByRole('region', { name: 'Design canvas', exact: true });
   const preview = canvas.getByLabel('Preview content lock', { exact: true });
-  await expect(preview).toBeVisible();
   await expect(placementPanel.getByLabel('Preview content lock', { exact: true })).toHaveCount(0);
-  // The live form preview must fit the narrow settings column, including
-  // its controls and the long shortcode when setup help is expanded.
+  // The preview stays available through a dialog when compact Display rules
+  // gives the settings the full pane.
   for (const width of [1440, 782]) {
     await page.setViewportSize({ width, height: 1000 });
+    let activeCanvas = canvas;
+    let activePreview = preview;
+    let previewDialog;
+    let compactPreviewButton;
+    if (width === 1440) {
+      await expect(activePreview).toBeVisible();
+    } else {
+      await expect(preview).toHaveCount(0);
+      compactPreviewButton = page.getByRole('button', { name: 'Preview campaign', exact: true });
+      await compactPreviewButton.click();
+      previewDialog = page.getByRole('dialog', { name: 'Preview campaign', exact: true });
+      await expect(previewDialog).toBeVisible();
+      activeCanvas = previewDialog.getByRole('region', { name: 'Design canvas', exact: true });
+      activePreview = activeCanvas.getByLabel('Preview content lock', { exact: true });
+      await expect(activePreview).toBeVisible();
+    }
     for (const direction of ['ltr', 'rtl']) {
       await page.evaluate(dir => { document.documentElement.dir = dir; }, direction);
       for (const state of ['locked', 'unlocked', 'unavailable']) {
-        await preview.selectOption(state);
-        await expect.poll(() => placementPanel.evaluate(panel => panel.scrollWidth - panel.clientWidth)).toBeLessThanOrEqual(1);
-        const example = canvas.getByLabel('Content lock example', { exact: true });
+        await activePreview.selectOption(state);
+        const example = activeCanvas.getByLabel('Content lock example', { exact: true });
         await expect.poll(() => example.evaluate(node => node.scrollWidth - node.clientWidth)).toBeLessThanOrEqual(1);
       }
+    }
+    if (previewDialog) {
+      await page.keyboard.press('Escape');
+      await expect(previewDialog).toBeHidden();
+      await expect(compactPreviewButton).toBeFocused();
+    }
+    for (const direction of ['ltr', 'rtl']) {
+      await page.evaluate(dir => { document.documentElement.dir = dir; }, direction);
+      await expect.poll(() => placementPanel.evaluate(panel => panel.scrollWidth - panel.clientWidth)).toBeLessThanOrEqual(1);
       const help = placementPanel.locator('details').filter({ has: page.getByText('Setup details', { exact: true }) });
       await help.getByText('Setup details', { exact: true }).click();
       await expect.poll(() => placementPanel.evaluate(panel => panel.scrollWidth - panel.clientWidth)).toBeLessThanOrEqual(1);

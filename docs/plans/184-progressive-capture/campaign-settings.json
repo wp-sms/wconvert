@@ -1,0 +1,30 @@
+{
+  "email-only": {
+    "goal": "grow_email_list",
+    "capture_mode": "local",
+    "submission_settings": {},
+    "destinations": []
+  },
+  "offer-first": {
+    "goal": "grow_email_list",
+    "capture_mode": "local",
+    "submission_settings": {},
+    "destinations": []
+  },
+  "enquiry": {
+    "goal": "collect_enquiries",
+    "capture_mode": "local",
+    "submission_settings": {},
+    "destinations": []
+  },
+  "email-then-sms": {
+    "goal": "grow_email_list",
+    "capture_mode": "local",
+    "submission_settings": {
+      "sms-signup": {
+        "destination_ids": []
+      }
+    },
+    "destinations": []
+  }
+}

@@ -204,7 +204,7 @@ export function start(options: ShellOptions): () => void {
             record((current) => scopesOf(entry.id).reduce(withConversion, current));
             run();
           },
-        }));
+        }, (entry.template?.tree.submissions.length ?? 0) > 0));
         if (accepted === false) failed = true;
         else overlayDone = overlayDone || isOverlay(entry);
       }

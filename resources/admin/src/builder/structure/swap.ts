@@ -1,7 +1,7 @@
 import { __, sprintf } from '@wordpress/i18n';
 import { FIELDS, withValue, type Path } from '../panel';
 import { nameOf, type TemplateLabels } from '../../templates/api';
-import { ACTIONS, actionFor, formStep, type ConvertingAct } from './catalogue';
+import { ACTIONS, formStep, type ConvertingAct } from './catalogue';
 import { capturesTaken, nodeAt } from './tree';
 import type { TemplateNode, TemplateTree } from '@renderer/types';
 
@@ -152,7 +152,7 @@ export function swapsFor(tree: TemplateTree, path: Path, act: ConvertingAct): Sw
  * it is a consequence of the design the merchant is looking at.
  */
 function whyActionIsRefused(tree: TemplateTree, action: string, act: ConvertingAct): string | null {
-  if (action !== actionFor(act)) {
+  if ((act === 'submit' && action === 'link') || (act === 'click' && !['link', 'close'].includes(action))) {
     return act === 'submit'
       ? __(
           'A design that submits has a second step for what the visitor sees afterwards, and a design that links away has none. Pick a design that links away from the Design tab.',

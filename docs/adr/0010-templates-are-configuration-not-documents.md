@@ -1,5 +1,7 @@
 # Templates are configuration, not documents
 
+**Current budget amendment — [ADR 0103](0103-progressive-capture-keeps-one-lead-per-journey.md):** The page payload cap is 2,560 B gzip (per-design 1,280 B). Free loaders remain 14,012 B; paid loaders cap at 19,456 B. Earlier measurements below are historical. All remain hard checks.
+
 A template is a JSON node tree plus a token set, validated against a shared
 vocabulary manifest. It contains no HTML and no CSS. One renderer, shipped in the
 loader, owns the entire component vocabulary and every line of the stylesheet.
@@ -157,6 +159,11 @@ third-party ones. Under configuration they are properties of the one renderer.
   [ADR 0053](0053-the-spin-to-win-card-is-withdrawn.md)), `image.shape` for a
   circle, and `badge.place` for the corner flash. A `list` node, a `progress`
   indicator and a third step were each considered and refused by that same test.*
+
+  **Planned amendment by [ADR 0103](0103-progressive-capture-keeps-one-lead-per-journey.md):**
+  offer-first, multi-screen enquiries and optional other-channel signup provide
+  the use cases for additional screens. The shared linear-flow contract replaces
+  the two-screen limit; it does not introduce a conditional route graph.
 
   ***The same ADR declined per-node styling, which is this ADR's real
   ceiling.*** *~~Every design's look is 22 **global** custom properties, so
@@ -318,7 +325,11 @@ third-party ones. Under configuration they are properties of the one renderer.
   offering two converting acts or none
   ([ADR 0020](0020-conversions-are-interpreted-at-read.md)), and one whose step
   count disagrees with its act — two for a submit, one for a click
-  ([ADR 0025](0025-cart-recovery-captures-nothing.md)). Recorded rather than
+  ([ADR 0025](0025-cart-recovery-captures-nothing.md)). *The fixed submit
+  screen count is amended for planned progressive capture by
+  [ADR 0103](0103-progressive-capture-keeps-one-lead-per-journey.md): validate
+  the explicit linear journey and its submission points instead. The shipping
+  validator is not yet updated.* Recorded rather than
   thrown, because one bad entry must not take the gallery down; and **not
   dropped in silence**, because an entry that simply vanished looks exactly like
   a gallery that failed to load. The channel is `_doing_it_wrong()` rather than
@@ -397,6 +408,11 @@ third-party ones. Under configuration they are properties of the one renderer.
   it delays. This applies to both click Goals — "Promote a sale or offer" and
   "Bring shoppers back to their cart" — so it is a property of the metric, not of
   WooCommerce.*
+  *Amended for progressive capture by
+  [ADR 0103](0103-progressive-capture-keeps-one-lead-per-journey.md): submit
+  designs may contain content screens and multiple input screens, including
+  optional submissions after the first accepted capture. Merchants arrange
+  them in a linear journey. The JSON v2 contract and readers implement this flow.*
 - **Every leaf now carries an `id`, and it is the one key validation ADDS rather
   than drops.** *This ADR's closure rule is that an unknown node type, token,
   param or Slot Role is dropped on the way in

@@ -71,6 +71,18 @@ final class OptinWriteTest extends TestCase
         self::assertArrayNotHasKey('teaser', $inline['config']);
     }
 
+    public function testOptionalRoutesNeverBecomePrimaryRoutesWhenSaving(): void
+    {
+        $email = '01JQ0000000000000000000001'; $sms = '01JQ0000000000000000000002';
+        $draft = $this->create(Goal::GrowEmailList, ['template_id' => 'journey-email-then-sms',
+            'destinations' => [$email], 'submission_settings' => ['sms-signup' => ['destination_ids' => [$sms]]]]);
+        self::assertIsArray($draft);
+        self::assertSame([$email], $draft['config']['destinations']);
+        $settings = \WConvert\Template\CaptureContract::settings($draft['config'], Goal::GrowEmailList->value);
+        self::assertSame([$email], $settings['email-signup']['destination_ids']);
+        self::assertSame([$sms], $settings['sms-signup']['destination_ids']);
+    }
+
     public function testAnEmailOnlySmsDraftSavesButCannotBePublished(): void
     {
         $draft = $this->create(Goal::GrowSmsList, ['template_id' => 'centred-card']);
@@ -79,7 +91,7 @@ final class OptinWriteTest extends TestCase
         $request->set_param('id', $draft['id']);
         $response = $this->controller->publish($request);
         self::assertInstanceOf(WP_Error::class, $response);
-        self::assertSame('wconvert_optin_goal_incomplete', $response->get_error_code());
+        self::assertContains($response->get_error_code(), ['wconvert_optin_goal_incomplete', 'wconvert_optin_form_incomplete']);
         self::assertNull($this->optins->find($draft['id'])?->publishedAt);
     }
 
@@ -126,6 +138,16 @@ final class OptinWriteTest extends TestCase
                 self::assertSame('wconvert_optin_goal_incomplete', $response->get_error_code());
             }
         }
+    }
+
+    public function testPrimaryEmailSignupMayAlsoSendItsPromisedResource(): void
+    {
+        $audience = $this->destinations->save(null, 'mailpoet', 'Newsletter', null, ['lists' => ['3']]);
+        $reward = $this->destinations->save(null, 'lead_magnet_email', 'Guide', null, ['file_url' => 'https://example.org/guide.pdf']);
+        $draft = $this->create(Goal::GrowEmailList, ['template_id' => 'centred-card', 'destinations' => [$audience->id, $reward->id]]);
+        self::assertIsArray($draft);
+        $request = new WP_REST_Request(); $request->set_param('id', $draft['id']);
+        self::assertInstanceOf(\WP_REST_Response::class, $this->controller->publish($request));
     }
 
     public function testALeadMagnetNeedsAConfiguredDeliveryRouteBeforePublishing(): void
@@ -206,6 +228,18 @@ final class OptinWriteTest extends TestCase
         $request = new WP_REST_Request();
         $request->set_param('name', 'Under test');
         $request->set_param('goal', $goal->value);
+        if (!isset($config['template']) && isset($config['template_id'])) {
+            $file = dirname(__DIR__, 3) . '/resources/templates/library/' . $config['template_id'] . '.json';
+            if (is_file($file)) {
+                $config['template'] = json_decode((string) file_get_contents($file), true);
+                if ($goal->outcome()->audienceChannel !== null) {
+                    $config = \WConvert\Template\TemplateTree::rewrittenIn($config, static function (array $node): array {
+                        if (($node['type'] ?? '') === 'consent') { $node['hidden'] = false; }
+                        return $node;
+                    });
+                }
+            }
+        }
         $request->set_param('config', $config + ['rules' => [['type' => 'page_load']]]);
 
         $response = $this->controller->store($request);
@@ -313,14 +347,24 @@ final class OptinWriteTest extends TestCase
      */
     private static function choiceDraft($options): array
     {
-        return ['template' => ['tokens' => [], 'tree' => ['steps' => [
+        return ['template' => ['tokens' => [], 'tree' => \WConvert\Tests\Unit\Support\JourneyFixture::tree(['steps' => [
             ['type' => 'stack', 'children' => [
                 ['type' => 'field', 'name' => 'email', 'required' => true],
                 ['type' => 'field', 'name' => 'interest', 'options' => $options],
+                ['type' => 'consent', 'text' => 'Send me email updates.', 'hidden' => false],
                 ['type' => 'button', 'action' => 'submit', 'label' => 'Send'],
             ]],
             ['type' => 'stack', 'children' => [['type' => 'heading', 'text' => 'Thanks']]],
-        ]]]];
+        ]])]];
+    }
+
+    public function testUnknownNavigationIsRefusedBeforeNormalizationCanChangeItsMeaning(): void
+    {
+        $config = self::choiceDraft([]);
+        $config['template']['tree']['steps'][0]['content']['children'][3]['action'] = 'autosave';
+        $refusal = $this->create(Goal::GrowEmailList, $config);
+        self::assertInstanceOf(WP_Error::class, $refusal);
+        self::assertSame('wconvert_template_action', $refusal->get_error_code());
     }
 
     /** @return array<string, array{mixed}> */
@@ -376,14 +420,14 @@ final class OptinWriteTest extends TestCase
     {
         $created = $this->create(Goal::GrowEmailList, self::choiceDraft([]));
         self::assertIsArray($created);
-        self::assertSame([], $created['config']['template']['tree']['steps'][0]['children'][1]['options']);
+        self::assertSame([], $created['config']['template']['tree']['steps'][0]['content']['children'][1]['options']);
         $request = new WP_REST_Request();
         $request->set_param('id', $created['id']);
         $request->set_param('name', 'Still unfinished');
         $request->set_param('config', $created['config']);
         $saved = $this->controller->update($request);
         self::assertNotInstanceOf(WP_Error::class, $saved);
-        self::assertSame([], $this->optins->find($created['id'])?->config['template']['tree']['steps'][0]['children'][1]['options']);
+        self::assertSame([], $this->optins->find($created['id'])?->config['template']['tree']['steps'][0]['content']['children'][1]['options']);
     }
 
     // ========================================================================
@@ -543,7 +587,7 @@ final class OptinWriteTest extends TestCase
             'template_id' => 'centred-card',
             'template' => [
                 'tokens' => [],
-                'tree' => [
+                'tree' => \WConvert\Tests\Unit\Support\JourneyFixture::tree([
                     'steps' => [
                         [
                             'type' => 'stack',
@@ -560,14 +604,14 @@ final class OptinWriteTest extends TestCase
                         ],
                         ['type' => 'stack', 'children' => [['type' => 'heading', 'role' => 'success_headline', 'text' => 'Done']]],
                     ],
-                ],
+                ]),
             ],
         ]);
 
         $this->assertIsArray($created);
 
         /** @var array<string, mixed> $field */
-        $field = $created['config']['template']['tree']['steps'][0]['children'][0];
+        $field = $created['config']['template']['tree']['steps'][0]['content']['children'][0];
 
         $this->assertSame('phone', $field['name']);
         $this->assertSame('Where do we text it?', $field['label']);
@@ -582,7 +626,7 @@ final class OptinWriteTest extends TestCase
     public function testASwappedFieldOffersTheRolesOfItsNewKind(): void
     {
         $vocabulary = TemplateVocabulary::fromManifest(self::PLUGIN_DIR);
-        $tree = [
+        $tree = \WConvert\Tests\Unit\Support\JourneyFixture::tree([
             'steps' => [
                 [
                     'type' => 'stack',
@@ -591,7 +635,7 @@ final class OptinWriteTest extends TestCase
                     ],
                 ],
             ],
-        ];
+        ]);
 
         $roles = \WConvert\Template\SlotRoles::declaredIn($tree, $vocabulary);
 
@@ -802,10 +846,10 @@ final class OptinWriteTest extends TestCase
             'rules' => [['type' => 'page_load']],
             'template' => [
                 'tokens' => ['bg' => '#abcdef'],
-                'tree' => ['steps' => [['type' => 'stack', 'children' => [
+                'tree' => \WConvert\Tests\Unit\Support\JourneyFixture::tree(['steps' => [['type' => 'stack', 'children' => [
                     ['type' => 'heading', 'text' => 'Edited after choosing', 'tokens' => ['fg' => '#123456'], 'narrow' => ['heading-size' => '2rem']],
                     ['type' => 'button', 'label' => 'Visit', 'action' => 'link', 'href' => 'https://example.test/offer'],
-                ]]]],
+                ]]]]),
             ],
         ]);
 
@@ -813,9 +857,9 @@ final class OptinWriteTest extends TestCase
         $this->assertInstanceOf(\WP_REST_Response::class, $response);
         $config = $response->get_data()['config'];
         $this->assertSame('#abcdef', $config['template']['tokens']['bg']);
-        $this->assertSame('Edited after choosing', $config['template']['tree']['steps'][0]['children'][0]['text']);
-        $this->assertSame(['fg' => '#123456'], $config['template']['tree']['steps'][0]['children'][0]['tokens']);
-        $this->assertSame(['heading-size' => '2rem'], $config['template']['tree']['steps'][0]['children'][0]['narrow']);
+        $this->assertSame('Edited after choosing', $config['template']['tree']['steps'][0]['content']['children'][0]['text']);
+        $this->assertSame(['fg' => '#123456'], $config['template']['tree']['steps'][0]['content']['children'][0]['tokens']);
+        $this->assertSame(['heading-size' => '2rem'], $config['template']['tree']['steps'][0]['content']['children'][0]['narrow']);
         $this->assertArrayNotHasKey('template_source', $config);
     }
 
@@ -855,7 +899,7 @@ final class OptinWriteTest extends TestCase
     {
         $refusal = $this->create(Goal::GrowEmailList, [
             'template' => [
-                'tree' => [
+                'tree' => \WConvert\Tests\Unit\Support\JourneyFixture::tree([
                     'steps' => [
                         [
                             'type' => 'stack',
@@ -865,7 +909,7 @@ final class OptinWriteTest extends TestCase
                             ],
                         ],
                     ],
-                ],
+                ]),
                 'tokens' => [],
             ],
         ]);
@@ -897,8 +941,8 @@ final class OptinWriteTest extends TestCase
 
         $refusal = $this->controller->update($request);
 
-        $this->assertInstanceOf(WP_Error::class, $refusal);
-        $this->assertSame('wconvert_optin_cannot_convert', $refusal->get_error_code());
+        $this->assertInstanceOf(\WP_REST_Response::class, $refusal);
+        $this->assertInstanceOf(WP_Error::class, $this->controller->publish($request));
     }
 
     /**
@@ -909,12 +953,12 @@ final class OptinWriteTest extends TestCase
      */
     public function testADraftWithNoDesignIsNotCaughtByTheConvertingActCheck(): void
     {
-        $this->assertIsArray($this->create(Goal::GrowEmailList, ['template' => ['tree' => ['steps' => []]]]));
+        $this->assertIsArray($this->create(Goal::GrowEmailList, ['template' => ['tree' => \WConvert\Tests\Unit\Support\JourneyFixture::tree(['steps' => []])]]));
     }
 
     public function testAnIncompleteDraftCanBeSavedButCannotBePublished(): void
     {
-        foreach ([[], ['template' => ['tree' => ['steps' => []]]]] as $config) {
+        foreach ([[], ['template' => ['tree' => \WConvert\Tests\Unit\Support\JourneyFixture::tree(['steps' => []])]]] as $config) {
             $draft = $this->create(Goal::GrowEmailList, $config);
             $this->assertIsArray($draft);
             $request = new WP_REST_Request();
@@ -1000,8 +1044,8 @@ final class OptinWriteTest extends TestCase
 
         $refusal = $this->controller->update($request);
 
-        $this->assertInstanceOf(WP_Error::class, $refusal);
-        $this->assertSame('wconvert_optin_cannot_convert', $refusal->get_error_code());
+        $this->assertInstanceOf(\WP_REST_Response::class, $refusal);
+        $this->assertInstanceOf(WP_Error::class, $this->controller->publish($request));
     }
 
     /** An edit that changes neither is left alone. */

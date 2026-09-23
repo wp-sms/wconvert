@@ -139,7 +139,7 @@ would make the rule engine asynchronous. And it cannot be a WSMS
 cannot be asked of a person, and where WConvert needs cart state it observes the
 cart itself.*
 
-*So [`CartCookie`](../../pro/src/WooCommerce/CartCookie.php) writes
+*So [`CartCookie`](../../pro/modules/cart-recovery/src/CartCookie.php) writes
 `<count>:<total>` on `woocommerce_cart_updated` and Pro's two loader modules read
 it. **Two hooks rather than the one #36 asked for**, and the second was found on a
 real WordPress rather than by the suite: `WC_Cart::empty_cart()` — what a
@@ -229,6 +229,11 @@ somebody ADDS, which no assertion about output can see.*
   no success state left to render, and an interstitial is worse than the navigation it
   delays. This applies equally to *Promote a sale or offer*; it is a property of
   click-metered Goals, not of WooCommerce.
+  *Amended for progressive capture by
+  [ADR 0103](0103-progressive-capture-keeps-one-lead-per-journey.md): the
+  two-screen rule for submit designs is being replaced with explicit linear
+  journeys. Single-step click-only cart designs retain their converting-act
+  semantics; they still capture no Lead and gain no post-capture journey.*
 - **No new [[Slot Role]].** The discount code is body copy the merchant edits.
   *Held by [#36](https://github.com/navidkashani/wconvert/issues/36): the three
   cart [[Playbook]]s fill `headline`, `body`, `cta_label` and `fine_print` and

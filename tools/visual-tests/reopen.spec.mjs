@@ -96,6 +96,7 @@ test('real editor loads Pro controls, simulates reopening, and saves draft setti
   await open(page);
   const id = await page.locator('#wconvert-payload').evaluate(node => JSON.parse(node.textContent)[0].id);
   await page.goto('/wp-login.php');
+  await expect(page.getByLabel('Username or Email Address')).toBeFocused();
   await page.getByLabel('Username or Email Address').fill('admin');
   await page.getByLabel('Password', { exact: true }).fill('password');
   await page.getByRole('button', { name: 'Log In', exact: true }).click();
@@ -112,7 +113,7 @@ test('real editor loads Pro controls, simulates reopening, and saves draft setti
   await expect(reopenTab).toHaveAttribute('aria-pressed', 'true');
   await expect(page.getByRole('region', { name: 'Design canvas' }).locator('[data-wconvert-reopen]')).toBeVisible();
   await page.evaluate(() => window.testShadows.find(root => root.host.hasAttribute('data-wconvert-reopen') && root.host.isConnected).querySelector('button').click());
-  await expect(page.getByRole('button', { name: 'The form', exact: true })).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByRole('combobox', { name: 'Campaign screen', exact: true })).toHaveValue('0');
   await page.getByRole('button', { name: 'Preview', exact: true }).click();
   await page.getByRole('button', { name: 'Close preview', exact: true }).click();
   await expect(reopenTab).toHaveAttribute('aria-pressed', 'true');
@@ -150,8 +151,8 @@ test('a real capture completes while minimized without expanding or submitting t
   const endpoint = await page.locator('#wconvert-payload').getAttribute('data-capture');
   let release;
   const held = new Promise(resolve => { release = resolve; });
-  let requests = 0;
-  await page.route(endpoint, async route => { requests++; await held; await route.continue(); });
+  const requests = [];
+  await page.route(endpoint, async route => { requests.push(route.request().postDataJSON()); await held; await route.continue(); });
   const sent = page.waitForRequest(endpoint);
   await page.evaluate(() => {
     const form = window.testShadows.flatMap(root => [...root.querySelectorAll('form')])[0];
@@ -164,7 +165,7 @@ test('a real capture completes while minimized without expanding or submitting t
   await page.evaluate(() => window.testShadows.find(root => root.host.hasAttribute('data-wconvert-reopen')).querySelector('button').click());
   await page.evaluate(() => window.testShadows.flatMap(root => [...root.querySelectorAll('form')])[0].requestSubmit());
   await page.keyboard.press('Escape');
-  const captured = page.waitForResponse(endpoint);
+  const captured = page.waitForResponse(response => response.url() === endpoint && response.request().postDataJSON()?.submission === 'primary');
   release();
   expect((await captured).status()).toBe(201);
   await expect.poll(() => page.evaluate(() => window.testShadows.find(root => root.host.hasAttribute('data-wconvert-reopen')).querySelector('button').textContent)).toBe('Submission received — View details');
@@ -172,7 +173,8 @@ test('a real capture completes while minimized without expanding or submitting t
   await page.evaluate(() => window.testShadows.find(root => root.host.hasAttribute('data-wconvert-reopen')).querySelector('button').click());
   await expect(page.locator('dialog')).toBeVisible();
   expect(await page.evaluate(() => window.testShadows.some(root => root.textContent.includes('Submission received')))).toBe(true);
-  expect(requests).toBe(1);
+  expect(requests.filter(request => request.phase === 'start')).toHaveLength(1);
+  expect(requests.filter(request => request.submission === 'primary')).toHaveLength(1);
   await page.keyboard.press('Escape');
   await page.reload();
   await expect(page.locator('[data-wconvert-reopen],dialog[open]')).toHaveCount(0);

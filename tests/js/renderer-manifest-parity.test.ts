@@ -1,3 +1,4 @@
+import { treeFixture } from './support/journey';
 import { readFileSync, readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
@@ -44,7 +45,7 @@ const MINIMAL: Readonly<Record<string, object>> = {
 
 /** The step's own element, one inside the root the renderer returns. */
 const renderStep = (node: object): Element | null =>
-  render({ steps: [node] } as TemplateTree, {}).firstElementChild;
+  render({ v: 2, steps: [{ id: 'screen', name: 'Test', kind: 'content', content: node }], submissions: [] } as TemplateTree, {}).firstElementChild;
 
 const CSS = SHADOW_CSS + DOCUMENT_CSS;
 
@@ -214,7 +215,7 @@ describe('every layout the manifest gives a token bag', () => {
 
   it.each(scoped)('writes it as custom properties on its own element: %s', (type) => {
     const root = render(
-      { steps: [{ type, tokens: { bg: '#fff4df', pad: '2rem' }, children: [], start: [], end: [] }] } as TemplateTree,
+      treeFixture({ steps: [{ type, tokens: { bg: '#fff4df', pad: '2rem' }, children: [], start: [], end: [] }] }) as TemplateTree,
       { bg: '#ffffff' },
     );
     const element = root.firstElementChild as HTMLElement;
@@ -228,7 +229,7 @@ describe('every layout the manifest gives a token bag', () => {
 
   it.each(scoped)('renders identically to one carrying no bag at all: %s', (type) => {
     const shape = (extra: object) =>
-      render({ steps: [{ type, children: [], start: [], end: [], ...extra }] } as TemplateTree, {})
+      render(treeFixture({ steps: [{ type, children: [], start: [], end: [], ...extra }] }) as TemplateTree, {})
         .firstElementChild?.outerHTML;
 
     expect(shape({ tokens: {} })).toBe(shape({}));
@@ -242,7 +243,7 @@ describe('every layout the manifest gives a token bag', () => {
    */
   it('draws whatever names it is handed, because closure is the boundarys job', () => {
     const element = render(
-      { steps: [{ type: 'stack', tokens: { wobble: '3deg' }, children: [] }] } as TemplateTree,
+      treeFixture({ steps: [{ type: 'stack', tokens: { wobble: '3deg' }, children: [] }] }) as TemplateTree,
       {},
     ).firstElementChild as HTMLElement;
 
@@ -350,7 +351,7 @@ describe('the panes of a split', () => {
  */
 describe('the panel', () => {
   const panel = (extra: object): HTMLElement =>
-    render({ steps: [{ type: 'panel', children: [], ...extra }] } as TemplateTree, {})
+    render(treeFixture({ steps: [{ type: 'panel', children: [], ...extra }] }) as TemplateTree, {})
       .firstElementChild as HTMLElement;
 
   /**
@@ -361,7 +362,7 @@ describe('the panel', () => {
    */
   it('starts from the designs colors and not its picture', () => {
     const root = render(
-      { steps: [{ type: 'panel', children: [] }] } as TemplateTree,
+      treeFixture({ steps: [{ type: 'panel', children: [] }] }) as TemplateTree,
       { bg: '#0f172a', 'bg-image': 'url(/hero.jpg)', overlay: 'rgba(0,0,0,.5)' },
     );
     const element = root.firstElementChild as HTMLElement;
@@ -407,13 +408,13 @@ describe('the panel', () => {
  */
 describe('the media', () => {
   const media = (extra: object): HTMLElement =>
-    render({ steps: [{ type: 'media', children: [], ...extra }] } as TemplateTree, {})
+    render(treeFixture({ steps: [{ type: 'media', children: [], ...extra }] }) as TemplateTree, {})
       .firstElementChild as HTMLElement;
 
   /** The same reset a `panel` takes, for the same reason and in the same place. */
   it('starts from the designs colors and not its picture', () => {
     const root = render(
-      { steps: [{ type: 'media', children: [] }] } as TemplateTree,
+      treeFixture({ steps: [{ type: 'media', children: [] }] }) as TemplateTree,
       { bg: '#0f172a', 'bg-image': 'url(/hero.jpg)', overlay: 'rgba(0,0,0,.5)' },
     );
     const element = root.firstElementChild as HTMLElement;
@@ -470,7 +471,7 @@ describe('the media', () => {
  */
 describe('the notch', () => {
   const panel = (extra: object): HTMLElement =>
-    render({ steps: [{ type: 'panel', children: [], ...extra }] } as TemplateTree, {})
+    render(treeFixture({ steps: [{ type: 'panel', children: [], ...extra }] }) as TemplateTree, {})
       .firstElementChild as HTMLElement;
 
   it('writes it as a modifier attribute, and nothing at all for the default', () => {
@@ -616,7 +617,7 @@ describe('inline emphasis', () => {
  */
 describe('a token used as a value', () => {
   const scoped = (tokens: Record<string, string>, design: Record<string, string> = {}): HTMLElement =>
-    render({ steps: [{ type: 'panel', children: [], tokens }] } as TemplateTree, design)
+    render(treeFixture({ steps: [{ type: 'panel', children: [], tokens }] }) as TemplateTree, design)
       .firstElementChild as HTMLElement;
 
   it('is the same list the manifest declares', () => {
@@ -654,7 +655,7 @@ describe('a token used as a value', () => {
 
   it('leaves the designs own value on the root, so the reference has something to find', () => {
     const root = render(
-      { steps: [{ type: 'panel', children: [], tokens: { bg: 'accent' } }] } as TemplateTree,
+      treeFixture({ steps: [{ type: 'panel', children: [], tokens: { bg: 'accent' } }] }) as TemplateTree,
       { accent: '#263f2c' },
     );
 
@@ -710,7 +711,7 @@ describe('every token the manifest declares', () => {
  */
 describe('the narrow bag', () => {
   const retuned = (node: object, design: Record<string, string> = {}): HTMLElement =>
-    render({ steps: [node] } as TemplateTree, design).firstElementChild as HTMLElement;
+    render({ v: 2, steps: [{ id: 'screen', name: 'Test', kind: 'content', content: node }], submissions: [] } as TemplateTree, design).firstElementChild as HTMLElement;
 
   it('fires at the width the manifest declares', () => {
     expect(A_NARROW_DESIGN).toBe(manifest.narrow);
@@ -772,7 +773,7 @@ describe('the narrow bag', () => {
 
   it('mirrors what an ancestor set, through a box that set nothing', () => {
     const root = render(
-      {
+      treeFixture({
         steps: [
           {
             type: 'panel',
@@ -782,7 +783,7 @@ describe('the narrow bag', () => {
             ],
           },
         ],
-      } as TemplateTree,
+      }) as TemplateTree,
       { fg: '#253c2b' },
     );
     const inner = root.querySelector('.wc-stack > .wc-panel') as HTMLElement;

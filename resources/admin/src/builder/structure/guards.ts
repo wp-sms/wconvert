@@ -1,3 +1,4 @@
+import { walkNodes } from './journey';
 import { __, _n, sprintf } from '@wordpress/i18n';
 import { childKeysOf } from '../panel';
 import { nodeAt, nodesOf, withRemoved, type Block } from './tree';
@@ -53,14 +54,14 @@ export function convertingActOf(tree: TemplateTree): ConvertingAct[] {
   const found: ConvertingAct[] = [];
 
   for (const step of tree.steps) {
-    collectActs(step, found);
+    collectActs(step.content, found);
   }
 
   return (['submit', 'click'] as const).filter((act) => found.includes(act));
 }
 
 function collectActs(node: TemplateNode, found: ConvertingAct[]): void {
-  if (node.type === 'button') {
+  if (node.type === 'button' && 'action' in node && ['submit', 'link'].includes(String(node.action))) {
     const act: ConvertingAct = (node as { action?: string }).action === 'link' ? 'click' : 'submit';
 
     if (!found.includes(act)) {
@@ -92,7 +93,7 @@ function collectActs(node: TemplateNode, found: ConvertingAct[]): void {
  * the Optin reports zero forever (ADR 0020). A list of blocks that does not
  * point at it is a list missing its most important row.
  */
-export const isConvertingAct = (block: Block): boolean => block.type === 'button';
+export const isConvertingAct = (block: Block): boolean => block.type === 'button' && block.counts !== false && ['submit', 'link'].includes(block.action ?? '');
 
 /**
  * Why this block may not be removed, or null.
@@ -164,8 +165,8 @@ export function whyDuplicationIsRefused(tree: TemplateTree, path: Path): string 
     return null;
   }
 
-  if (typesUnder(node).includes('button')) {
-    return __('A campaign counts exactly one conversion, so it has one button.', 'wconvert');
+  if (walkNodes(node).some(n => n.type === 'button' && 'action' in n && ['submit', 'link'].includes(String(n.action)))) {
+    return __('Keep exactly one button per submission or offer link. Add a navigation button instead.', 'wconvert');
   }
 
   if (typesUnder(node).includes('field')) {

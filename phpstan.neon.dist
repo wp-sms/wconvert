@@ -16,6 +16,8 @@ parameters:
         # bin/verify-source-contract.sh must catch, so analysing them would
         # report the fixtures' faults as the project's.
         - tests/fixtures/*
+    scanDirectories:
+        - vendor/woocommerce/action-scheduler/classes
     scanFiles:
         # Action Scheduler is a bundled WordPress plugin rather than a PSR-4
         # library, so its `as_*()` functions are declared in a file nothing

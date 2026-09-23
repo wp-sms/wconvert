@@ -25,39 +25,46 @@
   "tree": {
     "steps": [
       {
-        "type": "stack",
-        "children": [
-          {
-            "type": "heading",
-            "id": "n1",
-            "role": "headline",
-            "text": "Midseason sale"
-          },
-          {
-            "type": "text",
-            "id": "n2",
-            "role": "body",
-            "text": "Selected favourites from the collection, for less."
-          },
-          {
-            "type": "button",
-            "id": "n3",
-            "role": "cta_label",
-            "label": "Shop the sale",
-            "action": "link"
-          },
-          {
-            "type": "text",
-            "id": "n4",
-            "role": "fine_print",
-            "text": "Selected items only. Prices as marked.",
-            "size": "s",
-            "tokens": {
-              "text-size": "1.167rem"
+        "id": "s1",
+        "name": "Offer",
+        "kind": "content",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "heading",
+              "id": "n1",
+              "role": "headline",
+              "text": "Midseason sale"
+            },
+            {
+              "type": "text",
+              "id": "n2",
+              "role": "body",
+              "text": "Selected favourites from the collection, for less."
+            },
+            {
+              "type": "button",
+              "id": "n3",
+              "role": "cta_label",
+              "label": "Shop the sale",
+              "action": "link"
+            },
+            {
+              "type": "text",
+              "id": "n4",
+              "role": "fine_print",
+              "text": "Selected items only. Prices as marked.",
+              "size": "s",
+              "tokens": {
+                "text-size": "1.167rem"
+              }
             }
-          }
-        ]
+          ]
+        }
       }
-    ]
+    ],
+    "v": 2,
+    "submissions": []
   }
 }

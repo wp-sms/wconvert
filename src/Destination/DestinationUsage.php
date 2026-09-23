@@ -35,6 +35,6 @@ final class DestinationUsage
     private static function bindings(?string $json): array
     {
         $config = json_decode($json ?? '', true);
-        return OptinBinding::ids(is_array($config) ? $config : null);
+        return OptinBinding::allIds(is_array($config) ? $config : null);
     }
 }

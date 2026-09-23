@@ -7,6 +7,14 @@ hand-adds. It is **off by default, required once present, and enforced
 server-side**, and the evidence it produces is the [[Consent Record]] snapshotted
 into the [[Lead]]'s existing `fields` JSON.
 
+*Amended for progressive capture by
+[ADR 0103](0103-progressive-capture-keeps-one-lead-per-journey.md): one combined
+Lead can hold separate email and SMS consent evidence from different explicit
+submissions. SMS consent cannot be inferred from email consent or possession
+of a phone number. The single-checkbox contract described below is still the
+current runtime; the new Template contract and storage representation are
+specified in the companion [plan](../plans/184-progressive-capture.md).*
+
 *Clarified by [ADR 0076](0076-an-enquiry-captures-one-optional-choice-before-handoff.md):
 an optional service choice is a `field`, not this checkbox. Selecting a service
 does not assert consent or a marketing subscription. The enquiry Playbook uses
@@ -108,6 +116,11 @@ merchant will edit that wording and consent evidence that silently rewrites
 itself to match the current copy is evidence of nothing. A separate consent
 timestamp was explicitly rejected: `created_at` is already that, to the same
 second.
+
+*Amended by [ADR 0103](0103-progressive-capture-keeps-one-lead-per-journey.md):
+the first capture time cannot also describe consent accepted on a later SMS
+screen. Record each acceptance time with its own unchanged wording and channel.
+This changes the evidence contract; a storage design has not yet been approved.*
 
 ## Consequences
 

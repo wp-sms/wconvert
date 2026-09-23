@@ -2,13 +2,12 @@
 
 namespace WConvert\Rest;
 
+use WConvert\Database\DatabaseException;
 use WConvert\Lead\CaptureForm;
-use WConvert\Lead\LeadCapture;
 use WConvert\Lead\Refusal;
 use WConvert\Lead\RefusalCode;
 use WConvert\Optin\PublishedOptin;
 use WConvert\Optin\PublishedSet;
-use WConvert\Template\PolicyLink;
 use WConvert\Template\TemplateVocabulary;
 use WP_Error;
 use WP_REST_Request;
@@ -46,7 +45,9 @@ final class CaptureController implements RestController
 
     public function __construct(
         private readonly PublishedSet $publishedSet,
-        private readonly LeadCapture $capture,
+        private readonly \WConvert\Lead\JourneyCapture $capture,
+        private readonly \WConvert\Optin\OptinRepository $optins,
+        private readonly \WConvert\Lead\CaptureGrant $grants,
         private readonly TemplateVocabulary $vocabulary,
         private readonly CaptureRateLimit $rateLimit,
     ) {
@@ -122,21 +123,38 @@ final class CaptureController implements RestController
         // [[Consent Record]] is the wording exactly as it was SHOWN, and what
         // was shown depends on whether this site has a privacy policy
         // (ADR 0032).
-        $payload = PolicyLink::into($optin->payload, get_privacy_policy_url());
-        $form = CaptureForm::fromTemplate($payload['template'] ?? null, $this->vocabulary);
-        $result = $form->validate(self::submitted($request));
-
-        if ($result instanceof Refusal) {
-            return self::refuse($result);
+        $saved = $this->optins->find($optin->id);
+        if ($saved === null) { return new WP_Error('wconvert_unavailable', __('This form is no longer available.', 'wconvert'), ['status' => 404]); }
+        $config = $saved->publishedConfig;
+        $goal = $saved->goal;
+        $policy = get_privacy_policy_url();
+        $contract = \WConvert\Template\CaptureContract::fingerprint($config, $goal, $policy);
+        $body = self::submitted($request);
+        if (!is_string($body['contract'] ?? null) || !hash_equals($contract, $body['contract'])
+            || \WConvert\Template\CaptureContract::issue($config, $goal, $policy) !== null) {
+            return new WP_Error('wconvert_capture_changed', __('This form changed. Refresh the page to review it. Details already received remain saved.', 'wconvert'), ['status' => 409]);
         }
-
-        $lead = $this->capture->record($optin->id, $result);
-
-        // 201 and the id of what was created, which is what a REST create
-        // says. It is the visitor's own submission coming back to them, and
-        // the browser needs nothing else: the success step is already in the
-        // payload it rendered from.
-        return new WP_REST_Response(['id' => $lead->id], 201);
+        if (($body['phase'] ?? null) === 'start') {
+            return new WP_REST_Response(['grant' => $this->grants->issue($optin->id, $contract, time())], 200);
+        }
+        $grant = $this->grants->verify(is_string($body['grant'] ?? null) ? $body['grant'] : '', $optin->id, $contract, time());
+        if ($grant === null) {
+            return new WP_Error('wconvert_capture_expired', __('This form session has expired. Details already received remain saved. Refresh to start a new request.', 'wconvert'), ['status' => 409]);
+        }
+        $template = \WConvert\Template\CaptureContract::template($config, $goal, $policy);
+        $id = is_string($body['submission'] ?? null) ? $body['submission'] : '';
+        $settings = \WConvert\Template\CaptureContract::settings($config, $goal);
+        if (!isset($settings[$id])) { return new WP_Error('wconvert_capture_invalid', __('This submission is unavailable.', 'wconvert'), ['status' => 422]); }
+        $result = CaptureForm::fromTemplate($template, $this->vocabulary, $id)->validate($body);
+        if ($result instanceof Refusal) { return self::refuse($result); }
+        try {
+            $accepted = $this->capture->accept($optin->id, $contract, $grant, $template['tree'], $id, $result, $settings[$id]);
+        } catch (\WConvert\Lead\CaptureConflict) {
+            return new WP_Error('wconvert_capture_conflict', __('These details cannot be changed or resumed. Details already received remain saved.', 'wconvert'), ['status' => 409]);
+        } catch (DatabaseException) {
+            return new WP_Error('wconvert_capture_storage_failed', __('This submission could not be saved. Please try again.', 'wconvert'), ['status' => 500]);
+        }
+        return new WP_REST_Response($accepted, $accepted['replay'] ? 200 : 201);
     }
 
     /**

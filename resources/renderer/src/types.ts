@@ -34,6 +34,10 @@ export type SlotRole =
   | 'badge'
   | 'rating_text'
   | 'cta_label'
+  | 'next_label'
+  | 'back_label'
+  | 'skip_label'
+  | 'close_label'
   | 'consent_text'
   | 'success_headline'
   | 'success_body'
@@ -441,7 +445,8 @@ export interface ButtonNode extends BaseNode {
    * both a `submit` and a `link` is rejected at registration rather than
    * disambiguated at runtime (CONTEXT.md, Conversion).
    */
-  readonly action?: 'submit' | 'link';
+  readonly action?: 'submit' | 'link' | 'next' | 'back' | 'skip' | 'close';
+  readonly submission?: string;
   readonly href?: string | null;
 }
 
@@ -754,28 +759,22 @@ export type TemplateNode = LayoutNode | LeafNode | { readonly type: string };
  * Terminal is structural — it is the last step — rather than a flag, so there
  * is no second spelling of the same fact to keep in step.
  */
+export interface TemplateScreen {
+  readonly id: string;
+  readonly name: string;
+  readonly kind: 'content' | 'input' | 'acknowledgement';
+  readonly content: TemplateNode;
+}
+export interface CaptureSubmission {
+  readonly id: string;
+  readonly required: boolean;
+  readonly fields: readonly string[];
+  readonly consents: readonly string[];
+}
 export interface TemplateTree {
-  readonly steps: readonly TemplateNode[];
-  /**
-   * Which vocabulary wrote this tree.
-   *
-   * ==========================================================================
-   * NOTHING IN THE RENDERER READS THIS EITHER, AND FOR A DIFFERENT REASON.
-   * ==========================================================================
-   * `id` rides along because stripping it would cost a second walk; this rides
-   * along because it is the whole point. A snapshot outlives the vocabulary it
-   * was drawn from, and until now had no way to say WHICH one — which is fine
-   * while the vocabulary only ever widens, and is unrecoverable the first time
-   * something is renamed or a choice list is tightened.
-   *
-   * Optional in the type because a tree written before the key existed is
-   * still a tree, and the renderer's whole posture toward an unrecognised
-   * anything is to carry on. It is minted in PHP by
-   * `WConvert\Template\TemplateTree::stamped()`, on every path that builds a
-   * tree, and **the renderer and the admin must never mint one** — the same
-   * rule `id` has, for the same reason.
-   */
-  readonly v?: number;
+  readonly v: number;
+  readonly steps: readonly TemplateScreen[];
+  readonly submissions: readonly CaptureSubmission[];
 }
 
 /**

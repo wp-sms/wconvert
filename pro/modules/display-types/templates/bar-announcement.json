@@ -26,34 +26,41 @@
   "tree": {
     "steps": [
       {
-        "type": "row",
-        "children": [
-          {
-            "type": "badge",
-            "id": "n1",
-            "role": "badge",
-            "text": "Delivery",
-            "tokens": {
-              "text-size": "1.0834rem"
+        "id": "s1",
+        "name": "Offer",
+        "kind": "content",
+        "content": {
+          "type": "row",
+          "children": [
+            {
+              "type": "badge",
+              "id": "n1",
+              "role": "badge",
+              "text": "Delivery",
+              "tokens": {
+                "text-size": "1.0834rem"
+              }
+            },
+            {
+              "type": "heading",
+              "id": "n2",
+              "level": 2,
+              "role": "headline",
+              "text": "Free UK delivery over \u00a340"
+            },
+            {
+              "type": "button",
+              "id": "n3",
+              "role": "cta_label",
+              "label": "Explore the shop",
+              "action": "link",
+              "href": "/shop/"
             }
-          },
-          {
-            "type": "heading",
-            "id": "n2",
-            "level": 2,
-            "role": "headline",
-            "text": "Free UK delivery over £40"
-          },
-          {
-            "type": "button",
-            "id": "n3",
-            "role": "cta_label",
-            "label": "Explore the shop",
-            "action": "link",
-            "href": "/shop/"
-          }
-        ]
+          ]
+        }
       }
-    ]
+    ],
+    "v": 2,
+    "submissions": []
   }
 }

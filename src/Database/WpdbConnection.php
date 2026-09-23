@@ -16,6 +16,7 @@ defined('ABSPATH') || exit;
 final class WpdbConnection implements Connection
 {
     private \wpdb $wpdb;
+    private bool $transactional = false;
 
     public function __construct(?\wpdb $wpdb = null)
     {
@@ -25,6 +26,35 @@ final class WpdbConnection implements Connection
 
         /** @var \wpdb $wpdb */
         $this->wpdb = $wpdb;
+    }
+
+    /** @template T
+     * @param callable(): T $work
+     * @return T
+     */
+    public function transaction(callable $work): mixed
+    {
+        if (!$this->transactional) {
+            // Progressive capture must fail closed on non-transactional tables.
+            $rows = $this->wpdb->get_results($this->wpdb->prepare(
+                'SELECT ENGINE FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME IN (%s, %s, %s)',
+                $this->wpdb->prefix . self::TABLE_OPTIONS, $this->wpdb->prefix . self::TABLE_LEADS, $this->wpdb->prefix . self::TABLE_STATS
+            ), ARRAY_A);
+            $this->assertSucceeded($rows);
+            if (count($rows ?? []) !== 3 || array_filter($rows, static fn (array $row): bool => strtoupper((string) $row['ENGINE']) !== 'INNODB') !== []) {
+                throw new DatabaseException('Capture requires transactional WordPress storage.');
+            }
+            $this->transactional = true;
+        }
+        $this->assertSucceeded($this->wpdb->query('START TRANSACTION'));
+        try {
+            $result = $work();
+            $this->assertSucceeded($this->wpdb->query('COMMIT'));
+            return $result;
+        } catch (\Throwable $failure) {
+            $this->wpdb->query('ROLLBACK');
+            throw $failure;
+        }
     }
 
     /**
@@ -82,11 +112,13 @@ final class WpdbConnection implements Connection
         // list: a gate with an exception file is a gate that quietly grows
         // one. This is its opposite — local, visible at the line, and read in
         // place by the reviewer who asks this same question next.
-        /** @var list<array<string, string|null>> $rows */
+        /** @var list<array<string, string|null>>|null $rows */
         // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- prepare() binds every value through $wpdb->prepare() and the table as %i; the sniff cannot see it. See the note above.
-        $rows = $this->wpdb->get_results($this->prepare($table, $sql, $params), ARRAY_A) ?: [];
+        $rows = $this->wpdb->get_results($this->prepare($table, $sql, $params), ARRAY_A);
 
-        return $rows;
+        $this->assertSucceeded($rows);
+
+        return $rows ?? [];
     }
 
     /**
@@ -100,6 +132,8 @@ final class WpdbConnection implements Connection
         // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- prepare() binds every value through $wpdb->prepare() and the table as %i; the sniff cannot see it. See the note in results().
         $row = $this->wpdb->get_row($this->prepare($table, $sql, $params), ARRAY_A);
 
+        $this->assertSucceeded($row);
+
         return $row;
     }
 
@@ -108,7 +142,7 @@ final class WpdbConnection implements Connection
      */
     public function insert(string $table, array $data): void
     {
-        $this->wpdb->insert($this->wpdb->prefix . $table, $data);
+        $this->assertSucceeded($this->wpdb->insert($this->wpdb->prefix . $table, $data));
     }
 
     /**
@@ -117,7 +151,7 @@ final class WpdbConnection implements Connection
      */
     public function update(string $table, array $data, array $where): void
     {
-        $this->wpdb->update($this->wpdb->prefix . $table, $data, $where);
+        $this->assertSucceeded($this->wpdb->update($this->wpdb->prefix . $table, $data, $where));
     }
 
     /**
@@ -136,7 +170,11 @@ final class WpdbConnection implements Connection
         }
 
         // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- prepare() binds every value through $wpdb->prepare() and the table as %i; the sniff cannot see it. See the note in results().
-        return (int) $this->wpdb->query($this->prepare($table, $sql, $params));
+        $deleted = $this->wpdb->query($this->prepare($table, $sql, $params));
+
+        $this->assertSucceeded($deleted);
+
+        return (int) $deleted;
     }
 
     /**
@@ -157,7 +195,24 @@ final class WpdbConnection implements Connection
         }
 
         // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- prepare() binds every value through $wpdb->prepare() and the table as %i; the sniff cannot see it. See the note in results().
-        $this->wpdb->query($this->prepare($table, $sql, $params));
+        $this->assertSucceeded($this->wpdb->query($this->prepare($table, $sql, $params)));
+    }
+
+    /**
+     * `$wpdb` reports database errors through `false` and `last_error` rather
+     * than exceptions. Keep that WordPress-specific contract behind this
+     * adapter so callers cannot mistake a rejected write for success or an
+     * errored read for an empty result.
+     *
+     * The exception is deliberately generic: `$wpdb->last_error` and the SQL
+     * can contain captured values, and neither belongs in a public REST error
+     * or an uncaught exception rendered by a debug-enabled site.
+     */
+    private function assertSucceeded(mixed $result): void
+    {
+        if ($result === false || $this->wpdb->last_error !== '') {
+            throw new DatabaseException('WConvert could not complete a database operation.');
+        }
     }
 
     /**

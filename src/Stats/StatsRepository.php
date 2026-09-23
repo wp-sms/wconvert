@@ -44,7 +44,7 @@ final class StatsRepository
      * rather than by kind, and a statement that named its table twice would
      * need the table interleaved at each one.
      */
-    private const INCREMENT = 'INSERT INTO %i (optin_id, stat_date, kind, `count`) VALUES (%s, %s, %s, 1)'
+    private const INCREMENT = 'INSERT INTO %i (optin_id, stat_date, kind, scope, `count`) VALUES (%s, %s, %s, %s, 1)'
         . ' ON DUPLICATE KEY UPDATE `count` = `count` + 1';
 
     /**
@@ -55,7 +55,7 @@ final class StatsRepository
      * has been counting. No `WHERE`, because a milestone is all-time, and
      * therefore no bindings at all.
      */
-    private const FIRST_DAYS = 'SELECT kind, MIN(stat_date) AS first_day FROM %i GROUP BY kind';
+    private const FIRST_DAYS = 'SELECT kind, MIN(stat_date) AS first_day FROM %i WHERE scope = \'\' GROUP BY kind';
 
     public function __construct(
         private readonly Connection $db,
@@ -97,7 +97,7 @@ final class StatsRepository
     {
         return $this->db->results(
             Connection::TABLE_STATS,
-            'SELECT optin_id, stat_date, kind, `count` FROM %i WHERE stat_date BETWEEN %s AND %s',
+            'SELECT optin_id, stat_date, kind, `count` FROM %i WHERE scope = \'\' AND stat_date BETWEEN %s AND %s',
             $range->from,
             $range->to
         );
@@ -170,8 +170,8 @@ final class StatsRepository
      * therefore also stamped together, which is what a visitor's page view
      * actually was.
      */
-    public function increment(string $optinId, StatKind $kind, string $statDate): void
+    public function increment(string $optinId, StatKind $kind, string $statDate, string $scope = ''): void
     {
-        $this->db->upsert(Connection::TABLE_STATS, self::INCREMENT, $optinId, $statDate, $kind->value);
+        $this->db->upsert(Connection::TABLE_STATS, self::INCREMENT, $optinId, $statDate, $kind->value, $scope);
     }
 }

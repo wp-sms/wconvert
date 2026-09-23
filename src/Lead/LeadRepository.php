@@ -102,8 +102,8 @@ final class LeadRepository
      * chronologically, so `ORDER BY id` is `ORDER BY created_at` and the lead
      * log needs no index to list newest-first. `created_at` is a real column
      * regardless, because retention pruning is a range delete over it and
-     * because it is the [[Consent Record]]'s timestamp — there is no second
-     * one (ADR 0002, ADR 0032).
+     * because it anchors first-capture retention. JourneyCapture owns accepted
+     * submissions and their separate consent timestamps (ADR 0103).
      */
     public function record(string $optinId, Submission $submission): Lead
     {
@@ -126,7 +126,7 @@ final class LeadRepository
             // column is a JSON OBJECT of captured values and #25's export
             // reads it as one — a row that is silently a different JSON type
             // from its neighbours is the kind of thing found much later.
-            'fields' => (string) wp_json_encode((object) $lead->fields),
+            'fields' => (string) wp_json_encode(['answers' => (object) $lead->fields, 'capture' => (object) $lead->capture]),
             'created_at' => $lead->createdAt,
         ]);
 

@@ -107,7 +107,9 @@ final class PushWorker
             return;
         }
 
-        $subject = PushSubject::of($lead);
+        $snapshot = $lead->submission($job->submissionId);
+        if ($snapshot === null) { return; }
+        $subject = PushSubject::of($snapshot);
         $credentials = $this->connections->credentialsFor($destination);
         $result = $type->push($subject, new PushContext(
             // One name, by primary key. An Optin is never hard-deleted, so

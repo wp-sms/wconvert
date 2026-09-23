@@ -1,9 +1,10 @@
+import { treeFixture } from '../../../tests/js/support/journey';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { selectAutomatic, showAutomatic } from '../../modules/inline-placement/loader';
 import type { PayloadEntry } from '@loader/types';
 
 const entry = (id: string, priority = 0): PayloadEntry => ({ id, display_type: 'inline', priority,
-  triggers: [{ type: 'page_load' }], conditions: [], template: { tokens: {}, tree: { steps: [{ type: 'stack', children: [] }] } },
+  triggers: [{ type: 'page_load' }], conditions: [], template: { tokens: {}, tree: treeFixture({ steps: [{ type: 'stack', children: [] }] }) },
   ...{ inline_placement: { position: 'after_content' } },
 });
 afterEach(() => { document.body.innerHTML = ''; });

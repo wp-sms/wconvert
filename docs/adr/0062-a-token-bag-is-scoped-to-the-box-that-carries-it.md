@@ -1,5 +1,7 @@
 # A token bag is scoped to the box that carries it
 
+**Current budget amendment — [ADR 0103](0103-progressive-capture-keeps-one-lead-per-journey.md):** The page payload cap is 2,560 B gzip (per-design 1,280 B). Free loaders remain 14,012 B; paid loaders cap at 19,456 B. Earlier measurements below are historical. All remain hard checks.
+
 Any layout node may re-declare the design's tokens for itself and everything
 inside it. The **names stay closed**; what is new is an answer to *where*.
 

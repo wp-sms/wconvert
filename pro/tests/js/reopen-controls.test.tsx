@@ -1,3 +1,4 @@
+import { treeFixture } from '../../../tests/js/support/journey';
 import { useState } from 'react';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -6,7 +7,7 @@ import ReopenPreview from '../../modules/display-types/admin/ReopenPreview';
 import ReopenSettings from '../../modules/display-types/admin/ReopenSettings';
 import { ReopenSettings as EditionSettings } from '@/reopenControls';
 
-const template = { tokens: {}, tree: { steps: [{ type: 'stack', children: [{ type: 'heading', text: 'Offer' }] }] } };
+const template = { tokens: {}, tree: treeFixture({ steps: [{ type: 'stack', children: [{ type: 'heading', text: 'Offer' }] }] }) };
 beforeEach(() => vi.stubGlobal('matchMedia', () => ({ matches: false, addEventListener: vi.fn(), removeEventListener: vi.fn() })));
 afterEach(() => vi.unstubAllGlobals());
 

@@ -10,7 +10,7 @@ import { cn } from '../lib/utils';
  * cell as a label-and-value pair off `data-label`. Nothing here changes with the
  * viewport, and no JavaScript measures anything.
  *
- * **900px is the table's own number.** ADR 0038 owns 782 (the builder's floor)
+ * **900px is the table's own number.** ADR 0038 owns the adaptive editor
  * and 360 (a floor, not a breakpoint), and a table reusing either would make one
  * number mean two things. The two alternatives were refused on what they cost
  * the reader: horizontal scroll makes a lead log something you drag sideways,

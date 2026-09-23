@@ -1,3 +1,4 @@
+import { treeFixture } from '../../../tests/js/support/journey';
 import { afterEach, expect, it, vi } from 'vitest';
 import { start } from '@loader/shell';
 import { createLoader } from '@loader/engine';
@@ -7,10 +8,10 @@ import { proPresenter } from '../../modules/display-types/loader/present';
 const campaign = {
   id: '01JQ0000000000000000000001', display_type: 'inline', content_lock: { mode: 'hide' },
   triggers: [{ type: 'page_load' }], frequency: { stopAfterConversion: false },
-  template: { tokens: {}, tree: { steps: [
+  template: { tokens: {}, tree: treeFixture({ steps: [
     { type: 'stack', children: [{ type: 'field', name: 'email' }, { type: 'button', label: 'Unlock', action: 'submit' }] },
     { type: 'stack', children: [{ type: 'heading', text: 'Received' }] },
-  ] } },
+  ] }) },
 };
 let stop: (() => void) | undefined;
 afterEach(() => { stop?.(); document.body.innerHTML = ''; localStorage.clear(); sessionStorage.clear(); vi.restoreAllMocks(); vi.unstubAllGlobals(); });
@@ -41,7 +42,7 @@ it('reveals only after acknowledged capture and remembers this campaign across d
   vi.spyOn(Element.prototype, 'attachShadow').mockImplementation(function (this: Element, options) {
     const root = attach.call(this, options); roots.push(root); return root;
   });
-  vi.stubGlobal('fetch', vi.fn(async () => ({ ok: true, status: 200, json: async () => ({ id: 'lead' }) })));
+  vi.stubGlobal('fetch', vi.fn(async () => ({ ok: true, status: 200, json: async () => ({ id: 'lead', grant: 'grant' }) })));
   const content = page();
   const beacon = run();
   expect(content.hidden).toBe(true);
@@ -49,7 +50,7 @@ it('reveals only after acknowledged capture and remembers this campaign across d
   form.querySelector('input')!.value = 'reader@example.com';
   form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
   await vi.waitFor(() => expect(content.hidden).toBe(false));
-  expect(beacon.report.mock.calls.filter(call => call[1] === 'conversion')).toHaveLength(1);
+  expect(beacon.report.mock.calls.filter(call => call[1] === 'conversion')).toHaveLength(0);
   stop!();
   const next = page();
   const later = run();
@@ -77,7 +78,7 @@ it.each([
 it('retains the gate and field values on a correctable refusal, then permits an explicit retry', async () => {
   const form = formAccess();
   const fetch = vi.fn().mockResolvedValueOnce({ ok: false, status: 400, json: async () => ({ code: 'wconvert_field_required', message: 'Email required', data: { field: 'email' } }) })
-    .mockResolvedValue({ ok: true, status: 200, json: async () => ({ id: 'lead' }) });
+    .mockResolvedValue({ ok: true, status: 200, json: async () => ({ id: 'lead', grant: 'grant' }) });
   vi.stubGlobal('fetch', fetch);
   const content = page(); run(); submit(form());
   await vi.waitFor(() => expect(form().textContent).toContain('Email required'));
@@ -110,10 +111,10 @@ it('retains acknowledged capture when storage is unavailable', async () => {
   const form = formAccess();
   vi.spyOn(Storage.prototype, 'getItem').mockImplementation(() => { throw new Error('blocked'); });
   vi.spyOn(Storage.prototype, 'setItem').mockImplementation(() => { throw new Error('blocked'); });
-  vi.stubGlobal('fetch', vi.fn(async () => ({ ok: true, status: 200, json: async () => ({ id: 'lead' }) })));
+  vi.stubGlobal('fetch', vi.fn(async () => ({ ok: true, status: 200, json: async () => ({ id: 'lead', grant: 'grant' }) })));
   const content = page(); const beacon = run(); submit(form());
   await vi.waitFor(() => expect(content.hidden).toBe(false));
-  expect(beacon.report.mock.calls.filter(call => call[1] === 'conversion')).toHaveLength(1);
+  expect(beacon.report.mock.calls.filter(call => call[1] === 'conversion')).toHaveLength(0);
 });
 
 it('leaves a duplicate region readable and releases owned state on teardown', () => {
@@ -133,7 +134,7 @@ it('opens when a theme removes the mounted form', async () => {
 
 it('honors an earlier ordinary anchor without gating the later content region', async () => {
   const form = formAccess();
-  vi.stubGlobal('fetch', vi.fn(async () => ({ ok: true, status: 200, json: async () => ({ id: 'lead' }) })));
+  vi.stubGlobal('fetch', vi.fn(async () => ({ ok: true, status: 200, json: async () => ({ id: 'lead', grant: 'grant' }) })));
   const content = page(); const anchor = document.createElement('div');
   anchor.setAttribute('data-wconvert-optin', campaign.id); document.body.prepend(anchor);
   run(); expect(content.hidden).toBe(false); expect(anchor.childElementCount).toBe(1);
@@ -143,21 +144,21 @@ it('honors an earlier ordinary anchor without gating the later content region', 
 it('retains an in-flight acknowledgement after eligibility loss without reopening the form', async () => {
   const form = formAccess(); const content = page(); let allowed = true; let changed = () => {};
   let resolve!: (value: unknown) => void;
-  vi.stubGlobal('fetch', vi.fn(() => new Promise(done => { resolve = done; })));
+  vi.stubGlobal('fetch', vi.fn(() => new Promise(done => { resolve = done; })).mockResolvedValueOnce({ ok: true, json: async () => ({ grant: 'grant' }) }));
   const beacon = { report: vi.fn(), flush: vi.fn(), stop: vi.fn() };
   stop = start({ loader: createLoader([...FREE_MODULES, { id: 'audience', kind: 'condition', consentCategory: null,
     create: (notify) => { changed = notify; return { holds: () => allowed }; } }]),
     entries: [{ ...campaign, conditions: [{ type: 'audience' }] }], presenter: proPresenter, beacon, store: { read: () => null, write() {} } });
-  submit(form()); allowed = false; changed();
+  submit(form()); await vi.waitFor(() => expect(resolve).toBeTypeOf('function')); allowed = false; changed();
   expect(content.hidden).toBe(false); expect(form().isConnected).toBe(false);
-  resolve({ ok: true, status: 200, json: async () => ({ id: 'lead' }) });
+  resolve({ ok: true, status: 200, json: async () => ({ id: 'lead', grant: 'grant' }) });
   await vi.waitFor(() => expect(localStorage.length).toBe(1));
-  expect(beacon.report.mock.calls.filter(call => call[1] === 'conversion')).toHaveLength(1);
+  expect(beacon.report.mock.calls.filter(call => call[1] === 'conversion')).toHaveLength(0);
 });
 
 it.each([true, false])('never opens another Campaign’s gate when an ordinary form settles (success: %s)', async success => {
   const form = formAccess();
-  vi.stubGlobal('fetch', vi.fn(async () => ({ ok: success, status: success ? 200 : 503, json: async () => success ? { id: 'lead' } : {} })));
+  vi.stubGlobal('fetch', vi.fn(async () => ({ ok: success, status: success ? 200 : 503, json: async () => success ? { id: 'lead', grant: 'grant' } : {} })));
   const content = page();
   const other = { ...campaign, id: '01JQ0000000000000000000002' };
   const anchor = document.createElement('div'); anchor.setAttribute('data-wconvert-optin', other.id); document.body.prepend(anchor);

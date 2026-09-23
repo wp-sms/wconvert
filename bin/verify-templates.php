@@ -370,8 +370,8 @@ function lintFile(string $file, string $label, TemplateVocabulary $vocabulary, T
     $normalized = $vocabulary->normalize($decoded);
 
     diffNodes(
-        array_values(is_array($decoded['tree']['steps'] ?? null) ? $decoded['tree']['steps'] : []),
-        $normalized['tree']['steps'],
+        array_column(is_array($decoded['tree']['steps'] ?? null) ? $decoded['tree']['steps'] : [], 'content'),
+        array_column($normalized['tree']['steps'], 'content'),
         'steps',
         $label,
         $lint
@@ -400,13 +400,8 @@ function lintFile(string $file, string $label, TemplateVocabulary $vocabulary, T
         $lint->fault($label, 'offers two converting acts — a submit AND a link. An Optin has exactly one');
     } elseif ($acts === []) {
         $lint->fault($label, 'offers no converting act, so an Optin on it would report zero forever');
-    } elseif ($steps !== $acts[0]->steps()) {
-        $lint->fault($label, sprintf(
-            'converts on a %s, which takes %d step(s), and has %d',
-            $acts[0]->value,
-            $acts[0]->steps(),
-            $steps
-        ));
+    } elseif (($issue = \WConvert\Template\CaptureJourney::issue($normalized['tree'])) !== null) {
+        $lint->fault($label, 'Invalid capture journey: ' . $issue);
     }
 }
 

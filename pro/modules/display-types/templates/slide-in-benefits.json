@@ -25,121 +25,145 @@
   "tree": {
     "steps": [
       {
-        "type": "stack",
-        "children": [
-          {
-            "type": "heading",
-            "id": "n1",
-            "role": "headline",
-            "text": "A better Friday read"
-          },
-          {
-            "type": "stack",
-            "children": [
-              {
-                "type": "row",
-                "children": [
-                  {
-                    "type": "icon",
-                    "id": "n2",
-                    "name": "truck"
-                  },
-                  {
-                    "type": "text",
-                    "id": "n3",
-                    "role": "body",
-                    "text": "One considered story"
-                  }
-                ]
-              },
-              {
-                "type": "row",
-                "children": [
-                  {
-                    "type": "icon",
-                    "id": "n4",
-                    "name": "clock"
-                  },
-                  {
-                    "type": "text",
-                    "id": "n5",
-                    "role": "body",
-                    "text": "One practical idea"
-                  }
-                ]
-              },
-              {
-                "type": "row",
-                "children": [
-                  {
-                    "type": "icon",
-                    "id": "n6",
-                    "name": "check"
-                  },
-                  {
-                    "type": "text",
-                    "id": "n7",
-                    "role": "body",
-                    "text": "One useful resource"
-                  }
-                ]
-              }
-            ]
-          },
-          {
-            "type": "divider",
-            "id": "n8"
-          },
-          {
-            "type": "field",
-            "id": "n9",
-            "name": "email",
-            "label": "Email address",
-            "placeholder": "you@example.com",
-            "required": true
-          },
-          {
-            "type": "button",
-            "id": "n10",
-            "role": "cta_label",
-            "label": "Send me the Friday note",
-            "action": "submit"
-          },
-          {
-            "type": "consent",
-            "id": "n11",
-            "role": "consent_text",
-            "hidden": true,
-            "text": "Email me offers and news. %s",
-            "link": {
-              "label": "Privacy Policy"
+        "id": "s1",
+        "name": "Details",
+        "kind": "input",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "heading",
+              "id": "n1",
+              "role": "headline",
+              "text": "A better Friday read"
             },
-            "tokens": {
-              "text-size": "1.125rem"
+            {
+              "type": "stack",
+              "children": [
+                {
+                  "type": "row",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "n2",
+                      "name": "truck"
+                    },
+                    {
+                      "type": "text",
+                      "id": "n3",
+                      "role": "body",
+                      "text": "One considered story"
+                    }
+                  ]
+                },
+                {
+                  "type": "row",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "n4",
+                      "name": "clock"
+                    },
+                    {
+                      "type": "text",
+                      "id": "n5",
+                      "role": "body",
+                      "text": "One practical idea"
+                    }
+                  ]
+                },
+                {
+                  "type": "row",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "n6",
+                      "name": "check"
+                    },
+                    {
+                      "type": "text",
+                      "id": "n7",
+                      "role": "body",
+                      "text": "One useful resource"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "divider",
+              "id": "n8"
+            },
+            {
+              "type": "field",
+              "id": "n9",
+              "name": "email",
+              "label": "Email address",
+              "placeholder": "you@example.com",
+              "required": true
+            },
+            {
+              "type": "button",
+              "id": "n10",
+              "role": "cta_label",
+              "label": "Send me the Friday note",
+              "action": "submit",
+              "submission": "primary"
+            },
+            {
+              "type": "consent",
+              "id": "n11",
+              "role": "consent_text",
+              "hidden": true,
+              "text": "Email me offers and news. %s",
+              "link": {
+                "label": "Privacy Policy"
+              },
+              "tokens": {
+                "text-size": "1.125rem"
+              }
             }
-          }
-        ]
+          ]
+        }
       },
       {
-        "type": "stack",
-        "children": [
-          {
-            "type": "icon",
-            "id": "n14",
-            "name": "check"
-          },
-          {
-            "type": "heading",
-            "id": "n12",
-            "role": "success_headline",
-            "text": "Thank you"
-          },
-          {
-            "type": "text",
-            "id": "n13",
-            "role": "success_body",
-            "text": "We have received your request for occasional updates."
-          }
+        "id": "s2",
+        "name": "Received",
+        "kind": "acknowledgement",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "icon",
+              "id": "n14",
+              "name": "check"
+            },
+            {
+              "type": "heading",
+              "id": "n12",
+              "role": "success_headline",
+              "text": "Thank you"
+            },
+            {
+              "type": "text",
+              "id": "n13",
+              "role": "success_body",
+              "text": "We have received your request for occasional updates."
+            }
+          ]
+        }
+      }
+    ],
+    "v": 2,
+    "submissions": [
+      {
+        "id": "primary",
+        "required": true,
+        "fields": [
+          "n9"
+        ],
+        "consents": [
+          "n11"
         ]
       }
     ]

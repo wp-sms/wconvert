@@ -1,8 +1,7 @@
 import type { OptinControls, PayloadEntry, Presenter } from './types';
 import type { Mounted } from '@renderer/mount';
 import { mount } from '@renderer/mount';
-import { bindCapture } from './capture';
-import { captureEndpoint } from './payload';
+import { bindJourney } from './journey';
 import { isOverlay } from './decide';
 
 /**
@@ -72,7 +71,7 @@ export const templatePresenter: Presenter = {
 
     mounted.show();
 
-    captureInto(mounted, entry.id, controls);
+    captureInto(mounted, entry, controls);
 
     // **An Impression has two moments and only a renderer can tell them
     // apart.** For the three overlays it is the moment it is shown, because
@@ -106,22 +105,8 @@ export const templatePresenter: Presenter = {
  * never reaches this at all — its single step holds no form, so nothing it
  * renders can submit.
  */
-export function captureInto(mounted: Mounted, optinId: string, controls: OptinControls): void {
-  if (mounted.root === null) {
-    return;
-  }
-
-  bindCapture(mounted.root, {
-    optinId,
-    endpoint: captureEndpoint(),
-    onCaptured: () => {
-      controls.convert();
-      // **Terminal is structural — it is the LAST step** — rather than a flag,
-      // so there is no second spelling of the same fact to keep in step. A
-      // step index past the end renders an empty root, so the floor matters.
-      mounted.showStep(Math.max(mounted.steps - 1, 0));
-    },
-  });
+export function captureInto(mounted: Mounted, entry: PayloadEntry, controls: OptinControls): void {
+  bindJourney(mounted, entry, { onCaptured: () => controls.convert(), onDismiss: () => controls.dismiss() });
 }
 
 function anchorFor(id: string): Element | null {

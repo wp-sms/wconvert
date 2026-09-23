@@ -3,7 +3,7 @@
 /**
  * verify-lead-log.php — the lead log's SQL, against a real database.
  *
- *     wp eval-file bin/verify-lead-log.php
+ *     wp eval-file bin/verify-lead-log.php --use-include
  *
  * Exit 0 = every check passed, 1 = a check failed, 2 = it declined to run.
  *
@@ -46,7 +46,7 @@ use WConvert\Support\Ulid;
 use WConvert\Template\TemplateVocabulary;
 
 if (!defined('ABSPATH')) {
-    fwrite(STDERR, "Run this through WordPress: wp eval-file bin/verify-lead-log.php\n");
+    fwrite(STDERR, "Run this through WordPress: wp eval-file bin/verify-lead-log.php --use-include\n");
 
     exit(2);
 }
@@ -121,6 +121,10 @@ $sarahFirst = $leads->record($optinId, new Submission('sarah@example.com', null,
 $bob = $leads->record($otherOptinId, new Submission('bob@example.com', '+442071234567', []));
 $phoneOnly = $leads->record($optinId, new Submission(null, '+12025551234', ['consent_text' => 'Email me offers.']));
 $sarahSecond = $leads->record($optinId, new Submission('sarah@example.com', null, []));
+
+// Paging intentionally excludes the current millisecond. Let the final fixture
+// enter that window before comparing grouped and ungrouped reads.
+usleep(2000);
 
 echo "The grouping view\n";
 

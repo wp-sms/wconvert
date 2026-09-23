@@ -20,10 +20,10 @@ final class OutcomeContractTest extends TestCase
     public function testAnSmsGoalNeedsARequiredPhoneOnTheSubmittingScreen(): void
     {
         $contract = Goal::GrowSmsList->outcome();
-        $form = static fn (array $fields): array => ['template' => ['tree' => ['steps' => [
+        $form = static fn (array $fields): array => ['template' => ['tree' => \WConvert\Tests\Unit\Support\JourneyFixture::tree(['steps' => [
             ['type' => 'stack', 'children' => [...$fields, ['type' => 'button', 'action' => 'submit']]],
             ['type' => 'stack', 'children' => []],
-        ]]]];
+        ]])]];
 
         self::assertNotNull($contract->designIssue($form([['type' => 'field', 'name' => 'email', 'required' => true]])));
         self::assertNotNull($contract->designIssue($form([['type' => 'field', 'name' => 'phone', 'required' => false]])));

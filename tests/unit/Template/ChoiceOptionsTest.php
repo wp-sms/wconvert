@@ -36,13 +36,13 @@ final class ChoiceOptionsTest extends TestCase
     {
         $vocabulary = TemplateVocabulary::fromManifest(dirname(__DIR__, 3));
         $options = [['value' => 'repair', 'label' => 'Repair']];
-        $template = $vocabulary->normalize(['tree' => ['steps' => [[
+        $template = $vocabulary->normalize(['tree' => \WConvert\Tests\Unit\Support\JourneyFixture::tree(['steps' => [[
             'type' => 'stack', 'children' => [
                 ['type' => 'field', 'name' => 'email', 'options' => $options],
                 ['type' => 'field', 'name' => 'interest', 'options' => $options],
             ],
-        ]]]]);
-        $fields = $template['tree']['steps'][0]['children'];
+        ]]])]);
+        $fields = $template['tree']['steps'][0]['content']['children'];
         self::assertArrayNotHasKey('options', $fields[0]);
         self::assertSame($options, $fields[1]['options']);
     }

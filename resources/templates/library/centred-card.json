@@ -24,85 +24,109 @@
   "tree": {
     "steps": [
       {
-        "type": "stack",
-        "children": [
-          {
-            "type": "heading",
-            "id": "n1",
-            "role": "headline",
-            "text": "Five good reads. Every Friday."
-          },
-          {
-            "type": "text",
-            "id": "n2",
-            "role": "body",
-            "text": "A short selection of stories worth your time. Free, once a week."
-          },
-          {
-            "type": "stack",
-            "children": [
-              {
-                "type": "field",
-                "id": "n3",
-                "name": "email",
-                "label": "Email address",
-                "placeholder": "you@example.com",
-                "required": true
-              },
-              {
-                "type": "button",
-                "id": "n4",
-                "role": "cta_label",
-                "label": "Send me the Friday reads",
-                "action": "submit"
-              }
-            ]
-          },
-          {
-            "type": "consent",
-            "id": "n5",
-            "role": "consent_text",
-            "hidden": true,
-            "text": "Send me the Friday reads. %s",
-            "link": {
-              "label": "Privacy Policy"
+        "id": "s1",
+        "name": "Details",
+        "kind": "input",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "heading",
+              "id": "n1",
+              "role": "headline",
+              "text": "Five good reads. Every Friday."
             },
-            "tokens": {
-              "text-size": "1.125rem"
+            {
+              "type": "text",
+              "id": "n2",
+              "role": "body",
+              "text": "A short selection of stories worth your time. Free, once a week."
+            },
+            {
+              "type": "stack",
+              "children": [
+                {
+                  "type": "field",
+                  "id": "n3",
+                  "name": "email",
+                  "label": "Email address",
+                  "placeholder": "you@example.com",
+                  "required": true
+                },
+                {
+                  "type": "button",
+                  "id": "n4",
+                  "role": "cta_label",
+                  "label": "Send me the Friday reads",
+                  "action": "submit",
+                  "submission": "primary"
+                }
+              ]
+            },
+            {
+              "type": "consent",
+              "id": "n5",
+              "role": "consent_text",
+              "hidden": true,
+              "text": "Send me the Friday reads. %s",
+              "link": {
+                "label": "Privacy Policy"
+              },
+              "tokens": {
+                "text-size": "1.125rem"
+              }
+            },
+            {
+              "type": "text",
+              "id": "n6",
+              "role": "fine_print",
+              "text": "One email each Friday. Unsubscribe any time.",
+              "size": "s",
+              "tokens": {
+                "text-size": "1.167rem"
+              }
             }
-          },
-          {
-            "type": "text",
-            "id": "n6",
-            "role": "fine_print",
-            "text": "One email each Friday. Unsubscribe any time.",
-            "size": "s",
-            "tokens": {
-              "text-size": "1.167rem"
-            }
-          }
-        ]
+          ]
+        }
       },
       {
-        "type": "stack",
-        "children": [
-          {
-            "type": "icon",
-            "id": "n9",
-            "name": "check"
-          },
-          {
-            "type": "heading",
-            "id": "n7",
-            "role": "success_headline",
-            "text": "Thank you"
-          },
-          {
-            "type": "text",
-            "id": "n8",
-            "role": "success_body",
-            "text": "We have received your request for the Friday reads."
-          }
+        "id": "s2",
+        "name": "Received",
+        "kind": "acknowledgement",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "icon",
+              "id": "n9",
+              "name": "check"
+            },
+            {
+              "type": "heading",
+              "id": "n7",
+              "role": "success_headline",
+              "text": "Thank you"
+            },
+            {
+              "type": "text",
+              "id": "n8",
+              "role": "success_body",
+              "text": "We have received your request for the Friday reads."
+            }
+          ]
+        }
+      }
+    ],
+    "v": 2,
+    "submissions": [
+      {
+        "id": "primary",
+        "required": true,
+        "fields": [
+          "n3"
+        ],
+        "consents": [
+          "n5"
         ]
       }
     ]

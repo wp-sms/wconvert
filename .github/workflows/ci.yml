@@ -137,6 +137,10 @@ jobs:
               - 'phpunit.xml*'
               - 'bin/**'
               - 'tests/**'
+              - 'resources/**/*.json'
+              - 'pro/resources/**/*.json'
+              - 'pro/modules/**/*.json'
+              - 'tiers.json'
               - '.github/workflows/php-tests.yml'
               - '.github/workflows/ci.yml'
             js:
@@ -156,7 +160,9 @@ jobs:
               - 'vitest.config.ts'
               - 'resources/**'
               - 'pro/resources/**'
+              - 'pro/modules/**'
               - 'pro/tests/**'
+              - 'tiers.json'
               - '.github/workflows/frontend-tests.yml'
               - '.github/workflows/ci.yml'
 

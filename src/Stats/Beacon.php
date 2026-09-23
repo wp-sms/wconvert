@@ -111,6 +111,8 @@ final class Beacon
 
         $stat = StatKind::fromBeacon($kind);
 
-        return $stat === null ? null : new BeaconEvent($optinId, $stat);
+        $scope = $candidate['scope'] ?? '';
+        if (!is_string($scope) || strlen($scope) > 160) { return null; }
+        return $stat === null ? null : new BeaconEvent($optinId, $stat, $scope);
     }
 }

@@ -76,7 +76,7 @@ export function withPolicyLink(tree: TemplateTree, url: string | undefined): Tem
     return tree;
   }
 
-  const steps = tree.steps.map((step) => resolve(step, url));
+  const steps = tree.steps.map((step) => ({ ...step, content: resolve(step.content, url) }));
 
   return steps.every((step, index) => step === tree.steps[index]) ? tree : { ...tree, steps };
 }

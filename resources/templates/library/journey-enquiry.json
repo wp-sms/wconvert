@@ -1,0 +1,146 @@
+{
+  "id": "journey-enquiry",
+  "name": "A short enquiry",
+  "display_type": "inline",
+  "tier": "free",
+  "tokens": {
+    "width": "28rem",
+    "pad": "1.5rem",
+    "gap": "1rem",
+    "align": "start"
+  },
+  "tree": {
+    "v": 2,
+    "submissions": [
+      {
+        "id": "enquiry-request",
+        "required": true,
+        "fields": [
+          "n2",
+          "n5",
+          "n6"
+        ],
+        "consents": []
+      }
+    ],
+    "steps": [
+      {
+        "id": "request",
+        "name": "Your request",
+        "kind": "input",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "heading",
+              "id": "n1",
+              "role": "headline",
+              "text": "Tell us what you need"
+            },
+            {
+              "type": "field",
+              "id": "n2",
+              "name": "interest",
+              "label": "What can we help with?",
+              "required": true,
+              "options": [
+                {
+                  "value": "consultation",
+                  "label": "A consultation"
+                },
+                {
+                  "value": "quote",
+                  "label": "A quote"
+                }
+              ]
+            },
+            {
+              "type": "button",
+              "id": "n3",
+              "role": "next_label",
+              "label": "Continue",
+              "action": "next"
+            }
+          ]
+        }
+      },
+      {
+        "id": "details",
+        "name": "Contact details",
+        "kind": "input",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "heading",
+              "id": "n4",
+              "role": "headline",
+              "text": "How can we contact you?"
+            },
+            {
+              "type": "field",
+              "id": "n5",
+              "name": "name",
+              "label": "Your name",
+              "required": false
+            },
+            {
+              "type": "field",
+              "id": "n6",
+              "name": "email",
+              "label": "Email address",
+              "required": true
+            },
+            {
+              "type": "text",
+              "id": "n7",
+              "role": "fine_print",
+              "text": "We will use these details to respond to your request."
+            },
+            {
+              "type": "button",
+              "id": "n8",
+              "role": "back_label",
+              "label": "Back",
+              "action": "back",
+              "tokens": {
+                "accent": "transparent",
+                "accent-fg": "#475569"
+              }
+            },
+            {
+              "type": "button",
+              "id": "n9",
+              "role": "cta_label",
+              "label": "Send my enquiry",
+              "action": "submit",
+              "submission": "enquiry-request"
+            }
+          ]
+        }
+      },
+      {
+        "id": "received",
+        "name": "Acknowledgement",
+        "kind": "acknowledgement",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "heading",
+              "id": "n10",
+              "role": "success_headline",
+              "text": "Details received"
+            },
+            {
+              "type": "text",
+              "id": "n11",
+              "role": "success_body",
+              "text": "Thank you. We have received the details you submitted."
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -21,7 +21,7 @@ export interface OutcomeContract {
 export function outcomeDesignIssue(outcome: OutcomeContract, template: Template | undefined): string | null {
   const acts = template ? convertingActOf(template.tree) : [];
   if (acts.length !== 1 || acts[0] !== outcome.action) return outcome.requirement;
-  if (outcome.capture_any_of.length === 0) return !outcome.link_required || (template && hasLink(template.tree.steps[0])) ? null : outcome.requirement;
+  if (outcome.capture_any_of.length === 0) return !outcome.link_required || (template && hasLink(template.tree.steps[0]?.content)) ? null : outcome.requirement;
   return capturedFields(template).some((field) => outcome.capture_any_of.includes(field.name)
     && (outcome.capture_any_of.length > 1 || field.required)) ? null : outcome.requirement;
 }

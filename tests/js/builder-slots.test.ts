@@ -1,3 +1,4 @@
+import { treeFixture } from './support/journey';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
@@ -113,7 +114,7 @@ describe('the address a block is known by', () => {
    * by construction.
    */
   it('tells three same-named slots apart with no ordinal to keep in step', () => {
-    const three = {
+    const three = treeFixture({
       steps: [
         {
           type: 'stack',
@@ -124,7 +125,7 @@ describe('the address a block is known by', () => {
           ],
         },
       ],
-    };
+    });
     const root = render(three as never, {}, 0, { paths: true });
 
     expect(

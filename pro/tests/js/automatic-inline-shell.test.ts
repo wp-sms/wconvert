@@ -1,3 +1,4 @@
+import { treeFixture } from '../../../tests/js/support/journey';
 import { afterEach, expect, it } from 'vitest';
 import { start } from '@loader/shell';
 import { explain } from '@loader/inspect/explain';
@@ -6,7 +7,7 @@ import { BASIC_MODULES } from '../../resources/loader/src/modules';
 import { automaticPlacementState } from '../../modules/inline-placement/loader';
 import type { PayloadEntry } from '@loader/types';
 
-const template = { tokens: {}, tree: { steps: [{ type: 'stack', children: [{ type: 'heading', text: 'Hello' }] }] } };
+const template = { tokens: {}, tree: treeFixture({ steps: [{ type: 'stack', children: [{ type: 'heading', text: 'Hello' }] }] }) };
 const entry = (id: string, extra: Partial<PayloadEntry> = {}): PayloadEntry => ({ id, display_type: 'inline', template,
   triggers: [{ type: 'page_load' }], conditions: [], ...{ inline_placement: { position: 'after_content' } }, ...extra });
 afterEach(() => { document.querySelectorAll('dialog').forEach(dialog => dialog.close()); document.body.innerHTML = ''; });

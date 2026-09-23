@@ -5,6 +5,13 @@ WConvert records no notion of *person*. Two submissions from one human are two
 over the identifier those rows already carry — in the lead log's presentation
 only. **No person key, no person table, no column.**
 
+*Amended for progressive capture by
+[ADR 0103](0103-progressive-capture-keeps-one-lead-per-journey.md): separate
+journeys still create separate Leads. Multiple accepted submissions within one
+journey contribute to one Lead, without identifying a person across visits or
+merging rows by email or phone. The immutable-Lead references below describe
+the accepted exception; updates remain limited to that journey.*
+
 For that grouping to mean anything, `email` and `phone` are stored in
 **canonical form**: email lowercased, phone in E.164. An identifier that cannot be
 canonicalised is **rejected at submit**, synchronously.

@@ -29,166 +29,190 @@
   "tree": {
     "steps": [
       {
-        "type": "stack",
-        "children": [
-          {
-            "type": "eyebrow",
-            "id": "n1",
-            "role": "wordmark",
-            "text": "The Friday letter",
-            "tokens": {
-              "text-size": "1.0834rem"
-            }
-          },
-          {
-            "type": "heading",
-            "id": "n2",
-            "role": "headline",
-            "size": "xl",
-            "text": "One long read, every Friday"
-          },
-          {
-            "type": "grid",
-            "tokens": {
-              "gap": "1rem"
-            },
-            "children": [
-              {
-                "type": "row",
-                "tokens": {
-                  "gap": "0.5rem"
-                },
-                "children": [
-                  {
-                    "type": "icon",
-                    "id": "n3",
-                    "name": "clock"
-                  },
-                  {
-                    "type": "text",
-                    "id": "n4",
-                    "role": "body",
-                    "size": "s",
-                    "text": "Eight minutes, no more.",
-                    "tokens": {
-                      "text-size": "1.167rem"
-                    }
-                  }
-                ]
-              },
-              {
-                "type": "row",
-                "tokens": {
-                  "gap": "0.5rem"
-                },
-                "children": [
-                  {
-                    "type": "icon",
-                    "id": "n5",
-                    "name": "gift"
-                  },
-                  {
-                    "type": "text",
-                    "id": "n6",
-                    "role": "body",
-                    "size": "s",
-                    "text": "One idea to try.",
-                    "tokens": {
-                      "text-size": "1.167rem"
-                    }
-                  }
-                ]
-              },
-              {
-                "type": "row",
-                "tokens": {
-                  "gap": "0.5rem"
-                },
-                "children": [
-                  {
-                    "type": "icon",
-                    "id": "n7",
-                    "name": "check"
-                  },
-                  {
-                    "type": "text",
-                    "id": "n8",
-                    "role": "body",
-                    "size": "s",
-                    "text": "One click to leave.",
-                    "tokens": {
-                      "text-size": "1.167rem"
-                    }
-                  }
-                ]
+        "id": "s1",
+        "name": "Details",
+        "kind": "input",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "eyebrow",
+              "id": "n1",
+              "role": "wordmark",
+              "text": "The Friday letter",
+              "tokens": {
+                "text-size": "1.0834rem"
               }
-            ]
-          },
-          {
-            "type": "divider",
-            "id": "n9"
-          },
-          {
-            "type": "row",
-            "children": [
-              {
-                "type": "field",
-                "id": "n10",
-                "name": "email",
-                "label": "Email address",
-                "placeholder": "you@example.com",
-                "required": true
-              },
-              {
-                "type": "button",
-                "id": "n11",
-                "role": "cta_label",
-                "label": "Send me the Friday letter",
-                "action": "submit"
-              }
-            ]
-          },
-          {
-            "type": "consent",
-            "id": "n12",
-            "role": "consent_text",
-            "hidden": true,
-            "text": "Email me offers and news. %s",
-            "link": {
-              "label": "Privacy Policy"
             },
-            "tokens": {
-              "text-size": "1.125rem"
+            {
+              "type": "heading",
+              "id": "n2",
+              "role": "headline",
+              "size": "xl",
+              "text": "One long read, every Friday"
+            },
+            {
+              "type": "grid",
+              "tokens": {
+                "gap": "1rem"
+              },
+              "children": [
+                {
+                  "type": "row",
+                  "tokens": {
+                    "gap": "0.5rem"
+                  },
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "n3",
+                      "name": "clock"
+                    },
+                    {
+                      "type": "text",
+                      "id": "n4",
+                      "role": "body",
+                      "size": "s",
+                      "text": "Eight minutes, no more.",
+                      "tokens": {
+                        "text-size": "1.167rem"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "row",
+                  "tokens": {
+                    "gap": "0.5rem"
+                  },
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "n5",
+                      "name": "gift"
+                    },
+                    {
+                      "type": "text",
+                      "id": "n6",
+                      "role": "body",
+                      "size": "s",
+                      "text": "One idea to try.",
+                      "tokens": {
+                        "text-size": "1.167rem"
+                      }
+                    }
+                  ]
+                },
+                {
+                  "type": "row",
+                  "tokens": {
+                    "gap": "0.5rem"
+                  },
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "n7",
+                      "name": "check"
+                    },
+                    {
+                      "type": "text",
+                      "id": "n8",
+                      "role": "body",
+                      "size": "s",
+                      "text": "One click to leave.",
+                      "tokens": {
+                        "text-size": "1.167rem"
+                      }
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "divider",
+              "id": "n9"
+            },
+            {
+              "type": "row",
+              "children": [
+                {
+                  "type": "field",
+                  "id": "n10",
+                  "name": "email",
+                  "label": "Email address",
+                  "placeholder": "you@example.com",
+                  "required": true
+                },
+                {
+                  "type": "button",
+                  "id": "n11",
+                  "role": "cta_label",
+                  "label": "Send me the Friday letter",
+                  "action": "submit",
+                  "submission": "primary"
+                }
+              ]
+            },
+            {
+              "type": "consent",
+              "id": "n12",
+              "role": "consent_text",
+              "hidden": true,
+              "text": "Email me offers and news. %s",
+              "link": {
+                "label": "Privacy Policy"
+              },
+              "tokens": {
+                "text-size": "1.125rem"
+              }
+            },
+            {
+              "type": "text",
+              "id": "n13",
+              "role": "fine_print",
+              "size": "s",
+              "text": "No spam, and you can unsubscribe at any time.",
+              "tokens": {
+                "text-size": "1.167rem"
+              }
             }
-          },
-          {
-            "type": "text",
-            "id": "n13",
-            "role": "fine_print",
-            "size": "s",
-            "text": "No spam, and you can unsubscribe at any time.",
-            "tokens": {
-              "text-size": "1.167rem"
-            }
-          }
-        ]
+          ]
+        }
       },
       {
-        "type": "stack",
-        "children": [
-          {
-            "type": "heading",
-            "id": "n14",
-            "role": "success_headline",
-            "size": "xl",
-            "text": "Request received"
-          },
-          {
-            "type": "text",
-            "id": "n15",
-            "role": "success_body",
-            "text": "Thank you for asking to receive the letter."
-          }
+        "id": "s2",
+        "name": "Received",
+        "kind": "acknowledgement",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "heading",
+              "id": "n14",
+              "role": "success_headline",
+              "size": "xl",
+              "text": "Request received"
+            },
+            {
+              "type": "text",
+              "id": "n15",
+              "role": "success_body",
+              "text": "Thank you for asking to receive the letter."
+            }
+          ]
+        }
+      }
+    ],
+    "v": 2,
+    "submissions": [
+      {
+        "id": "primary",
+        "required": true,
+        "fields": [
+          "n10"
+        ],
+        "consents": [
+          "n12"
         ]
       }
     ]

@@ -19,7 +19,7 @@ final class PackValidator
 {
     public const MAX_BYTES = 262144;
     public const MAX_TEMPLATES = 12;
-    public const CAPABILITIES = ['template-tree:1', 'success-actions:1', 'enquiry-choice:1', 'campaign-starts:1'];
+    public const CAPABILITIES = ['template-tree:2', 'success-actions:1', 'enquiry-choice:1', 'campaign-starts:1', 'capture-journey:1'];
 
     /** @param array<string, mixed> $manifest */
     public function __construct(private readonly array $manifest, private readonly TemplateVocabulary $vocabulary)
@@ -58,7 +58,7 @@ final class PackValidator
         $templates = $pack['templates'] ?? null;
         self::check(is_array($templates) && array_is_list($templates) && count($templates) > 0 && count($templates) <= self::MAX_TEMPLATES, __('This pack has an invalid design list.', 'wconvert'));
         $ids = [];
-        $requiredCapabilities = ['template-tree:1'];
+        $requiredCapabilities = ['template-tree:2', 'capture-journey:1'];
         foreach ($templates as $position => $template) {
             self::check(is_array($template), __('This pack contains an invalid design.', 'wconvert'));
             $this->keys($template, ['id', 'name', 'display_type', 'tier', 'tree', 'tokens']);
@@ -69,17 +69,24 @@ final class PackValidator
             $this->bag($template['tokens'] ?? []);
             $tree = $template['tree'] ?? null;
             self::check(is_array($tree), __('This design has no tree.', 'wconvert'));
-            $this->keys($tree, ['v', 'steps']);
-            self::check(($tree['v'] ?? TemplateTree::VERSION) === TemplateTree::VERSION, __('Update required: this design uses a newer vocabulary.', 'wconvert'));
-            self::check(is_array($tree['steps'] ?? null) && array_is_list($tree['steps']) && count($tree['steps']) >= 1 && count($tree['steps']) <= 2, __('This design has an invalid screen list.', 'wconvert'));
+            $this->keys($tree, ['v', 'steps', 'submissions']);
+            self::check(($tree['v'] ?? null) === TemplateTree::VERSION, __('Update required: this design uses a newer vocabulary.', 'wconvert'));
+            self::check(is_array($tree['steps'] ?? null) && array_is_list($tree['steps']) && count($tree['steps']) >= 1 && count($tree['steps']) <= 7, __('This design has an invalid screen list.', 'wconvert'));
             $nodeIds = [];
             $count = 0;
             foreach ($tree['steps'] as $step) {
-                $this->node($step, 0, $nodeIds, $count, $requiredCapabilities);
+                self::check(is_array($step), __('This design has an invalid screen.', 'wconvert'));
+                $this->words($step['name'] ?? null, 120);
+                $this->keys($step, ['id', 'name', 'kind', 'content']);
+                $this->node($step['content'] ?? null, 0, $nodeIds, $count, $requiredCapabilities);
+            }
+            foreach (is_array($tree['submissions'] ?? null) ? $tree['submissions'] : [] as $submission) {
+                self::check(is_array($submission), __('This design has an invalid submission.', 'wconvert'));
+                $this->keys($submission, ['id', 'required', 'fields', 'consents']);
             }
             self::check(!in_array(TemplateForm::issue($template), ['identifier', 'choices'], true), __('This design needs a usable email or phone capture form.', 'wconvert'));
             $acts = ConvertingAct::offeredIn($tree);
-            self::check(count($acts) === 1 && count($tree['steps']) === $acts[0]->steps(), __('This design does not provide one valid conversion flow.', 'wconvert'));
+            self::check(count($acts) === 1 && \WConvert\Template\CaptureJourney::issue($tree) === null, __('This design does not provide one valid conversion flow.', 'wconvert'));
             $source = new class ($template) implements TemplateSource {
                 /** @param array<string, mixed> $entry */
                 public function __construct(private readonly array $entry) {}
@@ -100,7 +107,7 @@ final class PackValidator
                 $template = array_values(array_filter($pack['templates'], static fn (array $entry): bool => $entry['id'] === $playbook['template_id']))[0];
                 $tree = \WConvert\Template\SlotRoles::bind($template['tree'], $playbook['copy'], $this->vocabulary);
                 $nodeIds = []; $count = 0;
-                foreach ($tree['steps'] as $step) $this->node($step, 0, $nodeIds, $count, $requiredCapabilities);
+                foreach ($tree['steps'] as $step) $this->node($step['content'], 0, $nodeIds, $count, $requiredCapabilities);
             }
         }
         self::check(array_diff(array_unique($requiredCapabilities), $capabilities) === [], __('This pack does not declare every capability its designs need.', 'wconvert'));

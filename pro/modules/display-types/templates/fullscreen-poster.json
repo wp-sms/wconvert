@@ -18,43 +18,50 @@
   "tree": {
     "steps": [
       {
-        "type": "stack",
-        "children": [
-          {
-            "type": "eyebrow",
-            "role": "eyebrow",
-            "text": "The new collection",
-            "id": "n1"
-          },
-          {
-            "type": "heading",
-            "role": "headline",
-            "text": "A fresh perspective.",
-            "id": "n2"
-          },
-          {
-            "type": "text",
-            "role": "body",
-            "text": "Explore the latest pieces, made for everyday living.",
-            "id": "n3"
-          },
-          {
-            "type": "button",
-            "role": "cta_label",
-            "label": "Explore the collection",
-            "action": "link",
-            "href": "https://example.com/collection",
-            "id": "n4"
-          },
-          {
-            "type": "text",
-            "role": "fine_print",
-            "text": "Explore the collection for current prices and availability.",
-            "size": "s",
-            "id": "n5"
-          }
-        ]
+        "id": "s1",
+        "name": "Offer",
+        "kind": "content",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "eyebrow",
+              "role": "eyebrow",
+              "text": "The new collection",
+              "id": "n1"
+            },
+            {
+              "type": "heading",
+              "role": "headline",
+              "text": "A fresh perspective.",
+              "id": "n2"
+            },
+            {
+              "type": "text",
+              "role": "body",
+              "text": "Explore the latest pieces, made for everyday living.",
+              "id": "n3"
+            },
+            {
+              "type": "button",
+              "role": "cta_label",
+              "label": "Explore the collection",
+              "action": "link",
+              "href": "https://example.com/collection",
+              "id": "n4"
+            },
+            {
+              "type": "text",
+              "role": "fine_print",
+              "text": "Explore the collection for current prices and availability.",
+              "size": "s",
+              "id": "n5"
+            }
+          ]
+        }
       }
-    ]
+    ],
+    "v": 2,
+    "submissions": []
   }
 }

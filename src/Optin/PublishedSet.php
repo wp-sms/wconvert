@@ -45,6 +45,15 @@ final class PublishedSet
      */
     public function replaceWith(array $set): void
     {
+        foreach ($set as $entry) {
+            $revision = $entry['payload']['capture_contract'] ?? null;
+            if (!is_string($revision)) { continue; }
+            $definition = [];
+            foreach ($entry['payload']['template']['tree']['steps'] ?? [] as $index => $screen) {
+                $definition[$screen['id']] = ['name' => $screen['name'], 'order' => $index];
+            }
+            $this->options->set('wconvert_flow_' . $entry['id'] . '_' . $revision, $definition);
+        }
         $this->options->set(self::OPTION, $set);
     }
 }

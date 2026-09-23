@@ -227,8 +227,9 @@ KEY idx_phone (phone)
 optin_id CHAR(26) NOT NULL,
 stat_date DATE NOT NULL,
 kind VARCHAR(32) NOT NULL,
+scope VARCHAR(160) NOT NULL DEFAULT '',
 count INT UNSIGNED NOT NULL DEFAULT 0,
-PRIMARY KEY  (optin_id,stat_date,kind)
+PRIMARY KEY  (optin_id,stat_date,kind,scope)
 ) {$charsetCollate};\n";
     }
 }

@@ -1,3 +1,4 @@
+import { treeFixture } from './support/journey';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Beacon, BeaconKind } from '@loader/beacon';
 import { createLoader } from '@loader/engine';
@@ -27,7 +28,7 @@ import type { PayloadEntry } from '@loader/types';
 const OPTIN = '01JQ0000000000000000000001';
 
 const TEMPLATE = {
-  tree: {
+  tree: treeFixture({
     steps: [
       {
         type: 'stack',
@@ -38,7 +39,7 @@ const TEMPLATE = {
         ],
       },
     ],
-  },
+  }),
   tokens: { bg: '#fff' },
 };
 

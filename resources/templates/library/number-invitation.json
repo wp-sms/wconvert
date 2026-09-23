@@ -28,300 +28,324 @@
   "tree": {
     "steps": [
       {
-        "type": "panel",
-        "edges": "all",
-        "tokens": {
-          "border": "#95b6b8"
-        },
-        "children": [
-          {
-            "type": "split",
-            "ratio": 0.35,
-            "start": [
-              {
-                "type": "media",
-                "tokens": {
-                  "bg": "#153f44",
-                  "fg": "#eafafa",
-                  "muted": "#c4e1dd",
-                  "pad": "2rem 1.5rem",
-                  "gap": "1.5rem",
-                  "radius": "0"
-                },
-                "narrow": {
-                  "pad": "1.25rem",
-                  "gap": "0.75rem"
-                },
-                "children": [
-                  {
-                    "type": "heading",
-                    "id": "n1",
-                    "level": 2,
-                    "size": "xs",
-                    "role": "wordmark",
-                    "text": "work / notes"
+        "id": "s1",
+        "name": "Details",
+        "kind": "input",
+        "content": {
+          "type": "panel",
+          "edges": "all",
+          "tokens": {
+            "border": "#95b6b8"
+          },
+          "children": [
+            {
+              "type": "split",
+              "ratio": 0.35,
+              "start": [
+                {
+                  "type": "media",
+                  "tokens": {
+                    "bg": "#153f44",
+                    "fg": "#eafafa",
+                    "muted": "#c4e1dd",
+                    "pad": "2rem 1.5rem",
+                    "gap": "1.5rem",
+                    "radius": "0"
                   },
-                  {
-                    "type": "stack",
-                    "tokens": {
-                      "gap": "0.4rem"
+                  "narrow": {
+                    "pad": "1.25rem",
+                    "gap": "0.75rem"
+                  },
+                  "children": [
+                    {
+                      "type": "heading",
+                      "id": "n1",
+                      "level": 2,
+                      "size": "xs",
+                      "role": "wordmark",
+                      "text": "work / notes"
                     },
-                    "children": [
-                      {
-                        "type": "heading",
-                        "id": "n2",
-                        "size": "2xl",
-                        "role": "headline",
-                        "text": "01",
-                        "narrow": {
-                          "heading-size": "1.25rem"
-                        }
+                    {
+                      "type": "stack",
+                      "tokens": {
+                        "gap": "0.4rem"
                       },
-                      {
-                        "type": "text",
-                        "id": "n3",
-                        "size": "s",
-                        "role": "body",
-                        "text": "useful idea\nevery Monday.",
-                        "tokens": {
-                          "text-size": "1.167rem"
+                      "children": [
+                        {
+                          "type": "heading",
+                          "id": "n2",
+                          "size": "2xl",
+                          "role": "headline",
+                          "text": "01",
+                          "narrow": {
+                            "heading-size": "1.25rem"
+                          }
+                        },
+                        {
+                          "type": "text",
+                          "id": "n3",
+                          "size": "s",
+                          "role": "body",
+                          "text": "useful idea\nevery Monday.",
+                          "tokens": {
+                            "text-size": "1.167rem"
+                          }
                         }
-                      }
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "id": "n5",
-                    "size": "s",
-                    "role": "fine_print",
-                    "text": "A five-minute read.",
-                    "tokens": {
-                      "text-size": "1.167rem"
-                    }
-                  }
-                ]
-              }
-            ],
-            "end": [
-              {
-                "type": "panel",
-                "tokens": {
-                  "pad": "2.62rem 1.69rem 1.75rem",
-                  "gap": "0.85rem"
-                },
-                "narrow": {
-                  "pad": "1.25rem",
-                  "gap": "0.875rem"
-                },
-                "children": [
-                  {
-                    "type": "eyebrow",
-                    "id": "n6",
-                    "role": "eyebrow",
-                    "text": "A practical Monday read",
-                    "tokens": {
-                      "text-size": "1.0834rem"
-                    }
-                  },
-                  {
-                    "type": "heading",
-                    "id": "n7",
-                    "role": "headline",
-                    "text": "Make room\nfor better work.",
-                    "narrow": {
-                      "heading-size": "1.625rem"
-                    }
-                  },
-                  {
-                    "type": "text",
-                    "id": "n8",
-                    "role": "body",
-                    "text": "Notes on focus and doing less busywork. One idea you can use each week."
-                  },
-                  {
-                    "type": "field",
-                    "id": "n9",
-                    "name": "email",
-                    "label": "Email address",
-                    "placeholder": "you@example.com",
-                    "required": true
-                  },
-                  {
-                    "type": "consent",
-                    "id": "n10",
-                    "role": "consent_text",
-                    "hidden": true,
-                    "text": "Send me the Monday note. %s",
-                    "link": {
-                      "label": "Privacy Policy"
+                      ]
                     },
-                    "tokens": {
-                      "text-size": "1.125rem"
+                    {
+                      "type": "text",
+                      "id": "n5",
+                      "size": "s",
+                      "role": "fine_print",
+                      "text": "A five-minute read.",
+                      "tokens": {
+                        "text-size": "1.167rem"
+                      }
                     }
+                  ]
+                }
+              ],
+              "end": [
+                {
+                  "type": "panel",
+                  "tokens": {
+                    "pad": "2.62rem 1.69rem 1.75rem",
+                    "gap": "0.85rem"
                   },
-                  {
-                    "type": "button",
-                    "id": "n11",
-                    "role": "cta_label",
-                    "label": "Send me Monday’s note",
-                    "action": "submit"
+                  "narrow": {
+                    "pad": "1.25rem",
+                    "gap": "0.875rem"
                   },
-                  {
-                    "type": "text",
-                    "id": "n12",
-                    "size": "s",
-                    "role": "fine_print",
-                    "text": "One email a week from work / notes. Unsubscribe at any time.",
-                    "tokens": {
-                      "text-size": "1.167rem"
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "id": "n6",
+                      "role": "eyebrow",
+                      "text": "A practical Monday read",
+                      "tokens": {
+                        "text-size": "1.0834rem"
+                      }
+                    },
+                    {
+                      "type": "heading",
+                      "id": "n7",
+                      "role": "headline",
+                      "text": "Make room\nfor better work.",
+                      "narrow": {
+                        "heading-size": "1.625rem"
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "id": "n8",
+                      "role": "body",
+                      "text": "Notes on focus and doing less busywork. One idea you can use each week."
+                    },
+                    {
+                      "type": "field",
+                      "id": "n9",
+                      "name": "email",
+                      "label": "Email address",
+                      "placeholder": "you@example.com",
+                      "required": true
+                    },
+                    {
+                      "type": "consent",
+                      "id": "n10",
+                      "role": "consent_text",
+                      "hidden": true,
+                      "text": "Send me the Monday note. %s",
+                      "link": {
+                        "label": "Privacy Policy"
+                      },
+                      "tokens": {
+                        "text-size": "1.125rem"
+                      }
+                    },
+                    {
+                      "type": "button",
+                      "id": "n11",
+                      "role": "cta_label",
+                      "label": "Send me Monday\u2019s note",
+                      "action": "submit",
+                      "submission": "primary"
+                    },
+                    {
+                      "type": "text",
+                      "id": "n12",
+                      "size": "s",
+                      "role": "fine_print",
+                      "text": "One email a week from work / notes. Unsubscribe at any time.",
+                      "tokens": {
+                        "text-size": "1.167rem"
+                      }
                     }
-                  }
-                ]
-              }
-            ],
-            "basis": "16rem"
-          }
-        ]
+                  ]
+                }
+              ],
+              "basis": "16rem"
+            }
+          ]
+        }
       },
       {
-        "type": "panel",
-        "edges": "all",
-        "tokens": {
-          "border": "#95b6b8"
-        },
-        "children": [
-          {
-            "type": "split",
-            "ratio": 0.35,
-            "start": [
-              {
-                "type": "media",
-                "tokens": {
-                  "bg": "#153f44",
-                  "fg": "#eafafa",
-                  "muted": "#c4e1dd",
-                  "pad": "2rem 1.5rem",
-                  "gap": "1.5rem",
-                  "radius": "0"
-                },
-                "narrow": {
-                  "pad": "1.25rem",
-                  "gap": "0.75rem"
-                },
-                "children": [
-                  {
-                    "type": "heading",
-                    "id": "n20",
-                    "level": 2,
-                    "size": "xs",
-                    "role": "wordmark",
-                    "text": "work / notes"
+        "id": "s2",
+        "name": "Received",
+        "kind": "acknowledgement",
+        "content": {
+          "type": "panel",
+          "edges": "all",
+          "tokens": {
+            "border": "#95b6b8"
+          },
+          "children": [
+            {
+              "type": "split",
+              "ratio": 0.35,
+              "start": [
+                {
+                  "type": "media",
+                  "tokens": {
+                    "bg": "#153f44",
+                    "fg": "#eafafa",
+                    "muted": "#c4e1dd",
+                    "pad": "2rem 1.5rem",
+                    "gap": "1.5rem",
+                    "radius": "0"
                   },
-                  {
-                    "type": "image",
-                    "id": "n21",
-                    "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 10' fill='none' stroke='%23a8dfd0' stroke-width='.5'%3E%3Ccircle cx='10' cy='5' r='4.6' stroke-width='.14'/%3E%3Cpath d='m7.6 5.1 1.8 1.8 3.2-3.6'/%3E%3C/svg%3E",
-                    "alt": "A tick",
-                    "shape": "circle",
-                    "fit": "contain"
+                  "narrow": {
+                    "pad": "1.25rem",
+                    "gap": "0.75rem"
                   },
-                  {
-                    "type": "text",
-                    "id": "n22",
-                    "size": "s",
-                    "role": "success_body",
-                    "text": "A useful start\nto your working week.",
-                    "tokens": {
-                      "text-size": "1.167rem"
-                    }
-                  }
-                ]
-              }
-            ],
-            "end": [
-              {
-                "type": "panel",
-                "tokens": {
-                  "pad": "2.62rem 1.69rem 1.75rem",
-                  "gap": "0.85rem"
-                },
-                "narrow": {
-                  "pad": "1.25rem",
-                  "gap": "0.875rem"
-                },
-                "children": [
-                  {
-                    "type": "badge",
-                    "id": "n23",
-                    "role": "badge",
-                    "text": "Request received",
-                    "tokens": {
-                      "text-size": "1.0834rem"
-                    }
-                  },
-                  {
-                    "type": "heading",
-                    "id": "n24",
-                    "role": "success_headline",
-                    "text": "Make a little\nroom for Monday.",
-                    "narrow": {
-                      "heading-size": "1.625rem"
-                    }
-                  },
-                  {
-                    "type": "text",
-                    "id": "n25",
-                    "role": "success_body",
-                    "text": "We have received your request for %b. Thanks for making a little room.",
-                    "emphasis": "the Monday note"
-                  },
-                  {
-                    "type": "stack",
-                    "tokens": {
-                      "gap": "0.55rem"
+                  "children": [
+                    {
+                      "type": "heading",
+                      "id": "n20",
+                      "level": 2,
+                      "size": "xs",
+                      "role": "wordmark",
+                      "text": "work / notes"
                     },
-                    "children": [
-                      {
-                        "type": "divider",
-                        "id": "n26"
-                      },
-                      {
-                        "type": "eyebrow",
-                        "id": "n27",
-                        "role": "eyebrow",
-                        "text": "Coming up",
-                        "tokens": {
-                          "text-size": "1.0834rem"
-                        }
-                      },
-                      {
-                        "type": "text",
-                        "id": "n28",
-                        "size": "xl",
-                        "role": "success_body",
-                        "text": "A five minute reset for a scattered week."
-                      },
-                      {
-                        "type": "divider",
-                        "id": "n29"
+                    {
+                      "type": "image",
+                      "id": "n21",
+                      "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 10' fill='none' stroke='%23a8dfd0' stroke-width='.5'%3E%3Ccircle cx='10' cy='5' r='4.6' stroke-width='.14'/%3E%3Cpath d='m7.6 5.1 1.8 1.8 3.2-3.6'/%3E%3C/svg%3E",
+                      "alt": "A tick",
+                      "shape": "circle",
+                      "fit": "contain"
+                    },
+                    {
+                      "type": "text",
+                      "id": "n22",
+                      "size": "s",
+                      "role": "success_body",
+                      "text": "A useful start\nto your working week.",
+                      "tokens": {
+                        "text-size": "1.167rem"
                       }
-                    ]
-                  },
-                  {
-                    "type": "text",
-                    "id": "n30",
-                    "size": "s",
-                    "role": "fine_print",
-                    "text": "One email each Monday. Unsubscribe at any time.",
-                    "tokens": {
-                      "text-size": "1.167rem"
                     }
-                  }
-                ]
-              }
-            ],
-            "basis": "16rem"
-          }
+                  ]
+                }
+              ],
+              "end": [
+                {
+                  "type": "panel",
+                  "tokens": {
+                    "pad": "2.62rem 1.69rem 1.75rem",
+                    "gap": "0.85rem"
+                  },
+                  "narrow": {
+                    "pad": "1.25rem",
+                    "gap": "0.875rem"
+                  },
+                  "children": [
+                    {
+                      "type": "badge",
+                      "id": "n23",
+                      "role": "badge",
+                      "text": "Request received",
+                      "tokens": {
+                        "text-size": "1.0834rem"
+                      }
+                    },
+                    {
+                      "type": "heading",
+                      "id": "n24",
+                      "role": "success_headline",
+                      "text": "Make a little\nroom for Monday.",
+                      "narrow": {
+                        "heading-size": "1.625rem"
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "id": "n25",
+                      "role": "success_body",
+                      "text": "We have received your request for %b. Thanks for making a little room.",
+                      "emphasis": "the Monday note"
+                    },
+                    {
+                      "type": "stack",
+                      "tokens": {
+                        "gap": "0.55rem"
+                      },
+                      "children": [
+                        {
+                          "type": "divider",
+                          "id": "n26"
+                        },
+                        {
+                          "type": "eyebrow",
+                          "id": "n27",
+                          "role": "eyebrow",
+                          "text": "Coming up",
+                          "tokens": {
+                            "text-size": "1.0834rem"
+                          }
+                        },
+                        {
+                          "type": "text",
+                          "id": "n28",
+                          "size": "xl",
+                          "role": "success_body",
+                          "text": "A five minute reset for a scattered week."
+                        },
+                        {
+                          "type": "divider",
+                          "id": "n29"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "text",
+                      "id": "n30",
+                      "size": "s",
+                      "role": "fine_print",
+                      "text": "One email each Monday. Unsubscribe at any time.",
+                      "tokens": {
+                        "text-size": "1.167rem"
+                      }
+                    }
+                  ]
+                }
+              ],
+              "basis": "16rem"
+            }
+          ]
+        }
+      }
+    ],
+    "v": 2,
+    "submissions": [
+      {
+        "id": "primary",
+        "required": true,
+        "fields": [
+          "n9"
+        ],
+        "consents": [
+          "n10"
         ]
       }
     ]

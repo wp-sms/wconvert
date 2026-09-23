@@ -60,7 +60,20 @@ final class PlaybookLibrary
     private function __construct(
         private readonly array $playbooks,
         private readonly array $rejections,
+        private readonly ?\Closure $build = null,
     ) {
+    }
+
+    private ?self $loaded = null;
+
+    /**
+     * A library that does not include and translate Playbook files until read.
+     *
+     * @param \Closure(): self $build
+     */
+    public static function deferred(\Closure $build): self
+    {
+        return new self([], [], $build);
     }
 
     /**
@@ -139,6 +152,11 @@ final class PlaybookLibrary
      */
     public function all(): array
     {
+        $loaded = $this->materialized();
+        if ($loaded !== $this) {
+            return $loaded->all();
+        }
+
         return $this->playbooks;
     }
 
@@ -154,6 +172,11 @@ final class PlaybookLibrary
      */
     public function servicing(Goal $goal): array
     {
+        $loaded = $this->materialized();
+        if ($loaded !== $this) {
+            return $loaded->servicing($goal);
+        }
+
         return array_values(array_filter(
             $this->playbooks,
             static fn (Playbook $playbook): bool => $playbook->goal === $goal
@@ -162,6 +185,11 @@ final class PlaybookLibrary
 
     public function find(string $id): ?Playbook
     {
+        $loaded = $this->materialized();
+        if ($loaded !== $this) {
+            return $loaded->find($id);
+        }
+
         return $this->playbooks[$id] ?? null;
     }
 
@@ -170,7 +198,29 @@ final class PlaybookLibrary
      */
     public function rejections(): array
     {
+        $loaded = $this->materialized();
+        if ($loaded !== $this) {
+            return $loaded->rejections();
+        }
+
         return $this->rejections;
+    }
+
+    private function materialized(): self
+    {
+        if ($this->build === null) {
+            return $this;
+        }
+
+        if ($this->loaded === null) {
+            $loaded = ($this->build)();
+            if ($loaded === $this) {
+                throw new \LogicException('A deferred playbook library cannot build itself.');
+            }
+            $this->loaded = $loaded;
+        }
+
+        return $this->loaded;
     }
 
     /**
@@ -257,9 +307,7 @@ final class PlaybookLibrary
         // declares. A Role the Template does not declare is dropped on prefill
         // and nobody is told (CONTEXT.md, Slot Role) — so it is caught here,
         // where there is still an author to tell.
-        $declared = SlotRoles::declaredIn($template['tree'], $vocabulary);
-
-        return array_diff(array_keys($copy), $declared) === [] ? null : RejectionReason::UnfilledSlotRole;
+        return SlotRoles::acceptsCopy($template['tree'], $copy, $vocabulary) ? null : RejectionReason::UnfilledSlotRole;
     }
 
     /**
@@ -369,6 +417,9 @@ final class PlaybookLibrary
             }
         }
 
+        foreach (is_array($copy['screens'] ?? null) ? $copy['screens'] : [] as $words) {
+            if (!is_array($words) || self::namesSomethingSiteLocal($entry, $words, $rules, $vocabulary)) { return true; }
+        }
         if (array_intersect(array_keys($copy), $vocabulary->authoredRoles()) !== []) {
             return true;
         }

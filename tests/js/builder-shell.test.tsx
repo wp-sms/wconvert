@@ -1,3 +1,4 @@
+import { treeFixture } from './support/journey';
 import { CAPTURE_OUTCOME } from './support/outcomes';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
@@ -1221,14 +1222,14 @@ describe('the summary', () => {
 
 describe('saving qualification choices without losing unfinished work', () => {
   const withChoices = (options: unknown) => optin({ config: { ...optin().config,
-    template: { tokens: ENTRY.tokens, tree: { steps: [
+    template: { tokens: ENTRY.tokens, tree: treeFixture({ steps: [
       { type: 'stack', children: [
         { type: 'field', name: 'email', required: true },
         { type: 'field', name: 'interest', label: 'Service needed', options },
         { type: 'button', action: 'submit', label: 'Send' },
       ] },
       { type: 'stack', children: [{ type: 'heading', text: 'Thanks' }] },
-    ] } },
+    ] }) },
   } });
 
   it('refuses a save that would drop a duplicate answer, retaining its label and draft history', async () => {
@@ -1254,7 +1255,7 @@ describe('saving qualification choices without losing unfinished work', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
     await screen.findByText('Draft saved');
     expect(builder.saveOptin).toHaveBeenCalledTimes(1);
-    expect(builder.saveOptin.mock.calls[0][2].template.tree.steps[0].children[1].options).toEqual([
+    expect(builder.saveOptin.mock.calls[0][2].template.tree.steps[0].content.children[1].options).toEqual([
       { value: 'repair', label: 'Repair' }, { value: 'installation', label: 'Installation' },
     ]);
   });

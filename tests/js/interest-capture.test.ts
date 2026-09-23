@@ -1,3 +1,4 @@
+import { treeFixture } from './support/journey';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { bindCapture, CAPTURE_ERROR_CLASS } from '@loader/capture';
 import { render } from '@renderer/render';
@@ -11,7 +12,7 @@ const OPTIONS = [
 ] as const;
 
 const template = (): Template => ({
-  tree: {
+  tree: treeFixture({
     steps: [
       {
         type: 'stack',
@@ -31,11 +32,11 @@ const template = (): Template => ({
       },
       { type: 'stack', children: [{ type: 'heading', text: 'Thanks' }] },
     ],
-  },
+  }),
   tokens: {},
 });
 
-const firstStep = (): TemplateTree['steps'][number] => template().tree.steps[0];
+const firstStep = (): TemplateTree['steps'][number]['content'] => template().tree.steps[0].content;
 
 const respondWith = (status: number, body: unknown): Promise<Response> =>
   Promise.resolve({
@@ -84,26 +85,26 @@ afterEach(() => {
 describe('the interest field renderer', () => {
   it.each([{}, null, 'not a list', [null, { value: 'broken' }, { value: 3, label: 'Bad value' }]])(
     'survives malformed imported options without breaking the preview', (options) => {
-      const design = { steps: [{ type: 'stack', children: [
+      const design = treeFixture({ steps: [{ type: 'stack', children: [
         { type: 'field', name: 'interest', options },
         { type: 'button', label: 'Send', action: 'submit' },
-      ] }] } as unknown as TemplateTree;
+      ] }] }) as unknown as TemplateTree;
       const root = render(design, {});
       expect([...interest(root).options].map((option) => option.value)).toEqual(['']);
     },
   );
 
   it('renders valid imported options safely beside malformed rows', () => {
-    const design = { steps: [{ type: 'stack', children: [
+    const design = treeFixture({ steps: [{ type: 'stack', children: [
       { type: 'field', name: 'interest', options: [null, ...OPTIONS, {}] },
       { type: 'button', label: 'Send', action: 'submit' },
-    ] }] } as unknown as TemplateTree;
+    ] }] }) as unknown as TemplateTree;
     const root = render(design, {});
     expect([...interest(root).options].map((option) => option.value)).toEqual(['', 'installation', 'repair']);
   });
 
   it('renders a labelled native select with stable option values and required state', () => {
-    const root = render({ steps: [firstStep()] }, {});
+    const root = render(treeFixture({ steps: [firstStep()] }), {});
     const select = interest(root);
     const label = root.querySelector<HTMLLabelElement>('label[for="wc-interest"]');
 

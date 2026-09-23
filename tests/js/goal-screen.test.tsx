@@ -1,3 +1,4 @@
+import { treeFixture } from './support/journey';
 import { CLICK_OUTCOME } from './support/outcomes';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
@@ -86,7 +87,7 @@ const PLAYBOOK = {
    */
   template: {
     tokens: { bg: '#ffffff' },
-    tree: {
+    tree: treeFixture({
       steps: [
         {
           type: 'stack',
@@ -98,7 +99,7 @@ const PLAYBOOK = {
         },
         { type: 'stack', children: [{ type: 'heading', role: 'success_headline', text: 'Done' }] },
       ],
-    },
+    }),
   },
 };
 
@@ -110,14 +111,14 @@ const DRAFT = {
     template_id: 'centred-card',
     template: {
       tokens: { bg: '#ffffff' },
-      tree: {
+      tree: treeFixture({
         steps: [
           {
             type: 'stack',
             children: [{ type: 'heading', role: 'headline', text: 'Ten percent off your first order' }],
           },
         ],
-      },
+      }),
     },
   },
 };
@@ -366,9 +367,9 @@ describe('a goal then a draft', () => {
 
   it('describes repeat display using the actual design action and orders audience before timing', async () => {
     goals.listPlaybooks.mockResolvedValue([{ ...PLAYBOOK,
-      template: { ...PLAYBOOK.template, tree: { steps: [{ type: 'stack', children: [
+      template: { ...PLAYBOOK.template, tree: treeFixture({ steps: [{ type: 'stack', children: [
         { type: 'button', label: 'View the offer', action: 'link', href: '/offer' },
-      ] }] } },
+      ] }] }) },
       setup: { ...PLAYBOOK.setup, targeting: { logged_in: false }, frequency: { cooldownDays: 2 } },
     }]);
     render(<GoalScreen onCreated={vi.fn()} />); await pickGoal();

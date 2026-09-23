@@ -24,85 +24,109 @@
   "tree": {
     "steps": [
       {
-        "type": "stack",
-        "children": [
-          {
-            "type": "heading",
-            "id": "n1",
-            "role": "headline",
-            "text": "Talk it through with us"
-          },
-          {
-            "type": "text",
-            "id": "n2",
-            "role": "body",
-            "text": "Leave your number and a request for a call about your project."
-          },
-          {
-            "type": "row",
-            "children": [
-              {
-                "type": "field",
-                "id": "n4",
-                "name": "phone",
-                "label": "Mobile number",
-                "placeholder": "+44 7700 900000",
-                "required": true
-              }
-            ]
-          },
-          {
-            "type": "button",
-            "id": "n5",
-            "role": "cta_label",
-            "label": "Request a callback",
-            "action": "submit"
-          },
-          {
-            "type": "consent",
-            "id": "n6",
-            "role": "consent_text",
-            "hidden": true,
-            "text": "I agree to a call about my request. %s",
-            "link": {
-              "label": "Privacy Policy"
+        "id": "s1",
+        "name": "Details",
+        "kind": "input",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "heading",
+              "id": "n1",
+              "role": "headline",
+              "text": "Talk it through with us"
             },
-            "tokens": {
-              "text-size": "1.125rem"
+            {
+              "type": "text",
+              "id": "n2",
+              "role": "body",
+              "text": "Leave your number and a request for a call about your project."
+            },
+            {
+              "type": "row",
+              "children": [
+                {
+                  "type": "field",
+                  "id": "n4",
+                  "name": "phone",
+                  "label": "Mobile number",
+                  "placeholder": "+44 7700 900000",
+                  "required": true
+                }
+              ]
+            },
+            {
+              "type": "button",
+              "id": "n5",
+              "role": "cta_label",
+              "label": "Request a callback",
+              "action": "submit",
+              "submission": "primary"
+            },
+            {
+              "type": "consent",
+              "id": "n6",
+              "role": "consent_text",
+              "hidden": true,
+              "text": "I agree to a call about my request. %s",
+              "link": {
+                "label": "Privacy Policy"
+              },
+              "tokens": {
+                "text-size": "1.125rem"
+              }
+            },
+            {
+              "type": "text",
+              "id": "n7",
+              "role": "fine_print",
+              "text": "We use your number to respond to this enquiry.",
+              "size": "s",
+              "tokens": {
+                "text-size": "1.167rem"
+              }
             }
-          },
-          {
-            "type": "text",
-            "id": "n7",
-            "role": "fine_print",
-            "text": "We use your number to respond to this enquiry.",
-            "size": "s",
-            "tokens": {
-              "text-size": "1.167rem"
-            }
-          }
-        ]
+          ]
+        }
       },
       {
-        "type": "stack",
-        "children": [
-          {
-            "type": "icon",
-            "id": "n10",
-            "name": "check"
-          },
-          {
-            "type": "heading",
-            "id": "n8",
-            "role": "success_headline",
-            "text": "Callback request received"
-          },
-          {
-            "type": "text",
-            "id": "n9",
-            "role": "success_body",
-            "text": "Thank you. We have received your number and your request for a call."
-          }
+        "id": "s2",
+        "name": "Received",
+        "kind": "acknowledgement",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "icon",
+              "id": "n10",
+              "name": "check"
+            },
+            {
+              "type": "heading",
+              "id": "n8",
+              "role": "success_headline",
+              "text": "Callback request received"
+            },
+            {
+              "type": "text",
+              "id": "n9",
+              "role": "success_body",
+              "text": "Thank you. We have received your number and your request for a call."
+            }
+          ]
+        }
+      }
+    ],
+    "v": 2,
+    "submissions": [
+      {
+        "id": "primary",
+        "required": true,
+        "fields": [
+          "n4"
+        ],
+        "consents": [
+          "n6"
         ]
       }
     ]

@@ -267,7 +267,7 @@ final class SchemaTest extends TestCase
     {
         $columns = self::columnNamesOf(self::PREFIX . 'wconvert_stats');
 
-        $this->assertSame(['optin_id', 'stat_date', 'kind', 'count'], $columns);
+        $this->assertSame(['optin_id', 'stat_date', 'kind', 'scope', 'count'], $columns);
         $this->assertNotContains('id', $columns, 'ADR 0019: the composite key is the key; there is no surrogate');
         $this->assertNotContains('goal', $columns, 'ADR 0020: a Goal is read at report time, never frozen on a row');
         $this->assertNotContains('had_email', $columns, 'ADR 0020: interpreted at read');
@@ -286,7 +286,7 @@ final class SchemaTest extends TestCase
     public function testTheCountersAreKeyedForTheOneQueryTheyServe(): void
     {
         $this->assertStringContainsString(
-            'PRIMARY KEY  (optin_id,stat_date,kind)',
+            'PRIMARY KEY  (optin_id,stat_date,kind,scope)',
             self::bodyOf(self::PREFIX . 'wconvert_stats')
         );
     }

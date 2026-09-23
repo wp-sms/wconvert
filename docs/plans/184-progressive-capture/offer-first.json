@@ -1,0 +1,129 @@
+{
+  "id": "journey-offer-first",
+  "name": "An invitation before signup",
+  "display_type": "popup",
+  "tier": "free",
+  "tokens": {
+    "width": "28rem",
+    "pad": "1.5rem",
+    "gap": "1rem",
+    "align": "start"
+  },
+  "tree": {
+    "v": 2,
+    "submissions": [
+      {
+        "id": "email-signup",
+        "required": true,
+        "fields": [
+          "n6"
+        ],
+        "consents": [
+          "n7"
+        ]
+      }
+    ],
+    "steps": [
+      {
+        "id": "offer",
+        "name": "Invitation",
+        "kind": "content",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "heading",
+              "id": "n1",
+              "role": "headline",
+              "text": "Want occasional updates?"
+            },
+            {
+              "type": "text",
+              "id": "n2",
+              "role": "body",
+              "text": "Find out what is new and receive our latest offers."
+            },
+            {
+              "type": "button",
+              "id": "n3",
+              "role": "next_label",
+              "label": "Show me the signup",
+              "action": "next"
+            },
+            {
+              "type": "button",
+              "id": "n4",
+              "role": "close_label",
+              "label": "No thanks",
+              "action": "close",
+              "tokens": {
+                "accent": "transparent",
+                "accent-fg": "#475569"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "email",
+        "name": "Email signup",
+        "kind": "input",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "heading",
+              "id": "n5",
+              "role": "headline",
+              "text": "Get our email updates"
+            },
+            {
+              "type": "field",
+              "id": "n6",
+              "name": "email",
+              "label": "Email address",
+              "required": true
+            },
+            {
+              "type": "consent",
+              "id": "n7",
+              "role": "consent_text",
+              "hidden": false,
+              "text": "Email me news and offers."
+            },
+            {
+              "type": "button",
+              "id": "n8",
+              "role": "cta_label",
+              "label": "Sign up for email",
+              "action": "submit",
+              "submission": "email-signup"
+            }
+          ]
+        }
+      },
+      {
+        "id": "received",
+        "name": "Acknowledgement",
+        "kind": "acknowledgement",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "heading",
+              "id": "n9",
+              "role": "success_headline",
+              "text": "Details received"
+            },
+            {
+              "type": "text",
+              "id": "n10",
+              "role": "success_body",
+              "text": "Thank you. We have received the details you submitted."
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

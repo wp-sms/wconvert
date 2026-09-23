@@ -16,6 +16,21 @@ Read [`CONTEXT.md`](CONTEXT.md) before using any domain term.
 
 Planned follow-ups and deferred work: [Product todo list](docs/TODO.md).
 
+## Multi-screen capture
+
+Free includes editable linear journeys: offer screens, questions, a final Submit,
+and acknowledgement. Next and Back keep answers on the current page. An optional
+other-channel signup can follow a completed email or SMS signup: each accepted
+signup is saved and queued immediately, while the journey keeps one combined
+Lead and one Conversion. Skipping optional SMS preserves the email signup.
+
+Start with one of the four `journey-*` Templates/Playbooks. JSON uses `tree.v: 2`
+with explicit screen wrappers and field/consent ownership. See the
+[contract](docs/plans/184-progressive-capture/README.md) and
+[verification record](docs/plans/184-progressive-capture/verification.md).
+Atomic capture requires transactional InnoDB storage; Action Scheduler handles
+queued delivery and recovery. Pro display/integration entitlements are unchanged.
+
 ## The free/Pro boundary
 
 The dependency runs one way and only one way:
@@ -110,7 +125,7 @@ reaches for first.
 
 `npm run check:loader` is the **one build a pull request pays for**, and it
 earns it: both of its assertions are about build output. Free's and Pro's
-loader, gzip -9, hard-fail at 14,012 bytes for Free and 18,432 bytes for paid builds (ADR 0101); and free's loader is scanned for
+loader, gzip -9, hard-fail at 14,012 bytes for Free and 19,456 bytes for paid builds (ADR 0103); and free's loader is scanned for
 every rule identifier the manifest calls premium — free's *admin* bundle is
 deliberately never scanned, because it carries premium identifiers on purpose
 for its `locked` cards.
@@ -201,7 +216,7 @@ tests/unit/Template/TemplateVocabularyTest.php # what validation drops on the wa
 tests/unit/Template/TemplateSnapshotTest.php   # an Optin's copy outlives its entry
 tests/unit/Template/TemplateFacetsTest.php     # every shipped design's facets, from its tree
 tests/unit/Rest/TemplateRoutesTest.php         # the index carries no tree, and locked cards link
-tests/unit/Frontend/PayloadBudgetTest.php      # ten snapshotted trees, ≤2KB gzipped
+tests/unit/Frontend/PayloadBudgetTest.php      # five distinct Campaigns, ≤2.5KiB gzipped
 tests/unit/Template/LibraryLintTest.php        # bin/verify-templates.php, over the shipped library
 tests/unit/Pro/Template/ProLibraryTest.php     # a Pro install is shown no upsell for a design it has
 ```
@@ -303,7 +318,7 @@ the authority on what a database does.
 So the queries are proven where queries can be proven:
 
 ```bash
-wp eval-file bin/verify-lead-log.php   # against a real WordPress and a real database
+wp eval-file bin/verify-lead-log.php --use-include   # against a real WordPress and database
 ```
 
 It writes a small fixture, checks that two rows sharing an identifier really do
@@ -451,7 +466,7 @@ the database**. That is a claim about MySQL rather than about PHP, so it is
 proven against MySQL:
 
 ```bash
-wp eval-file bin/verify-stats.php   # against a real WordPress and a real MySQL
+wp eval-file bin/verify-stats.php --use-include   # against a real WordPress and MySQL
 ```
 
 It fires two increments concurrently on two connections — the second blocking
@@ -513,6 +528,26 @@ translates it, and three increments on one key really do land as one row with
 `count = 3`. So the counters can be exercised under Playground; what cannot be
 is the claim the statement exists to make, which is that two writers in the
 same instant produce two.
+
+### Verifying database behavior safely
+
+CI installs a fresh WordPress 6.8 on MySQL 8.4 and runs the stats, lead-log and
+literal-search verifiers under PHP 8.2. Together they check MySQL's counter
+atomicity, the lead log's grouping/erasure/pruning SQL, and captured-value
+search escaping. Run the same checks only against a throwaway MySQL-backed
+WordPress with the free plugin active:
+
+```bash
+WP_PATH=/absolute/path/to/throwaway-wordpress
+wp eval-file "$PWD/bin/verify-stats.php" --use-include --path="$WP_PATH"
+wp eval-file "$PWD/bin/verify-lead-log.php" --use-include --path="$WP_PATH"
+wp eval-file "$PWD/bin/verify-lead-search.php" --use-include --path="$WP_PATH"
+```
+
+`--use-include` preserves the scripts' `strict_types` declaration under WP-CLI
+2.12. Both write and delete fixtures: the stats verifier refuses existing
+counters or Leads, and the lead-log verifier refuses existing Leads. Never
+point them at a live or valued site.
 
 **The beacon is stateless** — no visitor id, no device id, no hashed
 fingerprint ([ADR 0017](docs/adr/0017-no-visitor-identifier.md)) — so there is
@@ -711,9 +746,9 @@ WordPress privacy-policy tools remain active
 ([ADR 0096](docs/adr/0096-privacy-authoring-help-is-progressive-and-snapshotted.md)).
 
 **The eraser issues a `DELETE`, never an anonymising update.** Anonymising is
-an update, and [ADR 0002](docs/adr/0002-leads-are-immutable-by-schema.md) has
-no update path — `wconvert_leads` has no `status` and no `updated_at` precisely
-so a row cannot acquire mutable state without a migration a reviewer will see.
+an update, while erasure must remove the whole accepted record. The only allowed
+Lead additions belong to the same short-lived capture journey; general profile
+editing remains outside WConvert ([ADR 0103](docs/adr/0103-progressive-capture-keeps-one-lead-per-journey.md)).
 
 The WordPress adapter remains email-addressed. A verified phone-only request
 uses capture history's exact-phone search and CSV, then deletes every Lead whose
@@ -1053,7 +1088,7 @@ workflows, screenshots, supported content and troubleshooting.
 
 Use Content lock for a public bonus, checklist, or article section revealed after
 form submission. In Display rules → Placement choose **Content lock**, use a
-complete two-screen inline submission design, then publish. In your WordPress
+complete inline capture journey, then publish. In your WordPress
 post/page, add **WConvert Lock from here** after the public introduction. Choose
 the Campaign in the block settings sidebar, then write ordinary blocks below the
 divider. Everything below it, including content added later, belongs to the lock.

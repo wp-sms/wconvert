@@ -1,6 +1,6 @@
 <?php
 
-/** Read-only SQL verification: wp eval-file bin/verify-lead-search.php. No fixture rows are stored. */
+/** Read-only SQL verification: wp eval-file bin/verify-lead-search.php --use-include. No fixture rows are stored. */
 declare(strict_types=1);
 
 use WConvert\Lead\LeadQuery;
@@ -20,7 +20,7 @@ $values = [];
 foreach ($fixtures as $index => $row) {
     $relation .= $index === 0 ? '' : ' UNION ALL ';
     $relation .= 'SELECT %s AS id, %s AS optin_id, %s AS email, NULLIF(%s, \'\') AS phone, %s AS fields';
-    array_push($values, $row[0], $row[1], $row[2], $row[3] ?? '', (string) wp_json_encode($row[4]));
+    array_push($values, $row[0], $row[1], $row[2], $row[3] ?? '', (string) wp_json_encode(['answers' => $row[4], 'capture' => []]));
 }
 $cases = [
     ['Sarah', 1], ['repair', 1], ['20%_off', 1], ['20Xoff', 0],

@@ -29,6 +29,10 @@ enum StatKind: string
      * counted rather than derived (CONTEXT.md, Impression).
      */
     case Impression = 'impression';
+    case ScreenShown = 'screen_shown';
+    case ScreenAdvanced = 'screen_advanced';
+    case ScreenSkipped = 'screen_skipped';
+    case ScreenDismissed = 'screen_dismissed';
 
     /**
      * The visitor doing the thing the Optin exists to make them do. One Optin
@@ -57,6 +61,10 @@ enum StatKind: string
     public function label(): string
     {
         return match ($this) {
+            self::ScreenShown => __('Screen shown', 'wconvert'),
+            self::ScreenAdvanced => __('Screen completed', 'wconvert'),
+            self::ScreenSkipped => __('Screen skipped', 'wconvert'),
+            self::ScreenDismissed => __('Screen dismissed', 'wconvert'),
             self::Impression => __('Impressions', 'wconvert'),
             self::Conversion => __('Conversions', 'wconvert'),
             self::Dismiss => __('Dismissals', 'wconvert'),

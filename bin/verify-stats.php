@@ -3,7 +3,7 @@
 /**
  * verify-stats.php — the counters, against a real MySQL.
  *
- *     wp eval-file bin/verify-stats.php
+ *     wp eval-file bin/verify-stats.php --use-include
  *
  * Exit 0 = every check passed, 1 = a check failed, 2 = it declined to run.
  *
@@ -22,7 +22,7 @@
  * it at Local:
  *
  *     php -d mysqli.default_socket="$HOME/Library/Application Support/Local/run/<id>/mysql/mysqld.sock" \
- *       "$(which wp)" eval-file bin/verify-stats.php
+ *       "$(which wp)" eval-file bin/verify-stats.php --use-include
  *
  * IT REFUSES TO RUN ON A SITE THAT ALREADY HAS COUNTS. The counters can never
  * be recomputed — there is no raw data behind them — so a merchant's numbers
@@ -68,7 +68,7 @@ use WConvert\Template\TemplateLibrary;
 use WConvert\Template\TemplateVocabulary;
 
 if (!defined('ABSPATH')) {
-    fwrite(STDERR, "Run this through WordPress: wp eval-file bin/verify-stats.php\n");
+    fwrite(STDERR, "Run this through WordPress: wp eval-file bin/verify-stats.php --use-include\n");
 
     exit(2);
 }
@@ -217,7 +217,7 @@ echo "The table\n";
 
 $columns = $wpdb->get_col("SHOW COLUMNS FROM `{$statsTable}`");
 
-$verify->check('it has the four approved columns and no surrogate id', ['optin_id', 'stat_date', 'kind', 'count'], $columns);
+$verify->check('it has the five approved columns and no surrogate id', ['optin_id', 'stat_date', 'kind', 'scope', 'count'], $columns);
 
 $indexes = $wpdb->get_results("SHOW INDEX FROM `{$statsTable}`", ARRAY_A);
 $indexNames = array_values(array_unique(array_map(
@@ -237,7 +237,7 @@ foreach (is_array($indexes) ? $indexes : [] as $index) {
 
 ksort($keyColumns);
 
-$verify->check('and it is keyed for the one query it serves', ['optin_id', 'stat_date', 'kind'], array_values($keyColumns));
+$verify->check('and its key separates Campaign and journey scopes', ['optin_id', 'stat_date', 'kind', 'scope'], array_values($keyColumns));
 
 echo "The upsert\n";
 
@@ -607,9 +607,13 @@ echo "The beacon endpoint\n";
 // socket. Nothing else can prove the controller wires its three collaborators
 // together, because a `WP_REST_Request` faithful enough to prove it is a
 // WordPress install with extra steps.
-$design = TemplateLibrary::fromDirectory(TemplateVocabulary::fromManifest())->snapshotInto(['template_id' => 'offer-panel']);
+$design = TemplateLibrary::fromDirectory(TemplateVocabulary::fromManifest())->snapshotInto(['template_id' => 'name-and-email']);
 $published = $optins->create('Beacon check', 'grow_email_list', $design);
-$optins->publish($published->id);
+$verify->check(
+    'the beacon fixture is a valid capture design and publishes',
+    $published->id,
+    $optins->publish($published->id)?->id
+);
 $unpublished = $optins->create('Never published', 'grow_email_list', []);
 
 // A beacon always arrives over HTTP and therefore always has these. WP-CLI has
@@ -655,7 +659,7 @@ $beacon([
     ['optin_id' => $published->id, 'kind' => 'dismiss'],
 ]);
 
-$verify->check('a coalesced flush counts each act once', 1, $countOf($published->id, 'conversion', $beaconDay));
+$verify->check('a browser cannot count a form Conversion before server acceptance', null, $countOf($published->id, 'conversion', $beaconDay));
 $verify->check('including the Dismissal', 1, $countOf($published->id, 'dismiss', $beaconDay));
 
 $beacon([['optin_id' => $unpublished->id, 'kind' => 'impression']]);
@@ -764,6 +768,11 @@ $verify->check('no address was stored anywhere, in a key or in a value', 0, (int
 )));
 
 echo "The milestones\n";
+
+// The published beacon and rate-limit fixtures above correctly record the
+// site's first publish. The next section verifies that record from its empty
+// boundary, so reset only this throwaway fixture option at that boundary.
+delete_option(MilestoneStore::OPTION);
 
 // ==========================================================================
 // FOUR OF THE FIVE ARE A DATE RECORDED ONCE (#94).

@@ -38,7 +38,13 @@ final class OutcomeContract
 
         // Only the visible submitting screen collects data. A phone in the
         // acknowledgement or below a hidden container cannot satisfy a Goal.
-        $first = $tree['steps'][0] ?? [];
+        $first = ['type' => 'stack', 'children' => []];
+        $refs = $tree['submissions'][0]['fields'] ?? [];
+        foreach ($tree['steps'] ?? [] as $screen) {
+            foreach (\WConvert\Template\CaptureJourney::nodes($screen['content'] ?? []) as $node) {
+                if (in_array($node['id'] ?? null, $refs, true)) { $first['children'][] = $node; }
+            }
+        }
         $fields = [];
         $walk = static function (array $node) use (&$walk, &$fields): void {
             if (($node['hidden'] ?? false) === true) return;
@@ -49,7 +55,7 @@ final class OutcomeContract
                 if (is_array($child)) $walk($child);
             }
         };
-        if (is_array($first)) $walk($first);
+        $walk($first);
         foreach ($this->captureAnyOf as $field) {
             // CaptureForm already requires at least one identifier. A Goal
             // naming a particular channel must require that channel itself.

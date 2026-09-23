@@ -20,7 +20,7 @@ final class PictureTransferTest extends TestCase
      */
     private function template(array $nodes, array $tokens = []): array
     {
-        return ['tokens' => $tokens, 'tree' => ['steps' => [['type' => 'stack', 'children' => $nodes]]]];
+        return ['tokens' => $tokens, 'tree' => \WConvert\Tests\Unit\Support\JourneyFixture::tree(['steps' => [['type' => 'stack', 'children' => $nodes]]])];
     }
 
     public function testRootPhotoCanMoveToAnUnambiguousPhotoPanelWithoutCarryingTheOldPalette(): void
@@ -29,7 +29,7 @@ final class PictureTransferTest extends TestCase
         $mine = $this->template([], ['bg-image' => 'url("/shop.jpg")', 'bg' => '#123456']);
         $next = $this->template([['type' => 'media', 'tokens' => ['bg-image' => 'none'], 'children' => []]], ['bg' => '#ffffff']);
         $result = PictureTransfer::prepare($mine, $old, $next);
-        $this->assertSame('url("/shop.jpg")', $result['template']['tree']['steps'][0]['children'][0]['tokens']['bg-image']);
+        $this->assertSame('url("/shop.jpg")', $result['template']['tree']['steps'][0]['content']['children'][0]['tokens']['bg-image']);
         $this->assertSame('#ffffff', $result['template']['tokens']['bg']);
         $this->assertSame(0, $result['unplaced']);
     }
@@ -38,8 +38,8 @@ final class PictureTransferTest extends TestCase
     {
         $old = $this->template([['type' => 'media', 'tokens' => ['bg-image' => 'none'], 'children' => []]]);
         $mine = $old;
-        $mine['tree']['steps'][0]['children'][0] += ['narrow' => ['bg-image' => 'url("/phone.jpg")', 'image-position' => '30% 50%']];
-        $mine['tree']['steps'][0]['children'][0]['tokens'] = ['bg-image' => 'url("/shop.jpg")', 'image-position' => 'right center'];
+        $mine['tree']['steps'][0]['content']['children'][0] += ['narrow' => ['bg-image' => 'url("/phone.jpg")', 'image-position' => '30% 50%']];
+        $mine['tree']['steps'][0]['content']['children'][0]['tokens'] = ['bg-image' => 'url("/shop.jpg")', 'image-position' => 'right center'];
         $result = PictureTransfer::prepare($mine, $old, $old);
         $this->assertSame($mine, $result['template']);
     }
@@ -48,18 +48,18 @@ final class PictureTransferTest extends TestCase
     {
         $old = $this->template([['type' => 'media', 'tokens' => ['bg-image' => 'none'], 'children' => []]]);
         $mine = $old;
-        $mine['tree']['steps'][0]['children'][0]['tokens']['bg-image'] = 'url("/shop.jpg")';
+        $mine['tree']['steps'][0]['content']['children'][0]['tokens']['bg-image'] = 'url("/shop.jpg")';
         $next = $old;
-        $next['tree']['steps'][0]['children'][0]['narrow'] = ['bg-image' => 'url("/sample.jpg")', 'pad' => '1rem'];
+        $next['tree']['steps'][0]['content']['children'][0]['narrow'] = ['bg-image' => 'url("/sample.jpg")', 'pad' => '1rem'];
         $result = PictureTransfer::prepare($mine, $old, $next);
-        $this->assertSame(['pad' => '1rem'], $result['template']['tree']['steps'][0]['children'][0]['narrow']);
+        $this->assertSame(['pad' => '1rem'], $result['template']['tree']['steps'][0]['content']['children'][0]['narrow']);
     }
 
     public function testBackgroundCanBecomeAnImageAndKeepsItsDecorativeMeaning(): void
     {
         $result = PictureTransfer::prepare($this->template([], ['bg-image' => 'url("/shop.jpg")']), $this->template([]), $this->template([$this->picture('/sample.jpg')]));
-        $this->assertSame('/shop.jpg', $result['template']['tree']['steps'][0]['children'][0]['src']);
-        $this->assertSame('', $result['template']['tree']['steps'][0]['children'][0]['alt']);
+        $this->assertSame('/shop.jpg', $result['template']['tree']['steps'][0]['content']['children'][0]['src']);
+        $this->assertSame('', $result['template']['tree']['steps'][0]['content']['children'][0]['alt']);
     }
 
     public function testMeaningfulImageCannotBecomeADecorativeBackgroundSilently(): void
@@ -93,13 +93,13 @@ final class PictureTransferTest extends TestCase
 
     public function testPicturesInBothSplitPanesUseTheSharedChildVocabulary(): void
     {
-        $old = ['tokens' => [], 'tree' => ['steps' => [['type' => 'split',
+        $old = ['tokens' => [], 'tree' => \WConvert\Tests\Unit\Support\JourneyFixture::tree(['steps' => [['type' => 'split',
             'start' => [['type' => 'media', 'tokens' => ['bg-image' => 'none'], 'children' => []]],
             'end' => [$this->picture('/sample.jpg')],
-        ]]]];
+        ]]])];
         $mine = $old;
-        $mine['tree']['steps'][0]['start'][0]['tokens']['bg-image'] = 'url("/mine.jpg")';
-        $mine['tree']['steps'][0]['end'][0]['src'] = '/other.jpg';
+        $mine['tree']['steps'][0]['content']['start'][0]['tokens']['bg-image'] = 'url("/mine.jpg")';
+        $mine['tree']['steps'][0]['content']['end'][0]['src'] = '/other.jpg';
         $result = PictureTransfer::prepare($mine, $old, $old);
         $this->assertSame($mine, $result['template']);
         $this->assertSame(0, $result['unplaced']);

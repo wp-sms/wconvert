@@ -185,7 +185,7 @@ final class TemplateFacets
     private static function walk(array $tree): array
     {
         $steps = is_array($tree['steps'] ?? null) ? array_values($tree['steps']) : [];
-        $first = $steps[0] ?? null;
+        $first = $steps[0]['content'] ?? null;
 
         $found = [
             'fields' => [],

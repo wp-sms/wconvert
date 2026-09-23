@@ -124,6 +124,7 @@ final class CoreServiceProvider implements ServiceProvider
      * @var list<class-string<RestController>>
      */
     public const REST_CONTROLLERS = [
+        \WConvert\Rest\JourneyStatsController::class,
         OptinController::class,
         TemplateController::class,
         TemplateCatalogController::class,
@@ -213,12 +214,19 @@ final class CoreServiceProvider implements ServiceProvider
 
         $container->register(
             TemplateLibrary::class,
-            static fn (ServiceContainer $c): TemplateLibrary => TemplateLibrary::from(
-                $c->resolve(TemplateVocabulary::class),
-                new BundledTemplates(WCONVERT_DIR),
-                new LockedTemplates(WCONVERT_DIR),
-                $c->resolve(InstalledPacks::class)
-            )
+            static function (ServiceContainer $c): TemplateLibrary {
+                $vocabulary = $c->resolve(TemplateVocabulary::class);
+
+                return TemplateLibrary::deferred(
+                    $vocabulary,
+                    static fn (): TemplateLibrary => TemplateLibrary::from(
+                        $vocabulary,
+                        new BundledTemplates(WCONVERT_DIR),
+                        new LockedTemplates(WCONVERT_DIR),
+                        $c->resolve(InstalledPacks::class)
+                    )
+                );
+            }
         );
 
         $container->register(OptionStore::class, static fn (): OptionStore => new WpOptionStore());
@@ -362,12 +370,14 @@ final class CoreServiceProvider implements ServiceProvider
         // (ADR 0013). Validation happens on the way in, and only here.
         $container->register(
             PlaybookLibrary::class,
-            static fn (ServiceContainer $c): PlaybookLibrary => PlaybookLibrary::fromDirectory(
-                $c->resolve(TemplateLibrary::class),
-                $c->resolve(TemplateVocabulary::class),
-                $c->resolve(RuleVocabulary::class),
-                WCONVERT_DIR,
-                $c->resolve(InstalledPacks::class)->playbooks()
+            static fn (ServiceContainer $c): PlaybookLibrary => PlaybookLibrary::deferred(
+                static fn (): PlaybookLibrary => PlaybookLibrary::fromDirectory(
+                    $c->resolve(TemplateLibrary::class),
+                    $c->resolve(TemplateVocabulary::class),
+                    $c->resolve(RuleVocabulary::class),
+                    WCONVERT_DIR,
+                    $c->resolve(InstalledPacks::class)->playbooks()
+                )
             )
         );
 
@@ -456,11 +466,15 @@ final class CoreServiceProvider implements ServiceProvider
             )
         );
 
+        $container->register(\WConvert\Rest\JourneyStatsController::class, static fn (ServiceContainer $c) => new \WConvert\Rest\JourneyStatsController($c->resolve(Connection::class)));
+
         $container->register(
             CaptureController::class,
             static fn (ServiceContainer $c): CaptureController => new CaptureController(
                 $c->resolve(PublishedSet::class),
-                $c->resolve(LeadCapture::class),
+                new \WConvert\Lead\JourneyCapture($c->resolve(Connection::class), $c->resolve(\WConvert\Stats\StatsRepository::class)),
+                $c->resolve(OptinRepository::class),
+                new \WConvert\Lead\CaptureGrant(wp_salt('auth')),
                 $c->resolve(TemplateVocabulary::class),
                 $c->resolve(CaptureRateLimit::class)
             )
@@ -729,10 +743,18 @@ final class CoreServiceProvider implements ServiceProvider
 
         add_action('update_option_timezone_string', $reresolve);
         add_action('update_option_gmt_offset', $reresolve);
+        $policyChanged = static function () use ($container): void { $container->resolve(OptinRepository::class)->rebuildForPolicyChange(); };
+        foreach (['wp_page_for_privacy_policy', 'permalink_structure', 'home', 'siteurl'] as $option) {
+            add_action('update_option_' . $option, $policyChanged);
+        }
+        add_action('post_updated', static function (int $id) use ($policyChanged): void {
+            if ($id === (int) get_option('wp_page_for_privacy_policy')) { $policyChanged(); }
+        });
+
 
         /*
          * ====================================================================
-         * A REST CONTROLLER IS BUILT WHEN A ROUTE IS SERVED, NEVER HERE.
+         * ROUTES REGISTER ON REST INIT; AUTHORING DATA LOADS ONLY WHEN READ.
          * ====================================================================
          * This runs on `plugins_loaded`, which is before `init` — and a
          * controller is not one object but the graph behind it.
@@ -748,14 +770,16 @@ final class CoreServiceProvider implements ServiceProvider
          *
          * **Nothing is lost by waiting**, and that is what makes this the fix
          * rather than a deferral bought with something. A controller's entire
-         * `hooks()` was one `add_action('rest_api_init', …)`, so it already
-         * did nothing until a route was served; what boot paid for was
-         * building the graph behind routes most requests never reach.
+         * `hooks()` was one `add_action('rest_api_init', …)`, so route
+         * declaration already belonged here rather than at plugin boot.
          *
-         * One deferral covers all eleven, and covers whatever a controller's
-         * dependencies come to do at construction next — which is the half
-         * that a fix aimed at the Playbook library alone would leave open for
-         * the next constructor that reaches for a word.
+         * `rest_api_init` still runs for every REST request. All controllers
+         * must therefore be constructed to declare their routes even when the
+         * request is only a public capture or beacon. The Template and
+         * Playbook libraries keep their typed place in those graphs but defer
+         * globbing, decoding, normalising and translation until a handler
+         * actually reads authoring data. Their first successful read is reused
+         * for the rest of the request.
          *
          * NOT behind `is_admin()`, for the reason the two public routes always
          * needed: a route has to exist wherever `rest_api_init` fires or it
@@ -807,8 +831,11 @@ final class CoreServiceProvider implements ServiceProvider
         // dispatch attaches to a capture, which arrives through REST from a
         // visitor's page; the worker attaches to an Action Scheduler hook,
         // which fires from a loopback request that is neither (#4).
-        $container->resolve(PushDispatcher::class)->hooks();
         $container->resolve(PushWorker::class)->hooks();
+        (new \WConvert\Destination\SubmissionDispatcher(
+            $container->resolve(Connection::class), $container->resolve(\WConvert\Queue\Queue::class),
+            $container->resolve(DestinationStore::class), $container->resolve(DestinationRegistry::class), $container->resolve(HealthStore::class)
+        ))->hooks();
 
         if (!is_admin()) {
             $container->resolve(LoaderEnqueue::class)->hooks();

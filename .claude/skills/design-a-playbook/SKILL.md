@@ -67,6 +67,14 @@ so it is refused here instead. Roles **repeat** and a Playbook supplying an
 array fills them **in tree order** (ADR 0051) — three `body` values are three
 benefit lines. A single value fills the first slot only.
 
+### Multi-screen copy is scoped
+
+Journeys with more than two screens use `copy.screens`: scope by the submitted
+field set (`submission:email`, `submission:phone`, `submission:email-name`),
+`screen:<id>` for other screens, and `acknowledgement`. Each scope contains
+ordinary Slot Role bindings. Never reuse email consent as SMS consent. Navigation
+has its own next/back/skip/close labels. See the four `journey-*` Playbooks.
+
 ### No markup, ever. A link is structure.
 
 For the one `interest` choice field, labels and sent values travel together.

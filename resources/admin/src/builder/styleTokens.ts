@@ -75,7 +75,7 @@ function hasPicture(template: Template, path: Path | null, width: WidthBag): boo
       return Array.isArray(children) && children.some((child: TemplateNode) => painted(child));
     });
   };
-  if (path === null) return picture(template.tokens['bg-image']) || template.tree.steps.some(painted);
+  if (path === null) return picture(template.tokens['bg-image']) || template.tree.steps.some((step) => painted(step.content));
   const node = nodeAt(template.tree, path);
   if (node === null) return false;
   // An image's own source is independent of background inheritance.

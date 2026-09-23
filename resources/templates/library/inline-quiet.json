@@ -26,88 +26,112 @@
   "tree": {
     "steps": [
       {
-        "type": "stack",
-        "children": [
-          {
-            "type": "divider",
-            "id": "n1"
-          },
-          {
-            "type": "heading",
-            "id": "n2",
-            "role": "headline",
-            "level": 2,
-            "text": "A good read, once a week."
-          },
-          {
-            "type": "text",
-            "id": "n3",
-            "role": "body",
-            "text": "One thoughtful story to carry into the weekend."
-          },
-          {
-            "type": "row",
-            "children": [
-              {
-                "type": "field",
-                "id": "n4",
-                "name": "email",
-                "label": "Email address",
-                "placeholder": "you@example.com",
-                "required": true
-              },
-              {
-                "type": "button",
-                "id": "n5",
-                "role": "cta_label",
-                "label": "Send me the weekly story",
-                "action": "submit"
-              }
-            ]
-          },
-          {
-            "type": "consent",
-            "id": "n6",
-            "role": "consent_text",
-            "hidden": true,
-            "text": "Email me offers and news. %s",
-            "link": {
-              "label": "Privacy Policy"
+        "id": "s1",
+        "name": "Details",
+        "kind": "input",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "divider",
+              "id": "n1"
             },
-            "tokens": {
-              "text-size": "1.125rem"
+            {
+              "type": "heading",
+              "id": "n2",
+              "role": "headline",
+              "level": 2,
+              "text": "A good read, once a week."
+            },
+            {
+              "type": "text",
+              "id": "n3",
+              "role": "body",
+              "text": "One thoughtful story to carry into the weekend."
+            },
+            {
+              "type": "row",
+              "children": [
+                {
+                  "type": "field",
+                  "id": "n4",
+                  "name": "email",
+                  "label": "Email address",
+                  "placeholder": "you@example.com",
+                  "required": true
+                },
+                {
+                  "type": "button",
+                  "id": "n5",
+                  "role": "cta_label",
+                  "label": "Send me the weekly story",
+                  "action": "submit",
+                  "submission": "primary"
+                }
+              ]
+            },
+            {
+              "type": "consent",
+              "id": "n6",
+              "role": "consent_text",
+              "hidden": true,
+              "text": "Email me offers and news. %s",
+              "link": {
+                "label": "Privacy Policy"
+              },
+              "tokens": {
+                "text-size": "1.125rem"
+              }
+            },
+            {
+              "type": "divider",
+              "id": "n7"
             }
-          },
-          {
-            "type": "divider",
-            "id": "n7"
-          }
-        ]
+          ]
+        }
       },
       {
-        "type": "stack",
-        "children": [
-          {
-            "type": "divider",
-            "id": "n8"
-          },
-          {
-            "type": "heading",
-            "id": "n9",
-            "role": "success_headline",
-            "level": 2,
-            "text": "Thank you"
-          },
-          {
-            "type": "text",
-            "id": "n10",
-            "role": "success_body",
-            "text": "We have received your request. Enjoy the rest of your reading."
-          },
-          {
-            "type": "divider",
-            "id": "n11"
-          }
+        "id": "s2",
+        "name": "Received",
+        "kind": "acknowledgement",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "divider",
+              "id": "n8"
+            },
+            {
+              "type": "heading",
+              "id": "n9",
+              "role": "success_headline",
+              "level": 2,
+              "text": "Thank you"
+            },
+            {
+              "type": "text",
+              "id": "n10",
+              "role": "success_body",
+              "text": "We have received your request. Enjoy the rest of your reading."
+            },
+            {
+              "type": "divider",
+              "id": "n11"
+            }
+          ]
+        }
+      }
+    ],
+    "v": 2,
+    "submissions": [
+      {
+        "id": "primary",
+        "required": true,
+        "fields": [
+          "n4"
+        ],
+        "consents": [
+          "n6"
         ]
       }
     ]

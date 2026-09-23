@@ -1,3 +1,4 @@
+import { treeFixture } from './support/journey';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { CAPTURE_ERROR_CLASS, bindCapture } from '@loader/capture';
 import { render } from '@renderer/render';
@@ -16,7 +17,7 @@ const OPTIN = '01JQ0000000000000000000001';
 const ENDPOINT = 'https://example.test/wp-json/wconvert/v1/capture';
 
 const template = (options: { consent?: boolean; phone?: boolean } = {}): Template => ({
-  tree: {
+  tree: treeFixture({
     steps: [
       {
         type: 'stack',
@@ -33,7 +34,7 @@ const template = (options: { consent?: boolean; phone?: boolean } = {}): Templat
       },
       { type: 'stack', children: [{ type: 'heading', role: 'success_headline', text: 'Done' }] },
     ],
-  },
+  }),
   tokens: {},
 });
 

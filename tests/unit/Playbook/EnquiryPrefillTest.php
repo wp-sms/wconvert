@@ -229,7 +229,7 @@ final class EnquiryPrefillTest extends TestCase
         $alternative = $original;
         $alternative['id'] = 'other-choice';
         $alternative['tokens']['bg'] = '#ffffff';
-        $alternative['tree']['steps'][0]['children'] = array_reverse($alternative['tree']['steps'][0]['children']);
+        $alternative['tree']['steps'][0]['content']['children'] = array_reverse($alternative['tree']['steps'][0]['content']['children']);
         $source = new class ([$original, $alternative]) implements TemplateSource {
             /** @param list<array<string, mixed>> $candidates */
             public function __construct(private readonly array $candidates)
@@ -258,7 +258,7 @@ final class EnquiryPrefillTest extends TestCase
         $this->assertSame('Which service do you need? (optional)', $fields['interest']['label']);
         $this->assertSame('Choose a service', $fields['interest']['placeholder']);
         $this->assertSame('#ffffff', $switched['template']['tokens']['bg']);
-        $this->assertSame('fine_print', $switched['template']['tree']['steps'][0]['children'][0]['role']);
+        $this->assertSame('fine_print', $switched['template']['tree']['steps'][0]['content']['children'][0]['role']);
     }
 
     public function testChoosingADesignWithoutAChoiceDropsThatRoleWithoutChangingTheReplyAddress(): void

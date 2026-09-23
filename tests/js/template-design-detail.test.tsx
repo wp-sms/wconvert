@@ -1,3 +1,4 @@
+import { treeFixture } from './support/journey';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { act, render, screen, waitFor, within } from '@testing-library/react';
@@ -200,7 +201,7 @@ describe('inspecting a design before replacing the draft', () => {
   });
 
   it('offers only the screens present in a single-screen design', () => {
-    detail({ template: { ...TEMPLATE, tree: { ...TEMPLATE.tree, steps: [TEMPLATE.tree.steps[0]] } } });
+    detail({ template: { ...TEMPLATE, tree: treeFixture({ ...TEMPLATE.tree, steps: [TEMPLATE.tree.steps[0]] }) } });
     expect(screen.queryByRole('group', { name: 'Preview screen' })).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Use this design' })).toHaveAttribute('aria-disabled', 'false');
   });

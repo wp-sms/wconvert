@@ -97,7 +97,7 @@ final class OptinRepositoryTest extends TestCase
         $this->assertFalse($live->toArray()['has_unpublished_changes']);
 
         $config = $live->config;
-        $config['template']['tree']['steps'][0]['children'][0]['text'] = 'VIEW OFFER';
+        $config['template']['tree']['steps'][0]['content']['children'][0]['text'] = 'VIEW OFFER';
         $saved = $this->repository->saveDraft($optin->id, null, null, $config);
         $this->assertNotNull($saved);
         $this->assertTrue($saved->toArray()['has_unpublished_changes'], 'case-only edits are saved changes');
@@ -133,9 +133,9 @@ final class OptinRepositoryTest extends TestCase
             [['type' => 'field', 'name' => 'name']],
             [['type' => 'field', 'name' => 'email'], ['type' => 'field', 'name' => 'interest', 'options' => []]],
         ] as $fields) {
-            $config = ['template' => ['tree' => ['steps' => [[
+            $config = ['template' => ['tree' => \WConvert\Tests\Unit\Support\JourneyFixture::tree(['steps' => [[
                 'type' => 'stack', 'children' => [...$fields, ['type' => 'button', 'action' => 'submit']],
-            ]]]]];
+            ]]])]];
             $saved = $this->repository->saveDraft($optin->id, null, null, $config);
             self::assertNotNull($saved, 'the merchant can keep an unfinished draft');
             self::assertNull($this->repository->publish($optin->id));
@@ -146,7 +146,7 @@ final class OptinRepositoryTest extends TestCase
 
     public function testMissingDesignCannotBePromotedAndDoesNotStampActivation(): void
     {
-        foreach ([[], ['template' => ['tree' => ['steps' => []]]]] as $config) {
+        foreach ([[], ['template' => ['tree' => \WConvert\Tests\Unit\Support\JourneyFixture::tree(['steps' => []])]]] as $config) {
             $draft = $this->repository->create('Incomplete', 'grow_email_list', $config);
             $this->assertNull($this->repository->publish($draft->id));
             $this->assertNull($this->repository->find($draft->id)?->publishedAt);

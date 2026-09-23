@@ -35,7 +35,7 @@ final class PolicyLinkTest extends TestCase
             $node['role'] = $role;
         }
 
-        return ['template' => ['tree' => ['steps' => [['type' => 'stack', 'children' => [$node]]]], 'tokens' => []]];
+        return ['template' => ['tree' => \WConvert\Tests\Unit\Support\JourneyFixture::tree(['steps' => [['type' => 'stack', 'children' => [$node]]]]), 'tokens' => []]];
     }
 
     /**
@@ -45,7 +45,7 @@ final class PolicyLinkTest extends TestCase
     private static function firstLink(array $payload): array
     {
         /** @var array<string, mixed> $link */
-        $link = $payload['template']['tree']['steps'][0]['children'][0]['link'];
+        $link = $payload['template']['tree']['steps'][0]['content']['children'][0]['link'];
 
         return $link;
     }
@@ -118,10 +118,10 @@ final class PolicyLinkTest extends TestCase
             'link' => ['label' => 'privacy policy'],
         ];
 
-        $payload = ['template' => ['tree' => ['steps' => [
+        $payload = ['template' => ['tree' => \WConvert\Tests\Unit\Support\JourneyFixture::tree(['steps' => [
             ['type' => 'split', 'start' => [$node('a')], 'end' => [['type' => 'row', 'children' => [$node('b')]]]],
             ['type' => 'stack', 'children' => [$node('c')]],
-        ]], 'tokens' => []]];
+        ]]), 'tokens' => []]];
 
         $resolved = PolicyLink::into($payload, self::POLICY);
         $found = [];
@@ -138,7 +138,7 @@ final class PolicyLinkTest extends TestCase
         };
 
         foreach ($resolved['template']['tree']['steps'] as $step) {
-            $walk($step);
+            $walk($step['content']);
         }
 
         $this->assertSame([self::POLICY, self::POLICY, self::POLICY], $found);

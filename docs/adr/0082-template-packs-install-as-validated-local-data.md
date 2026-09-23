@@ -57,6 +57,14 @@ Limits: 12 designs/pack, 200 nodes/design, depth 12, 2 screens, bounded text and
 styles, and the existing compressed per-design budget. This stricter import
 policy does not restrict merchant-authored editor values.
 
+*Amended for progressive capture by
+[ADR 0103](0103-progressive-capture-keeps-one-lead-per-journey.md): replace the
+two-screen limit with explicit linear-journey validation in JSON v2.
+Update capability requirements and raw-structure validation together;
+unsupported flow data must not be silently normalized into a different capture.
+Existing packs are not promised a compatibility reader during this pre-release
+redesign.*
+
 ## Local versions and failures
 
 Validated pack bytes are atomically renamed from a temporary file into

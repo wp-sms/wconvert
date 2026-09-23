@@ -88,7 +88,8 @@ const ROOT = process.argv[2] ? resolve(process.argv[2]) : REPO_ROOT;
  * bundle is enqueued only for an administrator who asked for it.
  */
 const FREE_BYTE_BUDGET = 14012;
-const PAID_BYTE_BUDGET = 18432;
+// ADR 0103: shared journeys plus paid recovery/content access.
+const PAID_BYTE_BUDGET = 19456;
 
 const MANIFEST = 'resources/rules/manifest.json';
 

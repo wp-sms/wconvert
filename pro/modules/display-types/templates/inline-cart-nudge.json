@@ -26,39 +26,46 @@
   "tree": {
     "steps": [
       {
-        "type": "row",
-        "children": [
-          {
-            "type": "icon",
-            "id": "n1",
-            "name": "truck"
-          },
-          {
-            "type": "stack",
-            "children": [
-              {
-                "type": "heading",
-                "id": "n2",
-                "role": "headline",
-                "text": "Ready for another look?"
-              },
-              {
-                "type": "text",
-                "id": "n3",
-                "role": "body",
-                "text": "Review the items in your basket."
-              }
-            ]
-          },
-          {
-            "type": "button",
-            "id": "n4",
-            "role": "cta_label",
-            "label": "Open my basket",
-            "action": "link"
-          }
-        ]
+        "id": "s1",
+        "name": "Offer",
+        "kind": "content",
+        "content": {
+          "type": "row",
+          "children": [
+            {
+              "type": "icon",
+              "id": "n1",
+              "name": "truck"
+            },
+            {
+              "type": "stack",
+              "children": [
+                {
+                  "type": "heading",
+                  "id": "n2",
+                  "role": "headline",
+                  "text": "Ready for another look?"
+                },
+                {
+                  "type": "text",
+                  "id": "n3",
+                  "role": "body",
+                  "text": "Review the items in your basket."
+                }
+              ]
+            },
+            {
+              "type": "button",
+              "id": "n4",
+              "role": "cta_label",
+              "label": "Open my basket",
+              "action": "link"
+            }
+          ]
+        }
       }
-    ]
+    ],
+    "v": 2,
+    "submissions": []
   }
 }

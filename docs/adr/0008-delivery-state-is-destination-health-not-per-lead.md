@@ -5,6 +5,15 @@ here, explicitly declining to spend a third table on our behalf. The obvious
 design is a `wconvert_lead_deliveries` table at the per-(Lead × Destination)
 grain — the grain the queue already uses. We did not build it.
 
+*Amended for progressive capture by
+[ADR 0103](0103-progressive-capture-keeps-one-lead-per-journey.md): one Lead may
+receive an email signup and a later SMS signup. Each completed signup starts
+its handoff immediately after persistence, and SMS must not replay the email
+welcome or resource delivery. A Lead/Destination pair alone no longer names
+the exact accepted submission a job represents. Submission-scoped routing,
+retry, recovery and evidence storage are being designed; this amendment does
+not introduce a delivery table; accepted snapshots and initial handoff markers live in existing Lead JSON.*
+
 The argument that decides it is **idempotency**. The ESP research found that no
 vendor offers an idempotency header, so every push must use the vendor's
 email-keyed upsert. That makes `push()` idempotent by construction — a

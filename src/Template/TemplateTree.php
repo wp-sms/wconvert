@@ -82,7 +82,7 @@ final class TemplateTree
      * would need and cannot reconstruct. The first reader is whichever release
      * first has to narrow something.
      */
-    public const VERSION = 1;
+    public const VERSION = 2;
 
     /**
      * The same tree, stamped with the vocabulary version that produced it.
@@ -96,8 +96,8 @@ final class TemplateTree
      * The version goes FIRST so a stored `config` reads with it at the top,
      * where a human opening the row looks.
      *
-     * @param array{steps: list<array<string, mixed>>} $tree
-     * @return array{v: int, steps: list<array<string, mixed>>}
+     * @param array{steps: list<array<string, mixed>>, submissions: list<array<string, mixed>>} $tree
+     * @return array{v: int, steps: list<array<string, mixed>>, submissions: list<array<string, mixed>>}
      */
     public static function stamped(array $tree): array
     {
@@ -149,6 +149,10 @@ final class TemplateTree
      */
     private static function rewrite(array $node, callable $rewrite): array
     {
+        if (is_array($node['content'] ?? null)) {
+            $node['content'] = self::rewrite($node['content'], $rewrite);
+            return $node;
+        }
         $node = $rewrite($node);
 
         foreach (self::CHILD_KEYS as $key) {
@@ -171,7 +175,7 @@ final class TemplateTree
      */
     public static function childrenOf(array $node): array
     {
-        $children = [];
+        $children = is_array($node['content'] ?? null) ? [$node['content']] : [];
 
         foreach (self::CHILD_KEYS as $key) {
             if (is_array($node[$key] ?? null)) {

@@ -59,7 +59,7 @@ final class LeadExporterTest extends TestCase
             'optin_id' => '01HZZZZZZZZZZZZZZZZZZZZZZZ',
             'email' => $email,
             'phone' => '+12025551234',
-            'fields' => (string) json_encode((object) $fields),
+            'fields' => (string) json_encode(['answers' => (object) $fields, 'capture' => (object) []]),
             'created_at' => '2026-08-01 09:30:00',
         ];
     }

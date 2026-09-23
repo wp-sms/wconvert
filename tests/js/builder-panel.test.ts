@@ -1,3 +1,4 @@
+import { treeFixture } from './support/journey';
 import { readFileSync, readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
@@ -27,7 +28,7 @@ import type { TemplateNode, TemplateTree, Tokens } from '@renderer/types';
  * where it is, which words it holds, and whether it is switched on.
  */
 
-const TREE: TemplateTree = {
+const TREE: TemplateTree = treeFixture({
   steps: [
     {
       type: 'stack',
@@ -38,7 +39,7 @@ const TREE: TemplateTree = {
       ],
     },
   ],
-};
+});
 
 describe('the slots of a design', () => {
   it('is every leaf that holds words or an image, in tree order, wherever it sits', () => {
@@ -240,7 +241,7 @@ describe('the manifest’s choices', () => {
  */
 describe('the scope chain', () => {
   /** A box inside a box, with a leaf at the bottom of it. */
-  const NESTED = {
+  const NESTED = treeFixture({
     steps: [
       {
         type: 'stack',
@@ -255,7 +256,7 @@ describe('the scope chain', () => {
         ],
       },
     ],
-  } as unknown as TemplateTree;
+  }) as unknown as TemplateTree;
 
   /** The heading, at the bottom of both boxes. */
   const LEAF = [0, 'children', 0, 'children', 0, 'children', 0];
@@ -303,15 +304,15 @@ describe('the scope chain', () => {
 });
 
 describe('writing a token onto one box', () => {
-  const ONE = {
+  const ONE = treeFixture({
     steps: [{ type: 'stack', children: [{ type: 'panel', children: [] }] }],
-  } as unknown as TemplateTree;
+  }) as unknown as TemplateTree;
 
   const PANEL = [0, 'children', 0];
 
   it('creates the bag on that box and touches nothing else', () => {
     const next = withScopeToken(ONE, PANEL, 'bg', '#fff4df');
-    const panel = (next.steps[0] as unknown as { children: { tokens?: Tokens }[] }).children[0];
+    const panel = (next.steps[0].content as unknown as { children: { tokens?: Tokens }[] }).children[0];
 
     expect(panel?.tokens).toEqual({ bg: '#fff4df' });
     expect(next.steps[0]).not.toHaveProperty('tokens');
@@ -327,7 +328,7 @@ describe('writing a token onto one box', () => {
   it('drops the bag entirely when the last value is cleared', () => {
     const set = withScopeToken(ONE, PANEL, 'bg', '#fff4df');
     const cleared = withScopeToken(set, PANEL, 'bg', '');
-    const panel = (cleared.steps[0] as unknown as { children: Record<string, unknown>[] }).children[0];
+    const panel = (cleared.steps[0].content as unknown as { children: Record<string, unknown>[] }).children[0];
 
     expect(panel).not.toHaveProperty('tokens');
   });

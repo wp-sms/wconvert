@@ -58,7 +58,7 @@ final class PolicyText
             '<p>' . __('We use WConvert to display campaigns, including forms and messages, on this website. When a campaign includes a form, we use the information you submit for the purpose described in that form, such as responding to a request, providing a resource or managing a subscription.', 'wconvert') . '</p>',
             '<h3>' . __('Information we collect', 'wconvert') . '</h3>',
             '<p>' . __('When you submit a WConvert form, we collect the information shown in that form. Depending on the form, this may include your name, email address, phone number, selections and messages. We also record which campaign received the submission and the date and time it was submitted.', 'wconvert') . '</p>',
-            '<p>' . __('If a form asks for your consent, we save the exact consent statement shown when you submitted it. This lets us keep a record of what you agreed to.', 'wconvert') . '</p>',
+            '<p>' . __('If a form asks for your consent, we save the exact consent statement shown when you submitted it. Each completed signup is saved immediately. An optional email or SMS signup has its own consent statement and acceptance time; skipping it does not undo an earlier signup.', 'wconvert') . '</p>',
             '<p>' . __('We do not add the page address, IP address or browser details to the saved form submission.', 'wconvert') . '</p>',
             '<h3>' . __('Browser storage and campaign statistics', 'wconvert') . '</h3>',
             '<p>' . sprintf(

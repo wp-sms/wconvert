@@ -177,7 +177,7 @@ final class LibraryLintTest extends TestCase
                 'name' => 'Typo',
                 'display_type' => 'popup',
                 'tier' => 'free',
-                'trees' => ['steps' => []],
+                'trees' => \WConvert\Tests\Unit\Support\JourneyFixture::tree(['steps' => []]),
             ]),
         ]));
 
@@ -198,13 +198,13 @@ final class LibraryLintTest extends TestCase
                 'name' => 'Roles',
                 'display_type' => 'popup',
                 'tier' => 'free',
-                'tree' => ['steps' => [
+                'tree' => \WConvert\Tests\Unit\Support\JourneyFixture::tree(['steps' => [
                     ['type' => 'stack', 'children' => [
                         ['type' => 'heading', 'role' => 'nonsense', 'text' => 'One'],
                         ['type' => 'text', 'role' => 'cta_label', 'text' => 'Two'],
                         ['type' => 'button', 'label' => 'Go', 'action' => 'link', 'href' => '/x'],
                     ]],
-                ]],
+                ]]),
             ]),
         ]));
 

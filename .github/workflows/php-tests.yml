@@ -102,3 +102,72 @@ jobs:
       # phpstan.neon.dist pins phpVersion: 80100 — analysis runs on the floor.
       - name: PHPStan
         run: composer phpstan
+
+  database:
+    name: 'Database · WordPress 6.8 / PHP 8.2 / MySQL 8.4'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      mysql:
+        image: mysql:8.4
+        env:
+          MYSQL_DATABASE: wordpress
+          MYSQL_ROOT_PASSWORD: root
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping --host=127.0.0.1 --password=root"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup PHP 8.2 and WP-CLI
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          extensions: mbstring, mysqli, mysqlnd
+          tools: composer, wp-cli
+          coverage: none
+
+      - name: Install plugin dependencies
+        run: composer install --no-interaction --no-progress
+
+      - name: Install disposable WordPress
+        env:
+          WP_PATH: ${{ runner.temp }}/wordpress
+        run: |
+          set -euo pipefail
+
+          wp core download --version=6.8 --path="$WP_PATH"
+          wp config create \
+            --path="$WP_PATH" \
+            --dbname=wordpress \
+            --dbuser=root \
+            --dbpass=root \
+            --dbhost=127.0.0.1:3306
+          wp config set DISABLE_WP_CRON true --raw --path="$WP_PATH"
+          wp config set WCONVERT_VERIFY_JOURNEYS true --raw --path="$WP_PATH"
+          wp core install \
+            --path="$WP_PATH" \
+            --url=http://wconvert.test \
+            --title=WConvert \
+            --admin_user=admin \
+            --admin_password=development-only \
+            --admin_email=admin@example.test \
+            --skip-email
+          ln -s "$GITHUB_WORKSPACE" "$WP_PATH/wp-content/plugins/wconvert"
+          wp plugin activate wconvert --path="$WP_PATH"
+
+      - name: Verify SQL behavior against MySQL
+        env:
+          WP_PATH: ${{ runner.temp }}/wordpress
+        run: |
+          set -euo pipefail
+
+          wp eval-file "$GITHUB_WORKSPACE/bin/verify-stats.php" --use-include --path="$WP_PATH"
+          wp eval-file "$GITHUB_WORKSPACE/bin/verify-lead-log.php" --use-include --path="$WP_PATH"
+          wp eval-file "$GITHUB_WORKSPACE/bin/verify-lead-search.php" --use-include --path="$WP_PATH"
+
+          WCONVERT_VERIFY_BOOTSTRAP="$WP_PATH/wp-load.php" php "$GITHUB_WORKSPACE/bin/verify-capture-journeys.php"

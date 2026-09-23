@@ -1,22 +1,23 @@
 [
   {
     "id": "store-collection",
-    "version": "1.3.0",
+    "version": "1.4.0",
     "name": "Store collection",
     "description": "Three offer layouts: Fieldwork, Punched ticket and The summer archive. Add your real code, terms, sale destination and schedule before publishing.",
     "requires": {
       "plugin": "0.1.0",
-      "tree": 1,
+      "tree": 2,
       "capabilities": [
-        "template-tree:1",
+        "template-tree:2",
         "success-actions:1",
-        "campaign-starts:1"
+        "campaign-starts:1",
+        "capture-journey:1"
       ]
     },
     "templates": {
-      "fieldwork": "ecb063af6d48143a785910b1973f8ef50ec9737c68f686db8f620cf99ffa7dc9",
-      "punched-ticket": "1d7cb2a8680347d63d3da871bfa8c0850d017245f7f9a3ecbdd56b01be6025a4",
-      "summer-archive": "67a91cddab71598c07027739159a5a6090b6f9aecb7943ab552616e87dc0a4fb"
+      "fieldwork": "04d4fcc57ab50f5e3976063d0495b7a2c304d6b3421511b8b6aea0389c028cf3",
+      "punched-ticket": "b67fd6ff82e5bc91b5b17247a6c113c4620a2987d5b39f256496fbaef83aa099",
+      "summer-archive": "9fab8bce6a4ae4fd314e38ef3fe96caff5c6ab7ebd1e3d5b4f7bbe1e09f6dc5d"
     },
     "playbooks": {
       "welcome-discount": "aa3f95bd99f7b853cddf2ec7b4d002eeb42712981d8d70ac76ed3ed1376b1f9b",
@@ -26,23 +27,24 @@
   },
   {
     "id": "publisher-collection",
-    "version": "1.3.0",
+    "version": "1.4.0",
     "name": "Publisher collection",
     "description": "Four layouts for newsletters, article-end signups, guides and reading recommendations. Add your publication details, destinations and resources before publishing.",
     "requires": {
       "plugin": "0.1.0",
-      "tree": 1,
+      "tree": 2,
       "capabilities": [
-        "template-tree:1",
+        "template-tree:2",
         "success-actions:1",
-        "campaign-starts:1"
+        "campaign-starts:1",
+        "capture-journey:1"
       ]
     },
     "templates": {
-      "sunday-marginalia": "63d36c4ed052e8b699b8b52f4ff26eeb3a9537b037153da308b1eac532c045e5",
-      "inline-rule": "56dfeb212b680be57ad4658696d54f65f59105931fedc3d573a3e666eef24cca",
-      "useful-guide": "4b613eed60063ba6358a6cbd6ab853dcba1c529ced5b937daf2d0767027cf34d",
-      "reading-slip": "4835d5e4319c0604a4307ae6f723c7191512a0068f7b67404b10097f130a3010"
+      "sunday-marginalia": "4a8faf6b76b8834aee44e44480884f71a8710a41d42bfaf8cd54d25d66b15cad",
+      "inline-rule": "c886cc22c8810d3c845e50f88fc7c691a2dda5533cca173e0dbe66f2e809bc4d",
+      "useful-guide": "0493084eede0ec2f4861e12cdb67c99a7226f29bd1eb658a847b3f820a444a79",
+      "reading-slip": "8a1bb2268e59b975d2a0fb61885c681a059e5cd6b1275174d7fce59501b1971c"
     },
     "playbooks": {
       "read-to-the-end": "0dbbb7ccff5677061c8efc4c977c54a8c5fba5012f0b6dd3e4f2920ddb21a0be",
@@ -53,23 +55,24 @@
   },
   {
     "id": "service-collection",
-    "version": "1.3.0",
+    "version": "1.4.0",
     "name": "Service collection",
     "description": "Three layouts for callbacks, service enquiries and checklists. Add your topics, response process and resources before publishing.",
     "requires": {
       "plugin": "0.1.0",
-      "tree": 1,
+      "tree": 2,
       "capabilities": [
-        "template-tree:1",
+        "template-tree:2",
         "success-actions:1",
         "enquiry-choice:1",
-        "campaign-starts:1"
+        "campaign-starts:1",
+        "capture-journey:1"
       ]
     },
     "templates": {
-      "callback-notes": "7b62c02197464787642896cc6102c6613fcf0ceac3232ef81fd2e6400ff269bc",
-      "inline-choice": "905b17cada1b364e5c1e5bc68983ddfeee7c85e5cb70b5216ad17fd9620ab089",
-      "launch-checklist": "70265743393d14563c463e330dbbba05c1efb1d2b27437a3942de36141171d8d"
+      "callback-notes": "643b77cdb2d86c907fdf9a0801da77969aadc55015589b50f9a89db285252df0",
+      "inline-choice": "d832b65e168dc0ee84f238b7950153b0b019bba9107b4547e434aca8d67644f7",
+      "launch-checklist": "03dea5322c4a0d98b494e8344ca5110b4d710352eea2766c9eecaa4bd1d13735"
     },
     "playbooks": {
       "request-a-callback": "c975d28525e888e7b916312fd717fb46bf40786dcbfc70d0c30ac13adbd3f981",

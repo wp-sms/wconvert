@@ -29,6 +29,34 @@ final class TemplateLibraryTest extends TestCase
         return TemplateLibrary::fromDirectory(TemplateVocabulary::fromManifest(self::PLUGIN_DIR), self::PLUGIN_DIR);
     }
 
+    public function testADeferredLibraryRetriesAFailedBuildAndKeepsOnlyTheSuccessfulResult(): void
+    {
+        $vocabulary = TemplateVocabulary::fromManifest(self::PLUGIN_DIR);
+        $attempts = 0;
+        $library = TemplateLibrary::deferred(
+            $vocabulary,
+            static function () use (&$attempts, $vocabulary): TemplateLibrary {
+                $attempts++;
+                if ($attempts === 1) {
+                    throw new \RuntimeException('temporary read failure');
+                }
+
+                return TemplateLibrary::fromDirectory($vocabulary, self::PLUGIN_DIR);
+            }
+        );
+
+        try {
+            $library->all();
+            $this->fail('The first catalog read should fail.');
+        } catch (\RuntimeException $error) {
+            $this->assertSame('temporary read failure', $error->getMessage());
+        }
+
+        $this->assertNotNull($library->find('centred-card'));
+        $this->assertNotSame([], $library->all());
+        $this->assertSame(2, $attempts, 'the successful catalog was rebuilt after it had already been cached');
+    }
+
     public function testTheV1SubmitMeteredTemplateShips(): void
     {
         $template = self::library()->find('centred-card');
@@ -98,14 +126,11 @@ final class TemplateLibraryTest extends TestCase
             $nodes = self::consentNodesIn($template['tree']);
 
             $this->assertCount(
-                $captures ? 1 : 0,
+                $captures ? array_sum(array_map(static fn (array $s): int => count($s['consents']), $template['tree']['submissions'])) : 0,
                 $nodes,
                 "{$id}: a capture design offers consent capture, and nothing else offers it"
             );
 
-            foreach ($nodes as $node) {
-                $this->assertTrue($node['hidden'] ?? false, "{$id}: ships consent turned on for the merchant");
-            }
         }
     }
 

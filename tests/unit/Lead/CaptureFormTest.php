@@ -41,7 +41,7 @@ final class CaptureFormTest extends TestCase
     private static function template(array $extra = []): array
     {
         return [
-            'tree' => [
+            'tree' => \WConvert\Tests\Unit\Support\JourneyFixture::tree([
                 'steps' => [
                     [
                         'type' => 'stack',
@@ -58,7 +58,7 @@ final class CaptureFormTest extends TestCase
                         ],
                     ],
                 ],
-            ],
+            ]),
             'tokens' => [],
         ];
     }
@@ -226,7 +226,7 @@ final class CaptureFormTest extends TestCase
     public function testOnlyTheStepThatSubmitsIsTheForm(): void
     {
         $template = self::template();
-        $template['tree']['steps'][1]['children'][] = ['type' => 'field', 'name' => 'phone', 'required' => true];
+        $template['tree']['steps'][1]['content']['children'][] = ['type' => 'field', 'name' => 'phone', 'required' => true];
 
         $capture = self::validate($template, ['fields' => ['email' => 'sarah@example.com']]);
 
@@ -317,7 +317,7 @@ final class CaptureFormTest extends TestCase
     public function testASubmissionCarryingNeitherIdentifierIsRefused(): void
     {
         $template = self::template([['type' => 'field', 'name' => 'name']]);
-        $template['tree']['steps'][0]['children'][1] = ['type' => 'field', 'name' => 'email'];
+        $template['tree']['steps'][0]['content']['children'][1] = ['type' => 'field', 'name' => 'email'];
 
         $refusal = self::validate($template, ['fields' => ['name' => 'Sarah']]);
 
@@ -332,10 +332,10 @@ final class CaptureFormTest extends TestCase
     public function testAClickMeteredOptinCapturesNothing(): void
     {
         $template = [
-            'tree' => ['steps' => [[
+            'tree' => \WConvert\Tests\Unit\Support\JourneyFixture::tree(['steps' => [[
                 'type' => 'stack',
                 'children' => [['type' => 'button', 'label' => 'Shop the sale', 'action' => 'link', 'href' => 'https://example.test/sale']],
-            ]]],
+            ]]]),
             'tokens' => [],
         ];
 

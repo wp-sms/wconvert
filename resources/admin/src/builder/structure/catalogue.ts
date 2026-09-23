@@ -1,6 +1,7 @@
 import { __ } from '@wordpress/i18n';
 import { AUTHORED_ROLES, FIELDS, LAYOUTS, LEAVES, ROLES, childKeysOf } from '../panel';
 import { capturesTaken, nodeAt, rolesTaken, type Spot } from './tree';
+import { submissionScreen } from './journey';
 import type { TemplateNode, TemplateTree } from '@renderer/types';
 
 /**
@@ -140,31 +141,19 @@ function whyRefused(
   at: Spot,
   act: ConvertingAct,
 ): string | null {
-  if (type === 'button') {
-    return buttonsIn(tree) > 0
-      ? __('This design already has the button that counts. A campaign has exactly one.', 'wconvert')
-      : null;
+  const screen = tree.steps[Number(at.parent[0])];
+  if (type === 'button' && act === 'click' && buttonsIn(tree) > 0) {
+    return __('This design already has its converting link.', 'wconvert');
   }
-
-  if (type === 'followup' && (act !== 'submit' || at.parent[0] !== 1 || formStep(tree) !== 0)) {
-    return __('A resource link belongs on the screen after the form is submitted.', 'wconvert');
+  if (type === 'followup') {
+    const primary = tree.submissions[0]?.id;
+    const acceptedAt = submissionScreen(tree, primary);
+    if (acceptedAt < 0 || Number(at.parent[0]) <= acceptedAt) {
+      return __('Resource links belong after capture.', 'wconvert');
+    }
   }
-
-  if (type === 'field' || type === 'consent') {
-    const form = formStep(tree);
-
-    if (form === null) {
-      return act === 'click'
-        ? __(
-            'This Campaign converts on a click and captures nothing, so it has no form to add to.',
-            'wconvert',
-          )
-        : __('Add the button that submits the form first — the form is the step that holds it.', 'wconvert');
-    }
-
-    if (at.parent[0] !== form) {
-      return __('Only the step with the submit button is a form, so this is the step that captures.', 'wconvert');
-    }
+  if ((type === 'field' || type === 'consent') && screen?.kind !== 'input') {
+    return __('Add contact fields to a question screen.', 'wconvert');
   }
 
   if (type === 'field' && freeCapture(tree) === null) {
@@ -261,7 +250,7 @@ export function nodeFor(
     // and `whyRefused` refuses a second button — and it is here because
     // deleting the only button and adding one back is the route that reaches
     // it, and the act to restore is the one the design had (ADR 0059).
-    node.action = actionFor(act);
+    node.action = act === 'click' ? 'link' : 'next';
   }
 
   // A `consent` node ships hidden, which is the same "off by default" every
@@ -374,7 +363,7 @@ export function losesWordsOnSwitch(block: { type: string; role: string | null })
 export const actionFor = (act: ConvertingAct): string => (act === 'click' ? 'link' : 'submit');
 
 /** Every `action` a `button` may carry, in the order the acts are declared. */
-export const ACTIONS: readonly string[] = ['submit', 'link'];
+export const ACTIONS: readonly string[] = ['submit', 'link', 'next', 'back', 'skip', 'close'];
 
 /** A capture kind no field in the tree is using, or null. */
 export function freeCapture(tree: TemplateTree): string | null {
@@ -383,30 +372,23 @@ export function freeCapture(tree: TemplateTree): string | null {
   return FIELDS.find((kind) => !taken.includes(kind)) ?? null;
 }
 
-/**
- * Which step IS the form, or null where none is.
- *
- * Read exactly the way `render.ts` reads it — the step holding a button that is
- * not a `link` — so the editor and the renderer cannot disagree about which
- * step captures. A click-metered design has no such step, which is ADR 0025's
- * whole point rather than a missing case.
- */
+/** First screen with an explicit Submit; navigation buttons do not submit answers. */
 export function formStep(tree: TemplateTree): number | null {
-  const at = tree.steps.findIndex(submits);
+  const at = tree.steps.findIndex((step) => submits(step.content));
 
   return at === -1 ? null : at;
 }
 
 function submits(node: TemplateNode): boolean {
   if (node.type === 'button') {
-    return (node as { action?: string }).action !== 'link';
+    return (node as { action?: string }).action === 'submit';
   }
 
   return childKeysOf(node.type).some((key) => childrenOf(node, key).some(submits));
 }
 
 function buttonsIn(tree: TemplateTree): number {
-  return tree.steps.reduce((carried, step) => carried + buttonsUnder(step), 0);
+  return tree.steps.reduce((carried, step) => carried + buttonsUnder(step.content), 0);
 }
 
 function buttonsUnder(node: TemplateNode): number {

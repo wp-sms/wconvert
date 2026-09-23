@@ -125,11 +125,11 @@ final class ProServiceProvider implements ServiceProvider
          * of the designs behind them.
          *
          * **Re-registering is the whole mechanism.** `ServiceContainer::register()`
-         * overwrites the factory, `TemplateLibrary` is only ever resolved
-         * lazily from inside other factories, and this runs at
-         * `plugins_loaded` 20 — long before `rest_api_init` — so nothing stale
-         * is cached and no free code has to know Pro exists. The import runs
-         * Pro → free, which is the one direction ADR 0028 allows.
+         * overwrites the factory and this runs at `plugins_loaded` 20 — long
+         * before `rest_api_init` can resolve even the lightweight deferred
+         * library — so nothing stale is cached and no free code has to know
+         * Pro exists. The import runs Pro → free, which is the one direction
+         * ADR 0028 allows.
          *
          * **`LockedTemplates` stays LAST, and the order is the point.** A stub
          * whose id a registered entry already holds is dropped by
@@ -142,27 +142,36 @@ final class ProServiceProvider implements ServiceProvider
          */
         $container->register(
             TemplateLibrary::class,
-            static fn (ServiceContainer $c): TemplateLibrary => TemplateLibrary::from(
-                $c->resolve(TemplateVocabulary::class),
-                new BundledTemplates(WCONVERT_DIR),
-                new ProTemplates(WCONVERT_PRO_DIR),
-                new LockedTemplates(WCONVERT_DIR),
-                $c->resolve(\WConvert\Template\Catalog\InstalledPacks::class),
-            )
+            static function (ServiceContainer $c): TemplateLibrary {
+                $vocabulary = $c->resolve(TemplateVocabulary::class);
+
+                return TemplateLibrary::deferred(
+                    $vocabulary,
+                    static fn (): TemplateLibrary => TemplateLibrary::from(
+                        $vocabulary,
+                        new BundledTemplates(WCONVERT_DIR),
+                        new ProTemplates(WCONVERT_PRO_DIR),
+                        new LockedTemplates(WCONVERT_DIR),
+                        $c->resolve(\WConvert\Template\Catalog\InstalledPacks::class),
+                    )
+                );
+            }
         );
 
         // Keep premium setups beside their trees. Free cannot validate a
         // Playbook against a locked metadata-only card, and must not ship the tree.
         $container->register(
             \WConvert\Playbook\PlaybookLibrary::class,
-            static fn (ServiceContainer $c): \WConvert\Playbook\PlaybookLibrary => \WConvert\Playbook\PlaybookLibrary::fromDirectory(
-                $c->resolve(TemplateLibrary::class),
-                $c->resolve(TemplateVocabulary::class),
-                $c->resolve(RuleVocabulary::class),
-                WCONVERT_DIR,
-                array_merge(
-                    (new \WConvert\Pro\Template\ProPlaybooks(WCONVERT_PRO_DIR))->entries(),
-                    $c->resolve(\WConvert\Template\Catalog\InstalledPacks::class)->playbooks()
+            static fn (ServiceContainer $c): \WConvert\Playbook\PlaybookLibrary => \WConvert\Playbook\PlaybookLibrary::deferred(
+                static fn (): \WConvert\Playbook\PlaybookLibrary => \WConvert\Playbook\PlaybookLibrary::fromDirectory(
+                    $c->resolve(TemplateLibrary::class),
+                    $c->resolve(TemplateVocabulary::class),
+                    $c->resolve(RuleVocabulary::class),
+                    WCONVERT_DIR,
+                    array_merge(
+                        (new \WConvert\Pro\Template\ProPlaybooks(WCONVERT_PRO_DIR))->entries(),
+                        $c->resolve(\WConvert\Template\Catalog\InstalledPacks::class)->playbooks()
+                    )
                 )
             )
         );

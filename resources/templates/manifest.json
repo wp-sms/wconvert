@@ -500,10 +500,15 @@
       "params": [
         "action",
         "tokens",
-        "narrow"
+        "narrow",
+        "submission"
       ],
       "roles": [
-        "cta_label"
+        "cta_label",
+        "next_label",
+        "back_label",
+        "skip_label",
+        "close_label"
       ],
       "style_tokens": [
         "font",
@@ -512,7 +517,20 @@
         "accent-fg",
         "radius",
         "align"
-      ]
+      ],
+      "choices": {
+        "action": [
+          "next",
+          "back",
+          "submit",
+          "skip",
+          "close",
+          "link"
+        ]
+      },
+      "defaults": {
+        "action": "next"
+      }
     },
     "consent": {
       "content": [
@@ -620,7 +638,11 @@
     "interest_label",
     "interest_placeholder",
     "interest_options",
-    "success_action"
+    "success_action",
+    "next_label",
+    "back_label",
+    "skip_label",
+    "close_label"
   ],
   "authored_roles": [
     "code_value",
@@ -778,5 +800,31 @@
     "max_items": 12,
     "value_pattern": "^[a-z][a-z0-9_-]{0,47}$",
     "label_max_length": 120
+  },
+  "flow": {
+    "tree_version": 2,
+    "capability": "capture-journey:1",
+    "screen_kinds": [
+      "content",
+      "input",
+      "acknowledgement"
+    ],
+    "actions": [
+      "next",
+      "back",
+      "submit",
+      "skip",
+      "close",
+      "link"
+    ],
+    "capture_purposes": [
+      "request",
+      "email_marketing",
+      "sms_marketing"
+    ],
+    "limits": {
+      "max_pre_acknowledgement_screens": 6,
+      "max_submissions": 2
+    }
   }
 }

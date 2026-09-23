@@ -121,9 +121,9 @@ final class TemplateRoutesTest extends TestCase
         $request->set_param('source', 'centred-card');
         $request->set_param('template', [
             'tokens' => ['bg' => '#abcdef'],
-            'tree' => ['steps' => [['type' => 'stack', 'children' => [
+            'tree' => \WConvert\Tests\Unit\Support\JourneyFixture::tree(['steps' => [['type' => 'stack', 'children' => [
                 ['type' => 'heading', 'role' => 'headline', 'text' => 'My own headline'],
-            ]]]],
+            ]]]]),
         ]);
 
         $prepared = self::controller()->snapshot($request);
@@ -132,7 +132,7 @@ final class TemplateRoutesTest extends TestCase
         $data = $prepared->get_data();
         $this->assertStringContainsString('My own headline', json_encode($data, JSON_THROW_ON_ERROR));
         $this->assertNotSame('#abcdef', $data['tokens']['bg']);
-        $this->assertSame('split', $data['tree']['steps'][0]['type']);
+        $this->assertSame('split', $data['tree']['steps'][0]['content']['type']);
         $this->assertArrayNotHasKey('id', $data);
     }
 

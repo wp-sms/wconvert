@@ -96,6 +96,7 @@ export interface Frequency {
  * publish time (ADR 0005).
  */
 export interface PayloadEntry {
+  readonly capture_contract?: string;
   readonly id: string;
   readonly display_type?: string;
   /** Non-default logical edge or corner for a non-modal overlay. */

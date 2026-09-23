@@ -261,7 +261,7 @@ final class TemplateVocabulary
      * somewhere downstream instead.
      *
      * @param mixed $template
-     * @return array{tree: array{steps: list<array<string, mixed>>}, tokens: array<string, string>}
+     * @return array{tree: array{v: int, steps: list<array<string, mixed>>, submissions: list<array<string, mixed>>}, tokens: array<string, string>}
      */
     public function normalize($template): array
     {
@@ -277,10 +277,15 @@ final class TemplateVocabulary
         $ids = NodeIdentities::in($steps, $this->identity);
 
         foreach (is_array($steps) ? $steps : [] as $step) {
-            $node = $this->node($step, $ids);
+            $node = is_array($step) && is_array($step['content'] ?? null) ? $this->node($step['content'], $ids) : null;
 
             if ($node !== null) {
-                $normalized[] = $node;
+                $normalized[] = [
+                    'id' => is_string($step['id'] ?? null) ? $step['id'] : '',
+                    'name' => is_string($step['name'] ?? null) ? mb_substr($step['name'], 0, 120) : '',
+                    'kind' => is_string($step['kind'] ?? null) ? $step['kind'] : '',
+                    'content' => $node,
+                ];
             }
         }
 
@@ -288,7 +293,7 @@ final class TemplateVocabulary
             // Stamped with the vocabulary version that produced it, so a
             // narrowing change one day has a fact to migrate FROM rather than
             // a guess about what each stored design meant ({@see TemplateTree::VERSION}).
-            'tree' => TemplateTree::stamped(['steps' => $normalized]),
+            'tree' => TemplateTree::stamped(['steps' => $normalized, 'submissions' => self::submissions($tree['submissions'] ?? [])]),
             'tokens' => $this->tokens($template['tokens'] ?? []),
         ];
     }
@@ -312,7 +317,7 @@ final class TemplateVocabulary
      * is declared per node in the manifest rather than guessed at here.
      *
      * @param mixed $tree
-     * @return array{v: int, steps: list<array<string, mixed>>}
+     * @return array{v: int, steps: list<array<string, mixed>>, submissions: list<array<string, mixed>>}
      */
     public function withoutCopy($tree): array
     {
@@ -321,14 +326,32 @@ final class TemplateVocabulary
         $stripped = [];
 
         foreach ($steps as $step) {
-            $node = $this->stripNode($step);
+            $node = is_array($step) ? $this->stripNode($step['content'] ?? null) : null;
 
             if ($node !== null) {
-                $stripped[] = $node;
+                $stripped[] = array_replace($step, ['content' => $node]);
             }
         }
 
-        return TemplateTree::stamped(['steps' => $stripped]);
+        return TemplateTree::stamped(['steps' => $stripped, 'submissions' => self::submissions($tree['submissions'] ?? [])]);
+    }
+
+    /** @param mixed $input
+     * @return list<array<string, mixed>>
+     */
+    private static function submissions($input): array
+    {
+        $result = [];
+        foreach (is_array($input) ? $input : [] as $submission) {
+            if (!is_array($submission)) { continue; }
+            $result[] = [
+                'id' => is_string($submission['id'] ?? null) ? $submission['id'] : '',
+                'required' => ($submission['required'] ?? null) === true,
+                'fields' => array_values(array_filter(is_array($submission['fields'] ?? null) ? $submission['fields'] : [], 'is_string')),
+                'consents' => array_values(array_filter(is_array($submission['consents'] ?? null) ? $submission['consents'] : [], 'is_string')),
+            ];
+        }
+        return $result;
     }
 
     /**

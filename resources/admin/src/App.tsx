@@ -12,8 +12,6 @@ import { issueCount } from './destinations/issueCount';
 import { Button } from './components/ui/button';
 import { BackLink } from './shell/BuilderSkeleton';
 import { Shell } from './shell/Shell';
-import { NarrowScreenNotice } from './shell/NarrowScreenNotice';
-import { useBuilderViewport } from './hooks/useBuilderViewport';
 import { editorHref, leadsHref, reportHref, sendingIssuesHref } from './nav';
 import { useAdminNavigation, type EditingState } from './hooks/useAdminNavigation';
 import { ConfirmDialog } from './shell/ConfirmDialog';
@@ -73,12 +71,11 @@ export function App() {
   // Its accepted route changes only after the merchant discards or saves them.
   if (route.editId !== undefined) {
     return <>
-      <BuilderScreen key={navigation.hash} id={route.editId}
+      <OptinBuilder key={navigation.hash} id={route.editId}
         backLabel={route.returnTo.startsWith('#analytics') ? __('Back to Analytics', 'wconvert')
           : route.returnTo.startsWith('#leads') ? __('Back to Leads', 'wconvert') : __('Back to Campaigns', 'wconvert')}
         onEditingStateChange={navigation.onEditingStateChange}
         onCreated={(createdId) => navigate(editorHref(createdId, route.returnTo))}
-        onNarrowClose={() => navigation.requestNavigation(route.returnTo)}
         onClose={() => navigate(route.returnTo)} />
       <ConfirmDialog open={navigation.pending} onOpenChange={(open) => { if (!open) navigation.stay(); }}
         title={__('Leave without saving?', 'wconvert')}
@@ -121,37 +118,6 @@ export function App() {
         confirmLabel={__('Discard changes', 'wconvert')} cancelLabel={__('Keep editing', 'wconvert')}
         onConfirm={navigation.discard} returnFocusTo={navigation.returnFocusTo} />
     </Shell>
-  );
-}
-
-/**
- * The builder, or the sentence that stands where it would.
- *
- * Initial arrival below 782px does not fetch the lazy editor or its data
- * (ADR 0038). Once opened, a draft survives window resizing or rotation:
- * the editor stays mounted, hidden and inert, behind the narrow notice.
- * A dialog already open may finish or close without losing its own edits.
- * The visible way out uses the same unsaved-work guard as browser navigation.
- */
-function BuilderScreen({ id, onClose, onNarrowClose, backLabel, onEditingStateChange, onCreated }: {
-  id: string; onClose: () => void; onNarrowClose: () => void; backLabel: string; onEditingStateChange: (state: EditingState) => void; onCreated: (id: string) => void;
-}) {
-  const fits = useBuilderViewport();
-  const [opened, setOpened] = useState(fits);
-  useEffect(() => { if (fits) setOpened(true); }, [fits]);
-
-  return (
-    <>
-      {!fits && <Shell>
-        <BackLink className="mb-4" onClose={onNarrowClose} label={backLabel} />
-        <NarrowScreenNotice />
-      </Shell>}
-      {/* First arrival on a phone still avoids the lazy chunk and reads. Once
-          mounted, keep the draft alive if the window narrows or rotates. */}
-      {(fits || opened) && <div hidden={!fits} inert={!fits}>
-        <OptinBuilder id={id} onClose={onClose} backLabel={backLabel} onEditingStateChange={onEditingStateChange} onCreated={onCreated} />
-      </div>}
-    </>
   );
 }
 
