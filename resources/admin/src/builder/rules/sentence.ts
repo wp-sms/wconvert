@@ -581,6 +581,14 @@ export function howOftenSummary(
 ): Summary {
   const caps: string[] = [];
 
+  if (frequency.maxPerSession !== undefined) {
+    caps.push(sprintf(
+      /* translators: %d: automatic appearances in one tab session. */
+      _n('automatically at most %d time per tab session', 'automatically at most %d times per tab session', frequency.maxPerSession, 'wconvert'),
+      frequency.maxPerSession,
+    ));
+  }
+
   if (frequency.maxImpressions !== undefined) {
     caps.push(
       sprintf(
@@ -614,7 +622,9 @@ export function howOftenSummary(
     // and the subject carries across the conjunction. Its own string rather
     // than a fragment of the first, because a language that does not carry it
     // has to be able to repeat it.
-    stoppers.push(act === 'click' ? __('click the main button', 'wconvert') : __('submit the form', 'wconvert'));
+    stoppers.push(stoppers.length > 0
+      ? (act === 'click' ? __('click the main button', 'wconvert') : __('submit the form', 'wconvert'))
+      : (act === 'click' ? __('they click the main button', 'wconvert') : __('they submit the form', 'wconvert')));
   }
 
   const and = _x('and', 'joins two limits on how often a campaign shows', 'wconvert');
@@ -715,7 +725,7 @@ export function phraseOf(rule: Rule, types: readonly RuleType[]): Summary {
     (param) => !(preset !== null && preset.phrase !== null && param in preset.fixed),
   );
 
-  const missing = open.filter((param) => !supplied(rule[param]));
+  const missing = open.filter((param) => !(rule.type === 'query_param' && param === 'value') && !supplied(rule[param]));
   const values = open.map((param) => format(type.params[param], rule[param]));
   const phrase = preset?.phrase ?? type.phrase;
 

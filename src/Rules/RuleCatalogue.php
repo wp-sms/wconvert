@@ -287,6 +287,7 @@ final class RuleCatalogue
         return [
             'type' => $type,
             'kind' => $this->vocabulary->kindOf($type)?->value,
+            'signal' => $this->vocabulary->signalOf($type),
             'label' => RuleLabels::type($type),
             // The same rule read inside a sentence rather than over a control.
             // The rules panel's four section summaries are built from these,

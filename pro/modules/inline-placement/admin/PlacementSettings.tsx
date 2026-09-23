@@ -1,9 +1,10 @@
+import { planFrom, incompletePlan } from '@/builder/rules/plan';
 import { useId, useRef, useState } from 'react';
 import { __ } from '@wordpress/i18n';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { usesPageLoadOnly, type InlinePlacementProps } from '@/inlinePlacement';
-import type { Rule, Targeting } from '@/builder/api';
+import { type InlinePlacementProps } from '@/inlinePlacement';
+import type { Targeting } from '@/builder/api';
 import { ManualPlacement } from '@/builder/ManualPlacement';
 import './placement.css';
 import LockSettings from '../../content-lock/admin/LockSettings';
@@ -16,14 +17,13 @@ export default function PlacementSettings({ optinId, published, config, vocabula
   const lockChoice = useRef<HTMLInputElement>(null);
   const placement = config.inline_placement as { position: string; paragraph?: number; fallback?: string } | null;
   const locked = config.content_lock != null;
-  const rules = (config.rules ?? []) as Rule[];
-  const triggerNames = new Set(vocabulary.triggers.map((rule) => rule.type));
-  const compatible = usesPageLoadOnly(rules, vocabulary);
+  const plan = planFrom(config.display_rules) ?? incompletePlan();
+  const compatible = plan.opening.mode === 'immediate';
   const validParagraph = Number.isInteger(placement?.paragraph) && (placement?.paragraph ?? 0) >= 1 && (placement?.paragraph ?? 0) <= 100;
   const targeting = (config.targeting ?? {}) as Targeting;
   const enable = () => {
     onChange({ inline_placement: confirm === 'lock' ? null : { position: 'after_content' }, content_lock: confirm === 'lock' ? { mode: 'hide' } : null,
-      rules: [...rules.filter((rule) => !triggerNames.has(rule.type)), { type: 'page_load' }],
+      display_rules: { ...plan, opening: { mode: 'immediate' } }, rules: undefined,
       ...(confirm !== 'lock' && !targeting.include?.length ? { targeting: { ...targeting, include: [{ type: 'singular', value: 'post' }] } } : {}),
     });
     setConfirm(false);

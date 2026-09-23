@@ -23,10 +23,10 @@ export function unpack(entry: Recoverable): Recoverable {
   return { ...entry, teaser: { label, placement: corners[placement], gap: gap ?? undefined, background, color,
     ...(mobile ? { mobile: { visible: mobile[0] ?? undefined, placement: corners[mobile[1]], gap: mobile[2] ?? undefined } } : {}) } };
 }
-export interface ReopenView { refresh(): void; dispose(): void }
+export interface ReopenView { open(): boolean; isOpen(): boolean; refresh(): void; dispose(): void }
 interface RecoveryOptions {
   restoring: boolean;
-  allowed(): boolean;
+  allowed(continuing?: boolean): boolean;
   minimized(): void;
   stopped(): void;
   opened(): void;
@@ -64,7 +64,8 @@ export function showReopen(entry: Recoverable, controls: OptinControls, recovery
   });
   if (!mounted.mounted) return false;
   const open = () => {
-    if (removed || !layout() || (!completed && recovery?.allowed() === false)) { hide(); return; }
+    if (removed || !layout() || (!completed && recovery?.allowed() === false)) { hide(); return false; }
+    if (expanded) return true;
     hide();
     try { mounted.show(); } catch { mounted.close(); return false; }
     expanded = true; once('impression');
@@ -92,9 +93,9 @@ export function showReopen(entry: Recoverable, controls: OptinControls, recovery
   const refresh = () => {
     if (removed) return;
     if (completed) { if (!expanded) { hide(); remind(); } return; }
-    if (recovery?.allowed() === false) { hide(); if (expanded) { expanded = false; mounted.close(); } }
+    if (recovery?.allowed(expanded) === false) { hide(); if (expanded) { expanded = false; mounted.close(); } }
     else if (!expanded) { hide(); remind(); }
   };
   media.addEventListener('change', refresh);
-  return { refresh, dispose() { removed = true; hide(); mounted.close(); media.removeEventListener('change', refresh); } }; 
+  return { open: () => open() === true, isOpen: () => expanded, refresh, dispose() { removed = true; hide(); mounted.close(); media.removeEventListener('change', refresh); } };
 }

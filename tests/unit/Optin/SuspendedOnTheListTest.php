@@ -110,7 +110,7 @@ final class SuspendedOnTheListTest extends TestCase
      */
     private function draft(array $rules): string
     {
-        return $this->optins->create('Spring sale', 'promote_offer', ['rules' => $rules, 'template' => OptinDesign::template()])->id;
+        return $this->optins->create('Spring sale', 'promote_offer', ['display_rules' => \WConvert\Tests\Unit\Support\DisplayFixture::plan($rules), 'template' => OptinDesign::template()])->id;
     }
 
     /**
@@ -222,11 +222,11 @@ final class SuspendedOnTheListTest extends TestCase
     }
 
     /** A degraded Optin is running, not suspended, and the list must not say otherwise. */
-    public function testADegradedOptinIsNotSuspended(): void
+    public function testAMissingExitModuleSuspendsTheAuthoredCampaign(): void
     {
         $id = $this->publish([['type' => 'exit_intent']]);
 
-        $this->assertNull(self::suspensionOf($this->listedOn(false), $id));
+        $this->assertNotNull(self::suspensionOf($this->listedOn(false), $id));
     }
 
     /**

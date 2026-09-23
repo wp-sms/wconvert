@@ -818,7 +818,7 @@ $milestones = new MilestoneStore($options);
 
 $verify->check('a site that has published nothing has no activation milestone', null, $milestones->firstPublish());
 
-$activated = $optins->create('Activation', 'grow_email_list', $design + ['rules' => [['type' => 'page_load']]]);
+$activated = $optins->create('Activation', 'grow_email_list', $design + ['display_rules' => \WConvert\Rules\DisplayPlan::immediate()]);
 
 $optins->publish($activated->id);
 

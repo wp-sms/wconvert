@@ -65,7 +65,7 @@ final class OptinWriteTest extends TestCase
         self::assertSame(['label' => 'Save'], $draft['config']['teaser']);
         $invalid = $this->create(Goal::GrowEmailList, ['teaser' => ['label' => ' ']]);
         self::assertInstanceOf(WP_Error::class, $invalid);
-        self::assertSame('wconvert_teaser', $invalid->get_error_code());
+        self::assertSame('wconvert_configuration', $invalid->get_error_code());
         $inline = $this->create(Goal::GrowEmailList, ['display_type' => 'inline', 'teaser' => ['label' => 'Save']]);
         self::assertIsArray($inline);
         self::assertArrayNotHasKey('teaser', $inline['config']);
@@ -240,7 +240,7 @@ final class OptinWriteTest extends TestCase
                 }
             }
         }
-        $request->set_param('config', $config + ['rules' => [['type' => 'page_load']]]);
+        $request->set_param('config', $config + ['display_rules' => \WConvert\Tests\Unit\Support\DisplayFixture::plan([['type' => 'page_load']])]);
 
         $response = $this->controller->store($request);
 
@@ -296,7 +296,7 @@ final class OptinWriteTest extends TestCase
         self::assertIsArray($draft);
         self::assertSame('after_content', $draft['config']['inline_placement']['fallback']);
         $delayed = $this->create(Goal::GrowEmailList, ['display_type' => 'inline',
-            'inline_placement' => ['position' => 'after_content'], 'rules' => [['type' => 'time_on_page', 'seconds' => 10]]]);
+            'inline_placement' => ['position' => 'after_content'], 'display_rules' => \WConvert\Tests\Unit\Support\DisplayFixture::plan([['type' => 'time_on_page', 'seconds' => 10]])]);
         self::assertInstanceOf(WP_Error::class, $delayed);
         self::assertSame('wconvert_inline_trigger', $delayed->get_error_code());
         $popup = $this->create(Goal::GrowEmailList, ['display_type' => 'popup', 'inline_placement' => ['position' => 'after_content']]);
@@ -310,7 +310,7 @@ final class OptinWriteTest extends TestCase
             'capture_mode' => 'local', 'inline_placement' => ['position' => 'after_content']]);
         self::assertIsArray($created);
         $config = $created['config'];
-        $config['rules'] = [['type' => 'time_on_page', 'seconds' => 10]];
+        $config['display_rules'] = \WConvert\Tests\Unit\Support\DisplayFixture::plan([['type' => 'time_on_page', 'seconds' => 10]]);
         $this->optins->saveDraft($created['id'], null, null, $config);
         $request = new WP_REST_Request();
         $request->set_param('id', $created['id']);
@@ -322,7 +322,7 @@ final class OptinWriteTest extends TestCase
 
     public function testContentLockPublicationChecksFormAndAllVariantDrafts(): void
     {
-        $parent = $this->create(Goal::GrowEmailList, array_merge(self::choiceDraft([['value' => 'guide', 'label' => 'Guide']]), ['display_type' => 'inline', 'capture_mode' => 'local', 'rules' => [['type' => 'page_load']]]));
+        $parent = $this->create(Goal::GrowEmailList, array_merge(self::choiceDraft([['value' => 'guide', 'label' => 'Guide']]), ['display_type' => 'inline', 'capture_mode' => 'local', 'display_rules' => \WConvert\Tests\Unit\Support\DisplayFixture::plan([['type' => 'page_load']])]));
         self::assertIsArray($parent);
         $arm = $this->optins->createVariant($parent['id']);
         self::assertNotNull($arm);
@@ -335,7 +335,7 @@ final class OptinWriteTest extends TestCase
         self::assertSame('wconvert_content_lock_family', $refused->get_error_code());
         $this->optins->saveDraft($arm->id, null, null, $config);
         self::assertNotInstanceOf(WP_Error::class, $this->controller->publish($request));
-        $config['rules'] = [['type' => 'time_on_page', 'seconds' => 10]];
+        $config['display_rules'] = \WConvert\Tests\Unit\Support\DisplayFixture::plan([['type' => 'time_on_page', 'seconds' => 10]]);
         $this->optins->saveDraft($parent['id'], null, null, $config);
         $refused = $this->controller->publish($request);
         self::assertInstanceOf(WP_Error::class, $refused);
@@ -404,7 +404,7 @@ final class OptinWriteTest extends TestCase
         $request->set_param('id', $created['id']);
         $request->set_param('name', 'A name that must not be saved');
         $request->set_param('goal', Goal::PromoteOffer->value);
-        $request->set_param('config', self::choiceDraft($options) + ['rules' => [['type' => 'page_load']]]);
+        $request->set_param('config', self::choiceDraft($options) + ['display_rules' => \WConvert\Tests\Unit\Support\DisplayFixture::plan([['type' => 'page_load']])]);
         $refusal = $this->controller->update($request);
         self::assertInstanceOf(WP_Error::class, $refusal);
         self::assertSame('wconvert_optin_choices_invalid', $refusal->get_error_code());
@@ -753,7 +753,7 @@ final class OptinWriteTest extends TestCase
 
         $request = new WP_REST_Request();
         $request->set_param('id', $created['id']);
-        $request->set_param('config', ['template_id' => 'stacked-signup', 'rules' => [['type' => 'page_load']]]);
+        $request->set_param('config', ['template_id' => 'stacked-signup', 'display_rules' => \WConvert\Tests\Unit\Support\DisplayFixture::plan([['type' => 'page_load']])]);
 
         $response = $this->controller->update($request);
 
@@ -786,7 +786,7 @@ final class OptinWriteTest extends TestCase
 
         $request = new WP_REST_Request();
         $request->set_param('id', $arm->id);
-        $request->set_param('config', ['template_id' => 'offer-panel', 'rules' => [['type' => 'page_load']]]);
+        $request->set_param('config', ['template_id' => 'offer-panel', 'display_rules' => \WConvert\Tests\Unit\Support\DisplayFixture::plan([['type' => 'page_load']])]);
 
         $refusal = $this->controller->update($request);
 
@@ -804,7 +804,7 @@ final class OptinWriteTest extends TestCase
 
         $request = new WP_REST_Request();
         $request->set_param('id', $parent['id']);
-        $request->set_param('config', ['template_id' => 'offer-panel', 'rules' => [['type' => 'page_load']]]);
+        $request->set_param('config', ['template_id' => 'offer-panel', 'display_rules' => \WConvert\Tests\Unit\Support\DisplayFixture::plan([['type' => 'page_load']])]);
 
         $refusal = $this->controller->update($request);
 
@@ -828,7 +828,7 @@ final class OptinWriteTest extends TestCase
 
         $request = new WP_REST_Request();
         $request->set_param('id', $arm->id);
-        $request->set_param('config', ['template_id' => 'centred-card', 'rules' => [['type' => 'page_load']]]);
+        $request->set_param('config', ['template_id' => 'centred-card', 'display_rules' => \WConvert\Tests\Unit\Support\DisplayFixture::plan([['type' => 'page_load']])]);
 
         $this->assertNotInstanceOf(WP_Error::class, $this->controller->update($request));
     }
@@ -843,7 +843,7 @@ final class OptinWriteTest extends TestCase
         $request->set_param('template_source', 'centred-card');
         $request->set_param('config', [
             'template_id' => 'centred-card',
-            'rules' => [['type' => 'page_load']],
+            'display_rules' => \WConvert\Tests\Unit\Support\DisplayFixture::plan([['type' => 'page_load']]),
             'template' => [
                 'tokens' => ['bg' => '#abcdef'],
                 'tree' => \WConvert\Tests\Unit\Support\JourneyFixture::tree(['steps' => [['type' => 'stack', 'children' => [
@@ -872,7 +872,7 @@ final class OptinWriteTest extends TestCase
 
         $request = new WP_REST_Request();
         $request->set_param('id', $created['id']);
-        $request->set_param('config', ['template_id' => 'offer-panel', 'rules' => [['type' => 'page_load']]]);
+        $request->set_param('config', ['template_id' => 'offer-panel', 'display_rules' => \WConvert\Tests\Unit\Support\DisplayFixture::plan([['type' => 'page_load']])]);
 
         $this->assertNotInstanceOf(WP_Error::class, $this->controller->update($request));
     }
@@ -1236,7 +1236,7 @@ final class OptinWriteTest extends TestCase
         $request = new WP_REST_Request();
         $request->set_param('id', $created['id']);
         $request->set_param('config', [
-            'rules' => [['type' => 'page_load']],
+            'display_rules' => \WConvert\Tests\Unit\Support\DisplayFixture::plan([['type' => 'page_load']]),
             'starts_at' => '2026-11-30 09:00',
             'ends_at' => '2026-11-27 09:00',
         ]);

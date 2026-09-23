@@ -135,6 +135,7 @@ export function PrivacyDataMap() {
             )}
           </Description>
           {data.browser.content_unlock != null && <Description className="mt-2">{__('Content locks remember successful access for 30 days in site-scoped local storage: up to 64 Campaign IDs and expiry days, with no contact details. Blocked storage limits remembering to this page.', 'wconvert')}</Description>}
+          <Description className="mt-2">{__('Configured session limits use wcv_display_session_v1: at most 128 Campaign family counts, without contact details or a visitor ID. The least recently shown family is evicted first. Blocked storage limits pacing to the current page; browsers may copy or restore tab sessions.', 'wconvert')}</Description>
           {data.browser.reopen_session != null && <Description className="mt-2">{__('When a Pro reopen button is enabled, this tab also remembers the Campaign and reminder dismissals until its browser session ends. This session storage contains no contact details or visitor ID. Browsers may restore it when restoring tabs; blocked storage limits recovery to the current page.', 'wconvert')}</Description>}
           {data.browser.cart_recovery !== null && <Description className="mt-2">
             {__('Cart recovery keeps the cart item count and total until the WooCommerce cart session ends. It does not store product or contact details.', 'wconvert')}

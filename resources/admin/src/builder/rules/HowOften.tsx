@@ -27,7 +27,7 @@ export function HowOften({ frequency, schedule, priority, overlay, act = 'submit
     else next[field] = false;
     onFrequency(next);
   };
-  const setCount = (field: 'maxImpressions' | 'cooldownDays', value: string) => {
+  const setCount = (field: 'maxImpressions' | 'cooldownDays' | 'maxPerSession', value: string) => {
     const next = { ...frequency };
     const count = Number(value);
     if (value === '' || !Number.isFinite(count) || count < 1) delete next[field];
@@ -70,6 +70,11 @@ export function HowOften({ frequency, schedule, priority, overlay, act = 'submit
       <Description>{__('These limits apply to this Campaign in each visitor’s browser. Clearing browsing data resets them.', 'wconvert')}</Description>
       <Description>{__('An enabled Pro reopen button lets visitors return by choice despite automatic view limits, waiting periods or dismissal settings. Completion stops it; closing the reminder stops this Campaign for the tab session.', 'wconvert')}</Description>
       <div className="flex flex-col gap-3">
+        <div><Label htmlFor="wconvert-session-max">{__('Automatic appearances per tab session', 'wconvert')}</Label>
+          <Input id="wconvert-session-max" type="number" min={1} max={100} value={frequency.maxPerSession ?? ''} onChange={event => setCount('maxPerSession', event.target.value)} />
+          <p className="text-note text-muted-foreground">{__('Empty means no session limit. If browser storage is blocked, this limit lasts only on the current page.', 'wconvert')}</p>
+          {frequency.maxPerSession && frequency.stopAfterDismiss !== false && <p>{__('Stop after closing is stronger: closing it can prevent future sessions too.', 'wconvert')}</p>}
+        </div>
         <label className="wconvert-frequency-switch">
           <input type="checkbox" checked={frequency.stopAfterDismiss !== false} onChange={(event) => setSwitch('stopAfterDismiss', event.target.checked)} />
           {__('Stop showing it once they close it', 'wconvert')}

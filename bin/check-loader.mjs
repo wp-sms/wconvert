@@ -12,7 +12,7 @@
 //
 // Two assertions, and neither is optional:
 //
-//   1. THE BYTE BUDGET, HARD. gzip -9: Free 14012 B; paid 18432 B
+//   1. THE BYTE BUDGET, HARD. gzip -9: Free 14012 B; paid 20480 B
 //      (ADR 0101, explicitly approved for recovery), per build. It blocks rather than warns, and there is no
 //      second warn band nobody would read.
 //
@@ -89,7 +89,8 @@ const ROOT = process.argv[2] ? resolve(process.argv[2]) : REPO_ROOT;
  */
 const FREE_BYTE_BUDGET = 14012;
 // ADR 0103: shared journeys plus paid recovery/content access.
-const PAID_BYTE_BUDGET = 19456;
+// ADR 0104: user-approved 1 KiB increase for grouped display policies.
+const PAID_BYTE_BUDGET = 20480;
 
 const MANIFEST = 'resources/rules/manifest.json';
 

@@ -237,7 +237,7 @@ final class RecordedOnTheRealPathTest extends TestCase
         $optin = $this->startFromAPlaybook();
 
         $config = $optin['config'];
-        $config['rules'] = [['type' => 'exit_intent']];
+        $config['display_rules'] = \WConvert\Tests\Unit\Support\DisplayFixture::plan([['type' => 'exit_intent']]);
 
         $this->edit((string) $optin['id'], $config);
 
@@ -254,7 +254,7 @@ final class RecordedOnTheRealPathTest extends TestCase
         $optin = $this->startFromAPlaybook();
 
         $config = $optin['config'];
-        $config['rules'] = [['type' => 'exit_intent']];
+        $config['display_rules'] = \WConvert\Tests\Unit\Support\DisplayFixture::plan([['type' => 'exit_intent']]);
         $saved = $this->edit((string) $optin['id'], $config);
 
         $again = $saved['config'];
@@ -289,7 +289,7 @@ final class RecordedOnTheRealPathTest extends TestCase
         $optin = $this->startFromScratch();
 
         $config = $optin['config'];
-        $config['rules'] = [['type' => 'exit_intent']];
+        $config['display_rules'] = \WConvert\Tests\Unit\Support\DisplayFixture::plan([['type' => 'exit_intent']]);
 
         $this->edit((string) $optin['id'], $config);
 
@@ -305,7 +305,7 @@ final class RecordedOnTheRealPathTest extends TestCase
         $optin = $this->startFromAPlaybook();
 
         $config = $optin['config'];
-        $config['rules'] = [['type' => 'exit_intent']];
+        $config['display_rules'] = \WConvert\Tests\Unit\Support\DisplayFixture::plan([['type' => 'exit_intent']]);
         $config['starts_at'] = '2026-06-11T10:00';
         $config['ends_at'] = '2026-06-11T09:00';
 

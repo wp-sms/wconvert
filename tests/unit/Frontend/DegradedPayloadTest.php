@@ -62,7 +62,7 @@ final class DegradedPayloadTest extends TestCase
      */
     private function publish(array $rules): string
     {
-        $optin = $this->repository->create('Spring sale', 'promote_offer', ['rules' => $rules, 'template' => OptinDesign::template()]);
+        $optin = $this->repository->create('Spring sale', 'promote_offer', ['display_rules' => \WConvert\Tests\Unit\Support\DisplayFixture::plan($rules), 'template' => OptinDesign::template()]);
         $this->repository->publish($optin->id);
 
         return $optin->id;
@@ -80,20 +80,13 @@ final class DegradedPayloadTest extends TestCase
         );
     }
 
-    /**
-     * The headline case. `exit_intent` was the Optin's only way of firing, and
-     * a *dropped* premium Trigger leaves an Optin that never fires again with
-     * nothing in any log — so it is substituted, with the substitute's params
-     * filled, and capture keeps working (ADR 0012).
-     */
-    public function testAnOptinAuthoredWithProKeepsFiringOnAnInstallThatLostIt(): void
+    public function testAnAuthoredCampaignSuspendsWhenItsRequiredTriggerIsUnavailable(): void
     {
         $this->publish([['type' => 'exit_intent']]);
 
         $served = $this->servedTo(InstalledRules::free());
 
-        $this->assertCount(1, $served);
-        $this->assertSame([['type' => 'time_on_page', 'seconds' => 15]], $served[0]['triggers']);
+        $this->assertSame([], $served);
     }
 
     /** And on the install it was authored on, nothing about it changes. */
@@ -101,23 +94,16 @@ final class DegradedPayloadTest extends TestCase
     {
         $this->publish([['type' => 'exit_intent']]);
 
-        $this->assertSame([['type' => 'exit_intent']], $this->servedTo(InstalledRules::withPro())[0]['triggers']);
+        $this->assertSame([['id' => 'rule-1', 'type' => 'exit_intent']], $this->servedTo(InstalledRules::withPro())[0]['display_rules']['opening']['rules']);
     }
 
-    /**
-     * **A premium Condition is dropped**, which only widens the audience — the
-     * safe direction to fail in. Left in the payload it would fail shut in
-     * free's evaluator, and the Optin would never show with nothing saying why
-     * (ADR 0012, ADR 0028).
-     */
-    public function testAPremiumConditionIsStrippedRatherThanShippedToAnEvaluatorThatLacksIt(): void
+    public function testAMissingAudienceModuleSuspendsInsteadOfWideningTheAudience(): void
     {
         $this->publish([['type' => 'page_load'], ['type' => 'query_param', 'key' => 'utm_source']]);
 
         $served = $this->servedTo(InstalledRules::free());
 
-        $this->assertSame([], $served[0]['conditions']);
-        $this->assertSame([['type' => 'page_load']], $served[0]['triggers']);
+        $this->assertSame([], $served);
     }
 
     /**
@@ -155,7 +141,7 @@ final class DegradedPayloadTest extends TestCase
         $served = $this->servedTo(InstalledRules::withPro());
 
         $this->assertSame([$id], array_column($served, 'id'));
-        $this->assertSame([['type' => 'click_element', 'selector' => '#buy']], $served[0]['triggers']);
+        $this->assertSame([['id' => 'rule-1', 'type' => 'click_element', 'selector' => '#buy']], $served[0]['display_rules']['opening']['rules']);
     }
 
     /**

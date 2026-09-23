@@ -1,7 +1,8 @@
+import { planFrom } from '../builder/rules/plan';
 import { useEffect, useState } from 'react';
 import { __ } from '@wordpress/i18n';
 import type { Template } from '@renderer/types';
-import { getOptin, getRules, type Frequency, type Rule, type Targeting } from '../builder/api';
+import { getOptin, getRules, type Frequency, type Targeting } from '../builder/api';
 import { summarise } from '../builder/rules/summaries';
 import { convertingActOf } from '../builder/structure/guards';
 import { nodeAt, nodesOf } from '../builder/structure/tree';
@@ -24,7 +25,7 @@ async function readContext(id: string) {
   const act = template ? convertingActOf(template.tree)[0] : undefined;
   const rules = summarise(
     {
-      rules: Array.isArray(config.rules) ? (config.rules as Rule[]) : [],
+      display_rules: planFrom(config.display_rules),
       targeting: (config.targeting ?? {}) as Targeting,
       frequency: (config.frequency ?? {}) as Frequency,
       schedule: {

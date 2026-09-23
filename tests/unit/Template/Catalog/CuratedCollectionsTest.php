@@ -97,7 +97,7 @@ final class CuratedCollectionsTest extends TestCase
                 $draft = $prefill->fromPlaybook($preview['starting_points'][$position]['id']);
                 $original = $bundledPrefill->fromPlaybook($start['id']);
                 $this->assertSame($original['config']['template'], $draft['config']['template'], 'Starting-point wording survives the real prefill.');
-                $this->assertSame($original['config']['rules'], $draft['config']['rules']);
+                $this->assertSame($original['config']['display_rules'], $draft['config']['display_rules']);
                 $this->assertSame($original['config']['targeting'] ?? [], $draft['config']['targeting'] ?? []);
             }
             $previews[$entry['id']] = $preview;

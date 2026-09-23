@@ -1,3 +1,4 @@
+import { displayEntry } from './support/display-entry';
 import { treeFixture } from './support/journey';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Beacon, BeaconKind } from '@loader/beacon';
@@ -43,13 +44,13 @@ const TEMPLATE = {
   tokens: { bg: '#fff' },
 };
 
-const inlineOptin = (id: string): PayloadEntry => ({
+const inlineOptin = (id: string): PayloadEntry => (displayEntry({
   id,
   display_type: 'inline',
   template: TEMPLATE,
   triggers: [{ type: 'page_load' }],
   conditions: [],
-});
+}));
 
 /** A beacon that records what it was told about whom, in order. */
 function countingBeacon(): Beacon & { counted: [string, BeaconKind][] } {

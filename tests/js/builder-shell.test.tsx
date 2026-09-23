@@ -1,3 +1,4 @@
+import { displayPlan } from './support/display-entry';
 import { treeFixture } from './support/journey';
 import { CAPTURE_OUTCOME } from './support/outcomes';
 import { readFileSync } from 'node:fs';
@@ -217,7 +218,7 @@ function optin(over: Record<string, unknown> = {}) {
     has_unpublished_changes: false,
     deleted_at: null,
     suspended: null,
-    config: { template_id: 'centred-card', template: { tree: ENTRY.tree, tokens: ENTRY.tokens }, ...(collectionMode === 'local' ? { capture_mode: 'local' } : {}) },
+    config: { display_rules: displayPlan([{ type: 'page_load' }]), template_id: 'centred-card', template: { tree: ENTRY.tree, tokens: ENTRY.tokens }, ...(collectionMode === 'local' ? { capture_mode: 'local' } : {}) },
     sibling_act: null,
     ...over,
   };
@@ -261,7 +262,7 @@ const labelOf = (name: string | RegExp) =>
 describe('the builder shell', () => {
   it('keeps inline placement only in Display rules and preserves undo', async () => {
     builder.getOptin.mockResolvedValue(optin({ config: {
-      ...optin().config, display_type: 'inline', rules: [{ type: 'page_load' }],
+      ...optin().config, display_type: 'inline', display_rules: displayPlan([{ type: 'page_load' }]),
       inline_placement: { position: 'after_content' },
     } }));
     open();
@@ -271,14 +272,13 @@ describe('the builder shell', () => {
     expect(within(design).queryByRole('button', { name: 'Use manual placement' })).toBeNull();
     await userEvent.click(screen.getByRole('tab', { name: 'Display rules' }));
     const rules = screen.getByRole('tabpanel', { name: 'Display rules' });
-    await userEvent.click(within(rules).getByRole('button', { name: 'Placement Automatically after content' }));
-    expect(within(rules).getByRole('button', { name: 'Placement Automatically after content' })).toHaveAttribute('aria-expanded', 'true');
+    expect(within(rules).getByRole('heading', { name: 'Placement' })).toBeVisible();
     await userEvent.click(within(rules).getByRole('button', { name: 'Use manual placement' }));
     await userEvent.click(screen.getByRole('tab', { name: 'Design' }));
     expect(within(screen.getByRole('tabpanel', { name: 'Design' })).queryByText('Manual')).toBeNull();
     await userEvent.click(screen.getByRole('button', { name: 'Undo draft edit' }));
     await userEvent.click(screen.getByRole('tab', { name: 'Display rules' }));
-    expect(screen.getByRole('button', { name: 'Placement Automatically after content' })).toBeVisible();
+    expect(screen.getByRole('button', { name: 'Use manual placement' })).toBeVisible();
   });
 
   /**
@@ -484,7 +484,7 @@ describe('the builder shell', () => {
   });
 
   it('opens a blank goal-based draft in the popup library without treating format as a new creation step', async () => {
-    builder.getOptin.mockResolvedValue(optin({ config: {} }));
+    builder.getOptin.mockResolvedValue(optin({ config: { display_rules: displayPlan([{ type: 'page_load' }]),} }));
     templates.listTemplates.mockResolvedValue({
       ...INDEX,
       templates: [
@@ -559,8 +559,8 @@ describe('the builder shell', () => {
 
     await userEvent.click(await screen.findByRole('tab', { name: 'Display rules' }));
 
-    for (const question of ['Pages', 'Audience', 'When it appears', 'Schedule & frequency']) {
-      expect(await screen.findByRole('button', { name: new RegExp(`^${question}`) })).toBeInTheDocument();
+    for (const question of ['Pages', 'Audience', 'Opening moment', 'Schedule & limits']) {
+      expect(within(screen.getByRole('navigation', { name: 'Display setup sections' })).getByRole('button', { name: new RegExp(`^${question}`) })).toBeInTheDocument();
     }
   });
 
@@ -578,10 +578,11 @@ describe('the builder shell', () => {
    * on screen and is the same preview, which its width control still being on
    * whatever the merchant chose is the sharper test of.
    */
-  it('keeps the preview on screen while the rules are being edited', async () => {
+  it('opens the same preview on demand while rules are edited', async () => {
     open();
     await userEvent.click(await screen.findByRole('button', { name: 'Mobile preview' }));
     await userEvent.click(screen.getByRole('tab', { name: 'Display rules' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Preview campaign' }));
     const canvas = screen.getByRole('region', { name: 'Design canvas' });
     expect(canvas).toHaveAttribute('data-width', 'narrow');
   });
@@ -993,7 +994,7 @@ describe('the summary', () => {
   it('names the playbook it was started from', async () => {
     builder.getOptin.mockResolvedValue(
       optin({
-        config: {
+        config: { display_rules: displayPlan([{ type: 'page_load' }]),
           template_id: 'centred-card',
           playbook_id: 'welcome-discount',
           template: { tree: ENTRY.tree, tokens: ENTRY.tokens },
@@ -1019,7 +1020,7 @@ describe('the summary', () => {
     goals.listPlaybooks.mockResolvedValue([]);
     builder.getOptin.mockResolvedValue(
       optin({
-        config: {
+        config: { display_rules: displayPlan([{ type: 'page_load' }]),
           template_id: 'centred-card',
           playbook_id: 'welcome-discount',
           template: { tree: ENTRY.tree, tokens: ENTRY.tokens },
@@ -1097,7 +1098,7 @@ describe('the summary', () => {
         config: {
           template_id: 'centred-card',
           template: { tree: ENTRY.tree, tokens: ENTRY.tokens },
-          rules: [{ type: 'time_on_page', seconds: 8 }],
+          display_rules: displayPlan([{ type: 'time_on_page', seconds: 8 }]),
         },
       }),
     );
@@ -1107,9 +1108,9 @@ describe('the summary', () => {
 
     expect(await screen.findByRole('dialog')).toBeInTheDocument();
     expect(fact('Pages')?.textContent).toBe('On every page');
-    expect(fact('When it appears')?.textContent).toContain('8');
-    expect(fact('Audience')?.textContent).toBe('Anyone who reaches it');
-    expect(fact('Schedule & frequency')?.textContent).toContain('until they close it');
+    expect(fact('Opening moment')?.textContent).toContain('8');
+    expect(fact('Audience')?.textContent).toBe('Everyone');
+    expect(fact('Schedule & limits')?.textContent).toContain('until they close it');
   });
 
   /**
@@ -1143,7 +1144,7 @@ describe('the summary', () => {
     });
     builder.getOptin.mockResolvedValue(
       optin({
-        config: {
+        config: { display_rules: displayPlan([{ type: 'page_load' }]),
           template_id: 'centred-card',
           playbook_id: 'welcome-discount',
           destination_hint: { types: ['wsms', 'email_service_provider'], fields: ['email'] },
@@ -1195,7 +1196,7 @@ describe('the summary', () => {
     });
     builder.getOptin.mockResolvedValue(
       optin({
-        config: {
+        config: { display_rules: displayPlan([{ type: 'page_load' }]),
           template_id: 'centred-card',
           destinations: ['d1'],
           destination_hint: { types: ['wsms'], fields: ['email'] },
@@ -1342,7 +1343,7 @@ describe('whole-draft Undo and Redo', () => {
     open();
     await userEvent.type(await screen.findByRole('textbox', { name: 'Name' }), ' revised');
     await userEvent.click(screen.getByRole('tab', { name: 'Display rules' }));
-    await userEvent.click(screen.getByText('Schedule & frequency').closest('button') as HTMLElement);
+    await userEvent.click(screen.getAllByText('Schedule & limits')[0].closest('button') as HTMLElement);
     await userEvent.click(screen.getByRole('checkbox', { name: 'Stop after they submit the form' }));
     await userEvent.click(screen.getByRole('tab', { name: 'Destinations' }));
     await userEvent.click(await screen.findByRole('checkbox', { name: /Selected contacts/ }));
@@ -1351,7 +1352,7 @@ describe('whole-draft Undo and Redo', () => {
     expect(screen.getByRole('checkbox', { name: /Selected contacts/ })).toBeChecked();
     await userEvent.click(screen.getByRole('button', { name: 'Undo draft edit' }));
     await userEvent.click(screen.getByRole('tab', { name: 'Display rules' }));
-    await userEvent.click(screen.getByText('Schedule & frequency').closest('button') as HTMLElement);
+    await userEvent.click(screen.getAllByText('Schedule & limits')[0].closest('button') as HTMLElement);
     expect(screen.getByRole('checkbox', { name: 'Stop after they submit the form' })).toBeChecked();
     await userEvent.click(screen.getByRole('button', { name: 'Undo draft edit' }));
     expect(screen.getByRole('textbox', { name: 'Name' })).toHaveValue('Welcome discount');
@@ -1527,7 +1528,7 @@ describe('changing templates in the draft', () => {
     expect(templates.prepareTemplate).toHaveBeenCalledTimes(2);
     await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
     expect(builder.saveOptin).toHaveBeenCalledWith(ID, 'Welcome discount', {
-      template_id: ALTERNATE.id, display_type: 'popup', template: { tree: ALTERNATE.tree, tokens: ALTERNATE.tokens },
+      display_rules: displayPlan([{ type: 'page_load' }]), template_id: ALTERNATE.id, display_type: 'popup', template: { tree: ALTERNATE.tree, tokens: ALTERNATE.tokens },
     }, undefined, ALTERNATE.id);
   });
 

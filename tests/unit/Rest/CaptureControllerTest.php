@@ -147,7 +147,7 @@ final class CaptureControllerTest extends TestCase
         $published = new PublishedSet($options);
         $optins = new OptinRepository(new FakeConnection(), $published, RuleVocabulary::fromManifest(), new MilestoneStore($options));
         $template = json_decode((string) file_get_contents(dirname(__DIR__, 3) . '/resources/templates/library/journey-email-only.json'), true);
-        $config = ['template' => $template, 'display_type' => 'popup', 'capture_mode' => 'local', 'rules' => [['type' => 'page_load']]];
+        $config = ['template' => $template, 'display_type' => 'popup', 'capture_mode' => 'local', 'display_rules' => \WConvert\Tests\Unit\Support\DisplayFixture::plan([['type' => 'page_load']])];
         $optin = $optins->create('Capture test', 'grow_email_list', $config);
         $optins->publish($optin->id);
         $db = $this->createMock(Connection::class);

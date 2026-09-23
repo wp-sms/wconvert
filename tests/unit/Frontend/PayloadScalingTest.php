@@ -49,7 +49,7 @@ final class PayloadScalingTest extends TestCase
                         'value' => $matches ? '/pricing' : sprintf('/campaign-%d', $i),
                     ]],
                 ],
-                'payload' => ['display_type' => 'popup', 'template_id' => 'centred-card'],
+                'payload' => ['display_rules' => \WConvert\Rules\DisplayPlan::immediate(), 'display_type' => 'popup', 'template_id' => 'centred-card'],
             ];
         }
 

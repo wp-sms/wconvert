@@ -1,3 +1,4 @@
+import { displayEntry } from '../../../tests/js/support/display-entry';
 import { treeFixture } from '../../../tests/js/support/journey';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import { start } from '@loader/shell';
@@ -5,15 +6,16 @@ import { createLoader } from '@loader/engine';
 import { FREE_MODULES } from '@loader/modules';
 import type { PayloadEntry } from '@loader/types';
 import { proPresenter } from '../../modules/display-types/loader/present';
+import { clickElement } from '../../modules/premium-triggers/loader/click-element';
 
-const campaign = {
+const campaign = displayEntry({
   id: '01JQ0000000000000000000001', display_type: 'popup',
   triggers: [{ type: 'page_load' }], teaser: { label: 'Get my discount' },
   template: { tokens: {}, tree: treeFixture({ steps: [
     { type: 'stack', children: [{ type: 'heading', text: 'Your discount' }, { type: 'field', name: 'email' }, { type: 'button', label: 'Join', action: 'submit' }] },
     { type: 'stack', children: [{ type: 'heading', text: 'Thank you' }] },
   ] }) },
-};
+});
 beforeEach(() => { vi.stubGlobal('matchMedia', vi.fn(() => ({ matches: false, addEventListener: vi.fn(), removeEventListener: vi.fn() }))); });
 let stop: (() => void) | undefined;
 afterEach(() => { stop?.(); document.body.innerHTML = ''; sessionStorage.clear(); localStorage.clear(); document.cookie = 'wcv1=; Max-Age=0; path=/'; vi.restoreAllMocks(); vi.unstubAllGlobals(); });
@@ -49,6 +51,52 @@ it('offers the same popup after dismissal, retaining inputs without counting ano
   expect(dialog.open).toBe(true);
   expect(input.value).toBe('reader@example.com');
   expect(beacon.report.mock.calls.map(call => call[1])).toEqual(['impression', 'dismiss']);
+});
+
+it('releases collision state after repeated explicit openings without recounting the presentation', () => {
+  const ui = shadowAccess();
+  document.body.innerHTML = '<button id="offer-a">Offer A</button><button id="offer-b">Offer B</button>';
+  const first = displayEntry({ ...campaign, triggers: [{ type: 'click_element', selector: '#offer-a' }] });
+  const second = displayEntry({ ...campaign, id: '01JQ0000000000000000000002', teaser: undefined, triggers: [{ type: 'click_element', selector: '#offer-b' }] });
+  const options = { ...optionsFor([first, second]), loader: createLoader([...FREE_MODULES, clickElement]) };
+  stop = start(options);
+  document.querySelector<HTMLButtonElement>('#offer-a')!.click();
+  const dialog = document.querySelector('dialog')!;
+  const input = ui.roots.flatMap(root => [...root.querySelectorAll('input')]).find(input => input.type === 'email')!;
+  input.value = 'reader@example.com';
+  document.querySelector<HTMLButtonElement>('#offer-b')!.click();
+  expect(document.querySelectorAll('dialog[open]')).toHaveLength(1);
+  expect(options.beacon.report.mock.calls.filter(call => call[0] === second.id)).toHaveLength(0);
+  dialog.close();
+  document.querySelector<HTMLButtonElement>('#offer-a')!.click();
+  expect(dialog.open).toBe(true);
+  expect(input.value).toBe('reader@example.com');
+  dialog.close();
+  document.querySelector<HTMLButtonElement>('#offer-b')!.click();
+  expect(document.querySelectorAll('dialog[open]')).toHaveLength(1);
+  expect(options.beacon.report.mock.calls.filter(call => call[0] === first.id).map(call => call[1])).toEqual(['impression', 'dismiss']);
+  expect(options.beacon.report.mock.calls.filter(call => call[0] === second.id).map(call => call[1])).toEqual(['impression']);
+});
+
+it('releases an eligibility-hidden overlay for a later explicit request', () => {
+  document.body.innerHTML = '<button id="offer-b">Offer B</button>';
+  let eligible = true;
+  let signal = () => {};
+  const first = displayEntry({ ...campaign, conditions: [{ type: 'allowed' }] });
+  const second = displayEntry({ ...campaign, id: '01JQ0000000000000000000002', teaser: undefined, triggers: [{ type: 'click_element', selector: '#offer-b' }] });
+  const options = { ...optionsFor([first, second]), loader: createLoader([...FREE_MODULES, clickElement,
+    { id: 'allowed', kind: 'condition' as const, consentCategory: null, create: (changed: () => void) => { signal = changed; return { holds: () => eligible }; } },
+  ]) };
+  stop = start(options);
+  const dialog = document.querySelector('dialog')!;
+  expect(dialog.open).toBe(true);
+  eligible = false; signal();
+  expect(dialog.open).toBe(false);
+  document.querySelector<HTMLButtonElement>('#offer-b')!.click();
+  expect(document.querySelectorAll('dialog[open]')).toHaveLength(1);
+  eligible = true; signal();
+  expect(document.querySelectorAll('dialog[open]')).toHaveLength(1);
+  expect(options.beacon.report.mock.calls.map(call => [call[0], call[1]])).toEqual([[first.id, 'impression'], [second.id, 'impression']]);
 });
 
 function shadowAccess() {
@@ -93,13 +141,13 @@ it('hides on condition loss, revalidates before reopening, and retains only cond
   let eligible = true;
   let signal = () => {};
   const stopTrigger = vi.fn();
-  const options = optionsFor([{ ...campaign, conditions: [{ type: 'allowed' }] }]);
+  const options = optionsFor([displayEntry({ ...campaign, conditions: [{ type: 'allowed' }] })]);
   options.loader = createLoader([
     { id: 'page_load', kind: 'trigger', consentCategory: 'functional', create: () => ({ holds: () => true, stop: stopTrigger }) },
     { id: 'allowed', kind: 'condition', consentCategory: 'functional', create: changed => { signal = changed; return { holds: () => eligible }; } },
   ]);
   stop = start(options);
-  expect(stopTrigger).toHaveBeenCalledOnce();
+  expect(stopTrigger).not.toHaveBeenCalled();
   document.querySelector('dialog')!.close();
   eligible = false; signal();
   expect(document.querySelector('[data-wconvert-reopen]')).toBeNull();
@@ -188,13 +236,14 @@ it('keeps same-page recovery and refusal working when session storage is blocked
   expect(document.querySelector('[data-wconvert-reopen]')).toBeNull();
 });
 
-it('expires an expanded recovered offer without adding a dismissal', () => {
+it('lets an open capture finish at expiry but prevents another reopening', () => {
   const ui = shadowAccess();
   let now = 100;
   const options = { ...optionsFor([{ ...campaign, ends_at: 500 }]), now: () => now };
   stop = start(options); document.querySelector('dialog')!.close(); ui.button('Get my discount').click();
   now = 500; window.dispatchEvent(new Event('pageshow'));
-  expect(document.querySelector('dialog')!.open).toBe(false);
+  expect(document.querySelector('dialog')!.open).toBe(true);
+  document.querySelector('dialog')!.close();
   expect(document.querySelector('[data-wconvert-reopen]')).toBeNull();
   expect(options.beacon.report.mock.calls.map(call => call[1])).toEqual(['impression', 'dismiss']);
 });

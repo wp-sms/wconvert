@@ -63,7 +63,7 @@ $c->resolve(DestinationRegistry::class)->register($provider);
 $emailRoute = $destinations->save(null, $provider->id(), 'Verification email', null, []);
 $smsRoute = $destinations->save(null, $provider->id(), 'Verification SMS', null, []);
 $template = json_decode((string) file_get_contents(dirname(__DIR__) . '/resources/templates/library/journey-email-then-sms.json'), true, 32, JSON_THROW_ON_ERROR);
-$config = ['template' => $template, 'display_type' => 'popup', 'rules' => [['type' => 'page_load']],
+$config = ['template' => $template, 'display_type' => 'popup', 'display_rules' => \WConvert\Rules\DisplayPlan::immediate(),
     'destinations' => [$emailRoute->id], 'submission_settings' => ['sms-signup' => ['destination_ids' => [$smsRoute->id]]]];
 $optin = $optins->create('Journey verification', 'grow_email_list', $config);
 $optins->publish($optin->id);

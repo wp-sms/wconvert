@@ -38,7 +38,7 @@ final class PublishedProjectionTest extends TestCase
      */
     private static function row(array $overrides = []): array
     {
-        return array_merge([
+        $row = array_merge([
             'id' => '01JQ0000000000000000000001',
             'goal' => 'grow_email_list',
             'config' => '{"targeting":{"include":[{"type":"url","value":"/draft"}]},"note":"working draft"}',
@@ -46,11 +46,14 @@ final class PublishedProjectionTest extends TestCase
             'published_at' => '2026-08-24 10:00:00',
             'deleted_at' => null,
         ], $overrides);
+        $config = json_decode((string) ($row['published_config'] ?? ''), true);
+        if (is_array($config)) $row['published_config'] = json_encode($config + ['display_rules' => \WConvert\Rules\DisplayPlan::immediate()]);
+        return $row;
     }
 
     public function testMixedPublishedLockModesStayReadableUntilTheFamilyAgrees(): void
     {
-        $config = ['display_type' => 'inline', 'rules' => [['type' => 'page_load']], 'content_lock' => ['mode' => 'hide'],
+        $config = ['display_type' => 'inline', 'display_rules' => \WConvert\Tests\Unit\Support\DisplayFixture::plan([['type' => 'page_load']]), 'content_lock' => ['mode' => 'hide'],
             'template' => ['tokens' => [], 'tree' => \WConvert\Tests\Unit\Support\JourneyFixture::tree(['steps' => [
                 ['type' => 'stack', 'children' => [['type' => 'field', 'name' => 'email', 'required' => true], ['type' => 'button', 'action' => 'submit', 'label' => 'Unlock']]],
                 ['type' => 'stack', 'children' => [['type' => 'heading', 'text' => 'Thanks']]],
@@ -68,6 +71,18 @@ final class PublishedProjectionTest extends TestCase
         self::assertSame($parent['id'], $alone[0]['payload']['campaign']);
     }
 
+    public function testOrdinaryOverlayArmsShareTheirCampaignSessionAllowance(): void
+    {
+        $parent = self::row();
+        $child = self::row(['id' => '01JQ0000000000000000000002', 'parent_id' => $parent['id']]);
+        $set = self::build([$parent, $child]);
+        foreach ($set as $entry) {
+            self::assertSame($parent['id'], $entry['payload']['campaign']);
+            self::assertArrayNotHasKey('content_lock', $entry['payload']);
+            self::assertArrayNotHasKey('teaser', $entry['payload']);
+        }
+    }
+
     public function testAPublishedRowProjectsItsTargetingSeparablyFromItsPayload(): void
     {
         $set = self::build([self::row()]);
@@ -78,7 +93,7 @@ final class PublishedProjectionTest extends TestCase
             // from it at enqueue and the browser never sees it (ADR 0025).
             'goal' => 'grow_email_list',
             'targeting' => ['include' => [['type' => 'post', 'value' => 12]]],
-            'payload' => ['display_type' => 'popup', 'triggers' => [], 'conditions' => []],
+            'payload' => ['display_type' => 'popup', 'display_rules' => \WConvert\Rules\DisplayPlan::immediate()],
         ]], $set);
     }
 
@@ -157,7 +172,7 @@ final class PublishedProjectionTest extends TestCase
     {
         return [
             'targeting' => ['include' => [['type' => 'url', 'value' => '/*']]],
-            'rules' => [['type' => 'page_load']],
+            'display_rules' => \WConvert\Tests\Unit\Support\DisplayFixture::plan([['type' => 'page_load']]),
             'template' => ['tree' => \WConvert\Tests\Unit\Support\JourneyFixture::tree(['steps' => []]), 'tokens' => []],
             'display_type' => 'floating_bar',
             'placement' => 'block_start',
@@ -211,7 +226,7 @@ final class PublishedProjectionTest extends TestCase
         $payload = self::build([self::row(['published_config' => (string) json_encode($config)])])[0]['payload'];
 
         $this->assertSame(
-            ['template', 'display_type', 'placement', 'frequency', 'priority', 'triggers', 'conditions'],
+            ['template', 'display_type', 'placement', 'frequency', 'priority', 'display_rules'],
             array_keys($payload),
             'a key reaching the browser is a decision; add it here and say why it renders'
         );
@@ -278,16 +293,15 @@ final class PublishedProjectionTest extends TestCase
     {
         $set = self::build([self::row(['published_config' => (string) json_encode([
             'display_type' => 'popup',
-            'rules' => [
+            'display_rules' => \WConvert\Tests\Unit\Support\DisplayFixture::plan([
                 ['type' => 'device', 'in' => ['desktop']],
                 ['type' => 'time_on_page', 'seconds' => 10],
-            ],
+            ]),
         ])])]);
 
         $this->assertSame([
             'display_type' => 'popup',
-            'triggers' => [['type' => 'time_on_page', 'seconds' => 10]],
-            'conditions' => [['type' => 'device', 'in' => ['desktop']]],
+            'display_rules' => \WConvert\Tests\Unit\Support\DisplayFixture::plan([['type' => 'device', 'in' => ['desktop']], ['type' => 'time_on_page', 'seconds' => 10]]),
         ], $set[0]['payload']);
     }
 
@@ -299,7 +313,7 @@ final class PublishedProjectionTest extends TestCase
     public function testTheFlatRuleListDoesNotTravelBesideItsPartition(): void
     {
         $set = self::build([self::row(['published_config' => (string) json_encode([
-            'rules' => [['type' => 'page_load']],
+            'display_rules' => \WConvert\Tests\Unit\Support\DisplayFixture::plan([['type' => 'page_load']]),
         ])])]);
 
         $this->assertArrayNotHasKey('rules', $set[0]['payload']);
@@ -310,14 +324,11 @@ final class PublishedProjectionTest extends TestCase
      * "no triggers" as "never fires" (ADR 0012's zero-trigger loss), and it can
      * only read that from a key that is present and empty.
      */
-    public function testBothAxesArePresentEvenWhenTheOptinHasNoRules(): void
+    public function testUnsupportedSavedRulesNeverBecomeImmediate(): void
     {
-        $set = self::build([self::row(['published_config' => '{"display_type":"popup"}'])]);
-
-        $this->assertSame(['triggers' => [], 'conditions' => []], array_intersect_key(
-            $set[0]['payload'],
-            ['triggers' => null, 'conditions' => null]
-        ));
+        $row = self::row();
+        $row['published_config'] = '{"rules":[{"type":"page_load"}]}';
+        self::assertSame([], self::build([$row]));
     }
 
     /**
@@ -331,12 +342,11 @@ final class PublishedProjectionTest extends TestCase
         $set = self::build([self::row(['published_config' => (string) json_encode([
             'triggers' => [['type' => 'page_load']],
             'conditions' => 'whatever this is',
-            'rules' => [['type' => 'time_on_page', 'seconds' => 10]],
+            'display_rules' => \WConvert\Tests\Unit\Support\DisplayFixture::plan([['type' => 'time_on_page', 'seconds' => 10]]),
         ])])]);
 
         $this->assertSame([
-            'triggers' => [['type' => 'time_on_page', 'seconds' => 10]],
-            'conditions' => [],
+            'display_rules' => \WConvert\Tests\Unit\Support\DisplayFixture::plan([['type' => 'time_on_page', 'seconds' => 10]]),
         ], $set[0]['payload']);
     }
 

@@ -10,7 +10,7 @@ add_action('init', static function (): void {
     if (!isset($ids[$kind])) {
         $config = [
             'display_type' => $kind === 'slide' ? 'slide_in' : 'popup',
-            'rules' => [['type' => 'page_load']], 'capture_mode' => 'local',
+            'display_rules' => \WConvert\Rules\DisplayPlan::immediate(), 'capture_mode' => 'local',
             'frequency' => ['maxImpressions' => 1],
             'teaser' => ['label' => 'Get my discount', 'mobile' => ['placement' => 'block_start_inline_start', 'gap' => 24]],
             'template' => ['tokens' => ['width' => '24rem', 'accent' => '#12505a'], 'tree' => ['v' => 2, 'submissions' => [['id' => 'primary', 'required' => true, 'fields' => ['n2'], 'consents' => []]], 'steps' => [

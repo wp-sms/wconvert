@@ -73,6 +73,7 @@ final class PolicyText
                 __('If local storage is unavailable, WConvert uses a cookie with the same name for up to %s. This browser record contains no name, email address, phone number or visitor identifier created by WConvert.', 'wconvert'),
                 $this->cookieDuration($browser['cookie_fallback_days'])
             ) . '</p>',
+            '<p>' . __('When a Campaign uses a session limit, WConvert stores appearance counts under wcv_display_session_v1 in this tab’s session storage. It holds at most 128 Campaign families, evicting the least recently shown. It contains no contact details or visitor identifier. Browsers may copy or restore tab sessions; if storage is blocked, the limit lasts only on the current page.', 'wconvert') . '</p>',
             ...($browser['cart_recovery'] !== null ? [
                 '<p>' . __('Cart recovery stores the cart item count and total in a browser cookie until the WooCommerce cart session ends. It does not store product or contact details.', 'wconvert') . '</p>',
             ] : []),

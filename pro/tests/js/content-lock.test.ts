@@ -1,3 +1,4 @@
+import { displayEntry } from '../../../tests/js/support/display-entry';
 import { treeFixture } from '../../../tests/js/support/journey';
 import { afterEach, expect, it, vi } from 'vitest';
 import { start } from '@loader/shell';
@@ -5,14 +6,14 @@ import { createLoader } from '@loader/engine';
 import { FREE_MODULES } from '@loader/modules';
 import { proPresenter } from '../../modules/display-types/loader/present';
 
-const campaign = {
+const campaign = displayEntry({
   id: '01JQ0000000000000000000001', display_type: 'inline', content_lock: { mode: 'hide' },
   triggers: [{ type: 'page_load' }], frequency: { stopAfterConversion: false },
   template: { tokens: {}, tree: treeFixture({ steps: [
     { type: 'stack', children: [{ type: 'field', name: 'email' }, { type: 'button', label: 'Unlock', action: 'submit' }] },
     { type: 'stack', children: [{ type: 'heading', text: 'Received' }] },
   ] }) },
-};
+});
 let stop: (() => void) | undefined;
 afterEach(() => { stop?.(); document.body.innerHTML = ''; localStorage.clear(); sessionStorage.clear(); vi.restoreAllMocks(); vi.unstubAllGlobals(); });
 function page() {
@@ -91,7 +92,7 @@ it('opens on condition loss and does not re-lock when eligibility returns', () =
   const content = page(); let allowed = true; let changed = () => {};
   stop = start({ loader: createLoader([...FREE_MODULES, { id: 'audience', kind: 'condition', consentCategory: null,
     create: (notify) => { changed = notify; return { holds: () => allowed }; } }]),
-    entries: [{ ...campaign, conditions: [{ type: 'audience' }] }], presenter: proPresenter, store: { read: () => null, write() {} } });
+    entries: [displayEntry({ ...campaign, conditions: [{ type: 'audience' }] })], presenter: proPresenter, store: { read: () => null, write() {} } });
   expect(content.hidden).toBe(true);
   allowed = false; changed(); expect(content.hidden).toBe(false);
   allowed = true; changed(); expect(content.hidden).toBe(false);
@@ -101,7 +102,7 @@ it('does not take readable content away after initially withheld eligibility cha
   const content = page(); let allowed = false; let changed = () => {};
   stop = start({ loader: createLoader([...FREE_MODULES, { id: 'audience', kind: 'condition', consentCategory: null,
     create: (notify) => { changed = notify; return { holds: () => allowed }; } }]),
-    entries: [{ ...campaign, conditions: [{ type: 'audience' }] }], presenter: proPresenter, store: { read: () => null, write() {} } });
+    entries: [displayEntry({ ...campaign, conditions: [{ type: 'audience' }] })], presenter: proPresenter, store: { read: () => null, write() {} } });
   expect(content.hidden).toBe(false);
   allowed = true; changed(); expect(content.hidden).toBe(false);
   expect(content.previousElementSibling!.childElementCount).toBe(0);
@@ -148,7 +149,7 @@ it('retains an in-flight acknowledgement after eligibility loss without reopenin
   const beacon = { report: vi.fn(), flush: vi.fn(), stop: vi.fn() };
   stop = start({ loader: createLoader([...FREE_MODULES, { id: 'audience', kind: 'condition', consentCategory: null,
     create: (notify) => { changed = notify; return { holds: () => allowed }; } }]),
-    entries: [{ ...campaign, conditions: [{ type: 'audience' }] }], presenter: proPresenter, beacon, store: { read: () => null, write() {} } });
+    entries: [displayEntry({ ...campaign, conditions: [{ type: 'audience' }] })], presenter: proPresenter, beacon, store: { read: () => null, write() {} } });
   submit(form()); await vi.waitFor(() => expect(resolve).toBeTypeOf('function')); allowed = false; changed();
   expect(content.hidden).toBe(false); expect(form().isConnected).toBe(false);
   resolve({ ok: true, status: 200, json: async () => ({ id: 'lead', grant: 'grant' }) });

@@ -49,7 +49,7 @@ export const exitIntent: LoaderModule = {
       // Once, on the transition. `scroll_depth` asks on every scroll because
       // each of its rules carries its own threshold; this is a boolean with no
       // params, so a second ask has nothing new to answer.
-      changed();
+      try { changed(); } finally { leaving = false; }
     };
 
     document.addEventListener('mouseout', onMouseOut);

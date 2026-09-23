@@ -1,8 +1,9 @@
 import { __ } from '@wordpress/i18n';
 import type { ConvertingAct } from '../structure/catalogue';
-import { entriesOn } from './axis';
-import { howOftenSummary, whenSummary, whereSummary, whoSummary, type Summary } from './sentence';
-import type { Frequency, Rule, RuleVocabulary, Schedule, Targeting } from '../api';
+import type { DisplayPlan } from '@loader/display-rules';
+import { groupSummary } from './plan';
+import { howOftenSummary, whereSummary, type Summary } from './sentence';
+import type { Frequency, RuleVocabulary, Schedule, Targeting } from '../api';
 
 /**
  * The four questions, answered — **once, for the two screens that ask them.**
@@ -29,7 +30,7 @@ import type { Frequency, Rule, RuleVocabulary, Schedule, Targeting } from '../ap
 
 /** What the four sections and the readiness panel both read out of `config`. */
 export interface DisplayRulesValue {
-  readonly rules: readonly Rule[];
+  readonly display_rules?: DisplayPlan;
   readonly targeting: Targeting;
   readonly frequency: Frequency;
   /**
@@ -68,7 +69,7 @@ export function summarise(
   overlay: boolean,
   act: ConvertingAct = 'submit',
 ): AxisSummaries {
-  const { rules, targeting, frequency, schedule, priority } = value;
+  const { display_rules: plan, targeting, frequency, schedule, priority } = value;
   /*
    * Every type on every axis, because a summary reads a rule by its DECLARED
    * params and a Targeting rule can carry a preset like any other. The two
@@ -77,32 +78,20 @@ export function summarise(
    */
   const all = [...vocabulary.targeting, ...vocabulary.triggers, ...vocabulary.conditions];
 
+  const audience = plan?.audience;
+  const groups = audience?.mode === 'groups' ? audience.groups.map(group => groupSummary(group, all)) : [];
+  const opening = plan?.opening;
+  const when = !opening ? { text: __('Replace older display rules', 'wconvert'), attention: true }
+    : opening.mode === 'immediate' ? { text: __('As soon as the page is eligible', 'wconvert'), attention: false }
+      : groupSummary({ match: opening.mode === 'click' ? 'any' : opening.match, rules: opening.rules }, all);
+  if (opening?.mode === 'automatic' && (!Number.isFinite(opening.minimum_seconds ?? 0) || (opening.minimum_seconds ?? 0) < 0 || (opening.minimum_seconds ?? 0) > 3600)) when.attention = true;
+  if (opening?.mode === 'automatic' && opening.minimum_seconds) when.text += ` · ${opening.minimum_seconds} ` + __('seconds minimum', 'wconvert');
   return [
-    { id: 'where', eyebrow: __('Pages', 'wconvert'), ...whereSummary(targeting) },
-    {
-      id: 'who',
-      eyebrow: __('Audience', 'wconvert'),
-      // Both visitor predicates are stored on the TARGETING axis and answered
-      // here, which is the one place those two differ ({@see Who}): they are
-      // fields rather than list members because an include list unions page
-      // sets, and they read out under WHO because that is the question a
-      // merchant looks for them under.
-      ...whoSummary(
-        entriesOn(rules, vocabulary.conditions),
-        all,
-        targeting.logged_in,
-        targeting.roles,
-      ),
-    },
-    {
-      id: 'when',
-      eyebrow: __('When it appears', 'wconvert'),
-      ...whenSummary(entriesOn(rules, vocabulary.triggers), all),
-    },
-    {
-      id: 'how-often',
-      eyebrow: __('Schedule & frequency', 'wconvert'),
-      ...howOftenSummary(frequency, schedule, priority, overlay, act),
-    },
+    { id: 'where', eyebrow: __('Pages', 'wconvert'), ...whereSummary(targeting),
+      ...(targeting.mode === 'selected' && !targeting.include?.length ? { text: __('Choose included pages', 'wconvert'), attention: true } : {}) },
+    { id: 'who', eyebrow: __('Audience', 'wconvert'), text: audience?.mode === 'everyone' ? __('Everyone', 'wconvert') : groups.map(group => `(${group.text})`).join(__(' OR ', 'wconvert')) || __('Choose an audience', 'wconvert'),
+      attention: !audience || (audience.mode === 'groups' && (!groups.length || groups.some(group => group.attention))) },
+    { id: 'when', eyebrow: __('Opening moment', 'wconvert'), ...when },
+    { id: 'how-often', eyebrow: __('Schedule & limits', 'wconvert'), ...howOftenSummary(frequency, schedule, priority, overlay, act) },
   ];
 }

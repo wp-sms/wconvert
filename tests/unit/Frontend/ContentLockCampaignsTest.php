@@ -17,7 +17,7 @@ final class ContentLockCampaignsTest extends TestCase
         $set = new PublishedSet(new FakeOptionStore());
         $repo = new OptinRepository(new FakeConnection(), $set, InstalledRules::vocabulary(), new MilestoneStore(new FakeOptionStore()));
         $set->replaceWith([
-            ['id' => 'ready', 'payload' => ['display_type' => 'inline', 'content_lock' => ['mode' => 'hide'], 'triggers' => [['type' => 'page_load']], 'template' => ['private' => 'never return this']]],
+            ['id' => 'ready', 'payload' => \WConvert\Tests\Unit\Support\DisplayFixture::entry(['display_type' => 'inline', 'content_lock' => ['mode' => 'hide'], 'triggers' => [['type' => 'page_load']], 'template' => ['private' => 'never return this']])],
             ['id' => 'ordinary', 'payload' => ['display_type' => 'inline']],
             ['id' => 'popup', 'payload' => ['display_type' => 'popup']],
         ]);
@@ -42,10 +42,10 @@ final class ContentLockCampaignsTest extends TestCase
     {
         $set = new PublishedSet(new FakeOptionStore());
         $repo = new OptinRepository(new FakeConnection(), $set, InstalledRules::vocabulary(), new MilestoneStore(new FakeOptionStore()));
-        $set->replaceWith([['id' => 'saved', 'payload' => [
+        $set->replaceWith([['id' => 'saved', 'payload' => \WConvert\Tests\Unit\Support\DisplayFixture::entry([
             'display_type' => 'inline', 'content_lock' => ['mode' => 'hide'],
             'triggers' => [['type' => 'page_load']], 'conditions' => [['type' => 'cart_has_items']],
-        ]]]);
+        ])]]);
         $picker = new ContentLockCampaigns($set, $repo, InstalledRules::withProButNoStore());
         self::assertSame('unavailable', $picker->campaigns()[0]['status']);
         self::assertNull($picker->data()['manageUrl']);

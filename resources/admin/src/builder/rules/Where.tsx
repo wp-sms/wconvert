@@ -56,14 +56,20 @@ export function Where({ types, targeting, onChange }: WhereProps) {
 
   return (
     <>
-      <RuleList
+      <fieldset className="wconvert-display-choices"><legend>{__('Page selection', 'wconvert')}</legend>
+        <label><input type="radio" name="display-pages" checked={targeting.mode !== 'selected' && !include.length}
+          onChange={() => onChange({ ...targeting, mode: 'entire', include: [] })} />{__('Entire site', 'wconvert')}</label>
+        <label><input type="radio" name="display-pages" checked={targeting.mode === 'selected' || !!include.length}
+          onChange={() => onChange({ ...targeting, mode: 'selected' })} />{__('Selected pages', 'wconvert')}</label>
+      </fieldset>
+      {(targeting.mode === 'selected' || include.length > 0) && <RuleList
         list="include"
         heading={__('Show it on', 'wconvert')}
-        empty={__('Shown everywhere on the site.', 'wconvert')}
+        empty={__('Choose at least one page before publishing.', 'wconvert')}
         types={pages}
         rules={include}
-        onChange={(rules) => setList('include', rules)}
-      />
+        onChange={(rules) => onChange({ ...targeting, mode: 'selected', include: rules })}
+      />}
 
       <RuleList
         list="exclude"

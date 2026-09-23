@@ -4,77 +4,7 @@ namespace WConvert\Rules;
 
 defined('ABSPATH') || exit;
 
-/**
- * =============================================================================
- * LOSING PRO DEGRADES RATHER THAN STOPS — AND WHERE DEGRADING WOULD MAKE AN
- * OPTIN LIE, IT SUSPENDS INSTEAD.
- * =============================================================================
- * The thin resolver ADR 0012 describes, reading the table ADR 0012 puts in the
- * rule manifest, applied at the two call sites ADR 0012 names. It is
- * asymmetric by rule kind, and the asymmetry is the whole design:
- *
- * - **A premium [[Trigger]] is substituted** — `exit_intent` → `time_on_page`,
- *   `scroll_up` → `scroll_depth`. Every Optin carries at least one Trigger, so
- *   a *dropped* one leaves an Optin that can never fire: a silent, total loss
- *   of function with nothing in any log.
- * - **A premium [[Condition]] is dropped.** There is no honest substitute for
- *   "the referrer is Google", and inventing one fabricates targeting nobody
- *   asked for. Dropping only *widens* the audience, which is the safe
- *   direction to fail in.
- * - **Except where the manifest says `on_absence: suspend`** (ADR 0027), for a
- *   Condition whose guarantee the Optin's copy asserts. Dropping *"You left 3
- *   items in your cart"*'s Condition does not widen an audience, it makes the
- *   Optin say something false.
- *
- * =============================================================================
- * AND THE POST-CONDITION THAT MAKES "SUBSTITUTED" MORE THAN A TABLE ENTRY.
- * =============================================================================
- * **Degradation never turns an Optin that could fire into one that cannot.**
- * The table is what closes the case where an honest substitute exists;
- * `click_element` has none, because its selector names something only one site
- * has. So the rule is checked at the end rather than trusted from the table:
- * an Optin whose rules named a Trigger going in, and name none that could fire
- * coming out, is **[[Suspended]]** — the same outcome as the silent loss, with
- * a cause the merchant can read on the list screen and no repair step when the
- * dependency returns.
- *
- * That is a narrowing of ADR 0012 in the same shape ADR 0027 already narrowed
- * it, and it is recorded inline in both.
- *
- * =============================================================================
- * WHY THERE IS NO ENTITLEMENT BRANCH HERE.
- * =============================================================================
- * The question asked of every rule is *"can this install evaluate this type?"*,
- * and it is answered by {@see SuppliedRules} — a registry free fills from the
- * manifest's free tier and [[Pro]] fills from its own. Not "is Pro loaded", not
- * a licence, not a tier: **a set-membership test against what actually
- * registered** (ADR 0015). The grounding is a fact about this request rather
- * than a decision about a customer, which is what lets the strip live on the
- * enqueue path ADR 0012 puts it on without putting a branch on it — the thing
- * ADR 0004 spends the whole loader design avoiding, and what
- * `tests/unit/Contract/NoLicenceOnTheFrontEndTest.php` reads the source to
- * keep true.
- *
- * =============================================================================
- * TWO CALL SITES, AND THEY NEVER TOUCH THE SAME OPTIN.
- * =============================================================================
- * **{@see intoConfig()} is prefill**, and exists for authoring honesty:
- * wp.org Guideline 9 fires on showing a real control `disabled`, so a free
- * user is handed a working rule they can configure. It is the only call site
- * that WRITES, so it is the only one that records the `degraded_from` marker.
- *
- * **{@see intoPayload()} is enqueue**, and exists for runtime correctness of
- * Optins authored while Pro was installed and running after it is gone. It
- * writes nothing — the published set outlives the code that reads it — so
- * there is no marker for it to record, and the note the builder shows for that
- * case needs none: the rule is still sitting in `config`, at its own tier.
- *
- * They are disjoint by MOMENT rather than by guard, and prefill baking the
- * substitution in is what makes the second pass a no-op on an Optin the first
- * one touched.
- *
- * @since 0.1.0
- */
+/** Catalog prefill may offer visible alternatives. Authored campaigns suspend if any capability is lost. */
 final class Degradation
 {
     public function __construct(
@@ -99,7 +29,9 @@ final class Degradation
      * reaches that case, because ADR 0026 hides the [[Goal]] above such a
      * Playbook on an install that cannot serve it.
      *
+     *
      * @param mixed $rules The flat `{type, scalar}` list, as the Playbook wrote it.
+     *
      * @return list<array<string, mixed>>
      */
     public function intoConfig($rules): array
@@ -108,58 +40,39 @@ final class Degradation
     }
 
     /**
+     * @param list<array<string, mixed>> $rules
+     * @return array<string, mixed> */
+    public function intoDisplayConfig(array $rules): array
+    {
+        return DisplayPlan::fromCatalogue($this->intoConfig($rules), $this->vocabulary);
+    }
+
+    /**
      * The rule type one published Optin cannot run without, or null — asked of
      * a payload entry rather than of a flat list.
      *
-     * Beside {@see suspendedBy()} because the same question arrives in two
-     * shapes: prefill holds the flat list a [[Playbook]] wrote, and everything
-     * downstream of publish holds the entry `partition()` produced. Both go
-     * through the same resolver, so the Optin list and the enqueue path can
-     * never disagree about whether a site is serving an Optin.
+     * Authored groups are scanned without changing their Boolean meaning.
+     * A missing leaf suspends the whole Campaign, including an OR alternative.
      *
      * @param array<string, mixed> $entry
      */
     public function suspendedIn(array $entry): ?string
     {
-        return $this->resolve($this->vocabulary->flatten($entry), false)['suspendedBy'];
+        if (!isset($entry['display_rules'])) return 'display_rules';
+        return $this->suspendedBy([...DisplayPlan::rules($entry['display_rules']), ...($entry['required_rules'] ?? [])]);
     }
 
     /**
-     * ENQUEUE. One payload entry, degraded — or **null where the Optin is
-     * Suspended and this page must not carry it at all**.
-     *
-     * Both axes are resolved together and re-partitioned, because a
-     * substitution is a rule swap and kind is a fixed property of the type: a
-     * Trigger's substitute is a Trigger, and the manifest is what says so
-     * rather than the axis the rule happened to arrive on.
+     * ENQUEUE. Keep the authored payload unchanged, or withhold the entire
+     * Campaign when any required implementation is missing.
      *
      * @param array<string, mixed> $entry As {@see \WConvert\Optin\PublishedOptin::toPayloadEntry()} built it.
+     *
      * @return array<string, mixed>|null
      */
     public function intoPayload(array $entry): ?array
     {
-        $resolved = $this->resolve($this->vocabulary->flatten($entry), false);
-
-        if ($resolved['suspendedBy'] !== null) {
-            return null;
-        }
-
-        // Assigned rather than merged, so the keys keep the position the
-        // projection gave them and an entry nothing was done to comes back
-        // byte-identical.
-        //
-        // **And an axis is never INVENTED.** The projection always writes both
-        // keys, because the loader reads "no triggers" as "never fires" and
-        // can only read that from a key that is present — but this is not the
-        // projection, and adding a key an entry did not have would spend bytes
-        // on every matching page view to say what its absence already said.
-        foreach ($this->vocabulary->partition($resolved['rules']) as $axis => $rules) {
-            if ($rules !== [] || array_key_exists($axis, $entry)) {
-                $entry[$axis] = $rules;
-            }
-        }
-
-        return $entry;
+        return $this->suspendedIn($entry) === null ? $entry : null;
     }
 
     /**
@@ -174,11 +87,16 @@ final class Degradation
      * a missing tier from a missing plugin and must not guess, since one is
      * buyable from us and the other is not.
      *
+     *
      * @param mixed $rules
      */
     public function suspendedBy($rules): ?string
     {
-        return $this->resolve($rules, false)['suspendedBy'];
+        foreach (is_array($rules) ? $rules : [] as $rule) {
+            $type = (string) ($rule['type'] ?? '');
+            if (!in_array($this->vocabulary->kindOf($type), [RuleKind::Visitor, RuleKind::Page], true) && !$this->supplied->supplies($type)) return $type;
+        }
+        return null;
     }
 
     /**
@@ -212,8 +130,11 @@ final class Degradation
      * A Condition with no substitute is dropped by both, because dropping one
      * only WIDENS the audience and there is nothing for the merchant to fix.
      *
+     *
      * @param mixed $rules
+     *
      * @param bool $forAuthoring True at prefill — the call site that writes `config` for a person to read.
+     *
      * @return array{rules: list<array<string, mixed>>, suspendedBy: string|null}
      */
     private function resolve($rules, bool $forAuthoring): array
@@ -282,7 +203,9 @@ final class Degradation
      * and at Playbook registration, and calling it a suspension here would
      * report a bug as a missing dependency.
      *
+     *
      * @param mixed $before
+     *
      * @param list<array<string, mixed>> $runnable What is left that this install can evaluate.
      */
     private function lostItsLastTrigger($before, array $runnable): ?string

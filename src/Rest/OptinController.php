@@ -370,12 +370,10 @@ final class OptinController implements RestController
         } catch (InvalidSchedule $refused) {
             return self::refuseTheSchedule($refused);
         } catch (\InvalidArgumentException $refused) {
-            return new WP_Error('wconvert_teaser', __('Reopen button text must contain 1–80 characters.', 'wconvert'), ['status' => 400]);
+            return new WP_Error('wconvert_configuration', $refused->getMessage(), ['status' => 400]);
         }
 
-        if (!$this->vocabulary->hasTrigger($normalized['rules'] ?? [])) {
-            return self::needsATrigger();
-        }
+
 
         // No arm check on a create: `POST /optins` writes no `parent_id`, and
         // {@see OptinRepository::createVariant()} makes an arm by COPYING its
@@ -455,7 +453,7 @@ final class OptinController implements RestController
         } catch (InvalidSchedule $refused) {
             return self::refuseTheSchedule($refused);
         } catch (\InvalidArgumentException $refused) {
-            return new WP_Error('wconvert_teaser', __('Reopen button text must contain 1–80 characters.', 'wconvert'), ['status' => 400]);
+            return new WP_Error('wconvert_configuration', $refused->getMessage(), ['status' => 400]);
         }
 
         // Checked against the config that ARRIVED, because `saveDraft()`
@@ -463,9 +461,7 @@ final class OptinController implements RestController
         // config, so a trigger the stored one had is not one this Optin will
         // have. A PATCH that carries none is not editing the rules at all and
         // is not asked the question.
-        if ($normalized !== null && !$this->vocabulary->hasTrigger($normalized['rules'] ?? [])) {
-            return self::needsATrigger();
-        }
+
 
         // Goal fit is checked at publication, so incomplete drafts stay editable.
         // Bindings on a design without capture remain unusable under any Goal.
@@ -567,6 +563,19 @@ final class OptinController implements RestController
 
         if ($optin === null || $optin->isDeleted()) {
             return self::notFound();
+        }
+
+        $displayIssues = \WConvert\Rules\DisplayPlan::issues($optin->config['display_rules'] ?? [], $this->vocabulary);
+        if (($optin->config['targeting']['mode'] ?? '') === 'selected' && empty($optin->config['targeting']['include'])) {
+            $displayIssues[] = __('Choose at least one included page.', 'wconvert');
+        }
+        foreach (['include', 'exclude'] as $axis) {
+            foreach ($optin->config['targeting'][$axis] ?? [] as $rule) {
+                if (\WConvert\Targeting\TargetingRule::fromArray($rule) === null || trim((string) ($rule['value'] ?? '')) === '' || (in_array($rule['type'] ?? '', ['post', 'term'], true) && (!is_numeric($rule['value'] ?? null) || (int) $rule['value'] < 1))) $displayIssues[] = __('Complete the selected page rules.', 'wconvert');
+            }
+        }
+        if ($displayIssues !== []) {
+            return new WP_Error('wconvert_display_incomplete', implode(' ', $displayIssues), ['status' => 400]);
         }
 
         if (!$optin->hasDesign()) {
@@ -776,12 +785,23 @@ final class OptinController implements RestController
             $config['capture_mode'] = $config['capture_mode'] === 'local' ? 'local' : 'connected';
         }
         if (isset($config['targeting'])) {
-            $config['targeting'] = Targeting::fromArray((array) $config['targeting'])->toArray();
+            $targeting = $config['targeting'];
+            if (!is_array($targeting) || isset($targeting['logged_in']) || isset($targeting['roles']) || !in_array($targeting['mode'] ?? 'entire', ['entire', 'selected'], true)) {
+                throw new \InvalidArgumentException(__('Put account restrictions in Audience and choose a valid page mode.', 'wconvert'));
+            }
+            foreach (['include', 'exclude'] as $axis) {
+                if (!is_array($targeting[$axis] ?? []) || !array_is_list($targeting[$axis] ?? [])) throw new \InvalidArgumentException(__('Invalid page selection.', 'wconvert'));
+                foreach ($targeting[$axis] ?? [] as $rule) {
+                    if (!is_array($rule) || !is_string($rule['type'] ?? null) || $this->vocabulary->kindOf($rule['type']) !== \WConvert\Rules\RuleKind::Page) throw new \InvalidArgumentException(__('Unknown page rule.', 'wconvert'));
+                }
+            }
+            $config['targeting'] = array_intersect_key($targeting, array_flip(['mode', 'include', 'exclude']));
         }
 
-        if (isset($config['rules'])) {
-            $config['rules'] = $this->vocabulary->normalize($config['rules']);
+        if (array_key_exists('rules', $config)) {
+            throw new \InvalidArgumentException(__('Replace the older development display rules before saving.', 'wconvert'));
         }
+        $config['display_rules'] = \WConvert\Rules\DisplayPlan::normalize($config['display_rules'] ?? null, $this->vocabulary);
 
         // **The placement, which reached the browser unvalidated until now.**
         // `display_type` is one of the four keys the published projection
@@ -840,6 +860,10 @@ final class OptinController implements RestController
         // change an answer, and the payload is inlined against a 2KB budget
         // (ADR 0014).
         if (isset($config['frequency'])) {
+            $cap = $config['frequency']['maxPerSession'] ?? null;
+            if ($cap !== null && (!is_numeric($cap) || !is_finite((float) $cap) || (float) (int) $cap !== (float) $cap || $cap < 1 || $cap > 100)) {
+                throw new \InvalidArgumentException(__('Use a whole session limit between 1 and 100.', 'wconvert'));
+            }
             $frequency = Frequency::fromArray((array) $config['frequency'])->toArray();
 
             if ($frequency === []) {
@@ -950,13 +974,13 @@ final class OptinController implements RestController
     private function refuseContentLock(array $config, string $id): ?WP_Error
     {
         $enabled = \WConvert\Optin\ContentLock::normalize($config['content_lock'] ?? null) !== null;
-        if ($enabled && !\WConvert\Optin\ContentLock::compatible($config, $this->vocabulary->partition($config['rules'] ?? [])['triggers'])) {
+        if ($enabled && !\WConvert\Optin\ContentLock::compatible($config, \WConvert\Rules\DisplayPlan::compatibilityTriggers($config['display_rules'] ?? []))) {
             return new WP_Error('wconvert_content_lock', __('Content lock requires a complete inline submission form, manual placement, and only the page-load trigger.', 'wconvert'), ['status' => 400]);
         }
         foreach ($this->optins->otherArmsOf($id) as $arm) {
             $other = $arm->config;
             $otherEnabled = \WConvert\Optin\ContentLock::normalize($other['content_lock'] ?? null) !== null;
-            if ($enabled !== $otherEnabled || ($otherEnabled && !\WConvert\Optin\ContentLock::compatible($other, $this->vocabulary->partition($other['rules'] ?? [])['triggers']))) {
+            if ($enabled !== $otherEnabled || ($otherEnabled && !\WConvert\Optin\ContentLock::compatible($other, \WConvert\Rules\DisplayPlan::compatibilityTriggers($other['display_rules'] ?? [])))) {
                 return new WP_Error('wconvert_content_lock_family', __('Every A/B variant must use the same content-lock mode and a compatible inline submission form.', 'wconvert'), ['status' => 400]);
             }
         }
@@ -973,7 +997,7 @@ final class OptinController implements RestController
             return new WP_Error('wconvert_inline_placement',
                 __('Choose a valid inline position and a paragraph number from 1 to 100.', 'wconvert'), ['status' => 400]);
         }
-        $triggers = $this->vocabulary->partition($config['rules'] ?? [])['triggers'];
+        $triggers = \WConvert\Rules\DisplayPlan::compatibilityTriggers($config['display_rules'] ?? []);
         if (count($triggers) !== 1 || ($triggers[0]['type'] ?? null) !== 'page_load') {
             return new WP_Error('wconvert_inline_trigger',
                 __('Automatic inline placement requires only the page-load trigger. Change When it appears, or use manual placement.', 'wconvert'), ['status' => 400]);
@@ -1168,38 +1192,6 @@ final class OptinController implements RestController
             'wconvert_optin_cannot_convert',
             __(
                 'This design has nothing on it that counts as a conversion, so the Campaign would report zero however many people saw it. Add the button back, or pick a design that has one.',
-                'wconvert'
-            ),
-            ['status' => 400]
-        );
-    }
-
-    /**
-     * **An Optin cannot be saved with no [[Trigger]] it can act on.**
-     *
-     * Every Optin has at least one, and "shows immediately" is the explicit
-     * `page_load` Trigger rather than an empty list (CONTEXT.md, Trigger). An
-     * Optin with none can never fire — a silent, total loss of function with
-     * nothing in any log, which ADR 0012 names as this category's defining
-     * support ticket.
-     *
-     * Refused rather than repaired. Supplying `page_load` for the merchant
-     * would put a popup on the page the moment it loads, which is display
-     * behaviour nobody asked for — the same reason ADR 0012 refuses to invent
-     * a substitute for a dropped [[Condition]], and the reason the [[Playbook]]
-     * registry refuses the same shape at the other end (
-     * {@see \WConvert\Support\RejectionReason::NoTrigger}).
-     *
-     * Refused at SAVE rather than at publish, because the draft is what the
-     * merchant is looking at: told at publish, they would have to find their
-     * way back to a rules panel they had already left.
-     */
-    private static function needsATrigger(): WP_Error
-    {
-        return new WP_Error(
-            'wconvert_optin_needs_a_trigger',
-            __(
-                'A campaign needs at least one Trigger it can act on. Fill in the one you have, or add “Shows immediately” if it should show straight away.',
                 'wconvert'
             ),
             ['status' => 400]

@@ -97,6 +97,7 @@ final class RuleVocabulary
     public const DEGRADED_FROM = 'degraded_from';
 
     /**
+     * @param array<string, string> $signals Trigger type => threshold, state or fresh gesture.
      * @param array<string, RuleKind> $kinds Rule type => its declared kind.
      * @param array<string, Tier> $tiers Rule type => which install supplies it.
      * @param array<string, array<string, array<string, mixed>>> $params Rule type => param name => its declaration.
@@ -115,6 +116,7 @@ final class RuleVocabulary
         private readonly array $onAbsence = [],
         private readonly array $substitutes = [],
         private readonly array $requires = [],
+        private readonly array $signals = [],
     ) {
     }
 
@@ -136,6 +138,7 @@ final class RuleVocabulary
         $onAbsence = [];
         $substitutes = [];
         $requires = [];
+        $signals = [];
 
         foreach ($manifest as $axis => $entries) {
             if (!is_array($entries)) {
@@ -156,6 +159,7 @@ final class RuleVocabulary
                 $type = (string) $type;
                 $axes[(string) $axis][] = $type;
                 $kinds[$type] = $kind;
+                if (in_array($entry['signal'] ?? '', ['threshold', 'state', 'gesture'], true)) $signals[$type] = $entry['signal'];
                 $tiers[$type] = Tier::tryFrom(is_string($entry['tier'] ?? null) ? $entry['tier'] : '') ?? Tier::Free;
                 $params[$type] = self::declarations($entry['params'] ?? []);
                 $presets[$type] = self::declarations($entry['presets'] ?? []);
@@ -190,7 +194,12 @@ final class RuleVocabulary
             }
         }
 
-        return new self($kinds, $tiers, $params, $presets, $axes, $onAbsence, $substitutes, $requires);
+        return new self($kinds, $tiers, $params, $presets, $axes, $onAbsence, $substitutes, $requires, $signals);
+    }
+
+    public function signalOf(string $type): ?string
+    {
+        return $this->signals[$type] ?? null;
     }
 
     public function kindOf(string $type): ?RuleKind

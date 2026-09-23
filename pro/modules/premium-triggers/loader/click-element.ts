@@ -31,7 +31,7 @@ import type { LoaderModule } from '@loader/types';
  * plausible rule: a visitor who clicked twenty things and matched none of them
  * on the way is not about to.
  */
-const REMEMBERED = 20;
+
 
 export const clickElement: LoaderModule = {
   id: 'click_element',
@@ -48,8 +48,7 @@ export const clickElement: LoaderModule = {
       }
 
       clicked.push(target);
-      clicked.splice(0, clicked.length - REMEMBERED);
-      changed();
+      try { changed(); } finally { clicked.length = 0; }
     };
 
     // Capture, so a handler that stops propagation on the merchant's own

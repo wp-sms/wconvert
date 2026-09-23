@@ -57,6 +57,7 @@ export interface ServerOptin {
    * direction, which is the only thing they could have disagreed about.
    */
   readonly schedule: { readonly starts: string | null; readonly ends: string | null } | null;
+  readonly audienceAllowed?: boolean;
   readonly targeting: TargetingReport | null;
 }
 
@@ -289,6 +290,8 @@ function stoppedAt(
   // Absent from the payload after Targeting admitted it: something between the
   // two dropped it, and "it did not arrive" is the honest report rather than a
   // guess about which cache did it.
+  if (optin.audienceAllowed === false) return { gate: 'targeting', reason: 'audience_server' };
+
   if (!reached.has(optin.id) || entry === null) {
     return { gate: 'payload', reason: 'not_in_payload' };
   }
@@ -302,7 +305,7 @@ function stoppedAt(
   // cookie. It sits AFTER `payload` because a scheduled Optin IS in the
   // published set and DOES reach the browser before its window opens — which
   // is the decision the whole feature turns on, readable off the sequence.
-  if (entry.standing === 'capped' && entry.schedule !== null) {
+  if ((entry.standing === 'capped' || entry.standing === 'waiting') && entry.schedule !== null) {
     return {
       gate: 'schedule',
       reason: entry.schedule === 'before' ? 'before_window' : 'after_window',

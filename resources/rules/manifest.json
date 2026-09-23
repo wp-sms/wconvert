@@ -4,7 +4,12 @@
       "kind": "page",
       "tier": "free",
       "requires": null,
-      "params": { "value": { "control": "post_id", "authored": true } },
+      "params": {
+        "value": {
+          "control": "post_id",
+          "authored": true
+        }
+      },
       "presets": {},
       "consent_category": null,
       "on_absence": null,
@@ -14,7 +19,11 @@
       "kind": "page",
       "tier": "free",
       "requires": null,
-      "params": { "value": { "control": "post_type" } },
+      "params": {
+        "value": {
+          "control": "post_type"
+        }
+      },
       "presets": {},
       "consent_category": null,
       "on_absence": null,
@@ -24,7 +33,11 @@
       "kind": "page",
       "tier": "free",
       "requires": null,
-      "params": { "value": { "control": "post_type" } },
+      "params": {
+        "value": {
+          "control": "post_type"
+        }
+      },
       "presets": {},
       "consent_category": null,
       "on_absence": null,
@@ -34,7 +47,12 @@
       "kind": "page",
       "tier": "free",
       "requires": null,
-      "params": { "value": { "control": "term_id", "authored": true } },
+      "params": {
+        "value": {
+          "control": "term_id",
+          "authored": true
+        }
+      },
       "presets": {},
       "consent_category": null,
       "on_absence": null,
@@ -44,7 +62,11 @@
       "kind": "page",
       "tier": "free",
       "requires": null,
-      "params": { "value": { "control": "path_glob" } },
+      "params": {
+        "value": {
+          "control": "path_glob"
+        }
+      },
       "presets": {},
       "consent_category": null,
       "on_absence": null,
@@ -54,7 +76,11 @@
       "kind": "visitor",
       "tier": "free",
       "requires": null,
-      "params": { "value": { "control": "role_set" } },
+      "params": {
+        "value": {
+          "control": "role_set"
+        }
+      },
       "presets": {},
       "consent_category": null,
       "on_absence": null,
@@ -64,7 +90,11 @@
       "kind": "visitor",
       "tier": "free",
       "requires": null,
-      "params": { "value": { "control": "boolean" } },
+      "params": {
+        "value": {
+          "control": "boolean"
+        }
+      },
       "presets": {},
       "consent_category": null,
       "on_absence": null,
@@ -80,43 +110,68 @@
       "presets": {},
       "consent_category": null,
       "on_absence": "drop",
-      "substitute": null
+      "substitute": null,
+      "signal": "threshold"
     },
     "time_on_page": {
       "kind": "trigger",
       "tier": "free",
       "requires": null,
-      "params": { "seconds": { "control": "seconds" } },
+      "params": {
+        "seconds": {
+          "control": "seconds"
+        }
+      },
       "presets": {
-        "after_a_moment": { "seconds": 5 },
-        "after_a_read": { "seconds": 15 }
+        "after_a_moment": {
+          "seconds": 5
+        },
+        "after_a_read": {
+          "seconds": 15
+        }
       },
       "consent_category": null,
       "on_absence": "drop",
-      "substitute": null
+      "substitute": null,
+      "signal": "threshold"
     },
     "scroll_depth": {
       "kind": "trigger",
       "tier": "free",
       "requires": null,
-      "params": { "percent": { "control": "percent" } },
+      "params": {
+        "percent": {
+          "control": "percent"
+        }
+      },
       "presets": {
-        "halfway_down": { "percent": 50 },
-        "near_the_end": { "percent": 80 }
+        "halfway_down": {
+          "percent": 50
+        },
+        "near_the_end": {
+          "percent": 80
+        }
       },
       "consent_category": null,
       "on_absence": "drop",
-      "substitute": null
+      "substitute": null,
+      "signal": "threshold"
     },
     "click_element": {
       "kind": "trigger",
       "tier": "pro",
       "requires": null,
-      "params": { "selector": { "control": "selector", "authored": true } },
+      "params": {
+        "selector": {
+          "control": "selector",
+          "authored": true
+        }
+      },
       "presets": {},
       "consent_category": null,
       "on_absence": "drop",
-      "substitute": null
+      "substitute": null,
+      "signal": "gesture"
     },
     "exit_intent": {
       "kind": "trigger",
@@ -126,7 +181,11 @@
       "presets": {},
       "consent_category": null,
       "on_absence": "drop",
-      "substitute": { "type": "time_on_page", "seconds": 15 }
+      "substitute": {
+        "type": "time_on_page",
+        "seconds": 15
+      },
+      "signal": "gesture"
     },
     "scroll_up": {
       "kind": "trigger",
@@ -136,7 +195,26 @@
       "presets": {},
       "consent_category": null,
       "on_absence": "drop",
-      "substitute": { "type": "scroll_depth", "percent": 50 }
+      "substitute": {
+        "type": "scroll_depth",
+        "percent": 50
+      },
+      "signal": "gesture"
+    },
+    "inactivity": {
+      "kind": "trigger",
+      "tier": "free",
+      "requires": null,
+      "params": {
+        "seconds": {
+          "control": "seconds"
+        }
+      },
+      "presets": {},
+      "consent_category": null,
+      "on_absence": "drop",
+      "substitute": null,
+      "signal": "state"
     }
   },
   "conditions": {
@@ -144,11 +222,33 @@
       "kind": "condition",
       "tier": "free",
       "requires": null,
-      "params": { "in": { "control": "device_set", "options": ["mobile", "tablet", "desktop"] } },
+      "params": {
+        "in": {
+          "control": "device_set",
+          "options": [
+            "mobile",
+            "tablet",
+            "desktop"
+          ]
+        }
+      },
       "presets": {
-        "mobile_only": { "in": ["mobile"] },
-        "not_on_mobile": { "in": ["tablet", "desktop"] },
-        "desktop_only": { "in": ["desktop"] }
+        "mobile_only": {
+          "in": [
+            "mobile"
+          ]
+        },
+        "not_on_mobile": {
+          "in": [
+            "tablet",
+            "desktop"
+          ]
+        },
+        "desktop_only": {
+          "in": [
+            "desktop"
+          ]
+        }
       },
       "consent_category": null,
       "on_absence": "drop",
@@ -159,11 +259,17 @@
       "tier": "free",
       "requires": null,
       "params": {
-        "between": { "control": "hours" }
+        "between": {
+          "control": "hours"
+        }
       },
       "presets": {
-        "office_hours": { "between": "09:00-17:00" },
-        "evenings": { "between": "18:00-00:00" }
+        "office_hours": {
+          "between": "09:00-17:00"
+        },
+        "evenings": {
+          "between": "18:00-00:00"
+        }
       },
       "consent_category": null,
       "on_absence": "drop",
@@ -174,13 +280,23 @@
       "tier": "pro",
       "requires": null,
       "params": {
-        "key": { "control": "text" },
-        "value": { "control": "text_set" }
+        "key": {
+          "control": "text"
+        },
+        "value": {
+          "control": "text_set"
+        }
       },
       "presets": {
-        "utm_source": { "key": "utm_source" },
-        "utm_medium": { "key": "utm_medium" },
-        "utm_campaign": { "key": "utm_campaign" }
+        "utm_source": {
+          "key": "utm_source"
+        },
+        "utm_medium": {
+          "key": "utm_medium"
+        },
+        "utm_campaign": {
+          "key": "utm_campaign"
+        }
       },
       "consent_category": null,
       "on_absence": "drop",
@@ -191,12 +307,31 @@
       "tier": "pro",
       "requires": null,
       "params": {
-        "in": { "control": "referrer_set", "options": ["direct", "search", "social"] }
+        "in": {
+          "control": "referrer_set",
+          "options": [
+            "direct",
+            "search",
+            "social"
+          ]
+        }
       },
       "presets": {
-        "from_search": { "in": ["search"] },
-        "from_social": { "in": ["social"] },
-        "arrived_directly": { "in": ["direct"] }
+        "from_search": {
+          "in": [
+            "search"
+          ]
+        },
+        "from_social": {
+          "in": [
+            "social"
+          ]
+        },
+        "arrived_directly": {
+          "in": [
+            "direct"
+          ]
+        }
       },
       "consent_category": null,
       "on_absence": "drop",
@@ -216,7 +351,12 @@
       "kind": "condition",
       "tier": "elite",
       "requires": "woocommerce",
-      "params": { "amount": { "control": "amount", "authored": true } },
+      "params": {
+        "amount": {
+          "control": "amount",
+          "authored": true
+        }
+      },
       "presets": {},
       "consent_category": "functional",
       "on_absence": "suspend",

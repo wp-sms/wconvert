@@ -209,6 +209,12 @@ function rowOf(row: Row, labels: Labels): HTMLElement {
 
   if (row.browser.recoveryStatus) details.append(note(row.browser.recoveryStatus));
 
+  if (row.browser.opening) {
+    const opening = row.browser.opening;
+    details.append(note(`${text(labels, 'display', 'opening')}: ${text(labels, 'display', opening.mode)} · ${text(labels, 'display', opening.match)} · ${text(labels, 'display', String(opening.answer))}${opening.minimum ? ` · ${text(labels, 'display', 'minimum')}: ${opening.minimum}` : ''}`));
+  }
+  row.browser.groups?.forEach((group, index) => details.append(ruleTable(`${text(labels, 'display', 'group')} ${index + 1} · ${text(labels, 'display', group.match)} · ${text(labels, 'display', String(group.answer))}`, group.rules, labels)));
+
   details.append(
     ruleTable(text(labels, 'sections', 'triggers'), row.browser.triggers, labels),
     ruleTable(text(labels, 'sections', 'conditions'), row.browser.conditions, labels),

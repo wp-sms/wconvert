@@ -74,6 +74,8 @@ The substitution itself is asymmetric by rule kind:
   [`Availability`](../../src/Support/Availability.php), resolved per registry
   member, with `unavailable` beating `locked`.*
 
+> **Amended by [ADR 0104](0104-display-workspace-uses-bounded-groups-and-fresh-gestures.md):** Substitution/drop behavior below applies only when compiling initial catalog suggestions. Any missing implementation in an authored `display_rules` policy suspends the entire Campaign; enqueue never substitutes or drops a restriction.
+
 ## Why the manifest owns the table
 
 The alternatives were the Playbook declaring its own fallback, or a standalone

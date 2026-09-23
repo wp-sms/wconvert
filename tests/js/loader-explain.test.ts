@@ -1,3 +1,4 @@
+import { displayEntry } from './support/display-entry';
 import { describe, expect, it, vi } from 'vitest';
 import { explain } from '@loader/inspect/explain';
 import type { PayloadEntry, Rule, RuleEvaluator, VisitorState } from '@loader/types';
@@ -23,13 +24,13 @@ function evaluators(map: Record<string, () => boolean>): ReadonlyMap<string, Rul
 }
 
 function entry(overrides: Partial<PayloadEntry> = {}): PayloadEntry {
-  return {
+  return displayEntry({
     id: 'A',
     display_type: 'popup',
     triggers: [rule('time_on_page')],
     conditions: [rule('device')],
     ...overrides,
-  };
+  });
 }
 
 function input(overrides: Partial<Parameters<typeof explain>[0]> = {}) {
@@ -81,11 +82,11 @@ describe('“not evaluated” is not “failed”', () => {
    * merchant to go and fix a rule that is perfectly fine — and the rule may
    * well hold the moment consent arrives, in the same page view (issue #11).
    */
-  it('reports null for every rule on a blocked Optin, and never false', () => {
+  it('reports null only for the withheld leaf and still explains independent leaves', () => {
     const report = explain(input({ withheld: new Set(['device']) }));
 
     expect(only(report).standing).toBe('blocked');
-    expect(only(report).triggers[0].answer).toBeNull();
+    expect(only(report).triggers[0].answer).toBe(true);
     expect(only(report).conditions[0].answer).toBeNull();
   });
 

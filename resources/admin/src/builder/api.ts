@@ -98,6 +98,7 @@ export interface RulePreset {
 }
 
 export interface RuleType {
+  signal?: 'threshold' | 'state' | 'gesture' | null;
   type: string;
   kind: string;
   label: string;
@@ -176,6 +177,7 @@ export interface RuleVocabulary {
  * `WConvert\Targeting\Targeting`.
  */
 export interface Targeting {
+  mode?: 'entire' | 'selected';
   include?: { type: string; value: unknown }[];
   exclude?: { type: string; value: unknown }[];
   /**
@@ -218,6 +220,7 @@ export interface Targeting {
  * and only one of them costs bytes on every page view.
  */
 export interface Frequency {
+  maxPerSession?: number;
   maxImpressions?: number;
   cooldownDays?: number;
   stopAfterDismiss?: boolean;
@@ -272,6 +275,7 @@ export const SCHEDULE_FIELDS = ['starts_at', 'ends_at'] as const;
  * reads.
  */
 export const FREQUENCY_FIELDS = [
+  'maxPerSession',
   'maxImpressions',
   'cooldownDays',
   'stopAfterDismiss',

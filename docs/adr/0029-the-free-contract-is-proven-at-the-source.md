@@ -1,6 +1,6 @@
 # The free contract is proven at the source, not at the artifact
 
-**Current budget amendment — [ADR 0103](0103-progressive-capture-keeps-one-lead-per-journey.md):** The page payload cap is 2,560 B gzip (per-design 1,280 B). Free loaders remain 14,012 B; paid loaders cap at 19,456 B. Earlier measurements below are historical. All remain hard checks.
+**Current budget amendment — [ADR 0103](0103-progressive-capture-keeps-one-lead-per-journey.md):** The page payload cap is 2,560 B gzip (per-design 1,280 B). Free loaders remain 14,012 B; paid loaders cap at 20,480 B after the approved 1 KiB increase in [ADR 0104](0104-display-workspace-uses-bounded-groups-and-fresh-gestures.md). Earlier measurements below are historical. All remain hard checks.
 
 **Budget amendment — [ADR 0101](0101-reopen-buttons-preserve-an-explicit-visitor-choice.md):** Free remains capped at 14,012 B gzip; paid loaders have an explicitly approved 18,432 B cap for complete recovery behavior. The 2 KiB per-page payload limit and hard fail-closed checks remain.
 

@@ -58,6 +58,7 @@ final class DataMap
     {
         $browser = [
             'key' => 'wcv1',
+            'display_session' => 'wcv_display_session_v1',
             'local_storage_expiry_days' => null,
             'cookie_fallback' => true,
             'cookie_fallback_days' => 365,
@@ -80,6 +81,7 @@ final class DataMap
 
         return [
             'key' => 'wcv1',
+            'display_session' => 'wcv_display_session_v1',
             'local_storage_expiry_days' => null,
             'cookie_fallback' => true,
             'cookie_fallback_days' => 365,

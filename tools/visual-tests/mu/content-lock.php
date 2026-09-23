@@ -14,7 +14,7 @@ add_action('init', static function (): void {
     if (!isset($ids[$kind])) {
         $config = [
             'display_type' => 'inline', 'content_lock' => ['mode' => 'hide'],
-            'rules' => [['type' => 'page_load']], 'capture_mode' => 'local',
+            'display_rules' => \WConvert\Rules\DisplayPlan::immediate(), 'capture_mode' => 'local',
             'frequency' => ['stopAfterConversion' => false],
             'template' => ['tokens' => ['width' => '24rem', 'accent' => '#12505a'], 'tree' => ['v' => 2, 'submissions' => [['id' => 'primary', 'required' => true, 'fields' => ['n2'], 'consents' => []]], 'steps' => [
                 ['id' => 'details', 'name' => 'Details', 'kind' => 'input', 'content' => ['type' => 'stack', 'children' => [['type' => 'heading', 'id' => 'n1', 'text' => 'Get the bonus'], ['type' => 'field', 'id' => 'n2', 'name' => 'email', 'required' => true], ['type' => 'button', 'id' => 'n3', 'label' => 'Unlock', 'action' => 'submit', 'submission' => 'primary']]]],

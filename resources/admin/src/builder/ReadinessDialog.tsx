@@ -20,7 +20,7 @@ import { capturesTaken, nodeAt, nodesOf } from './structure/tree';
 import { convertingActOf } from './structure/guards';
 import { summarise } from './rules/summaries';
 import { PlacementGuidance } from './PlacementGuidance';
-import { inlinePlacementLabel, usesPageLoadOnly } from '../inlinePlacement';
+import { inlinePlacementLabel } from '../inlinePlacement';
 import { physicalPlacementLabel, resolvedPlacement } from './PlacementControl';
 import { useDirection } from '../hooks/useDirection';
 import type { Path } from './panel';
@@ -126,8 +126,9 @@ export function ReadinessDialog({
   const needsCapture = bound.length > 0;
   const goalIssue = outcome && hasDesign ? outcomeDesignIssue(outcome, template) : null;
   const handoffIssue = outcome ? outcomeHandoffIssue(outcome, bound, destinations, captureMode) : null;
-  const inlineTriggerIssue = !overlay && (inlinePlacement != null || contentLock != null) && !usesPageLoadOnly(rules.rules, vocabulary);
+  const inlineTriggerIssue = !overlay && (inlinePlacement != null || contentLock != null) && rules.display_rules?.opening.mode !== 'immediate';
   const blocking: { said: string; fix: () => void }[] = [
+    ...summaries.filter(summary => summary.attention && ['who', 'when', 'where'].includes(summary.id)).map(summary => ({ said: summary.text, fix: () => onGoToRules(summary.id) })),
     ...(contentLock != null && (overlay || inlinePlacement != null || !template || convertingActOf(template.tree)[0] !== 'submit')
       ? [{ said: __('Content lock requires an inline submission form and manual placement.', 'wconvert'), fix: onGoToPlacement }] : []),
     ...(!overlay && inlinePlacement != null && inlinePlacementLabel(inlinePlacement) === null

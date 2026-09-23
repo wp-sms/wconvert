@@ -1,8 +1,9 @@
+import type { DisplayPlan } from '@loader/display-rules';
 import apiFetch from '@wordpress/api-fetch';
 import type { Template } from '@renderer/types';
 import type { Availability } from './availability';
 import type { OutcomeContract } from './outcome';
-import type { Frequency, Rule, Targeting } from '../builder/api';
+import type { Frequency, Targeting } from '../builder/api';
 
 /**
  * The creation flow's three reads.
@@ -28,6 +29,7 @@ export interface GoalEntry {
   label: string;
   description: string;
   outcome: OutcomeContract;
+  audience_requirement?: string | null;
   headline_kind: string;
   headline_label: string;
   tier: string;
@@ -67,7 +69,7 @@ export interface PlaybookEntry {
    * Omitted only where the source could not be resolved. */
   setup?: {
     display_type: string;
-    rules: Rule[];
+    display_rules: DisplayPlan;
     targeting?: Targeting;
     frequency?: Frequency;
     destination_hint?: Record<string, unknown>;

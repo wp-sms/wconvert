@@ -127,7 +127,7 @@ $entryFor = static function (string $id) use ($set): ?array {
 $config = TemplateLibrary::fromDirectory(TemplateVocabulary::fromManifest())->snapshotInto(['template_id' => 'centred-card']) + [
     'targeting' => [],
     'display_type' => 'popup',
-    'rules' => [['type' => 'page_load']],
+    'display_rules' => \WConvert\Rules\DisplayPlan::immediate(),
 ];
 
 echo "\nStarting a test\n";

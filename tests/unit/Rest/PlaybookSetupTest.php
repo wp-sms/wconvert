@@ -72,9 +72,9 @@ final class PlaybookSetupTest extends TestCase
         $draft = $prefill->fromPlaybook('third-party-start');
         $this->assertNotNull($draft);
         $this->assertSame('exit_intent', $entry['rules'][0]['type'], 'Authoring provenance stays unchanged.');
-        $this->assertSame('time_on_page', $entry['setup']['rules'][0]['type']);
-        $this->assertSame(15, $entry['setup']['rules'][0]['seconds']);
-        $this->assertSame($draft['config']['rules'], $entry['setup']['rules']);
+        $this->assertSame('time_on_page', $entry['setup']['display_rules']['opening']['rules'][0]['type']);
+        $this->assertSame(15, $entry['setup']['display_rules']['opening']['rules'][0]['seconds']);
+        $this->assertSame($draft['config']['display_rules'], $entry['setup']['display_rules']);
         $this->assertSame($draft['config']['targeting'], $entry['setup']['targeting']);
         $this->assertSame($draft['config']['destination_hint'], $entry['setup']['destination_hint']);
         $this->assertSame($draft['config']['template'], $entry['template']);

@@ -45,7 +45,7 @@ final class RequestContextFactory
 
         foreach ($publishedSet as $optin) {
             $withTerms = $withTerms || $optin->targeting->usesType(TargetingType::Term);
-            $withRoles = $withRoles || $optin->targeting->roles !== null;
+            $withRoles = $withRoles || array_filter(\WConvert\Rules\DisplayPlan::rules($optin->payload['display_rules'] ?? []), static fn ($rule) => $rule['type'] === 'role') !== [];
 
             // Nothing further to learn. The set is walked on every uncached
             // page load, so it stops as soon as both answers are in.
