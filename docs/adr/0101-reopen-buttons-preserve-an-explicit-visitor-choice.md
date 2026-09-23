@@ -1,6 +1,6 @@
 # Reopen buttons preserve an explicit visitor choice
 
-**Current budget amendment — [ADR 0105](0105-phone-input-is-a-conditional-shared-asset.md):** The page payload cap is 2,560 B gzip (per-design 1,280 B). Free loaders remain 14,012 B; Basic caps at 20,480 B, Pro at 20,560 B, Elite at 20,736 B. The optional phone asset caps at 16 KiB. Earlier measurements below are historical. All remain hard checks.
+**Current budget amendment — [ADR 0105](0105-phone-input-is-a-conditional-shared-asset.md):** The page payload cap is 2,560 B gzip (per-design 1,280 B). Free loaders remain 14,012 B; Basic caps at 20,480 B, Pro at 20,608 B, Elite at 20,784 B. The optional phone asset caps at 16 KiB. Earlier measurements below are historical. All remain hard checks.
 
 Implements [#178](https://github.com/wp-sms/wconvert/issues/178), part of [#165](https://github.com/wp-sms/wconvert/issues/165). Amends ADRs [0011](0011-non-modal-overlays-use-the-popover-top-layer.md), [0017](0017-no-visitor-identifier.md), [0019](0019-analytics-stores-daily-counters-not-events.md), [0044](0044-there-is-no-visitor-facing-error-state.md), [0047](0047-site-wide-frequency-is-the-same-shape-at-a-second-scope.md), [0014](0014-pro-replaces-the-loader.md) and [0029](0029-the-free-contract-is-proven-at-the-source.md).
 

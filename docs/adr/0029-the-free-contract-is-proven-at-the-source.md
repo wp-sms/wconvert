@@ -1,6 +1,6 @@
 # The free contract is proven at the source, not at the artifact
 
-**Current budget amendment — [ADR 0105](0105-phone-input-is-a-conditional-shared-asset.md):** The page payload cap is 2,560 B gzip (per-design 1,280 B). Free loaders remain 14,012 B; Basic caps at 20,480 B, Pro at 20,560 B, Elite at 20,736 B. The optional phone asset caps at 16 KiB. Earlier measurements below are historical. All remain hard checks.
+**Current budget amendment — [ADR 0105](0105-phone-input-is-a-conditional-shared-asset.md):** The page payload cap is 2,560 B gzip (per-design 1,280 B). Free loaders remain 14,012 B; Basic caps at 20,480 B, Pro at 20,608 B, Elite at 20,784 B. The optional phone asset caps at 16 KiB. Earlier measurements below are historical. All remain hard checks.
 
 **Budget amendment — [ADR 0101](0101-reopen-buttons-preserve-an-explicit-visitor-choice.md):** Free remains capped at 14,012 B gzip; paid loaders have an explicitly approved 18,432 B cap for complete recovery behavior. The 2 KiB per-page payload limit and hard fail-closed checks remain.
 

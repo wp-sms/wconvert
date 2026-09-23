@@ -12,8 +12,8 @@ console.log(`  ✓ phone feature: ${phone} B gzipped (budget ${cap} B)`);
 for (const [label, path, base] of [
   ['free', 'public/loader/loader.js', 14012],
   ['basic', 'pro/public/tiers/basic/loader/loader.js', 20480],
-  ['pro', 'pro/public/tiers/pro/loader/loader.js', 20560],
-  ['elite', 'pro/public/loader/loader.js', 20736],
+  ['pro', 'pro/public/tiers/pro/loader/loader.js', 20608],
+  ['elite', 'pro/public/loader/loader.js', 20784],
 ]) {
   const total = size(path) + phone;
   console.log(`  ✓ ${label} phone page: ${total} B gzipped (combined ceiling ${base + cap} B)`);

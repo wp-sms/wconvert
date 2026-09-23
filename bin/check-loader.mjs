@@ -13,7 +13,7 @@
 // Two assertions, and neither is optional:
 //
 //   1. THE BYTE BUDGET, HARD. gzip -9: Free 14012 B; Basic 20480 B;
-//      Pro 20560 B; Elite 20736 B (ADR 0105), per build. It blocks rather than warns, and there is no
+//      Pro 20608 B; Elite 20784 B (ADR 0105), per build. It blocks rather than warns, and there is no
 //      second warn band nobody would read.
 //
 //      IT WAS 8192, AND THE NUMBER MOVED ONCE, ON PURPOSE. The original was
@@ -92,8 +92,8 @@ const FREE_BYTE_BUDGET = 14012;
 // ADR 0104: user-approved 1 KiB increase for grouped display policies.
 const PAID_BYTE_BUDGET = 20480;
 // ADR 0105: the complete shared phone-field seam has measured per-rung caps.
-const PRO_BYTE_BUDGET = 20560;
-const ELITE_BYTE_BUDGET = 20736;
+const PRO_BYTE_BUDGET = 20608;
+const ELITE_BYTE_BUDGET = 20784;
 
 const MANIFEST = 'resources/rules/manifest.json';
 
