@@ -84,6 +84,11 @@ test('all starter designs, short viewport, enlarged text and reduced motion', as
     await page.goto(`/?wconvert_fullscreen=${setup}`, { waitUntil: 'domcontentloaded' });
     await expect(page.locator('dialog[open]')).toBeVisible();
     await page.evaluate(() => { document.documentElement.style.fontSize = '32px'; });
+    // Wait for rem-dependent shadow styles to catch up with the enlarged root.
+    await expect.poll(() => page.evaluate(() => {
+      const shadow = window.testShadows.find(root => root.querySelector('.wc-root'));
+      return getComputedStyle(shadow.querySelector('.wc-root')).fontSize;
+    })).toBe('32px');
     const geometry = await page.evaluate(() => {
       const dialog = document.querySelector('dialog');
       dialog.scrollTop = 10000;

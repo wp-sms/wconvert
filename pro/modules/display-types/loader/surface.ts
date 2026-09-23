@@ -2,7 +2,7 @@
 export function decorateFullscreen(root: HTMLElement, width: unknown, height = '100dvh'): void {
   Object.assign(root.style, {
     inlineSize: '100%', maxBlockSize: 'none', minBlockSize: height,
-    borderRadius: '0', boxShadow: 'none', overflow: 'visible',
+    borderRadius: '0', boxShadow: 'none', overflow: 'visible', overflowWrap: 'anywhere',
     boxSizing: 'border-box', display: 'flex', flexDirection: 'column', justifyContent: 'center',
     paddingBlockStart: 'calc(4rem + env(safe-area-inset-top))',
     paddingBlockEnd: 'max(2rem, env(safe-area-inset-bottom))',
