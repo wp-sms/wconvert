@@ -3,8 +3,8 @@ import apiFetch from '@wordpress/api-fetch';
 import { __ } from '@wordpress/i18n';
 import { Region, RegionBody, RegionHeader } from '../shell/Region';
 import { setPhoneSiteCountry } from '../phoneSiteCountry';
+import { PhoneCountryPicker, type Country } from '../PhoneCountryPicker';
 
-interface Country { code: string; name: string }
 interface Response { country: string; countries: Country[] }
 const path = '/wconvert/v1/optins/phone-country';
 
@@ -12,7 +12,6 @@ const path = '/wconvert/v1/optins/phone-country';
 export function SitePhoneCountry() {
   const [selected, setSelected] = useState('');
   const [countries, setCountries] = useState<Country[]>([]);
-  const [query, setQuery] = useState('');
   const [error, setError] = useState('');
   const [saving, setSaving] = useState(false);
   useEffect(() => {
@@ -27,7 +26,6 @@ export function SitePhoneCountry() {
   }, []);
   const change = async (country: string) => {
     const before = selected;
-    setQuery('');
     setSelected(country);
     setSaving(true);
     setError('');
@@ -40,24 +38,13 @@ export function SitePhoneCountry() {
       setError(__('Could not save the starting country.', 'wconvert'));
     } finally { setSaving(false); }
   };
-  const match = query.trim().toLocaleLowerCase();
-  const matching = match ? countries.filter(country => `${country.name} ${country.code}`.toLocaleLowerCase().includes(match)) : countries;
-  const current = countries.find(country => country.code === selected);
-  const choices = current && !matching.some(country => country.code === selected) ? [current, ...matching] : matching;
   return <Region>
     <RegionHeader title={__('Phone input', 'wconvert')} description={__('Starting country for phone fields across this site.', 'wconvert')} />
     <RegionBody>
-      <label className="block">
-        <span className="block font-medium">{__('Default country', 'wconvert')}</span>
-        <input className="mt-2 block w-full max-w-sm rounded-md border p-2" type="search" value={query} onChange={event => setQuery(event.target.value)} placeholder={__('Search countries', 'wconvert')} aria-label={__('Search countries', 'wconvert')} />
-        <select className="mt-2 w-full max-w-sm rounded-md border p-2" value={selected} onChange={event => void change(event.target.value)} disabled={countries.length === 0 || saving}>
-          <option value="" disabled>{__('Choose a country', 'wconvert')}</option>
-          {choices.map(country => <option key={country.code} value={country.code}>{country.name}</option>)}
-        </select>
-      </label>
-      {match && matching.length === 0 && <p className="mt-2 text-note" role="status">{__('No countries match your search.', 'wconvert')}</p>}
+      <PhoneCountryPicker label={__('Default country', 'wconvert')} value={selected} countries={countries}
+        onChange={country => void change(country)} disabled={countries.length === 0 || saving} />
       {saving && <p role="status" className="mt-2 text-note">{__('Saving…', 'wconvert')}</p>}
-      <p className="mt-2 text-note text-muted-foreground">{__('Campaigns can override this. Published campaigns keep their current country until you publish them again.', 'wconvert')}</p>
+      <p className="mt-2 text-note text-muted-foreground">{__('Campaigns can override this. Republish campaigns using the site default to apply changes.', 'wconvert')}</p>
       {error && <p role="alert" className="mt-2 text-destructive">{error}</p>}
     </RegionBody>
   </Region>;

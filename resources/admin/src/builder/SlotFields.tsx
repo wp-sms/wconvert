@@ -12,6 +12,7 @@ import { readable, hasScheduleEnded } from '../lib/wallTime';
 import { adminSettings } from '../settings';
 import countries from '../../../phone/countries.json';
 import { phoneSiteCountry } from '../phoneSiteCountry';
+import { PhoneCountryPicker } from '../PhoneCountryPicker';
 import { nameOf, type TemplateLabels } from '../templates/api';
 import type { Slot } from './panel';
 
@@ -168,13 +169,9 @@ export function SlotFields({
         spelled in this bundle.
       */}
       {slot.type === 'field' && slot.captures === 'phone' && (
-        <label className="wconvert-slot__key">
-          {__('Starting country', 'wconvert')}
-          <select value={String(slot.settings.find(setting => setting.param === 'phone_country')?.held ?? 'site')} onChange={event => onParam('phone_country', event.target.value)}>
-            <option value="site">{__('Use site setting', 'wconvert')}{phoneSiteCountry() ? ` (${phoneSiteCountry()})` : ''}</option>
-            {countries.map(country => <option key={country.code} value={country.code}>{country.name}</option>)}
-          </select>
-        </label>
+        <PhoneCountryPicker label={__('Starting country', 'wconvert')}
+          value={String(slot.settings.find(setting => setting.param === 'phone_country')?.held ?? 'site')}
+          siteCountry={phoneSiteCountry()} countries={countries} onChange={country => onParam('phone_country', country)} />
       )}
       {slot.settings.filter(setting => !['phone_country'].includes(setting.param) && (slot.captures === 'phone' || setting.param !== 'phone_dropdown')).map((setting) => (
         <ParamChoice
@@ -224,7 +221,7 @@ export function SlotFields({
       {slot.type === 'countdown' && <Countdown endsAt={endsAt} onSetEndDate={onSetEndDate} />}
 
       {slot.type === 'field' && slot.captures === 'phone' && (
-        <p className="description">{__('Visitors can choose a country and enter a local number. The saved number includes its country code. Changing the site setting affects this campaign after you publish it again.', 'wconvert')}</p>
+        <p className="description">{__('Numbers are saved with their country code.', 'wconvert')}</p>
       )}
 
       {(slot.role === 'success_headline' || slot.role === 'success_body') && (
