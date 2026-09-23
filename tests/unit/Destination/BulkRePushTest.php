@@ -77,12 +77,12 @@ final class BulkRePushTest extends TestCase
         $this->db->answers = [
             [['id' => $this->bound, 'published_config' => $this->db->rows[$this->bound]['published_config']],
              ['id' => $this->unbound, 'published_config' => $this->db->rows[$this->unbound]['published_config']]],
-            array_map(static fn (string $id): array => [
+            array_map(fn (string $id): array => [
                 'id' => $id,
                 'optin_id' => 'x',
                 'email' => 'sarah@example.com',
                 'phone' => null,
-                'fields' => '{}',
+                'fields' => (string) json_encode(['answers' => [], 'capture' => ['submissions' => ['primary' => ['destination_ids' => [$this->destinationId], 'values' => ['email' => 'sarah@example.com']]]]]),
                 'created_at' => '2026-08-25 10:00:00',
             ], $leadIds),
         ];
@@ -142,7 +142,7 @@ final class BulkRePushTest extends TestCase
 
         self::assertNotNull($leadRead, 'The replay is a keyset walk from a boundary.');
 
-        $boundary = Ulid::floorAt((int) strtotime('2026-08-20 12:00:00 UTC') * 1000);
+        $boundary = Ulid::floorAt((int) (strtotime('2026-08-20 12:00:00 UTC') - \WConvert\Lead\CaptureGrant::LIFETIME) * 1000);
         self::assertContains($boundary, $leadRead['params']);
     }
 

@@ -1,3 +1,4 @@
+import { treeFixture } from './support/journey';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import type { Beacon, BeaconKind } from '@loader/beacon';
 import { reporting } from '@loader/beacon';
@@ -26,7 +27,7 @@ import { resolve } from 'node:path';
 const OPTIN = '01JQ0000000000000000000001';
 
 const TEMPLATE = {
-  tree: {
+  tree: treeFixture({
     steps: [
       {
         type: 'stack',
@@ -38,7 +39,7 @@ const TEMPLATE = {
       },
       { type: 'stack', children: [{ type: 'heading', role: 'success_headline', text: 'Check your inbox' }] },
     ],
-  },
+  }),
   tokens: { bg: '#fff' },
 };
 
@@ -169,7 +170,7 @@ describe('an Impression has two moments', () => {
     document.body.appendChild(anchor);
 
     const beacon = show({ display_type: 'inline' });
-    const intersect = observed[0];
+    const intersect = observed[observed.length - 1];
 
     intersect();
     intersect();

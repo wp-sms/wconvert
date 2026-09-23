@@ -893,6 +893,11 @@ final class OptinRepository
      * every schedule with it — and without this the correction would wait for
      * the next unrelated publish, which may never come.
      */
+    public function rebuildForPolicyChange(): void
+    {
+        $this->rebuildPublishedSet();
+    }
+
     public function rebuildForTimezoneChange(): void
     {
         $this->rebuildPublishedSet();

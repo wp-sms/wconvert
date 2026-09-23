@@ -1,3 +1,6 @@
+import { SubmissionSettings } from './SubmissionSettings';
+import { JourneyReport } from './JourneyReport';
+import { referencedJourney } from './structure/journey';
 import { contentLockDesignCompatible } from '../inlinePlacement';
 import './editor.css';
 import { Activity, useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -388,9 +391,8 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
     coalescing.current = coalesce ?? null;
     // Gallery metadata is display-only; edits store the renderer's document.
     const changedTemplate = changes.template as Template | undefined;
-    if (changedTemplate && Object.keys(changedTemplate).some((key) => key !== 'tree' && key !== 'tokens')) {
-      changes = { ...changes, template: { tree: changedTemplate.tree, tokens: changedTemplate.tokens } };
-    }
+    if (changedTemplate) changes = { ...changes, template: { tree: referencedJourney(changedTemplate.tree), tokens: changedTemplate.tokens } };
+
     setConfig((current) => (current === null ? current : { ...current, ...changes }));
     setSaved(false);
   }, []);
@@ -482,7 +484,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
   const prepareDesign = useCallback((picked: string, mode: 'keep' | 'sample', sample: Template) =>
     mode === 'sample'
       ? prepareTemplate(picked, { tree: sample.tree, tokens: sample.tokens }, picked, goal ?? undefined)
-      : prepareTemplate(picked, template ?? { tree: { steps: [] }, tokens: {} }, templateId, goal ?? undefined),
+      : prepareTemplate(picked, template ?? { tree: { v: 2, steps: [], submissions: [] }, tokens: {} }, templateId, goal ?? undefined),
   [template, templateId, goal]);
 
   const stepping = useCallback(
@@ -781,6 +783,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
                   previewPane
                 ) : (
                   <StructureView
+                    primaryChannel={entryOfGoal?.outcome.audience_channel}
                     template={entry}
                     labels={gallery.labels}
                     act={act}
@@ -890,6 +893,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
               onChange={(next) => edit({ destinations: next, capture_mode: 'connected' })}
             />
             }
+            <SubmissionSettings template={template} primaryChannel={entryOfGoal?.outcome.audience_channel} config={config} destinations={read(destinations)?.destinations ?? []} onChange={edit} />
           </div>
           {previewPane}
         </TabsContent>
@@ -953,6 +957,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
           </div>
           </div>
           {entryOfGoal?.outcome && <p className="text-note text-muted-foreground">{entryOfGoal.outcome.measurement}</p>}
+          {details && id && <JourneyReport id={id} />}
           {(numbers !== null || (publishedAt !== null && stats.status === 'loading')) && (
             <div className="wconvert-details-section"><h3>{__('Performance', 'wconvert')}</h3>
               {numbers !== null ? (

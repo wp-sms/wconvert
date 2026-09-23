@@ -186,7 +186,7 @@ padding.
   [ADR 0103](0103-progressive-capture-keeps-one-lead-per-journey.md): offer-first
   journeys, multi-screen enquiries, and email followed by optional SMS supply
   concrete use cases. The accepted feature includes editable linear screens,
-  with navigation and capture explicitly distinct. It is pending implementation.*
+  with navigation and capture explicitly distinct. It is implemented in the shared journey contract.*
 - **Per-node styling**, above.
 
 ## What would reopen rung 3

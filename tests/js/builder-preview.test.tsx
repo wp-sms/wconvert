@@ -1,3 +1,4 @@
+import { treeFixture } from './support/journey';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { fireEvent, render, within } from '@testing-library/react';
@@ -399,7 +400,7 @@ describe('the consent link the admin draws', () => {
   const prefilled = (): TemplateEntry =>
     ({
       ...ENTRY,
-      tree: {
+      tree: treeFixture({
         steps: [
           {
             type: 'stack',
@@ -415,7 +416,7 @@ describe('the consent link the admin draws', () => {
           },
           { type: 'stack', children: [] },
         ],
-      },
+      }),
     }) as unknown as TemplateEntry;
 
   const fineOf = (root: HTMLElement) =>
@@ -474,7 +475,7 @@ describe('the consent link the admin draws', () => {
     const own = 'https://example.test/ours';
     const template = {
       ...ENTRY,
-      tree: {
+      tree: treeFixture({
         steps: [
           {
             type: 'stack',
@@ -490,7 +491,7 @@ describe('the consent link the admin draws', () => {
           },
           { type: 'stack', children: [] },
         ],
-      },
+      }),
     } as unknown as TemplateEntry;
 
     render(<Preview template={template} />);

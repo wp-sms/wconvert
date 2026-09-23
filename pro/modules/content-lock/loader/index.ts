@@ -2,7 +2,7 @@ import type { LoaderModule, PayloadEntry, PresentationSession } from '@loader/ty
 import { decide, type Decision } from '@loader/decide';
 import { isWithinWindow } from '@loader/schedule';
 import { captureEndpoint, PAYLOAD_ELEMENT_ID } from '@loader/payload';
-import { bindCapture } from '@loader/capture';
+import { bindJourney } from '@loader/journey';
 import { whenInViewport } from '@loader/present';
 import { mount, type Mounted } from '@renderer/mount';
 import { unlockStore } from './state';
@@ -109,12 +109,12 @@ export function connectContentLock(base: PresentationSession, entries: readonly 
       let mounted: Mounted | undefined;
       try {
         mounted = mount({ displayType: 'inline', template: entry.template, anchor, endsAt: entry.ends_at });
-        if (!mounted.mounted || mounted.steps !== 2 || (!mounted.root?.querySelector('form') && mounted.root?.tagName !== 'FORM')) { mounted.close(); return false; }
+        if (!mounted.mounted || entry.template.tree.submissions.length === 0) { mounted.close(); return false; }
         const view = mounted;
         if (!view.root || !captureEndpoint()) { view.close(); return false; }
         mounts.push(view);
-        bindCapture(view.root, {
-          optinId: entry.id, endpoint: captureEndpoint(),
+        bindJourney(view, entry, {
+          onDismiss: () => controls.dismiss(),
           onCaptured() {
             const focus = view.root?.getRootNode() as ShadowRoot;
             const ownedFocus = !!focus.activeElement;
@@ -122,7 +122,6 @@ export function connectContentLock(base: PresentationSession, entries: readonly 
             store.remember(lockFamily(entry));
             try { controls.convert(); } finally {
               if (!disposed) {
-                view.showStep(Math.max(view.steps - 1, 0));
                 if (canLock && content && view.root) {
                   const message = document.createElement('p');
                   message.textContent = labels()[0]; message.setAttribute('role', 'status'); message.tabIndex = -1;

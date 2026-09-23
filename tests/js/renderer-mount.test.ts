@@ -1,3 +1,4 @@
+import { treeFixture } from './support/journey';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { DOCUMENT_STYLE_ID, mount } from '@renderer/mount';
 import { DOCUMENT_CSS, SHADOW_CSS } from '@renderer/css';
@@ -14,7 +15,7 @@ import type { Template } from '@renderer/types';
  */
 
 const TEMPLATE: Template = {
-  tree: { steps: [{ type: 'stack', children: [{ type: 'heading', text: 'Join the list' }] }] },
+  tree: treeFixture({ steps: [{ type: 'stack', children: [{ type: 'heading', text: 'Join the list' }] }] }),
   tokens: { bg: '#fff', backdrop: 'rgba(0,0,0,.6)' },
 };
 
@@ -88,14 +89,14 @@ describe('a popup', () => {
 
   it('keeps every popup screen full-width without changing authored or narrow scopes', () => {
     const template: Template = {
-      tree: {
+      tree: treeFixture({
         steps: ['Leave your details', 'Details received'].map((text) => ({
           type: 'stack',
           tokens: { width: '70%', pad: '2rem' },
           narrow: { width: '90%', pad: '1rem' },
           children: [{ type: 'heading', text }],
         })),
-      },
+      }),
       tokens: Object.freeze({ width: '80%', bg: '#fff' }),
     };
     const authored = JSON.stringify(template);
@@ -247,11 +248,11 @@ describe('the document-level style', () => {
 describe('a countdown', () => {
   const NOW = Date.UTC(2026, 10, 27, 9, 0, 0);
   const WITH_A_CLOCK: Template = {
-    tree: {
+    tree: treeFixture({
       steps: [
         { type: 'stack', children: [{ type: 'countdown' }, { type: 'button', label: 'Go', action: 'link' }] },
       ],
-    },
+    }),
     tokens: {},
   };
 
@@ -377,7 +378,7 @@ describe('a countdown', () => {
 describe('the visitor acting on a mounted Optin', () => {
   it('cannot navigate the page away by submitting the form', () => {
     const submitting = {
-      tree: { steps: [{ type: 'stack', children: [{ type: 'field', name: 'email' }, { type: 'button', label: 'Go', action: 'submit' }] }] },
+      tree: treeFixture({ steps: [{ type: 'stack', children: [{ type: 'field', name: 'email' }, { type: 'button', label: 'Go', action: 'submit' }] }] }),
       tokens: {},
     } as Template;
 
@@ -400,7 +401,7 @@ describe('the visitor acting on a mounted Optin', () => {
   it('converts a click-metered Optin by clicking its CTA', () => {
     const onConvert = vi.fn();
     const clicking = {
-      tree: { steps: [{ type: 'stack', children: [{ type: 'button', label: 'Back to your cart', action: 'link', href: '/cart' }] }] },
+      tree: treeFixture({ steps: [{ type: 'stack', children: [{ type: 'button', label: 'Back to your cart', action: 'link', href: '/cart' }] }] }),
       tokens: {},
     } as Template;
 
@@ -414,12 +415,12 @@ describe('the visitor acting on a mounted Optin', () => {
 
   it('swaps to the terminal step in place', () => {
     const twoStep = {
-      tree: {
+      tree: treeFixture({
         steps: [
           { type: 'stack', children: [{ type: 'heading', text: 'Join the list' }] },
           { type: 'stack', children: [{ type: 'heading', role: 'success_headline', text: 'Check your inbox' }] },
         ],
-      },
+      }),
       tokens: {},
     } as Template;
 

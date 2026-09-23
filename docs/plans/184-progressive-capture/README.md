@@ -1,9 +1,8 @@
-# Proposed Template JSON contract
+# Template JSON contract
 
-These JSON files are review fixtures for [issue #184](../184-progressive-capture.md).
-They are not shipping Templates and do not pass today's two-screen validator.
-The product decisions are recorded in [ADR 0103](../../adr/0103-progressive-capture-keeps-one-lead-per-journey.md);
-the exact property names below are an implementation recommendation.
+These examples mirror the four shipping journey Templates in
+`resources/templates/library/`. The production manifest and validator are
+canonical. Product decisions are recorded in [ADR 0103](../../adr/0103-progressive-capture-keeps-one-lead-per-journey.md).
 
 | File | Journey | Saving behavior |
 |---|---|---|
@@ -12,9 +11,7 @@ the exact property names below are an implementation recommendation.
 | `enquiry.json` | Request → details → acknowledgement | Final submission includes fields from both input screens |
 | `email-then-sms.json` | Email → optional SMS → acknowledgement | Email creates the Lead; SMS adds to it; Skip keeps the email capture |
 
-`campaign-settings.json` supplies example Campaign purposes and local-only handoff
-settings for those four designs. `manifest-flow.json` is the proposed flow section
-to add to the shipping manifest during implementation. It defines the closed
+`campaign-settings.json` supplies example local-only Campaign handoff settings for those four designs. `manifest-flow.json` mirrors the flow section of the shipping manifest. It defines the closed
 choices used below; it is not a second permanent vocabulary to maintain.
 
 The sample consent sentences illustrate separate channels. Final library copy
@@ -23,7 +20,7 @@ these examples do not establish provider subscription or delivery.
 
 ## Structure
 
-`tree.v: 2` marks the proposed new format. Convert all unreleased bundled
+`tree.v: 2` marks the supported format. Convert all unreleased bundled
 Templates and pack fixtures directly; do not add a legacy reader.
 
 `tree.steps` becomes a list of screen wrappers:
@@ -44,8 +41,7 @@ Templates and pack fixtures directly; do not add a legacy reader.
   final screen. Canonical field names still come from the manifest.
 - `consents`: stable IDs of consent controls available to this submission.
   Campaign setup reveals and requires the matching marketing control. A request
-  may use a notice without marketing consent. Purpose is resolved from Campaign
-  settings, not inferred from sample Template wording.
+  may use a notice without marketing consent. Purpose is derived from the Campaign Goal and submission order, not inferred from sample Template wording.
 
 The declaration order of submissions must match their Submit screens. There is
 no route language or conditional graph. Screen order supplies forward navigation.
@@ -163,3 +159,16 @@ Do not copy these proposed fields into the production manifest in isolation:
 its readers currently treat any non-link button as a submission and infer the
 whole form from that button's screen. The coordinated implementation is part of
 the plan, not an optional follow-up.
+
+## Copy and Destination scope
+
+For journeys with more than two screens, Playbook copy uses `copy.screens`.
+Keys such as `submission:email`, `submission:phone`, `screen:offer`, and
+`acknowledgement` preserve distinct screen wording. Navigation uses
+`next_label`, `back_label`, `skip_label`, and `close_label`; only Submit uses
+`cta_label`. Copy from one channel must not become the other channel's consent.
+
+The primary submission uses existing `config.destinations`. Only the optional
+submission uses `config.submission_settings[submissionId].destination_ids`.
+Purpose is server-derived, never a merchant-supplied permission flag. Local
+capture sends neither submission to an external Destination.

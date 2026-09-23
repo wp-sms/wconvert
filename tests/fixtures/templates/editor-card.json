@@ -23,78 +23,102 @@
   "tree": {
     "steps": [
       {
-        "type": "stack",
-        "children": [
-          {
-            "type": "heading",
-            "id": "n1",
-            "role": "headline",
-            "text": "Get 10% off your first order"
-          },
-          {
-            "type": "text",
-            "id": "n2",
-            "role": "body",
-            "text": "Join the list and request your first-order code."
-          },
-          {
-            "type": "row",
-            "children": [
-              {
-                "type": "field",
-                "id": "n3",
-                "name": "email",
-                "label": "Email address",
-                "placeholder": "you@example.com",
-                "required": true
-              },
-              {
-                "type": "button",
-                "id": "n4",
-                "role": "cta_label",
-                "label": "Send my code",
-                "action": "submit"
+        "id": "s1",
+        "name": "Details",
+        "kind": "input",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "heading",
+              "id": "n1",
+              "role": "headline",
+              "text": "Get 10% off your first order"
+            },
+            {
+              "type": "text",
+              "id": "n2",
+              "role": "body",
+              "text": "Join the list and request your first-order code."
+            },
+            {
+              "type": "row",
+              "children": [
+                {
+                  "type": "field",
+                  "id": "n3",
+                  "name": "email",
+                  "label": "Email address",
+                  "placeholder": "you@example.com",
+                  "required": true
+                },
+                {
+                  "type": "button",
+                  "id": "n4",
+                  "role": "cta_label",
+                  "label": "Send my code",
+                  "action": "submit",
+                  "submission": "primary"
+                }
+              ]
+            },
+            {
+              "type": "consent",
+              "id": "n5",
+              "role": "consent_text",
+              "hidden": true,
+              "text": "Email me offers and news. See our %s.",
+              "link": {
+                "label": "Privacy Policy"
               }
-            ]
-          },
-          {
-            "type": "consent",
-            "id": "n5",
-            "role": "consent_text",
-            "hidden": true,
-            "text": "Email me offers and news. See our %s.",
-            "link": {
-              "label": "Privacy Policy"
+            },
+            {
+              "type": "text",
+              "id": "n6",
+              "role": "fine_print",
+              "text": "No spam, and you can unsubscribe at any time."
             }
-          },
-          {
-            "type": "text",
-            "id": "n6",
-            "role": "fine_print",
-            "text": "No spam, and you can unsubscribe at any time."
-          }
-        ]
+          ]
+        }
       },
       {
-        "type": "stack",
-        "children": [
-          {
-            "type": "icon",
-            "id": "n9",
-            "name": "check"
-          },
-          {
-            "type": "heading",
-            "id": "n7",
-            "role": "success_headline",
-            "text": "Thank you"
-          },
-          {
-            "type": "text",
-            "id": "n8",
-            "role": "success_body",
-            "text": "We have received your request for the welcome offer."
-          }
+        "id": "s2",
+        "name": "Received",
+        "kind": "acknowledgement",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "icon",
+              "id": "n9",
+              "name": "check"
+            },
+            {
+              "type": "heading",
+              "id": "n7",
+              "role": "success_headline",
+              "text": "Thank you"
+            },
+            {
+              "type": "text",
+              "id": "n8",
+              "role": "success_body",
+              "text": "We have received your request for the welcome offer."
+            }
+          ]
+        }
+      }
+    ],
+    "v": 2,
+    "submissions": [
+      {
+        "id": "primary",
+        "required": true,
+        "fields": [
+          "n3"
+        ],
+        "consents": [
+          "n5"
         ]
       }
     ]

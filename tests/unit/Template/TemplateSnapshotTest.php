@@ -41,7 +41,7 @@ final class TemplateSnapshotTest extends TestCase
             'tokens' => ['bg' => '#ffffff'],
             // Submit-metered, so two steps and exactly one converting act —
             // the shape TemplateLibrary registers (ADR 0020, ADR 0025).
-            'tree' => ['steps' => [
+            'tree' => \WConvert\Tests\Unit\Support\JourneyFixture::tree(['steps' => [
                 ['type' => 'stack', 'children' => [
                     ['type' => 'heading', 'role' => 'headline', 'text' => $headline],
                     ['type' => 'image', 'src' => '/starter.png', 'alt' => 'The starter picture'],
@@ -51,7 +51,7 @@ final class TemplateSnapshotTest extends TestCase
                 ['type' => 'stack', 'children' => [
                     ['type' => 'heading', 'role' => 'success_headline', 'text' => 'You are on the list'],
                 ]],
-            ]],
+            ]]),
         ]));
     }
 
@@ -62,7 +62,7 @@ final class TemplateSnapshotTest extends TestCase
             'id' => 'second',
             'display_type' => 'popup',
             'tokens' => ['bg' => '#000000'],
-            'tree' => ['steps' => [
+            'tree' => \WConvert\Tests\Unit\Support\JourneyFixture::tree(['steps' => [
                 ['type' => 'stack', 'children' => [
                     ['type' => 'heading', 'role' => 'headline', 'text' => 'Second'],
                     ['type' => 'image', 'src' => '/second.png', 'alt' => 'The second picture'],
@@ -72,7 +72,7 @@ final class TemplateSnapshotTest extends TestCase
                 ['type' => 'stack', 'children' => [
                     ['type' => 'heading', 'role' => 'success_headline', 'text' => 'Done'],
                 ]],
-            ]],
+            ]]),
         ]));
     }
 
@@ -90,8 +90,8 @@ final class TemplateSnapshotTest extends TestCase
         $config = $this->library()->snapshotInto(['template_id' => 'starter']);
 
         foreach ($edits as $at => $keys) {
-            $config['template']['tree']['steps'][0]['children'][$at] = array_merge(
-                $config['template']['tree']['steps'][0]['children'][$at],
+            $config['template']['tree']['steps'][0]['content']['children'][$at] = array_merge(
+                $config['template']['tree']['steps'][0]['content']['children'][$at],
                 $keys
             );
         }
@@ -99,7 +99,7 @@ final class TemplateSnapshotTest extends TestCase
         $config['template_id'] = 'second';
 
         $switched = $this->library()->snapshotInto($config, 'starter');
-        $children = $switched['template']['tree']['steps'][0]['children'];
+        $children = $switched['template']['tree']['steps'][0]['content']['children'];
 
         return ['image' => $children[1], 'button' => $children[3]];
     }
@@ -159,7 +159,7 @@ final class TemplateSnapshotTest extends TestCase
     public function testPickingATemplateCopiesItsDesignAndNotItsWords(): void
     {
         $config = $this->library()->snapshotInto(['template_id' => 'starter']);
-        [$heading, $image, $field] = $config['template']['tree']['steps'][0]['children'];
+        [$heading, $image, $field] = $config['template']['tree']['steps'][0]['content']['children'];
 
         $this->assertArrayNotHasKey('text', $heading, 'placeholder copy is never copied into an Optin');
         $this->assertSame('headline', $heading['role'], 'but the Role it fills is');
@@ -209,10 +209,10 @@ final class TemplateSnapshotTest extends TestCase
             'tokens' => ['bg' => '#000000'],
             // Click-metered, so ONE step: the click navigates the visitor
             // away and there is no success state left to render (ADR 0025).
-            'tree' => ['steps' => [['type' => 'stack', 'children' => [
+            'tree' => \WConvert\Tests\Unit\Support\JourneyFixture::tree(['steps' => [['type' => 'stack', 'children' => [
                 ['type' => 'image', 'src' => '/x.png', 'alt' => ''],
                 ['type' => 'button', 'role' => 'cta_label', 'label' => 'Shop', 'action' => 'link', 'href' => 'https://x.test'],
-            ]]]],
+            ]]]]),
         ]));
 
         $config = $this->library()->snapshotInto(['template_id' => 'starter']);
@@ -221,7 +221,7 @@ final class TemplateSnapshotTest extends TestCase
         $repicked = $this->library()->snapshotInto($config, 'starter');
 
         $this->assertSame(['bg' => '#000000'], $repicked['template']['tokens']);
-        $this->assertSame('image', $repicked['template']['tree']['steps'][0]['children'][0]['type']);
+        $this->assertSame('image', $repicked['template']['tree']['steps'][0]['content']['children'][0]['type']);
     }
 
     // ========================================================================
@@ -295,7 +295,7 @@ final class TemplateSnapshotTest extends TestCase
         $this->shipSecond();
 
         $config = $this->library()->snapshotInto(['template_id' => 'starter']);
-        $config['template']['tree']['steps'][0]['children'][1]['src'] = '/mine.jpg';
+        $config['template']['tree']['steps'][0]['content']['children'][1]['src'] = '/mine.jpg';
         $config['template_id'] = 'second';
 
         unlink($this->tree . '/resources/templates/library/starter.json');
@@ -304,7 +304,7 @@ final class TemplateSnapshotTest extends TestCase
 
         $this->assertSame(
             '/second.png',
-            $switched['template']['tree']['steps'][0]['children'][1]['src']
+            $switched['template']['tree']['steps'][0]['content']['children'][1]['src']
         );
     }
 
@@ -319,7 +319,7 @@ final class TemplateSnapshotTest extends TestCase
 
         $config = $this->library()->snapshotInto(['template_id' => 'starter']);
         // A second image, as the structure editor would append one.
-        $config['template']['tree']['steps'][0]['children'][] = [
+        $config['template']['tree']['steps'][0]['content']['children'][] = [
             'type' => 'image',
             'src' => '/added.jpg',
             'alt' => 'Added by hand',
@@ -328,7 +328,7 @@ final class TemplateSnapshotTest extends TestCase
 
         $switched = $this->library()->snapshotInto($config, 'starter');
         $images = array_values(array_filter(
-            $switched['template']['tree']['steps'][0]['children'],
+            $switched['template']['tree']['steps'][0]['content']['children'],
             static fn (array $node): bool => $node['type'] === 'image'
         ));
 

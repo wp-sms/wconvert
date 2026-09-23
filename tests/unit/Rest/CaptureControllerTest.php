@@ -5,7 +5,14 @@ namespace WConvert\Tests\Unit\Rest;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use WConvert\Database\WpdbConnection;
-use WConvert\Lead\LeadCapture;
+use WConvert\Lead\JourneyCapture;
+use WConvert\Lead\CaptureGrant;
+use WConvert\Database\Connection;
+use WConvert\Database\DatabaseException;
+use WConvert\Stats\StatsRepository;
+use WConvert\Optin\OptinRepository;
+use WConvert\Rules\RuleVocabulary;
+use WConvert\Milestone\MilestoneStore;
 use WConvert\Lead\LeadRepository;
 use WConvert\Optin\PublishedSet;
 use WConvert\Rest\CaptureController;
@@ -30,9 +37,14 @@ final class CaptureControllerTest extends TestCase
 {
     private static function controller(): CaptureController
     {
+        $options = new FakeOptionStore();
+        $db = new FakeConnection();
+        $published = new PublishedSet($options);
         return new CaptureController(
-            new PublishedSet(new FakeOptionStore()),
-            new LeadCapture(new LeadRepository(new FakeConnection())),
+            $published,
+            new JourneyCapture($db, new StatsRepository($db)),
+            new OptinRepository($db, $published, RuleVocabulary::fromManifest(), new MilestoneStore($options)),
+            new CaptureGrant('test-signing-key'),
             TemplateVocabulary::fromManifest(__DIR__ . '/../../..'),
             new CaptureRateLimit(new FakeTransientStore())
         );
@@ -47,7 +59,7 @@ final class CaptureControllerTest extends TestCase
 
     protected function tearDown(): void
     {
-        remove_all_actions(LeadCapture::CAPTURED);
+        remove_all_actions(JourneyCapture::ACCEPTED);
     }
 
     /**
@@ -131,45 +143,27 @@ final class CaptureControllerTest extends TestCase
 
     public function testARejectedLeadInsertReturnsASafeErrorAndDoesNotDispatchTheLead(): void
     {
-        $optinId = '01JQ0000000000000000000001';
         $options = new FakeOptionStore();
-        $options->set(PublishedSet::OPTION, [[
-            'id' => $optinId,
-            'targeting' => [],
-            'payload' => ['template' => [
-                'tree' => ['steps' => [[
-                    'type' => 'stack',
-                    'children' => [
-                        ['type' => 'field', 'name' => 'email', 'required' => true],
-                        ['type' => 'button', 'action' => 'submit', 'label' => 'Join'],
-                    ],
-                ]]],
-                'tokens' => [],
-            ]],
-        ]]);
-
-        $wpdb = new class extends \wpdb {
-            public function insert(string $table, array $data): int|false
-            {
-                $this->last_error = 'INSERT INTO wp_wconvert_leads rejected sarah@example.com';
-
-                return false;
-            }
-        };
+        $published = new PublishedSet($options);
+        $optins = new OptinRepository(new FakeConnection(), $published, RuleVocabulary::fromManifest(), new MilestoneStore($options));
+        $template = json_decode((string) file_get_contents(dirname(__DIR__, 3) . '/resources/templates/library/journey-email-only.json'), true);
+        $config = ['template' => $template, 'display_type' => 'popup', 'capture_mode' => 'local', 'rules' => [['type' => 'page_load']]];
+        $optin = $optins->create('Capture test', 'grow_email_list', $config);
+        $optins->publish($optin->id);
+        $db = $this->createMock(Connection::class);
+        $db->method('transaction')->willReturnCallback(static fn (callable $work) => $work());
+        $db->method('row')->willReturn(['option_value' => (string) json_encode(['expires' => time() + 1800, 'lead' => null])]);
+        $db->method('insert')->willThrowException(new DatabaseException('safe storage failure'));
         $dispatched = false;
-        add_action(LeadCapture::CAPTURED, static function () use (&$dispatched): void {
-            $dispatched = true;
-        });
-
-        $controller = new CaptureController(
-            new PublishedSet($options),
-            new LeadCapture(new LeadRepository(new WpdbConnection($wpdb))),
-            TemplateVocabulary::fromManifest(__DIR__ . '/../../..'),
-            new CaptureRateLimit(new FakeTransientStore())
-        );
+        add_action(JourneyCapture::ACCEPTED, static function () use (&$dispatched): void { $dispatched = true; });
+        $grants = new CaptureGrant('test-signing-key');
+        $contract = \WConvert\Template\CaptureContract::fingerprint($config, $optin->goal, get_privacy_policy_url());
+        $controller = new CaptureController($published, new JourneyCapture($db, new StatsRepository($db)), $optins, $grants,
+            TemplateVocabulary::fromManifest(dirname(__DIR__, 3)), new CaptureRateLimit(new FakeTransientStore()));
         $request = new \WP_REST_Request('POST', '/wconvert/v1/capture');
-        $request->set_param('optin_id', $optinId);
-        $request->set_body((string) json_encode(['fields' => ['email' => 'sarah@example.com']]));
+        $request->set_param('optin_id', $optin->id);
+        $request->set_body((string) json_encode(['fields' => ['email' => 'sarah@example.com'], 'consent' => true,
+            'submission' => $template['tree']['submissions'][0]['id'], 'contract' => $contract, 'grant' => $grants->issue($optin->id, $contract, time())]));
 
         $response = $controller->capture($request);
 

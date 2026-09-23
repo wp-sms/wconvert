@@ -334,7 +334,7 @@ final class WpdbConnectionTest extends TestCase
 
         $this->assertCount(1, $wpdb->prepared);
         $this->assertSame(
-            ['wp_wconvert_stats', '01JQ0000000000000000000001', '2026-03-04', 'conversion'],
+            ['wp_wconvert_stats', '01JQ0000000000000000000001', '2026-03-04', 'conversion', ''],
             $wpdb->prepared[0]['args']
         );
         $this->assertCount(1, $wpdb->queries);

@@ -1,3 +1,4 @@
+import { treeFixture } from '../../../tests/js/support/journey';
 import { afterEach, describe, expect, it } from 'vitest';
 import { DOCUMENT_STYLE_ID } from '@renderer/mount';
 import { INLINE_ANCHOR_ATTRIBUTE } from '@loader/present';
@@ -23,7 +24,7 @@ import { isShowing } from '../../../tests/js/support/popover';
  */
 
 const TEMPLATE = {
-  tree: {
+  tree: treeFixture({
     steps: [
       {
         type: 'stack',
@@ -35,7 +36,7 @@ const TEMPLATE = {
       },
       { type: 'stack', children: [{ type: 'heading', role: 'success_headline', text: 'Check your inbox' }] },
     ],
-  },
+  }),
   tokens: { bg: '#fff' },
 };
 

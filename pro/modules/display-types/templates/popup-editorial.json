@@ -28,105 +28,129 @@
   "tree": {
     "steps": [
       {
-        "type": "split",
-        "ratio": 0.65,
-        "start": [
-          {
-            "type": "stack",
-            "children": [
-              {
-                "type": "eyebrow",
-                "id": "n1",
-                "role": "eyebrow",
-                "text": "The Saturday letter",
-                "tokens": {
-                  "text-size": "1.0834rem"
-                }
-              },
-              {
-                "type": "heading",
-                "id": "n2",
-                "role": "headline",
-                "text": "One long read, every weekend"
-              },
-              {
-                "type": "text",
-                "id": "n3",
-                "role": "body",
-                "text": "No links, no round-up, no news. One piece worth the twenty minutes."
-              },
-              {
-                "type": "field",
-                "id": "n4",
-                "name": "email",
-                "label": "Email address",
-                "placeholder": "you@example.com",
-                "required": true
-              },
-              {
-                "type": "button",
-                "id": "n5",
-                "role": "cta_label",
-                "label": "Start on Saturday",
-                "action": "submit"
-              },
-              {
-                "type": "consent",
-                "id": "n6",
-                "role": "consent_text",
-                "hidden": true,
-                "text": "Email me offers and news. %s",
-                "link": {
-                  "label": "Privacy Policy"
+        "id": "s1",
+        "name": "Details",
+        "kind": "input",
+        "content": {
+          "type": "split",
+          "ratio": 0.65,
+          "start": [
+            {
+              "type": "stack",
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "id": "n1",
+                  "role": "eyebrow",
+                  "text": "The Saturday letter",
+                  "tokens": {
+                    "text-size": "1.0834rem"
+                  }
                 },
-                "tokens": {
-                  "text-size": "1.125rem"
+                {
+                  "type": "heading",
+                  "id": "n2",
+                  "role": "headline",
+                  "text": "One long read, every weekend"
+                },
+                {
+                  "type": "text",
+                  "id": "n3",
+                  "role": "body",
+                  "text": "No links, no round-up, no news. One piece worth the twenty minutes."
+                },
+                {
+                  "type": "field",
+                  "id": "n4",
+                  "name": "email",
+                  "label": "Email address",
+                  "placeholder": "you@example.com",
+                  "required": true
+                },
+                {
+                  "type": "button",
+                  "id": "n5",
+                  "role": "cta_label",
+                  "label": "Start on Saturday",
+                  "action": "submit",
+                  "submission": "primary"
+                },
+                {
+                  "type": "consent",
+                  "id": "n6",
+                  "role": "consent_text",
+                  "hidden": true,
+                  "text": "Email me offers and news. %s",
+                  "link": {
+                    "label": "Privacy Policy"
+                  },
+                  "tokens": {
+                    "text-size": "1.125rem"
+                  }
+                },
+                {
+                  "type": "text",
+                  "id": "n7",
+                  "role": "fine_print",
+                  "text": "Unsubscribe in one click, any time.",
+                  "size": "s",
+                  "tokens": {
+                    "text-size": "1.167rem"
+                  }
                 }
-              },
-              {
-                "type": "text",
-                "id": "n7",
-                "role": "fine_print",
-                "text": "Unsubscribe in one click, any time.",
-                "size": "s",
-                "tokens": {
-                  "text-size": "1.167rem"
-                }
-              }
-            ]
-          }
-        ],
-        "end": [
-          {
-            "type": "image",
-            "id": "n8",
-            "src": "data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%203%201.5'%3E%3Cdefs%3E%3ClinearGradient%20id='g'%20x1='0'%20y1='0'%20x2='1'%20y2='1'%3E%3Cstop%20offset='0'%20stop-color='%231e293b'/%3E%3Cstop%20offset='.6'%20stop-color='%23334155'/%3E%3Cstop%20offset='1'%20stop-color='%2364748b'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width='3'%20height='4'%20fill='url%28%23g%29'/%3E%3Ccircle%20cx='1.5'%20cy='1.35'%20r='0.78'%20fill='%23cbd5e1'%20opacity='.5'/%3E%3Ccircle%20cx='2.4'%20cy='3.2'%20r='0.9'%20fill='%2394a3b8'%20opacity='.38'/%3E%3C/svg%3E",
-            "alt": "Image placeholder",
-            "fit": "cover"
-          }
-        ],
-        "basis": "16rem"
+              ]
+            }
+          ],
+          "end": [
+            {
+              "type": "image",
+              "id": "n8",
+              "src": "data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%203%201.5'%3E%3Cdefs%3E%3ClinearGradient%20id='g'%20x1='0'%20y1='0'%20x2='1'%20y2='1'%3E%3Cstop%20offset='0'%20stop-color='%231e293b'/%3E%3Cstop%20offset='.6'%20stop-color='%23334155'/%3E%3Cstop%20offset='1'%20stop-color='%2364748b'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width='3'%20height='4'%20fill='url%28%23g%29'/%3E%3Ccircle%20cx='1.5'%20cy='1.35'%20r='0.78'%20fill='%23cbd5e1'%20opacity='.5'/%3E%3Ccircle%20cx='2.4'%20cy='3.2'%20r='0.9'%20fill='%2394a3b8'%20opacity='.38'/%3E%3C/svg%3E",
+              "alt": "Image placeholder",
+              "fit": "cover"
+            }
+          ],
+          "basis": "16rem"
+        }
       },
       {
-        "type": "stack",
-        "children": [
-          {
-            "type": "icon",
-            "id": "n11",
-            "name": "check"
-          },
-          {
-            "type": "heading",
-            "id": "n9",
-            "role": "success_headline",
-            "text": "Thanks for the interest"
-          },
-          {
-            "type": "text",
-            "id": "n10",
-            "role": "success_body",
-            "text": "We have received your request for the weekend note."
-          }
+        "id": "s2",
+        "name": "Received",
+        "kind": "acknowledgement",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "icon",
+              "id": "n11",
+              "name": "check"
+            },
+            {
+              "type": "heading",
+              "id": "n9",
+              "role": "success_headline",
+              "text": "Thanks for the interest"
+            },
+            {
+              "type": "text",
+              "id": "n10",
+              "role": "success_body",
+              "text": "We have received your request for the weekend note."
+            }
+          ]
+        }
+      }
+    ],
+    "v": 2,
+    "submissions": [
+      {
+        "id": "primary",
+        "required": true,
+        "fields": [
+          "n4"
+        ],
+        "consents": [
+          "n6"
         ]
       }
     ]

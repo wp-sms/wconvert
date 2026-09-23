@@ -58,14 +58,14 @@ final class FlagshipCollectionTest extends TestCase
                             $this->assertArrayNotHasKey('href', $node['link']);
                         }
                     }
-                    if ($node['type'] === 'field') {
+                    if (($node['type'] ?? '') === 'field') {
                         $this->assertNotEmpty($node['label'], $id);
                         $this->assertNotEmpty($node['placeholder'], $id);
                         if ($node['name'] === 'interest') {
                             $this->assertNotEmpty($node['options'], $id);
                         }
                     }
-                    if (in_array($node['type'], ['button', 'followup'], true)) {
+                    if (in_array($node['type'] ?? '', ['button', 'followup'], true)) {
                         $this->assertEmpty($node['href'] ?? '', $id . ': merchant-owned URL');
                     }
                     array_push($nodes, ...TemplateTree::childrenOf($node));

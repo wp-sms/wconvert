@@ -26,34 +26,41 @@
   "tree": {
     "steps": [
       {
-        "type": "row",
-        "children": [
-          {
-            "type": "icon",
-            "id": "n1",
-            "name": "clock"
-          },
-          {
-            "type": "heading",
-            "id": "n2",
-            "level": 2,
-            "role": "headline",
-            "text": "The sale ends in"
-          },
-          {
-            "type": "countdown",
-            "id": "n3"
-          },
-          {
-            "type": "button",
-            "id": "n4",
-            "role": "cta_label",
-            "label": "Shop the sale",
-            "action": "link",
-            "href": "/sale/"
-          }
-        ]
+        "id": "s1",
+        "name": "Offer",
+        "kind": "content",
+        "content": {
+          "type": "row",
+          "children": [
+            {
+              "type": "icon",
+              "id": "n1",
+              "name": "clock"
+            },
+            {
+              "type": "heading",
+              "id": "n2",
+              "level": 2,
+              "role": "headline",
+              "text": "The sale ends in"
+            },
+            {
+              "type": "countdown",
+              "id": "n3"
+            },
+            {
+              "type": "button",
+              "id": "n4",
+              "role": "cta_label",
+              "label": "Shop the sale",
+              "action": "link",
+              "href": "/sale/"
+            }
+          ]
+        }
       }
-    ]
+    ],
+    "v": 2,
+    "submissions": []
   }
 }

@@ -98,7 +98,7 @@ final class PrivacyGuidanceTest extends TestCase
     public function testOngoingMarketingShowsConsentButOneTimeRequestsDoNot(): void
     {
         $guidance = new PrivacyGuidance(new FakeOptionStore());
-        $tree = ['steps' => [[
+        $tree = \WConvert\Tests\Unit\Support\JourneyFixture::tree(['steps' => [[
             'type' => 'stack',
             'children' => [[
                 'type' => 'consent',
@@ -106,7 +106,7 @@ final class PrivacyGuidanceTest extends TestCase
                 'hidden' => true,
                 'text' => 'Send me weekly news.',
             ]],
-        ]]];
+        ]]]);
 
         $marketing = self::consentIn($guidance->treeFor($tree, Goal::GrowEmailList));
         $request = self::consentIn($guidance->treeFor($tree, Goal::CollectEnquiries));
@@ -120,7 +120,7 @@ final class PrivacyGuidanceTest extends TestCase
     public function testMarketingNeverRevealsABlankConsentControl(): void
     {
         $guidance = new PrivacyGuidance(new FakeOptionStore());
-        $tree = ['steps' => [['type' => 'consent', 'role' => 'consent_text', 'hidden' => true]]];
+        $tree = \WConvert\Tests\Unit\Support\JourneyFixture::tree(['steps' => [['type' => 'consent', 'role' => 'consent_text', 'hidden' => true]]]);
 
         $consent = self::consentIn($guidance->treeFor($tree, Goal::GrowSmsList));
 
@@ -131,12 +131,12 @@ final class PrivacyGuidanceTest extends TestCase
     {
         $guidance = new PrivacyGuidance(new FakeOptionStore());
         $guidance->set(false);
-        $tree = ['steps' => [[
+        $tree = \WConvert\Tests\Unit\Support\JourneyFixture::tree(['steps' => [[
             'type' => 'consent',
             'role' => 'consent_text',
             'hidden' => false,
             'text' => 'Keep this choice.',
-        ]]];
+        ]]]);
 
         $this->assertSame($tree, $guidance->treeFor($tree, Goal::CollectEnquiries));
     }

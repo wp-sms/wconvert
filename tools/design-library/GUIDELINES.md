@@ -72,8 +72,9 @@ Competitor teardowns put this exact failure on the avoid list:
 
 ### 1.5 The success step is a screen
 
-A submit-metered design has two steps and **the second one is a real thing a
-real visitor looks at**. It acknowledges the captured request and has to look
+A capture journey ends with an acknowledgement, and **that is a real screen a
+real visitor looks at**. A primary signup may already be saved before an optional
+other-channel signup; say that clearly and offer an equally clear Skip action. It acknowledges the captured request and has to look
 like it belongs to the first step. Write *Request received* or *Thank you for
 requesting the guide*. The form's completion does not prove that a connected
 service has subscribed the visitor, confirmed their address or delivered an

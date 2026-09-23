@@ -145,6 +145,11 @@ final class PayloadTag
             && $lockLabels !== ['Content unlocked.', 'Continue to content', 'Your submission could not be confirmed. The content is available below.']) {
             $localized .= ' data-content-lock="' . esc_attr((string) json_encode($lockLabels, JSON_UNESCAPED_UNICODE)) . '"';
         }
+        $journeyLabels = [__('Continue', 'wconvert'), __('Submission not confirmed. Please try again.', 'wconvert')];
+        if (array_filter($entries, static fn (array $entry): bool => isset($entry['capture_contract'])) !== []
+            && $journeyLabels !== ['Continue', 'Submission not confirmed. Please try again.']) {
+            $localized .= ' data-journey="' . esc_attr((string) json_encode($journeyLabels, JSON_UNESCAPED_UNICODE)) . '"';
+        }
         return sprintf(
             '<script type="application/json" id="%s" %s="%s" %s="%s" %s="%s"%s%s>%s</script>',
             self::ELEMENT_ID,

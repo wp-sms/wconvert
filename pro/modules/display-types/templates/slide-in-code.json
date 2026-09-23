@@ -26,81 +26,105 @@
   "tree": {
     "steps": [
       {
-        "type": "stack",
-        "children": [
-          {
-            "type": "eyebrow",
-            "id": "n1",
-            "role": "eyebrow",
-            "text": "While you are here",
-            "tokens": {
-              "text-size": "1.0834rem"
-            }
-          },
-          {
-            "type": "heading",
-            "id": "n2",
-            "role": "headline",
-            "text": "Ten percent off"
-          },
-          {
-            "type": "text",
-            "id": "n3",
-            "role": "body",
-            "text": "Leave your email to reveal a first-order code here."
-          },
-          {
-            "type": "field",
-            "id": "n4",
-            "name": "email",
-            "label": "Email address",
-            "placeholder": "you@example.com",
-            "required": true
-          },
-          {
-            "type": "button",
-            "id": "n5",
-            "role": "cta_label",
-            "label": "Reveal my code",
-            "action": "submit"
-          },
-          {
-            "type": "consent",
-            "id": "n6",
-            "role": "consent_text",
-            "hidden": true,
-            "text": "Email me offers and news. %s",
-            "link": {
-              "label": "Privacy Policy"
+        "id": "s1",
+        "name": "Details",
+        "kind": "input",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "eyebrow",
+              "id": "n1",
+              "role": "eyebrow",
+              "text": "While you are here",
+              "tokens": {
+                "text-size": "1.0834rem"
+              }
             },
-            "tokens": {
-              "text-size": "1.125rem"
+            {
+              "type": "heading",
+              "id": "n2",
+              "role": "headline",
+              "text": "Ten percent off"
+            },
+            {
+              "type": "text",
+              "id": "n3",
+              "role": "body",
+              "text": "Leave your email to reveal a first-order code here."
+            },
+            {
+              "type": "field",
+              "id": "n4",
+              "name": "email",
+              "label": "Email address",
+              "placeholder": "you@example.com",
+              "required": true
+            },
+            {
+              "type": "button",
+              "id": "n5",
+              "role": "cta_label",
+              "label": "Reveal my code",
+              "action": "submit",
+              "submission": "primary"
+            },
+            {
+              "type": "consent",
+              "id": "n6",
+              "role": "consent_text",
+              "hidden": true,
+              "text": "Email me offers and news. %s",
+              "link": {
+                "label": "Privacy Policy"
+              },
+              "tokens": {
+                "text-size": "1.125rem"
+              }
             }
-          }
-        ]
+          ]
+        }
       },
       {
-        "type": "stack",
-        "children": [
-          {
-            "type": "heading",
-            "id": "n7",
-            "role": "success_headline",
-            "text": "All yours"
-          },
-          {
-            "type": "code",
-            "id": "n8",
-            "role": "code_value",
-            "text": "WELCOME10",
-            "copy": true
-          },
-          {
-            "type": "text",
-            "id": "n9",
-            "role": "success_body",
-            "text": "We have received your details. Use this code at checkout."
-          }
+        "id": "s2",
+        "name": "Received",
+        "kind": "acknowledgement",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "heading",
+              "id": "n7",
+              "role": "success_headline",
+              "text": "All yours"
+            },
+            {
+              "type": "code",
+              "id": "n8",
+              "role": "code_value",
+              "text": "WELCOME10",
+              "copy": true
+            },
+            {
+              "type": "text",
+              "id": "n9",
+              "role": "success_body",
+              "text": "We have received your details. Use this code at checkout."
+            }
+          ]
+        }
+      }
+    ],
+    "v": 2,
+    "submissions": [
+      {
+        "id": "primary",
+        "required": true,
+        "fields": [
+          "n4"
+        ],
+        "consents": [
+          "n6"
         ]
       }
     ]

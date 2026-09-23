@@ -7,12 +7,12 @@ no `updated_at` column**. A row with no mutable state cannot acquire a lifecycle
 without a migration a reviewer will see. `created_at` alone also makes retention
 pruning a range delete.
 
-*Amended for the planned progressive capture feature by
+*Amended for progressive capture by
 [ADR 0103](0103-progressive-capture-keeps-one-lead-per-journey.md): the user chose
 one Lead per capture journey, saved at the first submission and extended by
 later explicit submissions in that same journey. Absolute immutability no
-longer defines the planned boundary; general profile editing and Contact
-lifecycle changes remain outside it. The current code is still immutable;
+longer defines the boundary; general profile editing and Contact
+lifecycle changes remain outside it. Only the journey capture and handoff writers may update accepted Lead JSON;
 storage and continuation authorization are specified in the companion
 [plan](../plans/184-progressive-capture/storage.md).*
 

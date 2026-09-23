@@ -54,11 +54,25 @@ final class OptinBinding
         return $ids;
     }
 
+    /** Every route for usage/recovery, without merging optional routes into the primary signup.
+     * @param array<string, mixed>|null $config
+     * @return list<string>
+     */
+    public static function allIds(?array $config): array
+    {
+        $ids = self::ids($config);
+        if (($config['capture_mode'] ?? '') === 'local') { return $ids; }
+        foreach ($config['submission_settings'] ?? [] as $setting) {
+            array_push($ids, ...self::ids(['destinations' => $setting['destination_ids'] ?? []]));
+        }
+        return array_values(array_unique($ids));
+    }
+
     /**
      * @param array<string, mixed>|null $config
      */
     public static function binds(?array $config, string $destinationId): bool
     {
-        return in_array($destinationId, self::ids($config), true);
+        return in_array($destinationId, self::allIds($config), true);
     }
 }

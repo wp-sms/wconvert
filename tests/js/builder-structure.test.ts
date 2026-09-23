@@ -1,3 +1,4 @@
+import { treeFixture } from './support/journey';
 import { describe, expect, it } from 'vitest';
 import {
   nodeAt,
@@ -56,7 +57,7 @@ import type { SplitNode, TemplateNode, TemplateTree } from '@renderer/types';
  * A submit-metered design, shaped like the shipped ones: a form step holding a
  * `row` with the field and the button in it, and a terminal success step.
  */
-const TREE: TemplateTree = {
+const TREE: TemplateTree = treeFixture({
   steps: [
     {
       type: 'stack',
@@ -78,7 +79,7 @@ const TREE: TemplateTree = {
       children: [{ type: 'heading', role: 'success_headline', text: 'You are in' }],
     },
   ],
-};
+});
 
 const HEADLINE = [0, 'children', 0] as const;
 const ROW = [0, 'children', 2] as const;
@@ -293,7 +294,7 @@ describe('duplicating a block', () => {
    * simply gets a fresh one on the next save.
    */
   it('strips the node id from the copy, at any depth', () => {
-    const named: TemplateTree = {
+    const named: TemplateTree = treeFixture({
       steps: [
         {
           type: 'stack',
@@ -303,7 +304,7 @@ describe('duplicating a block', () => {
           ],
         },
       ],
-    };
+    });
 
     const doubledLeaf = withDuplicated(named, [0, 'children', 0]);
     const doubledLayout = withDuplicated(named, [0, 'children', 1]);
@@ -377,8 +378,8 @@ describe('what the catalogue offers', () => {
   it('refuses a second button, with a reason rather than a gap', () => {
     const button = additionsIn(TREE, at, 'submit').find((addition) => addition.type === 'button');
 
-    expect(button?.refused).toMatch(/exactly one/i);
-    expect(nodeFor(TREE, 'button', at, 'submit')).toBeNull();
+    expect(button?.refused).toBeNull();
+    expect(nodeFor(TREE, 'button', at, 'submit')).toMatchObject({ action: 'next' });
   });
 
   /**
@@ -390,12 +391,12 @@ describe('what the catalogue offers', () => {
     const onSuccess = { parent: [1], key: 'children', index: 0 } as const;
     const refused = additionsIn(TREE, onSuccess, 'submit').find((addition) => addition.type === 'field');
 
-    expect(refused?.refused).toMatch(/submit button/i);
+    expect(refused?.refused).toMatch(/question screen/i);
   });
 
   it('refuses a field once every capture kind is taken', () => {
-    const full = [...((TREE.steps[0] as unknown) as { children: TemplateNode[] }).children];
-    const crowded: TemplateTree = {
+    const full = [...((TREE.steps[0].content as unknown) as { children: TemplateNode[] }).children];
+    const crowded: TemplateTree = treeFixture({
       steps: [
         {
           type: 'stack',
@@ -408,7 +409,7 @@ describe('what the catalogue offers', () => {
         },
         TREE.steps[1],
       ],
-    };
+    });
 
     expect(freeCapture(crowded)).toBeNull();
     expect(
@@ -421,18 +422,18 @@ describe('what the catalogue offers', () => {
    * absence — there is no step holding a submit, so there is no form.
    */
   it('refuses a field on an Optin that converts on a click', () => {
-    const clicked: TemplateTree = {
+    const clicked: TemplateTree = treeFixture({
       steps: [
         {
           type: 'stack',
           children: [{ type: 'button', role: 'cta_label', label: 'Shop', action: 'link' }],
         },
       ],
-    };
+    });
 
     expect(
       additionsIn(clicked, at, 'click').find((addition) => addition.type === 'field')?.refused,
-    ).toMatch(/captures nothing/i);
+    ).toMatch(/question screen/i);
   });
 });
 
@@ -449,10 +450,10 @@ describe('a block the catalogue builds', () => {
    * to restore is the one the design had.
    */
   it('gives a button the act the design converts on', () => {
-    const empty: TemplateTree = { steps: [{ type: 'stack', children: [] }] };
+    const empty: TemplateTree = treeFixture({ steps: [{ type: 'stack', children: [] }] });
 
     expect(nodeFor(empty, 'button', at, 'click')).toMatchObject({ action: 'link' });
-    expect(nodeFor(empty, 'button', at, 'submit')).toMatchObject({ action: 'submit' });
+    expect(nodeFor(empty, 'button', at, 'submit')).toMatchObject({ action: 'next' });
   });
 
   /**
@@ -466,7 +467,7 @@ describe('a block the catalogue builds', () => {
    * because a second `body` is a second paragraph and binds.
    */
   it('gives a new block a free Slot Role first, and repeats one rather than none', () => {
-    const empty: TemplateTree = { steps: [{ type: 'stack', children: [] }] };
+    const empty: TemplateTree = treeFixture({ steps: [{ type: 'stack', children: [] }] });
 
     expect(nodeFor(empty, 'heading', at, 'submit')).toMatchObject({ role: 'headline' });
     // Both of a heading's Roles are claimed in TREE, so the next one repeats
@@ -534,11 +535,11 @@ describe('a block the catalogue builds', () => {
 describe('the safety net', () => {
   it('reads the converting act the same way the renderer and PHP do', () => {
     expect(convertingActOf(TREE)).toEqual(['submit']);
-    expect(convertingActOf({ steps: [{ type: 'button', label: 'Go' }] })).toEqual(['submit']);
+    expect(convertingActOf(treeFixture({ steps: [{ type: 'button', label: 'Go' }] }))).toEqual(['submit']);
     // The METRIC's word, not the node's: `ConvertingAct::collect()` reads
     // `action === 'link'` and answers `Click`, and this has to agree with it.
-    expect(convertingActOf({ steps: [{ type: 'button', action: 'link' }] })).toEqual(['click']);
-    expect(convertingActOf({ steps: [] })).toEqual([]);
+    expect(convertingActOf(treeFixture({ steps: [{ type: 'button', action: 'link' }] }))).toEqual(['click']);
+    expect(convertingActOf(treeFixture({ steps: [] }))).toEqual([]);
   });
 
   /**
@@ -559,7 +560,7 @@ describe('the safety net', () => {
   });
 
   it('refuses removing the last field while the form still submits', () => {
-    const loose: TemplateTree = {
+    const loose: TemplateTree = treeFixture({
       steps: [
         {
           type: 'stack',
@@ -569,7 +570,7 @@ describe('the safety net', () => {
           ],
         },
       ],
-    };
+    });
 
     expect(whyRemovalIsRefused(loose, [0, 'children', 0])).toMatch(/captures nothing/i);
   });
@@ -759,15 +760,15 @@ describe('reaching a node by path', () => {
 
 describe('swapping split panes', () => {
   it('moves content and stable identities together, preserving each pane’s width', () => {
-    const tree = { steps: [{ type: 'split', ratio: 0.35, basis: '16rem',
+    const tree = treeFixture({ steps: [{ type: 'split', ratio: 0.35, basis: '16rem',
       start: [{ type: 'heading', id: 'art-title', text: 'Welcome', role: 'headline' }],
       end: [{ type: 'field', id: 'email-field', name: 'email' }],
-    }] } as TemplateTree;
+    }] }) as TemplateTree;
     const before = JSON.stringify(tree);
     const changed = withSwappedPanes(tree, [0]);
-    const split = changed.steps[0] as SplitNode;
-    expect(split.start).toEqual((tree.steps[0] as SplitNode).end);
-    expect(split.end).toEqual((tree.steps[0] as SplitNode).start);
+    const split = changed.steps[0].content as SplitNode;
+    expect(split.start).toEqual((tree.steps[0].content as SplitNode).end);
+    expect(split.end).toEqual((tree.steps[0].content as SplitNode).start);
     expect(split.ratio).toBeCloseTo(0.65);
     expect(split.basis).toBe('16rem');
     expect(JSON.stringify(tree)).toBe(before);
@@ -783,6 +784,6 @@ describe('resource links after the form', () => {
     const link = nodeFor(TREE, 'followup', success, 'submit')!;
     expect(link).toMatchObject({ type: 'followup', label: 'Open resource', role: 'success_action' });
     expect(convertingActOf(withInserted(TREE, success, link))).toEqual(['submit']);
-    expect(nodeFor(TREE, 'followup', success, 'click')).toBeNull();
+    expect(nodeFor(TREE, 'followup', success, 'click')).toMatchObject({ type: 'followup' });
   });
 });

@@ -63,5 +63,5 @@ export function InlinePlacementSettings(props: InlinePlacementProps) {
 }
 
 export function contentLockDesignCompatible(displayType: string, template: Template): boolean {
-  return displayType === 'inline' && convertingActOf(template.tree).join() === 'submit' && template.tree.steps.length === 2;
+  return displayType === 'inline' && convertingActOf(template.tree).join() === 'submit' && template.tree.steps.at(-1)?.kind === 'acknowledgement';
 }

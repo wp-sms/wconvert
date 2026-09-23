@@ -51,10 +51,10 @@ final class PublishedProjectionTest extends TestCase
     public function testMixedPublishedLockModesStayReadableUntilTheFamilyAgrees(): void
     {
         $config = ['display_type' => 'inline', 'rules' => [['type' => 'page_load']], 'content_lock' => ['mode' => 'hide'],
-            'template' => ['tokens' => [], 'tree' => ['steps' => [
-                ['type' => 'stack', 'children' => [['type' => 'field', 'name' => 'email'], ['type' => 'button', 'action' => 'submit', 'label' => 'Unlock']]],
+            'template' => ['tokens' => [], 'tree' => \WConvert\Tests\Unit\Support\JourneyFixture::tree(['steps' => [
+                ['type' => 'stack', 'children' => [['type' => 'field', 'name' => 'email', 'required' => true], ['type' => 'button', 'action' => 'submit', 'label' => 'Unlock']]],
                 ['type' => 'stack', 'children' => [['type' => 'heading', 'text' => 'Thanks']]],
-            ]]]];
+            ]])]];
         $parent = self::row(['published_config' => json_encode($config)]);
         $child = self::row(['id' => '01JQ0000000000000000000002', 'parent_id' => $parent['id']]);
         $mixed = self::build([$parent, $child]);
@@ -158,7 +158,7 @@ final class PublishedProjectionTest extends TestCase
         return [
             'targeting' => ['include' => [['type' => 'url', 'value' => '/*']]],
             'rules' => [['type' => 'page_load']],
-            'template' => ['tree' => ['steps' => []], 'tokens' => []],
+            'template' => ['tree' => \WConvert\Tests\Unit\Support\JourneyFixture::tree(['steps' => []]), 'tokens' => []],
             'display_type' => 'floating_bar',
             'placement' => 'block_start',
             // The shape `resources/loader/src/types.ts` declares and

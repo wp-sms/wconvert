@@ -1,7 +1,7 @@
 # Progressive capture journeys — issue #184
 
-Status: product direction agreed; implementation plan ready for review. Updated
-2026-09-22. Runtime implementation has not started. The user approved the limited
+Status: implemented on the issue branch; verification recorded in
+[the implementation record](184-progressive-capture/verification.md). Updated 2026-09-23. The user approved the limited
 statistics-table change; no new tables or Lead columns are authorized.
 
 The accepted scope follows the [use-case and competitor reassessment](184-progressive-capture/decision-review.md):
@@ -12,8 +12,8 @@ Issue: https://github.com/wp-sms/wconvert/issues/184
 
 Review artifacts:
 
-- [Proposed Template contract and four JSON examples](184-progressive-capture/README.md).
-- [Storage, requests, queue handoff and analytics proposal](184-progressive-capture/storage.md).
+- [Template contract and four JSON examples](184-progressive-capture/README.md).
+- [Storage, requests, queue handoff and analytics design](184-progressive-capture/storage.md).
 - [Accepted domain decisions](../adr/0103-progressive-capture-keeps-one-lead-per-journey.md).
 
 ## Objective
@@ -126,7 +126,7 @@ designs are `resources/templates/library/*.json`. Pro designs also live under
 their owning modules. Updating only one example JSON would leave this feature
 incomplete.
 
-The proposed contract must explicitly distinguish:
+The implemented contract distinguishes:
 
 - Stable screen identity, human-readable editor name, and display order.
 - Content/input screens versus acknowledgement screens.
@@ -142,10 +142,9 @@ visual content in the existing node vocabulary. Do not insert arbitrary script,
 URLs containing captured values, or merchant-defined executable conditions.
 Reject unknown actions; never interpret an unknown navigation action as Submit.
 
-Four reviewable JSON examples now accompany this plan: email-only, offer-first,
-enquiry, and email-plus-SMS. They demonstrate proposed syntax and remain outside
-the shipping library until its validator and runtime support the new contract.
-During implementation:
+Four matching Templates and Playbooks ship: email-only, offer-first, enquiry,
+and email-plus-SMS. The JSON examples below mirror their production definitions.
+Implementation covers:
 
 1. Update the manifest and shared PHP/TypeScript tree contract together.
 2. Update every bundled Free/Pro design directly to the selected contract.
@@ -165,9 +164,9 @@ During implementation:
 | Validity and publication | `TemplateForm.php`, `ConvertingAct.php`, `TemplateLibrary.php`, `src/Goal/OutcomeContract.php`, `src/Rest/OptinController.php` | Validate reachable linear flow, capture boundaries, identifiers and consent; decouple one converting act from number of buttons/screens |
 | Library and packs | `TemplateFacets.php`, `SlotRoles.php`, `TemplateLabels.php`, `src/Template/Catalog/PackValidator.php` | Derive captures over the right scope, preserve copy by identity/scope, reject incompatible packs before normalization |
 | Editor | `resources/admin/src/builder/structure/*`, `EditorCanvas.tsx`, `StructureView.tsx`, `OptinBuilder.tsx`, `ReadinessDialog.tsx` | Screen controls, complete draft Undo, safe reorder/delete, realistic preview and publish errors |
-| Renderer and visitor flow | `resources/renderer/src/render.ts`, `mount.ts`, `resources/loader/src/capture.ts` | Preserve answers, handle navigation and capture separately, focus/errors/progress, pending and confirmed states |
-| Server capture | `src/Rest/CaptureController.php`, `src/Lead/CaptureForm.php`, `LeadCapture.php`, `LeadRepository.php`, `Submission.php`, `ConsentRecord.php` | Authoritative submission scope, canonical validation, consent snapshots, authenticated continuation and retry behavior |
-| Destinations | `src/Destination/PushDispatcher.php`, `PushJob.php`, `PushSubject.php`, adapters | Stage-specific dispatch and retry semantics, channel permission, stable payload semantics, no duplicated one-time actions |
+| Renderer and visitor flow | `resources/renderer/src/render.ts`, `mount.ts`, `resources/loader/src/journey.ts` | Preserve answers, handle navigation and capture separately, focus/errors/progress, pending and confirmed states |
+| Server capture | `src/Rest/CaptureController.php`, `src/Lead/CaptureForm.php`, `JourneyCapture.php`, `LeadRepository.php`, `Submission.php`, `ConsentRecord.php` | Authoritative submission scope, canonical validation, consent snapshots, authenticated continuation and retry behavior |
+| Destinations | `src/Destination/SubmissionDispatcher.php`, `PushJob.php`, `PushSubject.php`, adapters | Stage-specific dispatch and retry semantics, channel permission, stable payload semantics, no duplicated one-time actions |
 | Analytics and reporting | `src/Stats/*`, Lead views/export, Goal contracts | Count agreed converting act exactly once, explain channel additions, preserve useful report labels |
 | Privacy | `src/Privacy/*`, `src/Retention/*` | Include new evidence in export/erasure/data map; continuation cannot bypass deletion or extend retention silently |
 | Pro interactions | `src/Optin/ContentLock.php`, `PublishedProjection.php`, Pro display/reopen/content-lock modules | Define unlock, dismissal, stop-after-conversion and continuation across every supported surface |

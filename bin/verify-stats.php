@@ -217,7 +217,7 @@ echo "The table\n";
 
 $columns = $wpdb->get_col("SHOW COLUMNS FROM `{$statsTable}`");
 
-$verify->check('it has the four approved columns and no surrogate id', ['optin_id', 'stat_date', 'kind', 'count'], $columns);
+$verify->check('it has the five approved columns and no surrogate id', ['optin_id', 'stat_date', 'kind', 'scope', 'count'], $columns);
 
 $indexes = $wpdb->get_results("SHOW INDEX FROM `{$statsTable}`", ARRAY_A);
 $indexNames = array_values(array_unique(array_map(
@@ -237,7 +237,7 @@ foreach (is_array($indexes) ? $indexes : [] as $index) {
 
 ksort($keyColumns);
 
-$verify->check('and it is keyed for the one query it serves', ['optin_id', 'stat_date', 'kind'], array_values($keyColumns));
+$verify->check('and its key separates Campaign and journey scopes', ['optin_id', 'stat_date', 'kind', 'scope'], array_values($keyColumns));
 
 echo "The upsert\n";
 
@@ -659,7 +659,7 @@ $beacon([
     ['optin_id' => $published->id, 'kind' => 'dismiss'],
 ]);
 
-$verify->check('a coalesced flush counts each act once', 1, $countOf($published->id, 'conversion', $beaconDay));
+$verify->check('a browser cannot count a form Conversion before server acceptance', null, $countOf($published->id, 'conversion', $beaconDay));
 $verify->check('including the Dismissal', 1, $countOf($published->id, 'dismiss', $beaconDay));
 
 $beacon([['optin_id' => $unpublished->id, 'kind' => 'impression']]);

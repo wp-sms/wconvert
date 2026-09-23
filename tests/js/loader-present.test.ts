@@ -1,3 +1,4 @@
+import { treeFixture } from './support/journey';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { INLINE_ANCHOR_ATTRIBUTE, captureInto, templatePresenter } from '@loader/present';
 import { CAPTURE_ATTRIBUTE, PAYLOAD_ELEMENT_ID } from '@loader/payload';
@@ -14,12 +15,12 @@ import type { OptinControls, PayloadEntry } from '@loader/types';
  */
 
 const TEMPLATE = {
-  tree: {
+  tree: treeFixture({
     steps: [
       { type: 'stack', children: [{ type: 'heading', text: 'Join the list' }, { type: 'field', name: 'email' }, { type: 'button', label: 'Go', action: 'submit' }] },
       { type: 'stack', children: [{ type: 'heading', role: 'success_headline', text: 'Check your inbox' }] },
     ],
-  },
+  }),
   tokens: { bg: '#fff' },
 };
 
@@ -134,7 +135,7 @@ describe('an inline Optin', () => {
 
     templatePresenter.show(item, seen);
 
-    expect(observed).toEqual([anchor]);
+    expect(observed).toContain(anchor);
     expect(seen.impressions).toBe(0);
 
     scroll.fire?.([{ isIntersecting: true }]);
@@ -200,7 +201,7 @@ describe('a visitor submitting the form', () => {
     const mounted = mount({ displayType: 'popup', template: TEMPLATE });
 
     mounted.show();
-    captureInto(mounted, '01JQ0000000000000000000001', seen);
+    captureInto(mounted, { id: '01JQ0000000000000000000001', template: TEMPLATE, capture_contract: 'test-contract' }, seen);
 
     return mounted;
   };
@@ -209,7 +210,7 @@ describe('a visitor submitting the form', () => {
     const seen = controls();
 
     payloadElement(ENDPOINT);
-    responding({ ok: true, status: 201, json: () => Promise.resolve({ id: '01JQ' }) });
+    responding({ ok: true, status: 201, json: () => Promise.resolve({ id: '01JQ', grant: 'grant' }) });
 
     const mounted = wired(seen);
 

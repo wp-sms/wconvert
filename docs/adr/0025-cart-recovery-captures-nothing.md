@@ -229,7 +229,7 @@ somebody ADDS, which no assertion about output can see.*
   no success state left to render, and an interstitial is worse than the navigation it
   delays. This applies equally to *Promote a sale or offer*; it is a property of
   click-metered Goals, not of WooCommerce.
-  *Amended for planned progressive capture by
+  *Amended for progressive capture by
   [ADR 0103](0103-progressive-capture-keeps-one-lead-per-journey.md): the
   two-screen rule for submit designs is being replaced with explicit linear
   journeys. Single-step click-only cart designs retain their converting-act

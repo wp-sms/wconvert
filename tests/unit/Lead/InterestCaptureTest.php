@@ -39,7 +39,7 @@ final class InterestCaptureTest extends TestCase
     private static function template(bool $required = true): array
     {
         return [
-            'tree' => [
+            'tree' => \WConvert\Tests\Unit\Support\JourneyFixture::tree([
                 'steps' => [
                     [
                         'type' => 'stack',
@@ -59,7 +59,7 @@ final class InterestCaptureTest extends TestCase
                     ],
                     ['type' => 'stack', 'children' => [['type' => 'heading', 'text' => 'Thanks']]],
                 ],
-            ],
+            ]),
             'tokens' => [],
         ];
     }

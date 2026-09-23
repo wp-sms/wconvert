@@ -25,29 +25,36 @@
   "tree": {
     "steps": [
       {
-        "type": "row",
-        "children": [
-          {
-            "type": "icon",
-            "id": "n1",
-            "name": "bolt"
-          },
-          {
-            "type": "heading",
-            "id": "n2",
-            "role": "headline",
-            "level": 2,
-            "text": "Free UK delivery over £40"
-          },
-          {
-            "type": "button",
-            "id": "n3",
-            "role": "cta_label",
-            "label": "Explore the shop",
-            "action": "link"
-          }
-        ]
+        "id": "s1",
+        "name": "Offer",
+        "kind": "content",
+        "content": {
+          "type": "row",
+          "children": [
+            {
+              "type": "icon",
+              "id": "n1",
+              "name": "bolt"
+            },
+            {
+              "type": "heading",
+              "id": "n2",
+              "role": "headline",
+              "level": 2,
+              "text": "Free UK delivery over \u00a340"
+            },
+            {
+              "type": "button",
+              "id": "n3",
+              "role": "cta_label",
+              "label": "Explore the shop",
+              "action": "link"
+            }
+          ]
+        }
       }
-    ]
+    ],
+    "v": 2,
+    "submissions": []
   }
 }

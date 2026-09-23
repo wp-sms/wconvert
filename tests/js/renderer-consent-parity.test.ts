@@ -1,3 +1,4 @@
+import { treeFixture } from './support/journey';
 import { describe, expect, it } from 'vitest';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
@@ -33,7 +34,7 @@ const { cases } = JSON.parse(readFileSync(FIXTURE, 'utf8')) as { cases: readonly
 
 describe('the consent sentence, as the renderer draws it', () => {
   it.each(cases)('$why', ({ node, shown }) => {
-    const root = render({ steps: [{ type: 'stack', children: [node] }] }, {});
+    const root = render(treeFixture({ steps: [{ type: 'stack', children: [node] }] }), {});
 
     expect(root.querySelector('.wc-consent-text')?.textContent).toBe(shown);
   });
@@ -46,7 +47,7 @@ describe('the consent sentence, as the renderer draws it', () => {
    * no words to it.
    */
   it.each(cases)('anchor — $why', ({ node, anchor }) => {
-    const root = render({ steps: [{ type: 'stack', children: [node] }] }, {});
+    const root = render(treeFixture({ steps: [{ type: 'stack', children: [node] }] }), {});
     const rendered = root.querySelector<HTMLAnchorElement>('.wc-consent-text a');
 
     expect(rendered?.getAttribute('href') ?? null).toBe(anchor);

@@ -5,7 +5,7 @@ one request, while they are still on the page**. There is no second way a Lead
 comes into existence: no admin "add lead" screen, no CSV import, no competitor
 import, no ingestion API.
 
-*Amended for planned progressive capture by
+*Amended for progressive capture by
 [ADR 0103](0103-progressive-capture-keeps-one-lead-per-journey.md): visitor
 submission remains the only origin. One capture journey can now contribute
 multiple explicit submissions to one Lead, with one Conversion at the first

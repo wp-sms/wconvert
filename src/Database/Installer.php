@@ -31,9 +31,8 @@ defined('ABSPATH') || exit;
  *
  * What `dbDelta` cannot do is worth knowing before relying on this: it **adds
  * and alters, and never removes**. A dropped column or index needs a raw
- * `ALTER`, which is a thing this plugin deliberately has nowhere to put, so
- * removing either from {@see Schema} means a fresh install stops creating it
- * and an existing install keeps a harmless orphan.
+ * `ALTER`. The approved statistics scope/key is reconciled explicitly before
+ * dbDelta; other removals from Schema require their own deliberate decision.
  *
  * @since 0.1.0
  */
@@ -52,8 +51,9 @@ final class Installer
      *
      * `4`: `parent_id` on `wconvert_optins`, `idx_goal` removed, and the
      * published set narrowed to an allowlist.
+     * `5`: approved statistics scope/key and JSON v2 capture projection.
      */
-    public const VERSION = '4';
+    public const VERSION = '5';
 
     public function __construct(
         private readonly OptionStore $options,
@@ -66,6 +66,8 @@ final class Installer
         global $wpdb;
 
         require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+
+        $this->alignStatisticsKey($wpdb);
 
         dbDelta(Schema::sql($wpdb->prefix, $wpdb->get_charset_collate()));
 
@@ -93,6 +95,30 @@ final class Installer
         $this->optins->rebuildForInstall();
 
         $this->options->set(self::VERSION_OPTION, self::VERSION);
+    }
+
+    /** dbDelta cannot replace a primary key; reconcile the approved scope/key together. */
+    private function alignStatisticsKey(\wpdb $db): void
+    {
+        $table = $db->prefix . Connection::TABLE_STATS;
+        if ($db->get_var($db->prepare('SHOW TABLES LIKE %s', $db->esc_like($table))) !== $table) {
+            return;
+        }
+        $columns = $db->get_col($db->prepare('SHOW COLUMNS FROM %i', $table));
+        $indexes = $db->get_results($db->prepare("SHOW INDEX FROM %i WHERE Key_name = 'PRIMARY'", $table), ARRAY_A);
+        $primary = array_column(is_array($indexes) ? $indexes : [], 'Column_name');
+        if (in_array('scope', $columns, true) && $primary === ['optin_id', 'stat_date', 'kind', 'scope']) {
+            return;
+        }
+        $changes = [];
+        if (!in_array('scope', $columns, true)) {
+            $changes[] = "ADD COLUMN scope VARCHAR(160) NOT NULL DEFAULT '' AFTER kind";
+        }
+        if ($primary !== []) { $changes[] = 'DROP PRIMARY KEY'; }
+        $changes[] = 'ADD PRIMARY KEY (optin_id,stat_date,kind,scope)';
+        if ($db->query($db->prepare('ALTER TABLE %i ' . implode(', ', $changes), $table)) === false) {
+            throw new DatabaseException('Could not install the approved journey statistics key.');
+        }
     }
 
     /**

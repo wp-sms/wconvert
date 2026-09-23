@@ -7,7 +7,7 @@ hand-adds. It is **off by default, required once present, and enforced
 server-side**, and the evidence it produces is the [[Consent Record]] snapshotted
 into the [[Lead]]'s existing `fields` JSON.
 
-*Amended for planned progressive capture by
+*Amended for progressive capture by
 [ADR 0103](0103-progressive-capture-keeps-one-lead-per-journey.md): one combined
 Lead can hold separate email and SMS consent evidence from different explicit
 submissions. SMS consent cannot be inferred from email consent or possession

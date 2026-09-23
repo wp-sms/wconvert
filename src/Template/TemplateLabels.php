@@ -42,6 +42,10 @@ final class TemplateLabels
             'badge' => __('Badge wording', 'wconvert'),
             /* translators: the words beside a star rating, e.g. “from 2,000 reviews”. */
             'rating_text' => __('Words beside the stars', 'wconvert'),
+            'next_label' => __('Next button label', 'wconvert'),
+            'back_label' => __('Back button label', 'wconvert'),
+            'skip_label' => __('Skip button label', 'wconvert'),
+            'close_label' => __('Close button label', 'wconvert'),
             'cta_label' => __('Button label', 'wconvert'),
             'consent_text' => __('Consent wording', 'wconvert'),
             'success_headline' => __('Headline after they submit', 'wconvert'),
@@ -457,6 +461,7 @@ final class TemplateLabels
              * a small `h2` and a large `h3`, which is the pair no token reaches.
              */
             /* translators: a heading's rank inside the Optin — whether it is the main heading or one under it. This is the document outline, not how big it is drawn. */
+            'button.action' => __('Button action', 'wconvert'),
             'heading.level' => __('Heading rank', 'wconvert'),
             /* translators: how big this heading is drawn, as a step up or down from the design's own heading size. */
             'heading.size' => __('Heading scale', 'wconvert'),
@@ -497,6 +502,12 @@ final class TemplateLabels
     {
         return [
             /* translators: a heading rank. This heading is the Optin's own main heading. */
+            'button.action.submit' => __('Submit', 'wconvert'),
+            'button.action.next' => __('Next', 'wconvert'),
+            'button.action.back' => __('Back', 'wconvert'),
+            'button.action.skip' => __('Skip optional signup', 'wconvert'),
+            'button.action.close' => __('Close', 'wconvert'),
+            'button.action.link' => __('Open link', 'wconvert'),
             'code.copy.false' => __('Code only', 'wconvert'),
             'code.copy.true' => __('Code and copy button', 'wconvert'),
             'heading.level.1' => __('Main heading', 'wconvert'),

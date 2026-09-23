@@ -267,7 +267,7 @@ final class TemplateLibrary
             return RejectionReason::NoConvertingAct;
         }
 
-        return count($tree['steps']) === $acts[0]->steps() ? null : RejectionReason::WrongStepCount;
+        return CaptureJourney::issue($tree) === null ? null : RejectionReason::WrongStepCount;
     }
 
     /**

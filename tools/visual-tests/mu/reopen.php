@@ -13,14 +13,14 @@ add_action('init', static function (): void {
             'rules' => [['type' => 'page_load']], 'capture_mode' => 'local',
             'frequency' => ['maxImpressions' => 1],
             'teaser' => ['label' => 'Get my discount', 'mobile' => ['placement' => 'block_start_inline_start', 'gap' => 24]],
-            'template' => ['tokens' => ['width' => '24rem', 'accent' => '#12505a'], 'tree' => ['steps' => [
-                ['type' => 'stack', 'children' => [['type' => 'heading', 'text' => 'Your discount'], ['type' => 'field', 'name' => 'email', 'required' => true], ['type' => 'button', 'label' => 'Join', 'action' => 'submit']]],
-                ['type' => 'stack', 'children' => [['type' => 'heading', 'text' => 'Submission received']]],
+            'template' => ['tokens' => ['width' => '24rem', 'accent' => '#12505a'], 'tree' => ['v' => 2, 'submissions' => [['id' => 'primary', 'required' => true, 'fields' => ['n2'], 'consents' => []]], 'steps' => [
+                ['id' => 'details', 'name' => 'Details', 'kind' => 'input', 'content' => ['type' => 'stack', 'children' => [['type' => 'heading', 'id' => 'n1', 'text' => 'Your discount'], ['type' => 'field', 'id' => 'n2', 'name' => 'email', 'required' => true], ['type' => 'button', 'id' => 'n3', 'label' => 'Join', 'action' => 'submit', 'submission' => 'primary']]]],
+                ['id' => 'received', 'name' => 'Received', 'kind' => 'acknowledgement', 'content' => ['type' => 'stack', 'children' => [['type' => 'heading', 'id' => 'n4', 'text' => 'Submission received']]]],
             ]]],
         ];
         if ($kind === 'long') $config['teaser']['label'] = str_repeat('Long offer ', 7);
         if ($kind === 'hidden') $config['teaser']['mobile']['visible'] = false;
-        $optin = $repository->create('Reopen fixture', 'grow_email_list', $config);
+        $optin = $repository->create('Reopen fixture', 'collect_enquiries', $config);
         $ids[$kind] = $optin->id;
         update_option('wconvert_reopen_fixtures', $ids);
     }

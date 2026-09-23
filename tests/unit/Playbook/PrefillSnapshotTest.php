@@ -115,7 +115,7 @@ final class PrefillSnapshotTest extends TestCase
     public function testPrefillWritesThePlaybooksWordsIntoTheOptinsOwnCopyOfTheTemplate(): void
     {
         $config = $this->draft()['config'];
-        $children = $config['template']['tree']['steps'][0]['children'];
+        $children = $config['template']['tree']['steps'][0]['content']['children'];
 
         $this->assertSame('Ten percent off your first order', $children[0]['text']);
         $this->assertSame('Email address', $children[2]['children'][0]['label']);
@@ -161,13 +161,13 @@ final class PrefillSnapshotTest extends TestCase
         $this->assertIsArray($reprefilled);
         $this->assertSame(
             'COMPLETELY DIFFERENT WORDS',
-            $reprefilled['config']['template']['tree']['steps'][0]['children'][0]['text'],
+            $reprefilled['config']['template']['tree']['steps'][0]['content']['children'][0]['text'],
             'a NEW Optin gets the improved words, which is what improving one is for'
         );
         $this->assertSame($before, $this->payloadOf($optin), 'and the running Optin is byte-identical');
         $this->assertSame(
             'Ten percent off your first order',
-            $before['template']['tree']['steps'][0]['children'][0]['text']
+            $before['template']['tree']['steps'][0]['content']['children'][0]['text']
         );
     }
 
@@ -218,7 +218,7 @@ final class PrefillSnapshotTest extends TestCase
 
         $this->assertSame(
             'Ten percent off your first order',
-            $saved['template']['tree']['steps'][0]['children'][0]['text'] ?? null
+            $saved['template']['tree']['steps'][0]['content']['children'][0]['text'] ?? null
         );
 
         // And the other half of the same rule still holds: naming a DIFFERENT
@@ -229,7 +229,7 @@ final class PrefillSnapshotTest extends TestCase
         // switching Template" (CONTEXT.md, Playbook).
         $config['template_id'] = 'stacked-signup';
         $repicked = $templates->snapshotInto($config, 'centred-card');
-        $children = $repicked['template']['tree']['steps'][0]['children'];
+        $children = $repicked['template']['tree']['steps'][0]['content']['children'];
 
         $this->assertSame('Ten percent off your first order', $children[0]['text'], 'the headline came across');
         $this->assertSame($templates->find('stacked-signup')['tokens'], $repicked['template']['tokens']);

@@ -24,7 +24,7 @@ final class ConvertingActTest extends TestCase
      */
     private static function step(array $children): array
     {
-        return ['steps' => [['type' => 'stack', 'children' => $children]]];
+        return \WConvert\Tests\Unit\Support\JourneyFixture::tree(['steps' => [['type' => 'stack', 'children' => $children]]]);
     }
 
     public function testAFormsSubmitIsTheSubmitAct(): void
@@ -60,11 +60,11 @@ final class ConvertingActTest extends TestCase
      */
     public function testATreeOfferingBothActsOffersTwo(): void
     {
-        $tree = ['steps' => [[
+        $tree = \WConvert\Tests\Unit\Support\JourneyFixture::tree(['steps' => [[
             'type' => 'split',
             'start' => [['type' => 'button', 'label' => 'Join', 'action' => 'submit']],
             'end' => [['type' => 'button', 'label' => 'Shop', 'action' => 'link']],
-        ]]];
+        ]]]);
 
         $this->assertSame([ConvertingAct::Submit, ConvertingAct::Click], ConvertingAct::offeredIn($tree));
     }
@@ -88,14 +88,4 @@ final class ConvertingActTest extends TestCase
         $this->assertSame([], ConvertingAct::offeredIn(self::step([['type' => 'heading', 'text' => 'Hi']])));
     }
 
-    /**
-     * A submit-metered Template has TWO steps and a click-metered one has ONE
-     * — the click navigates the visitor away, so there is no success state
-     * left to render (ADR 0010, corrected by ADR 0025).
-     */
-    public function testTheActDecidesHowManyStepsItsTemplateHas(): void
-    {
-        $this->assertSame(2, ConvertingAct::Submit->steps());
-        $this->assertSame(1, ConvertingAct::Click->steps());
-    }
 }

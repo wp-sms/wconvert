@@ -27,221 +27,245 @@
   "tree": {
     "steps": [
       {
-        "type": "panel",
-        "tokens": {
-          "pad": "2rem",
-          "gap": "1rem"
-        },
-        "children": [
-          {
-            "type": "eyebrow",
-            "id": "n1",
-            "role": "wordmark",
-            "text": "PRACTICA / FIELD NOTES",
-            "tokens": {
-              "text-size": "1.0834rem"
-            }
+        "id": "s1",
+        "name": "Details",
+        "kind": "input",
+        "content": {
+          "type": "panel",
+          "tokens": {
+            "pad": "2rem",
+            "gap": "1rem"
           },
-          {
-            "type": "split",
-            "ratio": 0.35,
-            "basis": "12rem",
-            "tokens": {
-              "gap": "1.25rem"
-            },
-            "start": [
-              {
-                "type": "panel",
-                "tokens": {
-                  "bg": "#813c2b",
-                  "fg": "#fff9ee",
-                  "muted": "#fff9ee",
-                  "pad": "1.25rem",
-                  "gap": "0.5rem",
-                  "radius": "0.15rem"
-                },
-                "children": [
-                  {
-                    "type": "eyebrow",
-                    "id": "n2",
-                    "role": "eyebrow",
-                    "text": "THE PLANT CHECKLIST",
-                    "tokens": {
-                      "text-size": "1.0834rem"
-                    }
-                  },
-                  {
-                    "type": "heading",
-                    "id": "n3",
-                    "role": "headline",
-                    "text": "07",
-                    "size": "2xl",
-                    "tokens": {
-                      "heading-size": "1rem"
-                    }
-                  },
-                  {
-                    "type": "text",
-                    "id": "n4",
-                    "role": "body",
-                    "text": "Simple checks.\nHappier plants."
-                  }
-                ]
+          "children": [
+            {
+              "type": "eyebrow",
+              "id": "n1",
+              "role": "wordmark",
+              "text": "PRACTICA / FIELD NOTES",
+              "tokens": {
+                "text-size": "1.0834rem"
               }
-            ],
-            "end": [
-              {
-                "type": "stack",
-                "tokens": {
-                  "gap": ".75rem"
-                },
-                "children": [
-                  {
-                    "type": "heading",
-                    "id": "n5",
-                    "role": "headline",
-                    "text": "Less guesswork.\nHappier plants.",
-                    "tokens": {
-                      "heading-size": "1.75rem"
-                    }
+            },
+            {
+              "type": "split",
+              "ratio": 0.35,
+              "basis": "12rem",
+              "tokens": {
+                "gap": "1.25rem"
+              },
+              "start": [
+                {
+                  "type": "panel",
+                  "tokens": {
+                    "bg": "#813c2b",
+                    "fg": "#fff9ee",
+                    "muted": "#fff9ee",
+                    "pad": "1.25rem",
+                    "gap": "0.5rem",
+                    "radius": "0.15rem"
                   },
-                  {
-                    "type": "text",
-                    "id": "n6",
-                    "role": "body",
-                    "text": "Seven checks for light, water and the little things your plants need."
-                  }
-                ]
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "id": "n2",
+                      "role": "eyebrow",
+                      "text": "THE PLANT CHECKLIST",
+                      "tokens": {
+                        "text-size": "1.0834rem"
+                      }
+                    },
+                    {
+                      "type": "heading",
+                      "id": "n3",
+                      "role": "headline",
+                      "text": "07",
+                      "size": "2xl",
+                      "tokens": {
+                        "heading-size": "1rem"
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "id": "n4",
+                      "role": "body",
+                      "text": "Simple checks.\nHappier plants."
+                    }
+                  ]
+                }
+              ],
+              "end": [
+                {
+                  "type": "stack",
+                  "tokens": {
+                    "gap": ".75rem"
+                  },
+                  "children": [
+                    {
+                      "type": "heading",
+                      "id": "n5",
+                      "role": "headline",
+                      "text": "Less guesswork.\nHappier plants.",
+                      "tokens": {
+                        "heading-size": "1.75rem"
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "id": "n6",
+                      "role": "body",
+                      "text": "Seven checks for light, water and the little things your plants need."
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "field",
+              "id": "n7",
+              "name": "email",
+              "label": "Email address",
+              "placeholder": "you@example.com",
+              "required": true
+            },
+            {
+              "type": "consent",
+              "id": "n8",
+              "role": "consent_text",
+              "text": "Use my email to respond to this request. %s",
+              "link": {
+                "label": "Privacy Policy"
+              },
+              "hidden": true,
+              "tokens": {
+                "text-size": "1.125rem"
               }
-            ]
-          },
-          {
-            "type": "field",
-            "id": "n7",
-            "name": "email",
-            "label": "Email address",
-            "placeholder": "you@example.com",
-            "required": true
-          },
-          {
-            "type": "consent",
-            "id": "n8",
-            "role": "consent_text",
-            "text": "Use my email to respond to this request. %s",
-            "link": {
-              "label": "Privacy Policy"
             },
-            "hidden": true,
-            "tokens": {
-              "text-size": "1.125rem"
-            }
-          },
-          {
-            "type": "button",
-            "id": "n9",
-            "role": "cta_label",
-            "label": "Request the plant checklist",
-            "action": "submit"
-          },
-          {
-            "type": "text",
-            "id": "n10",
-            "role": "fine_print",
-            "text": "A printable guide to keep nearby. Free to request. %s",
-            "size": "s",
-            "tokens": {
-              "text-size": "1.167rem"
+            {
+              "type": "button",
+              "id": "n9",
+              "role": "cta_label",
+              "label": "Request the plant checklist",
+              "action": "submit",
+              "submission": "primary"
             },
-            "link": {
-              "label": "Privacy Policy"
+            {
+              "type": "text",
+              "id": "n10",
+              "role": "fine_print",
+              "text": "A printable guide to keep nearby. Free to request. %s",
+              "size": "s",
+              "tokens": {
+                "text-size": "1.167rem"
+              },
+              "link": {
+                "label": "Privacy Policy"
+              }
             }
+          ],
+          "narrow": {
+            "pad": "1.25rem",
+            "gap": ".875rem"
           }
-        ],
-        "narrow": {
-          "pad": "1.25rem",
-          "gap": ".875rem"
         }
       },
       {
-        "type": "panel",
-        "tokens": {
-          "pad": "2rem",
-          "gap": "1rem"
-        },
-        "children": [
-          {
-            "type": "eyebrow",
-            "id": "n11",
-            "role": "wordmark",
-            "text": "PRACTICA / FIELD NOTES",
-            "tokens": {
-              "text-size": "1.0834rem"
-            }
+        "id": "s2",
+        "name": "Received",
+        "kind": "acknowledgement",
+        "content": {
+          "type": "panel",
+          "tokens": {
+            "pad": "2rem",
+            "gap": "1rem"
           },
-          {
-            "type": "icon",
-            "id": "n12",
-            "name": "check"
-          },
-          {
-            "type": "heading",
-            "id": "n13",
-            "role": "success_headline",
-            "text": "A useful first step."
-          },
-          {
-            "type": "text",
-            "id": "n14",
-            "role": "success_body",
-            "text": "Thank you for requesting the plant checklist. We have received your details."
-          },
-          {
-            "type": "panel",
-            "tokens": {
-              "bg": "#ead8c8",
-              "pad": "1.25rem",
-              "gap": ".5rem"
-            },
-            "children": [
-              {
-                "type": "eyebrow",
-                "id": "n15",
-                "role": "eyebrow",
-                "text": "START HERE",
-                "tokens": {
-                  "text-size": "1.0834rem"
-                }
-              },
-              {
-                "type": "text",
-                "id": "n16",
-                "role": "success_body",
-                "text": "Check the soil before you water. Give it a moment, then decide."
+          "children": [
+            {
+              "type": "eyebrow",
+              "id": "n11",
+              "role": "wordmark",
+              "text": "PRACTICA / FIELD NOTES",
+              "tokens": {
+                "text-size": "1.0834rem"
               }
-            ]
-          },
-          {
-            "type": "followup",
-            "id": "n17",
-            "role": "success_action",
-            "label": "Open the checklist",
-            "hidden": true
-          },
-          {
-            "type": "text",
-            "id": "n18",
-            "role": "fine_print",
-            "text": "Your request is for the plant checklist.",
-            "size": "s",
-            "tokens": {
-              "text-size": "1.167rem"
+            },
+            {
+              "type": "icon",
+              "id": "n12",
+              "name": "check"
+            },
+            {
+              "type": "heading",
+              "id": "n13",
+              "role": "success_headline",
+              "text": "A useful first step."
+            },
+            {
+              "type": "text",
+              "id": "n14",
+              "role": "success_body",
+              "text": "Thank you for requesting the plant checklist. We have received your details."
+            },
+            {
+              "type": "panel",
+              "tokens": {
+                "bg": "#ead8c8",
+                "pad": "1.25rem",
+                "gap": ".5rem"
+              },
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "id": "n15",
+                  "role": "eyebrow",
+                  "text": "START HERE",
+                  "tokens": {
+                    "text-size": "1.0834rem"
+                  }
+                },
+                {
+                  "type": "text",
+                  "id": "n16",
+                  "role": "success_body",
+                  "text": "Check the soil before you water. Give it a moment, then decide."
+                }
+              ]
+            },
+            {
+              "type": "followup",
+              "id": "n17",
+              "role": "success_action",
+              "label": "Open the checklist",
+              "hidden": true
+            },
+            {
+              "type": "text",
+              "id": "n18",
+              "role": "fine_print",
+              "text": "Your request is for the plant checklist.",
+              "size": "s",
+              "tokens": {
+                "text-size": "1.167rem"
+              }
             }
+          ],
+          "narrow": {
+            "pad": "1.25rem",
+            "gap": ".875rem"
           }
-        ],
-        "narrow": {
-          "pad": "1.25rem",
-          "gap": ".875rem"
         }
+      }
+    ],
+    "v": 2,
+    "submissions": [
+      {
+        "id": "primary",
+        "required": true,
+        "fields": [
+          "n7"
+        ],
+        "consents": [
+          "n8"
+        ]
       }
     ]
   }

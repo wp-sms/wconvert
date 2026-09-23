@@ -27,237 +27,261 @@
   "tree": {
     "steps": [
       {
-        "type": "split",
-        "ratio": 0.35,
-        "basis": "16rem",
-        "start": [
-          {
-            "type": "media",
-            "tokens": {
-              "bg": "#2348cc",
-              "fg": "#edff8a",
-              "muted": "#edff8a",
-              "pad": "1.75rem",
-              "gap": "1.25rem",
-              "radius": "0"
-            },
-            "narrow": {
-              "pad": "1.25rem",
-              "gap": ".5rem"
-            },
-            "children": [
-              {
-                "type": "eyebrow",
-                "id": "n1",
-                "role": "wordmark",
-                "text": "SIGNAL / LAUNCH NOTES",
-                "tokens": {
-                  "text-size": "1.0834rem"
-                }
+        "id": "s1",
+        "name": "Details",
+        "kind": "input",
+        "content": {
+          "type": "split",
+          "ratio": 0.35,
+          "basis": "16rem",
+          "start": [
+            {
+              "type": "media",
+              "tokens": {
+                "bg": "#2348cc",
+                "fg": "#edff8a",
+                "muted": "#edff8a",
+                "pad": "1.75rem",
+                "gap": "1.25rem",
+                "radius": "0"
               },
-              {
-                "type": "heading",
-                "id": "n2",
-                "role": "headline",
-                "text": "12",
-                "size": "3xl",
-                "tokens": {
-                  "heading-size": "clamp(1.2rem, 4cqi, 2rem)"
-                }
+              "narrow": {
+                "pad": "1.25rem",
+                "gap": ".5rem"
               },
-              {
-                "type": "text",
-                "id": "n3",
-                "role": "body",
-                "text": "Checks before\nyou go live."
-              }
-            ]
-          }
-        ],
-        "end": [
-          {
-            "type": "panel",
-            "tokens": {
-              "pad": "2rem 1.5rem",
-              "gap": "1rem",
-              "radius": "0"
-            },
-            "children": [
-              {
-                "type": "eyebrow",
-                "id": "n4",
-                "role": "eyebrow",
-                "text": "A PRACTICAL PRE-FLIGHT",
-                "tokens": {
-                  "text-size": "1.0834rem"
-                }
-              },
-              {
-                "type": "heading",
-                "id": "n5",
-                "role": "headline",
-                "text": "Launch your site.\nKeep your nerve.",
-                "tokens": {
-                  "heading-size": "1.75rem"
-                }
-              },
-              {
-                "type": "text",
-                "id": "n6",
-                "role": "body",
-                "text": "A twelve-point checklist for the details that are easy to miss before launch."
-              },
-              {
-                "type": "field",
-                "id": "n7",
-                "name": "email",
-                "label": "Email address",
-                "placeholder": "you@example.com",
-                "required": true
-              },
-              {
-                "type": "consent",
-                "id": "n8",
-                "role": "consent_text",
-                "text": "Use my email to respond to this request. %s",
-                "link": {
-                  "label": "Privacy Policy"
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "id": "n1",
+                  "role": "wordmark",
+                  "text": "SIGNAL / LAUNCH NOTES",
+                  "tokens": {
+                    "text-size": "1.0834rem"
+                  }
                 },
-                "hidden": true,
-                "tokens": {
-                  "text-size": "1.125rem"
-                }
-              },
-              {
-                "type": "button",
-                "id": "n9",
-                "role": "cta_label",
-                "label": "Request the launch checklist",
-                "action": "submit"
-              },
-              {
-                "type": "text",
-                "id": "n10",
-                "role": "fine_print",
-                "text": "One useful checklist. Free to request. %s",
-                "size": "s",
-                "tokens": {
-                  "text-size": "1.167rem"
+                {
+                  "type": "heading",
+                  "id": "n2",
+                  "role": "headline",
+                  "text": "12",
+                  "size": "3xl",
+                  "tokens": {
+                    "heading-size": "clamp(1.2rem, 4cqi, 2rem)"
+                  }
                 },
-                "link": {
-                  "label": "Privacy Policy"
+                {
+                  "type": "text",
+                  "id": "n3",
+                  "role": "body",
+                  "text": "Checks before\nyou go live."
                 }
-              }
-            ],
-            "narrow": {
-              "pad": "1.25rem",
-              "gap": ".875rem"
+              ]
             }
-          }
-        ]
+          ],
+          "end": [
+            {
+              "type": "panel",
+              "tokens": {
+                "pad": "2rem 1.5rem",
+                "gap": "1rem",
+                "radius": "0"
+              },
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "id": "n4",
+                  "role": "eyebrow",
+                  "text": "A PRACTICAL PRE-FLIGHT",
+                  "tokens": {
+                    "text-size": "1.0834rem"
+                  }
+                },
+                {
+                  "type": "heading",
+                  "id": "n5",
+                  "role": "headline",
+                  "text": "Launch your site.\nKeep your nerve.",
+                  "tokens": {
+                    "heading-size": "1.75rem"
+                  }
+                },
+                {
+                  "type": "text",
+                  "id": "n6",
+                  "role": "body",
+                  "text": "A twelve-point checklist for the details that are easy to miss before launch."
+                },
+                {
+                  "type": "field",
+                  "id": "n7",
+                  "name": "email",
+                  "label": "Email address",
+                  "placeholder": "you@example.com",
+                  "required": true
+                },
+                {
+                  "type": "consent",
+                  "id": "n8",
+                  "role": "consent_text",
+                  "text": "Use my email to respond to this request. %s",
+                  "link": {
+                    "label": "Privacy Policy"
+                  },
+                  "hidden": true,
+                  "tokens": {
+                    "text-size": "1.125rem"
+                  }
+                },
+                {
+                  "type": "button",
+                  "id": "n9",
+                  "role": "cta_label",
+                  "label": "Request the launch checklist",
+                  "action": "submit",
+                  "submission": "primary"
+                },
+                {
+                  "type": "text",
+                  "id": "n10",
+                  "role": "fine_print",
+                  "text": "One useful checklist. Free to request. %s",
+                  "size": "s",
+                  "tokens": {
+                    "text-size": "1.167rem"
+                  },
+                  "link": {
+                    "label": "Privacy Policy"
+                  }
+                }
+              ],
+              "narrow": {
+                "pad": "1.25rem",
+                "gap": ".875rem"
+              }
+            }
+          ]
+        }
       },
       {
-        "type": "split",
-        "ratio": 0.35,
-        "basis": "16rem",
-        "start": [
-          {
-            "type": "media",
-            "tokens": {
-              "bg": "#2348cc",
-              "fg": "#edff8a",
-              "muted": "#edff8a",
-              "pad": "1.75rem",
-              "gap": "1.25rem",
-              "radius": "0"
-            },
-            "narrow": {
-              "pad": "1.25rem",
-              "gap": ".5rem"
-            },
-            "children": [
-              {
-                "type": "eyebrow",
-                "id": "n20",
-                "role": "wordmark",
-                "text": "SIGNAL / LAUNCH NOTES",
-                "tokens": {
-                  "text-size": "1.0834rem"
+        "id": "s2",
+        "name": "Received",
+        "kind": "acknowledgement",
+        "content": {
+          "type": "split",
+          "ratio": 0.35,
+          "basis": "16rem",
+          "start": [
+            {
+              "type": "media",
+              "tokens": {
+                "bg": "#2348cc",
+                "fg": "#edff8a",
+                "muted": "#edff8a",
+                "pad": "1.75rem",
+                "gap": "1.25rem",
+                "radius": "0"
+              },
+              "narrow": {
+                "pad": "1.25rem",
+                "gap": ".5rem"
+              },
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "id": "n20",
+                  "role": "wordmark",
+                  "text": "SIGNAL / LAUNCH NOTES",
+                  "tokens": {
+                    "text-size": "1.0834rem"
+                  }
+                },
+                {
+                  "type": "heading",
+                  "id": "n21",
+                  "role": "success_headline",
+                  "text": "Ready.",
+                  "size": "xl",
+                  "tokens": {
+                    "heading-size": "clamp(1.2rem, 4cqi, 2rem)"
+                  }
+                },
+                {
+                  "type": "text",
+                  "id": "n22",
+                  "role": "success_body",
+                  "text": "Small steps.\nA steadier launch."
                 }
-              },
-              {
-                "type": "heading",
-                "id": "n21",
-                "role": "success_headline",
-                "text": "Ready.",
-                "size": "xl",
-                "tokens": {
-                  "heading-size": "clamp(1.2rem, 4cqi, 2rem)"
-                }
-              },
-              {
-                "type": "text",
-                "id": "n22",
-                "role": "success_body",
-                "text": "Small steps.\nA steadier launch."
-              }
-            ]
-          }
-        ],
-        "end": [
-          {
-            "type": "panel",
-            "tokens": {
-              "pad": "2rem 1.5rem",
-              "gap": "1rem",
-              "radius": "0"
-            },
-            "children": [
-              {
-                "type": "heading",
-                "id": "n23",
-                "role": "success_headline",
-                "text": "A clearer path\nto launch."
-              },
-              {
-                "type": "text",
-                "id": "n24",
-                "role": "success_body",
-                "text": "Thank you for requesting the launch checklist. We have received your details."
-              },
-              {
-                "type": "divider",
-                "id": "n25"
-              },
-              {
-                "type": "text",
-                "id": "n26",
-                "role": "success_body",
-                "text": "Start with the essentials: clear copy, working links and a form you have tested."
-              },
-              {
-                "type": "followup",
-                "id": "n27",
-                "role": "success_action",
-                "label": "Open the checklist",
-                "hidden": true
-              },
-              {
-                "type": "text",
-                "id": "n28",
-                "role": "fine_print",
-                "text": "Your request is for the launch checklist.",
-                "size": "s",
-                "tokens": {
-                  "text-size": "1.167rem"
-                }
-              }
-            ],
-            "narrow": {
-              "pad": "1.25rem",
-              "gap": ".875rem"
+              ]
             }
-          }
+          ],
+          "end": [
+            {
+              "type": "panel",
+              "tokens": {
+                "pad": "2rem 1.5rem",
+                "gap": "1rem",
+                "radius": "0"
+              },
+              "children": [
+                {
+                  "type": "heading",
+                  "id": "n23",
+                  "role": "success_headline",
+                  "text": "A clearer path\nto launch."
+                },
+                {
+                  "type": "text",
+                  "id": "n24",
+                  "role": "success_body",
+                  "text": "Thank you for requesting the launch checklist. We have received your details."
+                },
+                {
+                  "type": "divider",
+                  "id": "n25"
+                },
+                {
+                  "type": "text",
+                  "id": "n26",
+                  "role": "success_body",
+                  "text": "Start with the essentials: clear copy, working links and a form you have tested."
+                },
+                {
+                  "type": "followup",
+                  "id": "n27",
+                  "role": "success_action",
+                  "label": "Open the checklist",
+                  "hidden": true
+                },
+                {
+                  "type": "text",
+                  "id": "n28",
+                  "role": "fine_print",
+                  "text": "Your request is for the launch checklist.",
+                  "size": "s",
+                  "tokens": {
+                    "text-size": "1.167rem"
+                  }
+                }
+              ],
+              "narrow": {
+                "pad": "1.25rem",
+                "gap": ".875rem"
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "v": 2,
+    "submissions": [
+      {
+        "id": "primary",
+        "required": true,
+        "fields": [
+          "n7"
+        ],
+        "consents": [
+          "n8"
         ]
       }
     ]

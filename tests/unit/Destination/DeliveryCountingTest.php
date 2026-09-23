@@ -91,7 +91,7 @@ final class DeliveryCountingTest extends TestCase
             'optin_id' => self::OPTIN,
             'email' => 'sarah@example.com',
             'phone' => null,
-            'fields' => '{"name":"Sarah"}',
+            'fields' => (string) json_encode(['answers' => ['name' => 'Sarah'], 'capture' => ['submissions' => ['primary' => ['values' => ['name' => 'Sarah', 'email' => 'sarah@example.com']]]]]),
             'created_at' => '2026-08-25 10:00:00',
         ];
     }

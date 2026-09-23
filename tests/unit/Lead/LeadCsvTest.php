@@ -79,6 +79,17 @@ final class LeadCsvTest extends TestCase
      * to outlive the delete without being denormalised onto every Lead row
      * (ADR 0002, ADR 0020).
      */
+    public function testTheExportKeepsBothChannelsConsentAndSeparateAcceptanceTimes(): void
+    {
+        $evidence = ['email_consent_text' => 'Email me updates.', 'email_accepted_at' => '2026-09-23T01:00:00Z',
+            'sms_consent_text' => 'Text me updates.', 'sms_accepted_at' => '2026-09-23T01:05:00Z'];
+        $rows = $this->parse([self::lead($evidence)], []);
+        $exported = array_combine($rows[0], $rows[1]);
+        foreach ($evidence as $key => $value) { self::assertSame($value, $exported[$key]); }
+        self::assertArrayNotHasKey('capture', $exported);
+        self::assertArrayNotHasKey('receipt_key', $exported);
+    }
+
     public function testTheFileCarriesTheOptinsName(): void
     {
         $rows = $this->parse([self::lead()], ['OPTIN1' => 'Newsletter footer']);

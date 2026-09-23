@@ -21,7 +21,7 @@ final class PackPlaybooksTest extends TestCase
         $source = file_get_contents(WCONVERT_DIR . 'resources/templates/library/fieldwork.json');
         $this->assertIsString($source);
         return ['schema' => 1, 'id' => 'store', 'version' => '1.0.0', 'name' => 'Store', 'description' => 'Store starts',
-            'requires' => ['plugin' => '0.1.0', 'tree' => 1, 'capabilities' => ['template-tree:1', 'success-actions:1', 'campaign-starts:1']],
+            'requires' => ['plugin' => '0.1.0', 'tree' => 2, 'capabilities' => ['template-tree:2', 'capture-journey:1', 'success-actions:1', 'campaign-starts:1']],
             'assets' => [],
             'templates' => [json_decode($source, true)],
             'playbooks' => [require WCONVERT_DIR . 'resources/playbooks/welcome-discount.php']];
@@ -116,7 +116,7 @@ final class PackPlaybooksTest extends TestCase
     public function testRemoteStartingPointsRejectUnsafeUnsupportedAndSilentlyDroppedContent(): void
     {
         $changes = [
-            'missing capability' => static function (&$p) { $p['requires']['capabilities'] = ['template-tree:1', 'success-actions:1']; },
+            'missing capability' => static function (&$p) { $p['requires']['capabilities'] = ['template-tree:2', 'capture-journey:1', 'success-actions:1']; },
             'duplicate id' => static function (&$p) { $p['playbooks'][] = $p['playbooks'][0]; },
             'too many starts' => static function (&$p) { $p['playbooks'] = array_fill(0, 13, $p['playbooks'][0]); },
             'unknown goal' => static function (&$p) { $p['playbooks'][0]['goal'] = 'unknown'; },

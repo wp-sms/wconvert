@@ -12,7 +12,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs'
 import { ParamChoice } from './ParamChoice';
 import { BorderPreview, ImageFitPreview, ImageShapePreview, SplitRatioPreview } from './ChoicePreview';
 import { SlotFields } from './SlotFields';
-import { nameOfBlock, stepName } from './BlockRow';
+import { nameOfBlock } from './BlockRow';
 import { LAYOUTS, slotsOf, withHidden, withValue, type Path, type Slot } from './panel';
 import { nodeAt, nodesOf, samePath, withSwappedPanes } from './structure/tree';
 import { swapLabel, swapNameOf, swapSaid, swapsFor, withSwapped } from './structure/swap';
@@ -115,7 +115,7 @@ export function BlockInspector({
           <h4 id={heading} className="wconvert-inspector__name">
             {name}
           </h4>
-          <p>{stepName(Number(path[0]) + 1)}</p>
+          <p>{template.tree.steps[Number(path[0])]?.name}</p>
         </div>
         <SwapMenu template={template} labels={labels} path={path} act={act} onSwap={onSwap} />
       </div>
@@ -219,8 +219,18 @@ function contentBody({
   endsAt?: string;
   onSetEndDate?: () => void;
 }) {
+  const node = nodeAt(template.tree, path) as { action?: string; submission?: string } | null;
   return (
     <>
+      {block.type === 'button' && ['submit', 'skip'].includes(node?.action ?? '') && <label className="block p-3">
+        {__('Signup', 'wconvert')}
+        <select value={node?.submission ?? ''} onChange={e => onChange({ ...template, tree: withValue(template.tree, path, 'submission', e.target.value) })}>
+          <option value="">{__('Choose a signup', 'wconvert')}</option>
+          {template.tree.submissions.filter(s => node?.action !== 'skip' || !s.required).map((s, index) => <option key={s.id} value={s.id}>
+            {s.required ? __('Primary signup or request', 'wconvert') : __('Optional signup', 'wconvert')}{index > 1 ? ` ${index + 1}` : ''}
+          </option>)}
+        </select>
+      </label>}
       {slot === null ? (
         <>
           <div className="wconvert-layout-params">

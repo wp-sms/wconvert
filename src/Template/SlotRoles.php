@@ -96,6 +96,13 @@ final class SlotRoles
      */
     public static function copyFrom($tree, TemplateVocabulary $vocabulary): array
     {
+        if (is_array($tree) && count($tree['steps'] ?? []) > 2) {
+            $scoped = [];
+            foreach ($tree['steps'] as $index => $screen) {
+                $scoped[self::scope($tree, $index)] = self::copyFrom(['steps' => [$screen], 'submissions' => []], $vocabulary);
+            }
+            return ['screens' => $scoped];
+        }
         /** @var array<string, list<mixed>> $found */
         $found = [];
 
@@ -157,10 +164,19 @@ final class SlotRoles
      *
      * @param mixed $tree
      * @param array<string, mixed> $copy Role => the words, as a Playbook carries them.
-     * @return array{v: int, steps: list<array<string, mixed>>}
+     * @return array{v: int, steps: list<array<string, mixed>>, submissions: list<array<string, mixed>>}
      */
     public static function bind($tree, array $copy, TemplateVocabulary $vocabulary): array
     {
+        if (is_array($tree) && (isset($copy['screens']) || count($tree['steps'] ?? []) > 2)) {
+            $steps = [];
+            foreach ($tree['steps'] as $index => $screen) {
+                $scope = self::scope($tree, $index);
+                $words = $copy['screens'][$scope] ?? (!isset($copy['screens']) && ($index === CaptureJourney::submitScreen($tree, $tree['submissions'][0]['id'] ?? '') || $screen['kind'] === 'acknowledgement') ? $copy : []);
+                $steps[] = self::bind(['steps' => [$screen], 'submissions' => []], is_array($words) ? $words : [], $vocabulary)['steps'][0];
+            }
+            return TemplateTree::stamped(['steps' => $steps, 'submissions' => $tree['submissions'] ?? []]);
+        }
         /** @var array<string, int> $bound How many nodes have already taken each Role. */
         $bound = [];
 
@@ -185,6 +201,44 @@ final class SlotRoles
                 return $node;
             }
         );
+    }
+
+    /** @param array<string, mixed> $tree
+     * @param array<string, mixed> $copy
+     */
+    public static function acceptsCopy(array $tree, array $copy, TemplateVocabulary $vocabulary): bool
+    {
+        if (!isset($copy['screens'])) { return array_diff(array_keys($copy), self::declaredIn($tree, $vocabulary)) === []; }
+        if (array_keys($copy) !== ['screens'] || !is_array($copy['screens'])) { return false; }
+        $scopes = [];
+        foreach ($tree['steps'] as $index => $screen) {
+            $scopes[self::scope($tree, $index)] = self::declaredIn(['steps' => [$screen]], $vocabulary);
+        }
+        foreach ($copy['screens'] as $scope => $words) {
+            if (!isset($scopes[$scope]) || !is_array($words) || array_diff(array_keys($words), $scopes[$scope]) !== []) { return false; }
+        }
+        return true;
+    }
+
+    /** Copy scopes follow a submission's channel; other screens retain their stable identity.
+     * @param array<string, mixed> $tree
+     */
+    private static function scope(array $tree, int $index): string
+    {
+        $screen = $tree['steps'][$index];
+        if ($screen['kind'] === 'acknowledgement') { return 'acknowledgement'; }
+        foreach ($tree['submissions'] ?? [] as $submission) {
+            if (CaptureJourney::submitScreen($tree, $submission['id']) !== $index) { continue; }
+            $fields = [];
+            foreach ($tree['steps'] as $step) {
+                foreach (CaptureJourney::nodes($step['content']) as $node) {
+                    if (in_array($node['id'] ?? null, $submission['fields'], true)) { $fields[] = $node['name']; }
+                }
+            }
+            sort($fields);
+            return 'submission:' . implode('-', $fields);
+        }
+        return 'screen:' . $screen['id'];
     }
 
     /**
@@ -338,7 +392,7 @@ final class SlotRoles
      *
      * @param mixed $tree
      * @param callable(array<string, mixed>, array<string, list<string>>): array<string, mixed> $visit
-     * @return array{v: int, steps: list<array<string, mixed>>}
+     * @return array{v: int, steps: list<array<string, mixed>>, submissions: list<array<string, mixed>>}
      */
     private static function walk($tree, TemplateVocabulary $vocabulary, callable $visit): array
     {
@@ -352,7 +406,7 @@ final class SlotRoles
             }
         }
 
-        return TemplateTree::stamped(['steps' => $visited]);
+        return TemplateTree::stamped(['steps' => $visited, 'submissions' => $tree['submissions'] ?? []]);
     }
 
     /**
@@ -362,6 +416,10 @@ final class SlotRoles
      */
     private static function visitNode(array $node, TemplateVocabulary $vocabulary, callable $visit): array
     {
+        if (is_array($node['content'] ?? null)) {
+            $node['content'] = self::visitNode($node['content'], $vocabulary, $visit);
+            return $node;
+        }
         $node = $visit($node, self::bindingsOf($node, $vocabulary));
 
         foreach (TemplateTree::CHILD_KEYS as $key) {

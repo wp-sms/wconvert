@@ -1,3 +1,4 @@
+import { treeFixture } from '../../../tests/js/support/journey';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import { start } from '@loader/shell';
 import { createLoader } from '@loader/engine';
@@ -8,10 +9,10 @@ import { proPresenter } from '../../modules/display-types/loader/present';
 const campaign = {
   id: '01JQ0000000000000000000001', display_type: 'popup',
   triggers: [{ type: 'page_load' }], teaser: { label: 'Get my discount' },
-  template: { tokens: {}, tree: { steps: [
+  template: { tokens: {}, tree: treeFixture({ steps: [
     { type: 'stack', children: [{ type: 'heading', text: 'Your discount' }, { type: 'field', name: 'email' }, { type: 'button', label: 'Join', action: 'submit' }] },
     { type: 'stack', children: [{ type: 'heading', text: 'Thank you' }] },
-  ] } },
+  ] }) },
 };
 beforeEach(() => { vi.stubGlobal('matchMedia', vi.fn(() => ({ matches: false, addEventListener: vi.fn(), removeEventListener: vi.fn() }))); });
 let stop: (() => void) | undefined;
@@ -125,14 +126,14 @@ it('keeps a slow capture alive while minimized and offers success without expand
   const ui = shadowAccess();
   const tag = document.createElement('script'); tag.id = 'wconvert-payload'; tag.setAttribute('data-capture', 'https://example.test/wp-json/wconvert/v1/capture'); document.body.append(tag);
   let resolve!: (response: Response) => void;
-  const fetch = vi.fn(() => new Promise<Response>(done => { resolve = done; })); vi.stubGlobal('fetch', fetch);
+  const fetch = vi.fn(() => new Promise<Response>(done => { resolve = done; })).mockResolvedValueOnce({ ok: true, json: async () => ({ grant: 'grant' }) } as Response); vi.stubGlobal('fetch', fetch);
   const options = optionsFor([campaign]); stop = start(options);
   const form = ui.roots.flatMap(root => [...root.querySelectorAll('form')])[0];
   form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
   document.querySelector('dialog')!.close();
   ui.button('Get my discount').click();
   form.dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
-  expect(fetch).toHaveBeenCalledOnce();
+  await vi.waitFor(() => expect(fetch).toHaveBeenCalledTimes(2));
   document.querySelector('dialog')!.close();
   resolve({ ok: true, status: 201, json: async () => ({ id: '01JQ0000000000000000000009' }) } as Response);
   await vi.waitFor(() => expect(ui.button('Submission received — View details')).toBeDefined());
@@ -140,7 +141,7 @@ it('keeps a slow capture alive while minimized and offers success without expand
   ui.button('Submission received — View details').click();
   expect(document.querySelector('dialog')!.open).toBe(true);
   expect(ui.roots.some(root => root.textContent?.includes('Thank you'))).toBe(true);
-  expect(options.beacon.report.mock.calls.map(call => call[1])).toEqual(['impression', 'dismiss', 'conversion']);
+  expect(options.beacon.report.mock.calls.map(call => call[1])).toEqual(['impression', 'dismiss']);
 });
 
 it('decodes compact settings and preserves the exact selected arm', () => {
@@ -242,7 +243,7 @@ it('closing successful content ends presentation even across responsive changes'
   const changes: (() => void)[] = [];
   vi.stubGlobal('matchMedia', () => ({ matches: false, addEventListener: (_: string, handler: () => void) => changes.push(handler), removeEventListener: vi.fn() }));
   const tag = document.createElement('script'); tag.id = 'wconvert-payload'; tag.setAttribute('data-capture', '/capture'); document.body.append(tag);
-  vi.stubGlobal('fetch', vi.fn(async () => ({ ok: true, json: async () => ({ id: 'lead' }) })));
+  vi.stubGlobal('fetch', vi.fn(async () => ({ ok: true, json: async () => ({ id: 'lead', grant: 'grant' }) })));
   stop = start(optionsFor([campaign]));
   ui.roots.flatMap(root => [...root.querySelectorAll('form')])[0].dispatchEvent(new Event('submit', { bubbles: true, cancelable: true }));
   await vi.waitFor(() => expect(ui.roots.some(root => root.textContent?.includes('Thank you'))).toBe(true));

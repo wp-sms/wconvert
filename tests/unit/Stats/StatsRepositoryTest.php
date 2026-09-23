@@ -85,8 +85,8 @@ final class StatsRepositoryTest extends TestCase
     {
         $this->stats->increment(self::OPTIN, StatKind::Dismiss, '2026-03-04');
 
-        $this->assertStringContainsString('VALUES (%s, %s, %s, 1)', $this->db->upserts[0]['sql']);
-        $this->assertSame([self::OPTIN, '2026-03-04', 'dismiss'], $this->db->upserts[0]['params']);
+        $this->assertStringContainsString('VALUES (%s, %s, %s, %s, 1)', $this->db->upserts[0]['sql']);
+        $this->assertSame([self::OPTIN, '2026-03-04', 'dismiss', ''], $this->db->upserts[0]['params']);
     }
 
     /**
@@ -113,7 +113,7 @@ final class StatsRepositoryTest extends TestCase
         }
 
         $this->assertSame(
-            ['impression', 'conversion', 'dismiss', 'lead_magnet_delivered'],
+            ['impression', 'screen_shown', 'screen_advanced', 'screen_skipped', 'screen_dismissed', 'conversion', 'dismiss', 'lead_magnet_delivered'],
             array_map(static fn (array $upsert): string => (string) $upsert['params'][2], $this->db->upserts)
         );
     }
@@ -175,7 +175,7 @@ final class StatsRepositoryTest extends TestCase
     {
         $this->stats->inRange(StatRange::lastDays(30, '2026-08-25'));
 
-        $this->assertStringContainsString('WHERE stat_date BETWEEN %s AND %s', $this->db->reads[0]['sql']);
+        $this->assertStringContainsString("WHERE scope = '' AND stat_date BETWEEN %s AND %s", $this->db->reads[0]['sql']);
         $this->assertSame(['2026-07-27', '2026-08-25'], $this->db->reads[0]['params']);
     }
 

@@ -8,24 +8,19 @@ const children = (node: TemplateNode): readonly TemplateNode[] => {
   const branches = node as { children?: readonly TemplateNode[]; start?: readonly TemplateNode[]; end?: readonly TemplateNode[] };
   return [...(branches.children ?? []), ...(branches.start ?? []), ...(branches.end ?? [])];
 };
-// The renderer and capture boundary derive the form from its submit button.
-const submits = (node: TemplateNode): boolean => node.type === 'button'
-  ? !('action' in node) || node.action !== 'link'
-  : children(node).some(submits);
-
 /** Only fields on the actual submitting step can satisfy a destination. */
 export function capturedFields(template: Template | undefined): CapturedField[] {
-  const form = template?.tree.steps.find(submits);
-  if (!form) return [];
+  if (!template) return [];
+  const refs = new Set(template.tree.submissions[0]?.fields ?? []);
   const fields: CapturedField[] = [];
   const walk = (node: TemplateNode) => {
     if ('hidden' in node && node.hidden === true) return;
-    if (node.type === 'field' && 'name' in node && typeof node.name === 'string') {
+    if ('id' in node && refs.has(String(node.id)) && node.type === 'field' && 'name' in node && typeof node.name === 'string') {
       fields.push({ name: node.name, required: 'required' in node && node.required === true });
     }
     children(node).forEach(walk);
   };
-  walk(form);
+  template.tree.steps.forEach((step) => walk(step.content));
   return fields;
 }
 

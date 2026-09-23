@@ -1,3 +1,4 @@
+import { treeFixture } from './support/journey';
 import { useState } from 'react';
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -53,7 +54,7 @@ describe('padding and gradients preserve authored values until an explicit edit'
   });
 
   it('groups picture and heading settings and omits unused effects without changing the draft', () => {
-    const template: Template = { tokens: {}, tree: { steps: [{ type: 'media', tokens: { 'bg-image': 'url(photo.jpg)' }, children: [{ type: 'heading', text: 'Hello' }] }] } };
+    const template: Template = { tokens: {}, tree: treeFixture({ steps: [{ type: 'media', tokens: { 'bg-image': 'url(photo.jpg)' }, children: [{ type: 'heading', text: 'Hello' }] }] }) };
     const changed = vi.fn();
     render(<ScopeStyle template={template} labels={labels} path={[0]} width="tokens" copied={null} onCopy={vi.fn()}
       openToken={null} onOpenToken={vi.fn()} onSelect={vi.fn()} onChange={changed} />);
@@ -167,7 +168,7 @@ it.each([
   [{}, { pad: '1rem' }, '1rem', false],
   [{ pad: '2rem' }, {}, '1rem', true],
 ])('marks mobile padding only when its effective value differs (%j, %j, %s)', (local, inherited, mobile, different) => {
-  const template: Template = { tokens: inherited, tree: { steps: [{ type: 'panel', tokens: local, narrow: { pad: mobile }, children: [] }] } };
+  const template: Template = { tokens: inherited, tree: treeFixture({ steps: [{ type: 'panel', tokens: local, narrow: { pad: mobile }, children: [] }] }) };
   render(<ScopeStyle template={template} labels={labels} path={[0]} width="tokens" copied={null} onCopy={vi.fn()}
     openToken={null} onOpenToken={vi.fn()} onSelect={vi.fn()} onChange={vi.fn()} />);
   expect(screen.queryByText('Different on mobile') !== null).toBe(different);
@@ -175,7 +176,7 @@ it.each([
 });
 
 it('lists local mobile overrides and resets only the selected element’s narrow bag', async () => {
-  const original: Template = { tokens: {}, tree: { steps: [{ type: 'stack', children: [{ type: 'panel', tokens: { pad: '2rem' }, narrow: { pad: '1rem' }, children: [] }] }] } };
+  const original: Template = { tokens: {}, tree: treeFixture({ steps: [{ type: 'stack', children: [{ type: 'panel', tokens: { pad: '2rem' }, narrow: { pad: '1rem' }, children: [] }] }] }) };
   const changed = vi.fn();
   function Editor() {
     const [template, setTemplate] = useState(original);

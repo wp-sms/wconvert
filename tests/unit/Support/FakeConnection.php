@@ -27,6 +27,12 @@ final class FakeConnection implements Connection
     /** @var array<string, array<string, string|null>> */
     public array $rows = [];
 
+    public function transaction(callable $work): mixed
+    {
+        $before = $this->rows;
+        try { return $work(); } catch (\Throwable $failure) { $this->rows = $before; throw $failure; }
+    }
+
     /** @var list<string> Every SQL string this connection was asked to run. */
     public array $statements = [];
 

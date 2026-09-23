@@ -25,56 +25,63 @@
   "tree": {
     "steps": [
       {
-        "type": "stack",
-        "children": [
-          {
-            "type": "eyebrow",
-            "id": "n1",
-            "role": "eyebrow",
-            "text": "Ends soon",
-            "tokens": {
-              "text-size": "1.0834rem"
+        "id": "s1",
+        "name": "Offer",
+        "kind": "content",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "eyebrow",
+              "id": "n1",
+              "role": "eyebrow",
+              "text": "Ends soon",
+              "tokens": {
+                "text-size": "1.0834rem"
+              }
+            },
+            {
+              "type": "heading",
+              "id": "n2",
+              "role": "headline",
+              "text": "The final edit"
+            },
+            {
+              "type": "countdown",
+              "id": "n3"
+            },
+            {
+              "type": "divider",
+              "id": "n4"
+            },
+            {
+              "type": "text",
+              "id": "n5",
+              "role": "body",
+              "text": "Selected styles, reduced while the sale is open."
+            },
+            {
+              "type": "button",
+              "id": "n6",
+              "role": "cta_label",
+              "label": "Shop the sale",
+              "action": "link"
+            },
+            {
+              "type": "text",
+              "id": "n7",
+              "role": "fine_print",
+              "text": "Selected items only. Prices as marked.",
+              "size": "s",
+              "tokens": {
+                "text-size": "1.167rem"
+              }
             }
-          },
-          {
-            "type": "heading",
-            "id": "n2",
-            "role": "headline",
-            "text": "The final edit"
-          },
-          {
-            "type": "countdown",
-            "id": "n3"
-          },
-          {
-            "type": "divider",
-            "id": "n4"
-          },
-          {
-            "type": "text",
-            "id": "n5",
-            "role": "body",
-            "text": "Selected styles, reduced while the sale is open."
-          },
-          {
-            "type": "button",
-            "id": "n6",
-            "role": "cta_label",
-            "label": "Shop the sale",
-            "action": "link"
-          },
-          {
-            "type": "text",
-            "id": "n7",
-            "role": "fine_print",
-            "text": "Selected items only. Prices as marked.",
-            "size": "s",
-            "tokens": {
-              "text-size": "1.167rem"
-            }
-          }
-        ]
+          ]
+        }
       }
-    ]
+    ],
+    "v": 2,
+    "submissions": []
   }
 }

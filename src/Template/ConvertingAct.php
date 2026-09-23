@@ -41,21 +41,6 @@ enum ConvertingAct: string
     case Click = 'click';
 
     /**
-     * How many steps a Template metered by this act has.
-     *
-     * A submit-metered template has **two** — the post-submit success state is
-     * a terminal step. A click-metered one has **one**: the click navigates the
-     * visitor away, so there is no success state left to render and an
-     * interstitial is worse than the navigation it delays. It is a property of
-     * the metric rather than of WooCommerce, so it holds for both click Goals
-     * (ADR 0010, corrected by ADR 0025).
-     */
-    public function steps(): int
-    {
-        return $this === self::Submit ? 2 : 1;
-    }
-
-    /**
      * The `action` a `button` carries to produce this act.
      *
      * **The one place `link` is spelled beside `submit`.** They are the node
@@ -76,9 +61,7 @@ enum ConvertingAct: string
      * Every act a tree offers, once each, in this enum's order.
      *
      * A `button` node is the only thing that converts, and its `action` param
-     * is which of the two it is — `link` navigates, anything else submits,
-     * which is the same default the renderer takes so the two cannot disagree
-     * about an omitted param.
+     * is which of the two it is — `link` navigates and `submit` captures. Navigation buttons are not acts.
      *
      * The walk covers every step and every pane, through
      * {@see TemplateTree::childrenOf()}, because a `split`'s far pane is
@@ -109,7 +92,7 @@ enum ConvertingAct: string
             return;
         }
 
-        if (($node['type'] ?? null) === 'button') {
+        if (($node['type'] ?? null) === 'button' && in_array($node['action'] ?? null, ['submit', 'link'], true)) {
             $act = ($node['action'] ?? null) === self::Click->action() ? self::Click : self::Submit;
 
             if (!in_array($act, $found, true)) {

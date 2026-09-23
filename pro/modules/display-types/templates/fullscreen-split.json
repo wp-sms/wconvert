@@ -17,101 +17,129 @@
   "tree": {
     "steps": [
       {
-        "type": "split",
-        "basis": "20rem",
-        "start": [{
-          "type": "panel",
-          "tokens": {
-            "bg": "#153a32",
-            "fg": "#ffffff",
-            "muted": "#d9e6df",
-            "pad": "2rem",
-            "radius": "0.5rem"
-          },
+        "id": "s1",
+        "name": "Details",
+        "kind": "input",
+        "content": {
+          "type": "split",
+          "basis": "20rem",
+          "start": [
+            {
+              "type": "panel",
+              "tokens": {
+                "bg": "#153a32",
+                "fg": "#ffffff",
+                "muted": "#d9e6df",
+                "pad": "2rem",
+                "radius": "0.5rem"
+              },
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "role": "eyebrow",
+                  "text": "A practical field guide",
+                  "id": "n1"
+                },
+                {
+                  "type": "heading",
+                  "role": "headline",
+                  "text": "Make room\nfor better work.",
+                  "id": "n2"
+                },
+                {
+                  "type": "text",
+                  "role": "body",
+                  "text": "Seven practical ways to organise a calmer working week.",
+                  "id": "n3"
+                }
+              ]
+            }
+          ],
+          "end": [
+            {
+              "type": "panel",
+              "tokens": {
+                "bg": "#ffffff",
+                "pad": "2rem",
+                "radius": "0.5rem"
+              },
+              "children": [
+                {
+                  "type": "field",
+                  "name": "email",
+                  "required": true,
+                  "label": "Email address",
+                  "placeholder": "you@example.com",
+                  "id": "n4"
+                },
+                {
+                  "type": "button",
+                  "role": "cta_label",
+                  "label": "Request the guide",
+                  "action": "submit",
+                  "id": "n5",
+                  "submission": "primary"
+                },
+                {
+                  "type": "consent",
+                  "role": "consent_text",
+                  "text": "I agree to receive these emails.",
+                  "hidden": true,
+                  "id": "n6"
+                },
+                {
+                  "type": "text",
+                  "role": "fine_print",
+                  "text": "We use your details for this request. %s",
+                  "size": "s",
+                  "link": {
+                    "label": "Privacy Policy"
+                  },
+                  "id": "n7"
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "s2",
+        "name": "Received",
+        "kind": "acknowledgement",
+        "content": {
+          "type": "stack",
           "children": [
             {
-              "type": "eyebrow",
-              "role": "eyebrow",
-              "text": "A practical field guide",
-              "id": "n1"
+              "type": "icon",
+              "name": "check",
+              "id": "n8"
             },
             {
               "type": "heading",
-              "role": "headline",
-              "text": "Make room\nfor better work.",
-              "id": "n2"
+              "role": "success_headline",
+              "text": "Request received",
+              "id": "n9"
             },
             {
               "type": "text",
-              "role": "body",
-              "text": "Seven practical ways to organise a calmer working week.",
-              "id": "n3"
+              "role": "success_body",
+              "text": "Thank you for your request.",
+              "id": "n10"
             }
           ]
-        }],
-        "end": [{
-          "type": "panel",
-          "tokens": {
-            "bg": "#ffffff",
-            "pad": "2rem",
-            "radius": "0.5rem"
-          },
-          "children": [
-            {
-              "type": "field",
-              "name": "email",
-              "required": true,
-              "label": "Email address",
-              "placeholder": "you@example.com",
-              "id": "n4"
-            },
-            {
-              "type": "button",
-              "role": "cta_label",
-              "label": "Request the guide",
-              "action": "submit",
-              "id": "n5"
-            },
-            {
-              "type": "consent",
-              "role": "consent_text",
-              "text": "I agree to receive these emails.",
-              "hidden": true,
-              "id": "n6"
-            },
-            {
-              "type": "text",
-              "role": "fine_print",
-              "text": "We use your details for this request. %s",
-              "size": "s",
-              "link": {
-                "label": "Privacy Policy"
-              },
-              "id": "n7"
-            }
-          ]
-        }]
-      },
+        }
+      }
+    ],
+    "v": 2,
+    "submissions": [
       {
-        "type": "stack",
-        "children": [
-          {
-            "type": "icon",
-            "name": "check",
-            "id": "n8"
-          },
-          {
-            "type": "heading",
-            "role": "success_headline",
-            "text": "Request received",
-            "id": "n9"
-          },
-          {
-            "type": "text",
-            "role": "success_body",
-            "text": "Thank you for your request.",
-            "id": "n10"
-          }
+        "id": "primary",
+        "required": true,
+        "fields": [
+          "n4"
+        ],
+        "consents": [
+          "n6"
         ]
       }
     ]

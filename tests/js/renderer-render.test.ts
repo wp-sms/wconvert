@@ -1,3 +1,4 @@
+import { treeFixture } from './support/journey';
 import { describe, expect, it } from 'vitest';
 import { render } from '@renderer/render';
 import { SHADOW_CSS } from '@renderer/css';
@@ -13,7 +14,7 @@ import type { TemplateTree } from '@renderer/types';
 
 const TOKENS = { bg: '#fff', fg: '#111' };
 
-const oneStep = (root: TemplateTree['steps'][number]): TemplateTree => ({ steps: [root] });
+const oneStep = (root: TemplateTree['steps'][number]['content']): TemplateTree => (treeFixture({ steps: [root] }));
 
 describe('render', () => {
   it('writes a heading with textContent', () => {
@@ -99,7 +100,7 @@ describe('an unrecognised node', () => {
         { type: 'carousel', slides: 4 },
         { type: 'heading', text: 'After' },
       ],
-    } as TemplateTree['steps'][number]);
+    } as TemplateTree['steps'][number]['content']);
 
     const element = render(tree, TOKENS);
 
@@ -107,7 +108,7 @@ describe('an unrecognised node', () => {
   });
 
   it('does not take the step down when it IS the step', () => {
-    const tree = { steps: [{ type: 'carousel' }] } as TemplateTree;
+    const tree = treeFixture({ steps: [{ type: 'carousel' }] }) as TemplateTree;
 
     expect(() => render(tree, TOKENS)).not.toThrow();
     expect(render(tree, TOKENS).children).toHaveLength(0);
@@ -156,7 +157,7 @@ describe('a text node carrying a link', () => {
           link: { label: 'Privacy Policy', href },
         },
       ],
-    } as TemplateTree['steps'][number]);
+    } as TemplateTree['steps'][number]['content']);
 
   it('constructs the anchor itself and never parses markup', () => {
     const element = render(fine('https://example.test/privacy'), TOKENS);
@@ -179,7 +180,7 @@ describe('a text node carrying a link', () => {
     const tree = oneStep({
       type: 'stack',
       children: [{ type: 'text', text: '<img src=x onerror=alert(1)>' }],
-    } as TemplateTree['steps'][number]);
+    } as TemplateTree['steps'][number]['content']);
 
     const element = render(tree, TOKENS);
 
@@ -189,7 +190,7 @@ describe('a text node carrying a link', () => {
 });
 
 describe('the leaf vocabulary', () => {
-  const leaf = (node: object) => render(oneStep({ type: 'stack', children: [node] } as TemplateTree['steps'][number]), TOKENS);
+  const leaf = (node: object) => render(oneStep({ type: 'stack', children: [node] } as TemplateTree['steps'][number]['content']), TOKENS);
 
   it('renders a field as a labelled control named for what it captures', () => {
     const element = leaf({ type: 'field', name: 'email', label: 'Email', placeholder: 'you@example.com', required: true });
@@ -271,7 +272,7 @@ describe('the layout vocabulary', () => {
       basis: '16rem',
       start: [{ type: 'heading', text: 'Request a callback' }],
       end: [{ type: 'split', start: [], end: [] }],
-    } as TemplateTree['steps'][number]);
+    } as TemplateTree['steps'][number]['content']);
     const [outer, nested] = [...render(tree, TOKENS).querySelectorAll<HTMLElement>('.wc-split')];
 
     for (const pane of outer.children) {
@@ -291,7 +292,7 @@ describe('the layout vocabulary', () => {
       ratio: 0.4,
       start: [{ type: 'image', src: '/x.png', alt: '' }],
       end: [{ type: 'heading', text: 'Join' }],
-    } as TemplateTree['steps'][number]);
+    } as TemplateTree['steps'][number]['content']);
 
     const split = render(tree, TOKENS).firstElementChild as HTMLElement;
 
@@ -326,7 +327,7 @@ describe('the layout vocabulary', () => {
         { type: 'grid', columns: 3, children: [{ type: 'heading', text: 'One' }] },
         { type: 'heading', text: 'Two' },
       ],
-    } as TemplateTree['steps'][number]);
+    } as TemplateTree['steps'][number]['content']);
 
     const stack = render(tree, TOKENS).firstElementChild as HTMLElement;
     const grid = stack.querySelector('.wc-grid') as HTMLElement;
@@ -351,7 +352,7 @@ describe('the layout vocabulary', () => {
         { type: 'masonry', children: [{ type: 'heading', text: 'Lost' }] },
         { type: 'heading', text: 'Kept' },
       ],
-    } as TemplateTree['steps'][number]);
+    } as TemplateTree['steps'][number]['content']);
 
     const stack = render(tree, TOKENS).firstElementChild as HTMLElement;
 
@@ -365,12 +366,12 @@ describe('the layout vocabulary', () => {
  * a terminal step; a click-metered one has ONE (ADR 0010, ADR 0025).
  */
 describe('steps', () => {
-  const tree: TemplateTree = {
+  const tree: TemplateTree = treeFixture({
     steps: [
       { type: 'stack', children: [{ type: 'heading', text: 'Join the list' }] },
       { type: 'stack', children: [{ type: 'heading', role: 'success_headline', text: 'Check your inbox' }] },
-    ] as TemplateTree['steps'],
-  };
+    ] as TemplateTree['steps'][number]['content'][],
+  });
 
   it('renders the first step by default', () => {
     expect(render(tree, TOKENS).textContent).toBe('Join the list');
@@ -396,7 +397,7 @@ describe('slot roles', () => {
     const tree = oneStep({
       type: 'stack',
       children: [{ type: 'text', role: 'fine_print', text: 'No spam.' }],
-    } as TemplateTree['steps'][number]);
+    } as TemplateTree['steps'][number]['content']);
 
     expect(render(tree, TOKENS).querySelector('[data-role=fine_print]')?.textContent).toBe('No spam.');
   });
@@ -413,9 +414,9 @@ describe('slot roles', () => {
    * (ADR 0040).
    */
   it('stamps a field with what it captures, since it has no Role of its own', () => {
-    const tree = {
+    const tree = treeFixture({
       steps: [{ type: 'stack', children: [{ type: 'field', name: 'email', label: 'Email' }] }],
-    } as TemplateTree;
+    }) as TemplateTree;
     const field = render(tree, TOKENS).querySelector('[data-captures=email]');
 
     expect(field).not.toBeNull();
@@ -432,7 +433,7 @@ describe('a step holding a submit button', () => {
   const submitting = oneStep({
     type: 'stack',
     children: [{ type: 'field', name: 'email' }, { type: 'button', label: 'Go', action: 'submit' }],
-  } as TemplateTree['steps'][number]);
+  } as TemplateTree['steps'][number]['content']);
 
   it('renders its root as a form', () => {
     expect(render(submitting, TOKENS).tagName).toBe('FORM');
@@ -442,7 +443,7 @@ describe('a step holding a submit button', () => {
     const clicking = oneStep({
       type: 'stack',
       children: [{ type: 'button', label: 'Back to your cart', action: 'link', href: '/cart' }],
-    } as TemplateTree['steps'][number]);
+    } as TemplateTree['steps'][number]['content']);
 
     expect(render(clicking, TOKENS).tagName).toBe('DIV');
   });

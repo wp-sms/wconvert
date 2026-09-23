@@ -125,7 +125,7 @@ final class BulkRePush
             return Ulid::floorAt(0);
         }
 
-        return Ulid::floorAt((int) strtotime(get_gmt_from_date($since) . ' UTC') * 1000);
+        return Ulid::floorAt((int) max(0, strtotime(get_gmt_from_date($since) . ' UTC') - \WConvert\Lead\CaptureGrant::LIFETIME) * 1000);
     }
 
     /**
@@ -153,14 +153,17 @@ final class BulkRePush
                 // The stagger, and the whole of rate limiting in v1: the Nth
                 // job of a replay waits `N / throughput` minutes. Immediate
                 // dispatch stays immediate — only this is slowed (ADR 0008).
-                $this->queue->schedule(
-                    $now + intdiv($queued, $throughput) * self::MINUTE,
-                    PushJob::HOOK,
-                    (new PushJob($lead->id, $destinationId))->toArgs()
-                );
-
+                foreach ($lead->capture['submissions'] ?? [] as $submissionId => $submission) {
+                    if (!in_array($destinationId, $submission['destination_ids'] ?? [], true)) { continue; }
+                    if ($queued >= self::MAX_JOBS) { return $queued; }
+                    $this->queue->schedule(
+                        $now + intdiv($queued, $throughput) * self::MINUTE,
+                        PushJob::HOOK,
+                        (new PushJob($lead->id, $destinationId, 1, $submissionId))->toArgs()
+                    );
+                    $queued++;
+                }
                 $cursor = $lead->id;
-                $queued++;
             }
 
             if (count($page) < self::BATCH) {

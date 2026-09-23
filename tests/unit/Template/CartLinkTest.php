@@ -33,10 +33,10 @@ final class CartLinkTest extends TestCase
     {
         $button = array_merge(['type' => 'button', 'role' => 'cta_label', 'label' => 'Back to my cart', 'action' => 'link'], $overrides);
 
-        return ['template' => ['tree' => ['steps' => [['type' => 'stack', 'children' => [
+        return ['template' => ['tree' => \WConvert\Tests\Unit\Support\JourneyFixture::tree(['steps' => [['type' => 'stack', 'children' => [
             ['type' => 'heading', 'role' => 'headline', 'text' => 'Leaving something behind?'],
             $button,
-        ]]]], 'tokens' => []]];
+        ]]]]), 'tokens' => []]];
     }
 
     /**
@@ -46,7 +46,7 @@ final class CartLinkTest extends TestCase
     private static function cta(array $payload): array
     {
         /** @var array<string, mixed> $node */
-        $node = $payload['template']['tree']['steps'][0]['children'][1];
+        $node = $payload['template']['tree']['steps'][0]['content']['children'][1];
 
         return $node;
     }
@@ -116,7 +116,7 @@ final class CartLinkTest extends TestCase
     {
         $payload = self::payload();
 
-        unset($payload['template']['tree']['steps'][0]['children'][1]['action']);
+        unset($payload['template']['tree']['steps'][0]['content']['children'][1]['action']);
 
         $this->assertArrayNotHasKey('href', self::cta(CartLink::into($payload, self::CART)));
     }
@@ -129,15 +129,15 @@ final class CartLinkTest extends TestCase
      */
     public function testItReachesACtaInTheFarPaneOfASplit(): void
     {
-        $payload = ['template' => ['tree' => ['steps' => [[
+        $payload = ['template' => ['tree' => \WConvert\Tests\Unit\Support\JourneyFixture::tree(['steps' => [[
             'type' => 'split',
             'start' => [['type' => 'image', 'src' => 'x.png']],
             'end' => [['type' => 'button', 'action' => 'link', 'label' => 'Back']],
-        ]]], 'tokens' => []]];
+        ]]]), 'tokens' => []]];
 
         $resolved = CartLink::into($payload, self::CART);
 
-        $this->assertSame(self::CART, $resolved['template']['tree']['steps'][0]['end'][0]['href']);
+        $this->assertSame(self::CART, $resolved['template']['tree']['steps'][0]['content']['end'][0]['href']);
     }
 
     /**

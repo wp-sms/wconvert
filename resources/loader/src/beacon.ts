@@ -20,16 +20,17 @@ import type { OptinControls } from './types';
  */
 
 /** What the endpoint accepts. `lead_magnet_delivered` is PHP's and never travels here. */
-export type BeaconKind = 'impression' | 'conversion' | 'dismiss';
+export type BeaconKind = 'impression' | 'screen_shown' | 'screen_advanced' | 'screen_skipped' | 'screen_dismissed' | 'conversion' | 'dismiss';
 
 interface BeaconEvent {
   readonly optin_id: string;
   readonly kind: BeaconKind;
+  readonly scope?: string;
 }
 
 export interface Beacon {
   /** Report an act. Sends now for an Impression, queues otherwise. */
-  report(optinId: string, kind: BeaconKind): void;
+  report(optinId: string, kind: BeaconKind, scope?: string): void;
   /** Send whatever is waiting. Called on `pagehide`; safe to call with nothing queued. */
   flush(): void;
   /**
@@ -127,12 +128,12 @@ export function createBeacon(endpoint: string | null): Beacon {
     send(events);
   }
 
-  function report(optinId: string, kind: BeaconKind): void {
+  function report(optinId: string, kind: BeaconKind, scope?: string): void {
     if (stopped) {
       return;
     }
 
-    queued.push({ optin_id: optinId, kind });
+    queued.push({ optin_id: optinId, kind, ...(scope ? { scope } : {}) });
 
     if (kind === 'impression') {
       flush();
@@ -167,7 +168,7 @@ export function createBeacon(endpoint: string | null): Beacon {
  * why a dismissed popup stays dismissed — and the counters are per-site and
  * anonymous.
  */
-export function reporting(beacon: Beacon, optinId: string, controls: OptinControls): OptinControls {
+export function reporting(beacon: Beacon, optinId: string, controls: OptinControls, serverCapture = false): OptinControls {
   return {
     impression() {
       controls.impression();
@@ -179,7 +180,7 @@ export function reporting(beacon: Beacon, optinId: string, controls: OptinContro
     },
     convert() {
       controls.convert();
-      beacon.report(optinId, 'conversion');
+      if (!serverCapture) beacon.report(optinId, 'conversion');
     },
   };
 }

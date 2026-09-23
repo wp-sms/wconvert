@@ -23,86 +23,93 @@
   "tree": {
     "steps": [
       {
-        "type": "stack",
-        "children": [
-          {
-            "type": "heading",
-            "id": "n1",
-            "role": "headline",
-            "text": "Why people order from us"
-          },
-          {
-            "type": "grid",
-            "children": [
-              {
-                "type": "row",
-                "children": [
-                  {
-                    "type": "icon",
-                    "id": "n2",
-                    "name": "truck"
-                  },
-                  {
-                    "type": "text",
-                    "id": "n3",
-                    "role": "body",
-                    "text": "Free delivery over £40"
-                  }
-                ]
-              },
-              {
-                "type": "row",
-                "children": [
-                  {
-                    "type": "icon",
-                    "id": "n4",
-                    "name": "clock"
-                  },
-                  {
-                    "type": "text",
-                    "id": "n5",
-                    "role": "body",
-                    "text": "Dispatch details upfront"
-                  }
-                ]
-              },
-              {
-                "type": "row",
-                "children": [
-                  {
-                    "type": "icon",
-                    "id": "n6",
-                    "name": "check"
-                  },
-                  {
-                    "type": "text",
-                    "id": "n7",
-                    "role": "body",
-                    "text": "Returns for 30 days"
-                  }
-                ]
+        "id": "s1",
+        "name": "Offer",
+        "kind": "content",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "heading",
+              "id": "n1",
+              "role": "headline",
+              "text": "Why people order from us"
+            },
+            {
+              "type": "grid",
+              "children": [
+                {
+                  "type": "row",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "n2",
+                      "name": "truck"
+                    },
+                    {
+                      "type": "text",
+                      "id": "n3",
+                      "role": "body",
+                      "text": "Free delivery over \u00a340"
+                    }
+                  ]
+                },
+                {
+                  "type": "row",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "n4",
+                      "name": "clock"
+                    },
+                    {
+                      "type": "text",
+                      "id": "n5",
+                      "role": "body",
+                      "text": "Dispatch details upfront"
+                    }
+                  ]
+                },
+                {
+                  "type": "row",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "n6",
+                      "name": "check"
+                    },
+                    {
+                      "type": "text",
+                      "id": "n7",
+                      "role": "body",
+                      "text": "Returns for 30 days"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "button",
+              "id": "n8",
+              "role": "cta_label",
+              "label": "Start shopping",
+              "action": "link"
+            },
+            {
+              "type": "text",
+              "id": "n9",
+              "role": "fine_print",
+              "text": "UK mainland orders. See delivery and returns terms.",
+              "size": "s",
+              "tokens": {
+                "text-size": "1.167rem"
               }
-            ]
-          },
-          {
-            "type": "button",
-            "id": "n8",
-            "role": "cta_label",
-            "label": "Start shopping",
-            "action": "link"
-          },
-          {
-            "type": "text",
-            "id": "n9",
-            "role": "fine_print",
-            "text": "UK mainland orders. See delivery and returns terms.",
-            "size": "s",
-            "tokens": {
-              "text-size": "1.167rem"
             }
-          }
-        ]
+          ]
+        }
       }
-    ]
+    ],
+    "v": 2,
+    "submissions": []
   }
 }

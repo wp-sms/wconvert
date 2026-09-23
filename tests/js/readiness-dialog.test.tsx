@@ -1,3 +1,4 @@
+import { treeFixture } from './support/journey';
 import { CAPTURE_OUTCOME } from './support/outcomes';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
@@ -91,7 +92,7 @@ describe('reviewing before publishing', () => {
     expect(screen.queryByRole('dialog')).toBeNull();
   });
 
-  it.each([undefined, { tree: { steps: [] }, tokens: {} } as Template])('blocks a missing or empty design and routes to choosing one', async (template) => {
+  it.each([undefined, { tree: treeFixture({ steps: [] }), tokens: {} } as Template])('blocks a missing or empty design and routes to choosing one', async (template) => {
     const { supplied } = await open({ template });
     expect(screen.getByRole('button', { name: 'Publish Campaign' })).toBeDisabled();
     expect(screen.getByText('Choose a design before publishing.')).toBeInTheDocument();
@@ -102,9 +103,9 @@ describe('reviewing before publishing', () => {
   });
 
   it('blocks a design with no conversion action', async () => {
-    const template: Template = { tokens: FORM.tokens, tree: { steps: [
+    const template: Template = { tokens: FORM.tokens, tree: treeFixture({ steps: [
       { type: 'stack', children: [{ type: 'heading', role: 'headline', text: 'Hello' }] },
-    ] } };
+    ] }) };
     const { supplied } = await open({ template });
     expect(screen.getByText(/Nothing on this design counts as a conversion/)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Publish Campaign' })).toBeDisabled();
@@ -125,11 +126,11 @@ describe('reviewing before publishing', () => {
   });
 
   it('blocks an unfinished interest choice and opens the exact field for correction', async () => {
-    const template: Template = { tokens: FORM.tokens, tree: { steps: [{ type: 'stack', children: [
+    const template: Template = { tokens: FORM.tokens, tree: treeFixture({ steps: [{ type: 'stack', children: [
       { type: 'field', name: 'email', required: true },
       { type: 'field', name: 'interest', options: [] },
       { type: 'button', action: 'submit', label: 'Send' },
-    ] }] } };
+    ] }] }) };
     const { supplied } = await open({ template });
     expect(screen.getByRole('button', { name: 'Publish Campaign' })).toBeDisabled();
     await userEvent.click(screen.getByRole('button', { name: /Set up the interest choices/ }));
@@ -139,9 +140,9 @@ describe('reviewing before publishing', () => {
   });
 
   it('blocks a submitting form without an identifier and opens the design editor', async () => {
-    const template: Template = { tokens: FORM.tokens, tree: { steps: [{ type: 'stack', children: [
+    const template: Template = { tokens: FORM.tokens, tree: treeFixture({ steps: [{ type: 'stack', children: [
       { type: 'field', name: 'name' }, { type: 'button', action: 'submit', label: 'Send' },
-    ] }] } };
+    ] }] }) };
     const { supplied } = await open({ template });
     expect(screen.getByRole('button', { name: 'Publish Campaign' })).toBeDisabled();
     await userEvent.click(screen.getByRole('button', { name: /Add an email or phone field/ }));
@@ -187,11 +188,11 @@ describe('reviewing before publishing', () => {
   });
 
   it('shows a compact privacy review and opens the existing notice control', async () => {
-    const template: Template = { tokens: FORM.tokens, tree: { steps: [{ type: 'stack', children: [
+    const template: Template = { tokens: FORM.tokens, tree: treeFixture({ steps: [{ type: 'stack', children: [
       { type: 'field', name: 'email', required: true },
       { type: 'button', action: 'submit', label: 'Send' },
       { type: 'text', role: 'fine_print', text: 'We use your email to reply. %s', link: { label: 'Privacy Policy' } },
-    ] }, { type: 'stack', children: [] }] } };
+    ] }, { type: 'stack', children: [] }] }) };
     const { supplied } = await open({
       template,
       goal: ready(NOTICE_GOAL),
@@ -209,11 +210,11 @@ describe('reviewing before publishing', () => {
   });
 
   it('does not claim an unresolved notice already links somewhere', async () => {
-    const template: Template = { tokens: FORM.tokens, tree: { steps: [{ type: 'stack', children: [
+    const template: Template = { tokens: FORM.tokens, tree: treeFixture({ steps: [{ type: 'stack', children: [
       { type: 'field', name: 'email', required: true },
       { type: 'button', action: 'submit', label: 'Send' },
       { type: 'text', role: 'fine_print', text: 'We use your email to reply. %s', link: { label: 'Privacy Policy' } },
-    ] }, { type: 'stack', children: [] }] } };
+    ] }, { type: 'stack', children: [] }] }) };
     await open({ template, goal: ready(NOTICE_GOAL), privacyGuidance: true });
 
     expect(screen.getByText('This form includes a Privacy Policy notice.')).toBeInTheDocument();
@@ -222,12 +223,12 @@ describe('reviewing before publishing', () => {
   });
 
   it('flags missing consent for an ongoing marketing list and opens that exact control', async () => {
-    const template: Template = { tokens: FORM.tokens, tree: { steps: [{ type: 'stack', children: [
+    const template: Template = { tokens: FORM.tokens, tree: treeFixture({ steps: [{ type: 'stack', children: [
       { type: 'field', name: 'email', required: true },
       { type: 'consent', role: 'consent_text', hidden: true, text: 'Send me weekly updates. %s', link: { label: 'Privacy Policy' } },
       { type: 'button', action: 'submit', label: 'Join' },
       { type: 'text', role: 'fine_print', text: 'Weekly emails. %s', link: { label: 'Privacy Policy' } },
-    ] }, { type: 'stack', children: [] }] } };
+    ] }, { type: 'stack', children: [] }] }) };
     const { supplied } = await open({ template, privacyGuidance: true, policyUrl: 'https://example.test/privacy/' });
 
     expect(screen.getByText('No consent checkbox is shown for this marketing list.')).toBeInTheDocument();
@@ -237,12 +238,12 @@ describe('reviewing before publishing', () => {
   });
 
   it('confirms visible consent for an ongoing marketing list', async () => {
-    const template: Template = { tokens: FORM.tokens, tree: { steps: [{ type: 'stack', children: [
+    const template: Template = { tokens: FORM.tokens, tree: treeFixture({ steps: [{ type: 'stack', children: [
       { type: 'field', name: 'email', required: true },
       { type: 'consent', role: 'consent_text', hidden: false, text: 'Send me weekly updates. %s', link: { label: 'Privacy Policy' } },
       { type: 'button', action: 'submit', label: 'Join' },
       { type: 'text', role: 'fine_print', text: 'Weekly emails. %s', link: { label: 'Privacy Policy' } },
-    ] }, { type: 'stack', children: [] }] } };
+    ] }, { type: 'stack', children: [] }] }) };
     await open({ template, privacyGuidance: true, policyUrl: 'https://example.test/privacy/' });
 
     expect(screen.getByText('Required consent is shown for this marketing list.')).toBeInTheDocument();

@@ -175,8 +175,7 @@ makes any Goal measured by clicks report zero forever.
 A progressive [[Capture journey]] converts at its first accepted capture.
 Later submissions in that journey add to the same Lead without another
 Conversion. Next, Back and Skip do not convert. This is the accepted product
-contract in [ADR 0103](docs/adr/0103-progressive-capture-keeps-one-lead-per-journey.md),
-pending implementation.
+contract in [ADR 0103](docs/adr/0103-progressive-capture-keeps-one-lead-per-journey.md).
 
 **One Optin has exactly one converting act**, and its ~~[[Goal]]~~ **design**
 decides which: a design whose button submits converts on the submit, and one
@@ -830,7 +829,7 @@ later accepted submissions in that journey add to that Lead. Navigation alone
 captures nothing. Ordinary forms submit once at the end; a primary marketing
 signup may offer one optional signup for the other channel. A saved signup
 survives abandonment of that optional follow-up.
-This accepted contract is pending implementation under
+This contract is implemented under
 [ADR 0103](docs/adr/0103-progressive-capture-keeps-one-lead-per-journey.md).
 
 A journey is linear: the merchant can arrange its screens and submission
@@ -1304,7 +1303,7 @@ the provider's *shape*, never of a person's state.
 In a progressive [[Capture journey]], each completed signup starts its handoff
 after it is saved, without waiting for optional later screens. A later SMS
 submission must not repeat an email welcome or resource delivery. This accepted
-behavior is pending implementation under
+behavior is implemented under
 [ADR 0103](docs/adr/0103-progressive-capture-keeps-one-lead-per-journey.md);
 The companion [storage plan](docs/plans/184-progressive-capture/storage.md)
 specifies submission routing and recovery.

@@ -362,9 +362,9 @@ final class PayloadTest extends TestCase
     /** @return array<string, mixed> A one-step, click-metered design with an href-less CTA. */
     private static function ctaOnly(): array
     {
-        return ['template' => ['tree' => ['steps' => [['type' => 'stack', 'children' => [
+        return ['template' => ['tree' => \WConvert\Tests\Unit\Support\JourneyFixture::tree(['steps' => [['type' => 'stack', 'children' => [
             ['type' => 'button', 'role' => 'cta_label', 'label' => 'Back to my cart', 'action' => 'link'],
-        ]]]], 'tokens' => []]];
+        ]]]]), 'tokens' => []]];
     }
 
     /**
@@ -373,7 +373,7 @@ final class PayloadTest extends TestCase
      */
     private static function href(array $entries)
     {
-        return $entries[0]['template']['tree']['steps'][0]['children'][0]['href'] ?? null;
+        return $entries[0]['template']['tree']['steps'][0]['content']['children'][0]['href'] ?? null;
     }
 
     public function testACartOptinsCtaIsPointedAtTheSitesCart(): void

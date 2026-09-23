@@ -1,3 +1,4 @@
+import { treeFixture } from './support/journey';
 import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, expect, it, vi } from 'vitest';
@@ -6,7 +7,7 @@ const api = vi.hoisted(() => ({ getOptin: vi.fn(), getRules: vi.fn(), readDestin
 vi.mock('../../resources/admin/src/builder/api', () => ({ getOptin: api.getOptin, getRules: api.getRules }));
 vi.mock('../../resources/admin/src/destinations/api', () => ({ readDestinations: api.readDestinations }));
 const { default: CampaignDetails } = await import('../../resources/admin/src/optins/CampaignDetails');
-const config = (action: 'submit' | 'link') => ({ display_type: 'inline', targeting: { logged_in: false }, template: { tokens: {}, tree: { steps: [{ type: 'stack', children: [{ type: 'button', action, href: 'https://example.test/offer' }] }] } } });
+const config = (action: 'submit' | 'link') => ({ display_type: 'inline', targeting: { logged_in: false }, template: { tokens: {}, tree: treeFixture({ steps: [{ type: 'stack', children: [{ type: 'button', action, href: 'https://example.test/offer' }] }] }) } });
 beforeEach(() => {
   vi.clearAllMocks();
   api.getRules.mockResolvedValue(ruleTypes());

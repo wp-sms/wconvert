@@ -451,6 +451,7 @@ export function mountPopover(options: MountOptions): Mounted {
     }
 
     if (byTheVisitor) {
+      parts.root.dispatchEvent(new Event('wconvert:dismissed'));
       options.onDismiss?.();
     }
 

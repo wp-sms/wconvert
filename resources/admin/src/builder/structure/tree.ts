@@ -133,6 +133,8 @@ export interface Block {
    * the swap both need it, and neither may reach into the node itself.
    */
   readonly action: string | null;
+  /** Optional later submissions do not add another Campaign Conversion. */
+  readonly counts?: boolean;
   /**
    * What it SAYS, where it says anything.
    *
@@ -187,13 +189,17 @@ export function nodesOf(tree: TemplateTree): Block[] {
   const blocks: Block[] = [];
 
   tree.steps.forEach((step, index) =>
-    collect(step, [index], 1, index + 1, tree.steps.length, null, blocks),
+    collect(step.content, [index], 1, index + 1, tree.steps.length, null, blocks),
   );
 
   // Numbered through the SAME helper `slotsOf` uses, because a row and the
   // preview slot it points at must land on one `SlotKey` — and roles repeat, so
   // the name alone no longer identifies either (ADR 0051, {@link numbered}).
-  return numbered(blocks);
+  return numbered(blocks).map(block => {
+    const node = nodeAt(tree, block.path) as { submission?: string } | null;
+    return block.action === 'submit' && node?.submission === tree.submissions[1]?.id && tree.submissions.length > 1
+      ? { ...block, counts: false } : block;
+  });
 }
 
 function collect(
@@ -221,10 +227,8 @@ function collect(
     pane,
     role: typeof role === 'string' ? role : null,
     captures: node.type === 'field' && typeof captures === 'string' ? captures : null,
-    // An omitted `action` submits, which is what the renderer assumes and what
-    // `ConvertingAct::collect()` assumes — so an absent param cannot mean one
-    // thing to the row and another to whatever counts.
-    action: node.type === 'button' ? (typeof action === 'string' ? action : 'submit') : null,
+    // An omitted action is navigation, matching the renderer.
+    action: node.type === 'button' ? (typeof action === 'string' ? action : 'next') : null,
     hidden: (node as { hidden?: boolean }).hidden === true,
     sets: Object.keys((node as { tokens?: object }).tokens ?? {}).length,
     setsNarrow: Object.keys((node as { narrow?: object }).narrow ?? {}).length,
@@ -252,7 +256,7 @@ export function nodeAt(tree: TemplateTree, path: Path): TemplateNode | null {
     return null;
   }
 
-  let node: TemplateNode | null = tree.steps[step] ?? null;
+  let node: TemplateNode | null = tree.steps[step]?.content ?? null;
 
   for (let at = 0; at < rest.length && node !== null; at += 2) {
     const key = rest[at];
@@ -509,7 +513,8 @@ function withChildren(
   }
 
   return {
-    steps: tree.steps.map((node, at) => (at === step ? rebuild(node, rest, key, edit) : node)),
+    ...tree,
+    steps: tree.steps.map((node, at) => (at === step ? { ...node, content: rebuild(node.content, rest, key, edit) } : node)),
   };
 }
 

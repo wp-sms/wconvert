@@ -289,16 +289,19 @@ export function shell(template: Template, chrome: HTMLElement | null, options: M
       const next = render(template.tree, template.tokens, index, { paths: options.paths });
 
       bind(next);
+      root.dispatchEvent(new Event('wconvert:closed'));
       root.replaceWith(next);
       root = next;
 
       return next;
     },
     resume(): void {
+      root.dispatchEvent(new Event('wconvert:shown'));
       paint(root);
       if (options.endsAt !== undefined && ticking === undefined) ticking = setInterval(() => paint(root), 1000);
     },
     stop(): void {
+      root.dispatchEvent(new Event('wconvert:closed'));
       clearInterval(ticking);
       ticking = undefined;
     },
@@ -406,6 +409,7 @@ export function mountModal(options: MountOptions, surface: ModalSurface = {}): M
     surface.closed?.();
 
     if (dismissible) {
+      parts.root.dispatchEvent(new Event('wconvert:dismissed'));
       options.onDismiss?.();
     }
   });

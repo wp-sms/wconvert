@@ -26,57 +26,64 @@
   "tree": {
     "steps": [
       {
-        "type": "stack",
-        "children": [
-          {
-            "type": "badge",
-            "id": "n1",
-            "role": "badge",
-            "text": "50% OFF",
-            "tokens": {
-              "text-size": "1.0834rem"
+        "id": "s1",
+        "name": "Offer",
+        "kind": "content",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "badge",
+              "id": "n1",
+              "role": "badge",
+              "text": "50% OFF",
+              "tokens": {
+                "text-size": "1.0834rem"
+              }
+            },
+            {
+              "type": "eyebrow",
+              "id": "n2",
+              "role": "eyebrow",
+              "text": "The archive edit",
+              "tokens": {
+                "text-size": "1.0834rem"
+              }
+            },
+            {
+              "type": "heading",
+              "id": "n3",
+              "role": "headline",
+              "text": "Half price. Fresh possibilities."
+            },
+            {
+              "type": "text",
+              "id": "n4",
+              "role": "body",
+              "text": "Selected pieces from the archive, ready for a new home."
+            },
+            {
+              "type": "button",
+              "id": "n5",
+              "role": "cta_label",
+              "label": "Shop the sale",
+              "action": "link"
+            },
+            {
+              "type": "text",
+              "id": "n6",
+              "role": "fine_print",
+              "text": "Selected items only. Prices as marked.",
+              "size": "s",
+              "tokens": {
+                "text-size": "1.167rem"
+              }
             }
-          },
-          {
-            "type": "eyebrow",
-            "id": "n2",
-            "role": "eyebrow",
-            "text": "The archive edit",
-            "tokens": {
-              "text-size": "1.0834rem"
-            }
-          },
-          {
-            "type": "heading",
-            "id": "n3",
-            "role": "headline",
-            "text": "Half price. Fresh possibilities."
-          },
-          {
-            "type": "text",
-            "id": "n4",
-            "role": "body",
-            "text": "Selected pieces from the archive, ready for a new home."
-          },
-          {
-            "type": "button",
-            "id": "n5",
-            "role": "cta_label",
-            "label": "Shop the sale",
-            "action": "link"
-          },
-          {
-            "type": "text",
-            "id": "n6",
-            "role": "fine_print",
-            "text": "Selected items only. Prices as marked.",
-            "size": "s",
-            "tokens": {
-              "text-size": "1.167rem"
-            }
-          }
-        ]
+          ]
+        }
       }
-    ]
+    ],
+    "v": 2,
+    "submissions": []
   }
 }

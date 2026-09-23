@@ -26,76 +26,100 @@
   "tree": {
     "steps": [
       {
-        "type": "stack",
-        "children": [
-          {
-            "type": "row",
-            "children": [
-              {
-                "type": "icon",
-                "id": "n1",
-                "name": "gift"
-              },
-              {
-                "type": "heading",
-                "id": "n2",
-                "level": 2,
-                "role": "headline",
-                "text": "Five good reads, every Friday"
-              },
-              {
-                "type": "field",
-                "id": "n3",
-                "name": "email",
-                "label": "Email address",
-                "placeholder": "you@example.com",
-                "required": true
-              },
-              {
-                "type": "button",
-                "id": "n4",
-                "role": "cta_label",
-                "label": "Send me the reads",
-                "action": "submit"
-              }
-            ]
-          },
-          {
-            "type": "consent",
-            "id": "n5",
-            "role": "consent_text",
-            "hidden": true,
-            "text": "Email me offers and news. %s",
-            "link": {
-              "label": "Privacy Policy"
+        "id": "s1",
+        "name": "Details",
+        "kind": "input",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "row",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "n1",
+                  "name": "gift"
+                },
+                {
+                  "type": "heading",
+                  "id": "n2",
+                  "level": 2,
+                  "role": "headline",
+                  "text": "Five good reads, every Friday"
+                },
+                {
+                  "type": "field",
+                  "id": "n3",
+                  "name": "email",
+                  "label": "Email address",
+                  "placeholder": "you@example.com",
+                  "required": true
+                },
+                {
+                  "type": "button",
+                  "id": "n4",
+                  "role": "cta_label",
+                  "label": "Send me the reads",
+                  "action": "submit",
+                  "submission": "primary"
+                }
+              ]
             },
-            "tokens": {
-              "text-size": "1.125rem"
+            {
+              "type": "consent",
+              "id": "n5",
+              "role": "consent_text",
+              "hidden": true,
+              "text": "Email me offers and news. %s",
+              "link": {
+                "label": "Privacy Policy"
+              },
+              "tokens": {
+                "text-size": "1.125rem"
+              }
             }
-          }
-        ]
+          ]
+        }
       },
       {
-        "type": "row",
-        "children": [
-          {
-            "type": "icon",
-            "id": "n6",
-            "name": "check"
-          },
-          {
-            "type": "heading",
-            "id": "n7",
-            "level": 2,
-            "role": "success_headline",
-            "text": "Request received"
-          },
-          {
-            "type": "text",
-            "id": "n8",
-            "role": "success_body",
-            "text": "Thank you for requesting the Friday reads."
-          }
+        "id": "s2",
+        "name": "Received",
+        "kind": "acknowledgement",
+        "content": {
+          "type": "row",
+          "children": [
+            {
+              "type": "icon",
+              "id": "n6",
+              "name": "check"
+            },
+            {
+              "type": "heading",
+              "id": "n7",
+              "level": 2,
+              "role": "success_headline",
+              "text": "Request received"
+            },
+            {
+              "type": "text",
+              "id": "n8",
+              "role": "success_body",
+              "text": "Thank you for requesting the Friday reads."
+            }
+          ]
+        }
+      }
+    ],
+    "v": 2,
+    "submissions": [
+      {
+        "id": "primary",
+        "required": true,
+        "fields": [
+          "n3"
+        ],
+        "consents": [
+          "n5"
         ]
       }
     ]

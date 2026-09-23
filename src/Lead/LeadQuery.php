@@ -109,7 +109,7 @@ final class LeadQuery
         if ($this->search !== null) {
             // Literal substring search is explicit, never run on each keystroke.
             // JSON values (not keys or consent text) are searched as captured.
-            $sql .= ' AND (LOWER(email) LIKE LOWER(%s) OR phone LIKE %s OR LOWER(JSON_UNQUOTE(JSON_EXTRACT(fields, \'$.name\'))) LIKE LOWER(%s) OR LOWER(JSON_UNQUOTE(JSON_EXTRACT(fields, \'$.message\'))) LIKE LOWER(%s))';
+            $sql .= ' AND (LOWER(email) LIKE LOWER(%s) OR phone LIKE %s OR LOWER(JSON_UNQUOTE(JSON_EXTRACT(fields, \'$.answers.name\'))) LIKE LOWER(%s) OR LOWER(JSON_UNQUOTE(JSON_EXTRACT(fields, \'$.answers.message\'))) LIKE LOWER(%s))';
             $term = '%' . addcslashes($this->search, '_%\\') . '%';
             $params = [$term, $term, $term, $term];
         }

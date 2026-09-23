@@ -1,3 +1,4 @@
+import { treeFixture } from './support/journey';
 import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
@@ -51,16 +52,16 @@ describe('provider-declared destination requirements', () => {
     expect(compatibilityProblems({ ...route, settings: { ...route.settings, interest_field: 'cf_7' } }, captures).join(' ')).toContain('New subscribers only');
   });
   it('reads actual fields and requiredness across nested layout branches', () => {
-    const template: Template = { tokens: {}, tree: { steps: [{ type: 'split', start: [
+    const template: Template = { tokens: {}, tree: treeFixture({ steps: [{ type: 'split', start: [
       { type: 'field', name: 'email', required: true },
-    ], end: [{ type: 'stack', children: [{ type: 'field', name: 'phone', required: false }, { type: 'button' }] }] }] } };
+    ], end: [{ type: 'stack', children: [{ type: 'field', name: 'phone', required: false }, { type: 'button' }] }] }] }) };
     expect(capturedFields(template)).toEqual([{ name: 'email', required: true }, { name: 'phone', required: false }]);
   });
   it('does not count fields on non-submitting screens as captured by the form', () => {
-    const template: Template = { tokens: {}, tree: { steps: [
+    const template: Template = { tokens: {}, tree: treeFixture({ steps: [
       { type: 'stack', children: [{ type: 'field', name: 'phone' }, { type: 'button', action: 'submit' }] },
       { type: 'stack', children: [{ type: 'field', name: 'email', required: true }] },
-    ] } };
+    ] }) };
     const actual = capturedFields(template);
     expect(actual).toEqual([{ name: 'phone', required: false }]);
     expect(compatibilityProblems(route, actual).join(' ')).toContain('needs email address. Add it');

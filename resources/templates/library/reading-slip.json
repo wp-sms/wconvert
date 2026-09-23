@@ -26,52 +26,59 @@
   "tree": {
     "steps": [
       {
-        "type": "stack",
-        "children": [
-          {
-            "type": "eyebrow",
-            "id": "n1",
-            "role": "eyebrow",
-            "text": "Your next read",
-            "tokens": {
-              "text-size": "1.0834rem"
+        "id": "s1",
+        "name": "Offer",
+        "kind": "content",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "eyebrow",
+              "id": "n1",
+              "role": "eyebrow",
+              "text": "Your next read",
+              "tokens": {
+                "text-size": "1.0834rem"
+              }
+            },
+            {
+              "type": "divider",
+              "id": "n2"
+            },
+            {
+              "type": "heading",
+              "id": "n3",
+              "role": "headline",
+              "text": "Make room for a slower morning"
+            },
+            {
+              "type": "text",
+              "id": "n4",
+              "role": "body",
+              "text": "A practical essay on finding a little quiet before the day begins."
+            },
+            {
+              "type": "text",
+              "id": "n5",
+              "role": "fine_print",
+              "text": "An essay to read at your own pace.",
+              "size": "s",
+              "tokens": {
+                "text-size": "1.167rem"
+              }
+            },
+            {
+              "type": "button",
+              "id": "n6",
+              "role": "cta_label",
+              "label": "Read the essay",
+              "action": "link"
             }
-          },
-          {
-            "type": "divider",
-            "id": "n2"
-          },
-          {
-            "type": "heading",
-            "id": "n3",
-            "role": "headline",
-            "text": "Make room for a slower morning"
-          },
-          {
-            "type": "text",
-            "id": "n4",
-            "role": "body",
-            "text": "A practical essay on finding a little quiet before the day begins."
-          },
-          {
-            "type": "text",
-            "id": "n5",
-            "role": "fine_print",
-            "text": "An essay to read at your own pace.",
-            "size": "s",
-            "tokens": {
-              "text-size": "1.167rem"
-            }
-          },
-          {
-            "type": "button",
-            "id": "n6",
-            "role": "cta_label",
-            "label": "Read the essay",
-            "action": "link"
-          }
-        ]
+          ]
+        }
       }
-    ]
+    ],
+    "v": 2,
+    "submissions": []
   }
 }

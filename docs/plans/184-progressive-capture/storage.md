@@ -1,7 +1,6 @@
 # Storage, requests and reporting
 
-Status: implementation proposal for the accepted product plan. No runtime or
-schema change is included in this planning work. The earlier two-table proposal
+Status: implemented and exercised against isolated WordPress/MySQL. The earlier two-table proposal
 is withdrawn. Use existing Lead JSON, Action Scheduler and the existing daily
 statistics table. The user explicitly approved the statistics column/key change
 below on 2026-09-22 under `CLAUDE.md`'s storage rule. No other table/column change
@@ -23,10 +22,8 @@ existing `fields` JSON becomes an explicit envelope:
         "accepted_at": "2026-09-22T10:00:00Z",
         "request_hash": "normalized-request-fingerprint",
         "purpose": "email_marketing",
-        "values": { "email": "example@example.com" },
-        "consents": [
-          { "id": "n_email_consent", "purpose": "email_marketing", "text": "Email me news and offers." }
-        ],
+        "values": { "email": "example@example.com", "consent_text": "Email me news and offers." },
+        "consent_ids": ["n3"],
         "destination_ids": ["opaque-destination-id"],
         "handoff": "pending"
       }
@@ -61,7 +58,7 @@ page memory and reuse it for retries. Next/Back do not obtain grants or send dat
 The first capture transaction claims a non-autoloaded WordPress option named
 from the hash of the grant's secret. WordPress already has a unique option-name
 index. This owned option is a temporary request receipt: expiry plus accepted
-Lead ID, or a revoked marker. It contains no answers, consent, credentials,
+Lead ID. It contains no answers, consent, credentials,
 email or phone. Create the Lead with a ULID minted at acceptance and write its
 receipt mapping in the same transaction. The unique option key serializes
 concurrent first requests. Identical normalized retries return the accepted
@@ -76,8 +73,9 @@ This is transport retry bookkeeping, not a visitor identity or cross-visit sessi
 
 ## Continuation and erasure
 
-Return a signed continuation proof after first acceptance, bound to the Lead,
-Campaign, receipt and contract. The optional addition requires it. Use an absolute
+Reuse the original signed grant after first acceptance. Its receipt now maps
+atomically to the accepted Lead; the server never takes a client-supplied Lead
+ID as authorization. The optional addition requires the same grant. Use an absolute
 30-minute grant lifetime without renewal. Expiry offers a finish/close path and
 never undoes saved information. Independent later signups are new captures.
 
@@ -85,20 +83,20 @@ Email/phone matches and exposed Lead IDs never authorize updates. Keep grants,
 secrets and unsaved values out of URLs, logs, cookies, localStorage and
 sessionStorage. Reload loses them; accepted captures remain.
 
-Erasure changes the receipt to a revoked marker before deleting the Lead, in the
-same transaction. Keep only its hash/expiry until the signed start grant expires.
-Every first-request retry must present the original unexpired grant, so deletion
-followed by a replay cannot recreate the Lead. After expiry the receipt can be
-removed. Its owned option key is in internal Lead metadata, avoiding scans of
-unrelated options. Pruning handles any unexpired receipt the same way. Missing
-Leads provide no continuation, export, or queued payload.
+Erasure deletes the Lead and its accepted snapshots. Its temporary receipt keeps
+the opaque mapping until expiry. Both replay and continuation lock that receipt,
+find the mapped Lead missing, and refuse: they cannot recreate erased data.
+Retention pruning has the same behavior. Expiry cleanup removes owned receipts;
+uninstall also removes them. No answers remain in the receipt.
 
 ## Atomic capture
 
-The current database abstraction lacks transaction methods. Add narrow
-transaction/row-lock operations and prove them on WordPress MySQL and Playground
-SQLite. Verify supported storage engines; do not silently fall back to unsafe
-independent writes where atomicity is unavailable.
+The database abstraction supplies transactions and row locks. WordPress MySQL
+verification exercises concurrent connections and rollback after queue insertion.
+Capture requires InnoDB options, Leads and statistics tables; handoff also checks
+Action Scheduler database storage and its InnoDB actions/groups tables. Unsafe
+engines fail closed. SQLite/Playground is not claimed to support this transactional
+path; the existing visual harness remains useful for rendering.
 
 First acceptance atomically writes the receipt, Lead/snapshot and server-owned
 counters. A later submission locks the Lead, validates the declared addition,
@@ -196,6 +194,14 @@ four-counters-per-Campaign/day budget no longer describes this workload.
 ## Approval boundary
 
 The user approved the `scope` column and primary-key change on 2026-09-22.
-This planning change executes neither. The earlier two-new-table proposal is
+The schema definition now includes both changes. The earlier two-new-table proposal is
 withdrawn; no new tables or Lead columns are approved. Further schema changes
 would need separate justification and sign-off.
+
+Report definitions contain screen names/order, never visitor answers. Like the
+anonymous daily statistics they describe, they are retained as historical data
+and removed by uninstall. Reports separate publication versions and show a
+30-day window; the existing Campaign counters always filter the empty scope.
+Recovery processes 100 Leads per batch with a keyset checkpoint and a 30-minute
+overlap. Follow-up jobs include their cursor so a currently running recovery job
+does not suppress the next batch through Action Scheduler's uniqueness check.

@@ -65,21 +65,23 @@ final class CaptureForm
      *
      * @param mixed $template
      */
-    public static function fromTemplate($template, TemplateVocabulary $vocabulary): self
+    public static function fromTemplate($template, TemplateVocabulary $vocabulary, ?string $submissionId = null): self
     {
         $template = is_array($template) ? $template : [];
         $tree = is_array($template['tree'] ?? null) ? $template['tree'] : [];
         $steps = is_array($tree['steps'] ?? null) ? $tree['steps'] : [];
 
-        foreach ($steps as $step) {
-            if (is_array($step) && \WConvert\Template\TemplateForm::submits($step)) {
-                $fields = [];
-                $consent = null;
-
-                self::read($step, $fields, $consent, $vocabulary);
-
-                return new self($fields, $consent, $vocabulary->schemes());
+        foreach ($tree['submissions'] ?? [] as $submission) {
+            if ($submissionId !== null && $submission['id'] !== $submissionId) { continue; }
+            $fields = [];
+            $consent = null;
+            $refs = array_merge($submission['fields'], $submission['consents']);
+            foreach ($steps as $screen) {
+                foreach (\WConvert\Template\CaptureJourney::nodes($screen['content'] ?? []) as $node) {
+                    if (in_array($node['id'] ?? null, $refs, true)) { self::read($node, $fields, $consent, $vocabulary); }
+                }
             }
+            return new self($fields, $consent, $vocabulary->schemes());
         }
 
         return new self([], null, $vocabulary->schemes());

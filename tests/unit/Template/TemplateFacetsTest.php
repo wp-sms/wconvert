@@ -151,33 +151,33 @@ final class TemplateFacetsTest extends TestCase
     public function testAVisibleBackgroundPictureDoesNotNeedAnImageNode(): void
     {
         $picture = 'url("https://example.org/picture.jpg")';
-        $tree = ['steps' => [[
+        $tree = \WConvert\Tests\Unit\Support\JourneyFixture::tree(['steps' => [[
             'type' => 'split',
             'start' => [['type' => 'heading', 'text' => 'Hello']],
             'end' => [['type' => 'media', 'tokens' => ['bg-image' => $picture], 'children' => []]],
-        ]]];
+        ]]]);
 
         $this->assertTrue(TemplateFacets::of($tree, [])['has_image']);
-        $this->assertTrue(TemplateFacets::of(['steps' => []], [], ['bg-image' => $picture])['has_image']);
-        $this->assertTrue(TemplateFacets::of(['steps' => [[
+        $this->assertTrue(TemplateFacets::of(\WConvert\Tests\Unit\Support\JourneyFixture::tree(['steps' => []]), [], ['bg-image' => $picture])['has_image']);
+        $this->assertTrue(TemplateFacets::of(\WConvert\Tests\Unit\Support\JourneyFixture::tree(['steps' => [[
             'type' => 'panel', 'narrow' => ['bg-image' => $picture], 'children' => [],
-        ]]], [])['has_image']);
+        ]]]), [])['has_image']);
     }
 
     public function testAnUnusedBackgroundTokenOrColorWashIsNotAPicture(): void
     {
         foreach (['none', 'linear-gradient(#fff,#000)', ''] as $background) {
-            $this->assertFalse(TemplateFacets::of(['steps' => [[
+            $this->assertFalse(TemplateFacets::of(\WConvert\Tests\Unit\Support\JourneyFixture::tree(['steps' => [[
                 'type' => 'panel', 'tokens' => ['bg-image' => $background], 'children' => [],
-            ]]], [], ['bg-image' => $background])['has_image']);
+            ]]]), [], ['bg-image' => $background])['has_image']);
         }
 
         // Rows do not paint this token, and panels reset an ancestor's image.
-        $this->assertFalse(TemplateFacets::of(['steps' => [[
+        $this->assertFalse(TemplateFacets::of(\WConvert\Tests\Unit\Support\JourneyFixture::tree(['steps' => [[
             'type' => 'row',
             'tokens' => ['bg-image' => 'url("https://example.org/picture.jpg")'],
             'children' => [['type' => 'panel', 'children' => []]],
-        ]]], [])['has_image']);
+        ]]]), [])['has_image']);
     }
 
     /**
@@ -200,7 +200,7 @@ final class TemplateFacetsTest extends TestCase
      */
     public function testItReadsBothPanesOfASideBySide(): void
     {
-        $facets = TemplateFacets::of([
+        $facets = TemplateFacets::of(\WConvert\Tests\Unit\Support\JourneyFixture::tree([
             'steps' => [
                 [
                     'type' => 'split',
@@ -213,7 +213,7 @@ final class TemplateFacetsTest extends TestCase
                 ],
                 ['type' => 'stack', 'children' => []],
             ],
-        ], ['email', 'name', 'phone']);
+        ]), ['email', 'name', 'phone']);
 
         $this->assertSame('split', $facets['shape']);
         $this->assertTrue($facets['has_image']);
@@ -229,7 +229,7 @@ final class TemplateFacetsTest extends TestCase
      */
     public function testTheShapeIsTheFirstStepsAndNotTheSuccessStates(): void
     {
-        $facets = TemplateFacets::of([
+        $facets = TemplateFacets::of(\WConvert\Tests\Unit\Support\JourneyFixture::tree([
             'steps' => [
                 [
                     'type' => 'row',
@@ -237,7 +237,7 @@ final class TemplateFacetsTest extends TestCase
                 ],
                 ['type' => 'stack', 'children' => [['type' => 'heading', 'text' => 'Done']]],
             ],
-        ], ['email']);
+        ]), ['email']);
 
         $this->assertSame('row', $facets['shape']);
     }
@@ -248,7 +248,7 @@ final class TemplateFacetsTest extends TestCase
      */
     public function testAFieldTheVocabularyDoesNotDeclareIsNotACapture(): void
     {
-        $facets = TemplateFacets::of([
+        $facets = TemplateFacets::of(\WConvert\Tests\Unit\Support\JourneyFixture::tree([
             'steps' => [[
                 'type' => 'stack',
                 'children' => [
@@ -257,7 +257,7 @@ final class TemplateFacetsTest extends TestCase
                     ['type' => 'button', 'action' => 'submit'],
                 ],
             ]],
-        ], ['email', 'name', 'phone']);
+        ]), ['email', 'name', 'phone']);
 
         $this->assertSame(['email'], $facets['captures']);
     }
@@ -272,7 +272,7 @@ final class TemplateFacetsTest extends TestCase
      */
     public function testAnAuthoredStubIsTheSameShapeAsADerivedOne(): void
     {
-        $derived = TemplateFacets::of(['steps' => []], []);
+        $derived = TemplateFacets::of(\WConvert\Tests\Unit\Support\JourneyFixture::tree(['steps' => []]), []);
         $authored = TemplateFacets::authored(
             ['shape' => 'split', 'captures' => ['email'], 'has_image' => true],
             self::vocabulary()->facets()
@@ -354,7 +354,7 @@ final class TemplateFacetsTest extends TestCase
      */
     private static function each(array $tree, callable $visit): void
     {
-        $queue = is_array($tree['steps'] ?? null) ? array_values($tree['steps']) : [];
+        $queue = is_array($tree['steps'] ?? null) ? array_column($tree['steps'], 'content') : [];
 
         while ($queue !== []) {
             $node = array_shift($queue);

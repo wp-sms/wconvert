@@ -28,57 +28,64 @@
   "tree": {
     "steps": [
       {
-        "type": "stack",
-        "children": [
-          {
-            "type": "badge",
-            "id": "n1",
-            "role": "badge",
-            "text": "ARCHIVE SALE",
-            "tokens": {
-              "text-size": "1.0834rem"
+        "id": "s1",
+        "name": "Offer",
+        "kind": "content",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "badge",
+              "id": "n1",
+              "role": "badge",
+              "text": "ARCHIVE SALE",
+              "tokens": {
+                "text-size": "1.0834rem"
+              }
+            },
+            {
+              "type": "eyebrow",
+              "id": "n2",
+              "role": "eyebrow",
+              "text": "The final edit",
+              "tokens": {
+                "text-size": "1.0834rem"
+              }
+            },
+            {
+              "type": "heading",
+              "id": "n3",
+              "role": "headline",
+              "text": "Selected pieces. Half price."
+            },
+            {
+              "type": "text",
+              "id": "n5",
+              "role": "body",
+              "text": "Find a favourite from the archive while the sale is open."
+            },
+            {
+              "type": "button",
+              "id": "n6",
+              "role": "cta_label",
+              "label": "Shop the sale",
+              "action": "link"
+            },
+            {
+              "type": "text",
+              "id": "n7",
+              "role": "fine_print",
+              "text": "Selected items only. Prices as marked.",
+              "size": "s",
+              "tokens": {
+                "text-size": "1.167rem"
+              }
             }
-          },
-          {
-            "type": "eyebrow",
-            "id": "n2",
-            "role": "eyebrow",
-            "text": "The final edit",
-            "tokens": {
-              "text-size": "1.0834rem"
-            }
-          },
-          {
-            "type": "heading",
-            "id": "n3",
-            "role": "headline",
-            "text": "Selected pieces. Half price."
-          },
-          {
-            "type": "text",
-            "id": "n5",
-            "role": "body",
-            "text": "Find a favourite from the archive while the sale is open."
-          },
-          {
-            "type": "button",
-            "id": "n6",
-            "role": "cta_label",
-            "label": "Shop the sale",
-            "action": "link"
-          },
-          {
-            "type": "text",
-            "id": "n7",
-            "role": "fine_print",
-            "text": "Selected items only. Prices as marked.",
-            "size": "s",
-            "tokens": {
-              "text-size": "1.167rem"
-            }
-          }
-        ]
+          ]
+        }
       }
-    ]
+    ],
+    "v": 2,
+    "submissions": []
   }
 }

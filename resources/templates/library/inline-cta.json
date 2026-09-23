@@ -24,53 +24,60 @@
   "tree": {
     "steps": [
       {
-        "type": "split",
-        "ratio": 0.65,
-        "basis": "16rem",
-        "start": [
-          {
-            "type": "stack",
-            "children": [
-              {
-                "type": "heading",
-                "id": "n1",
-                "role": "headline",
-                "text": "Pick up where you left off"
-              },
-              {
-                "type": "text",
-                "id": "n2",
-                "role": "body",
-                "text": "Your next step is here when you are ready."
-              }
-            ]
-          }
-        ],
-        "end": [
-          {
-            "type": "stack",
-            "children": [
-              {
-                "type": "button",
-                "id": "n3",
-                "role": "cta_label",
-                "label": "Continue exploring",
-                "action": "link"
-              },
-              {
-                "type": "text",
-                "id": "n4",
-                "role": "fine_print",
-                "text": "Take a closer look before you decide.",
-                "size": "s",
-                "tokens": {
-                  "text-size": "1.167rem"
+        "id": "s1",
+        "name": "Offer",
+        "kind": "content",
+        "content": {
+          "type": "split",
+          "ratio": 0.65,
+          "basis": "16rem",
+          "start": [
+            {
+              "type": "stack",
+              "children": [
+                {
+                  "type": "heading",
+                  "id": "n1",
+                  "role": "headline",
+                  "text": "Pick up where you left off"
+                },
+                {
+                  "type": "text",
+                  "id": "n2",
+                  "role": "body",
+                  "text": "Your next step is here when you are ready."
                 }
-              }
-            ]
-          }
-        ]
+              ]
+            }
+          ],
+          "end": [
+            {
+              "type": "stack",
+              "children": [
+                {
+                  "type": "button",
+                  "id": "n3",
+                  "role": "cta_label",
+                  "label": "Continue exploring",
+                  "action": "link"
+                },
+                {
+                  "type": "text",
+                  "id": "n4",
+                  "role": "fine_print",
+                  "text": "Take a closer look before you decide.",
+                  "size": "s",
+                  "tokens": {
+                    "text-size": "1.167rem"
+                  }
+                }
+              ]
+            }
+          ]
+        }
       }
-    ]
+    ],
+    "v": 2,
+    "submissions": []
   }
 }

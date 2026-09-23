@@ -18,80 +18,104 @@
   "tree": {
     "steps": [
       {
-        "type": "stack",
-        "children": [
-          {
-            "type": "eyebrow",
-            "role": "eyebrow",
-            "text": "The weekly field notes",
-            "id": "n1"
-          },
-          {
-            "type": "heading",
-            "role": "headline",
-            "text": "One useful idea.\nEvery Friday.",
-            "id": "n2"
-          },
-          {
-            "type": "text",
-            "role": "body",
-            "text": "A short email on making space for better work. Read it in five minutes.",
-            "id": "n3"
-          },
-          {
-            "type": "field",
-            "name": "email",
-            "required": true,
-            "label": "Email address",
-            "placeholder": "you@example.com",
-            "id": "n4"
-          },
-          {
-            "type": "button",
-            "role": "cta_label",
-            "label": "Request the weekly notes",
-            "action": "submit",
-            "id": "n5"
-          },
-          {
-            "type": "consent",
-            "role": "consent_text",
-            "text": "I agree to receive these emails.",
-            "hidden": true,
-            "id": "n6"
-          },
-          {
-            "type": "text",
-            "role": "fine_print",
-            "text": "We use your details for this request. %s",
-            "size": "s",
-            "link": {
-              "label": "Privacy Policy"
+        "id": "s1",
+        "name": "Details",
+        "kind": "input",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "eyebrow",
+              "role": "eyebrow",
+              "text": "The weekly field notes",
+              "id": "n1"
             },
-            "id": "n7"
-          }
-        ]
+            {
+              "type": "heading",
+              "role": "headline",
+              "text": "One useful idea.\nEvery Friday.",
+              "id": "n2"
+            },
+            {
+              "type": "text",
+              "role": "body",
+              "text": "A short email on making space for better work. Read it in five minutes.",
+              "id": "n3"
+            },
+            {
+              "type": "field",
+              "name": "email",
+              "required": true,
+              "label": "Email address",
+              "placeholder": "you@example.com",
+              "id": "n4"
+            },
+            {
+              "type": "button",
+              "role": "cta_label",
+              "label": "Request the weekly notes",
+              "action": "submit",
+              "id": "n5",
+              "submission": "primary"
+            },
+            {
+              "type": "consent",
+              "role": "consent_text",
+              "text": "I agree to receive these emails.",
+              "hidden": true,
+              "id": "n6"
+            },
+            {
+              "type": "text",
+              "role": "fine_print",
+              "text": "We use your details for this request. %s",
+              "size": "s",
+              "link": {
+                "label": "Privacy Policy"
+              },
+              "id": "n7"
+            }
+          ]
+        }
       },
       {
-        "type": "stack",
-        "children": [
-          {
-            "type": "icon",
-            "name": "check",
-            "id": "n8"
-          },
-          {
-            "type": "heading",
-            "role": "success_headline",
-            "text": "Request received",
-            "id": "n9"
-          },
-          {
-            "type": "text",
-            "role": "success_body",
-            "text": "Thank you for your request.",
-            "id": "n10"
-          }
+        "id": "s2",
+        "name": "Received",
+        "kind": "acknowledgement",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "icon",
+              "name": "check",
+              "id": "n8"
+            },
+            {
+              "type": "heading",
+              "role": "success_headline",
+              "text": "Request received",
+              "id": "n9"
+            },
+            {
+              "type": "text",
+              "role": "success_body",
+              "text": "Thank you for your request.",
+              "id": "n10"
+            }
+          ]
+        }
+      }
+    ],
+    "v": 2,
+    "submissions": [
+      {
+        "id": "primary",
+        "required": true,
+        "fields": [
+          "n4"
+        ],
+        "consents": [
+          "n6"
         ]
       }
     ]

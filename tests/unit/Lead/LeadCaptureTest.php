@@ -171,7 +171,7 @@ final class LeadCaptureTest extends TestCase
             new Submission('sarah@example.com', null, [])
         );
 
-        $this->assertSame('{}', self::leadRows($db)[0]['fields']);
+        $this->assertSame('{"answers":{},"capture":{}}', self::leadRows($db)[0]['fields']);
     }
 
     /**
@@ -195,7 +195,7 @@ final class LeadCaptureTest extends TestCase
         $this->assertSame('+12025551234', $written['phone']);
         $this->assertSame(
             ['name' => 'Sarah', 'consent_text' => 'I agree to receive emails.'],
-            json_decode((string) $written['fields'], true)
+            json_decode((string) $written['fields'], true)['answers']
         );
     }
 }

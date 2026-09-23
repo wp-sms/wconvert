@@ -24,75 +24,99 @@
   "tree": {
     "steps": [
       {
-        "type": "row",
-        "children": [
-          {
-            "type": "stack",
-            "children": [
-              {
-                "type": "heading",
-                "id": "n1",
-                "role": "headline",
-                "text": "Get the weekly round-up"
-              },
-              {
-                "type": "text",
-                "id": "n2",
-                "role": "body",
-                "text": "Five links, every Thursday."
-              }
-            ]
-          },
-          {
-            "type": "field",
-            "id": "n3",
-            "name": "email",
-            "label": "Email address",
-            "placeholder": "you@example.com",
-            "required": true
-          },
-          {
-            "type": "button",
-            "id": "n4",
-            "role": "cta_label",
-            "label": "Send me the round-up",
-            "action": "submit"
-          },
-          {
-            "type": "consent",
-            "id": "n5",
-            "role": "consent_text",
-            "hidden": true,
-            "text": "Email me offers and news. %s",
-            "link": {
-              "label": "Privacy Policy"
+        "id": "s1",
+        "name": "Details",
+        "kind": "input",
+        "content": {
+          "type": "row",
+          "children": [
+            {
+              "type": "stack",
+              "children": [
+                {
+                  "type": "heading",
+                  "id": "n1",
+                  "role": "headline",
+                  "text": "Get the weekly round-up"
+                },
+                {
+                  "type": "text",
+                  "id": "n2",
+                  "role": "body",
+                  "text": "Five links, every Thursday."
+                }
+              ]
             },
-            "tokens": {
-              "text-size": "1.125rem"
+            {
+              "type": "field",
+              "id": "n3",
+              "name": "email",
+              "label": "Email address",
+              "placeholder": "you@example.com",
+              "required": true
+            },
+            {
+              "type": "button",
+              "id": "n4",
+              "role": "cta_label",
+              "label": "Send me the round-up",
+              "action": "submit",
+              "submission": "primary"
+            },
+            {
+              "type": "consent",
+              "id": "n5",
+              "role": "consent_text",
+              "hidden": true,
+              "text": "Email me offers and news. %s",
+              "link": {
+                "label": "Privacy Policy"
+              },
+              "tokens": {
+                "text-size": "1.125rem"
+              }
             }
-          }
-        ]
+          ]
+        }
       },
       {
-        "type": "stack",
-        "children": [
-          {
-            "type": "icon",
-            "id": "n8",
-            "name": "check"
-          },
-          {
-            "type": "heading",
-            "id": "n6",
-            "role": "success_headline",
-            "text": "Thank you"
-          },
-          {
-            "type": "text",
-            "id": "n7",
-            "role": "success_body",
-            "text": "We have received your request for the weekly round-up."
-          }
+        "id": "s2",
+        "name": "Received",
+        "kind": "acknowledgement",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "icon",
+              "id": "n8",
+              "name": "check"
+            },
+            {
+              "type": "heading",
+              "id": "n6",
+              "role": "success_headline",
+              "text": "Thank you"
+            },
+            {
+              "type": "text",
+              "id": "n7",
+              "role": "success_body",
+              "text": "We have received your request for the weekly round-up."
+            }
+          ]
+        }
+      }
+    ],
+    "v": 2,
+    "submissions": [
+      {
+        "id": "primary",
+        "required": true,
+        "fields": [
+          "n3"
+        ],
+        "consents": [
+          "n5"
         ]
       }
     ]

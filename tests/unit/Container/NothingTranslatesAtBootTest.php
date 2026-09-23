@@ -89,6 +89,7 @@ final class NothingTranslatesAtBootTest extends TestCase
      * @var array<class-string<RestController>, string>
      */
     private const A_ROUTE_PER_CONTROLLER = [
+        \WConvert\Rest\JourneyStatsController::class => '/optins/(?P<id>[A-Z0-9]{26})/journey-stats',
         OptinController::class => '/optins',
         TemplateController::class => '/templates',
         \WConvert\Rest\TemplateCatalogController::class => '/template-catalog',

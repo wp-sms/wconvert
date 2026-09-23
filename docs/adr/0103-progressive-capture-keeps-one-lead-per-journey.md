@@ -2,8 +2,8 @@
 
 Product direction agreed during the [#184 planning interview](../plans/184-progressive-capture.md)
 on 2026-09-22 and confirmed after the
-[use-case review](../plans/184-progressive-capture/decision-review.md). Runtime
-implementation is pending. Ordinary multi-screen forms save and hand off once
+[use-case review](../plans/184-progressive-capture/decision-review.md). Implemented on the issue branch; see the
+[verification record](../plans/184-progressive-capture/verification.md). Ordinary multi-screen forms save and hand off once
 at their final Submit. The separate optional email/SMS signup experience is the
 bounded exception; navigation is never autosave.
 
@@ -45,7 +45,7 @@ and reorder screens in a linear journey, with a primary submission and optional
 other-channel signup. Curated
 Templates provide starting points; conditional branching is outside this feature.
 Content-only screens are meaningful parts of a linear journey, while navigation
-remains distinct from a submission. The concrete JSON syntax is still proposed.
+remains distinct from a submission. The production JSON contract is `tree.v: 2`.
 
 Reports include the overall Conversion count, separate email/SMS capture totals,
 and anonymous screen progress counts. Repeated screen visits are not unique
@@ -63,7 +63,7 @@ continues to own work/retries. No new tables or Lead columns are approved.
 
 - [ADR 0002](0002-leads-are-immutable-by-schema.md): replace absolute Lead
   immutability with a narrowly authorized addition within one capture journey.
-  The blanket no-update test must become tests of that boundary when implemented.
+  The source guard permits only the two capture/handoff writers; behavior checks exercise the addition boundary.
 - [ADR 0031](0031-a-lead-has-exactly-one-origin.md): visitor submission remains
   the only origin, but one journey may contain multiple explicit submissions.
 - [ADR 0021](0021-lead-identity-is-computed-not-stored.md): independent captures
@@ -91,7 +91,22 @@ continues to own work/retries. No new tables or Lead columns are approved.
 
 The companion plan specifies the JSON contract, purpose-specific routing,
 30-minute memory-only continuation, atomic request receipts, accepted snapshots,
-reporting scopes and erasure behavior. These require implementation and real
-WordPress verification; the documents do not claim the current runtime supports
-them. No cross-visit Contact model, autosave, delayed Smart Sync or generalized
+reporting scopes and erasure behavior. These are implemented and verified on isolated WordPress/MySQL, including
+concurrency and interrupted queue handoff. No cross-visit Contact model, autosave, delayed Smart Sync or generalized
 sending policy is added. Exactly-once external delivery is not promised.
+
+## Measured byte-budget amendment
+
+Flow identities, field references and distinct Campaign contract fingerprints
+are now part of the measured visitor payload. The five-Campaign/reopen fixture
+crossed the previous 2,048 B cap (2,129 B even before distinct fingerprint values
+were added). The hard page cap is 2,560 B; the derived per-design cap is 1,280 B.
+The measurement descends screen wrappers and varies Campaign fingerprints.
+This is an explicit implementation tradeoff for the agreed feature, not a claim
+that the previous fixture still passes unchanged.
+
+Free retains its 14,012 B loader cap. Paid loaders now cap at 19,456 B (19 KiB):
+shared journey handling plus existing recovery/content-lock code exceeded the
+18 KiB limit by roughly 0.6 KiB at Elite. No feature is moved into an unmeasured
+lazy download. Final gzip sizes are recorded with verification. These budget
+amendments do not authorize any additional database schema change.

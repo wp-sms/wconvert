@@ -4,22 +4,7 @@ namespace WConvert\Lead;
 
 defined('ABSPATH') || exit;
 
-/**
- * A [[Lead]]: one capture EVENT — one person submitted one form, at one time,
- * on one page, into one [[Optin]].
- *
- * **It has no lifecycle.** It is never confirmed, unsubscribed, bounced or
- * re-engaged; it is a row in a log, not a record under management. That is
- * enforced by the schema rather than by this comment — `wconvert_leads` has no
- * `status` column and no `updated_at`, so acquiring one takes a migration a
- * reviewer will see (ADR 0002).
- *
- * There is nothing to mutate here for the same reason. The type is readonly
- * not as a style but because a Lead genuinely never changes after the instant
- * it is written.
- *
- * @since 0.1.0
- */
+/** One journey's combined capture record. Accepted submission values stay fixed. */
 final class Lead
 {
     /**
@@ -32,6 +17,8 @@ final class Lead
         public readonly ?string $phone,
         public readonly array $fields,
         public readonly string $createdAt,
+        /** @var array<string, mixed> Internal accepted snapshots; never a public DTO. */
+        public readonly array $capture = [],
     ) {
     }
 
@@ -56,8 +43,9 @@ final class Lead
             (string) ($row['optin_id'] ?? ''),
             self::nullableString($row['email'] ?? null),
             self::nullableString($row['phone'] ?? null),
-            array_filter(is_array($decoded) ? $decoded : [], 'is_string'),
-            (string) ($row['created_at'] ?? '')
+            array_filter(is_array($decoded['answers'] ?? null) ? $decoded['answers'] : [], 'is_string'),
+            (string) ($row['created_at'] ?? ''),
+            is_array($decoded['capture'] ?? null) ? $decoded['capture'] : []
         );
     }
 
@@ -74,6 +62,18 @@ final class Lead
             'fields' => $this->fields,
             'created_at' => $this->createdAt,
         ];
+    }
+
+    /** Frozen payload for one job; erasure is checked by the repository before this read. */
+    public function submission(string $id): ?self
+    {
+        $snapshot = $this->capture['submissions'][$id] ?? null;
+        if (!is_array($snapshot) || !is_array($snapshot['values'] ?? null)) { return null; }
+        $values = $snapshot['values'];
+        $email = $values['email'] ?? null;
+        $phone = $values['phone'] ?? null;
+        unset($values['email'], $values['phone']);
+        return new self($this->id, $this->optinId, $email, $phone, $values, $this->createdAt);
     }
 
     private static function nullableString(?string $value): ?string

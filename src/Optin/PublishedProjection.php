@@ -386,6 +386,13 @@ final class PublishedProjection
             }
         }
 
+        if (isset($payload['template'])) {
+            $payload['template'] = \WConvert\Template\CaptureContract::template($published, (string) ($row['goal'] ?? ''), get_privacy_policy_url());
+            if (($payload['template']['tree']['submissions'] ?? []) !== []) {
+                $payload['capture_contract'] = \WConvert\Template\CaptureContract::fingerprint($published, (string) ($row['goal'] ?? ''), get_privacy_policy_url());
+            }
+        }
+
         if (isset($payload['content_lock'])) {
             $lock = ContentLock::normalize($payload['content_lock']);
             if ($lock === null || !ContentLock::compatible($published, $vocabulary->partition($rules)['triggers'])) {

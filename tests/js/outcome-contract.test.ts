@@ -1,3 +1,4 @@
+import { treeFixture } from './support/journey';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
@@ -16,7 +17,7 @@ describe('the Goal contract on the edited draft', () => {
     expect(outcomeDesignIssue(sms, phone)).toBeNull();
     const optional = JSON.parse(JSON.stringify(phone).replaceAll('"required":true', '"required":false'));
     expect(outcomeDesignIssue(sms, optional)).toBe(sms.requirement);
-    const hidden = { ...phone, tree: { steps: phone.tree.steps.map((step, index) => index === 0 ? { ...step, hidden: true } : step) } };
+    const hidden = { ...phone, tree: treeFixture({ steps: phone.tree.steps.map((step, index) => index === 0 ? { ...step, content: { ...step.content, hidden: true } } : step) }) };
     expect(outcomeDesignIssue(sms, hidden)).toBe(sms.requirement);
   });
 

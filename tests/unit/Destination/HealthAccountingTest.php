@@ -74,7 +74,7 @@ final class HealthAccountingTest extends TestCase
             'optin_id' => '01OPTIN',
             'email' => 'sarah@example.com',
             'phone' => null,
-            'fields' => '{"name":"Sarah"}',
+            'fields' => (string) json_encode(['answers' => ['name' => 'Sarah'], 'capture' => ['submissions' => ['primary' => ['values' => ['name' => 'Sarah', 'email' => 'sarah@example.com']]]]]),
             'created_at' => '2026-08-25 10:00:00',
         ];
 

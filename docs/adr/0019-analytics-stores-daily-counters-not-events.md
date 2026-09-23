@@ -10,7 +10,7 @@ There is no event table, and `wconvert_stats` holds one row per
 the user approved adding `scope` to this existing table and its primary key.
 Empty scope retains Campaign totals; bounded channel and revision/screen scopes
 support capture-journey reports. This still stores daily counters, not raw events.
-The schema and reader changes are pending implementation.
+The schema and readers implement these scoped counters.
 
 The row was already almost a counter.
 [ADR 0020](0020-conversions-are-interpreted-at-read.md) strips every dimension

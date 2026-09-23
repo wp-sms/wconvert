@@ -72,6 +72,7 @@ final class PushJob
         public readonly string $leadId,
         public readonly string $destinationId,
         public readonly int $attempt = 1,
+        public readonly string $submissionId = 'primary',
     ) {
     }
 
@@ -88,15 +89,15 @@ final class PushJob
             return null;
         }
 
-        return new self($leadId, $destinationId, max(1, (int) ($args['attempt'] ?? 1)));
+        return new self($leadId, $destinationId, max(1, (int) ($args['attempt'] ?? 1)), (string) ($args['submission'] ?? 'primary'));
     }
 
     /**
-     * @return array{lead: string, destination: string, attempt: int}
+     * @return array{lead: string, destination: string, attempt: int, submission: string}
      */
     public function toArgs(): array
     {
-        return ['lead' => $this->leadId, 'destination' => $this->destinationId, 'attempt' => $this->attempt];
+        return ['lead' => $this->leadId, 'destination' => $this->destinationId, 'attempt' => $this->attempt, 'submission' => $this->submissionId];
     }
 
     public function hasAttemptsLeft(): bool
@@ -106,7 +107,7 @@ final class PushJob
 
     public function next(): self
     {
-        return new self($this->leadId, $this->destinationId, $this->attempt + 1);
+        return new self($this->leadId, $this->destinationId, $this->attempt + 1, $this->submissionId);
     }
 
     /**

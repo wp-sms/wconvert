@@ -22,15 +22,15 @@ export function ScreenControls({
 }) {
   return (
     <div className="wconvert-segmented" aria-label={__('Campaign screen', 'wconvert')}>
-      {template.tree.steps.map((_, index) => (
+      {template.tree.steps.map((screen, index) => (
         <Button
-          key={index}
+          key={screen.id}
           variant="ghost"
           size="sm"
           aria-pressed={!extra?.selected && step === index}
           onClick={() => onChange(index)}
         >
-          {stepName(index + 1)}
+          {screen.name}
         </Button>
       ))}
       {extra && <Button variant="ghost" size="sm" aria-pressed={extra.selected} onClick={extra.onSelect}>{extra.label}</Button>}

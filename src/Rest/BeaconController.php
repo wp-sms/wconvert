@@ -160,7 +160,17 @@ final class BeaconController implements RestController
                 continue;
             }
 
-            $this->stats->increment($event->optinId, $event->kind, $today);
+            $screenEvent = str_starts_with($event->kind->value, 'screen_');
+            if ($screenEvent) {
+                if (preg_match('/^screen:([a-f0-9]{64}):([a-z][a-z0-9_-]{0,47})$/D', $event->scope, $parts) !== 1) { continue; }
+                $definition = get_option('wconvert_flow_' . $event->optinId . '_' . $parts[1], []);
+                if (!is_array($definition) || !isset($definition[$parts[2]])) { continue; }
+            } elseif ($event->scope !== '') { continue; }
+            if ($event->kind === \WConvert\Stats\StatKind::Conversion) {
+                $optin = PublishedOptin::findInSet($this->publishedSet->all(), $event->optinId);
+                if (!empty($optin?->payload['template']['tree']['submissions'])) { continue; }
+            }
+            $this->stats->increment($event->optinId, $event->kind, $today, $event->scope);
         }
 
         return new WP_REST_Response(null, 204);

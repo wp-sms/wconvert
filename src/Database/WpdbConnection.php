@@ -16,6 +16,7 @@ defined('ABSPATH') || exit;
 final class WpdbConnection implements Connection
 {
     private \wpdb $wpdb;
+    private bool $transactional = false;
 
     public function __construct(?\wpdb $wpdb = null)
     {
@@ -25,6 +26,35 @@ final class WpdbConnection implements Connection
 
         /** @var \wpdb $wpdb */
         $this->wpdb = $wpdb;
+    }
+
+    /** @template T
+     * @param callable(): T $work
+     * @return T
+     */
+    public function transaction(callable $work): mixed
+    {
+        if (!$this->transactional) {
+            // Progressive capture must fail closed on non-transactional tables.
+            $rows = $this->wpdb->get_results($this->wpdb->prepare(
+                'SELECT ENGINE FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME IN (%s, %s, %s)',
+                $this->wpdb->prefix . self::TABLE_OPTIONS, $this->wpdb->prefix . self::TABLE_LEADS, $this->wpdb->prefix . self::TABLE_STATS
+            ), ARRAY_A);
+            $this->assertSucceeded($rows);
+            if (count($rows ?? []) !== 3 || array_filter($rows, static fn (array $row): bool => strtoupper((string) $row['ENGINE']) !== 'INNODB') !== []) {
+                throw new DatabaseException('Capture requires transactional WordPress storage.');
+            }
+            $this->transactional = true;
+        }
+        $this->assertSucceeded($this->wpdb->query('START TRANSACTION'));
+        try {
+            $result = $work();
+            $this->assertSucceeded($this->wpdb->query('COMMIT'));
+            return $result;
+        } catch (\Throwable $failure) {
+            $this->wpdb->query('ROLLBACK');
+            throw $failure;
+        }
     }
 
     /**

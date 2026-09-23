@@ -5,38 +5,12 @@ namespace WConvert\Tests\Unit\Lead;
 use PHPUnit\Framework\Attributes\CoversNothing;
 use PHPUnit\Framework\TestCase;
 
-/**
- * **Nothing in either plugin tree writes to a [[Lead]] row.**
- *
- * `tests/unit/Database/SchemaTest.php` holds the storage half of ADR 0002 —
- * no `status`, no `updated_at` — and that is the half a reviewer notices,
- * because it is a migration. This is the other half. `wconvert_leads` still
- * has six columns an `update()` could legally write to, and
- * {@see \WConvert\Database\Connection} still offers the method, because
- * `wconvert_optins` genuinely needs it: a soft delete IS an update.
- *
- * So the guard cannot be "there is no `update()`". It has to be "no `update()`
- * names this table", and that is a property of the SOURCE rather than of any
- * one class — which is why it is asserted by reading the source, the way
- * `bin/pro-php-scan.php` asserts the free/Pro boundary.
- *
- * #25 is the ticket that made this necessary. Erasure is the caller that
- * WOULD have written to a Lead row under the usual WordPress convention —
- * anonymising blanks the identifying columns — and ADR 0018 chose a `DELETE`
- * so that ADR 0002 needed no carve-out. A carve-out is exactly what a future
- * reader would add back, absent something that fails.
- *
- * **#26 is the ticket that made it widen.** It added `upsert()` to
- * {@see \WConvert\Database\Connection} for the analytics counter, and the
- * `ON DUPLICATE KEY UPDATE` half of that is an update by another name: against
- * `wconvert_leads` it would be a write to a row that already existed, which is
- * the exact thing this file exists to make unspellable. So the scan is over
- * WRITE METHODS rather than over one method name — {@see self::WRITE_METHODS}
- * — and the day the interface widens a third time, this list is where that
- * widening has to be admitted.
+/** Only journey acceptance and its initial queue handoff may update a Lead.
+ * General profile editing remains forbidden (ADR 0002 amended by ADR 0103).
+ * Real WordPress verification exercises immutable accepted values and erasure.
  */
 #[CoversNothing]
-final class NoLeadIsEverUpdatedTest extends TestCase
+final class LeadUpdateBoundaryTest extends TestCase
 {
     /**
      * The two ways the lead log gets named.
@@ -53,10 +27,9 @@ final class NoLeadIsEverUpdatedTest extends TestCase
      * Every method on {@see \WConvert\Database\Connection} that can write to
      * a row which already exists.
      *
-     * `insert()` is deliberately absent: an insert is the ONE write a Lead ever
-     * takes, and `bin/verify-lead-log.php` relies on it — its retention fixture
+     * `insert()` is deliberately absent: initial capture creates the Lead, and `bin/verify-lead-log.php` relies on it — its retention fixture
      * inserts a Lead with an aged ULID rather than rewriting one, because
-     * rewriting is the thing no file in this repository may do.
+     * retention must remain anchored to first acceptance.
      *
      * `delete()` is absent for a different reason: removing a Lead is what ADR
      * 0018 chose ON PURPOSE, so that anonymising — which is an update — never
@@ -196,21 +169,20 @@ final class NoLeadIsEverUpdatedTest extends TestCase
     /**
      * The claim. Every file in both trees, and not one of them.
      */
-    public function testNoFileInEitherTreeWritesToALeadRow(): void
+    public function testOnlyTheAcceptedJourneyAndItsHandoffCanUpdateALead(): void
     {
         $offenders = [];
 
         foreach (self::everyPhpFile() as $file) {
             foreach (self::leadWritesIn((string) file_get_contents($file)) as $line) {
-                $offenders[] = basename($file) . ':' . $line;
+                $offenders[] = basename($file);
             }
         }
 
         $this->assertSame(
-            [],
-            $offenders,
-            'ADR 0002: a Lead has no lifecycle, so no update() and no upsert() may name wconvert_leads. '
-                . 'ADR 0018 chose a DELETE for erasure precisely so this stayed true.'
+            ['SubmissionDispatcher.php', 'JourneyCapture.php'],
+            array_values(array_unique($offenders)),
+            'ADR 0103: only accepted additions and their initial handoff may update the combined capture record.'
         );
 
         $this->assertNotSame([], self::everyPhpFile(), 'the scan must have had something to look at');

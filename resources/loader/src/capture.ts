@@ -169,8 +169,8 @@ async function send(endpoint: string, payload: string): Promise<RefusalBody | nu
 }
 
 /** Keep submitted values steady and make waiting visible; restore on failure. */
-function pending(root: HTMLElement): () => void {
-  const buttons = [...root.querySelectorAll<HTMLButtonElement>('button[type="submit"]')].filter((button) => !button.disabled);
+export function pending(root: HTMLElement): () => void {
+  const buttons = [...root.querySelectorAll<HTMLButtonElement>('button.wc-button')].filter((button) => !button.disabled);
   const fields = [...root.querySelectorAll<HTMLInputElement>('input.wc-input')].filter((input) => !input.readOnly);
   const checkboxes = [...root.querySelectorAll<CaptureInput>('input.wc-checkbox,select.wc-input')].filter((input) => !input.disabled);
 
@@ -224,7 +224,7 @@ function body(root: HTMLElement, optinId: string): string {
  * One error element, replaced rather than appended to: a form that stacks
  * every attempt tells the visitor less with each one.
  */
-function refuse(root: HTMLElement, message: string, field: string | null): void {
+export function refuse(root: HTMLElement, message: string, field: string | null): void {
   clear(root);
 
   const error = document.createElement('p');
@@ -250,7 +250,7 @@ function refuse(root: HTMLElement, message: string, field: string | null): void 
   input.focus();
 }
 
-function clear(root: HTMLElement): void {
+export function clear(root: HTMLElement): void {
   root.querySelector(`.${CAPTURE_ERROR_CLASS}`)?.remove();
 
   for (const marked of root.querySelectorAll(`[aria-describedby~="${ERROR_ID}"]`)) {

@@ -142,7 +142,7 @@ final class BundledPlaybooksTest extends TestCase
             foreach (self::library()->servicing($goal) as $playbook) {
                 $this->assertArrayHasKey(
                     'consent_text',
-                    $playbook->copy,
+                    $playbook->copy['screens']['submission:' . ($goal === Goal::GrowSmsList ? 'phone' : 'email')] ?? $playbook->copy,
                     "{$playbook->id} cannot show the consent its Goal expects"
                 );
             }
@@ -359,17 +359,12 @@ final class BundledPlaybooksTest extends TestCase
      */
     private static function wordsIn(array $copy): array
     {
-        foreach ($copy as $role => $words) {
-            if (!is_array($words) || !is_array($words['options'] ?? null)) {
-                continue;
-            }
-
-            foreach ($words['options'] as $index => $option) {
-                if (is_array($option)) {
-                    unset($copy[$role]['options'][$index]['value']);
-                }
-            }
-        }
+        $stripValues = static function (array $value) use (&$stripValues): array {
+            if (isset($value['value'], $value['label'])) { unset($value['value']); }
+            foreach ($value as $key => $child) { if (is_array($child)) { $value[$key] = $stripValues($child); } }
+            return $value;
+        };
+        $copy = $stripValues($copy);
 
         $words = [];
 

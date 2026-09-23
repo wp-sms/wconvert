@@ -124,6 +124,7 @@ final class CoreServiceProvider implements ServiceProvider
      * @var list<class-string<RestController>>
      */
     public const REST_CONTROLLERS = [
+        \WConvert\Rest\JourneyStatsController::class,
         OptinController::class,
         TemplateController::class,
         TemplateCatalogController::class,
@@ -465,11 +466,15 @@ final class CoreServiceProvider implements ServiceProvider
             )
         );
 
+        $container->register(\WConvert\Rest\JourneyStatsController::class, static fn (ServiceContainer $c) => new \WConvert\Rest\JourneyStatsController($c->resolve(Connection::class)));
+
         $container->register(
             CaptureController::class,
             static fn (ServiceContainer $c): CaptureController => new CaptureController(
                 $c->resolve(PublishedSet::class),
-                $c->resolve(LeadCapture::class),
+                new \WConvert\Lead\JourneyCapture($c->resolve(Connection::class), $c->resolve(\WConvert\Stats\StatsRepository::class)),
+                $c->resolve(OptinRepository::class),
+                new \WConvert\Lead\CaptureGrant(wp_salt('auth')),
                 $c->resolve(TemplateVocabulary::class),
                 $c->resolve(CaptureRateLimit::class)
             )
@@ -738,6 +743,14 @@ final class CoreServiceProvider implements ServiceProvider
 
         add_action('update_option_timezone_string', $reresolve);
         add_action('update_option_gmt_offset', $reresolve);
+        $policyChanged = static function () use ($container): void { $container->resolve(OptinRepository::class)->rebuildForPolicyChange(); };
+        foreach (['wp_page_for_privacy_policy', 'permalink_structure', 'home', 'siteurl'] as $option) {
+            add_action('update_option_' . $option, $policyChanged);
+        }
+        add_action('post_updated', static function (int $id) use ($policyChanged): void {
+            if ($id === (int) get_option('wp_page_for_privacy_policy')) { $policyChanged(); }
+        });
+
 
         /*
          * ====================================================================
@@ -818,8 +831,11 @@ final class CoreServiceProvider implements ServiceProvider
         // dispatch attaches to a capture, which arrives through REST from a
         // visitor's page; the worker attaches to an Action Scheduler hook,
         // which fires from a loopback request that is neither (#4).
-        $container->resolve(PushDispatcher::class)->hooks();
         $container->resolve(PushWorker::class)->hooks();
+        (new \WConvert\Destination\SubmissionDispatcher(
+            $container->resolve(Connection::class), $container->resolve(\WConvert\Queue\Queue::class),
+            $container->resolve(DestinationStore::class), $container->resolve(DestinationRegistry::class), $container->resolve(HealthStore::class)
+        ))->hooks();
 
         if (!is_admin()) {
             $container->resolve(LoaderEnqueue::class)->hooks();

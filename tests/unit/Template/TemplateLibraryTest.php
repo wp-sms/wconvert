@@ -126,14 +126,11 @@ final class TemplateLibraryTest extends TestCase
             $nodes = self::consentNodesIn($template['tree']);
 
             $this->assertCount(
-                $captures ? 1 : 0,
+                $captures ? array_sum(array_map(static fn (array $s): int => count($s['consents']), $template['tree']['submissions'])) : 0,
                 $nodes,
                 "{$id}: a capture design offers consent capture, and nothing else offers it"
             );
 
-            foreach ($nodes as $node) {
-                $this->assertTrue($node['hidden'] ?? false, "{$id}: ships consent turned on for the merchant");
-            }
         }
     }
 

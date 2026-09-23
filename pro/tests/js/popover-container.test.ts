@@ -1,3 +1,4 @@
+import { treeFixture } from '../../../tests/js/support/journey';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { DOCUMENT_STYLE_ID } from '@renderer/mount';
 import { A_DESIGNS_OWN_WIDTH, SHADOW_CSS } from '@renderer/css';
@@ -20,7 +21,7 @@ import { isShowing, withoutPopoverSupport } from '../../../tests/js/support/popo
  */
 
 const TEMPLATE: Template = {
-  tree: {
+  tree: treeFixture({
     steps: [
       {
         type: 'stack',
@@ -32,7 +33,7 @@ const TEMPLATE: Template = {
       },
       { type: 'stack', children: [{ type: 'heading', role: 'success_headline', text: 'Check your inbox' }] },
     ],
-  },
+  }),
   tokens: { bg: '#fff' },
 };
 

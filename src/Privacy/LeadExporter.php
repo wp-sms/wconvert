@@ -143,9 +143,15 @@ final class LeadExporter
             // its own, because it is evidence rather than a captured value.
             // **Nothing is emitted where it is absent** — see the class
             // docblock: absent is "no wording to show", never "not given".
-            $pairs[] = $name === 'consent_text'
-                ? ['name' => __('Consent', 'wconvert'), 'value' => $value]
-                : ['name' => $name, 'value' => $value];
+            $label = match ($name) {
+                'consent_text' => __('Consent', 'wconvert'),
+                'email_consent_text' => __('Email consent', 'wconvert'),
+                'sms_consent_text' => __('SMS consent', 'wconvert'),
+                'email_accepted_at' => __('Email accepted at (UTC)', 'wconvert'),
+                'sms_accepted_at' => __('SMS accepted at (UTC)', 'wconvert'),
+                default => $name,
+            };
+            $pairs[] = ['name' => $label, 'value' => $value];
         }
 
         return $pairs;

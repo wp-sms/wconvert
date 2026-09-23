@@ -98,7 +98,7 @@ final class FirstDaysAreAMinimumTest extends TestCase
         $this->assertSame([], $this->db->reads[0]['params']);
         $this->assertStringContainsString('MIN(stat_date)', $this->db->reads[0]['sql']);
         $this->assertStringContainsString('GROUP BY kind', $this->db->reads[0]['sql']);
-        $this->assertStringNotContainsString('WHERE', $this->db->reads[0]['sql']);
+        $this->assertStringContainsString("WHERE scope = ''", $this->db->reads[0]['sql']);
     }
 
     /**

@@ -58,6 +58,14 @@ defined('ABSPATH') || exit;
  */
 interface Connection
 {
+    public const TABLE_OPTIONS = 'options';
+
+    /** @template T
+     * @param callable(): T $work
+     * @return T
+     */
+    public function transaction(callable $work): mixed;
+
     public const TABLE_OPTINS = 'wconvert_optins';
 
     /**

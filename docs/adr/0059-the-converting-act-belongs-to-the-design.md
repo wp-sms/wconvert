@@ -5,7 +5,7 @@ words, and the grouping on Analytics. It no longer declares the converting act.
 Which act an [[Optin]] converts on is read from the design it holds, and from
 nowhere else.
 
-*Amended for planned progressive capture by
+*Amended for progressive capture by
 [ADR 0103](0103-progressive-capture-keeps-one-lead-per-journey.md): the design
 still defines the converting act, but the first accepted capture in a journey
 counts once. Subsequent submissions can add to its Lead without counting again.

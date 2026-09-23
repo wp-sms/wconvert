@@ -41,18 +41,18 @@ final class TemplateVocabularyTest extends TestCase
     public function testAnUnknownNodeTypeIsDropped(): void
     {
         $normalized = self::normalize([
-            'tree' => ['steps' => [[
+            'tree' => \WConvert\Tests\Unit\Support\JourneyFixture::tree(['steps' => [[
                 'type' => 'stack',
                 'children' => [
                     ['type' => 'heading', 'text' => 'Join'],
                     ['type' => 'carousel', 'slides' => 4],
                 ],
-            ]]],
+            ]]]),
         ]);
 
         $this->assertSame(
             [['type' => 'heading', 'text' => 'Join', 'id' => 'n1']],
-            $normalized['tree']['steps'][0]['children']
+            $normalized['tree']['steps'][0]['content']['children']
         );
     }
 
@@ -66,19 +66,19 @@ final class TemplateVocabularyTest extends TestCase
     public function testAnUnknownParamOnAKnownNodeIsDropped(): void
     {
         $normalized = self::normalize([
-            'tree' => ['steps' => [['type' => 'heading', 'text' => 'Join', 'onclick' => 'alert(1)']]],
+            'tree' => \WConvert\Tests\Unit\Support\JourneyFixture::tree(['steps' => [['type' => 'heading', 'text' => 'Join', 'onclick' => 'alert(1)']]]),
         ]);
 
-        $this->assertSame(['type' => 'heading', 'text' => 'Join', 'id' => 'n1'], $normalized['tree']['steps'][0]);
+        $this->assertSame(['type' => 'heading', 'text' => 'Join', 'id' => 'n1'], $normalized['tree']['steps'][0]['content']);
     }
 
     public function testAnUnknownSlotRoleIsDroppedButTheNodeSurvives(): void
     {
         $normalized = self::normalize([
-            'tree' => ['steps' => [['type' => 'heading', 'role' => 'shout', 'text' => 'Join']]],
+            'tree' => \WConvert\Tests\Unit\Support\JourneyFixture::tree(['steps' => [['type' => 'heading', 'role' => 'shout', 'text' => 'Join']]]),
         ]);
 
-        $this->assertSame(['type' => 'heading', 'text' => 'Join', 'id' => 'n1'], $normalized['tree']['steps'][0]);
+        $this->assertSame(['type' => 'heading', 'text' => 'Join', 'id' => 'n1'], $normalized['tree']['steps'][0]['content']);
     }
 
     /**
@@ -99,14 +99,14 @@ final class TemplateVocabularyTest extends TestCase
     public function testASlotRoleMayBeClaimedByMoreThanOneNode(): void
     {
         $normalized = self::normalize([
-            'tree' => ['steps' => [
+            'tree' => \WConvert\Tests\Unit\Support\JourneyFixture::tree(['steps' => [
                 ['type' => 'heading', 'role' => 'headline', 'text' => 'First'],
                 ['type' => 'heading', 'role' => 'headline', 'text' => 'Second'],
-            ]],
+            ]]),
         ]);
 
-        $this->assertSame('headline', $normalized['tree']['steps'][0]['role'] ?? null);
-        $this->assertSame('headline', $normalized['tree']['steps'][1]['role'] ?? null);
+        $this->assertSame('headline', $normalized['tree']['steps'][0]['content']['role'] ?? null);
+        $this->assertSame('headline', $normalized['tree']['steps'][1]['content']['role'] ?? null);
     }
 
     /**
@@ -116,34 +116,34 @@ final class TemplateVocabularyTest extends TestCase
     public function testALinkHrefIsSchemeValidatedAtWrite(): void
     {
         $link = static fn (string $href): array => [
-            'tree' => ['steps' => [[
+            'tree' => \WConvert\Tests\Unit\Support\JourneyFixture::tree(['steps' => [[
                 'type' => 'text',
                 'text' => 'Our %s',
                 'link' => ['label' => 'policy', 'href' => $href],
-            ]]],
+            ]]]),
         ];
 
         $kept = self::normalize($link('https://example.test/privacy'));
         $dropped = self::normalize($link('javascript:alert(1)'));
 
-        $this->assertSame('https://example.test/privacy', $kept['tree']['steps'][0]['link']['href']);
-        $this->assertArrayNotHasKey('href', $dropped['tree']['steps'][0]['link']);
+        $this->assertSame('https://example.test/privacy', $kept['tree']['steps'][0]['content']['link']['href']);
+        $this->assertArrayNotHasKey('href', $dropped['tree']['steps'][0]['content']['link']);
     }
 
     public function testTheTwoPanesOfASplitAreValidatedLikeAnyOtherChildren(): void
     {
         $normalized = self::normalize([
-            'tree' => ['steps' => [[
+            'tree' => \WConvert\Tests\Unit\Support\JourneyFixture::tree(['steps' => [[
                 'type' => 'split',
                 'ratio' => 0.4,
                 'start' => [['type' => 'image', 'src' => '/x.png', 'alt' => '']],
                 'end' => [['type' => 'marquee']],
-            ]]],
+            ]]]),
         ]);
 
-        $this->assertCount(1, $normalized['tree']['steps'][0]['start']);
-        $this->assertSame([], $normalized['tree']['steps'][0]['end']);
-        $this->assertSame(0.4, $normalized['tree']['steps'][0]['ratio']);
+        $this->assertCount(1, $normalized['tree']['steps'][0]['content']['start']);
+        $this->assertSame([], $normalized['tree']['steps'][0]['content']['end']);
+        $this->assertSame(0.4, $normalized['tree']['steps'][0]['content']['ratio']);
     }
 
     public function testATemplateThatIsNotATemplateNormalisesToAnEmptyOne(): void
@@ -152,7 +152,7 @@ final class TemplateVocabularyTest extends TestCase
         // tree with no `v` is one written before the key existed, which is a
         // fact a migration would need and cannot reconstruct
         // ({@see \WConvert\Template\TemplateTree::VERSION}).
-        $empty = ['tree' => ['v' => TemplateTree::VERSION, 'steps' => []], 'tokens' => []];
+        $empty = ['tree' => \WConvert\Tests\Unit\Support\JourneyFixture::tree(['v' => TemplateTree::VERSION, 'steps' => []]), 'tokens' => []];
 
         $this->assertSame($empty, self::normalize([]));
         $this->assertSame($empty, self::normalize(['tree' => 'nonsense']));
@@ -167,10 +167,10 @@ final class TemplateVocabularyTest extends TestCase
      */
     public function testEveryTreeThisVocabularyBuildsCarriesItsVersion(): void
     {
-        $tree = ['steps' => [[
+        $tree = \WConvert\Tests\Unit\Support\JourneyFixture::tree(['steps' => [[
             'type' => 'stack',
             'children' => [['type' => 'heading', 'role' => 'headline', 'text' => 'Join']],
-        ]]];
+        ]]]);
 
         $this->assertSame(TemplateTree::VERSION, self::normalize(['tree' => $tree])['tree']['v']);
         $this->assertSame(TemplateTree::VERSION, self::vocabulary()->withoutCopy($tree)['v']);
@@ -189,10 +189,10 @@ final class TemplateVocabularyTest extends TestCase
     public function testAConsentNodeCanCarryItsSlotRole(): void
     {
         $normalized = self::normalize([
-            'tree' => ['steps' => [['type' => 'consent', 'role' => 'consent_text', 'text' => 'I agree to the %s.']]],
+            'tree' => \WConvert\Tests\Unit\Support\JourneyFixture::tree(['steps' => [['type' => 'consent', 'role' => 'consent_text', 'text' => 'I agree to the %s.']]]),
         ]);
 
-        $this->assertSame('consent_text', $normalized['tree']['steps'][0]['role'] ?? null);
+        $this->assertSame('consent_text', $normalized['tree']['steps'][0]['content']['role'] ?? null);
     }
 
     /**
@@ -203,20 +203,20 @@ final class TemplateVocabularyTest extends TestCase
      */
     public function testTakingACopyLeavesEveryWordBehindAndKeepsEverythingElse(): void
     {
-        $stripped = self::vocabulary()->withoutCopy(['steps' => [[
+        $stripped = self::vocabulary()->withoutCopy(\WConvert\Tests\Unit\Support\JourneyFixture::tree(['steps' => [[
             'type' => 'stack',
             'children' => [
                 ['type' => 'heading', 'role' => 'headline', 'text' => 'Get 10% off'],
                 ['type' => 'field', 'name' => 'email', 'label' => 'Email', 'placeholder' => 'you@x.test', 'required' => true],
-                ['type' => 'image', 'src' => '/tote.png', 'alt' => 'A tote bag'],
+                ['type' => 'image', 'src' => '/tote.png', 'alt' => 'A tote bag', 'id' => 'n3'],
                 ['type' => 'text', 'role' => 'fine_print', 'text' => 'Our %s', 'link' => ['label' => 'policy']],
             ],
-        ]]]);
+        ]]]));
 
-        [$heading, $field, $image, $fine] = $stripped['steps'][0]['children'];
+        [$heading, $field, $image, $fine] = $stripped['steps'][0]['content']['children'];
 
         // The words go.
-        $this->assertSame(['type' => 'heading', 'role' => 'headline'], $heading);
+        $this->assertSame(['type' => 'heading', 'role' => 'headline', 'id' => 'n1'], $heading);
         $this->assertArrayNotHasKey('label', $field);
         $this->assertArrayNotHasKey('placeholder', $field);
         $this->assertArrayNotHasKey('text', $fine);
@@ -230,7 +230,7 @@ final class TemplateVocabularyTest extends TestCase
 
         // And the image, because "a template's image slot keeps the template's
         // own asset or stays empty" and Playbooks never supply one (ADR 0013).
-        $this->assertSame(['type' => 'image', 'src' => '/tote.png', 'alt' => 'A tote bag'], $image);
+        $this->assertSame(['type' => 'image', 'src' => '/tote.png', 'alt' => 'A tote bag', 'id' => 'n3'], $image);
     }
 
     /**
@@ -253,7 +253,7 @@ final class TemplateVocabularyTest extends TestCase
     public function testOnlyTheLeavesTheManifestNamesMayBeHidden(): void
     {
         $normalized = self::normalize([
-            'tree' => ['steps' => [[
+            'tree' => \WConvert\Tests\Unit\Support\JourneyFixture::tree(['steps' => [[
                 'type' => 'stack',
                 'children' => [
                     ['type' => 'heading', 'text' => 'Join', 'hidden' => true],
@@ -263,10 +263,10 @@ final class TemplateVocabularyTest extends TestCase
                     ['type' => 'field', 'name' => 'email', 'hidden' => true],
                     ['type' => 'button', 'label' => 'Join', 'action' => 'submit', 'hidden' => true],
                 ],
-            ]]],
+            ]]]),
         ]);
 
-        $children = $normalized['tree']['steps'][0]['children'];
+        $children = $normalized['tree']['steps'][0]['content']['children'];
 
         foreach (array_slice($children, 0, 4) as $node) {
             $this->assertTrue($node['hidden'], sprintf('%s may be hidden', $node['type']));
@@ -293,14 +293,14 @@ final class TemplateVocabularyTest extends TestCase
     public function testAScopedTokenNameOutsideTheVocabularyIsDropped(): void
     {
         $normalized = self::normalize([
-            'tree' => ['steps' => [[
+            'tree' => \WConvert\Tests\Unit\Support\JourneyFixture::tree(['steps' => [[
                 'type' => 'stack',
                 'tokens' => ['bg' => '#fff4df', 'wobble' => '3deg', '--evil' => 'x'],
                 'children' => [],
-            ]]],
+            ]]]),
         ]);
 
-        $this->assertSame(['bg' => '#fff4df'], $normalized['tree']['steps'][0]['tokens']);
+        $this->assertSame(['bg' => '#fff4df'], $normalized['tree']['steps'][0]['content']['tokens']);
     }
 
     /**
@@ -310,14 +310,14 @@ final class TemplateVocabularyTest extends TestCase
     public function testAScopedTokenValueThatIsNotAScalarIsDropped(): void
     {
         $normalized = self::normalize([
-            'tree' => ['steps' => [[
+            'tree' => \WConvert\Tests\Unit\Support\JourneyFixture::tree(['steps' => [[
                 'type' => 'stack',
                 'tokens' => ['bg' => ['#fff', 'url(javascript:alert(1))'], 'fg' => '#331e17'],
                 'children' => [],
-            ]]],
+            ]]]),
         ]);
 
-        $this->assertSame(['fg' => '#331e17'], $normalized['tree']['steps'][0]['tokens']);
+        $this->assertSame(['fg' => '#331e17'], $normalized['tree']['steps'][0]['content']['tokens']);
     }
 
     /**
@@ -328,10 +328,10 @@ final class TemplateVocabularyTest extends TestCase
     public function testABagThatKeepsNothingLeavesNoKey(): void
     {
         $normalized = self::normalize([
-            'tree' => ['steps' => [['type' => 'row', 'tokens' => ['wobble' => '3deg'], 'children' => []]]],
+            'tree' => \WConvert\Tests\Unit\Support\JourneyFixture::tree(['steps' => [['type' => 'row', 'tokens' => ['wobble' => '3deg'], 'children' => []]]]),
         ]);
 
-        $this->assertArrayNotHasKey('tokens', $normalized['tree']['steps'][0]);
+        $this->assertArrayNotHasKey('tokens', $normalized['tree']['steps'][0]['content']);
     }
 
     /**
@@ -340,7 +340,7 @@ final class TemplateVocabularyTest extends TestCase
     public function testLayoutsAndLeavesMayCarryClosedBags(): void
     {
         $normalized = self::normalize([
-            'tree' => ['steps' => [[
+            'tree' => \WConvert\Tests\Unit\Support\JourneyFixture::tree(['steps' => [[
                 'type' => 'stack',
                 'tokens' => ['bg' => '#111'],
                 'children' => [
@@ -349,10 +349,10 @@ final class TemplateVocabularyTest extends TestCase
                     ['type' => 'split', 'tokens' => ['bg' => '#444'], 'start' => [], 'end' => []],
                     ['type' => 'heading', 'text' => 'Join', 'tokens' => ['fg' => '#555', 'wobble' => '3deg'], 'narrow' => ['heading-size' => '2rem', 'unknown' => 'yes']],
                 ],
-            ]]],
+            ]]]),
         ]);
 
-        $step = $normalized['tree']['steps'][0];
+        $step = $normalized['tree']['steps'][0]['content'];
 
         $this->assertSame(['bg' => '#111'], $step['tokens']);
 
@@ -371,13 +371,13 @@ final class TemplateVocabularyTest extends TestCase
      */
     public function testACopyOfATreeKeepsItsScopedBags(): void
     {
-        $stripped = self::vocabulary()->withoutCopy(['steps' => [[
+        $stripped = self::vocabulary()->withoutCopy(\WConvert\Tests\Unit\Support\JourneyFixture::tree(['steps' => [[
             'type' => 'stack',
             'tokens' => ['bg' => '#fff4df'],
             'children' => [['type' => 'heading', 'text' => 'Join']],
-        ]]]);
+        ]]]));
 
-        $this->assertSame(['bg' => '#fff4df'], $stripped['steps'][0]['tokens']);
-        $this->assertArrayNotHasKey('text', $stripped['steps'][0]['children'][0]);
+        $this->assertSame(['bg' => '#fff4df'], $stripped['steps'][0]['content']['tokens']);
+        $this->assertArrayNotHasKey('text', $stripped['steps'][0]['content']['children'][0]);
     }
 }

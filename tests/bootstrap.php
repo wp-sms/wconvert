@@ -1315,6 +1315,24 @@ if (!class_exists('wpdb')) {
             return $query;
         }
 
+        public function esc_like(string $text): string
+        {
+            return addcslashes($text, '_%\\');
+        }
+
+        public function get_var(string $sql): mixed
+        {
+            $this->queries[] = $sql;
+            return null;
+        }
+
+        /** @return list<mixed> */
+        public function get_col(string $sql): array
+        {
+            $this->queries[] = $sql;
+            return [];
+        }
+
         public function query(string $sql): int|false
         {
             $this->queries[] = $sql;
@@ -1709,4 +1727,13 @@ function get_bloginfo(string $show = '', string $filter = 'raw'): string
 function wp_specialchars_decode(string $text, int $quote_style = ENT_NOQUOTES): string
 {
     return html_entity_decode($text, $quote_style, 'UTF-8');
+}
+
+if (!function_exists('wp_salt')) {
+    function wp_salt(string $scheme = 'auth'): string { return 'wconvert-test-secret-' . $scheme; }
+}
+
+if (!function_exists('as_has_scheduled_action')) {
+    /** @param array<mixed> $args */
+    function as_has_scheduled_action(string $hook, array $args = [], string $group = ''): bool { return false; }
 }

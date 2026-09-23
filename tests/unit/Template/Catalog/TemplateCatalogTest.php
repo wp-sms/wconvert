@@ -43,7 +43,7 @@ final class TemplateCatalogTest extends TestCase
     {
         $entry = json_decode((string) file_get_contents(WCONVERT_DIR . '/resources/templates/library/reading-slip.json'), true, 512, JSON_THROW_ON_ERROR);
         return ['schema' => 1, 'id' => 'reading', 'name' => 'Reading', 'description' => 'A reading card.', 'version' => $version,
-            'requires' => ['plugin' => '0.1.0', 'tree' => 1, 'capabilities' => ['template-tree:1']], 'assets' => [], 'templates' => [$entry]];
+            'requires' => ['plugin' => '0.1.0', 'tree' => 2, 'capabilities' => ['template-tree:2', 'capture-journey:1']], 'assets' => [], 'templates' => [$entry]];
     }
 
     /** @param array<string, mixed> $pack */
@@ -135,7 +135,7 @@ final class TemplateCatalogTest extends TestCase
         file_put_contents($this->directory . '/bad.json', '<?php throw new Exception("executed");');
         $library = TemplateLibrary::from(TemplateVocabulary::fromManifest(), new \WConvert\Template\BundledTemplates(WCONVERT_DIR), $this->installed);
         $this->assertNotNull($library->find('reading-slip'));
-        $this->assertCount(37, $library->all());
+        $this->assertCount(41, $library->all());
     }
 
     public function testSameReleaseIsIdempotentAndCannotOverwriteItsBaseline(): void
@@ -157,7 +157,7 @@ final class TemplateCatalogTest extends TestCase
             catch (RuntimeException $error) { $this->assertStringContainsString('declare every capability', $error->getMessage()); }
         }
         $pack = $this->pack();
-        $pack['templates'][0]['tree']['steps'][0]['children'][] = ['type' => 'field', 'id' => 'extra', 'name' => 'email', 'label' => 'Email', 'options' => [['value' => 'one', 'label' => 'One']]];
+        $pack['templates'][0]['tree']['steps'][0]['content']['children'][] = ['type' => 'field', 'id' => 'extra', 'name' => 'email', 'label' => 'Email', 'options' => [['value' => 'one', 'label' => 'One']]];
         $this->expectException(RuntimeException::class);
         $this->validator->decode(json_encode($pack, JSON_THROW_ON_ERROR));
     }

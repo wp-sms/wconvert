@@ -1,3 +1,4 @@
+import { treeFixture } from './support/journey';
 import { CLICK_OUTCOME } from './support/outcomes';
 import { CheckStrip } from '../../resources/admin/src/builder/CheckStrip';
 import { readFileSync } from 'node:fs';
@@ -65,7 +66,7 @@ const ID = '01JQ00000000000000000000AA';
  * be interesting at all: the panel sets a ground, the stack inside it sets
  * nothing, and the heading in that stack is drawn with the panel's.
  */
-const NESTED: TemplateTree = {
+const NESTED: TemplateTree = treeFixture({
   steps: [
     {
       type: 'stack',
@@ -85,7 +86,7 @@ const NESTED: TemplateTree = {
     },
     { type: 'stack', children: [{ type: 'heading', role: 'success_headline', text: 'Done', id: 'n3' }] },
   ],
-} as unknown as TemplateTree;
+}) as unknown as TemplateTree;
 
 const LABELS = {
   roles: { headline: 'Headline', cta_label: 'Button label', success_headline: 'Headline after they submit' },
@@ -247,7 +248,7 @@ describe('the Style half of the inspector', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
 
     const design = saved();
-    const panel = (design.tree.steps[0] as unknown as {
+    const panel = (design.tree.steps[0].content as unknown as {
       children: { tokens?: Record<string, string> }[];
     }).children[0];
 
@@ -273,7 +274,7 @@ describe('the Style half of the inspector', () => {
 
     await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
 
-    const panel = (saved().tree.steps[0] as unknown as { children: Record<string, unknown>[] })
+    const panel = (saved().tree.steps[0].content as unknown as { children: Record<string, unknown>[] })
       .children[0];
 
     expect(panel).not.toHaveProperty('tokens');
@@ -316,7 +317,7 @@ describe('the Style half of the inspector', () => {
     await userEvent.click(screen.getByRole('button', { name: /^Paste 2 setting/ }));
     await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
 
-    const inner = (saved().tree.steps[0] as unknown as {
+    const inner = (saved().tree.steps[0].content as unknown as {
       children: { children: { tokens?: Record<string, string> }[] }[];
     }).children[0]?.children[0];
 
@@ -376,7 +377,7 @@ describe('the narrow bag, through the width switch', () => {
     await userEvent.type(screen.getByLabelText('Background value'), '#123456');
     await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
 
-    const panel = (saved().tree.steps[0] as unknown as {
+    const panel = (saved().tree.steps[0].content as unknown as {
       children: { tokens?: Record<string, string>; narrow?: Record<string, string> }[];
     }).children[0];
 
@@ -395,7 +396,7 @@ describe('the narrow bag, through the width switch', () => {
   it('tells set-here and set-for-narrow apart', async () => {
     builder.getOptin.mockResolvedValue(
       optin(
-        {
+        treeFixture({
           steps: [
             {
               type: 'stack',
@@ -410,7 +411,7 @@ describe('the narrow bag, through the width switch', () => {
             },
             { type: 'stack', children: [{ type: 'text', role: 'success_body', text: 'Done' }] },
           ],
-        } as unknown as TemplateTree,
+        }) as unknown as TemplateTree,
         { bg: '#ffffff' },
       ),
     );
@@ -454,7 +455,7 @@ describe('a scoped color that follows the palette', () => {
     await userEvent.click(screen.getByRole('button', { name: /→ Button/ }));
     await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
 
-    const panel = (saved().tree.steps[0] as unknown as {
+    const panel = (saved().tree.steps[0].content as unknown as {
       children: { tokens?: Record<string, string> }[];
     }).children[0];
 
@@ -469,7 +470,7 @@ describe('a scoped color that follows the palette', () => {
   it('stops offering it once the value already names a token', async () => {
     builder.getOptin.mockResolvedValue(
       optin(
-        {
+        treeFixture({
           steps: [
             {
               type: 'stack',
@@ -483,7 +484,7 @@ describe('a scoped color that follows the palette', () => {
             },
             { type: 'stack', children: [{ type: 'text', role: 'success_body', text: 'Done' }] },
           ],
-        } as unknown as TemplateTree,
+        }) as unknown as TemplateTree,
         { bg: '#ffffff', accent: '#263f2c' },
       ),
     );
@@ -507,7 +508,7 @@ describe('a scoped color that follows the palette', () => {
  */
 describe('the readability readout at a scope', () => {
   /** A box with a failing `muted` and nothing in it that reads `muted`. */
-  const HEADINGS_ONLY = {
+  const HEADINGS_ONLY = treeFixture({
     steps: [
       {
         type: 'stack',
@@ -522,7 +523,7 @@ describe('the readability readout at a scope', () => {
       },
       { type: 'stack', children: [{ type: 'text', role: 'success_body', text: 'Done' }] },
     ],
-  } as unknown as TemplateTree;
+  }) as unknown as TemplateTree;
 
   it('says nothing about a pair no leaf in the box reads', async () => {
     builder.getOptin.mockResolvedValue(optin(HEADINGS_ONLY, { bg: '#ffffff', fg: '#111827' }));
@@ -536,7 +537,7 @@ describe('the readability readout at a scope', () => {
   it('still says it where the box holds something that reads it', async () => {
     builder.getOptin.mockResolvedValue(
       optin(
-        {
+        treeFixture({
           steps: [
             {
               type: 'stack',
@@ -554,7 +555,7 @@ describe('the readability readout at a scope', () => {
             },
             { type: 'stack', children: [{ type: 'text', role: 'success_body', text: 'Done' }] },
           ],
-        } as unknown as TemplateTree,
+        }) as unknown as TemplateTree,
         { bg: '#ffffff', fg: '#111827' },
       ),
     );
@@ -631,7 +632,7 @@ describe('the tree’s override count', () => {
   it('counts what a box sets, and says nothing for one that sets nothing', async () => {
     builder.getOptin.mockResolvedValue(
       optin(
-        {
+        treeFixture({
           steps: [
             {
               type: 'stack',
@@ -647,7 +648,7 @@ describe('the tree’s override count', () => {
             },
             { type: 'stack', children: [{ type: 'text', role: 'success_body', text: 'Done' }] },
           ],
-        } as unknown as TemplateTree,
+        }) as unknown as TemplateTree,
         { bg: '#ffffff' },
       ),
     );

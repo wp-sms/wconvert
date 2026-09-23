@@ -1,3 +1,4 @@
+import { treeFixture } from './support/journey';
 import { readFileSync, readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { describe, expect, it } from 'vitest';
@@ -19,9 +20,9 @@ import type { TemplateTree } from '@renderer/types';
  * that can have a bug where a `textContent` renderer cannot.
  */
 
-const words = (text: string): TemplateTree => ({
+const words = (text: string): TemplateTree => (treeFixture({
   steps: [{ type: 'stack', children: [{ type: 'heading', role: 'headline', text }] }],
-});
+}));
 
 describe("a Playbook's words", () => {
   it('render as text even when they look like markup', () => {
@@ -40,7 +41,7 @@ describe("a Playbook's words", () => {
    */
   it('build their one link as a constructed anchor, never as parsed markup', () => {
     const root = render(
-      {
+      treeFixture({
         steps: [{
           type: 'stack',
           children: [{
@@ -50,7 +51,7 @@ describe("a Playbook's words", () => {
             link: { label: '<b>Privacy Policy</b>', href: 'https://example.test/privacy' },
           }],
         }],
-      },
+      }),
       {},
     );
 
@@ -69,12 +70,12 @@ describe("a Playbook's words", () => {
    */
   it('render no anchor at all where the site resolved no destination', () => {
     const root = render(
-      {
+      treeFixture({
         steps: [{
           type: 'stack',
           children: [{ type: 'text', role: 'fine_print', text: 'See our %s.', link: { label: 'Privacy Policy' } }],
         }],
-      },
+      }),
       {},
     );
 

@@ -109,7 +109,7 @@ final class JobPayloadTest extends TestCase
 
         self::assertCount(1, $this->queue->jobs);
         self::assertSame(PushJob::HOOK, $this->queue->jobs[0]['hook']);
-        self::assertSame(['lead', 'destination', 'attempt'], array_keys($this->queue->jobs[0]['args']));
+        self::assertSame(['lead', 'destination', 'attempt', 'submission'], array_keys($this->queue->jobs[0]['args']));
         self::assertSame($this->destinationId, $this->queue->jobs[0]['args']['destination']);
         self::assertNull($this->queue->jobs[0]['at'], 'A capture dispatches immediately.');
     }
@@ -199,6 +199,6 @@ final class JobPayloadTest extends TestCase
 
         sort($properties);
 
-        self::assertSame(['attempt', 'destinationId', 'leadId'], $properties);
+        self::assertSame(['attempt', 'destinationId', 'leadId', 'submissionId'], $properties);
     }
 }

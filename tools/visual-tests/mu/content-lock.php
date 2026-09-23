@@ -16,13 +16,13 @@ add_action('init', static function (): void {
             'display_type' => 'inline', 'content_lock' => ['mode' => 'hide'],
             'rules' => [['type' => 'page_load']], 'capture_mode' => 'local',
             'frequency' => ['stopAfterConversion' => false],
-            'template' => ['tokens' => ['width' => '24rem', 'accent' => '#12505a'], 'tree' => ['steps' => [
-                ['type' => 'stack', 'children' => [['type' => 'heading', 'text' => 'Get the bonus'], ['type' => 'field', 'name' => 'email', 'required' => true], ['type' => 'button', 'label' => 'Unlock', 'action' => 'submit']]],
-                ['type' => 'stack', 'children' => [['type' => 'heading', 'text' => 'Request received']]],
+            'template' => ['tokens' => ['width' => '24rem', 'accent' => '#12505a'], 'tree' => ['v' => 2, 'submissions' => [['id' => 'primary', 'required' => true, 'fields' => ['n2'], 'consents' => []]], 'steps' => [
+                ['id' => 'details', 'name' => 'Details', 'kind' => 'input', 'content' => ['type' => 'stack', 'children' => [['type' => 'heading', 'id' => 'n1', 'text' => 'Get the bonus'], ['type' => 'field', 'id' => 'n2', 'name' => 'email', 'required' => true], ['type' => 'button', 'id' => 'n3', 'label' => 'Unlock', 'action' => 'submit', 'submission' => 'primary']]]],
+                ['id' => 'received', 'name' => 'Received', 'kind' => 'acknowledgement', 'content' => ['type' => 'stack', 'children' => [['type' => 'heading', 'id' => 'n4', 'text' => 'Request received']]]],
             ]]],
         ];
         if ($kind === 'off' || $kind === 'divider-off') unset($config['content_lock']);
-        $ids[$kind] = $repository->create('Content lock ' . $kind, 'grow_email_list', $config)->id;
+        $ids[$kind] = $repository->create('Content lock ' . $kind, 'collect_enquiries', $config)->id;
         update_option('wconvert_lock_fixtures', $ids);
     }
     if ($kind !== 'missing' && $kind !== 'divider-missing') $repository->publish($ids[$kind]);

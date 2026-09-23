@@ -1,3 +1,4 @@
+import { treeFixture } from '../../../tests/js/support/journey';
 import { afterEach, describe, expect, it } from 'vitest';
 import { start } from '@loader/shell';
 import { DOCUMENT_STYLE_ID } from '@renderer/mount';
@@ -31,7 +32,7 @@ import { proPresenter } from '../../modules/display-types/loader';
  */
 
 const TEMPLATE = {
-  tree: {
+  tree: treeFixture({
     steps: [
       {
         type: 'stack',
@@ -43,7 +44,7 @@ const TEMPLATE = {
       },
       { type: 'stack', children: [{ type: 'heading', role: 'success_headline', text: 'Check your inbox' }] },
     ],
-  },
+  }),
   tokens: { bg: '#fff' },
 };
 

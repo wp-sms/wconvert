@@ -1,5 +1,7 @@
 # Templates are configuration, not documents
 
+**Current budget amendment — [ADR 0103](0103-progressive-capture-keeps-one-lead-per-journey.md):** The page payload cap is 2,560 B gzip (per-design 1,280 B). Free loaders remain 14,012 B; paid loaders cap at 19,456 B. Earlier measurements below are historical. All remain hard checks.
+
 A template is a JSON node tree plus a token set, validated against a shared
 vocabulary manifest. It contains no HTML and no CSS. One renderer, shipped in the
 loader, owns the entire component vocabulary and every line of the stylesheet.
@@ -406,11 +408,11 @@ third-party ones. Under configuration they are properties of the one renderer.
   it delays. This applies to both click Goals — "Promote a sale or offer" and
   "Bring shoppers back to their cart" — so it is a property of the metric, not of
   WooCommerce.*
-  *Amended for planned progressive capture by
+  *Amended for progressive capture by
   [ADR 0103](0103-progressive-capture-keeps-one-lead-per-journey.md): submit
   designs may contain content screens and multiple input screens, including
   optional submissions after the first accepted capture. Merchants arrange
-  them in a linear journey. The JSON contract and readers are pending implementation.*
+  them in a linear journey. The JSON v2 contract and readers implement this flow.*
 - **Every leaf now carries an `id`, and it is the one key validation ADDS rather
   than drops.** *This ADR's closure rule is that an unknown node type, token,
   param or Slot Role is dropped on the way in

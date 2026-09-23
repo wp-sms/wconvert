@@ -1,3 +1,4 @@
+import { treeFixture } from './support/journey';
 import { CAPTURE_OUTCOME } from './support/outcomes';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
@@ -280,7 +281,7 @@ const typesIn = (nodes: readonly TemplateNode[] | undefined): string[] =>
   (nodes ?? []).map((node) => node.type);
 
 const formChildren = (tree: TemplateTree): readonly TemplateNode[] =>
-  (tree.steps[0] as unknown as { children: readonly TemplateNode[] }).children;
+  (tree.steps[0].content as unknown as { children: readonly TemplateNode[] }).children;
 
 describe('moving a block', () => {
   /**
@@ -712,7 +713,7 @@ describe('adding a block', () => {
   });
 
   /** One Optin has exactly one converting act (CONTEXT.md, Conversion). */
-  it('refuses a second button, with the reason where the pointer is', async () => {
+  it('offers navigation buttons beside the submission button', async () => {
     await structure();
 
     await userEvent.click(
@@ -720,7 +721,7 @@ describe('adding a block', () => {
     );
     await userEvent.click(screen.getByRole('menuitem', { name: 'Add a block after this' }));
 
-    expect(await screen.findByRole('menuitem', { name: /Button/ })).toHaveTextContent('exactly one');
+    expect(await screen.findByRole('menuitem', { name: /Button/ })).not.toHaveAttribute('aria-disabled', 'true');
   });
 
   it('puts the new block where it was asked for, and announces it', async () => {
@@ -766,7 +767,7 @@ describe('adding a block', () => {
    */
   it('refuses a field on the step that is not the form', async () => {
     await structure();
-    await userEvent.click(screen.getByRole('button', { name: 'After they submit' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Received' }));
 
     await userEvent.click(
       within(row('Headline after they submit')).getByRole('button', {
@@ -775,7 +776,7 @@ describe('adding a block', () => {
     );
     await userEvent.click(screen.getByRole('menuitem', { name: 'Add a block after this' }));
 
-    expect(await screen.findByRole('menuitem', { name: /Field/ })).toHaveTextContent('submit button');
+    expect(await screen.findByRole('menuitem', { name: /Field/ })).toHaveTextContent('question screen');
   });
 });
 
@@ -1068,12 +1069,12 @@ describe('the inspector', () => {
    */
   it('takes the preview to the step the selected block lives on', async () => {
     await structure();
-    await userEvent.click(screen.getByRole('button', { name: 'After they submit' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Received' }));
     await select('Headline after they submit');
 
     expect(screen.getByRole('region', { name: 'Design canvas' })).toHaveTextContent('After they submit');
 
-    expect(within(screen.getByLabelText('Campaign screen')).getByRole('button', { name: 'After they submit' })).toHaveAttribute(
+    expect(within(screen.getByLabelText('Campaign screen')).getByRole('button', { name: 'Received' })).toHaveAttribute(
       'aria-pressed',
       'true',
     );
@@ -1553,14 +1554,14 @@ describe('a layout’s own settings', () => {
               the step's own row ("The form"), so a `split` there has no row of
               its own to select.
             */
-            tree: {
+            tree: treeFixture({
               steps: [
                 {
                   type: 'stack',
                   children: [{ type: 'split', ratio: 0.4, start: [], end: [] }],
                 },
               ],
-            },
+            }),
           },
         },
       }),
@@ -1694,14 +1695,14 @@ describe('a leaf’s own settings', () => {
           template_id: 'centred-card',
           template: {
             tokens: ENTRY.tokens,
-            tree: {
+            tree: treeFixture({
               steps: [
                 {
                   type: 'stack',
                   children: [{ type: 'image', id: 'n1', src: '/x.png', alt: '', fit: 'cover' }],
                 },
               ],
-            },
+            }),
           },
         },
       }),
@@ -1788,20 +1789,20 @@ describe('a countdown’s inspector', () => {
       config: {
         template_id: 'centred-card',
         template: {
-          tree: {
+          tree: treeFixture({
             ...ENTRY.tree,
             steps: ENTRY.tree.steps.map((step, at) =>
               at === 0
                 ? {
-                    ...step,
+                    ...step.content,
                     children: [
                       { type: 'countdown' },
-                      ...((step as { children?: unknown[] }).children ?? []),
+                      ...((step.content as { children?: unknown[] }).children ?? []),
                     ],
                   }
                 : step,
             ),
-          },
+          }),
           tokens: ENTRY.tokens,
         },
         ...config,
@@ -1892,7 +1893,7 @@ describe('the icon picker', () => {
       config: {
         template_id: 'centred-card',
         template: {
-          tree: {
+          tree: treeFixture({
             ...ENTRY.tree,
             /*
              * Step 0 gains the icon this test is about; every OTHER step is
@@ -1903,15 +1904,15 @@ describe('the icon picker', () => {
              * reason that had nothing to do with the picker.
              */
             steps: ENTRY.tree.steps.map((step, at) => {
-              const children = ((step as { children?: { type?: string }[] }).children ?? []).filter(
+              const children = ((step.content as { children?: { type?: string }[] }).children ?? []).filter(
                 (child) => child.type !== 'icon',
               );
 
               return at === 0
-                ? { ...step, children: [{ type: 'icon', name: 'gift' }, ...children] }
-                : { ...step, children };
+                ? { ...step.content, children: [{ type: 'icon', name: 'gift' }, ...children] }
+                : { ...step.content, children };
             }),
-          },
+          }),
           tokens: ENTRY.tokens,
         },
       },

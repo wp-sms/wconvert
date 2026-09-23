@@ -54,12 +54,13 @@ const EDITABLE = typeof __WCONVERT_VISITOR__ === 'undefined' || !__WCONVERT_VISI
  * pushed its body font across the boundary that way (ADR 0009).
  */
 export function render(tree: TemplateTree, tokens: Tokens, step = 0, options: RenderOptions = {}): HTMLElement {
-  const node = tree.steps[step];
+  const screen = tree.steps[step];
+  const node = screen?.content;
 
   // A submit button outside a form submits nothing, so the step that holds one
   // IS the form. Which step that is follows from the tree, so this stays a
   // pure property of (tree, tokens) rather than something the caller declares.
-  const root = document.createElement(node !== undefined && submits(node) ? 'form' : 'div');
+  const root = document.createElement(screen?.kind === 'input' ? 'form' : 'div');
 
   root.className = 'wc-root';
 
@@ -166,17 +167,6 @@ function scope(element: HTMLElement, tokens: Tokens | undefined, prefix = TOKEN_
       value !== name && REFERABLE.includes(value) ? `var(${TOKEN_PREFIX}${value})` : value,
     );
   }
-}
-
-/** Does this subtree hold the converting act that is a submission? */
-function submits(node: TemplateNode): boolean {
-  const branch = node as { children?: readonly TemplateNode[]; start?: readonly TemplateNode[]; end?: readonly TemplateNode[]; action?: string };
-
-  if (node.type === 'button') {
-    return branch.action !== 'link';
-  }
-
-  return [branch.children, branch.start, branch.end].some(children => children?.some(submits));
 }
 
 /**
@@ -940,6 +930,7 @@ function field(node: FieldNode): HTMLElement | null {
   input.id = `wc-${name}`;
   input.className = 'wc-input';
   input.name = name;
+  if (node.id) input.dataset.captureId = node.id;
   input.required = node.required === true;
   input.autocomplete = kind.autocomplete;
   if (input instanceof HTMLSelectElement) {
@@ -1031,7 +1022,10 @@ function button(node: ButtonNode | FollowupNode): HTMLElement {
   const element = document.createElement('button');
 
   element.className = 'wc-button';
-  element.type = 'submit';
+  const action = node.action ?? 'next';
+  element.type = action === 'submit' || action === 'next' ? 'submit' : 'button';
+  element.dataset.action = action;
+  if (node.submission) element.dataset.submission = node.submission;
   element.textContent = label;
 
   return element;
@@ -1055,6 +1049,7 @@ function consent(node: ConsentNode): HTMLElement {
   box.className = 'wc-checkbox';
   box.type = 'checkbox';
   box.name = 'consent';
+  if (node.id) box.dataset.captureId = node.id;
   box.required = true;
 
   label.setAttribute('for', box.id);

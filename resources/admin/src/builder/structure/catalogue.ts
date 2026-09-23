@@ -140,31 +140,15 @@ function whyRefused(
   at: Spot,
   act: ConvertingAct,
 ): string | null {
-  if (type === 'button') {
-    return buttonsIn(tree) > 0
-      ? __('This design already has the button that counts. A campaign has exactly one.', 'wconvert')
-      : null;
+  const screen = tree.steps[Number(at.parent[0])];
+  if (type === 'button' && act === 'click' && buttonsIn(tree) > 0) {
+    return __('This design already has its converting link.', 'wconvert');
   }
-
-  if (type === 'followup' && (act !== 'submit' || at.parent[0] !== 1 || formStep(tree) !== 0)) {
-    return __('A resource link belongs on the screen after the form is submitted.', 'wconvert');
+  if (type === 'followup' && screen?.kind !== 'acknowledgement') {
+    return __('Resource links belong after capture.', 'wconvert');
   }
-
-  if (type === 'field' || type === 'consent') {
-    const form = formStep(tree);
-
-    if (form === null) {
-      return act === 'click'
-        ? __(
-            'This Campaign converts on a click and captures nothing, so it has no form to add to.',
-            'wconvert',
-          )
-        : __('Add the button that submits the form first — the form is the step that holds it.', 'wconvert');
-    }
-
-    if (at.parent[0] !== form) {
-      return __('Only the step with the submit button is a form, so this is the step that captures.', 'wconvert');
-    }
+  if ((type === 'field' || type === 'consent') && screen?.kind !== 'input') {
+    return __('Add contact fields to a question screen.', 'wconvert');
   }
 
   if (type === 'field' && freeCapture(tree) === null) {
@@ -261,7 +245,7 @@ export function nodeFor(
     // and `whyRefused` refuses a second button — and it is here because
     // deleting the only button and adding one back is the route that reaches
     // it, and the act to restore is the one the design had (ADR 0059).
-    node.action = actionFor(act);
+    node.action = act === 'click' ? 'link' : 'next';
   }
 
   // A `consent` node ships hidden, which is the same "off by default" every
@@ -374,7 +358,7 @@ export function losesWordsOnSwitch(block: { type: string; role: string | null })
 export const actionFor = (act: ConvertingAct): string => (act === 'click' ? 'link' : 'submit');
 
 /** Every `action` a `button` may carry, in the order the acts are declared. */
-export const ACTIONS: readonly string[] = ['submit', 'link'];
+export const ACTIONS: readonly string[] = ['submit', 'link', 'next', 'back', 'skip', 'close'];
 
 /** A capture kind no field in the tree is using, or null. */
 export function freeCapture(tree: TemplateTree): string | null {
@@ -392,7 +376,7 @@ export function freeCapture(tree: TemplateTree): string | null {
  * whole point rather than a missing case.
  */
 export function formStep(tree: TemplateTree): number | null {
-  const at = tree.steps.findIndex(submits);
+  const at = tree.steps.findIndex((step) => submits(step.content));
 
   return at === -1 ? null : at;
 }
@@ -406,7 +390,7 @@ function submits(node: TemplateNode): boolean {
 }
 
 function buttonsIn(tree: TemplateTree): number {
-  return tree.steps.reduce((carried, step) => carried + buttonsUnder(step), 0);
+  return tree.steps.reduce((carried, step) => carried + buttonsUnder(step.content), 0);
 }
 
 function buttonsUnder(node: TemplateNode): number {

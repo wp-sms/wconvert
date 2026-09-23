@@ -9,7 +9,7 @@ final class OptinDesign
     public static function template(): array
     {
         return [
-            'tree' => ['steps' => [[
+            'tree' => \WConvert\Tests\Unit\Support\JourneyFixture::tree(['steps' => [[
                 'type' => 'stack',
                 'children' => [[
                     'type' => 'button',
@@ -17,7 +17,7 @@ final class OptinDesign
                     'text' => 'View offer',
                     'href' => 'https://example.org/offer',
                 ]],
-            ]]],
+            ]]]),
             'tokens' => [],
         ];
     }

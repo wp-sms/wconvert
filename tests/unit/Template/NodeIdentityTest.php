@@ -39,7 +39,7 @@ final class NodeIdentityTest extends TestCase
     private static function normalize(array $steps): array
     {
         /** @var array{steps: list<array<string, mixed>>} $tree */
-        $tree = self::vocabulary()->normalize(['tree' => ['steps' => $steps]])['tree'];
+        $tree = self::vocabulary()->normalize(['tree' => \WConvert\Tests\Unit\Support\JourneyFixture::tree(['steps' => $steps])])['tree'];
 
         return $tree;
     }
@@ -59,7 +59,7 @@ final class NodeIdentityTest extends TestCase
                 return;
             }
 
-            if (is_string($node['id'] ?? null)) {
+            if (isset($node['type']) && is_string($node['id'] ?? null)) {
                 $found[] = $node['id'];
             }
 
@@ -97,8 +97,8 @@ final class NodeIdentityTest extends TestCase
     {
         $tree = self::normalize([['type' => 'stack', 'children' => [['type' => 'heading', 'text' => 'Join']]]]);
 
-        self::assertArrayNotHasKey('id', $tree['steps'][0]);
-        self::assertSame('n1', $tree['steps'][0]['children'][0]['id'] ?? null);
+        self::assertArrayNotHasKey('id', $tree['steps'][0]['content']);
+        self::assertSame('n1', $tree['steps'][0]['content']['children'][0]['id'] ?? null);
     }
 
     /** Both of a `split`'s panes, which is where a second reader forgets to look. */
@@ -152,20 +152,20 @@ final class NodeIdentityTest extends TestCase
         ]]);
 
         /** @var array<string, mixed> $heading */
-        $heading = $tree['steps'][0]['children'][0];
+        $heading = $tree['steps'][0]['content']['children'][0];
         /** @var array<string, mixed> $body */
-        $body = $tree['steps'][0]['children'][1];
+        $body = $tree['steps'][0]['content']['children'][1];
 
         $rearranged = self::normalize([[
             'type' => 'stack',
             'children' => [$body, ['type' => 'image', 'src' => '/a.png', 'alt' => ''], $heading],
         ]]);
 
-        self::assertSame('n2', $rearranged['steps'][0]['children'][0]['id'] ?? null);
-        self::assertSame('n1', $rearranged['steps'][0]['children'][2]['id'] ?? null);
+        self::assertSame('n2', $rearranged['steps'][0]['content']['children'][0]['id'] ?? null);
+        self::assertSame('n1', $rearranged['steps'][0]['content']['children'][2]['id'] ?? null);
         // The newcomer takes the lowest number nothing already holds, rather
         // than a number that was already spoken for.
-        self::assertSame('n3', $rearranged['steps'][0]['children'][1]['id'] ?? null);
+        self::assertSame('n3', $rearranged['steps'][0]['content']['children'][1]['id'] ?? null);
     }
 
     /**
@@ -184,8 +184,8 @@ final class NodeIdentityTest extends TestCase
             ],
         ]]);
 
-        self::assertSame('n1', $tree['steps'][0]['children'][1]['id'] ?? null);
-        self::assertNotSame('n1', $tree['steps'][0]['children'][0]['id'] ?? null);
+        self::assertSame('n1', $tree['steps'][0]['content']['children'][1]['id'] ?? null);
+        self::assertNotSame('n1', $tree['steps'][0]['content']['children'][0]['id'] ?? null);
     }
 
     /**
@@ -204,8 +204,8 @@ final class NodeIdentityTest extends TestCase
             ],
         ]]);
 
-        self::assertSame('n1', $tree['steps'][0]['children'][0]['id'] ?? null);
-        self::assertSame('n2', $tree['steps'][0]['children'][1]['id'] ?? null);
+        self::assertSame('n1', $tree['steps'][0]['content']['children'][0]['id'] ?? null);
+        self::assertSame('n2', $tree['steps'][0]['content']['children'][1]['id'] ?? null);
     }
 
     /**
@@ -218,7 +218,7 @@ final class NodeIdentityTest extends TestCase
     {
         $tree = self::normalize([['type' => 'heading', 'id' => $id, 'text' => 'Join']]);
 
-        self::assertSame('n1', $tree['steps'][0]['id'] ?? null);
+        self::assertSame('n1', $tree['steps'][0]['content']['id'] ?? null);
     }
 
     /** @return array<string, array{mixed}> */

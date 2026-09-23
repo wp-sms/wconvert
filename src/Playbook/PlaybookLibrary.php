@@ -307,9 +307,7 @@ final class PlaybookLibrary
         // declares. A Role the Template does not declare is dropped on prefill
         // and nobody is told (CONTEXT.md, Slot Role) — so it is caught here,
         // where there is still an author to tell.
-        $declared = SlotRoles::declaredIn($template['tree'], $vocabulary);
-
-        return array_diff(array_keys($copy), $declared) === [] ? null : RejectionReason::UnfilledSlotRole;
+        return SlotRoles::acceptsCopy($template['tree'], $copy, $vocabulary) ? null : RejectionReason::UnfilledSlotRole;
     }
 
     /**
@@ -419,6 +417,9 @@ final class PlaybookLibrary
             }
         }
 
+        foreach (is_array($copy['screens'] ?? null) ? $copy['screens'] : [] as $words) {
+            if (!is_array($words) || self::namesSomethingSiteLocal($entry, $words, $rules, $vocabulary)) { return true; }
+        }
         if (array_intersect(array_keys($copy), $vocabulary->authoredRoles()) !== []) {
             return true;
         }
