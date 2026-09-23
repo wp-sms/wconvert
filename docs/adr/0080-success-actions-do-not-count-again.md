@@ -11,7 +11,10 @@ normal link styled like a button; only the existing converting `button` receives
 Copy buttons use `type=button`, so they neither submit a form nor count a click.
 Existing submit/click registration and step-count rules remain unchanged.
 
-The Add menu offers Resource link only on step 1 after a form on step 0. Readiness
+**Amended by [ADR 0103](0103-progressive-capture-keeps-one-lead-per-journey.md):** the Add menu offers
+Resource link on any screen after the primary submission, including the optional
+other-channel signup screen. A promised resource must not depend on that optional
+signup. Click-only designs and screens before primary acceptance cannot offer it. Readiness
 and server publication checks require every visible resource link to have a
 label, a normalized safe URL and that placement. Drafts may remain incomplete,
 and hidden optional links do not block publication. The URL uses the vocabulary’s

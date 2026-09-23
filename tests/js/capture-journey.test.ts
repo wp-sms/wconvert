@@ -72,3 +72,23 @@ it('retries an unconfirmed SMS response with the same grant and never repeats em
   expect(JSON.parse(fetcher.mock.calls[3][1].body)).toMatchObject({grant: 'secret', submission: 'sms-signup', fields: {phone: '+12025551234'}});
   expect(mounted.root!.textContent).toContain('Details received');
 });
+
+it('offers the earned guide while SMS is still optional without another capture', async () => {
+  const template = structuredClone(source) as Template;
+  const content = template.tree.steps[1].content as unknown as { children: unknown[] };
+  content.children.push({ type: 'followup', label: 'Open guide', href: 'https://example.com/guide' });
+  const fetcher = vi.fn().mockResolvedValueOnce({ ok: true, json: async () => ({ grant: 'secret' }) })
+    .mockResolvedValueOnce({ ok: true, json: async () => ({ id: 'lead' }) });
+  vi.stubGlobal('fetch', fetcher);
+  const { mounted, captured } = setup(template);
+  expect(mounted.root!.querySelector('a[href="https://example.com/guide"]')).toBeNull();
+  mounted.root!.querySelector<HTMLInputElement>('[name="email"]')!.value = 'visitor@example.com';
+  mounted.root!.querySelector<HTMLInputElement>('[name="consent"]')!.checked = true;
+  mounted.root!.querySelector<HTMLButtonElement>('[data-action="submit"]')!.click(); await settle();
+  const link = mounted.root!.querySelector<HTMLAnchorElement>('a[href="https://example.com/guide"]')!;
+  expect(link).not.toBeNull();
+  expect(link.hasAttribute('data-convert')).toBe(false);
+  expect(mounted.root!.querySelector('[name="phone"]')).not.toBeNull();
+  expect(fetcher).toHaveBeenCalledTimes(2);
+  expect(captured).toHaveBeenCalledOnce();
+});

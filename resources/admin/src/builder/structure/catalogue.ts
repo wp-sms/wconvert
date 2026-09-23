@@ -1,6 +1,7 @@
 import { __ } from '@wordpress/i18n';
 import { AUTHORED_ROLES, FIELDS, LAYOUTS, LEAVES, ROLES, childKeysOf } from '../panel';
 import { capturesTaken, nodeAt, rolesTaken, type Spot } from './tree';
+import { submissionScreen } from './journey';
 import type { TemplateNode, TemplateTree } from '@renderer/types';
 
 /**
@@ -144,8 +145,12 @@ function whyRefused(
   if (type === 'button' && act === 'click' && buttonsIn(tree) > 0) {
     return __('This design already has its converting link.', 'wconvert');
   }
-  if (type === 'followup' && screen?.kind !== 'acknowledgement') {
-    return __('Resource links belong after capture.', 'wconvert');
+  if (type === 'followup') {
+    const primary = tree.submissions[0]?.id;
+    const acceptedAt = submissionScreen(tree, primary);
+    if (acceptedAt < 0 || Number(at.parent[0]) <= acceptedAt) {
+      return __('Resource links belong after capture.', 'wconvert');
+    }
   }
   if ((type === 'field' || type === 'consent') && screen?.kind !== 'input') {
     return __('Add contact fields to a question screen.', 'wconvert');
@@ -367,14 +372,7 @@ export function freeCapture(tree: TemplateTree): string | null {
   return FIELDS.find((kind) => !taken.includes(kind)) ?? null;
 }
 
-/**
- * Which step IS the form, or null where none is.
- *
- * Read exactly the way `render.ts` reads it — the step holding a button that is
- * not a `link` — so the editor and the renderer cannot disagree about which
- * step captures. A click-metered design has no such step, which is ADR 0025's
- * whole point rather than a missing case.
- */
+/** First screen with an explicit Submit; navigation buttons do not submit answers. */
 export function formStep(tree: TemplateTree): number | null {
   const at = tree.steps.findIndex((step) => submits(step.content));
 
@@ -383,7 +381,7 @@ export function formStep(tree: TemplateTree): number | null {
 
 function submits(node: TemplateNode): boolean {
   if (node.type === 'button') {
-    return (node as { action?: string }).action !== 'link';
+    return (node as { action?: string }).action === 'submit';
   }
 
   return childKeysOf(node.type).some((key) => childrenOf(node, key).some(submits));

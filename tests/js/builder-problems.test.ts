@@ -1,3 +1,5 @@
+import enquiry from '../../resources/templates/library/journey-enquiry.json';
+import optionalSignup from '../../resources/templates/library/journey-email-then-sms.json';
 import { treeFixture } from './support/journey';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
@@ -115,7 +117,7 @@ describe('a form that captures nothing anybody reads', () => {
     });
 
     expect(said({ tree: stranded, tokens: ENTRY.tokens })).toContainEqual(
-      expect.stringMatching(/not on the step that submits/),
+      expect.stringMatching(/Assign this field to a submission/),
     );
   });
 });
@@ -262,5 +264,17 @@ describe('resource link readiness', () => {
     expect(check({ ...link, label: '' })[0]?.blocksPublish).toBe(true);
     expect(check(link, 0)[0]?.blocksPublish).toBe(true);
     expect(check({ ...link, href: '', hidden: true })).toEqual([]);
+  });
+});
+
+describe('journey readiness', () => {
+  it('accepts fields across screens and a resource after primary capture', () => {
+    for (const source of [enquiry, optionalSignup]) {
+      const template = structuredClone(source) as Template;
+      const acknowledgement = template.tree.steps.at(-1)!.content as unknown as { children: unknown[] };
+      acknowledgement.children.push({ type: 'followup', label: 'Open guide', href: '/guide.pdf' });
+      const problems = problemsIn(template, undefined);
+      expect(problems.filter(p => p.check === 'captures' || p.said.includes('resource link'))).toEqual([]);
+    }
   });
 });

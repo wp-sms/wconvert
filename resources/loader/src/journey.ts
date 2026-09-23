@@ -48,7 +48,10 @@ export function bindJourney(mounted: Mounted, entry: PayloadEntry, options: Opti
     if (index < 0 || index >= tree!.steps.length) return;
     step = index; mounted.showStep(index); bind();
     const root = mounted.root;
-    if (root && root.getClientRects().length > 0) { root.tabIndex = -1; root.focus({ preventScroll: true }); }
+    if (root && root.getClientRects().length > 0) {
+      const target = root.querySelector<HTMLElement>('h1,h2,h3,[role="heading"]') ?? root;
+      target.tabIndex = -1; target.focus({ preventScroll: true });
+    }
   }
   function bind() {
     const root = mounted.root;

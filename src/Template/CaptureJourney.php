@@ -22,6 +22,7 @@ final class CaptureJourney
         $nodes = [];
         $positions = [];
         $buttons = [];
+        $resources = [];
         $names = [];
         foreach ($steps as $index => $step) {
             if (!is_array($step) || !self::identifier($step['id'] ?? null) || isset($screens[$step['id']])
@@ -53,11 +54,14 @@ final class CaptureJourney
                     if (($index === 0 && $action === 'back') || ($index === count($steps) - 1 && in_array($action, ['next', 'submit', 'skip'], true))) { return 'actions'; }
                     $buttons[] = [$node, $index];
                 }
-                if ($type === 'followup' && !($node['hidden'] ?? false)
-                    && ($step['kind'] !== 'acknowledgement' || trim((string) ($node['label'] ?? '')) === '' || trim((string) ($node['href'] ?? '')) === '')) { return 'followup'; }
+                if ($type === 'followup' && !($node['hidden'] ?? false)) {
+                    if (trim((string) ($node['label'] ?? '')) === '' || trim((string) ($node['href'] ?? '')) === '') { return 'followup'; }
+                    $resources[] = $index;
+                }
             }
         }
         if ($submissions === []) {
+            if ($resources !== []) { return 'followup'; }
             return count($steps) === 1 && $steps[0]['kind'] === 'content'
                 && count(array_filter($buttons, static fn (array $entry): bool => $entry[0]['action'] === 'link')) === 1
                 && count(array_filter($buttons, static fn (array $entry): bool => in_array($entry[0]['action'], ['submit', 'next', 'skip'], true))) === 0 ? null : 'flow';
@@ -97,6 +101,9 @@ final class CaptureJourney
         }
         foreach ($nodes as $id => $node) {
             if (in_array($node['type'] ?? '', ['field', 'consent'], true) && !isset($owned[$id])) { return 'references'; }
+        }
+        foreach ($resources as $at) {
+            if ($at <= self::submitScreen($tree, $submissions[0]['id'])) { return 'followup'; }
         }
         foreach ($buttons as [$button, $at]) {
             if ($button['action'] === 'link') { return 'actions'; }

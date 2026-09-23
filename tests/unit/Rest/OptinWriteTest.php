@@ -140,6 +140,16 @@ final class OptinWriteTest extends TestCase
         }
     }
 
+    public function testPrimaryEmailSignupMayAlsoSendItsPromisedResource(): void
+    {
+        $audience = $this->destinations->save(null, 'mailpoet', 'Newsletter', null, ['lists' => ['3']]);
+        $reward = $this->destinations->save(null, 'lead_magnet_email', 'Guide', null, ['file_url' => 'https://example.org/guide.pdf']);
+        $draft = $this->create(Goal::GrowEmailList, ['template_id' => 'centred-card', 'destinations' => [$audience->id, $reward->id]]);
+        self::assertIsArray($draft);
+        $request = new WP_REST_Request(); $request->set_param('id', $draft['id']);
+        self::assertInstanceOf(\WP_REST_Response::class, $this->controller->publish($request));
+    }
+
     public function testALeadMagnetNeedsAConfiguredDeliveryRouteBeforePublishing(): void
     {
         $draft = $this->create(Goal::DeliverLeadMagnet, ['template_id' => 'centred-card']);

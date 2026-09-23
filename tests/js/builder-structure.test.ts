@@ -1,3 +1,4 @@
+import optionalSignup from '../../resources/templates/library/journey-email-then-sms.json';
 import { treeFixture } from './support/journey';
 import { describe, expect, it } from 'vitest';
 import {
@@ -777,6 +778,11 @@ describe('swapping split panes', () => {
 });
 
 describe('resource links after the form', () => {
+  it('offers the earned resource on the optional signup screen', () => {
+    const tree = optionalSignup.tree as TemplateTree;
+    expect(nodeFor(tree, 'followup', { parent: [1], key: 'children', index: 0 }, 'submit')).toMatchObject({ type: 'followup' });
+    expect(nodeFor(tree, 'followup', { parent: [0], key: 'children', index: 0 }, 'submit')).toBeNull();
+  });
   it('offers one only on the success screen, without introducing a counted act', () => {
     const success = { parent: [1], key: 'children', index: 1 };
     const form = { parent: [0], key: 'children', index: 0 };

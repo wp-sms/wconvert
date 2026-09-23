@@ -613,10 +613,23 @@ final class OptinController implements RestController
             return new WP_Error('wconvert_optin_goal_incomplete', $goalIssue, ['status' => 400]);
         }
 
-        foreach (\WConvert\Template\CaptureContract::settings($optin->config, $optin->goal) as $setting) {
+        $submissions = $optin->config['template']['tree']['submissions'] ?? [];
+        $primarySubmission = $submissions[0]['id'] ?? '';
+        foreach (\WConvert\Template\CaptureContract::settings($optin->config, $optin->goal) as $submissionId => $setting) {
             if (($optin->config['capture_mode'] ?? '') === 'local') { continue; }
             if ($setting['purpose'] !== 'request' && $setting['destination_ids'] === []) {
                 return new WP_Error('wconvert_signup_destination', __('Choose a service for each signup or collect only in WConvert.', 'wconvert'), ['status' => 400]);
+            }
+            $requiredValues = [];
+            foreach ($submissions as $definition) {
+                if ($definition['id'] !== $submissionId) { continue; }
+                foreach ($optin->config['template']['tree']['steps'] as $screen) {
+                    foreach (\WConvert\Template\CaptureJourney::nodes($screen['content']) as $node) {
+                        if (in_array($node['id'] ?? null, $definition['fields'], true) && ($node['required'] ?? false)) {
+                            $requiredValues[$node['name']] = 'present';
+                        }
+                    }
+                }
             }
             foreach ($setting['destination_ids'] as $destinationId) {
                 $destination = $this->destinations->find($destinationId);
@@ -624,7 +637,9 @@ final class OptinController implements RestController
                 $channel = $setting['purpose'] === 'email_marketing' ? 'email' : 'sms';
                 if ($destination === null || $type === null || !$this->destinationTypes->isDispatchable($destination->type)
                     || $type->requirements()->missingSettings($destination->settings) !== []
-                    || ($setting['purpose'] !== 'request' && !in_array($channel, $type->requirements()->audienceChannels, true))) {
+                    || !$type->requirements()->acceptsCapture($requiredValues)
+                    || ($setting['purpose'] !== 'request' && !in_array($channel, $type->requirements()->audienceChannels, true)
+                        && ($submissionId !== $primarySubmission || $type->requirements()->audienceChannels !== []))) {
                     return new WP_Error('wconvert_signup_destination', __('A selected signup service is unavailable or does not support its channel.', 'wconvert'), ['status' => 400]);
                 }
             }

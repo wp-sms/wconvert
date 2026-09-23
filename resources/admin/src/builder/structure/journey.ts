@@ -6,6 +6,13 @@ export function walkNodes(node: TemplateNode): TemplateNode[] {
   return [node, ...[...(b.children ?? []), ...(b.start ?? []), ...(b.end ?? [])].flatMap(walkNodes)];
 }
 
+/** The explicit acceptance boundary for one declared submission. */
+export function submissionScreen(tree: TemplateTree, id: string | undefined): number {
+  if (!id) return -1;
+  return tree.steps.findIndex(s => walkNodes(s.content).some(n =>
+    n.type === 'button' && 'action' in n && n.action === 'submit' && 'submission' in n && n.submission === id));
+}
+
 /** New draft nodes need identities before submission references can name them. */
 export function referencedJourney(tree: TemplateTree): TemplateTree {
   const taken = new Set(tree.steps.flatMap(s => walkNodes(s.content)).map(n => 'id' in n ? n.id : undefined));

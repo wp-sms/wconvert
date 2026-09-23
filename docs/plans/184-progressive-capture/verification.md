@@ -21,6 +21,9 @@ product decisions made after the original issue was written.
   retains separate exact consent wording/time and starts its own queue handoff.
   Jobs reference frozen accepted values and route IDs; later SMS cannot change
   what an earlier email job sends. No person matching or cross-page resume.
+- Promised resources can be delivered with the primary signup or opened from
+  the optional signup screen; neither waits for optional consent. Editor readiness
+  checks follow declared submissions across screens.
 - Existing Lead JSON, owned non-autoloaded options and Action Scheduler. The only
   schema change is the approved statistics scope column/primary key. Installer version 5 reconciles that key explicitly
   because dbDelta cannot replace a primary key. InnoDB is
@@ -35,8 +38,8 @@ product decisions made after the original issue was written.
 
 ## Verification performed
 
-- Full PHPUnit suite: 2,070 tests, 10,113 assertions passed.
-- Full Vitest suite: 2,612 tests across 124 files passed. Focused editor tests also
+- Full PHPUnit suite: 2,072 tests, 10,117 assertions passed.
+- Full Vitest suite: 2,615 tests across 124 files passed. Focused editor tests also
   cover optional-screen creation/removal, reorder identities and duplication.
 - TypeScript, ESLint, PHPStan, production builds, source contract and loader
   contract checked. `verify-templates.php` accepts all 57 shipping designs.
@@ -90,5 +93,5 @@ ADR 0103 records the explicit budget adjustment for flow metadata and the shared
 journey runtime. The page cap is 2,560 B gzip and each design's cap is 1,280 B.
 The Free loader remains capped at 14,012 B. Paid loaders cap at 19,456 B; nothing
 is moved to an unmeasured lazy download. At the final measured build: Free
-11,811 B, Basic 17,904 B, Pro 18,883 B and Elite 19,074 B gzip. Build checks remain
+11,836 B, Basic 17,926 B, Pro 18,904 B and Elite 19,095 B gzip. Build checks remain
 hard failures above those ceilings.

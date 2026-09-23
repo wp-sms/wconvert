@@ -7,6 +7,16 @@ use WConvert\Template\CaptureJourney;
 
 final class CaptureJourneyTest extends TestCase
 {
+    public function testEarnedResourceCanBeShownBeforeTheOptionalSignupIsCompleted(): void
+    {
+        $template = json_decode((string) file_get_contents(dirname(__DIR__, 3) . '/resources/templates/library/journey-email-then-sms.json'), true);
+        $link = ['type' => 'followup', 'label' => 'Open guide', 'href' => 'https://example.com/guide'];
+        $template['tree']['steps'][1]['content']['children'][] = $link;
+        self::assertNull(CaptureJourney::issue($template['tree']));
+        $template['tree']['steps'][0]['content']['children'][] = $link;
+        self::assertSame('followup', CaptureJourney::issue($template['tree']));
+    }
+
     public function testNavigationActionsMatchTheProductionManifest(): void
     {
         $manifest = \WConvert\Template\TemplateManifest::load(dirname(__DIR__, 3));
