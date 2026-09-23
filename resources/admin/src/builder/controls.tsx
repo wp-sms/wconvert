@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import { ObjectPicker } from './rules/ObjectPicker';
 import type { RuleParam } from './api';
 
@@ -36,12 +36,12 @@ export function ParamControl({ id, param, value, onChange }: ParamControlProps) 
   switch (param.control) {
     case 'boolean':
       return (
-        <input
-          id={id}
-          type="checkbox"
-          checked={value === true}
-          onChange={(event) => onChange(event.target.checked)}
-        />
+        <select id={id} value={typeof value === 'boolean' ? String(value) : ''}
+          onChange={event => onChange(event.target.value === '' ? undefined : event.target.value === 'true')}>
+          <option value="">{__('Choose…', 'wconvert')}</option>
+          <option value="true">{__('Yes', 'wconvert')}</option>
+          <option value="false">{__('No', 'wconvert')}</option>
+        </select>
       );
 
     case 'seconds':
@@ -51,8 +51,8 @@ export function ParamControl({ id, param, value, onChange }: ParamControlProps) 
           id={id}
           type="number"
           className="small-text"
-          min={0}
-          max={param.control === 'percent' ? 100 : undefined}
+          min={1}
+          max={param.control === 'percent' ? 100 : 3600}
           value={typeof value === 'number' ? value : ''}
           onChange={(event) => onChange(event.target.value === '' ? undefined : Number(event.target.value))}
         />
@@ -124,7 +124,7 @@ export function ParamControl({ id, param, value, onChange }: ParamControlProps) 
       return <OptionSet id={id} param={param} value={value} onChange={onChange} />;
 
     case 'text_set':
-      return <ValueList value={value} onChange={onChange} />;
+      return <ValueList id={id} label={param.label} value={value} onChange={onChange} />;
 
     case 'referrer_set':
       return <SourceSet id={id} param={param} value={value} onChange={onChange} />;
@@ -138,6 +138,7 @@ export function ParamControl({ id, param, value, onChange }: ParamControlProps) 
           id={id}
           type="text"
           className="regular-text"
+          aria-describedby={HINTS[param.control] ? `${id}-hint` : undefined}
           value={typeof value === 'string' ? value : ''}
           onChange={(event) => onChange(event.target.value === '' ? undefined : event.target.value)}
         />
@@ -241,7 +242,7 @@ function SourceSet({ id, param, value, onChange }: ParamControlProps) {
       */}
       <span className="wconvert-source-set__sites">
         <span className="wconvert-param__name">{__('or from these sites', 'wconvert')}</span>{' '}
-        <ValueList value={sites} onChange={(next) => write(sources, (next as string[]) ?? [])} />
+        <ValueList id={`${id}-sites`} label={__('Referring site', 'wconvert')} value={sites} onChange={(next) => write(sources, (next as string[]) ?? [])} />
       </span>
     </span>
   );
@@ -323,7 +324,7 @@ const written = (draft: string): string => {
 };
 
 /** A set the merchant types — one value per row, and no way to nest one. */
-function ValueList({ value, onChange }: Omit<ParamControlProps, 'param' | 'id'>) {
+function ValueList({ id, label, value, onChange }: Omit<ParamControlProps, 'param'> & { label: string }) {
   const values = (Array.isArray(value) ? (value as unknown[]) : []).map((each) => String(each));
   // Always one empty row at the end, so adding a value is typing rather than
   // finding a button first.
@@ -333,12 +334,15 @@ function ValueList({ value, onChange }: Omit<ParamControlProps, 'param' | 'id'>)
     onChange(rows.map((row, index) => (index === at ? next : row)).filter((row) => row !== ''));
 
   return (
-    <span className="wconvert-value-list">
+    <span className="wconvert-value-list" role="group" aria-label={label}>
       {rows.map((row, index) => (
         <span key={index}>
           <input
             type="text"
             className="regular-text"
+            id={`${id}-value-${index}`}
+            aria-label={row === '' ? sprintf(__('Add a value for %s', 'wconvert'), label) : sprintf(__('%1$s, value %2$d', 'wconvert'), label, index + 1)}
+            placeholder={__('Type a value…', 'wconvert')}
             value={row}
             onChange={(event) => write(index, event.target.value)}
           />
@@ -378,6 +382,8 @@ function ValueList({ value, onChange }: Omit<ParamControlProps, 'param' | 'id'>)
  * module-level constant.
  */
 const HINTS: Partial<Record<RuleParam['control'], () => string>> = {
+  path_glob: () => __('Use a path such as /pricing/ or /shop/*. The * matches any characters. Leave out the domain.', 'wconvert'),
+  text_set: () => __('Match any value listed here. Leave empty to match any visit where this parameter is present.', 'wconvert'),
   referrer_set: () =>
     __(
       'The page they were on immediately before this one — not where they first found your site. A visit with no previous page counts as Direct.',
@@ -453,6 +459,7 @@ export function ParamField({ id, param, value, onChange }: ParamControlProps) {
   return (
     <span className="wconvert-param">
       <label htmlFor={id}>{param.label}</label> {control}
+      {hint && <span id={`${id}-hint`} className="wconvert-param__hint text-note">{hint()}</span>}
     </span>
   );
 }

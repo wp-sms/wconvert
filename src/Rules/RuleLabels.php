@@ -42,16 +42,16 @@ final class RuleLabels
     {
         return [
             'post' => __('A specific page or post', 'wconvert'),
-            'singular' => __('Any single item of a type', 'wconvert'),
-            'archive' => __('An archive listing', 'wconvert'),
+            'singular' => __('All items of a content type', 'wconvert'),
+            'archive' => __('Content archive', 'wconvert'),
             'term' => __('A category or tag', 'wconvert'),
             'url' => __('A URL path', 'wconvert'),
-            'logged_in' => __('Signed-in visitors', 'wconvert'),
+            'logged_in' => __('Sign-in status', 'wconvert'),
             'page_load' => __('Shows immediately', 'wconvert'),
-            'inactivity' => __('No recent activity', 'wconvert'),
+            'inactivity' => __('Visitor inactivity', 'wconvert'),
             'time_on_page' => __('Time delay', 'wconvert'),
             'scroll_depth' => __('Scroll depth', 'wconvert'),
-            'click_element' => __('Clicks an element', 'wconvert'),
+            'click_element' => __('Clicks a button or link', 'wconvert'),
             'exit_intent' => __('About to leave', 'wconvert'),
             'scroll_up' => __('Scrolls back up', 'wconvert'),
             // "Role" rather than "Role or membership", which is what this
@@ -60,10 +60,10 @@ final class RuleLabels
             // reads is the site's own — every role, plus whatever an adapter
             // offers — so the heading naming only what free ships would go
             // stale, and naming what free does not would over-claim today.
-            'role' => __('Role', 'wconvert'),
+            'role' => __('User role', 'wconvert'),
             'device' => __('Device', 'wconvert'),
             'time_of_day' => __('Time of day', 'wconvert'),
-            'query_param' => __('A URL parameter', 'wconvert'),
+            'query_param' => __('URL parameter / UTM tag', 'wconvert'),
             'referrer' => __('Where they came from', 'wconvert'),
             'cart_has_items' => __('Has something in their cart', 'wconvert'),
             'cart_value_min' => __('Cart is worth at least', 'wconvert'),
@@ -82,13 +82,13 @@ final class RuleLabels
     public static function params(): array
     {
         return [
-            'post.value' => __('Page or post ID', 'wconvert'),
+            'post.value' => __('Page or post', 'wconvert'),
             'singular.value' => __('Content type', 'wconvert'),
             'archive.value' => __('Content type', 'wconvert'),
-            'term.value' => __('Term ID', 'wconvert'),
+            'term.value' => __('Category or tag', 'wconvert'),
             'url.value' => __('Path, with * as a wildcard', 'wconvert'),
-            'logged_in.value' => __('Signed in', 'wconvert'),
-            'inactivity.seconds' => __('Seconds without input', 'wconvert'),
+            'logged_in.value' => __('Signed in to this site?', 'wconvert'),
+            'inactivity.seconds' => __('Seconds without activity', 'wconvert'),
             'time_on_page.seconds' => __('Seconds', 'wconvert'),
             'scroll_depth.percent' => __('Percent of the page', 'wconvert'),
             'click_element.selector' => __('CSS selector', 'wconvert'),
@@ -129,10 +129,10 @@ final class RuleLabels
     public static function presets(): array
     {
         return [
-            'time_on_page.after_a_moment' => __('After a few seconds', 'wconvert'),
-            'time_on_page.after_a_read' => __('Once they have read a while', 'wconvert'),
-            'scroll_depth.halfway_down' => __('Half way down the page', 'wconvert'),
-            'scroll_depth.near_the_end' => __('Near the end of the page', 'wconvert'),
+            'time_on_page.after_a_moment' => __('After 5 seconds', 'wconvert'),
+            'time_on_page.after_a_read' => __('After 15 seconds', 'wconvert'),
+            'scroll_depth.halfway_down' => __('Halfway down (50%)', 'wconvert'),
+            'scroll_depth.near_the_end' => __('Near the end (80%)', 'wconvert'),
             'device.mobile_only' => __('On mobile only', 'wconvert'),
             'device.not_on_mobile' => __('Anywhere but mobile', 'wconvert'),
             'device.desktop_only' => __('On desktop only', 'wconvert'),
@@ -141,11 +141,11 @@ final class RuleLabels
             // their own, so the summary reads the type's with the hours
             // substituted in — and the merchant sees the actual window rather
             // than a label that might not be theirs.
-            'time_of_day.office_hours' => __('During office hours', 'wconvert'),
-            'time_of_day.evenings' => __('In the evening', 'wconvert'),
-            'query_param.utm_source' => __('Came from a particular source', 'wconvert'),
-            'query_param.utm_medium' => __('Came through a particular medium', 'wconvert'),
-            'query_param.utm_campaign' => __('Came from a particular campaign', 'wconvert'),
+            'time_of_day.office_hours' => __('Daytime (09:00–17:00)', 'wconvert'),
+            'time_of_day.evenings' => __('Evening (18:00–00:00)', 'wconvert'),
+            'query_param.utm_source' => __('Source (utm_source)', 'wconvert'),
+            'query_param.utm_medium' => __('Medium (utm_medium)', 'wconvert'),
+            'query_param.utm_campaign' => __('Campaign (utm_campaign)', 'wconvert'),
             'referrer.from_search' => __('Came from a search engine', 'wconvert'),
             'referrer.from_social' => __('Came from social media', 'wconvert'),
             'referrer.arrived_directly' => __('Arrived with no referring page', 'wconvert'),
@@ -224,10 +224,10 @@ final class RuleLabels
     public static function presetPhrases(): array
     {
         return [
-            'time_on_page.after_a_moment' => __('after a few seconds', 'wconvert'),
-            'time_on_page.after_a_read' => __('once they have read a while', 'wconvert'),
-            'scroll_depth.halfway_down' => __('half way down the page', 'wconvert'),
-            'scroll_depth.near_the_end' => __('near the end of the page', 'wconvert'),
+            'time_on_page.after_a_moment' => __('after 5 seconds on the page', 'wconvert'),
+            'time_on_page.after_a_read' => __('after 15 seconds on the page', 'wconvert'),
+            'scroll_depth.halfway_down' => __('after scrolling 50 percent of the page', 'wconvert'),
+            'scroll_depth.near_the_end' => __('after scrolling 80 percent of the page', 'wconvert'),
             'device.mobile_only' => __('they are on mobile', 'wconvert'),
             'device.not_on_mobile' => __('they are not on mobile', 'wconvert'),
             'device.desktop_only' => __('they are on desktop', 'wconvert'),

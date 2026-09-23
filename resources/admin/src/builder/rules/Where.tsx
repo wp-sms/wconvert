@@ -156,6 +156,7 @@ function RuleList({ list, heading, empty, types, rules, onChange }: RuleListProp
     */
     <div className="wconvert-rules__group">
       <p className="wconvert-rules__label text-micro uppercase text-muted-foreground">{heading}</p>
+      {list === 'include' && rules.length > 1 && <p className="wconvert-display-rule-help">{__('A page only needs to match one of these rules.', 'wconvert')}</p>}
       <RuleRows rows={rows} empty={empty} />
       {/*
         ==================================================================
@@ -177,7 +178,7 @@ function RuleList({ list, heading, empty, types, rules, onChange }: RuleListProp
       */}
       <AddRule
         axis={types}
-        label={__('Add', 'wconvert')}
+        label={list === 'include' ? __('Add pages', 'wconvert') : __('Exclude pages', 'wconvert')}
         onAdd={(rule: Rule) =>
           onChange([...rules, { type: rule.type, value: rule.value ?? '' }])
         }

@@ -6,6 +6,7 @@ use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
 use WConvert\Goal\Goal;
 use WConvert\Optin\Optin;
+use WConvert\Optin\Frequency;
 use WConvert\Optin\PublishedOptin;
 use WConvert\Optin\PublishedProjection;
 use WConvert\Playbook\PlaybookLibrary;
@@ -110,6 +111,38 @@ final class PrefillSnapshotTest extends TestCase
         );
 
         return PublishedOptin::fromSet($set)[0]->toPayloadEntry();
+    }
+
+    public function testNewCampaignsUseTheRecommendedRepeatPolicy(): void
+    {
+        $vocabulary = TemplateVocabulary::fromManifest(self::PLUGIN_DIR);
+        $rules = RuleVocabulary::fromManifest(self::PLUGIN_DIR);
+        $templates = TemplateLibrary::fromDirectory($vocabulary, self::PLUGIN_DIR);
+        $playbooks = PlaybookLibrary::fromDirectory($templates, $vocabulary, $rules, self::PLUGIN_DIR);
+        $prefill = new Prefill($playbooks, $templates, $vocabulary, InstalledRules::free());
+        $drafts = [];
+        foreach ($playbooks->all() as $playbook) {
+            $draft = $prefill->fromPlaybook($playbook->id);
+            $this->assertNotNull($draft);
+            if ($playbook->displayType === 'inline') {
+                $this->assertArrayNotHasKey('maxPerSession', $draft['config']['frequency'] ?? []);
+            } else {
+                $drafts[] = $draft;
+            }
+        }
+        $this->assertNotEmpty($drafts, 'Check the shipped popup starting points as well as scratch drafts.');
+        foreach (Goal::cases() as $goal) {
+            $drafts[] = $prefill->fromScratch($goal);
+        }
+        foreach ($drafts as $draft) {
+            // Check effective behavior after normalizing storage, including
+            // default-on completion, rather than requiring a redundant true.
+            $stored = Frequency::fromArray($draft['config']['frequency'])->toArray();
+            $policy = Frequency::fromArray($stored);
+            $this->assertSame(1, $policy->maxPerSession, $draft['name']);
+            $this->assertTrue($policy->stopAfterConversion, $draft['name']);
+            $this->assertFalse($policy->stopAfterDismiss, $draft['name']);
+        }
     }
 
     public function testPrefillWritesThePlaybooksWordsIntoTheOptinsOwnCopyOfTheTemplate(): void

@@ -250,6 +250,7 @@ export function ObjectPicker({ id, kind, value, onChange }: ObjectPickerProps) {
             className="w-full min-w-0 max-w-full"
             role="combobox"
             autoComplete="off"
+            placeholder={kind === 'post' ? __('Search pages or posts…', 'wconvert') : __('Search categories or tags…', 'wconvert')}
             aria-expanded={expanded}
             aria-controls={expanded ? listId : undefined}
             aria-autocomplete="list"

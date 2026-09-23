@@ -1,10 +1,11 @@
-import { useRef, useState, type KeyboardEvent } from 'react';
+import { useId, useRef, useState, type KeyboardEvent } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import { Plus } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '../../components/ui/popover';
 import { useDirection } from '../../hooks/useDirection';
 import { renderingFor, tierProductName, type Rendering } from '../../goals/availability';
+import { ruleHelp } from './ruleHelp';
 import { toRule } from '../presets';
 import type { Rule, RuleType } from '../api';
 
@@ -19,6 +20,7 @@ export interface AddRuleProps {
  * Opening, searching and closing never edit the draft.
  */
 export function AddRule({ axis, label, onAdd }: AddRuleProps) {
+  const helpId = useId();
   const [open, setOpen] = useState(false);
   const [query, setQuery] = useState('');
   const search = useRef<HTMLInputElement>(null);
@@ -72,9 +74,9 @@ export function AddRule({ axis, label, onAdd }: AddRuleProps) {
       <div ref={results} className="wconvert-rule-picker__results">
         {offered.map(({ type, choices }) => <div key={type.type} role="group" aria-label={type.label} data-available="true">
           {type.presets.length > 0 && <p className="wconvert-rule-picker__heading">{type.label}</p>}
-          {choices.map(preset => <button key={preset?.id ?? ''} type="button" onClick={() => {
+          {choices.map(preset => <button key={preset?.id ?? ''} type="button" aria-label={preset?.label ?? (type.presets.length > 0 ? __('Custom values…', 'wconvert') : type.label)} aria-describedby={!preset && ruleHelp(type.type) ? `${helpId}-${type.type}` : undefined} onClick={() => {
             onAdd(toRule(type, preset, {})); setOpen(false);
-          }}>{preset?.label ?? (type.presets.length > 0 ? __('Set it myself', 'wconvert') : type.label)}</button>)}
+          }}>{preset?.label ?? (type.presets.length > 0 ? __('Custom values…', 'wconvert') : type.label)}{!preset && ruleHelp(type.type) && <small id={`${helpId}-${type.type}`}>{ruleHelp(type.type)}</small>}</button>)}
         </div>)}
         {unavailable.map(({ reason, types }) => <div key={reason} role="group" aria-label={reason} data-available="false">
           <p className="wconvert-rule-picker__heading">{reason}</p>

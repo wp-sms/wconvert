@@ -744,6 +744,13 @@ export function phraseOf(rule: Rule, types: readonly RuleType[]): Summary {
     };
   }
 
+  if (rule.type === 'query_param' && !supplied(rule.value)) {
+    return { text: sprintf(__('URL contains the “%s” parameter (any value)', 'wconvert'), String(rule.key)), attention: false };
+  }
+  if (rule.type === 'logged_in') {
+    return { text: rule.value === true ? __('signed in to this site', 'wconvert') : __('signed out of this site', 'wconvert'), attention: false };
+  }
+
   // A phrase with no placeholders is passed through untouched rather than
   // through `sprintf`, which would eat a literal `%` out of a merchant's own
   // CSS selector.

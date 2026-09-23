@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
+import { ruleHelp } from './ruleHelp';
 import { ParamField } from '../controls';
 import { fromRule, toRule } from '../presets';
 import type { Rule, RuleType } from '../api';
@@ -109,9 +110,10 @@ export function RuleRow({ rule, at, types, onChange }: RuleRowProps) {
           {/* The general form, always offered. A preset is a shortcut over the
               engine type and never a replacement for it (ADR 0005), so a
               merchant who wants their own `utm_term` is not locked out of one. */}
-          <option value="">{__('Set it myself', 'wconvert')}</option>
+          <option value="">{__('Custom values…', 'wconvert')}</option>
         </select>
       )}
+      {ruleHelp(type.type) && <p className="wconvert-rule__note text-note">{ruleHelp(type.type)}</p>}
       {editable.map(([param, declaration]) => (
         <ParamField
           key={param}
@@ -119,20 +121,11 @@ export function RuleRow({ rule, at, types, onChange }: RuleRowProps) {
           param={declaration}
           value={shown[param]}
           onChange={(value) => {
-            // ==============================================================
-            // TOUCHING A PARAM IS SETTING IT YOURSELF, AND THE CONTROLS MUST
-            // NOT VANISH UNDER THE CURSOR.
-            // ==============================================================
-            // Without this, a merchant unticking one of three device boxes
-            // lands on `['tablet', 'desktop']`, which IS the "anywhere but
-            // mobile" preset — so the row snapped onto it and the checkboxes
-            // they were using disappeared mid-edit.
-            //
-            // The cost is that the select then reads "Set it myself" rather
-            // than naming the preset their values happen to equal. That is the
-            // better half of the trade: the values are on screen right beside
-            // it, and controls that move while being used are not.
-            setCustom(true);
+            // Keep a custom form open when its values happen to match a
+            // shortcut, so editing device boxes cannot make them disappear.
+            // A shortcut's editable fields (e.g. UTM values) do not change its
+            // fixed key and must not turn it into the custom form.
+            if (preset === null) setCustom(true);
             onChange(toRule(type, preset, { ...shown, [param]: value }, degradedFrom));
           }}
         />

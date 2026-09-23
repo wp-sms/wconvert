@@ -25,7 +25,7 @@ export function AudienceEditor({ value, types, onChange }: { value: Audience; ty
         <GroupEditor group={group} types={types} offset={index * 10} onChange={next => onChange({ ...value, groups: groups.map((old, at) => at === index ? next : old) })} />
       </div>)}
       {!advanced ? <Button variant="ghost" className="mt-4" onClick={() => setAdvanced(true)}>{__('Advanced: alternative audiences', 'wconvert')}</Button>
-        : <div className="mt-4"><p>{__('Matching any complete group is enough. Use a separate group for a different audience.', 'wconvert')}</p>
+        : <div className="mt-4"><p>{__('A visitor only needs to match one audience group. For example: mobile visitors OR signed-in customers.', 'wconvert')}</p>
           {groups.length < 5 && <Button variant="outline" onClick={() => onChange({ ...value, groups: [...groups, emptyGroup()] })}>{__('Add alternative audience', 'wconvert')}</Button>}
         </div>}
     </>}
