@@ -607,7 +607,8 @@ echo "The beacon endpoint\n";
 // socket. Nothing else can prove the controller wires its three collaborators
 // together, because a `WP_REST_Request` faithful enough to prove it is a
 // WordPress install with extra steps.
-$design = TemplateLibrary::fromDirectory(TemplateVocabulary::fromManifest())->snapshotInto(['template_id' => 'name-and-email']);
+$design = TemplateLibrary::fromDirectory(TemplateVocabulary::fromManifest())->snapshotInto(['template_id' => 'name-and-email'])
+    + ['display_rules' => \WConvert\Rules\DisplayPlan::immediate()];
 $published = $optins->create('Beacon check', 'grow_email_list', $design);
 $verify->check(
     'the beacon fixture is a valid capture design and publishes',
@@ -818,7 +819,7 @@ $milestones = new MilestoneStore($options);
 
 $verify->check('a site that has published nothing has no activation milestone', null, $milestones->firstPublish());
 
-$activated = $optins->create('Activation', 'grow_email_list', $design + ['display_rules' => \WConvert\Rules\DisplayPlan::immediate()]);
+$activated = $optins->create('Activation', 'grow_email_list', $design);
 
 $optins->publish($activated->id);
 
