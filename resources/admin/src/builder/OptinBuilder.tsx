@@ -220,6 +220,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
 
   const bound = Array.isArray(config?.destinations) ? (config.destinations as string[]) : [];
 
+  const [displaySection, setDisplaySection] = useState<string>();
   const displayRules = {
     display_rules: planFrom(config?.display_rules),
     targeting: (config?.targeting ?? {}) as Targeting,
@@ -890,6 +891,8 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
             </div>}
             <DisplayRules
               audienceRequirement={entryOfGoal?.audience_requirement}
+              initialSection={displaySection}
+              onSectionChange={setDisplaySection}
               act={act}
               vocabulary={vocabulary}
               value={displayRules}

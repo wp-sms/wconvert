@@ -21,17 +21,20 @@ export interface DisplayRulesProps {
   readonly overlay: boolean;
   readonly act?: ConvertingAct;
   readonly audienceRequirement?: string | null;
+  readonly initialSection?: string;
+  readonly onSectionChange?: (section: string) => void;
   readonly onChange: (patch: Partial<DisplayRulesValue>) => void;
   readonly placement?: { readonly summary: string; readonly controls: ReactNode };
   readonly reveal?: { readonly id: string; readonly focus?: string } | null;
 }
 
 /** One canonical draft; navigation and the summary are views of it. */
-export function DisplayRules({ vocabulary, value, overlay, act = 'submit', onChange, reveal, placement, audienceRequirement }: DisplayRulesProps) {
+export function DisplayRules({ vocabulary, value, overlay, act = 'submit', onChange, reveal, placement, audienceRequirement, initialSection, onSectionChange }: DisplayRulesProps) {
   const summaries = summarise(value, vocabulary, overlay, act);
-  const [active, setActive] = useState(() => summaries.find(section => section.attention)?.id ?? 'when');
+  const [active, setActive] = useState(() => initialSection ?? summaries.find(section => section.attention)?.id ?? 'when');
   const [testing, setTesting] = useState(false);
   const plan = value.display_rules;
+  useEffect(() => { onSectionChange?.(active); }, [active, onSectionChange]);
   useEffect(() => {
     if (!reveal) return;
     setActive(reveal.id === 'placement' ? 'where' : reveal.id);
