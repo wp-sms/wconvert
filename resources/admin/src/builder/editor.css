@@ -1127,3 +1127,56 @@ body .wconvert-rule-picker__unavailable {
     border-inline-end: 0;
   }
 }
+
+/* Journey controls share the editor chrome, leaving the canvas room to work. */
+#wconvert-admin .wconvert-journey {
+  flex: none;
+  min-inline-size: 0;
+  padding: 10px 20px 14px;
+  border-block-end: 1px solid var(--editor-rule);
+  background: var(--card);
+}
+#wconvert-admin .wconvert-journey__header,
+#wconvert-admin .wconvert-journey__title,
+#wconvert-admin .wconvert-journey__header-actions,
+#wconvert-admin .wconvert-journey__controls,
+#wconvert-admin .wconvert-journey__actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+#wconvert-admin .wconvert-journey__header { justify-content: space-between; flex-wrap: wrap; margin-block-end: 8px; }
+#wconvert-admin .wconvert-journey__title { gap: 2px; }
+#wconvert-admin .wconvert-journey__title h2 { margin: 0; font-size: var(--text-micro); font-weight: 600; }
+#wconvert-admin .wconvert-journey__controls { align-items: flex-end; flex-wrap: wrap; gap: 12px; }
+#wconvert-admin .wconvert-journey__field {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-inline-size: 0;
+  inline-size: 220px;
+  max-inline-size: 100%;
+  font-size: var(--text-label);
+  color: var(--muted-foreground);
+}
+#wconvert-admin .wconvert-journey__field--completion { inline-size: 260px; }
+#wconvert-admin .wconvert-journey__field select {
+  inline-size: 100%;
+  max-inline-size: 100%;
+  min-inline-size: 0;
+  margin: 0;
+  font-size: var(--text-micro);
+}
+#wconvert-admin .wconvert-journey__actions { gap: 2px; padding-inline-start: 10px; border-inline-start: 1px solid var(--editor-rule); }
+#wconvert-admin .wconvert-journey__header-actions { flex-wrap: wrap; margin-inline-start: auto; }
+@layer utilities {
+  #wconvert-admin .wconvert-journey__field :is(input, select) {
+    height: 32px !important;
+    min-height: 32px !important;
+    font-size: var(--text-micro) !important;
+    color: var(--foreground) !important;
+    background-color: var(--card) !important;
+  }
+  #wconvert-admin .wconvert-journey__delete:not([aria-disabled='true']):hover { color: var(--destructive) !important; }
+  #wconvert-admin .wconvert-journey__optional { max-inline-size: 100% !important; white-space: normal !important; height: auto !important; min-height: 32px !important; text-align: start; }
+}
