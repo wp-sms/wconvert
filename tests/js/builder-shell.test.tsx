@@ -272,6 +272,7 @@ describe('the builder shell', () => {
     expect(within(design).queryByRole('button', { name: 'Use manual placement' })).toBeNull();
     await userEvent.click(screen.getByRole('tab', { name: 'Display rules' }));
     const rules = screen.getByRole('tabpanel', { name: 'Display rules' });
+    await userEvent.click(within(screen.getByRole('navigation', { name: 'Display setup sections' })).getByRole('button', { name: /^Pages/ }));
     expect(within(rules).getByRole('heading', { name: 'Placement' })).toBeVisible();
     await userEvent.click(within(rules).getByRole('button', { name: 'Use manual placement' }));
     await userEvent.click(screen.getByRole('tab', { name: 'Design' }));
