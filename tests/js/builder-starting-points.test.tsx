@@ -2,6 +2,7 @@ import { displayPlan } from './support/display-entry';
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, expect, it, vi } from 'vitest';
+import { StartingPoints } from '../../resources/admin/src/builder/rules/StartingPoints';
 import { DisplayRules } from '../../resources/admin/src/builder/rules/DisplayRules';
 import { ruleBundle, ruleTypes } from './support/rule-types';
 import type { DisplayRulesValue } from '../../resources/admin/src/builder/rules/summaries';
@@ -28,25 +29,25 @@ function setup(bundle = ruleBundle({ label: 'All eligible visitors', targeting: 
 }
 
 describe('reviewing a display-rule display rule set', () => {
-  it('shows page and audience changes for targeting replacement, waits for confirmation and restores cancel focus', async () => {
+  it('shows only page changes for targeting replacement, waits for confirmation and restores cancel focus', async () => {
     const onChange = setup();
     expect(screen.queryByRole('button', { name: /All eligible visitors/ })).toBeNull();
     await userEvent.click(screen.getByRole('button', { name: 'Browse display rule sets' }));
     const trigger = screen.getByRole('button', { name: /All eligible visitors/ });
     await userEvent.click(trigger);
     const dialog = screen.getByRole('dialog', { name: 'Choose a display rule set' });
-    expect(within(dialog).getByText('Pages')).toBeInTheDocument();
-    expect(within(dialog).getByText('Audience')).toBeInTheDocument();
+    expect(within(dialog).getByText('Pages', { selector: 'strong' })).toBeInTheDocument();
+    expect(within(dialog).queryByText('Audience', { selector: 'strong' })).not.toBeInTheDocument();
     expect(within(dialog).getByText('URL path: /offers')).toBeInTheDocument();
     expect(within(dialog).getByText(/On every page/)).toBeInTheDocument();
-    expect(within(dialog).getAllByText(/mobile/)).toHaveLength(2);
+    expect(within(dialog).queryByText(/mobile/)).not.toBeInTheDocument();
     expect(within(dialog).getByText(/Undo can restore/)).toBeInTheDocument();
     expect(onChange).not.toHaveBeenCalled();
     await userEvent.click(within(dialog).getByRole('button', { name: 'Back to choices' }));
     expect(trigger).toHaveFocus();
     expect(onChange).not.toHaveBeenCalled();
     await userEvent.click(trigger);
-    await userEvent.click(screen.getByRole('button', { name: 'Replace these rules' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Apply to draft' }));
     expect(onChange).toHaveBeenCalledExactlyOnceWith({ targeting: {} });
   });
 
@@ -60,7 +61,7 @@ describe('reviewing a display-rule display rule set', () => {
     expect(within(dialog).getByText('Individual content: Posts')).toBeInTheDocument();
     expect(within(dialog).queryByText('Matches 1 page rule')).not.toBeInTheDocument();
     expect(onChange).not.toHaveBeenCalled();
-    await userEvent.click(within(dialog).getByRole('button', { name: 'Replace these rules' }));
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Apply to draft' }));
     expect(onChange).toHaveBeenCalledExactlyOnceWith({ targeting });
   });
 
@@ -84,12 +85,48 @@ describe('reviewing a display-rule display rule set', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Browse display rule sets' }));
     await userEvent.click(screen.getByRole('button', { name: /Show immediately/ }));
     const dialog = screen.getByRole('dialog', { name: 'Choose a display rule set' });
-    expect(within(dialog).getByText('Opening moment')).toBeInTheDocument();
-    expect(within(dialog).getByText('Schedule & limits')).toBeInTheDocument();
-    expect(within(dialog).queryByText('Pages')).toBeNull();
-    await userEvent.click(within(dialog).getByRole('button', { name: 'Replace these rules' }));
+    expect(within(dialog).getByText('Opening moment', { selector: 'strong' })).toBeInTheDocument();
+    expect(within(dialog).getByText('Schedule & limits', { selector: 'strong' })).toBeInTheDocument();
+    expect(within(dialog).queryByText('Pages', { selector: 'strong' })).toBeNull();
+    await userEvent.click(within(dialog).getByRole('button', { name: 'Apply to draft' }));
     expect(onChange).toHaveBeenCalledExactlyOnceWith({
       display_rules: { ...current.display_rules, opening: { mode: 'immediate' } }, frequency: {},
     });
+  });
+});
+
+
+describe('finding the right starting point', () => {
+  it('combines section and word filters without editing, and preserves them when returning from review', async () => {
+    const onApply = vi.fn();
+    render(<StartingPoints bundles={[
+      ruleBundle({ id: 'session', label: 'Once per session', description: 'One automatic appearance', triggers: undefined, frequency: { maxPerSession: 1 } }),
+      ruleBundle({ id: 'scroll', label: 'Wait for scroll', description: 'Open halfway down' }),
+    ]} onApply={onApply} describe={() => []} />);
+    await userEvent.click(screen.getByRole('button', { name: 'Browse display rule sets' }));
+    await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Settings to change' }), 'how-often');
+    expect(screen.queryByRole('button', { name: /Wait for scroll/ })).not.toBeInTheDocument();
+    await userEvent.type(screen.getByRole('searchbox'), 'automatic session');
+    await userEvent.click(screen.getByRole('button', { name: /Once per session/ }));
+    expect(onApply).not.toHaveBeenCalled();
+    await userEvent.click(screen.getByRole('button', { name: 'Back to choices' }));
+    expect(screen.getByRole('searchbox')).toHaveValue('automatic session');
+    expect(screen.getByRole('combobox', { name: 'Settings to change' })).toHaveValue('how-often');
+    await userEvent.click(screen.getByRole('button', { name: /Once per session/ }));
+    await userEvent.click(screen.getByRole('button', { name: 'Apply to draft' }));
+    expect(onApply).toHaveBeenCalledExactlyOnceWith({ frequency: { maxPerSession: 1 } });
+  });
+
+  it('compiles alternative gestures as OR while preserving audience and repeat settings', async () => {
+    const onChange = setup(ruleBundle({ label: 'Change of direction', triggers: [{ type: 'exit_intent' }, { type: 'scroll_up' }] }));
+    await userEvent.click(screen.getByRole('button', { name: 'Browse display rule sets' }));
+    await userEvent.click(screen.getByRole('button', { name: /Change of direction/ }));
+    await userEvent.click(screen.getByRole('button', { name: 'Apply to draft' }));
+    expect(onChange).toHaveBeenCalledExactlyOnceWith({ display_rules: {
+      ...current.display_rules,
+      opening: { mode: 'automatic', match: 'any', minimum_seconds: 0, rules: [
+        { type: 'exit_intent', id: expect.any(String) }, { type: 'scroll_up', id: expect.any(String) },
+      ] },
+    } });
   });
 });

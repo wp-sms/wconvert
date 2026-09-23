@@ -1,7 +1,8 @@
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import { lazy, Suspense, useEffect, useState, type ReactNode } from 'react';
 import type { ConvertingAct } from '../structure/catalogue';
 import type { DisplayPlan } from '@loader/display-rules';
+import { FlaskConical } from 'lucide-react';
 import { Button } from '../../components/ui/button';
 import { HowOften } from './HowOften';
 import { StartingPoints, patchOf, affectedSections, type BundlePatch } from './StartingPoints';
@@ -24,12 +25,13 @@ export interface DisplayRulesProps {
   readonly initialSection?: string;
   readonly onSectionChange?: (section: string) => void;
   readonly onChange: (patch: Partial<DisplayRulesValue>) => void;
+  readonly reopenEnabled?: boolean;
   readonly placement?: { readonly summary: string; readonly controls: ReactNode };
   readonly reveal?: { readonly id: string; readonly focus?: string } | null;
 }
 
 /** One canonical draft; navigation and the summary are views of it. */
-export function DisplayRules({ vocabulary, value, overlay, act = 'submit', onChange, reveal, placement, audienceRequirement, initialSection, onSectionChange }: DisplayRulesProps) {
+export function DisplayRules({ vocabulary, value, overlay, act = 'submit', onChange, reveal, placement, audienceRequirement, initialSection, onSectionChange, reopenEnabled }: DisplayRulesProps) {
   const summaries = summarise(value, vocabulary, overlay, act);
   const [active, setActive] = useState(() => initialSection ?? summaries.find(section => section.attention)?.id ?? 'when');
   const [testing, setTesting] = useState(false);
@@ -46,9 +48,17 @@ export function DisplayRules({ vocabulary, value, overlay, act = 'submit', onCha
   const audienceTypes = [...vocabulary.conditions, ...vocabulary.targeting.filter(type => type.kind === 'visitor')];
 
   return <div className="wconvert-display">
-    <div className="wconvert-display-header"><div><h2>{__('Display setup', 'wconvert')}</h2>
-      <p>{__('Reach the right people at the right moment.', 'wconvert')}</p></div>
-      <Button variant="outline" onClick={() => setTesting(true)}>{__('Test a sample visit', 'wconvert')}</Button>
+    <div className="wconvert-display-header">
+      <h2>{__('Display setup', 'wconvert')}</h2>
+      <div className="wconvert-display-actions">
+        <StartingPoints bundles={vocabulary.bundles} describe={bundle => {
+          const nextValue = { ...value, ...applied(patchOf(bundle), value) };
+          const next = summarise(nextValue, vocabulary, overlay, act);
+          return summaries.filter(axis => affectedSections(bundle).includes(axis.id)).map(axis => ({ label: axis.eyebrow,
+            before: axis.id === 'where' ? targetingSummary(value.targeting, vocabulary.targeting, 'review') : axis.text,
+            after: axis.id === 'where' ? targetingSummary(nextValue.targeting, vocabulary.targeting, 'review') : next.find(each => each.id === axis.id)!.text }));
+        }} onApply={patch => onChange(applied(patch, value))} />
+      </div>
     </div>
     {!plan && <div role="alert" className="wconvert-display-repair"><p>{__('This draft uses an older development rule format. Review and replace its display setup before saving or publishing.', 'wconvert')}</p>
       <Button onClick={() => update(incompletePlan())}>{__('Set up display rules', 'wconvert')}</Button></div>}
@@ -56,7 +66,7 @@ export function DisplayRules({ vocabulary, value, overlay, act = 'submit', onCha
       <nav aria-label={__('Display setup sections', 'wconvert')}>
         {summaries.map((section, index) => <button type="button" key={section.id} aria-current={active === section.id ? 'step' : undefined}
           onClick={() => setActive(section.id)}><span className="wconvert-display-step" aria-hidden="true">{index + 1}</span><span>{section.eyebrow}
-          <small>{section.attention ? __('Needs attention', 'wconvert') : section.text}</small></span></button>)}
+          <small>{section.attention ? __('Needs attention', 'wconvert') : section.id === 'how-often' ? repeatHint(value) : section.text}</small></span></button>)}
       </nav>
       <section className="wconvert-display-editor" aria-labelledby="wconvert-display-heading">
         <h3 id="wconvert-display-heading" tabIndex={-1}>{current.eyebrow}</h3>
@@ -66,23 +76,18 @@ export function DisplayRules({ vocabulary, value, overlay, act = 'submit', onCha
         {active === 'who' && plan && <AudienceEditor value={plan.audience} types={audienceTypes} onChange={audience => update({ ...plan, audience })} />}
         {active === 'when' && plan && <OpeningEditor value={plan.opening} types={vocabulary.triggers} onChange={opening => update({ ...plan, opening })} />}
         {active === 'how-often' && <HowOften act={act} frequency={value.frequency} schedule={value.schedule} priority={value.priority} overlay={overlay}
-          onFrequency={frequency => onChange({ frequency })} onSchedule={schedule => onChange({ schedule })} onPriority={priority => onChange({ priority })} />}
+          reopenEnabled={reopenEnabled} onFrequency={frequency => onChange({ frequency })} onSchedule={schedule => onChange({ schedule })} onPriority={priority => onChange({ priority })} />}
       </section>
       <aside className="wconvert-display-summary" aria-label={__('Display summary', 'wconvert')}>
         <details open><summary>{__('Your campaign will appear…', 'wconvert')}</summary>
         <dl>{summaries.map(section => <div key={section.id}><dt><button type="button" onClick={() => setActive(section.id)}>{section.eyebrow}</button></dt><dd>{section.text}</dd></div>)}</dl>
         <p className="text-note text-muted-foreground">{__('Page exclusions, required Goal conditions and site limits always apply.', 'wconvert')}</p>
+        <Button variant="outline" className="wconvert-display-test" onClick={() => setTesting(true)}><FlaskConical aria-hidden="true" />{__('Test a sample visit', 'wconvert')}</Button>
         <p className="text-note text-muted-foreground">{__('This is your draft. Changes go live only when published.', 'wconvert')}</p>
         </details>
       </aside>
     </div>
-    <StartingPoints bundles={vocabulary.bundles} describe={bundle => {
-      const nextValue = { ...value, ...applied(patchOf(bundle), value) };
-      const next = summarise(nextValue, vocabulary, overlay, act);
-      return summaries.filter(axis => affectedSections(bundle).includes(axis.id)).map(axis => ({ label: axis.eyebrow,
-        before: axis.id === 'where' ? targetingSummary(value.targeting, vocabulary.targeting, 'review') : axis.text,
-        after: axis.id === 'where' ? targetingSummary(nextValue.targeting, vocabulary.targeting, 'review') : next.find(each => each.id === axis.id)!.text }));
-    }} onApply={patch => onChange(applied(patch, value))} />
+
     {testing && <Suspense fallback={<p role="status">{__('Loading sample tester…', 'wconvert')}</p>}><SampleVisit value={value} vocabulary={vocabulary} onClose={() => setTesting(false)} /></Suspense>}
   </div>;
 }
@@ -99,4 +104,13 @@ function applied(patch: BundlePatch, value: DisplayRulesValue): Partial<DisplayR
   if (patch.conditions !== undefined) plan = { ...plan, audience: patch.conditions.length ? { mode: 'groups', groups: [{ id: newRuleId(), match: 'all', rules: patch.conditions.map(rule => freshRule(rule as Rule)) }] } : { mode: 'everyone' } };
   return { ...(patch.triggers !== undefined || patch.conditions !== undefined ? { display_rules: plan } : {}),
     ...(patch.targeting !== undefined ? { targeting: patch.targeting } : {}), ...(patch.frequency !== undefined ? { frequency: patch.frequency } : {}) };
+}
+
+/** Navigation needs the main pacing choice; the adjacent summary carries every stop. */
+function repeatHint({ frequency, schedule }: DisplayRulesValue): string {
+  if (schedule.starts_at || schedule.ends_at) return __('Scheduled dates', 'wconvert');
+  if (frequency.cooldownDays) return sprintf(__('Every %d days at most', 'wconvert'), frequency.cooldownDays);
+  if (frequency.maxPerSession === 1) return __('Once per tab session', 'wconvert');
+  if (frequency.maxPerSession) return sprintf(__('%d per tab session', 'wconvert'), frequency.maxPerSession);
+  return __('Every eligible page', 'wconvert');
 }

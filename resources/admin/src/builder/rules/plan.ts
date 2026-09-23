@@ -4,7 +4,11 @@ import type { Rule, RuleType } from '../api';
 import { phraseOf } from './sentence';
 import { __ } from '@wordpress/i18n';
 
-export const newRuleId = () => crypto.randomUUID();
+/** Authoring IDs also work on HTTP installs, where randomUUID is unavailable. */
+export const newRuleId = (): string => Array.from(
+  crypto.getRandomValues(new Uint8Array(16)),
+  byte => byte.toString(16).padStart(2, '0'),
+).join('');
 export const emptyGroup = (): RuleGroup => ({ id: newRuleId(), match: 'all', rules: [] });
 export const freshRule = (rule: Rule): Rule => ({ ...rule, id: newRuleId() });
 export const incompletePlan = (): DisplayPlan => ({ audience: { mode: 'everyone' }, opening: { mode: 'automatic', match: 'all', rules: [] } });

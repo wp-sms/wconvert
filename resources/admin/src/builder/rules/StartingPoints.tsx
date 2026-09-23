@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import { ArrowLeft, ArrowUpRight, Clock3, LayoutGrid, Lock, MapPin, Repeat2, Users } from 'lucide-react';
 import { Badge } from '../../components/ui/badge';
+import { Input } from '../../components/ui/input';
 import { Button } from '../../components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '../../components/ui/dialog';
 import { renderingFor, tierName } from '../../goals/availability';
@@ -26,6 +27,7 @@ export interface BundlePatch {
 export function StartingPoints({ bundles, onApply, describe }: StartingPointsProps) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState('');
+  const [section, setSection] = useState('all');
   const [pending, setPending] = useState<RuleBundle | null>(null);
   const returnFocusTo = useRef<HTMLButtonElement | null>(null);
   const reviewHeading = useRef<HTMLHeadingElement | null>(null);
@@ -36,28 +38,32 @@ export function StartingPoints({ bundles, onApply, describe }: StartingPointsPro
   }, [pending, open]);
 
   if (bundles.length === 0) return null;
-  const shown = bundles.filter(bundle => [bundle.label, bundle.description, sectionsIn(bundle)]
-    .some(text => text.toLocaleLowerCase().includes(search.trim().toLocaleLowerCase())));
+  const labels = sectionLabels();
+  const words = search.trim().toLocaleLowerCase().split(/\s+/).filter(Boolean);
+  const shown = bundles.filter(bundle => (section === 'all' || affectedSections(bundle).includes(section))
+    && words.every(word => [bundle.label, bundle.description, sectionsIn(bundle)].join(' ').toLocaleLowerCase().includes(word)));
 
-  return <div className="wconvert-starters wconvert-starters--compact">
-    <div><h3>{__('Display rule sets', 'wconvert')}</h3>
-      <p>{__('Start with a ready-made set of display rules.', 'wconvert')}</p>
-    </div>
-    <Dialog open={open} onOpenChange={next => {
+  return <Dialog open={open} onOpenChange={next => {
       setOpen(next);
-      if (next) { setSearch(''); setPending(null); returnFocusTo.current = null; }
+      if (next) { setSearch(''); setSection('all'); setPending(null); returnFocusTo.current = null; }
     }}>
-      <DialogTrigger asChild><Button variant="outline" size="sm"><LayoutGrid aria-hidden="true" />{__('Browse display rule sets', 'wconvert')}</Button></DialogTrigger>
+      <DialogTrigger asChild><Button variant="ghost"><LayoutGrid aria-hidden="true" />{__('Browse display rule sets', 'wconvert')}</Button></DialogTrigger>
       <DialogContent className="wconvert-starting-picker sm:max-w-3xl">
         <DialogHeader>
           <DialogTitle>{__('Choose a display rule set', 'wconvert')}</DialogTitle>
-          <DialogDescription>{__('Browse ready-made rules, then review what will change before applying.', 'wconvert')}</DialogDescription>
+          <DialogDescription>{__('Start with ready-made rules. Review what they replace before applying to your draft.', 'wconvert')}</DialogDescription>
         </DialogHeader>
         <div className="wconvert-starters-body">
           <div hidden={pending !== null}>
-            <label className="wconvert-starters-search">{__('Find a display rule set', 'wconvert')}
-              <input type="search" value={search} onChange={event => setSearch(event.target.value)} placeholder={__('Search by name or rule…', 'wconvert')} />
+            <div className="wconvert-starters-filters"><label className="wconvert-starters-search">{__('Find a display rule set', 'wconvert')}
+              <Input type="search" value={search} onChange={event => setSearch(event.target.value)} placeholder={__('Try scroll, mobile or repeat…', 'wconvert')} />
             </label>
+            <label className="wconvert-starters-search">{__('Settings to change', 'wconvert')}
+              <select value={section} onChange={event => setSection(event.target.value)}>
+                <option value="all">{__('All settings', 'wconvert')}</option>
+                {Object.entries(labels).map(([id, label]) => <option key={id} value={id}>{label}</option>)}
+              </select>
+            </label></div>
             <ul className="wconvert-starters__list">
               {shown.map(bundle => {
                 const rendering = renderingFor(bundle.availability, 'settings_list');
@@ -92,17 +98,16 @@ export function StartingPoints({ bundles, onApply, describe }: StartingPointsPro
                 <span><strong>{__('Current:', 'wconvert')}</strong> {section.before}</span>
                 <span><strong>{__('After applying:', 'wconvert')}</strong> {section.after}</span>
               </div>)}
-              <p>{__('Your start and end dates, priority and settings outside these sections stay the same. Undo can restore these draft settings.', 'wconvert')}</p>
+              <p>{__('Only the settings listed above are replaced. Dates, priority and campaign design stay the same. Undo can restore these draft settings.', 'wconvert')}</p>
             </div>
           </div>}
         </div>
         <DialogFooter>
           <Button variant="outline" onClick={() => setOpen(false)}>{__('Cancel', 'wconvert')}</Button>
-          {pending && <Button onClick={() => { onApply(patchOf(pending)); setOpen(false); }}>{__('Replace these rules', 'wconvert')}</Button>}
+          {pending && <Button onClick={() => { onApply(patchOf(pending)); setOpen(false); }}>{__('Apply to draft', 'wconvert')}</Button>}
         </DialogFooter>
       </DialogContent>
-    </Dialog>
-  </div>;
+    </Dialog>;
 }
 
 /**
@@ -119,8 +124,8 @@ export function affectedSections(bundle: RuleBundle): string[] {
     named.push('where');
   }
 
-  // A targeting replacement also replaces its logged-in and role restrictions.
-  if (bundle.conditions !== undefined || bundle.targeting !== undefined) {
+  // Visitor restrictions belong to display_rules.audience, not page targeting.
+  if (bundle.conditions !== undefined) {
     named.push('who');
   }
 
@@ -135,13 +140,17 @@ export function affectedSections(bundle: RuleBundle): string[] {
   return named;
 }
 
-function sectionsIn(bundle: RuleBundle): string {
-  const labels: Record<string, string> = {
+function sectionLabels(): Record<string, string> {
+  return {
     where: __('Pages', 'wconvert'),
     who: __('Audience', 'wconvert'),
-    when: __('When it appears', 'wconvert'),
-    'how-often': __('Frequency', 'wconvert'),
+    when: __('Opening moment', 'wconvert'),
+    'how-often': __('Repeat limits', 'wconvert'),
   };
+}
+
+function sectionsIn(bundle: RuleBundle): string {
+  const labels = sectionLabels();
   return listWithAnd(affectedSections(bundle).map((id) => labels[id]));
 }
 

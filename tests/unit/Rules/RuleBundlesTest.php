@@ -113,6 +113,15 @@ final class RuleBundlesTest extends TestCase
         $this->assertSame(['maxImpressions' => 1], self::find(self::bundles(), 'show-it-once')['frequency']);
     }
 
+    public function testNewStartingPointsUseTheSupportedDisplaySemantics(): void
+    {
+        $this->assertSame([['type' => 'inactivity', 'seconds' => 30]], self::find(self::bundles(), 'after-inactivity')['triggers']);
+        $this->assertSame(['maxPerSession' => 1, 'stopAfterDismiss' => false, 'stopAfterConversion' => true], self::find(self::bundles(), 'once-per-session')['frequency']);
+        $this->assertSame(['cooldownDays' => 7, 'stopAfterDismiss' => false, 'stopAfterConversion' => true], self::find(self::bundles(), 'space-out-visits')['frequency']);
+        $this->assertSame([['type' => 'exit_intent'], ['type' => 'scroll_up']], self::find(self::bundles(), 'leaving-or-scrolling-back')['triggers']);
+        $this->assertSame('locked', self::find(self::bundles(false), 'leaving-or-scrolling-back')['availability']);
+    }
+
     // ========================================================================
     // AVAILABILITY: THE LEAST OF ITS RULES', AND ADR 0026'S PRECEDENCE INTACT.
     // ========================================================================

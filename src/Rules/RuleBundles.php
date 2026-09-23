@@ -85,7 +85,7 @@ final class RuleBundles
                 // point names an OUTCOME; a preset names a rule setting.
                 'label' => __('Give them time to read', 'wconvert'),
                 'description' => __(
-                    'Waits fifteen seconds before showing, so it never interrupts someone who has only just arrived.',
+                    'Opens after 15 seconds on the page, when the campaign’s other conditions allow it.',
                     'wconvert'
                 ),
                 'rules' => [['type' => 'time_on_page', 'preset' => 'after_a_read']],
@@ -94,7 +94,7 @@ final class RuleBundles
             'halfway-down' => [
                 'label' => __('Wait until they scroll', 'wconvert'),
                 'description' => __(
-                    'Shows once the visitor has scrolled past the middle — a sign they are actually reading.',
+                    'Opens after the visitor reaches 50% of the page’s scrollable distance.',
                     'wconvert'
                 ),
                 'rules' => [['type' => 'scroll_depth', 'preset' => 'halfway_down']],
@@ -103,16 +103,16 @@ final class RuleBundles
             'blog-posts-only' => [
                 'label' => __('Only on blog posts', 'wconvert'),
                 'description' => __(
-                    'Keeps it off your pages, your shop and your archives. Your posts only.',
+                    'Limits page selection to individual blog posts. Replaces existing page inclusions and exclusions.',
                     'wconvert'
                 ),
                 'targeting' => ['include' => [['type' => 'singular', 'value' => 'post']]],
             ],
 
             'show-it-once' => [
-                'label' => __('Show it once, then stop', 'wconvert'),
+                'label' => __('One automatic appearance per browser', 'wconvert'),
                 'description' => __(
-                    'One showing per visitor, ever. The least intrusive setting there is.',
+                    'Allows one automatic appearance in each browser. Clearing browser data resets this limit.',
                     'wconvert'
                 ),
                 'frequency' => ['maxImpressions' => 1],
@@ -120,23 +120,47 @@ final class RuleBundles
 
             'mobile-visitors' => [
                 'label' => __('Mobile visitors only', 'wconvert'),
-                'description' => __('Shows on phones and nowhere else.', 'wconvert'),
+                'description' => __('Limits the audience to mobile-sized browser windows. Replaces existing audience rules.', 'wconvert'),
                 'rules' => [['type' => 'device', 'preset' => 'mobile_only']],
+            ],
+
+            'after-inactivity' => [
+                'label' => __('Reach visitors who pause', 'wconvert'),
+                'description' => __('Opens after 30 seconds without activity while the page stays visible.', 'wconvert'),
+                'rules' => [['type' => 'inactivity', 'seconds' => 30]],
+            ],
+
+            'once-per-session' => [
+                'label' => __('Avoid repeating in the same visit', 'wconvert'),
+                'description' => __('One automatic appearance per browser tab session. Stops after the visitor completes the campaign.', 'wconvert'),
+                'frequency' => ['maxPerSession' => 1, 'stopAfterDismiss' => false, 'stopAfterConversion' => true],
+            ],
+
+            'space-out-visits' => [
+                'label' => __('Leave a week between appearances', 'wconvert'),
+                'description' => __('Waits 7 days between automatic appearances in the same browser. Stops after completion.', 'wconvert'),
+                'frequency' => ['cooldownDays' => 7, 'stopAfterDismiss' => false, 'stopAfterConversion' => true],
             ],
 
             'on-the-way-out' => [
                 'label' => __('As they are leaving', 'wconvert'),
                 'description' => __(
-                    'Catches the visitor when their pointer heads for the address bar, rather than on a timer.',
+                    'Opens when the pointer leaves through the top of the page. Does not detect leaving on touch-only visits.',
                     'wconvert'
                 ),
                 'rules' => [['type' => 'exit_intent']],
             ],
 
+            'leaving-or-scrolling-back' => [
+                'label' => __('Catch a change of direction', 'wconvert'),
+                'description' => __('Opens when the pointer leaves through the top OR the visitor scrolls down then back up. The scroll option also works on touch screens.', 'wconvert'),
+                'rules' => [['type' => 'exit_intent'], ['type' => 'scroll_up']],
+            ],
+
             'rescue-a-cart' => [
-                'label' => __('Rescue an abandoned cart', 'wconvert'),
+                'label' => __('Remind shoppers before they leave', 'wconvert'),
                 'description' => __(
-                    'Waits until there is something in the cart, then catches the shopper on their way out.',
+                    'For shoppers with items in their WooCommerce cart, opens when the pointer leaves through the top. Touch-only visits need another opening rule.',
                     'wconvert'
                 ),
                 'rules' => [['type' => 'cart_has_items'], ['type' => 'exit_intent']],

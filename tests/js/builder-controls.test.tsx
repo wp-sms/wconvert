@@ -237,7 +237,7 @@ describe('the referrer hint', () => {
       />,
     );
 
-    expect(screen.getByRole('group')).toHaveAttribute('aria-describedby', 'wconvert-referrer-hint');
+    expect(screen.getByRole('group', { name: 'A param' })).toHaveAttribute('aria-describedby', 'wconvert-referrer-hint');
   });
 
   /** And no other set control grows one, since none of them has this trap. */
@@ -427,5 +427,19 @@ describe('the role control', () => {
 
     expect(container.querySelector('[role=group]')).toHaveAttribute('aria-labelledby', 'wconvert-roles');
     expect(screen.getByText(/signed-in visitors only/i)).toBeInTheDocument();
+  });
+});
+
+
+describe('explicit boolean choices', () => {
+  it('keeps an unanswered rule distinct from No and allows selecting No directly', async () => {
+    const changed = vi.fn();
+    render(<ParamField id="sign-in" param={{ ...paramFor('boolean'), label: 'Signed in to this site?' }} value={undefined} onChange={changed} />);
+    const input = screen.getByRole('combobox', { name: 'Signed in to this site?' });
+    expect(input).toHaveValue('');
+    await userEvent.selectOptions(input, 'false');
+    expect(changed).toHaveBeenLastCalledWith(false);
+    await userEvent.selectOptions(input, 'true');
+    expect(changed).toHaveBeenLastCalledWith(true);
   });
 });

@@ -695,17 +695,22 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
             variant="outline"
             ref={previewButton}
             size={small ? 'icon-sm' : 'default'}
-            aria-label={previewing ? __('Edit', 'wconvert') : __('Preview', 'wconvert')}
-            title={previewing ? __('Edit', 'wconvert') : __('Preview', 'wconvert')}
+            aria-label={tab === 'rules' ? __('Preview campaign', 'wconvert') : previewing ? __('Edit', 'wconvert') : __('Preview', 'wconvert')}
+            title={tab === 'rules' ? __('Preview campaign', 'wconvert') : previewing ? __('Edit', 'wconvert') : __('Preview', 'wconvert')}
             disabled={entry === null || busy}
-            onClick={() => {
+            onClick={(event) => {
+              if (tab === 'rules') {
+                previewDialogTrigger.current = event.currentTarget;
+                setPreviewDialogOpen(true);
+                return;
+              }
               setTab('design');
               setPreviewing(!previewing);
               setSelection(null);
             }}
           >
-            {previewing ? <MousePointer2 aria-hidden="true" /> : <Eye aria-hidden="true" />}
-            {!small && (previewing ? __('Edit', 'wconvert') : __('Preview', 'wconvert'))}
+            {previewing && tab !== 'rules' ? <MousePointer2 aria-hidden="true" /> : <Eye aria-hidden="true" />}
+            {!small && (previewing && tab !== 'rules' ? __('Edit', 'wconvert') : __('Preview', 'wconvert'))}
           </Button>
           <Button variant="outline" disabled={busy || !dirty} onClick={() => void save()}>
             {busy
@@ -881,15 +886,8 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
         </TabsContent>
         <TabsContent value="rules" className="wconvert-workspace__secondary wconvert-workspace__display" data-content-lock={showingLock || undefined}>
           <div className="wconvert-workspace__settings">
-            {entry && <div className="wconvert-workspace__preview-action">
-              <Button ref={previewDialogTrigger} type="button" variant="outline" onClick={(event) => {
-                previewDialogTrigger.current = event.currentTarget;
-                setPreviewDialogOpen(true);
-              }}>
-                <Eye aria-hidden="true" />{__('Preview campaign', 'wconvert')}
-              </Button>
-            </div>}
             <DisplayRules
+              reopenEnabled={canPreviewReopen}
               audienceRequirement={entryOfGoal?.audience_requirement}
               initialSection={displaySection}
               onSectionChange={setDisplaySection}

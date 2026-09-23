@@ -1,4 +1,9 @@
 body.wconvert-editing #wconvert-admin { padding-block-end: 0; }
+/* WordPress reduces its content gutter to 10px on phones. */
+@media (max-width: 782px) {
+  body.wconvert-editing:not(.wconvert-fullscreen) #wconvert-admin { margin-inline-start: -10px; width: calc(100% + 10px); }
+}
+body.wconvert-editing.wconvert-fullscreen #wconvert-admin { margin-inline-start: 0; width: 100%; }
 /* The editing workspace owns the viewport; the list screens keep Shell. */
 body.wconvert-editing #wpbody-content {
   padding-bottom: 0;
@@ -966,7 +971,7 @@ body .wconvert-launch-review [data-slot='dialog-description'] { margin: 0; }
 .wconvert-starters--compact > button { justify-self: start; }
 .wconvert-starting-picker { max-height: calc(100dvh - 32px); gap: 16px; }
 .wconvert-starting-picker [data-slot='dialog-header'] > :is(h2, p) { margin: 0; }
-.wconvert-starters-body { min-height: 0; max-height: min(60dvh, calc(100dvh - 220px)); overflow-y: auto; overscroll-behavior: contain; }
+.wconvert-starters-body { min-height: 0; max-height: min(60dvh, calc(100dvh - 220px)); overflow-y: auto; overscroll-behavior: contain; padding-inline: 4px; }
 .wconvert-starters-search { display: grid; gap: 6px; margin-block-end: 16px; font-size: var(--text-note); }
 .wconvert-starters-search input { width: 100%; height: 36px; margin: 0; }
 .wconvert-starting-picker .wconvert-starter { height: 100%; }
@@ -1251,33 +1256,135 @@ body .wconvert-rule-picker__unavailable {
   #wconvert-admin .wconvert-workspace__settings [data-slot='region-header'] { flex-direction: column; gap: 12px !important; }
 }
 
-/* Display workspace: responds to its available panel width, including wp-admin. */
-#wconvert-admin .wconvert-display { container-type: inline-size; min-width: 0; }
-#wconvert-admin .wconvert-display-header { display: flex; justify-content: space-between; align-items: start; gap: 1rem; margin-bottom: 1.5rem; }
-#wconvert-admin .wconvert-display-header h2 { margin: 0; font-size: var(--text-section); }
-#wconvert-admin .wconvert-display-header p { margin: .4rem 0 0; color: var(--muted-foreground); }
-#wconvert-admin .wconvert-display-grid { display: grid; grid-template-columns: 180px minmax(0, 1fr) 250px; gap: 1.5rem; align-items: start; }
-#wconvert-admin .wconvert-display nav { display: grid; gap: .4rem; }
-#wconvert-admin .wconvert-display nav button { display: flex; gap: .65rem; text-align: start; border: 1px solid transparent; border-radius: .6rem; padding: .85rem; background: transparent; cursor: pointer; color: inherit; }
+/* Display workspace: one compact header, white work surfaces, inset rule groups. */
+#wconvert-admin .wconvert-display { container-type: inline-size; min-inline-size: 0; max-inline-size: 90rem; margin-inline: auto; }
+#wconvert-admin .wconvert-display-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: .75rem 1rem; margin-block-end: 1rem; }
+#wconvert-admin .wconvert-display-header h2 { margin: 0; font-size: var(--text-heading); font-weight: 600; }
+#wconvert-admin .wconvert-display-actions { display: flex; align-items: center; flex-wrap: wrap; gap: .5rem; }
+#wconvert-admin .wconvert-display-grid { display: grid; grid-template-columns: 180px minmax(0, 1fr) 240px; gap: 1.25rem; align-items: start; }
+#wconvert-admin .wconvert-display nav { display: grid; gap: .25rem; }
+#wconvert-admin .wconvert-display nav button { display: flex; gap: .625rem; align-items: flex-start; text-align: start; border: 1px solid transparent; border-radius: var(--radius-lg); padding: .75rem; background: transparent; cursor: pointer; color: inherit; min-inline-size: 0; }
+#wconvert-admin .wconvert-display nav button > span:last-child { min-inline-size: 0; }
+#wconvert-admin .wconvert-display nav button:hover { background: var(--surface); }
 #wconvert-admin .wconvert-display nav button[aria-current] { background: var(--accent); border-color: var(--border); font-weight: 600; }
-#wconvert-admin .wconvert-display nav small { display: block; margin-top: .25rem; font-weight: 400; color: var(--muted-foreground); }
-#wconvert-admin .wconvert-display-step { border: 1px solid var(--border); border-radius: 50%; width: 1.5rem; height: 1.5rem; text-align: center; flex-shrink: 0; }
-#wconvert-admin .wconvert-display-editor { padding: 1.5rem; border: 1px solid var(--border); border-radius: .8rem; min-width: 0; background: var(--background); }
-#wconvert-admin .wconvert-display-editor h3 { margin: 0 0 1rem; font-size: var(--text-section); }
-#wconvert-admin .wconvert-display-summary { background: var(--muted); border: 1px solid var(--border); border-radius: .8rem; padding: 1.25rem; overflow-wrap: anywhere; }
-#wconvert-admin .wconvert-display-summary summary { margin: 0 0 1rem; font-size: var(--text-body); font-weight: 600; cursor: pointer; }
-#wconvert-admin .wconvert-display-summary dl { display: grid; gap: 1rem; }
-#wconvert-admin .wconvert-display-summary dt button { background: transparent; border: 0; padding: 0; cursor: pointer; font-weight: 600; color: inherit; text-align: start; }
-#wconvert-admin .wconvert-display-summary dd { margin: .35rem 0 0; line-height: 1.6; }
-#wconvert-admin .wconvert-display-choices { display: grid; gap: .7rem; border: 0; padding: 0; margin: 1.25rem 0; }
-#wconvert-admin .wconvert-display-choices legend { font-weight: 600; margin-bottom: .65rem; }
-#wconvert-admin .wconvert-display-choices label { display: flex; gap: .6rem; align-items: center; }
-#wconvert-admin .wconvert-display-match { display: block; margin-bottom: 1rem; }
-#wconvert-admin .wconvert-display-group { padding: 1rem; border: 1px solid var(--border); border-radius: .6rem; }
+#wconvert-admin .wconvert-display nav small { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; margin-block-start: .25rem; font-size: var(--text-note); line-height: 1.5; font-weight: 400; color: var(--muted-foreground); overflow-wrap: anywhere; }
+#wconvert-admin .wconvert-display-step { display: grid; place-items: center; border: 1px solid var(--border); border-radius: 50%; inline-size: 1.5rem; block-size: 1.5rem; font-size: var(--text-note); flex-shrink: 0; background: var(--card); }
+#wconvert-admin .wconvert-display nav button[aria-current] .wconvert-display-step { background: var(--primary); border-color: var(--primary); color: var(--primary-foreground); }
+#wconvert-admin .wconvert-display-editor { padding: 1.5rem; border: 1px solid var(--border); border-radius: var(--radius-lg); min-inline-size: 0; background: var(--card); }
+#wconvert-admin .wconvert-display-editor h3 { margin: 0 0 1.25rem; font-size: var(--text-heading); font-weight: 600; }
+#wconvert-admin .wconvert-display-editor > p { margin: 0 0 1rem; font-size: var(--text-note); color: var(--muted-foreground); }
+#wconvert-admin .wconvert-display-summary { background: var(--card); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 1rem; overflow-wrap: anywhere; }
+#wconvert-admin .wconvert-display-summary summary { margin: 0; font-size: var(--text-body); font-weight: 600; cursor: pointer; }
+#wconvert-admin .wconvert-display-summary dl { margin: .75rem 0 0; }
+#wconvert-admin .wconvert-display-summary dl > div { padding-block: .75rem; border-block-end: 1px solid var(--border); }
+#wconvert-admin .wconvert-display-summary dt button { background: transparent; border: 0; padding: 0; cursor: pointer; font-size: var(--text-note); font-weight: 500; color: var(--muted-foreground); text-align: start; }
+#wconvert-admin .wconvert-display-summary dt button:hover { color: var(--primary); text-decoration: underline; }
+#wconvert-admin .wconvert-display-summary dd { margin: .25rem 0 0; font-size: var(--text-body); line-height: 1.5; }
+#wconvert-admin .wconvert-display-summary p { margin: .75rem 0 0; line-height: 1.5; }
+#wconvert-admin .wconvert-display-test { inline-size: 100%; margin-block-start: 1rem; }
+#wconvert-admin .wconvert-display-choices { display: flex; flex-wrap: wrap; gap: .5rem; border: 0; padding: 0; margin: 1.25rem 0; }
+#wconvert-admin .wconvert-display-choices legend { font-weight: 600; margin-block-end: .65rem; }
+#wconvert-admin .wconvert-display-choices label { display: flex; gap: .5rem; align-items: center; border: 1px solid var(--input); border-radius: var(--radius-md); padding: .5rem .75rem; cursor: pointer; }
+#wconvert-admin .wconvert-display-choices label:has(input:checked) { background: var(--accent); border-color: var(--primary); }
+#wconvert-admin .wconvert-display-choices input { margin: 0; flex: none; }
+#wconvert-admin .wconvert-display-match { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; margin-block-end: 1rem; }
+#wconvert-admin .wconvert-display-group { padding: 1rem; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--surface); }
 #wconvert-admin .wconvert-display-group-title { display: flex; justify-content: space-between; align-items: center; }
 #wconvert-admin .wconvert-display-or { text-align: center; color: var(--muted-foreground); font-size: var(--text-note); font-weight: 600; }
-#wconvert-admin .wconvert-display-repair, #wconvert-admin .wconvert-display-test-result { padding: 1rem; margin-bottom: 1rem; background: var(--muted); border-radius: .6rem; }
-#wconvert-admin .wconvert-workspace__secondary.wconvert-workspace__display { display: block; }
-#wconvert-admin .wconvert-workspace__display > .wconvert-workspace__settings { max-width: none; }
-@container (max-width: 1050px) { #wconvert-admin .wconvert-display-grid { grid-template-columns: 165px minmax(0, 1fr); } #wconvert-admin .wconvert-display-summary { grid-column: 2; } }
-@container (max-width: 680px) { #wconvert-admin .wconvert-display-grid { display: flex; flex-direction: column; gap: 1rem; } #wconvert-admin .wconvert-display nav { grid-template-columns: repeat(2, minmax(0, 1fr)); width: 100%; } #wconvert-admin .wconvert-display-editor, #wconvert-admin .wconvert-display-summary { width: 100%; padding: 1rem; } #wconvert-admin .wconvert-display-header { flex-direction: column; } }
+#wconvert-admin .wconvert-display-repair, #wconvert-admin .wconvert-display-test-result { padding: 1rem; margin-block-end: 1rem; background: var(--surface); border-radius: var(--radius-lg); }
+#wconvert-admin .wconvert-workspace__secondary.wconvert-workspace__display { display: block; overflow: auto; background: var(--background); }
+#wconvert-admin .wconvert-workspace__display > .wconvert-workspace__settings { max-inline-size: none; border: 0; padding: 1.25rem 1.5rem; overflow: visible; }
+#wconvert-admin .wconvert-display-field { display: flex; flex-direction: column; align-items: flex-start; gap: .5rem; }
+#wconvert-admin .wconvert-display-field > select { inline-size: 100%; }
+#wconvert-admin .wconvert-display-field p, #wconvert-admin .wconvert-schedule-settings p { margin: 0; }
+#wconvert-admin .wconvert-display-dwell { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; }
+#wconvert-admin .wconvert-display-dwell input { inline-size: 6rem; }
+#wconvert-admin .wconvert-display-stop { margin-block: 1rem; }
+#wconvert-admin .wconvert-display-disclosure { margin-block-start: .75rem; }
+#wconvert-admin .wconvert-display-disclosure > summary { cursor: pointer; font-size: var(--text-note); font-weight: 500; color: var(--primary); }
+#wconvert-admin .wconvert-display-disclosure-body { display: flex; flex-direction: column; gap: 1rem; padding-block-start: 1rem; }
+#wconvert-admin .wconvert-display-disclosure-body .wconvert-schedule-fields { margin-block-start: 0; }
+#wconvert-admin .wconvert-display-schedule { border-block-start: 1px solid var(--border); padding-block-start: 1.25rem; }
+#wconvert-admin .wconvert-display-schedule legend { float: inline-start; inline-size: 100%; }
+#wconvert-admin .wconvert-display-hint { margin-block-start: .75rem !important; font-size: var(--text-note); color: var(--muted-foreground); }
+#wconvert-admin .wconvert-display .wconvert-site-limits-note { background: var(--surface); border: 0; }
+@container (max-width: 1050px) {
+  #wconvert-admin .wconvert-display-grid { grid-template-columns: 165px minmax(0, 1fr); }
+  #wconvert-admin .wconvert-display-summary { grid-column: 2; }
+}
+@container (max-width: 680px) {
+  #wconvert-admin .wconvert-display-grid { display: flex; flex-direction: column; gap: 1rem; }
+  #wconvert-admin .wconvert-display nav { grid-template-columns: repeat(2, minmax(0, 1fr)); inline-size: 100%; }
+  #wconvert-admin .wconvert-display nav small { display: none; }
+  #wconvert-admin .wconvert-display nav button { align-items: center; }
+  #wconvert-admin .wconvert-display-editor, #wconvert-admin .wconvert-display-summary { inline-size: 100%; padding: 1rem; }
+  #wconvert-admin .wconvert-display-header { gap: .5rem; }
+  #wconvert-admin .wconvert-display-actions { inline-size: 100%; }
+}
+@media (max-width: 640px) {
+  #wconvert-admin .wconvert-workspace__display > .wconvert-workspace__settings { padding: 1rem; }
+}
+
+/* Match the important utility layer so wp-admin and button utilities cannot widen
+   the editor actions beyond a narrow viewport. */
+@layer utilities {
+  @media (max-width: 640px) {
+    #wconvert-admin .wconvert-workspace__actions > button { padding-inline: 8px !important; }
+  }
+}
+
+/* The sample tester is portaled outside the admin mount. Keep the verdict fixed
+   while only the visitor fields and optional assumptions scroll. */
+.wconvert-sample-dialog { font-size: var(--text-body); }
+.wconvert-sample-header { padding: 1.25rem 3rem 1rem 1.25rem; flex: none; }
+[dir='rtl'] .wconvert-sample-header { padding-inline: 1.25rem 3rem; }
+.wconvert-sample-result { display: flex; align-items: flex-start; gap: .75rem; flex: none; margin: 0 1.25rem; padding: 1rem; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--surface); }
+.wconvert-sample-result > svg { inline-size: 1.25rem; block-size: 1.25rem; flex: none; margin-block-start: .125rem; color: var(--muted-foreground); }
+.wconvert-sample-result[data-passes='true'] > svg { color: var(--success); }
+.wconvert-sample-result strong { display: block; font-size: var(--text-heading); font-weight: 600; }
+.wconvert-sample-result p { margin: .25rem 0 0; font-size: var(--text-note); line-height: 1.5; color: var(--muted-foreground); }
+.wconvert-sample-body { min-block-size: 0; overflow-y: auto; overscroll-behavior: contain; padding: 1.25rem; display: flex; flex-direction: column; gap: 1.5rem; }
+.wconvert-sample-body h3 { margin: 0 0 .375rem; font-size: var(--text-body); font-weight: 600; }
+.wconvert-sample-help { margin: 0; font-size: var(--text-note); line-height: 1.5; color: var(--muted-foreground); }
+.wconvert-sample-fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr)); gap: 1rem; margin-block: 1rem; }
+.wconvert-sample-field { display: flex; flex-direction: column; gap: .5rem; min-inline-size: 0; }
+.wconvert-sample-field > div { display: flex; gap: .5rem; align-items: center; }
+.wconvert-sample-field input { min-inline-size: 0; max-inline-size: 8rem; }
+.wconvert-sample-field span { font-size: var(--text-note); color: var(--muted-foreground); }
+.wconvert-sample-checks { display: flex; flex-direction: column; gap: .5rem; list-style: none; margin: .75rem 0 0; padding: 0; font-size: var(--text-note); }
+.wconvert-sample-checks li { display: flex; justify-content: space-between; gap: 1rem; padding-block-end: .5rem; border-block-end: 1px solid var(--border); }
+.wconvert-sample-checks li > span:last-child { flex: none; font-weight: 500; color: var(--muted-foreground); }
+.wconvert-sample-checks li > span[data-met='true'] { color: var(--primary); }
+.wconvert-sample-events { margin-block-start: 1rem; }
+.wconvert-sample-event-buttons { display: flex; flex-wrap: wrap; gap: .5rem; margin-block-start: .75rem; }
+.wconvert-sample-event-buttons button { white-space: normal; overflow-wrap: anywhere; block-size: auto; min-block-size: var(--control-height); }
+.wconvert-sample-facts { display: grid; gap: 1rem; margin-block-start: 1rem; }
+.wconvert-sample-facts label { display: grid; grid-template-columns: minmax(0, 1fr) minmax(9rem, auto); gap: .5rem 1rem; align-items: center; }
+.wconvert-sample-facts select { min-inline-size: 0; max-inline-size: 100%; }
+.wconvert-sample-assumptions { border-block-start: 1px solid var(--border); padding-block-start: 1rem; }
+.wconvert-sample-assumptions summary { cursor: pointer; font-weight: 500; }
+.wconvert-sample-assumptions summary > span:last-child { margin-inline-start: .5rem; font-size: var(--text-note); font-weight: 400; color: var(--muted-foreground); }
+.wconvert-sample-assumption-body { display: flex; flex-direction: column; gap: .875rem; padding-block-start: 1rem; }
+.wconvert-sample-assumption-body label { display: flex; align-items: flex-start; gap: .625rem; line-height: 1.5; }
+.wconvert-sample-assumption-body input { flex: none; margin: .15rem 0 0; }
+.wconvert-sample-footer { flex: none; display: flex; align-items: center; justify-content: space-between; gap: 1rem; border-block-start: 1px solid var(--border); padding: 1rem 1.25rem; }
+.wconvert-sample-footer p { margin: 0; font-size: var(--text-note); color: var(--muted-foreground); line-height: 1.5; }
+.wconvert-sample-footer button { flex: none; }
+@media (max-width: 480px) {
+  .wconvert-sample-header { padding-block: 1rem .75rem; }
+  .wconvert-sample-result { padding: .75rem; }
+  .wconvert-sample-body { padding-block: 1rem; }
+  .wconvert-sample-facts label { grid-template-columns: minmax(0, 1fr); }
+  .wconvert-sample-footer { flex-wrap: wrap; gap: .5rem; padding-block: .75rem; }
+}
+
+/* Display choices explain the decision at the point where it is made. */
+.wconvert-display-rule-help { margin: .5rem 0 1rem; font-size: var(--text-note); line-height: 1.6; color: var(--muted-foreground); }
+body .wconvert-rule-picker__results button small { display: block; margin-block-start: .25rem; font-size: var(--text-note); line-height: 1.5; color: var(--muted-foreground); font-weight: 400; }
+.wconvert-starters-filters { display: grid; grid-template-columns: minmax(0, 1fr) minmax(10rem, .65fr); gap: 1rem; }
+body .wconvert-starting-picker .wconvert-starters-filters :is(input, select) { inline-size: 100%; min-inline-size: 0; margin: 0; }
+body .wconvert-starting-picker .wconvert-starters-filters select { border-color: var(--input); border-radius: var(--radius); background-color: var(--card); color: var(--foreground); }
+body .wconvert-starting-picker .wconvert-starters-filters select:focus { outline: 2px solid var(--ring); outline-offset: 1px; box-shadow: none; }
+@media (max-width: 480px) {
+  .wconvert-starters-filters { grid-template-columns: minmax(0, 1fr); gap: 0; }
+}

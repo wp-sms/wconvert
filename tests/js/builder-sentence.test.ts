@@ -461,12 +461,17 @@ describe('one rule, read', () => {
 
   it('treats zero and false as values somebody meant', () => {
     expect(phraseOf({ type: 'scroll_depth', percent: 0 }, types).attention).toBe(false);
-    expect(phraseOf({ type: 'logged_in', value: false }, types).attention).toBe(false);
+    expect(phraseOf({ type: 'logged_in', value: false }, types)).toEqual({ text: 'signed out of this site', attention: false });
   });
 
   /** It names every missing setting, not just the first. */
   it('requires the query key while an empty value means any value', () => {
     expect(phraseOf({ type: 'query_param' }, types).text).toBe('query_param — needs key');
+    for (const value of [undefined, []]) {
+      expect(phraseOf({ type: 'query_param', key: 'utm_campaign', value }, types)).toEqual({
+        text: 'URL contains the “utm_campaign” parameter (any value)', attention: false,
+      });
+    }
   });
 
   /**
