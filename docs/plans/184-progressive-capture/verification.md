@@ -95,3 +95,22 @@ The Free loader remains capped at 14,012 B. Paid loaders cap at 19,456 B; nothin
 is moved to an unmeasured lazy download. At the final measured build: Free
 11,836 B, Basic 17,926 B, Pro 18,904 B and Elite 19,095 B gzip. Build checks remain
 hard failures above those ceilings.
+
+## Visual screen manager follow-up
+
+The approved prototype A is implemented in the shared Free/Pro editor. A compact
+screen selector and Manage screens button replace the inline management panel.
+The dialog shows actual screen previews, order and save-point labels; supports
+pointer dragging and accessible move buttons; and returns to the selected screen
+on the full-height canvas. Acknowledgement stays last, and the primary submission
+cannot move after the optional one. Actions retain campaign Undo and draft Save.
+The exploratory journey prototype was removed after recording the choice in ADR
+0103. Template JSON and storage are unchanged by this UI refinement.
+
+Verification: the full frontend run passed all 123 behavior-test files; its
+stylesheet failures were corrected and the stylesheet and journey suites rerun
+successfully (352 tests). TypeScript, full ESLint and both admin builds pass.
+Real local WordPress checks covered modal opening/closing, screen selection,
+actual preview sizing, adding and dragging a screen, Undo back to the original
+draft, and 1440px/1024px layouts. The modal scrolls at shorter heights without
+reducing the canvas. The saved Campaign was not changed by these checks.

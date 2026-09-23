@@ -113,7 +113,7 @@ test('real editor loads Pro controls, simulates reopening, and saves draft setti
   await expect(reopenTab).toHaveAttribute('aria-pressed', 'true');
   await expect(page.getByRole('region', { name: 'Design canvas' }).locator('[data-wconvert-reopen]')).toBeVisible();
   await page.evaluate(() => window.testShadows.find(root => root.host.hasAttribute('data-wconvert-reopen') && root.host.isConnected).querySelector('button').click());
-  await expect(page.getByRole('button', { name: 'Details', exact: true })).toHaveAttribute('aria-pressed', 'true');
+  await expect(page.getByRole('combobox', { name: 'Campaign screen', exact: true })).toHaveValue('0');
   await page.getByRole('button', { name: 'Preview', exact: true }).click();
   await page.getByRole('button', { name: 'Close preview', exact: true }).click();
   await expect(reopenTab).toHaveAttribute('aria-pressed', 'true');

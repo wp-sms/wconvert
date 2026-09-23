@@ -47,6 +47,15 @@ Templates provide starting points; conditional branching is outside this feature
 Content-only screens are meaningful parts of a linear journey, while navigation
 remains distinct from a submission. The production JSON contract is `tree.v: 2`.
 
+The approved visual-modal editor (prototype A, 2026-09-23) keeps screen switching
+in the existing toolbar and moves journey management into a dialog. Numbered
+cards preview the actual screens and identify where a signup is saved. Dragging
+and keyboard-accessible move buttons share the same order constraints: the
+primary signup precedes the optional signup and the acknowledgement stays last.
+Selecting a card exposes its name and completion behavior; editing its design
+returns to the full-height canvas. Changes use the existing campaign draft and
+Undo history. This changes neither the Template JSON contract nor storage.
+
 Reports include the overall Conversion count, separate email/SMS capture totals,
 and anonymous screen progress counts. Repeated screen visits are not unique
 people, and aggregated screen differences must not be called exact abandonment.

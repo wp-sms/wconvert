@@ -1,9 +1,8 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import { Monitor, Smartphone, MousePointer2, X } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Preview } from './Preview';
-import { stepName } from './BlockRow';
 import { resolvedPlacement } from './PlacementControl';
 import type { SlotKey } from './slots';
 import type { Template } from '@renderer/types';
@@ -21,18 +20,11 @@ export function ScreenControls({
   extra?: { label: string; selected: boolean; onSelect(): void };
 }) {
   return (
-    <div className="wconvert-segmented" aria-label={__('Campaign screen', 'wconvert')}>
-      {template.tree.steps.map((screen, index) => (
-        <Button
-          key={screen.id}
-          variant="ghost"
-          size="sm"
-          aria-pressed={!extra?.selected && step === index}
-          onClick={() => onChange(index)}
-        >
-          {screen.name}
-        </Button>
-      ))}
+    <div className="wconvert-screen-controls">
+      <select aria-label={__('Campaign screen', 'wconvert')} value={extra?.selected ? 'reopen' : String(step)} onChange={event => event.target.value === 'reopen' ? extra?.onSelect() : onChange(Number(event.target.value))}>
+        {template.tree.steps.map((screen, index) => <option key={screen.id} value={String(index)}>{sprintf(__('%1$d. %2$s', 'wconvert'), index + 1, screen.name)}</option>)}
+        {extra && <option value="reopen">{extra.label}</option>}
+      </select>
       {extra && <Button variant="ghost" size="sm" aria-pressed={extra.selected} onClick={extra.onSelect}>{extra.label}</Button>}
     </div>
   );
@@ -152,7 +144,7 @@ export function EditorCanvas({
         <span>
           {name}
           <span aria-hidden="true">›</span>
-          {screen?.label ?? stepName(shown + 1)}
+          {screen?.label ?? template.tree.steps[shown]?.name}
         </span>
         <label>
           <span className="sr-only">{__('Canvas zoom', 'wconvert')}</span>

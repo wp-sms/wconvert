@@ -1128,55 +1128,65 @@ body .wconvert-rule-picker__unavailable {
   }
 }
 
-/* Journey controls share the editor chrome, leaving the canvas room to work. */
-#wconvert-admin .wconvert-journey {
-  flex: none;
-  min-inline-size: 0;
-  padding: 10px 20px 14px;
-  border-block-end: 1px solid var(--editor-rule);
-  background: var(--card);
-}
-#wconvert-admin .wconvert-journey__header,
-#wconvert-admin .wconvert-journey__title,
-#wconvert-admin .wconvert-journey__header-actions,
-#wconvert-admin .wconvert-journey__controls,
-#wconvert-admin .wconvert-journey__actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-}
-#wconvert-admin .wconvert-journey__header { justify-content: space-between; flex-wrap: wrap; margin-block-end: 8px; }
-#wconvert-admin .wconvert-journey__title { gap: 2px; }
-#wconvert-admin .wconvert-journey__title h2 { margin: 0; font-size: var(--text-micro); font-weight: 600; }
-#wconvert-admin .wconvert-journey__controls { align-items: flex-end; flex-wrap: wrap; gap: 12px; }
-#wconvert-admin .wconvert-journey__field {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  min-inline-size: 0;
-  inline-size: 220px;
-  max-inline-size: 100%;
-  font-size: var(--text-label);
-  color: var(--muted-foreground);
-}
-#wconvert-admin .wconvert-journey__field--completion { inline-size: 260px; }
-#wconvert-admin .wconvert-journey__field select {
-  inline-size: 100%;
-  max-inline-size: 100%;
-  min-inline-size: 0;
-  margin: 0;
-  font-size: var(--text-micro);
-}
-#wconvert-admin .wconvert-journey__actions { gap: 2px; padding-inline-start: 10px; border-inline-start: 1px solid var(--editor-rule); }
-#wconvert-admin .wconvert-journey__header-actions { flex-wrap: wrap; margin-inline-start: auto; }
+
+/* Screen selection stays in the toolbar; management lives in a dialog. */
+#wconvert-admin .wconvert-workspace__toolbar { grid-template-columns: auto minmax(0, 1fr) auto; }
+#wconvert-admin .wconvert-workspace__screens { justify-content: center; min-inline-size: 0; }
+#wconvert-admin .wconvert-screen-controls { display: flex; align-items: center; gap: 6px; min-inline-size: 0; }
+#wconvert-admin .wconvert-screen-controls select { margin: 0; min-inline-size: 0; max-inline-size: 220px; inline-size: 100%; font-size: var(--text-micro); }
 @layer utilities {
-  #wconvert-admin .wconvert-journey__field :is(input, select) {
-    height: 32px !important;
-    min-height: 32px !important;
-    font-size: var(--text-micro) !important;
-    color: var(--foreground) !important;
-    background-color: var(--card) !important;
+  [data-slot='dialog-content'].wconvert-journey-dialog {
+    display: flex !important; flex-direction: column !important; gap: 0 !important;
+    inline-size: min(1050px, calc(100vw - 48px)) !important; max-inline-size: none !important;
+    max-block-size: calc(100dvh - 80px) !important; padding: 0 !important; overflow: hidden;
   }
-  #wconvert-admin .wconvert-journey__delete:not([aria-disabled='true']):hover { color: var(--destructive) !important; }
-  #wconvert-admin .wconvert-journey__optional { max-inline-size: 100% !important; white-space: normal !important; height: auto !important; min-height: 32px !important; text-align: start; }
+  .wconvert-journey-dialog__fields :is(input, select) { inline-size: 100% !important; max-inline-size: none !important; min-inline-size: 0; block-size: 36px !important; margin: 0 !important; font-size: var(--text-micro) !important; }
+}
+.wconvert-journey-dialog__header { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; padding: 24px 26px 20px; flex: none; }
+.wconvert-journey-dialog__header [data-slot='dialog-description'] { margin-block-start: 10px; max-inline-size: 36rem; font-size: var(--text-note); line-height: 1.6; }
+.wconvert-journey-dialog__header-actions { display: flex; align-items: center; gap: 10px; flex: none; }
+.wconvert-journey-dialog__screens { list-style: none; display: flex; gap: 26px; flex: none; overflow: auto; margin: 0; padding: 20px 26px; background: var(--surface); border-block: 1px solid var(--border); max-block-size: 260px; }
+.wconvert-journey-card { position: relative; flex: 0 0 205px; min-inline-size: 0; padding: 10px; margin: 0; border: 1px solid var(--border); border-radius: 7px; background: var(--card); }
+.wconvert-journey-card:not(:last-child)::after { content: '→'; position: absolute; inset-inline-end: -21px; inset-block-start: 45%; color: var(--muted-foreground); }
+[dir='rtl'] .wconvert-journey-card:not(:last-child)::after { content: '←'; }
+.wconvert-journey-card[data-selected='true'] { border-color: var(--primary); box-shadow: 0 0 0 1px var(--primary); }
+.wconvert-journey-card[data-dragging='true'] { opacity: .5; }
+.wconvert-journey-card[data-drop-target='true'] { outline: 3px dashed var(--ring); outline-offset: 3px; }
+.wconvert-journey-card:has(button:focus-visible) { outline: 2px solid var(--ring); outline-offset: 3px; }
+.wconvert-journey-card__head { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-block-end: 10px; color: var(--muted-foreground); font-size: var(--text-label); }
+.wconvert-journey-card__grip { cursor: grab; position: relative; z-index: 1; min-inline-size: 24px; block-size: 24px; display: grid; place-items: center; }
+.wconvert-journey-card__preview { position: relative; display: flex; align-items: center; justify-content: center; block-size: 116px; overflow: hidden; border-radius: 4px; background: var(--surface); pointer-events: none; }
+.wconvert-journey-card__drawing { position: absolute; inset-block-start: 50%; inset-inline: calc(50% - 300px); inline-size: 600px; transform-origin: center; pointer-events: none; }
+.wconvert-journey-card__drawing .wconvert-preview { display: flex; justify-content: center; }
+.wconvert-journey-card__select { display: flex; flex-direction: column; align-items: flex-start; text-align: start; gap: 5px; inline-size: 100%; padding: 10px 0 2px; border: 0; background: none; cursor: pointer; color: var(--foreground); }
+.wconvert-journey-card__select::after { content: ''; position: absolute; inset: 40px 0 0; }
+.wconvert-journey-card__select strong { font-size: var(--text-note); font-weight: 600; overflow-wrap: anywhere; }
+.wconvert-journey-card__select span { font-size: var(--text-label); color: var(--muted-foreground); }
+.wconvert-journey-dialog__details { overflow: auto; min-block-size: 0; padding: 22px 26px; }
+.wconvert-journey-dialog__selected { display: flex; align-items: center; gap: 10px; margin-block-end: 18px; }
+.wconvert-journey-dialog__selected>span { display: grid; place-items: center; inline-size: 32px; block-size: 32px; flex: none; border-radius: 6px; background: var(--secondary); color: var(--primary); }
+.wconvert-journey-dialog__selected h3 { font-size: var(--text-note); margin: 0; font-weight: 600; overflow-wrap: anywhere; }
+.wconvert-journey-dialog__fields { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.wconvert-journey__field { display: flex; flex-direction: column; gap: 7px; min-inline-size: 0; font-size: var(--text-note); }
+.wconvert-journey-dialog__behavior { padding: 12px 14px; margin-block: 18px; background: var(--secondary); border: 1px solid var(--border); border-radius: 5px; font-size: var(--text-note); }
+.wconvert-journey-dialog__behavior p { font-size: var(--text-micro); line-height: 1.6; margin: 5px 0 0; color: var(--muted-foreground); }
+.wconvert-journey-dialog__actions-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; flex-wrap: wrap; }
+.wconvert-journey__actions { display: flex; gap: 4px; }
+.wconvert-journey-dialog__footer { display: flex; align-items: center; justify-content: space-between; gap: 16px; border-block-start: 1px solid var(--border); padding: 12px 26px; flex: none; }
+.wconvert-journey-dialog__footer p { margin: 0; color: var(--muted-foreground); font-size: var(--text-micro); line-height: 1.5; }
+@media (max-width: 1100px) {
+  #wconvert-admin .wconvert-workspace__toolbar { gap: 6px; }
+  #wconvert-admin .wconvert-screen-controls select { max-inline-size: 165px; }
+}
+@media (max-width: 640px) {
+  .wconvert-journey-dialog__header { flex-wrap: wrap; padding: 18px; }
+  .wconvert-journey-dialog__fields { grid-template-columns: 1fr; }
+  .wconvert-journey-dialog__screens { padding: 18px; }
+  .wconvert-journey-dialog__details { padding: 18px; }
+}
+
+@layer utilities {
+  .wconvert-journey-dialog [data-slot='dialog-description'] { margin-block-start: 9px !important; }
+  .wconvert-journey__delete:not([aria-disabled='true']):hover { color: var(--destructive) !important; }
+  .wconvert-journey-dialog [data-slot='dialog-title'] { font-size: var(--text-title) !important; }
 }

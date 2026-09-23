@@ -1,4 +1,3 @@
-import { JourneyEditor } from './JourneyEditor';
 import { referencedJourney } from './structure/journey';
 import { useEffect, useId, useLayoutEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
@@ -41,7 +40,6 @@ import { nameOf, type TemplateLabels } from '../templates/api';
 import type { Template, TemplateTree } from '@renderer/types';
 
 export interface StructureViewProps {
-  readonly primaryChannel?: string | null;
   readonly template: Template;
   readonly labels: TemplateLabels;
 
@@ -74,7 +72,6 @@ export interface StructureViewProps {
 }
 
 export function StructureView({
-  primaryChannel,
   template,
   labels,
   act,
@@ -241,7 +238,6 @@ export function StructureView({
   return (
     <>
       {toolbar}
-      <JourneyEditor primaryChannel={primaryChannel} tree={template.tree} step={step ?? 0} onChange={tree => onChange({ ...template, tree })} onSelect={index => onSelect([index])} />
 
       <p role="status" aria-label={__('Layer changes', 'wconvert')} className="sr-only">
         {said}

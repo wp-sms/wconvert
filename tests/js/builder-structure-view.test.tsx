@@ -767,7 +767,7 @@ describe('adding a block', () => {
    */
   it('refuses a field on the step that is not the form', async () => {
     await structure();
-    await userEvent.click(screen.getByRole('button', { name: 'Received' }));
+    await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Campaign screen' }), '1');
 
     await userEvent.click(
       within(row('Headline after they submit')).getByRole('button', {
@@ -1069,15 +1069,12 @@ describe('the inspector', () => {
    */
   it('takes the preview to the step the selected block lives on', async () => {
     await structure();
-    await userEvent.click(screen.getByRole('button', { name: 'Received' }));
+    await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Campaign screen' }), '1');
     await select('Headline after they submit');
 
-    expect(screen.getByRole('region', { name: 'Design canvas' })).toHaveTextContent('After they submit');
+    expect(screen.getByRole('region', { name: 'Design canvas' })).toHaveTextContent('Received');
 
-    expect(within(screen.getByLabelText('Campaign screen')).getByRole('button', { name: 'Received' })).toHaveAttribute(
-      'aria-pressed',
-      'true',
-    );
+    expect(screen.getByRole('combobox', { name: 'Campaign screen' })).toHaveValue('1');
   });
 
   /**

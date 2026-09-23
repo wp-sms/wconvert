@@ -57,3 +57,15 @@ export function duplicateScreen(tree: TemplateTree, index: number): TemplateScre
   };
   return { ...base, id: freshScreen(tree, 'input').id, name: sprintf(__('%s (copy)', 'wconvert'), base.name), content: clone(base.content) };
 }
+
+/** Keep the acknowledgement last and accepted signups in their declared order. */
+export function movedScreen(tree: TemplateTree, from: number, to: number): TemplateTree {
+  if (from === to || from < 0 || to < 0 || from >= tree.steps.length - 1 || to >= tree.steps.length - 1) return tree;
+  const steps = [...tree.steps];
+  const [screen] = steps.splice(from, 1);
+  steps.splice(to, 0, screen);
+  const next = { ...tree, steps };
+  const ends = tree.submissions.map(sub => submissionScreen(next, sub.id)).filter(index => index >= 0);
+  if (ends.some((end, index) => index > 0 && end <= ends[index - 1])) return tree;
+  return referencedJourney(next);
+}

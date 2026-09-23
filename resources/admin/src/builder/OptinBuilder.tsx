@@ -1,4 +1,5 @@
 import { SubmissionSettings } from './SubmissionSettings';
+import { JourneyEditor } from './JourneyEditor';
 import { JourneyReport } from './JourneyReport';
 import { referencedJourney } from './structure/journey';
 import { contentLockDesignCompatible } from '../inlinePlacement';
@@ -773,7 +774,9 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
                       {__('Design settings', 'wconvert')}
                     </Button>
                   </div>
-                  <ScreenControls template={entry} step={shownStep} onChange={chooseStep} extra={canPreviewReopen ? { label: reopenLabel, selected: showingReopen, onSelect: showReopen } : undefined} />
+                  <div className="wconvert-workspace__screens"><ScreenControls template={entry} step={shownStep} onChange={chooseStep} extra={canPreviewReopen ? { label: reopenLabel, selected: showingReopen, onSelect: showReopen } : undefined} />
+                    {!previewing && <JourneyEditor primaryChannel={entryOfGoal?.outcome.audience_channel} tree={entry.tree} tokens={entry.tokens} step={shownStep} onChange={tree => edit({ template: { ...entry, tree } })} onSelect={chooseStep} />}
+                  </div>
                   <div>
                     <DeviceControls width={width} onChange={setWidth} />
                     <Fullscreen />
@@ -783,7 +786,6 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
                   previewPane
                 ) : (
                   <StructureView
-                    primaryChannel={entryOfGoal?.outcome.audience_channel}
                     template={entry}
                     labels={gallery.labels}
                     act={act}

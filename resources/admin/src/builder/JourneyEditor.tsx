@@ -1,25 +1,41 @@
-import { useId } from 'react';
-import { ArrowLeft, ArrowRight, ChevronDown, Copy, FilePlus2, ListPlus, Plus, Trash2 } from 'lucide-react';
+import { useId, useState } from 'react';
+import { ArrowLeft, ArrowRight, ChevronDown, Copy, FilePlus2, ListPlus, Plus, Trash2, Workflow, X } from 'lucide-react';
 import { Input } from '../components/ui/input';
 import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '../components/ui/tooltip';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '../components/ui/dropdown-menu';
-import { InfoTip } from '../shell/InfoTip';
-import { __ } from '@wordpress/i18n';
+import { Dialog, DialogTrigger, DialogContent, DialogTitle, DialogDescription, DialogClose } from '../components/ui/dialog';
+import { JourneyScreenCard } from './JourneyScreenCard';
+import { __, sprintf } from '@wordpress/i18n';
 import { Button } from '../components/ui/button';
-import type { TemplateTree } from '@renderer/types';
-import { duplicateScreen, freshScreen, referencedJourney, walkNodes } from './structure/journey';
+import type { TemplateTree, Tokens } from '@renderer/types';
+import { duplicateScreen, freshScreen, referencedJourney, walkNodes, submissionScreen, movedScreen } from './structure/journey';
 
-export function JourneyEditor({ tree, step, primaryChannel, onChange, onSelect }: {
-  primaryChannel?: string | null; tree: TemplateTree; step: number; onChange(tree: TemplateTree): void; onSelect(step: number): void;
+export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChange, onSelect }: {
+  tokens?: Tokens; primaryChannel?: string | null; tree: TemplateTree; step: number; onChange(tree: TemplateTree): void; onSelect(step: number): void;
 }) {
   const id = useId();
+  const [open, setOpen] = useState(false);
+  const [said, setSaid] = useState('');
   const current = tree.steps[step];
   if (!current || tree.submissions.length === 0) return null;
   const write = (next: TemplateTree, index: number) => { onChange(referencedJourney(next)); onSelect(index); };
-  const move = (by: number) => {
-    const steps = [...tree.steps]; [steps[step], steps[step + by]] = [steps[step + by], steps[step]];
-    write({ ...tree, steps }, step + by);
+  const move = (from: number, to: number) => {
+    const next = movedScreen(tree, from, to);
+    if (next === tree) { setSaid(__('Keep the main signup before the optional signup, and the thank-you screen last.', 'wconvert')); return; }
+    write(next, to);
+    setSaid(sprintf(__('%1$s moved to screen %2$d.', 'wconvert'), tree.steps[from].name, to + 1));
   };
+  const saving = (index: number) => tree.submissions.find(sub => submissionScreen(tree, sub.id) === index);
+  const saveLabel = (id: string) => {
+    const optional = id !== tree.submissions[0].id;
+    if (!primaryChannel) return __('Save request', 'wconvert');
+    const email = optional ? primaryChannel === 'sms' : primaryChannel === 'email';
+    return optional
+      ? email ? __('Save optional email signup', 'wconvert') : __('Save optional SMS signup', 'wconvert')
+      : email ? __('Save email signup', 'wconvert') : __('Save SMS signup', 'wconvert');
+  };
+  const screenLabel = (index: number) => tree.steps[index].kind === 'acknowledgement' ? __('Journey complete', 'wconvert')
+    : saving(index) ? saveLabel(saving(index)!.id) : __('Continue only', 'wconvert');
   const add = (kind: 'content' | 'input') => {
     const steps = [...tree.steps]; const at = Math.min(step, steps.length - 1);
     let screen = freshScreen(tree, kind);
@@ -52,78 +68,96 @@ export function JourneyEditor({ tree, step, primaryChannel, onChange, onSelect }
     if (end < 0) return;
     write({ ...tree, submissions: tree.submissions.slice(0, 1), steps: [...tree.steps.slice(0, end + 1), tree.steps[tree.steps.length - 1]] }, end);
   };
+  const submission = saving(step);
   return <TooltipProvider delayDuration={300}>
-    <section className="wconvert-journey" aria-labelledby={`${id}-heading`}>
-      <div className="wconvert-journey__header">
-        <div className="wconvert-journey__title">
-          <h2 id={`${id}-heading`}>{__('Journey screens', 'wconvert')}</h2>
-          <InfoTip label={__('About journey screens', 'wconvert')}>
-            {__('Next keeps answers on this page. Submit saves the signup or request. Submitted details stay fixed, even when visitors go back.', 'wconvert')}
-          </InfoTip>
+    <Dialog open={open} onOpenChange={value => { setOpen(value); setSaid(''); }}>
+      <DialogTrigger asChild><Button type="button" variant="outline" size="sm"><Workflow aria-hidden="true" />{__('Manage screens', 'wconvert')}</Button></DialogTrigger>
+      <DialogContent className="wconvert-journey-dialog" showCloseButton={false}>
+        <div className="wconvert-journey-dialog__header">
+          <div><DialogTitle>{__('Manage screens', 'wconvert')}</DialogTitle>
+            <DialogDescription>{__('Visitors see these screens in order. Drag to rearrange, or select a screen to make changes.', 'wconvert')}</DialogDescription></div>
+          <div className="wconvert-journey-dialog__header-actions">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button type="button" size="sm" variant="outline"><Plus aria-hidden="true" />{__('Add screen', 'wconvert')}<ChevronDown aria-hidden="true" /></Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem disabled={tree.steps.length >= 7} onSelect={() => add('content')}><FilePlus2 aria-hidden="true" />{__('Add offer screen', 'wconvert')}</DropdownMenuItem>
+                <DropdownMenuItem disabled={tree.steps.length >= 7} onSelect={() => add('input')}><ListPlus aria-hidden="true" />{__('Add question screen', 'wconvert')}</DropdownMenuItem>
+                {primaryChannel && tree.submissions.length === 1 && <>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem disabled={tree.steps.length >= 7} onSelect={addOptional}><Plus aria-hidden="true" />{__('Add optional signup', 'wconvert')}</DropdownMenuItem>
+                </>}
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <DialogClose asChild><Button type="button" variant="ghost" size="icon-sm" aria-label={__('Close screen manager', 'wconvert')}><X aria-hidden="true" /></Button></DialogClose>
+          </div>
         </div>
-        <div className="wconvert-journey__header-actions">
-          {primaryChannel && tree.submissions.length > 1 && <Button type="button" size="sm" variant="ghost" className="wconvert-journey__optional" onClick={removeOptional}>
-            {__('Remove optional signup screens', 'wconvert')}
-          </Button>}
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button type="button" size="sm" variant="outline"><Plus aria-hidden="true" />{__('Add screen', 'wconvert')}<ChevronDown aria-hidden="true" /></Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem disabled={tree.steps.length >= 7} onSelect={() => add('content')}><FilePlus2 aria-hidden="true" />{__('Add offer screen', 'wconvert')}</DropdownMenuItem>
-              <DropdownMenuItem disabled={tree.steps.length >= 7} onSelect={() => add('input')}><ListPlus aria-hidden="true" />{__('Add question screen', 'wconvert')}</DropdownMenuItem>
-              {primaryChannel && tree.submissions.length === 1 && <>
-                <DropdownMenuSeparator />
-                <DropdownMenuItem disabled={tree.steps.length >= 7} onSelect={addOptional}><Plus aria-hidden="true" />{__('Add optional signup', 'wconvert')}</DropdownMenuItem>
-              </>}
-            </DropdownMenuContent>
-          </DropdownMenu>
+        <ol className="wconvert-journey-dialog__screens" aria-label={__('Screens in visitor order', 'wconvert')}>
+          {tree.steps.map((screen, index) => <JourneyScreenCard key={screen.id} template={{ tree, tokens }} index={index} selected={index === step}
+            scope={id} label={screenLabel(index)} onSelect={() => onSelect(index)}
+            onMove={(from, to) => move(tree.steps.findIndex(s => s.id === from), Math.min(tree.steps.findIndex(s => s.id === to), tree.steps.length - 2))} />)}
+        </ol>
+        <div className="wconvert-journey-dialog__details">
+          <div className="wconvert-journey-dialog__selected"><span>{step + 1}</span><h3>{current.name}</h3></div>
+          <div className="wconvert-journey-dialog__fields">
+
+            <label className="wconvert-journey__field">{__('Screen name', 'wconvert')}
+              <Input type="text" value={current.name} onChange={e => onChange({ ...tree, steps: tree.steps.map((s, i) => i === step ? { ...s, name: e.target.value } : s) })} />
+            </label>
+            {current.kind === 'input' && <label className="wconvert-journey__field">{__('When this screen is completed', 'wconvert')}
+              <select value={tree.submissions.find(sub => walkNodes(current.content).some(n => 'submission' in n && n.submission === sub.id && 'action' in n && n.action === 'submit'))?.id ?? 'next'}
+                onChange={event => {
+                  const chosen = event.target.value;
+                  const rewrite = (node: import('@renderer/types').TemplateNode, at: number): import('@renderer/types').TemplateNode => {
+                    const n = { ...node } as Record<string, unknown>;
+                    if (n.type === 'button' && n.action === 'submit' && (at === step || n.submission === chosen)) { n.action = 'next'; delete n.submission; }
+                    for (const key of ['children', 'start', 'end']) if (Array.isArray(n[key])) n[key] = (n[key] as import('@renderer/types').TemplateNode[]).map(c => rewrite(c, at));
+                    return n as unknown as import('@renderer/types').TemplateNode;
+                  };
+                  const steps = tree.steps.map((s, at) => ({ ...s, content: rewrite(s.content, at) }));
+                  if (chosen !== 'next') {
+                    let replaced = false;
+                    const submit = (node: import('@renderer/types').TemplateNode): import('@renderer/types').TemplateNode => {
+                      const n = { ...node } as Record<string, unknown>;
+                      if (!replaced && n.type === 'button' && n.action === 'next') { replaced = true; n.action = 'submit'; n.submission = chosen; n.label = __('Submit', 'wconvert'); }
+                      for (const key of ['children', 'start', 'end']) if (Array.isArray(n[key])) n[key] = (n[key] as import('@renderer/types').TemplateNode[]).map(submit);
+                      return n as unknown as import('@renderer/types').TemplateNode;
+                    };
+                    steps[step] = { ...steps[step], content: submit(steps[step].content) };
+                  }
+                  write({ ...tree, steps }, step);
+                }}>
+                <option value="next">{__('Go to the next screen', 'wconvert')}</option>
+                {tree.submissions.map(sub => <option key={sub.id} value={sub.id}>{saveLabel(sub.id)}</option>)}
+              </select>
+            </label>}
+          </div>
+          <div className="wconvert-journey-dialog__behavior"><strong>{screenLabel(step)}</strong><p>{current.kind === 'acknowledgement'
+            ? __('The journey ends here. This screen always stays last.', 'wconvert')
+            : submission?.required === false
+              ? __('Adds details to the same Lead. Visitors can skip this signup; their earlier signup stays saved.', 'wconvert')
+              : submission
+                ? __('Saves the signup or request here, even if the visitor leaves a later screen.', 'wconvert')
+                : __('New answers stay on this page until the visitor submits. Going to the next screen does not save new details.', 'wconvert')}</p></div>
+          <div className="wconvert-journey-dialog__actions-row">
+            <div className="wconvert-journey__actions" role="group" aria-label={__('Screen actions', 'wconvert')}>
+              <ScreenAction label={__('Duplicate', 'wconvert')} icon={Copy} disabled={current.kind === 'acknowledgement' || tree.steps.length >= 7} onClick={() => {
+                const steps = [...tree.steps]; steps.splice(step, 0, duplicateScreen(tree, step)); write({ ...tree, steps }, step);
+              }} />
+              <ScreenAction label={__('Move earlier', 'wconvert')} icon={ArrowLeft} directional disabled={movedScreen(tree, step, step - 1) === tree} onClick={() => move(step, step - 1)} />
+              <ScreenAction label={__('Move later', 'wconvert')} icon={ArrowRight} directional disabled={movedScreen(tree, step, step + 1) === tree} onClick={() => move(step, step + 1)} />
+              <ScreenAction label={__('Delete screen', 'wconvert')} icon={Trash2} destructive disabled={current.kind === 'acknowledgement' || tree.steps.length <= 2} onClick={() => write({ ...tree, steps: tree.steps.filter((_, i) => i !== step) }, Math.max(0, step - 1))} />
+            </div>
+            <Button type="button" onClick={() => setOpen(false)}>{__('Edit this screen’s design', 'wconvert')}<ArrowRight aria-hidden="true" className="rtl:rotate-180" /></Button>
+          </div>
+          {primaryChannel && tree.submissions.length > 1 && <Button type="button" size="sm" variant="ghost" onClick={removeOptional}>{__('Remove optional signup screens', 'wconvert')}</Button>}
         </div>
-      </div>
-      <div className="wconvert-journey__controls">
-        <label className="wconvert-journey__field">{__('Screen name', 'wconvert')}
-          <Input type="text" value={current.name} onChange={e => onChange({ ...tree, steps: tree.steps.map((s, i) => i === step ? { ...s, name: e.target.value } : s) })} />
-        </label>
-        {current.kind === 'input' && <label className="wconvert-journey__field wconvert-journey__field--completion">{__('On completion', 'wconvert')}
-          <select value={tree.submissions.find(sub => walkNodes(current.content).some(n => 'submission' in n && n.submission === sub.id && 'action' in n && n.action === 'submit'))?.id ?? 'next'}
-            onChange={event => {
-              const chosen = event.target.value;
-              const rewrite = (node: import('@renderer/types').TemplateNode, at: number): import('@renderer/types').TemplateNode => {
-                const n = { ...node } as Record<string, unknown>;
-                if (n.type === 'button' && n.action === 'submit' && (at === step || n.submission === chosen)) { n.action = 'next'; delete n.submission; }
-                for (const key of ['children', 'start', 'end']) if (Array.isArray(n[key])) n[key] = (n[key] as import('@renderer/types').TemplateNode[]).map(c => rewrite(c, at));
-                return n as unknown as import('@renderer/types').TemplateNode;
-              };
-              const steps = tree.steps.map((s, at) => ({ ...s, content: rewrite(s.content, at) }));
-              if (chosen !== 'next') {
-                let replaced = false;
-                const submit = (node: import('@renderer/types').TemplateNode): import('@renderer/types').TemplateNode => {
-                  const n = { ...node } as Record<string, unknown>;
-                  if (!replaced && n.type === 'button' && n.action === 'next') { replaced = true; n.action = 'submit'; n.submission = chosen; n.label = __('Submit', 'wconvert'); }
-                  for (const key of ['children', 'start', 'end']) if (Array.isArray(n[key])) n[key] = (n[key] as import('@renderer/types').TemplateNode[]).map(submit);
-                  return n as unknown as import('@renderer/types').TemplateNode;
-                };
-                steps[step] = { ...steps[step], content: submit(steps[step].content) };
-              }
-              write({ ...tree, steps }, step);
-            }}>
-            <option value="next">{__('Continue without saving', 'wconvert')}</option>
-            {tree.submissions.map((sub, i) => <option key={sub.id} value={sub.id}>{i === 0 ? __('Submit primary signup/request', 'wconvert') : __('Submit optional signup', 'wconvert')}</option>)}
-          </select>
-        </label>}
-        <div className="wconvert-journey__actions" role="group" aria-label={__('Screen actions', 'wconvert')}>
-          <ScreenAction label={__('Duplicate', 'wconvert')} icon={Copy} disabled={current.kind === 'acknowledgement' || tree.steps.length >= 7} onClick={() => {
-            const steps = [...tree.steps]; steps.splice(step, 0, duplicateScreen(tree, step)); write({ ...tree, steps }, step);
-          }} />
-          <ScreenAction label={__('Move earlier', 'wconvert')} icon={ArrowLeft} directional disabled={step === 0 || current.kind === 'acknowledgement'} onClick={() => move(-1)} />
-          <ScreenAction label={__('Move later', 'wconvert')} icon={ArrowRight} directional disabled={step >= tree.steps.length - 2} onClick={() => move(1)} />
-          <ScreenAction label={__('Delete screen', 'wconvert')} icon={Trash2} destructive disabled={current.kind === 'acknowledgement' || tree.steps.length <= 2} onClick={() => write({ ...tree, steps: tree.steps.filter((_, i) => i !== step) }, Math.max(0, step - 1))} />
-        </div>
-      </div>
-    </section>
+        <div className="wconvert-journey-dialog__footer"><p role="status">{said || __('Changes are part of your campaign draft. Save the draft to keep them.', 'wconvert')}</p><DialogClose asChild><Button variant="outline">{__('Done', 'wconvert')}</Button></DialogClose></div>
+      </DialogContent>
+    </Dialog>
   </TooltipProvider>;
 }
-
 /** Refused actions stay focusable so their labels are available by keyboard. */
 function ScreenAction({ label, icon: Icon, disabled, directional, destructive, onClick }: {
   label: string; icon: typeof Copy; disabled: boolean; directional?: boolean; destructive?: boolean; onClick(): void;
