@@ -101,7 +101,15 @@ foreach (['email-signup' => $emailRoute->id, 'sms-signup' => $smsRoute->id] as $
 }
 journeyCheck(count($provider->pushed) === 2, 'each accepted signup has one independent provider handoff');
 $rows = $db->results(Connection::TABLE_STATS, 'SELECT kind, scope, `count` FROM %i WHERE optin_id = %s', $optin->id);
-journeyCheck(count($rows) === 3 && array_sum(array_column($rows, 'count')) === 3, 'one Campaign Conversion and two channel captures');
+$counts = [];
+foreach ($rows as $row) { $counts[$row['kind'] . ':' . $row['scope']] = (int) $row['count']; }
+ksort($counts);
+journeyCheck($counts === [
+    'capture:' => 2,
+    'conversion:' => 1,
+    'conversion:channel:email_marketing' => 1,
+    'conversion:channel:sms_marketing' => 1,
+], 'one Campaign Conversion, two captured submissions, and two channel counts');
 journeyCheck(get_option('wconvert_flow_' . $optin->id . '_' . $base['contract'], null) !== null, 'publication saves the reporting screen definitions');
 $changed = $body; $changed['fields'] = ['email' => 'replacement@example.test'];
 journeyCheck((journeyRequest($changed)['error'] ?? '') === 'wconvert_capture_conflict', 'an accepted email cannot be changed');

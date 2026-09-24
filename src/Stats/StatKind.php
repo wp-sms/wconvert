@@ -5,7 +5,7 @@ namespace WConvert\Stats;
 defined('ABSPATH') || exit;
 
 /**
- * What a counted act was — **a closed set of four, with no filter and no
+ * What a counted act was — **a closed set, with no filter and no
  * registry** (ADR 0019).
  *
  * The closure is the point. `wconvert_stats`' entire justification is a
@@ -36,7 +36,7 @@ enum StatKind: string
 
     /**
      * The visitor doing the thing the Optin exists to make them do. One Optin
-     * has exactly one converting act, fixed by its [[Goal]] (ADR 0020).
+     * has exactly one converting act, derived from its design (ADR 0059).
      */
     case Conversion = 'conversion';
     case Capture = 'capture';
@@ -79,7 +79,7 @@ enum StatKind: string
     /**
      * The kind a *browser* may assert, or null.
      *
-     * Three of the four, not four. The beacon endpoint is public and
+     * The beacon endpoint is public and
      * unauthenticated by necessity — a nonce baked into a page the full-page
      * cache serves byte-identically to everyone authenticates nothing — so the
      * honest limit on it is what a browser could possibly know. It saw the
