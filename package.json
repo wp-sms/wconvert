@@ -27,6 +27,7 @@
     "lint:fix": "eslint . --fix",
     "typecheck": "tsc --noEmit",
     "prototype:editor": "vite --config tools/design-system/editor-prototype/vite.config.mjs",
+    "prototype:journeys": "vite --config tools/design-system/editor-prototype/vite.config.mjs --open '/?prototype=journeys&variant=B&scenario=garden'",
     "visual:serve": "node tools/visual-tests/server.mjs",
     "test:visual": "playwright test -c tools/visual-tests/playwright.config.mjs",
     "test:visual:popup": "playwright test -c tools/visual-tests/popup.config.mjs",

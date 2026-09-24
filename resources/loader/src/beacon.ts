@@ -20,7 +20,7 @@ import type { OptinControls } from './types';
  */
 
 /** What the endpoint accepts. `lead_magnet_delivered` is PHP's and never travels here. */
-export type BeaconKind = 'impression' | 'screen_shown' | 'screen_advanced' | 'screen_skipped' | 'screen_dismissed' | 'conversion' | 'dismiss';
+export type BeaconKind = 'impression' | 'screen_shown' | 'screen_advanced' | 'screen_skipped' | 'screen_dismissed' | 'conversion' | 'result_click' | 'dismiss';
 
 interface BeaconEvent {
   readonly optin_id: string;

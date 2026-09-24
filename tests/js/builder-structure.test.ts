@@ -336,6 +336,7 @@ describe('what the catalogue offers', () => {
       'countdown',
       'code',
       'field',
+      'question',
       'button',
       'consent',
       'followup',

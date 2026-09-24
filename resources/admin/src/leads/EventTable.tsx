@@ -132,6 +132,13 @@ export function EventTable({
                 <h3 className="m-0 text-body font-semibold">{__('What they said', 'wconvert')}</h3>
                 <blockquote className="mx-0 mb-0 mt-3 border-s-2 border-primary ps-4 whitespace-pre-wrap break-words">{selected.fields.message}</blockquote>
               </section>}
+              {!!selected.question_answers?.length && <section className="border-y border-border py-5">
+                <h3 className="m-0 text-body font-semibold">{__('Answers', 'wconvert')}</h3>
+                <dl className="mt-3 flex flex-col gap-3">{selected.question_answers.map(answer => <div key={answer.id}>
+                  <dt className="font-medium">{answer.question}</dt>
+                  <dd className="m-0 break-words whitespace-pre-wrap">{(answer.labels.length ? answer.labels : answer.values).join(', ')}</dd>
+                </div>)}</dl>
+              </section>}
               <section>
                 <h3 className="mb-3 mt-0 text-body font-semibold">{__('Capture context', 'wconvert')}</h3>
                 <a className="inline-flex items-center gap-2 text-primary" href={editorHref(selected.optin_id, returnTo)}>{nameOf(selected.optin_id)}<ExternalLink aria-hidden="true" className="size-3" /></a>

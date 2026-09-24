@@ -17,10 +17,14 @@ final class CaptureContract
     public static function settings(array $config, string $goal): array
     {
         $settings = [];
+        $tree = $config['template']['tree'] ?? [];
+        $resultAt = array_search('result', array_column($tree['steps'] ?? [], 'kind'), true);
         foreach ($config['template']['tree']['submissions'] ?? [] as $index => $submission) {
             $id = $submission['id'];
             $purpose = $index === 0 ? match ($goal) {
-                'grow_email_list' => 'email_marketing', 'grow_sms_list' => 'sms_marketing', default => 'request',
+                'grow_email_list' => 'email_marketing', 'grow_sms_list' => 'sms_marketing',
+                'find_match' => $resultAt !== false && $resultAt < CaptureJourney::submitScreen($tree, $id) ? 'email_marketing' : 'request',
+                default => 'request',
             } : ($goal === 'grow_sms_list' ? 'email_marketing' : 'sms_marketing');
             $entry = $config['submission_settings'][$id] ?? [];
             $routes = ($config['capture_mode'] ?? '') === 'local' ? [] : ($index === 0 ? ($config['destinations'] ?? []) : ($entry['destination_ids'] ?? []));
@@ -43,6 +47,23 @@ final class CaptureContract
         $template = self::template($config, $goal, $policyUrl);
         $tree = $template['tree'] ?? [];
         if (($issue = CaptureJourney::issue($tree)) !== null) { return $issue; }
+        foreach ($tree['steps'] ?? [] as $step) {
+            if (($step['kind'] ?? '') !== 'result') { continue; }
+            foreach ($step['results'] ?? [] as $variant) {
+                $hasLink = trim((string) ($variant['href'] ?? '')) !== '';
+                $hasLabel = trim((string) ($variant['link_label'] ?? '')) !== '';
+                if ($hasLink !== $hasLabel) { return 'result_link'; }
+            }
+            if (($step['products_required'] ?? false) === true) {
+                if (!class_exists('WooCommerce') || count($step['results'] ?? []) < 2) { return 'products'; }
+                foreach ($step['results'] as $variant) {
+                    if (trim((string) ($variant['href'] ?? '')) === '' || trim((string) ($variant['link_label'] ?? '')) === '') { return 'products'; }
+                }
+                foreach (array_slice($step['results'], 0, -1) as $variant) {
+                    if (empty($variant['product_ids'])) { return 'products'; }
+                }
+            }
+        }
         $settings = self::settings($config, $goal);
         if (count($settings) > 1 && !in_array($goal, ['grow_email_list', 'grow_sms_list'], true)) { return 'purpose'; }
         foreach ($tree['submissions'] ?? [] as $submission) {

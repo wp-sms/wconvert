@@ -39,6 +39,8 @@ enum StatKind: string
      * has exactly one converting act, fixed by its [[Goal]] (ADR 0020).
      */
     case Conversion = 'conversion';
+    case Capture = 'capture';
+    case ResultClick = 'result_click';
 
     /**
      * A **deliberate** close — the button, `Esc`, the backdrop, or the
@@ -67,6 +69,8 @@ enum StatKind: string
             self::ScreenDismissed => __('Screen dismissed', 'wconvert'),
             self::Impression => __('Impressions', 'wconvert'),
             self::Conversion => __('Conversions', 'wconvert'),
+            self::Capture => __('Captured submissions', 'wconvert'),
+            self::ResultClick => __('Result link clicks', 'wconvert'),
             self::Dismiss => __('Dismissals', 'wconvert'),
             self::LeadMagnetDelivered => __('Emails accepted for sending', 'wconvert'),
         };
@@ -86,6 +90,6 @@ enum StatKind: string
     {
         $kind = self::tryFrom($value);
 
-        return $kind === self::LeadMagnetDelivered ? null : $kind;
+        return in_array($kind, [self::LeadMagnetDelivered, self::Capture], true) ? null : $kind;
     }
 }

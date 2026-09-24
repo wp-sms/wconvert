@@ -280,12 +280,21 @@ final class TemplateVocabulary
             $node = is_array($step) && is_array($step['content'] ?? null) ? $this->node($step['content'], $ids) : null;
 
             if ($node !== null) {
-                $normalized[] = [
+                $screen = [
                     'id' => is_string($step['id'] ?? null) ? $step['id'] : '',
                     'name' => is_string($step['name'] ?? null) ? mb_substr($step['name'], 0, 120) : '',
                     'kind' => is_string($step['kind'] ?? null) ? $step['kind'] : '',
                     'content' => $node,
                 ];
+                if (array_key_exists('when', $step)) {
+                    // An invalid condition must never turn into Always by being dropped.
+                    $screen['when'] = JourneyRules::normalize($step['when']) ?? ['match' => 'invalid', 'clauses' => []];
+                }
+                if (($step['kind'] ?? '') === 'result') {
+                    $screen['results'] = $this->resultVariants($step['results'] ?? null);
+                    if (($step['products_required'] ?? false) === true) { $screen['products_required'] = true; }
+                }
+                $normalized[] = $screen;
             }
         }
 
@@ -418,7 +427,7 @@ final class TemplateVocabulary
             }
 
             if ($key === 'options') {
-                if ($type === 'field' && ($node['name'] ?? null) === 'interest') {
+                if (($type === 'field' && ($node['name'] ?? null) === 'interest') || $type === 'question') {
                     $kept[$key] = $this->choiceOptions($node[$key]);
                 }
                 continue;
@@ -534,6 +543,33 @@ final class TemplateVocabulary
         }
 
         return $kept;
+    }
+
+    /** @param mixed $input
+     * @return list<array<string, mixed>>
+     */
+    private function resultVariants($input): array
+    {
+        if (!is_array($input) || !array_is_list($input)) { return []; }
+        $result = [];
+        foreach (array_slice($input, 0, 6) as $variant) {
+            if (!is_array($variant)) { continue; }
+            $entry = [
+                'id' => is_string($variant['id'] ?? null) ? mb_substr($variant['id'], 0, 48) : '',
+                'heading' => is_string($variant['heading'] ?? null) ? mb_substr($variant['heading'], 0, 200) : '',
+                'body' => is_string($variant['body'] ?? null) ? mb_substr($variant['body'], 0, 500) : '',
+            ];
+            if (array_key_exists('when', $variant)) {
+                $entry['when'] = JourneyRules::normalize($variant['when']) ?? ['match' => 'invalid', 'clauses' => []];
+            }
+            $href = $this->href($variant['href'] ?? null);
+            if ($href !== null) { $entry['href'] = $href; }
+            if (is_string($variant['link_label'] ?? null)) { $entry['link_label'] = mb_substr($variant['link_label'], 0, 120); }
+            $ids = is_array($variant['product_ids'] ?? null) ? $variant['product_ids'] : [];
+            $entry['product_ids'] = array_values(array_unique(array_filter(array_slice($ids, 0, 6), static fn ($id): bool => is_int($id) && $id > 0)));
+            $result[] = $entry;
+        }
+        return $result;
     }
 
     /**

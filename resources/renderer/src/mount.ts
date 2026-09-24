@@ -1,5 +1,5 @@
 import type { Template } from './types';
-import { A_DESIGNS_OWN_WIDTH, DOCUMENT_CSS, SHADOW_CSS } from './css';
+import { A_DESIGNS_OWN_WIDTH, DOCUMENT_CSS, SHADOW_CSS, mountedStyles } from './css';
 import { COUNTDOWN_SLOT, render } from './render';
 
 export { render, SHADOW_CSS };
@@ -209,7 +209,7 @@ export function shell(template: Template, chrome: HTMLElement | null, options: M
   const shadow = host.attachShadow({ mode: 'closed' });
   const style = document.createElement('style');
 
-  style.textContent = SHADOW_CSS;
+  style.textContent = mountedStyles();
   shadow.appendChild(style);
 
   let root = render(template.tree, template.tokens, 0, { paths: options.paths });

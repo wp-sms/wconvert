@@ -1,0 +1,229 @@
+{
+  "id": "journey-content-guide",
+  "name": "Content guide with optional signup",
+  "display_type": "popup",
+  "tier": "basic",
+  "tokens": {
+    "bg": "#ffffff",
+    "fg": "#17324a",
+    "muted": "#607288",
+    "accent": "#315f89",
+    "accent-fg": "#ffffff",
+    "border": "#d7e2eb",
+    "heading-size": "1.875rem",
+    "text-size": "1rem",
+    "radius": "0.75rem",
+    "pad": "1.5rem",
+    "gap": "1rem",
+    "width": "32rem",
+    "align": "start"
+  },
+  "tree": {
+    "v": 2,
+    "submissions": [
+      {
+        "id": "email-signup",
+        "required": false,
+        "fields": [
+          "n9"
+        ],
+        "consents": [
+          "n10"
+        ]
+      }
+    ],
+    "steps": [
+      {
+        "id": "interests",
+        "name": "Your interests",
+        "kind": "input",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "heading",
+              "id": "n1",
+              "text": "Find a useful guide",
+              "role": "headline"
+            },
+            {
+              "type": "text",
+              "id": "n2",
+              "text": "Choose what interests you. We will recommend a useful guide.",
+              "role": "body"
+            },
+            {
+              "type": "question",
+              "id": "n3",
+              "label": "Which topics interest you?",
+              "answer_type": "multi",
+              "required": false,
+              "options": [
+                {
+                  "value": "grow",
+                  "label": "Growing"
+                },
+                {
+                  "value": "care",
+                  "label": "Everyday care"
+                }
+              ]
+            },
+            {
+              "type": "button",
+              "id": "n4",
+              "label": "See my guide",
+              "action": "next",
+              "role": "next_label"
+            }
+          ]
+        }
+      },
+      {
+        "id": "guide",
+        "name": "Your guide",
+        "kind": "result",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "button",
+              "id": "n5",
+              "label": "Optional email updates",
+              "action": "next",
+              "role": "next_label"
+            },
+            {
+              "type": "button",
+              "id": "n6",
+              "label": "Back",
+              "action": "back",
+              "role": "back_label"
+            }
+          ]
+        },
+        "results": [
+          {
+            "id": "growing",
+            "heading": "Start with growing",
+            "body": "Read our getting-started guide.",
+            "product_ids": [],
+            "when": {
+              "match": "all",
+              "clauses": [
+                {
+                  "question": "n3",
+                  "operator": "includes_any",
+                  "values": [
+                    "grow"
+                  ]
+                }
+              ]
+            },
+            "link_label": "Read the guide",
+            "href": ""
+          },
+          {
+            "id": "fallback",
+            "heading": "Start here",
+            "body": "Browse our beginner guide.",
+            "product_ids": [],
+            "link_label": "Read the guide",
+            "href": ""
+          }
+        ]
+      },
+      {
+        "id": "signup",
+        "name": "Optional email updates",
+        "kind": "input",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "heading",
+              "id": "n7",
+              "text": "Want more guides?",
+              "role": "headline"
+            },
+            {
+              "type": "text",
+              "id": "n8",
+              "text": "Your result is already available. Signup is optional.",
+              "role": "body"
+            },
+            {
+              "type": "field",
+              "id": "n9",
+              "name": "email",
+              "required": true,
+              "label": "Email address"
+            },
+            {
+              "type": "consent",
+              "id": "n10",
+              "text": "Send me email guides and updates. %s",
+              "link": {
+                "label": "Privacy Policy"
+              },
+              "hidden": false,
+              "role": "consent_text"
+            },
+            {
+              "type": "button",
+              "id": "n11",
+              "label": "Sign up",
+              "action": "submit",
+              "submission": "email-signup",
+              "role": "cta_label"
+            },
+            {
+              "type": "button",
+              "id": "n12",
+              "label": "No thanks",
+              "action": "skip",
+              "submission": "email-signup",
+              "role": "skip_label"
+            },
+            {
+              "type": "button",
+              "id": "n13",
+              "label": "Back to guide",
+              "action": "back",
+              "role": "back_label"
+            }
+          ]
+        }
+      },
+      {
+        "id": "thanks",
+        "name": "All set",
+        "kind": "acknowledgement",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "heading",
+              "id": "n14",
+              "text": "Thanks for visiting",
+              "role": "success_headline"
+            },
+            {
+              "type": "text",
+              "id": "n15",
+              "text": "Your guide is ready whenever you return to it.",
+              "role": "success_body"
+            },
+            {
+              "type": "button",
+              "id": "n16",
+              "label": "Back",
+              "action": "back",
+              "role": "back_label"
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

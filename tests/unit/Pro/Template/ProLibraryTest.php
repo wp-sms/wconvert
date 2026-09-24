@@ -94,6 +94,34 @@ final class ProLibraryTest extends TestCase
         }
     }
 
+    public function testQuestionStartsRegisterWithTheirPaidDesigns(): void
+    {
+        $templates = $this->library();
+        $library = \WConvert\Playbook\PlaybookLibrary::fromDirectory(
+            $templates,
+            TemplateVocabulary::fromManifest(self::FREE_DIR),
+            \WConvert\Rules\RuleVocabulary::fromManifest(self::FREE_DIR),
+            self::FREE_DIR,
+            (new \WConvert\Pro\Template\ProPlaybooks(self::PRO_DIR))->entries()
+        );
+        self::assertSame([], $library->rejections());
+        foreach (['product-finder', 'service-enquiry', 'content-guide'] as $id) {
+            $playbook = $library->find($id);
+            self::assertNotNull($playbook);
+            self::assertSame('basic', $templates->find($playbook->templateId)['tier']);
+            $vocabulary = TemplateVocabulary::fromManifest(self::FREE_DIR);
+            $tree = \WConvert\Template\SlotRoles::bind(
+                $vocabulary->withoutCopy($templates->find($playbook->templateId)['tree']),
+                $playbook->copy,
+                $vocabulary
+            );
+            self::assertNotSame('', $tree['steps'][0]['content']['children'][0]['text'] ?? '', $id . ' must start with a visible heading');
+            $buttons = array_values(array_filter($tree['steps'][0]['content']['children'], static fn (array $node): bool => $node['type'] === 'button'));
+            self::assertNotSame('', $buttons[0]['label'] ?? '', $id . ' must have a visible continue button');
+        }
+        self::assertCount(2, $library->servicing(\WConvert\Goal\Goal::FindMatch));
+    }
+
     /**
      * And the same fact from the other end. A card and the design behind it are
      * two files written months apart — the stub in free's `locked.json`, the

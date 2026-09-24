@@ -110,6 +110,7 @@ final class TemplateLabels
             /* translators: a block — one discount code, boxed, the same for every visitor. */
             'code' => __('Discount code', 'wconvert'),
             'field' => __('Field', 'wconvert'),
+            'question' => __('Question', 'wconvert'),
             'button' => __('Button', 'wconvert'),
             'followup' => __('Resource link', 'wconvert'),
             'consent' => __('Consent checkbox', 'wconvert'),
@@ -474,6 +475,8 @@ final class TemplateLabels
             'field.required' => __('Required field', 'wconvert'),
             'field.phone_country' => __('Starting country', 'wconvert'),
             'field.phone_dropdown' => __('Country dropdown', 'wconvert'),
+            'question.answer_type' => __('Answer type', 'wconvert'),
+            'question.required' => __('Required answer', 'wconvert'),
             /* translators: how many of the five stars are filled in. */
             'rating.value' => __('How many stars', 'wconvert'),
             /* translators: which of the six pictures an Icon block draws. */
@@ -510,6 +513,11 @@ final class TemplateLabels
             'button.action.skip' => __('Skip optional signup', 'wconvert'),
             'button.action.close' => __('Close', 'wconvert'),
             'button.action.link' => __('Open link', 'wconvert'),
+            'question.answer_type.single' => __('Choose one', 'wconvert'),
+            'question.answer_type.multi' => __('Choose several', 'wconvert'),
+            'question.answer_type.text' => __('Short answer', 'wconvert'),
+            'question.required.false' => __('Optional', 'wconvert'),
+            'question.required.true' => __('Required', 'wconvert'),
             'code.copy.false' => __('Code only', 'wconvert'),
             'code.copy.true' => __('Code and copy button', 'wconvert'),
             'heading.level.1' => __('Main heading', 'wconvert'),
@@ -689,6 +697,7 @@ final class TemplateLabels
             /* translators: plain words filling %i in a sentence. */
             'italic' => __('Words in italic', 'wconvert'),
             'label' => __('Label', 'wconvert'),
+            'help' => __('Help text', 'wconvert'),
             'placeholder' => __('Placeholder', 'wconvert'),
             'src' => __('Image address', 'wconvert'),
             'alt' => __('Alt text', 'wconvert'),
@@ -725,6 +734,7 @@ final class TemplateLabels
         return [
             'submit' => __('Sends the form', 'wconvert'),
             'link' => __('Goes somewhere else', 'wconvert'),
+            'next' => __('Shows a result', 'wconvert'),
         ];
     }
 

@@ -70,6 +70,8 @@ export function render(tree: TemplateTree, tokens: Tokens, step = 0, options: Re
     appendNode(root, node, tokens, EDITABLE && options.paths === true ? String(step) : null);
   }
 
+  if (screen?.kind === 'result' && journeyResult) root.appendChild(journeyResult(screen));
+
   return root;
 }
 
@@ -102,6 +104,18 @@ export interface RenderOptions {
    * what was clicked. Off by default — see above.
    */
   readonly paths?: boolean;
+}
+
+let journeyQuestion: ((node: TemplateNode) => HTMLElement) | undefined;
+let journeyResult: ((screen: TemplateTree['steps'][number]) => HTMLElement) | undefined;
+
+/** Pro supplies its renderer in the same compiled bundle before mounting. */
+export function registerJourneyRenderer(implementation: {
+  question(node: TemplateNode): HTMLElement;
+  result(screen: TemplateTree['steps'][number]): HTMLElement;
+}): void {
+  journeyQuestion = implementation.question;
+  journeyResult = implementation.result;
 }
 
 /**
@@ -266,6 +280,8 @@ function elementFor(node: TemplateNode, scoped: Tokens, at: string | null): HTML
       return image(node as ImageNode);
     case 'field':
       return field(node as FieldNode);
+    case 'question':
+      return journeyQuestion?.(node) ?? null;
     case 'button':
     case 'followup':
       return button(node as ButtonNode | FollowupNode);

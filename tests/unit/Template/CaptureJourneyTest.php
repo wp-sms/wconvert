@@ -53,6 +53,35 @@ final class CaptureJourneyTest extends TestCase
         $template['tree']['submissions'][0]['fields'][] = 'missing-field';
         self::assertSame('references', CaptureJourney::issue($template['tree']));
     }
+
+    public function testAQuizCanRequireCaptureBeforeItsTerminalResult(): void
+    {
+        $template = json_decode((string) file_get_contents(dirname(__DIR__, 3) . '/pro/modules/journeys/templates/journey-content-guide.json'), true);
+        $tree = $template['tree'];
+        $signup = $tree['steps'][2];
+        $signup['content']['children'] = array_values(array_filter($signup['content']['children'],
+            static fn (array $node): bool => ($node['action'] ?? '') !== 'skip'));
+        $result = $tree['steps'][1];
+        $result['content']['children'] = array_values(array_filter($result['content']['children'],
+            static fn (array $node): bool => ($node['action'] ?? '') !== 'next'));
+        $tree['steps'] = [$tree['steps'][0], $signup, $result];
+        $tree['submissions'][0]['required'] = true;
+
+        self::assertNull(CaptureJourney::issue($tree));
+        self::assertSame([\WConvert\Template\ConvertingAct::Match], \WConvert\Template\ConvertingAct::offeredIn($tree));
+        self::assertSame('request', \WConvert\Template\CaptureContract::settings(['template' => ['tree' => $tree]], 'find_match')['email-signup']['purpose']);
+        self::assertSame('email_marketing', \WConvert\Template\CaptureContract::settings(['template' => $template], 'find_match')['email-signup']['purpose']);
+    }
+
+    public function testAContentResultNeedsItsConfiguredGuideLinkBeforePublishing(): void
+    {
+        $template = json_decode((string) file_get_contents(dirname(__DIR__, 3) . '/pro/modules/journeys/templates/journey-content-guide.json'), true);
+        $config = ['template' => $template];
+        self::assertSame('result_link', \WConvert\Template\CaptureContract::issue($config, 'find_match', ''));
+        foreach ($config['template']['tree']['steps'][1]['results'] as &$variant) $variant['href'] = 'https://example.com/guide';
+        unset($variant);
+        self::assertNull(\WConvert\Template\CaptureContract::issue($config, 'find_match', ''));
+    }
     public function testOptionalSmsKeepsASeparateSubmissionAndRejectsBypassingEmail(): void
     {
         $template = json_decode((string) file_get_contents(dirname(__DIR__, 3) . '/resources/templates/library/journey-email-then-sms.json'), true);

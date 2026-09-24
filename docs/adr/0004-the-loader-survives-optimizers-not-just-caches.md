@@ -43,6 +43,8 @@ which turns the one shared loader into a per-URL asset. Measured across seven
 URLs: 9 bundles / 108 KB versus 3 bundles / 28 KB. Combined with the rule above,
 the JSON tag gets position-safety **and** keeps the loader cacheable across pages.
 
+*Extended by [ADR 0106](0106-question-journeys-extend-the-paid-loader.md): quiz answers remain in page memory; the late product read sends selected product IDs only and leaves the cached payload and loader shared across visitors. An API failure shows authored fallback content instead of freezing a stale price into HTML.*
+
 ## Time on page is measured with `performance.now()`
 
 Delay-JS plugins execute the loader seconds after navigation. A loader that

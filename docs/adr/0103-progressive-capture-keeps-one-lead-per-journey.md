@@ -14,6 +14,8 @@ one Conversion, at its first accepted capture. Next, Back, later additions, and
 retries do not count again. Separate journeys still create separate Leads;
 matching an email or phone never authorizes merging or updating one.
 
+**Extended by [ADR 0106](0106-question-journeys-extend-the-paid-loader.md):** that capture-first count remains the rule for ordinary journeys. A paid result journey counts its Conversion when its selected Results screen is shown, even if required contact was accepted first; optional signup after an immediate result creates a Lead without counting another Conversion. Anonymous answers create no Lead.
+
 Already-submitted details are fixed. Back can review earlier submissions, but
 only unsaved answers remain editable. Later submissions add new details and
 evidence without replacing previously accepted identifiers or wording.
@@ -76,6 +78,8 @@ qualification and relevant offers. No branching engine, UI, JSON fields or
 release commitment is introduced here. A future plan must cover skipped required
 fields, consent/submission ownership, Back after changing an answer, and reports
 for different paths before implementation.
+
+**Implemented by [ADR 0106](0106-question-journeys-extend-the-paid-loader.md):** the bounded paid extension adds flat earlier-answer conditions, selected results, and a path preview. The Free linear journey contract remains available.
 
 Reports include the overall Conversion count, separate email/SMS capture totals,
 and anonymous screen progress counts. Repeated screen visits are not unique

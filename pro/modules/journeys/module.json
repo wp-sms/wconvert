@@ -1,0 +1,6 @@
+{
+  "slug": "journeys",
+  "name": "Questions and results",
+  "description": "Conditional question journeys and WooCommerce product results.",
+  "bundle_marker": "data-question-id"
+}

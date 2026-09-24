@@ -63,6 +63,12 @@ final class PrivacyGuidance
             return $copy;
         }
 
+        if (is_array($copy['screens'] ?? null)) {
+            foreach ($copy['screens'] as $scope => $words) {
+                if (is_array($words)) $copy['screens'][$scope] = $this->copyFor($words);
+            }
+        }
+
         unset($copy['consent_text']);
 
         if (!array_key_exists('fine_print', $copy)) {
@@ -107,7 +113,9 @@ final class PrivacyGuidance
             return $tree;
         }
 
-        $showConsent = $goal->outcome()->audienceChannel !== null;
+        // A matching quiz may offer email updates after showing its result.
+        // That optional marketing submission still needs its visible consent.
+        $showConsent = $goal->outcome()->audienceChannel !== null || $goal === Goal::FindMatch;
         $payload = TemplateTree::rewrittenIn(
             ['template' => ['tree' => $tree]],
             static function (array $node) use ($showConsent): array {

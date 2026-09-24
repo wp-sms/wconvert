@@ -76,7 +76,7 @@ final class LeadCsv
             $captured[] = 'interest_label';
         }
 
-        return $this->columns ??= array_merge(self::LEADING_COLUMNS, $captured, [self::CONSENT_COLUMN, 'email_consent_text', 'email_accepted_at', 'sms_consent_text', 'sms_accepted_at']);
+        return $this->columns ??= array_merge(self::LEADING_COLUMNS, $captured, [self::CONSENT_COLUMN, 'email_consent_text', 'email_accepted_at', 'sms_consent_text', 'sms_accepted_at', 'question_answers']);
     }
 
     /**
@@ -123,10 +123,49 @@ final class LeadCsv
         // In column order, so the row lines up with the header by construction
         // rather than by two lists agreeing.
         foreach ($this->columns() as $column) {
-            $row[] = self::neutralise($leading[$column] ?? $lead->fields[$column] ?? '');
+            $value = $column === 'question_answers' ? self::answerSummary($lead->questionAnswers) : ($leading[$column] ?? $lead->fields[$column] ?? '');
+            $row[] = self::neutralise($value);
         }
 
         return $row;
+    }
+
+    /** @param list<array<string, mixed>> $answers */
+    public static function answerSummary(array $answers): string
+    {
+        $parts = [];
+        foreach ($answers as $answer) {
+            $label = is_string($answer['question'] ?? null) ? $answer['question'] : '';
+            $values = ($answer['labels'] ?? []) ?: ($answer['values'] ?? []);
+            if ($label !== '' && is_array($values)) { $parts[] = $label . ': ' . implode(', ', array_filter($values, 'is_string')); }
+        }
+        return implode(' | ', $parts);
+    }
+
+    /** @param resource $handle */
+    public function writeQuestionHeader($handle): void
+    {
+        fputcsv($handle, ['lead_id', 'submitted_at', 'optin', 'optin_id', 'submission', 'question_id', 'question', 'choice_value', 'choice_label', 'text_answer'], ',', '"', '');
+    }
+
+    /** @param resource $handle
+     * @param list<Lead> $leads
+     * @param array<string, string> $optinNames
+     */
+    public function writeQuestionRows($handle, array $leads, array $optinNames): void
+    {
+        foreach ($leads as $lead) {
+            foreach ($lead->questionAnswers as $answer) {
+                $values = is_array($answer['values'] ?? null) ? $answer['values'] : [];
+                foreach ($values as $index => $value) {
+                    $row = [$lead->id, $lead->createdAt, $optinNames[$lead->optinId] ?? $lead->optinId,
+                        $lead->optinId, (string) ($answer['submission'] ?? ''), (string) ($answer['id'] ?? ''),
+                        (string) ($answer['question'] ?? ''), ($answer['type'] ?? '') === 'text' ? '' : (string) $value,
+                        (string) ($answer['labels'][$index] ?? ''), ($answer['type'] ?? '') === 'text' ? (string) $value : ''];
+                    fputcsv($handle, array_map(self::neutralise(...), $row), ',', '"', '');
+                }
+            }
+        }
     }
 
     /**

@@ -166,9 +166,12 @@ final class BeaconController implements RestController
                 $definition = get_option('wconvert_flow_' . $event->optinId . '_' . $parts[1], []);
                 if (!is_array($definition) || !isset($definition[$parts[2]])) { continue; }
             } elseif ($event->scope !== '') { continue; }
-            if ($event->kind === \WConvert\Stats\StatKind::Conversion) {
+            if (in_array($event->kind, [\WConvert\Stats\StatKind::Conversion, \WConvert\Stats\StatKind::ResultClick], true)) {
                 $optin = PublishedOptin::findInSet($this->publishedSet->all(), $event->optinId);
-                if (!empty($optin?->payload['template']['tree']['submissions'])) { continue; }
+                $tree = $optin?->payload['template']['tree'] ?? [];
+                $resultAt = array_search('result', array_column($tree['steps'] ?? [], 'kind'), true);
+                if ($event->kind === \WConvert\Stats\StatKind::ResultClick && $resultAt === false) { continue; }
+                if ($event->kind === \WConvert\Stats\StatKind::Conversion && !empty($tree['submissions']) && $resultAt === false) { continue; }
             }
             $this->stats->increment($event->optinId, $event->kind, $today, $event->scope);
         }

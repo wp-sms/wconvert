@@ -12,6 +12,8 @@ counts once. Subsequent submissions can add to its Lead without counting again.
 Submission-button count and screen count therefore cannot define the number
 of Conversions. The runtime and the two-screen rules below are not yet updated.*
 
+*Extended by [ADR 0106](0106-question-journeys-extend-the-paid-loader.md): a design with a Results screen converts on the first showing of that screen, whether contact was required before it or offered afterward. The later optional capture is a separate channel count, not another Campaign Conversion.*
+
 > **Amended by [ADR 0085](0085-goals-have-publish-contracts-and-stable-history.md):** Runtime act detection still belongs to the design. An Outcome contract now checks Goal/action/channel compatibility at publication, while allowing incomplete drafts.
 
 `Goal::convertingAct()` is deleted. Every refusal that existed to keep a Goal

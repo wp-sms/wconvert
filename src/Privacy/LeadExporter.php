@@ -154,6 +154,13 @@ final class LeadExporter
             $pairs[] = ['name' => $label, 'value' => $value];
         }
 
+        foreach ($lead->questionAnswers as $answer) {
+            $values = is_array($answer['labels'] ?? null) && $answer['labels'] !== [] ? $answer['labels'] : ($answer['values'] ?? []);
+            if (is_string($answer['question'] ?? null) && is_array($values)) {
+                $pairs[] = ['name' => $answer['question'], 'value' => implode(', ', array_filter($values, 'is_string'))];
+            }
+        }
+
         return $pairs;
     }
 }

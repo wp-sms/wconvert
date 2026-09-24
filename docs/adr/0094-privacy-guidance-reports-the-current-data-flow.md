@@ -23,6 +23,8 @@ credentials or provider settings. A configured destination whose implementation
 is currently unavailable remains visible with unknown fields; missing code does
 not make a configured data flow disappear.
 
+**Extended by [ADR 0106](0106-question-journeys-extend-the-paid-loader.md):** paid question answers stay in page memory unless a visitor explicitly submits contact details, when the submitted answers join the Lead snapshot and its export/erasure path. Product recommendations read only merchant-selected IDs from the public WooCommerce Store API; aggregate completions and clicks contain no individual answer set.
+
 The REST representation is available only to administrators with
 `manage_options`. The admin translates it into merchant guidance. PolicyText
 translates the same facts into visitor-facing suggested wording. Internal route

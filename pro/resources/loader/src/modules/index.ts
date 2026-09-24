@@ -5,6 +5,7 @@ import { AB_TESTING_MODULES } from '../../../../modules/ab-testing/loader';
 import { CART_MODULES } from '../../../../modules/cart-recovery/loader';
 import { CONTENT_LOCK_MODULES } from '../../../../modules/content-lock/loader';
 import { INLINE_PLACEMENT_MODULES } from '../../../../modules/inline-placement/loader';
+import { JOURNEY_MODULES } from '../../../../modules/journeys/loader';
 
 /**
  * What each tier's build ships, named once so the three entries and the parity
@@ -30,9 +31,9 @@ import { INLINE_PLACEMENT_MODULES } from '../../../../modules/inline-placement/l
  * rather than rules, and dropping either here because it is empty today is how
  * a rule added to it later ships nowhere.
  */
-export { DISPLAY_TYPE_MODULES, PREMIUM_TRIGGER_MODULES, AB_TESTING_MODULES, CART_MODULES, INLINE_PLACEMENT_MODULES, CONTENT_LOCK_MODULES };
+export { DISPLAY_TYPE_MODULES, PREMIUM_TRIGGER_MODULES, AB_TESTING_MODULES, CART_MODULES, INLINE_PLACEMENT_MODULES, CONTENT_LOCK_MODULES, JOURNEY_MODULES };
 
-export const BASIC_MODULES: readonly LoaderModule[] = [...DISPLAY_TYPE_MODULES, ...INLINE_PLACEMENT_MODULES, ...CONTENT_LOCK_MODULES];
+export const BASIC_MODULES: readonly LoaderModule[] = [...DISPLAY_TYPE_MODULES, ...INLINE_PLACEMENT_MODULES, ...CONTENT_LOCK_MODULES, ...JOURNEY_MODULES];
 
 export const PRO_MODULES: readonly LoaderModule[] = [
   ...BASIC_MODULES,

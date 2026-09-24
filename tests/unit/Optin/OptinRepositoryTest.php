@@ -196,7 +196,8 @@ final class OptinRepositoryTest extends TestCase
         $this->repository->armsByParent();
 
         foreach ($this->db->statements as $sql) {
-            $this->assertStringContainsString('NOT (BINARY config <=> BINARY published_config)', $sql);
+            $this->assertStringContainsString('WHEN config IS NULL OR published_config IS NULL THEN 1', $sql);
+            $this->assertStringContainsString('BINARY config <> BINARY published_config', $sql);
             $this->assertStringContainsString('AS has_unpublished_changes', $sql);
             $this->assertStringNotContainsString(', config,', $sql);
             $this->assertStringNotContainsString(', published_config,', $sql);

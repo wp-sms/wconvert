@@ -1,0 +1,191 @@
+{
+  "id": "journey-service-enquiry",
+  "name": "Relevant service enquiry",
+  "display_type": "popup",
+  "tier": "basic",
+  "tokens": {
+    "bg": "#ffffff",
+    "fg": "#17324a",
+    "muted": "#607288",
+    "accent": "#315f89",
+    "accent-fg": "#ffffff",
+    "border": "#d7e2eb",
+    "heading-size": "1.875rem",
+    "text-size": "1rem",
+    "radius": "0.75rem",
+    "pad": "1.5rem",
+    "gap": "1rem",
+    "width": "32rem",
+    "align": "start"
+  },
+  "tree": {
+    "v": 2,
+    "submissions": [
+      {
+        "id": "enquiry",
+        "required": true,
+        "fields": [
+          "n9"
+        ],
+        "consents": []
+      }
+    ],
+    "steps": [
+      {
+        "id": "service",
+        "name": "What do you need?",
+        "kind": "input",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "heading",
+              "id": "n1",
+              "text": "Tell us what you need",
+              "role": "headline"
+            },
+            {
+              "type": "question",
+              "id": "n2",
+              "label": "What can we help with?",
+              "answer_type": "single",
+              "required": true,
+              "options": [
+                {
+                  "value": "design",
+                  "label": "Design"
+                },
+                {
+                  "value": "repair",
+                  "label": "Repair"
+                }
+              ]
+            },
+            {
+              "type": "button",
+              "id": "n3",
+              "label": "Continue",
+              "action": "next",
+              "role": "next_label"
+            }
+          ]
+        }
+      },
+      {
+        "id": "repair",
+        "name": "Repair details",
+        "kind": "content",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "heading",
+              "id": "n4",
+              "text": "A little about the repair",
+              "role": "headline"
+            },
+            {
+              "type": "text",
+              "id": "n5",
+              "text": "We can usually advise after hearing about the item.",
+              "role": "body"
+            },
+            {
+              "type": "button",
+              "id": "n6",
+              "label": "Continue",
+              "action": "next",
+              "role": "next_label"
+            },
+            {
+              "type": "button",
+              "id": "n7",
+              "label": "Back",
+              "action": "back",
+              "role": "back_label"
+            }
+          ]
+        },
+        "when": {
+          "match": "all",
+          "clauses": [
+            {
+              "question": "n2",
+              "operator": "is",
+              "values": [
+                "repair"
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "contact",
+        "name": "Contact details",
+        "kind": "input",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "heading",
+              "id": "n8",
+              "text": "How can we reach you?",
+              "role": "headline"
+            },
+            {
+              "type": "field",
+              "id": "n9",
+              "name": "email",
+              "required": true,
+              "label": "Email address"
+            },
+            {
+              "type": "button",
+              "id": "n10",
+              "label": "Send enquiry",
+              "action": "submit",
+              "submission": "enquiry",
+              "role": "cta_label"
+            },
+            {
+              "type": "button",
+              "id": "n11",
+              "label": "Back",
+              "action": "back",
+              "role": "back_label"
+            }
+          ]
+        }
+      },
+      {
+        "id": "received",
+        "name": "Request received",
+        "kind": "acknowledgement",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "heading",
+              "id": "n12",
+              "text": "Request received",
+              "role": "success_headline"
+            },
+            {
+              "type": "text",
+              "id": "n13",
+              "text": "We will review your enquiry and reply using the details you supplied.",
+              "role": "success_body"
+            },
+            {
+              "type": "button",
+              "id": "n14",
+              "label": "Back",
+              "action": "back",
+              "role": "back_label"
+            }
+          ]
+        }
+      }
+    ]
+  }
+}

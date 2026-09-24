@@ -1,6 +1,6 @@
 import userEvent from '@testing-library/user-event';
 import { useState } from 'react';
-import { render, screen, fireEvent, cleanup, act, within } from '@testing-library/react';
+import { render, screen, fireEvent, cleanup, within } from '@testing-library/react';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import { JourneyEditor } from '../../resources/admin/src/builder/JourneyEditor';
 import type { TemplateTree } from '@renderer/types';
@@ -18,6 +18,10 @@ function Editor({ initial = source.tree as TemplateTree }: { initial?: TemplateT
     <output data-testid="draft">{JSON.stringify(tree)}</output></>;
 }
 function draft(): TemplateTree { return JSON.parse(screen.getByTestId('draft').textContent!); }
+async function action(user: ReturnType<typeof userEvent.setup>, name: string) {
+  await user.click(screen.getByRole('button', { name: 'Screen actions' }));
+  await user.click(screen.getByRole('menuitem', { name }));
+}
 it('adds and removes an optional SMS signup without changing the primary field ownership', async () => {
   const user = userEvent.setup();
   render(<Editor />);
@@ -31,7 +35,7 @@ it('adds and removes an optional SMS signup without changing the primary field o
   expect(tree.submissions[1].fields).toHaveLength(1);
   expect(tree.submissions[1].consents).toHaveLength(1);
   expect(screen.getByLabelText('Screen name')).toHaveValue('Optional SMS signup');
-  fireEvent.click(screen.getByRole('button', {name:'Delete screen'}));
+  await action(user, 'Delete screen');
   expect(draft().submissions).toHaveLength(1);
   expect(draft().steps).toHaveLength(2);
 });
@@ -43,30 +47,26 @@ it('preserves screen identity when reordering and gives a duplicate its own iden
   await user.click(screen.getByRole('menuitem', {name:'Add offer screen'}));
   const added = draft().steps[0].id;
   fireEvent.change(screen.getByLabelText('Screen name'),{target:{value:'Invitation'}});
-  fireEvent.click(screen.getByRole('button',{name:'Move later'}));
+  await action(user, 'Move later');
   expect(draft().steps[1]).toMatchObject({id:added,name:'Invitation'});
-  fireEvent.click(screen.getByRole('button',{name:'Duplicate'}));
+  await action(user, 'Duplicate');
   const tree = draft();
   expect(tree.steps).toHaveLength(4);
   expect(new Set(tree.steps.map(s=>s.id)).size).toBe(4);
   expect(tree.steps.at(-1)?.kind).toBe('acknowledgement');
 });
 
-it('labels icon actions on keyboard focus and refuses unavailable moves', async () => {
-  // jsdom has no layout observer; tooltip placement is checked in WordPress.
+it('labels screen actions and refuses unavailable moves', async () => {
   vi.stubGlobal('ResizeObserver', class { observe() {} unobserve() {} disconnect() {} });
   const user = userEvent.setup();
   render(<Editor />);
   await user.click(screen.getByRole('button', { name: 'Manage screens' }));
   const original = draft();
-  const earlier = screen.getByRole('button', { name: 'Move earlier' });
-  expect(earlier).toHaveAttribute('aria-disabled', 'true');
-  await act(async () => { earlier.focus(); });
-  expect(await screen.findByRole('tooltip')).toHaveTextContent('Move earlier');
-  await user.keyboard('{Enter}');
+  await user.click(screen.getByRole('button', { name: 'Screen actions' }));
+  const earlier = screen.getByRole('menuitem', { name: 'Move earlier' });
+  expect(earlier).toHaveAttribute('data-disabled');
+  await user.click(earlier);
   expect(draft()).toEqual(original);
-  await user.keyboard('{Escape}');
-  expect(screen.queryByRole('tooltip')).not.toBeInTheDocument();
 });
 
 it('keeps management off the canvas and restores focus after choosing a screen to design', async () => {
@@ -79,8 +79,10 @@ it('keeps management off the canvas and restores focus after choosing a screen t
   const cards = within(dialog).getByRole('list', { name: 'Screens in visitor order' });
   await user.click(within(cards).getAllByRole('button')[1]);
   expect(screen.getByLabelText('Screen name')).toHaveValue(source.tree.steps[1].name);
-  expect(screen.getByRole('button', { name: 'Delete screen' })).toHaveAttribute('aria-disabled', 'true');
-  await user.click(screen.getByRole('button', { name: 'Edit this screen’s design' }));
+  await user.click(screen.getByRole('button', { name: 'Screen actions' }));
+  expect(screen.getByRole('menuitem', { name: 'Delete screen' })).toHaveAttribute('data-disabled');
+  await user.keyboard('{Escape}');
+  await user.click(screen.getByRole('button', { name: 'Edit design' }));
   expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   expect(trigger).toHaveFocus();
 });
@@ -126,12 +128,12 @@ it('names the affected screens before removing a signup spread across multiple s
   render(<Editor initial={initial} />);
   await user.click(screen.getByRole('button', { name: 'Manage screens' }));
   await user.click(screen.getByRole('button', { name: /Optional SMS signup Save/ }));
-  await user.click(screen.getByRole('button', { name: 'Delete screen' }));
+  await action(user, 'Delete screen');
   const confirmation = screen.getByRole('alertdialog');
   expect(confirmation).toHaveTextContent('Phone question, Optional SMS signup');
   await user.click(within(confirmation).getByRole('button', { name: 'Cancel' }));
   expect(draft()).toEqual(initial);
-  await user.click(screen.getByRole('button', { name: 'Delete screen' }));
+  await action(user, 'Delete screen');
   await user.click(screen.getByRole('button', { name: 'Remove signup screens' }));
   expect(draft().steps).toHaveLength(2);
   expect(draft().submissions).toHaveLength(1);
@@ -188,7 +190,7 @@ it('reveals the earned coupon immediately when adding SMS and preserves it when 
   expect(fetcher).toHaveBeenCalledTimes(2);
   anchor.remove(); tag.remove();
 
-  await user.click(screen.getByRole('button', { name: 'Delete screen' }));
+  await action(user, 'Delete screen');
   expect(draft().submissions).toHaveLength(1);
   expect(walkNodes(draft().steps[1].content).find(n => n.type === 'code')).toMatchObject({ text: 'WELCOME10' });
 });

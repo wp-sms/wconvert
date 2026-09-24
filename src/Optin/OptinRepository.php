@@ -53,7 +53,10 @@ final class OptinRepository
      * memory at a few hundred rows, and the whole reason this constant exists.
      */
     private const SUMMARY_COLUMNS = 'id, name, goal, parent_id, published_at, deleted_at, '
-        . '(published_at IS NOT NULL AND deleted_at IS NULL AND NOT (BINARY config <=> BINARY published_config)) AS has_unpublished_changes';
+        . '(published_at IS NOT NULL AND deleted_at IS NULL AND CASE '
+        . 'WHEN config IS NULL AND published_config IS NULL THEN 0 '
+        . 'WHEN config IS NULL OR published_config IS NULL THEN 1 '
+        . 'ELSE BINARY config <> BINARY published_config END) AS has_unpublished_changes';
 
     /**
      * What the published set is built from.

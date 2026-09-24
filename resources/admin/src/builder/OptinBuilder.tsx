@@ -3,7 +3,7 @@ import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuIte
 import { SubmissionSettings } from './SubmissionSettings';
 import { JourneyEditor } from './JourneyEditor';
 import { JourneyReport } from './JourneyReport';
-import { referencedJourney } from './structure/journey';
+import { referencedJourney, submissionScreen } from './structure/journey';
 import { contentLockDesignCompatible } from '../inlinePlacement';
 import './editor.css';
 import { Activity, useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -243,6 +243,16 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
 
   const act: ConvertingAct =
     template === undefined ? 'submit' : (convertingActOf(template.tree)[0] ?? 'submit');
+
+  // Results can stand alone, but an optional email signup after them is still
+  // a marketing submission. Show the same explicit storage choice as email forms.
+  const resultAt = template?.tree.steps.findIndex(screen => screen.kind === 'result') ?? -1;
+  const signupAt = template?.tree.submissions[0] ? submissionScreen(template.tree, template.tree.submissions[0].id) : -1;
+  const captureOutcome = entryOfGoal?.outcome && act === 'match' && resultAt >= 0 && signupAt > resultAt
+    ? { ...entryOfGoal.outcome, audience_channel: 'email' }
+    : entryOfGoal?.outcome;
+  const readinessGoal = goalEntry.status === 'ready' && goalEntry.data && captureOutcome
+    ? ready({ ...goalEntry.data, outcome: captureOutcome }) : goalEntry;
 
   const overlay = config === null || displayTypeOf(config, templates) !== 'inline';
 
@@ -723,7 +733,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
             optin={{ published_at: publishedAt, deleted_at: deletedAt, suspended, has_unpublished_changes: unpublishedChanges }}
             dirty={dirty}
             busy={busy}
-            goal={goalEntry}
+            goal={readinessGoal}
             goalId={goal ?? ''}
             playbook={playbook}
             playbookId={typeof config.playbook_id === 'string' ? config.playbook_id : ''}
@@ -914,11 +924,11 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
                 <Eye aria-hidden="true" />{__('Preview campaign', 'wconvert')}
               </Button>
             </div>}
-            {entryOfGoal?.outcome.audience_channel && <CaptureModeChoice disabled={busy} selectedCount={bound.length} mode={config.capture_mode === 'local' ? 'local' : 'connected'}
+            {captureOutcome?.audience_channel && <CaptureModeChoice disabled={busy} selectedCount={bound.length} mode={config.capture_mode === 'local' ? 'local' : 'connected'}
               onChange={(mode) => edit({ capture_mode: mode, ...(mode === 'local' ? { destinations: [] } : {}) })} />}
-            {entryOfGoal?.outcome.audience_channel && config.capture_mode === 'local' ? null :
+            {captureOutcome?.audience_channel && config.capture_mode === 'local' ? null :
             <DestinationsEditor
-              outcome={entryOfGoal?.outcome}
+              outcome={captureOutcome}
               template={template}
               bound={bound}
               available={
@@ -945,7 +955,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
               onChange={(next) => edit({ destinations: next, capture_mode: 'connected' })}
             />
             }
-            <SubmissionSettings template={template} primaryChannel={entryOfGoal?.outcome.audience_channel} config={config} destinations={read(destinations)?.destinations ?? []} onChange={edit} />
+            <SubmissionSettings template={template} primaryChannel={captureOutcome?.audience_channel} config={config} destinations={read(destinations)?.destinations ?? []} onChange={edit} />
           </div>
           {!compact && previewPane}
         </TabsContent>

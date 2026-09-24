@@ -519,6 +519,8 @@ export const SHADOW_CSS = [
    * container, so the shorthand was already inert there.
    */
   `.wc-field{display:flex;flex-direction:column;gap:.25rem;text-align:start}`,
+  `.wc-product{display:grid;grid-template-columns:4.5rem minmax(0,1fr);gap:.75rem;padding:.75rem;border:1px solid var(--wc-border,#e5e7eb);border-radius:var(--wc-radius,.5rem)}`,
+  `.wc-product>img{inline-size:4.5rem;block-size:4.5rem;object-fit:cover}`,
   `.wc-row>.wc-field{flex:1 1 12rem}`,
   /*
    * ==========================================================================
@@ -713,3 +715,7 @@ export const SHADOW_CSS = [
    * --------------------------------------------------------------------- */
   `@container wc (max-width:24rem){[data-narrow]{${'bg fg muted accent accent-fg border input-bg font heading-font heading-size heading-weight tracking text-size leading radius pad gap width align bg-image image-position overlay shadow motion backdrop'.split(' ').map(name => `--wc-${name}:var(--wc-n-${name})!important`).join(';')}}}`,
 ].join('');
+
+let premiumStyles = '';
+export function registerJourneyStyles(css: string): void { premiumStyles = css; }
+export function mountedStyles(): string { return SHADOW_CSS + premiumStyles; }

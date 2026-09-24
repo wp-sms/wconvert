@@ -56,9 +56,9 @@ final class ArtifactContractTest extends TestCase
           "premium": {
             "slug": "wconvert-pro",
             "tiers": [
-              { "slug": "basic", "name": "Pro", "modules": ["display-types"] },
-              { "slug": "pro", "name": "Pro", "modules": ["display-types", "premium-triggers"] },
-              { "slug": "elite", "name": "Pro", "modules": ["display-types", "premium-triggers", "cart-recovery"] }
+              { "slug": "basic", "name": "Pro", "modules": ["display-types", "journeys"] },
+              { "slug": "pro", "name": "Pro", "modules": ["display-types", "journeys", "premium-triggers"] },
+              { "slug": "elite", "name": "Pro", "modules": ["display-types", "journeys", "premium-triggers", "cart-recovery"] }
             ]
           }
         }
@@ -205,6 +205,7 @@ final class ArtifactContractTest extends TestCase
             // nothing that could be too high. The tests that assert the
             // per-tier rules build lower rungs explicitly.
             'modules/display-types/module.json' => "{\"slug\":\"display-types\"}\n",
+            'modules/journeys/module.json' => "{\"slug\":\"journeys\"}\n",
             'modules/content-lock/module.json' => "{\"slug\":\"content-lock\"}\n",
             'modules/inline-placement/module.json' => "{\"slug\":\"inline-placement\"}\n",
             'modules/premium-triggers/module.json' => "{\"slug\":\"premium-triggers\"}\n",
@@ -230,7 +231,7 @@ final class ArtifactContractTest extends TestCase
     {
         $withheld = [];
 
-        foreach (['display-types', 'premium-triggers', 'ab-testing', 'cart-recovery'] as $slug) {
+        foreach (['display-types', 'journeys', 'premium-triggers', 'ab-testing', 'cart-recovery'] as $slug) {
             if (!in_array($slug, $modules, true)) {
                 $withheld["modules/{$slug}/module.json"] = null;
             }
@@ -430,9 +431,9 @@ final class ArtifactContractTest extends TestCase
     public function testPassesOnEachRungCutToItsOwnModules(): void
     {
         foreach ([
-            'basic' => ['display-types'],
-            'pro' => ['display-types', 'premium-triggers', 'ab-testing'],
-            'elite' => ['display-types', 'premium-triggers', 'ab-testing', 'cart-recovery'],
+            'basic' => ['display-types', 'journeys'],
+            'pro' => ['display-types', 'journeys', 'premium-triggers', 'ab-testing'],
+            'elite' => ['display-types', 'journeys', 'premium-triggers', 'ab-testing', 'cart-recovery'],
         ] as $rung => $modules) {
             $result = $this->verify($this->stagedProAt($modules));
 
@@ -466,7 +467,7 @@ final class ArtifactContractTest extends TestCase
      */
     public function testFailsWhenABasicZipCarriesAHigherRungsModule(): void
     {
-        $tree = $this->stagedProAt(['display-types', 'premium-triggers', 'ab-testing']);
+        $tree = $this->stagedProAt(['display-types', 'journeys', 'premium-triggers', 'ab-testing']);
 
         // Inferred as `pro`, correctly. What makes it wrong is the design
         // library: `pro` ships `display-types` too, so the tree is internally
@@ -504,7 +505,7 @@ final class ArtifactContractTest extends TestCase
     /** And a rung's own rules in its own bundle are exactly what belongs there. */
     public function testARungsBundleMayCarryItsOwnRules(): void
     {
-        $result = $this->verify($this->stagedProAt(['display-types', 'premium-triggers', 'ab-testing'], [
+        $result = $this->verify($this->stagedProAt(['display-types', 'journeys', 'premium-triggers', 'ab-testing'], [
             'public/loader/loader.js' => "var rules={exit_intent:1};\n",
         ]));
 

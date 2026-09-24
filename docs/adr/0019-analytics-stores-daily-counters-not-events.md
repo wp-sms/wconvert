@@ -12,6 +12,8 @@ Empty scope retains Campaign totals; bounded channel and revision/screen scopes
 support capture-journey reports. This still stores daily counters, not raw events.
 The schema and readers implement these scoped counters.
 
+**Extended by [ADR 0106](0106-question-journeys-extend-the-paid-loader.md):** result journeys add bounded aggregate quiz-completion, capture, and result-click counts in this same table. They add no response row, visitor identity, or new column; anonymous answers are not retained.
+
 The row was already almost a counter.
 [ADR 0020](0020-conversions-are-interpreted-at-read.md) strips every dimension
 off a recorded act except which [[Optin]] it happened on and what kind it was, so

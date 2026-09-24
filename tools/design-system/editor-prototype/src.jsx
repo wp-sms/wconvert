@@ -1,5 +1,7 @@
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import { App } from './App.jsx';
+const application = new URLSearchParams(window.location.search).get('prototype') === 'journeys'
+  ? import('./journey-prototype/App.jsx')
+  : import('./App.jsx');
 
-createRoot(document.getElementById('root')).render(<App/>);
+application.then(({ App }) => createRoot(document.getElementById('root')).render(<App/>));

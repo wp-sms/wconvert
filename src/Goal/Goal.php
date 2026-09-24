@@ -24,6 +24,9 @@ enum Goal: string
             self::CollectEnquiries => new OutcomeContract('submit', ['email', 'phone'],
                 __('Use an enquiry form with an email or phone field before publishing.', 'wconvert'),
                 __('Counts enquiries submitted here. Replies, bookings and completed work in another service are not measured.', 'wconvert'), 'captured'),
+            self::FindMatch => new OutcomeContract('match', [],
+                __('Use a journey with a Results screen and a valid question path.', 'wconvert'),
+                __('Counts quiz results shown. Product clicks and purchases are separate.', 'wconvert'), 'quiz_completed'),
             self::RecoverCart => new OutcomeContract('click', [],
                 __('Use a design whose button links to the cart before publishing.', 'wconvert'),
                 __('Counts clicks back to the cart. Completed orders and recovered revenue are not measured.', 'wconvert'), 'on_site_action'),
@@ -49,6 +52,8 @@ enum Goal: string
 
     case CollectEnquiries = 'collect_enquiries';
 
+    case FindMatch = 'find_match';
+
     public function headlineKind(): StatKind
     {
         return $this === self::DeliverLeadMagnet ? StatKind::LeadMagnetDelivered : StatKind::Conversion;
@@ -60,6 +65,7 @@ enum Goal: string
             self::GrowEmailList => __('Email submissions', 'wconvert'),
             self::GrowSmsList => __('Phone submissions', 'wconvert'),
             self::CollectEnquiries => __('Enquiries captured', 'wconvert'),
+            self::FindMatch => __('Quiz completions', 'wconvert'),
             self::RecoverCart => __('Cart return clicks', 'wconvert'),
             self::PromoteOffer => __('Link clicks', 'wconvert'),
             self::DeliverLeadMagnet => __('Emails accepted for sending', 'wconvert'),
@@ -68,7 +74,7 @@ enum Goal: string
 
     public function tier(): Tier
     {
-        return $this === self::RecoverCart ? Tier::Elite : Tier::Free;
+        return match ($this) { self::RecoverCart => Tier::Elite, self::FindMatch => Tier::Basic, default => Tier::Free };
     }
 
     public function requires(): ?SiteDependency
@@ -85,6 +91,7 @@ enum Goal: string
             self::PromoteOffer => __('Promote an offer or content', 'wconvert'),
             self::DeliverLeadMagnet => __('Deliver a lead magnet', 'wconvert'),
             self::CollectEnquiries => __('Collect enquiries', 'wconvert'),
+            self::FindMatch => __('Help visitors find a match', 'wconvert'),
         };
     }
 
@@ -97,6 +104,7 @@ enum Goal: string
             self::PromoteOffer => __('Send visitors to an offer or a useful page, and count the clicks through to it.', 'wconvert'),
             self::DeliverLeadMagnet => __('Email a resource link and count emails accepted for sending.', 'wconvert'),
             self::CollectEnquiries => __('Capture requests with contact details for follow-up in Leads or your connected service.', 'wconvert'),
+            self::FindMatch => __('Ask a few questions and show one relevant result, with signup optional.', 'wconvert'),
         };
     }
 }

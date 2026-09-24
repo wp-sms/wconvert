@@ -65,4 +65,6 @@ The user explicitly approved a **1 KiB increase to the existing paid-loader cap*
 
 > **Amended by [ADR 0105](0105-phone-input-is-a-conditional-shared-asset.md):** Basic remains at 20,480 bytes; Pro caps at 20,608 and Elite at 20,784 after the full phone-field integration. Free remains at 14,012 bytes. The optional phone asset has its own 16 KiB cap.
 
+> **Amended by [ADR 0106](0106-question-journeys-extend-the-paid-loader.md):** Paid caps now stand at 24,064 / 25,088 / 25,344 bytes for Basic / Pro / Elite. Free and the optional phone cap remain unchanged.
+
 This amends ADRs 0005 (grouping), 0012/0027 (authored availability), 0047 (Campaign session cap), 0048 (draft simulation beside live inspection), 0050 (schedule wake/active capture), 0101 (explicit activation/collision/expiry) and 0103 (paid-loader cap). Their relevant passages are annotated inline.

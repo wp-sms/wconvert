@@ -24,8 +24,10 @@ to them. Going Back may review submitted details but cannot replace them.
 
 The implemented progressive journey contract is recorded in
 [ADR 0103](docs/adr/0103-progressive-capture-keeps-one-lead-per-journey.md).
-The runtime supports linear screens with one primary submission and an optional
-other-channel signup, saved independently within the same capture journey.
+The Free runtime supports linear screens with one primary submission and an optional
+other-channel signup, saved independently within the same capture journey. Pro
+also supports questions and answer-dependent screens, with at most one Results
+screen. See [ADR 0106](docs/adr/0106-question-journeys-extend-the-paid-loader.md).
 
 "Never confirmed" is the sharpest case, because it is the one every competitor
 gets wrong: **WConvert has no double opt-in and never will.** Confirming an
@@ -33,8 +35,8 @@ opt-in means reading and mutating [[Contact]] state, which the [[Destination]]
 contract forbids outright. Where double opt-in is wanted it belongs to whoever
 owns the Contact — WSMS's own subscription form, or the ESP's audience setting.
 
-Not every [[Conversion]] is a Lead. An Optin whose success is a click-through
-captures no form, so it produces a Conversion and no Lead.
+Not every [[Conversion]] is a Lead. A click-through or an anonymous quiz result
+produces a Conversion without a Lead.
 
 A submit design's success copy acknowledges the captured request. It must not
 claim that a Contact is subscribed or confirmed, or that a message or resource
@@ -75,6 +77,13 @@ here, and would carry no [[Consent Record]], which is the half that cannot be
 invented.
 
 WConvert owns Leads.
+
+When a visitor explicitly submits contact details after answering Pro questions,
+the Lead also holds a snapshot of the active question IDs, wording, values and
+choice labels in existing JSON storage. Skipped answers are excluded. An
+anonymous completion creates no Lead and stores no individual answers; only
+aggregate completion and result-click counts remain. A later optional signup
+adds one Lead without a second Conversion.
 
 A form can also ask one choice question under the canonical key `interest`.
 Its stable selected value and the label from the published choice definition
@@ -168,19 +177,23 @@ their calendar month independently of rolling report dates. See
 
 A visitor doing the thing an [[Optin]] exists to make them do — the countable
 act its [[Goal]] names. Submitting a form is one kind of Conversion; clicking
-through to an offer is another.
+through to an offer and completing an anonymous quiz result are others.
 
-Every [[Lead]] is a Conversion; the reverse does not hold. Assuming it does
-makes any Goal measured by clicks report zero forever.
+Most accepted Leads are Conversions; a quiz Lead is not a second Conversion.
+The reverse does not hold either: anonymous quiz completion and link clicks
+create no Lead.
 
-A progressive [[Capture journey]] converts at its first accepted capture.
-Later submissions in that journey add to the same Lead without another
-Conversion. Next, Back and Skip do not convert. This is the accepted product
+A capture-only progressive [[Capture journey]] converts at its first accepted
+capture. Later submissions add to the same Lead without another Conversion.
+A Pro quiz converts when its selected result appears, whether it asked for
+contact first or offers an optional signup afterward. Captures in that quiz
+are recorded separately. Next, Back and Skip alone do not convert. This is the accepted product
 contract in [ADR 0103](docs/adr/0103-progressive-capture-keeps-one-lead-per-journey.md).
 
 **One Optin has exactly one converting act**, and its ~~[[Goal]]~~ **design**
-decides which: a design whose button submits converts on the submit, and one
-whose button links away converts on the click. A [[Template]] offering both is
+decides which: a design whose button submits converts on the submit, one
+whose button links away converts on the click, and a quiz converts
+on its first selected result. A [[Template]] offering both unrelated acts is
 rejected when it is registered, not disambiguated at runtime — an Optin with two
 candidate Conversions has no honest number to report.
 
@@ -754,7 +767,7 @@ second timer ran does not show.
 
 The business outcome an [[Optin]] serves, selected before choosing a [[Playbook]].
 It remains visible in the editor alongside the precise metric WConvert can prove.
-The six Goals stay business-oriented; their counts do not claim subscriber state,
+The seven Goals stay business-oriented; their counts do not claim subscriber state,
 inbox delivery, bookings, orders or revenue that WConvert does not observe.
 
 A Goal can change until first publication. After publication, including after
@@ -778,6 +791,7 @@ contract checks compatibility before that design becomes live.
 | Recover abandoned carts | Click design; cart URL supplied at runtime | Cart return clicks |
 | Promote an offer or content | Click design with an offer/content link | Link clicks |
 | Deliver a lead magnet | Required email plus a selected, available, configured lead-magnet email Destination | Emails accepted for sending |
+| Find a match | Pro result journey; contact is optional | Completed results |
 
 Submissions are events, not unique people or confirmed subscriptions. Mail
 acceptance is not inbox arrival or a download; resends can count again. These are
@@ -797,18 +811,27 @@ See [ADR 0085](docs/adr/0085-goals-have-publish-contracts-and-stable-history.md)
 ### Capture journey
 
 One visitor's sequence of screens and explicit submissions within one [[Optin]].
-The first accepted submission creates one [[Lead]] and counts one [[Conversion]];
+In a capture-only journey, the first accepted submission creates one [[Lead]]
+and counts one [[Conversion]];
 later accepted submissions in that journey add to that Lead. Navigation alone
 captures nothing. Ordinary forms submit once at the end; a primary marketing
 signup may offer one optional signup for the other channel. A saved signup
 survives abandonment of that optional follow-up.
+In a quiz, required pre-result contact is a request, while optional signup
+after a result is a separate marketing purpose with visible consent. Both
+create a Lead only when submitted; showing the result counts the Conversion.
 This contract is implemented under
 [ADR 0103](docs/adr/0103-progressive-capture-keeps-one-lead-per-journey.md).
 
-A journey is linear: the merchant can arrange its screens and submission
+A Free journey is linear: the merchant can arrange its screens and submission
 points, including a screen that explains an offer before asking for details.
-It does not branch based on answers. This is a Free core capability; using
-a Pro Display Type or integration still requires that capability's own tier.
+Pro can ask choice or short-text questions and skip later screens based on
+earlier choice answers. It still moves forward in one ordered list: there are
+no arbitrary jumps or loops. Its one Results screen selects the first matching
+variant, then a fallback. Results may precede an optional signup, so a visitor
+can finish without giving contact details. Product cards use the live public
+WooCommerce catalog for merchant-selected IDs; unavailable products fall back
+to the result's own link.
 
 ### Template
 
@@ -830,10 +853,14 @@ candidate, changes only the draft, and is undoable. Sample offers and links stil
 need review. A new Playbook draft continues to use its own copy, not those samples
 ([ADR 0075](docs/adr/0075-draft-history-and-template-content-choices-stay-predictable.md)).
 
+Pro question text and choice labels survive a Template snapshot because they
+define the quiz and its conditional references; ordinary display copy still
+uses Slot Roles. A Results screen carries ordered variants and one fallback.
+
 A submit Template also supplies a hidden consent control as a capability, not a
 decision that the Campaign needs it. With Privacy Guidance on, Campaign setup
-reveals that control for ongoing marketing Goals and keeps it hidden for
-one-time requests. Choosing another Template reapplies the same purpose-based
+reveals that control for ongoing marketing Goals and optional quiz signup, and
+keeps it hidden for one-time requests. Choosing another Template reapplies the same purpose-based
 starting point; the design never acquires a Goal tag (ADR 0099).
 
 > **"How it is styled" has a scope.** The design sets its tokens for the
@@ -973,8 +1000,9 @@ inferred the manifest enumerates it
 ### Template pack
 
 A versioned collection of downloadable designs, installed explicitly from a
-configured catalog. The first format supports Free popup/inline designs with
-placeholders. It supplies no renderer code or site-local destinations. Installed
+configured catalog. The format supports Free popup/inline designs and Pro
+question journeys for an installed paid tier. It supplies no renderer code,
+site-local destinations, product IDs, or links. Installed
 versions remain local and retain source baselines; updates affect the library
 for future choices, never existing Optin snapshots. Browsing and installation
 live in the design picker and the Goal-first creation flow. Packs may also carry

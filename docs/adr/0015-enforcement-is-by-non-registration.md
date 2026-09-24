@@ -1,5 +1,7 @@
 # Enforcement is by non-registration
 
+**Extended by [ADR 0106](0106-question-journeys-extend-the-paid-loader.md):** question journeys and product recommendations belong to every paid tier. A Free install does not register their visitor module and suppresses a campaign that requires it, preserving the draft for a later Pro activation.
+
 There is **no runtime licence check anywhere in WConvert.** The only question ever
 asked is "is [[Pro]] loaded", and it is answered by the registries themselves: a
 premium capability is *absent* from a free install rather than present and guarded.

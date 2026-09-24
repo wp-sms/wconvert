@@ -131,6 +131,9 @@ export function LeadLog({ query, onQueryChange, onRefresh }: LeadLogProps) {
     {csv && <PageAction><Button variant="outline" onClick={() => exportLeads(applied.query)}>
       <Download aria-hidden="true" />{__('Export matching submissions', 'wconvert')}
     </Button></PageAction>}
+    {csv && <PageAction><Button variant="outline" onClick={() => exportLeads(applied.query, 'questions')}>
+      <Download aria-hidden="true" />{__('Export question answers', 'wconvert')}
+    </Button></PageAction>}
     <Region label={__('Submissions', 'wconvert')}>
       <RegionBody>
         <div role="group" aria-label={__('Submission purpose', 'wconvert')} className="mb-4 flex flex-wrap gap-2">
@@ -346,6 +349,7 @@ function GroupEvents({ group, query, nameOf, goalOf, onRelated }: { group: LeadG
   return <div className="flex flex-col gap-4">
     <p>{submissionCount(data?.submissions ?? group.submissions)}{__(' within the selected filters. These are capture events, not a contact profile.', 'wconvert')}</p>
     {csv && <Button variant="outline" className="self-start" onClick={() => exportLeads(filter)}><Download aria-hidden="true" />{__('Export these submissions', 'wconvert')}</Button>}
+    {csv && <Button variant="outline" className="self-start" onClick={() => exportLeads(filter, 'questions')}><Download aria-hidden="true" />{__('Export question answers', 'wconvert')}</Button>}
     {loading && <p role="status">{__('Loading submissions…', 'wconvert')}</p>}
     {error && <div><p role="alert">{error}</p><Button variant="outline" onClick={() => setRetry((value) => value + 1)}>{__('Retry', 'wconvert')}</Button></div>}
     {data !== null && data.leads.length === 0 && <p>{__('No retained submissions match this group and these filters.', 'wconvert')}</p>}

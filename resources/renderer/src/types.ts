@@ -56,6 +56,33 @@ export type SlotRole =
 /** What a `field` captures. Closed, because the capture path canonicalises per kind. */
 export type FieldName = 'email' | 'name' | 'phone' | 'interest';
 
+/** Answers are separate from canonical contact fields. IDs survive copy edits. */
+export interface QuestionChoice { readonly value: string; readonly label: string; }
+export interface QuestionNode extends BaseNode {
+  readonly type: 'question';
+  readonly label: string;
+  readonly help?: string;
+  readonly answer_type: 'single' | 'multi' | 'text';
+  readonly required?: boolean;
+  readonly options?: readonly QuestionChoice[];
+}
+
+export interface QuestionClause {
+  readonly question: string;
+  readonly operator: 'is' | 'is_not' | 'includes_any' | 'includes_none';
+  readonly values: readonly string[];
+}
+export interface QuestionCondition { readonly match: 'all' | 'any'; readonly clauses: readonly QuestionClause[]; }
+export interface ResultVariant {
+  readonly id: string;
+  readonly heading: string;
+  readonly body?: string;
+  readonly href?: string;
+  readonly link_label?: string;
+  readonly product_ids?: readonly number[];
+  readonly when?: QuestionCondition;
+}
+
 /**
  * A link inside a sentence, expressed as STRUCTURE rather than markup
  * (ADR 0013). The renderer splits the text on `%s` and constructs the `<a>`
@@ -481,6 +508,7 @@ export type LeafNode =
   | IconNode
   | ImageNode
   | FieldNode
+  | QuestionNode
   | ButtonNode
   | FollowupNode
   | ConsentNode;
@@ -765,8 +793,11 @@ export type TemplateNode = LayoutNode | LeafNode | { readonly type: string };
 export interface TemplateScreen {
   readonly id: string;
   readonly name: string;
-  readonly kind: 'content' | 'input' | 'acknowledgement';
+  readonly kind: 'content' | 'input' | 'result' | 'acknowledgement';
   readonly content: TemplateNode;
+  readonly when?: QuestionCondition;
+  readonly results?: readonly ResultVariant[];
+  readonly products_required?: boolean;
 }
 export interface CaptureSubmission {
   readonly id: string;

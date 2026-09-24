@@ -598,11 +598,16 @@ final class OptinController implements RestController
         }
 
         $issue = \WConvert\Template\CaptureContract::issue($optin->config, $optin->goal, get_privacy_policy_url());
+        if (\WConvert\Template\CaptureJourney::requiresPremium($optin->config['template']['tree'] ?? []) && !$this->goals->supportsJourneys()) {
+            return new WP_Error('wconvert_journey_requires_pro', __('Questions, conditions and results require WConvert Pro before publishing.', 'wconvert'), ['status' => 400]);
+        }
         if ($issue !== null) {
             $message = match ($issue) {
                 'choices' => __('Add at least one choice to the interest field before publishing. You can keep saving this Campaign as a draft.', 'wconvert'),
                 'followup' => __('Give each resource link a label and address, and place it after the form. You can keep saving this Campaign as a draft.', 'wconvert'),
                 'consent' => __('Each signup needs its required contact field and its own consent wording.', 'wconvert'),
+                'products' => __('Connect WooCommerce, choose products for each matching result, and add a fallback link with a label to every result before publishing.', 'wconvert'),
+                'result_link' => __('Give each result link a label and destination before publishing.', 'wconvert'),
                 default => __('Complete the screen order, navigation and submission fields before publishing. You can keep saving this Campaign as a draft.', 'wconvert'),
             };
             return new WP_Error('wconvert_optin_form_incomplete', $message, ['status' => 400]);

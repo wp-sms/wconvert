@@ -17,6 +17,7 @@ import { LAYOUTS, slotsOf, withHidden, withValue, type Path, type Slot } from '.
 import { nodeAt, nodesOf, samePath, withSwappedPanes } from './structure/tree';
 import { swapLabel, swapNameOf, swapSaid, swapsFor, withSwapped } from './structure/swap';
 import type { ConvertingAct } from './structure/catalogue';
+import { QuestionSettings } from './JourneySettings';
 import { nameOf, type TemplateLabels } from '../templates/api';
 import type { Template } from '@renderer/types';
 
@@ -220,6 +221,9 @@ function contentBody({
   onSetEndDate?: () => void;
 }) {
   const node = nodeAt(template.tree, path) as { action?: string; submission?: string } | null;
+  if (block.type === 'question') {
+    return <QuestionSettings tree={template.tree} step={Number(path[0])} onChange={tree => onChange({ ...template, tree })} onSelect={() => undefined} />;
+  }
   return (
     <>
       {block.type === 'button' && ['submit', 'skip'].includes(node?.action ?? '') && <label className="block p-3">
