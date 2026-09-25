@@ -15,12 +15,14 @@ import type { TemplateTree, TemplateNode, QuestionNode, Tokens } from '@renderer
 import { addGraphResultSignup, duplicateScreen, freshScreen, referencedJourney, walkNodes, submissionScreen, movedScreen, screenRemoval, removedScreen, resultAccess, unreachableScreens } from './structure/journey';
 import { conditionText } from './structure/conditionText';
 import { graphDisplayOrder, graphReaches, graphRemoval, insertOnGraphEdge, upgradeToGraph } from './structure/graph';
+import type { JourneyRepair } from './structure/journeyReadiness';
 
 const JourneyMap = lazy(() => import('./JourneyMap').then(module => ({ default: module.JourneyMap })));
 
-export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChange, onSelect, displaySummary, destinationSummary, deliveryMode, onGoToRules, onGoToDestinations, onGoToDesign, openRequest, embedded = false }: {
+export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChange, onSelect, displaySummary, destinationSummary, deliveryMode, onGoToRules, onGoToDestinations, onGoToDesign, openRequest, repairRequest, embedded = false }: {
   tokens?: Tokens; primaryChannel?: string | null; tree: TemplateTree; step: number; onChange(tree: TemplateTree): void; onSelect(step: number): void;
-  displaySummary?: string; destinationSummary?: string; deliveryMode?: 'local' | 'connected' | 'none'; onGoToRules?(): void; onGoToDestinations?(): void; onGoToDesign?(): void; openRequest?: number; embedded?: boolean;
+  displaySummary?: string; destinationSummary?: string; deliveryMode?: 'local' | 'connected' | 'none'; onGoToRules?(): void; onGoToDestinations?(): void; onGoToDesign?(): void; openRequest?: number;
+  repairRequest?: JourneyRepair & { readonly serial: number }; embedded?: boolean;
 }) {
   const id = useId();
   const [open, setOpen] = useState(false);
@@ -33,13 +35,31 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
   const [panelSection, setPanelSection] = useState<'content' | 'paths'>('content');
   const [mobilePane, setMobilePane] = useState<'map' | 'details'>('map');
   const [pathFocus, setPathFocus] = useState<number | null>(null);
+  const selectedId = useRef(tree.steps[step]?.id);
   useEffect(() => { if (openRequest) setOpen(true); }, [openRequest]);
+  const handledRepair = useRef(0);
+  useEffect(() => {
+    if (!repairRequest || handledRepair.current === repairRequest.serial) return;
+    handledRepair.current = repairRequest.serial;
+    const index = tree.steps.findIndex(screen => screen.id === repairRequest.screenId);
+    if (index < 0) return;
+    selectedId.current = repairRequest.screenId;
+    setInspecting(true);
+    setSampleOpen(false);
+    setView('flow');
+    setMobilePane('details');
+    setPanelSection(repairRequest.section);
+    const answerPaths = tree.graph?.edges.filter(edge => edge.from === repairRequest.screenId && edge.kind === 'answer');
+    const priority = repairRequest.edgeId ? answerPaths?.findIndex(edge => edge.id === repairRequest.edgeId)
+      : repairRequest.pathPriority;
+    setPathFocus(priority !== undefined && priority >= 0 ? priority : null);
+    onSelect(index);
+  }, [repairRequest, tree.steps, tree.graph, onSelect]);
   const [said, setSaid] = useState('');
   const [confirmRemoval, setConfirmRemoval] = useState(false);
   const [confirmGraphRemoval, setConfirmGraphRemoval] = useState(false);
   const [pendingRoute, setPendingRoute] = useState<{ tree: TemplateTree; disconnected: readonly string[] } | null>(null);
   const screenList = useRef<HTMLOListElement>(null);
-  const selectedId = useRef(tree.steps[step]?.id);
   const previousTree = useRef(tree);
   const select = (index: number) => { selectedId.current = tree.steps[index]?.id; setInspecting(true); setSampleOpen(false); setPanelSection('content'); setPathFocus(null); setMobilePane('details'); onSelect(index); };
   useEffect(() => {

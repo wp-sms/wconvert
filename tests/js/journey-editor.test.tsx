@@ -12,6 +12,7 @@ import source from '../../resources/templates/library/journey-email-only.json';
 import rules from '../fixtures/journey-rules.json';
 import service from '../../pro/modules/journeys/templates/journey-service-enquiry.json';
 import finder from '../../pro/modules/journeys/templates/journey-product-finder.json';
+import graphFixture from '../fixtures/journey-graph-enquiry.json';
 
 vi.mock('../../resources/admin/src/builder/Preview', () => ({ Preview: () => <div /> }));
 vi.mock('../../resources/admin/src/builder/JourneyMap', () => ({ JourneyMap: () => <div aria-label="Journey map" /> }));
@@ -24,6 +25,22 @@ function Editor({ initial = source.tree as TemplateTree }: { initial?: TemplateT
     <output data-testid="draft">{JSON.stringify(tree)}</output></>;
 }
 function draft(): TemplateTree { return JSON.parse(screen.getByTestId('draft').textContent!); }
+it('opens a requested graph repair on its source screen and path settings', async () => {
+  const base = graphFixture as unknown as TemplateTree;
+  const tree: TemplateTree = { ...base, graph: { ...base.graph!, edges: [...base.graph!.edges,
+    { id: 'repair', from: 'interests', to: 'balcony', kind: 'answer',
+      when: { match: 'all', clauses: [{ question: 'n1', operator: 'includes_any', values: [] }] } },
+  ] } };
+  function RepairEditor() {
+    const [step, setStep] = useState(0);
+    return <JourneyEditor embedded tree={tree} step={step} onChange={() => {}} onSelect={setStep}
+      repairRequest={{ serial: 1, screenId: 'interests', section: 'paths', edgeId: 'repair' }} />;
+  }
+  render(<RepairEditor />);
+  expect(await screen.findByRole('heading', { name: 'Interests' })).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: 'Next screen' })).toHaveAttribute('aria-pressed', 'true');
+  expect(screen.getByRole('checkbox', { name: 'Garden' })).toHaveFocus();
+});
 it('lets a merchant choose several answers for a multi-select condition', async () => {
   const user = userEvent.setup();
   const sourceQuestion = { id: 'interests', type: 'question', label: 'Your interests', answer_type: 'multi', required: true,

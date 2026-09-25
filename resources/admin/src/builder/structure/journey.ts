@@ -16,7 +16,11 @@ export function submissionScreen(tree: TemplateTree, id: string | undefined): nu
 }
 
 export function unreachableScreens(tree: TemplateTree): readonly string[] {
-  if (tree.graph) return tree.steps.filter(screen => !graphReaches(tree.graph!, tree.graph!.entry, screen.id)).map(screen => screen.name);
+  return unreachableScreenIds(tree).map(id => tree.steps.find(screen => screen.id === id)?.name ?? id);
+}
+
+export function unreachableScreenIds(tree: TemplateTree): readonly string[] {
+  if (tree.graph) return tree.steps.filter(screen => !graphReaches(tree.graph!, tree.graph!.entry, screen.id)).map(screen => screen.id);
   const reached = new Set<string>();
   const visit = (index: number) => {
     const screen = tree.steps[index];
@@ -27,7 +31,7 @@ export function unreachableScreens(tree: TemplateTree): readonly string[] {
     if (screen.when && tree.steps[index + 1]) visit(index + 1);
   };
   visit(0);
-  return tree.steps.filter(screen => !reached.has(screen.id)).map(screen => screen.name);
+  return tree.steps.filter(screen => !reached.has(screen.id)).map(screen => screen.id);
 }
 
 /** New draft nodes need identities before submission references can name them. */

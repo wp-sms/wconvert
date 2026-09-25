@@ -53,6 +53,13 @@ narrow modal and internal submission IDs in its summary. These improvements
 are slices of the release work, not a claim that path-sensitive validation or
 full prototype parity is done.
 
+Publish review now catches an unfinished answer condition on a v3 connection
+before the server rejects it. Its fix action opens that connection's source
+screen and path settings; incomplete screen visibility/result rules and
+disconnected screens likewise name the affected screen. This is a focused
+authoring check, not a replacement for the server's full graph and capture
+contract. Other server-only failure codes still need precise repair targets.
+
 The next slice added route and skip decisions to the shared JS/PHP evaluator.
 Try answers now explains whether a screen was bypassed by a winning branch or
 hidden by its own condition; Test journey labels that distinction too. This
@@ -183,6 +190,12 @@ screen and modal but could not click inside the renderer's closed shadow root;
 mounted-renderer UI tests cover the simulated save failure, snapshot, Back,
 and destination retry. This does not yet satisfy the full real-browser visitor
 interaction release gate.
+
+The saved quiz draft was reloaded again after the readiness-link change. Review
+& publish still showed destination setup as its only publish blocker; it
+did not invent an unfinished-path problem for a valid route. A draft with an
+empty graph answer condition is covered by the readiness UI test, which checks
+that its fix action selects the stable source screen and matching path.
 
 ## Scenario contract before more visual polishing
 

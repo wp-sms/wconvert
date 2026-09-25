@@ -10,6 +10,7 @@ import { ready } from '../../resources/admin/src/shell/loadable';
 import type { GoalEntry } from '../../resources/admin/src/goals/api';
 import type { Template } from '@renderer/types';
 import { ruleTypes } from './support/rule-types';
+import graphFixture from '../fixtures/journey-graph-enquiry.json';
 
 const design = (id: string): Template => JSON.parse(readFileSync(
   resolve(import.meta.dirname, `../../resources/templates/library/${id}.json`), 'utf8',
@@ -54,6 +55,19 @@ async function open(overrides: Partial<ReadinessDialogProps> = {}) {
 afterEach(() => { delete window.wconvertAdmin; });
 
 describe('reviewing before publishing', () => {
+  it('opens the exact unfinished graph path from the publish review', async () => {
+    const onEditJourney = vi.fn();
+    const tree = graphFixture as unknown as Template['tree'];
+    const template: Template = { ...FORM, tree: { ...tree, graph: { ...tree.graph!, edges: [...tree.graph!.edges,
+      { id: 'unfinished', from: 'interests', to: 'balcony', kind: 'answer',
+        when: { match: 'all', clauses: [{ question: 'n1', operator: 'includes_any', values: [] }] } },
+    ] } } };
+    await open({ template, onEditJourney });
+    expect(screen.getByRole('button', { name: 'Publish Campaign' })).toBeDisabled();
+    await userEvent.click(screen.getByRole('button', { name: /Choose an answer for the path from “Interests” to “Balcony details”/ }));
+    await waitFor(() => expect(onEditJourney).toHaveBeenCalledExactlyOnceWith({ screenId: 'interests', section: 'paths', edgeId: 'unfinished' }));
+  });
+
   it('links the inline placement recap to its placement settings', async () => {
     const placement = vi.fn();
     const { supplied } = await open({ displayType: 'inline', inlinePlacement: { position: 'after_content' }, onGoToPlacement: placement });

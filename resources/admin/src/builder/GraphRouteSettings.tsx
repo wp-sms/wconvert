@@ -19,7 +19,12 @@ export function GraphRouteSettings({ tree, step, focusPath, onChange, onInsert }
   const [pending, setPending] = useState<{ tree: TemplateTree; disconnected: readonly string[] } | null>(null);
   useEffect(() => {
     if (focusPath === null || focusPath === undefined) return;
-    list.current?.querySelector<HTMLElement>(`[data-path-priority="${focusPath}"]`)?.scrollIntoView?.({ block: 'nearest' });
+    const row = list.current?.querySelector<HTMLElement>(`[data-path-priority="${focusPath}"]`);
+    row?.scrollIntoView?.({ block: 'nearest' });
+    const clause = row?.querySelector<HTMLElement>('.wconvert-journey-settings__clause');
+    (clause?.querySelector<HTMLElement>('.wconvert-journey-settings__answers input')
+      ?? clause?.querySelector<HTMLElement>('select:last-of-type')
+      ?? row?.querySelector<HTMLElement>('select'))?.focus();
   }, [focusPath, step]);
   if (!graph || !screen) return null;
   const routes = graph.edges.filter(edge => edge.from === screen.id);

@@ -4,6 +4,7 @@ import { SubmissionSettings } from './SubmissionSettings';
 import { JourneyEditor } from './JourneyEditor';
 import { JourneyReport } from './JourneyReport';
 import { referencedJourney, submissionScreen } from './structure/journey';
+import type { JourneyRepair } from './structure/journeyReadiness';
 import { contentLockDesignCompatible } from '../inlinePlacement';
 import './editor.css';
 import { Activity, useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -167,6 +168,8 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
     return () => document.body.classList.remove('wconvert-editing');
   }, []);
   const [tab, setTab] = useState<TabId>('design');
+  const [journeyRepair, setJourneyRepair] = useState<(JourneyRepair & { serial: number }) | null>(null);
+  const journeyRepairSerial = useRef(0);
 
   const [openToken, setOpenToken] = useState<string | null>(null);
 
@@ -767,7 +770,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
             onPublish={publish}
             onPreview={() => { setTab('design'); setPreviewing(true); setSelection(null); previewButton.current?.focus(); }}
             onEditDesign={() => { setTab('design'); setPreviewing(false); setShowLayers(true); setDrawer('layers'); layersButton.current?.focus(); }}
-            onEditJourney={() => { setTab('journey'); setPreviewing(false); }}
+            onEditJourney={repair => { setTab('journey'); setPreviewing(false); if (repair) setJourneyRepair({ ...repair, serial: ++journeyRepairSerial.current }); }}
             onGoToDesign={() => { setTab('design'); setPreviewing(false); setBrowsing(true); }}
             onGoToPlacement={goToInlinePlacement}
             onGoToDestinations={() => { setTab('destinations'); destinationsTab.current?.focus(); }}
@@ -796,7 +799,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
       {error !== null && <PageError message={error} />}
       <div className="wconvert-workspace__body" inert={busy}>
         <TabsContent value="journey" className="wconvert-workspace__journey">
-          {entry && <JourneyEditor embedded primaryChannel={entryOfGoal?.outcome.audience_channel} tree={entry.tree} tokens={entry.tokens} step={shownStep}
+          {entry && <JourneyEditor embedded primaryChannel={entryOfGoal?.outcome.audience_channel} tree={entry.tree} tokens={entry.tokens} step={shownStep} repairRequest={journeyRepair ?? undefined}
             onChange={tree => edit({ template: { ...entry, tree } })} onSelect={chooseStep} displaySummary={displaySummary} destinationSummary={destinationSummary}
             deliveryMode={config?.capture_mode === 'local' ? 'local' : bound.length > 0 ? 'connected' : 'none'}
             onGoToDesign={() => { setTab('design'); setPreviewing(false); }}

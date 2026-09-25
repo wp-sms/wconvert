@@ -16,7 +16,7 @@ import { messageOf, type Loadable } from '../shell/loadable';
 import { destinationsSaid } from './destinations';
 import { capturedFields } from '../destinations/requirements';
 import { problemsIn, type Problem } from './structure/problems';
-import { unreachableScreens } from './structure/journey';
+import { journeyReadinessIssues, type JourneyRepair } from './structure/journeyReadiness';
 import { capturesTaken, nodeAt, nodesOf } from './structure/tree';
 import { convertingActOf } from './structure/guards';
 import { summarise } from './rules/summaries';
@@ -63,7 +63,7 @@ export interface ReadinessDialogProps {
   readonly onGoToDesign: () => void;
   readonly onGoToPlacement?: () => void;
   readonly onEditDesign: () => void;
-  readonly onEditJourney?: () => void;
+  readonly onEditJourney?: (repair?: JourneyRepair) => void;
   readonly onPreview: () => void;
   /** Saves any unsaved draft before promoting it; rejects without hiding the dialog. */
   readonly onPublish: () => Promise<void>;
@@ -126,8 +126,7 @@ export function ReadinessDialog({
   const missingNotice = reviewsPrivacy && privacyPath === null;
   const missingConsent = expectsConsent && visibleConsentPath === null;
   const problems = hasDesign ? problemsIn(template, rules.schedule.ends_at) : [];
-  const incompletePath = template?.tree.steps.some(screen => screen.paths?.some(path => path.when?.clauses.some(clause => !clause.values.length || clause.values.some(value => !value))));
-  const unreachable = template ? unreachableScreens(template.tree) : [];
+  const journeyIssues = template ? journeyReadinessIssues(template.tree) : [];
   const needsCapture = bound.length > 0;
   const goalIssue = outcome && hasDesign ? outcomeDesignIssue(outcome, template) : null;
   const handoffIssue = outcome ? outcomeHandoffIssue(outcome, bound, destinations, captureMode) : null;
@@ -143,8 +142,7 @@ export function ReadinessDialog({
     ...(goalIssue ? [{ said: goalIssue, fix: template && convertingActOf(template.tree)[0] === outcome?.action ? onEditDesign : onGoToDesign }] : []),
     ...(handoffIssue ? [{ said: handoffIssue, fix: onGoToDestinations }] : []),
     ...(!hasDesign ? [{ said: __('Choose a design before publishing.', 'wconvert'), fix: onGoToDesign }] : []),
-    ...(incompletePath ? [{ said: __('Choose an answer for each journey path in Manage screens.', 'wconvert'), fix: onEditJourney }] : []),
-    ...(unreachable.length ? [{ said: sprintf(__('No journey path reaches: %s.', 'wconvert'), unreachable.join(', ')), fix: onEditJourney }] : []),
+    ...journeyIssues.map(issue => ({ said: issue.said, fix: () => onEditJourney(issue.repair) })),
     ...problems.filter((problem) => problem.check === 'converts' || problem.blocksPublish).map((problem) => ({
       said: problem.said,
       fix: problem.path !== null ? () => onGoTo(problem.path as Path) : onEditDesign,
