@@ -4,11 +4,14 @@ import { __, sprintf } from '@wordpress/i18n';
 import type { QuestionClause, QuestionCondition, QuestionNode, ResultVariant, TemplateNode, TemplateTree } from '@renderer/types';
 import { replaceAnswer, unreachableScreens, walkNodes, usedBy } from './structure/journey';
 import { conditionText, resultsMayOverlap } from './structure/conditionText';
+import { graphEdgeId, graphReaches } from './structure/graph';
 import { ConfirmDialog } from '../shell/ConfirmDialog';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../components/ui/dropdown-menu';
 
 type ChoiceQuestion = QuestionNode & { id: string };
-const questionsBefore = (tree: TemplateTree, at: number): ChoiceQuestion[] => tree.steps.slice(0, at)
+const questionsBefore = (tree: TemplateTree, at: number): ChoiceQuestion[] => tree.steps.filter((screen, index) => tree.graph
+  ? index !== at && graphReaches(tree.graph, screen.id, tree.steps[at].id)
+  : index < at)
   .flatMap(screen => walkNodes(screen.content))
   .filter((node): node is ChoiceQuestion => node.type === 'question' && 'id' in node && typeof node.id === 'string'
     && 'answer_type' in node && node.answer_type !== 'text') as ChoiceQuestion[];
@@ -148,12 +151,23 @@ export function ScreenConditionSettings({ tree, step, onChange, onSelect }: {
   tree: TemplateTree; step: number; onChange(next: TemplateTree): void; onSelect(step: number): void;
 }) {
   const screen = tree.steps[step];
-  if (step === 0 || ['result', 'acknowledgement'].includes(screen.kind)
+  if (screen.id === (tree.graph?.entry ?? tree.steps[0].id) || ['result', 'acknowledgement'].includes(screen.kind)
     || walkNodes(screen.content).some(node => node.type === 'button' && 'action' in node && node.action === 'submit')) return null;
   const sources = questionsBefore(tree, step);
   return <section className="wconvert-journey-settings"><h4>{__('Screen visibility', 'wconvert')}</h4>
-    <ConditionSettings value={screen.when} sources={sources} onChange={when => onChange({ ...tree, steps: tree.steps.map((item, at) => at === step ? { ...item, when } : item) })} />
-    {screen.when && <p className="wconvert-journey-settings__skip">{sprintf(__('If this does not match, skip “%1$s” and check “%2$s” next. Other relevant follow-ups can still appear.', 'wconvert'), screen.name, tree.steps[step + 1]?.name ?? __('the ending', 'wconvert'))}</p>}
+    <ConditionSettings value={screen.when} sources={sources} onChange={when => {
+      const steps = tree.steps.map((item, at) => at === step ? { ...item, when } : item);
+      if (!tree.graph) { onChange({ ...tree, steps }); return; }
+      const edges = tree.graph.edges.filter(edge => !(edge.from === screen.id && edge.kind === 'hidden'));
+      const fallback = edges.find(edge => edge.from === screen.id && edge.kind === 'default');
+      if (when && fallback) edges.push({ id: tree.graph.edges.find(edge => edge.from === screen.id && edge.kind === 'hidden')?.id ?? graphEdgeId(tree.graph),
+        from: screen.id, to: tree.graph.edges.find(edge => edge.from === screen.id && edge.kind === 'hidden')?.to ?? fallback.to, kind: 'hidden' });
+      onChange({ ...tree, steps, graph: { ...tree.graph, edges } });
+    }} />
+    {screen.when && <p className="wconvert-journey-settings__skip">{tree.graph
+      ? sprintf(__('If this does not match, skip “%1$s” and continue at “%2$s”. Change that destination under Next screen.', 'wconvert'), screen.name,
+        tree.steps.find(item => item.id === tree.graph?.edges.find(edge => edge.from === screen.id && edge.kind === 'hidden')?.to)?.name ?? __('the ending', 'wconvert'))
+      : sprintf(__('If this does not match, skip “%1$s” and check “%2$s” next. Other relevant follow-ups can still appear.', 'wconvert'), screen.name, tree.steps[step + 1]?.name ?? __('the ending', 'wconvert'))}</p>}
     {screen.when?.clauses.map(clause => { const source = questionsBefore(tree, step).find(q => q.id === clause.question);
       const sourceAt = tree.steps.findIndex(item => walkNodes(item.content).some(node => 'id' in node && node.id === clause.question));
       return source && sourceAt >= 0 ? <button key={clause.question} type="button" onClick={() => onSelect(sourceAt)}>{__('Edit source question:', 'wconvert')} {source.label}</button> : null;
@@ -173,7 +187,8 @@ export function QuestionSettings({ tree, step, onChange, onSelect }: {
   return <section className="wconvert-journey-settings"><h4>{__('Questions on this screen', 'wconvert')}</h4>
     {questions.map(question => {
       const refs = usedBy(tree, question.id);
-      const protectedValues = new Set(tree.steps.flatMap(item => [item.when, ...(item.results?.map(result => result.when) ?? []), ...(item.paths?.map(path => path.when) ?? [])])
+      const protectedValues = new Set([...tree.steps.flatMap(item => [item.when, ...(item.results?.map(result => result.when) ?? []), ...(item.paths?.map(path => path.when) ?? [])]),
+        ...(tree.graph?.edges.map(edge => edge.when) ?? [])]
         .flatMap(condition => condition?.clauses ?? []).filter(clause => clause.question === question.id).flatMap(clause => clause.values));
       return <div key={question.id} className="wconvert-journey-settings__question">
         <label>{__('Question', 'wconvert')}<input value={question.label} maxLength={200} onChange={event => change(question.id, node => ({ ...node, label: event.target.value }))} /></label>

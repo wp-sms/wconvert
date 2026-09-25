@@ -38,9 +38,12 @@ upgraded in a draft. Migration creates explicit default and answer edges from
 their current paths, plus a hidden edge to the next ordered screen wherever a
 show condition exists. It removes the old `paths` keys only after creating the
 graph, then persists stable edge IDs. The migration is checked against legacy
-visitor paths before the editor offers it. Publication of version 3 waits for
-the graph-specific capture and goal validation; a valid topology alone is not
-publishable.
+visitor paths before the editor offers it. Version 3 publication checks graph
+topology, field and consent ownership, submission boundaries, and goal-specific
+required paths; a valid topology alone is not publishable. A field or consent
+screen must appear on every path to its save point. Branch-only contact fields
+remain unsupported until the capture endpoint can verify which field screens
+were visited.
 
 React Flow is an admin view of this data, not the source of routing semantics.
 The Screens inventory and inspector must support every authoring action without

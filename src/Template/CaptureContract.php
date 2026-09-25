@@ -49,9 +49,10 @@ final class CaptureContract
         $template = self::template($config, $goal, $policyUrl);
         $tree = $template['tree'] ?? [];
         if (($tree['v'] ?? null) === 3) {
-            return JourneyGraph::issue($tree) ?? 'graph_capture';
+            if (($issue = GraphCaptureContract::issue($tree, $goal)) !== null) { return $issue; }
+        } else {
+            if (($issue = CaptureJourney::issue($tree)) !== null) { return $issue; }
         }
-        if (($issue = CaptureJourney::issue($tree)) !== null) { return $issue; }
         foreach ($tree['steps'] ?? [] as $step) {
             if (($step['kind'] ?? '') !== 'result') { continue; }
             foreach ($step['results'] ?? [] as $variant) {

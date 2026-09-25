@@ -7,9 +7,9 @@ import type { Template } from '@renderer/types';
 import { Preview } from './Preview';
 
 /** Pointer dragging supplements the same move operation used by the arrow buttons. */
-export function JourneyScreenCard({ template, index, selected, scope, label, condition, onSelect, onMove }: {
-  template: Template; index: number; selected: boolean; scope: string; label: string; condition?: string;
-  onSelect(): void; onMove(from: string, to: string): void;
+export function JourneyScreenCard({ template, index, ordinal, selected, scope, label, condition, onSelect, onMove }: {
+  template: Template; index: number; ordinal?: number; selected: boolean; scope: string; label: string; condition?: string;
+  onSelect(): void; onMove?(from: string, to: string): void;
 }) {
   const frame = useRef<HTMLDivElement>(null);
   const drawing = useRef<HTMLDivElement>(null);
@@ -29,12 +29,13 @@ export function JourneyScreenCard({ template, index, selected, scope, label, con
   const grip = useRef<HTMLSpanElement>(null);
   const latestMove = useRef(onMove);
   latestMove.current = onMove;
+  const movable = !!onMove;
   const [dragging, setDragging] = useState(false);
   const [over, setOver] = useState(false);
   const screen = template.tree.steps[index];
   const terminal = screen.kind === 'acknowledgement';
   useEffect(() => {
-    if (!card.current || !grip.current) return;
+    if (!card.current || !grip.current || !movable) return;
     return combine(
       draggable({ element: card.current, dragHandle: grip.current, canDrag: () => !terminal,
         getInitialData: () => ({ journey: scope, screen: screen.id }),
@@ -42,14 +43,14 @@ export function JourneyScreenCard({ template, index, selected, scope, label, con
       dropTargetForElements({ element: card.current,
         canDrop: ({ source }) => source.data.journey === scope && source.data.screen !== screen.id,
         onDragEnter: () => setOver(true), onDragLeave: () => setOver(false),
-        onDrop: ({ source }) => { setOver(false); latestMove.current(String(source.data.screen), screen.id); },
+        onDrop: ({ source }) => { setOver(false); latestMove.current?.(String(source.data.screen), screen.id); },
       }),
     );
-  }, [scope, screen.id, terminal]);
+  }, [scope, screen.id, terminal, movable]);
   return <li ref={card} className="wconvert-journey-card" data-selected={selected} data-dragging={dragging} data-drop-target={over}>
     <div className="wconvert-journey-card__head">
-      <span>{sprintf(__('Screen %d', 'wconvert'), index + 1)}</span>
-      <span ref={grip} className="wconvert-journey-card__grip" aria-hidden="true">{terminal ? __('Last', 'wconvert') : <GripVertical size={16} />}</span>
+      <span>{sprintf(__('Screen %d', 'wconvert'), ordinal ?? index + 1)}</span>
+      {onMove && <span ref={grip} className="wconvert-journey-card__grip" aria-hidden="true">{terminal ? __('Last', 'wconvert') : <GripVertical size={16} />}</span>}
     </div>
     <div ref={frame} className="wconvert-journey-card__preview" inert aria-hidden="true"><div ref={drawing} className="wconvert-journey-card__drawing" style={{ transform: `translateY(-50%) scale(${scale})` }}><Preview template={template} step={index} /></div></div>
     <button type="button" className="wconvert-journey-card__select" aria-pressed={selected} onClick={onSelect}>

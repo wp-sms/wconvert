@@ -59,10 +59,17 @@ JS/PHP traversal, structural validation, a v2 migration with path-parity checks,
 and an unordered multi-interest fixture. The visitor runtime, server answer
 capture, purpose detection, Try answers, and Test journey use that graph when
 present. Draft normalization preserves graph IDs and priority; v2 remains on its
-old evaluator. The v3 publish boundary deliberately rejects even a structurally
-valid graph until capture ownership, goal-specific required paths and the rest
-of publication validation are complete. The editor does not yet author v3
-connections, so this is an implementation slice, not prototype parity.
+old evaluator. The v3 publish boundary now checks capture ownership,
+goal-specific required paths, and result/question requirements. The editor can
+explicitly upgrade a v2 draft, insert on a named edge, and edit branch
+priority, fallback and hidden destinations without changing visitor routing
+through array order. The Screens inventory and map use a topological reading
+order. Safe one-destination graph deletion previews its reroute and supports
+Undo. This is still an implementation slice, not prototype parity: complex
+branch deletion, result-gate authoring, grouped follow-ups, browser scenario evidence,
+and precise readiness repair links remain open. The server currently requires
+field and consent screens to appear on every path to their save point because
+capture requests cannot otherwise prove a conditional field was visited.
 
 ## Verified gaps
 

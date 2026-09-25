@@ -6,6 +6,7 @@ import { registerPremiumJourneyRenderer } from '../../modules/journeys/loader/re
 import finder from '../../modules/journeys/templates/journey-product-finder.json';
 import service from '../../modules/journeys/templates/journey-service-enquiry.json';
 import guide from '../../modules/journeys/templates/journey-content-guide.json';
+import enquiryGraph from '../../../tests/fixtures/journey-graph-enquiry.json';
 import { showProducts } from '@loader/products';
 import { resultAccess } from '../../../resources/admin/src/builder/structure/journey';
 import { convertingActOf } from '../../../resources/admin/src/builder/structure/guards';
@@ -80,6 +81,28 @@ it('starts at the graph entry and submits after an unordered branch and merge', 
   journey.act('submit');
   await vi.waitFor(() => expect(fetcher).toHaveBeenCalledTimes(2));
   expect(JSON.parse(String(fetcher.mock.calls[1][1].body)).question_answers).toEqual({ n2: 'repair' });
+});
+
+it('keeps a relevant follow-up and contact draft after changing multiple interests', async () => {
+  const fetcher = vi.fn().mockResolvedValueOnce({ ok: true, json: async () => ({ grant: 'secret' }) })
+    .mockResolvedValueOnce({ ok: true, json: async () => ({ id: 'lead' }) });
+  vi.stubGlobal('fetch', fetcher);
+  const journey = setup({ ...(service as Template), tree: enquiryGraph as unknown as Template['tree'] });
+  journey.choose('garden'); journey.choose('balcony'); journey.act('next');
+  expect(journey.root().textContent).toContain('Garden size?');
+  journey.choose('small'); journey.act('next');
+  expect(journey.root().textContent).toContain('Balcony size?');
+  journey.choose('large'); journey.act('next');
+  journey.root().querySelector<HTMLInputElement>('[name="email"]')!.value = 'visitor@example.com';
+  journey.act('back'); journey.act('back'); journey.act('back');
+  journey.choose('garden'); journey.act('next');
+  expect(journey.root().textContent).toContain('Balcony size?');
+  expect(journey.root().querySelector<HTMLInputElement>('input[value="large"]')?.checked).toBe(true);
+  journey.act('next');
+  expect(journey.root().querySelector<HTMLInputElement>('[name="email"]')?.value).toBe('visitor@example.com');
+  journey.act('submit');
+  await vi.waitFor(() => expect(fetcher).toHaveBeenCalledTimes(2));
+  expect(JSON.parse(String(fetcher.mock.calls[1][1].body)).question_answers).toEqual({ n1: ['balcony'], n4: 'large' });
 });
 
 it('follows an explicit branch, rejoins capture, and clears a changed-away answer', async () => {

@@ -609,7 +609,7 @@ final class OptinController implements RestController
                 'products' => __('Connect WooCommerce, choose products for each matching result, and add a fallback link with a label to every result before publishing.', 'wconvert'),
                 'result_link' => __('Give each result link a label and destination before publishing.', 'wconvert'),
                 'routes' => __('In Manage screens, connect every screen with forward paths that rejoin before a signup or result. You can keep saving this Campaign as a draft.', 'wconvert'),
-                'graph_capture' => __('This graph journey can be saved as a draft, but its capture and goal checks are not ready for publishing yet.', 'wconvert'),
+                'capture_paths' => __('Every route to the ending must pass the required save or result screen. Review the connections in Manage screens.', 'wconvert'),
                 'conditions' => __('In Manage screens, choose an answer for every conditional screen and path before publishing. You can keep saving this Campaign as a draft.', 'wconvert'),
                 default => __('Complete the screen order, navigation and submission fields before publishing. You can keep saving this Campaign as a draft.', 'wconvert'),
             };

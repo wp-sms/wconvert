@@ -50,7 +50,7 @@ final class TemplateVocabularyTest extends TestCase
         self::assertArrayNotHasKey('onclick', $normalized['graph']['edges'][0]);
         self::assertSame($normalized['graph'], self::vocabulary()->withoutCopy($normalized)['graph']);
         self::assertNull(\WConvert\Template\JourneyGraph::issue($normalized));
-        self::assertSame('graph_capture', \WConvert\Template\CaptureContract::issue(['template' => ['tree' => $normalized]], 'get_enquiries', ''));
+        self::assertSame('navigation', \WConvert\Template\CaptureContract::issue(['template' => ['tree' => $normalized]], 'collect_enquiries', ''));
     }
 
     public function testAnUnknownNodeTypeIsDropped(): void

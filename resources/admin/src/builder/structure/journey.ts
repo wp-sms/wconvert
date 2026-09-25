@@ -1,5 +1,6 @@
 import { __, sprintf } from '@wordpress/i18n';
 import type { QuestionCondition, TemplateTree, TemplateNode, TemplateScreen } from '@renderer/types';
+import { graphReaches } from './graph';
 
 export function walkNodes(node: TemplateNode, includeHidden = true): TemplateNode[] {
   if (!includeHidden && 'hidden' in node && node.hidden) return [];
@@ -15,6 +16,7 @@ export function submissionScreen(tree: TemplateTree, id: string | undefined): nu
 }
 
 export function unreachableScreens(tree: TemplateTree): readonly string[] {
+  if (tree.graph) return tree.steps.filter(screen => !graphReaches(tree.graph!, tree.graph!.entry, screen.id)).map(screen => screen.name);
   const reached = new Set<string>();
   const visit = (index: number) => {
     const screen = tree.steps[index];
@@ -41,6 +43,9 @@ export function referencedJourney(tree: TemplateTree): TemplateTree {
     return n as unknown as TemplateNode;
   };
   const steps = tree.steps.map(s => ({ ...s, content: identify(s.content) }));
+  // Graph submissions have explicit ownership. Inferring it from storage order
+  // would quietly change the capture payload when a merchant moves a card.
+  if (tree.graph) return { ...tree, steps };
   let start = 0;
   const submissions = tree.submissions.map(sub => {
     const end = steps.findIndex(s => walkNodes(s.content).some(n => n.type === 'button' && 'action' in n && n.action === 'submit' && 'submission' in n && n.submission === sub.id));
@@ -112,7 +117,8 @@ export function freshScreen(tree: TemplateTree, kind: 'content' | 'input'): Temp
 export function usedBy(tree: TemplateTree, questionId: string): string[] {
   return tree.steps.filter(screen => screen.when?.clauses.some(clause => clause.question === questionId)
     || screen.results?.some(result => result.when?.clauses.some(clause => clause.question === questionId))
-    || screen.paths?.some(path => path.when?.clauses.some(clause => clause.question === questionId))).map(screen => screen.id);
+    || screen.paths?.some(path => path.when?.clauses.some(clause => clause.question === questionId))
+    || tree.graph?.edges.some(edge => edge.from === screen.id && edge.when?.clauses.some(clause => clause.question === questionId))).map(screen => screen.id);
 }
 
 /** Replace a referenced choice everywhere in one undoable draft edit. IDs and rule order stay stable. */
@@ -129,7 +135,8 @@ export function replaceAnswer(tree: TemplateTree, questionId: string, removed: s
     for (const key of ['children', 'start', 'end']) if (Array.isArray(copy[key])) copy[key] = (copy[key] as TemplateNode[]).map(content);
     return copy as TemplateNode;
   };
-  return { ...tree, steps: tree.steps.map(screen => ({ ...screen, content: content(screen.content), when: condition(screen.when),
+  return { ...tree, graph: tree.graph && { ...tree.graph, edges: tree.graph.edges.map(edge => ({ ...edge, when: condition(edge.when) })) },
+    steps: tree.steps.map(screen => ({ ...screen, content: content(screen.content), when: condition(screen.when),
     paths: screen.paths?.map(path => ({ ...path, when: condition(path.when) })),
     results: screen.results?.map(result => ({ ...result, when: condition(result.when) })) })) };
 }
