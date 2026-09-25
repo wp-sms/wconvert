@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import fixture from '../fixtures/journey-rules.json';
 import paths from '../fixtures/journey-paths.json';
 import type { TemplateScreen } from '@renderer/types';
-import { activeAnswers, chooseResult, journeyPath, matches, visibleScreens, type Answers } from '@loader/journey-rules';
+import { activeAnswers, chooseResult, journeyPath, journeyTrace, matches, visibleScreens, type Answers } from '@loader/journey-rules';
 
 const steps = fixture.steps as TemplateScreen[];
 
@@ -46,5 +46,19 @@ describe('forward paths', () => {
     steps[1] = { ...steps[1], paths: [{ to: 'contact' }] };
     expect(visibleScreens(steps, { q_interest: ['indoors'], q_indoor: 'bright' }).map(screen => screen.id))
       .toEqual(['interests', 'indoors', 'contact', 'received']);
+  });
+
+  it('records the chosen branch and distinguishes bypassed screens from failed conditions', () => {
+    const steps = structuredClone(paths.steps) as TemplateScreen[];
+    const condition = (value: string) => ({ match: 'all' as const, clauses: [{ question: 'q_interest', operator: 'includes_any' as const, values: [value] }] });
+    steps[0] = { ...steps[0], paths: [{ to: 'indoors', when: condition('indoors') }, { to: 'garden', when: condition('garden') }, { to: 'contact' }] };
+    const trace = journeyTrace(steps, { q_interest: ['garden', 'indoors'], q_indoor: 'bright' });
+    expect(trace.indices.map(index => steps[index].id)).toEqual(['interests', 'indoors', 'contact', 'received']);
+    expect(trace.decisions[0]).toEqual({ from: 0, to: 2, kind: 'route', priority: 0 });
+    expect(trace.skips).toContainEqual({ index: 1, reason: 'route', from: 0, to: 2 });
+    expect(trace.answers).toEqual({ q_interest: ['garden', 'indoors'], q_indoor: 'bright' });
+    const noAnswer = journeyTrace(paths.steps as TemplateScreen[], { q_interest: [] });
+    expect(noAnswer.skips).toContainEqual({ index: 1, reason: 'condition', missingQuestions: ['q_interest'] });
+    expect(noAnswer.skips).toContainEqual({ index: 2, reason: 'condition', missingQuestions: ['q_interest'] });
   });
 });

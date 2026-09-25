@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
-import { activeAnswers, chooseResult, journeyPath, matches, type Answers } from '../../../loader/src/journey-rules';
+import { activeAnswers, chooseResult, journeyTrace, type Answers } from '../../../loader/src/journey-rules';
 import type { QuestionNode, TemplateTree } from '@renderer/types';
 import { submissionScreen, walkNodes } from './structure/journey';
 
@@ -14,10 +14,26 @@ export function JourneySample({ tree, onTrace, onSelect, onClose }: {
     .filter((node): node is IdentifiedQuestion => node.type === 'question' && 'id' in node && typeof node.id === 'string' && node.answer_type !== 'text')
     .map(question => [question.id, question.answer_type === 'multi' ? [question.options?.[0]?.value].filter((value): value is string => !!value) : question.options?.[0]?.value ?? ''])));
   const [skippedSignups, setSkippedSignups] = useState<readonly string[]>([]);
-  const path = useMemo(() => journeyPath(tree.steps, answers), [tree.steps, answers]);
+  const path = useMemo(() => journeyTrace(tree.steps, answers), [tree.steps, answers]);
   useEffect(() => onTrace(path.indices), [onTrace, path]);
   const questions = path.indices.flatMap(index => walkNodes(tree.steps[index].content))
     .filter((node): node is IdentifiedQuestion => node.type === 'question' && 'id' in node && typeof node.id === 'string');
+  const allQuestions = tree.steps.flatMap((screen, index) => walkNodes(screen.content)
+    .filter((node): node is IdentifiedQuestion => node.type === 'question' && 'id' in node && typeof node.id === 'string')
+    .map(question => ({ question, index })));
+  const skippedReason = (index: number): string => {
+    const skip = path.skips.find(item => item.index === index);
+    if (skip?.reason === 'route' && skip.from !== undefined && skip.to !== undefined) return sprintf(
+      __('%1$s went directly to %2$s on a different path.', 'wconvert'), tree.steps[skip.from].name, tree.steps[skip.to].name);
+    const missing = skip?.missingQuestions?.[0];
+    if (missing) {
+      const source = allQuestions.find(item => item.question.id === missing);
+      if (source) return path.indices.includes(source.index)
+        ? sprintf(__('No answer was given to “%s”.', 'wconvert'), source.question.label)
+        : sprintf(__('“%s” was not asked on this path.', 'wconvert'), source.question.label);
+    }
+    return __('Its show condition did not match.', 'wconvert');
+  };
   const submitted = tree.submissions.filter(sub => path.indices.includes(submissionScreen(tree, sub.id)) && !skippedSignups.includes(sub.id));
   const result = path.indices.map(index => tree.steps[index]).find(screen => screen.kind === 'result');
   const selectedResult = result ? chooseResult(result.results ?? [], path.answers) : undefined;
@@ -55,15 +71,14 @@ export function JourneySample({ tree, onTrace, onSelect, onClose }: {
           </select></label>}</li>;
       })}</ol>
       {tree.steps.some((_, index) => !path.indices.includes(index)) && <div className="wconvert-journey-sample__skipped"><h4>{__('Skipped for these answers', 'wconvert')}</h4>
-        {tree.steps.map((screen, index) => !path.indices.includes(index) ? <p key={screen.id}><strong>{screen.name}</strong><small>{screen.when && !matches(screen.when, path.answers)
-          ? __('Its show condition did not match.', 'wconvert') : __('A different path was taken.', 'wconvert')}</small></p> : null)}
+        {tree.steps.map((screen, index) => !path.indices.includes(index) ? <p key={screen.id}><strong>{screen.name}</strong><small>{skippedReason(index)}</small></p> : null)}
       </div>}
-      {path.indices.flatMap(index => {
-        const screen = tree.steps[index];
-        if (!screen.paths || screen.paths.length < 2) return [];
-        const choice = screen.paths.findIndex(route => matches(route.when, path.answers));
+      {path.decisions.flatMap(decision => {
+        const screen = tree.steps[decision.from];
+        if (decision.kind !== 'route' || !screen.paths || screen.paths.length < 2) return [];
         return [<p className="wconvert-journey-sample__decision" key={screen.id}>
-          {sprintf(__('%1$s: %2$s path wins; later matches are ignored.', 'wconvert'), screen.name, choice === screen.paths.length - 1 ? __('Everyone else', 'wconvert') : String(choice + 1))}</p>];
+          {sprintf(__('%1$s: %2$s path wins; later matches are ignored.', 'wconvert'), screen.name,
+            decision.priority === screen.paths.length - 1 ? __('Everyone else', 'wconvert') : String((decision.priority ?? 0) + 1))}</p>];
       })}
       {selectedResult && <p className="wconvert-journey-sample__result">{sprintf(__('Result shown: %s', 'wconvert'), selectedResult.heading)}</p>}
       <div className="wconvert-journey-sample__outcome"><strong>{sprintf(_n('%d simulated submission', '%d simulated submissions', submitted.length, 'wconvert'), submitted.length)}</strong>

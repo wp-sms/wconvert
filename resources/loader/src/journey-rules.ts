@@ -5,6 +5,9 @@ export interface Clause { readonly question: string; readonly operator: 'is' | '
 export interface Condition { readonly match: 'all' | 'any'; readonly clauses: readonly Clause[]; }
 
 export interface JourneyPath { readonly indices: readonly number[]; readonly answers: Answers; }
+export interface JourneyDecision { readonly from: number; readonly to: number; readonly kind: 'route' | 'continue' | 'hidden'; readonly priority?: number; }
+export interface JourneySkip { readonly index: number; readonly reason: 'condition' | 'route'; readonly from?: number; readonly to?: number; readonly missingQuestions?: readonly string[]; }
+export interface JourneyTrace extends JourneyPath { readonly decisions: readonly JourneyDecision[]; readonly skips: readonly JourneySkip[]; }
 
 /** A blank source makes even a negative comparison false. */
 export function matches(condition: Condition | undefined, answers: Answers): boolean {
@@ -20,10 +23,13 @@ export function matches(condition: Condition | undefined, answers: Answers): boo
   return condition.match === 'any' ? evaluated.some(Boolean) : evaluated.every(Boolean);
 }
 
-/** Resolve a forward journey. Explicit routes have visible, first-match priority. */
-export function journeyPath(steps: readonly TemplateScreen[], answers: Answers): JourneyPath {
+/** Resolve the visitor's route once, retaining the reason for each bypass. */
+export function journeyTrace(steps: readonly TemplateScreen[], answers: Answers): JourneyTrace {
   const active: Answers = {};
   const indices: number[] = [];
+  const decisions: JourneyDecision[] = [];
+  const skips: JourneySkip[] = [];
+  const positions = new Map(steps.map((step, index) => [step.id, index]));
   let at = 0;
   while (at < steps.length) {
     const step = steps[at];
@@ -39,13 +45,29 @@ export function journeyPath(steps: readonly TemplateScreen[], answers: Answers):
         const layout = question as { children?: typeof nodes; start?: typeof nodes; end?: typeof nodes };
         nodes.push(...(layout.children ?? []), ...(layout.start ?? []), ...(layout.end ?? []));
       }
+    } else {
+      const missingQuestions = step.when?.clauses.filter(clause => {
+        const value = active[clause.question];
+        return value === undefined || value === '' || Array.isArray(value) && !value.length;
+      }).map(clause => clause.question) ?? [];
+      skips.push({ index: at, reason: 'condition', ...(missingQuestions.length ? { missingQuestions } : {}) });
     }
-    const route = shown ? step.paths?.find(path => matches(path.when, active)) : undefined;
-    const target = route ? steps.findIndex(candidate => candidate.id === route.to) : at + 1;
+    const priority = shown ? step.paths?.findIndex(path => matches(path.when, active)) ?? -1 : -1;
+    const route = priority >= 0 ? step.paths?.[priority] : undefined;
+    const target = route ? positions.get(route.to) ?? at + 1 : at + 1;
     // Publication rejects missing and backward routes. The guard also keeps
     // a malformed cached payload from trapping a visitor in a loop.
-    at = target > at ? target : at + 1;
+    const next = target > at ? target : at + 1;
+    if (next < steps.length) decisions.push({ from: at, to: next, kind: shown ? route ? 'route' : 'continue' : 'hidden', ...(route ? { priority } : {}) });
+    if (shown && route) for (let bypassed = at + 1; bypassed < next; bypassed++) skips.push({ index: bypassed, reason: 'route', from: at, to: next });
+    at = next;
   }
+  return { indices, answers: active, decisions, skips };
+}
+
+/** Resolve a forward journey. Explicit routes have visible, first-match priority. */
+export function journeyPath(steps: readonly TemplateScreen[], answers: Answers): JourneyPath {
+  const { indices, answers: active } = journeyTrace(steps, answers);
   return { indices, answers: active };
 }
 

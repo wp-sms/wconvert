@@ -65,4 +65,22 @@ final class JourneyRulesTest extends TestCase
         $condition['clauses'][0]['operator'] = 'is';
         self::assertNull(JourneyRules::normalize($condition));
     }
+
+    public function testTraceNamesTheWinningRouteAndWhyScreensWereSkipped(): void
+    {
+        $fixture = json_decode((string) file_get_contents(dirname(__DIR__, 2) . '/fixtures/journey-paths.json'), true);
+        $steps = $fixture['steps'];
+        $condition = static fn (string $answer): array => ['match' => 'all', 'clauses' => [[
+            'question' => 'q_interest', 'operator' => 'includes_any', 'values' => [$answer],
+        ]]];
+        $steps[0]['paths'] = [['to' => 'indoors', 'when' => $condition('indoors')], ['to' => 'garden', 'when' => $condition('garden')], ['to' => 'contact']];
+        $trace = JourneyRules::trace($steps, ['q_interest' => ['garden', 'indoors'], 'q_indoor' => 'bright']);
+        self::assertSame(['interests', 'indoors', 'contact', 'received'], array_map(static fn (int $at): string => $steps[$at]['id'], $trace['indices']));
+        self::assertSame(['from' => 0, 'to' => 2, 'kind' => 'route', 'priority' => 0], $trace['decisions'][0]);
+        self::assertContains(['index' => 1, 'reason' => 'route', 'from' => 0, 'to' => 2], $trace['skips']);
+        self::assertSame(['q_interest' => ['garden', 'indoors'], 'q_indoor' => 'bright'], $trace['answers']);
+        $withoutAnswer = JourneyRules::trace($fixture['steps'], ['q_interest' => []]);
+        self::assertContains(['index' => 1, 'reason' => 'condition', 'missingQuestions' => ['q_interest']], $withoutAnswer['skips']);
+        self::assertContains(['index' => 2, 'reason' => 'condition', 'missingQuestions' => ['q_interest']], $withoutAnswer['skips']);
+    }
 }

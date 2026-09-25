@@ -65,8 +65,20 @@ final class JourneyRules
      */
     public static function path(array $steps, array $answers): array
     {
+        $trace = self::trace($steps, $answers);
+        return ['indices' => $trace['indices'], 'answers' => $trace['answers']];
+    }
+
+    /** @param list<array<string, mixed>> $steps
+     * @param array<string, string|list<string>> $answers
+     * @return array{indices: list<int>, answers: array<string, string|list<string>>, decisions: list<array<string, int|string>>, skips: list<array<string, mixed>>}
+     */
+    public static function trace(array $steps, array $answers): array
+    {
         $active = [];
         $indices = [];
+        $decisions = [];
+        $skips = [];
         $positions = array_flip(array_column($steps, 'id'));
         for ($at = 0; $at < count($steps);) {
             $step = $steps[$at];
@@ -78,17 +90,36 @@ final class JourneyRules
                         $active[$node['id']] = $answers[$node['id']];
                     }
                 }
+            } else {
+                $missing = [];
+                foreach ($step['when']['clauses'] ?? [] as $clause) {
+                    $value = $active[$clause['question']] ?? null;
+                    if ($value === null || $value === '' || $value === []) { $missing[] = $clause['question']; }
+                }
+                $skips[] = ['index' => $at, 'reason' => 'condition'] + ($missing !== [] ? ['missingQuestions' => $missing] : []);
             }
             $target = $at + 1;
-            foreach ($shown ? ($step['paths'] ?? []) : [] as $route) {
+            $priority = null;
+            foreach ($shown ? ($step['paths'] ?? []) : [] as $index => $route) {
                 if (self::matches($route['when'] ?? null, $active)) {
                     $target = $positions[$route['to'] ?? ''] ?? $target;
+                    $priority = $index;
                     break;
                 }
             }
-            $at = $target > $at ? $target : $at + 1;
+            $next = $target > $at ? $target : $at + 1;
+            if ($next < count($steps)) {
+                $decisions[] = ['from' => $at, 'to' => $next, 'kind' => !$shown ? 'hidden' : ($priority !== null ? 'route' : 'continue')]
+                    + ($priority !== null ? ['priority' => $priority] : []);
+            }
+            if ($shown && $priority !== null) {
+                for ($bypassed = $at + 1; $bypassed < $next; $bypassed++) {
+                    $skips[] = ['index' => $bypassed, 'reason' => 'route', 'from' => $at, 'to' => $next];
+                }
+            }
+            $at = $next;
         }
-        return ['indices' => $indices, 'answers' => $active];
+        return ['indices' => $indices, 'answers' => $active, 'decisions' => $decisions, 'skips' => $skips];
     }
 
     /** @param list<array<string, mixed>> $variants

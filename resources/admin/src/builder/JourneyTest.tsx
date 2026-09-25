@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import { mount } from '@renderer/mount';
 import type { Template, TemplateNode } from '@renderer/types';
-import { activeAnswers, chooseResult, journeyPath, type Answers } from '../../../loader/src/journey-rules';
+import { activeAnswers, chooseResult, journeyPath, journeyTrace, type Answers } from '../../../loader/src/journey-rules';
 import { walkNodes } from './structure/journey';
 
 /** The real renderer, with in-memory answers and no capture or analytics calls. */
@@ -20,11 +20,9 @@ export function JourneyTest({ template, onEdit }: { template: Template; onEdit(s
   const failNextRef = useRef(false);
   const [feedback, setFeedback] = useState('');
   const tree = template.tree;
-  const active = useMemo(() => activeAnswers(tree.steps, answers), [tree.steps, answers]);
-  const applicable = useMemo(() => {
-    const inPath = new Set(journeyPath(tree.steps, answers).indices);
-    return tree.steps.map((_, index) => inPath.has(index));
-  }, [tree.steps, answers]);
+  const trace = useMemo(() => journeyTrace(tree.steps, answers), [tree.steps, answers]);
+  const active = trace.answers;
+  const applicable = tree.steps.map((_, index) => trace.indices.includes(index));
   const shownResult = tree.steps[step].kind === 'result' ? chooseResult(tree.steps[step].results ?? [], active) : undefined;
   const move = useCallback((direction: 1 | -1, current: Answers) => {
     const inPath = activeAnswers(tree.steps, current);
@@ -160,7 +158,9 @@ export function JourneyTest({ template, onEdit }: { template: Template; onEdit(s
     <div className="wconvert-journey-test__side">
       <h3>{__('Path summary', 'wconvert')}</h3>
       <ol>{tree.steps.map((screen, at) => <li key={screen.id} data-current={at === step}>
-        <span>{screen.name}</span><small>{applicable[at] ? visited.includes(at) ? __('Visited', 'wconvert') : __('Included', 'wconvert') : __('Skipped by condition', 'wconvert')}</small>
+        <span>{screen.name}</span><small>{applicable[at] ? visited.includes(at) ? __('Visited', 'wconvert') : __('Included', 'wconvert')
+          : trace.skips.find(skip => skip.index === at)?.reason === 'route' ? __('Bypassed by another path', 'wconvert')
+            : __('Show condition did not match', 'wconvert')}</small>
         {!applicable[at] && <button type="button" onClick={() => onEdit(at)}>{__('Edit condition', 'wconvert')}</button>}
       </li>)}</ol>
       {shownResult && <p className="wconvert-journey-test__result">{sprintf(__('Result shown: %s', 'wconvert'), shownResult.heading)}</p>}

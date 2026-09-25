@@ -48,6 +48,12 @@ check exposed and fixed a narrow modal and internal submission IDs in its
 summary. These improvements are slices of the release work, not a claim that
 the graph contract, path-sensitive validation, or full prototype parity is done.
 
+The next slice added route and skip decisions to the shared JS/PHP evaluator.
+Try answers now explains whether a screen was bypassed by a winning branch or
+hidden by its own condition; Test journey labels that distinction too. This
+trace still uses the ordered v2 journey model and does not yet identify stable
+edge IDs or capture boundaries. Those remain part of the graph-contract work.
+
 ## Verified gaps
 
 “Current” below means source inspection of PR #190 plus a real WordPress browser
