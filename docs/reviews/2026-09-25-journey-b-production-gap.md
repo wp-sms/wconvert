@@ -35,8 +35,8 @@ again or turn conditional follow-ups into mutually exclusive branches.
 
 ## Verified gaps
 
-“Current” below means source inspection of PR #190, with limited WordPress smoke
-testing from the implementation turn. “B” means prototype behavior, which used
+“Current” below means source inspection of PR #190 plus a real WordPress browser
+walkthrough on the local Pro build. “B” means prototype behavior, which used
 simulated submissions and delivery. A gap is not proof of an observed visitor bug
 unless stated as such.
 
@@ -51,9 +51,9 @@ unless stated as such.
 | Full preview | `JourneyTest` uses the real renderer, but Submit/Skip just advances. It has no accepted-submission ledger, failed-save/retry state or destination outcome. It stores only question answers; remounting can discard a typed contact draft on Back. | A test session runs the actual navigation semantics without network writes, keeps unsaved drafts, freezes accepted snapshots, and explains that provider delivery is queued/failed separately from local save. | P0 |
 | Back after acceptance | The live runtime locks accepted fields and question IDs; the preview does not model that boundary. | Back reviews accepted data read-only; no replacement or duplicate Lead. Answers after the accepted boundary remain editable. | P0 |
 | Publish validation | Readiness catches structural route problems but has no end-to-end scenario evidence, precise clause/edge repair path, shadowed-rule warning, or path-sensitive capture proof. | Link every blocking issue to a field/edge; warn on redundant priority; offer representative walkthroughs as evidence, not a mandatory publish checklist. | P0/P1 |
-| Map overview | The Journey tab opens with the first inspector already occupying the right side. Conditional follow-ups remain separate nodes, with no overview group. | Start at a quiet overview; group repeated independent follow-ups without changing semantics; open inspector on selection. Ensure grouping can be expanded and navigated by keyboard. | P1 |
-| Context and saving | Display and Destination summaries are campaign-wide text above the map. An individual capture card does not show its actual save/handoff; two submissions are hard to distinguish. | Show trigger/eligibility and destination context near the relevant handoff, with links to actual sections. Differentiate saved request, queued delivery, result completion and optional signup. | P1 |
-| Authoring affordances | New connection can create an empty answer condition, then opens path settings. Insertion lives in the inspector. “Screens in visitor order” implies a sequence that branch visitors will not follow. | Offer clear intent before connecting; put insert action on the specific path; show exact rule priority/fallback; call the list an inventory and avoid misleading ordinal itinerary labels. | P1 |
+| Map overview | This branch now opens the Journey tab on a full-width map and opens the inspector on selection. It does not group independent follow-ups; a five-screen modal needs horizontal panning for later screens. | Group repeated independent follow-ups without changing semantics; keep the expanded group navigable by keyboard. | P1 |
+| Context and saving | The Journey summary now reuses the Display rules wording, and capture cards say where details are saved with a link to Destinations. The map still cannot distinguish accepted save from queued delivery or trace separate submissions. | Differentiate saved request, queued delivery, result completion and optional signup at the exact handoff. | P1 |
+| Authoring affordances | New connection can create an empty answer condition, then opens path settings. Insertion lives in the inspector. The Screens list now calls itself an inventory, and Add screen names its actual insertion point. | Offer clear intent before connecting; put insert action on the specific path; show exact rule priority/fallback. | P1 |
 | Rule repair | Referenced answer replacement exists, but discovery remains mostly through selected settings. | Direct “Used by” links, exact clause focus, impact preview for reroute/delete, and one named undo action for structural edits. | P1 |
 | Screen preview | The current map offers text previews; B offers per-screen preview from the card and full path preview. | Separate “Preview screen” from “Test journey” in labels and controls; render the selected screen at realistic viewport sizes. | P1 |
 | Canvas state | Map layout is recalculated from the ordered graph and drag positions are local to the mounted tab. Sample path styles leave edges visually present regardless of whether they were traversed. | Persist or deterministically restore layout independent of routing; highlight actual traversed edges; preserve viewport/selection across tab changes; keep drag smooth. | P1 |
@@ -66,6 +66,38 @@ The code evidence is concentrated in `resources/loader/src/journey-rules.ts`,
 `JourneyEditor.tsx`, `JourneyMap.tsx`, `JourneySample.tsx`, `JourneyTest.tsx`,
 `JourneySettings.tsx`, and `ReadinessDialog.tsx`. The prototype's [evaluation](../../tools/design-system/editor-prototype/flow-prototype/EVALUATION.md)
 is engineering evidence, not a merchant study.
+
+## Browser walkthrough, September 25
+
+The local WordPress campaign **Reveal a welcome discount** remained a saved,
+two-screen draft throughout the walkthrough. Its Display rules said **after 12
+seconds on the page**, while the Journey tab initially said **Automatic
+trigger**. The Journey summary now uses the same rule sentence. Before the
+map-first change, its inspector occupied 35% of the canvas at entry; after the
+change the two-screen map opens full-width, the capture card names the save
+point, and the instruction sits above rather than on top of that card. The
+Add screen menu had said **After Details** but inserted a question **before
+Details**; it now states the actual insertion location. No campaign change was
+saved or published during this check.
+
+In the isolated five-screen comparison fixture, the former fit-all camera
+made the nodes illegibly small inside Manage screens. The camera now starts
+with the first two screens at readable size; later screens require scrolling
+or **Fit journey**. The inspector can be closed to return to the overview.
+The production Test journey still advances straight from a simulated submit
+to its ending without a save ledger, unlike B's preview. Readiness checks
+structural errors but does not present a route and capture walkthrough.
+
+B's **Multiple interests** scenario was walked through with garden and balcony
+selected, then Back to deselect garden. Both relevant questions appeared
+before one combined enquiry; the garden answer was removed, the balcony answer
+and contact draft persisted, and a simulated save failure kept the form.
+The **Find your coffee** scenario showed a result before any contact details;
+choosing **No thanks** at optional email signup ended the journey with no
+simulated submission. Its result preview also offers product-unavailable and
+loading-failed states. B's Add screen dialog initially clipped its action below
+the viewport; it now has a scrollable form and a visible footer action. These
+are prototype observations, not claims about the production visitor runtime.
 
 ## Scenario contract before more visual polishing
 

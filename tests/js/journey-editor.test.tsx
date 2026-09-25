@@ -109,7 +109,7 @@ it('keeps management off the canvas and restores focus after choosing a screen t
   await user.click(trigger);
   const dialog = screen.getByRole('dialog', { name: 'Manage screens' });
   await user.click(within(dialog).getByRole('button', { name: 'Screens' }));
-  const cards = within(dialog).getByRole('list', { name: 'Screens in visitor order' });
+  const cards = within(dialog).getByRole('list', { name: 'Journey screen inventory' });
   await user.click(within(cards).getAllByRole('button')[1]);
   expect(screen.getByLabelText('Screen name')).toHaveValue(source.tree.steps[1].name);
   await user.click(screen.getByRole('button', { name: 'Screen actions' }));
@@ -118,6 +118,18 @@ it('keeps management off the canvas and restores focus after choosing a screen t
   await user.click(screen.getByRole('button', { name: 'Edit design' }));
   expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   expect(trigger).toHaveFocus();
+});
+
+it('starts the embedded journey with a readable overview and can return to it after editing', async () => {
+  const user = userEvent.setup();
+  render(<JourneyEditor embedded tree={source.tree as TemplateTree} step={0} onChange={() => {}} onSelect={() => {}} />);
+  expect(screen.getByLabelText('Journey map')).toBeInTheDocument();
+  expect(screen.queryByLabelText('Selected screen settings')).not.toBeInTheDocument();
+  await user.click(screen.getByRole('button', { name: 'Screens' }));
+  expect(screen.getByLabelText('Selected screen settings')).toBeInTheDocument();
+  await user.click(screen.getByRole('button', { name: 'Close screen settings' }));
+  expect(screen.getByLabelText('Journey map')).toBeInTheDocument();
+  expect(screen.queryByLabelText('Selected screen settings')).not.toBeInTheDocument();
 });
 
 it('opens on the flow and creates an ordered answer path through the inspector', async () => {
@@ -311,7 +323,7 @@ it('shows readable screen conditions and edits one result at a time', async () =
   render(<Editor initial={initial} />);
   await user.click(screen.getByRole('button', { name: 'Manage screens' }));
   await user.click(screen.getByRole('button', { name: 'Screens' }));
-  const cards = screen.getByRole('list', { name: 'Screens in visitor order' });
+  const cards = screen.getByRole('list', { name: 'Journey screen inventory' });
   expect(within(cards).getByRole('button', { name: /Garden size.*Show if Project\? is Garden/ })).toBeInTheDocument();
   await user.click(within(cards).getByRole('button', { name: /Result Shows a selected result/ }));
   const results = screen.getByRole('tablist', { name: 'Possible results' });
@@ -341,7 +353,7 @@ it('warns when two matching results can receive the same answer', async () => {
   render(<Editor initial={tree} />);
   await user.click(screen.getByRole('button', { name: 'Manage screens' }));
   await user.click(screen.getByRole('button', { name: 'Screens' }));
-  await user.click(screen.getByRole('list', { name: 'Screens in visitor order' }).querySelectorAll('button')[3]);
+  await user.click(screen.getByRole('list', { name: 'Journey screen inventory' }).querySelectorAll('button')[3]);
   expect(screen.getByText(/may match the same answers/)).toBeInTheDocument();
   await user.click(within(screen.getByRole('tablist', { name: 'Possible results' })).getByRole('tab', { name: /More garden ideas/ }));
   await user.click(screen.getByRole('button', { name: 'Move earlier' }));

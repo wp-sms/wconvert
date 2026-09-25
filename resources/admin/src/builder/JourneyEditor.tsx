@@ -26,6 +26,7 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
   const [view, setView] = useState<'flow' | 'screens'>('flow');
   const [query, setQuery] = useState('');
   const [sampleOpen, setSampleOpen] = useState(false);
+  const [inspecting, setInspecting] = useState(!embedded);
   const [samplePath, setSamplePath] = useState<readonly number[] | null>(null);
   const [panelSection, setPanelSection] = useState<'content' | 'paths'>('content');
   const [mobilePane, setMobilePane] = useState<'map' | 'details'>('map');
@@ -37,7 +38,7 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
   const screenList = useRef<HTMLOListElement>(null);
   const selectedId = useRef(tree.steps[step]?.id);
   const previousTree = useRef(tree);
-  const select = (index: number) => { selectedId.current = tree.steps[index]?.id; setSampleOpen(false); setPanelSection('content'); setPathFocus(null); setMobilePane('details'); onSelect(index); };
+  const select = (index: number) => { selectedId.current = tree.steps[index]?.id; setInspecting(true); setSampleOpen(false); setPanelSection('content'); setPathFocus(null); setMobilePane('details'); onSelect(index); };
   useEffect(() => {
     if (previousTree.current !== tree) {
       const index = tree.steps.findIndex(screen => screen.id === selectedId.current);
@@ -51,7 +52,7 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
   if (!current) return null;
   const canCondition = tree.steps.slice(0, step + 1).some(screen => walkNodes(screen.content).some(node => node.type === 'question' && 'answer_type' in node && node.answer_type !== 'text'));
   const matches = tree.steps.map((screen, index) => ({ screen, index })).filter(item => item.screen.name.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase()));
-  const write = (next: TemplateTree, index: number) => { selectedId.current = next.steps[index]?.id; onChange(referencedJourney(next)); onSelect(index); };
+  const write = (next: TemplateTree, index: number) => { selectedId.current = next.steps[index]?.id; setInspecting(true); onChange(referencedJourney(next)); onSelect(index); };
   const move = (from: number, to: number) => {
     const next = movedScreen(tree, from, to);
     if (next === tree) { setSaid(__('Keep the main signup before the optional signup, and the thank-you screen last.', 'wconvert')); return; }
@@ -165,6 +166,12 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
     setSaid(__('Screen removed. Undo brings it back.', 'wconvert'));
   };
   const submission = saving(step);
+  const boundary = tree.steps.findIndex(s => s.kind === 'result' || walkNodes(s.content).some(n => 'action' in n && n.action === 'submit'));
+  const insertionAt = Math.min(step + 1, boundary < 0 ? tree.steps.length - 1 : boundary);
+  const insertionLabel = insertionAt <= step
+    ? sprintf(__('Before %s', 'wconvert'), tree.steps[insertionAt].name)
+    : sprintf(__('After %s', 'wconvert'), current.name);
+  const panelOpen = sampleOpen || inspecting;
   const connect = (source: string, target: string) => {
     const from = tree.steps.findIndex(screen => screen.id === source);
     if (from < 0) return;
@@ -202,12 +209,15 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
                 <Button type="button" size="sm" variant="outline"><Plus aria-hidden="true" />{__('Add screen', 'wconvert')}<ChevronDown aria-hidden="true" /></Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuLabel>{step === tree.steps.length - 1 ? sprintf(__('Before %s', 'wconvert'), current.name) : sprintf(__('After %s', 'wconvert'), current.name)}</DropdownMenuLabel>
+                <DropdownMenuLabel>{insertionLabel}</DropdownMenuLabel>
                 <DropdownMenuItem disabled={tree.steps.length >= 7} onSelect={() => add('content')}><FilePlus2 aria-hidden="true" />{__('Add offer screen', 'wconvert')}</DropdownMenuItem>
                 <DropdownMenuItem disabled={tree.steps.length >= 7} onSelect={() => add('input')}><ListPlus aria-hidden="true" />{__('Add question screen', 'wconvert')}</DropdownMenuItem>
                 <DropdownMenuItem disabled={tree.steps.length >= 7 || !canCondition} onSelect={() => add('input', true)}><ListPlus aria-hidden="true" />{__('Add relevant follow-up', 'wconvert')}</DropdownMenuItem>
                 {(primaryChannel && tree.submissions.length === 1 || tree.submissions.length === 0 && tree.steps.some(s => s.kind === 'result')) && <>
                   <DropdownMenuSeparator />
+                  <DropdownMenuLabel>{tree.submissions.length === 0
+                    ? __('After the result', 'wconvert')
+                    : sprintf(__('Before %s', 'wconvert'), tree.steps[tree.steps.length - 1].name)}</DropdownMenuLabel>
                   <DropdownMenuItem disabled={tree.steps.length >= (tree.submissions.length === 0 ? 6 : 7)} onSelect={addOptional}><Plus aria-hidden="true" />{__('Add optional signup', 'wconvert')}</DropdownMenuItem>
                 </>}
               </DropdownMenuContent>
@@ -217,7 +227,7 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
         </div>
         <div className="wconvert-journey-view" role="group" aria-label={__('Journey view', 'wconvert')}>
           <button type="button" aria-pressed={view === 'flow'} onClick={() => { setView('flow'); setMobilePane('map'); }}>{__('Flow', 'wconvert')}</button>
-          <button type="button" aria-pressed={view === 'screens'} onClick={() => { setView('screens'); setMobilePane('map'); }}>{__('Screens', 'wconvert')}</button>
+          <button type="button" aria-pressed={view === 'screens'} onClick={() => { setView('screens'); setInspecting(true); setMobilePane('map'); }}>{__('Screens', 'wconvert')}</button>
           <div className="wconvert-journey-find"><label><Search aria-hidden="true" /><span className="sr-only">{__('Find a screen', 'wconvert')}</span><input type="search" value={query} placeholder={__('Find a screen…', 'wconvert')} onChange={event => setQuery(event.target.value)} /></label>
             {query.trim() && <div className="wconvert-journey-find__results" role="group" aria-label={__('Matching screens', 'wconvert')}>
               {matches.length ? matches.map(({ screen, index }) => <button type="button" key={screen.id} onClick={() => { select(index); setView('flow'); setQuery(''); }}>{screen.name}<small>{sprintf(__('Screen %d', 'wconvert'), index + 1)}</small></button>)
@@ -231,19 +241,20 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
           {destinationSummary && <div><small>{__('After a visitor submits', 'wconvert')}</small><strong>{destinationSummary}</strong>
             {onGoToDestinations && <button type="button" onClick={() => { setOpen(false); onGoToDestinations(); }}>{__('Edit destinations', 'wconvert')}</button>}</div>}
         </div>}
-        <div className="wconvert-journey-mobile-tabs" role="group" aria-label={__('Mobile journey view', 'wconvert')}>
+        {panelOpen && <div className="wconvert-journey-mobile-tabs" role="group" aria-label={__('Mobile journey view', 'wconvert')}>
           <button type="button" aria-pressed={mobilePane === 'map'} onClick={() => setMobilePane('map')}>{view === 'flow' ? __('Map', 'wconvert') : __('Screens', 'wconvert')}</button>
           <button type="button" aria-pressed={mobilePane === 'details'} onClick={() => setMobilePane('details')}>{sampleOpen ? __('Sample answers', 'wconvert') : __('Edit screen', 'wconvert')}</button>
-        </div>
-        <div className="wconvert-journey-side" data-mobile-pane={mobilePane}>
+        </div>}
+        <div className="wconvert-journey-side" data-mobile-pane={mobilePane} data-panel-open={panelOpen}>
           <div className="wconvert-journey-mobile-picker"><label>{__('Screen', 'wconvert')}<select value={step} onChange={event => select(Number(event.target.value))}>{tree.steps.map((screen, index) => <option key={screen.id} value={index}>{index + 1}. {screen.name}</option>)}</select></label></div>
           {view === 'flow' && <Suspense fallback={<div className="wconvert-journey-map">{__('Loading journey map…', 'wconvert')}</div>}>
-            <JourneyMap tree={tree} selected={step} focusedPath={panelSection === 'paths' ? pathFocus : null}
-              onSelect={select} onSelectPath={(index, priority) => { select(index); setPanelSection('paths'); setPathFocus(priority); }} onConnect={connect} samplePath={samplePath} />
+            <JourneyMap tree={tree} selected={inspecting ? step : null} focusedPath={inspecting && panelSection === 'paths' ? pathFocus : null}
+              onSelect={select} onSelectPath={(index, priority) => { select(index); setPanelSection('paths'); setPathFocus(priority); }} onConnect={connect} samplePath={samplePath}
+              destinationSummary={destinationSummary} onGoToDestinations={onGoToDestinations} />
           </Suspense>}
           {view === 'screens' && <aside className="wconvert-journey-rail" aria-label={__('Journey screens', 'wconvert')}>
-            <div className="wconvert-journey-rail__heading"><strong>{__('Screens', 'wconvert')}</strong><span>{tree.steps.length} / 7</span><small>{__('In visitor order · some may be skipped', 'wconvert')}</small></div>
-            <ol ref={screenList} className="wconvert-journey-dialog__screens" aria-label={__('Screens in visitor order', 'wconvert')}>
+            <div className="wconvert-journey-rail__heading"><strong>{__('Screens', 'wconvert')}</strong><span>{tree.steps.length} / 7</span><small>{__('Screen inventory · paths may skip screens', 'wconvert')}</small></div>
+            <ol ref={screenList} className="wconvert-journey-dialog__screens" aria-label={__('Journey screen inventory', 'wconvert')}>
               {tree.steps.map((screen, index) => <JourneyScreenCard key={screen.id} template={{ tree, tokens }} index={index} selected={index === step}
                 scope={id} label={screenLabel(index)} condition={screen.when ? sprintf(__('Show if %s', 'wconvert'), conditionText(tree, screen.when))
                   : screen.kind === 'result' && (screen.results?.length ?? 0) > 1 ? sprintf(__('%d possible results', 'wconvert'), screen.results?.length ?? 0) : undefined}
@@ -251,9 +262,11 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
                 onMove={(from, to) => move(tree.steps.findIndex(s => s.id === from), Math.min(tree.steps.findIndex(s => s.id === to), tree.steps.length - 2))} />)}
             </ol>
           </aside>}
-          {sampleOpen ? <JourneySample tree={tree} onTrace={setSamplePath} onSelect={select} onClose={() => { setSampleOpen(false); setSamplePath(null); }} />
-            : <section className="wconvert-journey-pane" aria-label={__('Selected screen settings', 'wconvert')}>
-            <div className="wconvert-journey-pane__heading"><div className="wconvert-journey-dialog__selected"><span>{step + 1}</span><div><h3>{current.name}</h3><small>{sprintf(__('Screen %1$d of %2$d', 'wconvert'), step + 1, tree.steps.length)}</small></div></div></div>
+          {sampleOpen ? <JourneySample tree={tree} onTrace={setSamplePath} onSelect={select} onClose={() => { setSampleOpen(false); setSamplePath(null); setMobilePane('map'); }} />
+            : inspecting && <section className="wconvert-journey-pane" aria-label={__('Selected screen settings', 'wconvert')}>
+            <div className="wconvert-journey-pane__heading"><div className="wconvert-journey-dialog__selected"><span>{step + 1}</span><div><h3>{current.name}</h3><small>{sprintf(__('Screen %1$d of %2$d', 'wconvert'), step + 1, tree.steps.length)}</small></div></div>
+              <button type="button" className="wconvert-journey-pane__close" aria-label={__('Close screen settings', 'wconvert')} onClick={() => { setInspecting(false); setPathFocus(null); setView('flow'); setMobilePane('map'); }}><X aria-hidden="true" /></button>
+            </div>
             <div className="wconvert-journey-pane__tabs" role="group" aria-label={__('Screen settings section', 'wconvert')}>
               <button type="button" aria-pressed={panelSection === 'content'} onClick={() => setPanelSection('content')}>{__('Content & visibility', 'wconvert')}</button>
               <button type="button" aria-pressed={panelSection === 'paths'} onClick={() => setPanelSection('paths')}>{__('Next screen', 'wconvert')}</button>

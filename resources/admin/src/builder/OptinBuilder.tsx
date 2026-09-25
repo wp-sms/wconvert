@@ -39,6 +39,7 @@ import { CaptureModeChoice } from './CaptureModeChoice';
 import { ReadinessDialog } from './ReadinessDialog';
 import { hintIn, hintSaid } from './destinations';
 import { planFrom } from './rules/plan';
+import { summarise } from './rules/summaries';
 import { DisplayRules, type DisplayRulesValue } from './rules/DisplayRules';
 import { DevExport } from './DevExport';
 import { Fullscreen } from './Fullscreen';
@@ -239,14 +240,10 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
   };
 
   const displayPlan = displayRules.display_rules;
-  const displaySummary = displayPlan ? [
-    displayPlan.audience.mode === 'everyone' ? __('All visitors', 'wconvert')
-      : sprintf(_n('%d audience group', '%d audience groups', displayPlan.audience.groups.length, 'wconvert'), displayPlan.audience.groups.length),
-    displayPlan.opening.mode === 'immediate' ? __('Immediately', 'wconvert')
-      : displayPlan.opening.mode === 'click' ? __('On visitor click', 'wconvert')
-        : displayPlan.opening.minimum_seconds ? sprintf(__('After %d seconds', 'wconvert'), displayPlan.opening.minimum_seconds)
-          : __('Automatic trigger', 'wconvert'),
-  ].join(' · ') : __('Review display rules', 'wconvert');
+  const displayAxes = vocabulary && displayPlan ? summarise(displayRules, vocabulary, false) : null;
+  const displaySummary = displayAxes
+    ? `${displayAxes[1].text} · ${displayAxes[2].text}`
+    : __('Review display rules', 'wconvert');
   const destinationNames = bound.map(id => read(destinations)?.destinations.find(item => item.id === id)?.label).filter((name): name is string => !!name);
   const destinationSummary = config?.capture_mode === 'local' ? __('Stored in WConvert', 'wconvert')
     : destinationNames.length === bound.length && bound.length > 0 ? destinationNames.join(' + ')

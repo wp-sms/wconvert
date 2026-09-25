@@ -7,13 +7,14 @@ import { walkNodes } from './structure/journey';
 import { conditionText } from './structure/conditionText';
 import '@xyflow/react/dist/style.css';
 
-interface CardData { tree: TemplateTree; index: number; rtl: boolean; muted: boolean; preview: boolean; select(index: number): void; selectPath(index: number, priority: number): void }
+interface CardData { tree: TemplateTree; index: number; rtl: boolean; muted: boolean; preview: boolean; destinationSummary?: string; select(index: number): void; selectPath(index: number, priority: number): void; goToDestinations?(): void }
 
 const ScreenCard = memo(function ScreenCard({ data, selected }: NodeProps) {
-  const { tree, index, rtl, muted, preview, select, selectPath } = data as unknown as CardData;
+  const { tree, index, rtl, muted, preview, destinationSummary, select, selectPath, goToDestinations } = data as unknown as CardData;
   const screen = tree.steps[index];
   const content = walkNodes(screen.content);
   const question = content.find(node => node.type === 'question');
+  const savesDetails = content.some(node => node.type === 'button' && 'action' in node && node.action === 'submit');
   const heading = content.find(node => node.type === 'heading');
   const incoming = tree.steps.slice(0, index).filter((item, at) => (item.paths ?? (tree.steps[at + 1] ? [{ to: tree.steps[at + 1].id }] : []))
     .some(path => path.to === screen.id)).length;
@@ -32,6 +33,11 @@ const ScreenCard = memo(function ScreenCard({ data, selected }: NodeProps) {
     </button>
     {preview && <div className="wconvert-flow-node__preview" aria-hidden="true"><small>{__('Screen preview', 'wconvert')}</small><strong>{heading && 'text' in heading ? String(heading.text) : screen.name}</strong>
       {question && 'options' in question && <span>{question.options?.slice(0, 2).map(option => option.label).join(' · ')}</span>}
+    </div>}
+    {savesDetails && <div className="wconvert-flow-node__save">
+      <strong>{__('Details saved here', 'wconvert')}</strong>
+      {destinationSummary && <span>{destinationSummary}</span>}
+      {goToDestinations && <button type="button" className="nodrag" onClick={goToDestinations}>{__('Edit destinations', 'wconvert')}</button>}
     </div>}
     {paths.length > 1 && <div className="wconvert-flow-node__paths">
       <small>{__('First matching path wins', 'wconvert')}</small>
@@ -63,21 +69,21 @@ const ScreenCard = memo(function ScreenCard({ data, selected }: NodeProps) {
 });
 const nodeTypes = { screen: ScreenCard };
 
-function FocusCamera({ selectedId, nextId, firstId, revision, onTidy, preview, onPreview }: {
-  selectedId: string; nextId?: string; firstId: string; revision: number; onTidy(): void; preview: boolean; onPreview(): void;
+function FocusCamera({ selectedId, nextId, firstId, initialOverview, revision, onTidy, preview, onPreview }: {
+  selectedId: string; nextId?: string; firstId: string; initialOverview: boolean; revision: number; onTidy(): void; preview: boolean; onPreview(): void;
 }) {
   const { fitView, viewportInitialized } = useReactFlow();
   const width = useStore(state => state.width);
   const overviewShown = useRef(false);
   useEffect(() => {
     if (!viewportInitialized || revision === 0) return;
-    const overview = !overviewShown.current && width >= 600;
+    const overview = !overviewShown.current && width >= 600 && initialOverview;
     overviewShown.current = true;
     const frame = requestAnimationFrame(() => void fitView({
       ...(overview ? {} : { nodes: [{ id: selectedId }, ...(width >= 600 && nextId ? [{ id: nextId }] : [])] }),
       padding: 0.2, maxZoom: 1, duration: 180 }));
     return () => cancelAnimationFrame(frame);
-  }, [fitView, nextId, revision, selectedId, viewportInitialized, width]);
+  }, [fitView, nextId, initialOverview, revision, selectedId, viewportInitialized, width]);
   return <div className="wconvert-journey-map__tools">
     <button type="button" onClick={() => void fitView({ nodes: [{ id: firstId }], padding: .4, maxZoom: 1, duration: 180 })}>{__('Start', 'wconvert')}</button>
     <button type="button" aria-pressed={preview} onClick={onPreview}>{preview ? __('Hide previews', 'wconvert') : __('Screen previews', 'wconvert')}</button>
@@ -87,9 +93,10 @@ function FocusCamera({ selectedId, nextId, firstId, revision, onTidy, preview, o
 }
 
 /** The canvas is an overview; the same routes are editable through selects in the inspector. */
-export function JourneyMap({ tree, selected, focusedPath = null, onSelect, onSelectPath, onConnect, samplePath = null }: {
-  tree: TemplateTree; selected: number; onSelect(index: number): void; onSelectPath(index: number, priority: number): void;
+export function JourneyMap({ tree, selected, focusedPath = null, onSelect, onSelectPath, onConnect, samplePath = null, destinationSummary, onGoToDestinations }: {
+  tree: TemplateTree; selected: number | null; onSelect(index: number): void; onSelectPath(index: number, priority: number): void;
   onConnect(source: string, target: string): void; samplePath?: readonly number[] | null; focusedPath?: number | null;
+  destinationSummary?: string; onGoToDestinations?(): void;
 }) {
   const [positions, setPositions] = useState<Record<string, { x: number; y: number }>>({});
   const [measurements, setMeasurements] = useState<Record<string, { width: number; height: number }>>({});
@@ -103,7 +110,8 @@ export function JourneyMap({ tree, selected, focusedPath = null, onSelect, onSel
     graph.setGraph({ rankdir: rtl ? 'RL' : 'LR', ranksep: 92, nodesep: 46 });
     graph.setDefaultEdgeLabel(() => ({}));
     tree.steps.forEach((step, index) => graph.setNode(step.id, { width: 252,
-      height: 166 + (preview ? 75 : 0) + (step.when ? 32 : 0) + Math.max(0, (step.paths?.length ?? 1) - 1) * 45
+      height: 166 + (preview ? 75 : 0) + (walkNodes(step.content).some(node => node.type === 'button' && 'action' in node && node.action === 'submit') ? 74 : 0)
+        + (step.when ? 32 : 0) + Math.max(0, (step.paths?.length ?? 1) - 1) * 45
         + (step.when && step.paths && tree.steps[index + 1] && !step.paths.some(path => path.to === tree.steps[index + 1].id) ? 30 : 0)
         - (index === tree.steps.length - 1 ? 28 : 0) }));
     tree.steps.forEach((step, index) => {
@@ -120,12 +128,12 @@ export function JourneyMap({ tree, selected, focusedPath = null, onSelect, onSel
   // The layout depends on graph structure, not card text edits.
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [layoutKey, rtl, tidyRevision, preview]);
-  const focusTarget = focusedPath === null ? null : tree.steps.findIndex(item => item.id === (tree.steps[selected].paths ?? [{ to: tree.steps[selected + 1]?.id }])[focusedPath]?.to);
+  const focusTarget = focusedPath === null || selected === null ? null : tree.steps.findIndex(item => item.id === (tree.steps[selected].paths ?? [{ to: tree.steps[selected + 1]?.id }])[focusedPath]?.to);
   const nodes = useMemo<Node[]>(() => tree.steps.map((step, index) => ({ id: step.id, type: 'screen',
     position: positions[step.id] ?? { x: (rtl ? tree.steps.length - 1 - index : index) * 340, y: 60 }, measured: measurements[step.id],
     selected: index === selected && samplePath === null, data: { tree, index, rtl,
       muted: samplePath !== null ? !samplePath.includes(index) : focusTarget !== null && index !== selected && index !== focusTarget,
-      preview, select: onSelect, selectPath: onSelectPath } })), [tree, selected, positions, measurements, onSelect, onSelectPath, rtl, samplePath, focusTarget, preview]);
+      preview, destinationSummary, goToDestinations: onGoToDestinations, select: onSelect, selectPath: onSelectPath } })), [tree, selected, positions, measurements, onSelect, onSelectPath, rtl, samplePath, focusTarget, preview, destinationSummary, onGoToDestinations]);
   const edges = useMemo<Edge[]>(() => tree.steps.flatMap((step, index) => {
     const routes: Edge[] = (step.paths ?? (tree.steps[index + 1] ? [{ to: tree.steps[index + 1].id }] : []))
       .map((path, priority) => ({ id: `${step.id}-${priority}`, source: step.id, target: path.to, data: { sourceIndex: index, priority },
@@ -167,10 +175,11 @@ export function JourneyMap({ tree, selected, focusedPath = null, onSelect, onSel
         if (moved.length) setPositions(old => ({ ...old, ...Object.fromEntries(moved.map(change => [change.id, change.position!])) }));
       }}>
       <Background gap={24} size={1} color="#dce5dd" /><Controls showInteractive={false} />
-      <FocusCamera selectedId={tree.steps[selected]?.id ?? tree.steps[0].id} nextId={tree.steps[selected + 1]?.id} firstId={tree.steps[0].id}
+      <FocusCamera selectedId={tree.steps[selected ?? 0]?.id ?? tree.steps[0].id} nextId={tree.steps[(selected ?? 0) + 1]?.id} firstId={tree.steps[0].id}
+        initialOverview={selected === null && tree.steps.length <= 3}
         revision={revision} preview={preview} onPreview={() => setPreview(value => !value)} onTidy={() => setTidyRevision(value => value + 1)} />
     </ReactFlow>
-    <p className="wconvert-journey-map__hint">{rtl ? __('Follow arrows from right to left. Select a screen to edit; draw a line to add a forward path.', 'wconvert')
-      : __('Follow arrows from left to right. Select a screen to edit; draw a line to add a forward path.', 'wconvert')}</p>
+    <p className="wconvert-journey-map__hint">{rtl ? __('Follow arrows from right to left. Scroll to move through the map; select a screen to edit or draw a forward path.', 'wconvert')
+      : __('Follow arrows from left to right. Scroll to move through the map; select a screen to edit or draw a forward path.', 'wconvert')}</p>
   </div>;
 }
