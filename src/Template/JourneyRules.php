@@ -4,7 +4,7 @@ namespace WConvert\Template;
 
 defined('ABSPATH') || exit;
 
-/** Answer rules for ordered journeys. Conditions only read earlier choice questions. */
+/** Answer rules for forward journeys. Conditions only read earlier choice questions. */
 final class JourneyRules
 {
     /** @param mixed $condition
@@ -51,16 +51,39 @@ final class JourneyRules
      */
     public static function activeAnswers(array $steps, array $answers): array
     {
+        return self::path($steps, $answers)['answers'];
+    }
+
+    /** @param list<array<string, mixed>> $steps
+     * @param array<string, string|list<string>> $answers
+     * @return array{indices: list<int>, answers: array<string, string|list<string>>}
+     */
+    public static function path(array $steps, array $answers): array
+    {
         $active = [];
-        foreach ($steps as $step) {
-            if (!self::matches($step['when'] ?? null, $active)) { continue; }
-            foreach (CaptureJourney::nodes($step['content'] ?? []) as $node) {
-                if (($node['type'] ?? '') === 'question' && isset($answers[$node['id'] ?? ''])) {
-                    $active[$node['id']] = $answers[$node['id']];
+        $indices = [];
+        $positions = array_flip(array_column($steps, 'id'));
+        for ($at = 0; $at < count($steps);) {
+            $step = $steps[$at];
+            $shown = self::matches($step['when'] ?? null, $active);
+            if ($shown) {
+                $indices[] = $at;
+                foreach (CaptureJourney::nodes($step['content'] ?? []) as $node) {
+                    if (($node['type'] ?? '') === 'question' && isset($answers[$node['id'] ?? ''])) {
+                        $active[$node['id']] = $answers[$node['id']];
+                    }
                 }
             }
+            $target = $at + 1;
+            foreach ($shown ? ($step['paths'] ?? []) : [] as $route) {
+                if (self::matches($route['when'] ?? null, $active)) {
+                    $target = $positions[$route['to'] ?? ''] ?? $target;
+                    break;
+                }
+            }
+            $at = $target > $at ? $target : $at + 1;
         }
-        return $active;
+        return ['indices' => $indices, 'answers' => $active];
     }
 
     /** @param list<array<string, mixed>> $variants

@@ -7,8 +7,11 @@ import type { TemplateTree } from '@renderer/types';
 import { movedScreen, removedScreen, referencedJourney, walkNodes } from '../../resources/admin/src/builder/structure/journey';
 import progressive from '../../resources/templates/library/journey-email-then-sms.json';
 import source from '../../resources/templates/library/journey-email-only.json';
+import rules from '../fixtures/journey-rules.json';
+import service from '../../pro/modules/journeys/templates/journey-service-enquiry.json';
 
 vi.mock('../../resources/admin/src/builder/Preview', () => ({ Preview: () => <div /> }));
+vi.mock('../../resources/admin/src/builder/JourneyMap', () => ({ JourneyMap: () => <div aria-label="Journey map" /> }));
 beforeEach(() => vi.stubGlobal('ResizeObserver', class { observe() {} unobserve() {} disconnect() {} }));
 afterEach(() => { cleanup(); vi.unstubAllGlobals(); });
 function Editor({ initial = source.tree as TemplateTree }: { initial?: TemplateTree }) {
@@ -39,6 +42,18 @@ it('adds and removes an optional SMS signup without changing the primary field o
   expect(draft().submissions).toHaveLength(1);
   expect(draft().steps).toHaveLength(2);
 });
+it('keeps an explicit forward path connected when adding an optional signup', async () => {
+  const user = userEvent.setup();
+  const base = structuredClone(source.tree) as TemplateTree;
+  const initial: TemplateTree = { ...base, steps: [{ ...base.steps[0], paths: [{ to: base.steps[1].id }] }, ...base.steps.slice(1)] };
+  render(<Editor initial={initial} />);
+  await user.click(screen.getByRole('button', { name: 'Manage screens' }));
+  await user.click(screen.getByRole('button', { name: 'Add screen' }));
+  await user.click(screen.getByRole('menuitem', { name: 'Add optional signup' }));
+  const tree = draft();
+  expect(tree.steps[0].paths).toEqual([{ to: tree.steps[1].id }]);
+  expect(tree.steps[1].paths).toEqual([{ to: tree.steps[2].id }]);
+});
 it('preserves screen identity when reordering and gives a duplicate its own identity', async () => {
   const user = userEvent.setup();
   render(<Editor />);
@@ -54,6 +69,23 @@ it('preserves screen identity when reordering and gives a duplicate its own iden
   expect(tree.steps).toHaveLength(4);
   expect(new Set(tree.steps.map(s=>s.id)).size).toBe(4);
   expect(tree.steps.at(-1)?.kind).toBe('acknowledgement');
+});
+it('keeps a duplicated screen on an explicit incoming path', async () => {
+  const user = userEvent.setup();
+  const base = structuredClone(source.tree) as TemplateTree;
+  const initial: TemplateTree = { ...base, steps: [
+    { ...base.steps[0], paths: [{ to: 'offer' }] },
+    { id: 'offer', name: 'Offer', kind: 'content', content: { type: 'button', action: 'next', label: 'Continue' } },
+    base.steps[1],
+  ] };
+  render(<Editor initial={initial} />);
+  await user.click(screen.getByRole('button', { name: 'Manage screens' }));
+  await user.click(screen.getByRole('button', { name: 'Screens' }));
+  await user.click(screen.getByRole('button', { name: /Offer Continue only/ }));
+  await action(user, 'Duplicate');
+  const tree = draft();
+  expect(tree.steps[0].paths).toEqual([{ to: tree.steps[1].id }]);
+  expect(tree.steps[1].paths).toEqual([{ to: 'offer' }]);
 });
 
 it('labels screen actions and refuses unavailable moves', async () => {
@@ -76,6 +108,7 @@ it('keeps management off the canvas and restores focus after choosing a screen t
   const trigger = screen.getByRole('button', { name: 'Manage screens' });
   await user.click(trigger);
   const dialog = screen.getByRole('dialog', { name: 'Manage screens' });
+  await user.click(within(dialog).getByRole('button', { name: 'Screens' }));
   const cards = within(dialog).getByRole('list', { name: 'Screens in visitor order' });
   await user.click(within(cards).getAllByRole('button')[1]);
   expect(screen.getByLabelText('Screen name')).toHaveValue(source.tree.steps[1].name);
@@ -85,6 +118,24 @@ it('keeps management off the canvas and restores focus after choosing a screen t
   await user.click(screen.getByRole('button', { name: 'Edit design' }));
   expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   expect(trigger).toHaveFocus();
+});
+
+it('opens on the flow and creates an ordered answer path through the inspector', async () => {
+  const user = userEvent.setup();
+  render(<Editor initial={service.tree as TemplateTree} />);
+  await user.click(screen.getByRole('button', { name: 'Manage screens' }));
+  expect(screen.getByRole('button', { name: 'Flow' })).toHaveAttribute('aria-pressed', 'true');
+  expect(screen.getByLabelText('Journey map')).toBeInTheDocument();
+  await user.click(screen.getByRole('button', { name: 'Add answer path' }));
+  const paths = draft().steps[0].paths!;
+  expect(paths).toHaveLength(2);
+  expect(paths[0]).toMatchObject({ to: 'contact', when: { clauses: [{ question: 'n2', values: [''] }] } });
+  expect(paths[1]).toEqual({ to: 'repair' });
+  expect(screen.getByText('Choose an answer for this path before publishing.')).toBeInTheDocument();
+  await user.selectOptions(screen.getByRole('combobox', { name: 'Answer' }), 'design');
+  expect(draft().steps[0].paths?.[0].when?.clauses[0].values).toEqual(['design']);
+  await user.click(screen.getByRole('button', { name: 'Remove path' }));
+  expect(draft().steps[0].paths).toBeUndefined();
 });
 
 it('keeps the primary signup ahead of optional signup and the acknowledgement last', () => {
@@ -127,6 +178,7 @@ it('names the affected screens before removing a signup spread across multiple s
   const user = userEvent.setup();
   render(<Editor initial={initial} />);
   await user.click(screen.getByRole('button', { name: 'Manage screens' }));
+  await user.click(screen.getByRole('button', { name: 'Screens' }));
   await user.click(screen.getByRole('button', { name: /Optional SMS signup Save/ }));
   await action(user, 'Delete screen');
   const confirmation = screen.getByRole('alertdialog');
@@ -193,4 +245,47 @@ it('reveals the earned coupon immediately when adding SMS and preserves it when 
   await action(user, 'Delete screen');
   expect(draft().submissions).toHaveLength(1);
   expect(walkNodes(draft().steps[1].content).find(n => n.type === 'code')).toMatchObject({ text: 'WELCOME10' });
+});
+
+it('shows readable screen conditions and edits one result at a time', async () => {
+  const user = userEvent.setup();
+  const initial = { v: 1, steps: rules.steps, submissions: [] } as unknown as TemplateTree;
+  render(<Editor initial={initial} />);
+  await user.click(screen.getByRole('button', { name: 'Manage screens' }));
+  await user.click(screen.getByRole('button', { name: 'Screens' }));
+  const cards = screen.getByRole('list', { name: 'Screens in visitor order' });
+  expect(within(cards).getByRole('button', { name: /Garden size.*Show if Project\? is Garden/ })).toBeInTheDocument();
+  await user.click(within(cards).getByRole('button', { name: /Result Shows a selected result/ }));
+  const results = screen.getByRole('tablist', { name: 'Possible results' });
+  const tabs = within(results).getAllByRole('tab');
+  expect(tabs).toHaveLength(2);
+  expect(tabs[0]).toHaveAttribute('aria-selected', 'true');
+  expect(screen.getByRole('tabpanel', { name: /Garden/ })).toBeInTheDocument();
+  expect(screen.getByLabelText('Heading')).toHaveValue('Garden');
+  await user.click(tabs[0]);
+  await user.keyboard('{ArrowDown}');
+  expect(tabs[1]).toHaveAttribute('aria-selected', 'true');
+  expect(screen.getByRole('tabpanel', { name: /Everyone else/ })).toBeInTheDocument();
+  expect(screen.getByLabelText('Heading')).toHaveValue('Other');
+  await user.clear(screen.getByLabelText('Heading'));
+  await user.type(screen.getByLabelText('Heading'), 'A place to start');
+  expect(draft().steps[3].results?.[0].heading).toBe('Garden');
+  expect(draft().steps[3].results?.[1].heading).toBe('A place to start');
+});
+
+it('warns when two matching results can receive the same answer', async () => {
+  const user = userEvent.setup();
+  const initial = { v: 1, steps: structuredClone(rules.steps), submissions: [] } as unknown as TemplateTree;
+  const result = initial.steps[3];
+  const tree = { ...initial, steps: [...initial.steps.slice(0, 3), { ...result, results: [
+    result.results![0], { ...result.results![0], id: 'also-garden', heading: 'More garden ideas' }, result.results![1],
+  ] }] } as TemplateTree;
+  render(<Editor initial={tree} />);
+  await user.click(screen.getByRole('button', { name: 'Manage screens' }));
+  await user.click(screen.getByRole('button', { name: 'Screens' }));
+  await user.click(screen.getByRole('list', { name: 'Screens in visitor order' }).querySelectorAll('button')[3]);
+  expect(screen.getByText(/may match the same answers/)).toBeInTheDocument();
+  await user.click(within(screen.getByRole('tablist', { name: 'Possible results' })).getByRole('tab', { name: /More garden ideas/ }));
+  await user.click(screen.getByRole('button', { name: 'Move earlier' }));
+  expect(draft().steps[3].results?.[0].id).toBe('also-garden');
 });

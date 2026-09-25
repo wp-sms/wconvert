@@ -165,6 +165,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
     return () => document.body.classList.remove('wconvert-editing');
   }, []);
   const [tab, setTab] = useState<TabId>('design');
+  const [journeyOpenRequest, setJourneyOpenRequest] = useState(0);
 
   const [openToken, setOpenToken] = useState<string | null>(null);
 
@@ -236,6 +237,21 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
     },
     priority: typeof config?.priority === 'number' ? config.priority : 0,
   };
+
+  const displayPlan = displayRules.display_rules;
+  const displaySummary = displayPlan ? [
+    displayPlan.audience.mode === 'everyone' ? __('All visitors', 'wconvert')
+      : sprintf(_n('%d audience group', '%d audience groups', displayPlan.audience.groups.length, 'wconvert'), displayPlan.audience.groups.length),
+    displayPlan.opening.mode === 'immediate' ? __('Immediately', 'wconvert')
+      : displayPlan.opening.mode === 'click' ? __('On visitor click', 'wconvert')
+        : displayPlan.opening.minimum_seconds ? sprintf(__('After %d seconds', 'wconvert'), displayPlan.opening.minimum_seconds)
+          : __('Automatic trigger', 'wconvert'),
+  ].join(' · ') : __('Review display rules', 'wconvert');
+  const destinationNames = bound.map(id => read(destinations)?.destinations.find(item => item.id === id)?.label).filter((name): name is string => !!name);
+  const destinationSummary = config?.capture_mode === 'local' ? __('Stored in WConvert', 'wconvert')
+    : destinationNames.length === bound.length && bound.length > 0 ? destinationNames.join(' + ')
+      : bound.length > 0 ? sprintf(_n('%d connected destination', '%d connected destinations', bound.length, 'wconvert'), bound.length)
+        : __('No connected destinations', 'wconvert');
 
   const template = config?.template as Template | undefined;
   const templateId = typeof config?.template_id === 'string' ? config.template_id : undefined;
@@ -753,6 +769,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
             onPublish={publish}
             onPreview={() => { setTab('design'); setPreviewing(true); setSelection(null); previewButton.current?.focus(); }}
             onEditDesign={() => { setTab('design'); setPreviewing(false); setShowLayers(true); setDrawer('layers'); layersButton.current?.focus(); }}
+            onEditJourney={() => { setTab('design'); setPreviewing(false); setJourneyOpenRequest(current => current + 1); }}
             onGoToDesign={() => { setTab('design'); setPreviewing(false); setBrowsing(true); }}
             onGoToPlacement={goToInlinePlacement}
             onGoToDestinations={() => { setTab('destinations'); destinationsTab.current?.focus(); }}
@@ -820,7 +837,9 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
                     </Button>
                   </div>
                   <div className="wconvert-workspace__screens"><ScreenControls template={entry} step={shownStep} onChange={chooseStep} extra={canPreviewReopen ? { label: reopenLabel, selected: showingReopen, onSelect: showReopen } : undefined} />
-                    {!previewing && <JourneyEditor primaryChannel={entryOfGoal?.outcome.audience_channel} tree={entry.tree} tokens={entry.tokens} step={shownStep} onChange={tree => edit({ template: { ...entry, tree } })} onSelect={chooseStep} />}
+                    {!previewing && <JourneyEditor primaryChannel={entryOfGoal?.outcome.audience_channel} tree={entry.tree} tokens={entry.tokens} step={shownStep} openRequest={journeyOpenRequest}
+                      onChange={tree => edit({ template: { ...entry, tree } })} onSelect={chooseStep} displaySummary={displaySummary} destinationSummary={destinationSummary}
+                      onGoToRules={() => setTab('rules')} onGoToDestinations={() => { setTab('destinations'); destinationsTab.current?.focus(); }} />}
                   </div>
                   <div>
                     {compact ? <DropdownMenu><DropdownMenuTrigger asChild><Button variant="ghost" size="icon-sm" aria-label={__('Preview options', 'wconvert')}><MoreHorizontal aria-hidden="true" /></Button></DropdownMenuTrigger>

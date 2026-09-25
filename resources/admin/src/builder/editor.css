@@ -1203,6 +1203,7 @@ body .wconvert-rule-picker__unavailable {
 .wconvert-journey-rail .wconvert-journey-card__select { padding-block-start: 7px; }
 .wconvert-journey-rail .wconvert-journey-card__select strong { font-size: var(--text-micro); }
 .wconvert-journey-rail .wconvert-journey-card__select span { font-size: var(--text-label); line-height: 1.5; }
+.wconvert-journey-card__condition { display: block; color: var(--primary); font-size: var(--text-label); line-height: 1.4; overflow-wrap: anywhere; }
 .wconvert-journey-rail .wconvert-journey-card:not(:last-child)::after { content: '↓'; inset-inline-end: 50%; inset-block-start: auto; inset-block-end: -18px; }
 .wconvert-journey-pane { display: flex; flex-direction: column; min-inline-size: 0; min-block-size: 0; overflow: hidden; }
 .wconvert-journey-pane__heading { padding: 17px 24px; border-block-end: 1px solid var(--border); flex: none; }
@@ -1218,8 +1219,19 @@ body .wconvert-rule-picker__unavailable {
 .wconvert-journey-settings button { justify-self: start; border: 0; background: none; color: var(--primary); cursor: pointer; padding: 4px 0; font: inherit; text-align: start; }
 .wconvert-journey-settings button:disabled { opacity: .45; cursor: not-allowed; }
 .wconvert-journey-settings :is(input,select,textarea,button):focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
-.wconvert-journey-settings__clause { display: grid; grid-template-columns: minmax(0,1.2fr) minmax(0,1fr) minmax(0,1fr) auto; align-items: center; gap: 7px; }
+.wconvert-journey-settings__clause { display: grid; grid-template-columns: auto minmax(0,1.2fr) minmax(0,1fr) minmax(0,1fr) auto; align-items: center; gap: 7px; }
+.wconvert-journey-settings__clause>span { color: var(--foreground); font-size: var(--text-note); font-weight: 600; }
 .wconvert-journey-settings__question,.wconvert-journey-settings__result { display: grid; gap: 12px; padding: 14px; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--surface); min-inline-size: 0; }
+.wconvert-journey-settings__result { border-block-start: 3px solid var(--primary); }
+.wconvert-journey-settings__result-heading { display: flex; justify-content: space-between; align-items: baseline; flex-wrap: wrap; gap: 8px; }
+.wconvert-journey-settings__result-list { display: grid; max-block-size: 225px; overflow: auto; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--card); }
+.wconvert-journey-settings .wconvert-journey-settings__result-list button { display: grid; gap: 3px; inline-size: 100%; padding: 10px 12px; color: var(--foreground); background: var(--card); border: 0; border-block-end: 1px solid var(--border); border-inline-start: 3px solid transparent; text-align: start; }
+.wconvert-journey-settings .wconvert-journey-settings__result-list button:last-child { border-block-end: 0; }
+.wconvert-journey-settings .wconvert-journey-settings__result-list button[aria-selected='true'] { border-inline-start-color: var(--primary); background: var(--secondary); }
+.wconvert-journey-settings__result-list strong { font-size: var(--text-note); overflow-wrap: anywhere; }
+.wconvert-journey-settings__result-list span { font-size: var(--text-label); font-weight: 400; color: var(--muted-foreground); overflow-wrap: anywhere; }
+.wconvert-journey-settings .wconvert-journey-settings__warning { padding: 10px 12px; border: 1px solid var(--border); border-inline-start: 3px solid var(--primary); border-radius: var(--radius); background: var(--secondary); color: var(--foreground); }
+.wconvert-journey-settings__result-order { display: flex; gap: 16px; }
 .wconvert-journey-settings__group { display: grid; gap: 10px; margin-block-start: 20px; padding: 14px; border: 1px solid var(--border); border-radius: var(--radius-lg); min-inline-size: 0; }
 .wconvert-journey-settings__group legend { padding-inline: 5px; font-weight: 650; }
 .wconvert-journey-settings__group label { display: flex; align-items: center; gap: 8px; }
@@ -1227,8 +1239,8 @@ body .wconvert-rule-picker__unavailable {
 .wconvert-journey-settings__group p { margin: 0; color: var(--muted-foreground); font-size: var(--text-note); line-height: 1.5; }
 .wconvert-journey-settings__group button { border: 0; padding: 0; background: none; color: var(--primary); cursor: pointer; text-decoration: underline; }
 .wconvert-journey-settings__choice { display: grid; grid-template-columns: minmax(0,1fr) auto; gap: 8px; margin-block-start: 8px; }
-.wconvert-journey-settings .wconvert-journey-settings__check { display: flex; align-items: center; gap: 8px; }
-.wconvert-journey-settings__check input { inline-size: auto; }
+.wconvert-journey-settings .wconvert-journey-settings__check { display: flex; align-items: center; gap: 8px; min-block-size: 24px; cursor: pointer; }
+.wconvert-journey-settings__check input[type='checkbox'],.wconvert-journey-settings__group input[type='radio'] { inline-size: 18px; block-size: 18px; min-inline-size: 18px; flex-shrink: 0; margin: 0; padding: 0; }
 .wconvert-journey-settings__products { display: grid; gap: 8px; }
 .wconvert-journey-settings__products ul,.wconvert-journey-settings__products ol { margin: 0; padding-inline-start: 22px; }
 .wconvert-journey-settings__products li { display: flex; align-items: center; gap: 8px; padding-block: 6px; }
@@ -1242,10 +1254,14 @@ body .wconvert-rule-picker__unavailable {
 .wconvert-journey-test__side li { padding-block: 7px; }
 .wconvert-journey-test__side li small { display: block; color: var(--muted-foreground); }
 .wconvert-journey-test__side li[data-current=true] { font-weight: 600; color: var(--primary); }
+.wconvert-journey-test__result { padding: 10px 12px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--secondary); font-weight: 600; }
 .wconvert-journey-test__side fieldset { display: grid; gap: 6px; border: 1px solid var(--border); border-radius: var(--radius); }
 .wconvert-journey-test__side fieldset label { display: flex; gap: 6px; }
 @media (max-width: 700px) { .wconvert-journey-test { grid-template-columns: 1fr; } }
-@media (max-width: 740px) { .wconvert-journey-settings__clause { grid-template-columns: minmax(0,1fr) minmax(0,1fr); } }
+@media (max-width: 740px) {
+  .wconvert-journey-settings__clause { grid-template-columns: minmax(0,1fr) minmax(0,1fr); }
+  .wconvert-journey-settings__clause>span,.wconvert-journey-settings__clause>select:first-of-type,.wconvert-journey-settings__clause>button { grid-column: 1 / -1; }
+}
 .wconvert-journey-mobile-picker { display: none; }
 @media (max-width: 800px) {
   .wconvert-journey-side { grid-template-columns: 200px minmax(0, 1fr); }
@@ -1332,6 +1348,57 @@ body .wconvert-rule-picker__unavailable {
 }
 
 /* Display workspace: one compact header, white work surfaces, inset rule groups. */
+/* Journey flow: horizontal map plus an explicit, keyboard-usable path inspector. */
+@layer utilities {
+  [data-slot='dialog-content'].wconvert-journey-dialog { inline-size: min(1280px, calc(100vw - 40px)) !important; }
+}
+.wconvert-journey-view { display: flex; gap: 4px; padding: 0 26px 12px; border-block-end: 1px solid var(--border); }
+.wconvert-journey-view button { padding: 7px 15px; border: 1px solid transparent; border-radius: var(--radius); background: transparent; color: var(--muted-foreground); cursor: pointer; }
+.wconvert-journey-view button[aria-pressed='true'] { border-color: var(--border); background: var(--surface); color: var(--foreground); font-weight: 650; }
+.wconvert-journey-context { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; padding: 10px 26px; background: var(--surface); border-block-end: 1px solid var(--border); }
+.wconvert-journey-context>div { display: flex; align-items: baseline; gap: 8px; min-inline-size: 0; }
+.wconvert-journey-context small { flex: none; color: var(--muted-foreground); font-size: var(--text-label); }
+.wconvert-journey-context strong { min-inline-size: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: var(--text-micro); }
+.wconvert-journey-context button { flex: none; padding: 0; border: 0; background: none; color: var(--primary); font-size: var(--text-label); cursor: pointer; }
+.wconvert-journey-context button:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+.wconvert-journey-side:has(.wconvert-journey-map) { grid-template-columns: minmax(0, 1fr) minmax(320px, 35%); }
+.wconvert-journey-map { position: relative; min-inline-size: 0; min-block-size: 0; background: #f8faf8; border-inline-end: 1px solid var(--border); }
+.wconvert-journey-map .react-flow { inline-size: 100%; block-size: 100%; }
+.wconvert-journey-map__hint { position: absolute; inset-inline: 18px auto; inset-block-start: 10px; max-inline-size: min(440px, 70%); margin: 0; padding: 6px 9px; border: 1px solid var(--border); border-radius: 6px; background: #fffffff0; color: var(--muted-foreground); font-size: var(--text-label); pointer-events: none; }
+.wconvert-flow-node { inline-size: 252px; border: 1px solid #c9d9d0; border-radius: 12px; background: white; box-shadow: 0 5px 14px #183f2712; text-align: start; }
+.wconvert-flow-node.is-selected { border-color: #397c58; box-shadow: 0 0 0 3px #397c5830, 0 5px 14px #183f2712; }
+.wconvert-flow-node__main { display: grid; gap: 7px; inline-size: 100%; padding: 16px; border: 0; background: none; text-align: start; color: #1d3428; cursor: grab; }
+.wconvert-flow-node__main:active { cursor: grabbing; }
+.wconvert-flow-node__main small { color: #587667; font-size: var(--text-label); text-transform: uppercase; letter-spacing: .05em; }
+.wconvert-flow-node__main strong { font-size: var(--text-body); line-height: 1.3; overflow-wrap: anywhere; }
+.wconvert-flow-node__main span,.wconvert-flow-node__main em { font-size: var(--text-micro); line-height: 1.45; color: #546d5f; font-style: normal; overflow-wrap: anywhere; }
+.wconvert-flow-node__main em { padding: 5px 7px; border-radius: 5px; background: #eaf5ee; color: #245d3d; }
+.wconvert-flow-node__paths { display: grid; gap: 2px; padding: 9px 12px 12px; border-block-start: 1px solid #e3ece6; }
+.wconvert-flow-node__paths>small { margin-block-end: 2px; color: #587667; font-size: var(--text-meta); text-transform: uppercase; }
+.wconvert-flow-node__paths button { inline-size: 100%; padding: 4px; border: 0; background: none; color: #244b36; text-align: start; font-size: var(--text-label); cursor: pointer; }
+.wconvert-flow-node__path { position: relative; }
+.wconvert-flow-node__path .react-flow__handle { inset-inline-end: -18px; inset-block-start: 50%; }
+.wconvert-flow-node__paths span { display: block; color: #64776a; }
+.wconvert-flow-node__hidden { position: relative; padding: 7px 15px; border-block-start: 1px solid #e3ece6; color: #64776a; font-size: var(--text-label); }
+.wconvert-flow-node__hidden .react-flow__handle { inset-inline-end: -6px; inset-block-start: 50%; }
+.wconvert-flow-node__add { padding: 7px 15px; border-block-start: 1px solid #e3ece6; color: #397c58; font-size: var(--text-label); }
+.wconvert-flow-node :is(button):focus-visible,.wconvert-journey-view button:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+.wconvert-flow-node .react-flow__handle { inline-size: 10px; block-size: 10px; background: #397c58; border: 2px solid white; }
+.wconvert-journey-routes>ol { display: grid; gap: 12px; margin: 0; padding: 0; list-style: none; }
+.wconvert-journey-routes>ol>li { display: grid; gap: 9px; padding: 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); }
+.wconvert-journey-routes>ol>li>strong { font-size: var(--text-note); }
+.wconvert-journey-routes__actions { display: flex; flex-wrap: wrap; gap: 12px; }
+.wconvert-journey-routes .wconvert-journey-settings { margin: 0; padding: 0; border: 0; }
+.wconvert-journey-pane .wconvert-journey-settings__clause { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.wconvert-journey-pane .wconvert-journey-settings__clause>span,
+.wconvert-journey-pane .wconvert-journey-settings__clause>select:first-of-type,
+.wconvert-journey-pane .wconvert-journey-settings__clause>button { grid-column: 1 / -1; }
+@media (max-width: 800px) {
+  .wconvert-journey-context { grid-template-columns: 1fr; padding-inline: 18px; }
+  .wconvert-journey-side:has(.wconvert-journey-map) { display: flex; flex-direction: column; }
+  .wconvert-journey-map { flex: none; block-size: 330px; border-inline-end: 0; border-block-end: 1px solid var(--border); }
+  .wconvert-journey-pane { flex: 1; }
+}
 #wconvert-admin .wconvert-display { container-type: inline-size; min-inline-size: 0; max-inline-size: 90rem; margin-inline: auto; }
 #wconvert-admin .wconvert-display-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: .75rem 1rem; margin-block-end: 1rem; }
 #wconvert-admin .wconvert-display-header h2 { margin: 0; font-size: var(--text-heading); font-weight: 600; }

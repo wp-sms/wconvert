@@ -290,6 +290,17 @@ final class TemplateVocabulary
                     // An invalid condition must never turn into Always by being dropped.
                     $screen['when'] = JourneyRules::normalize($step['when']) ?? ['match' => 'invalid', 'clauses' => []];
                 }
+                if (array_key_exists('paths', $step)) {
+                    $screen['paths'] = [];
+                    foreach (is_array($step['paths']) ? $step['paths'] : [] as $route) {
+                        if (!is_array($route)) { $screen['paths'][] = ['to' => '']; continue; }
+                        $entry = ['to' => is_string($route['to'] ?? null) ? $route['to'] : ''];
+                        if (array_key_exists('when', $route)) {
+                            $entry['when'] = JourneyRules::normalize($route['when']) ?? ['match' => 'invalid', 'clauses' => []];
+                        }
+                        $screen['paths'][] = $entry;
+                    }
+                }
                 if (($step['kind'] ?? '') === 'result') {
                     $screen['results'] = $this->resultVariants($step['results'] ?? null);
                     if (($step['products_required'] ?? false) === true) { $screen['products_required'] = true; }

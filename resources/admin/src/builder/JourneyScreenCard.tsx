@@ -7,8 +7,8 @@ import type { Template } from '@renderer/types';
 import { Preview } from './Preview';
 
 /** Pointer dragging supplements the same move operation used by the arrow buttons. */
-export function JourneyScreenCard({ template, index, selected, scope, label, onSelect, onMove }: {
-  template: Template; index: number; selected: boolean; scope: string; label: string;
+export function JourneyScreenCard({ template, index, selected, scope, label, condition, onSelect, onMove }: {
+  template: Template; index: number; selected: boolean; scope: string; label: string; condition?: string;
   onSelect(): void; onMove(from: string, to: string): void;
 }) {
   const frame = useRef<HTMLDivElement>(null);
@@ -54,6 +54,7 @@ export function JourneyScreenCard({ template, index, selected, scope, label, onS
     <div ref={frame} className="wconvert-journey-card__preview" inert aria-hidden="true"><div ref={drawing} className="wconvert-journey-card__drawing" style={{ transform: `translateY(-50%) scale(${scale})` }}><Preview template={template} step={index} /></div></div>
     <button type="button" className="wconvert-journey-card__select" aria-pressed={selected} onClick={onSelect}>
       <strong>{screen.name}</strong><span>{label}</span>
+      {condition && <small className="wconvert-journey-card__condition">{condition}</small>}
     </button>
   </li>;
 }

@@ -28,6 +28,14 @@ import { describe, expect, it } from 'vitest';
  */
 const CSS = ['index.css', 'builder/editor.css', 'optins/campaigns.css', 'shell/header.css', '../../../pro/modules/inline-placement/admin/placement.css'].map(file => readFileSync(resolve(import.meta.dirname, '../../resources/admin/src', file), 'utf8')).join('\n');
 
+describe('journey choices', () => {
+  it('keeps unchecked controls wide enough when WordPress removes native appearance', () => {
+    const checkbox = /\.wconvert-journey-settings__check input[^{}]*\{([^}]*)\}/.exec(CSS)?.[1] ?? '';
+    expect(checkbox).toMatch(/min-inline-size:\s*[^;0]/);
+    expect(checkbox).toMatch(/flex-shrink:\s*0/);
+  });
+});
+
 describe('the token row', () => {
   /**
    * `.wconvert-token__exact` declares `inline-size: 7rem` at `0,1,0` and lost to

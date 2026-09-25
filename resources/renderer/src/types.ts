@@ -796,6 +796,8 @@ export interface TemplateScreen {
   readonly kind: 'content' | 'input' | 'result' | 'acknowledgement';
   readonly content: TemplateNode;
   readonly when?: QuestionCondition;
+  /** First matching route wins; the final route has no condition and is the fallback. */
+  readonly paths?: readonly { readonly to: string; readonly when?: QuestionCondition }[];
   readonly results?: readonly ResultVariant[];
   readonly products_required?: boolean;
 }

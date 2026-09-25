@@ -4,6 +4,8 @@ export type Answers = Record<string, string | string[]>;
 export interface Clause { readonly question: string; readonly operator: 'is' | 'is_not' | 'includes_any' | 'includes_none'; readonly values: readonly string[]; }
 export interface Condition { readonly match: 'all' | 'any'; readonly clauses: readonly Clause[]; }
 
+export interface JourneyPath { readonly indices: readonly number[]; readonly answers: Answers; }
+
 /** A blank source makes even a negative comparison false. */
 export function matches(condition: Condition | undefined, answers: Answers): boolean {
   if (!condition) return true;
@@ -18,27 +20,42 @@ export function matches(condition: Condition | undefined, answers: Answers): boo
   return condition.match === 'any' ? evaluated.some(Boolean) : evaluated.every(Boolean);
 }
 
-/** A forward pass removes hidden answers, including answers depending on them. */
-export function activeAnswers(steps: readonly TemplateScreen[], answers: Answers): Answers {
+/** Resolve a forward journey. Explicit routes have visible, first-match priority. */
+export function journeyPath(steps: readonly TemplateScreen[], answers: Answers): JourneyPath {
   const active: Answers = {};
-  for (const step of steps) {
-    if (!matches(step.when, active)) continue;
-    const nodes = [step.content];
-    while (nodes.length) {
-      const question = nodes.shift()!;
-      if (question.type === 'question' && 'id' in question && typeof question.id === 'string' && answers[question.id] !== undefined) {
-        active[question.id] = answers[question.id];
+  const indices: number[] = [];
+  let at = 0;
+  while (at < steps.length) {
+    const step = steps[at];
+    const shown = matches(step.when, active);
+    if (shown) {
+      indices.push(at);
+      const nodes = [step.content];
+      while (nodes.length) {
+        const question = nodes.shift()!;
+        if (question.type === 'question' && 'id' in question && typeof question.id === 'string' && answers[question.id] !== undefined) {
+          active[question.id] = answers[question.id];
+        }
+        const layout = question as { children?: typeof nodes; start?: typeof nodes; end?: typeof nodes };
+        nodes.push(...(layout.children ?? []), ...(layout.start ?? []), ...(layout.end ?? []));
       }
-      const layout = question as { children?: typeof nodes; start?: typeof nodes; end?: typeof nodes };
-      nodes.push(...(layout.children ?? []), ...(layout.start ?? []), ...(layout.end ?? []));
     }
+    const route = shown ? step.paths?.find(path => matches(path.when, active)) : undefined;
+    const target = route ? steps.findIndex(candidate => candidate.id === route.to) : at + 1;
+    // Publication rejects missing and backward routes. The guard also keeps
+    // a malformed cached payload from trapping a visitor in a loop.
+    at = target > at ? target : at + 1;
   }
-  return active;
+  return { indices, answers: active };
+}
+
+/** A forward pass removes answers on skipped branches and hidden screens. */
+export function activeAnswers(steps: readonly TemplateScreen[], answers: Answers): Answers {
+  return journeyPath(steps, answers).answers;
 }
 
 export function visibleScreens(steps: readonly TemplateScreen[], answers: Answers): readonly TemplateScreen[] {
-  const active = activeAnswers(steps, answers);
-  return steps.filter(step => matches(step.when, active));
+  return journeyPath(steps, answers).indices.map(index => steps[index]);
 }
 
 export function chooseResult<T extends { readonly when?: Condition }>(variants: readonly T[], answers: Answers): T | undefined {

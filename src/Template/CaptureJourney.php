@@ -4,7 +4,7 @@ namespace WConvert\Template;
 
 defined('ABSPATH') || exit;
 
-/** The bounded linear flow, shared by publication, packs and capture. */
+/** The bounded forward flow, shared by publication, packs and capture. */
 final class CaptureJourney
 {
     public const ACTIONS = ['next', 'back', 'submit', 'skip', 'close', 'link'];
@@ -12,7 +12,7 @@ final class CaptureJourney
     public static function requiresPremium(array $tree): bool
     {
         foreach ($tree['steps'] ?? [] as $step) {
-            if (isset($step['when']) || ($step['kind'] ?? '') === 'result') { return true; }
+            if (isset($step['when']) || isset($step['paths']) || ($step['kind'] ?? '') === 'result') { return true; }
             foreach (self::nodes($step['content'] ?? []) as $node) {
                 if (($node['type'] ?? '') === 'question') { return true; }
             }
@@ -72,6 +72,7 @@ final class CaptureJourney
             }
         }
         if (($issue = self::questionIssue($steps)) !== null) { return $issue; }
+        if (($issue = self::routeIssue($steps)) !== null) { return $issue; }
         $resultAt = array_search('result', array_column($steps, 'kind'), true);
         if ($submissions === []) {
             if ($resources !== []) { return 'followup'; }
@@ -196,8 +197,55 @@ final class CaptureJourney
                 if (($node['answer_type'] ?? '') === 'text' && $choices !== []) { return 'questions'; }
                 $earlier[$node['id']] = $node;
             }
+            foreach (is_array($step['paths'] ?? null) ? $step['paths'] : [] as $route) {
+                if (is_array($route) && isset($route['when']) && self::conditionIssue($route['when'], $earlier) !== null) { return 'conditions'; }
+            }
         }
         if ($resultCount > 1 || $questionCount > 10) { return 'flow'; }
+        return null;
+    }
+
+    /** @param list<array<string, mixed>> $steps
+     * Routes stay within the next capture or result boundary so a branch
+     * cannot silently bypass an accepted submission or promised result. */
+    private static function routeIssue(array $steps): ?string
+    {
+        $positions = array_flip(array_column($steps, 'id'));
+        $boundaries = [];
+        foreach ($steps as $index => $step) {
+            if ($step['kind'] === 'result' || $step['kind'] === 'acknowledgement') { $boundaries[] = $index; }
+            foreach (self::nodes($step['content']) as $node) {
+                if (($node['type'] ?? '') === 'button' && ($node['action'] ?? '') === 'submit') { $boundaries[] = $index; break; }
+            }
+        }
+        sort($boundaries);
+        foreach ($steps as $index => $step) {
+            if (!array_key_exists('paths', $step)) { continue; }
+            $routes = $step['paths'];
+            if (!is_array($routes) || !array_is_list($routes) || count($routes) < 1 || count($routes) > 6
+                || $index === count($steps) - 1) { return 'routes'; }
+            $seen = [];
+            $limit = count($steps) - 1;
+            foreach ($boundaries as $boundary) { if ($boundary > $index) { $limit = $boundary; break; } }
+            foreach ($routes as $priority => $route) {
+                if (!is_array($route) || !self::identifier($route['to'] ?? null)
+                    || !isset($positions[$route['to']]) || isset($seen[$route['to']])
+                    || $positions[$route['to']] <= $index || $positions[$route['to']] > $limit
+                    || ($priority === count($routes) - 1) === isset($route['when'])) { return 'routes'; }
+                $seen[$route['to']] = true;
+            }
+        }
+        $reachable = [0 => true];
+        foreach ($steps as $index => $step) {
+            if (!isset($reachable[$index])) { continue; }
+            $routes = $step['paths'] ?? (isset($steps[$index + 1]) ? [['to' => $steps[$index + 1]['id']]] : []);
+            foreach ($routes as $route) {
+                $target = $positions[$route['to']] ?? null;
+                if ($target !== null) { $reachable[$target] = true; }
+            }
+            if (isset($step['when']) && isset($steps[$index + 1])) { $reachable[$index + 1] = true; }
+        }
+        if (count($reachable) !== count($steps)) { return 'routes'; }
         return null;
     }
 

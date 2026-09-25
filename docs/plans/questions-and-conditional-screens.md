@@ -167,8 +167,7 @@ invoking control or the design inspector when that is the next task. Ensure new
 content and actionable errors are announced without announcing every keystroke.
 These requirements follow the [WAI modal dialog pattern](https://www.w3.org/WAI/ARIA/apg/patterns/dialog-modal/).
 Clickable issue-to-editor navigation also borrows the useful repair behavior from
-[Typeform's Logic Map](https://help.typeform.com/hc/en-us/articles/360057591531-Logic-Map),
-without adding a graph editor.
+[Typeform's Logic Map](https://help.typeform.com/hc/en-us/articles/360057591531-Logic-Map).
 
 ### Adding a question
 
@@ -193,21 +192,28 @@ mutable questions across Campaigns.
 
 ### Showing a screen conditionally
 
-Use the selected **B** layout in **Manage screens**: a vertical list of visual screen
-cards beside one settings pane. On selecting a question or offer screen,
-add **Show this screen** with **Always** (default) or **When answers match**.
+Use the selected **B** layout in **Manage screens**: a horizontal flow map with a
+selected-screen settings pane. Keep a **Screens** list for inventory, keyboard use,
+and reordering. The map shows ordered answer paths and joins; a line can be drawn
+to a later screen, while the pane edits its answer, priority, and fallback. Show
+display-rule and destination summaries above the map with links to their tabs.
+On selecting a question or offer screen, offer **Show this screen** with
+**For everyone** (default) or **Only if an answer matches**. Independent
+conditional follow-ups can all run for a multi-select answer before one combined
+enquiry. Explicit paths handle exclusive branches; the first matching path wins.
+See [ADR 0107](../adr/0107-forward-journey-paths-and-flow-editor.md).
 
 Example:
 
 ```text
 Screen: Running experience
 
-Show this screen: When answers match
+Show this screen: Only if an answer matches
 Match: All conditions
 
-[Main activity] [is] [Running]
+If [Main activity] [is] [Running]
 
-+ Add condition
++ Add another condition
 
 Shown when Main activity is Running.
 Otherwise visitors continue to the next relevant screen.
@@ -227,9 +233,11 @@ single undoable draft actions. Drafts may be incomplete; publication may not.
 
 ### Results and WooCommerce products
 
-Add one **Results** screen to a quiz. In its settings show ordered result variants,
-each with **Show when**, editable content, and optional **Products**. The first
-matching variant wins; a final **Everyone else** fallback is always present.
+Add one **Results** screen to a quiz. In its settings show compact result tabs
+with answer-based summaries, then edit only the selected result's condition,
+content, and optional **Products** in a clearly labelled panel. Allow earlier/later ordering for
+matching results. The first matching variant wins; a final **Everyone else**
+fallback is always present.
 Warn about detected duplicate/overlapping rules and explain the ordering; v1 does
 not promise exhaustive shadowing detection. Do not present
 several matching variants as multiple consecutive thank-you screens.

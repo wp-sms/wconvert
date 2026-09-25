@@ -1999,6 +1999,7 @@ describe('adaptive editor and signup deletion', () => {
     builder.getOptin.mockResolvedValue(optin({ config }));
     render(<OptinBuilder id={ID} onClose={vi.fn()} />);
     await userEvent.click(await screen.findByRole('button', { name: 'Manage screens' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Screens' }));
     await userEvent.click(screen.getByRole('button', { name: /Optional SMS signup Save/ }));
     await userEvent.click(screen.getByRole('button', { name: 'Screen actions' }));
     await userEvent.click(screen.getByRole('menuitem', { name: 'Delete screen' }));

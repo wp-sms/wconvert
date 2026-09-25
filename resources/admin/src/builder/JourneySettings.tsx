@@ -1,8 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useId, useState } from 'react';
 import apiFetch from '@wordpress/api-fetch';
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import type { QuestionClause, QuestionCondition, QuestionNode, ResultVariant, TemplateNode, TemplateTree } from '@renderer/types';
-import { walkNodes, usedBy } from './structure/journey';
+import { unreachableScreens, walkNodes, usedBy } from './structure/journey';
+import { conditionText, resultsMayOverlap } from './structure/conditionText';
 
 type ChoiceQuestion = QuestionNode & { id: string };
 const questionsBefore = (tree: TemplateTree, at: number): ChoiceQuestion[] => tree.steps.slice(0, at)
@@ -17,16 +18,17 @@ function replaceNode(node: TemplateNode, id: string, update: (node: QuestionNode
   return copy as TemplateNode;
 }
 
-function ConditionSettings({ value, sources, onChange, required = false }: {
+export function ConditionSettings({ value, sources, onChange, required = false, purpose = 'screen' }: {
   value?: QuestionCondition; sources: ChoiceQuestion[]; onChange(value?: QuestionCondition): void; required?: boolean;
+  purpose?: 'screen' | 'route' | 'result';
 }) {
   const initial = (q: ChoiceQuestion): QuestionClause => ({ question: q.id, operator: q.answer_type === 'multi' ? 'includes_any' : 'is', values: [q.options?.[0]?.value ?? ''] });
   const patch = (index: number, clause: QuestionCondition['clauses'][number]) => onChange({ match: value?.match ?? 'all', clauses: (value?.clauses ?? []).map((old, at) => at === index ? clause : old) });
   return <div className="wconvert-journey-settings">
-    {!required && <label>{__('Show when', 'wconvert')}
+    {!required && <label>{__('Show this screen', 'wconvert')}
       <select value={value ? 'match' : 'always'} onChange={event => onChange(event.target.value === 'match' && sources[0] ? { match: 'all', clauses: [initial(sources[0])] } : undefined)}>
-        <option value="always">{__('Always', 'wconvert')}</option>
-        <option value="match" disabled={!sources.length}>{__('Answers match', 'wconvert')}</option>
+        <option value="always">{__('For everyone', 'wconvert')}</option>
+        <option value="match" disabled={!sources.length}>{__('Only if an answer matches', 'wconvert')}</option>
       </select>
     </label>}
     {!sources.length && <p>{__('Add a choice question on an earlier screen to use conditions.', 'wconvert')}</p>}
@@ -37,6 +39,7 @@ function ConditionSettings({ value, sources, onChange, required = false }: {
       {value.clauses.map((clause, index) => {
         const source = sources.find(q => q.id === clause.question) ?? sources[0];
         return <div key={index} className="wconvert-journey-settings__clause">
+          <span>{index === 0 ? __('If', 'wconvert') : value.match === 'all' ? __('And', 'wconvert') : __('Or', 'wconvert')}</span>
           <select aria-label={__('Question', 'wconvert')} value={clause.question} onChange={event => { const q = sources.find(item => item.id === event.target.value)!; patch(index, initial(q)); }}>
             {sources.map(q => <option key={q.id} value={q.id}>{q.label}</option>)}
           </select>
@@ -44,15 +47,67 @@ function ConditionSettings({ value, sources, onChange, required = false }: {
             {source?.answer_type === 'multi' ? <><option value="includes_any">{__('includes', 'wconvert')}</option><option value="includes_none">{__('does not include', 'wconvert')}</option></> : <><option value="is">{__('is', 'wconvert')}</option><option value="is_not">{__('is not', 'wconvert')}</option></>}
           </select>
           <select aria-label={__('Answer', 'wconvert')} value={clause.values[0] ?? ''} onChange={event => patch(index, { ...clause, values: [event.target.value] })}>
+            {clause.values[0] === '' && <option value="">{__('Choose answer…', 'wconvert')}</option>}
             {source?.options?.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}
           </select>
           <button type="button" onClick={() => { const clauses = value.clauses.filter((_, at) => at !== index); onChange(clauses.length ? { ...value, clauses } : undefined); }}>{__('Remove', 'wconvert')}</button>
         </div>;
       })}
-      {value.clauses.length < 5 && <button type="button" onClick={() => onChange({ ...value, clauses: [...value.clauses, initial(sources[0])] })}>{__('Add condition', 'wconvert')}</button>}
-      <p>{__('Visitors whose answers do not match continue to the next relevant screen. An unanswered question never matches, even with “is not.”', 'wconvert')}</p>
+      {value.clauses.length < 5 && <button type="button" onClick={() => onChange({ ...value, clauses: [...value.clauses, initial(sources[0])] })}>{__('Add another condition', 'wconvert')}</button>}
+      <p>{purpose === 'route'
+        ? __('If this does not match, the next path is checked. An unanswered question never matches, even with “is not.”', 'wconvert')
+        : required
+          ? __('If this does not match, the next result is checked. An unanswered question never matches, even with “is not.”', 'wconvert')
+          : __('Visitors whose answers do not match continue to the next relevant screen. An unanswered question never matches, even with “is not.”', 'wconvert')}</p>
     </>}
   </div>;
+}
+
+/** Routes are ordered alternatives. The last route is always the fallback. */
+export function RouteSettings({ tree, step, onChange }: { tree: TemplateTree; step: number; onChange(next: TemplateTree): void }) {
+  const screen = tree.steps[step];
+  if (!screen || step === tree.steps.length - 1) return null;
+  const boundary = tree.steps.findIndex((item, index) => index > step && (['result', 'acknowledgement'].includes(item.kind)
+    || walkNodes(item.content).some(node => node.type === 'button' && 'action' in node && node.action === 'submit')));
+  const last = boundary < 0 ? tree.steps.length - 1 : boundary;
+  const targets = tree.steps.slice(step + 1, last + 1);
+  const sources = tree.steps.slice(0, step + 1).flatMap(item => walkNodes(item.content))
+    .filter((node): node is ChoiceQuestion => node.type === 'question' && 'id' in node && typeof node.id === 'string'
+      && 'answer_type' in node && node.answer_type !== 'text') as ChoiceQuestion[];
+  const paths = screen.paths ?? [{ to: tree.steps[step + 1].id }];
+  const write = (next: typeof paths) => onChange({ ...tree, steps: tree.steps.map((item, index) => index === step
+    ? { ...item, paths: next.length === 1 && !next[0].when && next[0].to === tree.steps[step + 1].id ? undefined : next } : item) });
+  const unused = targets.find(target => !paths.some(path => path.to === target.id));
+  const unreachable = unreachableScreens(tree);
+  const add = () => {
+    if (!sources.length || !unused || paths.length >= 6) return;
+    const question = sources[0];
+    write([{ to: unused.id, when: { match: 'all', clauses: [{ question: question.id,
+      operator: question.answer_type === 'multi' ? 'includes_any' : 'is', values: [''] }] } }, ...paths]);
+  };
+  return <section className="wconvert-journey-settings wconvert-journey-routes"><h4>{__('Next paths', 'wconvert')}</h4>
+    <p>{paths.length > 1 ? __('Visitors take the first matching path. If none match, they take Everyone else.', 'wconvert')
+      : __('After this screen, visitors continue to the next relevant screen.', 'wconvert')}</p>
+    {screen.when && screen.paths && <p>{__('If this screen is hidden, visitors continue to the next screen without checking these paths.', 'wconvert')}</p>}
+    <ol>{paths.map((path, index) => <li key={`${index}-${path.to}`}>
+      <strong>{index === paths.length - 1 ? __('Everyone else', 'wconvert') : sprintf(__('%d. If the answer matches', 'wconvert'), index + 1)}</strong>
+      <label>{__('Go to', 'wconvert')}<select value={path.to} onChange={event => write(paths.map((item, at) => at === index ? { ...item, to: event.target.value } : item))}>
+        {targets.map(target => <option key={target.id} value={target.id} disabled={paths.some((item, at) => at !== index && item.to === target.id)}>{target.name}</option>)}
+      </select></label>
+      {path.when && <ConditionSettings required purpose="route" value={path.when} sources={sources} onChange={when => {
+        if (when) write(paths.map((item, at) => at === index ? { ...item, when } : item));
+      }} />}
+      {path.when?.clauses.some(clause => clause.values[0] === '') && <p className="wconvert-journey-settings__warning" role="status">{__('Choose an answer for this path before publishing.', 'wconvert')}</p>}
+      {index < paths.length - 1 && <div className="wconvert-journey-routes__actions">
+        <button type="button" disabled={index === 0} onClick={() => { const next = [...paths]; [next[index - 1], next[index]] = [next[index], next[index - 1]]; write(next); }}>{__('Higher priority', 'wconvert')}</button>
+        <button type="button" disabled={index >= paths.length - 2} onClick={() => { const next = [...paths]; [next[index + 1], next[index]] = [next[index], next[index + 1]]; write(next); }}>{__('Lower priority', 'wconvert')}</button>
+        <button type="button" onClick={() => write(paths.filter((_, at) => at !== index))}>{__('Remove path', 'wconvert')}</button>
+      </div>}
+    </li>)}</ol>
+    {sources.length > 0 && unused && paths.length < 6 && <button type="button" onClick={add}>{__('Add answer path', 'wconvert')}</button>}
+    {!sources.length && targets.length > 1 && <p>{__('Add a choice question here or earlier to branch by answer.', 'wconvert')}</p>}
+    {unreachable.length > 0 && <p className="wconvert-journey-settings__warning" role="status">{sprintf(__('No path reaches: %s. Connect or remove these screens before publishing.', 'wconvert'), unreachable.join(', '))}</p>}
+  </section>;
 }
 
 export function ScreenConditionSettings({ tree, step, onChange, onSelect }: {
@@ -81,7 +136,7 @@ export function QuestionSettings({ tree, step, onChange, onSelect }: {
   return <section className="wconvert-journey-settings"><h4>{__('Questions on this screen', 'wconvert')}</h4>
     {questions.map(question => {
       const refs = usedBy(tree, question.id);
-      const protectedValues = new Set(tree.steps.flatMap(item => [item.when, ...(item.results?.map(result => result.when) ?? [])])
+      const protectedValues = new Set(tree.steps.flatMap(item => [item.when, ...(item.results?.map(result => result.when) ?? []), ...(item.paths?.map(path => path.when) ?? [])])
         .flatMap(condition => condition?.clauses ?? []).filter(clause => clause.question === question.id).flatMap(clause => clause.values));
       return <div key={question.id} className="wconvert-journey-settings__question">
         <label>{__('Question', 'wconvert')}<input value={question.label} maxLength={200} onChange={event => change(question.id, node => ({ ...node, label: event.target.value }))} /></label>
@@ -154,28 +209,70 @@ function ProductPicker({ ids, onChange }: { ids: readonly number[]; onChange(ids
 }
 
 export function ResultSettings({ tree, step, onChange }: { tree: TemplateTree; step: number; onChange(next: TemplateTree): void }) {
+  const tabsId = useId();
+  const [selectedId, setSelectedId] = useState<string | null>(null);
   const screen = tree.steps[step];
   if (screen.kind !== 'result') return null;
   const variants = screen.results ?? [];
   const sources = questionsBefore(tree, step);
+  const selected = variants.find(variant => variant.id === selectedId) ?? variants[0];
+  const selectedAt = variants.findIndex(variant => variant.id === selected?.id);
+  let overlap: [ResultVariant, ResultVariant] | undefined;
+  for (let at = 0; at < variants.length - 1 && !overlap; at++) {
+    for (let next = at + 1; next < variants.length - 1; next++) {
+      if (resultsMayOverlap(tree, variants[at], variants[next])) { overlap = [variants[at], variants[next]]; break; }
+    }
+  }
   const setVariants = (results: readonly ResultVariant[]) => onChange({ ...tree, steps: tree.steps.map((item, at) => at === step ? { ...item, results } : item) });
   const edit = (at: number, update: Partial<ResultVariant>) => setVariants(variants.map((item, index) => index === at ? { ...item, ...update } : item));
-  return <section className="wconvert-journey-settings"><h4>{__('Results', 'wconvert')}</h4>
-    <p>{__('The first matching result wins. Everyone else always gets the final fallback.', 'wconvert')}</p>
+  const move = (from: number, to: number) => {
+    const next = [...variants];
+    const [item] = next.splice(from, 1);
+    next.splice(to, 0, item);
+    setVariants(next);
+  };
+  const addResult = () => {
+    const q = sources[0]; let i = 1; while (variants.some(item => item.id === `result_${i}`)) i++;
+    const id = `result_${i}`;
+    setVariants([...variants.slice(0, -1), { id, heading: __('Your result', 'wconvert'), body: __('Here is a good place to start.', 'wconvert'), product_ids: [], when: { match: 'all', clauses: [{ question: q.id, operator: q.answer_type === 'multi' ? 'includes_any' : 'is', values: [q.options?.[0]?.value ?? ''] }] } }, ...variants.slice(-1)]);
+    setSelectedId(id);
+  };
+  return <section className="wconvert-journey-settings"><div className="wconvert-journey-settings__result-heading"><h4>{__('Results', 'wconvert')}</h4>
+    {variants.length < 6 && sources.length > 0 && <button type="button" onClick={addResult}>{__('Add matching result', 'wconvert')}</button>}
+  </div>
+    <p>{__('Choose a result to edit. Visitors see the first matching result, or Everyone else.', 'wconvert')}</p>
     <label className="wconvert-journey-settings__check"><input type="checkbox" checked={screen.products_required === true} onChange={event => onChange({ ...tree, steps: tree.steps.map((item, at) => at === step ? { ...item, products_required: event.target.checked } : item) })} />{__('Require live products before publishing', 'wconvert')}</label>
-    {variants.map((variant, at) => <div key={variant.id} className="wconvert-journey-settings__result">
-      <h5>{at === variants.length - 1 ? __('Everyone else', 'wconvert') : `${__('Result', 'wconvert')} ${at + 1}`}</h5>
-      {at < variants.length - 1 && <ConditionSettings required value={variant.when} sources={sources} onChange={when => { if (when) edit(at, { when }); }} />}
-      <label>{__('Heading', 'wconvert')}<input value={variant.heading} maxLength={200} onChange={event => edit(at, { heading: event.target.value })} /></label>
-      <label>{__('Message and product fallback', 'wconvert')}<textarea value={variant.body ?? ''} maxLength={500} onChange={event => edit(at, { body: event.target.value })} /></label>
-      <label>{__('Fallback shop or guide link', 'wconvert')}<input type="text" inputMode="url" placeholder="/shop/" value={variant.href ?? ''} onChange={event => edit(at, { href: event.target.value })} /></label>
-      <label>{__('Link label', 'wconvert')}<input value={variant.link_label ?? ''} maxLength={120} onChange={event => edit(at, { link_label: event.target.value })} /></label>
-      <ProductPicker ids={variant.product_ids ?? []} onChange={product_ids => edit(at, { product_ids })} />
-      {at < variants.length - 1 && <button type="button" onClick={() => setVariants(variants.filter((_, index) => index !== at))}>{__('Remove result', 'wconvert')}</button>}
-    </div>)}
-    {variants.length < 6 && sources.length > 0 && <button type="button" onClick={() => {
-      const q = sources[0]; let i = 1; while (variants.some(item => item.id === `result_${i}`)) i++;
-      setVariants([...variants.slice(0, -1), { id: `result_${i}`, heading: __('Your result', 'wconvert'), body: __('Here is a good place to start.', 'wconvert'), product_ids: [], when: { match: 'all', clauses: [{ question: q.id, operator: q.answer_type === 'multi' ? 'includes_any' : 'is', values: [q.options?.[0]?.value ?? ''] }] } }, ...variants.slice(-1)]);
-    }}>{__('Add matching result', 'wconvert')}</button>}
+    {overlap && <p className="wconvert-journey-settings__warning" role="status">{sprintf(__('“%1$s” and “%2$s” may match the same answers. The result listed first wins; test both paths.', 'wconvert'), overlap[0].heading, overlap[1].heading)}</p>}
+    <div className="wconvert-journey-settings__result-list" role="tablist" aria-label={__('Possible results', 'wconvert')} aria-orientation="vertical">
+      {variants.map((variant, at) => <button key={variant.id} type="button" role="tab" id={`${tabsId}-tab-${at}`} aria-controls={`${tabsId}-panel`}
+        aria-selected={selected?.id === variant.id} tabIndex={selected?.id === variant.id ? 0 : -1} onClick={() => setSelectedId(variant.id)}
+        onKeyDown={event => {
+          const next = event.key === 'ArrowDown' || event.key === 'ArrowRight' ? (at + 1) % variants.length
+            : event.key === 'ArrowUp' || event.key === 'ArrowLeft' ? (at - 1 + variants.length) % variants.length
+              : event.key === 'Home' ? 0 : event.key === 'End' ? variants.length - 1 : -1;
+          if (next < 0) return;
+          event.preventDefault();
+          setSelectedId(variants[next].id);
+          event.currentTarget.parentElement?.querySelectorAll<HTMLButtonElement>('[role="tab"]')[next]?.focus();
+        }}>
+        <strong>{at === variants.length - 1 ? __('Everyone else', 'wconvert') : sprintf(__('%1$d. %2$s', 'wconvert'), at + 1, variant.heading || sprintf(__('Result %d', 'wconvert'), at + 1))}</strong>
+        <span>{at === variants.length - 1 ? __('Default when no other result matches', 'wconvert')
+          : variant.when ? sprintf(__('If %s', 'wconvert'), conditionText(tree, variant.when)) : __('Set a condition', 'wconvert')}</span>
+      </button>)}
+    </div>
+    {selected && <div key={selected.id} className="wconvert-journey-settings__result" role="tabpanel" id={`${tabsId}-panel`} aria-labelledby={`${tabsId}-tab-${selectedAt}`}>
+      <h5>{sprintf(__('Editing: %s', 'wconvert'), selectedAt === variants.length - 1 ? __('Everyone else', 'wconvert') : selected.heading || sprintf(__('Result %d', 'wconvert'), selectedAt + 1))}</h5>
+      {selectedAt < variants.length - 1 && variants.length > 2 && <div className="wconvert-journey-settings__result-order">
+        <button type="button" disabled={selectedAt === 0} onClick={() => move(selectedAt, selectedAt - 1)}>{__('Move earlier', 'wconvert')}</button>
+        <button type="button" disabled={selectedAt >= variants.length - 2} onClick={() => move(selectedAt, selectedAt + 1)}>{__('Move later', 'wconvert')}</button>
+      </div>}
+      {selectedAt < variants.length - 1 && <ConditionSettings required value={selected.when} sources={sources} onChange={when => { if (when) edit(selectedAt, { when }); }} />}
+      <label>{__('Heading', 'wconvert')}<input value={selected.heading} maxLength={200} onChange={event => edit(selectedAt, { heading: event.target.value })} /></label>
+      <label>{__('Message', 'wconvert')}<textarea value={selected.body ?? ''} maxLength={500} onChange={event => edit(selectedAt, { body: event.target.value })} /></label>
+      <label>{__('Fallback shop or guide link', 'wconvert')}<input type="text" inputMode="url" placeholder="/shop/" value={selected.href ?? ''} onChange={event => edit(selectedAt, { href: event.target.value })} /></label>
+      <label>{__('Link label', 'wconvert')}<input value={selected.link_label ?? ''} maxLength={120} onChange={event => edit(selectedAt, { link_label: event.target.value })} /></label>
+      <ProductPicker ids={selected.product_ids ?? []} onChange={product_ids => edit(selectedAt, { product_ids })} />
+      {selectedAt < variants.length - 1 && <button type="button" onClick={() => { setSelectedId(null); setVariants(variants.filter((_, index) => index !== selectedAt)); }}>{__('Remove result', 'wconvert')}</button>}
+    </div>}
   </section>;
 }

@@ -14,6 +14,20 @@ export function submissionScreen(tree: TemplateTree, id: string | undefined): nu
     n.type === 'button' && 'action' in n && n.action === 'submit' && 'submission' in n && n.submission === id));
 }
 
+export function unreachableScreens(tree: TemplateTree): readonly string[] {
+  const reached = new Set<string>();
+  const visit = (index: number) => {
+    const screen = tree.steps[index];
+    if (!screen || reached.has(screen.id)) return;
+    reached.add(screen.id);
+    const targets = screen.paths?.map(path => path.to) ?? (tree.steps[index + 1] ? [tree.steps[index + 1].id] : []);
+    targets.forEach(id => visit(tree.steps.findIndex(item => item.id === id)));
+    if (screen.when && tree.steps[index + 1]) visit(index + 1);
+  };
+  visit(0);
+  return tree.steps.filter(screen => !reached.has(screen.id)).map(screen => screen.name);
+}
+
 /** New draft nodes need identities before submission references can name them. */
 export function referencedJourney(tree: TemplateTree): TemplateTree {
   const taken = new Set(tree.steps.flatMap(s => walkNodes(s.content)).map(n => 'id' in n ? n.id : undefined));
@@ -41,7 +55,7 @@ export function referencedJourney(tree: TemplateTree): TemplateTree {
 
 /** Move one signup across its result without changing question or field identities. */
 export function resultAccess(tree: TemplateTree, required: boolean): TemplateTree {
-  if (tree.submissions.length !== 1) return tree;
+  if (tree.submissions.length !== 1 || tree.steps.some(screen => screen.paths?.length)) return tree;
   const resultAt = tree.steps.findIndex(screen => screen.kind === 'result');
   const signupAt = submissionScreen(tree, tree.submissions[0].id);
   if (resultAt < 0 || signupAt < 0) return tree;
@@ -97,7 +111,8 @@ export function freshScreen(tree: TemplateTree, kind: 'content' | 'input'): Temp
 
 export function usedBy(tree: TemplateTree, questionId: string): string[] {
   return tree.steps.filter(screen => screen.when?.clauses.some(clause => clause.question === questionId)
-    || screen.results?.some(result => result.when?.clauses.some(clause => clause.question === questionId))).map(screen => screen.id);
+    || screen.results?.some(result => result.when?.clauses.some(clause => clause.question === questionId))
+    || screen.paths?.some(path => path.when?.clauses.some(clause => clause.question === questionId))).map(screen => screen.id);
 }
 
 export function duplicateScreen(tree: TemplateTree, index: number): TemplateScreen {
@@ -108,7 +123,7 @@ export function duplicateScreen(tree: TemplateTree, index: number): TemplateScre
     for (const key of ['children', 'start', 'end']) if (Array.isArray(n[key])) n[key] = (n[key] as TemplateNode[]).map(clone);
     return n as unknown as TemplateNode;
   };
-  return { ...base, id: freshScreen(tree, 'input').id, name: sprintf(__('%s (copy)', 'wconvert'), base.name), content: clone(base.content) };
+  return { ...base, paths: undefined, id: freshScreen(tree, 'input').id, name: sprintf(__('%s (copy)', 'wconvert'), base.name), content: clone(base.content) };
 }
 
 /** Keep the acknowledgement last and accepted signups in their declared order. */
@@ -117,14 +132,25 @@ export function movedScreen(tree: TemplateTree, from: number, to: number): Templ
   const steps = [...tree.steps];
   const [screen] = steps.splice(from, 1);
   steps.splice(to, 0, screen);
+  const moved = steps[to];
+  if (moved.paths?.length === 1 && !moved.paths[0].when && steps.findIndex(item => item.id === moved.paths![0].to) <= to) {
+    steps[to] = { ...moved, paths: undefined };
+  }
   const next = { ...tree, steps };
   for (let at = 0; at < steps.length; at++) {
     const earlier = new Set(steps.slice(0, at).flatMap(s => walkNodes(s.content)).filter(n => n.type === 'question' && 'id' in n).map(n => (n as { id: string }).id));
+    const through = new Set([...earlier, ...walkNodes(steps[at].content).filter(n => n.type === 'question' && 'id' in n).map(n => (n as { id: string }).id)]);
+    const boundary = steps.findIndex((s, index) => index > at && (['result', 'acknowledgement'].includes(s.kind)
+      || walkNodes(s.content).some(n => n.type === 'button' && 'action' in n && n.action === 'submit')));
     if (steps[at].when?.clauses.some(clause => !earlier.has(clause.question))
-      || steps[at].results?.some(result => result.when?.clauses.some(clause => !earlier.has(clause.question)))) return tree;
+      || steps[at].results?.some(result => result.when?.clauses.some(clause => !earlier.has(clause.question)))
+      || steps[at].paths?.some(path => path.when?.clauses.some(clause => !through.has(clause.question))
+        || steps.findIndex(s => s.id === path.to) <= at
+        || (boundary >= 0 && steps.findIndex(s => s.id === path.to) > boundary))) return tree;
   }
   const ends = tree.submissions.map(sub => submissionScreen(next, sub.id)).filter(index => index >= 0);
   if (ends.some((end, index) => index > 0 && end <= ends[index - 1])) return tree;
+  if (unreachableScreens(next).length > 0) return tree;
   return referencedJourney(next);
 }
 
@@ -133,6 +159,7 @@ export function movedScreen(tree: TemplateTree, from: number, to: number): Templ
 export function screenRemoval(tree: TemplateTree, index: number): { screens: string[]; submission?: string } {
   const screen = tree.steps[index];
   if (!screen || ['acknowledgement', 'result'].includes(screen.kind) || tree.steps.length <= 2
+    || tree.steps.some(item => item.paths?.some(path => path.to === screen.id))
     || walkNodes(screen.content).some(n => n.type === 'question' && 'id' in n && usedBy(tree, n.id as string).length > 0)) return { screens: [] };
   const submission = tree.submissions.find(sub => submissionScreen(tree, sub.id) === index);
   if (submission?.required) return { screens: [] };

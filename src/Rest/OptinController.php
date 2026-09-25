@@ -608,6 +608,8 @@ final class OptinController implements RestController
                 'consent' => __('Each signup needs its required contact field and its own consent wording.', 'wconvert'),
                 'products' => __('Connect WooCommerce, choose products for each matching result, and add a fallback link with a label to every result before publishing.', 'wconvert'),
                 'result_link' => __('Give each result link a label and destination before publishing.', 'wconvert'),
+                'routes' => __('In Manage screens, connect every screen with forward paths that rejoin before a signup or result. You can keep saving this Campaign as a draft.', 'wconvert'),
+                'conditions' => __('In Manage screens, choose an answer for every conditional screen and path before publishing. You can keep saving this Campaign as a draft.', 'wconvert'),
                 default => __('Complete the screen order, navigation and submission fields before publishing. You can keep saving this Campaign as a draft.', 'wconvert'),
             };
             return new WP_Error('wconvert_optin_form_incomplete', $message, ['status' => 400]);

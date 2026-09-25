@@ -21,8 +21,15 @@ final class QuestionCapture
         }
         $answers = [];
         $snapshots = [];
-        foreach ($tree['steps'] ?? [] as $step) {
-            if (!JourneyRules::matches($step['when'] ?? null, $answers)) { continue; }
+        $steps = $tree['steps'] ?? [];
+        $path = JourneyRules::path($steps, $posted);
+        if ($submissionId !== '' && !in_array(CaptureJourney::submitScreen($tree, $submissionId), $path['indices'], true)) {
+            return new Refusal(RefusalCode::ChoiceInvalid);
+        }
+        $boundary = $submissionId === '' ? count($steps) : CaptureJourney::submitScreen($tree, $submissionId);
+        foreach ($path['indices'] as $index) {
+            if ($index > $boundary) { break; }
+            $step = $steps[$index];
             foreach (CaptureJourney::nodes($step['content'] ?? []) as $node) {
                 if (($node['type'] ?? '') !== 'question') { continue; }
                 $id = $node['id'];

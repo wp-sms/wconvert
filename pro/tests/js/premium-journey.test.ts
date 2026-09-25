@@ -58,6 +58,37 @@ it('sends active question answers with a contact submission, once', async () => 
   expect(journey.completed).not.toHaveBeenCalled();
 });
 
+it('follows an explicit branch, rejoins capture, and clears a changed-away answer', async () => {
+  const base = structuredClone((service as Template).tree);
+  const design = { id: 'design', name: 'Design details', kind: 'input' as const, content: { type: 'stack' as const, children: [
+    { type: 'heading' as const, text: 'Tell us about your design' },
+    { type: 'question' as const, id: 'q_design', label: 'Project size?', answer_type: 'single' as const, required: false,
+      options: [{ value: 'small', label: 'Small' }, { value: 'large', label: 'Large' }] },
+    { type: 'button' as const, action: 'next' as const, label: 'Continue' },
+    { type: 'button' as const, action: 'back' as const, label: 'Back' },
+  ] } };
+  const condition = (value: string) => ({ match: 'all' as const, clauses: [{ question: 'n2', operator: 'is' as const, values: [value] }] });
+  const tree = { ...base, steps: [
+    { ...base.steps[0], paths: [{ to: 'repair', when: condition('repair') }, { to: 'design', when: condition('design') }, { to: 'contact' }] },
+    { ...base.steps[1], paths: [{ to: 'contact' }] }, design, ...base.steps.slice(2),
+  ] };
+  const fetcher = vi.fn().mockResolvedValueOnce({ ok: true, json: async () => ({ grant: 'secret' }) })
+    .mockResolvedValueOnce({ ok: true, json: async () => ({ id: 'lead' }) });
+  vi.stubGlobal('fetch', fetcher);
+  const journey = setup({ ...(service as Template), tree });
+  journey.choose('design'); journey.act('next');
+  expect(journey.root().textContent).toContain('Tell us about your design');
+  journey.choose('small'); journey.act('next');
+  journey.act('back'); journey.act('back');
+  journey.choose('repair'); journey.act('next');
+  expect(journey.root().textContent).not.toContain('Tell us about your design');
+  journey.act('next');
+  journey.root().querySelector<HTMLInputElement>('[name="email"]')!.value = 'visitor@example.com';
+  journey.act('submit');
+  await vi.waitFor(() => expect(fetcher).toHaveBeenCalledTimes(2));
+  expect(JSON.parse(String(fetcher.mock.calls[1][1].body)).question_answers).toEqual({ n2: 'repair' });
+});
+
 it('shows results before an optional email signup without counting another conversion', async () => {
   const fetcher = vi.fn().mockResolvedValueOnce({ ok: true, json: async () => ({ grant: 'secret' }) })
     .mockResolvedValueOnce({ ok: true, json: async () => ({ id: 'lead' }) });

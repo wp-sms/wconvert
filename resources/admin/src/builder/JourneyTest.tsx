@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import { mount } from '@renderer/mount';
 import type { Template, TemplateNode } from '@renderer/types';
-import { activeAnswers, chooseResult, matches, type Answers } from '../../../loader/src/journey-rules';
+import { activeAnswers, chooseResult, journeyPath, type Answers } from '../../../loader/src/journey-rules';
 import { walkNodes } from './structure/journey';
 
 /** The real renderer, with in-memory answers and no capture or analytics calls. */
@@ -14,7 +14,8 @@ export function JourneyTest({ template, onEdit }: { template: Template; onEdit(s
   const [productState, setProductState] = useState<'selected' | 'empty' | 'error'>('selected');
   const tree = template.tree;
   const active = activeAnswers(tree.steps, answers);
-  const applicable = tree.steps.map(screen => matches(screen.when, active));
+  const applicable = tree.steps.map((_, index) => journeyPath(tree.steps, answers).indices.includes(index));
+  const shownResult = tree.steps[step].kind === 'result' ? chooseResult(tree.steps[step].results ?? [], active) : undefined;
   const move = useCallback((direction: 1 | -1, current: Answers) => {
     const inPath = activeAnswers(tree.steps, current);
     setAnswers(inPath);
@@ -24,9 +25,9 @@ export function JourneyTest({ template, onEdit }: { template: Template; onEdit(s
       setStep(previous.at(-1) ?? 0);
       return;
     }
-    for (let at = step + 1; at < tree.steps.length; at++) if (matches(tree.steps[at].when, inPath)) {
-      setVisited([...visited, at]); setStep(at); return;
-    }
+    const path = journeyPath(tree.steps, inPath).indices;
+    const at = path[path.indexOf(step) + 1];
+    if (at !== undefined) { setVisited([...visited, at]); setStep(at); }
   }, [tree.steps, visited, step]);
   useEffect(() => {
     const target = anchor.current;
@@ -100,6 +101,7 @@ export function JourneyTest({ template, onEdit }: { template: Template; onEdit(s
         <span>{screen.name}</span><small>{applicable[at] ? visited.includes(at) ? __('Visited', 'wconvert') : __('Included', 'wconvert') : __('Skipped by condition', 'wconvert')}</small>
         {!applicable[at] && <button type="button" onClick={() => onEdit(at)}>{__('Edit condition', 'wconvert')}</button>}
       </li>)}</ol>
+      {shownResult && <p className="wconvert-journey-test__result">{sprintf(__('Result shown: %s', 'wconvert'), shownResult.heading)}</p>}
       {tree.steps[step].kind === 'result' && <fieldset><legend>{__('Product state', 'wconvert')}</legend>
         {(['selected', 'empty', 'error'] as const).map(value => <label key={value}><input type="radio" name="product-state" checked={productState === value} onChange={() => setProductState(value)} />{value === 'selected' ? __('Selected', 'wconvert') : value === 'empty' ? __('None available', 'wconvert') : __('Loading error', 'wconvert')}</label>)}
       </fieldset>}

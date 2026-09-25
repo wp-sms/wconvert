@@ -4,7 +4,7 @@ import type { PayloadEntry } from '@loader/types';
 import { captureEndpoint, beaconEndpoint, PAYLOAD_ELEMENT_ID } from '@loader/payload';
 import { createBeacon, type BeaconKind } from '@loader/beacon';
 import { clear, pending, refuse } from '@loader/capture';
-import { activeAnswers, chooseResult, matches, type Answers } from '@loader/journey-rules';
+import { activeAnswers, chooseResult, journeyPath, type Answers } from '@loader/journey-rules';
 import { showProducts } from '@loader/products';
 
 type Input = HTMLInputElement | HTMLSelectElement;
@@ -51,6 +51,7 @@ export function bindJourney(mounted: Mounted, entry: PayloadEntry, options: Opti
   const visited: number[] = [0];
   const accepted = new Set<string>();
   const fixed = new Set<string>();
+  const lockedQuestions = new Set<string>();
   const cleared = new Set<string>();
   const nodes = new Map<string, { node: TemplateNode; screen: number }>();
   function collect(node: TemplateNode, screen: number) {
@@ -83,6 +84,7 @@ export function bindJourney(mounted: Mounted, entry: PayloadEntry, options: Opti
       groups.set(id, [...(groups.get(id) ?? []), input]);
     }
     for (const [id, inputs] of groups) {
+      if (lockedQuestions.has(id)) continue;
       const first = inputs[0];
       if (first instanceof HTMLTextAreaElement) {
         const value = first.value.trim();
@@ -98,10 +100,10 @@ export function bindJourney(mounted: Mounted, entry: PayloadEntry, options: Opti
     const active = activeAnswers(tree!.steps, questionAnswers);
     for (const id of Object.keys(questionAnswers)) if (!(id in active)) delete questionAnswers[id];
   };
-  const relevant = (index: number) => matches(tree!.steps[index].when, activeAnswers(tree!.steps, questionAnswers));
   const next = (index: number, direction: 1 | -1): number => {
-    for (let at = index + direction; at >= 0 && at < tree!.steps.length; at += direction) if (relevant(at)) return at;
-    return index;
+    const path = journeyPath(tree!.steps, questionAnswers).indices;
+    const position = path.indexOf(index);
+    return path[position + direction] ?? index;
   };
   function show(index: number) {
     if (index < 0 || index >= tree!.steps.length) return;
@@ -175,6 +177,7 @@ export function bindJourney(mounted: Mounted, entry: PayloadEntry, options: Opti
       const value = questionAnswers[input.dataset.questionId ?? ''];
       if (input instanceof HTMLTextAreaElement) input.value = typeof value === 'string' ? value : '';
       else input.checked = Array.isArray(value) ? value.includes(input.value) : value === input.value;
+      if (lockedQuestions.has(input.dataset.questionId ?? '')) input.disabled = true;
       input.addEventListener('input', () => { for (const peer of root.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>('[data-question-id]')) if (peer.dataset.questionId === input.dataset.questionId) peer.setCustomValidity(''); });
     }
     for (const button of root.querySelectorAll<HTMLButtonElement>('button[data-action]')) {
@@ -238,6 +241,7 @@ export function bindJourney(mounted: Mounted, entry: PayloadEntry, options: Opti
           if (typeof result.id !== 'string' || result.id.trim() === '') throw {};
           accepted.add(submission.id);
           [...submission.fields, ...submission.consents].forEach(id => fixed.add(id));
+          Object.keys(activeAnswers(tree!.steps, questionAnswers)).forEach(id => lockedQuestions.add(id));
           release(); busy = false;
           report('screen_advanced'); const target = next(step, 1); if (target !== step) { visited.push(target); show(target); }
           if (accepted.size === 1 && resultAt < 0) options.onCaptured();

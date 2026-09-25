@@ -1,0 +1,15 @@
+{
+  "steps": [
+    {"id":"interests","name":"Interests","kind":"input","content":{"type":"question","id":"q_interest","label":"What interests you?","answer_type":"multi","required":true,"options":[{"value":"garden","label":"Garden"},{"value":"indoors","label":"Indoors"}]}},
+    {"id":"garden","name":"Garden details","kind":"input","when":{"match":"all","clauses":[{"question":"q_interest","operator":"includes_any","values":["garden"]}]},"content":{"type":"question","id":"q_garden","label":"Garden size?","answer_type":"single","required":false,"options":[{"value":"small","label":"Small"},{"value":"large","label":"Large"}]}},
+    {"id":"indoors","name":"Indoor details","kind":"input","when":{"match":"all","clauses":[{"question":"q_interest","operator":"includes_any","values":["indoors"]}]},"content":{"type":"question","id":"q_indoor","label":"Indoor light?","answer_type":"single","required":false,"options":[{"value":"bright","label":"Bright"},{"value":"shade","label":"Shade"}]}},
+    {"id":"contact","name":"One enquiry","kind":"input","content":{"type":"stack","children":[]}},
+    {"id":"received","name":"Received","kind":"acknowledgement","content":{"type":"stack","children":[]}}
+  ],
+  "cases": [
+    {"answers":{"q_interest":["garden","indoors"],"q_garden":"small","q_indoor":"bright"},"active":{"q_interest":["garden","indoors"],"q_garden":"small","q_indoor":"bright"},"visible":["interests","garden","indoors","contact","received"]},
+    {"answers":{"q_interest":["indoors"],"q_garden":"small","q_indoor":"bright"},"active":{"q_interest":["indoors"],"q_indoor":"bright"},"visible":["interests","indoors","contact","received"]},
+    {"answers":{"q_interest":["garden"],"q_garden":"small","q_indoor":"bright"},"active":{"q_interest":["garden"],"q_garden":"small"},"visible":["interests","garden","contact","received"]},
+    {"answers":{"q_interest":[],"q_garden":"small","q_indoor":"bright"},"active":{"q_interest":[]},"visible":["interests","contact","received"]}
+  ]
+}

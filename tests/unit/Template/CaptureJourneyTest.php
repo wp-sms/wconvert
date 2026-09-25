@@ -54,6 +54,51 @@ final class CaptureJourneyTest extends TestCase
         self::assertSame('references', CaptureJourney::issue($template['tree']));
     }
 
+    public function testForwardBranchesRejoinBeforeTheRequiredCapture(): void
+    {
+        $template = json_decode((string) file_get_contents(dirname(__DIR__, 3) . '/pro/modules/journeys/templates/journey-service-enquiry.json'), true);
+        $tree = $template['tree'];
+        $design = ['id' => 'design', 'name' => 'Design details', 'kind' => 'content', 'content' => ['type' => 'stack', 'children' => [
+            ['type' => 'heading', 'text' => 'Design details'], ['type' => 'button', 'action' => 'next', 'label' => 'Continue'],
+        ]]];
+        array_splice($tree['steps'], 2, 0, [$design]);
+        $condition = static fn (string $value): array => ['match' => 'all', 'clauses' => [
+            ['question' => 'n2', 'operator' => 'is', 'values' => [$value]],
+        ]];
+        $tree['steps'][0]['paths'] = [['to' => 'repair', 'when' => $condition('repair')], ['to' => 'design', 'when' => $condition('design')], ['to' => 'contact']];
+        $tree['steps'][1]['paths'] = [['to' => 'contact']];
+        self::assertNull(CaptureJourney::issue($tree));
+        $vocabulary = \WConvert\Template\TemplateVocabulary::fromManifest(dirname(__DIR__, 3));
+        $normalized = $vocabulary->normalize(['tree' => $tree, 'tokens' => []])['tree'];
+        self::assertSame($tree['steps'][0]['paths'], $normalized['steps'][0]['paths']);
+        self::assertSame($tree['steps'][0]['paths'], $vocabulary->withoutCopy($normalized)['steps'][0]['paths']);
+        $steps = array_values(array_map(static fn (array $screen): array => $screen, $tree['steps']));
+        self::assertSame(['service', 'design', 'contact', 'received'], array_map(
+            static fn (int $at): string => $tree['steps'][$at]['id'],
+            \WConvert\Template\JourneyRules::path($steps, ['n2' => 'design'])['indices']
+        ));
+        $hiddenBranch = $tree;
+        $hiddenBranch['steps'][0]['paths'] = [['to' => 'repair']];
+        $hiddenBranch['steps'][1]['paths'] = [['to' => 'contact']];
+        self::assertNull(CaptureJourney::issue($hiddenBranch));
+        $hiddenSteps = array_values(array_map(static fn (array $screen): array => $screen, $hiddenBranch['steps']));
+        self::assertSame(['service', 'design', 'contact', 'received'], array_map(
+            static fn (int $at): string => $hiddenBranch['steps'][$at]['id'],
+            \WConvert\Template\JourneyRules::path($hiddenSteps, ['n2' => 'design'])['indices']
+        ));
+        $tree['steps'][0]['paths'][0]['when']['clauses'][0]['values'] = [''];
+        self::assertSame('conditions', CaptureJourney::issue($tree));
+        $tree['steps'][0]['paths'][0]['when']['clauses'][0]['values'] = ['repair'];
+        $tree['steps'][0]['paths'][0]['to'] = 'received';
+        self::assertSame('routes', CaptureJourney::issue($tree));
+        $tree['steps'][0]['paths'][0]['to'] = 'repair';
+        $tree['steps'][1]['paths'] = [['to' => 'service']];
+        self::assertSame('routes', CaptureJourney::issue($tree));
+        $tree['steps'][1]['paths'] = [['to' => 'contact']];
+        $tree['steps'][0]['paths'] = [['to' => 'contact']];
+        self::assertSame('routes', CaptureJourney::issue($tree));
+    }
+
     public function testAQuizCanRequireCaptureBeforeItsTerminalResult(): void
     {
         $template = json_decode((string) file_get_contents(dirname(__DIR__, 3) . '/pro/modules/journeys/templates/journey-content-guide.json'), true);
