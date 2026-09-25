@@ -42,11 +42,16 @@ authoring, PHP/JS evaluation, invalid references, and vocabulary round-trip.
 
 Test journey now keeps contact drafts, marks simulated accepted and skipped
 submissions, supports a retryable save failure, and locks accepted fields and
-question answers when going Back. It still does not simulate destination
-delivery or provide the complete edge-by-edge trace. The local WordPress browser
-check exposed and fixed a narrow modal and internal submission IDs in its
-summary. These improvements are slices of the release work, not a claim that
-the graph contract, path-sensitive validation, or full prototype parity is done.
+question answers when going Back. Each accepted snapshot includes the visited
+questions through that save point, including optional ones left unanswered, and
+excludes answers from later screens. A failed save preserves a draft question
+typed on the same screen as the contact fields. The preview also separates a
+simulated accepted save from queued or failed destination delivery, lets the
+merchant retry delivery without another save, and names traversed graph edges
+with their conditions. The local WordPress browser check exposed and fixed a
+narrow modal and internal submission IDs in its summary. These improvements
+are slices of the release work, not a claim that path-sensitive validation or
+full prototype parity is done.
 
 The next slice added route and skip decisions to the shared JS/PHP evaluator.
 Try answers now explains whether a screen was bypassed by a winning branch or
@@ -169,6 +174,15 @@ arbitrary result topology can be rearranged; the editor disables the timing
 choice when it cannot safely transform the existing connections. The browser
 walkthrough also caught and corrected misleading first-capture and stale
 status wording.
+
+After rebuilding the Pro admin assets, the same saved quiz draft was reloaded
+in WordPress. Test journey showed the real first screen, the required-contact
+notice, topological path summary, an expandable connection trace, and the
+capture checkpoint summary. The browser control could inspect the rendered
+screen and modal but could not click inside the renderer's closed shadow root;
+mounted-renderer UI tests cover the simulated save failure, snapshot, Back,
+and destination retry. This does not yet satisfy the full real-browser visitor
+interaction release gate.
 
 ## Scenario contract before more visual polishing
 

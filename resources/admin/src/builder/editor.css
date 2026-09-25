@@ -1264,8 +1264,16 @@ body .wconvert-rule-picker__unavailable {
 .wconvert-journey-test__capture { display: grid; gap: 9px; padding: 12px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); }
 .wconvert-journey-test__capture h4 { margin: 0; }
 .wconvert-journey-test__side .wconvert-journey-test__capture ol { padding: 0; list-style: none; }
-.wconvert-journey-test__capture li { display: flex; justify-content: space-between; gap: 12px; }
+.wconvert-journey-test__capture li { display: grid; gap: 7px; }
+.wconvert-journey-test__checkpoint > div:first-child { display: flex; justify-content: space-between; gap: 12px; }
 .wconvert-journey-test__capture li span { color: var(--muted-foreground); text-align: end; }
+.wconvert-journey-test__checkpoint > small { line-height: 1.5; color: var(--muted-foreground); }
+.wconvert-journey-test__route summary,.wconvert-journey-test__checkpoint summary { cursor: pointer; font-weight: 600; }
+.wconvert-journey-test__route ol { margin-block: 8px 0; }
+.wconvert-journey-test__checkpoint dl { display: grid; gap: 7px; margin-block: 8px 0; }
+.wconvert-journey-test__checkpoint dl > div { display: flex; justify-content: space-between; gap: 12px; }
+.wconvert-journey-test__checkpoint dt { color: var(--muted-foreground); }
+.wconvert-journey-test__checkpoint dd { margin: 0; text-align: end; overflow-wrap: anywhere; }
 .wconvert-journey-test__capture label { display: flex; align-items: start; gap: 7px; cursor: pointer; }
 .wconvert-journey-test__capture input { margin-block-start: 2px; }
 .wconvert-journey-test__side fieldset { display: grid; gap: 6px; border: 1px solid var(--border); border-radius: var(--radius); }

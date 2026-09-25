@@ -798,6 +798,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
         <TabsContent value="journey" className="wconvert-workspace__journey">
           {entry && <JourneyEditor embedded primaryChannel={entryOfGoal?.outcome.audience_channel} tree={entry.tree} tokens={entry.tokens} step={shownStep}
             onChange={tree => edit({ template: { ...entry, tree } })} onSelect={chooseStep} displaySummary={displaySummary} destinationSummary={destinationSummary}
+            deliveryMode={config?.capture_mode === 'local' ? 'local' : bound.length > 0 ? 'connected' : 'none'}
             onGoToDesign={() => { setTab('design'); setPreviewing(false); }}
             onGoToRules={() => setTab('rules')} onGoToDestinations={() => { setTab('destinations'); destinationsTab.current?.focus(); }} />}
         </TabsContent>

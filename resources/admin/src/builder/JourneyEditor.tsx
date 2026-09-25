@@ -18,9 +18,9 @@ import { graphDisplayOrder, graphReaches, graphRemoval, insertOnGraphEdge, upgra
 
 const JourneyMap = lazy(() => import('./JourneyMap').then(module => ({ default: module.JourneyMap })));
 
-export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChange, onSelect, displaySummary, destinationSummary, onGoToRules, onGoToDestinations, onGoToDesign, openRequest, embedded = false }: {
+export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChange, onSelect, displaySummary, destinationSummary, deliveryMode, onGoToRules, onGoToDestinations, onGoToDesign, openRequest, embedded = false }: {
   tokens?: Tokens; primaryChannel?: string | null; tree: TemplateTree; step: number; onChange(tree: TemplateTree): void; onSelect(step: number): void;
-  displaySummary?: string; destinationSummary?: string; onGoToRules?(): void; onGoToDestinations?(): void; onGoToDesign?(): void; openRequest?: number; embedded?: boolean;
+  displaySummary?: string; destinationSummary?: string; deliveryMode?: 'local' | 'connected' | 'none'; onGoToRules?(): void; onGoToDestinations?(): void; onGoToDesign?(): void; openRequest?: number; embedded?: boolean;
 }) {
   const id = useId();
   const [open, setOpen] = useState(false);
@@ -463,7 +463,8 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
       <DialogContent className="wconvert-journey-test-dialog">
         <DialogTitle>{__('Test journey', 'wconvert')}</DialogTitle>
         <DialogDescription>{__('Try answers and inspect the included and skipped screens. Nothing is submitted.', 'wconvert')}</DialogDescription>
-        <JourneyTest template={{ tree, tokens }} onEdit={index => { select(index); setTestOpen(false); setOpen(true); }} />
+        <JourneyTest template={{ tree, tokens }} deliveryMode={deliveryMode} destinationSummary={destinationSummary}
+          onEdit={index => { select(index); setTestOpen(false); setOpen(true); }} />
       </DialogContent>
     </Dialog>
   </>;
