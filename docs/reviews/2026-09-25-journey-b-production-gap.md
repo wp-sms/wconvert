@@ -54,6 +54,16 @@ hidden by its own condition; Test journey labels that distinction too. This
 trace still uses the ordered v2 journey model and does not yet identify stable
 edge IDs or capture boundaries. Those remain part of the graph-contract work.
 
+The graph-contract slice now has an explicit v3 entry and stable edges, equivalent
+JS/PHP traversal, structural validation, a v2 migration with path-parity checks,
+and an unordered multi-interest fixture. The visitor runtime, server answer
+capture, purpose detection, Try answers, and Test journey use that graph when
+present. Draft normalization preserves graph IDs and priority; v2 remains on its
+old evaluator. The v3 publish boundary deliberately rejects even a structurally
+valid graph until capture ownership, goal-specific required paths and the rest
+of publication validation are complete. The editor does not yet author v3
+connections, so this is an implementation slice, not prototype parity.
+
 ## Verified gaps
 
 “Current” below means source inspection of PR #190 plus a real WordPress browser

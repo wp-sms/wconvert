@@ -73,6 +73,18 @@ export interface QuestionClause {
   readonly values: readonly string[];
 }
 export interface QuestionCondition { readonly match: 'all' | 'any'; readonly clauses: readonly QuestionClause[]; }
+/** Explicit journey connections. Answer edges are checked in array order. */
+export interface JourneyGraphEdge {
+  readonly id: string;
+  readonly from: string;
+  readonly to: string;
+  readonly kind: 'answer' | 'default' | 'hidden';
+  readonly when?: QuestionCondition;
+}
+export interface JourneyGraph {
+  readonly entry: string;
+  readonly edges: readonly JourneyGraphEdge[];
+}
 export interface ResultVariant {
   readonly id: string;
   readonly heading: string;
@@ -811,6 +823,8 @@ export interface TemplateTree {
   readonly v: number;
   readonly steps: readonly TemplateScreen[];
   readonly submissions: readonly CaptureSubmission[];
+  /** Version 3 routing; the v2 ordered steps remain readable without this. */
+  readonly graph?: JourneyGraph;
 }
 
 /**

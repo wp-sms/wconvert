@@ -4,6 +4,7 @@ namespace WConvert\Lead;
 
 use WConvert\Template\CaptureJourney;
 use WConvert\Template\JourneyRules;
+use WConvert\Template\JourneyGraph;
 
 defined('ABSPATH') || exit;
 
@@ -22,13 +23,14 @@ final class QuestionCapture
         $answers = [];
         $snapshots = [];
         $steps = $tree['steps'] ?? [];
-        $path = JourneyRules::path($steps, $posted);
+        $path = is_array($tree['graph'] ?? null)
+            ? JourneyGraph::trace($steps, $tree['graph'], $posted)
+            : JourneyRules::path($steps, $posted);
         if ($submissionId !== '' && !in_array(CaptureJourney::submitScreen($tree, $submissionId), $path['indices'], true)) {
             return new Refusal(RefusalCode::ChoiceInvalid);
         }
-        $boundary = $submissionId === '' ? count($steps) : CaptureJourney::submitScreen($tree, $submissionId);
+        $boundary = $submissionId === '' ? -1 : CaptureJourney::submitScreen($tree, $submissionId);
         foreach ($path['indices'] as $index) {
-            if ($index > $boundary) { break; }
             $step = $steps[$index];
             foreach (CaptureJourney::nodes($step['content'] ?? []) as $node) {
                 if (($node['type'] ?? '') !== 'question') { continue; }
@@ -70,6 +72,7 @@ final class QuestionCapture
                     'submission' => $submissionId,
                 ];
             }
+            if ($index === $boundary) { break; }
         }
         return $snapshots;
     }

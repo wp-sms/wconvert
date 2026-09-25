@@ -58,6 +58,30 @@ it('sends active question answers with a contact submission, once', async () => 
   expect(journey.completed).not.toHaveBeenCalled();
 });
 
+it('starts at the graph entry and submits after an unordered branch and merge', async () => {
+  const base = structuredClone((service as Template).tree);
+  const tree = { ...base, v: 3, steps: [base.steps[2], base.steps[3], base.steps[1], base.steps[0]], graph: {
+    entry: 'service', edges: [
+      { id: 'start', from: 'service', to: 'repair', kind: 'default' as const },
+      { id: 'repair-next', from: 'repair', to: 'contact', kind: 'default' as const },
+      { id: 'repair-hidden', from: 'repair', to: 'contact', kind: 'hidden' as const },
+      { id: 'saved', from: 'contact', to: 'received', kind: 'default' as const },
+    ],
+  } };
+  const fetcher = vi.fn().mockResolvedValueOnce({ ok: true, json: async () => ({ grant: 'secret' }) })
+    .mockResolvedValueOnce({ ok: true, json: async () => ({ id: 'lead' }) });
+  vi.stubGlobal('fetch', fetcher);
+  const journey = setup({ ...(service as Template), tree });
+  expect(journey.root().textContent).toContain('What can we help with?');
+  journey.choose('repair'); journey.act('next');
+  expect(journey.root().textContent).toContain('A little about the repair');
+  journey.act('next');
+  journey.root().querySelector<HTMLInputElement>('[name="email"]')!.value = 'visitor@example.com';
+  journey.act('submit');
+  await vi.waitFor(() => expect(fetcher).toHaveBeenCalledTimes(2));
+  expect(JSON.parse(String(fetcher.mock.calls[1][1].body)).question_answers).toEqual({ n2: 'repair' });
+});
+
 it('follows an explicit branch, rejoins capture, and clears a changed-away answer', async () => {
   const base = structuredClone((service as Template).tree);
   const design = { id: 'design', name: 'Design details', kind: 'input' as const, content: { type: 'stack' as const, children: [
@@ -131,6 +155,17 @@ it('can require contact before a result while counting the result as the quiz co
   const immediate = resultAccess(tree, false);
   expect(immediate.steps.map(screen => screen.kind)).toEqual(['input', 'result', 'input', 'acknowledgement']);
   expect(immediate.submissions[0].required).toBe(false);
+});
+
+it('explains a required graph capture gate from the entry, regardless of storage order', () => {
+  const base = resultAccess((guide as Template).tree, true);
+  const [question, signup, result] = base.steps;
+  const tree = { ...base, v: 3, steps: [result, question, signup], graph: { entry: question.id, edges: [
+    { id: 'to-signup', from: question.id, to: signup.id, kind: 'default' as const },
+    { id: 'to-result', from: signup.id, to: result.id, kind: 'default' as const },
+  ] } };
+  const journey = setup({ ...(guide as Template), tree });
+  expect(journey.root().textContent).toContain('Contact details are required before you see your result.');
 });
 
 it('returns to the question named by a server refusal', async () => {

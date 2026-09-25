@@ -23,7 +23,9 @@ final class CaptureContract
             $id = $submission['id'];
             $purpose = $index === 0 ? match ($goal) {
                 'grow_email_list' => 'email_marketing', 'grow_sms_list' => 'sms_marketing',
-                'find_match' => $resultAt !== false && $resultAt < CaptureJourney::submitScreen($tree, $id) ? 'email_marketing' : 'request',
+                'find_match' => $resultAt !== false && (is_array($tree['graph'] ?? null)
+                    ? JourneyGraph::reaches($tree['graph'], $tree['steps'][$resultAt]['id'], $tree['steps'][CaptureJourney::submitScreen($tree, $id)]['id'] ?? '')
+                    : $resultAt < CaptureJourney::submitScreen($tree, $id)) ? 'email_marketing' : 'request',
                 default => 'request',
             } : ($goal === 'grow_sms_list' ? 'email_marketing' : 'sms_marketing');
             $entry = $config['submission_settings'][$id] ?? [];
@@ -46,6 +48,9 @@ final class CaptureContract
     {
         $template = self::template($config, $goal, $policyUrl);
         $tree = $template['tree'] ?? [];
+        if (($tree['v'] ?? null) === 3) {
+            return JourneyGraph::issue($tree) ?? 'graph_capture';
+        }
         if (($issue = CaptureJourney::issue($tree)) !== null) { return $issue; }
         foreach ($tree['steps'] ?? [] as $step) {
             if (($step['kind'] ?? '') !== 'result') { continue; }

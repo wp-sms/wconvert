@@ -3,14 +3,17 @@ import { __, sprintf } from '@wordpress/i18n';
 import { mount } from '@renderer/mount';
 import type { Template, TemplateNode } from '@renderer/types';
 import { activeAnswers, chooseResult, journeyPath, journeyTrace, type Answers } from '../../../loader/src/journey-rules';
+import { graphTrace } from '../../../loader/src/journey-graph';
 import { walkNodes } from './structure/journey';
 
 /** The real renderer, with in-memory answers and no capture or analytics calls. */
 export function JourneyTest({ template, onEdit }: { template: Template; onEdit(step: number): void }) {
+  const tree = template.tree;
+  const entry = tree.graph ? Math.max(0, tree.steps.findIndex(screen => screen.id === tree.graph?.entry)) : 0;
   const anchor = useRef<HTMLDivElement>(null);
-  const [step, setStep] = useState(0);
+  const [step, setStep] = useState(entry);
   const [answers, setAnswers] = useState<Answers>({});
-  const [visited, setVisited] = useState<number[]>([0]);
+  const [visited, setVisited] = useState<number[]>([entry]);
   const [productState, setProductState] = useState<'selected' | 'empty' | 'error'>('selected');
   const [captureValues, setCaptureValues] = useState<Record<string, string | boolean>>({});
   const [accepted, setAccepted] = useState<string[]>([]);
@@ -19,24 +22,23 @@ export function JourneyTest({ template, onEdit }: { template: Template; onEdit(s
   const [failNext, setFailNext] = useState(false);
   const failNextRef = useRef(false);
   const [feedback, setFeedback] = useState('');
-  const tree = template.tree;
-  const trace = useMemo(() => journeyTrace(tree.steps, answers), [tree.steps, answers]);
+  const trace = useMemo(() => tree.graph ? graphTrace(tree.steps, tree.graph, answers) : journeyTrace(tree.steps, answers), [tree.steps, tree.graph, answers]);
   const active = trace.answers;
   const applicable = tree.steps.map((_, index) => trace.indices.includes(index));
   const shownResult = tree.steps[step].kind === 'result' ? chooseResult(tree.steps[step].results ?? [], active) : undefined;
   const move = useCallback((direction: 1 | -1, current: Answers) => {
-    const inPath = activeAnswers(tree.steps, current);
+    const inPath = tree.graph ? graphTrace(tree.steps, tree.graph, current).answers : activeAnswers(tree.steps, current);
     setAnswers(inPath);
     if (direction < 0) {
       const previous = visited.slice(0, -1);
       setVisited(previous);
-      setStep(previous.at(-1) ?? 0);
+      setStep(previous.at(-1) ?? entry);
       return;
     }
-    const path = journeyPath(tree.steps, inPath).indices;
+    const path = tree.graph ? graphTrace(tree.steps, tree.graph, inPath).indices : journeyPath(tree.steps, inPath).indices;
     const at = path[path.indexOf(step) + 1];
     if (at !== undefined) { setVisited([...visited, at]); setStep(at); }
-  }, [tree.steps, visited, step]);
+  }, [tree.steps, tree.graph, visited, step, entry]);
   useEffect(() => {
     const target = anchor.current;
     if (!target) return;
@@ -47,7 +49,9 @@ export function JourneyTest({ template, onEdit }: { template: Template; onEdit(s
     if (!root) return () => mounted.close();
     const resultAt = tree.steps.findIndex(screen => screen.kind === 'result');
     const signupAt = tree.submissions[0] ? tree.steps.findIndex(screen => walkNodes(screen.content).some(node => node.type === 'button' && 'submission' in node && node.submission === tree.submissions[0].id && 'action' in node && node.action === 'submit')) : -1;
-    if (step === 0 && resultAt > signupAt && signupAt >= 0) {
+    if (step === entry && signupAt >= 0 && resultAt >= 0 && (tree.graph
+      ? trace.indices.indexOf(signupAt) >= 0 && trace.indices.indexOf(signupAt) < trace.indices.indexOf(resultAt)
+      : resultAt > signupAt)) {
       const notice = document.createElement('p');
       notice.className = 'wc-gate-note'; notice.textContent = __('Contact details are required before you see your result.', 'wconvert');
       const heading = root.querySelector('h1,h2,h3');
@@ -133,7 +137,8 @@ export function JourneyTest({ template, onEdit }: { template: Template; onEdit(s
           const id = button.dataset.submission ?? '';
           if (failNextRef.current) { failNextRef.current = false; setFailNext(false); setFeedback(__('Submission not confirmed. The visitor stays here and can retry.', 'wconvert')); return; }
           setAccepted(previous => previous.includes(id) ? previous : [...previous, id]);
-          setAcceptedQuestions(previous => [...new Set([...previous, ...Object.keys(activeAnswers(tree.steps, read()))])]);
+          setAcceptedQuestions(previous => [...new Set([...previous, ...Object.keys(tree.graph
+            ? graphTrace(tree.steps, tree.graph, read()).answers : activeAnswers(tree.steps, read()))])]);
           setFeedback(__('Submission accepted in this test. No lead was created.', 'wconvert'));
         } else if (button.dataset.action === 'skip') {
           const id = button.dataset.submission ?? '';
@@ -152,14 +157,14 @@ export function JourneyTest({ template, onEdit }: { template: Template; onEdit(s
     root.querySelectorAll('a').forEach(link => link.addEventListener('click', event => event.preventDefault()));
     return () => mounted.close();
   // Remount when the preview path or its answers change; this never sends data.
-  }, [template, step, productState, answers, active, move, tree.steps, tree.submissions, captureValues, accepted, acceptedQuestions]);
+  }, [template, step, entry, productState, answers, active, trace.indices, move, tree.steps, tree.graph, tree.submissions, captureValues, accepted, acceptedQuestions]);
   return <div className="wconvert-journey-test">
     <div ref={anchor} className="wconvert-journey-test__stage" />
     <div className="wconvert-journey-test__side">
       <h3>{__('Path summary', 'wconvert')}</h3>
       <ol>{tree.steps.map((screen, at) => <li key={screen.id} data-current={at === step}>
         <span>{screen.name}</span><small>{applicable[at] ? visited.includes(at) ? __('Visited', 'wconvert') : __('Included', 'wconvert')
-          : trace.skips.find(skip => skip.index === at)?.reason === 'route' ? __('Bypassed by another path', 'wconvert')
+          : ('skips' in trace && trace.skips.find(skip => skip.index === at)?.reason === 'route') || ('hidden' in trace && !trace.hidden.includes(screen.id)) ? __('Bypassed by another path', 'wconvert')
             : __('Show condition did not match', 'wconvert')}</small>
         {!applicable[at] && <button type="button" onClick={() => onEdit(at)}>{__('Edit condition', 'wconvert')}</button>}
       </li>)}</ol>
@@ -175,7 +180,7 @@ export function JourneyTest({ template, onEdit }: { template: Template; onEdit(s
       {tree.steps[step].kind === 'result' && <fieldset><legend>{__('Product state', 'wconvert')}</legend>
         {(['selected', 'empty', 'error'] as const).map(value => <label key={value}><input type="radio" name="product-state" checked={productState === value} onChange={() => setProductState(value)} />{value === 'selected' ? __('Selected', 'wconvert') : value === 'empty' ? __('None available', 'wconvert') : __('Loading error', 'wconvert')}</label>)}
       </fieldset>}
-      <button type="button" onClick={() => { setAnswers({}); setCaptureValues({}); setAccepted([]); setAcceptedQuestions([]); setSkipped([]); failNextRef.current = false; setFailNext(false); setFeedback(''); setStep(0); setVisited([0]); }}>{__('Reset test', 'wconvert')}</button>
+      <button type="button" onClick={() => { setAnswers({}); setCaptureValues({}); setAccepted([]); setAcceptedQuestions([]); setSkipped([]); failNextRef.current = false; setFailNext(false); setFeedback(''); setStep(entry); setVisited([entry]); }}>{__('Reset test', 'wconvert')}</button>
       <p>{__('Preview never saves answers, creates Leads, or counts conversions.', 'wconvert')}</p>
     </div>
   </div>;

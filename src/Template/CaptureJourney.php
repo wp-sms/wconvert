@@ -11,6 +11,7 @@ final class CaptureJourney
     /** @param array<string, mixed> $tree */
     public static function requiresPremium(array $tree): bool
     {
+        if (isset($tree['graph'])) { return true; }
         foreach ($tree['steps'] ?? [] as $step) {
             if (isset($step['when']) || isset($step['paths']) || ($step['kind'] ?? '') === 'result') { return true; }
             foreach (self::nodes($step['content'] ?? []) as $node) {

@@ -4,7 +4,8 @@ import type { PayloadEntry } from '@loader/types';
 import { captureEndpoint, beaconEndpoint, PAYLOAD_ELEMENT_ID } from '@loader/payload';
 import { createBeacon, type BeaconKind } from '@loader/beacon';
 import { clear, pending, refuse } from '@loader/capture';
-import { activeAnswers, chooseResult, journeyPath, type Answers } from '@loader/journey-rules';
+import { chooseResult, journeyPath, type Answers } from '@loader/journey-rules';
+import { graphReaches, graphTrace } from '@loader/journey-graph';
 import { showProducts } from '@loader/products';
 
 type Input = HTMLInputElement | HTMLSelectElement;
@@ -24,6 +25,8 @@ function labels(): string[] {
 export function bindJourney(mounted: Mounted, entry: PayloadEntry, options: Options): void {
   const tree = entry.template?.tree;
   if (!tree || (tree.submissions.length === 0 && !tree.steps.some(screen => screen.kind === 'result'))) return;
+  const route = (answers: Answers) => tree.graph ? graphTrace(tree.steps, tree.graph, answers) : journeyPath(tree.steps, answers);
+  const activeFor = (answers: Answers) => route(answers).answers;
   const resultAt = tree.steps.findIndex(screen => screen.kind === 'result');
   const firstSubmitAt = tree.steps.findIndex(screen => screen.kind === 'input' && tree.submissions.some(sub => {
     const walk = (node: TemplateNode): boolean => {
@@ -33,7 +36,8 @@ export function bindJourney(mounted: Mounted, entry: PayloadEntry, options: Opti
     };
     return walk(screen.content);
   }));
-  const resultFirst = resultAt >= 0 && (firstSubmitAt < 0 || resultAt < firstSubmitAt);
+  const resultFirst = resultAt >= 0 && (firstSubmitAt < 0 || (tree.graph
+    ? graphReaches(tree.graph, tree.steps[resultAt].id, tree.steps[firstSubmitAt].id) : resultAt < firstSubmitAt));
   const beacon = createBeacon(beaconEndpoint());
   const counted = new Set<string>();
   const report = (kind: BeaconKind, index = step) => {
@@ -41,14 +45,15 @@ export function bindJourney(mounted: Mounted, entry: PayloadEntry, options: Opti
     if (counted.has(key) || !entry.capture_contract) return;
     counted.add(key); beacon.report(entry.id, kind, `screen:${entry.capture_contract}:${screen.id}`); beacon.flush();
   };
-  let step = 0;
+  const entryIndex = tree.graph ? Math.max(0, tree.steps.findIndex(screen => screen.id === tree.graph?.entry)) : 0;
+  let step = entryIndex;
   let grant: string | undefined;
   let busy = false;
   const answers = new Map<string, string | boolean>();
   const questionAnswers: Answers = {};
   let completed = false;
   let stopProducts: (() => void) | undefined;
-  const visited: number[] = [0];
+  const visited: number[] = [step];
   const accepted = new Set<string>();
   const fixed = new Set<string>();
   const lockedQuestions = new Set<string>();
@@ -97,11 +102,11 @@ export function bindJourney(mounted: Mounted, entry: PayloadEntry, options: Opti
         if (value) questionAnswers[id] = value; else delete questionAnswers[id];
       }
     }
-    const active = activeAnswers(tree!.steps, questionAnswers);
+    const active = activeFor(questionAnswers);
     for (const id of Object.keys(questionAnswers)) if (!(id in active)) delete questionAnswers[id];
   };
   const next = (index: number, direction: 1 | -1): number => {
-    const path = journeyPath(tree!.steps, questionAnswers).indices;
+    const path = route(questionAnswers).indices;
     const position = path.indexOf(index);
     return path[position + direction] ?? index;
   };
@@ -110,7 +115,7 @@ export function bindJourney(mounted: Mounted, entry: PayloadEntry, options: Opti
     stopProducts?.(); stopProducts = undefined;
     step = index; mounted.showStep(index); bind();
     if (tree!.steps[index].kind === 'result') {
-      const result = chooseResult(tree!.steps[index].results ?? [], activeAnswers(tree!.steps, questionAnswers));
+      const result = chooseResult(tree!.steps[index].results ?? [], activeFor(questionAnswers));
       const root = mounted.root;
       const heading = root?.querySelector<HTMLElement>('[data-result-heading]');
       const body = root?.querySelector<HTMLElement>('[data-result-body]');
@@ -136,7 +141,10 @@ export function bindJourney(mounted: Mounted, entry: PayloadEntry, options: Opti
     const root = mounted.root;
     if (!root) return;
     root.setAttribute('aria-label', tree!.steps[step].name);
-    if (step === 0 && resultAt > firstSubmitAt && firstSubmitAt >= 0) {
+    if (step === entryIndex
+      && firstSubmitAt >= 0 && resultAt >= 0 && (tree!.graph
+        ? graphReaches(tree!.graph, tree!.steps[firstSubmitAt].id, tree!.steps[resultAt].id)
+        : resultAt > firstSubmitAt)) {
       const notice = document.createElement('p');
       notice.className = 'wc-gate-note'; notice.textContent = labels()[2];
       const heading = root.querySelector('h1,h2,h3');
@@ -236,12 +244,12 @@ export function bindJourney(mounted: Mounted, entry: PayloadEntry, options: Opti
             if (typeof start.grant !== 'string' || start.grant.trim() === '') throw {};
             grant = start.grant;
           }
-          const result = await request({ ...base, grant, submission: submission.id, fields, question_answers: activeAnswers(tree!.steps, questionAnswers),
+          const result = await request({ ...base, grant, submission: submission.id, fields, question_answers: activeFor(questionAnswers),
             consent: submission.consents.length > 0 ? submission.consents.every(id => answers.get(id) === true) : undefined });
           if (typeof result.id !== 'string' || result.id.trim() === '') throw {};
           accepted.add(submission.id);
           [...submission.fields, ...submission.consents].forEach(id => fixed.add(id));
-          Object.keys(activeAnswers(tree!.steps, questionAnswers)).forEach(id => lockedQuestions.add(id));
+          Object.keys(activeFor(questionAnswers)).forEach(id => lockedQuestions.add(id));
           release(); busy = false;
           report('screen_advanced'); const target = next(step, 1); if (target !== step) { visited.push(target); show(target); }
           if (accepted.size === 1 && resultAt < 0) options.onCaptured();
@@ -261,6 +269,7 @@ export function bindJourney(mounted: Mounted, entry: PayloadEntry, options: Opti
       })();
     });
   }
+  if (tree.graph) mounted.showStep(step);
   bind();
 }
 

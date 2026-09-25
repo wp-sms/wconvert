@@ -38,6 +38,21 @@ final class TemplateVocabularyTest extends TestCase
         return self::vocabulary()->normalize($template);
     }
 
+    public function testGraphDraftKeepsStableEdgesAndPriorityWithoutUnknownKeys(): void
+    {
+        $fixture = json_decode((string) file_get_contents(self::PLUGIN_DIR . '/tests/fixtures/journey-graph.json'), true);
+        $tree = ['v' => 3, 'steps' => $fixture['steps'], 'submissions' => [], 'graph' => $fixture['graph']];
+        $tree['graph']['edges'][0]['onclick'] = 'not-a-route-setting';
+        $normalized = self::normalize(['tree' => $tree])['tree'];
+        self::assertSame(3, $normalized['v']);
+        self::assertSame('interests', $normalized['graph']['entry']);
+        self::assertSame(array_column($fixture['graph']['edges'], 'id'), array_column($normalized['graph']['edges'], 'id'));
+        self::assertArrayNotHasKey('onclick', $normalized['graph']['edges'][0]);
+        self::assertSame($normalized['graph'], self::vocabulary()->withoutCopy($normalized)['graph']);
+        self::assertNull(\WConvert\Template\JourneyGraph::issue($normalized));
+        self::assertSame('graph_capture', \WConvert\Template\CaptureContract::issue(['template' => ['tree' => $normalized]], 'get_enquiries', ''));
+    }
+
     public function testAnUnknownNodeTypeIsDropped(): void
     {
         $normalized = self::normalize([

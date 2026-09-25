@@ -4,6 +4,7 @@ import { afterEach, expect, it, vi } from 'vitest';
 import { JourneyTest } from '../../resources/admin/src/builder/JourneyTest';
 import type { Template } from '@renderer/types';
 import source from '../../resources/templates/library/journey-email-only.json';
+import graphFixture from '../fixtures/journey-graph.json';
 
 vi.mock('@renderer/mount', () => ({ mount: ({ anchor }: { anchor: HTMLElement }) => {
   const root = document.createElement('form');
@@ -34,4 +35,14 @@ it('keeps typed details when failure is toggled, then accepts a retry without se
   await user.click(screen.getByRole('button', { name: 'Reset test' }));
   expect(screen.getByText('Not reached')).toBeInTheDocument();
   expect(screen.getByLabelText('Email address')).toHaveValue('');
+});
+
+it('starts a graph test at its entry screen and resets to that entry', async () => {
+  const user = userEvent.setup();
+  const template = { tree: { v: 3, steps: graphFixture.steps, graph: graphFixture.graph, submissions: [] }, tokens: {} } as unknown as Template;
+  render(<JourneyTest template={template} onEdit={() => {}} />);
+  expect(screen.getByText('Interests').closest('li')).toHaveAttribute('data-current', 'true');
+  expect(screen.getByText('One enquiry').closest('li')).toHaveAttribute('data-current', 'false');
+  await user.click(screen.getByRole('button', { name: 'Reset test' }));
+  expect(screen.getByText('Interests').closest('li')).toHaveAttribute('data-current', 'true');
 });

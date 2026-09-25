@@ -67,4 +67,23 @@ final class QuestionCaptureTest extends TestCase
         $tree['steps'][0]['paths'] = [['to' => 'received']];
         self::assertInstanceOf(Refusal::class, QuestionCapture::validate($tree, ['n2' => 'design'], 'enquiry'));
     }
+
+    public function testGraphCaptureUsesVisitedOrderInsteadOfScreenStorageOrder(): void
+    {
+        $template = json_decode((string) file_get_contents(WCONVERT_DIR . '/pro/modules/journeys/templates/journey-service-enquiry.json'), true, 512, JSON_THROW_ON_ERROR);
+        $tree = $template['tree'];
+        $tree['v'] = 3;
+        $tree['steps'] = [$tree['steps'][2], $tree['steps'][3], $tree['steps'][1], $tree['steps'][0]];
+        $tree['graph'] = ['entry' => 'service', 'edges' => [
+            ['id' => 'start', 'from' => 'service', 'to' => 'repair', 'kind' => 'default'],
+            ['id' => 'repair_next', 'from' => 'repair', 'to' => 'contact', 'kind' => 'default'],
+            ['id' => 'repair_hidden', 'from' => 'repair', 'to' => 'contact', 'kind' => 'hidden'],
+            ['id' => 'saved', 'from' => 'contact', 'to' => 'received', 'kind' => 'default'],
+        ]];
+        $answer = QuestionCapture::validate($tree, ['n2' => 'repair'], 'enquiry');
+        self::assertIsArray($answer);
+        self::assertSame(['n2'], array_column($answer, 'id'));
+        self::assertSame('service', $answer[0]['screen']);
+        self::assertInstanceOf(Refusal::class, QuestionCapture::validate($tree, ['n2' => 'repair'], 'missing'));
+    }
 }

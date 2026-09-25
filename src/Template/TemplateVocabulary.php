@@ -309,11 +309,16 @@ final class TemplateVocabulary
             }
         }
 
+        $storedTree = TemplateTree::stamped(['steps' => $normalized, 'submissions' => self::submissions($tree['submissions'] ?? [])]);
+        if (($tree['v'] ?? null) === 3) {
+            $storedTree['v'] = 3;
+            $storedTree['graph'] = self::graph($tree['graph'] ?? null);
+        }
         return [
             // Stamped with the vocabulary version that produced it, so a
             // narrowing change one day has a fact to migrate FROM rather than
             // a guess about what each stored design meant ({@see TemplateTree::VERSION}).
-            'tree' => TemplateTree::stamped(['steps' => $normalized, 'submissions' => self::submissions($tree['submissions'] ?? [])]),
+            'tree' => $storedTree,
             'tokens' => $this->tokens($template['tokens'] ?? []),
         ];
     }
@@ -353,7 +358,31 @@ final class TemplateVocabulary
             }
         }
 
-        return TemplateTree::stamped(['steps' => $stripped, 'submissions' => self::submissions($tree['submissions'] ?? [])]);
+        $storedTree = TemplateTree::stamped(['steps' => $stripped, 'submissions' => self::submissions($tree['submissions'] ?? [])]);
+        if (($tree['v'] ?? null) === 3) {
+            $storedTree['v'] = 3;
+            $storedTree['graph'] = self::graph($tree['graph'] ?? null);
+        }
+        return $storedTree;
+    }
+
+    /** Keep draft graph IDs and priority while closing its storage vocabulary. */
+    private static function graph($input): array
+    {
+        $input = is_array($input) ? $input : [];
+        $edges = [];
+        foreach (is_array($input['edges'] ?? null) ? $input['edges'] : [] as $edge) {
+            $edge = is_array($edge) ? $edge : [];
+            $route = [];
+            foreach (['id', 'from', 'to', 'kind'] as $key) {
+                $route[$key] = is_string($edge[$key] ?? null) ? $edge[$key] : '';
+            }
+            if (array_key_exists('when', $edge)) {
+                $route['when'] = JourneyRules::normalize($edge['when']) ?? ['match' => 'invalid', 'clauses' => []];
+            }
+            $edges[] = $route;
+        }
+        return ['entry' => is_string($input['entry'] ?? null) ? $input['entry'] : '', 'edges' => $edges];
     }
 
     /** @param mixed $input

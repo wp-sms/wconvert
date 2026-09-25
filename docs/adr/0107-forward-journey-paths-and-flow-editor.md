@@ -2,6 +2,10 @@
 
 Accepted 2026-09-25. Amends the ordered-only routing decision in [ADR 0106](0106-question-journeys-extend-the-paid-loader.md).
 
+This describes version 2 journeys. [ADR 0108](0108-explicit-journey-graph-and-legacy-migration.md)
+supersedes its forward-only, array-order and seven-screen routing decisions for
+version 3 graph journeys; existing version 2 campaigns retain this behavior.
+
 The campaign editor has a persistent Journey tab with a horizontal React Flow map and selected-screen inspector; Manage screens in Design opens this tab. The Screens list remains available for inventory, keyboard operation, and reordering. Merchants can draw a connection to a later screen and edit its target, answer condition, and priority in the inspector. An explicit screen's `paths` are checked in order; the first match wins and the last, unconditional path is the fallback. No route may point backward or cross the next submission or result boundary. The ordered `steps` array still owns content, capture fields, and screen order; forward edges add branches and merges without another store or table.
 
 The absence of `paths` means continue through the next relevant ordered screen. That preserves simple journeys and makes independent `when` conditions useful for multi-select enquiries: every relevant follow-up can run before one combined submission. Explicit paths serve exclusive alternatives. On Back, unsaved answers from screens still on the resolved path remain; answers from skipped screens are removed. A successful submission freezes its accepted question answers while visitors can continue through later screens. Preview, visitor navigation, and server capture validation resolve the same path, and the capture contract fingerprint includes route changes.

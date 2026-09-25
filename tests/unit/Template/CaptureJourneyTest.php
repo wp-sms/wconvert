@@ -134,6 +134,21 @@ final class CaptureJourneyTest extends TestCase
         self::assertSame('email_marketing', \WConvert\Template\CaptureContract::settings(['template' => $template], 'find_match')['email-signup']['purpose']);
     }
 
+    public function testGraphResultFirstPurposeUsesConnectionsRatherThanStorageOrder(): void
+    {
+        $template = json_decode((string) file_get_contents(dirname(__DIR__, 3) . '/pro/modules/journeys/templates/journey-content-guide.json'), true);
+        $tree = $template['tree'];
+        $tree['v'] = 3;
+        $tree['steps'] = [$tree['steps'][2], $tree['steps'][3], $tree['steps'][0], $tree['steps'][1]];
+        $tree['graph'] = ['entry' => 'interests', 'edges' => [
+            ['id' => 'a', 'from' => 'interests', 'to' => 'guide', 'kind' => 'default'],
+            ['id' => 'b', 'from' => 'guide', 'to' => 'signup', 'kind' => 'default'],
+            ['id' => 'c', 'from' => 'signup', 'to' => 'thanks', 'kind' => 'default'],
+        ]];
+        $settings = \WConvert\Template\CaptureContract::settings(['template' => ['tree' => $tree]], 'find_match');
+        self::assertSame('email_marketing', $settings['email-signup']['purpose']);
+    }
+
     public function testAContentResultNeedsItsConfiguredGuideLinkBeforePublishing(): void
     {
         $template = json_decode((string) file_get_contents(dirname(__DIR__, 3) . '/pro/modules/journeys/templates/journey-content-guide.json'), true);
