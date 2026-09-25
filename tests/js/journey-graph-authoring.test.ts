@@ -32,6 +32,21 @@ it('gives a conditional inserted screen an explicit hidden continuation', () => 
   ]);
 });
 
+it('keeps later independent follow-ups reachable when an earlier one is hidden', () => {
+  const garden = { ...freshScreen(base, 'input'), when: { match: 'all' as const, clauses: [
+    { question: 'n1', operator: 'includes_any' as const, values: ['garden'] },
+  ] } };
+  const first = insertOnGraphEdge(base, 'start', garden);
+  const firstDefault = first.graph!.edges.find(edge => edge.from === garden.id && edge.kind === 'default')!;
+  const balcony = { ...freshScreen(first, 'input'), when: { match: 'all' as const, clauses: [
+    { question: 'n1', operator: 'includes_any' as const, values: ['balcony'] },
+  ] } };
+  const second = insertOnGraphEdge(first, firstDefault.id, balcony);
+  expect(second.graph?.edges.find(edge => edge.from === garden.id && edge.kind === 'hidden')?.to).toBe(balcony.id);
+  expect(graphTrace(second.steps, second.graph!, { n1: ['balcony'] }).indices.map(index => second.steps[index].id))
+    .toEqual(['interests', balcony.id, 'balcony', 'contact', 'received']);
+});
+
 it('keeps explicit field ownership when storage order changes', () => {
   const reordered = referencedJourney({ ...base, steps: [...base.steps].reverse() });
   expect(reordered.submissions[0]).toEqual(base.submissions[0]);
@@ -60,7 +75,7 @@ it('deletes an unreferenced screen as one reroute and preserves all incoming edg
   const screenId = added.steps.at(-1)!.id;
   const removed = graphRemoval(added, screenId)!;
   expect(removed.destination).toBe('contact');
-  expect(removed.incoming).toBe(1);
+  expect(removed.incoming).toBe(2);
   expect(removed.next.graph?.edges.find(edge => edge.id === 'balcony_next')?.to).toBe('contact');
   expect(removed.next.steps).toEqual(base.steps);
   expect(unreachableScreens(removed.next)).toEqual([]);

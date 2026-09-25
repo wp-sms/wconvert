@@ -86,7 +86,9 @@ export function insertOnGraphEdge(tree: TemplateTree, edgeId: string, screen: Te
     ? { id: graphEdgeId({ ...tree.graph, edges: [...tree.graph.edges, continuation] }), from: screen.id, to: edge.to, kind: 'hidden' }
     : null;
   return { ...tree, steps: [...tree.steps, screen], graph: { ...tree.graph,
-    edges: [...tree.graph.edges.map(item => item.id === edgeId ? { ...item, to: screen.id } : item), continuation, ...(hidden ? [hidden] : [])] } };
+    edges: [...tree.graph.edges.map(item => item.id === edgeId
+      || edge.kind === 'default' && item.from === edge.from && item.kind === 'hidden' && item.to === edge.to
+        ? { ...item, to: screen.id } : item), continuation, ...(hidden ? [hidden] : [])] } };
 }
 
 export function graphRemoval(tree: TemplateTree, screenId: string): { next: TemplateTree; destination: string; incoming: number } | null {

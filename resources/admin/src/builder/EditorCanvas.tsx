@@ -6,6 +6,7 @@ import { Preview } from './Preview';
 import { resolvedPlacement } from './PlacementControl';
 import type { SlotKey } from './slots';
 import type { Template } from '@renderer/types';
+import { graphDisplayOrder } from './structure/graph';
 
 export type PreviewWidth = 'own' | 'narrow';
 export function ScreenControls({
@@ -22,7 +23,8 @@ export function ScreenControls({
   return (
     <div className="wconvert-screen-controls">
       <select aria-label={__('Campaign screen', 'wconvert')} value={extra?.selected ? 'reopen' : String(step)} onChange={event => event.target.value === 'reopen' ? extra?.onSelect() : onChange(Number(event.target.value))}>
-        {template.tree.steps.map((screen, index) => <option key={screen.id} value={String(index)}>{sprintf(__('%1$d. %2$s', 'wconvert'), index + 1, screen.name)}</option>)}
+        {graphDisplayOrder(template.tree).map((index, position) => <option key={template.tree.steps[index].id} value={String(index)}>
+          {sprintf(__('%1$d. %2$s', 'wconvert'), position + 1, template.tree.steps[index].name)}</option>)}
         {extra && <option value="reopen">{extra.label}</option>}
       </select>
       {extra && <Button variant="ghost" size="sm" aria-pressed={extra.selected} onClick={extra.onSelect}>{extra.label}</Button>}

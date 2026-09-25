@@ -137,6 +137,24 @@ loading-failed states. B's Add screen dialog initially clipped its action below
 the viewport; it now has a scrollable form and a visible footer action. These
 are prototype observations, not claims about the production visitor runtime.
 
+In a separate local WordPress enquiry draft, the first question was changed to
+three interests and three conditional follow-ups were inserted before one
+contact save. Try answers showed Garden and Balcony together, then Balcony
+alone after Garden was deselected; both paths still reached one contact save.
+The draft is saved as **QA — Multi-interest graph (draft)** and remains
+unpublished for review.
+That walk exposed a real insertion defect: adding a follow-up after a hidden
+conditional screen originally left its hidden edge pointing beyond the new
+screen. The insertion helper now retargets that hidden edge when it shared the
+selected default destination, and a graph traversal regression test covers it.
+The same walkthrough found that Design's screen picker still numbered screens
+by storage position; it now uses the Journey's topological reading order.
+The full Test journey modal rendered the real first screen and its route and
+capture summary, but the browser automation surface could not interact with
+the renderer's closed shadow root. JS mounted-visitor tests cover the Back and
+answer-pruning behavior; the full WordPress visitor interaction remains a
+release check.
+
 ## Scenario contract before more visual polishing
 
 For each fixture, assert the same visited screens, winning edge, skipped-screen
