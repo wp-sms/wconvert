@@ -138,7 +138,10 @@ final class GraphCaptureContract
         return null;
     }
 
-    /** True when some route reaches a target without showing the required screen. */
+    /** True when some route reaches a target without showing the required screen.
+     * @param array<string, mixed> $graph
+     * @param list<string> $targets
+     */
     private static function bypasses(array $graph, string $entry, string $required, array $targets): bool
     {
         if ($entry === $required) { return false; }
@@ -154,6 +157,7 @@ final class GraphCaptureContract
         return false;
     }
 
+    /** @param array<string, mixed> $node */
     private static function questionIssue(array $node): ?string
     {
         if (!in_array($node['answer_type'] ?? null, ['single', 'multi', 'text'], true)
@@ -175,6 +179,7 @@ final class GraphCaptureContract
         return null;
     }
 
+    /** @param mixed $variants */
     private static function resultIssue($variants): ?string
     {
         if (!is_array($variants) || !array_is_list($variants) || count($variants) < 1 || count($variants) > 6) { return 'results'; }

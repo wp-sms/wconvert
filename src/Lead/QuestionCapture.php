@@ -11,6 +11,38 @@ defined('ABSPATH') || exit;
 /** Validates quiz answers against the published path and freezes readable labels. */
 final class QuestionCapture
 {
+    /**
+     * Questions covered by an accepted save, including optional blanks. Rebuild
+     * the route from the canonical snapshots so later answers cannot move its
+     * boundary or change which questions the visitor had already seen.
+     *
+     * @param array<string, mixed> $tree
+     * @param list<array<string, mixed>> $snapshots
+     * @return list<string>
+     */
+    public static function coveredIds(array $tree, array $snapshots, string $submissionId): array
+    {
+        $answers = [];
+        foreach ($snapshots as $snapshot) {
+            if (!is_string($snapshot['id'] ?? null) || !is_array($snapshot['values'] ?? null)) { continue; }
+            $answers[$snapshot['id']] = ($snapshot['type'] ?? '') === 'multi'
+                ? $snapshot['values'] : ($snapshot['values'][0] ?? '');
+        }
+        $steps = $tree['steps'] ?? [];
+        $path = is_array($tree['graph'] ?? null)
+            ? JourneyGraph::trace($steps, $tree['graph'], $answers)
+            : JourneyRules::path($steps, $answers);
+        $boundary = CaptureJourney::submitScreen($tree, $submissionId);
+        $ids = [];
+        foreach ($path['indices'] as $index) {
+            foreach (CaptureJourney::nodes($steps[$index]['content'] ?? []) as $node) {
+                if (($node['type'] ?? '') === 'question' && is_string($node['id'] ?? null)) { $ids[] = $node['id']; }
+            }
+            if ($index === $boundary) { break; }
+        }
+        return $ids;
+    }
+
     /** @param array<string, mixed> $tree
      * @param mixed $posted
      * @return list<array<string, mixed>>|Refusal

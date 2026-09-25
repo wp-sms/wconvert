@@ -44,6 +44,12 @@ if (!function_exists('wp_json_encode')) {
     }
 }
 
+if (!function_exists('wp_cache_delete')) {
+    function wp_cache_delete(string $key, string $group = ''): void
+    {
+    }
+}
+
 /* Action Scheduler's enqueue boundary, controllable by queue adapter tests. */
 $GLOBALS['wconvertTestActionSchedulerId'] = 1;
 $GLOBALS['wconvertTestScheduledActions'] = [];

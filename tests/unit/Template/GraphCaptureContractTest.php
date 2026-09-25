@@ -16,6 +16,7 @@ final class GraphCaptureContractTest extends TestCase
         $tree = json_decode((string) file_get_contents(WCONVERT_DIR . '/tests/fixtures/journey-graph-enquiry.json'), true);
         self::assertNull(CaptureContract::issue(['template' => ['tree' => $tree]], 'collect_enquiries', ''));
         $saved = TemplateVocabulary::fromManifest()->normalize(['tree' => $tree])['tree'];
+        if (!isset($saved['graph'])) { self::fail('A version 3 journey must retain its graph.'); }
         self::assertSame($tree['graph'], $saved['graph']);
         self::assertNull(CaptureContract::issue(['template' => ['tree' => $saved]], 'collect_enquiries', ''));
         $interests = ['garden' => ['garden', 'n2'], 'indoors' => ['indoors', 'n3'], 'balcony' => ['balcony', 'n4']];
@@ -39,6 +40,7 @@ final class GraphCaptureContractTest extends TestCase
         }
     }
 
+    /** @return array<string, mixed> */
     private static function graphize(string $name): array
     {
         $path = WCONVERT_DIR . "/pro/modules/journeys/templates/$name.json";

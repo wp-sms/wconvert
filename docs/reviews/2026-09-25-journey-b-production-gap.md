@@ -60,6 +60,17 @@ disconnected screens likewise name the affected screen. This is a focused
 authoring check, not a replacement for the server's full graph and capture
 contract. Other server-only failure codes still need precise repair targets.
 
+The live visitor and Test journey now share one capture-prefix calculation.
+Submitting from an earlier save includes only answers on screens reached before
+that save; it never accidentally sends a retained answer from a later screen.
+An accepted save locks every reached question, including optional questions
+left blank. The server stores that question coverage with the accepted snapshot
+and rejects a later progressive submission that changes a covered answer or
+fills a previously blank one. A new transaction test exercises both refusals
+and a valid unchanged second capture; the mounted visitor test exercises Back,
+earlier optional signup, and retained later answers. This closes the accepted
+snapshot gap but does not replace a real browser visitor walkthrough.
+
 The next slice added route and skip decisions to the shared JS/PHP evaluator.
 Try answers now explains whether a screen was bypassed by a winning branch or
 hidden by its own condition; Test journey labels that distinction too. This

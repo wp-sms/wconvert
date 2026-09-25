@@ -49,13 +49,28 @@ final class JourneyCapture
                 return ['id' => $leadId, 'submission' => $submissionId, 'first' => $primary, 'replay' => true];
             }
             if (($stored === null && !$primary) || ($stored !== null && $primary) || count($accepted) >= 2) { throw new CaptureConflict('order'); }
+            $currentQuestions = [];
+            foreach ($submitted->questionAnswers as $answer) {
+                $currentQuestions[$answer['id']] = $answer['values'];
+            }
             foreach ($accepted as $snapshot) {
                 if (array_intersect(array_keys($snapshot['values']), array_diff(array_keys($values), ['consent_text'])) !== []) { throw new CaptureConflict('fixed'); }
+                $priorQuestions = [];
+                foreach ($snapshot['question_answers'] ?? [] as $answer) {
+                    $priorQuestions[$answer['id']] = $answer['values'];
+                }
+                $covered = $snapshot['question_ids'] ?? QuestionCapture::coveredIds($tree, $snapshot['question_answers'] ?? [],
+                    (string) ($snapshot['submission_id'] ?? $tree['submissions'][0]['id']));
+                foreach ($covered as $id) {
+                    if (($priorQuestions[$id] ?? null) !== ($currentQuestions[$id] ?? null)) { throw new CaptureConflict('fixed'); }
+                }
             }
             $now = gmdate('Y-m-d\TH:i:s\Z');
             $data['capture']['submissions'][$submissionId] = [
                 'accepted_at' => $now, 'request_hash' => $hash, 'consent_ids' => $tree['submissions'][array_search($submissionId, array_column($tree['submissions'], 'id'), true)]['consents'], 'purpose' => $setting['purpose'],
-                'values' => $values, 'question_answers' => $submitted->questionAnswers, 'destination_ids' => $setting['destination_ids'],
+                'values' => $values, 'question_answers' => $submitted->questionAnswers,
+                'question_ids' => QuestionCapture::coveredIds($tree, $submitted->questionAnswers, $submissionId),
+                'submission_id' => $submissionId, 'destination_ids' => $setting['destination_ids'],
                 'handoff' => $setting['destination_ids'] === [] ? 'complete' : 'pending',
             ];
             $data['answers'] += $submitted->fields;

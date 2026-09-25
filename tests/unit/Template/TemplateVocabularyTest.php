@@ -44,11 +44,14 @@ final class TemplateVocabularyTest extends TestCase
         $tree = ['v' => 3, 'steps' => $fixture['steps'], 'submissions' => [], 'graph' => $fixture['graph']];
         $tree['graph']['edges'][0]['onclick'] = 'not-a-route-setting';
         $normalized = self::normalize(['tree' => $tree])['tree'];
+        if (!isset($normalized['graph'])) { self::fail('A version 3 journey must retain its graph.'); }
         self::assertSame(3, $normalized['v']);
         self::assertSame('interests', $normalized['graph']['entry']);
         self::assertSame(array_column($fixture['graph']['edges'], 'id'), array_column($normalized['graph']['edges'], 'id'));
         self::assertArrayNotHasKey('onclick', $normalized['graph']['edges'][0]);
-        self::assertSame($normalized['graph'], self::vocabulary()->withoutCopy($normalized)['graph']);
+        $withoutCopy = self::vocabulary()->withoutCopy($normalized);
+        if (!isset($withoutCopy['graph'])) { self::fail('Removing copy must retain the graph.'); }
+        self::assertSame($normalized['graph'], $withoutCopy['graph']);
         self::assertNull(\WConvert\Template\JourneyGraph::issue($normalized));
         self::assertSame('navigation', \WConvert\Template\CaptureContract::issue(['template' => ['tree' => $normalized]], 'collect_enquiries', ''));
     }

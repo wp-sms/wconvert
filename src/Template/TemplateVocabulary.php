@@ -261,7 +261,7 @@ final class TemplateVocabulary
      * somewhere downstream instead.
      *
      * @param mixed $template
-     * @return array{tree: array{v: int, steps: list<array<string, mixed>>, submissions: list<array<string, mixed>>}, tokens: array<string, string>}
+     * @return array{tree: array{v: int, steps: list<array<string, mixed>>, submissions: list<array<string, mixed>>, graph?: array{entry: string, edges: list<array<string, mixed>>}}, tokens: array<string, string>}
      */
     public function normalize($template): array
     {
@@ -342,7 +342,7 @@ final class TemplateVocabulary
      * is declared per node in the manifest rather than guessed at here.
      *
      * @param mixed $tree
-     * @return array{v: int, steps: list<array<string, mixed>>, submissions: list<array<string, mixed>>}
+     * @return array{v: int, steps: list<array<string, mixed>>, submissions: list<array<string, mixed>>, graph?: array{entry: string, edges: list<array<string, mixed>>}}
      */
     public function withoutCopy($tree): array
     {
@@ -366,7 +366,10 @@ final class TemplateVocabulary
         return $storedTree;
     }
 
-    /** Keep draft graph IDs and priority while closing its storage vocabulary. */
+    /** Keep draft graph IDs and priority while closing its storage vocabulary.
+     * @param mixed $input
+     * @return array{entry: string, edges: list<array<string, mixed>>}
+     */
     private static function graph($input): array
     {
         $input = is_array($input) ? $input : [];

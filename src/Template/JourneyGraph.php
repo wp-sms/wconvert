@@ -25,7 +25,9 @@ final class JourneyGraph
         return false;
     }
 
-    /** Check that explicit connections form one navigable, acyclic journey. */
+    /** Check that explicit connections form one navigable, acyclic journey.
+     * @param array<string, mixed> $tree
+     */
     public static function issue(array $tree): ?string
     {
         $steps = $tree['steps'] ?? null;
@@ -92,7 +94,11 @@ final class JourneyGraph
         return null;
     }
 
-    /** A source must be on at least one incoming path; other paths may leave it unanswered. */
+    /** A source must be on at least one incoming path; other paths may leave it unanswered.
+     * @param mixed $condition
+     * @param array<string, array{screen: string, node: array<string, mixed>}> $questions
+     * @param array<string, list<array<string, mixed>>> $outgoing
+     */
     private static function conditionIssue($condition, string $target, bool $allowCurrent, array $questions, array $outgoing): ?string
     {
         $condition = JourneyRules::normalize($condition);

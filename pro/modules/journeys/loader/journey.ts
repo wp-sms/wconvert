@@ -6,6 +6,7 @@ import { createBeacon, type BeaconKind } from '@loader/beacon';
 import { clear, pending, refuse } from '@loader/capture';
 import { chooseResult, journeyPath, type Answers } from '@loader/journey-rules';
 import { graphReaches, graphTrace } from '@loader/journey-graph';
+import { journeyCapturePrefix } from '@loader/journey-capture';
 import { showProducts } from '@loader/products';
 
 type Input = HTMLInputElement | HTMLSelectElement;
@@ -230,6 +231,8 @@ export function bindJourney(mounted: Mounted, entry: PayloadEntry, options: Opti
       if (button.dataset.action !== 'submit') return;
       const submission = tree!.submissions.find(s => s.id === button.dataset.submission);
       if (!submission || accepted.has(submission.id)) return;
+      const snapshot = journeyCapturePrefix(tree!.steps, tree!.graph, step, questionAnswers);
+      if (!snapshot) { refuse(root, labels()[1], null); options.onRefused?.('correctable'); return; }
       const fields: Record<string, string> = {};
       for (const id of submission.fields) {
         const node = nodes.get(id)?.node;
@@ -244,12 +247,12 @@ export function bindJourney(mounted: Mounted, entry: PayloadEntry, options: Opti
             if (typeof start.grant !== 'string' || start.grant.trim() === '') throw {};
             grant = start.grant;
           }
-          const result = await request({ ...base, grant, submission: submission.id, fields, question_answers: activeFor(questionAnswers),
+          const result = await request({ ...base, grant, submission: submission.id, fields, question_answers: snapshot.answers,
             consent: submission.consents.length > 0 ? submission.consents.every(id => answers.get(id) === true) : undefined });
           if (typeof result.id !== 'string' || result.id.trim() === '') throw {};
           accepted.add(submission.id);
           [...submission.fields, ...submission.consents].forEach(id => fixed.add(id));
-          Object.keys(activeFor(questionAnswers)).forEach(id => lockedQuestions.add(id));
+          snapshot.questionIds.forEach(id => lockedQuestions.add(id));
           release(); busy = false;
           report('screen_advanced'); const target = next(step, 1); if (target !== step) { visited.push(target); show(target); }
           if (accepted.size === 1 && resultAt < 0) options.onCaptured();

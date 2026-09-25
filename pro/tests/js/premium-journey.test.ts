@@ -9,6 +9,7 @@ import guide from '../../modules/journeys/templates/journey-content-guide.json';
 import enquiryGraph from '../../../tests/fixtures/journey-graph-enquiry.json';
 import { showProducts } from '@loader/products';
 import { resultAccess } from '../../../resources/admin/src/builder/structure/journey';
+import { upgradeToGraph } from '../../../resources/admin/src/builder/structure/graph';
 import { convertingActOf } from '../../../resources/admin/src/builder/structure/guards';
 
 registerPremiumJourneyRenderer();
@@ -57,6 +58,59 @@ it('sends active question answers with a contact submission, once', async () => 
   });
   expect(journey.captured).toHaveBeenCalledOnce();
   expect(journey.completed).not.toHaveBeenCalled();
+});
+
+it('locks an unanswered optional question after its enquiry is accepted', async () => {
+  const base = (service as Template).tree;
+  const content = base.steps[0].content as { type: 'stack'; children: import('@renderer/types').TemplateNode[] };
+  const tree = { ...base, steps: [{ ...base.steps[0], content: { ...content, children: [
+    ...content.children.slice(0, -1),
+    { type: 'question' as const, id: 'q_optional', label: 'Do you have photos?', answer_type: 'single' as const,
+      required: false, options: [{ value: 'yes', label: 'Yes' }, { value: 'no', label: 'No' }] },
+    content.children.at(-1)!,
+  ] } }, ...base.steps.slice(1)] };
+  const fetcher = vi.fn().mockResolvedValueOnce({ ok: true, json: async () => ({ grant: 'secret' }) })
+    .mockResolvedValueOnce({ ok: true, json: async () => ({ id: 'lead' }) });
+  vi.stubGlobal('fetch', fetcher);
+  const journey = setup({ ...(service as Template), tree });
+  journey.choose('repair'); journey.act('next'); journey.act('next');
+  journey.root().querySelector<HTMLInputElement>('[name="email"]')!.value = 'visitor@example.com';
+  journey.act('submit');
+  await vi.waitFor(() => expect(fetcher).toHaveBeenCalledTimes(2));
+  expect(JSON.parse(String(fetcher.mock.calls[1][1].body)).question_answers).toEqual({ n2: 'repair' });
+  journey.act('back'); journey.act('back'); journey.act('back');
+  const unanswered = journey.root().querySelector<HTMLInputElement>('input[value="yes"]')!;
+  expect(unanswered.checked).toBe(false);
+  expect(unanswered.disabled).toBe(true);
+});
+
+it('does not submit or freeze a later answer when returning to an optional graph save', async () => {
+  const base = upgradeToGraph((guide as Template).tree);
+  const later = { id: 'later', name: 'A later question', kind: 'input' as const, content: { type: 'stack' as const, children: [
+    { type: 'question' as const, id: 'q_late', label: 'Want a reminder?', answer_type: 'single' as const,
+      required: false, options: [{ value: 'yes', label: 'Yes' }, { value: 'no', label: 'No' }] },
+    { type: 'button' as const, action: 'next' as const, label: 'Continue' },
+    { type: 'button' as const, action: 'back' as const, label: 'Back' },
+  ] } };
+  const tree = { ...base, steps: [...base.steps.slice(0, 3), later, ...base.steps.slice(3)], graph: { ...base.graph!, edges: [
+    ...base.graph!.edges.map(edge => edge.from === 'signup' && edge.to === 'thanks' ? { ...edge, to: 'later' } : edge),
+    { id: 'late_to_thanks', from: 'later', to: 'thanks', kind: 'default' as const },
+  ] } };
+  const fetcher = vi.fn().mockResolvedValueOnce({ ok: true, json: async () => ({ grant: 'secret' }) })
+    .mockResolvedValueOnce({ ok: true, json: async () => ({ id: 'lead' }) });
+  vi.stubGlobal('fetch', fetcher);
+  const journey = setup({ ...(guide as Template), tree });
+  journey.choose('grow'); journey.act('next'); journey.act('next'); journey.act('skip');
+  journey.choose('yes'); journey.act('next'); journey.act('back'); journey.act('back');
+  journey.root().querySelector<HTMLInputElement>('[name="email"]')!.value = 'visitor@example.com';
+  const consent = journey.root().querySelector<HTMLInputElement>('[name="consent"]');
+  if (consent) consent.checked = true;
+  journey.act('submit');
+  await vi.waitFor(() => expect(fetcher).toHaveBeenCalledTimes(2));
+  expect(JSON.parse(String(fetcher.mock.calls[1][1].body)).question_answers).toEqual({ n3: ['grow'] });
+  const retained = journey.root().querySelector<HTMLInputElement>('input[value="yes"]')!;
+  expect(retained.checked).toBe(true);
+  expect(retained.disabled).toBe(false);
 });
 
 it('starts at the graph entry and submits after an unordered branch and merge', async () => {
