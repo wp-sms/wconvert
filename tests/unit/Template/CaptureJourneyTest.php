@@ -99,6 +99,22 @@ final class CaptureJourneyTest extends TestCase
         self::assertSame('routes', CaptureJourney::issue($tree));
     }
 
+    public function testMultiChoiceConditionValidatesEveryReferencedAnswer(): void
+    {
+        $template = json_decode((string) file_get_contents(dirname(__DIR__, 3) . '/pro/modules/journeys/templates/journey-service-enquiry.json'), true);
+        $tree = $template['tree'];
+        $tree['steps'][0]['content']['children'][1]['answer_type'] = 'multi';
+        $tree['steps'][1]['when'] = ['match' => 'all', 'clauses' => [[
+            'question' => 'n2', 'operator' => 'includes_any', 'values' => ['design', 'repair'],
+        ]]];
+        self::assertNull(CaptureJourney::issue($tree));
+        $vocabulary = \WConvert\Template\TemplateVocabulary::fromManifest(dirname(__DIR__, 3));
+        $normalized = $vocabulary->normalize(['tree' => $tree, 'tokens' => []])['tree'];
+        self::assertSame(['design', 'repair'], $normalized['steps'][1]['when']['clauses'][0]['values']);
+        $tree['steps'][1]['when']['clauses'][0]['values'][] = 'missing';
+        self::assertSame('conditions', CaptureJourney::issue($tree));
+    }
+
     public function testAQuizCanRequireCaptureBeforeItsTerminalResult(): void
     {
         $template = json_decode((string) file_get_contents(dirname(__DIR__, 3) . '/pro/modules/journeys/templates/journey-content-guide.json'), true);

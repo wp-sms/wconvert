@@ -48,10 +48,17 @@ export function ConditionSettings({ value, sources, onChange, required = false, 
           <select aria-label={__('Comparison', 'wconvert')} value={clause.operator} onChange={event => patch(index, { ...clause, operator: event.target.value as typeof clause.operator })}>
             {source?.answer_type === 'multi' ? <><option value="includes_any">{__('includes', 'wconvert')}</option><option value="includes_none">{__('does not include', 'wconvert')}</option></> : <><option value="is">{__('is', 'wconvert')}</option><option value="is_not">{__('is not', 'wconvert')}</option></>}
           </select>
-          <select aria-label={__('Answer', 'wconvert')} value={clause.values[0] ?? ''} onChange={event => patch(index, { ...clause, values: [event.target.value] })}>
+          {source?.answer_type === 'multi' ? <fieldset className="wconvert-journey-settings__answers">
+            <legend>{clause.operator === 'includes_none' ? __('None of these answers', 'wconvert') : __('Any of these answers', 'wconvert')}</legend>
+            {source.options?.map(option => <label key={option.value} className="wconvert-journey-settings__check"><input type="checkbox" checked={clause.values.includes(option.value)}
+              onChange={event => patch(index, { ...clause, values: event.target.checked
+                ? [...clause.values.filter(value => value !== ''), option.value]
+                : clause.values.filter(value => value !== option.value && value !== '') })} />{option.label}</label>)}
+            {!clause.values.some(value => value !== '') && <small>{__('Choose at least one answer.', 'wconvert')}</small>}
+          </fieldset> : <select aria-label={__('Answer', 'wconvert')} value={clause.values[0] ?? ''} onChange={event => patch(index, { ...clause, values: [event.target.value] })}>
             {clause.values[0] === '' && <option value="">{__('Choose answer…', 'wconvert')}</option>}
             {source?.options?.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}
-          </select>
+          </select>}
           <button type="button" onClick={() => { const clauses = value.clauses.filter((_, at) => at !== index); onChange(clauses.length ? { ...value, clauses } : undefined); }}>{__('Remove', 'wconvert')}</button>
         </div>;
       })}
@@ -117,7 +124,7 @@ export function RouteSettings({ tree, step, focusPath = null, onChange, onInsert
       {path.when && <ConditionSettings required purpose="route" value={path.when} sources={sources} onChange={when => {
         if (when) write(paths.map((item, at) => at === index ? { ...item, when } : item));
       }} />}
-      {path.when?.clauses.some(clause => clause.values[0] === '') && <p className="wconvert-journey-settings__warning" role="status">{__('Choose an answer for this path before publishing.', 'wconvert')}</p>}
+      {path.when?.clauses.some(clause => !clause.values.length || clause.values.some(value => !value)) && <p className="wconvert-journey-settings__warning" role="status">{__('Choose an answer for this path before publishing.', 'wconvert')}</p>}
       {onInsert && tree.steps.length < 7 && <DropdownMenu><DropdownMenuTrigger asChild><button type="button" className="wconvert-journey-routes__insert">{__('Insert on this path', 'wconvert')}</button></DropdownMenuTrigger>
         <DropdownMenuContent align="start"><DropdownMenuItem onSelect={() => onInsert(index, 'input')}>{__('Ask a question', 'wconvert')}</DropdownMenuItem>
           <DropdownMenuItem onSelect={() => onInsert(index, 'content')}>{__('Show a message', 'wconvert')}</DropdownMenuItem></DropdownMenuContent>

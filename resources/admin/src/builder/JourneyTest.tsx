@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import { mount } from '@renderer/mount';
 import type { Template, TemplateNode } from '@renderer/types';
@@ -12,9 +12,19 @@ export function JourneyTest({ template, onEdit }: { template: Template; onEdit(s
   const [answers, setAnswers] = useState<Answers>({});
   const [visited, setVisited] = useState<number[]>([0]);
   const [productState, setProductState] = useState<'selected' | 'empty' | 'error'>('selected');
+  const [captureValues, setCaptureValues] = useState<Record<string, string | boolean>>({});
+  const [accepted, setAccepted] = useState<string[]>([]);
+  const [acceptedQuestions, setAcceptedQuestions] = useState<string[]>([]);
+  const [skipped, setSkipped] = useState<string[]>([]);
+  const [failNext, setFailNext] = useState(false);
+  const failNextRef = useRef(false);
+  const [feedback, setFeedback] = useState('');
   const tree = template.tree;
-  const active = activeAnswers(tree.steps, answers);
-  const applicable = tree.steps.map((_, index) => journeyPath(tree.steps, answers).indices.includes(index));
+  const active = useMemo(() => activeAnswers(tree.steps, answers), [tree.steps, answers]);
+  const applicable = useMemo(() => {
+    const inPath = new Set(journeyPath(tree.steps, answers).indices);
+    return tree.steps.map((_, index) => inPath.has(index));
+  }, [tree.steps, answers]);
   const shownResult = tree.steps[step].kind === 'result' ? chooseResult(tree.steps[step].results ?? [], active) : undefined;
   const move = useCallback((direction: 1 | -1, current: Answers) => {
     const inPath = activeAnswers(tree.steps, current);
@@ -49,6 +59,21 @@ export function JourneyTest({ template, onEdit }: { template: Template; onEdit(s
       const answer = answers[input.dataset.questionId ?? ''];
       if (input instanceof HTMLTextAreaElement) input.value = typeof answer === 'string' ? answer : '';
       else input.checked = Array.isArray(answer) ? answer.includes(input.value) : answer === input.value;
+      if (acceptedQuestions.includes(input.dataset.questionId ?? '')) input.disabled = true;
+    }
+    for (const input of root.querySelectorAll<HTMLInputElement | HTMLSelectElement>('[data-capture-id]')) {
+      const id = input.dataset.captureId ?? '';
+      const value = captureValues[id];
+      if (input instanceof HTMLInputElement && input.type === 'checkbox') input.checked = value === true;
+      else if (typeof value === 'string') input.value = value;
+      if (tree.submissions.some(submission => accepted.includes(submission.id) && [...submission.fields, ...submission.consents].includes(id))) {
+        if (input instanceof HTMLInputElement && input.type === 'checkbox' || input instanceof HTMLSelectElement) input.disabled = true;
+        else input.readOnly = true;
+        input.required = false;
+      }
+    }
+    for (const button of root.querySelectorAll<HTMLButtonElement>('button[data-action="submit"]')) {
+      if (accepted.includes(button.dataset.submission ?? '')) { button.dataset.action = 'next'; button.textContent = __('Continue', 'wconvert'); }
     }
     if (tree.steps[step].kind === 'result') {
       const result = chooseResult(tree.steps[step].results ?? [], active);
@@ -77,13 +102,50 @@ export function JourneyTest({ template, onEdit }: { template: Template; onEdit(s
       }
       return next;
     };
+    const saveDraft = () => {
+      const next = { ...captureValues };
+      for (const input of root.querySelectorAll<HTMLInputElement | HTMLSelectElement>('[data-capture-id]')) {
+        if (input.disabled || input instanceof HTMLInputElement && input.readOnly) continue;
+        next[input.dataset.captureId ?? ''] = input instanceof HTMLInputElement && input.type === 'checkbox' ? input.checked : input.value;
+      }
+      setCaptureValues(next);
+      return next;
+    };
+    const validQuestions = () => {
+      const questions = walkNodes(tree.steps[step].content).filter(node => node.type === 'question' && 'id' in node && node.required);
+      for (const question of questions) {
+        const inputs = [...root.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>('[data-question-id]')].filter(input => input.dataset.questionId === ('id' in question ? question.id : ''));
+        if (inputs.length && !inputs.some(input => input instanceof HTMLTextAreaElement ? !!input.value.trim() : input.checked)) {
+          inputs[0].setCustomValidity(__('Please answer this question.', 'wconvert'));
+          inputs[0].reportValidity(); inputs[0].focus(); return false;
+        }
+        inputs[0]?.setCustomValidity('');
+      }
+      return true;
+    };
     const advance = (event: Event) => {
       const button = (event.target as Element).closest<HTMLButtonElement>('button[data-action]');
       if (!button) return;
       event.preventDefault();
-      if (button.dataset.action === 'back') { move(-1, read()); return; }
+      if (button.dataset.action === 'back') { saveDraft(); setFeedback(''); move(-1, read()); return; }
       if (['next', 'submit', 'skip'].includes(button.dataset.action ?? '')) {
-        if (button.dataset.action !== 'skip' && root instanceof HTMLFormElement && !root.reportValidity()) return;
+        if (button.dataset.action !== 'skip' && (!validQuestions() || root instanceof HTMLFormElement && !root.reportValidity())) return;
+        const draft = saveDraft();
+        if (button.dataset.action === 'submit') {
+          const id = button.dataset.submission ?? '';
+          if (failNextRef.current) { failNextRef.current = false; setFailNext(false); setFeedback(__('Submission not confirmed. The visitor stays here and can retry.', 'wconvert')); return; }
+          setAccepted(previous => previous.includes(id) ? previous : [...previous, id]);
+          setAcceptedQuestions(previous => [...new Set([...previous, ...Object.keys(activeAnswers(tree.steps, read()))])]);
+          setFeedback(__('Submission accepted in this test. No lead was created.', 'wconvert'));
+        } else if (button.dataset.action === 'skip') {
+          const id = button.dataset.submission ?? '';
+          const submission = tree.submissions.find(item => item.id === id);
+          if (!submission || submission.required || accepted.includes(id)) return;
+          for (const field of [...submission.fields, ...submission.consents]) delete draft[field];
+          setCaptureValues(draft);
+          setSkipped(previous => previous.includes(id) ? previous : [...previous, id]);
+          setFeedback(__('Optional submission skipped. No details were saved.', 'wconvert'));
+        } else setFeedback('');
         move(1, read());
       }
     };
@@ -92,7 +154,7 @@ export function JourneyTest({ template, onEdit }: { template: Template; onEdit(s
     root.querySelectorAll('a').forEach(link => link.addEventListener('click', event => event.preventDefault()));
     return () => mounted.close();
   // Remount when the preview path or its answers change; this never sends data.
-  }, [template, step, productState, answers, active, move, tree.steps, tree.submissions]);
+  }, [template, step, productState, answers, active, move, tree.steps, tree.submissions, captureValues, accepted, acceptedQuestions]);
   return <div className="wconvert-journey-test">
     <div ref={anchor} className="wconvert-journey-test__stage" />
     <div className="wconvert-journey-test__side">
@@ -102,10 +164,18 @@ export function JourneyTest({ template, onEdit }: { template: Template; onEdit(s
         {!applicable[at] && <button type="button" onClick={() => onEdit(at)}>{__('Edit condition', 'wconvert')}</button>}
       </li>)}</ol>
       {shownResult && <p className="wconvert-journey-test__result">{sprintf(__('Result shown: %s', 'wconvert'), shownResult.heading)}</p>}
+      {tree.submissions.length > 0 && <section className="wconvert-journey-test__capture"><h4>{__('Capture checkpoints', 'wconvert')}</h4>
+        <ol>{tree.submissions.map(submission => <li key={submission.id}><strong>{tree.steps.find(screen => walkNodes(screen.content).some(node => node.type === 'button' && 'action' in node && node.action === 'submit' && 'submission' in node && node.submission === submission.id))?.name ?? submission.id}</strong><span>{accepted.includes(submission.id)
+          ? __('Accepted in test', 'wconvert') : skipped.includes(submission.id) ? __('Skipped', 'wconvert')
+            : [...submission.fields, ...submission.consents].some(id => id in captureValues) ? __('Draft only', 'wconvert') : __('Not reached', 'wconvert')}</span></li>)}</ol>
+        <label><input type="checkbox" checked={failNext} onChange={event => { failNextRef.current = event.target.checked; setFailNext(event.target.checked); }} />{__('Simulate failure on next submission', 'wconvert')}</label>
+        {feedback && <p role="status">{feedback}</p>}
+        <p>{__('Destination delivery is not tested here.', 'wconvert')}</p>
+      </section>}
       {tree.steps[step].kind === 'result' && <fieldset><legend>{__('Product state', 'wconvert')}</legend>
         {(['selected', 'empty', 'error'] as const).map(value => <label key={value}><input type="radio" name="product-state" checked={productState === value} onChange={() => setProductState(value)} />{value === 'selected' ? __('Selected', 'wconvert') : value === 'empty' ? __('None available', 'wconvert') : __('Loading error', 'wconvert')}</label>)}
       </fieldset>}
-      <button type="button" onClick={() => { setAnswers({}); setStep(0); setVisited([0]); }}>{__('Reset answers', 'wconvert')}</button>
+      <button type="button" onClick={() => { setAnswers({}); setCaptureValues({}); setAccepted([]); setAcceptedQuestions([]); setSkipped([]); failNextRef.current = false; setFailNext(false); setFeedback(''); setStep(0); setVisited([0]); }}>{__('Reset test', 'wconvert')}</button>
       <p>{__('Preview never saves answers, creates Leads, or counts conversions.', 'wconvert')}</p>
     </div>
   </div>;

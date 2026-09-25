@@ -10,10 +10,11 @@ export function conditionText(tree: TemplateTree, condition: QuestionCondition):
     const question = questions.find(node => 'id' in node && node.id === clause.question);
     const label = question && 'label' in question ? String(question.label) : clause.question;
     const options = question && 'options' in question ? question.options : [];
-    const answer = clause.values.map(value => value === '' ? __('choose an answer', 'wconvert') : options?.find(option => option.value === value)?.label ?? value).join(', ');
+    const labels = clause.values.map(value => value === '' ? __('choose an answer', 'wconvert') : options?.find(option => option.value === value)?.label ?? value);
+    const answer = labels.length ? labels.join(` ${__('or', 'wconvert')} `) : __('choose an answer', 'wconvert');
     const operator = clause.operator === 'is' ? __('is', 'wconvert')
       : clause.operator === 'is_not' ? __('is not', 'wconvert')
-        : clause.operator === 'includes_any' ? __('includes', 'wconvert') : __('does not include', 'wconvert');
+        : clause.operator === 'includes_any' ? __('includes any of', 'wconvert') : __('includes none of', 'wconvert');
     return sprintf(__('%1$s %2$s %3$s', 'wconvert'), label, operator, answer);
   });
   return parts.join(` ${condition.match === 'any' ? __('or', 'wconvert') : __('and', 'wconvert')} `);

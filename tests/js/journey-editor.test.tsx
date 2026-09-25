@@ -3,7 +3,8 @@ import { useState } from 'react';
 import { render, screen, fireEvent, cleanup, within } from '@testing-library/react';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import { JourneyEditor } from '../../resources/admin/src/builder/JourneyEditor';
-import type { TemplateTree } from '@renderer/types';
+import type { QuestionCondition, QuestionNode, TemplateTree } from '@renderer/types';
+import { ConditionSettings } from '../../resources/admin/src/builder/JourneySettings';
 import { movedScreen, removedScreen, referencedJourney, replaceAnswer, walkNodes } from '../../resources/admin/src/builder/structure/journey';
 import progressive from '../../resources/templates/library/journey-email-then-sms.json';
 import source from '../../resources/templates/library/journey-email-only.json';
@@ -21,6 +22,25 @@ function Editor({ initial = source.tree as TemplateTree }: { initial?: TemplateT
     <output data-testid="draft">{JSON.stringify(tree)}</output></>;
 }
 function draft(): TemplateTree { return JSON.parse(screen.getByTestId('draft').textContent!); }
+it('lets a merchant choose several answers for a multi-select condition', async () => {
+  const user = userEvent.setup();
+  const sourceQuestion = { id: 'interests', type: 'question', label: 'Your interests', answer_type: 'multi', required: true,
+    options: [{ value: 'garden', label: 'Garden' }, { value: 'indoors', label: 'Indoors' }, { value: 'other', label: 'Other' }] } as QuestionNode & { id: string };
+  function Rule() {
+    const [condition, setCondition] = useState<QuestionCondition>({ match: 'all', clauses: [
+      { question: 'interests', operator: 'includes_any', values: ['garden'] },
+    ] });
+    return <><ConditionSettings value={condition} sources={[sourceQuestion]} onChange={next => next && setCondition(next)} required />
+      <output data-testid="condition">{JSON.stringify(condition)}</output></>;
+  }
+  render(<Rule />);
+  await user.click(screen.getByRole('checkbox', { name: 'Indoors' }));
+  expect(JSON.parse(screen.getByTestId('condition').textContent!).clauses[0].values).toEqual(['garden', 'indoors']);
+  await user.selectOptions(screen.getByRole('combobox', { name: 'Comparison' }), 'includes_none');
+  expect(screen.getByText('None of these answers')).toBeInTheDocument();
+  await user.click(screen.getByRole('checkbox', { name: 'Garden' }));
+  expect(JSON.parse(screen.getByTestId('condition').textContent!).clauses[0].values).toEqual(['indoors']);
+});
 async function action(user: ReturnType<typeof userEvent.setup>, name: string) {
   await user.click(screen.getByRole('button', { name: 'Screen actions' }));
   await user.click(screen.getByRole('menuitem', { name }));

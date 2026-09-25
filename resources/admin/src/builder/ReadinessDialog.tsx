@@ -126,7 +126,7 @@ export function ReadinessDialog({
   const missingNotice = reviewsPrivacy && privacyPath === null;
   const missingConsent = expectsConsent && visibleConsentPath === null;
   const problems = hasDesign ? problemsIn(template, rules.schedule.ends_at) : [];
-  const incompletePath = template?.tree.steps.some(screen => screen.paths?.some(path => path.when?.clauses.some(clause => !clause.values[0])));
+  const incompletePath = template?.tree.steps.some(screen => screen.paths?.some(path => path.when?.clauses.some(clause => !clause.values.length || clause.values.some(value => !value))));
   const unreachable = template ? unreachableScreens(template.tree) : [];
   const needsCapture = bound.length > 0;
   const goalIssue = outcome && hasDesign ? outcomeDesignIssue(outcome, template) : null;

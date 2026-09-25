@@ -33,6 +33,21 @@ requirements depend on the Campaign Goal. A quiz/content journey can finish
 anonymously, while an enquiry must reach its combined submission. Do not ask
 again or turn conditional follow-ups into mutually exclusive branches.
 
+## Progress after this audit
+
+The current branch now accepts several answers in a multi-choice condition in
+the editor, PHP normalization, capture validation, and the existing JS matcher.
+The editor uses checkboxes, and the map names the matching choices. Tests cover
+authoring, PHP/JS evaluation, invalid references, and vocabulary round-trip.
+
+Test journey now keeps contact drafts, marks simulated accepted and skipped
+submissions, supports a retryable save failure, and locks accepted fields and
+question answers when going Back. It still does not simulate destination
+delivery or provide the complete edge-by-edge trace. The local WordPress browser
+check exposed and fixed a narrow modal and internal submission IDs in its
+summary. These improvements are slices of the release work, not a claim that
+the graph contract, path-sensitive validation, or full prototype parity is done.
+
 ## Verified gaps
 
 “Current” below means source inspection of PR #190 plus a real WordPress browser

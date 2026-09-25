@@ -47,4 +47,22 @@ final class JourneyRulesTest extends TestCase
         $path = JourneyRules::path($steps, ['q_interest' => ['indoors'], 'q_indoor' => 'bright']);
         self::assertSame(['interests', 'indoors', 'contact', 'received'], array_map(static fn (int $at): string => $steps[$at]['id'], $path['indices']));
     }
+
+    public function testMultipleChosenAnswersCanMatchOneCondition(): void
+    {
+        $condition = ['match' => 'all', 'clauses' => [[
+            'question' => 'q_interest', 'operator' => 'includes_any', 'values' => ['garden', 'indoors'],
+        ]]];
+        self::assertSame($condition, JourneyRules::normalize($condition));
+        self::assertTrue(JourneyRules::matches($condition, ['q_interest' => ['indoors']]));
+        self::assertFalse(JourneyRules::matches($condition, ['q_interest' => ['other']]));
+        $condition['clauses'][0]['operator'] = 'includes_none';
+        self::assertTrue(JourneyRules::matches($condition, ['q_interest' => ['other']]));
+        self::assertFalse(JourneyRules::matches($condition, ['q_interest' => ['indoors', 'other']]));
+        self::assertFalse(JourneyRules::matches($condition, []));
+        $condition['clauses'][0]['values'] = ['garden', 'garden'];
+        self::assertNull(JourneyRules::normalize($condition));
+        $condition['clauses'][0]['operator'] = 'is';
+        self::assertNull(JourneyRules::normalize($condition));
+    }
 }

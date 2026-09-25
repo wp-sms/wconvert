@@ -260,7 +260,7 @@ final class CaptureJourney
             $question = $earlier[$clause['question']] ?? null;
             if ($question === null || $question['answer_type'] === 'text'
                 || !in_array($clause['operator'], $question['answer_type'] === 'multi' ? ['includes_any', 'includes_none'] : ['is', 'is_not'], true)
-                || !in_array($clause['values'][0], array_column($question['options'] ?? [], 'value'), true)) { return 'conditions'; }
+                || array_diff($clause['values'], array_column($question['options'] ?? [], 'value')) !== []) { return 'conditions'; }
         }
         return null;
     }
