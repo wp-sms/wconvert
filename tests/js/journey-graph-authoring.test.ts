@@ -1,9 +1,11 @@
 import { expect, it } from 'vitest';
 import type { TemplateTree } from '@renderer/types';
 import { graphTrace } from '@loader/journey-graph';
-import { freshScreen, referencedJourney, replaceAnswer, unreachableScreens, usedBy } from '../../resources/admin/src/builder/structure/journey';
-import { graphDisplayOrder, graphRemoval, graphTargets, insertOnGraphEdge } from '../../resources/admin/src/builder/structure/graph';
+import { addGraphResultSignup, freshScreen, referencedJourney, replaceAnswer, resultAccess, unreachableScreens, usedBy, walkNodes } from '../../resources/admin/src/builder/structure/journey';
+import { graphDisplayOrder, graphRemoval, graphTargets, insertOnGraphEdge, upgradeToGraph } from '../../resources/admin/src/builder/structure/graph';
 import fixture from '../fixtures/journey-graph-enquiry.json';
+import finder from '../../pro/modules/journeys/templates/journey-product-finder.json';
+import guide from '../../pro/modules/journeys/templates/journey-content-guide.json';
 
 const base = fixture as unknown as TemplateTree;
 
@@ -82,4 +84,54 @@ it('deletes an unreferenced screen as one reroute and preserves all incoming edg
   expect(graphRemoval(base, 'interests')).toBeNull();
   expect(graphRemoval(base, 'contact')).toBeNull();
   expect(graphRemoval(base, 'received')).toBeNull();
+});
+
+it('adds optional capture after an anonymous graph result without moving any question path', () => {
+  const original = upgradeToGraph(finder.tree as TemplateTree);
+  const next = addGraphResultSignup(original);
+  expect(next).not.toBe(original);
+  expect(next.submissions).toMatchObject([{ required: false, fields: [expect.any(String)], consents: [expect.any(String)] }]);
+  expect(next.graph?.edges.filter(edge => edge.from === 'match').map(edge => edge.kind)).toEqual(['default']);
+  expect(graphTrace(next.steps, next.graph!, { n3: 'garden', n6: 'sun' }).indices.map(index => next.steps[index].id))
+    .toEqual(['need', 'garden', 'match', next.steps.at(-2)!.id, next.steps.at(-1)!.id]);
+  expect(walkNodes(next.steps.at(-2)!.content).filter(node => node.type === 'button' && 'action' in node)
+    .map(node => 'action' in node ? node.action : '')).toEqual(['submit', 'skip', 'back']);
+  expect(addGraphResultSignup(next)).toBe(next);
+});
+
+it('moves a graph quiz signup before and after a result while keeping incoming edge identities', () => {
+  const optional = upgradeToGraph(guide.tree as TemplateTree);
+  const originalIncoming = optional.graph!.edges.find(edge => edge.to === 'guide')!.id;
+  const required = resultAccess(optional, true);
+  expect(required.submissions[0].required).toBe(true);
+  expect(required.steps.find(screen => screen.kind === 'acknowledgement')).toEqual(optional.steps.find(screen => screen.kind === 'acknowledgement'));
+  expect(required.graph?.edges.find(edge => edge.id === originalIncoming)?.to).toBe('signup');
+  expect(graphTrace(required.steps, required.graph!, { n3: ['grow'] }).indices.map(index => required.steps[index].id))
+    .toEqual(['interests', 'signup', 'guide', 'thanks']);
+  expect(walkNodes(required.steps.find(screen => screen.id === 'signup')!.content).some(node => node.type === 'button' && 'action' in node && node.action === 'skip')).toBe(false);
+  const back = resultAccess(required, false);
+  expect(back.submissions[0].required).toBe(false);
+  expect(back.graph?.edges.find(edge => edge.id === originalIncoming)?.to).toBe('guide');
+  expect(graphTrace(back.steps, back.graph!, { n3: ['grow'] }).indices.map(index => back.steps[index].id))
+    .toEqual(['interests', 'guide', 'signup', back.steps.at(-1)!.id]);
+  expect(back.submissions[0].fields).toEqual(optional.submissions[0].fields);
+  expect(back.submissions[0].consents).toEqual(optional.submissions[0].consents);
+  expect(back.steps.find(screen => screen.kind === 'acknowledgement')).toEqual(optional.steps.find(screen => screen.kind === 'acknowledgement'));
+  expect(back.graph?.edges.find(edge => edge.to === 'thanks')?.id).toBe(optional.graph?.edges.find(edge => edge.to === 'thanks')?.id);
+  expect(unreachableScreens(back)).toEqual([]);
+});
+
+it('keeps merchant-written signup copy when changing graph result timing', () => {
+  const optional = upgradeToGraph(guide.tree as TemplateTree);
+  const customized: TemplateTree = { ...optional, steps: optional.steps.map(screen => screen.id === 'signup'
+    ? { ...screen, name: 'Personal notes', content: { type: 'stack', children: [screen.content,
+      { type: 'heading', role: 'headline', text: 'Our own heading' }] } } : screen) };
+  const required = resultAccess(customized, true);
+  expect(required.steps.find(screen => screen.id === 'signup')?.name).toBe('Personal notes');
+  expect(walkNodes(required.steps.find(screen => screen.id === 'signup')!.content)
+    .some(node => node.type === 'heading' && 'text' in node && node.text === 'Our own heading')).toBe(true);
+  const optionalAgain = resultAccess(required, false);
+  expect(optionalAgain.steps.find(screen => screen.id === 'signup')?.name).toBe('Personal notes');
+  expect(walkNodes(optionalAgain.steps.find(screen => screen.id === 'signup')!.content)
+    .some(node => node.type === 'heading' && 'text' in node && node.text === 'Our own heading')).toBe(true);
 });

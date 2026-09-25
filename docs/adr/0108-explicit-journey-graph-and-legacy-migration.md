@@ -45,6 +45,15 @@ screen must appear on every path to its save point. Branch-only contact fields
 remain unsupported until the capture endpoint can verify which field screens
 were visited.
 
+For a quiz with a terminal result, the editor can attach one optional email
+signup after the result. It can move that signup before the result to require
+capture, or move it back afterward, when the result/signup/ending connections
+have the simple shape the editor can transform without losing another path.
+Incoming branch edges keep their IDs and are retargeted together. Field and
+consent ownership stays explicit, merchant-written copy stays intact, and a
+more complex topology requires manual route editing rather than a silent
+rearrangement.
+
 React Flow is an admin view of this data, not the source of routing semantics.
 The Screens inventory and inspector must support every authoring action without
 dragging, including changing priority, fallback and hidden exits. Layout and

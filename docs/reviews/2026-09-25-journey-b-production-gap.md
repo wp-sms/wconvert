@@ -155,6 +155,21 @@ the renderer's closed shadow root. JS mounted-visitor tests cover the Back and
 answer-pruning behavior; the full WordPress visitor interaction remains a
 release check.
 
+A separate local **QA — Graph quiz capture (draft)** exercised the product
+finder after explicitly enabling flexible paths. The merchant can now add an
+optional email signup after an anonymous result, then move that same signup
+before the result as a required gate. Both transformations preserve upstream
+graph edge IDs, explicit field/consent ownership, and the existing ending
+screen, including merchant-written ending content. The required version was
+saved and reloaded in WordPress; the map and Design screen picker showed
+contact before the result, then the ending. The readiness dialog reported destination
+configuration as the remaining publish blocker for this local draft, not a
+graph-route error. This is evidence for a simple quiz gate, not proof that
+arbitrary result topology can be rearranged; the editor disables the timing
+choice when it cannot safely transform the existing connections. The browser
+walkthrough also caught and corrected misleading first-capture and stale
+status wording.
+
 ## Scenario contract before more visual polishing
 
 For each fixture, assert the same visited screens, winning edge, skipped-screen

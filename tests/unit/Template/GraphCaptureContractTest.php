@@ -149,6 +149,12 @@ final class GraphCaptureContractTest extends TestCase
             ['id' => 'to_result', 'from' => 'signup', 'to' => 'guide', 'kind' => 'default'],
         ]];
         self::assertNull(GraphCaptureContract::issue($gate, 'find_match'));
+
+        $withEnding = $gate;
+        $withEnding['steps'][] = $guide['steps'][3];
+        $withEnding['steps'][0]['content'] = $guide['steps'][1]['content'];
+        $withEnding['graph']['edges'][] = ['id' => 'to_ending', 'from' => 'guide', 'to' => 'thanks', 'kind' => 'default'];
+        self::assertNull(GraphCaptureContract::issue($withEnding, 'find_match'));
     }
 
     public function testOnlyThePrimaryAcceptedSubmissionCanLeadToAnOptionalSecondSignup(): void

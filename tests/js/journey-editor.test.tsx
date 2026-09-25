@@ -6,10 +6,12 @@ import { JourneyEditor } from '../../resources/admin/src/builder/JourneyEditor';
 import type { QuestionCondition, QuestionNode, TemplateTree } from '@renderer/types';
 import { ConditionSettings } from '../../resources/admin/src/builder/JourneySettings';
 import { movedScreen, removedScreen, referencedJourney, replaceAnswer, walkNodes } from '../../resources/admin/src/builder/structure/journey';
+import { upgradeToGraph } from '../../resources/admin/src/builder/structure/graph';
 import progressive from '../../resources/templates/library/journey-email-then-sms.json';
 import source from '../../resources/templates/library/journey-email-only.json';
 import rules from '../fixtures/journey-rules.json';
 import service from '../../pro/modules/journeys/templates/journey-service-enquiry.json';
+import finder from '../../pro/modules/journeys/templates/journey-product-finder.json';
 
 vi.mock('../../resources/admin/src/builder/Preview', () => ({ Preview: () => <div /> }));
 vi.mock('../../resources/admin/src/builder/JourneyMap', () => ({ JourneyMap: () => <div aria-label="Journey map" /> }));
@@ -73,6 +75,24 @@ it('keeps an explicit forward path connected when adding an optional signup', as
   const tree = draft();
   expect(tree.steps[0].paths).toEqual([{ to: tree.steps[1].id }]);
   expect(tree.steps[1].paths).toEqual([{ to: tree.steps[2].id }]);
+});
+
+it('lets a merchant add optional capture to a graph quiz and move it before the result', async () => {
+  const user = userEvent.setup();
+  render(<Editor initial={upgradeToGraph(finder.tree as TemplateTree)} />);
+  await user.click(screen.getByRole('button', { name: 'Manage screens' }));
+  await user.click(screen.getByRole('button', { name: 'Screens' }));
+  await user.click(screen.getByRole('button', { name: /Your result Shows a selected result/ }));
+  expect(screen.getByRole('radio', { name: 'Immediately after the questions' })).toBeChecked();
+  await user.click(screen.getByRole('button', { name: 'Add optional signup' }));
+  expect(draft().submissions[0].required).toBe(false);
+  expect(screen.getByText(/Visitors may skip this signup and finish without saving contact details/)).toBeInTheDocument();
+  await user.click(screen.getByRole('button', { name: /Your result Shows a selected result/ }));
+  await user.click(screen.getByRole('radio', { name: 'After required contact details' }));
+  expect(draft().submissions[0].required).toBe(true);
+  expect(draft().graph?.edges.find(edge => edge.to === 'match')?.from).toBe(draft().steps.find(item => item.name === 'Contact details')?.id);
+  expect(screen.getByRole('radio', { name: 'After required contact details' })).toBeChecked();
+  expect(screen.getByText(/Contact details are now required before the result/)).toBeInTheDocument();
 });
 it('preserves screen identity when reordering and gives a duplicate its own identity', async () => {
   const user = userEvent.setup();
