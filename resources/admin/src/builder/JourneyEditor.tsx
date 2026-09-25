@@ -1,35 +1,43 @@
 import { lazy, Suspense, useEffect, useId, useRef, useState } from 'react';
-import { ArrowLeft, ArrowRight, ChevronDown, Copy, FilePlus2, ListPlus, Plus, Trash2, Workflow, X } from 'lucide-react';
+import { ArrowLeft, ArrowRight, ChevronDown, Copy, FilePlus2, ListPlus, Plus, Search, Trash2, Workflow, X } from 'lucide-react';
 import { ConfirmDialog } from '../shell/ConfirmDialog';
 import { Input } from '../components/ui/input';
-import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuSeparator, DropdownMenuTrigger } from '../components/ui/dropdown-menu';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '../components/ui/dropdown-menu';
 import { Dialog, DialogTrigger, DialogContent, DialogTitle, DialogDescription, DialogClose } from '../components/ui/dialog';
 import { JourneyScreenCard } from './JourneyScreenCard';
 import { QuestionSettings, ResultSettings, RouteSettings, ScreenConditionSettings } from './JourneySettings';
 import { JourneyTest } from './JourneyTest';
+import { JourneySample } from './JourneySample';
 import { __, sprintf } from '@wordpress/i18n';
 import { Button } from '../components/ui/button';
 import type { TemplateTree, TemplateNode, QuestionNode, Tokens } from '@renderer/types';
-import { duplicateScreen, freshScreen, referencedJourney, walkNodes, submissionScreen, movedScreen, screenRemoval, removedScreen, resultAccess } from './structure/journey';
+import { duplicateScreen, freshScreen, referencedJourney, walkNodes, submissionScreen, movedScreen, screenRemoval, removedScreen, resultAccess, unreachableScreens } from './structure/journey';
 import { conditionText } from './structure/conditionText';
 
 const JourneyMap = lazy(() => import('./JourneyMap').then(module => ({ default: module.JourneyMap })));
 
-export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChange, onSelect, displaySummary, destinationSummary, onGoToRules, onGoToDestinations, openRequest }: {
+export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChange, onSelect, displaySummary, destinationSummary, onGoToRules, onGoToDestinations, onGoToDesign, openRequest, embedded = false }: {
   tokens?: Tokens; primaryChannel?: string | null; tree: TemplateTree; step: number; onChange(tree: TemplateTree): void; onSelect(step: number): void;
-  displaySummary?: string; destinationSummary?: string; onGoToRules?(): void; onGoToDestinations?(): void; openRequest?: number;
+  displaySummary?: string; destinationSummary?: string; onGoToRules?(): void; onGoToDestinations?(): void; onGoToDesign?(): void; openRequest?: number; embedded?: boolean;
 }) {
   const id = useId();
   const [open, setOpen] = useState(false);
   const [testOpen, setTestOpen] = useState(false);
   const [view, setView] = useState<'flow' | 'screens'>('flow');
+  const [query, setQuery] = useState('');
+  const [sampleOpen, setSampleOpen] = useState(false);
+  const [samplePath, setSamplePath] = useState<readonly number[] | null>(null);
+  const [panelSection, setPanelSection] = useState<'content' | 'paths'>('content');
+  const [mobilePane, setMobilePane] = useState<'map' | 'details'>('map');
+  const [pathFocus, setPathFocus] = useState<number | null>(null);
   useEffect(() => { if (openRequest) setOpen(true); }, [openRequest]);
   const [said, setSaid] = useState('');
   const [confirmRemoval, setConfirmRemoval] = useState(false);
+  const [pendingRoute, setPendingRoute] = useState<{ tree: TemplateTree; disconnected: readonly string[] } | null>(null);
   const screenList = useRef<HTMLOListElement>(null);
   const selectedId = useRef(tree.steps[step]?.id);
   const previousTree = useRef(tree);
-  const select = (index: number) => { selectedId.current = tree.steps[index]?.id; onSelect(index); };
+  const select = (index: number) => { selectedId.current = tree.steps[index]?.id; setSampleOpen(false); setPanelSection('content'); setPathFocus(null); setMobilePane('details'); onSelect(index); };
   useEffect(() => {
     if (previousTree.current !== tree) {
       const index = tree.steps.findIndex(screen => screen.id === selectedId.current);
@@ -40,7 +48,9 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
   }, [tree, step, onSelect]);
   useEffect(() => { screenList.current?.querySelector('[data-selected="true"]')?.scrollIntoView?.({ block: 'nearest' }); }, [step]);
   const current = tree.steps[step];
-  if (!current || (tree.submissions.length === 0 && !tree.steps.some(screen => screen.kind === 'result'))) return null;
+  if (!current) return null;
+  const canCondition = tree.steps.slice(0, step + 1).some(screen => walkNodes(screen.content).some(node => node.type === 'question' && 'answer_type' in node && node.answer_type !== 'text'));
+  const matches = tree.steps.map((screen, index) => ({ screen, index })).filter(item => item.screen.name.toLocaleLowerCase().includes(query.trim().toLocaleLowerCase()));
   const write = (next: TemplateTree, index: number) => { selectedId.current = next.steps[index]?.id; onChange(referencedJourney(next)); onSelect(index); };
   const move = (from: number, to: number) => {
     const next = movedScreen(tree, from, to);
@@ -60,10 +70,17 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
   const screenLabel = (index: number) => tree.steps[index].kind === 'result' ? __('Shows a selected result', 'wconvert')
     : tree.steps[index].kind === 'acknowledgement' ? __('Journey complete', 'wconvert')
     : saving(index) ? saveLabel(saving(index)!.id) : __('Continue only', 'wconvert');
-  const add = (kind: 'content' | 'input') => {
+  const add = (kind: 'content' | 'input', conditional = false) => {
     const steps = [...tree.steps]; const boundary = steps.findIndex(s => s.kind === 'result' || walkNodes(s.content).some(n => 'action' in n && n.action === 'submit'));
     const at = Math.min(step + 1, boundary < 0 ? steps.length - 1 : boundary);
     let screen = freshScreen(tree, kind);
+    if (conditional) {
+      const question = tree.steps.slice(0, step + 1).flatMap(item => walkNodes(item.content)).find(node => node.type === 'question'
+        && 'id' in node && typeof node.id === 'string' && 'answer_type' in node && node.answer_type !== 'text') as (QuestionNode & { id: string }) | undefined;
+      if (!question) { setSaid(__('Add a choice question here or earlier before making a conditional follow-up.', 'wconvert')); return; }
+      screen = { ...screen, name: __('Relevant follow-up', 'wconvert'), when: { match: 'all', clauses: [{ question: question.id,
+        operator: question.answer_type === 'multi' ? 'includes_any' : 'is', values: [''] }] } };
+    }
     const optional = tree.submissions[1];
     const primaryEnd = steps.findIndex(s => walkNodes(s.content).some(n => 'submission' in n && n.submission === tree.submissions[0]?.id && 'action' in n && n.action === 'submit'));
     if (optional && at > primaryEnd && 'children' in screen.content) {
@@ -84,6 +101,23 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
       }
     }
     steps.splice(at, 0, screen); write({ ...tree, steps }, at);
+    if (conditional) setSaid(__('Follow-up added. Choose the matching answer in Screen visibility.', 'wconvert'));
+  };
+  const insertOnPath = (priority: number, kind: 'content' | 'input') => {
+    if (tree.steps.length >= 7 || step >= tree.steps.length - 1) return;
+    const source = tree.steps[step];
+    const paths = source.paths ?? [{ to: tree.steps[step + 1].id }];
+    const path = paths[priority];
+    if (!path) return;
+    // A hidden source continues to the next ordered screen. Mirror its visibility
+    // so inserting on a branch does not make that new screen appear on the skip path.
+    const screen = { ...freshScreen(tree, kind), ...(source.when ? { when: source.when } : {}), paths: [{ to: path.to }] };
+    const steps = [...tree.steps];
+    if (source.paths) steps[step] = { ...source, paths: paths.map((item, index) => index === priority ? { ...item, to: screen.id } : item) };
+    steps.splice(step + 1, 0, screen);
+    write({ ...tree, steps }, step + 1);
+    setPanelSection('content');
+    setSaid(sprintf(__('Screen inserted on this path. Its condition and continuation to %s are preserved.', 'wconvert'), tree.steps.find(item => item.id === path.to)?.name ?? path.to));
   };
   const addOptional = () => {
     const channel = primaryChannel === 'sms' || tree.submissions.length === 0 ? 'email' : 'phone';
@@ -141,42 +175,55 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
     const question = tree.steps.slice(0, from + 1).flatMap(item => walkNodes(item.content)).find(node => node.type === 'question'
       && 'id' in node && typeof node.id === 'string' && 'answer_type' in node && node.answer_type !== 'text') as (QuestionNode & { id: string }) | undefined;
     if (!question) {
-      if (!screen.paths) onChange({ ...tree, steps: tree.steps.map((item, index) => index === from ? { ...item, paths: [{ to: target }] } : item) });
+      if (!screen.paths) {
+        const changed = { ...tree, steps: tree.steps.map((item, index) => index === from ? { ...item, paths: [{ to: target }] } : item) };
+        const previously = new Set(unreachableScreens(tree));
+        const disconnected = unreachableScreens(changed).filter(name => !previously.has(name));
+        if (disconnected.length) setPendingRoute({ tree: changed, disconnected });
+        else onChange(changed);
+      }
       else setSaid(__('Add a choice question here or earlier before drawing another branch.', 'wconvert'));
       select(from); return;
     }
     const when = { match: 'all' as const, clauses: [{ question: question.id, operator: question.answer_type === 'multi' ? 'includes_any' as const : 'is' as const, values: [''] }] };
     onChange({ ...tree, steps: tree.steps.map((item, index) => index === from ? { ...item, paths: [{ to: target, when }, ...paths] } : item) });
-    select(from); setSaid(__('Path added. Choose its answer in the right panel before publishing.', 'wconvert'));
+    select(from); setPanelSection('paths'); setSaid(__('Path added. Choose its answer in the right panel before publishing.', 'wconvert'));
   };
-  return <>
-    <Dialog open={open} onOpenChange={value => { setOpen(value); setSaid(''); }}>
-      <DialogTrigger asChild><Button type="button" variant="outline" size="sm"><Workflow aria-hidden="true" />{__('Manage screens', 'wconvert')}</Button></DialogTrigger>
-      <DialogContent className="wconvert-journey-dialog" showCloseButton={false}>
+  const workspace = <>
         <div className="wconvert-journey-dialog__header">
-          <div><DialogTitle>{__('Manage screens', 'wconvert')}</DialogTitle>
-            <DialogDescription>{__('Plan the visitor journey, then select a screen to edit its questions and paths.', 'wconvert')}</DialogDescription></div>
+          <div>{embedded ? <h2>{__('Journey', 'wconvert')}</h2> : <DialogTitle>{__('Manage screens', 'wconvert')}</DialogTitle>}
+            {embedded ? <p className="wconvert-journey-description">{__('Plan the visitor journey, then select a screen to edit its questions and paths.', 'wconvert')}</p>
+              : <DialogDescription>{__('Plan the visitor journey, then select a screen to edit its questions and paths.', 'wconvert')}</DialogDescription>}</div>
           <div className="wconvert-journey-dialog__header-actions">
+            <Button type="button" size="sm" variant={sampleOpen ? 'secondary' : 'outline'} onClick={() => { setView('flow'); setSampleOpen(true); setMobilePane('details'); }}>{__('Try answers', 'wconvert')}</Button>
             <Button type="button" size="sm" variant="outline" onClick={() => { setOpen(false); setTestOpen(true); }}>{__('Test journey', 'wconvert')}</Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button type="button" size="sm" variant="outline"><Plus aria-hidden="true" />{__('Add screen', 'wconvert')}<ChevronDown aria-hidden="true" /></Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
+                <DropdownMenuLabel>{step === tree.steps.length - 1 ? sprintf(__('Before %s', 'wconvert'), current.name) : sprintf(__('After %s', 'wconvert'), current.name)}</DropdownMenuLabel>
                 <DropdownMenuItem disabled={tree.steps.length >= 7} onSelect={() => add('content')}><FilePlus2 aria-hidden="true" />{__('Add offer screen', 'wconvert')}</DropdownMenuItem>
                 <DropdownMenuItem disabled={tree.steps.length >= 7} onSelect={() => add('input')}><ListPlus aria-hidden="true" />{__('Add question screen', 'wconvert')}</DropdownMenuItem>
+                <DropdownMenuItem disabled={tree.steps.length >= 7 || !canCondition} onSelect={() => add('input', true)}><ListPlus aria-hidden="true" />{__('Add relevant follow-up', 'wconvert')}</DropdownMenuItem>
                 {(primaryChannel && tree.submissions.length === 1 || tree.submissions.length === 0 && tree.steps.some(s => s.kind === 'result')) && <>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem disabled={tree.steps.length >= (tree.submissions.length === 0 ? 6 : 7)} onSelect={addOptional}><Plus aria-hidden="true" />{__('Add optional signup', 'wconvert')}</DropdownMenuItem>
                 </>}
               </DropdownMenuContent>
             </DropdownMenu>
-            <DialogClose asChild><Button type="button" variant="ghost" size="icon-sm" aria-label={__('Close screen manager', 'wconvert')}><X aria-hidden="true" /></Button></DialogClose>
+            {!embedded && <DialogClose asChild><Button type="button" variant="ghost" size="icon-sm" aria-label={__('Close screen manager', 'wconvert')}><X aria-hidden="true" /></Button></DialogClose>}
           </div>
         </div>
         <div className="wconvert-journey-view" role="group" aria-label={__('Journey view', 'wconvert')}>
-          <button type="button" aria-pressed={view === 'flow'} onClick={() => setView('flow')}>{__('Flow', 'wconvert')}</button>
-          <button type="button" aria-pressed={view === 'screens'} onClick={() => setView('screens')}>{__('Screens', 'wconvert')}</button>
+          <button type="button" aria-pressed={view === 'flow'} onClick={() => { setView('flow'); setMobilePane('map'); }}>{__('Flow', 'wconvert')}</button>
+          <button type="button" aria-pressed={view === 'screens'} onClick={() => { setView('screens'); setMobilePane('map'); }}>{__('Screens', 'wconvert')}</button>
+          <div className="wconvert-journey-find"><label><Search aria-hidden="true" /><span className="sr-only">{__('Find a screen', 'wconvert')}</span><input type="search" value={query} placeholder={__('Find a screen…', 'wconvert')} onChange={event => setQuery(event.target.value)} /></label>
+            {query.trim() && <div className="wconvert-journey-find__results" role="group" aria-label={__('Matching screens', 'wconvert')}>
+              {matches.length ? matches.map(({ screen, index }) => <button type="button" key={screen.id} onClick={() => { select(index); setView('flow'); setQuery(''); }}>{screen.name}<small>{sprintf(__('Screen %d', 'wconvert'), index + 1)}</small></button>)
+                : <p>{__('No matching screens.', 'wconvert')}</p>}
+            </div>}
+          </div>
         </div>
         {(displaySummary || destinationSummary) && <div className="wconvert-journey-context">
           {displaySummary && <div><small>{__('When this appears', 'wconvert')}</small><strong>{displaySummary}</strong>
@@ -184,10 +231,15 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
           {destinationSummary && <div><small>{__('After a visitor submits', 'wconvert')}</small><strong>{destinationSummary}</strong>
             {onGoToDestinations && <button type="button" onClick={() => { setOpen(false); onGoToDestinations(); }}>{__('Edit destinations', 'wconvert')}</button>}</div>}
         </div>}
-        <div className="wconvert-journey-side">
+        <div className="wconvert-journey-mobile-tabs" role="group" aria-label={__('Mobile journey view', 'wconvert')}>
+          <button type="button" aria-pressed={mobilePane === 'map'} onClick={() => setMobilePane('map')}>{view === 'flow' ? __('Map', 'wconvert') : __('Screens', 'wconvert')}</button>
+          <button type="button" aria-pressed={mobilePane === 'details'} onClick={() => setMobilePane('details')}>{sampleOpen ? __('Sample answers', 'wconvert') : __('Edit screen', 'wconvert')}</button>
+        </div>
+        <div className="wconvert-journey-side" data-mobile-pane={mobilePane}>
           <div className="wconvert-journey-mobile-picker"><label>{__('Screen', 'wconvert')}<select value={step} onChange={event => select(Number(event.target.value))}>{tree.steps.map((screen, index) => <option key={screen.id} value={index}>{index + 1}. {screen.name}</option>)}</select></label></div>
           {view === 'flow' && <Suspense fallback={<div className="wconvert-journey-map">{__('Loading journey map…', 'wconvert')}</div>}>
-            <JourneyMap tree={tree} selected={step} onSelect={select} onConnect={connect} />
+            <JourneyMap tree={tree} selected={step} focusedPath={panelSection === 'paths' ? pathFocus : null}
+              onSelect={select} onSelectPath={(index, priority) => { select(index); setPanelSection('paths'); setPathFocus(priority); }} onConnect={connect} samplePath={samplePath} />
           </Suspense>}
           {view === 'screens' && <aside className="wconvert-journey-rail" aria-label={__('Journey screens', 'wconvert')}>
             <div className="wconvert-journey-rail__heading"><strong>{__('Screens', 'wconvert')}</strong><span>{tree.steps.length} / 7</span><small>{__('In visitor order · some may be skipped', 'wconvert')}</small></div>
@@ -199,9 +251,15 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
                 onMove={(from, to) => move(tree.steps.findIndex(s => s.id === from), Math.min(tree.steps.findIndex(s => s.id === to), tree.steps.length - 2))} />)}
             </ol>
           </aside>}
-          <section className="wconvert-journey-pane" aria-label={__('Selected screen settings', 'wconvert')}>
+          {sampleOpen ? <JourneySample tree={tree} onTrace={setSamplePath} onSelect={select} onClose={() => { setSampleOpen(false); setSamplePath(null); }} />
+            : <section className="wconvert-journey-pane" aria-label={__('Selected screen settings', 'wconvert')}>
             <div className="wconvert-journey-pane__heading"><div className="wconvert-journey-dialog__selected"><span>{step + 1}</span><div><h3>{current.name}</h3><small>{sprintf(__('Screen %1$d of %2$d', 'wconvert'), step + 1, tree.steps.length)}</small></div></div></div>
+            <div className="wconvert-journey-pane__tabs" role="group" aria-label={__('Screen settings section', 'wconvert')}>
+              <button type="button" aria-pressed={panelSection === 'content'} onClick={() => setPanelSection('content')}>{__('Content & visibility', 'wconvert')}</button>
+              <button type="button" aria-pressed={panelSection === 'paths'} onClick={() => setPanelSection('paths')}>{__('Next screen', 'wconvert')}</button>
+            </div>
             <div className="wconvert-journey-dialog__details">
+          {panelSection === 'content' ? <>
           <div className="wconvert-journey-dialog__fields">
 
             <label className="wconvert-journey__field">{__('Screen name', 'wconvert')}
@@ -237,7 +295,6 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
           </div>
           <ScreenConditionSettings tree={tree} step={step} onChange={onChange} onSelect={select} />
           <QuestionSettings tree={tree} step={step} onChange={onChange} onSelect={select} />
-          <RouteSettings tree={tree} step={step} onChange={onChange} />
           {current.kind === 'result' && <fieldset className="wconvert-journey-settings__group">
             <legend>{__('When visitors see their result', 'wconvert')}</legend>
             <label><input type="radio" name={`${id}-result-access`} disabled={tree.steps.some(screen => screen.paths?.length)} checked={tree.submissions.length === 0 || step < submissionScreen(tree, tree.submissions[0]?.id)}
@@ -257,6 +314,12 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
               : submission
                 ? __('Saves the signup or request here, even if the visitor leaves a later screen.', 'wconvert')
                 : __('New answers stay on this page until the visitor submits. Going to the next screen does not save new details.', 'wconvert')}</p></div>
+          {step < tree.steps.length - 1 && <button type="button" className="wconvert-journey-next-summary" onClick={() => setPanelSection('paths')}>
+            <strong>{current.paths?.length && current.paths.length > 1 ? sprintf(__('%d answer paths and Everyone else', 'wconvert'), current.paths.length - 1)
+              : sprintf(__('Next: %s', 'wconvert'), tree.steps.find(item => item.id === current.paths?.[0]?.to)?.name ?? tree.steps[step + 1].name)}</strong>
+            <small>{__('Review where visitors go next', 'wconvert')}</small>
+          </button>}
+          </> : <RouteSettings tree={tree} step={step} focusPath={pathFocus} onChange={onChange} onInsert={insertOnPath} />}
             </div>
             <div className="wconvert-journey-dialog__actions-row">
               <DropdownMenu>
@@ -278,17 +341,25 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
                   <DropdownMenuItem disabled={removal.screens.length === 0} onSelect={() => removal.screens.length > 1 ? setConfirmRemoval(true) : remove()}><Trash2 aria-hidden="true" />{__('Delete screen', 'wconvert')}</DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
-              <Button type="button" size="sm" onClick={() => setOpen(false)}>{__('Edit design', 'wconvert')}<ArrowRight aria-hidden="true" className="rtl:rotate-180" /></Button>
+            <Button type="button" size="sm" onClick={() => { if (embedded) onGoToDesign?.(); else setOpen(false); }}>{__('Edit design', 'wconvert')}<ArrowRight aria-hidden="true" className="rtl:rotate-180" /></Button>
             </div>
-          </section>
+          </section>}
         </div>
-        <div className="wconvert-journey-dialog__footer"><p role="status">{said || __('Changes are part of your campaign draft. Save the draft to keep them.', 'wconvert')}</p><DialogClose asChild><Button variant="outline">{__('Done', 'wconvert')}</Button></DialogClose></div>
+        <div className="wconvert-journey-dialog__footer"><p role="status">{said || __('Changes are part of your campaign draft. Save the draft to keep them.', 'wconvert')}</p>{!embedded && <DialogClose asChild><Button variant="outline">{__('Done', 'wconvert')}</Button></DialogClose>}</div>
         <ConfirmDialog open={confirmRemoval} onOpenChange={setConfirmRemoval} title={__('Remove this optional signup?', 'wconvert')}
           description={sprintf(__('These screens collect details for the same signup and will be removed: %s. Other screens stay. Undo brings them back.', 'wconvert'), tree.steps.filter(s => removal.screens.includes(s.id)).map(s => s.name).join(', '))}
           confirmLabel={__('Remove signup screens', 'wconvert')} onConfirm={remove} />
-      </DialogContent>
-    </Dialog>
-    <Dialog open={testOpen} onOpenChange={value => { setTestOpen(value); if (!value) setOpen(true); }}>
+        <ConfirmDialog open={pendingRoute !== null} onOpenChange={value => { if (!value) setPendingRoute(null); }} title={__('Review this path change', 'wconvert')}
+          description={pendingRoute ? sprintf(__('These screens would become unreachable: %s. They stay in the draft, but visitors cannot reach or submit from them. You can Undo after applying.', 'wconvert'), pendingRoute.disconnected.join(', ')) : ''}
+          confirmLabel={__('Apply path change', 'wconvert')} onConfirm={() => { if (pendingRoute) onChange(pendingRoute.tree); setPendingRoute(null); }} />
+  </>;
+  return <>
+    {embedded ? <section className="wconvert-journey-workspace" aria-label={__('Journey', 'wconvert')}>{workspace}</section>
+      : <Dialog open={open} onOpenChange={value => { setOpen(value); setSaid(''); }}>
+        <DialogTrigger asChild><Button type="button" variant="outline" size="sm"><Workflow aria-hidden="true" />{__('Manage screens', 'wconvert')}</Button></DialogTrigger>
+        <DialogContent className="wconvert-journey-dialog" showCloseButton={false}>{workspace}</DialogContent>
+      </Dialog>}
+    <Dialog open={testOpen} onOpenChange={value => { setTestOpen(value); if (!value && !embedded) setOpen(true); }}>
       <DialogContent className="wconvert-journey-test-dialog">
         <DialogTitle>{__('Test journey', 'wconvert')}</DialogTitle>
         <DialogDescription>{__('Try answers and inspect the included and skipped screens. Nothing is submitted.', 'wconvert')}</DialogDescription>

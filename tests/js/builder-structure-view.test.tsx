@@ -2003,7 +2003,6 @@ describe('adaptive editor and signup deletion', () => {
     await userEvent.click(screen.getByRole('button', { name: /Optional SMS signup Save/ }));
     await userEvent.click(screen.getByRole('button', { name: 'Screen actions' }));
     await userEvent.click(screen.getByRole('menuitem', { name: 'Delete screen' }));
-    await userEvent.click(screen.getByRole('button', { name: 'Done' }));
     await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
     expect(savedTree().submissions).toHaveLength(1);
     expect(builder.saveOptin.mock.calls.at(-1)?.[2].submission_settings).toEqual({});

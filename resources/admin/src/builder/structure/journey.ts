@@ -1,5 +1,5 @@
 import { __, sprintf } from '@wordpress/i18n';
-import type { TemplateTree, TemplateNode, TemplateScreen } from '@renderer/types';
+import type { QuestionCondition, TemplateTree, TemplateNode, TemplateScreen } from '@renderer/types';
 
 export function walkNodes(node: TemplateNode, includeHidden = true): TemplateNode[] {
   if (!includeHidden && 'hidden' in node && node.hidden) return [];
@@ -113,6 +113,25 @@ export function usedBy(tree: TemplateTree, questionId: string): string[] {
   return tree.steps.filter(screen => screen.when?.clauses.some(clause => clause.question === questionId)
     || screen.results?.some(result => result.when?.clauses.some(clause => clause.question === questionId))
     || screen.paths?.some(path => path.when?.clauses.some(clause => clause.question === questionId))).map(screen => screen.id);
+}
+
+/** Replace a referenced choice everywhere in one undoable draft edit. IDs and rule order stay stable. */
+export function replaceAnswer(tree: TemplateTree, questionId: string, removed: string, replacement: string): TemplateTree {
+  if (!replacement || replacement === removed) return tree;
+  const question = tree.steps.flatMap(screen => walkNodes(screen.content)).find(node => node.type === 'question' && 'id' in node && node.id === questionId);
+  if (!question || !('options' in question) || !question.options?.some(option => option.value === removed)
+    || !question.options.some(option => option.value === replacement) || question.options.length <= 2) return tree;
+  const condition = (value?: QuestionCondition): QuestionCondition | undefined => value && ({ ...value, clauses: value.clauses.map(clause => clause.question === questionId
+    ? { ...clause, values: [...new Set(clause.values.map(item => item === removed ? replacement : item))] } : clause) });
+  const content = (node: TemplateNode): TemplateNode => {
+    if (node.type === 'question' && 'id' in node && node.id === questionId) return { ...node, options: node.options?.filter(option => option.value !== removed) };
+    const copy = { ...node } as Record<string, unknown>;
+    for (const key of ['children', 'start', 'end']) if (Array.isArray(copy[key])) copy[key] = (copy[key] as TemplateNode[]).map(content);
+    return copy as TemplateNode;
+  };
+  return { ...tree, steps: tree.steps.map(screen => ({ ...screen, content: content(screen.content), when: condition(screen.when),
+    paths: screen.paths?.map(path => ({ ...path, when: condition(path.when) })),
+    results: screen.results?.map(result => ({ ...result, when: condition(result.when) })) })) };
 }
 
 export function duplicateScreen(tree: TemplateTree, index: number): TemplateScreen {

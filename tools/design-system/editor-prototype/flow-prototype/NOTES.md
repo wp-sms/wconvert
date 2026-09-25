@@ -355,3 +355,11 @@ and server validation share that model; Back retains still-relevant answers.
 [ADR 0107](../../../../docs/adr/0107-forward-journey-paths-and-flow-editor.md)
 records the shipped decision. The prototype remains an exploration of A/B and
 additional authoring ideas, not the production specification.
+
+The next production iteration moved the map into a persistent Journey tab. It added
+screen search, sample answer tracing, contextual path insertion, optional card previews,
+explicit map controls, separate content and routing panels, a compact mobile Map/Edit
+switch, referenced-answer replacement, and reroute impact review. The production model
+still limits campaigns to seven ordered screens with forward paths inside capture/result
+boundaries. The prototype's twenty-screen grouping, ELK edge routing, visitor ledger,
+and simulated publication walkthroughs are not production features.

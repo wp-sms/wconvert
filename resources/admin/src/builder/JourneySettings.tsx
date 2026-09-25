@@ -1,9 +1,11 @@
-import { useEffect, useId, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import apiFetch from '@wordpress/api-fetch';
 import { __, sprintf } from '@wordpress/i18n';
 import type { QuestionClause, QuestionCondition, QuestionNode, ResultVariant, TemplateNode, TemplateTree } from '@renderer/types';
-import { unreachableScreens, walkNodes, usedBy } from './structure/journey';
+import { replaceAnswer, unreachableScreens, walkNodes, usedBy } from './structure/journey';
 import { conditionText, resultsMayOverlap } from './structure/conditionText';
+import { ConfirmDialog } from '../shell/ConfirmDialog';
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../components/ui/dropdown-menu';
 
 type ChoiceQuestion = QuestionNode & { id: string };
 const questionsBefore = (tree: TemplateTree, at: number): ChoiceQuestion[] => tree.steps.slice(0, at)
@@ -64,7 +66,17 @@ export function ConditionSettings({ value, sources, onChange, required = false, 
 }
 
 /** Routes are ordered alternatives. The last route is always the fallback. */
-export function RouteSettings({ tree, step, onChange }: { tree: TemplateTree; step: number; onChange(next: TemplateTree): void }) {
+export function RouteSettings({ tree, step, focusPath = null, onChange, onInsert }: {
+  tree: TemplateTree; step: number; focusPath?: number | null; onChange(next: TemplateTree): void; onInsert?(priority: number, kind: 'content' | 'input'): void;
+}) {
+  const [pending, setPending] = useState<{ tree: TemplateTree; disconnected: readonly string[] } | null>(null);
+  const list = useRef<HTMLOListElement>(null);
+  useEffect(() => {
+    if (focusPath === null) return;
+    const row = list.current?.querySelector<HTMLElement>(`[data-path-priority="${focusPath}"]`);
+    row?.scrollIntoView?.({ block: 'nearest' });
+    row?.querySelector<HTMLElement>('select')?.focus();
+  }, [focusPath, step]);
   const screen = tree.steps[step];
   if (!screen || step === tree.steps.length - 1) return null;
   const boundary = tree.steps.findIndex((item, index) => index > step && (['result', 'acknowledgement'].includes(item.kind)
@@ -75,21 +87,29 @@ export function RouteSettings({ tree, step, onChange }: { tree: TemplateTree; st
     .filter((node): node is ChoiceQuestion => node.type === 'question' && 'id' in node && typeof node.id === 'string'
       && 'answer_type' in node && node.answer_type !== 'text') as ChoiceQuestion[];
   const paths = screen.paths ?? [{ to: tree.steps[step + 1].id }];
-  const write = (next: typeof paths) => onChange({ ...tree, steps: tree.steps.map((item, index) => index === step
-    ? { ...item, paths: next.length === 1 && !next[0].when && next[0].to === tree.steps[step + 1].id ? undefined : next } : item) });
+  const write = (next: typeof paths) => {
+    const changed = { ...tree, steps: tree.steps.map((item, index) => index === step
+      ? { ...item, paths: next.length === 1 && !next[0].when && next[0].to === tree.steps[step + 1].id ? undefined : next } : item) };
+    const already = new Set(unreachableScreens(tree));
+    const disconnected = unreachableScreens(changed).filter(name => !already.has(name));
+    if (disconnected.length) setPending({ tree: changed, disconnected });
+    else onChange(changed);
+  };
   const unused = targets.find(target => !paths.some(path => path.to === target.id));
   const unreachable = unreachableScreens(tree);
   const add = () => {
     if (!sources.length || !unused || paths.length >= 6) return;
     const question = sources[0];
+    const used = new Set(paths.flatMap(path => path.when?.clauses.filter(clause => clause.question === question.id).flatMap(clause => clause.values) ?? []));
+    const suggested = question.options?.find(option => !used.has(option.value))?.value ?? '';
     write([{ to: unused.id, when: { match: 'all', clauses: [{ question: question.id,
-      operator: question.answer_type === 'multi' ? 'includes_any' : 'is', values: [''] }] } }, ...paths]);
+      operator: question.answer_type === 'multi' ? 'includes_any' : 'is', values: [suggested] }] } }, ...paths]);
   };
   return <section className="wconvert-journey-settings wconvert-journey-routes"><h4>{__('Next paths', 'wconvert')}</h4>
     <p>{paths.length > 1 ? __('Visitors take the first matching path. If none match, they take Everyone else.', 'wconvert')
       : __('After this screen, visitors continue to the next relevant screen.', 'wconvert')}</p>
     {screen.when && screen.paths && <p>{__('If this screen is hidden, visitors continue to the next screen without checking these paths.', 'wconvert')}</p>}
-    <ol>{paths.map((path, index) => <li key={`${index}-${path.to}`}>
+    <ol ref={list}>{paths.map((path, index) => <li key={`${index}-${path.to}`} data-path-priority={index}>
       <strong>{index === paths.length - 1 ? __('Everyone else', 'wconvert') : sprintf(__('%d. If the answer matches', 'wconvert'), index + 1)}</strong>
       <label>{__('Go to', 'wconvert')}<select value={path.to} onChange={event => write(paths.map((item, at) => at === index ? { ...item, to: event.target.value } : item))}>
         {targets.map(target => <option key={target.id} value={target.id} disabled={paths.some((item, at) => at !== index && item.to === target.id)}>{target.name}</option>)}
@@ -98,6 +118,10 @@ export function RouteSettings({ tree, step, onChange }: { tree: TemplateTree; st
         if (when) write(paths.map((item, at) => at === index ? { ...item, when } : item));
       }} />}
       {path.when?.clauses.some(clause => clause.values[0] === '') && <p className="wconvert-journey-settings__warning" role="status">{__('Choose an answer for this path before publishing.', 'wconvert')}</p>}
+      {onInsert && tree.steps.length < 7 && <DropdownMenu><DropdownMenuTrigger asChild><button type="button" className="wconvert-journey-routes__insert">{__('Insert on this path', 'wconvert')}</button></DropdownMenuTrigger>
+        <DropdownMenuContent align="start"><DropdownMenuItem onSelect={() => onInsert(index, 'input')}>{__('Ask a question', 'wconvert')}</DropdownMenuItem>
+          <DropdownMenuItem onSelect={() => onInsert(index, 'content')}>{__('Show a message', 'wconvert')}</DropdownMenuItem></DropdownMenuContent>
+      </DropdownMenu>}
       {index < paths.length - 1 && <div className="wconvert-journey-routes__actions">
         <button type="button" disabled={index === 0} onClick={() => { const next = [...paths]; [next[index - 1], next[index]] = [next[index], next[index - 1]]; write(next); }}>{__('Higher priority', 'wconvert')}</button>
         <button type="button" disabled={index >= paths.length - 2} onClick={() => { const next = [...paths]; [next[index + 1], next[index]] = [next[index], next[index + 1]]; write(next); }}>{__('Lower priority', 'wconvert')}</button>
@@ -107,6 +131,9 @@ export function RouteSettings({ tree, step, onChange }: { tree: TemplateTree; st
     {sources.length > 0 && unused && paths.length < 6 && <button type="button" onClick={add}>{__('Add answer path', 'wconvert')}</button>}
     {!sources.length && targets.length > 1 && <p>{__('Add a choice question here or earlier to branch by answer.', 'wconvert')}</p>}
     {unreachable.length > 0 && <p className="wconvert-journey-settings__warning" role="status">{sprintf(__('No path reaches: %s. Connect or remove these screens before publishing.', 'wconvert'), unreachable.join(', '))}</p>}
+    <ConfirmDialog open={pending !== null} onOpenChange={open => { if (!open) setPending(null); }} title={__('Review this path change', 'wconvert')}
+      description={pending ? sprintf(__('These screens would become unreachable: %s. They stay in the draft, but visitors cannot reach or submit from them. You can Undo after applying.', 'wconvert'), pending.disconnected.join(', ')) : ''}
+      confirmLabel={__('Apply path change', 'wconvert')} onConfirm={() => { if (pending) onChange(pending.tree); setPending(null); }} />
   </section>;
 }
 
@@ -119,6 +146,7 @@ export function ScreenConditionSettings({ tree, step, onChange, onSelect }: {
   const sources = questionsBefore(tree, step);
   return <section className="wconvert-journey-settings"><h4>{__('Screen visibility', 'wconvert')}</h4>
     <ConditionSettings value={screen.when} sources={sources} onChange={when => onChange({ ...tree, steps: tree.steps.map((item, at) => at === step ? { ...item, when } : item) })} />
+    {screen.when && <p className="wconvert-journey-settings__skip">{sprintf(__('If this does not match, skip “%1$s” and check “%2$s” next. Other relevant follow-ups can still appear.', 'wconvert'), screen.name, tree.steps[step + 1]?.name ?? __('the ending', 'wconvert'))}</p>}
     {screen.when?.clauses.map(clause => { const source = questionsBefore(tree, step).find(q => q.id === clause.question);
       const sourceAt = tree.steps.findIndex(item => walkNodes(item.content).some(node => 'id' in node && node.id === clause.question));
       return source && sourceAt >= 0 ? <button key={clause.question} type="button" onClick={() => onSelect(sourceAt)}>{__('Edit source question:', 'wconvert')} {source.label}</button> : null;
@@ -129,6 +157,8 @@ export function ScreenConditionSettings({ tree, step, onChange, onSelect }: {
 export function QuestionSettings({ tree, step, onChange, onSelect }: {
   tree: TemplateTree; step: number; onChange(next: TemplateTree): void; onSelect(step: number): void;
 }) {
+  const [repair, setRepair] = useState<{ question: string; value: string } | null>(null);
+  const [replacement, setReplacement] = useState('');
   const screen = tree.steps[step];
   const questions = walkNodes(screen.content).filter((node): node is ChoiceQuestion => node.type === 'question' && 'id' in node && typeof node.id === 'string') as ChoiceQuestion[];
   if (!questions.length) return null;
@@ -147,7 +177,22 @@ export function QuestionSettings({ tree, step, onChange, onSelect }: {
         {question.answer_type !== 'text' && <div><strong>{__('Choices', 'wconvert')}</strong>
           {question.options?.map((option, at) => <div key={option.value} className="wconvert-journey-settings__choice"><input aria-label={`${__('Choice', 'wconvert')} ${at + 1}`} value={option.label} maxLength={120}
             onChange={event => change(question.id, node => ({ ...node, options: node.options?.map((old, i) => i === at ? { ...old, label: event.target.value } : old) }))} />
-            <button type="button" disabled={!!protectedValues.has(option.value) || (question.options?.length ?? 0) <= 2} onClick={() => change(question.id, node => ({ ...node, options: node.options?.filter((_, i) => i !== at) }))}>{__('Remove', 'wconvert')}</button></div>)}
+            <button type="button" disabled={(question.options?.length ?? 0) <= 2} onClick={() => {
+              if (protectedValues.has(option.value)) { setRepair({ question: question.id, value: option.value }); setReplacement(''); }
+              else change(question.id, node => ({ ...node, options: node.options?.filter((_, i) => i !== at) }));
+            }}>{protectedValues.has(option.value) ? __('Review uses', 'wconvert') : __('Remove', 'wconvert')}</button></div>)}
+          {repair?.question === question.id && <div className="wconvert-journey-answer-repair" role="region" aria-label={__('Review answer uses', 'wconvert')}>
+            <strong>{sprintf(__('“%s” is used in journey rules', 'wconvert'), question.options?.find(option => option.value === repair.value)?.label ?? repair.value)}</strong>
+            <p>{__('Edit each condition, or replace every use with another answer before removing this choice. Branch and result priority stay the same.', 'wconvert')}</p>
+            <div>{refs.map(id => <button type="button" key={id} onClick={() => onSelect(tree.steps.findIndex(item => item.id === id))}>{tree.steps.find(item => item.id === id)?.name} →</button>)}</div>
+            <label>{__('Replace its uses with', 'wconvert')}<select value={replacement} onChange={event => setReplacement(event.target.value)}>
+              <option value="">{__('Choose an existing answer…', 'wconvert')}</option>
+              {question.options?.filter(option => option.value !== repair.value).map(option => <option key={option.value} value={option.value}>{option.label}</option>)}
+            </select></label>
+            <div className="wconvert-journey-answer-repair__actions"><button type="button" disabled={!replacement} onClick={() => { onChange(replaceAnswer(tree, question.id, repair.value, replacement)); setRepair(null); }}>
+              {__('Replace uses & remove', 'wconvert')}</button><button type="button" onClick={() => setRepair(null)}>{__('Cancel', 'wconvert')}</button></div>
+            <small>{__('One draft change. Undo restores the answer and its references.', 'wconvert')}</small>
+          </div>}
           {(question.options?.length ?? 0) < 12 && <button type="button" onClick={() => change(question.id, node => {
             const taken = new Set(node.options?.map(item => item.value)); let at = 1; while (taken.has(`choice_${at}`)) at++;
             return { ...node, options: [...(node.options ?? []), { value: `choice_${at}`, label: __('New choice', 'wconvert') }] };
@@ -155,7 +200,7 @@ export function QuestionSettings({ tree, step, onChange, onSelect }: {
         </div>}
         <label className="wconvert-journey-settings__check"><input type="checkbox" checked={question.required === true} onChange={event => change(question.id, node => ({ ...node, required: event.target.checked }))} />{__('Answer required', 'wconvert')}</label>
         {refs.length > 0 && <div><strong>{__('Used by', 'wconvert')}</strong> {refs.map(id => <button type="button" key={id} onClick={() => onSelect(tree.steps.findIndex(item => item.id === id))}>{tree.steps.find(item => item.id === id)?.name}</button>)}
-          <p>{__('Remove its conditions before changing the answer type or deleting a referenced choice.', 'wconvert')}</p></div>}
+          <p>{__('To change the answer type, remove its conditions first. Referenced choices can be replaced above.', 'wconvert')}</p></div>}
       </div>;
     })}
   </section>;

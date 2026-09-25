@@ -1144,7 +1144,7 @@ body .wconvert-rule-picker__unavailable {
 }
 
 
-/* Screen selection stays in the toolbar; management lives in a dialog. */
+/* Screen selection stays in Design; the journey has its own workspace. */
 #wconvert-admin .wconvert-workspace__toolbar { grid-template-columns: auto minmax(0, 1fr) auto; }
 #wconvert-admin .wconvert-workspace__screens { justify-content: center; min-inline-size: 0; }
 #wconvert-admin .wconvert-screen-controls { display: flex; align-items: center; gap: 6px; min-inline-size: 0; }
@@ -1270,6 +1270,15 @@ body .wconvert-rule-picker__unavailable {
   .wconvert-journey-pane>.wconvert-journey-dialog__details { padding: 18px; }
   .wconvert-journey-pane .wconvert-journey-dialog__fields { grid-template-columns: 1fr; }
 }
+@media (max-width: 600px) {
+  #wconvert-admin .wconvert-journey-workspace .wconvert-journey-description,
+  #wconvert-admin .wconvert-journey-workspace .wconvert-journey-dialog__footer,
+  .wconvert-journey-side[data-mobile-pane='map']>.wconvert-journey-mobile-picker { display: none; }
+  #wconvert-admin .wconvert-journey-workspace:has(.wconvert-journey-side[data-mobile-pane='details']) .wconvert-journey-view,
+  #wconvert-admin .wconvert-journey-workspace:has(.wconvert-journey-side[data-mobile-pane='details']) .wconvert-journey-context { display: none; }
+  #wconvert-admin .wconvert-journey-workspace .wconvert-journey-dialog__header { padding-block: 12px 8px; }
+  .wconvert-journey-map__hint { max-inline-size: calc(100% - 32px); }
+}
 @media (max-width: 640px) {
   .wconvert-journey-side { display: flex; flex-direction: column; }
   .wconvert-journey-rail { display: none; }
@@ -1355,6 +1364,14 @@ body .wconvert-rule-picker__unavailable {
 .wconvert-journey-view { display: flex; gap: 4px; padding: 0 26px 12px; border-block-end: 1px solid var(--border); }
 .wconvert-journey-view button { padding: 7px 15px; border: 1px solid transparent; border-radius: var(--radius); background: transparent; color: var(--muted-foreground); cursor: pointer; }
 .wconvert-journey-view button[aria-pressed='true'] { border-color: var(--border); background: var(--surface); color: var(--foreground); font-weight: 650; }
+.wconvert-journey-find { position: relative; margin-inline-start: auto; min-inline-size: 190px; }
+.wconvert-journey-find label { display: flex; align-items: center; gap: 7px; padding: 0 9px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--card); }
+.wconvert-journey-find svg { inline-size: 15px; block-size: 15px; color: var(--muted-foreground); }
+#wconvert-admin .wconvert-journey-find input { inline-size: 100%; min-inline-size: 0; block-size: 34px; margin: 0; padding: 0; border: 0; box-shadow: none; font-size: var(--text-micro); }
+.wconvert-journey-find__results { position: absolute; z-index: 30; inset-block-start: calc(100% + 4px); inset-inline: 0; max-block-size: 260px; overflow: auto; padding: 4px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--card); box-shadow: 0 12px 28px #1d342824; }
+.wconvert-journey-find__results button { display: flex; justify-content: space-between; gap: 8px; inline-size: 100%; text-align: start; }
+.wconvert-journey-find__results small { color: var(--muted-foreground); }
+.wconvert-journey-find__results p { margin: 5px; color: var(--muted-foreground); }
 .wconvert-journey-context { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; padding: 10px 26px; background: var(--surface); border-block-end: 1px solid var(--border); }
 .wconvert-journey-context>div { display: flex; align-items: baseline; gap: 8px; min-inline-size: 0; }
 .wconvert-journey-context small { flex: none; color: var(--muted-foreground); font-size: var(--text-label); }
@@ -1365,15 +1382,26 @@ body .wconvert-rule-picker__unavailable {
 .wconvert-journey-map { position: relative; min-inline-size: 0; min-block-size: 0; background: #f8faf8; border-inline-end: 1px solid var(--border); }
 .wconvert-journey-map .react-flow { inline-size: 100%; block-size: 100%; }
 .wconvert-journey-map__hint { position: absolute; inset-inline: 18px auto; inset-block-start: 10px; max-inline-size: min(440px, 70%); margin: 0; padding: 6px 9px; border: 1px solid var(--border); border-radius: 6px; background: #fffffff0; color: var(--muted-foreground); font-size: var(--text-label); pointer-events: none; }
+.wconvert-journey-map__tools { position: absolute; z-index: 5; inset-inline-end: 12px; inset-block-end: 12px; display: flex; flex-wrap: wrap; gap: 5px; max-inline-size: calc(100% - 70px); }
+.wconvert-journey-map__tools button { padding: 6px 9px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--card); color: var(--foreground); box-shadow: 0 2px 8px #1d342812; cursor: pointer; }
+.wconvert-journey-map__tools button[aria-pressed='true'] { background: var(--secondary); border-color: var(--primary); }
 .wconvert-flow-node { inline-size: 252px; border: 1px solid #c9d9d0; border-radius: 12px; background: white; box-shadow: 0 5px 14px #183f2712; text-align: start; }
 .wconvert-flow-node.is-selected { border-color: #397c58; box-shadow: 0 0 0 3px #397c5830, 0 5px 14px #183f2712; }
+.wconvert-flow-node.is-muted { opacity: .35; }
 .wconvert-flow-node__main { display: grid; gap: 7px; inline-size: 100%; padding: 16px; border: 0; background: none; text-align: start; color: #1d3428; cursor: grab; }
 .wconvert-flow-node__main:active { cursor: grabbing; }
 .wconvert-flow-node__main small { color: #587667; font-size: var(--text-label); text-transform: uppercase; letter-spacing: .05em; }
 .wconvert-flow-node__main strong { font-size: var(--text-body); line-height: 1.3; overflow-wrap: anywhere; }
 .wconvert-flow-node__main span,.wconvert-flow-node__main em { font-size: var(--text-micro); line-height: 1.45; color: #546d5f; font-style: normal; overflow-wrap: anywhere; }
 .wconvert-flow-node__main em { padding: 5px 7px; border-radius: 5px; background: #eaf5ee; color: #245d3d; }
+.wconvert-flow-node__preview { display: grid; gap: 4px; margin: 0 12px 10px; padding: 10px; border: 1px solid #e3ece6; border-radius: 6px; background: #f8fbf9; color: #365444; }
+.wconvert-flow-node__preview small { color: #6b8173; text-transform: uppercase; }
+.wconvert-flow-node__preview strong { font-size: var(--text-micro); }
+.wconvert-flow-node__preview span { font-size: var(--text-label); }
 .wconvert-flow-node__paths { display: grid; gap: 2px; padding: 9px 12px 12px; border-block-start: 1px solid #e3ece6; }
+.wconvert-flow-node__continue { position: relative; padding: 8px 12px; border-block-start: 1px solid #e3ece6; }
+.wconvert-flow-node__continue button { padding: 0; border: 0; background: none; color: #244b36; font-size: var(--text-label); text-align: start; cursor: pointer; }
+.wconvert-flow-node__continue .react-flow__handle { inset-inline-end: -6px; inset-block-start: 50%; }
 .wconvert-flow-node__paths>small { margin-block-end: 2px; color: #587667; font-size: var(--text-meta); text-transform: uppercase; }
 .wconvert-flow-node__paths button { inline-size: 100%; padding: 4px; border: 0; background: none; color: #244b36; text-align: start; font-size: var(--text-label); cursor: pointer; }
 .wconvert-flow-node__path { position: relative; }
@@ -1393,11 +1421,64 @@ body .wconvert-rule-picker__unavailable {
 .wconvert-journey-pane .wconvert-journey-settings__clause>span,
 .wconvert-journey-pane .wconvert-journey-settings__clause>select:first-of-type,
 .wconvert-journey-pane .wconvert-journey-settings__clause>button { grid-column: 1 / -1; }
+.wconvert-journey-pane__tabs { display: flex; gap: 4px; padding: 8px 20px; border-block-end: 1px solid var(--border); }
+.wconvert-journey-pane__tabs button { padding: 7px 10px; border: 1px solid transparent; border-radius: var(--radius); background: transparent; color: var(--muted-foreground); cursor: pointer; }
+.wconvert-journey-pane__tabs button[aria-pressed='true'] { background: var(--secondary); border-color: var(--border); color: var(--foreground); font-weight: 600; }
+.wconvert-journey-mobile-tabs { display: none; }
+.wconvert-journey-next-summary { display: grid; gap: 3px; inline-size: 100%; margin-block-start: 18px; padding: 12px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); text-align: start; cursor: pointer; }
+.wconvert-journey-next-summary small { color: var(--muted-foreground); }
+.wconvert-journey-routes__insert { margin-block-start: 8px; padding: 6px 9px; border: 1px dashed var(--primary); border-radius: var(--radius); background: var(--card); color: var(--primary); cursor: pointer; }
+.wconvert-journey-settings__skip { padding: 9px 11px; border-inline-start: 3px solid var(--primary); background: var(--surface); color: var(--muted-foreground); }
+.wconvert-journey-sample { display: flex; flex-direction: column; min-block-size: 0; overflow: hidden; background: var(--card); }
+.wconvert-journey-sample__header { display: flex; justify-content: space-between; gap: 8px; padding: 16px 20px; border-block-end: 1px solid var(--border); }
+.wconvert-journey-sample__header h3 { margin: 0; font-size: var(--text-body); }
+.wconvert-journey-sample__header p { margin: 5px 0 0; color: var(--muted-foreground); line-height: 1.45; }
+.wconvert-journey-sample__header button { align-self: start; border: 0; background: none; color: var(--primary); cursor: pointer; }
+.wconvert-journey-sample__body { min-block-size: 0; overflow: auto; padding: 16px 20px; }
+.wconvert-journey-sample fieldset { display: grid; gap: 8px; margin: 0 0 18px; padding: 12px; border: 1px solid var(--border); border-radius: var(--radius); }
+.wconvert-journey-sample legend { padding-inline: 5px; font-weight: 600; }
+.wconvert-journey-sample fieldset label { display: flex; align-items: center; gap: 7px; }
+.wconvert-journey-sample fieldset input { margin: 0; }
+.wconvert-journey-sample fieldset>button { justify-self: start; border: 0; background: none; color: var(--primary); cursor: pointer; }
+.wconvert-journey-sample h4 { margin: 12px 0 8px; font-size: var(--text-note); }
+.wconvert-journey-sample ol { display: grid; gap: 7px; margin: 0; padding-inline-start: 20px; }
+.wconvert-journey-sample li button { display: inline-flex; align-items: center; gap: 8px; border: 0; background: none; color: var(--foreground); cursor: pointer; }
+.wconvert-journey-sample li button span { color: var(--primary); font-weight: 700; }
+.wconvert-journey-sample li label { display: grid; gap: 3px; margin-block: 4px; }
+.wconvert-journey-sample__skipped p { display: grid; gap: 2px; margin: 7px 0; }
+.wconvert-journey-sample__skipped small { color: var(--muted-foreground); }
+.wconvert-journey-sample__decision,.wconvert-journey-sample__result { padding: 9px 11px; border-radius: var(--radius); background: var(--secondary); }
+.wconvert-journey-sample__outcome { margin-block-start: 16px; padding: 12px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--surface); }
+.wconvert-journey-sample__outcome p { margin: 6px 0; }
+.wconvert-journey-sample__outcome small { color: var(--muted-foreground); }
+.wconvert-journey-answer-repair { display: grid; gap: 10px; padding: 14px; border: 1px solid var(--primary); border-radius: var(--radius); background: var(--surface); }
+.wconvert-journey-answer-repair>div:not(.wconvert-journey-answer-repair__actions) { display: flex; flex-wrap: wrap; gap: 5px; }
+.wconvert-journey-answer-repair button { border: 0; background: none; color: var(--primary); text-align: start; cursor: pointer; }
+.wconvert-journey-answer-repair__actions { display: flex; gap: 12px; }
+.wconvert-journey-answer-repair__actions button:first-child { padding: 7px 10px; border-radius: var(--radius); background: var(--primary); color: var(--primary-foreground); }
+.wconvert-journey-answer-repair__actions button:disabled { opacity: .5; cursor: not-allowed; }
+.wconvert-journey-answer-repair small { color: var(--muted-foreground); }
+#wconvert-admin .wconvert-workspace__journey { flex: 1; min-inline-size: 0; min-block-size: 0; margin: 0; }
+#wconvert-admin .wconvert-journey-workspace { display: flex; flex-direction: column; block-size: 100%; min-block-size: 0; background: var(--card); }
+#wconvert-admin .wconvert-journey-workspace .wconvert-journey-side { block-size: auto; min-block-size: 0; }
+#wconvert-admin .wconvert-journey-workspace .wconvert-journey-dialog__header { padding-block: 18px 12px; }
+#wconvert-admin .wconvert-journey-workspace .wconvert-journey-dialog__header h2 { margin: 0; font-size: var(--text-heading); }
+#wconvert-admin .wconvert-journey-workspace .wconvert-journey-description { margin: 5px 0 0; color: var(--muted-foreground); font-size: var(--text-note); }
+#wconvert-admin .wconvert-journey-workspace .wconvert-journey-dialog__footer { padding-block: 9px; }
 @media (max-width: 800px) {
   .wconvert-journey-context { grid-template-columns: 1fr; padding-inline: 18px; }
   .wconvert-journey-side:has(.wconvert-journey-map) { display: flex; flex-direction: column; }
-  .wconvert-journey-map { flex: none; block-size: 330px; border-inline-end: 0; border-block-end: 1px solid var(--border); }
-  .wconvert-journey-pane { flex: 1; }
+  .wconvert-journey-mobile-tabs { display: flex; gap: 5px; padding: 7px 18px; border-block-end: 1px solid var(--border); }
+  .wconvert-journey-mobile-tabs button { padding: 7px 12px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--card); }
+  .wconvert-journey-mobile-tabs button[aria-pressed='true'] { background: var(--secondary); color: var(--primary); border-color: var(--primary); font-weight: 600; }
+  .wconvert-journey-side { display: flex; flex-direction: column; }
+  .wconvert-journey-map { flex: 1; block-size: auto; min-block-size: 0; border-inline-end: 0; border-block-end: 1px solid var(--border); }
+  .wconvert-journey-pane,.wconvert-journey-sample { flex: 1; min-block-size: 0; }
+  .wconvert-journey-side[data-mobile-pane='map']>.wconvert-journey-pane,
+  .wconvert-journey-side[data-mobile-pane='map']>.wconvert-journey-sample,
+  .wconvert-journey-side[data-mobile-pane='details']>.wconvert-journey-map,
+  .wconvert-journey-side[data-mobile-pane='details']>.wconvert-journey-rail { display: none; }
+  .wconvert-journey-side[data-mobile-pane='map']>.wconvert-journey-rail { display: flex; flex: 1; border-inline-end: 0; }
 }
 #wconvert-admin .wconvert-display { container-type: inline-size; min-inline-size: 0; max-inline-size: 90rem; margin-inline: auto; }
 #wconvert-admin .wconvert-display-header { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: .75rem 1rem; margin-block-end: 1rem; }

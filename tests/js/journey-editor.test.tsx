@@ -4,7 +4,7 @@ import { render, screen, fireEvent, cleanup, within } from '@testing-library/rea
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import { JourneyEditor } from '../../resources/admin/src/builder/JourneyEditor';
 import type { TemplateTree } from '@renderer/types';
-import { movedScreen, removedScreen, referencedJourney, walkNodes } from '../../resources/admin/src/builder/structure/journey';
+import { movedScreen, removedScreen, referencedJourney, replaceAnswer, walkNodes } from '../../resources/admin/src/builder/structure/journey';
 import progressive from '../../resources/templates/library/journey-email-then-sms.json';
 import source from '../../resources/templates/library/journey-email-only.json';
 import rules from '../fixtures/journey-rules.json';
@@ -126,16 +126,74 @@ it('opens on the flow and creates an ordered answer path through the inspector',
   await user.click(screen.getByRole('button', { name: 'Manage screens' }));
   expect(screen.getByRole('button', { name: 'Flow' })).toHaveAttribute('aria-pressed', 'true');
   expect(screen.getByLabelText('Journey map')).toBeInTheDocument();
+  await user.click(screen.getByRole('button', { name: 'Next screen' }));
   await user.click(screen.getByRole('button', { name: 'Add answer path' }));
   const paths = draft().steps[0].paths!;
   expect(paths).toHaveLength(2);
-  expect(paths[0]).toMatchObject({ to: 'contact', when: { clauses: [{ question: 'n2', values: [''] }] } });
+  expect(paths[0]).toMatchObject({ to: 'contact', when: { clauses: [{ question: 'n2', values: ['design'] }] } });
   expect(paths[1]).toEqual({ to: 'repair' });
-  expect(screen.getByText('Choose an answer for this path before publishing.')).toBeInTheDocument();
-  await user.selectOptions(screen.getByRole('combobox', { name: 'Answer' }), 'design');
   expect(draft().steps[0].paths?.[0].when?.clauses[0].values).toEqual(['design']);
   await user.click(screen.getByRole('button', { name: 'Remove path' }));
   expect(draft().steps[0].paths).toBeUndefined();
+});
+
+it('inserts a screen on the selected branch without changing its condition or continuation', async () => {
+  const user = userEvent.setup();
+  render(<Editor initial={service.tree as TemplateTree} />);
+  await user.click(screen.getByRole('button', { name: 'Manage screens' }));
+  await user.click(screen.getByRole('button', { name: 'Next screen' }));
+  await user.click(screen.getByRole('button', { name: 'Add answer path' }));
+  const before = draft();
+  await user.click(screen.getAllByRole('button', { name: 'Insert on this path' })[0]);
+  await user.click(screen.getByRole('menuitem', { name: 'Ask a question' }));
+  const next = draft();
+  const inserted = next.steps[1];
+  expect(next.steps[0].paths?.[0]).toEqual({ ...before.steps[0].paths![0], to: inserted.id });
+  expect(inserted.paths).toEqual([{ to: 'contact' }]);
+  expect(next.steps[0].paths?.[1]).toEqual(before.steps[0].paths?.[1]);
+  expect(walkNodes(inserted.content).some(node => node.type === 'question')).toBe(true);
+});
+
+it('keeps an inserted screen hidden when its source is skipped', async () => {
+  const user = userEvent.setup();
+  render(<Editor initial={service.tree as TemplateTree} />);
+  await user.click(screen.getByRole('button', { name: 'Manage screens' }));
+  await user.click(screen.getByRole('button', { name: 'Screens' }));
+  await user.click(screen.getByRole('button', { name: /Repair details Continue only/ }));
+  await user.click(screen.getByRole('button', { name: 'Next screen' }));
+  await user.click(screen.getByRole('button', { name: 'Insert on this path' }));
+  await user.click(screen.getByRole('menuitem', { name: 'Show a message' }));
+  const next = draft();
+  expect(next.steps[2].when).toEqual(next.steps[1].when);
+  expect(next.steps[2].paths).toEqual([{ to: 'contact' }]);
+});
+
+it('explains a sample route without changing the campaign draft', async () => {
+  const user = userEvent.setup();
+  render(<Editor initial={service.tree as TemplateTree} />);
+  await user.click(screen.getByRole('button', { name: 'Manage screens' }));
+  await user.click(screen.getByRole('button', { name: 'Try answers' }));
+  const sample = screen.getByRole('complementary', { name: 'Sample visitor' });
+  expect(within(sample).getByText('Repair details')).toBeInTheDocument();
+  expect(within(sample).getByText('Its show condition did not match.')).toBeInTheDocument();
+  await user.click(within(sample).getByRole('radio', { name: 'Repair' }));
+  expect(within(sample).queryByText('Its show condition did not match.')).not.toBeInTheDocument();
+  expect(within(sample).getByText('1 simulated submission')).toBeInTheDocument();
+  expect(draft()).toEqual(service.tree);
+});
+
+it('replaces a referenced answer in visibility, paths and results as one tree change', () => {
+  const base = structuredClone(rules.steps) as TemplateTree['steps'][number][];
+  const question = base[0].content as import('@renderer/types').QuestionNode;
+  base[0] = { ...base[0], content: { ...question, options: [...question.options!, { value: 'indoor', label: 'Indoor' }] },
+    paths: [{ to: 'size', when: { match: 'all', clauses: [{ question: 'q_project', operator: 'is', values: ['garden'] }] } }, { to: 'result' }] };
+  const tree = { v: 2, steps: base, submissions: [] } as TemplateTree;
+  const next = replaceAnswer(tree, 'q_project', 'garden', 'indoor');
+  expect((next.steps[0].content as import('@renderer/types').QuestionNode).options?.map(option => option.value)).toEqual(['balcony', 'indoor']);
+  expect(next.steps[0].paths?.[0].when?.clauses[0].values).toEqual(['indoor']);
+  expect(next.steps[1].when?.clauses[0].values).toEqual(['indoor']);
+  expect(next.steps[3].results?.[0].when?.clauses[0].values).toEqual(['indoor']);
+  expect((tree.steps[0].content as import('@renderer/types').QuestionNode).options).toHaveLength(3);
 });
 
 it('keeps the primary signup ahead of optional signup and the acknowledgement last', () => {

@@ -311,12 +311,13 @@ describe('the builder shell', () => {
    * one nested inside this tab's own panel and `getAllByRole('tab')` cannot
    * tell them apart.
    */
-  it('offers three tabs, with the three rule surfaces under one of them', async () => {
+  it('offers a persistent Journey tab alongside Design, Display rules and Destinations', async () => {
     open();
 
     const strip = await screen.findByRole('tablist', { name: 'What you are editing' });
 
     expect(within(strip).getAllByRole('tab').map((tab) => tab.textContent)).toEqual([
+      'Journey',
       'Design',
       'Display rules',
       'Destinations',

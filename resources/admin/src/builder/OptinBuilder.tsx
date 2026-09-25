@@ -20,6 +20,7 @@ import {
   SlidersHorizontal,
   Target,
   Undo2,
+  Workflow,
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
@@ -100,7 +101,7 @@ interface DraftSnapshot {
   config: Config;
 }
 
-type TabId = 'design' | 'rules' | 'destinations';
+type TabId = 'journey' | 'design' | 'rules' | 'destinations';
 
 type Width = 'own' | 'narrow';
 
@@ -165,7 +166,6 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
     return () => document.body.classList.remove('wconvert-editing');
   }, []);
   const [tab, setTab] = useState<TabId>('design');
-  const [journeyOpenRequest, setJourneyOpenRequest] = useState(0);
 
   const [openToken, setOpenToken] = useState<string | null>(null);
 
@@ -708,6 +708,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
           className="wconvert-workspace__navigation"
           aria-label={__('What you are editing', 'wconvert')}
         >
+          <TabsTrigger value="journey">{__('Journey', 'wconvert')}</TabsTrigger>
           <TabsTrigger value="design">{__('Design', 'wconvert')}</TabsTrigger>
           <TabsTrigger value="rules">{__('Display rules', 'wconvert')}</TabsTrigger>
           <TabsTrigger ref={destinationsTab} value="destinations">{__('Destinations', 'wconvert')}</TabsTrigger>
@@ -769,7 +770,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
             onPublish={publish}
             onPreview={() => { setTab('design'); setPreviewing(true); setSelection(null); previewButton.current?.focus(); }}
             onEditDesign={() => { setTab('design'); setPreviewing(false); setShowLayers(true); setDrawer('layers'); layersButton.current?.focus(); }}
-            onEditJourney={() => { setTab('design'); setPreviewing(false); setJourneyOpenRequest(current => current + 1); }}
+            onEditJourney={() => { setTab('journey'); setPreviewing(false); }}
             onGoToDesign={() => { setTab('design'); setPreviewing(false); setBrowsing(true); }}
             onGoToPlacement={goToInlinePlacement}
             onGoToDestinations={() => { setTab('destinations'); destinationsTab.current?.focus(); }}
@@ -797,6 +798,12 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
       </header>
       {error !== null && <PageError message={error} />}
       <div className="wconvert-workspace__body" inert={busy}>
+        <TabsContent value="journey" className="wconvert-workspace__journey">
+          {entry && <JourneyEditor embedded primaryChannel={entryOfGoal?.outcome.audience_channel} tree={entry.tree} tokens={entry.tokens} step={shownStep}
+            onChange={tree => edit({ template: { ...entry, tree } })} onSelect={chooseStep} displaySummary={displaySummary} destinationSummary={destinationSummary}
+            onGoToDesign={() => { setTab('design'); setPreviewing(false); }}
+            onGoToRules={() => setTab('rules')} onGoToDestinations={() => { setTab('destinations'); destinationsTab.current?.focus(); }} />}
+        </TabsContent>
         <TabsContent value="design" forceMount className="wconvert-workspace__design">
           <Activity mode={tab === 'design' ? 'visible' : 'hidden'}>
             {entry === null ? (
@@ -837,9 +844,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
                     </Button>
                   </div>
                   <div className="wconvert-workspace__screens"><ScreenControls template={entry} step={shownStep} onChange={chooseStep} extra={canPreviewReopen ? { label: reopenLabel, selected: showingReopen, onSelect: showReopen } : undefined} />
-                    {!previewing && <JourneyEditor primaryChannel={entryOfGoal?.outcome.audience_channel} tree={entry.tree} tokens={entry.tokens} step={shownStep} openRequest={journeyOpenRequest}
-                      onChange={tree => edit({ template: { ...entry, tree } })} onSelect={chooseStep} displaySummary={displaySummary} destinationSummary={destinationSummary}
-                      onGoToRules={() => setTab('rules')} onGoToDestinations={() => { setTab('destinations'); destinationsTab.current?.focus(); }} />}
+                    {!previewing && <Button type="button" variant="outline" size="sm" onClick={() => setTab('journey')}><Workflow aria-hidden="true" />{__('Manage screens', 'wconvert')}</Button>}
                   </div>
                   <div>
                     {compact ? <DropdownMenu><DropdownMenuTrigger asChild><Button variant="ghost" size="icon-sm" aria-label={__('Preview options', 'wconvert')}><MoreHorizontal aria-hidden="true" /></Button></DropdownMenuTrigger>
