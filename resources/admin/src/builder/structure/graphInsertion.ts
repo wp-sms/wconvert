@@ -1,11 +1,11 @@
 import { __, sprintf } from '@wordpress/i18n';
-import type { QuestionCondition, TemplateTree } from '@renderer/types';
+import type { QuestionCondition, TemplateTree, TemplateScreen } from '@renderer/types';
 import { graphDisplayOrder, graphEdgeId, graphReaches, insertOnGraphEdge } from './graph';
 import { graphChoiceSources } from './graphConnections';
 import { conditionText } from './conditionText';
 import { freshScreen, walkNodes, withBackButton } from './journey';
 
-export type GraphScreenKind = 'content' | 'input' | 'followup';
+export type GraphScreenKind = 'content' | 'input' | 'followup' | 'ending';
 interface InsertionLocation {
   id: string; source: string; target: string; label: string; detail: string;
   choices: ReturnType<typeof graphChoiceSources>; canAsk: boolean; sharedHidden?: boolean;
@@ -46,7 +46,8 @@ export function graphInsertionLocations(tree: TemplateTree) {
 }
 
 export function insertionUnavailable(location: ReturnType<typeof graphInsertionLocations>[number], kind: GraphScreenKind): string | null {
-  if (kind !== 'content' && !location.canAsk) return __('Choose a connection before a save so the answer can be included.', 'wconvert');
+  if (kind === 'ending' && location.id === 'entry') return __('Choose a path to finish after the first screen.', 'wconvert');
+  if (kind !== 'content' && kind !== 'ending' && !location.canAsk) return __('Choose a connection before a save so the answer can be included.', 'wconvert');
   if (kind === 'followup' && !location.choices.length) return __('Choose a connection after a choice question.', 'wconvert');
   return null;
 }
@@ -58,10 +59,12 @@ export function addGraphScreen(tree: TemplateTree, locationId: string, kind: Gra
     const question = location.choices.find(item => item.id === clause.question);
     return !question || !clause.values.length || clause.values.some(value => !question.options?.some(option => option.value === value));
   }))) return tree;
-  let screen = freshScreen(tree, kind === 'content' ? 'content' : 'input', locationId !== 'entry');
+  let screen = kind === 'ending' ? freshEnding(tree) : freshScreen(tree, kind === 'content' ? 'content' : 'input', locationId !== 'entry');
+  if (kind === 'ending' && locationId === 'entry') return tree;
   if (kind === 'followup') screen = { ...screen, name: __('Relevant follow-up', 'wconvert'), when };
   if (locationId !== 'entry') {
-    const next = insertOnGraphEdge(tree, locationId.slice(5), screen);
+    const inserted = insertOnGraphEdge(tree, locationId.slice(5), screen);
+    const next = kind === 'ending' ? { ...inserted, graph: { ...inserted.graph!, edges: inserted.graph!.edges.filter(edge => edge.from !== screen.id) } } : inserted;
     if (!location.sharedHidden || includeSharedHidden) return next;
     // The low-level chain insertion also moves a shared hidden continuation.
     // A named-path insertion leaves it alone unless the merchant includes it.
@@ -71,4 +74,26 @@ export function addGraphScreen(tree: TemplateTree, locationId: string, kind: Gra
   return { ...tree, steps: [...tree.steps.map(item => item.id === tree.graph!.entry ? withBackButton(item) : item), screen],
     graph: { ...tree.graph, entry: screen.id, edges: [...tree.graph.edges,
       { id: graphEdgeId(tree.graph), from: screen.id, to: tree.graph.entry, kind: 'default' }] } };
+}
+
+/** Add an exclusive branch without changing the fallback or earlier priorities. */
+export function addGraphBranchScreen(tree: TemplateTree, source: string, kind: 'content' | 'input' | 'ending', when: QuestionCondition): TemplateTree {
+  const graph = tree.graph;
+  const fallback = graph?.edges.find(edge => edge.from === source && edge.kind === 'default');
+  const location = graphInsertionLocations(tree).find(item => item.id === `edge:${fallback?.id}`);
+  if (!graph || !fallback || !location || insertionUnavailable(location, kind) || !when.clauses.length
+    || when.clauses.some(clause => { const question = location.choices.find(item => item.id === clause.question);
+      return !question || !clause.values.length || clause.values.some(value => !question.options?.some(option => option.value === value)); })) return tree;
+  const screen = kind === 'ending' ? freshEnding(tree) : freshScreen(tree, kind);
+  const branch = { id: graphEdgeId(graph), from: source, to: screen.id, kind: 'answer' as const, when };
+  return { ...tree, steps: [...tree.steps, screen], graph: { ...graph, edges: [...graph.edges, branch,
+    ...(kind === 'ending' ? [] : [{ id: graphEdgeId({ ...graph, edges: [...graph.edges, branch] }), from: screen.id, to: fallback.to, kind: 'default' as const }])] } };
+}
+
+function freshEnding(tree: TemplateTree): TemplateScreen {
+  return { ...freshScreen(tree, 'content'), name: __('All done', 'wconvert'), kind: 'acknowledgement', content: { type: 'stack', children: [
+    { type: 'heading', role: 'headline', text: __('All done', 'wconvert') },
+    { type: 'button', label: __('Back', 'wconvert'), action: 'back', tokens: { accent: 'transparent', 'accent-fg': 'fg' } },
+    { type: 'button', label: __('Close', 'wconvert'), action: 'close' },
+  ] } };
 }

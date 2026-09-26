@@ -812,6 +812,8 @@ export interface TemplateScreen {
   readonly paths?: readonly { readonly to: string; readonly when?: QuestionCondition }[];
   readonly results?: readonly ResultVariant[];
   readonly products_required?: boolean;
+  readonly review_answers?: boolean;
+  readonly details_note?: string;
 }
 export interface CaptureSubmission {
   readonly id: string;

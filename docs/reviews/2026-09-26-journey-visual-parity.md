@@ -28,7 +28,7 @@ cancels it and returns focus to Add screen. No campaign content was saved,
 published or submitted during these checks. Grouping, previews, camera movement
 and highlighting are local view state.
 
-## Still open — do not claim full B parity
+## Gaps identified here — closed by the subsequent full audit
 
 1. **Contextual screen actions.** B offers screen preview and edit/add actions
    directly on selected cards. Production still relies on the main toolbar,
@@ -46,7 +46,10 @@ and highlighting are local view state.
    path, result, removal and replacement state. Compare those states directly;
    list deliberate production differences and evidence, not inferred parity.
 
-These are implementation/audit tasks, not blockers waiting on merchant input.
+These four findings are closed, with additional missing interactions found and
+implemented, in the [consolidated audit](2026-09-26-journey-full-audit.md). The
+numbered descriptions above preserve what was missing at this earlier checkpoint.
+They are no longer the current open-work list.
 The owner has waived GitHub CI and deferred VoiceOver as unverified; those
 choices do not waive visual and interaction parity.
 

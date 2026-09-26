@@ -97,3 +97,20 @@ hard caps are now 24,320 / 25,344 / 25,600 bytes. Free stays at 14,012 bytes,
 and the separately loaded phone asset, payload and design caps stay unchanged.
 The check remains blocking and flagless; no general waiver or warning band is
 introduced. Both loader and combined loader-plus-phone reporting use these caps.
+
+### Capture presentation parity (September 26 audit)
+
+Input screens may carry `review_answers: true` and a plain-text `details_note`
+(up to 500 characters). These are additive presentation metadata. The optional
+name shortcut creates a real owned field; it never creates another submission
+or implies marketing consent. The review uses only previously visited screens
+and active answers, so changing an earlier answer cannot expose an abandoned
+branch. Live and test journeys share the same text-only review renderer.
+
+After reusing the existing node walkers and simplifying DOM construction,
+measured gzip-9 sizes are 13,953 / 24,473 / 25,430 / 25,687 bytes. The new
+visitor review and details note exceed the prior paid caps by 153 / 86 / 87
+bytes. Allocate 256 bytes per paid rung specifically for this formerly missing
+prototype behavior: Basic 24,576, Pro 25,600, Elite 25,856 bytes. Free remains
+14,012 bytes; payload and phone limits are unchanged. This is a documented
+feature-cost amendment, not a claim that the old caps passed or a disabled gate.

@@ -1,6 +1,6 @@
 # The free contract is proven at the source, not at the artifact
 
-**Current budget amendment — [ADR 0106](0106-question-journeys-extend-the-paid-loader.md):** The page payload cap is 2,560 B gzip (per-design 1,280 B). Free loaders remain 14,012 B; Basic caps at 24,064 B, Pro at 25,088 B, Elite at 25,344 B. The optional phone asset caps at 16 KiB. Earlier measurements below are historical. All remain hard checks.
+**Current budget amendment — [ADR 0108](0108-explicit-journey-graph-and-legacy-migration.md):** The page payload cap is 2,560 B gzip (per-design 1,280 B). Free loaders remain 14,012 B; Basic caps at 24,576 B, Pro at 25,600 B, Elite at 25,856 B. The optional phone asset caps at 16 KiB. Earlier measurements below are historical. All remain hard checks.
 
 **Budget amendment — [ADR 0101](0101-reopen-buttons-preserve-an-explicit-visitor-choice.md):** Free remains capped at 14,012 B gzip; paid loaders have an explicitly approved 18,432 B cap for complete recovery behavior. The 2 KiB per-page payload limit and hard fail-closed checks remain.
 

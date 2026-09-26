@@ -1,6 +1,7 @@
 # Journey B completion checklist
 
-Updated September 26, 2026. PR #190 remains draft. This is the current checklist;
+Updated September 26, 2026. PR #190 remains draft. The latest UI inventory and
+verification is the [consolidated audit](2026-09-26-journey-full-audit.md);
 the [production-gap review](2026-09-25-journey-b-production-gap.md) is a historical
 record of findings and browser evidence. Later entries there close several
 gaps mentioned by earlier entries. Do not reopen a completed item solely because
@@ -30,14 +31,7 @@ to guess when answers are saved or which path wins does not meet the UX goal.
 
 ## Remaining work, in order
 
-1. **Finish visual and interaction parity with B.** The owner’s screenshots
-   exposed missing production details despite passing behavioral checks. The
-   [visual parity correction](2026-09-26-journey-visual-parity.md) records restored
-   map controls and incoming-path context, plus outstanding contextual screen
-   actions, line insertion, low-zoom cards and inspector/modal comparisons.
-   These are engineering tasks; do not describe merchant feedback as the only
-   remaining work.
-2. **Merchant validation before replacing the old experience.** Have occasional
+1. **Merchant validation before replacing the old experience.** Have occasional
    merchants create independent follow-ups, choose an exclusive branch, explain
    when details are saved, and repair a wrong condition. Record completion,
    wrong predictions and hesitation. Agent walkthroughs cannot supply that user
@@ -78,8 +72,9 @@ local results; they do not claim successful GitHub Actions execution.
 
 Visual parity correction: 66 JS tests, TypeScript, ESLint, both admin builds and
 source contract. Desktop quiz/enquiry and 390/320px browser checks are recorded
-in the [new audit](2026-09-26-journey-visual-parity.md). Full visual parity remains
-open; this is not a complete replacement acceptance.
+in the [new audit](2026-09-26-journey-visual-parity.md). The subsequent [full audit](2026-09-26-journey-full-audit.md) closes those
+identified implementation gaps and records newer full-build/runtime checks.
+Merchant validation is still distinct from engineering acceptance.
 
 Goal boundaries and native zoom: 95 JS tests; 12 PHP tests / 351 assertions;
 TypeScript, ESLint and both admin builds. Browser repaired a result bypass and

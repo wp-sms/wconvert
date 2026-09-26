@@ -158,15 +158,17 @@ export function RouteSettings({ tree, step, focusPath = null, onChange, onInsert
   </section>;
 }
 
-export function ScreenConditionSettings({ tree, step, onChange, onSelect }: {
-  tree: TemplateTree; step: number; onChange(next: TemplateTree): void; onSelect(step: number): void;
+export function ScreenConditionSettings({ tree, step, reveal, onChange, onSelect }: {
+  tree: TemplateTree; step: number; reveal?: number; onChange(next: TemplateTree): void; onSelect(step: number): void;
 }) {
+  const disclosure = useRef<HTMLDetailsElement>(null);
+  useEffect(() => { if (reveal !== undefined && disclosure.current) disclosure.current.open = true; }, [reveal]);
   const screen = tree.steps[step];
   if (screen.id === (tree.graph?.entry ?? tree.steps[0].id) || ['result', 'acknowledgement'].includes(screen.kind)
     || walkNodes(screen.content).some(node => node.type === 'button' && 'action' in node && node.action === 'submit')) return null;
   const sources = questionsBefore(tree, step);
   const hiddenDestination = tree.graph && tree.steps.find(item => item.id === tree.graph?.edges.find(edge => edge.from === screen.id && edge.kind === 'hidden')?.to);
-  return <section className="wconvert-journey-settings"><h4>{__('Screen visibility', 'wconvert')}</h4>
+  return <details ref={disclosure} className="wconvert-journey-settings wconvert-journey-visibility" open={screen.when ? true : undefined}><summary><strong>{__('Screen visibility', 'wconvert')}</strong><span>{screen.when ? conditionText(tree, screen.when) : __('Everyone on this path', 'wconvert')}</span></summary>
     <ConditionSettings value={screen.when} sources={sources} onChange={when => {
       const steps = tree.steps.map((item, at) => at === step ? { ...item, when } : item);
       if (!tree.graph) { onChange({ ...tree, steps }); return; }
@@ -185,7 +187,7 @@ export function ScreenConditionSettings({ tree, step, onChange, onSelect }: {
       const sourceAt = tree.steps.findIndex(item => walkNodes(item.content).some(node => 'id' in node && node.id === clause.question));
       return source && sourceAt >= 0 ? <button key={clause.question} type="button" onClick={() => onSelect(sourceAt)}>{__('Edit source question:', 'wconvert')} {source.label}</button> : null;
     })}
-  </section>;
+  </details>;
 }
 
 export function QuestionSettings({ tree, step, onChange, onSelect }: {

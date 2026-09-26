@@ -23,7 +23,9 @@ export function graphRemovalPlan(tree: TemplateTree, screenId: string) {
     [item.when, ...(item.paths?.map(path => path.when) ?? []), ...(item.results?.map(result => result.when) ?? [])].some(references)
     || graph?.edges.some(edge => edge.from === item.id && references(edge.when))));
   const reason = !graph || !screen ? __('This screen is no longer in the journey.', 'wconvert')
-    : screen.kind === 'result' || screen.kind === 'acknowledgement'
+    : screen.kind === 'result'
+      ? __('Keep this result screen for the campaign’s recommendation. Edit its results, content or incoming paths here.', 'wconvert')
+    : screen.kind === 'acknowledgement' && tree.steps.filter(item => item.kind === 'acknowledgement').length === 1
       ? __('Keep this ending so visitors have somewhere to finish. You can edit its content and incoming paths.', 'wconvert')
       : nodes.some(node => node.type === 'field' || node.type === 'consent' || node.type === 'button' && 'action' in node && node.action === 'submit')
         ? __('This screen collects or saves contact details. Its fields, consent and save settings must stay together; it cannot be deleted here.', 'wconvert')

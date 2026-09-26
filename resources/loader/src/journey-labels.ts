@@ -7,5 +7,5 @@ export function journeyLabel(index: number): string {
     if (typeof labels?.[index] === 'string') return labels[index];
   } catch { /* Missing or malformed page copy uses the fallback. */ }
   return ['Continue', 'Submission not confirmed. Please try again.', 'Contact details are required before you see your result.',
-    'Already saved. You can review these details, but cannot change them.'][index];
+    'Already saved. You can review these details, but cannot change them.', 'Review your answers'][index];
 }

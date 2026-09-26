@@ -287,6 +287,10 @@ final class TemplateVocabulary
                     'kind' => is_string($step['kind'] ?? null) ? $step['kind'] : '',
                     'content' => $node,
                 ];
+                if (($step['kind'] ?? '') === 'input') {
+                    if (($step['review_answers'] ?? false) === true) $screen['review_answers'] = true;
+                    if (is_string($step['details_note'] ?? null) && trim($step['details_note']) !== '') $screen['details_note'] = mb_substr($step['details_note'], 0, 500);
+                }
                 if (array_key_exists('when', $step)) {
                     // An invalid condition must never turn into Always by being dropped.
                     $screen['when'] = JourneyRules::normalize($step['when']) ?? ['match' => 'invalid', 'clauses' => []];

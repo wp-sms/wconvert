@@ -1,4 +1,5 @@
 import { journeyLabel } from '@loader/journey-labels';
+import { answerReview } from '@renderer/answer-review';
 import { journeyNotice } from '@renderer/journey-notice';
 import type { Mounted } from '@renderer/mount';
 import type { TemplateNode } from '@renderer/types';
@@ -127,6 +128,7 @@ export function bindJourney(mounted: Mounted, entry: PayloadEntry, options: Opti
     const root = mounted.root;
     if (!root) return;
     root.setAttribute('aria-label', tree!.steps[step].name);
+    if (tree!.steps[step].review_answers) answerReview(root, visited.filter(index => index !== step).flatMap(index => journeyNodes(tree!.steps[index].content)), activeFor(questionAnswers), journeyLabel(4));
     if (step === entryIndex && resultAt >= 0 && !resultFirst) {
       journeyNotice(root, journeyLabel(2));
     }

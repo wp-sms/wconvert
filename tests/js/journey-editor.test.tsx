@@ -18,10 +18,11 @@ import finder from '../../pro/modules/journeys/templates/journey-product-finder.
 import graphFixture from '../fixtures/journey-graph-enquiry.json';
 
 vi.mock('../../resources/admin/src/builder/Preview', () => ({ Preview: () => <div /> }));
-vi.mock('../../resources/admin/src/builder/JourneyMap', () => ({ JourneyMap: ({ onConnect, onReconnect, onSelect }: {
-  onConnect(source: string, target: string): void; onReconnect(edge: string, target: string): void; onSelect(index: number): void;
+vi.mock('../../resources/admin/src/builder/JourneyMap', () => ({ JourneyMap: ({ onConnect, onReconnect, onSelect, onAdd }: {
+  onConnect(source: string, target: string): void; onReconnect(edge: string, target: string): void; onSelect(index: number): void; onAdd(index: number, edgeId?: string): void;
 }) => <div aria-label="Journey map">
   <button onClick={() => onSelect(0)}>Select first screen</button>
+  <button onClick={() => onAdd(0, 'saved')}>Insert after save</button>
   <button onClick={() => onConnect('interests', 'contact')}>Draw test branch</button>
   <button onClick={() => onReconnect('start', 'contact')}>Reconnect test route</button>
   <button onClick={() => onReconnect('balcony_hidden', 'received')}>Bypass test save</button>
@@ -86,7 +87,7 @@ it('lets an ending selection add a question at an explicit location and restores
   await user.click(screen.getByRole('button', { name: 'Focus journey' }));
   await user.click(screen.getByRole('button', { name: 'Add screen' }));
   await user.click(screen.getByRole('menuitem', { name: 'Add question screen' }));
-  const dialog = screen.getByRole('dialog', { name: 'Add question screen' });
+  const dialog = screen.getByRole('dialog', { name: 'What happens next?' });
   expect(within(dialog).getByRole('option', { name: /One enquiry — Continue — to Received/ })).toBeDisabled();
   await user.keyboard('{Escape}');
   expect(document.body).toHaveClass('wconvert-journey-focus');
@@ -814,4 +815,18 @@ it.each(['result-heading', 'products-required'] as const)('focuses the %s repair
   render(<RepairEditor />);
   await waitFor(() => expect(focus === 'result-heading' ? screen.getByRole('textbox', { name: 'Heading' })
     : screen.getByRole('checkbox', { name: 'Require live products before publishing' })).toHaveFocus());
+});
+
+it('keeps the clicked connection when questions are unavailable after a save', async () => {
+  const user = userEvent.setup();
+  const tree = graphFixture as unknown as TemplateTree;
+  const saved = tree.graph!.edges.find(edge => edge.from === 'contact')!;
+  const draft = { ...tree, graph: { ...tree.graph!, edges: tree.graph!.edges.map(edge => edge.id === saved.id ? { ...edge, id: 'saved' } : edge) } };
+  render(<JourneyEditor embedded tree={draft} step={0} onChange={() => {}} onSelect={() => {}} />);
+  await user.click(await screen.findByRole('button', { name: 'Insert after save' }));
+  expect(screen.getByRole('combobox', { name: 'Insert at' })).toHaveValue('edge:saved');
+  expect(screen.getByRole('button', { name: 'Add screen here' })).toBeDisabled();
+  await user.selectOptions(screen.getByRole('combobox', { name: 'Screen type' }), 'ending');
+  expect(screen.getByRole('combobox', { name: 'Insert at' })).toHaveValue('edge:saved');
+  expect(screen.getByRole('button', { name: 'Add screen here' })).toBeEnabled();
 });

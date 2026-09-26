@@ -38,6 +38,23 @@ final class TemplateVocabularyTest extends TestCase
         return self::vocabulary()->normalize($template);
     }
 
+    public function testCaptureReviewAndDetailsNoteSurviveSaveWithoutAcceptingOtherTypes(): void
+    {
+        $tree = json_decode((string) file_get_contents(self::PLUGIN_DIR . '/tests/fixtures/journey-graph-enquiry.json'), true);
+        $tree['steps'][0]['review_answers'] = true;
+        $tree['steps'][0]['details_note'] = 'We use your details to reply.';
+        $normalized = self::normalize(['tree' => $tree])['tree'];
+        self::assertTrue($normalized['steps'][0]['review_answers']);
+        self::assertSame('We use your details to reply.', $normalized['steps'][0]['details_note']);
+        self::assertSame($normalized, self::normalize(['tree' => $normalized])['tree']);
+        self::assertNull(\WConvert\Template\CaptureContract::issue(['template' => ['tree' => $normalized]], 'collect_enquiries', ''));
+        $tree['steps'][0]['review_answers'] = 'true';
+        $tree['steps'][0]['details_note'] = ['invalid'];
+        $invalid = self::normalize(['tree' => $tree])['tree']['steps'][0];
+        self::assertArrayNotHasKey('review_answers', $invalid);
+        self::assertArrayNotHasKey('details_note', $invalid);
+    }
+
     public function testImportedContactAndConsentReferencesSurviveNormalizationAndAnotherSave(): void
     {
         $tree = json_decode((string) file_get_contents(self::PLUGIN_DIR . '/tests/fixtures/journey-graph-split-capture.json'), true);

@@ -144,3 +144,16 @@ it('keeps a malformed imported save on its screen instead of accepting an empty 
   expect(screen.getByLabelText('Email address')).toHaveValue('visitor@example.test');
   expect(screen.getByRole('button', { name: 'Sign up' })).toBeInTheDocument();
 });
+
+it('returns only the path actually visited to the map, before and after a save', async () => {
+  const user = userEvent.setup(), show = vi.fn();
+  render(<JourneyTest template={source as Template} onEdit={() => {}} onShowPath={show} />);
+  await user.click(screen.getByRole('button', { name: 'Show this path on the map' }));
+  expect(show).toHaveBeenLastCalledWith([0], []);
+  await user.type(screen.getByLabelText('Email address'), 'visitor@example.com');
+  await user.click(screen.getByLabelText('Consent'));
+  await user.click(screen.getByRole('button', { name: 'Sign up' }));
+  await user.click(screen.getByRole('button', { name: 'Show this path on the map' }));
+  expect(show.mock.lastCall?.[0]).toEqual([0, 1]);
+  expect(show.mock.lastCall?.[1]).toHaveLength(1);
+});

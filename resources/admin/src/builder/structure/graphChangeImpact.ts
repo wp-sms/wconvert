@@ -40,7 +40,7 @@ export function requiredSaveBypasses(tree: TemplateTree) {
 /** Only newly introduced consequences need a review; pre-existing issues stay in readiness. */
 export function graphChangeImpact(before: TemplateTree, after: TemplateTree): string | null {
   if (!before.graph || !after.graph) return null;
-  const name = (id: string) => before.steps.find(screen => screen.id === id)?.name ?? id;
+  const name = (id: string) => after.steps.find(screen => screen.id === id)?.name ?? before.steps.find(screen => screen.id === id)?.name ?? id;
   const alreadyDisconnected = new Set(unreachableScreenIds(before));
   const disconnected = unreachableScreenIds(after).filter(id => !alreadyDisconnected.has(id));
   const messages: string[] = [];

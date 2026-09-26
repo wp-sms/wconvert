@@ -17,9 +17,10 @@ vi.mock('@tisoap/react-flow-smart-edge', () => ({
 vi.mock('@xyflow/react', async importOriginal => ({
   ...await importOriginal<typeof import('@xyflow/react')>(),
   Position: { Left: 'left', Right: 'right' }, MarkerType: { ArrowClosed: 'arrowclosed' },
+  NodeToolbar: ({ children, isVisible }: { children: ReactNode; isVisible: boolean }) => isVisible ? <div>{children}</div> : null,
   Panel: ({ children }: { children: ReactNode }) => <div>{children}</div>,
   Handle: () => null, Controls: () => null, Background: () => null,
-  useReactFlow: () => ({ getNodes: () => canvas.nodes, fitView: canvas.fitView, viewportInitialized: true, getViewport: () => ({ x: 10, y: 20, zoom: 0.75 }), setViewport: canvas.setViewport }), useStore: () => 1000, useNodesInitialized: () => true,
+  useReactFlow: () => ({ getNodes: () => canvas.nodes, fitView: canvas.fitView, viewportInitialized: true, getViewport: () => ({ x: 10, y: 20, zoom: 0.75 }), setViewport: canvas.setViewport }), useStore: (selector: (state: { width: number; height: number; transform: number[] }) => unknown) => selector({ width: 1000, height: 700, transform: [0, 0, 1] }), useNodesInitialized: () => true,
   ReactFlow: ({ nodes, edges, nodeTypes, children, onNodesChange, onNodeClick, onEdgeClick }: { nodes: Node[]; edges: Edge[]; nodeTypes: NodeTypes; children: ReactNode; onNodesChange(changes: NodeChange[]): void; onNodeClick(event: MouseEvent, node: Node): void; onEdgeClick(event: MouseEvent, edge: Edge): void }) => {
     canvas.nodes = nodes; canvas.change = onNodesChange; canvas.edgeClick = edge => onEdgeClick({} as MouseEvent, edge);
     return <div className="react-flow">
@@ -207,4 +208,14 @@ it.each(['ltr', 'rtl'])('pans to later screens in %s without zooming or changing
     expect(canvas.setViewport).toHaveBeenCalledWith({ x: direction === 'rtl' ? 660 : -640, y: 20, zoom: .75 }, { duration: 180 });
     expect(canvas.nodes.map(node => node.position)).toEqual(positions);
   } finally { document.documentElement.dir = previous; }
+});
+
+it('highlights a tested hidden continuation when it shares the visible default line', async () => {
+  render(<JourneyMap tree={tree} selected={null} samplePath={[2, 4, 0]} sampleEdges={['start', 'garden_hidden', 'indoor_hidden', 'balcony_next']} onSelect={() => {}} onSelectPath={() => {}} onConnect={() => {}} />);
+  await userEvent.click(screen.getByRole('button', { name: 'Expand screens' }));
+  const edges = JSON.parse(screen.getByTestId('map-edges').textContent!) as Edge[];
+  expect(edges.find(edge => edge.id === 'garden_next')?.style?.opacity).toBe(1);
+  expect(edges.find(edge => edge.id === 'indoor_next')?.style?.opacity).toBe(1);
+  expect(edges.find(edge => edge.id === 'balcony_next')?.style?.opacity).toBe(1);
+  expect(edges.find(edge => edge.id === 'submitted')?.style?.opacity).toBe(.15);
 });

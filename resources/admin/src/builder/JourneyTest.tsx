@@ -1,4 +1,5 @@
 import { journeyTestProgress } from './structure/journeyTestProgress';
+import { answerReview } from '@renderer/answer-review';
 import { journeyNotice } from '@renderer/journey-notice';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
@@ -29,8 +30,8 @@ function TestProducts({ count, state, onRetry }: { count: number; state: Product
 }
 
 /** The real renderer, with in-memory answers and no capture or analytics calls. */
-export function JourneyTest({ template, onEdit, deliveryMode = 'none', destinationSummary }: {
-  template: Template; onEdit(step: number): void; deliveryMode?: 'local' | 'connected' | 'none'; destinationSummary?: string;
+export function JourneyTest({ template, onEdit, onShowPath, deliveryMode = 'none', destinationSummary }: {
+  template: Template; onEdit(step: number): void; onShowPath?(screens: readonly number[], edges: readonly string[]): void; deliveryMode?: 'local' | 'connected' | 'none'; destinationSummary?: string;
 }) {
   const tree = template.tree;
   const entry = tree.graph ? Math.max(0, tree.steps.findIndex(screen => screen.id === tree.graph?.entry)) : 0;
@@ -91,6 +92,7 @@ export function JourneyTest({ template, onEdit, deliveryMode = 'none', destinati
       : resultAt > signupAt)) {
       journeyNotice(root, __('Contact details are required before you see your result.', 'wconvert'));
     }
+    if (tree.steps[step].review_answers) answerReview(root, visited.filter(index => index !== step).flatMap(index => walkNodes(tree.steps[index].content)), active, __('Review your answers', 'wconvert'));
     let reviewing = false;
     for (const input of root.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>('[data-question-id]')) {
       const answer = answers[input.dataset.questionId ?? ''];
@@ -213,7 +215,7 @@ export function JourneyTest({ template, onEdit, deliveryMode = 'none', destinati
     root.querySelectorAll('a').forEach(link => link.addEventListener('click', event => event.preventDefault()));
     return () => { cancelAnimationFrame(focusFrame); mounted.close(); };
   // Remount when the preview path or its answers change; this never sends data.
-  }, [template, step, entry, answers, active, trace.indices, move, tree, captureValues, accepted, acceptedQuestions, deliveryMode]);
+  }, [template, step, entry, answers, active, trace.indices, move, tree, captureValues, accepted, acceptedQuestions, deliveryMode, visited]);
   const nodes = tree.steps.flatMap(screen => walkNodes(screen.content));
   const nodeLabel = (id: string) => {
     const node = nodes.find(item => 'id' in item && item.id === id);
@@ -296,6 +298,7 @@ export function JourneyTest({ template, onEdit, deliveryMode = 'none', destinati
         {(['selected', 'empty', 'error'] as const).map(value => <label key={value}><input type="radio" name="product-state" checked={productState === value} onChange={() => setProductState(value)} />{value === 'selected' ? __('Available', 'wconvert') : value === 'empty' ? __('None available', 'wconvert') : __('Loading error', 'wconvert')}</label>)}
         <p>{__('This test does not fetch your catalog. Retry simulates a successful response; check actual prices and stock on your website.', 'wconvert')}</p>
       </fieldset>}
+      {onShowPath && <button type="button" onClick={() => onShowPath(visited, routeSteps.map(item => item.id))}>{__('Show this path on the map', 'wconvert')}</button>}
       <button type="button" onClick={() => { setAnswers({}); setCaptureValues({}); phoneCountries.current = {}; setAccepted([]); setSnapshots({}); setAcceptedQuestions([]); setSkipped([]); setDelivery({});
         failNextRef.current = false; setFailNext(false); failDeliveryNextRef.current = false; setFailDeliveryNext(false); setProductState('selected'); setFeedback(''); setStep(entry); setVisited([entry]); }}>{__('Reset test', 'wconvert')}</button>
       <p>{__('Preview never saves answers, creates Leads, or counts conversions.', 'wconvert')}</p>

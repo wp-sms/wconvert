@@ -326,3 +326,17 @@ it('recovers product lookup without capturing contact details or counting anothe
   expect(journey.completed).toHaveBeenCalledOnce();
   journey.mounted.close();
 });
+
+it('lets visitors review only earlier answers on their actual graph path before submitting', () => {
+  const template = { tokens: {}, tree: { ...enquiryGraph, steps: enquiryGraph.steps.map(screen => screen.id === 'contact' ? { ...screen, review_answers: true, details_note: 'We reply to this request.' } : screen) } } as unknown as Template;
+  const journey = setup(template);
+  journey.choose('garden'); journey.act('next'); journey.choose('small'); journey.act('next');
+  expect(journey.root().getAttribute('aria-label')).toBe('One enquiry');
+  expect(journey.root().querySelector('.wc-answer-review')?.textContent).toContain('Garden size?Small');
+  expect(journey.root().querySelector('.wc-answer-review')?.textContent).not.toContain('Indoor light');
+  journey.act('back'); journey.act('back'); journey.choose('garden'); journey.choose('balcony'); journey.act('next'); journey.choose('large'); journey.act('next');
+  const review = journey.root().querySelector('.wc-answer-review')?.textContent;
+  expect(review).toContain('Balcony size?Large');
+  expect(review).not.toContain('Garden size');
+  expect(journey.captured).not.toHaveBeenCalled();
+});

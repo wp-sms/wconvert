@@ -305,6 +305,7 @@ export const SHADOW_CSS = [
    */
   `h3.wc-heading{font-size:calc(var(--wc-heading-size,1.5rem)*.72)}`,
   `.wc-text{margin:0}`,
+  `.wc-answer-review{margin-block:.75rem;text-align:start;overflow-wrap:anywhere}.wc-answer-review h3{font-size:inherit}.wc-answer-review dl{margin:.5rem 0}.wc-answer-review dt{font-weight:600;margin-block-start:.5rem}.wc-answer-review dd{margin:0;white-space:pre-wrap}.wc-capture-note{font-size:.875em;white-space:pre-wrap}`,
   // `.8125em` is small body text, not fine print — it sat close enough to the
   // body copy that a design with both read as two paragraphs of equal weight.
   // `.6875em` is the size this genre actually sets a consent line at.

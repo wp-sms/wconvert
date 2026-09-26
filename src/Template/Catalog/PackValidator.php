@@ -86,7 +86,7 @@ final class PackValidator
             foreach ($tree['steps'] as $step) {
                 self::check(is_array($step), __('This design has an invalid screen.', 'wconvert'));
                 $this->words($step['name'] ?? null, 120);
-                $this->keys($step, ['id', 'name', 'kind', 'content', 'when', 'paths', 'results', 'products_required']);
+                $this->keys($step, ['id', 'name', 'kind', 'content', 'when', 'paths', 'results', 'products_required', 'review_answers', 'details_note']);
                 if (isset($step['when'])) $this->condition($step['when']);
                 if (isset($step['paths'])) {
                     self::check(is_array($step['paths']) && array_is_list($step['paths']), __('This design has invalid screen routes.', 'wconvert'));
@@ -96,6 +96,8 @@ final class PackValidator
                         if (isset($route['when'])) $this->condition($route['when']);
                     }
                 }
+                if (isset($step['review_answers'])) self::check(is_bool($step['review_answers']), __('This design has an invalid answer review setting.', 'wconvert'));
+                if (isset($step['details_note'])) $this->words($step['details_note'], 500);
                 if (isset($step['products_required'])) self::check(is_bool($step['products_required']), __('This design has an invalid product requirement.', 'wconvert'));
                 if (isset($step['results'])) {
                     self::check(is_array($step['results']) && array_is_list($step['results']) && count($step['results']) <= 6, __('This design has invalid results.', 'wconvert'));

@@ -70,6 +70,11 @@ export function render(tree: TemplateTree, tokens: Tokens, step = 0, options: Re
     appendNode(root, node, tokens, EDITABLE && options.paths === true ? String(step) : null);
   }
 
+  if (screen?.kind === 'input' && screen.details_note?.trim()) {
+    const note = document.createElement('p'); note.className = 'wc-text wc-capture-note'; note.textContent = screen.details_note;
+    const heading = root.querySelector('h1,h2,h3'); if (heading) heading.after(note); else root.prepend(note);
+  }
+
   if (screen?.kind === 'result' && journeyResult) {
     root.prepend(journeyResult(screen));
     root.classList.add('wc-stack');

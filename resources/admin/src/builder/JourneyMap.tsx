@@ -1,8 +1,8 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState, type RefObject } from 'react';
-import { Background, Handle, MarkerType, Panel, Position, ReactFlow, useReactFlow, useStore, useNodesInitialized, type Connection, type Edge, type Node, type NodeProps } from '@xyflow/react';
+import { Background, Handle, MarkerType, NodeToolbar, Panel, Position, ReactFlow, useReactFlow, useStore, useNodesInitialized, type Connection, type Edge, type Node, type NodeProps } from '@xyflow/react';
 import dagre from '@dagrejs/dagre';
 import { ArrowLeft, ArrowRight, Check, CircleHelp, FileText, Flag, Send, Eye, EyeOff, Focus, Layers, Maximize2, Minus, Plus, Settings2 } from 'lucide-react';
-import { createSmartEdge, SmartEdgeProvider } from '@tisoap/react-flow-smart-edge';
+import { SmartEdgeProvider } from '@tisoap/react-flow-smart-edge';
 import { __, sprintf } from '@wordpress/i18n';
 import type { TemplateTree } from '@renderer/types';
 import { unreachableScreenIds, walkNodes } from './structure/journey';
@@ -11,13 +11,14 @@ import { graphDisplayOrder } from './structure/graph';
 import { canAddGraphConnection, canTargetGraphScreen, graphChoiceSources } from './structure/graphConnections';
 import { FollowupGroupCard } from './FollowupGroupCard';
 import { followupGroups, type FollowupGroup } from './structure/followupGroups';
-import { mapEdgeOptions, mapRoutingOptions } from './structure/mapRouting';
+import { JourneyMapEdge } from './JourneyMapEdge';
+import { mapRoutingOptions } from './structure/mapRouting';
 import { cameraTargets, mapMinZoom } from './structure/mapCamera';
 import { relatedMapElements } from './structure/mapSelection';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuCheckboxItem } from '../components/ui/dropdown-menu';
 import '@xyflow/react/dist/style.css';
 
-interface CardData { tree: TemplateTree; index: number; ordinal: number; rtl: boolean; unreachable: boolean; muted: boolean; preview: boolean; compactEnding: boolean; destinationSummary?: string; select(index: number): void; selectPath(index: number, priority: number | 'hidden'): void; goToDestinations?(): void }
+interface CardData { tree: TemplateTree; index: number; ordinal: number; rtl: boolean; unreachable: boolean; muted: boolean; preview: boolean; compactEnding: boolean; destinationSummary?: string; select(index: number): void; selectPath(index: number, priority: number | 'hidden'): void; goToDestinations?(): void; previewScreen?(index: number): void; add?(index: number, edgeId?: string): void }
 
 export function routesFor(tree: TemplateTree, index: number) {
   const screen = tree.steps[index];
@@ -34,7 +35,8 @@ export function hiddenFor(tree: TemplateTree, index: number): string | undefined
 }
 
 const ScreenCard = memo(function ScreenCard({ data, selected }: NodeProps) {
-  const { tree, index, ordinal, rtl, unreachable, muted, preview, compactEnding, destinationSummary, select, selectPath, goToDestinations } = data as unknown as CardData;
+  const { tree, index, ordinal, rtl, unreachable, muted, preview, compactEnding, destinationSummary, select, selectPath, goToDestinations, previewScreen, add } = data as unknown as CardData;
+  const overview = useStore(state => state.transform[2] < .65);
   const screen = tree.steps[index];
   const content = walkNodes(screen.content);
   const question = content.find(node => node.type === 'question');
@@ -54,7 +56,21 @@ const ScreenCard = memo(function ScreenCard({ data, selected }: NodeProps) {
   const kind = screen.kind === 'acknowledgement' ? __('Ending', 'wconvert') : screen.kind === 'result' ? __('Result', 'wconvert')
     : question ? __('Question', 'wconvert') : screen.kind === 'input' ? __('Collect details', 'wconvert') : __('Screen', 'wconvert');
   const KindIcon = screen.kind === 'acknowledgement' ? Check : screen.kind === 'result' ? Flag : question ? CircleHelp : savesDetails ? Send : FileText;
-  return <div dir={rtl ? 'rtl' : 'ltr'} className={`wconvert-flow-node${selected ? ' is-selected' : ''}${unreachable ? ' is-unreachable' : ''}${muted ? ' is-muted' : ''}${compactEnding && screen.kind === 'acknowledgement' ? ' is-compact-ending' : ''}`}>
+  return <div dir={rtl ? 'rtl' : 'ltr'} className={`wconvert-flow-node${selected ? ' is-selected' : ''}${unreachable ? ' is-unreachable' : ''}${muted ? ' is-muted' : ''}${compactEnding && screen.kind === 'acknowledgement' ? ' is-compact-ending' : ''}${overview && !selected ? ' is-overview' : ''}`}>
+    {overview && !selected && <button type="button" className="wconvert-flow-node__overview" aria-label={sprintf(__('Open %s', 'wconvert'), screen.name)} onClick={() => select(index)}>
+      <small>{kind}{screen.id === (tree.graph?.entry ?? tree.steps[0].id) ? ` · ${__('First screen', 'wconvert')}` : ''}{incoming > 1 ? ` · ${__('Paths rejoin', 'wconvert')}` : ''}</small><strong><bdi>{screen.name}</bdi></strong>
+      {screen.when && <span>{sprintf(__('Show if %s', 'wconvert'), conditionText(tree, screen.when))}</span>}
+      {branching && <span>{sprintf(__('%d answer paths · first match wins', 'wconvert'), paths.length - 1)}</span>}
+      {savesDetails && <span>{__('Details saved here', 'wconvert')}</span>}
+      {screen.kind === 'result' && <span>{sprintf(__('%d possible results', 'wconvert'), screen.results?.length ?? 0)}</span>}
+      {screen.kind === 'acknowledgement' && <span>{__('Journey complete', 'wconvert')}</span>}
+    </button>}
+    <NodeToolbar isVisible={selected} position={Position.Top}><div className="wconvert-journey-node-tools">
+      <button type="button" onClick={() => select(index)}>{__('Edit screen', 'wconvert')}</button>
+      {previewScreen && <button type="button" onClick={() => previewScreen(index)}>{__('Preview screen', 'wconvert')}</button>}
+      {add && screen.kind !== 'acknowledgement' && <button type="button" onClick={() => add(index)}>{__('Add screen', 'wconvert')}</button>}
+    </div></NodeToolbar>
+    {previewScreen && <button type="button" className="wconvert-flow-node__preview-button nodrag" aria-label={sprintf(__('Preview %s', 'wconvert'), screen.name)} onClick={() => previewScreen(index)}><Eye aria-hidden="true" /></button>}
     <Handle id="in" type="target" position={rtl ? Position.Right : Position.Left} />
     <button type="button" className="wconvert-flow-node__main" onClick={() => select(index)}>
       <div className="wconvert-flow-node__heading"><span className="wconvert-flow-node__type-icon" aria-hidden="true"><KindIcon /></span><div><small>{ordinal} · {kind}{screen.id === (tree.graph?.entry ?? tree.steps[0].id) ? ` · ${__('First screen', 'wconvert')}` : incoming > 1 ? ` · ${__('Paths rejoin', 'wconvert')}` : ''}</small><strong><bdi>{screen.name}</bdi></strong></div></div>
@@ -96,13 +112,13 @@ const ScreenCard = memo(function ScreenCard({ data, selected }: NodeProps) {
     </div>}
     {screen.kind === 'acknowledgement' && <div className="wconvert-flow-node__ending"><Check aria-hidden="true" />{__('Journey complete', 'wconvert')}</div>}
     {canDraw && <>
-      <div className="wconvert-flow-node__add">+ {missingContinuation ? __('Drag to connect the next screen', 'wconvert') : __('Drag to add an answer path', 'wconvert')}</div>
+      <div className="wconvert-flow-node__add">{add && <button type="button" className="nodrag" onClick={() => add(index)}><Plus aria-hidden="true" />{__('Add next screen', 'wconvert')}</button>}<span>+ {missingContinuation ? __('Drag to connect the next screen', 'wconvert') : __('Drag to add an answer path', 'wconvert')}</span></div>
       <Handle id="new" type="source" position={rtl ? Position.Left : Position.Right} style={{ top: 'calc(100% - 15px)' }} />
     </>}
   </div>;
 });
 const nodeTypes = { screen: ScreenCard, followups: FollowupGroupCard };
-const edgeTypes = { journey: createSmartEdge('smoothstep', mapEdgeOptions) };
+const edgeTypes = { journey: JourneyMapEdge };
 
 function FocusCamera({ mapRoot, selectedId, nextId, firstId, initialOverview, overviewWidth = 600, revision, onTidy, preview, onPreview, grouping, selection, onNodesReady }: {
   mapRoot: RefObject<HTMLDivElement | null>; selectedId: string; nextId?: string; firstId: string; initialOverview: boolean; overviewWidth?: number; revision: number; onTidy(): void; preview: boolean; onPreview(): void; grouping?: { active: boolean; toggle(): void }; selection?: { highlighted: boolean; toggle(): void }; onNodesReady(): void;
@@ -142,7 +158,7 @@ function FocusCamera({ mapRoot, selectedId, nextId, firstId, initialOverview, ov
   const nodesReady = useNodesInitialized();
   const viewPadding = useCallback(() => {
     const tools = mapRoot.current?.querySelector('.wconvert-journey-map__controls')?.getBoundingClientRect();
-    return { top: '24px' as const, left: '24px' as const, right: '56px' as const, bottom: `${Math.ceil((tools?.height ?? 44) + 40)}px` as const };
+    return { top: '56px' as const, left: '24px' as const, right: '56px' as const, bottom: `${Math.ceil((tools?.height ?? 44) + 40)}px` as const };
   }, [mapRoot]);
   useEffect(() => {
     if (!nodesReady) return;
@@ -203,11 +219,11 @@ function FocusCamera({ mapRoot, selectedId, nextId, firstId, initialOverview, ov
 }
 
 /** The canvas is an overview; the same routes are editable through selects in the inspector. */
-export function JourneyMap({ tree, selected, focusedPath = null, onSelect, onSelectPath, onConnect, onReconnect, samplePath = null, destinationSummary, onGoToDestinations }: {
+export function JourneyMap({ tree, selected, focusedPath = null, onSelect, onSelectPath, onConnect, onReconnect, samplePath = null, sampleEdges = null, destinationSummary, onGoToDestinations, onPreview, onAdd }: {
   tree: TemplateTree; selected: number | null; onSelect(index: number): void; onSelectPath(index: number, priority: number | 'hidden'): void;
-  onConnect(source: string, target: string): void; samplePath?: readonly number[] | null; focusedPath?: number | 'hidden' | null;
+  onConnect(source: string, target: string): void; samplePath?: readonly number[] | null; sampleEdges?: readonly string[] | null; focusedPath?: number | 'hidden' | null;
   onReconnect?(edgeId: string, target: string): void;
-  destinationSummary?: string; onGoToDestinations?(): void;
+  destinationSummary?: string; onGoToDestinations?(): void; onPreview?(index: number): void; onAdd?(index: number, edgeId?: string): void;
 }) {
   const [positions, setPositions] = useState<Record<string, { x: number; y: number }>>({});
   const [measurements, setMeasurements] = useState<Record<string, { width: number; height: number }>>({});
@@ -315,8 +331,8 @@ export function JourneyMap({ tree, selected, focusedPath = null, onSelect, onSel
   const highlighting = highlightRelated && selected !== null && samplePath === null;
   const cardData = useMemo(() => tree.steps.map((_, index) => ({ tree, index, ordinal: ordinals.indexOf(index) + 1, rtl, unreachable: disconnected.has(tree.steps[index].id),
       muted: samplePath !== null ? !samplePath.includes(index) : highlighting && !related.screens.has(tree.steps[index].id),
-      preview, compactEnding: groups.length > 0, destinationSummary, goToDestinations: onGoToDestinations, select: onSelect, selectPath: onSelectPath })),
-    [tree, disconnected, ordinals, onSelect, onSelectPath, rtl, samplePath, highlighting, related, preview, groups.length, destinationSummary, onGoToDestinations]);
+      previewScreen: onPreview, add: onAdd, preview, compactEnding: groups.length > 0, destinationSummary, goToDestinations: onGoToDestinations, select: onSelect, selectPath: onSelectPath })),
+    [tree, disconnected, ordinals, onSelect, onSelectPath, rtl, samplePath, highlighting, related, preview, groups.length, destinationSummary, onGoToDestinations, onPreview, onAdd]);
   const groupData = useMemo(() => new Map(groups.map(group => [group.id, { tree, group, rtl, unreachable: disconnected.has(tree.steps[group.screens[0]].id), selected: samplePath === null ? selected : null, muted: highlighting && !group.screens.some(index => related.screens.has(tree.steps[index].id)), samplePath, select: onSelect, expand }])),
     [groups, tree, disconnected, rtl, selected, samplePath, highlighting, related, onSelect, expand]);
   const nodes = useMemo<Node[]>(() => view.map(({ id, index, group }) => ({ id, type: group ? 'followups' : 'screen',
@@ -325,13 +341,15 @@ export function JourneyMap({ tree, selected, focusedPath = null, onSelect, onSel
   const edges = useMemo(() => rawEdges.flatMap(edge => {
     const source = visibleId(edge.source), target = visibleId(edge.target);
     if (source === target) return [];
-    return [{ ...edge, source, target,
-      style: { ...edge.style, opacity: highlighting && !related.paths.has(edge.id) ? .2 : 1 },
+    return [{ ...edge, source, target, selected: edge.id === selectedEdge?.id,
+      data: { ...edge.data, targetName: tree.steps.find(step => step.id === edge.target)?.name,
+        insert: onAdd && tree.graph ? (edgeId: string) => onAdd(Number(edge.data?.sourceIndex), edgeId) : undefined },
+      style: { ...edge.style, opacity: samplePath !== null && sampleEdges !== null ? sampleEdges.includes(edge.id) || tree.graph?.edges.some(hidden => hidden.kind === 'hidden' && hidden.from === edge.source && hidden.to === edge.target && sampleEdges.includes(hidden.id)) ? 1 : .15 : highlighting && !related.paths.has(edge.id) ? .2 : 1 },
       ariaLabel: sprintf(edge.data?.priority === 'hidden' ? __('When hidden: %1$s to %2$s', 'wconvert') : __('%1$s to %2$s', 'wconvert'), tree.steps.find(step => step.id === edge.source)?.name ?? edge.source, tree.steps.find(step => step.id === edge.target)?.name ?? edge.target),
       sourceHandle: source !== edge.source ? 'out' : edge.sourceHandle,
       targetHandle: target !== edge.target ? 'in' : edge.targetHandle,
       reconnectable: source !== edge.source || target !== edge.target ? false : edge.reconnectable }];
-  }), [rawEdges, visibleId, tree.steps, highlighting, related]);
+  }), [rawEdges, visibleId, tree.steps, tree.graph, highlighting, related, selectedEdge?.id, onAdd, sampleEdges, samplePath]);
   const valid = (connection: Connection | Edge) => {
     const from = tree.steps.findIndex(step => step.id === connection.source);
     const to = tree.steps.findIndex(step => step.id === connection.target);
