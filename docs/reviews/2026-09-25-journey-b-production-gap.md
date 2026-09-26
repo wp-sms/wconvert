@@ -71,9 +71,44 @@ not mean that required CI gate has passed.
 The full PHP suite passed 2,124 tests / 10,873 assertions after the publication
 fix, and PHPStan passed. No visitor bundle changes were needed for this slice.
 
-Remaining visitor UX detail: accepted screens prevent editing correctly, but
-need a clear saved/read-only explanation when visitors go Back. This evidence
-also does not cover a published anonymous/required quiz or external delivery.
+The following quiz and saved-screen slice closes the missing read-only
+explanation and published informational quiz checks. External delivery and
+live WooCommerce recommendation availability remain separate release checks.
+
+### September 26: published quiz timing and saved-screen details
+
+Accepted screens now explain “Already saved” on Back in Free, Pro and Test
+journey. The shared localized labels support older cached payloads; Free no
+longer discards translations when PHP supplies more than two labels.
+
+A real local quiz publication exposed three additional gaps. Moving the signup
+before the result retained the generated marketing checkbox; required gates now
+hide and unown that generated checkbox, restoring it for optional signup.
+Merchant-written consent is preserved. Hidden consent can remain as design copy
+only when no submission claims it. The review's capture classification now uses
+graph result timing rather than storage order. Result content renders before
+navigation, absent links no longer paint an empty button, and the modal's
+accessible name follows the selected result rather than the fallback. Test
+journey also updates the selected result link instead of retaining the fallback.
+
+Two isolated published local fixtures verified both timings through the visitor
+popup using keyboard controls. The required gate refused an empty email, then
+accepted a test address and reached Sunny garden picks. Back showed the accepted
+address and read-only notice. The database held one Lead, both answers, purpose
+`request`, and no accepted marketing consent. The anonymous fixture reached the
+same result before signup, displayed optional signup with the restored checkbox,
+and allowed “No thanks” to reach Thanks for visiting. It created zero Leads.
+Review correctly distinguished the required request gate from optional marketing
+signup. Both fixtures were unpublished and their shared QA page returned to
+draft afterward. Original QA drafts were untouched. These were informational
+results with product requirements disabled, not WooCommerce availability tests.
+
+Validation: the full JavaScript suite passed 2,834 tests; an additional selected
+result-link regression passed in the six-test Test journey suite. PHP passed
+2,125 tests / 10,876 assertions. TypeScript, ESLint, PHPStan, Free/Pro admin
+builds and all unchanged visitor/phone byte budgets passed, including loader
+compression under Node 22. Required GitHub CI remains externally blocked by
+account billing/spending-limit status.
 
 ### September 26: repair controls and path-aware authoring review
 
@@ -324,7 +359,7 @@ classification too. The shared shell's result-first check now follows graph
 connections rather than storage order; fixtures reverse storage for both
 optional and required signup and retain the expected classification.
 
-Remaining release work includes published visitor/server capture evidence,
+Remaining release work includes external delivery and live-product evidence,
 precise repair targets for server-only failures, grouped follow-up readability,
 complex graph edits, and the responsive/keyboard/RTL checks below. Do not mark
 the feature merge-ready solely from the successful admin simulation.

@@ -10,13 +10,27 @@ vi.mock('@renderer/mount', () => ({ mount: ({ anchor, template }: { anchor: HTML
   const root = document.createElement('form');
   anchor.append(root);
   return { mounted: true, root, show() {}, showStep(step: number) {
-    root.innerHTML = step === 0
+    root.innerHTML = template.tree.steps[step].kind === 'result'
+      ? '<h2 data-result-heading>Default result</h2><p data-result-body></p><a data-result-link href="https://example.test/stale">Default link</a>'
+      : step === 0
       ? `${template.tree.steps[0].name === 'Combined save' ? '<label>Optional note<textarea data-question-id="optional-note"></textarea></label>' : ''}${template.tree.steps[0].name === 'Choice save' ? '<label><input type="checkbox" data-question-id="interest-question" value="second">Balcony</label>' : ''}<label>Email address<input type="email" required data-capture-id="n2"></label><label><input type="checkbox" required data-capture-id="n3">Consent</label><button data-action="submit" data-submission="email-signup" type="submit">Sign up</button>`
       : '<h2>Received</h2><button data-action="back" type="button">Back</button>';
   }, close() { root.remove(); } };
 } }));
 
 afterEach(cleanup);
+
+it('shows the selected result link in the visitor test and hides it when absent', () => {
+  const result = { id: 'default', heading: 'Your guide', body: 'A useful next step.', href: 'https://example.test/guide', link_label: 'Read your guide' };
+  const template: Template = { tokens: {}, tree: { v: 2, submissions: [], steps: [{ id: 'result', name: 'Your result', kind: 'result',
+    content: { type: 'stack', children: [] }, results: [result] }] } };
+  const view = render(<JourneyTest template={template} onEdit={() => {}} />);
+  expect(screen.getByRole('link', { name: 'Read your guide' })).toHaveAttribute('href', result.href);
+  view.rerender(<JourneyTest template={{ ...template, tree: { ...template.tree, steps: [{ ...template.tree.steps[0],
+    results: [{ ...result, href: '', link_label: '' }] }] } }} onEdit={() => {}} />);
+  expect(screen.queryByRole('link')).not.toBeInTheDocument();
+  expect(view.container.querySelector('[data-result-link]')).not.toHaveAttribute('href');
+});
 
 it('shows merchant-facing choice labels in the accepted snapshot', async () => {
   const user = userEvent.setup();
@@ -109,4 +123,5 @@ it('retains an answer on the capture screen after a simulated save failure', asy
   await user.click(screen.getByRole('button', { name: 'Back' }));
   expect(screen.getByLabelText('Optional note')).toHaveValue('A sunny space');
   expect(screen.getByLabelText('Optional note')).toBeDisabled();
+  expect(screen.getByText('Already saved. You can review these details, but cannot change them.')).toBeInTheDocument();
 });

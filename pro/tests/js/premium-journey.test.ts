@@ -15,10 +15,10 @@ import { convertingActOf } from '../../../resources/admin/src/builder/structure/
 registerPremiumJourneyRenderer();
 afterEach(() => { document.body.replaceChildren(); vi.unstubAllGlobals(); });
 
-function setup(template: Template) {
+function setup(template: Template, displayType = 'inline') {
   const tag = document.createElement('script'); tag.id = 'wconvert-payload'; tag.setAttribute('data-capture', '/capture'); document.body.append(tag);
   const anchor = document.createElement('div'); document.body.append(anchor);
-  const mounted = mount({ template, displayType: 'inline', anchor }); mounted.show();
+  const mounted = mount({ template, displayType, anchor }); mounted.show();
   const captured = vi.fn(); const completed = vi.fn();
   bindJourney(mounted, { id: 'campaign', template, capture_contract: 'contract' }, { onCaptured: captured, onCompleted: completed });
   const root = () => mounted.root!;
@@ -34,6 +34,7 @@ it('finishes an anonymous product quiz and prunes a hidden answer after Back', (
   expect(journey.root().textContent).toContain('Tell us about your garden');
   journey.choose('sun'); journey.act('next');
   expect(journey.root().textContent).toContain('Sunny garden picks');
+  expect(journey.root().firstElementChild?.className).toBe('wc-result');
   expect(journey.completed).toHaveBeenCalledOnce();
   expect(journey.captured).not.toHaveBeenCalled();
   expect(fetcher).not.toHaveBeenCalled();
@@ -42,6 +43,23 @@ it('finishes an anonymous product quiz and prunes a hidden answer after Back', (
   expect(journey.root().textContent).toContain('Balcony picks');
   expect(journey.root().textContent).not.toContain('Tell us about your garden');
   expect(journey.completed).toHaveBeenCalledOnce();
+});
+
+it('names the popup after the selected result and removes an unavailable result link', async () => {
+  const template = finder as Template;
+  const tree = { ...template.tree, steps: template.tree.steps.map(screen => ({ ...screen,
+    results: screen.results?.map(result => ({ ...result, href: '', link_label: '' })),
+  })) };
+  const journey = setup({ ...template, tree }, 'popup');
+  journey.choose('garden'); journey.act('next'); journey.choose('sun'); journey.act('next');
+  await Promise.resolve();
+  expect(document.querySelector('dialog')?.getAttribute('aria-label')).toBe('Sunny garden picks');
+  const link = journey.root().querySelector<HTMLAnchorElement>('[data-result-link]')!;
+  expect(link.hidden).toBe(true);
+  expect(link.hasAttribute('href')).toBe(false);
+  journey.act('back'); journey.act('back'); journey.choose('balcony'); journey.act('next');
+  await Promise.resolve();
+  expect(document.querySelector('dialog')?.getAttribute('aria-label')).toBe('Balcony picks');
 });
 
 it('sends active question answers with a contact submission, once', async () => {
@@ -82,6 +100,7 @@ it('locks an unanswered optional question after its enquiry is accepted', async 
   const unanswered = journey.root().querySelector<HTMLInputElement>('input[value="yes"]')!;
   expect(unanswered.checked).toBe(false);
   expect(unanswered.disabled).toBe(true);
+  expect(journey.root().textContent).toContain('Already saved. You can review these details, but cannot change them.');
 });
 
 it('does not submit or freeze a later answer when returning to an optional graph save', async () => {

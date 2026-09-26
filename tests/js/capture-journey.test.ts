@@ -28,6 +28,7 @@ it('keeps the accepted email fixed, skips SMS, and does not send the first signu
   expect(mounted.root!.textContent).toContain('optional');
   mounted.root!.querySelector<HTMLButtonElement>('[data-action="back"]')!.click();
   expect(mounted.root!.querySelector<HTMLInputElement>('[name="email"]')!.readOnly).toBe(true);
+  expect(mounted.root!.textContent).toContain('Already saved. You can review these details, but cannot change them.');
   mounted.root!.querySelector<HTMLButtonElement>('[data-action="next"]')!.click();
   mounted.root!.querySelector<HTMLButtonElement>('[data-action="skip"]')!.click();
   expect(mounted.root!.textContent).toContain('Details received');

@@ -1,3 +1,4 @@
+import { journeyNotice } from '@renderer/journey-notice';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import { mount } from '@renderer/mount';
@@ -68,16 +69,14 @@ export function JourneyTest({ template, onEdit, deliveryMode = 'none', destinati
     if (step === entry && signupAt >= 0 && resultAt >= 0 && (tree.graph
       ? trace.indices.indexOf(signupAt) >= 0 && trace.indices.indexOf(signupAt) < trace.indices.indexOf(resultAt)
       : resultAt > signupAt)) {
-      const notice = document.createElement('p');
-      notice.className = 'wc-gate-note'; notice.textContent = __('Contact details are required before you see your result.', 'wconvert');
-      const heading = root.querySelector('h1,h2,h3');
-      if (heading) heading.after(notice); else root.prepend(notice);
+      journeyNotice(root, __('Contact details are required before you see your result.', 'wconvert'));
     }
+    let reviewing = false;
     for (const input of root.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>('[data-question-id]')) {
       const answer = answers[input.dataset.questionId ?? ''];
       if (input instanceof HTMLTextAreaElement) input.value = typeof answer === 'string' ? answer : '';
       else input.checked = Array.isArray(answer) ? answer.includes(input.value) : answer === input.value;
-      if (acceptedQuestions.includes(input.dataset.questionId ?? '')) input.disabled = true;
+      if (acceptedQuestions.includes(input.dataset.questionId ?? '')) { input.disabled = true; reviewing = true; }
     }
     for (const input of root.querySelectorAll<HTMLInputElement | HTMLSelectElement>('[data-capture-id]')) {
       const id = input.dataset.captureId ?? '';
@@ -88,8 +87,10 @@ export function JourneyTest({ template, onEdit, deliveryMode = 'none', destinati
         if (input instanceof HTMLInputElement && input.type === 'checkbox' || input instanceof HTMLSelectElement) input.disabled = true;
         else input.readOnly = true;
         input.required = false;
+        reviewing = true;
       }
     }
+    if (reviewing) journeyNotice(root, __('Already saved. You can review these details, but cannot change them.', 'wconvert'));
     for (const button of root.querySelectorAll<HTMLButtonElement>('button[data-action="submit"]')) {
       if (accepted.includes(button.dataset.submission ?? '')) { button.dataset.action = 'next'; button.textContent = __('Continue', 'wconvert'); }
     }
@@ -97,9 +98,16 @@ export function JourneyTest({ template, onEdit, deliveryMode = 'none', destinati
       const result = chooseResult(tree.steps[step].results ?? [], active);
       const heading = root.querySelector<HTMLElement>('[data-result-heading]');
       const body = root.querySelector<HTMLElement>('[data-result-body]');
+      const link = root.querySelector<HTMLAnchorElement>('[data-result-link]');
       const products = root.querySelector<HTMLElement>('[data-result-products]');
       if (heading) heading.textContent = result?.heading ?? '';
       if (body) body.textContent = result?.body ?? '';
+      if (link) {
+        link.textContent = result?.link_label ?? '';
+        link.hidden = !result?.href;
+        if (result?.href) link.href = result.href;
+        else link.removeAttribute('href');
+      }
       if (products && result?.product_ids?.length) products.textContent = productState === 'selected'
         ? sprintf(__('%d selected products would be checked for current price and availability.', 'wconvert'), result.product_ids.length)
         : productState === 'empty' ? __('No selected products are currently available. The shop link remains visible.', 'wconvert')

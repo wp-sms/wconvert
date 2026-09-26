@@ -121,6 +121,9 @@ it('moves a graph quiz signup before and after a result while keeping incoming e
   const originalIncoming = optional.graph!.edges.find(edge => edge.to === 'guide')!.id;
   const required = resultAccess(optional, true);
   expect(required.submissions[0].required).toBe(true);
+  expect(required.submissions[0].consents).toEqual([]);
+  expect(walkNodes(required.steps.find(screen => screen.id === 'signup')!.content)
+    .find(node => node.type === 'consent')).toMatchObject({ hidden: true });
   expect(required.steps.find(screen => screen.kind === 'acknowledgement')).toEqual(optional.steps.find(screen => screen.kind === 'acknowledgement'));
   expect(required.graph?.edges.find(edge => edge.id === originalIncoming)?.to).toBe('signup');
   expect(graphTrace(required.steps, required.graph!, { n3: ['grow'] }).indices.map(index => required.steps[index].id))
@@ -135,6 +138,8 @@ it('moves a graph quiz signup before and after a result while keeping incoming e
     .toEqual(['interests', 'guide', 'signup', back.steps.at(-1)!.id]);
   expect(back.submissions[0].fields).toEqual(optional.submissions[0].fields);
   expect(back.submissions[0].consents).toEqual(optional.submissions[0].consents);
+  expect(walkNodes(back.steps.find(screen => screen.id === 'signup')!.content)
+    .find(node => node.type === 'consent')).toMatchObject({ hidden: false });
   expect(back.steps.find(screen => screen.kind === 'acknowledgement')).toEqual(optional.steps.find(screen => screen.kind === 'acknowledgement'));
   expect(back.graph?.edges.find(edge => edge.to === 'thanks')?.id).toBe(optional.graph?.edges.find(edge => edge.to === 'thanks')?.id);
   expect(unreachableScreens(back)).toEqual([]);
@@ -153,4 +158,14 @@ it('keeps merchant-written signup copy when changing graph result timing', () =>
   expect(optionalAgain.steps.find(screen => screen.id === 'signup')?.name).toBe('Personal notes');
   expect(walkNodes(optionalAgain.steps.find(screen => screen.id === 'signup')!.content)
     .some(node => node.type === 'heading' && 'text' in node && node.text === 'Our own heading')).toBe(true);
+});
+
+it('preserves merchant-written consent requirements when moving a signup before the result', () => {
+  const optional = JSON.parse(JSON.stringify(upgradeToGraph(guide.tree as TemplateTree)), (key, value) =>
+    key === 'text' && value === 'Send me email guides and updates. %s' ? 'I agree to the stated use of my details.' : value) as TemplateTree;
+  const required = resultAccess(optional, true);
+  expect(required.submissions[0].consents).toEqual(optional.submissions[0].consents);
+  const consent = walkNodes(required.steps.find(screen => screen.id === 'signup')!.content).find(node => node.type === 'consent');
+  expect(consent).toMatchObject({ text: 'I agree to the stated use of my details.' });
+  expect(consent && 'hidden' in consent && consent.hidden).not.toBe(true);
 });

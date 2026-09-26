@@ -410,6 +410,7 @@ export function mountModal(options: MountOptions, surface: ModalSurface = {}): M
   });
 
   let dismissible = true;
+  const label = () => dialog.setAttribute('aria-label', parts.root.querySelector('h1,h2')?.textContent || 'Campaign');
 
   dialog.addEventListener('close', () => {
     dialog.style.setProperty('display', 'none', 'important');
@@ -436,7 +437,7 @@ export function mountModal(options: MountOptions, surface: ModalSurface = {}): M
       dismissible = true;
       parts.resume();
       surface.prepare?.(parts.root);
-      dialog.setAttribute('aria-label', parts.root.querySelector('h1,h2')?.textContent || 'Campaign');
+      label();
       documentStyle();
       document.body.appendChild(dialog);
       dialog.style.setProperty('display', 'block', 'important');
@@ -453,7 +454,10 @@ export function mountModal(options: MountOptions, surface: ModalSurface = {}): M
     showStep(step) {
       const root = parts.step(step);
       surface.prepare?.(root);
-      dialog.setAttribute('aria-label', root.querySelector('h1,h2')?.textContent || 'Campaign');
+      label();
+      // Journeys resolve their selected result immediately after the step swap.
+      // Name the completed screen, including that synchronous content update.
+      queueMicrotask(label);
     },
     close() {
       // The four ways a visitor dismisses are one thing; closing it OURSELVES

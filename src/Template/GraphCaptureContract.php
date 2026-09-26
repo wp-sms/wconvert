@@ -59,7 +59,11 @@ final class GraphCaptureContract
                 if ($type === 'field' && (($node['hidden'] ?? false) || !in_array($node['name'] ?? null, ['email', 'phone', 'name', 'interest'], true)
                     || ($node['name'] === 'interest' && empty($node['options'])) || isset($fieldNames[$node['name']]))) { return 'fields'; }
                 if ($type === 'field') $fieldNames[$node['name']] = true;
-                if ($type === 'consent' && ($node['hidden'] ?? false)) { return 'consent'; }
+                // A hidden, unowned checkbox can preserve optional-signup copy
+                // while the same screen is a request gate. It cannot be accepted.
+                if ($type === 'consent' && ($node['hidden'] ?? false)
+                    && array_filter($submissions, static fn ($submission): bool => is_array($submission)
+                        && in_array($nodeId, is_array($submission['consents'] ?? null) ? $submission['consents'] : [], true))) { return 'consent'; }
                 if ($type === 'button' && !($node['hidden'] ?? false)) {
                     $action = $node['action'] ?? null;
                     if (!in_array($action, CaptureJourney::ACTIONS, true)) { return 'actions'; }
@@ -125,7 +129,8 @@ final class GraphCaptureContract
             if ($goal === 'find_match' && $submission['required'] && !JourneyGraph::reaches($graph, $submitScreen, $result)) { return 'capture_paths'; }
         }
         foreach ($nodes as $id => $source) {
-            if (in_array($source['node']['type'] ?? null, ['field', 'consent'], true) && !isset($owned[$id])) { return 'references'; }
+            if (in_array($source['node']['type'] ?? null, ['field', 'consent'], true)
+                && !($source['node']['hidden'] ?? false) && !isset($owned[$id])) { return 'references'; }
             if ($goal !== 'find_match' && ($source['node']['type'] ?? null) === 'question'
                 && $source['screen'] !== $primaryScreen
                 && JourneyGraph::reaches($graph, $primaryScreen, $source['screen'])) { return 'capture_paths'; }

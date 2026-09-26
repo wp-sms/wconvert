@@ -4,6 +4,7 @@ import { SubmissionSettings } from './SubmissionSettings';
 import { JourneyEditor } from './JourneyEditor';
 import { JourneyReport } from './JourneyReport';
 import { referencedJourney, submissionScreen } from './structure/journey';
+import { isResultFirst } from '../../../loader/src/journey-mode';
 import type { JourneyRepair } from './structure/journeyReadiness';
 import { contentLockDesignCompatible } from '../inlinePlacement';
 import './editor.css';
@@ -262,9 +263,8 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
 
   // Results can stand alone, but an optional email signup after them is still
   // a marketing submission. Show the same explicit storage choice as email forms.
-  const resultAt = template?.tree.steps.findIndex(screen => screen.kind === 'result') ?? -1;
   const signupAt = template?.tree.submissions[0] ? submissionScreen(template.tree, template.tree.submissions[0].id) : -1;
-  const captureOutcome = entryOfGoal?.outcome && act === 'match' && resultAt >= 0 && signupAt > resultAt
+  const captureOutcome = entryOfGoal?.outcome && act === 'match' && template && signupAt >= 0 && isResultFirst(template.tree)
     ? { ...entryOfGoal.outcome, audience_channel: 'email' }
     : entryOfGoal?.outcome;
   const readinessGoal = goalEntry.status === 'ready' && goalEntry.data && captureOutcome

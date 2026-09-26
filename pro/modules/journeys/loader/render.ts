@@ -47,6 +47,7 @@ const CSS = [
   `.wc-question-choice>input{flex:none;accent-color:var(--wc-accent,#2563eb)}`,
   `.wc-question>textarea{inline-size:100%;min-block-size:5rem;padding:.625rem;border:1px solid var(--wc-border,#e5e7eb);border-radius:var(--wc-radius,.5rem);font:inherit}`,
   `.wc-result{display:grid;gap:var(--wc-gap,.75rem);text-align:start}`,
+  `.wc-result [hidden]{display:none}`,
   `.wc-result .wc-text{margin:0}`,
   `.wc-products-list{display:grid;grid-template-columns:repeat(auto-fit,minmax(9rem,1fr));gap:.75rem;list-style:none;margin:0;padding:0}`,
   `.wc-products-list li{display:grid;align-content:start;gap:.4rem;min-width:0;padding:.75rem;border:1px solid var(--wc-border,#ddd);border-radius:var(--wc-radius,.5rem)}`,

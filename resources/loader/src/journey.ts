@@ -1,7 +1,9 @@
+import { journeyLabel } from './journey-labels';
+import { journeyNotice } from '@renderer/journey-notice';
 import type { Mounted } from '@renderer/mount';
 import type { TemplateNode } from '@renderer/types';
 import type { PayloadEntry } from './types';
-import { captureEndpoint, beaconEndpoint, PAYLOAD_ELEMENT_ID } from './payload';
+import { captureEndpoint, beaconEndpoint } from './payload';
 import { createBeacon, type BeaconKind } from './beacon';
 import { clear, pending, refuse } from './capture';
 
@@ -9,14 +11,6 @@ type Input = HTMLInputElement | HTMLSelectElement;
 type PhoneControl = HTMLInputElement & { __p?: (value: string) => void; __r?: () => void };
 interface Reply { id?: string; grant?: string; message?: string; data?: { field?: string }; }
 interface Options { onCaptured(): void; onDismiss?(): void; onRefused?(kind: 'correctable' | 'unconfirmed'): void; }
-
-function labels(): string[] {
-  try {
-    const value: unknown = JSON.parse(document.getElementById(PAYLOAD_ELEMENT_ID)?.getAttribute('data-journey') ?? 'null');
-    if (Array.isArray(value) && value.length === 2 && value.every(item => typeof item === 'string')) return value;
-  } catch { /* Use fallback copy if the page attribute was removed. */ }
-  return ['Continue', 'Submission not confirmed. Please try again.'];
-}
 
 /** One mounted page owns unsaved answers and the expiring request capability. */
 export function bindJourney(mounted: Mounted, entry: PayloadEntry, options: Options): void {
@@ -74,6 +68,7 @@ export function bindJourney(mounted: Mounted, entry: PayloadEntry, options: Opti
     root.addEventListener('wconvert:closed', () => observer?.disconnect());
     root.addEventListener('wconvert:dismissed', () => report('screen_dismissed'));
     root.querySelector('.wc-close')?.addEventListener('click', () => report('screen_dismissed'));
+    let reviewing = false;
     for (const input of controls()) {
       const id = input.dataset.captureId!;
       const value = answers.get(id);
@@ -85,14 +80,16 @@ export function bindJourney(mounted: Mounted, entry: PayloadEntry, options: Opti
       }
       else if (cleared.delete(id)) (input as PhoneControl).__r?.();
       if (fixed.has(id)) {
+        reviewing = true;
         input.required = false;
         if (input instanceof HTMLSelectElement || (input instanceof HTMLInputElement && input.type === 'checkbox')) input.disabled = true;
         else input.readOnly = true;
       }
     }
+    if (reviewing) journeyNotice(root, journeyLabel(3));
     for (const button of root.querySelectorAll<HTMLButtonElement>('button[data-action]')) {
       if (button.dataset.action === 'submit' && accepted.has(button.dataset.submission!)) {
-        button.dataset.action = 'next'; button.textContent = labels()[0];
+        button.dataset.action = 'next'; button.textContent = journeyLabel(0);
       }
     }
     root.addEventListener('click', event => {
@@ -158,7 +155,7 @@ export function bindJourney(mounted: Mounted, entry: PayloadEntry, options: Opti
               : [...nodes.values()].find(({ node }) => 'name' in node && node.name === field);
             if (target && target.screen !== step) show(target.screen);
           }
-          if (mounted.root) refuse(mounted.root, reply?.message || labels()[1], field ?? null);
+          if (mounted.root) refuse(mounted.root, reply?.message || journeyLabel(1), field ?? null);
           options.onRefused?.(field ? 'correctable' : 'unconfirmed');
         }
       })();

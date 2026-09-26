@@ -161,9 +161,16 @@ function graphResultAccess(tree: TemplateTree, required: boolean): TemplateTree 
   const outgoing = (id: string) => graph.edges.filter(edge => edge.from === id);
   const incoming = (id: string) => graph.edges.filter(edge => edge.to === id);
   const route = (from: string, to: string) => outgoing(from).length === 1 && outgoing(from)[0].kind === 'default' && outgoing(from)[0].to === to;
+  const generatedConsent = (node: Record<string, unknown>) => node.type === 'consent'
+    && [__('Send me email updates. %s', 'wconvert'), __('Send me email guides and updates. %s', 'wconvert')].some(text => text === node.text);
+  const generatedConsentIds = walkNodes(signup.content).filter(node => generatedConsent(node as unknown as Record<string, unknown>) && 'id' in node)
+    .map(node => (node as { id: string }).id);
+  const consents = required ? submission.consents.filter(id => !generatedConsentIds.includes(id))
+    : [...new Set([...submission.consents, ...generatedConsentIds])];
   const rewrite = (node: TemplateNode, gate: boolean): TemplateNode => {
     const copy = { ...node } as Record<string, unknown>;
     // Preserve merchant-written copy. Only generated wording changes with the gate.
+    if (generatedConsent(copy)) copy.hidden = gate;
     if (copy.role === 'headline' && copy.text === (gate ? __('Want more guides?', 'wconvert') : __('One last step', 'wconvert')))
       copy.text = gate ? __('One last step', 'wconvert') : __('Want more guides?', 'wconvert');
     if (copy.role === 'body' && copy.text === (gate ? __('Your result is already available. Signup is optional.', 'wconvert')
@@ -201,7 +208,7 @@ function graphResultAccess(tree: TemplateTree, required: boolean): TemplateTree 
       : screen.id === signup.id ? { ...screen, name: (screen.name === __('Optional email signup', 'wconvert')
         || screen.name === __('Optional email updates', 'wconvert'))
         ? __('Contact details', 'wconvert') : screen.name, content: rewrite(withoutAction(screen.content, 'skip'), true) } : screen),
-    graph: { ...graph, edges }, submissions: [{ ...submission, required: true }] };
+    graph: { ...graph, edges }, submissions: [{ ...submission, required: true, consents }] };
   }
   if (!submission.required || !route(signup.id, result.id) || incoming(result.id).length !== 1) return tree;
   const existingEnding = tree.steps.find(screen => screen.id === outgoing(result.id)[0]?.to && screen.kind === 'acknowledgement');
@@ -221,7 +228,7 @@ function graphResultAccess(tree: TemplateTree, required: boolean): TemplateTree 
       : screen.id === signup.id ? { ...screen, name: screen.name === __('Contact details', 'wconvert')
         ? __('Optional email signup', 'wconvert') : screen.name, content: { type: 'stack', children: [rewrite(screen.content, false),
         { type: 'button', label: __('No thanks', 'wconvert'), action: 'skip', submission: submission.id } as TemplateNode] } as TemplateNode } : screen),
-    graph: { ...graph, edges }, submissions: [{ ...submission, required: false }] });
+    graph: { ...graph, edges }, submissions: [{ ...submission, required: false, consents }] });
   }
   const acknowledgementId = freshScreen(tree, 'content').id;
   const acknowledgement: TemplateScreen = { id: acknowledgementId, name: __('All set', 'wconvert'), kind: 'acknowledgement', content: { type: 'stack', children: [
@@ -238,7 +245,7 @@ function graphResultAccess(tree: TemplateTree, required: boolean): TemplateTree 
     : screen.id === signup.id ? { ...screen, name: screen.name === __('Contact details', 'wconvert')
       ? __('Optional email signup', 'wconvert') : screen.name, content: { type: 'stack', children: [rewrite(screen.content, false),
       { type: 'button', label: __('No thanks', 'wconvert'), action: 'skip', submission: submission.id } as TemplateNode] } as TemplateNode } : screen), acknowledgement],
-    graph: { ...graph, edges }, submissions: [{ ...submission, required: false }] });
+    graph: { ...graph, edges }, submissions: [{ ...submission, required: false, consents }] });
 }
 
 export function withBackButton(screen: TemplateScreen): TemplateScreen {

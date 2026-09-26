@@ -70,7 +70,7 @@ export function render(tree: TemplateTree, tokens: Tokens, step = 0, options: Re
     appendNode(root, node, tokens, EDITABLE && options.paths === true ? String(step) : null);
   }
 
-  if (screen?.kind === 'result' && journeyResult) root.appendChild(journeyResult(screen));
+  if (screen?.kind === 'result' && journeyResult) root.prepend(journeyResult(screen));
 
   return root;
 }

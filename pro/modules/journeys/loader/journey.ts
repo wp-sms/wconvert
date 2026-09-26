@@ -1,7 +1,9 @@
+import { journeyLabel } from '@loader/journey-labels';
+import { journeyNotice } from '@renderer/journey-notice';
 import type { Mounted } from '@renderer/mount';
 import type { TemplateNode } from '@renderer/types';
 import type { PayloadEntry } from '@loader/types';
-import { captureEndpoint, beaconEndpoint, PAYLOAD_ELEMENT_ID } from '@loader/payload';
+import { captureEndpoint, beaconEndpoint } from '@loader/payload';
 import { createBeacon, type BeaconKind } from '@loader/beacon';
 import { clear, pending, refuse } from '@loader/capture';
 import { chooseResult, journeyTrace, type Answers } from '@loader/journey-rules';
@@ -16,13 +18,6 @@ type PhoneControl = HTMLInputElement & { __p?: (value: string) => void; __r?: ()
 interface Reply { id?: string; grant?: string; message?: string; data?: { field?: string }; }
 interface Options { onCaptured(): void; onCompleted?(): void; onDismiss?(): void; onRefused?(kind: 'correctable' | 'unconfirmed'): void; }
 
-function labels(): string[] {
-  try {
-    const value: unknown = JSON.parse(document.getElementById(PAYLOAD_ELEMENT_ID)?.getAttribute('data-journey') ?? 'null');
-    if (Array.isArray(value) && value.length === 3 && value.every(item => typeof item === 'string')) return value;
-  } catch { /* Use fallback copy if the page attribute was removed. */ }
-  return ['Continue', 'Submission not confirmed. Please try again.', 'Contact details are required before you see your result.'];
-}
 
 /** One mounted page owns unsaved answers and the expiring request capability. */
 export function bindJourney(mounted: Mounted, entry: PayloadEntry, options: Options): void {
@@ -133,10 +128,7 @@ export function bindJourney(mounted: Mounted, entry: PayloadEntry, options: Opti
     if (!root) return;
     root.setAttribute('aria-label', tree!.steps[step].name);
     if (step === entryIndex && resultAt >= 0 && !resultFirst) {
-      const notice = document.createElement('p');
-      notice.className = 'wc-gate-note'; notice.textContent = labels()[2];
-      const heading = root.querySelector('h1,h2,h3');
-      if (heading) heading.after(notice); else root.prepend(notice);
+      journeyNotice(root, journeyLabel(2));
     }
     const index = step;
     let observer: IntersectionObserver | undefined;
@@ -153,6 +145,7 @@ export function bindJourney(mounted: Mounted, entry: PayloadEntry, options: Opti
     root.addEventListener('wconvert:closed', () => observer?.disconnect());
     root.addEventListener('wconvert:dismissed', () => report('screen_dismissed'));
     root.querySelector('.wc-close')?.addEventListener('click', () => report('screen_dismissed'));
+    let reviewing = false;
     for (const input of controls()) {
       const id = input.dataset.captureId!;
       const value = answers.get(id);
@@ -164,6 +157,7 @@ export function bindJourney(mounted: Mounted, entry: PayloadEntry, options: Opti
       }
       else if (cleared.delete(id)) (input as PhoneControl).__r?.();
       if (fixed.has(id)) {
+        reviewing = true;
         input.required = false;
         if (input instanceof HTMLSelectElement || (input instanceof HTMLInputElement && input.type === 'checkbox')) input.disabled = true;
         else input.readOnly = true;
@@ -173,12 +167,13 @@ export function bindJourney(mounted: Mounted, entry: PayloadEntry, options: Opti
       const value = questionAnswers[input.dataset.questionId ?? ''];
       if (input instanceof HTMLTextAreaElement) input.value = typeof value === 'string' ? value : '';
       else input.checked = Array.isArray(value) ? value.includes(input.value) : value === input.value;
-      if (lockedQuestions.has(input.dataset.questionId ?? '')) input.disabled = true;
+      if (lockedQuestions.has(input.dataset.questionId ?? '')) { input.disabled = true; reviewing = true; }
       input.addEventListener('input', () => { for (const peer of root.querySelectorAll<HTMLInputElement | HTMLTextAreaElement>('[data-question-id]')) if (peer.dataset.questionId === input.dataset.questionId) peer.setCustomValidity(''); });
     }
+    if (reviewing) journeyNotice(root, journeyLabel(3));
     for (const button of root.querySelectorAll<HTMLButtonElement>('button[data-action]')) {
       if (button.dataset.action === 'submit' && accepted.has(button.dataset.submission!)) {
-        button.dataset.action = 'next'; button.textContent = labels()[0];
+        button.dataset.action = 'next'; button.textContent = journeyLabel(0);
       }
     }
     if (tree!.steps[step].kind === 'result') {
@@ -219,7 +214,7 @@ export function bindJourney(mounted: Mounted, entry: PayloadEntry, options: Opti
       const submission = tree!.submissions.find(s => s.id === button.dataset.submission);
       if (!submission || accepted.has(submission.id)) return;
       const snapshot = journeyCapturePrefix(tree!.steps, tree!.graph, step, questionAnswers);
-      if (!snapshot) { refuse(root, labels()[1], null); options.onRefused?.('correctable'); return; }
+      if (!snapshot) { refuse(root, journeyLabel(1), null); options.onRefused?.('correctable'); return; }
       const fields: Record<string, string> = {};
       for (const id of submission.fields) {
         const node = nodes.get(id)?.node;
@@ -252,7 +247,7 @@ export function bindJourney(mounted: Mounted, entry: PayloadEntry, options: Opti
               : nodes.get(field) ?? [...nodes.values()].find(({ node }) => 'name' in node && node.name === field);
             if (target && target.screen !== step) show(target.screen);
           }
-          if (mounted.root) refuse(mounted.root, reply?.message || labels()[1], field ?? null);
+          if (mounted.root) refuse(mounted.root, reply?.message || journeyLabel(1), field ?? null);
           if (field && nodes.get(field)?.node.type === 'question') mounted.root?.querySelector<HTMLElement>(`[data-question-id="${field}"]`)?.focus();
           options.onRefused?.(field ? 'correctable' : 'unconfirmed');
         }

@@ -99,6 +99,16 @@ final class GraphCaptureContractTest extends TestCase
         self::assertSame('references', GraphCaptureContract::issue($tree, 'collect_enquiries'));
     }
 
+    public function testHiddenOptionalSignupCopyIsAllowedOnlyWhenNoSubmissionClaimsItsConsent(): void
+    {
+        $tree = self::graphize('journey-service-enquiry');
+        $tree['steps'][2]['content']['children'][] = ['type' => 'consent', 'id' => 'n90', 'hidden' => true, 'text' => 'Send me updates'];
+        self::assertNull(GraphCaptureContract::issue($tree, 'collect_enquiries'));
+        self::assertNull(CaptureContract::issue(['template' => ['tree' => $tree]], 'collect_enquiries', ''));
+        $tree['submissions'][0]['consents'] = ['n90'];
+        self::assertSame('consent', GraphCaptureContract::issue($tree, 'collect_enquiries'));
+    }
+
     public function testCaptureCannotHideConsentRepeatAFieldOrPromiseAnUnearnedResource(): void
     {
         $tree = self::graphize('journey-service-enquiry');
