@@ -35,6 +35,41 @@ again or turn conditional follow-ups into mutually exclusive branches.
 
 ## Progress after this audit
 
+### September 26: preserve imported references and refuse malformed test saves
+
+Node normalization now remembers the first claimant of each supplied identity.
+After every leaf has been assigned a canonical ID, normalization updates owned
+field/consent references and question references in screen visibility, ordered
+paths, graph answer edges and result rules. Screen/edge/result/submission IDs and
+answer values remain in their separate namespaces, even when their text matches
+a node alias. Missing references remain unresolved; referenced canonical IDs
+are reserved before minting so a missing source cannot accidentally attach to a
+new node. A second normalization is stable, and duplicate-ID references retain
+the existing first-claimant behavior.
+
+Test journey now requires the correct submit button on the current screen,
+unique owned fields/consents on the visited prefix, completed required fields
+and consent, a required contact identifier and required question answers. A
+malformed capture stays on its screen with an explanation and retains typed
+answers/details; it no longer accepts an empty snapshot. Capture checkpoints
+also name the current save point instead of calling it Not reached.
+
+WordPress verification used the unpublished split-capture QA draft. A deliberately
+unresolved field reference stayed on Send enquiry, showed the refusal and never
+reached the download. An imported field named `imported_email` was then edited
+through Design and saved. Both its node identity and submission reference became
+`n4`, the server capture-contract issue was null, and the visitor test accepted
+the earlier Email value into the snapshot before showing the download. The draft
+remains unpublished and no real capture or destination request was made.
+
+Verification: 2,919 JavaScript tests; 2,132 PHP tests / 11,006 assertions; PHPStan,
+typecheck, lint, source-contract checks and Free/Pro admin builds pass. Focused
+coverage includes imported fields/consent, all rule locations, namespace
+collisions, duplicate IDs, missing canonical references, second-save stability,
+malformed test saves and preserved draft input. This closes the imported-ID and
+empty-snapshot findings recorded in the preceding capture-readiness audit.
+
+
 ### September 26: graph-aware capture checks and required-contact repair
 
 Design readiness still compared field/resource storage indices with submission
@@ -63,13 +98,13 @@ Both pass in the reduced-concurrency full rerun. Typecheck, lint and Free/Pro
 admin builds pass. JavaScript coverage adds valid reversed order, exact required-field repair,
 a bypassable field, a conditional owned field, and a bypassable resource.
 
-**New remaining import gap:** an initial hand-written fixture used `email` as a
+**Import gap found here (resolved in the reference-preservation section above):** an initial hand-written fixture used `email` as a
 node ID. CaptureContract accepted it, but save normalization reminted it to an
 `n…` ID without updating the submission reference. Publication then returned
 `references`, and the visitor test misleadingly accepted an empty snapshot. The
 fixture now uses canonical IDs and its saved round trip is verified, but foreign
-ID/reference normalization and rejecting malformed test captures need a separate
-fix. This is not claimed complete.
+ID/reference normalization and rejecting malformed test captures required the
+separate fix documented above.
 
 
 ### September 26: visitor-test progress without premature route decisions

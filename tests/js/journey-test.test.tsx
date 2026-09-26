@@ -58,14 +58,14 @@ it('keeps typed details when failure is toggled, then accepts a retry without se
   await user.click(screen.getByRole('checkbox', { name: 'Simulate failure on next submission' }));
   expect(screen.getByLabelText('Email address')).toHaveValue('visitor@example.com');
   await user.click(screen.getByRole('button', { name: 'Sign up' }));
-  expect(screen.getByText('Draft only')).toBeInTheDocument();
+  expect(screen.getByText('Current save point')).toBeInTheDocument();
   expect(screen.getByText(/Submission not confirmed/)).toBeInTheDocument();
   expect(screen.getByLabelText('Email address')).toHaveValue('visitor@example.com');
   await user.click(screen.getByRole('button', { name: 'Sign up' }));
   expect(screen.getByText('Accepted in test')).toBeInTheDocument();
   expect(screen.getByRole('heading', { name: 'Received' })).toBeInTheDocument();
   await user.click(screen.getByRole('button', { name: 'Reset test' }));
-  expect(screen.getByText('Not reached')).toBeInTheDocument();
+  expect(screen.getByText('Current save point')).toBeInTheDocument();
   expect(screen.getByLabelText('Email address')).toHaveValue('');
 });
 
@@ -125,4 +125,22 @@ it('retains an answer on the capture screen after a simulated save failure', asy
   expect(screen.getByLabelText('Optional note')).toHaveValue('A sunny space');
   expect(screen.getByLabelText('Optional note')).toBeDisabled();
   expect(screen.getByText('Already saved. You can review these details, but cannot change them.')).toBeInTheDocument();
+});
+
+it('keeps a malformed imported save on its screen instead of accepting an empty snapshot', async () => {
+  const user = userEvent.setup();
+  const template = { ...source, tree: { ...source.tree, submissions: source.tree.submissions.map(submission => ({ ...submission, fields: ['missing_contact'] })),
+    steps: [{ ...source.tree.steps[0], name: 'Combined save', content: { type: 'stack', children: [source.tree.steps[0].content,
+      { type: 'question', id: 'optional-note', label: 'Optional note', answer_type: 'text', required: false, options: [] }], } }, ...source.tree.steps.slice(1)],
+  } } as Template;
+  render(<JourneyTest template={template} onEdit={() => {}} />);
+  await user.type(screen.getByLabelText('Email address'), 'visitor@example.test');
+  await user.type(screen.getByLabelText('Optional note'), 'Please keep this draft');
+  await user.click(screen.getByLabelText('Consent'));
+  await user.click(screen.getByRole('button', { name: 'Sign up' }));
+  expect(screen.getByRole('status')).toHaveTextContent('This save is incomplete or is not on the visited path.');
+  expect(screen.getByLabelText('Optional note')).toHaveValue('Please keep this draft');
+  expect(screen.queryByText('Accepted in test')).not.toBeInTheDocument();
+  expect(screen.getByLabelText('Email address')).toHaveValue('visitor@example.test');
+  expect(screen.getByRole('button', { name: 'Sign up' })).toBeInTheDocument();
 });

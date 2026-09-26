@@ -38,6 +38,74 @@ final class TemplateVocabularyTest extends TestCase
         return self::vocabulary()->normalize($template);
     }
 
+    public function testImportedContactAndConsentReferencesSurviveNormalizationAndAnotherSave(): void
+    {
+        $tree = json_decode((string) file_get_contents(self::PLUGIN_DIR . '/tests/fixtures/journey-graph-split-capture.json'), true);
+        $tree['steps'][2]['content']['children'][0]['id'] = 'contact_email';
+        $tree['steps'][2]['content']['children'][] = ['type' => 'consent', 'id' => 'privacy', 'text' => 'I agree'];
+        $tree['submissions'][0]['fields'] = ['contact_email'];
+        $tree['submissions'][0]['consents'] = ['privacy'];
+        self::assertNull(\WConvert\Template\CaptureContract::issue(['template' => ['tree' => $tree]], 'collect_enquiries', ''));
+        $normalized = self::normalize(['tree' => $tree])['tree'];
+        $field = $normalized['steps'][2]['content']['children'][0]['id'];
+        $consent = $normalized['steps'][2]['content']['children'][2]['id'];
+        self::assertMatchesRegularExpression('/^n[1-9][0-9]*$/', $field);
+        self::assertSame([$field], $normalized['submissions'][0]['fields']);
+        self::assertSame([$consent], $normalized['submissions'][0]['consents']);
+        self::assertNull(\WConvert\Template\CaptureContract::issue(['template' => ['tree' => $normalized]], 'collect_enquiries', ''));
+        self::assertSame($normalized, self::normalize(['tree' => $normalized])['tree']);
+        $tree['submissions'][0]['fields'][] = 'missing_field';
+        self::assertContains('missing_field', self::normalize(['tree' => $tree])['tree']['submissions'][0]['fields']);
+    }
+
+    public function testMissingCanonicalReferencesDoNotAttachToNewlyMintedFields(): void
+    {
+        $tree = json_decode((string) file_get_contents(self::PLUGIN_DIR . '/tests/fixtures/journey-graph-split-capture.json'), true);
+        unset($tree['steps'][2]['content']['children'][0]['id']);
+        $tree['submissions'][0]['fields'] = ['n1'];
+        $normalized = self::normalize(['tree' => $tree])['tree'];
+        self::assertNotSame('n1', $normalized['steps'][2]['content']['children'][0]['id']);
+        self::assertSame(['n1'], $normalized['submissions'][0]['fields']);
+        self::assertSame('references', \WConvert\Template\CaptureContract::issue(['template' => ['tree' => $normalized]], 'collect_enquiries', ''));
+    }
+
+    public function testQuestionReferencesChangeWithoutRenamingScreensEdgesAnswersOrSubmissions(): void
+    {
+        $when = ['match' => 'all', 'clauses' => [['question' => 'question_alias', 'operator' => 'is', 'values' => ['question_alias']]]];
+        foreach ([2, 3] as $version) {
+            $tree = ['v' => $version, 'submissions' => [['id' => 'question_alias', 'required' => true, 'fields' => [], 'consents' => []]], 'steps' => [
+                ['id' => 'question_alias', 'name' => 'Choose', 'kind' => 'input', 'content' => ['type' => 'question', 'id' => 'question_alias',
+                    'label' => 'Which?', 'answer_type' => 'single', 'options' => [['value' => 'question_alias', 'label' => 'Same spelling']]]],
+                ['id' => 'follow', 'name' => 'Follow-up', 'kind' => 'input', 'when' => $when, 'content' => ['type' => 'heading', 'text' => 'Details']],
+                ['id' => 'result', 'name' => 'Result', 'kind' => 'result', 'results' => [
+                    ['id' => 'question_alias', 'when' => $when, 'heading' => 'Match', 'body' => ''], ['id' => 'fallback', 'heading' => 'Fallback', 'body' => ''],
+                ], 'content' => ['type' => 'heading', 'text' => 'Result']],
+            ]];
+            if ($version === 3) $tree['graph'] = ['entry' => 'question_alias', 'edges' => [
+                ['id' => 'question_alias', 'from' => 'question_alias', 'to' => 'follow', 'kind' => 'answer', 'when' => $when],
+            ]];
+            else $tree['steps'][0]['paths'] = [['to' => 'follow', 'when' => $when]];
+            $normalized = self::normalize(['tree' => $tree])['tree'];
+            $id = $normalized['steps'][0]['content']['id'];
+            self::assertNotSame('question_alias', $id);
+            self::assertSame($id, $normalized['steps'][1]['when']['clauses'][0]['question']);
+            self::assertSame($id, $normalized['steps'][2]['results'][0]['when']['clauses'][0]['question']);
+            self::assertSame('question_alias', $normalized['steps'][0]['id']);
+            self::assertSame('question_alias', $normalized['steps'][0]['content']['options'][0]['value']);
+            self::assertSame('question_alias', $normalized['submissions'][0]['id']);
+            self::assertSame('question_alias', $normalized['steps'][2]['results'][0]['id']);
+            $route = $version === 3 ? $normalized['graph']['edges'][0] : $normalized['steps'][0]['paths'][0];
+            self::assertSame($id, $route['when']['clauses'][0]['question']);
+            self::assertSame(['question_alias'], $route['when']['clauses'][0]['values']);
+            if ($version === 3) {
+                self::assertSame('question_alias', $normalized['graph']['entry']);
+                self::assertSame('question_alias', $route['id']);
+                self::assertSame('question_alias', $route['from']);
+            }
+            self::assertSame($normalized, self::normalize(['tree' => $normalized])['tree']);
+        }
+    }
+
     public function testGraphDraftKeepsStableEdgesAndPriorityWithoutUnknownKeys(): void
     {
         $fixture = json_decode((string) file_get_contents(self::PLUGIN_DIR . '/tests/fixtures/journey-graph.json'), true);

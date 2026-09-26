@@ -163,7 +163,7 @@ export function JourneyTest({ template, onEdit, deliveryMode = 'none', destinati
           const id = button.dataset.submission ?? '';
           if (failNextRef.current) { setAnswers(currentAnswers); failNextRef.current = false; setFailNext(false); setFeedback(__('Submission not confirmed. The visitor stays here and can retry.', 'wconvert')); return; }
           const snapshot = testCaptureSnapshot(tree, step, id, currentAnswers, draft);
-          if (!snapshot) { setFeedback(__('This save point is not on the current route. Review its connections.', 'wconvert')); return; }
+          if (!snapshot) { setAnswers(currentAnswers); setFeedback(__('This save is incomplete or is not on the visited path. Check its contact fields and submission settings before testing again.', 'wconvert')); return; }
           setAccepted(previous => previous.includes(id) ? previous : [...previous, id]);
           setSnapshots(previous => ({ ...previous, [id]: previous[id] ?? snapshot }));
           setAcceptedQuestions(previous => [...new Set([...previous, ...snapshot.questionIds])]);
@@ -244,7 +244,8 @@ export function JourneyTest({ template, onEdit, deliveryMode = 'none', destinati
       {tree.submissions.length > 0 && <section className="wconvert-journey-test__capture"><h4>{__('Capture checkpoints', 'wconvert')}</h4>
         <ol>{tree.submissions.map(submission => <li key={submission.id} className="wconvert-journey-test__checkpoint"><div><strong>{tree.steps.find(screen => walkNodes(screen.content).some(node => node.type === 'button' && 'action' in node && node.action === 'submit' && 'submission' in node && node.submission === submission.id))?.name ?? submission.id}</strong><span>{accepted.includes(submission.id)
           ? __('Accepted in test', 'wconvert') : skipped.includes(submission.id) ? __('Skipped', 'wconvert')
-            : [...submission.fields, ...submission.consents].some(id => id in captureValues) ? __('Draft only', 'wconvert') : __('Not reached', 'wconvert')}</span></div>
+            : walkNodes(tree.steps[step].content).some(node => node.type === 'button' && 'submission' in node && node.submission === submission.id && 'action' in node && node.action === 'submit')
+              ? __('Current save point', 'wconvert') : [...submission.fields, ...submission.consents].some(id => id in captureValues) ? __('Draft only', 'wconvert') : __('Not reached', 'wconvert')}</span></div>
           {accepted.includes(submission.id) && <>
             <small>{deliveryMode === 'connected' ? delivery[submission.id] === 'failed'
               ? __('Destination delivery failed in this simulation. The accepted save remains; retry delivery without resubmitting.', 'wconvert')

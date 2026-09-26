@@ -275,6 +275,7 @@ final class TemplateVocabulary
         // a leaf with no id cannot be minted one that a leaf further down
         // already holds ({@see NodeIdentities::in()}).
         $ids = NodeIdentities::in($steps, $this->identity);
+        self::reserveJourneyReferences($tree, $ids);
 
         foreach (is_array($steps) ? $steps : [] as $step) {
             $node = is_array($step) && is_array($step['content'] ?? null) ? $this->node($step['content'], $ids) : null;
@@ -314,6 +315,7 @@ final class TemplateVocabulary
             $storedTree['v'] = 3;
             $storedTree['graph'] = self::graph($tree['graph'] ?? null);
         }
+        self::remapJourneyReferences($storedTree, $ids);
         return [
             // Stamped with the vocabulary version that produced it, so a
             // narrowing change one day has a fact to migrate FROM rather than
@@ -364,6 +366,52 @@ final class TemplateVocabulary
             $storedTree['graph'] = self::graph($tree['graph'] ?? null);
         }
         return $storedTree;
+    }
+
+    /** Reserve referenced identities even when their source is absent from an import.
+     * @param mixed $value
+     */
+    private static function reserveJourneyReferences($value, NodeIdentities $ids): void
+    {
+        if (!is_array($value)) return;
+        foreach ($value as $key => $item) {
+            if ($key === 'question' && is_string($item)) $ids->reserveReference($item);
+            elseif (in_array($key, ['fields', 'consents'], true) && is_array($item)) {
+                foreach ($item as $reference) if (is_string($reference)) $ids->reserveReference($reference);
+            } elseif (is_array($item)) self::reserveJourneyReferences($item, $ids);
+        }
+    }
+
+    /** Rewrite node references only after every source node has claimed its ID.
+     * Screen, edge, submission and answer IDs belong to separate namespaces.
+     * @param array{v: int, steps: list<array<string, mixed>>, submissions: list<array<string, mixed>>, graph?: array{entry: string, edges: list<array<string, mixed>>}} $tree
+     */
+    private static function remapJourneyReferences(array &$tree, NodeIdentities $ids): void
+    {
+        $condition = static function (array &$value) use ($ids): void {
+            if (!isset($value['clauses']) || !is_array($value['clauses'])) return;
+            foreach ($value['clauses'] as &$clause) {
+                if (is_array($clause) && is_string($clause['question'] ?? null)) $clause['question'] = $ids->reference($clause['question']);
+            }
+            unset($clause);
+        };
+        foreach ($tree['submissions'] as &$submission) {
+            foreach (['fields', 'consents'] as $key) $submission[$key] = array_map($ids->reference(...), $submission[$key]);
+        }
+        unset($submission);
+        foreach ($tree['steps'] as &$screen) {
+            if (isset($screen['when'])) $condition($screen['when']);
+            foreach (['paths', 'results'] as $key) {
+                if (!isset($screen[$key])) continue;
+                foreach ($screen[$key] as &$item) if (isset($item['when'])) $condition($item['when']);
+                unset($item);
+            }
+        }
+        unset($screen);
+        if (isset($tree['graph'])) {
+            foreach ($tree['graph']['edges'] as &$edge) if (isset($edge['when'])) $condition($edge['when']);
+            unset($edge);
+        }
     }
 
     /** Keep draft graph IDs and priority while closing its storage vocabulary.
