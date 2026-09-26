@@ -53,6 +53,7 @@ import { InlinePlacementSettings, inlinePlacementLabel, inlinePlacementControls,
 import { ReopenPreview, reopenControls } from '../reopenControls';
 import { EditorCanvas, ScreenControls, DeviceControls } from './EditorCanvas';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../components/ui/dialog';
+import { draftHistoryLabels, type DraftSnapshot } from './structure/draftEditLabel';
 import { canRedo, canUndo, historyOf, redo, remember, undo, type History } from './structure/history';
 import { nearestTo, samePath } from './structure/tree';
 import { convertingActOf } from './structure/guards';
@@ -99,10 +100,6 @@ export interface OptinBuilderProps {
 }
 
 type Config = Record<string, unknown>;
-interface DraftSnapshot {
-  name: string;
-  config: Config;
-}
 
 type TabId = 'journey' | 'design' | 'rules' | 'destinations';
 
@@ -586,7 +583,9 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
     setRevealSection({ id: 'how-often', focus: 'wconvert-ends-at' });
   };
 
+  const historyLabels = useMemo(() => draftHistoryLabels(past), [past]);
   const history = {
+    labels: historyLabels,
     canUndo: past !== null && canUndo(past),
     canRedo: past !== null && canRedo(past),
     undo: stepping(undo),
@@ -779,9 +778,9 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
             onGoToSchedule={goToSchedule}
           />
           {small ? <DropdownMenu><DropdownMenuTrigger asChild><Button variant="ghost" size="icon-sm" aria-label={__('Campaign actions', 'wconvert')}><MoreHorizontal aria-hidden="true" /></Button></DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem disabled={busy || !history.canUndo} onSelect={history.undo}>{__('Undo draft edit', 'wconvert')}</DropdownMenuItem>
-              <DropdownMenuItem disabled={busy || !history.canRedo} onSelect={history.redo}>{__('Redo draft edit', 'wconvert')}</DropdownMenuItem>
+            <DropdownMenuContent align="end" className="wconvert-campaign-actions">
+              <DropdownMenuItem disabled={busy || !history.canUndo} onSelect={history.undo}>{history.labels.undo}</DropdownMenuItem>
+              <DropdownMenuItem disabled={busy || !history.canRedo} onSelect={history.redo}>{history.labels.redo}</DropdownMenuItem>
               <DropdownMenuItem disabled={busy} onSelect={() => { detailsTrigger.current = previewButton.current; setDetails(true); }}>{__('Campaign details', 'wconvert')}</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu> : (<Button
@@ -802,7 +801,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
           {entry && <JourneyEditor embedded primaryChannel={entryOfGoal?.outcome.audience_channel} tree={entry.tree} tokens={entry.tokens} step={shownStep} repairRequest={journeyRepair ?? undefined}
             focusActions={<><HistoryControls history={{ ...history, canUndo: !busy && history.canUndo, canRedo: !busy && history.canRedo }} />
               <Button type="button" variant="outline" size="sm" disabled={busy || !dirty} onClick={() => void save()}>{busy ? __('Saving…', 'wconvert') : __('Save draft', 'wconvert')}</Button></>}
-            onChange={tree => edit({ template: { ...entry, tree } })} onSelect={chooseStep} displaySummary={displaySummary} destinationSummary={destinationSummary}
+            onChange={(tree, coalesce) => edit({ template: { ...entry, tree } }, coalesce)} onSelect={chooseStep} displaySummary={displaySummary} destinationSummary={destinationSummary}
             deliveryMode={config?.capture_mode === 'local' ? 'local' : bound.length > 0 ? 'connected' : 'none'}
             onGoToDesign={() => { setTab('design'); setPreviewing(false); }}
             onGoToRules={() => setTab('rules')} onGoToDestinations={() => { setTab('destinations'); destinationsTab.current?.focus(); }} />}
@@ -1101,7 +1100,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
           {numbers === null && publishedAt === null && <div className="wconvert-details-section"><h3>{__('Performance', 'wconvert')}</h3><p>{__('Publish this Campaign to start collecting impressions and conversions.', 'wconvert')}</p></div>}
           <details className="wconvert-details-history"><summary>{__('About draft history', 'wconvert')}</summary>
           <p className="text-note text-muted-foreground">
-            {__('Undo and Redo cover this session’s draft edits: name, design, display rules and destination selections. They do not change the published version or shared destination settings. Saving a new goal starts a new Undo history.', 'wconvert')}
+            {__('Undo and Redo cover this session’s draft edits: name, journey, design, display rules and destination selections. They do not change the published version or shared destination settings. Saving a new goal starts a new Undo history.', 'wconvert')}
           </p>
           </details>
           {entry && adminSettings()?.dev === true && (
@@ -1213,13 +1212,14 @@ function HistoryControls({
   history,
 }: {
   readonly history: {
+    readonly labels: { undo: string; redo: string };
     readonly canUndo: boolean;
     readonly canRedo: boolean;
     readonly undo: () => void;
     readonly redo: () => void;
   };
 }) {
-  const label = { undo: __('Undo draft edit', 'wconvert'), redo: __('Redo draft edit', 'wconvert') };
+  const label = history.labels;
 
   return (
     <span className="wconvert-history">

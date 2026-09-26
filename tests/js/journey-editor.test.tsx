@@ -2,6 +2,8 @@ import userEvent from '@testing-library/user-event';
 import { useState } from 'react';
 import { render, screen, fireEvent, cleanup, within, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
+import { historyOf, remember, undo, redo } from '../../resources/admin/src/builder/structure/history';
+import { draftHistoryLabels } from '../../resources/admin/src/builder/structure/draftEditLabel';
 import { JourneyEditor } from '../../resources/admin/src/builder/JourneyEditor';
 import { Fullscreen } from '../../resources/admin/src/builder/Fullscreen';
 import type { QuestionCondition, QuestionNode, TemplateTree } from '@renderer/types';
@@ -567,4 +569,34 @@ it('focuses the default destination when repairing a required-save bypass', asyn
   }
   render(<RepairEditor />);
   await waitFor(() => expect(screen.getByRole('combobox', { name: 'Go to' })).toHaveFocus());
+});
+
+
+it('undoes a journey typing burst once and keeps separate fields as separate edits', async () => {
+  const user = userEvent.setup();
+  const tree = graphFixture as unknown as TemplateTree;
+  function HistoryEditor() {
+    const [history, setHistory] = useState(historyOf({ name: 'Enquiry', config: { template: { tree, tokens: {} } } }));
+    const [step, setStep] = useState(tree.steps.findIndex(item => item.id === 'interests'));
+    const labels = draftHistoryLabels(history);
+    return <><button onClick={() => setHistory(undo)}>{labels.undo}</button><button onClick={() => setHistory(redo)}>{labels.redo}</button>
+      <JourneyEditor tree={history.present.config.template.tree} step={step} onSelect={setStep}
+        onChange={(next, key) => setHistory(current => remember(current, { ...current.present, config: { template: { tree: next, tokens: {} } } }, key ? { key, at: Date.now() } : null))} /></>;
+  }
+  render(<HistoryEditor />);
+  await user.click(screen.getByRole('button', { name: 'Manage screens' }));
+  await user.type(screen.getByRole('textbox', { name: 'Screen name' }), ' and preferences');
+  await user.type(screen.getByRole('textbox', { name: 'Question' }), ' today?');
+  // Close the modal to use campaign history, then open it to inspect the result.
+  await user.keyboard('{Escape}');
+  await user.click(screen.getByRole('button', { name: 'Undo: Edit questions on “Interests and preferences”' }));
+  await user.click(screen.getByRole('button', { name: 'Undo: Rename screen “Interests”' }));
+  await user.click(screen.getByRole('button', { name: 'Manage screens' }));
+  expect(screen.getByRole('textbox', { name: 'Screen name' })).toHaveValue('Interests');
+  expect(screen.getByRole('textbox', { name: 'Question' })).toHaveValue('What interests you?');
+  await user.keyboard('{Escape}');
+  await user.click(screen.getByRole('button', { name: 'Redo: Rename screen “Interests”' }));
+  await user.click(screen.getByRole('button', { name: 'Redo: Edit questions on “Interests and preferences”' }));
+  await user.click(screen.getByRole('button', { name: 'Manage screens' }));
+  expect(screen.getByRole('textbox', { name: 'Question' })).toHaveValue('What interests you? today?');
 });

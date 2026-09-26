@@ -35,6 +35,32 @@ again or turn conditional follow-ups into mutually exclusive branches.
 
 ## Progress after this audit
 
+### September 26: named Undo/Redo and coherent journey typing
+
+Campaign history now describes the actual action being undone/redone: screen
+addition/removal/rename, path changes and priorities, visibility, questions,
+results, saves, styles, campaign name, display rules and destinations. Labels
+come from the adjacent whole-draft snapshots, so coalesced typing and normalized
+server responses do not turn them into a separate command log. Shared history
+semantics remain unchanged: saved draft edits can be undone without changing
+the published version, and a saved Goal change starts fresh history.
+
+Journey screen names, question labels/help/choices and result copy now pass
+stable per-field typing keys to the existing history coalescer. One typing
+burst is one Undo step; different fields and non-typing operations remain
+separate. Desktop/focus-view controls expose the action as their accessible
+name and title; the mobile action menu displays the full text and wraps long
+screen names within the viewport.
+
+Local WordPress verification covered two distinct typing bursts, two Undo
+steps, Redo, Save draft, retained labels after save, and restoration/save of the
+original QA content. A reviewed path change was named and undone coherently.
+The 390px/320px mobile menu exposed a long-label clipping issue; the final
+viewport-constrained menu wraps it. Test changes were restored and temporary
+viewport overrides reset. The full JavaScript suite passed 2,876 tests;
+TypeScript, ESLint and both admin builds passed, followed by the stylesheet
+suite after the mobile wrapping fix. No visitor or PHP behavior changed.
+
 ### September 26: path-change save consequences and direct capture repair
 
 Reconnecting a line, drawing a new path or changing the path inspector now

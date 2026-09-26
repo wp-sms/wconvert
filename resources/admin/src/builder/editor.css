@@ -1,4 +1,6 @@
 body.wconvert-editing #wconvert-admin { padding-block-end: 0; }
+.wconvert-campaign-actions { max-inline-size: min(28rem, calc(100vw - 16px)); }
+.wconvert-campaign-actions [data-slot='dropdown-menu-item'] { white-space: normal; overflow-wrap: anywhere; }
 /* WordPress reduces its content gutter to 10px on phones. */
 @media (max-width: 782px) {
   body.wconvert-editing:not(.wconvert-fullscreen) #wconvert-admin { margin-inline-start: -10px; width: calc(100% + 10px); }

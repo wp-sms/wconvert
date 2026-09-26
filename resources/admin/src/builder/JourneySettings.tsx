@@ -185,14 +185,14 @@ export function ScreenConditionSettings({ tree, step, onChange, onSelect }: {
 }
 
 export function QuestionSettings({ tree, step, onChange, onSelect }: {
-  tree: TemplateTree; step: number; onChange(next: TemplateTree): void; onSelect(step: number): void;
+  tree: TemplateTree; step: number; onChange(next: TemplateTree, coalesce?: string): void; onSelect(step: number): void;
 }) {
   const [repair, setRepair] = useState<{ question: string; value: string } | null>(null);
   const [replacement, setReplacement] = useState('');
   const screen = tree.steps[step];
   const questions = walkNodes(screen.content).filter((node): node is ChoiceQuestion => node.type === 'question' && 'id' in node && typeof node.id === 'string') as ChoiceQuestion[];
   if (!questions.length) return null;
-  const change = (id: string, update: (node: QuestionNode) => TemplateNode) => onChange({ ...tree, steps: tree.steps.map((item, at) => at === step ? { ...item, content: replaceNode(item.content, id, update) } : item) });
+  const change = (id: string, update: (node: QuestionNode) => TemplateNode, field?: string) => onChange({ ...tree, steps: tree.steps.map((item, at) => at === step ? { ...item, content: replaceNode(item.content, id, update) } : item) }, field ? `journey:${screen.id}:${id}:${field}` : undefined);
   return <section className="wconvert-journey-settings"><h4>{__('Questions on this screen', 'wconvert')}</h4>
     {questions.map(question => {
       const refs = usedBy(tree, question.id);
@@ -200,14 +200,14 @@ export function QuestionSettings({ tree, step, onChange, onSelect }: {
         ...(tree.graph?.edges.map(edge => edge.when) ?? [])]
         .flatMap(condition => condition?.clauses ?? []).filter(clause => clause.question === question.id).flatMap(clause => clause.values));
       return <div key={question.id} className="wconvert-journey-settings__question">
-        <label>{__('Question', 'wconvert')}<input value={question.label} maxLength={200} onChange={event => change(question.id, node => ({ ...node, label: event.target.value }))} /></label>
-        <label>{__('Help text (optional)', 'wconvert')}<input value={question.help ?? ''} maxLength={300} onChange={event => change(question.id, node => ({ ...node, help: event.target.value }))} /></label>
+        <label>{__('Question', 'wconvert')}<input value={question.label} maxLength={200} onChange={event => change(question.id, node => ({ ...node, label: event.target.value }), 'label')} /></label>
+        <label>{__('Help text (optional)', 'wconvert')}<input value={question.help ?? ''} maxLength={300} onChange={event => change(question.id, node => ({ ...node, help: event.target.value }), 'help')} /></label>
         <label>{__('Answer type', 'wconvert')}<select value={question.answer_type} disabled={refs.length > 0} onChange={event => change(question.id, node => ({ ...node, answer_type: event.target.value as QuestionNode['answer_type'], options: event.target.value === 'text' ? [] : [{ value: 'first', label: __('First option', 'wconvert') }, { value: 'second', label: __('Second option', 'wconvert') }] }))}>
           <option value="single">{__('Choose one', 'wconvert')}</option><option value="multi">{__('Choose several', 'wconvert')}</option><option value="text">{__('Short answer', 'wconvert')}</option>
         </select></label>
         {question.answer_type !== 'text' && <div><strong>{__('Choices', 'wconvert')}</strong>
           {question.options?.map((option, at) => <div key={option.value} className="wconvert-journey-settings__choice"><input aria-label={`${__('Choice', 'wconvert')} ${at + 1}`} value={option.label} maxLength={120}
-            onChange={event => change(question.id, node => ({ ...node, options: node.options?.map((old, i) => i === at ? { ...old, label: event.target.value } : old) }))} />
+            onChange={event => change(question.id, node => ({ ...node, options: node.options?.map((old, i) => i === at ? { ...old, label: event.target.value } : old) }), `choice:${option.value}`)} />
             <button type="button" disabled={(question.options?.length ?? 0) <= 2} onClick={() => {
               if (protectedValues.has(option.value)) { setRepair({ question: question.id, value: option.value }); setReplacement(''); }
               else change(question.id, node => ({ ...node, options: node.options?.filter((_, i) => i !== at) }));
@@ -284,7 +284,7 @@ function ProductPicker({ ids, onChange }: { ids: readonly number[]; onChange(ids
   </div>;
 }
 
-export function ResultSettings({ tree, step, onChange }: { tree: TemplateTree; step: number; onChange(next: TemplateTree): void }) {
+export function ResultSettings({ tree, step, onChange }: { tree: TemplateTree; step: number; onChange(next: TemplateTree, coalesce?: string): void }) {
   const tabsId = useId();
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const screen = tree.steps[step];
@@ -299,8 +299,8 @@ export function ResultSettings({ tree, step, onChange }: { tree: TemplateTree; s
       if (resultsMayOverlap(tree, variants[at], variants[next])) { overlap = [variants[at], variants[next]]; break; }
     }
   }
-  const setVariants = (results: readonly ResultVariant[]) => onChange({ ...tree, steps: tree.steps.map((item, at) => at === step ? { ...item, results } : item) });
-  const edit = (at: number, update: Partial<ResultVariant>) => setVariants(variants.map((item, index) => index === at ? { ...item, ...update } : item));
+  const setVariants = (results: readonly ResultVariant[], coalesce?: string) => onChange({ ...tree, steps: tree.steps.map((item, at) => at === step ? { ...item, results } : item) }, coalesce);
+  const edit = (at: number, update: Partial<ResultVariant>, field?: string) => setVariants(variants.map((item, index) => index === at ? { ...item, ...update } : item), field ? `journey:${screen.id}:${variants[at].id}:${field}` : undefined);
   const move = (from: number, to: number) => {
     const next = [...variants];
     const [item] = next.splice(from, 1);
@@ -343,10 +343,10 @@ export function ResultSettings({ tree, step, onChange }: { tree: TemplateTree; s
         <button type="button" disabled={selectedAt >= variants.length - 2} onClick={() => move(selectedAt, selectedAt + 1)}>{__('Move later', 'wconvert')}</button>
       </div>}
       {selectedAt < variants.length - 1 && <ConditionSettings required value={selected.when} sources={sources} onChange={when => { if (when) edit(selectedAt, { when }); }} />}
-      <label>{__('Heading', 'wconvert')}<input value={selected.heading} maxLength={200} onChange={event => edit(selectedAt, { heading: event.target.value })} /></label>
-      <label>{__('Message', 'wconvert')}<textarea value={selected.body ?? ''} maxLength={500} onChange={event => edit(selectedAt, { body: event.target.value })} /></label>
-      <label>{__('Fallback shop or guide link', 'wconvert')}<input type="text" inputMode="url" placeholder="/shop/" value={selected.href ?? ''} onChange={event => edit(selectedAt, { href: event.target.value })} /></label>
-      <label>{__('Link label', 'wconvert')}<input value={selected.link_label ?? ''} maxLength={120} onChange={event => edit(selectedAt, { link_label: event.target.value })} /></label>
+      <label>{__('Heading', 'wconvert')}<input value={selected.heading} maxLength={200} onChange={event => edit(selectedAt, { heading: event.target.value }, 'heading')} /></label>
+      <label>{__('Message', 'wconvert')}<textarea value={selected.body ?? ''} maxLength={500} onChange={event => edit(selectedAt, { body: event.target.value }, 'body')} /></label>
+      <label>{__('Fallback shop or guide link', 'wconvert')}<input type="text" inputMode="url" placeholder="/shop/" value={selected.href ?? ''} onChange={event => edit(selectedAt, { href: event.target.value }, 'href')} /></label>
+      <label>{__('Link label', 'wconvert')}<input value={selected.link_label ?? ''} maxLength={120} onChange={event => edit(selectedAt, { link_label: event.target.value }, 'link_label')} /></label>
       <ProductPicker ids={selected.product_ids ?? []} onChange={product_ids => edit(selectedAt, { product_ids })} />
       {selectedAt < variants.length - 1 && <button type="button" onClick={() => { setSelectedId(null); setVariants(variants.filter((_, index) => index !== selectedAt)); }}>{__('Remove result', 'wconvert')}</button>}
     </div>}

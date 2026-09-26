@@ -125,8 +125,8 @@ describe('App navigation through the real lazy editor', () => {
 
   it('includes name edits in draft history and updates navigation dirty state on Undo', async () => {
     const name = await openEditor();
-    const undo = screen.getByRole('button', { name: 'Undo draft edit' });
-    const redo = screen.getByRole('button', { name: 'Redo draft edit' });
+    const undo = screen.getByRole('button', { name: /^Undo/ });
+    const redo = screen.getByRole('button', { name: /^Redo/ });
     expect(undo).toHaveAttribute('title', 'Undo draft edit');
     expect(redo).toHaveAttribute('title', 'Redo draft edit');
     await userEvent.type(name, ' revised');
