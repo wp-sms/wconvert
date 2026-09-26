@@ -35,6 +35,43 @@ again or turn conditional follow-ups into mutually exclusive branches.
 
 ## Progress after this audit
 
+### September 26: graph-aware capture checks and required-contact repair
+
+Design readiness still compared field/resource storage indices with submission
+indices. A valid graph stored as Download, Send enquiry, Your details was falsely
+flagged although its connections correctly run Your details → Send enquiry →
+Download. Readiness now verifies that every path to a save includes the owned
+field's unconditional input screen, and that every path to a resource includes
+the primary save. Legacy ordered journeys retain their positional checks. The
+same graph traversal rejects a field or resource available on only one of the
+incoming paths, rather than accepting mere reachability.
+
+A separate server-only `identifier` error now has an editor blocker naming the
+save screen when none of its email/phone fields is required. Its repair link
+opens the actual field in Design. The WordPress walkthrough verified disabled
+publication, the selected Email field, the Required field checkbox, removal of
+the blocker, Save draft, and a null server capture-contract issue after saving.
+Test journey then collected Email on the first screen, accepted it on the second,
+and showed the download and Email in the accepted snapshot on the third. This
+QA campaign remains unpublished; the test made no real submission.
+
+The shared split-capture fixture is tested in JavaScript and PHP, including
+normalization on save. Focused PHP coverage passes 11 tests / 59 assertions;
+The full JavaScript suite passes 2,916 tests with two workers; a prior default-concurrency
+run timed out in a builder-shell test and failed the following save-status check.
+Both pass in the reduced-concurrency full rerun. Typecheck, lint and Free/Pro
+admin builds pass. JavaScript coverage adds valid reversed order, exact required-field repair,
+a bypassable field, a conditional owned field, and a bypassable resource.
+
+**New remaining import gap:** an initial hand-written fixture used `email` as a
+node ID. CaptureContract accepted it, but save normalization reminted it to an
+`n…` ID without updating the submission reference. Publication then returned
+`references`, and the visitor test misleadingly accepted an empty snapshot. The
+fixture now uses canonical IDs and its saved round trip is verified, but foreign
+ID/reference normalization and rejecting malformed test captures need a separate
+fix. This is not claimed complete.
+
+
 ### September 26: visitor-test progress without premature route decisions
 
 The actual 13-screen WordPress test marked Home as bypassed and Business as

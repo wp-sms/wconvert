@@ -37,6 +37,20 @@ export function graphReaches(graph: JourneyGraph, from: string, to: string): boo
   return false;
 }
 
+/** Every route to `target` must visit `required`; storage order has no meaning. */
+export function graphRequiresScreen(graph: JourneyGraph, required: string, target: string): boolean {
+  if (!graphReaches(graph, graph.entry, target)) return false;
+  const pending = [graph.entry], seen = new Set<string>();
+  while (pending.length) {
+    const id = pending.pop()!;
+    if (id === required || seen.has(id)) continue;
+    if (id === target) return false;
+    seen.add(id);
+    for (const edge of graph.edges) if (edge.from === id) pending.push(edge.to);
+  }
+  return true;
+}
+
 export function graphTargets(tree: TemplateTree, source: string): readonly TemplateScreen[] {
   if (!tree.graph) return [];
   return tree.steps.filter(screen => screen.id !== source && !graphReaches(tree.graph!, screen.id, source));

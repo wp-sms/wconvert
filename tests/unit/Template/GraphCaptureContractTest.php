@@ -11,6 +11,16 @@ use WConvert\Template\TemplateVocabulary;
 
 final class GraphCaptureContractTest extends TestCase
 {
+    public function testSplitCaptureAndResourceUseGraphOrderAndRequireAContactIdentifier(): void
+    {
+        $tree = json_decode((string) file_get_contents(WCONVERT_DIR . '/tests/fixtures/journey-graph-split-capture.json'), true);
+        self::assertNull(CaptureContract::issue(['template' => ['tree' => $tree]], 'collect_enquiries', ''));
+        $normalized = TemplateVocabulary::fromManifest()->normalize(['tree' => $tree])['tree'];
+        self::assertNull(CaptureContract::issue(['template' => ['tree' => $normalized]], 'collect_enquiries', ''));
+        $tree['steps'][2]['content']['children'][0]['required'] = false;
+        self::assertSame('identifier', CaptureContract::issue(['template' => ['tree' => $tree]], 'collect_enquiries', ''));
+    }
+
     public function testExclusiveBranchesHaveSeparateQuestionBudgetsAndCaptureOnlyTheirOwnAnswers(): void
     {
         $tree = json_decode((string) file_get_contents(WCONVERT_DIR . '/tests/fixtures/journey-graph-branch-groups.json'), true);

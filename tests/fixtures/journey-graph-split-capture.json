@@ -1,0 +1,76 @@
+{
+  "v": 3,
+  "submissions": [
+    {
+      "id": "enquiry",
+      "fields": [
+        "n1"
+      ],
+      "consents": [],
+      "required": true
+    }
+  ],
+  "steps": [
+    {
+      "id": "thanks",
+      "name": "Download",
+      "kind": "acknowledgement",
+      "content": {
+        "type": "followup",
+        "id": "n2",
+        "label": "Get the guide",
+        "href": "https://example.test/guide"
+      }
+    },
+    {
+      "id": "save",
+      "name": "Send enquiry",
+      "kind": "input",
+      "content": {
+        "type": "button",
+        "action": "submit",
+        "submission": "enquiry",
+        "label": "Send"
+      }
+    },
+    {
+      "id": "details",
+      "name": "Your details",
+      "kind": "input",
+      "content": {
+        "type": "stack",
+        "children": [
+          {
+            "type": "field",
+            "id": "n1",
+            "name": "email",
+            "label": "Email",
+            "required": true
+          },
+          {
+            "type": "button",
+            "action": "next",
+            "label": "Continue"
+          }
+        ]
+      }
+    }
+  ],
+  "graph": {
+    "entry": "details",
+    "edges": [
+      {
+        "id": "continue",
+        "from": "details",
+        "to": "save",
+        "kind": "default"
+      },
+      {
+        "id": "saved",
+        "from": "save",
+        "to": "thanks",
+        "kind": "default"
+      }
+    ]
+  }
+}
