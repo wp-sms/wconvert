@@ -301,3 +301,28 @@ it('renders only selected, live, purchasable products and counts a product click
   expect(clicked).toHaveBeenCalledOnce();
   stop();
 });
+
+it('recovers product lookup without capturing contact details or counting another result conversion', async () => {
+  const template = finder as Template;
+  const tree = { ...template.tree, steps: template.tree.steps.map(screen => ({ ...screen,
+    results: screen.results?.map(result => ({ ...result, product_ids: [7], href: '/shop', link_label: 'Browse all plants' })),
+  })) };
+  const fetcher = vi.fn().mockResolvedValueOnce({ ok: false })
+    .mockResolvedValue({ ok: true, json: async () => [{ id: 7, name: 'Garden kit', permalink: '/garden-kit', is_purchasable: true, is_in_stock: true }] });
+  vi.stubGlobal('fetch', fetcher);
+  const journey = setup({ ...template, tree });
+  document.getElementById('wconvert-payload')!.setAttribute('data-products', `${location.origin}/wp-json/wc/store/v1/products`);
+  journey.choose('garden'); journey.act('next'); journey.choose('sun'); journey.act('next');
+  await vi.waitFor(() => expect(journey.root().textContent).toContain('Retry products'));
+  expect(journey.root().querySelector('[data-result-link]')?.textContent).toBe('Browse all plants');
+  [...journey.root().querySelectorAll('button')].find(button => button.textContent === 'Retry products')!.click();
+  await vi.waitFor(() => expect(journey.root().textContent).toContain('View Garden kit'));
+  journey.act('back');
+  expect(journey.root().querySelector<HTMLInputElement>('input[value="sun"]')?.checked).toBe(true);
+  journey.act('next');
+  await vi.waitFor(() => expect(journey.root().textContent).toContain('View Garden kit'));
+  expect(fetcher).toHaveBeenCalledTimes(3);
+  expect(journey.captured).not.toHaveBeenCalled();
+  expect(journey.completed).toHaveBeenCalledOnce();
+  journey.mounted.close();
+});

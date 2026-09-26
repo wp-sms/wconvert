@@ -21,10 +21,22 @@ export function showProducts(container: HTMLElement, variant: ResultVariant | un
   const status = document.createElement('p');
   status.setAttribute('role', 'status');
   container.replaceChildren(status);
+  let loading = false;
+  let retry: HTMLButtonElement | undefined;
+  const retryFocused = () => !!retry && retry === (container.getRootNode() as Document | ShadowRoot).activeElement;
+  const unavailable = () => {
+    const focused = retryFocused();
+    status.textContent = 'These products are unavailable right now. Please use the link below.';
+    retry?.remove();
+    if (focused) { status.tabIndex = -1; status.focus(); }
+  };
   const load = async () => {
+    if (loading || controller.signal.aborted) return;
+    loading = true;
+    retry?.setAttribute('aria-disabled', 'true');
     status.textContent = 'Loading current products…';
-    if (!endpoint) { status.textContent = 'Products are unavailable right now. Please use the link below.'; return; }
     try {
+      if (!endpoint) { unavailable(); return; }
       const url = new URL(endpoint, document.baseURI);
       if (url.origin !== location.origin) throw Error('Different origin');
       ids.forEach(id => url.searchParams.append('include[]', String(id)));
@@ -38,19 +50,23 @@ export function showProducts(container: HTMLElement, variant: ResultVariant | un
       for (const item of raw) {
         if (!item || typeof item !== 'object') continue;
         const p = item as StoreProduct;
-        if (ids.includes(p.id) && typeof p.name === 'string' && typeof p.permalink === 'string'
-          && p.is_purchasable === true && p.is_in_stock === true && p.is_password_protected !== true) byId.set(p.id, p);
+        if (!ids.includes(p.id) || typeof p.name !== 'string' || typeof p.permalink !== 'string'
+          || !p.permalink.trim() || p.is_purchasable !== true || p.is_in_stock !== true || p.is_password_protected === true) continue;
+        // One stale catalog link must not hide other valid recommendations.
+        try {
+          const href = new URL(p.permalink, document.baseURI);
+          if (href.origin === location.origin && /^https?:$/.test(href.protocol)) byId.set(p.id, { ...p, permalink: href.href });
+        } catch { /* Ignore this product, retaining the result and its fallback. */ }
       }
       if (controller.signal.aborted) return;
       const eligible = ids.map(id => byId.get(id)).filter((p): p is StoreProduct => !!p).slice(0, 3);
-      if (!eligible.length) { status.textContent = 'These products are unavailable right now. Please use the link below.'; return; }
+      if (!eligible.length) { unavailable(); return; }
       const list = document.createElement('ul');
       list.className = 'wc-products-list';
       for (const product of eligible) {
         const item = document.createElement('li');
         const link = document.createElement('a');
         link.href = product.permalink;
-        if (new URL(link.href, location.href).origin !== location.origin) continue;
         link.textContent = `View ${product.name}`;
         if (onProductClick) link.addEventListener('click', onProductClick);
         const image = product.images?.[0];
@@ -74,14 +90,21 @@ export function showProducts(container: HTMLElement, variant: ResultVariant | un
         }
         item.append(link); list.append(item);
       }
+      const focused = retryFocused();
       container.replaceChildren(list);
+      if (focused) list.querySelector('a')?.focus();
     } catch {
       if (controller.signal.aborted) return;
       status.textContent = 'Products could not load. You can still use the link below.';
-      const retry = document.createElement('button');
-      retry.type = 'button'; retry.className = 'wc-button'; retry.textContent = 'Retry products';
-      retry.addEventListener('click', () => { retry.remove(); void load(); }, { once: true });
-      container.append(retry);
+      if (!retry) {
+        retry = document.createElement('button');
+        retry.type = 'button'; retry.className = 'wc-button'; retry.textContent = 'Retry products';
+        retry.addEventListener('click', load);
+        container.append(retry);
+      }
+    } finally {
+      loading = false;
+      retry?.removeAttribute('aria-disabled');
     }
   };
   void load();

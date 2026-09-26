@@ -79,3 +79,21 @@ prevent layout resets. When workers are unavailable it routes on the main
 thread. This is a presentation dependency only; visitor traversal and server
 validation never import it. Overlapping cards still need repositioning, and
 dense-map browser measurements remain part of the release gate.
+
+### Product recovery and paid byte caps
+
+Product lookup failure must retain the selected result, its browse fallback and
+keyboard position. Retry keeps the same focused control during loading and
+another failure; successful recovery moves focus to the first usable product
+only if the visitor has not moved it elsewhere. Leaving the result aborts the
+request. Malformed or off-site catalog links are filtered before the display
+limit, and an entirely unusable list shows the unavailable explanation.
+
+The September 26 recovery build measured with Node 22 gzip level 9 is
+13,850 / 24,196 / 25,156 / 25,390 bytes for Free / Basic / Pro / Elite. This
+behavior exceeds the paid limits from ADR 0106 by 132 / 68 / 46 bytes. Allocate
+256 additional bytes per paid rung for this visitor recovery behavior: the
+hard caps are now 24,320 / 25,344 / 25,600 bytes. Free stays at 14,012 bytes,
+and the separately loaded phone asset, payload and design caps stay unchanged.
+The check remains blocking and flagless; no general waiver or warning band is
+introduced. Both loader and combined loader-plus-phone reporting use these caps.

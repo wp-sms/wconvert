@@ -1,5 +1,8 @@
 # Question journeys extend the paid loader
 
+The explicit graph model and current paid byte caps are amended by
+[ADR 0108](0108-explicit-journey-graph-and-legacy-migration.md).
+
 Accepted 2026-09-24. Implements the [shared questions plan](../plans/questions-and-conditional-screens.md).
 
 Questions, answer-dependent screens, one selected result, and public WooCommerce product cards ship in the `journeys` Pro module at every paid rung. The free loader keeps its existing linear capture behavior and byte cap. This decision originally used only the bounded, ordered tree and flat all/any rule format on both sides of the capture boundary. [ADR 0107](0107-forward-journey-paths-and-flow-editor.md) amends that routing choice: the same ordered screens now allow explicit forward paths, with first-match priority and a final fallback. It still adds no visitor identifier, answer archive, table, or column. Anonymous answers live only in the mounted page. Showing the selected Results screen increments the aggregate conversion counter whether contact was required beforehand or offered afterward. Optional contact capture later creates one Lead and increments a separate capture counter. Required pre-result capture is a request; result-first optional signup is email marketing with visible consent. Product clicks are aggregate events. WooCommerce is queried through its public Store Products route using only merchant-selected IDs, with current eligibility and price read at view time.

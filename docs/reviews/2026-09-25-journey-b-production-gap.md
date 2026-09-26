@@ -35,6 +35,41 @@ again or turn conditional follow-ups into mutually exclusive branches.
 
 ## Progress after this audit
 
+For current completion status and the next release checks, use the
+[September 26 completion checklist](2026-09-26-journey-completion-checklist.md).
+The sections below retain historical findings; their older “remaining work”
+sentences are not a second current backlog.
+
+### Product API recovery and keyboard continuity, September 26
+
+The actual product loader removed its Retry button on activation, losing
+keyboard focus both while waiting and on another failure. It also limited the
+candidate list before rejecting off-site links; a malformed URL could fail the
+whole response, and an entirely unusable list could leave an empty result area.
+Five regression cases reproduced four failures before the fix. Retry now keeps
+the same control, guards repeat activation while pending, and restores focus to
+the first usable product or the unavailable explanation when the control is
+removed. It does not take focus back if the visitor moved elsewhere. Link
+validation precedes the display limit; one unusable catalog record no longer
+hides valid recommendations. Leaving the result still aborts pending work.
+
+The disposable WordPress 7.1.2 / WooCommerce 11.1.2 popup was exercised using
+keyboard controls against an actual Store API 503, another failed retry, a
+delayed successful retry and a response containing only an off-site product
+link. Focus stayed visibly on Retry during loading/failure, then reached the
+$29 product link on success. Back retained Mostly sunny. The unusable-list
+case showed the explanation, and its browse fallback opened the actual shop.
+The campaign retained zero Leads. Its publication, pages and products were
+returned to draft; the temporary API filter, option, browser tab and server
+were removed/stopped.
+
+All 27 focused JS tests and 23 PHP loader-contract tests / 38 assertions passed,
+along with TypeScript, ESLint, all three paid loader builds, source boundaries,
+and Node 22 loader/phone checks. ADR 0108 records the measured 256-byte paid-cap
+amendment for this behavior. Free, phone, payload and design caps are unchanged.
+This closes the basic real-browser API failure/retry gap, not the complete
+prototype product-combination matrix or native zoom/assistive-technology gate.
+
 ### Visible keyboard focus and secondary-action defaults, September 26
 
 The actual browser exposed an invisible focus ring: No thanks matched
