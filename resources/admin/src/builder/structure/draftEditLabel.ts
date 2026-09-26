@@ -19,7 +19,7 @@ export function draftEditLabel(before: DraftSnapshot, after: DraftSnapshot): str
   if (changed.includes('template_id')) return __('Change design', 'wconvert');
   if (changed.length && changed.every(key => ['destinations', 'capture_mode'].includes(key))) return __('Change lead storage or destinations', 'wconvert');
   if (changed.length && changed.every(key => ['display_rules', 'rules', 'trigger', 'frequency', 'starts_at', 'ends_at'].includes(key))) return __('Change display rules', 'wconvert');
-  if (changed.length !== 1 || changed[0] !== 'template') return __('Edit campaign settings', 'wconvert');
+  if (!changed.includes('template') || changed.some(key => !['template', 'submission_settings'].includes(key))) return __('Edit campaign settings', 'wconvert');
   const from = before.config.template as Template | undefined;
   const to = after.config.template as Template | undefined;
   if (!from?.tree || !to?.tree) return __('Change design', 'wconvert');
@@ -28,6 +28,12 @@ export function draftEditLabel(before: DraftSnapshot, after: DraftSnapshot): str
 }
 
 function journeyEditLabel(before: TemplateTree, after: TemplateTree): string {
+  if (before.graph && after.graph) {
+    const removedSaves = before.submissions.filter(sub => !after.submissions.some(item => item.id === sub.id));
+    const addedSaves = after.submissions.filter(sub => !before.submissions.some(item => item.id === sub.id));
+    if (removedSaves.length === 1 && !removedSaves[0].required && !addedSaves.length) return __('Remove optional signup', 'wconvert');
+    if (addedSaves.length === 1 && !addedSaves[0].required && !removedSaves.length) return __('Add optional signup', 'wconvert');
+  }
   const added = after.steps.filter(screen => !before.steps.some(item => item.id === screen.id));
   const removed = before.steps.filter(screen => !after.steps.some(item => item.id === screen.id));
   if (added.length === 1 && !removed.length) return sprintf(__('Add screen “%s”', 'wconvert'), added[0].name);

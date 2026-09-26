@@ -35,6 +35,49 @@ again or turn conditional follow-ups into mutually exclusive branches.
 
 ## Progress after this audit
 
+### Coordinated optional capture removal, September 26
+
+The graph editor now offers **Remove optional signup** on screens that own an
+optional submission’s fields/consent or its save action. The review lists every
+screen to be removed, states that its questions/content also go, distinguishes
+previously saved Leads from draft changes, and names the incoming reconnections.
+Split capture screens are removed together while intervening independent offers
+stay. Boundary connections retain their IDs, conditions and priority. Multiple
+possible exits require a deliberate selection; no capture branch is silently
+chosen. Skip buttons elsewhere that refer to the removed submission are cleaned
+up, and a replaced entry loses its Back buttons. One Undo restores the entire
+edit, including the builder’s existing submission-destination cleanup; history
+labels identify the optional signup operation.
+
+Required captures, a campaign’s sole non-result capture, capture shared with
+another submission/result/ending, and externally referenced questions remain
+protected with explanations. These guards do not assert that all capture-model
+editing is finished. They prevent this removal action from silently dropping
+another save’s data or leaving an ordinary signup campaign without capture.
+
+An anonymous result with an existing ending can add optional capture again.
+The existing ending and result connection identity are retained, the new signup
+is selected by submission identity rather than storage position, and generated
+result navigation changes between Finish and Optional email updates.
+
+WordPress verification used the existing unpublished graph-quiz draft: required
+capture was changed to optional, removal was reviewed at 320×568, Cancel restored
+focus, removal was saved, and Test journey reached Balcony picks then All set
+without contact fields or capture checkpoints. Re-adding optional signup restored
+one capture and kept exactly one ending. The saved anonymous and re-added graphs
+both returned `GraphCaptureContract::issue: null`. The broader contract still
+reported the pre-existing `products` blocker because this local site lacks
+WooCommerce; this is not claimed as a publish-ready product campaign. Undo and
+Save restored the original required-capture QA draft, also graph-valid.
+
+Validation: 2,934 JavaScript tests pass. Final capture/editor/history coverage
+passes 50 tests after generated navigation and history-label adjustments.
+TypeScript, ESLint, both admin builds and source-boundary checks pass. PHP source
+is unchanged; the actual saved drafts were validated by the local PHP graph
+contract. Broader graph capture creation, result topology, merchant task feedback,
+accessibility and the outstanding release gates remain open.
+
+
 ### Screen removal and disconnected drafts, September 26
 
 Graph deletion now offers an explicit continuation instead of silently assuming

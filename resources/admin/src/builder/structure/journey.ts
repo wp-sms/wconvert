@@ -111,14 +111,27 @@ export function resultAccess(tree: TemplateTree, required: boolean): TemplateTre
     submissions: [{ ...tree.submissions[0], required: false }] });
 }
 
+/** Existing result/ending topology where a new optional signup can be inserted. */
+export function graphResultSignupTarget(tree: TemplateTree) {
+  if (!tree.graph || tree.submissions.length) return null;
+  const result = tree.steps.find(screen => screen.kind === 'result');
+  if (!result) return null;
+  const outgoing = tree.graph.edges.filter(edge => edge.from === result.id);
+  const ending = outgoing.length === 1 && outgoing[0].kind === 'default'
+    ? tree.steps.find(screen => screen.id === outgoing[0].to && screen.kind === 'acknowledgement') : undefined;
+  if (outgoing.length && !ending || ending && tree.graph.edges.some(edge => edge.from === ending.id)) return null;
+  if (!ending && (tree.steps.some(screen => screen.kind === 'acknowledgement')
+    || walkNodes(result.content).some(node => node.type === 'button' && 'action' in node && node.action === 'next'))) return null;
+  return { result, ending, edge: outgoing[0] };
+}
+
 /** Add a result-first, optional email capture to an anonymous graph quiz. */
 export function addGraphResultSignup(tree: TemplateTree): TemplateTree {
-  if (!tree.graph || tree.submissions.length || tree.steps.some(screen => screen.kind === 'acknowledgement')) return tree;
-  const result = tree.steps.find(screen => screen.kind === 'result');
-  if (!result || tree.graph.edges.some(edge => edge.from === result.id)
-    || walkNodes(result.content).some(node => node.type === 'button' && 'action' in node && node.action === 'next')) return tree;
+  const target = graphResultSignupTarget(tree);
+  if (!target || !tree.graph) return tree;
+  const { result, ending, edge } = target;
   const signupId = freshScreen(tree, 'input').id;
-  const acknowledgementId = freshScreen({ ...tree, steps: [...tree.steps, { ...result, id: signupId }] }, 'content').id;
+  const acknowledgementId = ending?.id ?? freshScreen({ ...tree, steps: [...tree.steps, { ...result, id: signupId }] }, 'content').id;
   const submissionId = 'email-signup';
   const signup: TemplateScreen = { id: signupId, name: __('Optional email signup', 'wconvert'), kind: 'input', content: { type: 'stack', children: [
     { type: 'heading', text: __('Want more guides?', 'wconvert'), role: 'headline' },
@@ -133,12 +146,19 @@ export function addGraphResultSignup(tree: TemplateTree): TemplateTree {
     { type: 'heading', text: __('Thanks for visiting', 'wconvert'), role: 'success_headline' },
     { type: 'button', label: __('Back', 'wconvert'), action: 'back' },
   ] } };
-  const firstEdge = graphEdgeId(tree.graph);
+  const firstEdge = edge?.id ?? graphEdgeId(tree.graph);
   const secondEdge = graphEdgeId({ ...tree.graph, edges: [...tree.graph.edges, { id: firstEdge, from: result.id, to: signupId, kind: 'default' }] });
-  const withIds = referencedJourney({ ...tree, steps: [...tree.steps.map(screen => screen.id === result.id
-    ? { ...screen, content: { type: 'stack', children: [screen.content,
-      { type: 'button', label: __('Optional email updates', 'wconvert'), action: 'next' } as TemplateNode] } as TemplateNode }
-    : screen), signup, acknowledgement], graph: { ...tree.graph, edges: [...tree.graph.edges,
+  const restoreInvitation = (node: TemplateNode): TemplateNode => {
+    const copy = { ...node } as Record<string, unknown>;
+    if (copy.type === 'button' && copy.action === 'next' && copy.label === __('Finish', 'wconvert')) copy.label = __('Optional email updates', 'wconvert');
+    for (const key of ['children', 'start', 'end']) if (Array.isArray(copy[key])) copy[key] = (copy[key] as TemplateNode[]).map(restoreInvitation);
+    return copy as unknown as TemplateNode;
+  };
+  const withIds = referencedJourney({ ...tree, steps: [...tree.steps.map(screen => screen.id !== result.id ? screen
+    : walkNodes(screen.content).some(node => node.type === 'button' && 'action' in node && node.action === 'next')
+      ? { ...screen, content: restoreInvitation(screen.content) }
+      : { ...screen, content: { type: 'stack', children: [screen.content,
+        { type: 'button', label: __('Optional email updates', 'wconvert'), action: 'next' } as TemplateNode] } as TemplateNode }), signup, ...(ending ? [] : [acknowledgement])], graph: { ...tree.graph, edges: [...tree.graph.edges.filter(item => item.id !== edge?.id),
     { id: firstEdge, from: result.id, to: signupId, kind: 'default' },
     { id: secondEdge, from: signupId, to: acknowledgementId, kind: 'default' }] },
     submissions: [] });

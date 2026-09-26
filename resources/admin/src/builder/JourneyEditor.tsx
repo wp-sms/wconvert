@@ -10,13 +10,15 @@ import { JourneyTest } from './JourneyTest';
 import { JourneySample } from './JourneySample';
 import { GraphRouteSettings } from './GraphRouteSettings';
 import { GraphScreenInsert } from './GraphScreenInsert';
+import { GraphCaptureRemove } from './GraphCaptureRemove';
+import { captureOnScreen, graphCaptureRemovalPlan } from './structure/graphCaptureRemoval';
 import { GraphScreenRemove } from './GraphScreenRemove';
 import { graphRemovalPlan } from './structure/graphRemoval';
 import { addGraphScreen, type GraphScreenKind } from './structure/graphInsertion';
 import { __, sprintf } from '@wordpress/i18n';
 import { Button } from '../components/ui/button';
 import type { TemplateTree, TemplateNode, QuestionNode, Tokens } from '@renderer/types';
-import { addGraphResultSignup, duplicateScreen, freshScreen, referencedJourney, walkNodes, submissionScreen, movedScreen, screenRemoval, removedScreen, resultAccess, unreachableScreenIds, unreachableScreens, withBackButton } from './structure/journey';
+import { addGraphResultSignup, graphResultSignupTarget, duplicateScreen, freshScreen, referencedJourney, walkNodes, submissionScreen, movedScreen, screenRemoval, removedScreen, resultAccess, unreachableScreenIds, unreachableScreens, withBackButton } from './structure/journey';
 import { graphChangeImpact } from './structure/graphChangeImpact';
 import { addGraphConnection, reconnectGraphEdge } from './structure/graphConnections';
 import { conditionText } from './structure/conditionText';
@@ -128,9 +130,7 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
   const current = tree.steps[step];
   const disconnected = useMemo(() => new Set(unreachableScreenIds(tree)), [tree]);
   if (!current) return null;
-  const canAddGraphResultSignup = !!tree.graph && tree.submissions.length === 0
-    && !tree.steps.some(screen => screen.kind === 'acknowledgement')
-    && tree.steps.some(screen => screen.kind === 'result' && !tree.graph?.edges.some(edge => edge.from === screen.id));
+  const canAddGraphResultSignup = !!graphResultSignupTarget(tree);
   const canCondition = tree.steps.some((screen, index) => (tree.graph
     ? screen.id === current?.id || graphReaches(tree.graph, screen.id, current?.id ?? '')
     : index <= step) && walkNodes(screen.content).some(node => node.type === 'question' && 'answer_type' in node && node.answer_type !== 'text'));
@@ -231,7 +231,7 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
     if (tree.graph) {
       const next = addGraphResultSignup(tree);
       if (next === tree) return;
-      write(next, next.steps.findIndex(screen => screen.id === next.steps.at(-2)?.id));
+      write(next, submissionScreen(next, next.submissions[0]?.id));
       setSaid(__('Optional signup added after the result. Visitors may finish without submitting details.', 'wconvert'));
       return;
     }
@@ -274,7 +274,18 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
     }
   };
   const removal = screenRemoval(tree, step);
+  const selectedCapture = tree.graph ? captureOnScreen(tree, current.id) : undefined;
+  const optionalRemoval = selectedCapture && !selectedCapture.required ? graphCaptureRemovalPlan(tree, selectedCapture.id) : null;
   const graphDelete = tree.graph ? graphRemovalPlan(tree, current.id) : null;
+  const deletionReason = optionalRemoval ? optionalRemoval.reason : graphDelete?.reason;
+  const applyGraphRemoval = (next: TemplateTree, destination: string) => {
+    deletedGraphScreen.current = true;
+    const target = next.steps.findIndex(screen => screen.id === destination);
+    write(next, target >= 0 ? target : 0);
+    setPanelSection('content'); setMobilePane('details'); setConfirmGraphRemoval(false);
+    setSaid(optionalRemoval ? __('Optional signup removed. Review the remaining screens. Undo restores the signup and its connections.', 'wconvert')
+      : __('Screen removed. Review the remaining paths. Undo restores the screen and its connections.', 'wconvert'));
+  };
   const remove = () => {
     const next = removedScreen(tree, step);
     write(next, Math.min(step, next.steps.length - 1));
@@ -504,8 +515,8 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
             : <RouteSettings tree={tree} step={step} focusPath={typeof pathFocus === 'number' ? pathFocus : null} onChange={onChange} onInsert={insertOnPath} />}
             </div>
             <div className="wconvert-journey-dialog__actions-row">
-              {tree.graph && <Button ref={deleteTrigger} type="button" size="sm" variant="outline" aria-disabled={!!graphDelete?.reason} aria-describedby={graphDelete?.reason ? `${id}-delete-reason` : undefined} onClick={() => { if (!graphDelete?.reason) { deletedGraphScreen.current = false; setConfirmGraphRemoval(true); } }}>
-                <Trash2 aria-hidden="true" />{__('Delete screen', 'wconvert')}
+              {tree.graph && <Button ref={deleteTrigger} type="button" size="sm" variant="outline" aria-disabled={!!deletionReason} aria-describedby={deletionReason ? `${id}-delete-reason` : undefined} onClick={() => { if (!deletionReason) { deletedGraphScreen.current = false; setConfirmGraphRemoval(true); } }}>
+                <Trash2 aria-hidden="true" />{optionalRemoval ? __('Remove optional signup', 'wconvert') : __('Delete screen', 'wconvert')}
               </Button>}
               {!tree.graph && <DropdownMenu>
                 <DropdownMenuTrigger asChild><Button type="button" size="sm" variant="outline">{__('Screen actions', 'wconvert')}<ChevronDown aria-hidden="true" /></Button></DropdownMenuTrigger>
@@ -528,7 +539,7 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
               </DropdownMenu>}
             <Button type="button" size="sm" onClick={() => { if (embedded) onGoToDesign?.(); else setOpen(false); }}>{__('Edit design', 'wconvert')}<ArrowRight aria-hidden="true" className="rtl:rotate-180" /></Button>
             </div>
-            {graphDelete?.reason && <p id={`${id}-delete-reason`} className="wconvert-journey-delete-reason">{graphDelete.reason}</p>}
+            {deletionReason && <p id={`${id}-delete-reason`} className="wconvert-journey-delete-reason">{deletionReason}</p>}
           </section>}
         </div>
         <div className="wconvert-journey-dialog__footer"><p role="status">{said || __('Changes are part of your campaign draft. Save the draft to keep them.', 'wconvert')}</p>{!embedded && <DialogClose asChild><Button variant="outline">{__('Done', 'wconvert')}</Button></DialogClose>}</div>
@@ -550,14 +561,9 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
         event.preventDefault();
         requestAnimationFrame(() => (deletedGraphScreen.current ? settingsHeading.current : deleteTrigger.current)?.focus());
       }}>
-        {confirmGraphRemoval && <GraphScreenRemove tree={tree} screenId={current.id} onCancel={() => setConfirmGraphRemoval(false)}
-          onRemove={(next, destination) => {
-            deletedGraphScreen.current = true;
-            const target = next.steps.findIndex(screen => screen.id === destination);
-            write(next, target >= 0 ? target : 0);
-            setPanelSection('content'); setMobilePane('details'); setConfirmGraphRemoval(false);
-            setSaid(__('Screen removed. Review the remaining paths. Undo restores the screen and its connections.', 'wconvert'));
-          }} />}
+        {confirmGraphRemoval && (optionalRemoval && selectedCapture
+          ? <GraphCaptureRemove tree={tree} submissionId={selectedCapture.id} onCancel={() => setConfirmGraphRemoval(false)} onRemove={applyGraphRemoval} />
+          : <GraphScreenRemove tree={tree} screenId={current.id} onCancel={() => setConfirmGraphRemoval(false)} onRemove={applyGraphRemoval} />)}
       </DialogContent>
     </Dialog>
     <Dialog open={addKind !== null} onOpenChange={value => { if (!value) setAddKind(null); }}>

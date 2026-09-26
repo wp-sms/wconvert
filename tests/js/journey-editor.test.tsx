@@ -718,3 +718,32 @@ it('keeps a protected Delete action focusable and associates the reason with it'
   expect(button).toHaveFocus();
   expect(screen.queryByRole('dialog', { name: 'Delete this screen?' })).not.toBeInTheDocument();
 });
+
+it('removes a graph optional signup as one undoable edit and explains its capture scope', async () => {
+  const user = userEvent.setup();
+  const initial = upgradeToGraph(progressive.tree as TemplateTree);
+  function CaptureEditor() {
+    const [history, setHistory] = useState(historyOf({ name: 'Signup', config: { template: { tree: initial, tokens: {} } } }));
+    const [step, setStep] = useState(initial.steps.findIndex(item => item.id === 'sms'));
+    return <><button onClick={() => setHistory(undo)}>Undo edit</button>
+      <JourneyEditor tree={history.present.config.template.tree} step={step} onSelect={setStep}
+        onChange={next => setHistory(current => remember(current, { ...current.present, config: { template: { tree: next, tokens: {} } } }))} />
+      <output data-testid="draft">{JSON.stringify(history.present.config.template.tree)}</output></>;
+  }
+  render(<CaptureEditor />);
+  await user.click(screen.getByRole('button', { name: 'Manage screens' }));
+  await user.click(screen.getByRole('button', { name: 'Remove optional signup' }));
+  let dialog = screen.getByRole('dialog', { name: 'Remove this optional signup?' });
+  expect(within(dialog).getByText(/Previously saved Leads are unchanged/)).toBeInTheDocument();
+  await user.click(within(dialog).getByRole('button', { name: 'Cancel' }));
+  expect(draft()).toEqual(initial);
+  await waitFor(() => expect(screen.getByRole('button', { name: 'Remove optional signup' })).toHaveFocus());
+  await user.click(screen.getByRole('button', { name: 'Remove optional signup' }));
+  dialog = screen.getByRole('dialog', { name: 'Remove this optional signup?' });
+  await user.click(within(dialog).getByRole('button', { name: 'Remove signup' }));
+  expect(draft().submissions).toEqual(initial.submissions.filter(sub => sub.required));
+  expect(draft().steps.map(item => item.id)).not.toContain('sms');
+  await user.keyboard('{Escape}');
+  await user.click(screen.getByRole('button', { name: 'Undo edit' }));
+  expect(draft()).toEqual(initial);
+});
