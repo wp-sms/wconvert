@@ -1,0 +1,176 @@
+{
+  "date": "2026-09-26",
+  "environment": "Local WordPress, actual visitor popup, actual Action Scheduler and HTTP receiver bound to 127.0.0.1",
+  "adapter": "Temporary QA DestinationType; this does not verify a vendor adapter or vendor subscription status",
+  "campaign": "01M3EF4MDZ3537BEP7X978TR0H",
+  "lead_count": 1,
+  "accepted_submissions": [
+    "email-signup",
+    "sms-signup"
+  ],
+  "accepted_lead_and_snapshots_unchanged_after_recovery": true,
+  "queue_arguments": [
+    {
+      "id": "2469",
+      "status": "complete",
+      "args": {
+        "lead": "01M3EF61M6655EZC3FSS5EBVZW",
+        "destination": "01M3EF4MCPXSPAACKAJVZ8ZXRF",
+        "attempt": 1,
+        "submission": "email-signup"
+      }
+    },
+    {
+      "id": "2472",
+      "status": "complete",
+      "args": {
+        "lead": "01M3EF61M6655EZC3FSS5EBVZW",
+        "destination": "01M3EF4MCTZZEVXA9N7VXBMMT3",
+        "attempt": 1,
+        "submission": "sms-signup"
+      }
+    },
+    {
+      "id": "2470",
+      "status": "complete",
+      "args": {
+        "lead": "01M3EF61M6655EZC3FSS5EBVZW",
+        "destination": "01M3EF4MCPXSPAACKAJVZ8ZXRF",
+        "attempt": 2,
+        "submission": "email-signup"
+      }
+    },
+    {
+      "id": "2473",
+      "status": "complete",
+      "args": {
+        "lead": "01M3EF61M6655EZC3FSS5EBVZW",
+        "destination": "01M3EF4MCTZZEVXA9N7VXBMMT3",
+        "attempt": 2,
+        "submission": "sms-signup"
+      }
+    },
+    {
+      "id": "2476",
+      "status": "complete",
+      "args": {
+        "lead": "01M3EF61M6655EZC3FSS5EBVZW",
+        "destination": "01M3EF4MCPXSPAACKAJVZ8ZXRF",
+        "attempt": 1,
+        "submission": "email-signup"
+      }
+    },
+    {
+      "id": "2474",
+      "status": "complete",
+      "args": {
+        "lead": "01M3EF61M6655EZC3FSS5EBVZW",
+        "destination": "01M3EF4MCPXSPAACKAJVZ8ZXRF",
+        "attempt": 3,
+        "submission": "email-signup"
+      }
+    },
+    {
+      "id": "2478",
+      "status": "complete",
+      "args": {
+        "lead": "01M3EF61M6655EZC3FSS5EBVZW",
+        "destination": "01M3EF4MCPXSPAACKAJVZ8ZXRF",
+        "attempt": 1,
+        "submission": "email-signup"
+      }
+    }
+  ],
+  "receiver": {
+    "accept": true,
+    "requests": [
+      {
+        "channel": "email",
+        "values": {
+          "email": "delivery-qa@example.test"
+        },
+        "status": 503
+      },
+      {
+        "channel": "sms",
+        "values": {
+          "phone": "+12025550123"
+        },
+        "status": 503
+      },
+      {
+        "channel": "email",
+        "values": {
+          "email": "delivery-qa@example.test"
+        },
+        "status": 503
+      },
+      {
+        "channel": "sms",
+        "values": {
+          "phone": "+12025550123"
+        },
+        "status": 200
+      },
+      {
+        "channel": "email",
+        "values": {
+          "email": "delivery-qa@example.test"
+        },
+        "status": 200
+      },
+      {
+        "channel": "email",
+        "values": {
+          "email": "delivery-qa@example.test"
+        },
+        "status": 200
+      },
+      {
+        "channel": "email",
+        "values": {
+          "email": "delivery-qa@example.test"
+        },
+        "status": 200
+      }
+    ],
+    "contacts": {
+      "sms:+12025550123": {
+        "phone": "+12025550123"
+      },
+      "email:delivery-qa@example.test": {
+        "email": "delivery-qa@example.test"
+      }
+    }
+  },
+  "health_after_recovery": {
+    "email": {
+      "lastSuccessAt": "2026-09-26 09:07:02",
+      "lastError": null,
+      "lastErrorAt": null,
+      "consecutiveFailures": 0,
+      "skippedCaptures": 0,
+      "lastSkippedAt": null
+    },
+    "sms": {
+      "lastSuccessAt": "2026-09-26 09:03:59",
+      "lastError": null,
+      "lastErrorAt": null,
+      "consecutiveFailures": 0,
+      "skippedCaptures": 0,
+      "lastSkippedAt": null
+    }
+  },
+  "limitations": [
+    "The receiver implements identifier-keyed upsert; real provider idempotency must be checked through its adapter tests.",
+    "No external provider credentials, accounts or recipients were used."
+  ],
+  "cleanup": {
+    "campaign": "unpublished; retained as local-only draft",
+    "page": "draft",
+    "temporary_destinations": "removed",
+    "temporary_adapter": "removed",
+    "receiver_process": "stopped; exit 143",
+    "pending_qa_jobs": 0
+  }
+}

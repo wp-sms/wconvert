@@ -35,6 +35,51 @@ again or turn conditional follow-ups into mutually exclusive branches.
 
 ## Progress after this audit
 
+### Actual capture, queued outage and delivery recovery, September 26
+
+A published local-only graph campaign exercised email signup followed by optional
+SMS through the actual visitor popup, not Test journey. A temporary destination
+adapter sent real HTTP requests only to `127.0.0.1`; the receiver rejected delivery
+with 503 until both submissions had been accepted. The visitor reached **Details
+received** during the outage. The database contained one Lead with two immutable
+accepted snapshots, separate consent/purpose/route records, and completed handoff.
+
+Action Scheduler recorded retry jobs carrying only Lead/destination/submission
+IDs and attempt numbers. Email attempts contained only the email identifier;
+SMS attempts contained only the phone identifier. Later SMS acceptance did not
+expand the earlier email payload. Both destination cards visibly showed Failing.
+After receiver recovery, automatic retry and the actual admin **Queue re-push**
+action delivered the original snapshots. Repeated recovery upserted the same
+receiver contact; the database still contained one unchanged Lead. Seven observed
+HTTP requests (three 503s, four 200s) left exactly two receiver contacts, one per
+channel. Both admin cards changed to **Success recorded** and cleared their
+failure counters. The structured [delivery evidence](2026-09-26-journey-delivery-evidence.json)
+records the queue arguments, HTTP payloads, final health and cleanup checks.
+
+This walkthrough exposed two admin wording errors. The recovery count was labelled
+Leads although its API counts individual submissions, and its stated start time
+omitted the existing overlap for later journey steps. Recovery buttons, counts and
+explanations now consistently refer to stored submissions. The confirmation names
+the last success and explains the overlap; the success report explicitly says
+queueing is not completed delivery and does not create new Leads. Browser checks
+verified the rebuilt count/report and final confirmation, then cancelled without
+creating another job.
+
+The temporary campaign is unpublished, its page is draft, its destinations and
+MU-plugin adapter are removed, and the receiver process has stopped. No QA jobs
+remain pending. All contact values were synthetic; no real provider credentials,
+accounts, email recipients or SMS recipients were used. The saved QA campaign is
+`01M3EF4MDZ3537BEP7X978TR0H` and is retained as a local-only draft.
+
+Validation: destination UI suite 48 tests; PHP destination suite 82 tests / 259
+assertions; typecheck, lint, and free/Pro admin builds pass. This closes the
+controlled local delivery/retry evidence gap for the actual capture/queue/worker
+path. The temporary receiver follows the destination idempotency contract; this
+is not a claim about every vendor adapter or external subscription state. Existing
+provider unit tests passed. Broader accessibility, product/API-failure scenarios,
+merchant task feedback and the unavailable CI runners remain separate gates.
+
+
 ### Result timing with downstream branches and actionable repair, September 26
 
 The result timing control now moves an adjacent result/signup pair while keeping

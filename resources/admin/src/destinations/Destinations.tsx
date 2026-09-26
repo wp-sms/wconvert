@@ -477,7 +477,13 @@ export function Destinations({ destinationId, mode = 'settings', onEditingStateC
         open={replaying !== null}
         onOpenChange={(open) => { if (!open) setReplaying(null); }}
         title={__('Re-push stored submissions?', 'wconvert')}
-        description={replaying === null ? '' : sprintf(__('This queues retained submissions for “%1$s” from Campaigns whose published configuration uses it, since %2$s. With no previous success, all retained matching submissions are included. It is not limited to the visible failures or search results, and can send an email again.', 'wconvert'), replaying.label, replaying.health.last_success_at ?? __('the beginning', 'wconvert'))}
+        description={replaying === null ? '' : [
+          sprintf(__('This queues retained submissions for “%s” from Campaigns whose published configuration uses it.', 'wconvert'), replaying.label),
+          replaying.health.last_success_at
+            ? sprintf(__('The last successful delivery was %s. Recovery includes an overlap before that time so later steps of a journey are not missed.', 'wconvert'), replaying.health.last_success_at)
+            : __('With no previous success, all retained matching submissions are included.', 'wconvert'),
+          __('It is not limited to the visible failures or search results, and can send an email again.', 'wconvert'),
+        ].join(' ')}
         confirmLabel={__('Queue re-push', 'wconvert')}
         returnFocusTo={returnFocus}
         onConfirm={() => { if (replaying !== null) replay(replaying); setReplaying(null); }}
@@ -759,11 +765,11 @@ function Configured({
                 )}
               </AlertTitle>
               <AlertDescription>
-                <p id={`wconvert-recovery-${destination.id}`}>{__('Re-push replays stored leads from Campaigns whose published configuration uses this destination, since its last success. It can send an email again.', 'wconvert')}</p>
+                <p id={`wconvert-recovery-${destination.id}`}>{__('Re-push replays stored submissions from Campaigns whose published configuration uses this destination, since its last success, including an overlap for later journey steps. It can send an email again.', 'wconvert')}</p>
                 {!runnable && <p>{__('Restore the required plugin or plan before re-pushing.', 'wconvert')}</p>}
                 <div className="mt-3"><Button variant="outline" size="sm" disabled={busy || !runnable}
                   aria-describedby={`wconvert-recovery-${destination.id}`} onClick={() => onRePush(destination)}>
-                  <RotateCcw aria-hidden="true" />{__('Re-push leads since the last success', 'wconvert')}
+                  <RotateCcw aria-hidden="true" />{__('Re-push stored submissions', 'wconvert')}
                 </Button></div>
               </AlertDescription>
             </Alert>
@@ -786,15 +792,14 @@ function Configured({
               <AlertTitle className="line-clamp-none">
                 {sprintf(
                   /* translators: %d: number of pushes queued. */
-                  _n('%d lead queued for re-pushing.', '%d Leads queued for re-pushing.', report.jobs, 'wconvert'),
+                  _n('%d submission queued for re-pushing.', '%d submissions queued for re-pushing.', report.jobs, 'wconvert'),
                   report.jobs,
                 )}
               </AlertTitle>
-              {report.capped && (
-                <AlertDescription>
-                  {__('That is the per-run limit — run it again once these have gone through.', 'wconvert')}
-                </AlertDescription>
-              )}
+              <AlertDescription>
+                <p>{__('Each submission uses its original accepted details. Re-pushing does not create new Leads; queued submissions still need to be delivered.', 'wconvert')}</p>
+                {report.capped && <p>{__('That is the per-run limit — run it again once these have gone through.', 'wconvert')}</p>}
+              </AlertDescription>
             </Alert>
           )}
           {/*
@@ -979,7 +984,7 @@ function Configured({
           </Button>
           {(mode === 'issues' || settingsOpen || failing) && destination.health.skipped_captures === 0 && <Button variant="outline" size="sm" disabled={busy || !runnable} onClick={() => onRePush(destination)}>
             <RotateCcw aria-hidden="true" />
-            {__('Re-push leads since the last success', 'wconvert')}
+            {__('Re-push stored submissions', 'wconvert')}
           </Button>}
         </div>
         {mode === 'settings' && settingsOpen && <Button
