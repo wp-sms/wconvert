@@ -8,16 +8,17 @@ import type { TemplateTree } from '@renderer/types';
 import fixture from '../fixtures/journey-graph-enquiry.json';
 import branchedFixture from '../fixtures/journey-graph-branch-groups.json';
 
-const canvas = vi.hoisted(() => ({ setViewport: vi.fn(), edgeClick: (() => {}) as (edge: Edge) => void, nodes: [] as Node[], change: (() => {}) as (changes: NodeChange[]) => void }));
+const canvas = vi.hoisted(() => ({ fitView: vi.fn(), setViewport: vi.fn(), edgeClick: (() => {}) as (edge: Edge) => void, nodes: [] as Node[], change: (() => {}) as (changes: NodeChange[]) => void }));
 
 vi.mock('@tisoap/react-flow-smart-edge', () => ({
   createSmartEdge: () => () => null, SmartEdgeProvider: ({ children }: { children: ReactNode }) => <>{children}</>,
 }));
 
-vi.mock('@xyflow/react', () => ({
+vi.mock('@xyflow/react', async importOriginal => ({
+  ...await importOriginal<typeof import('@xyflow/react')>(),
   Position: { Left: 'left', Right: 'right' }, MarkerType: { ArrowClosed: 'arrowclosed' },
   Handle: () => null, Controls: () => null, Background: () => null,
-  useReactFlow: () => ({ fitView: () => {}, viewportInitialized: true, getViewport: () => ({ x: 10, y: 20, zoom: 0.75 }), setViewport: canvas.setViewport }), useStore: () => 1000, useNodesInitialized: () => true,
+  useReactFlow: () => ({ getNodes: () => canvas.nodes, fitView: canvas.fitView, viewportInitialized: true, getViewport: () => ({ x: 10, y: 20, zoom: 0.75 }), setViewport: canvas.setViewport }), useStore: () => 1000, useNodesInitialized: () => true,
   ReactFlow: ({ nodes, edges, nodeTypes, children, onNodesChange, onNodeClick, onEdgeClick }: { nodes: Node[]; edges: Edge[]; nodeTypes: NodeTypes; children: ReactNode; onNodesChange(changes: NodeChange[]): void; onNodeClick(event: MouseEvent, node: Node): void; onEdgeClick(event: MouseEvent, edge: Edge): void }) => {
     canvas.nodes = nodes; canvas.change = onNodesChange; canvas.edgeClick = edge => onEdgeClick({} as MouseEvent, edge);
     return <div className="react-flow">
@@ -149,4 +150,19 @@ it('keeps a shared visible/hidden connection highlighted when inspecting the hid
   const edges = JSON.parse(screen.getByTestId('map-edges').textContent!) as Edge[];
   expect(edges.find(edge => edge.id === 'garden_next')?.style?.opacity).toBe(1);
   expect(edges.find(edge => edge.id === 'indoor_next')?.style?.opacity).toBe(0.2);
+});
+
+
+it('keeps the last inspected screen in view after its settings close', async () => {
+  canvas.fitView.mockClear();
+  const props = { tree, onSelect: () => {}, onSelectPath: () => {}, onConnect: () => {} };
+  const contactIndex = tree.steps.findIndex(step => step.id === 'contact');
+  const { rerender } = render(<JourneyMap {...props} selected={contactIndex} />);
+  await waitFor(() => expect(canvas.fitView).toHaveBeenCalledWith(expect.objectContaining({ nodes: expect.arrayContaining([{ id: 'contact' }]) })));
+  canvas.fitView.mockClear();
+  rerender(<JourneyMap {...props} selected={null} />);
+  // Closing the inspector may leave the viewport unchanged, or refit after its width grows.
+  // Tidy up requests a fresh fit and must retain the last screen, not jump to entry.
+  await userEvent.setup().click(screen.getByRole('button', { name: 'Tidy up' }));
+  await waitFor(() => expect(canvas.fitView).toHaveBeenLastCalledWith(expect.objectContaining({ nodes: expect.arrayContaining([{ id: 'contact' }]) })));
 });

@@ -12,6 +12,7 @@ import { canAddGraphConnection, canTargetGraphScreen, graphChoiceSources } from 
 import { FollowupGroupCard } from './FollowupGroupCard';
 import { followupGroups, type FollowupGroup } from './structure/followupGroups';
 import { mapEdgeOptions, mapRoutingOptions } from './structure/mapRouting';
+import { cameraTargets, mapMinZoom } from './structure/mapCamera';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuCheckboxItem } from '../components/ui/dropdown-menu';
 import '@xyflow/react/dist/style.css';
 
@@ -102,7 +103,7 @@ const edgeTypes = { journey: createSmartEdge('smoothstep', mapEdgeOptions) };
 function FocusCamera({ mapRoot, selectedId, nextId, firstId, initialOverview, overviewWidth = 600, revision, onTidy, preview, onPreview, grouping, toolbar, onNodesReady }: {
   mapRoot: RefObject<HTMLDivElement | null>; selectedId: string; nextId?: string; firstId: string; initialOverview: boolean; overviewWidth?: number; revision: number; onTidy(): void; preview: boolean; onPreview(): void; grouping?: { active: boolean; toggle(): void }; toolbar: HTMLElement | null; onNodesReady(): void;
 }) {
-  const { fitView, zoomIn, zoomOut, viewportInitialized, getViewport, setViewport } = useReactFlow();
+  const { fitView, zoomIn, zoomOut, viewportInitialized, getViewport, setViewport, getNodes } = useReactFlow();
   useEffect(() => {
     const root = mapRoot.current;
     if (!root) return;
@@ -142,10 +143,10 @@ function FocusCamera({ mapRoot, selectedId, nextId, firstId, initialOverview, ov
     if (!viewportInitialized || revision === 0) return;
     const overview = width >= overviewWidth && initialOverview;
     const frame = requestAnimationFrame(() => void fitView({
-      ...(overview ? {} : { nodes: [{ id: selectedId }, ...(width >= 600 && nextId ? [{ id: nextId }] : [])] }),
+      ...(overview ? {} : { nodes: cameraTargets(getNodes(), selectedId, nextId, width, height) }),
       padding: width < 600 ? .06 : overview ? .08 : .2, maxZoom: 1, duration: 180 }));
     return () => cancelAnimationFrame(frame);
-  }, [fitView, nextId, initialOverview, revision, selectedId, viewportInitialized, width, height, overviewWidth]);
+  }, [fitView, getNodes, nextId, initialOverview, revision, selectedId, viewportInitialized, width, height, overviewWidth]);
   return toolbar && createPortal(<div className="wconvert-journey-map__tools">
     <button type="button" className="wconvert-journey-map__desktop-tool" aria-label={__('Zoom in', 'wconvert')} onClick={() => void zoomIn()}>+</button>
     <button type="button" className="wconvert-journey-map__desktop-tool" aria-label={__('Zoom out', 'wconvert')} onClick={() => void zoomOut()}>−</button>
@@ -188,7 +189,10 @@ export function JourneyMap({ tree, selected, focusedPath = null, onSelect, onSel
   const [toolbar, setToolbar] = useState<HTMLDivElement | null>(null);
   const [expandedGroups, setExpandedGroups] = useState<readonly string[]>([]);
   const [grouping, setGrouping] = useState(true);
-  const [expandedFocus, setExpandedFocus] = useState<string | null>(null);
+  const [cameraFocus, setCameraFocus] = useState<string | null>(null);
+  useEffect(() => {
+    if (selected !== null && tree.steps[selected]) setCameraFocus(tree.steps[selected].id);
+  }, [selected, tree.steps]);
   const mapRoot = useRef<HTMLDivElement>(null);
   const pendingFocus = useRef<string | null>(null);
   const layoutState = useRef({ key: '', manuallyPositioned: false });
@@ -206,7 +210,7 @@ export function JourneyMap({ tree, selected, focusedPath = null, onSelect, onSel
   const groupKey = groups.map(group => `${group.id}:${group.screens.join(',')}`).join('|');
   const expand = useCallback((group: FollowupGroup) => {
     const id = tree.steps[group.screens[0]].id;
-    pendingFocus.current = id; setExpandedFocus(id);
+    pendingFocus.current = id; setCameraFocus(id);
     setExpandedGroups(current => [...current, group.id]);
   }, [tree.steps]);
   const focusExpandedScreen = useCallback(() => {
@@ -218,7 +222,7 @@ export function JourneyMap({ tree, selected, focusedPath = null, onSelect, onSel
     }
   }, []);
   const rtl = document.documentElement.dir === 'rtl';
-  const cameraIndex = selected ?? (expandedFocus && tree.steps.some(screen => screen.id === expandedFocus) ? tree.steps.findIndex(screen => screen.id === expandedFocus) : tree.graph ? Math.max(0, tree.steps.findIndex(screen => screen.id === tree.graph?.entry)) : 0);
+  const cameraIndex = selected ?? (cameraFocus && tree.steps.some(screen => screen.id === cameraFocus) ? tree.steps.findIndex(screen => screen.id === cameraFocus) : tree.graph ? Math.max(0, tree.steps.findIndex(screen => screen.id === tree.graph?.entry)) : 0);
   const layoutKey = tree.graph ? `${tree.graph.entry}|${tree.steps.map(screen => `${screen.id}:${!!screen.when}`).join('|')}|${tree.graph.edges.map(edge => `${edge.id}:${edge.from}:${edge.to}:${edge.kind}`).join('|')}`
     : tree.steps.map(step => `${step.id}:${step.when ? 'conditional' : 'always'}:${step.paths?.map(path => path.to).join(',') ?? ''}`).join('|');
   const layoutRequest = `${layoutKey}|${groupKey}|${rtl}|${tidyRevision}|${preview}`;
@@ -304,7 +308,7 @@ export function JourneyMap({ tree, selected, focusedPath = null, onSelect, onSel
     <ReactFlow nodes={nodes} edges={edges} nodeTypes={nodeTypes} edgeTypes={edgeTypes}
       nodesFocusable={false} edgesFocusable={false}
       ariaLabelConfig={{ 'node.a11yDescription.default': __('Use Tab to reach screen and path buttons. Press Enter to edit. Connections can also be edited in Next screen settings.', 'wconvert') }}
-      minZoom={0.25} maxZoom={1.5} deleteKeyCode={null} panOnScroll={!narrow} preventScrolling={!narrow} zoomOnScroll={false} zoomOnPinch
+      minZoom={mapMinZoom} maxZoom={1.5} deleteKeyCode={null} panOnScroll={!narrow} preventScrolling={!narrow} zoomOnScroll={false} zoomOnPinch
       onNodeClick={(event, node) => { if (node.type === 'screen' && !(event.target instanceof Element && event.target.closest('button'))) onSelect(tree.steps.findIndex(step => step.id === node.id)); }}
       onEdgeClick={(_, edge) => { const data = edge.data as { sourceIndex?: number; priority?: number | 'hidden' } | undefined; if (data?.sourceIndex !== undefined) onSelectPath(data.sourceIndex, data.priority ?? 0); }}
       isValidConnection={valid} onConnect={connection => { if (connection.source && connection.target && valid(connection)) onConnect(connection.source, connection.target); }}
@@ -328,7 +332,7 @@ export function JourneyMap({ tree, selected, focusedPath = null, onSelect, onSel
       <Background gap={24} size={1} color="#dce5dd" />
       <FocusCamera mapRoot={mapRoot} selectedId={visibleId(tree.steps[cameraIndex]?.id ?? tree.steps[0].id)} nextId={routesFor(tree, cameraIndex)[0]?.to ? visibleId(routesFor(tree, cameraIndex)[0].to) : undefined}
         firstId={visibleId(tree.graph?.entry ?? tree.steps[0].id)}
-        initialOverview={selected === null && view.length <= (groups.length ? 4 : 3)} overviewWidth={groups.length && view.length > 3 ? 900 : 600}
+        initialOverview={selected === null && cameraFocus === null && view.length <= (groups.length ? 4 : 3)} overviewWidth={groups.length && view.length > 3 ? 900 : 600}
         grouping={detectedGroups.length ? { active: groups.length > 0, toggle: () => { setGrouping(groups.length === 0); setExpandedGroups([]); } } : undefined}
         revision={revision} toolbar={toolbar} onNodesReady={focusExpandedScreen} preview={preview} onPreview={() => setPreview(value => !value)} onTidy={() => setTidyRevision(value => value + 1)} />
     </ReactFlow>

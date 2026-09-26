@@ -35,6 +35,37 @@ again or turn conditional follow-ups into mutually exclusive branches.
 
 ## Progress after this audit
 
+### September 26: large-map overview, readable focus and drag evidence
+
+A local unpublished enquiry with 53 screens and 101 graph edges (ten exclusive
+service branches, each with four independent follow-ups, then one combined save)
+passed the server capture contract. It exposed the map's 25% minimum zoom cropping
+the top and bottom branches even after Fit journey. The map now permits a 2%
+overview floor. Selecting a screen includes its next screen only if both remain
+readable; a distant branch or merge no longer shrinks the selected card into a
+thumbnail. Closing settings retains the last inspected screen instead of jumping
+to entry. This also applies to subsequent regrouping and layout resets.
+
+Browser checks against the rebuilt local Pro admin at 1280×720 verified all 23
+grouped cards and all 53 expanded cards inside Fit journey (about 10.8% and 10.5%
+zoom respectively). Search opened Home garden with its nearby follow-up group at
+readable size. Searching its seasonal-care screen, whose continuation merges far
+away, focused that screen at 100%; closing settings retained it. Layout was
+restored with Tidy up and no campaign edits were saved or published.
+
+Temporary DOM-only requestAnimationFrame instrumentation recorded a grouped drag
+(17 frames, 31/31 paths throughout, median 8.3 ms, max 9.4 ms) and an expanded drag
+(44 frames, 61/61 rendered paths throughout, median 8.3 ms, max 17.1 ms). Neither
+sample contained empty paths or smart-edge placeholders. Shared visible/hidden
+connections explain the difference between graph and rendered edge counts. These
+short local samples establish continuity for this scenario, not a general browser
+performance guarantee. The temporary instrumentation was removed afterward.
+
+Validation: 2,907 JavaScript tests pass, including nearby/distant camera targets,
+tall questions, narrow displays and retained focus after closing settings. Large
+map accessibility at native 200% zoom and broader browser coverage remain open.
+
+
 ### September 26: explicit Add screen locations and skip-path scope
 
 Flexible journeys no longer disable the Add screen menu when an ending is
