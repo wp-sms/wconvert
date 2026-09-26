@@ -94,9 +94,12 @@ and precise readiness repair links remain open. The server currently requires
 field and consent screens to appear on every path to their save point because
 capture requests cannot otherwise prove a conditional field was visited.
 
-## Verified gaps
+## Initial gaps recorded September 25
 
-“Current” below means source inspection of PR #190 plus a real WordPress browser
+This table preserves the initial audit, **not the current implementation status**.
+Use the progress and dated browser evidence above/below for completed changes;
+the release checks at the end remain open until explicitly verified.
+“Current” below meant source inspection of PR #190 plus a real WordPress browser
 walkthrough on the local Pro build. “B” means prototype behavior, which used
 simulated submissions and delivery. A gap is not proof of an observed visitor bug
 unless stated as such.
@@ -207,6 +210,52 @@ The saved quiz draft was reloaded again after the readiness-link change. Review
 did not invent an unfinished-path problem for a valid route. A draft with an
 empty graph answer condition is covered by the readiness UI test, which checks
 that its fix action selects the stable source screen and matching path.
+
+## Browser follow-up, September 26
+
+The admin-only Test journey mount now uses an open shadow root, allowing the
+browser test to operate its actual rendered controls. Published visitor mounts
+retain the existing closed root. Both QA campaigns remain unpublished drafts;
+the following evidence is real WordPress **admin simulation**, not a claim of
+published visitor capture or provider delivery.
+
+- **Required quiz gate:** selected Garden and Mostly sunny, reached contact
+  before the result, typed an email and consent, simulated failure, then retried.
+  The retry reached Sunny garden picks. Back showed accepted contact fields and
+  the preceding answer read-only. This exposed generated “Back to result” copy
+  on a gate before that result; result-timing transformations now use “Back.”
+- **Combined enquiry:** selected Garden and Balcony, answered both follow-ups,
+  typed contact details, then went Back and deselected Garden. Balcony's answer
+  and the email remained. Garden and Indoor were hidden. A simulated failed
+  save stayed on contact, and retry accepted one snapshot with only Balcony,
+  its follow-up and the email. The snapshot initially displayed stored option
+  keys; its review now resolves the visible choice labels.
+- **Authoring gaps:** inserted question screens lacked Back. New follow-ups now
+  include it; inserting/moving a screen to the start removes Back there and
+  gives the former first screen a Back control. Existing merchant content is
+  not silently rewritten; the two old QA follow-ups were repaired using Design.
+- **Design parity:** Layers called every later storage item “After they submit,”
+  disabled Question on an upstream follow-up stored after contact, and described
+  Continue as “Shows a result.” Layers now uses named screens, graph additions
+  follow navigation rather than storage order, and button summaries describe
+  their actual action. The WordPress browser confirmed Garden details and its
+  enabled Question insertion control after rebuilding.
+- **Phone and keyboard:** at 390px and 320px, Test journey now scrolls its body
+  while retaining its title and Close action. Snapshot labels and values stack
+  at phone widths. Opening focuses the visitor heading, Tab reaches the first
+  answer, and keyboard selection/Continue advances to the next heading. Closing
+  returns focus to Test journey; a condition repair instead targets its screen
+  settings. These checks cover this modal, not the entire editor's accessibility.
+
+The accepted-save implementation initially exceeded the Basic/Pro/Elite loader
+budgets. Reusing the existing node index and sharing question enumeration across
+the v2/v3 route and save-prefix evaluators brought all tiers back under the
+unchanged budgets. No diagram library is included in the visitor loader.
+
+Remaining release work includes published visitor/server capture evidence,
+precise repair targets for server-only failures, grouped follow-up readability,
+complex graph edits, and the responsive/keyboard/RTL checks below. Do not mark
+the feature merge-ready solely from the successful admin simulation.
 
 ## Scenario contract before more visual polishing
 

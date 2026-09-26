@@ -6,12 +6,29 @@ import { graphDisplayOrder, graphRemoval, graphTargets, insertOnGraphEdge, upgra
 import fixture from '../fixtures/journey-graph-enquiry.json';
 import finder from '../../pro/modules/journeys/templates/journey-product-finder.json';
 import guide from '../../pro/modules/journeys/templates/journey-content-guide.json';
+import { additionsIn } from '../../resources/admin/src/builder/structure/catalogue';
+import { nodesOf } from '../../resources/admin/src/builder/structure/tree';
 
 const base = fixture as unknown as TemplateTree;
+
+it('uses named screens and graph navigation for Design additions after storage reordering', () => {
+  const tree = { ...base, steps: [...base.steps].reverse() };
+  const offered = (screen: string, type: string) => additionsIn(tree,
+    { parent: [tree.steps.findIndex(item => item.id === screen)], key: 'children', index: 0 }, 'submit')
+    .find(item => item.type === type)?.refused;
+  expect(offered('garden', 'question')).toBeNull();
+  expect(offered('contact', 'question')).toBeNull();
+  expect(offered('received', 'question')).toMatch(/question screen/);
+  expect(offered('received', 'followup')).toBeNull();
+  expect(offered('garden', 'followup')).toMatch(/after capture/);
+  expect(nodesOf(tree).filter(block => block.level === 1).map(block => block.screenName))
+    .toEqual(tree.steps.map(screen => screen.name));
+});
 
 it('inserts on a named edge without changing the original condition or unrelated routes', () => {
   const before = graphTrace(base.steps, base.graph!, { n1: ['balcony'], n4: 'large' });
   const inserted = insertOnGraphEdge(base, 'balcony_next', freshScreen(base, 'content'));
+  expect(walkNodes(inserted.steps.at(-1)!.content).some(node => node.type === 'button' && 'action' in node && node.action === 'back')).toBe(true);
   const newScreen = inserted.steps.at(-1)!;
   expect(inserted.graph?.edges.find(edge => edge.id === 'balcony_next')?.to).toBe(newScreen.id);
   expect(inserted.graph?.edges.find(edge => edge.from === newScreen.id && edge.kind === 'default')?.to).toBe('contact');
@@ -109,6 +126,8 @@ it('moves a graph quiz signup before and after a result while keeping incoming e
   expect(graphTrace(required.steps, required.graph!, { n3: ['grow'] }).indices.map(index => required.steps[index].id))
     .toEqual(['interests', 'signup', 'guide', 'thanks']);
   expect(walkNodes(required.steps.find(screen => screen.id === 'signup')!.content).some(node => node.type === 'button' && 'action' in node && node.action === 'skip')).toBe(false);
+  expect(walkNodes(required.steps.find(screen => screen.id === 'signup')!.content).filter(node => node.type === 'button' && 'action' in node && node.action === 'back')
+    .map(node => 'label' in node ? node.label : '')).toEqual(['Back']);
   const back = resultAccess(required, false);
   expect(back.submissions[0].required).toBe(false);
   expect(back.graph?.edges.find(edge => edge.id === originalIncoming)?.to).toBe('guide');

@@ -11,12 +11,30 @@ vi.mock('@renderer/mount', () => ({ mount: ({ anchor, template }: { anchor: HTML
   anchor.append(root);
   return { mounted: true, root, show() {}, showStep(step: number) {
     root.innerHTML = step === 0
-      ? `${template.tree.steps[0].name === 'Combined save' ? '<label>Optional note<textarea data-question-id="optional-note"></textarea></label>' : ''}<label>Email address<input type="email" required data-capture-id="n2"></label><label><input type="checkbox" required data-capture-id="n3">Consent</label><button data-action="submit" data-submission="email-signup" type="submit">Sign up</button>`
+      ? `${template.tree.steps[0].name === 'Combined save' ? '<label>Optional note<textarea data-question-id="optional-note"></textarea></label>' : ''}${template.tree.steps[0].name === 'Choice save' ? '<label><input type="checkbox" data-question-id="interest-question" value="second">Balcony</label>' : ''}<label>Email address<input type="email" required data-capture-id="n2"></label><label><input type="checkbox" required data-capture-id="n3">Consent</label><button data-action="submit" data-submission="email-signup" type="submit">Sign up</button>`
       : '<h2>Received</h2><button data-action="back" type="button">Back</button>';
   }, close() { root.remove(); } };
 } }));
 
 afterEach(cleanup);
+
+it('shows merchant-facing choice labels in the accepted snapshot', async () => {
+  const user = userEvent.setup();
+  const first = source.tree.steps[0];
+  const template = { ...source, tree: { ...source.tree, steps: [{ ...first, name: 'Choice save', content: {
+    ...first.content, children: [...first.content.children,
+      { type: 'question', id: 'interest-question', label: 'Your interests', answer_type: 'multi', required: false,
+        options: [{ value: 'first', label: 'Garden' }, { value: 'second', label: 'Balcony' }] }],
+  } }, ...source.tree.steps.slice(1)] } } as unknown as Template;
+  render(<JourneyTest template={template} onEdit={() => {}} />);
+  await user.click(screen.getByLabelText('Balcony'));
+  await user.type(screen.getByLabelText('Email address'), 'visitor@example.com');
+  await user.click(screen.getByLabelText('Consent'));
+  await user.click(screen.getByRole('button', { name: 'Sign up' }));
+  await user.click(screen.getByText('Review accepted snapshot'));
+  expect(screen.getByText('Balcony')).toBeInTheDocument();
+  expect(screen.queryByText('second')).not.toBeInTheDocument();
+});
 
 it('keeps typed details when failure is toggled, then accepts a retry without sending data', async () => {
   const user = userEvent.setup();

@@ -1251,7 +1251,10 @@ body .wconvert-rule-picker__unavailable {
 .wconvert-journey-settings__products ul,.wconvert-journey-settings__products ol { margin: 0; padding-inline-start: 22px; }
 .wconvert-journey-settings__products li { display: flex; align-items: center; gap: 8px; padding-block: 6px; }
 .wconvert-journey-settings__products li span { flex: 1; min-inline-size: 0; overflow-wrap: anywhere; }
-.wconvert-journey-test-dialog { inline-size: min(100vw - 2rem, 980px); max-inline-size: 980px; max-block-size: min(90vh,800px); overflow-y: auto; }
+.wconvert-journey-test-dialog { inline-size: min(100vw - 2rem, 980px); max-inline-size: 980px; max-block-size: min(90dvh,800px); overflow: hidden; grid-template-rows: auto auto minmax(0,1fr); }
+.wconvert-journey-test-dialog > [data-slot='dialog-title'] { padding-inline-end: 32px; }
+.wconvert-journey-test-dialog > [data-slot='dialog-close'] { inline-size: 44px; block-size: 44px; display: grid; place-items: center; inset-block-start: 8px; inset-inline-end: 8px; }
+.wconvert-journey-test-dialog__body { min-block-size: 0; min-inline-size: 0; overflow: auto; padding: 2px; }
 .wconvert-journey-test { display: grid; grid-template-columns: minmax(0,1.4fr) minmax(220px,.6fr); gap: 22px; min-block-size: 320px; }
 .wconvert-journey-test__stage { display: grid; align-items: start; min-inline-size: 0; min-block-size: 280px; }
 .wconvert-journey-test__side { display: grid; align-content: start; gap: 12px; }
@@ -1278,7 +1281,11 @@ body .wconvert-rule-picker__unavailable {
 .wconvert-journey-test__capture input { margin-block-start: 2px; }
 .wconvert-journey-test__side fieldset { display: grid; gap: 6px; border: 1px solid var(--border); border-radius: var(--radius); }
 .wconvert-journey-test__side fieldset label { display: flex; gap: 6px; }
-@media (max-width: 700px) { .wconvert-journey-test { grid-template-columns: 1fr; } }
+@media (max-width: 700px) {
+  .wconvert-journey-test { grid-template-columns: 1fr; }
+  .wconvert-journey-test__checkpoint dl > div { display: grid; gap: 2px; }
+  .wconvert-journey-test__checkpoint dd { text-align: start; }
+}
 @media (max-width: 740px) {
   .wconvert-journey-settings__clause { grid-template-columns: minmax(0,1fr) minmax(0,1fr); }
   .wconvert-journey-settings__clause>span,.wconvert-journey-settings__clause>select:first-of-type,.wconvert-journey-settings__clause>button { grid-column: 1 / -1; }

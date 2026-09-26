@@ -304,7 +304,7 @@ describe('moving a block', () => {
 
     await userEvent.click(within(row('Headline')).getByRole('button', { name: 'Move Headline down' }));
 
-    expect(rowNames().slice(0, 4)).toEqual(['The form', 'Body text', 'Headline', 'Row']);
+    expect(rowNames().slice(0, 4)).toEqual(['Details', 'Body text', 'Headline', 'Row']);
   });
 
   /**
@@ -337,7 +337,7 @@ describe('moving a block', () => {
 
     await userEvent.click(up);
 
-    expect(rowNames().slice(0, 3)).toEqual(['The form', 'Headline', 'Body text']);
+    expect(rowNames().slice(0, 3)).toEqual(['Details', 'Headline', 'Body text']);
   });
 
   /**
@@ -359,7 +359,7 @@ describe('moving a block', () => {
     // Past the `row`, whose own two children sit between them in the list —
     // the block moved two places among its SIBLINGS, which is what ↓ means.
     expect(rowNames().slice(0, 6)).toEqual([
-      'The form',
+      'Details',
       'Body text',
       'Row',
       'Email address',
@@ -451,7 +451,7 @@ describe('the row', () => {
 
     await userEvent.click(screen.getByRole('menuitem', { name: 'Move down' }));
 
-    expect(rowNames().slice(0, 3)).toEqual(['The form', 'Body text', 'Headline']);
+    expect(rowNames().slice(0, 3)).toEqual(['Details', 'Body text', 'Headline']);
   });
 
   /** A third pointer-free path, for repeat moves without hunting for a button. */
@@ -461,11 +461,11 @@ describe('the row', () => {
 
     await userEvent.keyboard('{Alt>}{ArrowDown}{/Alt}');
 
-    expect(rowNames().slice(0, 3)).toEqual(['The form', 'Body text', 'Headline']);
+    expect(rowNames().slice(0, 3)).toEqual(['Details', 'Body text', 'Headline']);
 
     await userEvent.keyboard('{Alt>}{ArrowDown}{/Alt}');
 
-    expect(rowNames().slice(0, 4)).toEqual(['The form', 'Body text', 'Row', 'Email address']);
+    expect(rowNames().slice(0, 4)).toEqual(['Details', 'Body text', 'Row', 'Email address']);
   });
 
   /**
@@ -477,7 +477,7 @@ describe('the row', () => {
     await structure();
 
     expect(row('Headline').querySelector('.wconvert-block__grip')).not.toBeNull();
-    expect(row('The form').querySelector('.wconvert-block__grip')).toBeNull();
+    expect(row('Details').querySelector('.wconvert-block__grip')).toBeNull();
   });
 
   /**
@@ -734,7 +734,7 @@ describe('adding a block', () => {
     await userEvent.click(screen.getByRole('menuitem', { name: 'Add a block after this' }));
     await userEvent.click(await screen.findByRole('menuitem', { name: 'Image' }));
 
-    expect(rowNames().slice(0, 3)).toEqual(['The form', 'Headline', 'Image']);
+    expect(rowNames().slice(0, 3)).toEqual(['Details', 'Headline', 'Image']);
     expect(screen.getByRole('status', { name: 'Layer changes' })).toHaveTextContent('Image added.');
   });
 
@@ -844,10 +844,10 @@ describe('the inspector', () => {
 
   it('says what a step is rather than offering it a text box', async () => {
     await structure();
-    await select('The form');
+    await select('Details');
 
-    expect(inspector('The form').queryByLabelText('Text')).toBeNull();
-    expect(inspector('The form').getByText(/Appearance for Column/)).toBeInTheDocument();
+    expect(inspector('Details').queryByLabelText('Text')).toBeNull();
+    expect(inspector('Details').getByText(/Appearance for Column/)).toBeInTheDocument();
   });
 
   it('writes what is typed into the tree, and the Save sends it', async () => {
@@ -1105,7 +1105,7 @@ describe('the inspector', () => {
     // Whatever took focus. The fine print is the last block in its list, so
     // there is no next sibling and what was holding it takes focus — here the
     // step itself, which the inspector names rather than blanking.
-    expect(screen.getByRole('group', { name: 'The form' })).toBeInTheDocument();
+    expect(screen.getByRole('group', { name: 'Details' })).toBeInTheDocument();
   });
 });
 
@@ -1244,7 +1244,7 @@ describe('undo and redo', () => {
   it('keeps the design unchanged when an undo shortcut is pressed inside launch review', async () => {
     await structure();
     await userEvent.click(within(row('Headline')).getByRole('button', { name: 'Move Headline down' }));
-    expect(rowNames().slice(0, 3)).toEqual(['The form', 'Body text', 'Headline']);
+    expect(rowNames().slice(0, 3)).toEqual(['Details', 'Body text', 'Headline']);
     expect(screen.getByRole('button', { name: 'Undo draft edit' })).toBeEnabled();
 
     await userEvent.click(screen.getByRole('button', { name: 'Review & publish' }));
@@ -1257,12 +1257,12 @@ describe('undo and redo', () => {
     expect(screen.getByRole('dialog', { name: 'Review & publish' })).toBeInTheDocument();
     await userEvent.click(keepEditing);
 
-    expect(rowNames().slice(0, 3)).toEqual(['The form', 'Body text', 'Headline']);
+    expect(rowNames().slice(0, 3)).toEqual(['Details', 'Body text', 'Headline']);
     expect(screen.getByRole('button', { name: 'Undo draft edit' })).toBeEnabled();
     expect(screen.getByRole('button', { name: 'Redo draft edit' })).toBeDisabled();
     // The history still works once the merchant has deliberately returned to editing.
     await userEvent.click(screen.getByRole('button', { name: 'Undo draft edit' }));
-    expect(rowNames().slice(0, 3)).toEqual(['The form', 'Headline', 'Body text']);
+    expect(rowNames().slice(0, 3)).toEqual(['Details', 'Headline', 'Body text']);
   });
 
   /**
@@ -1282,7 +1282,7 @@ describe('undo and redo', () => {
 
     await userEvent.click(screen.getByRole('button', { name: 'Undo draft edit' }));
 
-    expect(rowNames().slice(0, 3)).toEqual(['The form', 'Headline', 'Body text']);
+    expect(rowNames().slice(0, 3)).toEqual(['Details', 'Headline', 'Body text']);
     expect(screen.queryByText(/^Draft saved$/)).toBeNull();
   });
 });
@@ -1549,7 +1549,7 @@ describe('a layout’s own settings', () => {
             tokens: ENTRY.tokens,
             /*
               Nested rather than at the top of the step: a step's root layout is
-              the step's own row ("The form"), so a `split` there has no row of
+              the step's own row ("Details"), so a `split` there has no row of
               its own to select.
             */
             tree: treeFixture({
@@ -1953,9 +1953,9 @@ describe('the visible Add element picker', () => {
     await userEvent.selectOptions(screen.getByLabelText('Insert position'), '1');
     await userEvent.type(screen.getByLabelText('Find an element'), 'Image');
     await userEvent.click(screen.getByRole('button', { name: 'Image' }));
-    expect(rowNames().slice(0, 3)).toEqual(['The form', 'Image', 'Headline']);
+    expect(rowNames().slice(0, 3)).toEqual(['Details', 'Image', 'Headline']);
     await userEvent.click(screen.getByRole('button', { name: 'Undo draft edit' }));
-    expect(rowNames().slice(0, 2)).toEqual(['The form', 'Headline']);
+    expect(rowNames().slice(0, 2)).toEqual(['Details', 'Headline']);
   });
 
   it('lets the merchant choose the field to add and disables a duplicate capture', async () => {

@@ -87,6 +87,9 @@ export function resultAccess(tree: TemplateTree, required: boolean): TemplateTre
       : __('Your result is already available. Signup is optional.', 'wconvert');
     if (copy.type === 'consent') copy.hidden = gate || !String(copy.text ?? '').trim();
     if (copy.type === 'button' && copy.action === 'submit') copy.label = gate ? __('See my result', 'wconvert') : __('Sign up', 'wconvert');
+    if (gate && copy.type === 'button' && copy.action === 'back'
+      && (copy.label === __('Back to guide', 'wconvert') || copy.label === __('Back to result', 'wconvert')))
+      copy.label = __('Back', 'wconvert');
     for (const key of ['children', 'start', 'end']) if (Array.isArray(copy[key])) copy[key] = (copy[key] as TemplateNode[]).map(child => contactCopy(child, gate));
     return copy as unknown as TemplateNode;
   };
@@ -124,7 +127,7 @@ export function addGraphResultSignup(tree: TemplateTree): TemplateTree {
     { type: 'consent', text: __('Send me email updates. %s', 'wconvert'), link: { label: __('Privacy Policy', 'wconvert') }, hidden: false, role: 'consent_text' },
     { type: 'button', label: __('Sign up', 'wconvert'), action: 'submit', submission: submissionId },
     { type: 'button', label: __('No thanks', 'wconvert'), action: 'skip', submission: submissionId },
-    { type: 'button', label: __('Back to result', 'wconvert'), action: 'back' },
+    { type: 'button', label: __('Back', 'wconvert'), action: 'back' },
   ] } };
   const acknowledgement: TemplateScreen = { id: acknowledgementId, name: __('All set', 'wconvert'), kind: 'acknowledgement', content: { type: 'stack', children: [
     { type: 'heading', text: __('Thanks for visiting', 'wconvert'), role: 'success_headline' },
@@ -168,6 +171,9 @@ function graphResultAccess(tree: TemplateTree, required: boolean): TemplateTree 
       copy.text = gate ? __('Enter your email to see your recommendation.', 'wconvert') : __('Your result is already available. Signup is optional.', 'wconvert');
     if (copy.type === 'button' && copy.action === 'submit' && copy.label === (gate ? __('Sign up', 'wconvert') : __('See my result', 'wconvert')))
       copy.label = gate ? __('See my result', 'wconvert') : __('Sign up', 'wconvert');
+    if (gate && copy.type === 'button' && copy.action === 'back'
+      && (copy.label === __('Back to result', 'wconvert') || copy.label === __('Back to guide', 'wconvert')))
+      copy.label = __('Back', 'wconvert');
     if (copy.type === 'button' && copy.action === 'next' && copy.label === (gate ? __('Optional email updates', 'wconvert') : __('Finish', 'wconvert')))
       copy.label = gate ? __('Finish', 'wconvert') : __('Optional email updates', 'wconvert');
     for (const key of ['children', 'start', 'end']) if (Array.isArray(copy[key])) copy[key] = (copy[key] as TemplateNode[]).map(child => rewrite(child, gate));
@@ -235,15 +241,31 @@ function graphResultAccess(tree: TemplateTree, required: boolean): TemplateTree 
     graph: { ...graph, edges }, submissions: [{ ...submission, required: false }] });
 }
 
-export function freshScreen(tree: TemplateTree, kind: 'content' | 'input'): TemplateScreen {
+export function withBackButton(screen: TemplateScreen): TemplateScreen {
+  if (walkNodes(screen.content).some(node => node.type === 'button' && 'action' in node && node.action === 'back')) return screen;
+  return { ...screen, content: { type: 'stack', children: [screen.content,
+    { type: 'button', label: __('Back', 'wconvert'), action: 'back', tokens: { accent: 'transparent', 'accent-fg': '#475569' } },
+  ] } };
+}
+
+function withoutBackButtons(node: TemplateNode): TemplateNode {
+  if (node.type === 'button' && 'action' in node && node.action === 'back') return { type: 'stack', children: [] };
+  const copy = { ...node } as Record<string, unknown>;
+  for (const key of ['children', 'start', 'end']) if (Array.isArray(copy[key])) copy[key] = (copy[key] as TemplateNode[])
+    .filter(child => !(child.type === 'button' && 'action' in child && child.action === 'back')).map(withoutBackButtons);
+  return copy as unknown as TemplateNode;
+}
+
+export function freshScreen(tree: TemplateTree, kind: 'content' | 'input', canGoBack = true): TemplateScreen {
   let i = 1; while (tree.steps.some(s => s.id === `s${i}`)) i++;
-  return { id: `s${i}`, name: kind === 'input' ? __('Questions', 'wconvert') : __('Offer', 'wconvert'), kind,
+  const screen: TemplateScreen = { id: `s${i}`, name: kind === 'input' ? __('Questions', 'wconvert') : __('Offer', 'wconvert'), kind,
     content: { type: 'stack', children: [
       { type: 'heading', role: 'headline', text: __('Tell us more', 'wconvert') },
       ...(kind === 'input' ? [{ type: 'question', label: __('What matters most to you?', 'wconvert'), answer_type: 'single', required: false,
         options: [{ value: 'first', label: __('First option', 'wconvert') }, { value: 'second', label: __('Second option', 'wconvert') }] } as TemplateNode] : []),
       { type: 'button', label: __('Continue', 'wconvert'), action: 'next' },
     ] } };
+  return canGoBack ? withBackButton(screen) : screen;
 }
 
 export function usedBy(tree: TemplateTree, questionId: string): string[] {
@@ -309,6 +331,11 @@ export function movedScreen(tree: TemplateTree, from: number, to: number): Templ
   const ends = tree.submissions.map(sub => submissionScreen(next, sub.id)).filter(index => index >= 0);
   if (ends.some((end, index) => index > 0 && end <= ends[index - 1])) return tree;
   if (unreachableScreens(next).length > 0) return tree;
+  if (steps[0].id !== tree.steps[0].id) {
+    steps[0] = { ...steps[0], content: withoutBackButtons(steps[0].content) };
+    const previousEntry = steps.findIndex(item => item.id === tree.steps[0].id);
+    if (previousEntry > 0) steps[previousEntry] = withBackButton(steps[previousEntry]);
+  }
   return referencedJourney(next);
 }
 

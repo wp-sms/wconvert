@@ -339,7 +339,7 @@ describe('the builder shell', () => {
 
     const tree = screen.getByRole('treegrid', { name: 'Blocks in this design' });
 
-    expect(within(tree).getByRole('row', { name: /The form/ })).toBeInTheDocument();
+    expect(within(tree).getByRole('row', { name: /Details/ })).toBeInTheDocument();
     expect(within(tree).getByRole('row', { name: /Headline/ })).toBeInTheDocument();
     expect(within(tree).getByRole('row', { name: /Email address/ })).toBeInTheDocument();
   });

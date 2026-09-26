@@ -8,7 +8,7 @@ import service from '../../modules/journeys/templates/journey-service-enquiry.js
 import guide from '../../modules/journeys/templates/journey-content-guide.json';
 import enquiryGraph from '../../../tests/fixtures/journey-graph-enquiry.json';
 import { showProducts } from '@loader/products';
-import { resultAccess } from '../../../resources/admin/src/builder/structure/journey';
+import { resultAccess, walkNodes } from '../../../resources/admin/src/builder/structure/journey';
 import { upgradeToGraph } from '../../../resources/admin/src/builder/structure/graph';
 import { convertingActOf } from '../../../resources/admin/src/builder/structure/guards';
 
@@ -212,6 +212,8 @@ it('shows results before an optional email signup without counting another conve
 it('can require contact before a result while counting the result as the quiz conversion', async () => {
   const tree = resultAccess((guide as Template).tree, true);
   expect(tree.steps.map(screen => screen.kind)).toEqual(['input', 'input', 'result']);
+  expect(walkNodes(tree.steps[1].content).filter(node => node.type === 'button' && 'action' in node && node.action === 'back')
+    .map(node => 'label' in node ? node.label : '')).toEqual(['Back']);
   expect(tree.submissions[0].required).toBe(true);
   expect(convertingActOf(tree)).toEqual(['match']);
   const fetcher = vi.fn().mockResolvedValueOnce({ ok: true, json: async () => ({ grant: 'secret' }) })

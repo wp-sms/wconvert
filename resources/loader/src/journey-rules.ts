@@ -1,4 +1,4 @@
-import type { TemplateScreen } from '@renderer/types';
+import type { TemplateNode, TemplateScreen } from '@renderer/types';
 
 export type Answers = Record<string, string | string[]>;
 export interface Clause { readonly question: string; readonly operator: 'is' | 'is_not' | 'includes_any' | 'includes_none'; readonly values: readonly string[]; }
@@ -8,6 +8,19 @@ export interface JourneyPath { readonly indices: readonly number[]; readonly ans
 export interface JourneyDecision { readonly from: number; readonly to: number; readonly kind: 'route' | 'continue' | 'hidden'; readonly priority?: number; }
 export interface JourneySkip { readonly index: number; readonly reason: 'condition' | 'route'; readonly from?: number; readonly to?: number; readonly missingQuestions?: readonly string[]; }
 export interface JourneyTrace extends JourneyPath { readonly decisions: readonly JourneyDecision[]; readonly skips: readonly JourneySkip[]; }
+
+/** Shared by both route models and the accepted-save boundary. */
+export function screenQuestionIds(screen: TemplateScreen): string[] {
+  const ids: string[] = [];
+  const nodes = [screen.content];
+  while (nodes.length) {
+    const node = nodes.shift()!;
+    if (node.type === 'question' && 'id' in node && typeof node.id === 'string') ids.push(node.id);
+    const layout = node as { children?: TemplateNode[]; start?: TemplateNode[]; end?: TemplateNode[] };
+    nodes.push(...(layout.children ?? []), ...(layout.start ?? []), ...(layout.end ?? []));
+  }
+  return ids;
+}
 
 /** A blank source makes even a negative comparison false. */
 export function matches(condition: Condition | undefined, answers: Answers): boolean {
@@ -36,15 +49,7 @@ export function journeyTrace(steps: readonly TemplateScreen[], answers: Answers)
     const shown = matches(step.when, active);
     if (shown) {
       indices.push(at);
-      const nodes = [step.content];
-      while (nodes.length) {
-        const question = nodes.shift()!;
-        if (question.type === 'question' && 'id' in question && typeof question.id === 'string' && answers[question.id] !== undefined) {
-          active[question.id] = answers[question.id];
-        }
-        const layout = question as { children?: typeof nodes; start?: typeof nodes; end?: typeof nodes };
-        nodes.push(...(layout.children ?? []), ...(layout.start ?? []), ...(layout.end ?? []));
-      }
+      for (const id of screenQuestionIds(step)) if (answers[id] !== undefined) active[id] = answers[id];
     } else {
       const missingQuestions = step.when?.clauses.filter(clause => {
         const value = active[clause.question];

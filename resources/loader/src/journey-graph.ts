@@ -1,5 +1,5 @@
-import type { JourneyGraph, TemplateNode, TemplateScreen } from '@renderer/types';
-import { matches, type Answers } from './journey-rules';
+import type { JourneyGraph, TemplateScreen } from '@renderer/types';
+import { matches, screenQuestionIds, type Answers } from './journey-rules';
 
 export interface GraphDecision { readonly edge: string; readonly from: string; readonly to: string; readonly kind: 'answer' | 'default' | 'hidden'; readonly priority?: number; }
 export interface GraphTrace { readonly indices: readonly number[]; readonly answers: Answers; readonly decisions: readonly GraphDecision[]; readonly hidden: readonly string[]; }
@@ -35,13 +35,7 @@ export function graphTrace(steps: readonly TemplateScreen[], graph: JourneyGraph
     const shown = matches(screen.when, active);
     if (shown) {
       indices.push(index);
-      const nodes: TemplateNode[] = [screen.content];
-      while (nodes.length) {
-        const node = nodes.shift()!;
-        if (node.type === 'question' && 'id' in node && typeof node.id === 'string' && answers[node.id] !== undefined) active[node.id] = answers[node.id];
-        const layout = node as { children?: TemplateNode[]; start?: TemplateNode[]; end?: TemplateNode[] };
-        nodes.push(...(layout.children ?? []), ...(layout.start ?? []), ...(layout.end ?? []));
-      }
+      for (const question of screenQuestionIds(screen)) if (answers[question] !== undefined) active[question] = answers[question];
     } else hidden.push(id);
     const outgoing = graph.edges.filter(edge => edge.from === id);
     const choices = outgoing.filter(edge => edge.kind === 'answer');

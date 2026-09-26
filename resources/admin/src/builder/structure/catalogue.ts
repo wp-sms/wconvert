@@ -2,6 +2,7 @@ import { __ } from '@wordpress/i18n';
 import { AUTHORED_ROLES, FIELDS, LAYOUTS, LEAVES, ROLES, childKeysOf } from '../panel';
 import { capturesTaken, nodeAt, rolesTaken, type Spot } from './tree';
 import { submissionScreen, walkNodes } from './journey';
+import { graphReaches } from './graph';
 import type { TemplateNode, TemplateTree } from '@renderer/types';
 
 /**
@@ -148,7 +149,9 @@ function whyRefused(
   if (type === 'followup') {
     const primary = tree.submissions[0]?.id;
     const acceptedAt = submissionScreen(tree, primary);
-    if (acceptedAt < 0 || Number(at.parent[0]) <= acceptedAt) {
+    if (acceptedAt < 0 || !screen || (tree.graph
+      ? screen.id === tree.steps[acceptedAt].id || !graphReaches(tree.graph, tree.steps[acceptedAt].id, screen.id)
+      : Number(at.parent[0]) <= acceptedAt)) {
       return __('Resource links belong after capture.', 'wconvert');
     }
   }
@@ -157,7 +160,8 @@ function whyRefused(
   }
   if (type === 'question') {
     const boundary = tree.steps.findIndex(item => item.kind === 'result' || walkNodes(item.content).some(node => node.type === 'button' && 'action' in node && node.action === 'submit'));
-    if (screen?.kind !== 'input' || (boundary >= 0 && Number(at.parent[0]) >= boundary)) return __('Add questions on a screen before the result or contact submission.', 'wconvert');
+    if (screen?.kind !== 'input') return __('Add questions to a question screen.', 'wconvert');
+    if (!tree.graph && boundary >= 0 && Number(at.parent[0]) >= boundary) return __('Add questions on a screen before the result or contact submission.', 'wconvert');
     if (tree.steps.flatMap(item => walkNodes(item.content)).filter(node => node.type === 'question').length >= 10) return __('This journey already has ten questions.', 'wconvert');
   }
 

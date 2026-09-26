@@ -99,6 +99,8 @@ export const sameSpot = (a: Spot, b: Spot): boolean =>
  * hid the row would offer no way to say so.
  */
 export interface Block {
+  /** Named screen container; storage position does not imply capture timing. */
+  readonly screenName?: string;
   readonly path: Path;
   readonly type: string;
   /** A leaf holds words; a layout holds blocks. Read off the manifest. */
@@ -196,6 +198,7 @@ export function nodesOf(tree: TemplateTree): Block[] {
   // preview slot it points at must land on one `SlotKey` — and roles repeat, so
   // the name alone no longer identifies either (ADR 0051, {@link numbered}).
   return numbered(blocks).map(block => {
+    if (block.level === 1) return { ...block, screenName: tree.steps[Number(block.path[0])].name };
     const node = nodeAt(tree, block.path) as { submission?: string } | null;
     return block.action === 'submit' && node?.submission === tree.submissions[1]?.id && tree.submissions.length > 1
       ? { ...block, counts: false } : block;

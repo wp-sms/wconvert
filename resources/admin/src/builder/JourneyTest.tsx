@@ -52,11 +52,17 @@ export function JourneyTest({ template, onEdit, deliveryMode = 'none', destinati
   useEffect(() => {
     const target = anchor.current;
     if (!target) return;
-    const mounted = mount({ displayType: 'inline', template, anchor: target });
+    const mounted = mount({ displayType: 'inline', template, anchor: target, shadowMode: 'open' });
     if (!mounted.mounted) return;
     mounted.show(); mounted.showStep(step);
     const root = mounted.root;
     if (!root) return () => mounted.close();
+    // Start keyboard travel in the visitor screen, before the diagnostic sidebar.
+    const focusFrame = requestAnimationFrame(() => {
+      if (!root.isConnected || !root.getClientRects().length) return;
+      const heading = root.querySelector<HTMLElement>('h1,h2,h3') ?? root;
+      heading.tabIndex = -1; heading.focus();
+    });
     const resultAt = tree.steps.findIndex(screen => screen.kind === 'result');
     const signupAt = tree.submissions[0] ? tree.steps.findIndex(screen => walkNodes(screen.content).some(node => node.type === 'button' && 'submission' in node && node.submission === tree.submissions[0].id && 'action' in node && node.action === 'submit')) : -1;
     if (step === entry && signupAt >= 0 && resultAt >= 0 && (tree.graph
@@ -173,11 +179,12 @@ export function JourneyTest({ template, onEdit, deliveryMode = 'none', destinati
     root.addEventListener('click', advance);
     root.addEventListener('submit', event => event.preventDefault());
     root.querySelectorAll('a').forEach(link => link.addEventListener('click', event => event.preventDefault()));
-    return () => mounted.close();
+    return () => { cancelAnimationFrame(focusFrame); mounted.close(); };
   // Remount when the preview path or its answers change; this never sends data.
   }, [template, step, entry, productState, answers, active, trace.indices, move, tree, captureValues, accepted, acceptedQuestions, deliveryMode]);
+  const nodes = tree.steps.flatMap(screen => walkNodes(screen.content));
   const nodeLabel = (id: string) => {
-    const node = tree.steps.flatMap(screen => walkNodes(screen.content)).find(item => 'id' in item && item.id === id);
+    const node = nodes.find(item => 'id' in item && item.id === id);
     return node && 'label' in node && typeof node.label === 'string' ? node.label
       : node?.type === 'consent' ? __('Consent', 'wconvert') : id;
   };
@@ -205,7 +212,12 @@ export function JourneyTest({ template, onEdit, deliveryMode = 'none', destinati
         : __('Continue', 'wconvert');
     return [{ id: `${decision.from}-${decision.to}`, label: sprintf(__('%1$s → %2$s: %3$s', 'wconvert'), from, to, action) }];
   });
-  const answerText = (value: string | string[] | undefined) => Array.isArray(value) ? value.join(', ') : value ?? __('Unanswered', 'wconvert');
+  const answerText = (id: string, value: string | string[] | undefined) => {
+    if (value === undefined || value === '' || Array.isArray(value) && !value.length) return __('Unanswered', 'wconvert');
+    const node = nodes.find(item => 'id' in item && item.id === id);
+    const choices = node && 'options' in node && Array.isArray(node.options) ? node.options : [];
+    return (Array.isArray(value) ? value : [value]).map(answer => choices.find(choice => choice.value === answer)?.label ?? answer).join(', ');
+  };
   return <div className="wconvert-journey-test">
     <div ref={anchor} className="wconvert-journey-test__stage" />
     <div className="wconvert-journey-test__side">
@@ -233,8 +245,8 @@ export function JourneyTest({ template, onEdit, deliveryMode = 'none', destinati
               {__('Simulate delivery retry', 'wconvert')}</button>}
             {snapshots[submission.id] && <details><summary>{__('Review accepted snapshot', 'wconvert')}</summary><dl>
               {Object.entries(snapshots[submission.id].values).map(([id, value]) => <div key={id}><dt>{nodeLabel(id)}</dt><dd>{typeof value === 'boolean'
-                ? value ? __('Agreed', 'wconvert') : __('Not agreed', 'wconvert') : value}</dd></div>)}
-              {snapshots[submission.id].questionIds.map(id => <div key={id}><dt>{nodeLabel(id)}</dt><dd>{answerText(snapshots[submission.id].answers[id])}</dd></div>)}
+                ? value ? __('Agreed', 'wconvert') : __('Not agreed', 'wconvert') : answerText(id, value)}</dd></div>)}
+              {snapshots[submission.id].questionIds.map(id => <div key={id}><dt>{nodeLabel(id)}</dt><dd>{answerText(id, snapshots[submission.id].answers[id])}</dd></div>)}
             </dl></details>}
           </>}
         </li>)}</ol>

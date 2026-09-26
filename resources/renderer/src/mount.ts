@@ -118,6 +118,8 @@ export interface MountOptions {
    * to select. {@see \@renderer/render's RenderOptions}.
    */
   readonly paths?: boolean;
+  /** Controlled admin tests may expose their rendered inputs to browser tooling. Visitor mounts remain closed. */
+  readonly shadowMode?: 'open';
 }
 
 export interface Mounted {
@@ -206,7 +208,7 @@ export function shell(template: Template, chrome: HTMLElement | null, options: M
   resume: () => void;
 } {
   const host = document.createElement('div');
-  const shadow = host.attachShadow({ mode: 'closed' });
+  const shadow = host.attachShadow({ mode: options.shadowMode ?? 'closed' });
   const style = document.createElement('style');
 
   style.textContent = mountedStyles();

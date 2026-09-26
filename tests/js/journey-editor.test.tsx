@@ -1,6 +1,6 @@
 import userEvent from '@testing-library/user-event';
 import { useState } from 'react';
-import { render, screen, fireEvent, cleanup, within } from '@testing-library/react';
+import { render, screen, fireEvent, cleanup, within, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import { JourneyEditor } from '../../resources/admin/src/builder/JourneyEditor';
 import type { QuestionCondition, QuestionNode, TemplateTree } from '@renderer/types';
@@ -25,6 +25,15 @@ function Editor({ initial = source.tree as TemplateTree }: { initial?: TemplateT
     <output data-testid="draft">{JSON.stringify(tree)}</output></>;
 }
 function draft(): TemplateTree { return JSON.parse(screen.getByTestId('draft').textContent!); }
+it.each([true, false])('restores focus after closing Test journey (embedded: %s)', async embedded => {
+  const user = userEvent.setup();
+  render(<JourneyEditor embedded={embedded} tree={source.tree as TemplateTree} step={0} onChange={() => {}} onSelect={() => {}} />);
+  if (!embedded) await user.click(screen.getByRole('button', { name: 'Manage screens' }));
+  await user.click(screen.getByRole('button', { name: 'Test journey' }));
+  expect(screen.getByRole('dialog', { name: 'Test journey' })).toBeInTheDocument();
+  await user.keyboard('{Escape}');
+  await waitFor(() => expect(screen.getByRole('button', { name: 'Test journey' })).toHaveFocus());
+});
 it('opens a requested graph repair on its source screen and path settings', async () => {
   const base = graphFixture as unknown as TemplateTree;
   const tree: TemplateTree = { ...base, graph: { ...base.graph!, edges: [...base.graph!.edges,
@@ -118,9 +127,15 @@ it('preserves screen identity when reordering and gives a duplicate its own iden
   await user.click(screen.getByRole('button', {name:'Add screen'}));
   await user.click(screen.getByRole('menuitem', {name:'Add offer screen'}));
   const added = draft().steps[0].id;
+  const backs = (tree: TemplateTree, index: number) => walkNodes(tree.steps[index].content)
+    .filter(node => node.type === 'button' && 'action' in node && node.action === 'back');
+  expect(backs(draft(), 0)).toHaveLength(0);
+  expect(backs(draft(), 1)).toHaveLength(1);
   fireEvent.change(screen.getByLabelText('Screen name'),{target:{value:'Invitation'}});
   await action(user, 'Move later');
   expect(draft().steps[1]).toMatchObject({id:added,name:'Invitation'});
+  expect(backs(draft(), 0)).toHaveLength(0);
+  expect(backs(draft(), 1)).toHaveLength(1);
   await action(user, 'Duplicate');
   const tree = draft();
   expect(tree.steps).toHaveLength(4);

@@ -215,7 +215,7 @@ describe('the Style half of the inspector', () => {
     await style(/Button label/);
     const breadcrumb = screen.getByRole('navigation', { name: 'Selected element' });
     expect(within(breadcrumb).getByRole('button', { name: 'Design' })).toBeInTheDocument();
-    expect(within(breadcrumb).getByRole('button', { name: 'The form' })).toBeInTheDocument();
+    expect(within(breadcrumb).getByRole('button', { name: 'Screen 1' })).toBeInTheDocument();
   });
 
   /**

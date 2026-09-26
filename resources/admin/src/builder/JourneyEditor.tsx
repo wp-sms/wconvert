@@ -12,7 +12,7 @@ import { GraphRouteSettings } from './GraphRouteSettings';
 import { __, sprintf } from '@wordpress/i18n';
 import { Button } from '../components/ui/button';
 import type { TemplateTree, TemplateNode, QuestionNode, Tokens } from '@renderer/types';
-import { addGraphResultSignup, duplicateScreen, freshScreen, referencedJourney, walkNodes, submissionScreen, movedScreen, screenRemoval, removedScreen, resultAccess, unreachableScreens } from './structure/journey';
+import { addGraphResultSignup, duplicateScreen, freshScreen, referencedJourney, walkNodes, submissionScreen, movedScreen, screenRemoval, removedScreen, resultAccess, unreachableScreens, withBackButton } from './structure/journey';
 import { conditionText } from './structure/conditionText';
 import { graphDisplayOrder, graphReaches, graphRemoval, insertOnGraphEdge, upgradeToGraph } from './structure/graph';
 import type { JourneyRepair } from './structure/journeyReadiness';
@@ -27,6 +27,9 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
   const id = useId();
   const [open, setOpen] = useState(false);
   const [testOpen, setTestOpen] = useState(false);
+  const testTrigger = useRef<HTMLButtonElement>(null);
+  const settingsHeading = useRef<HTMLHeadingElement>(null);
+  const returnToTestTrigger = useRef(true);
   const [view, setView] = useState<'flow' | 'screens'>('flow');
   const [query, setQuery] = useState('');
   const [sampleOpen, setSampleOpen] = useState(false);
@@ -131,7 +134,8 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
     }
     const steps = [...tree.steps]; const boundary = steps.findIndex(s => s.kind === 'result' || walkNodes(s.content).some(n => 'action' in n && n.action === 'submit'));
     const at = Math.min(step + 1, boundary < 0 ? steps.length - 1 : boundary);
-    let screen = freshScreen(tree, kind);
+    let screen = freshScreen(tree, kind, at > 0);
+    if (at === 0 && steps[0]) steps[0] = withBackButton(steps[0]);
     if (conditional) {
       const question = tree.steps.slice(0, step + 1).flatMap(item => walkNodes(item.content)).find(node => node.type === 'question'
         && 'id' in node && typeof node.id === 'string' && 'answer_type' in node && node.answer_type !== 'text') as (QuestionNode & { id: string }) | undefined;
@@ -281,7 +285,7 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
               : <DialogDescription>{__('Plan the visitor journey, then select a screen to edit its questions and paths.', 'wconvert')}</DialogDescription>}</div>
           <div className="wconvert-journey-dialog__header-actions">
             <Button type="button" size="sm" variant={sampleOpen ? 'secondary' : 'outline'} onClick={() => { setView('flow'); setSampleOpen(true); setMobilePane('details'); }}>{__('Try answers', 'wconvert')}</Button>
-            <Button type="button" size="sm" variant="outline" onClick={() => { setOpen(false); setTestOpen(true); }}>{__('Test journey', 'wconvert')}</Button>
+            <Button ref={testTrigger} type="button" size="sm" variant="outline" onClick={() => { returnToTestTrigger.current = true; setOpen(false); setTestOpen(true); }}>{__('Test journey', 'wconvert')}</Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button type="button" size="sm" variant="outline"><Plus aria-hidden="true" />{__('Add screen', 'wconvert')}<ChevronDown aria-hidden="true" /></Button>
@@ -347,7 +351,7 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
           </aside>}
           {sampleOpen ? <JourneySample tree={tree} onTrace={setSamplePath} onSelect={select} onClose={() => { setSampleOpen(false); setSamplePath(null); setMobilePane('map'); }} />
             : inspecting && <section className="wconvert-journey-pane" aria-label={__('Selected screen settings', 'wconvert')}>
-            <div className="wconvert-journey-pane__heading"><div className="wconvert-journey-dialog__selected"><span>{ordinal(step)}</span><div><h3>{current.name}</h3><small>{sprintf(__('Screen %1$d of %2$d', 'wconvert'), ordinal(step), tree.steps.length)}</small></div></div>
+            <div className="wconvert-journey-pane__heading"><div className="wconvert-journey-dialog__selected"><span>{ordinal(step)}</span><div><h3 ref={settingsHeading} tabIndex={-1}>{current.name}</h3><small>{sprintf(__('Screen %1$d of %2$d', 'wconvert'), ordinal(step), tree.steps.length)}</small></div></div>
               <button type="button" className="wconvert-journey-pane__close" aria-label={__('Close screen settings', 'wconvert')} onClick={() => { setInspecting(false); setPathFocus(null); setView('flow'); setMobilePane('map'); }}><X aria-hidden="true" /></button>
             </div>
             <div className="wconvert-journey-pane__tabs" role="group" aria-label={__('Screen settings section', 'wconvert')}>
@@ -480,11 +484,14 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
         <DialogContent className="wconvert-journey-dialog" showCloseButton={false}>{workspace}</DialogContent>
       </Dialog>}
     <Dialog open={testOpen} onOpenChange={value => { setTestOpen(value); if (!value && !embedded) setOpen(true); }}>
-      <DialogContent className="wconvert-journey-test-dialog">
+      <DialogContent className="wconvert-journey-test-dialog" onOpenAutoFocus={event => event.preventDefault()}
+        onCloseAutoFocus={event => { event.preventDefault(); requestAnimationFrame(() => (returnToTestTrigger.current ? testTrigger.current : settingsHeading.current)?.focus()); }}>
         <DialogTitle>{__('Test journey', 'wconvert')}</DialogTitle>
         <DialogDescription>{__('Try answers and inspect the included and skipped screens. Nothing is submitted.', 'wconvert')}</DialogDescription>
-        <JourneyTest template={{ tree, tokens }} deliveryMode={deliveryMode} destinationSummary={destinationSummary}
-          onEdit={index => { select(index); setTestOpen(false); setOpen(true); }} />
+        <div className="wconvert-journey-test-dialog__body">
+          <JourneyTest template={{ tree, tokens }} deliveryMode={deliveryMode} destinationSummary={destinationSummary}
+            onEdit={index => { returnToTestTrigger.current = false; select(index); setTestOpen(false); setOpen(true); }} />
+        </div>
       </DialogContent>
     </Dialog>
   </>;

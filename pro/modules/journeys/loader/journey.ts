@@ -4,7 +4,7 @@ import type { PayloadEntry } from '@loader/types';
 import { captureEndpoint, beaconEndpoint, PAYLOAD_ELEMENT_ID } from '@loader/payload';
 import { createBeacon, type BeaconKind } from '@loader/beacon';
 import { clear, pending, refuse } from '@loader/capture';
-import { chooseResult, journeyPath, type Answers } from '@loader/journey-rules';
+import { chooseResult, journeyTrace, type Answers } from '@loader/journey-rules';
 import { graphReaches, graphTrace } from '@loader/journey-graph';
 import { journeyCapturePrefix } from '@loader/journey-capture';
 import { showProducts } from '@loader/products';
@@ -26,17 +26,18 @@ function labels(): string[] {
 export function bindJourney(mounted: Mounted, entry: PayloadEntry, options: Options): void {
   const tree = entry.template?.tree;
   if (!tree || (tree.submissions.length === 0 && !tree.steps.some(screen => screen.kind === 'result'))) return;
-  const route = (answers: Answers) => tree.graph ? graphTrace(tree.steps, tree.graph, answers) : journeyPath(tree.steps, answers);
+  const route = (answers: Answers) => tree.graph ? graphTrace(tree.steps, tree.graph, answers) : journeyTrace(tree.steps, answers);
   const activeFor = (answers: Answers) => route(answers).answers;
+  const nodes = new Map<string, { node: TemplateNode; screen: number }>();
+  function collect(node: TemplateNode, screen: number) {
+    if ('id' in node && typeof node.id === 'string') nodes.set(node.id, { node, screen });
+    const branches = node as { children?: TemplateNode[]; start?: TemplateNode[]; end?: TemplateNode[] };
+    [...(branches.children ?? []), ...(branches.start ?? []), ...(branches.end ?? [])].forEach(child => collect(child, screen));
+  }
+  tree.steps.forEach((screen, i) => collect(screen.content, i));
+  const submitScreen = (id: string) => [...nodes.values()].find(({ node }) => node.type === 'button' && 'submission' in node && node.submission === id && 'action' in node && node.action === 'submit')?.screen ?? -1;
   const resultAt = tree.steps.findIndex(screen => screen.kind === 'result');
-  const firstSubmitAt = tree.steps.findIndex(screen => screen.kind === 'input' && tree.submissions.some(sub => {
-    const walk = (node: TemplateNode): boolean => {
-      if (node.type === 'button' && 'action' in node && node.action === 'submit' && 'submission' in node && node.submission === sub.id) return true;
-      const branch = node as { children?: readonly TemplateNode[]; start?: readonly TemplateNode[]; end?: readonly TemplateNode[] };
-      return [...(branch.children ?? []), ...(branch.start ?? []), ...(branch.end ?? [])].some(walk);
-    };
-    return walk(screen.content);
-  }));
+  const firstSubmitAt = tree.steps.findIndex((screen, index) => screen.kind === 'input' && tree.submissions.some(sub => submitScreen(sub.id) === index));
   const resultFirst = resultAt >= 0 && (firstSubmitAt < 0 || (tree.graph
     ? graphReaches(tree.graph, tree.steps[resultAt].id, tree.steps[firstSubmitAt].id) : resultAt < firstSubmitAt));
   const beacon = createBeacon(beaconEndpoint());
@@ -59,14 +60,6 @@ export function bindJourney(mounted: Mounted, entry: PayloadEntry, options: Opti
   const fixed = new Set<string>();
   const lockedQuestions = new Set<string>();
   const cleared = new Set<string>();
-  const nodes = new Map<string, { node: TemplateNode; screen: number }>();
-  function collect(node: TemplateNode, screen: number) {
-    if ('id' in node && typeof node.id === 'string') nodes.set(node.id, { node, screen });
-    const branches = node as { children?: TemplateNode[]; start?: TemplateNode[]; end?: TemplateNode[] };
-    [...(branches.children ?? []), ...(branches.start ?? []), ...(branches.end ?? [])].forEach(child => collect(child, screen));
-  }
-  tree.steps.forEach((screen, i) => collect(screen.content, i));
-  const submitScreen = (id: string) => [...nodes.values()].find(({ node }) => node.type === 'button' && 'submission' in node && node.submission === id && 'action' in node && node.action === 'submit')?.screen ?? -1;
   const controls = () => [...(mounted.root?.querySelectorAll<Input>('[data-capture-id]') ?? [])];
   const validQuestions = (root: HTMLElement): boolean => {
     for (const node of nodes.values()) {
