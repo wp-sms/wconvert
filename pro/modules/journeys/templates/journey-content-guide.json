@@ -98,7 +98,11 @@
               "id": "n6",
               "label": "Back",
               "action": "back",
-              "role": "back_label"
+              "role": "back_label",
+              "tokens": {
+                "accent": "transparent",
+                "accent-fg": "fg"
+              }
             }
           ]
         },
@@ -183,14 +187,22 @@
               "label": "No thanks",
               "action": "skip",
               "submission": "email-signup",
-              "role": "skip_label"
+              "role": "skip_label",
+              "tokens": {
+                "accent": "transparent",
+                "accent-fg": "fg"
+              }
             },
             {
               "type": "button",
               "id": "n13",
               "label": "Back to guide",
               "action": "back",
-              "role": "back_label"
+              "role": "back_label",
+              "tokens": {
+                "accent": "transparent",
+                "accent-fg": "fg"
+              }
             }
           ]
         }
@@ -219,7 +231,11 @@
               "id": "n16",
               "label": "Back",
               "action": "back",
-              "role": "back_label"
+              "role": "back_label",
+              "tokens": {
+                "accent": "transparent",
+                "accent-fg": "fg"
+              }
             }
           ]
         }

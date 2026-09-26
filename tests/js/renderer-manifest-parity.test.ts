@@ -640,7 +640,7 @@ describe('a token used as a value', () => {
     // the one case that stays verbatim — asserted on its own below.
     const on = name === 'bg' ? 'fg' : 'bg';
 
-    expect(scoped({ [on]: name }).style.getPropertyValue(`--wc-${on}`)).toBe(`var(--wc-${name})`);
+    expect(scoped({ [on]: name }).style.getPropertyValue(`--wc-${on}`)).toBe(`var(--wc-${name}${name === 'fg' ? `,${manifest.tokens.fg}` : ''})`);
   });
 
   it('writes every other value exactly as it was', () => {

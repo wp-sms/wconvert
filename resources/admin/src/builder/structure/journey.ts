@@ -77,7 +77,7 @@ export function resultAccess(tree: TemplateTree, required: boolean): TemplateTre
     return copy as unknown as TemplateNode;
   };
   const addButton = (screen: TemplateScreen, label: string, action: 'next' | 'skip', submission?: string): TemplateScreen => ({ ...screen,
-    content: { type: 'stack', children: [screen.content, { type: 'button', label, action, ...(submission ? { submission } : {}) }] },
+    content: { type: 'stack', children: [screen.content, { type: 'button', label, action, ...(submission ? { submission } : {}), ...(action === 'skip' ? { tokens: { accent: 'transparent', 'accent-fg': 'fg' } } : {}) }] },
   });
   const contactCopy = (node: TemplateNode, gate: boolean): TemplateNode => {
     const copy = { ...node } as Record<string, unknown>;
@@ -105,7 +105,7 @@ export function resultAccess(tree: TemplateTree, required: boolean): TemplateTre
   const signup = addButton({ ...tree.steps[signupAt], name: __('Optional email updates', 'wconvert'), content: contactCopy(tree.steps[signupAt].content, false) }, __('No thanks', 'wconvert'), 'skip', tree.submissions[0].id);
   const acknowledgement: TemplateScreen = { id: 'received', name: __('All set', 'wconvert'), kind: 'acknowledgement', content: { type: 'stack', children: [
     { type: 'heading', text: __('Thanks for visiting', 'wconvert') },
-    { type: 'button', label: __('Back', 'wconvert'), action: 'back' },
+    { type: 'button', label: __('Back', 'wconvert'), action: 'back', tokens: { accent: 'transparent', 'accent-fg': 'fg' } },
   ] } };
   return referencedJourney({ ...tree, steps: [...tree.steps.slice(0, signupAt), result, signup, acknowledgement],
     submissions: [{ ...tree.submissions[0], required: false }] });
@@ -139,12 +139,12 @@ export function addGraphResultSignup(tree: TemplateTree): TemplateTree {
     { type: 'field', name: 'email', required: true, label: __('Email address', 'wconvert') },
     { type: 'consent', text: __('Send me email updates. %s', 'wconvert'), link: { label: __('Privacy Policy', 'wconvert') }, hidden: false, role: 'consent_text' },
     { type: 'button', label: __('Sign up', 'wconvert'), action: 'submit', submission: submissionId },
-    { type: 'button', label: __('No thanks', 'wconvert'), action: 'skip', submission: submissionId },
-    { type: 'button', label: __('Back', 'wconvert'), action: 'back' },
+    { type: 'button', label: __('No thanks', 'wconvert'), action: 'skip', submission: submissionId, tokens: { accent: 'transparent', 'accent-fg': 'fg' } },
+    { type: 'button', label: __('Back', 'wconvert'), action: 'back', tokens: { accent: 'transparent', 'accent-fg': 'fg' } },
   ] } };
   const acknowledgement: TemplateScreen = { id: acknowledgementId, name: __('All set', 'wconvert'), kind: 'acknowledgement', content: { type: 'stack', children: [
     { type: 'heading', text: __('Thanks for visiting', 'wconvert'), role: 'success_headline' },
-    { type: 'button', label: __('Back', 'wconvert'), action: 'back' },
+    { type: 'button', label: __('Back', 'wconvert'), action: 'back', tokens: { accent: 'transparent', 'accent-fg': 'fg' } },
   ] } };
   const firstEdge = edge?.id ?? graphEdgeId(tree.graph);
   const secondEdge = graphEdgeId({ ...tree.graph, edges: [...tree.graph.edges, { id: firstEdge, from: result.id, to: signupId, kind: 'default' }] });
@@ -256,7 +256,7 @@ function graphResultAccess(tree: TemplateTree, required: boolean): TemplateTree 
     const acknowledgementId = freshScreen(tree, 'content').id;
     newEnding.push({ id: acknowledgementId, name: __('All set', 'wconvert'), kind: 'acknowledgement', content: { type: 'stack', children: [
       { type: 'heading', text: __('Thanks for visiting', 'wconvert'), role: 'success_headline' },
-      { type: 'button', label: __('Back', 'wconvert'), action: 'back', tokens: { accent: 'transparent', 'accent-fg': '#475569' } },
+      { type: 'button', label: __('Back', 'wconvert'), action: 'back', tokens: { accent: 'transparent', 'accent-fg': 'fg' } },
     ] } });
     edges.push({ id: graphEdgeId({ ...graph, edges }), from: signup.id, to: acknowledgementId, kind: 'default' });
   }
@@ -272,14 +272,14 @@ function graphResultAccess(tree: TemplateTree, required: boolean): TemplateTree 
     return { ...screen, name: required && [__('Optional email signup', 'wconvert'), __('Optional email updates', 'wconvert')].some(name => name === screen.name)
       ? __('Contact details', 'wconvert') : !required && screen.name === __('Contact details', 'wconvert') ? __('Optional email signup', 'wconvert') : screen.name,
     content: required ? content : { type: 'stack', children: [content,
-      { type: 'button', label: __('No thanks', 'wconvert'), action: 'skip', submission: submission.id, tokens: { accent: 'transparent', 'accent-fg': '#475569' } } as TemplateNode] } as TemplateNode };
+      { type: 'button', label: __('No thanks', 'wconvert'), action: 'skip', submission: submission.id, tokens: { accent: 'transparent', 'accent-fg': 'fg' } } as TemplateNode] } as TemplateNode };
   }), ...newEnding], graph: { ...graph, edges }, submissions: [{ ...submission, required, consents }] });
 }
 
 export function withBackButton(screen: TemplateScreen): TemplateScreen {
   if (walkNodes(screen.content).some(node => node.type === 'button' && 'action' in node && node.action === 'back')) return screen;
   return { ...screen, content: { type: 'stack', children: [screen.content,
-    { type: 'button', label: __('Back', 'wconvert'), action: 'back', tokens: { accent: 'transparent', 'accent-fg': '#475569' } },
+    { type: 'button', label: __('Back', 'wconvert'), action: 'back', tokens: { accent: 'transparent', 'accent-fg': 'fg' } },
   ] } };
 }
 

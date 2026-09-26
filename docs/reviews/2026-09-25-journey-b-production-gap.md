@@ -35,6 +35,46 @@ again or turn conditional follow-ups into mutually exclusive branches.
 
 ## Progress after this audit
 
+### Visible keyboard focus and secondary-action defaults, September 26
+
+The actual browser exposed an invisible focus ring: No thanks matched
+`:focus-visible`, but its computed outline was `rgba(0, 0, 0, 0)`. The shared
+renderer had reused the button's locally transparent accent for its outline.
+Buttons now use the surrounding foreground token for keyboard outlines. This
+fix also applies to already-saved transparent buttons, without changing their
+stored styles.
+
+New Back/skip controls in ordered and graph generators, and all shipped journey
+template Back/skip defaults, now use transparent backgrounds and the foreground
+color reference. This replaces both primary-looking Back controls and fixed dark
+secondary text. Foreground references have the same fallback as the renderer's
+root when a template omits that optional token. Existing custom button fill/text
+styles are not rewritten.
+
+Browser evidence:
+
+- The existing optional-SMS QA draft changed from invisible focus to a visible
+  `rgb(15, 23, 42)` outline on white. No campaign edit was needed for that fix.
+- The new **QA — Journey keyboard focus (dark draft)**
+  (`01M3EFW0D77N1X5KSADVR880TT`) uses the shipped content-guide structure. No thanks
+  and Back to guide have `rgb(248, 250, 252)` text and focus outlines on the dark
+  surface. The main signup retains its filled styling.
+- Keyboard Tab reaches both secondary controls; Enter on Back returns to the
+  result, with focus settling on its heading. At 320 × 568, the focused outline
+  remains visible inside the scrollable preview. The viewport was reset afterward.
+- Temporarily removing all palette tokens from that QA draft still rendered
+  No thanks as `rgb(17, 24, 39)` text with a visible dark outline on white. The
+  original dark configuration was restored; it remains unpublished with a null
+  PHP capture-contract issue. These preview checks created no Leads.
+
+Validation: 345 focused renderer/journey tests, typecheck, lint, all admin/block/
+loader/phone/inspector builds, source-boundary checks and loader/phone size budgets
+pass. All 60 registered designs survive template validation intact. The previous
+content-guide Back-button default hierarchy gap is resolved for new templates;
+this is not a full native-zoom or assistive-technology audit. Those broader checks,
+product/API-failure coverage, merchant feedback and green CI remain open.
+
+
 ### Actual capture, queued outage and delivery recovery, September 26
 
 A published local-only graph campaign exercised email signup followed by optional

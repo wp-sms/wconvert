@@ -102,7 +102,11 @@
               "id": "n7",
               "label": "Back",
               "action": "back",
-              "role": "back_label"
+              "role": "back_label",
+              "tokens": {
+                "accent": "transparent",
+                "accent-fg": "fg"
+              }
             }
           ]
         },
@@ -152,7 +156,11 @@
               "id": "n11",
               "label": "Back",
               "action": "back",
-              "role": "back_label"
+              "role": "back_label",
+              "tokens": {
+                "accent": "transparent",
+                "accent-fg": "fg"
+              }
             }
           ]
         }
@@ -181,7 +189,11 @@
               "id": "n14",
               "label": "Back",
               "action": "back",
-              "role": "back_label"
+              "role": "back_label",
+              "tokens": {
+                "accent": "transparent",
+                "accent-fg": "fg"
+              }
             }
           ]
         }

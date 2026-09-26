@@ -181,7 +181,10 @@ function scope(element: HTMLElement, tokens: Tokens | undefined, prefix = TOKEN_
         `--wc-n-accent` exists only on a box that carries a narrow bag, so
         pointing the mirror at itself would resolve to nothing on most of them.
       */
-      value !== name && REFERABLE.includes(value) ? `var(${TOKEN_PREFIX}${value})` : value,
+      value !== name && REFERABLE.includes(value)
+        // Secondary actions can follow foreground even in an unstyled template.
+        // Match the root's CSS fallback when that optional token is absent.
+        ? `var(${TOKEN_PREFIX}${value}${value === 'fg' ? ',#111827' : ''})` : value,
     );
   }
 }

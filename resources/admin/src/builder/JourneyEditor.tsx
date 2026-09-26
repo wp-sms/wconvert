@@ -186,7 +186,7 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
     const primaryEnd = steps.findIndex(s => walkNodes(s.content).some(n => 'submission' in n && n.submission === tree.submissions[0]?.id && 'action' in n && n.action === 'submit'));
     if (optional && at > primaryEnd && 'children' in screen.content) {
       screen = { ...screen, content: { ...screen.content, children: [...(screen.content.children ?? []),
-        { type: 'button', label: __('No thanks', 'wconvert'), tokens: { accent: 'transparent', 'accent-fg': '#475569' }, action: 'skip', submission: optional.id, role: 'skip_label' }] } };
+        { type: 'button', label: __('No thanks', 'wconvert'), tokens: { accent: 'transparent', 'accent-fg': 'fg' }, action: 'skip', submission: optional.id, role: 'skip_label' }] } };
     }
     if (at === step + 1 && steps[step].paths?.length) {
       const paths = [...steps[step].paths!];
@@ -256,8 +256,8 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
       { type: 'field', name: channel, required: true, label: channel === 'email' ? __('Email address', 'wconvert') : __('Phone number', 'wconvert') },
       { type: 'consent', text: channel === 'email' ? __('Send me email updates. %s', 'wconvert') : __('Send me text updates. %s', 'wconvert'), link: { label: __('Privacy Policy', 'wconvert') }, hidden: false, role: 'consent_text' },
       { type: 'button', label: channel === 'email' ? __('Sign up for email', 'wconvert') : __('Sign up for SMS', 'wconvert'), action: 'submit', submission: id },
-      { type: 'button', label: __('No thanks', 'wconvert'), tokens: { accent: 'transparent', 'accent-fg': '#475569' }, action: 'skip', submission: id },
-      { type: 'button', label: __('Back', 'wconvert'), tokens: { accent: 'transparent', 'accent-fg': '#475569' }, action: 'back' },
+      { type: 'button', label: __('No thanks', 'wconvert'), tokens: { accent: 'transparent', 'accent-fg': 'fg' }, action: 'skip', submission: id },
+      { type: 'button', label: __('Back', 'wconvert'), action: 'back', tokens: { accent: 'transparent', 'accent-fg': 'fg' } },
     ] } } as const;
     const steps = [...tree.steps];
     if (tree.submissions.length === 0 && steps[steps.length - 1].kind === 'result') {
@@ -266,7 +266,7 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
         { type: 'button', label: __('Optional email updates', 'wconvert'), action: 'next' }] } };
       steps.push(screen, { id: 'received', name: __('Thanks', 'wconvert'), kind: 'acknowledgement', content: { type: 'stack', children: [
         { type: 'heading', text: __('You can return to your result', 'wconvert') },
-        { type: 'button', label: __('Back', 'wconvert'), action: 'back' },
+        { type: 'button', label: __('Back', 'wconvert'), action: 'back', tokens: { accent: 'transparent', 'accent-fg': 'fg' } },
       ] } });
       write({ ...tree, steps, submissions: [{ id, required: false, fields: [], consents: [] }] }, steps.length - 2);
     } else {

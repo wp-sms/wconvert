@@ -659,6 +659,9 @@ export const SHADOW_CSS = [
   // One visible focus ring for everything focusable, so the keyboard path
   // `showModal()` supplies for free is actually followable.
   `:focus-visible{outline:2px solid var(--wc-accent,#2563eb);outline-offset:2px}`,
+  // A secondary button can override its accent with transparent. Its focus
+  // ring must still contrast with the surrounding surface in any palette.
+  `.wc-button:focus-visible{outline-color:var(--wc-fg,#0f172a)}`,
 
   /*
    * ==========================================================================

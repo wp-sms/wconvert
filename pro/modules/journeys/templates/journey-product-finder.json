@@ -110,7 +110,11 @@
               "id": "n8",
               "label": "Back",
               "action": "back",
-              "role": "back_label"
+              "role": "back_label",
+              "tokens": {
+                "accent": "transparent",
+                "accent-fg": "fg"
+              }
             }
           ]
         },
@@ -139,7 +143,11 @@
               "id": "n9",
               "label": "Back",
               "action": "back",
-              "role": "back_label"
+              "role": "back_label",
+              "tokens": {
+                "accent": "transparent",
+                "accent-fg": "fg"
+              }
             }
           ]
         },

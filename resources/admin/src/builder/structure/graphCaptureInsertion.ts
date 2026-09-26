@@ -61,8 +61,8 @@ export function addGraphCapture(tree: TemplateTree, primaryChannel: string | nul
       { type: 'field', name: channel, required: true, label: channel === 'email' ? __('Email address', 'wconvert') : __('Phone number', 'wconvert') },
       { type: 'consent', text: channel === 'email' ? __('Send me email updates. %s', 'wconvert') : __('Send me text updates. %s', 'wconvert'), link: { label: __('Privacy Policy', 'wconvert') }, hidden: false, role: 'consent_text' },
       { type: 'button', label: channel === 'email' ? __('Sign up for email', 'wconvert') : __('Sign up for SMS', 'wconvert'), action: 'submit', submission: submissionId },
-      { type: 'button', label: __('No thanks', 'wconvert'), tokens: { accent: 'transparent', 'accent-fg': '#475569' }, action: 'skip', submission: submissionId },
-      { type: 'button', label: __('Back', 'wconvert'), tokens: { accent: 'transparent', 'accent-fg': '#475569' }, action: 'back' },
+      { type: 'button', label: __('No thanks', 'wconvert'), action: 'skip', submission: submissionId, tokens: { accent: 'transparent', 'accent-fg': 'fg' } },
+      { type: 'button', label: __('Back', 'wconvert'), action: 'back', tokens: { accent: 'transparent', 'accent-fg': 'fg' } },
     ] as TemplateNode[] } };
   const next = referencedJourney({ ...tree, steps: [...tree.steps, screen], graph: { ...tree.graph,
     // Insert only on the chosen connection. A hidden exit is a separate choice.
