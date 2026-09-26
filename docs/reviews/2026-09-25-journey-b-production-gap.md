@@ -35,6 +35,39 @@ again or turn conditional follow-ups into mutually exclusive branches.
 
 ## Progress after this audit
 
+### September 26: connections route around cards
+
+The 13-screen enquiry exposed a long Garden hidden continuation passing behind
+the remaining Home follow-ups. Map connections now use the MIT-licensed
+`@tisoap/react-flow-smart-edge` 5.0.0 smooth-step router, with card clearance and
+rounded corners. Its provider batches work in a worker when available and falls
+back to main-thread routing when workers are unavailable. Routing remains active
+during movement instead of switching all connections to animated fallbacks.
+Controlled measurements, card positions, graph semantics, and the inspector
+remain owned by the existing editor. The dependency is confined to the lazy
+admin map; its chunk increased from 83.44 to 101.12 kB gzip (17.68 kB).
+
+Browser evidence: the separated hidden continuation routes above the Home group.
+Moving that group upward into its previous route produces a new clear path.
+After movement all nine connections are present with zero routing placeholders.
+Clicking the routed dashed segment opens Next screen and focuses Continue at.
+Dragging its arrowhead to Business interests updates that hidden destination and
+focuses the same control. Two Undo actions restore the saved Balcony continuation;
+Save draft is disabled. Tidy up restores the layout. Nothing was saved/published.
+
+Real-engine regressions check every segment against unrelated card bounds for
+four obstacle positions in both LTR and mirrored RTL geometry. A separate local
+Node benchmark of 40 cards and 55 connections completed five full synchronous
+batches in 5.2, 2.3, 1.5, 1.6, and 1.1 ms with no routing failures. This is engine
+evidence, not an end-to-end browser frame-time measurement. Overlapping cards
+can still cover their own handles; routing cannot make an endpoint inside a
+different card clear. Browser RTL, large-map drag frame continuity, and 200% zoom
+remain release checks. The new router does not establish a higher product limit.
+
+Validation: all 2,886 JavaScript tests, TypeScript, ESLint, Free/Pro admin builds,
+source contract, and existing loader-artifact budget checks pass. PHP and visitor
+runtime are unchanged. Existing main-bundle size warnings remain unchanged.
+
 ### September 26: direct path actions and hidden continuations
 
 A real map-card click exposed an event-bubbling defect: its path button opened

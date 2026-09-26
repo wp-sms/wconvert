@@ -2,6 +2,7 @@ import { memo, useCallback, useEffect, useMemo, useRef, useState, type RefObject
 import { createPortal } from 'react-dom';
 import { Background, Handle, MarkerType, Position, ReactFlow, useReactFlow, useStore, useNodesInitialized, type Connection, type Edge, type Node, type NodeProps } from '@xyflow/react';
 import dagre from '@dagrejs/dagre';
+import { createSmartEdge, SmartEdgeProvider } from '@tisoap/react-flow-smart-edge';
 import { __, sprintf } from '@wordpress/i18n';
 import type { TemplateTree } from '@renderer/types';
 import { walkNodes } from './structure/journey';
@@ -10,6 +11,7 @@ import { graphDisplayOrder } from './structure/graph';
 import { canAddGraphConnection, canTargetGraphScreen, graphChoiceSources } from './structure/graphConnections';
 import { FollowupGroupCard } from './FollowupGroupCard';
 import { followupGroups, type FollowupGroup } from './structure/followupGroups';
+import { mapEdgeOptions, mapRoutingOptions } from './structure/mapRouting';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuCheckboxItem } from '../components/ui/dropdown-menu';
 import '@xyflow/react/dist/style.css';
 
@@ -95,6 +97,7 @@ const ScreenCard = memo(function ScreenCard({ data, selected }: NodeProps) {
   </div>;
 });
 const nodeTypes = { screen: ScreenCard, followups: FollowupGroupCard };
+const edgeTypes = { journey: createSmartEdge('smoothstep', mapEdgeOptions) };
 
 function FocusCamera({ mapRoot, selectedId, nextId, firstId, initialOverview, overviewWidth = 600, revision, onTidy, preview, onPreview, grouping, toolbar, onNodesReady }: {
   mapRoot: RefObject<HTMLDivElement | null>; selectedId: string; nextId?: string; firstId: string; initialOverview: boolean; overviewWidth?: number; revision: number; onTidy(): void; preview: boolean; onPreview(): void; grouping?: { active: boolean; toggle(): void }; toolbar: HTMLElement | null; onNodesReady(): void;
@@ -263,14 +266,14 @@ export function JourneyMap({ tree, selected, focusedPath = null, onSelect, onSel
     const paths = routesFor(tree, index);
     const routes: Edge[] = paths
       .map((path, priority) => ({ id: 'id' in path && typeof path.id === 'string' ? path.id : `${step.id}-${priority}`, source: step.id, target: path.to, data: { sourceIndex: index, priority },
-        sourceHandle: `route-${priority}`, targetHandle: 'in', type: 'smoothstep', reconnectable: tree.graph ? 'target' : false,
+        sourceHandle: `route-${priority}`, targetHandle: 'in', type: 'journey', reconnectable: tree.graph ? 'target' : false,
         label: paths.length > 1 || path.when ? ('kind' in path ? path.kind === 'default' : !path.when) ? __('Else', 'wconvert') : String(priority + 1) : undefined,
         markerEnd: { type: MarkerType.ArrowClosed, color: '#719987', width: 15, height: 15 },
         style: { stroke: '#719987', strokeWidth: 2, opacity: samplePath !== null ? 1 : focusedPath !== null && (index !== selected || priority !== focusedPath && !(focusedPath === 'hidden' && path.to === hiddenFor(tree, index))) ? .2 : 1 } }));
     const hidden = hiddenFor(tree, index);
     if (hidden && !paths.some(path => path.to === hidden)) routes.push({
       id: tree.graph?.edges.find(edge => edge.from === step.id && edge.kind === 'hidden')?.id ?? `${step.id}-hidden`,
-      source: step.id, target: hidden, data: { sourceIndex: index, priority: 'hidden' }, sourceHandle: 'hidden', targetHandle: 'in', type: 'smoothstep', reconnectable: 'target',
+      source: step.id, target: hidden, data: { sourceIndex: index, priority: 'hidden' }, sourceHandle: 'hidden', targetHandle: 'in', type: 'journey', reconnectable: 'target',
       label: __('Hidden', 'wconvert'), markerEnd: { type: MarkerType.ArrowClosed, color: '#9aa8a0', width: 15, height: 15 },
       style: { stroke: '#9aa8a0', strokeWidth: 1.5, strokeDasharray: '5 4', opacity: samplePath !== null ? 1 : focusedPath !== null && (index !== selected || focusedPath !== 'hidden') ? .2 : 1 },
     });
@@ -297,7 +300,8 @@ export function JourneyMap({ tree, selected, focusedPath = null, onSelect, onSel
     return boundary < 0 || to <= boundary;
   };
   return <div ref={mapRoot} className="wconvert-journey-map" aria-label={__('Journey map', 'wconvert')}>
-    <ReactFlow nodes={nodes} edges={edges} nodeTypes={nodeTypes}
+    <SmartEdgeProvider nodes={nodes} options={mapRoutingOptions}>
+    <ReactFlow nodes={nodes} edges={edges} nodeTypes={nodeTypes} edgeTypes={edgeTypes}
       nodesFocusable={false} edgesFocusable={false}
       ariaLabelConfig={{ 'node.a11yDescription.default': __('Use Tab to reach screen and path buttons. Press Enter to edit. Connections can also be edited in Next screen settings.', 'wconvert') }}
       minZoom={0.25} maxZoom={1.5} deleteKeyCode={null} panOnScroll={!narrow} preventScrolling={!narrow} zoomOnScroll={false} zoomOnPinch
@@ -328,6 +332,7 @@ export function JourneyMap({ tree, selected, focusedPath = null, onSelect, onSel
         grouping={detectedGroups.length ? { active: groups.length > 0, toggle: () => { setGrouping(groups.length === 0); setExpandedGroups([]); } } : undefined}
         revision={revision} toolbar={toolbar} onNodesReady={focusExpandedScreen} preview={preview} onPreview={() => setPreview(value => !value)} onTidy={() => setTidyRevision(value => value + 1)} />
     </ReactFlow>
+    </SmartEdgeProvider>
     <p className="wconvert-journey-map__hint">{groups.length ? __('Every matching follow-up is shown. Expand screens to edit their connections.', 'wconvert') : tree.graph
       ? __('Drag from “+” to add an answer path, or move a line’s arrow to change its destination. Next screen settings offer the same controls. Moving a box changes only the layout.', 'wconvert')
       : rtl ? __('Follow arrows from right to left. Scroll to move through the map; select a screen to edit or draw a forward path.', 'wconvert')

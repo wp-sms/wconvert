@@ -70,3 +70,12 @@ dragging, including changing priority, fallback and hidden exits. Layout and
 viewport metadata stay outside the visitor graph. The product-facing scale
 limit will follow payload, loader and dense-map measurements rather than the
 old seven-screen limit or a new arbitrary number.
+
+Dagre continues to position cards using their measured sizes. The lazy admin map
+uses React Flow Smart Edge for obstacle-aware smooth-step connections: long
+branches and hidden exits must go around intervening cards. Its worker batches
+routing updates while dragging; retained measurements and controlled positions
+prevent layout resets. When workers are unavailable it routes on the main
+thread. This is a presentation dependency only; visitor traversal and server
+validation never import it. Overlapping cards still need repositioning, and
+dense-map browser measurements remain part of the release gate.

@@ -10,6 +10,10 @@ import branchedFixture from '../fixtures/journey-graph-branch-groups.json';
 
 const canvas = vi.hoisted(() => ({ setViewport: vi.fn(), edgeClick: (() => {}) as (edge: Edge) => void, nodes: [] as Node[], change: (() => {}) as (changes: NodeChange[]) => void }));
 
+vi.mock('@tisoap/react-flow-smart-edge', () => ({
+  createSmartEdge: () => () => null, SmartEdgeProvider: ({ children }: { children: ReactNode }) => <>{children}</>,
+}));
+
 vi.mock('@xyflow/react', () => ({
   Position: { Left: 'left', Right: 'right' }, MarkerType: { ArrowClosed: 'arrowclosed' },
   Handle: () => null, Controls: () => null, Background: () => null,
