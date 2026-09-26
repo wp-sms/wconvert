@@ -87,8 +87,17 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
       : repairRequest.pathPriority;
     setPathFocus(priority !== undefined && priority >= 0 ? priority : null);
     onSelect(index);
-    if (!repairRequest.resultId && (repairRequest.section === 'content' || priority === undefined || priority < 0)) requestAnimationFrame(() => {
+    if (!repairRequest.resultId && repairRequest.focus !== 'products-required' && (repairRequest.section === 'content' || priority === undefined || priority < 0)) requestAnimationFrame(() => {
       const heading = settingsHeading.current;
+      const pane = heading?.closest('.wconvert-journey-pane');
+      if (repairRequest.questionId) {
+        const question = [...(pane?.querySelectorAll<HTMLElement>('[data-question-id]') ?? [])].find(item => item.dataset.questionId === repairRequest.questionId);
+        const target = repairRequest.choiceIndex !== undefined
+          ? question?.querySelectorAll<HTMLElement>('.wconvert-journey-settings__choice input')[repairRequest.choiceIndex] ?? question?.querySelector<HTMLElement>('button')
+          : question?.querySelector<HTMLElement>('input');
+        (target ?? heading)?.focus(); return;
+      }
+      if (repairRequest.focus === 'screen-name') { pane?.querySelector<HTMLElement>('.wconvert-journey__field input')?.focus(); return; }
       const condition = repairRequest.focus === 'hidden-route'
         ? heading?.closest('.wconvert-journey-pane')?.querySelector<HTMLElement>('.wconvert-journey-settings__skip select')
         : repairRequest.section === 'content'
@@ -451,7 +460,7 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
           <div className="wconvert-journey-dialog__fields">
 
             <label className="wconvert-journey__field">{__('Screen name', 'wconvert')}
-              <Input type="text" value={current.name} onChange={e => onChange({ ...tree, steps: tree.steps.map((s, i) => i === step ? { ...s, name: e.target.value } : s) }, `journey:${current.id}:name`)} />
+              <Input type="text" maxLength={120} value={current.name} onChange={e => onChange({ ...tree, steps: tree.steps.map((s, i) => i === step ? { ...s, name: e.target.value } : s) }, `journey:${current.id}:name`)} />
             </label>
             {current.kind === 'input' && <label className="wconvert-journey__field">{__('When this screen is completed', 'wconvert')}
               <select value={tree.submissions.find(sub => walkNodes(current.content).some(n => 'submission' in n && n.submission === sub.id && 'action' in n && n.action === 'submit'))?.id ?? 'next'}

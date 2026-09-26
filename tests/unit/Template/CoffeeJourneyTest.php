@@ -17,6 +17,9 @@ final class CoffeeJourneyTest extends TestCase
         $fixture = json_decode((string) file_get_contents(WCONVERT_DIR . '/tests/fixtures/journey-graph-coffee.json'), true);
         self::assertCount(48, $fixture['cases']);
         $tree = TemplateVocabulary::fromManifest()->normalize($fixture['template'])['tree'];
+        if (!isset($tree['graph'])) {
+            self::fail('A version 3 journey must retain its graph.');
+        }
         self::assertSame($fixture['template']['tree']['graph'], $tree['graph']);
         self::assertNull(CaptureContract::issue(['template' => ['tree' => $tree]], 'find_match', 'https://example.test/privacy'));
         $result = array_values(array_filter($tree['steps'], static fn (array $screen): bool => $screen['kind'] === 'result'))[0];

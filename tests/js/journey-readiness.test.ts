@@ -77,3 +77,21 @@ it('requires a fallback for selected products independently of the live-product 
   const contentOnly: TemplateTree = { ...result, steps: result.steps.map(screen => ({ ...screen, results: screen.results!.map(variant => ({ ...variant, product_ids: [] })) })) };
   expect(journeyReadinessIssues(contentOnly)).toEqual([]);
 });
+
+it('names incomplete question text and answers by stable question identity', () => {
+  const tree: TemplateTree = { ...base, steps: base.steps.map(screen => screen.id === 'interests' ? { ...screen, content: { type: 'stack', children: [
+    { type: 'question', id: 'first', label: 'A complete question', answer_type: 'text', required: false },
+    { type: 'question', id: 'second', label: '', answer_type: 'single', required: false, options: [{ value: 'a', label: 'Named' }, { value: 'b', label: '' }] },
+  ] } } : screen) };
+  const issues = journeyReadinessIssues(tree);
+  expect(issues.find(issue => issue.key === 'question-label:second')?.repair).toEqual({ screenId: 'interests', section: 'content', focus: 'questions', questionId: 'second' });
+  expect(issues.find(issue => issue.key === 'choice-label:second:1')?.repair).toEqual({ screenId: 'interests', section: 'content', focus: 'questions', questionId: 'second', choiceIndex: 1 });
+});
+
+it('locates missing result headings and conditions instead of allowing a generic server refusal', () => {
+  const tree: TemplateTree = { ...base, steps: [...base.steps, { id: 'result', name: 'Your match', kind: 'result', content: { type: 'stack', children: [] },
+    results: [{ id: 'first', heading: '', body: '', product_ids: [] }, { id: 'fallback', heading: 'Everyone else', body: '', product_ids: [] }] }] };
+  const issues = journeyReadinessIssues(tree);
+  expect(issues.find(issue => issue.key === 'result-heading:result:first')?.repair).toEqual({ screenId: 'result', section: 'content', resultId: 'first', focus: 'result-heading' });
+  expect(issues.find(issue => issue.key === 'result:result:0')?.said).toContain('Only Everyone else is unconditional');
+});

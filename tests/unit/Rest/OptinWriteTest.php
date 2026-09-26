@@ -95,6 +95,24 @@ final class OptinWriteTest extends TestCase
         self::assertNull($this->optins->find($draft['id'])?->publishedAt);
     }
 
+    public function testJourneyRefusalIncludesItsRepairCategoryWithoutPublishingTheDraft(): void
+    {
+        $fixture = json_decode((string) file_get_contents(self::PLUGIN_DIR . '/tests/fixtures/journey-graph-coffee.json'), true);
+        $template = $fixture['template'];
+        foreach ($template['tree']['steps'] as &$screen) {
+            if ($screen['kind'] === 'result') $screen['results'][0]['heading'] = '';
+        }
+        unset($screen);
+        $draft = $this->create(Goal::FindMatch, ['template' => $template, 'capture_mode' => 'local']);
+        self::assertIsArray($draft);
+        $request = new WP_REST_Request(); $request->set_param('id', $draft['id']);
+        $response = $this->controller->publish($request);
+        self::assertInstanceOf(WP_Error::class, $response);
+        self::assertSame('wconvert_optin_form_incomplete', $response->get_error_code());
+        self::assertSame('results', $response->get_error_data()['issue']);
+        self::assertNull($this->optins->find($draft['id'])?->publishedAt);
+    }
+
     public function testUnpublishingDoesNotAllowAHistoryChangingGoalEdit(): void
     {
         $draft = $this->create(Goal::GrowEmailList, ['template_id' => 'centred-card', 'capture_mode' => 'local']);

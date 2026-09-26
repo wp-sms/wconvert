@@ -1,7 +1,7 @@
 import { __, sprintf } from '@wordpress/i18n';
 import type { QuestionCondition, QuestionNode, TemplateTree } from '@renderer/types';
 import { unreachableScreenIds, walkNodes } from './journey';
-import { graphReaches } from './graph';
+import { graphDisplayOrder, graphReaches } from './graph';
 import { MAX_PATH_QUESTIONS, questionPath } from './questionBudget';
 import { requiredSaveBypasses } from './graphChangeImpact';
 
@@ -11,7 +11,9 @@ export interface JourneyRepair {
   readonly edgeId?: string;
   readonly pathPriority?: number;
   readonly resultId?: string;
-  readonly focus?: 'questions' | 'hidden-route' | 'result-link';
+  readonly questionId?: string;
+  readonly choiceIndex?: number;
+  readonly focus?: 'questions' | 'hidden-route' | 'result-link' | 'result-heading' | 'products-required' | 'screen-name';
 }
 
 export interface JourneyReadinessIssue {
@@ -23,6 +25,7 @@ export interface JourneyReadinessIssue {
 /** Name the incomplete authoring controls we can locate before the server's final validation. */
 export function journeyReadinessIssues(tree: TemplateTree): JourneyReadinessIssue[] {
   const issues: JourneyReadinessIssue[] = [];
+  const order = graphDisplayOrder(tree);
   for (const bypass of requiredSaveBypasses(tree)) {
     if (!bypass.edge || !bypass.saving.length) continue;
     const ending = tree.steps.find(screen => screen.id === bypass.endingId)?.name ?? bypass.endingId;
@@ -62,6 +65,26 @@ export function journeyReadinessIssues(tree: TemplateTree): JourneyReadinessIssu
     return null;
   };
   for (const screen of tree.steps) {
+    if (!screen.name.trim() || screen.name.length > 120) issues.push({ key: `name:${screen.id}`,
+      said: sprintf(__('Give screen %d a name of 1 to 120 characters.', 'wconvert'), order.indexOf(tree.steps.indexOf(screen)) + 1),
+      repair: { screenId: screen.id, section: 'content', focus: 'screen-name' } });
+    const screenQuestions = [...questions.entries()].filter(([, question]) => question.screen === screen.id);
+    screenQuestions.forEach(([id, { node }], index) => {
+      const name = node.label?.trim() || sprintf(__('Question %d', 'wconvert'), index + 1);
+      if (!node.label?.trim() || node.label.length > 200) issues.push({ key: `question-label:${id}`,
+        said: sprintf(__('Give question %1$d on “%2$s” text of 1 to 200 characters.', 'wconvert'), index + 1, screen.name),
+        repair: { screenId: screen.id, section: 'content', focus: 'questions', questionId: id } });
+      if (node.answer_type !== 'text') {
+        if ((node.options?.length ?? 0) < 2 || (node.options?.length ?? 0) > 12) issues.push({ key: `question-choices:${id}`,
+          said: sprintf(__('“%1$s” on “%2$s” needs 2 to 12 answer choices.', 'wconvert'), name, screen.name),
+          repair: { screenId: screen.id, section: 'content', focus: 'questions', questionId: id, choiceIndex: 0 } });
+        node.options?.forEach((option, choiceIndex) => {
+          if (!option.label.trim()) issues.push({ key: `choice-label:${id}:${choiceIndex}`,
+            said: sprintf(__('Name answer %1$d for “%2$s” on “%3$s”.', 'wconvert'), choiceIndex + 1, name, screen.name),
+            repair: { screenId: screen.id, section: 'content', focus: 'questions', questionId: id, choiceIndex } });
+        });
+      }
+    });
     if (screen.when && incomplete(screen.when)) issues.push({ key: `show:${screen.id}`,
       said: sprintf(__('Choose an answer for when “%s” appears.', 'wconvert'), screen.name),
       repair: { screenId: screen.id, section: 'content' } });
@@ -70,6 +93,9 @@ export function journeyReadinessIssues(tree: TemplateTree): JourneyReadinessIssu
       if (reason) issues.push({ key: `show:${screen.id}`, said: sprintf(__('Review when “%1$s” appears: %2$s', 'wconvert'), screen.name, reason), repair: { screenId: screen.id, section: 'content' } });
     }
     screen.results?.forEach((result, index) => {
+      if (!result.heading.trim()) issues.push({ key: `result-heading:${screen.id}:${result.id}`,
+        said: sprintf(__('Give result %1$d on “%2$s” a heading.', 'wconvert'), index + 1, screen.name),
+        repair: { screenId: screen.id, section: 'content', resultId: result.id, focus: 'result-heading' } });
       const hasLink = !!result.href?.trim();
       const hasLabel = !!result.link_label?.trim();
       if (hasLink !== hasLabel || (!!result.product_ids?.length || screen.products_required) && !hasLink) {
@@ -79,7 +105,12 @@ export function journeyReadinessIssues(tree: TemplateTree): JourneyReadinessIssu
             : __('Complete the link destination and label for “%1$s” on “%2$s”.', 'wconvert'), result.heading, screen.name),
           repair: { screenId: screen.id, section: 'content', resultId: result.id, focus: 'result-link' } });
       }
-      if (!result.when) return;
+      if (!result.when) {
+        if (index < (screen.results?.length ?? 0) - 1) issues.push({ key: `result:${screen.id}:${index}`,
+          said: sprintf(__('Choose a condition for result %1$d on “%2$s”. Only Everyone else is unconditional.', 'wconvert'), index + 1, screen.name),
+          repair: { screenId: screen.id, section: 'content', resultId: result.id } });
+        return;
+      }
       const reason = incomplete(result.when) ? null : invalid(result.when, screen.id, false);
       if (!incomplete(result.when) && !reason) return;
       issues.push({ key: `result:${screen.id}:${index}`,

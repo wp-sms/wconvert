@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { cleanup, render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { afterEach, expect, it } from 'vitest';
+import { afterEach, expect, it, vi } from 'vitest';
 import type { QuestionCondition, QuestionNode, TemplateTree } from '@renderer/types';
 import { ConditionSettings, ScreenConditionSettings } from '../../resources/admin/src/builder/JourneySettings';
 import { GraphRouteSettings } from '../../resources/admin/src/builder/GraphRouteSettings';
@@ -123,4 +123,12 @@ it('focuses the hidden continuation when that map connection is selected', () =>
   const tree = fixture as unknown as TemplateTree;
   render(<GraphRouteSettings tree={tree} step={tree.steps.findIndex(screen => screen.id === 'garden')} focusPath="hidden" onChange={() => {}} onInsert={() => {}} />);
   expect(screen.getByRole('combobox', { name: 'Continue at' })).toHaveFocus();
+});
+
+it('can create the missing condition on an imported matching result', async () => {
+  const user = userEvent.setup();
+  const update = vi.fn();
+  render(<ConditionSettings required sources={[question]} onChange={update} />);
+  await user.click(screen.getByRole('button', { name: 'Add condition' }));
+  expect(update).toHaveBeenCalledWith({ match: 'all', clauses: [{ question: 'q1', operator: 'includes_any', values: ['garden'] }] });
 });

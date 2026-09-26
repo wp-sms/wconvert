@@ -108,6 +108,7 @@ export function ReadinessDialog({
   const [publishing, setPublishing] = useState(false);
   const [published, setPublished] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [errorRepair, setErrorRepair] = useState<JourneyRepair | null>(null);
   const trigger = useRef<HTMLButtonElement>(null);
   const afterClose = useRef<(() => void) | null>(null);
   const where = destinationsSaid(bound, destinations, capturedFields(template));
@@ -171,11 +172,17 @@ export function ReadinessDialog({
   const publish = async () => {
     setPublishing(true);
     setError(null);
+    setErrorRepair(null);
     try {
       await onPublish();
       setPublished(true);
     } catch (cause) {
       setError(messageOf(cause));
+      const refusal = cause as { code?: unknown; data?: { issue?: unknown } } | null;
+      if (refusal?.code === 'wconvert_optin_form_incomplete' && refusal.data?.issue === 'products') {
+        const result = template?.tree.steps.find(screen => screen.kind === 'result' && screen.products_required);
+        if (result) setErrorRepair({ screenId: result.id, section: 'content', focus: 'products-required' });
+      }
     } finally {
       setPublishing(false);
     }
@@ -189,6 +196,7 @@ export function ReadinessDialog({
         onClick={() => {
           setPublished(false);
           setError(null);
+          setErrorRepair(null);
           setOpen(true);
         }}
       >
@@ -441,6 +449,9 @@ export function ReadinessDialog({
             {error !== null && (
               <p role="alert" className="wconvert-launch-review__notice">{error}</p>
             )}
+            {errorRepair && <button className="wconvert-readiness__go" onClick={() => jump(() => onEditJourney(errorRepair))}>
+              {__('Review product requirements', 'wconvert')}
+            </button>}
             {!published && (
               <p className="text-note text-muted-foreground">
                 {current

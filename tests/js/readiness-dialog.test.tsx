@@ -11,6 +11,7 @@ import type { GoalEntry } from '../../resources/admin/src/goals/api';
 import type { Template } from '@renderer/types';
 import { ruleTypes } from './support/rule-types';
 import graphFixture from '../fixtures/journey-graph-enquiry.json';
+import coffee from '../fixtures/journey-graph-coffee.json';
 
 const design = (id: string): Template => JSON.parse(readFileSync(
   resolve(import.meta.dirname, `../../resources/templates/library/${id}.json`), 'utf8',
@@ -367,4 +368,20 @@ describe('review actions return to the place that can resolve them', () => {
     expect(screen.queryByRole('dialog')).toBeNull();
     await waitFor(() => expect(screen.getByRole('button', { name: 'Preview canvas' })).toHaveFocus());
   });
+});
+
+
+it('offers a focused repair after the server refuses the live-product requirement', async () => {
+  const onEditJourney = vi.fn();
+  const original = coffee.template as Template;
+  const template: Template = { ...original, tree: { ...original.tree, steps: original.tree.steps.map(step => step.kind === 'result'
+    ? { ...step, products_required: true } : step) } };
+  const goal = { ...GOAL, id: 'find_match', outcome: { ...GOAL.outcome, action: 'match' as const, audience_channel: null, capture_any_of: [] } };
+  await open({ template, goal: ready(goal), goalId: goal.id, onEditJourney,
+    onPublish: vi.fn().mockRejectedValue({ code: 'wconvert_optin_form_incomplete', message: 'WooCommerce is required.', data: { issue: 'products' } }) });
+  await userEvent.click(screen.getByRole('button', { name: 'Publish Campaign' }));
+  expect(await screen.findByRole('alert')).toHaveTextContent('WooCommerce is required.');
+  await userEvent.click(screen.getByRole('button', { name: 'Review product requirements' }));
+  expect(onEditJourney).toHaveBeenCalledWith({ screenId: 'result', section: 'content', focus: 'products-required' });
+  expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
 });

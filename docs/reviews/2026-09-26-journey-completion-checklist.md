@@ -21,7 +21,7 @@ to guess when answers are saved or which path wins does not meet the UX goal.
 | Accepted saves freeze their encountered question/contact/consent snapshot | JS and PHP capture verification, local database runs, actual progressive capture | A save snapshot excludes later answers even if retained in memory |
 | Required versus optional result access | Both modes published and exercised; adjacent pair transformation preserves downstream branches and shared ending | Complex non-adjacent gates require named manual preparation, not automatic rewiring |
 | Add/remove optional second capture | Owned-field/consent insertion and removal tests; saved graph contract and browser skip/failure/retry | Shared/dependent/required captures are protected with explanations |
-| Graph edits and repair | Named insertion points, removal/reroute impact, missing choices, hidden/default exits, disconnected screens, result links and missing required contact repair | A complete audit of server-only error destinations remains below |
+| Graph edits and repair | Named insertion points, removal/reroute impact, missing choices, hidden/default exits, disconnected screens, result links and missing required contact repair. Blank screen/question/choice/result text now has precise repair links; absent matching-result conditions can be added; a real WooCommerce refusal focuses product requirements | Consent and navigation refusal destinations still need the audit below; malformed imported identities are not automatically rewritten |
 | Save versus destination delivery | Actual visitor acceptance, real Action Scheduler retry against a loopback HTTP receiver, manual stored-submission recovery; one Lead and frozen separate payloads | Does not certify every external vendor's behavior; provider unit coverage is separate |
 | Product outcomes and catalog failure | Shared production fixture: all 48 coffee combinations through the visitor renderer and PHP; first-match/fallback, anonymous completion and Back/pruning. Actual WooCommerce stock exclusion, refetch, API 503/recovery and shop fallback. Preview simulation now supports Retry without remounting | Preview explicitly simulates availability; it does not fetch live prices or stock. Real catalog checks used representative products, not every possible external response |
 | Map clarity and drag continuity | Grouped independent follow-ups; 13-screen branch and 53-screen map checks; two instrumented drag samples without missing paths | Short local samples are not a broad performance guarantee |
@@ -30,11 +30,12 @@ to guess when answers are saved or which path wins does not meet the UX goal.
 
 ## Remaining work, in order
 
-1. **Audit server-only repair destinations.** Compare publication error codes
-   with readiness repair links. For merchant-editable errors still routed to
-   generic settings, name the affected screen/control and verify the repair in
-   the browser. Distinguish corrupted imported structures from routine authoring
-   mistakes instead of promising an automatic repair for every invalid graph.
+1. **Finish server-only repair destinations.** The [repair audit](2026-09-26-journey-publication-repairs.md)
+   records the implemented text/result/product repairs and their browser checks.
+   Still check consent wording/ownership and navigation-button failures, then
+   goal/save-boundary errors. Name the affected screen/control for routine
+   authoring mistakes; distinguish malformed imported structures rather than
+   promising automatic repair of every invalid graph.
 2. **Complete the accessibility task walkthrough.** Verify creation, priority
    change, test, repair and publish review at native 200% browser zoom, including
    nested dialogs. Extend current keyboard/RTL/narrow-layout evidence with an
@@ -52,6 +53,12 @@ to guess when answers are saved or which path wins does not meet the UX goal.
    evidence. Keep this separate from code correctness and visual preference.
 
 ## Latest focused verification
+
+Publication repairs: 99 JS tests; 69 PHP tests / 525 assertions; TypeScript;
+ESLint; PHPStan; Free/Pro admin builds. Local WordPress verified exact second
+question/second choice focus, fallback result-heading focus, and a real server
+product refusal followed by focused repair. QA draft `01M3EJK75SA40GBH933WRCHBMC`
+was repaired, saved and confirmed unpublished with a passing capture contract.
 
 Coffee scenarios and preview: 524 JS tests; 15 PHP tests / 379 assertions;
 TypeScript; ESLint; Free/Pro admin builds. Local editor walkthrough covered

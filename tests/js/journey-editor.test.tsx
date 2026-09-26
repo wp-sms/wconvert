@@ -789,3 +789,29 @@ it('explains a branched result timing restriction and opens the named paths for 
   await waitFor(() => expect(screen.getByRole('heading', { name: 'Your result' })).toHaveFocus());
   expect(draft()).toEqual(initial);
 });
+
+it('focuses the exact answer on the second question when repairing a blank label', async () => {
+  const base = graphFixture as unknown as TemplateTree;
+  const tree: TemplateTree = { ...base, steps: base.steps.map(item => item.id === 'interests' ? { ...item, content: { type: 'stack', children: [
+    item.content, { type: 'question', id: 'extra', label: 'Second question', answer_type: 'single', required: false, options: [{ value: 'a', label: 'A' }, { value: 'b', label: '' }] },
+  ] } } : item) };
+  function RepairEditor() {
+    const [step, setStep] = useState(0);
+    return <JourneyEditor embedded tree={tree} step={step} onChange={() => {}} onSelect={setStep}
+      repairRequest={{ serial: 1, screenId: 'interests', section: 'content', questionId: 'extra', choiceIndex: 1, focus: 'questions' }} />;
+  }
+  render(<RepairEditor />);
+  await waitFor(() => expect(screen.getAllByRole('textbox', { name: 'Choice 2' })[1]).toHaveFocus());
+});
+
+it.each(['result-heading', 'products-required'] as const)('focuses the %s repair without the inspector stealing focus', async focus => {
+  const tree = upgradeToGraph(finder.tree as TemplateTree);
+  function RepairEditor() {
+    const [step, setStep] = useState(0);
+    return <JourneyEditor embedded tree={tree} step={step} onChange={() => {}} onSelect={setStep}
+      repairRequest={{ serial: 1, screenId: 'match', section: 'content', ...(focus === 'result-heading' ? { resultId: 'balcony' } : {}), focus }} />;
+  }
+  render(<RepairEditor />);
+  await waitFor(() => expect(focus === 'result-heading' ? screen.getByRole('textbox', { name: 'Heading' })
+    : screen.getByRole('checkbox', { name: 'Require live products before publishing' })).toHaveFocus());
+});

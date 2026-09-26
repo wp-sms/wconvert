@@ -38,6 +38,9 @@ export function ConditionSettings({ value, sources, onChange, required = false, 
       </select>
     </label>}
     {!sources.length && <p>{__('Add a choice question on an earlier screen to use conditions.', 'wconvert')}</p>}
+    {required && !value && <button type="button" disabled={!sources.length} onClick={() => {
+      if (sources[0]) onChange({ match: 'all', clauses: [initial(sources[0])] });
+    }}>{__('Add condition', 'wconvert')}</button>}
     {value && <>
       {value.clauses.length > 1 && <label>{__('Match', 'wconvert')}<select value={value.match} onChange={event => onChange({ ...value, match: event.target.value as 'all' | 'any' })}>
         <option value="all">{__('All conditions', 'wconvert')}</option><option value="any">{__('Any condition', 'wconvert')}</option>
@@ -200,7 +203,7 @@ export function QuestionSettings({ tree, step, onChange, onSelect }: {
       const protectedValues = new Set([...tree.steps.flatMap(item => [item.when, ...(item.results?.map(result => result.when) ?? []), ...(item.paths?.map(path => path.when) ?? [])]),
         ...(tree.graph?.edges.map(edge => edge.when) ?? [])]
         .flatMap(condition => condition?.clauses ?? []).filter(clause => clause.question === question.id).flatMap(clause => clause.values));
-      return <div key={question.id} className="wconvert-journey-settings__question">
+      return <div key={question.id} data-question-id={question.id} className="wconvert-journey-settings__question">
         <label>{__('Question', 'wconvert')}<input value={question.label} maxLength={200} onChange={event => change(question.id, node => ({ ...node, label: event.target.value }), 'label')} /></label>
         <label>{__('Help text (optional)', 'wconvert')}<input value={question.help ?? ''} maxLength={300} onChange={event => change(question.id, node => ({ ...node, help: event.target.value }), 'help')} /></label>
         <label>{__('Answer type', 'wconvert')}<select value={question.answer_type} disabled={refs.length > 0} onChange={event => change(question.id, node => ({ ...node, answer_type: event.target.value as QuestionNode['answer_type'], options: event.target.value === 'text' ? [] : [{ value: 'first', label: __('First option', 'wconvert') }, { value: 'second', label: __('Second option', 'wconvert') }] }))}>
@@ -290,15 +293,22 @@ export function ResultSettings({ tree, step, onChange, repairRequest }: { tree: 
   const tabsId = useId();
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const linkInput = useRef<HTMLInputElement>(null);
+  const headingInput = useRef<HTMLInputElement>(null);
+  const productsRequired = useRef<HTMLInputElement>(null);
   const settingsRoot = useRef<HTMLElement>(null);
   const handledRepair = useRef(0);
   useLayoutEffect(() => {
-    if (!repairRequest?.resultId || handledRepair.current === repairRequest.serial) return;
+    if (!repairRequest || handledRepair.current === repairRequest.serial) return;
+    if (repairRequest.focus === 'products-required') {
+      productsRequired.current?.focus(); handledRepair.current = repairRequest.serial; return;
+    }
+    if (!repairRequest.resultId) return;
     // Focus only after the requested result's inputs have committed. Focusing the
     // previous result before switching tabs loses focus when that input unmounts.
     if (selectedId !== repairRequest.resultId) { setSelectedId(repairRequest.resultId); return; }
     const target = repairRequest.focus === 'result-link' ? linkInput.current
-      : settingsRoot.current?.querySelector<HTMLElement>('[role="tabpanel"] .wconvert-journey-settings__clause select');
+      : repairRequest.focus === 'result-heading' ? headingInput.current
+      : settingsRoot.current?.querySelector<HTMLElement>('[role="tabpanel"] .wconvert-journey-settings__clause select, [role="tabpanel"] .wconvert-journey-settings button');
     (target ?? linkInput.current)?.focus();
     handledRepair.current = repairRequest.serial;
   }, [repairRequest, selectedId]);
@@ -332,7 +342,7 @@ export function ResultSettings({ tree, step, onChange, repairRequest }: { tree: 
     {variants.length < 6 && sources.length > 0 && <button type="button" onClick={addResult}>{__('Add matching result', 'wconvert')}</button>}
   </div>
     <p>{__('Choose a result to edit. Visitors see the first matching result, or Everyone else.', 'wconvert')}</p>
-    <label className="wconvert-journey-settings__check"><input type="checkbox" checked={screen.products_required === true} onChange={event => onChange({ ...tree, steps: tree.steps.map((item, at) => at === step ? { ...item, products_required: event.target.checked } : item) })} />{__('Require live products before publishing', 'wconvert')}</label>
+    <label className="wconvert-journey-settings__check"><input ref={productsRequired} type="checkbox" checked={screen.products_required === true} onChange={event => onChange({ ...tree, steps: tree.steps.map((item, at) => at === step ? { ...item, products_required: event.target.checked } : item) })} />{__('Require live products before publishing', 'wconvert')}</label>
     {overlap && <p className="wconvert-journey-settings__warning" role="status">{sprintf(__('“%1$s” and “%2$s” may match the same answers. The result listed first wins; test both paths.', 'wconvert'), overlap[0].heading, overlap[1].heading)}</p>}
     <div className="wconvert-journey-settings__result-list" role="tablist" aria-label={__('Possible results', 'wconvert')} aria-orientation="vertical">
       {variants.map((variant, at) => <button key={variant.id} type="button" role="tab" id={`${tabsId}-tab-${at}`} aria-controls={`${tabsId}-panel`}
@@ -358,7 +368,7 @@ export function ResultSettings({ tree, step, onChange, repairRequest }: { tree: 
         <button type="button" disabled={selectedAt >= variants.length - 2} onClick={() => move(selectedAt, selectedAt + 1)}>{__('Move later', 'wconvert')}</button>
       </div>}
       {selectedAt < variants.length - 1 && <ConditionSettings required value={selected.when} sources={sources} onChange={when => { if (when) edit(selectedAt, { when }); }} />}
-      <label>{__('Heading', 'wconvert')}<input value={selected.heading} maxLength={200} onChange={event => edit(selectedAt, { heading: event.target.value }, 'heading')} /></label>
+      <label>{__('Heading', 'wconvert')}<input ref={headingInput} value={selected.heading} maxLength={200} onChange={event => edit(selectedAt, { heading: event.target.value }, 'heading')} /></label>
       <label>{__('Message', 'wconvert')}<textarea value={selected.body ?? ''} maxLength={500} onChange={event => edit(selectedAt, { body: event.target.value }, 'body')} /></label>
       <label>{__('Fallback shop or guide link', 'wconvert')}<input ref={linkInput} type="text" inputMode="url" placeholder="/shop/" value={selected.href ?? ''} onChange={event => edit(selectedAt, { href: event.target.value }, 'href')} /></label>
       <label>{__('Link label', 'wconvert')}<input value={selected.link_label ?? ''} maxLength={120} onChange={event => edit(selectedAt, { link_label: event.target.value }, 'link_label')} /></label>
