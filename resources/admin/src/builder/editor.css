@@ -4,6 +4,21 @@ body.wconvert-editing #wconvert-admin { padding-block-end: 0; }
   body.wconvert-editing:not(.wconvert-fullscreen) #wconvert-admin { margin-inline-start: -10px; width: calc(100% + 10px); }
 }
 body.wconvert-editing.wconvert-fullscreen #wconvert-admin { margin-inline-start: 0; width: 100%; }
+/* A transient journey view; leave the merchant's saved Full width preference alone. */
+body.wconvert-journey-focus #adminmenumain,
+body.wconvert-journey-focus #wpadminbar,
+body.wconvert-journey-focus #wpfooter,
+body.wconvert-journey-focus .wconvert-workspace__header,
+body.wconvert-journey-focus .wconvert-workspace__footer { display: none !important; }
+body.wconvert-journey-focus #wpcontent,
+body.wconvert-journey-focus #wpbody-content { margin-inline-start: 0; padding-inline-start: 0; }
+body.wconvert-editing.wconvert-journey-focus #wconvert-admin { margin-inline-start: 0; width: 100%; }
+html.wp-toolbar:has(body.wconvert-journey-focus) { padding-top: 0 !important; }
+body.wconvert-journey-focus #wpbody { padding-top: 0; }
+body.wconvert-journey-focus #wconvert-admin .wconvert-workspace { height: 100dvh; }
+#wconvert-admin .wconvert-journey-workspace[data-focused] .wconvert-journey-description,
+#wconvert-admin .wconvert-journey-workspace[data-focused] .wconvert-journey-context { display: none; }
+#wconvert-admin .wconvert-journey-workspace[data-focused] .wconvert-journey-dialog__header { padding-block: 10px; }
 /* The editing workspace owns the viewport; the list screens keep Shell. */
 body.wconvert-editing #wpbody-content {
   padding-bottom: 0;

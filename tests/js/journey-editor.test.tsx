@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { render, screen, fireEvent, cleanup, within, waitFor } from '@testing-library/react';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import { JourneyEditor } from '../../resources/admin/src/builder/JourneyEditor';
+import { Fullscreen } from '../../resources/admin/src/builder/Fullscreen';
 import type { QuestionCondition, QuestionNode, TemplateTree } from '@renderer/types';
 import { ConditionSettings } from '../../resources/admin/src/builder/JourneySettings';
 import { movedScreen, removedScreen, referencedJourney, replaceAnswer, walkNodes } from '../../resources/admin/src/builder/structure/journey';
@@ -23,6 +24,43 @@ vi.mock('../../resources/admin/src/builder/JourneyMap', () => ({ JourneyMap: ({ 
 </div> }));
 beforeEach(() => vi.stubGlobal('ResizeObserver', class { observe() {} unobserve() {} disconnect() {} }));
 afterEach(() => { cleanup(); vi.unstubAllGlobals(); });
+
+it('focuses the existing workspace without remounting it and closes nested UI before exiting', async () => {
+  const user = userEvent.setup();
+  const { unmount } = render(<JourneyEditor embedded tree={source.tree as TemplateTree} step={0} onChange={() => {}} onSelect={() => {}} />);
+  const map = await screen.findByLabelText('Journey map');
+  await user.click(screen.getByRole('button', { name: 'Focus journey' }));
+  expect(document.body).toHaveClass('wconvert-journey-focus');
+  expect(screen.getByLabelText('Journey map')).toBe(map);
+  await user.click(screen.getByRole('button', { name: 'Add screen' }));
+  await user.keyboard('{Escape}');
+  expect(document.body).toHaveClass('wconvert-journey-focus');
+  await user.click(screen.getByRole('button', { name: 'Test journey' }));
+  await user.keyboard('{Escape}');
+  expect(screen.queryByRole('dialog', { name: 'Test journey' })).not.toBeInTheDocument();
+  expect(document.body).toHaveClass('wconvert-journey-focus');
+  await waitFor(() => expect(screen.getByRole('button', { name: 'Test journey' })).toHaveFocus());
+  await user.keyboard('{Escape}');
+  expect(document.body).not.toHaveClass('wconvert-journey-focus');
+  expect(screen.getByRole('button', { name: 'Focus journey' })).toHaveFocus();
+  expect(screen.getByLabelText('Journey map')).toBe(map);
+  await user.click(screen.getByRole('button', { name: 'Focus journey' }));
+  unmount();
+  expect(document.body).not.toHaveClass('wconvert-journey-focus');
+});
+
+it('leaves the saved Full width preference intact when exiting journey focus', async () => {
+  const user = userEvent.setup();
+  render(<><Fullscreen /><JourneyEditor embedded tree={source.tree as TemplateTree} step={0} onChange={() => {}} onSelect={() => {}} /></>);
+  await user.click(screen.getByRole('button', { name: 'Full width' }));
+  const remembered = localStorage.getItem('wconvert:fullscreen');
+  await user.click(screen.getByRole('button', { name: 'Focus journey' }));
+  await user.keyboard('{Escape}');
+  expect(document.body).not.toHaveClass('wconvert-journey-focus');
+  expect(document.body).toHaveClass('wconvert-fullscreen');
+  expect(localStorage.getItem('wconvert:fullscreen')).toBe(remembered);
+  await user.click(screen.getByRole('button', { name: 'Show the menu' }));
+});
 function Editor({ initial = source.tree as TemplateTree }: { initial?: TemplateTree }) {
   const [tree, setTree] = useState(initial);
   const [step, setStep] = useState(0);

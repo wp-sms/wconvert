@@ -1,5 +1,5 @@
-import { lazy, Suspense, useEffect, useId, useRef, useState } from 'react';
-import { ArrowLeft, ArrowRight, ChevronDown, Copy, FilePlus2, ListPlus, Plus, Search, Trash2, Workflow, X } from 'lucide-react';
+import { lazy, Suspense, useEffect, useId, useRef, useState, type ReactNode } from 'react';
+import { ArrowLeft, ArrowRight, ChevronDown, Copy, FilePlus2, ListPlus, Maximize2, Minimize2, Plus, Search, Trash2, Workflow, X } from 'lucide-react';
 import { ConfirmDialog } from '../shell/ConfirmDialog';
 import { Input } from '../components/ui/input';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '../components/ui/dropdown-menu';
@@ -20,14 +20,23 @@ import type { JourneyRepair } from './structure/journeyReadiness';
 
 const JourneyMap = lazy(() => import('./JourneyMap').then(module => ({ default: module.JourneyMap })));
 
-export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChange, onSelect, displaySummary, destinationSummary, deliveryMode, onGoToRules, onGoToDestinations, onGoToDesign, openRequest, repairRequest, embedded = false }: {
+export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChange, onSelect, displaySummary, destinationSummary, deliveryMode, onGoToRules, onGoToDestinations, onGoToDesign, openRequest, repairRequest, embedded = false, focusActions }: {
   tokens?: Tokens; primaryChannel?: string | null; tree: TemplateTree; step: number; onChange(tree: TemplateTree): void; onSelect(step: number): void;
   displaySummary?: string; destinationSummary?: string; deliveryMode?: 'local' | 'connected' | 'none'; onGoToRules?(): void; onGoToDestinations?(): void; onGoToDesign?(): void; openRequest?: number;
   repairRequest?: JourneyRepair & { readonly serial: number }; embedded?: boolean;
+  focusActions?: ReactNode;
 }) {
   const id = useId();
   const [open, setOpen] = useState(false);
   const [testOpen, setTestOpen] = useState(false);
+  const [focused, setFocused] = useState(false);
+  const focusTrigger = useRef<HTMLButtonElement>(null);
+  const workspaceRoot = useRef<HTMLElement>(null);
+  useEffect(() => {
+    if (!focused || !embedded) return;
+    document.body.classList.add('wconvert-journey-focus');
+    return () => document.body.classList.remove('wconvert-journey-focus');
+  }, [focused, embedded]);
   const testTrigger = useRef<HTMLButtonElement>(null);
   const settingsHeading = useRef<HTMLHeadingElement>(null);
   const returnToTestTrigger = useRef(true);
@@ -73,6 +82,16 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
   const [confirmRemoval, setConfirmRemoval] = useState(false);
   const [confirmGraphRemoval, setConfirmGraphRemoval] = useState(false);
   const [pendingRoute, setPendingRoute] = useState<{ tree: TemplateTree; disconnected: readonly string[] } | null>(null);
+  useEffect(() => {
+    if (!focused) return;
+    const escape = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape' || event.defaultPrevented || testOpen || confirmRemoval || confirmGraphRemoval || pendingRoute
+        || !(event.target instanceof Node) || !workspaceRoot.current?.contains(event.target)) return;
+      event.preventDefault(); setFocused(false); focusTrigger.current?.focus();
+    };
+    document.addEventListener('keydown', escape);
+    return () => document.removeEventListener('keydown', escape);
+  }, [focused, testOpen, confirmRemoval, confirmGraphRemoval, pendingRoute]);
   const screenList = useRef<HTMLOListElement>(null);
   const previousTree = useRef(tree);
   const select = (index: number) => { selectedId.current = tree.steps[index]?.id; setInspecting(true); setSampleOpen(false); setPanelSection('content'); setPathFocus(null); setMobilePane('details'); onSelect(index); };
@@ -323,6 +342,11 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
             {embedded ? <p className="wconvert-journey-description">{__('Plan the visitor journey, then select a screen to edit its questions and paths.', 'wconvert')}</p>
               : <DialogDescription>{__('Plan the visitor journey, then select a screen to edit its questions and paths.', 'wconvert')}</DialogDescription>}</div>
           <div className="wconvert-journey-dialog__header-actions">
+            {embedded && <Button ref={focusTrigger} type="button" size="sm" variant="outline" aria-pressed={focused} onClick={() => setFocused(value => !value)}>
+              {focused ? <Minimize2 aria-hidden="true" /> : <Maximize2 aria-hidden="true" />}
+              {focused ? __('Back to campaign', 'wconvert') : __('Focus journey', 'wconvert')}
+            </Button>}
+            {focused && focusActions}
             <Button type="button" size="sm" variant={sampleOpen ? 'secondary' : 'outline'} onClick={() => { setView('flow'); setSampleOpen(true); setMobilePane('details'); }}>{__('Try answers', 'wconvert')}</Button>
             <Button ref={testTrigger} type="button" size="sm" variant="outline" onClick={() => { returnToTestTrigger.current = true; setOpen(false); setTestOpen(true); }}>{__('Test journey', 'wconvert')}</Button>
             <DropdownMenu>
@@ -517,14 +541,21 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
           confirmLabel={__('Apply path change', 'wconvert')} onConfirm={() => { if (pendingRoute) onChange(pendingRoute.tree); setPendingRoute(null); }} />
   </>;
   return <>
-    {embedded ? <section className="wconvert-journey-workspace" aria-label={__('Journey', 'wconvert')}>{workspace}</section>
+    {embedded ? <section ref={workspaceRoot} className="wconvert-journey-workspace" data-focused={focused || undefined} aria-label={__('Journey', 'wconvert')}>{workspace}</section>
       : <Dialog open={open} onOpenChange={value => { setOpen(value); setSaid(''); }}>
         <DialogTrigger asChild><Button type="button" variant="outline" size="sm"><Workflow aria-hidden="true" />{__('Manage screens', 'wconvert')}</Button></DialogTrigger>
         <DialogContent className="wconvert-journey-dialog" showCloseButton={false}>{workspace}</DialogContent>
       </Dialog>}
     <Dialog open={testOpen} onOpenChange={value => { setTestOpen(value); if (!value && !embedded) setOpen(true); }}>
       <DialogContent className="wconvert-journey-test-dialog" onOpenAutoFocus={event => event.preventDefault()}
-        onCloseAutoFocus={event => { event.preventDefault(); requestAnimationFrame(() => (returnToTestTrigger.current ? testTrigger.current : settingsHeading.current)?.focus()); }}>
+        onCloseAutoFocus={event => {
+          event.preventDefault();
+          const restore = () => (returnToTestTrigger.current ? testTrigger.current : settingsHeading.current)?.focus();
+          // The embedded workspace stays mounted. Deferring its restoration can
+          // steal focus from a subsequent Escape that leaves Focus journey.
+          if (embedded) restore();
+          else requestAnimationFrame(restore);
+        }}>
         <DialogTitle>{__('Test journey', 'wconvert')}</DialogTitle>
         <DialogDescription>{__('Try answers and inspect the included and skipped screens. Nothing is submitted.', 'wconvert')}</DialogDescription>
         <div className="wconvert-journey-test-dialog__body">

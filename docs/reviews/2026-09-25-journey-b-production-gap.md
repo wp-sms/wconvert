@@ -35,6 +35,29 @@ again or turn conditional follow-ups into mutually exclusive branches.
 
 ## Progress after this audit
 
+### September 26: focused journey workspace and nested keyboard behavior
+
+An embedded journey can now expand into Focus journey without remounting its
+map or resetting manually moved cards. The transient view hides campaign and
+WordPress chrome, keeps Undo/Redo and Save draft available, and restores the
+campaign with its separate Full width preference unchanged. Escape dismisses
+an open menu or Test journey first; a subsequent Escape leaves focus view and
+returns keyboard focus to its toggle. Embedded test-dialog focus restoration
+is synchronous so a queued animation frame cannot steal that focus afterward.
+
+A real WordPress check verified the 13-screen branch fixture, preserved dragged
+positions across the view switch, edited/undid/redid/saved from focus view and
+restored the QA draft. The canvas grew from about 236px to 487px tall at
+1280×720. Phone checks at 390×844 and 320×740 exposed a WordPress body toolbar
+offset; focus view now removes it and leaves map controls reachable. These
+checks improve space, not prove fit-all text readable for every large graph.
+Broader zoom/RTL, graph-edit scenarios, delivery evidence and merchant testing
+remain release work. No QA campaign was published for this slice.
+
+Validation: 2,861 JavaScript tests pass, including same-map identity, nested
+Escape and saved Full width preference regressions; TypeScript and ESLint pass;
+Free and Pro admin builds pass. Visitor/PHP code is unchanged by this slice.
+
 ### September 26: question budgets follow routes, with actual capture evidence
 
 The eleven-question bank in the two-branch fixture now passes publication.

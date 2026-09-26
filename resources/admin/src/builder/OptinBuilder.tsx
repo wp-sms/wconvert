@@ -800,6 +800,8 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
       <div className="wconvert-workspace__body" inert={busy}>
         <TabsContent value="journey" className="wconvert-workspace__journey">
           {entry && <JourneyEditor embedded primaryChannel={entryOfGoal?.outcome.audience_channel} tree={entry.tree} tokens={entry.tokens} step={shownStep} repairRequest={journeyRepair ?? undefined}
+            focusActions={<><HistoryControls history={{ ...history, canUndo: !busy && history.canUndo, canRedo: !busy && history.canRedo }} />
+              <Button type="button" variant="outline" size="sm" disabled={busy || !dirty} onClick={() => void save()}>{busy ? __('Saving…', 'wconvert') : __('Save draft', 'wconvert')}</Button></>}
             onChange={tree => edit({ template: { ...entry, tree } })} onSelect={chooseStep} displaySummary={displaySummary} destinationSummary={destinationSummary}
             deliveryMode={config?.capture_mode === 'local' ? 'local' : bound.length > 0 ? 'connected' : 'none'}
             onGoToDesign={() => { setTab('design'); setPreviewing(false); }}
