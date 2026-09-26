@@ -57,6 +57,12 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
       : repairRequest.pathPriority;
     setPathFocus(priority !== undefined && priority >= 0 ? priority : null);
     onSelect(index);
+    if (repairRequest.section === 'content' || priority === undefined || priority < 0) requestAnimationFrame(() => {
+      const heading = settingsHeading.current;
+      const condition = repairRequest.section === 'content'
+        ? heading?.closest('.wconvert-journey-pane')?.querySelector<HTMLElement>('.wconvert-journey-settings__clause select') : null;
+      (condition ?? heading)?.focus();
+    });
   }, [repairRequest, tree.steps, tree.graph, onSelect]);
   const [said, setSaid] = useState('');
   const [confirmRemoval, setConfirmRemoval] = useState(false);

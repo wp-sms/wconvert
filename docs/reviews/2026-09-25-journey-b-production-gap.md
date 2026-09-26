@@ -35,6 +35,33 @@ again or turn conditional follow-ups into mutually exclusive branches.
 
 ## Progress after this audit
 
+### September 26: repair controls and path-aware authoring review
+
+Readiness now names missing/deleted question sources, questions that cannot be
+answered before a rule on any incoming path, stale answer choices, incompatible
+comparisons, and missing default/hidden continuations. A question available on
+only some incoming paths remains allowed. The controls retain invalid selections
+visibly instead of displaying an unrelated question, let merchants replace them,
+and repair absent continuations without drawing lines. Editing visibility keeps
+an existing hidden route even while the default route is missing. Empty required
+branch conditions stay invalid until repaired; removing their last clause cannot
+silently turn them into a match-everyone route.
+
+In local WordPress, the unpublished multi-interest QA campaign was temporarily
+changed so Balcony details referenced the Garden answer, then Garden's normal
+and hidden routes were sent directly to Contact details while a separate branch
+still reached Balcony. Review correctly blocked publication and named the
+impossible Garden dependency. Its repair opened Balcony's condition and focused
+the unavailable-question selector. Replacing the source with the initial
+interests question cleared the blocker. All scenario edits were undone, leaving
+the saved QA campaign unchanged. No campaign was published by this check.
+
+The focused repair/readiness/editor suite passed 37 tests, the full JavaScript
+suite passed 2,830 tests, and Free/Pro admin builds completed. The database CI
+fixture also now separates lead writes by milliseconds so random ULID suffixes
+cannot make its newest-first expectation flaky; confirmation awaits the next CI
+run. These checks do not close the remaining release gate below.
+
 The current branch now accepts several answers in a multi-choice condition in
 the editor, PHP normalization, capture validation, and the existing JS matcher.
 The editor uses checkboxes, and the map names the matching choices. Tests cover

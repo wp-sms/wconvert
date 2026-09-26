@@ -42,13 +42,17 @@ export function ConditionSettings({ value, sources, onChange, required = false, 
         <option value="all">{__('All conditions', 'wconvert')}</option><option value="any">{__('Any condition', 'wconvert')}</option>
       </select></label>}
       {value.clauses.map((clause, index) => {
-        const source = sources.find(q => q.id === clause.question) ?? sources[0];
+        const source = sources.find(q => q.id === clause.question);
+        const operators = source?.answer_type === 'multi' ? ['includes_any', 'includes_none'] : ['is', 'is_not'];
+        const unavailable = source ? clause.values.filter(answer => answer && !source.options?.some(option => option.value === answer)) : [];
         return <div key={index} className="wconvert-journey-settings__clause">
           <span>{index === 0 ? __('If', 'wconvert') : value.match === 'all' ? __('And', 'wconvert') : __('Or', 'wconvert')}</span>
           <select aria-label={__('Question', 'wconvert')} value={clause.question} onChange={event => { const q = sources.find(item => item.id === event.target.value)!; patch(index, initial(q)); }}>
+            {!source && <option value={clause.question} disabled>{__('Question unavailable on this path — choose another', 'wconvert')}</option>}
             {sources.map(q => <option key={q.id} value={q.id}>{q.label}</option>)}
           </select>
-          <select aria-label={__('Comparison', 'wconvert')} value={clause.operator} onChange={event => patch(index, { ...clause, operator: event.target.value as typeof clause.operator })}>
+          <select aria-label={__('Comparison', 'wconvert')} value={clause.operator} disabled={!source} onChange={event => patch(index, { ...clause, operator: event.target.value as typeof clause.operator })}>
+            {!operators.includes(clause.operator) && <option value={clause.operator} disabled>{__('Choose comparison…', 'wconvert')}</option>}
             {source?.answer_type === 'multi' ? <><option value="includes_any">{__('includes', 'wconvert')}</option><option value="includes_none">{__('does not include', 'wconvert')}</option></> : <><option value="is">{__('is', 'wconvert')}</option><option value="is_not">{__('is not', 'wconvert')}</option></>}
           </select>
           {source?.answer_type === 'multi' ? <fieldset className="wconvert-journey-settings__answers">
@@ -57,15 +61,18 @@ export function ConditionSettings({ value, sources, onChange, required = false, 
               onChange={event => patch(index, { ...clause, values: event.target.checked
                 ? [...clause.values.filter(value => value !== ''), option.value]
                 : clause.values.filter(value => value !== option.value && value !== '') })} />{option.label}</label>)}
+            {unavailable.length > 0 && <div role="status"><small>{__('This rule contains an answer that is no longer available.', 'wconvert')}</small>
+              <button type="button" onClick={() => patch(index, { ...clause, values: clause.values.filter(answer => !unavailable.includes(answer)) })}>{__('Remove unavailable answers', 'wconvert')}</button></div>}
             {!clause.values.some(value => value !== '') && <small>{__('Choose at least one answer.', 'wconvert')}</small>}
-          </fieldset> : <select aria-label={__('Answer', 'wconvert')} value={clause.values[0] ?? ''} onChange={event => patch(index, { ...clause, values: [event.target.value] })}>
-            {clause.values[0] === '' && <option value="">{__('Choose answer…', 'wconvert')}</option>}
+          </fieldset> : <select aria-label={__('Answer', 'wconvert')} disabled={!source} value={clause.values[0] ?? ''} onChange={event => patch(index, { ...clause, values: [event.target.value] })}>
+            {!clause.values[0] && <option value="">{__('Choose answer…', 'wconvert')}</option>}
+            {clause.values[0] && (!source || unavailable.length > 0) && <option value={clause.values[0]} disabled>{__('Answer unavailable — choose another', 'wconvert')}</option>}
             {source?.options?.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}
           </select>}
-          <button type="button" onClick={() => { const clauses = value.clauses.filter((_, at) => at !== index); onChange(clauses.length ? { ...value, clauses } : undefined); }}>{__('Remove', 'wconvert')}</button>
+          <button type="button" onClick={() => { const clauses = value.clauses.filter((_, at) => at !== index); onChange(clauses.length || required ? { ...value, clauses } : undefined); }}>{__('Remove', 'wconvert')}</button>
         </div>;
       })}
-      {value.clauses.length < 5 && <button type="button" onClick={() => onChange({ ...value, clauses: [...value.clauses, initial(sources[0])] })}>{__('Add another condition', 'wconvert')}</button>}
+      {value.clauses.length < 5 && <button type="button" disabled={!sources.length} onClick={() => { if (sources[0]) onChange({ ...value, clauses: [...value.clauses, initial(sources[0])] }); }}>{value.clauses.length ? __('Add another condition', 'wconvert') : __('Add condition', 'wconvert')}</button>}
       <p>{purpose === 'route'
         ? __('If this does not match, the next path is checked. An unanswered question never matches, even with “is not.”', 'wconvert')
         : required
@@ -154,19 +161,21 @@ export function ScreenConditionSettings({ tree, step, onChange, onSelect }: {
   if (screen.id === (tree.graph?.entry ?? tree.steps[0].id) || ['result', 'acknowledgement'].includes(screen.kind)
     || walkNodes(screen.content).some(node => node.type === 'button' && 'action' in node && node.action === 'submit')) return null;
   const sources = questionsBefore(tree, step);
+  const hiddenDestination = tree.graph && tree.steps.find(item => item.id === tree.graph?.edges.find(edge => edge.from === screen.id && edge.kind === 'hidden')?.to);
   return <section className="wconvert-journey-settings"><h4>{__('Screen visibility', 'wconvert')}</h4>
     <ConditionSettings value={screen.when} sources={sources} onChange={when => {
       const steps = tree.steps.map((item, at) => at === step ? { ...item, when } : item);
       if (!tree.graph) { onChange({ ...tree, steps }); return; }
       const edges = tree.graph.edges.filter(edge => !(edge.from === screen.id && edge.kind === 'hidden'));
       const fallback = edges.find(edge => edge.from === screen.id && edge.kind === 'default');
-      if (when && fallback) edges.push({ id: tree.graph.edges.find(edge => edge.from === screen.id && edge.kind === 'hidden')?.id ?? graphEdgeId(tree.graph),
-        from: screen.id, to: tree.graph.edges.find(edge => edge.from === screen.id && edge.kind === 'hidden')?.to ?? fallback.to, kind: 'hidden' });
+      const hidden = tree.graph.edges.find(edge => edge.from === screen.id && edge.kind === 'hidden');
+      if (when && (hidden || fallback)) edges.push({ id: hidden?.id ?? graphEdgeId(tree.graph),
+        from: screen.id, to: (hidden ?? fallback)!.to, kind: 'hidden' });
       onChange({ ...tree, steps, graph: { ...tree.graph, edges } });
     }} />
     {screen.when && <p className="wconvert-journey-settings__skip">{tree.graph
-      ? sprintf(__('If this does not match, skip “%1$s” and continue at “%2$s”. Change that destination under Next screen.', 'wconvert'), screen.name,
-        tree.steps.find(item => item.id === tree.graph?.edges.find(edge => edge.from === screen.id && edge.kind === 'hidden')?.to)?.name ?? __('the ending', 'wconvert'))
+      ? hiddenDestination ? sprintf(__('If this does not match, skip “%1$s” and continue at “%2$s”. Change that destination under Next screen.', 'wconvert'), screen.name, hiddenDestination.name)
+        : __('Choose where visitors continue when this screen is hidden under Next screen.', 'wconvert')
       : sprintf(__('If this does not match, skip “%1$s” and check “%2$s” next. Other relevant follow-ups can still appear.', 'wconvert'), screen.name, tree.steps[step + 1]?.name ?? __('the ending', 'wconvert'))}</p>}
     {screen.when?.clauses.map(clause => { const source = questionsBefore(tree, step).find(q => q.id === clause.question);
       const sourceAt = tree.steps.findIndex(item => walkNodes(item.content).some(node => 'id' in node && node.id === clause.question));

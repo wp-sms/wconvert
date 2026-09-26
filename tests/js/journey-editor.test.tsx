@@ -50,6 +50,26 @@ it('opens a requested graph repair on its source screen and path settings', asyn
   expect(screen.getByRole('button', { name: 'Next screen' })).toHaveAttribute('aria-pressed', 'true');
   expect(screen.getByRole('checkbox', { name: 'Garden' })).toHaveFocus();
 });
+it('focuses a visibility repair once and lets the merchant continue editing', async () => {
+  const user = userEvent.setup();
+  const base = graphFixture as unknown as TemplateTree;
+  function RepairEditor() {
+    const [tree, setTree] = useState<TemplateTree>({ ...base, steps: base.steps.map(item => item.id === 'garden'
+      ? { ...item, when: { match: 'all', clauses: [{ question: 'deleted', operator: 'is', values: ['old'] }] } } : item) });
+    const [step, setStep] = useState(0);
+    return <JourneyEditor embedded tree={tree} step={step} onChange={setTree} onSelect={setStep}
+      repairRequest={{ serial: 1, screenId: 'garden', section: 'content' }} />;
+  }
+  render(<RepairEditor />);
+  const question = await screen.findByRole('combobox', { name: 'Question' });
+  await waitFor(() => expect(question).toHaveFocus());
+  await user.selectOptions(question, 'n1');
+  const balcony = screen.getByRole('checkbox', { name: 'Balcony' });
+  await user.click(balcony);
+  await waitFor(() => expect(balcony).toBeChecked());
+  expect(balcony).toHaveFocus();
+});
+
 it('lets a merchant choose several answers for a multi-select condition', async () => {
   const user = userEvent.setup();
   const sourceQuestion = { id: 'interests', type: 'question', label: 'Your interests', answer_type: 'multi', required: true,
