@@ -43,5 +43,6 @@ Chrome was restored to **Zoom: 100%** (`devicePixelRatio: 2`, viewport width
 1511px), and the temporary Chrome tab was closed.
 
 This verifies native zoom, the listed interactions and their focus transitions.
-It is not a VoiceOver walkthrough or a user study. VoiceOver verification is
-pending explicit permission to enable the macOS setting temporarily.
+It is not a VoiceOver walkthrough or a user study. The owner explicitly chose
+to skip VoiceOver for now on September 26. Screen-reader behavior remains
+unverified; VoiceOver was not enabled and no macOS setting was changed.

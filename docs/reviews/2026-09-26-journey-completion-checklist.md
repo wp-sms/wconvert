@@ -25,22 +25,27 @@ to guess when answers are saved or which path wins does not meet the UX goal.
 | Save versus destination delivery | Actual visitor acceptance, real Action Scheduler retry against a loopback HTTP receiver, manual stored-submission recovery; one Lead and frozen separate payloads | Does not certify every external vendor's behavior; provider unit coverage is separate |
 | Product outcomes and catalog failure | Shared production fixture: all 48 coffee combinations through the visitor renderer and PHP; first-match/fallback, anonymous completion and Back/pruning. Actual WooCommerce stock exclusion, refetch, API 503/recovery and shop fallback. Preview simulation now supports Retry without remounting | Preview explicitly simulates availability; it does not fetch live prices or stock. Real catalog checks used representative products, not every possible external response |
 | Map clarity and drag continuity | Grouped independent follow-ups; 13-screen branch and 53-screen map checks; two instrumented drag samples without missing paths | Short local samples are not a broad performance guarantee |
-| Keyboard and narrow layouts | Canvas traversal, non-drag controls, modal focus/return, RTL walkthrough, 320/390px layouts, light/dark/no-palette button focus. [Native Chrome 200% zoom](2026-09-26-journey-native-zoom.md) covered creation, repair, priority, test and nested Escape; fixed map collapse | Assistive-technology walkthrough is pending permission; this is not a merchant user study |
+| Keyboard and narrow layouts | Canvas traversal, non-drag controls, modal focus/return, RTL walkthrough, 320/390px layouts, light/dark/no-palette button focus. [Native Chrome 200% zoom](2026-09-26-journey-native-zoom.md) covered creation, repair, priority, test and nested Escape; fixed map collapse | VoiceOver was explicitly deferred by the owner and remains unverified; this is not a merchant user study |
 | Compatibility and publishing safety | Legacy evaluator/migration, Free/paid builds, import normalization, goal-aware PHP contract, mounted live snapshot retention and per-path question bound | Field/consent ownership must be present on every path to a save; ten questions per connected route remains a deliberate bound |
 
 ## Remaining work, in order
 
-1. **Complete the assistive-technology walkthrough.** Native 200% zoom tasks are
-   now verified separately. Permission has been requested to briefly enable
-   macOS VoiceOver and restore its prior setting. Do not represent accessibility
-   tree inspection as an actual screen-reader task walkthrough.
-2. **Merchant validation before replacing the old experience.** Have occasional
+1. **Merchant validation before replacing the old experience.** Have occasional
    merchants create independent follow-ups, choose an exclusive branch, explain
    when details are saved, and repair a wrong condition. Record completion,
    wrong predictions and hesitation. Agent walkthroughs cannot supply that user
    evidence. Keep this separate from code correctness and visual preference.
    The [session guide and observation sheet](2026-09-26-journey-merchant-validation.md)
    are ready; participant sessions have not been run.
+
+## Deferred screen-reader verification
+
+On September 26, the owner explicitly chose to skip VoiceOver for now and
+record it as unverified. It is no longer a gate for this pass. VoiceOver was
+not enabled and no macOS setting was changed. Keyboard, focus and native 200%
+zoom evidence remains valid for those checks; it does not establish actual
+screen-reader behavior. A future VoiceOver walkthrough remains a follow-up,
+not a pending permission request.
 
 ## GitHub CI exception
 
