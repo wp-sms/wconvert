@@ -1,4 +1,5 @@
-import type { TemplateNode, TemplateScreen } from '@renderer/types';
+import type { TemplateScreen } from '@renderer/types';
+import { journeyNodes } from './journey-nodes';
 
 export type Answers = Record<string, string | string[]>;
 export interface Clause { readonly question: string; readonly operator: 'is' | 'is_not' | 'includes_any' | 'includes_none'; readonly values: readonly string[]; }
@@ -11,15 +12,7 @@ export interface JourneyTrace extends JourneyPath { readonly decisions: readonly
 
 /** Shared by both route models and the accepted-save boundary. */
 export function screenQuestionIds(screen: TemplateScreen): string[] {
-  const ids: string[] = [];
-  const nodes = [screen.content];
-  while (nodes.length) {
-    const node = nodes.shift()!;
-    if (node.type === 'question' && 'id' in node && typeof node.id === 'string') ids.push(node.id);
-    const layout = node as { children?: TemplateNode[]; start?: TemplateNode[]; end?: TemplateNode[] };
-    nodes.push(...(layout.children ?? []), ...(layout.start ?? []), ...(layout.end ?? []));
-  }
-  return ids;
+  return journeyNodes(screen.content).flatMap(node => node.type === 'question' && 'id' in node && typeof node.id === 'string' ? [node.id] : []);
 }
 
 /** A blank source makes even a negative comparison false. */

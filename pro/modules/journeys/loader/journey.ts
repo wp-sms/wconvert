@@ -5,7 +5,9 @@ import { captureEndpoint, beaconEndpoint, PAYLOAD_ELEMENT_ID } from '@loader/pay
 import { createBeacon, type BeaconKind } from '@loader/beacon';
 import { clear, pending, refuse } from '@loader/capture';
 import { chooseResult, journeyTrace, type Answers } from '@loader/journey-rules';
-import { graphReaches, graphTrace } from '@loader/journey-graph';
+import { graphTrace } from '@loader/journey-graph';
+import { journeyNodes } from '@loader/journey-nodes';
+import { isResultFirst } from '@loader/journey-mode';
 import { journeyCapturePrefix } from '@loader/journey-capture';
 import { showProducts } from '@loader/products';
 
@@ -29,17 +31,12 @@ export function bindJourney(mounted: Mounted, entry: PayloadEntry, options: Opti
   const route = (answers: Answers) => tree.graph ? graphTrace(tree.steps, tree.graph, answers) : journeyTrace(tree.steps, answers);
   const activeFor = (answers: Answers) => route(answers).answers;
   const nodes = new Map<string, { node: TemplateNode; screen: number }>();
-  function collect(node: TemplateNode, screen: number) {
-    if ('id' in node && typeof node.id === 'string') nodes.set(node.id, { node, screen });
-    const branches = node as { children?: TemplateNode[]; start?: TemplateNode[]; end?: TemplateNode[] };
-    [...(branches.children ?? []), ...(branches.start ?? []), ...(branches.end ?? [])].forEach(child => collect(child, screen));
-  }
-  tree.steps.forEach((screen, i) => collect(screen.content, i));
+  tree.steps.forEach((screen, index) => journeyNodes(screen.content).forEach(node => {
+    if ('id' in node && typeof node.id === 'string') nodes.set(node.id, { node, screen: index });
+  }));
   const submitScreen = (id: string) => [...nodes.values()].find(({ node }) => node.type === 'button' && 'submission' in node && node.submission === id && 'action' in node && node.action === 'submit')?.screen ?? -1;
   const resultAt = tree.steps.findIndex(screen => screen.kind === 'result');
-  const firstSubmitAt = tree.steps.findIndex((screen, index) => screen.kind === 'input' && tree.submissions.some(sub => submitScreen(sub.id) === index));
-  const resultFirst = resultAt >= 0 && (firstSubmitAt < 0 || (tree.graph
-    ? graphReaches(tree.graph, tree.steps[resultAt].id, tree.steps[firstSubmitAt].id) : resultAt < firstSubmitAt));
+  const resultFirst = isResultFirst(tree);
   const beacon = createBeacon(beaconEndpoint());
   const counted = new Set<string>();
   const report = (kind: BeaconKind, index = step) => {
@@ -135,10 +132,7 @@ export function bindJourney(mounted: Mounted, entry: PayloadEntry, options: Opti
     const root = mounted.root;
     if (!root) return;
     root.setAttribute('aria-label', tree!.steps[step].name);
-    if (step === entryIndex
-      && firstSubmitAt >= 0 && resultAt >= 0 && (tree!.graph
-        ? graphReaches(tree!.graph, tree!.steps[firstSubmitAt].id, tree!.steps[resultAt].id)
-        : resultAt > firstSubmitAt)) {
+    if (step === entryIndex && resultAt >= 0 && !resultFirst) {
       const notice = document.createElement('p');
       notice.className = 'wc-gate-note'; notice.textContent = labels()[2];
       const heading = root.querySelector('h1,h2,h3');

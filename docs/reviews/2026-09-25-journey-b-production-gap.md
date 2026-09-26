@@ -251,6 +251,11 @@ The accepted-save implementation initially exceeded the Basic/Pro/Elite loader
 budgets. Reusing the existing node index and sharing question enumeration across
 the v2/v3 route and save-prefix evaluators brought all tiers back under the
 unchanged budgets. No diagram library is included in the visitor loader.
+CI's Node 22 compression initially remained above the local Node 24 result.
+The follow-up consolidation shares the full node traversal and result-timing
+classification too. The shared shell's result-first check now follows graph
+connections rather than storage order; fixtures reverse storage for both
+optional and required signup and retain the expected classification.
 
 Remaining release work includes published visitor/server capture evidence,
 precise repair targets for server-only failures, grouped follow-up readability,
