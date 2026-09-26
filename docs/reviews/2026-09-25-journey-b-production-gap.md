@@ -35,6 +35,40 @@ again or turn conditional follow-ups into mutually exclusive branches.
 
 ## Progress after this audit
 
+### September 26: parallel branches, measured layout and reading order
+
+A new 13-screen draft fixture has mutually exclusive home/business branches,
+four independent follow-ups on each branch, long labels, and a shared enquiry
+save. Expanding its groups in WordPress exposed four pairs of overlapping cards:
+the layout estimated heights instead of using the rendered text's dimensions.
+Layout now settles using measured widths/heights. Browser DOM geometry confirmed
+zero intersecting card pairs after expansion. Moving a card opts out of automatic
+measurement-based arrangement; Tidy up or a structural change explicitly starts
+a fresh layout. A regression checks tall parallel cards, retained manual positions
+after another card grows, and explicit re-arrangement.
+
+Canvas node order now follows the same topological reading order as the screen
+numbers and Screens inventory. The reversed-storage fixture previously put the
+ending first in the DOM; it now begins with the entry question and ends with the
+shared capture and ending. Browser Try answers selected Business + Office +
+Ongoing care: two business follow-ups shown, no home follow-ups, and one simulated
+enquiry. The fixture and test assert exclusion of stale home answers. These were
+draft-only checks, with no publication, Lead creation or destination request.
+
+The server check identified an additional required gap: `GraphCaptureContract`
+still caps the entire graph at ten questions because `QuestionCapture` accepts
+ten submitted answers. This fixture has eleven total questions but only six on
+either visitor path, so publication currently returns `questions`. Do not treat
+this fixture as publishable evidence. Reconcile the publication, authoring and
+request limits for exclusive branches, with explicit merchant-facing limits and
+shared server/client coverage. Do not merely raise the request bound or hide the
+failure. Fit-all on a branching map also remains too small in a short desktop
+canvas; selecting a screen is usable, but the broader workspace-size/focus view
+still needs work.
+
+The full JavaScript suite passed 2,856 tests, and TypeScript, ESLint and Free/Pro
+admin builds passed. No PHP or visitor loader code changed in this slice.
+
 ### September 26: readable independent follow-ups
 
 The map now summarizes a safe sequence of independent conditional questions in

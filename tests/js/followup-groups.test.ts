@@ -2,6 +2,9 @@ import { expect, it } from 'vitest';
 import type { TemplateTree } from '@renderer/types';
 import { followupGroups } from '../../resources/admin/src/builder/structure/followupGroups';
 import fixture from '../fixtures/journey-graph-enquiry.json';
+import branchedFixture from '../fixtures/journey-graph-branch-groups.json';
+import { graphTrace } from '@loader/journey-graph';
+import { screenQuestionIds } from '@loader/journey-rules';
 const tree = fixture as unknown as TemplateTree;
 const groupedNames = (value: TemplateTree) => followupGroups(value).map(group => group.screens.map(index => value.steps[index].id));
 
@@ -39,4 +42,22 @@ it('does not group capture fields or dependent follow-up answers', () => {
 it('leaves legacy and simple journeys unchanged', () => {
   expect(followupGroups({ ...tree, graph: undefined })).toEqual([]);
   expect(groupedNames({ ...tree, steps: tree.steps.map(screen => ({ ...screen, when: undefined })) })).toEqual([]);
+});
+
+it('keeps exclusive branches distinct while both follow-up groups rejoin the same save', () => {
+  const value = branchedFixture as unknown as TemplateTree;
+  expect(groupedNames(value)).toEqual([
+    ['home_garden', 'home_balcony', 'home_indoor', 'home_irrigation'],
+    ['business_office', 'business_hospitality', 'business_retail', 'business_maintenance'],
+  ]);
+  expect(followupGroups(value).map(group => group.next)).toEqual(['contact', 'contact']);
+  const question = (id: string) => screenQuestionIds(value.steps.find(screen => screen.id === id)!)[0];
+  const trace = graphTrace(value.steps, value.graph!, {
+    [question('scope')]: 'business', [question('business')]: ['office', 'maintenance'],
+    [question('business_office')]: 'Thirty workspaces', [question('business_maintenance')]: 'Monthly',
+    [question('home')]: ['garden'], [question('home_garden')]: 'An obsolete answer',
+  });
+  expect(trace.indices.map(index => value.steps[index].id)).toEqual(['scope', 'business', 'business_office', 'business_maintenance', 'contact', 'received']);
+  expect(trace.answers[question('home_garden')]).toBeUndefined();
+  expect(trace.decisions[0].edge).toBe('business_entry');
 });

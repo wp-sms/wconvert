@@ -160,15 +160,18 @@ export function JourneyMap({ tree, selected, focusedPath = null, onSelect, onSel
   const [expandedFocus, setExpandedFocus] = useState<string | null>(null);
   const mapRoot = useRef<HTMLDivElement>(null);
   const pendingFocus = useRef<string | null>(null);
+  const layoutState = useRef({ key: '', manuallyPositioned: false });
   const detectedGroups = useMemo(() => followupGroups(tree), [tree]);
   const groups = useMemo(() => grouping ? detectedGroups.filter(group => !expandedGroups.includes(group.id)) : [], [detectedGroups, expandedGroups, grouping]);
   const groupedScreens = useMemo(() => new Map(groups.flatMap(group => group.screens.map(index => [tree.steps[index].id, group.id] as const))), [groups, tree.steps]);
   const visibleId = useCallback((id: string) => groupedScreens.get(id) ?? id, [groupedScreens]);
-  const view = useMemo(() => tree.steps.flatMap<{ id: string; index: number; group?: FollowupGroup; width: number }>((screen, index) => {
+  const ordinals = useMemo(() => graphDisplayOrder(tree), [tree]);
+  const view = useMemo(() => ordinals.flatMap<{ id: string; index: number; group?: FollowupGroup; width: number }>(index => {
+    const screen = tree.steps[index];
     const group = groups.find(item => item.screens.includes(index));
     return group ? group.screens[0] === index ? [{ id: group.id, index, group, width: 320 }] : []
       : [{ id: screen.id, index, group: undefined, width: groups.length && screen.kind === 'acknowledgement' ? 176 : 252 }];
-  }), [tree.steps, groups]);
+  }), [tree.steps, groups, ordinals]);
   const groupKey = groups.map(group => `${group.id}:${group.screens.join(',')}`).join('|');
   const expand = useCallback((group: FollowupGroup) => {
     const id = tree.steps[group.screens[0]].id;
@@ -187,17 +190,20 @@ export function JourneyMap({ tree, selected, focusedPath = null, onSelect, onSel
   const cameraIndex = selected ?? (expandedFocus && tree.steps.some(screen => screen.id === expandedFocus) ? tree.steps.findIndex(screen => screen.id === expandedFocus) : tree.graph ? Math.max(0, tree.steps.findIndex(screen => screen.id === tree.graph?.entry)) : 0);
   const layoutKey = tree.graph ? `${tree.graph.entry}|${tree.steps.map(screen => `${screen.id}:${!!screen.when}`).join('|')}|${tree.graph.edges.map(edge => `${edge.id}:${edge.from}:${edge.to}:${edge.kind}`).join('|')}`
     : tree.steps.map(step => `${step.id}:${step.when ? 'conditional' : 'always'}:${step.paths?.map(path => path.to).join(',') ?? ''}`).join('|');
+  const layoutRequest = `${layoutKey}|${groupKey}|${rtl}|${tidyRevision}|${preview}`;
   useEffect(() => {
+    if (layoutState.current.key !== layoutRequest) layoutState.current = { key: layoutRequest, manuallyPositioned: false };
+    else if (layoutState.current.manuallyPositioned) return;
     const graph = new dagre.graphlib.Graph();
     graph.setGraph({ rankdir: rtl ? 'RL' : 'LR', ranksep: groups.length ? 56 : 92, nodesep: 46 });
     graph.setDefaultEdgeLabel(() => ({}));
     view.forEach(({ id, index, group, width }) => {
       const step = tree.steps[index];
-      graph.setNode(id, { width, height: group ? 100 + Math.min(group.screens.length * 52, 240) :
+      graph.setNode(id, { width: measurements[id]?.width ?? width, height: measurements[id]?.height ?? (group ? 100 + Math.min(group.screens.length * 52, 240) :
         166 + (preview ? 75 : 0) + (walkNodes(step.content).some(node => node.type === 'button' && 'action' in node && node.action === 'submit') ? 74 : 0)
         + (step.when ? 32 : 0) + Math.max(0, routesFor(tree, index).length - 1) * 45
         + (hiddenFor(tree, index) && !routesFor(tree, index).some(path => path.to === hiddenFor(tree, index)) ? 30 : 0)
-        - (routesFor(tree, index).length === 0 ? 28 : 0) });
+        - (routesFor(tree, index).length === 0 ? 28 : 0)) });
     });
     tree.steps.forEach((step, index) => {
       const from = visibleId(step.id);
@@ -210,12 +216,12 @@ export function JourneyMap({ tree, selected, focusedPath = null, onSelect, onSel
       return [id, { x: node.x - node.width / 2, y: node.y - node.height / 2 }];
     })));
     setRevision(value => value + 1);
-  // The layout depends on graph structure, not card text edits.
+  // Measured text wrapping determines spacing. Once a merchant moves a card,
+  // measurements must not reset that arrangement; Tidy up explicitly opts in.
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [layoutKey, groupKey, rtl, tidyRevision, preview]);
+  }, [layoutRequest, measurements]);
   const focusTarget = focusedPath === null || selected === null ? null
     : tree.steps.findIndex(item => item.id === routesFor(tree, selected)[focusedPath]?.to);
-  const ordinals = useMemo(() => graphDisplayOrder(tree), [tree]);
   const cardData = useMemo(() => tree.steps.map((_, index) => ({ tree, index, ordinal: ordinals.indexOf(index) + 1, rtl,
       muted: samplePath !== null ? !samplePath.includes(index) : focusTarget !== null && index !== selected && index !== focusTarget,
       preview, compactEnding: groups.length > 0, destinationSummary, goToDestinations: onGoToDestinations, select: onSelect, selectPath: onSelectPath })),
@@ -279,7 +285,10 @@ export function JourneyMap({ tree, selected, focusedPath = null, onSelect, onSel
           return changed.length ? { ...old, ...Object.fromEntries(changed.map(change => [change.id, change.dimensions!])) } : old;
         });
         const moved = changes.filter((change): change is Extract<typeof change, { type: 'position' }> => change.type === 'position' && !!change.position);
-        if (moved.length) setPositions(old => ({ ...old, ...Object.fromEntries(moved.map(change => [change.id, change.position!])) }));
+        if (moved.length) {
+          layoutState.current.manuallyPositioned = true;
+          setPositions(old => ({ ...old, ...Object.fromEntries(moved.map(change => [change.id, change.position!])) }));
+        }
       }}>
       <Background gap={24} size={1} color="#dce5dd" />
       <FocusCamera selectedId={visibleId(tree.steps[cameraIndex]?.id ?? tree.steps[0].id)} nextId={routesFor(tree, cameraIndex)[0]?.to ? visibleId(routesFor(tree, cameraIndex)[0].to) : undefined}
