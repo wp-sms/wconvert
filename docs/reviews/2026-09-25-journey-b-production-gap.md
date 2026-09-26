@@ -35,6 +35,46 @@ again or turn conditional follow-ups into mutually exclusive branches.
 
 ## Progress after this audit
 
+### September 26: actual publication and visitor capture
+
+The first real graph publication attempt exposed a missed boundary:
+`OptinRepository::publish()` still used the version-2-only form validator after
+REST had accepted the graph. It returned null, surfaced as “No such Campaign.”
+The repository now applies the same goal-aware capture contract to v3 graphs.
+Regression tests promote an unordered combined enquiry, refuse a later branch
+that bypasses its required capture without changing the live snapshot, and
+allow an anonymous graph quiz only under the quiz goal.
+
+A separate local QA campaign was restricted to one QA page and configured for
+local-only capture, with no destinations. The **published visitor popup**, not
+the admin simulation, was operated by keyboard in its production closed shadow
+root. Garden and Balcony both showed their follow-ups. After entering email,
+Back retained both answers; deselecting Garden skipped it, retained Balcony's
+answer, and retained the contact draft. Submit reached Request received. The
+WordPress database contained exactly one Lead, one enquiry snapshot, the Balcony
+selection and answer, and no Garden answer. Back showed the accepted email
+read-only and disabled the accepted question choices; Continue did not create
+another Lead. The QA campaign was then unpublished and its page returned to
+draft. The two original QA campaigns were not changed. The test Lead remains
+for inspection (`journey-browser-20260926@example.test`).
+
+Real WordPress 6.8 / MySQL checks also passed in a separate disposable database
+under PHP 8.2, in both Free and Pro: graph publication, Pro graph capture,
+inactive-answer exclusion, replay returning the same Lead, Free refusal of
+premium graph capture, six concurrent submissions producing one Lead, and
+recovery across 120 queued submissions. The lead-log SQL verifier passed with
+the distinct-millisecond fixture fix. CI now runs the capture verifier with
+both Free and Pro installed in sequence. GitHub's latest run could not allocate
+a runner because of the account billing/spending limit; local evidence does
+not mean that required CI gate has passed.
+
+The full PHP suite passed 2,124 tests / 10,873 assertions after the publication
+fix, and PHPStan passed. No visitor bundle changes were needed for this slice.
+
+Remaining visitor UX detail: accepted screens prevent editing correctly, but
+need a clear saved/read-only explanation when visitors go Back. This evidence
+also does not cover a published anonymous/required quiz or external delivery.
+
 ### September 26: repair controls and path-aware authoring review
 
 Readiness now names missing/deleted question sources, questions that cannot be

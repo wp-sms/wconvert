@@ -74,6 +74,47 @@ final class OptinRepositoryTest extends TestCase
         $this->assertSame([$optin->id], array_column($this->publishedSet->all(), 'id'));
     }
 
+    public function testGraphPublicationPromotesAValidCombinedEnquiryAndKeepsItsLiveSnapshotWhenABranchBypassesCapture(): void
+    {
+        $tree = json_decode((string) file_get_contents(WCONVERT_DIR . '/tests/fixtures/journey-graph-enquiry.json'), true);
+        $config = ['template' => ['tree' => $tree], 'capture_mode' => 'local', 'display_rules' => \WConvert\Rules\DisplayPlan::immediate()];
+        $optin = $this->repository->create('Combined enquiry', 'collect_enquiries', $config);
+        $published = $this->repository->publish($optin->id);
+        self::assertNotNull($published);
+        self::assertSame($tree, $published->publishedConfig['template']['tree']);
+        self::assertSame([$optin->id], array_column($this->publishedSet->all(), 'id'));
+
+        $config['template']['tree']['graph']['edges'][] = ['id' => 'bypass', 'from' => 'interests', 'to' => 'received', 'kind' => 'answer',
+            'when' => ['match' => 'all', 'clauses' => [['question' => 'n1', 'operator' => 'includes_any', 'values' => ['garden']]]]];
+        $this->repository->saveDraft($optin->id, null, null, $config);
+        self::assertNull($this->repository->publish($optin->id));
+        self::assertSame($tree, $this->repository->find($optin->id)?->publishedConfig['template']['tree']);
+    }
+
+    public function testGraphPublicationUsesTheQuizGoalToAllowAnAnonymousResult(): void
+    {
+        $template = json_decode((string) file_get_contents(WCONVERT_DIR . '/pro/modules/journeys/templates/journey-product-finder.json'), true);
+        $tree = $template['tree'];
+        // A content quiz has no WooCommerce product recommendation requirement.
+        foreach ($tree['steps'] as &$screen) unset($screen['products_required']);
+        unset($screen);
+        $edges = [];
+        foreach ($tree['steps'] as $index => $screen) {
+            if (!isset($tree['steps'][$index + 1])) continue;
+            $edges[] = ['id' => 'next_' . $screen['id'], 'from' => $screen['id'], 'to' => $tree['steps'][$index + 1]['id'], 'kind' => 'default'];
+            if (isset($screen['when'])) $edges[] = ['id' => 'hidden_' . $screen['id'], 'from' => $screen['id'], 'to' => $tree['steps'][$index + 1]['id'], 'kind' => 'hidden'];
+        }
+        $tree['v'] = 3;
+        $tree['graph'] = ['entry' => $tree['steps'][0]['id'], 'edges' => $edges];
+        $template['tree'] = $tree;
+        $config = ['template' => $template, 'display_rules' => \WConvert\Rules\DisplayPlan::immediate()];
+        self::assertNull(\WConvert\Template\CaptureContract::issue($config, 'find_match', ''));
+        $quiz = $this->repository->create('Anonymous graph quiz', 'find_match', $config);
+        self::assertNotNull($this->repository->publish($quiz->id));
+        $enquiry = $this->repository->create('Enquiry cannot omit capture', 'collect_enquiries', $config);
+        self::assertNull($this->repository->publish($enquiry->id));
+    }
+
     /**
      * A later edit to `config` is a draft again until it is published, so the
      * set must still be serving the version that was published.

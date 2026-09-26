@@ -171,3 +171,7 @@ jobs:
           wp eval-file "$GITHUB_WORKSPACE/bin/verify-lead-search.php" --use-include --path="$WP_PATH"
 
           WCONVERT_VERIFY_BOOTSTRAP="$WP_PATH/wp-load.php" php "$GITHUB_WORKSPACE/bin/verify-capture-journeys.php"
+
+          ln -s "$GITHUB_WORKSPACE/pro" "$WP_PATH/wp-content/plugins/wconvert-pro"
+          wp plugin activate wconvert-pro --path="$WP_PATH"
+          WCONVERT_VERIFY_BOOTSTRAP="$WP_PATH/wp-load.php" php "$GITHUB_WORKSPACE/bin/verify-capture-journeys.php"
