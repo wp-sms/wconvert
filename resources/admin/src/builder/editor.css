@@ -1221,7 +1221,8 @@ body .wconvert-rule-picker__unavailable {
 .wconvert-journey-rail .wconvert-journey-card__select strong { font-size: var(--text-micro); }
 .wconvert-journey-rail .wconvert-journey-card__select span { font-size: var(--text-label); line-height: 1.5; }
 .wconvert-journey-card__condition { display: block; color: var(--primary); font-size: var(--text-label); line-height: 1.4; overflow-wrap: anywhere; }
-.wconvert-journey-rail .wconvert-journey-card:not(:last-child)::after { content: '↓'; inset-inline-end: 50%; inset-block-start: auto; inset-block-end: -18px; }
+/* Inventory order is not visitor routing: adjacent cards can be on different branches. */
+.wconvert-journey-rail .wconvert-journey-card:not(:last-child)::after { content: none; }
 .wconvert-journey-pane { display: flex; flex-direction: column; min-inline-size: 0; min-block-size: 0; overflow: hidden; }
 .wconvert-journey-pane__heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; padding: 17px 24px; border-block-end: 1px solid var(--border); flex: none; }
 .wconvert-journey-pane__heading .wconvert-journey-dialog__selected { margin: 0; }

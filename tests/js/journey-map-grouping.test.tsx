@@ -8,18 +8,18 @@ import type { TemplateTree } from '@renderer/types';
 import fixture from '../fixtures/journey-graph-enquiry.json';
 import branchedFixture from '../fixtures/journey-graph-branch-groups.json';
 
-const canvas = vi.hoisted(() => ({ nodes: [] as Node[], change: (() => {}) as (changes: NodeChange[]) => void }));
+const canvas = vi.hoisted(() => ({ setViewport: vi.fn(), nodes: [] as Node[], change: (() => {}) as (changes: NodeChange[]) => void }));
 
 vi.mock('@xyflow/react', () => ({
   Position: { Left: 'left', Right: 'right' }, MarkerType: { ArrowClosed: 'arrowclosed' },
   Handle: () => null, Controls: () => null, Background: () => null,
-  useReactFlow: () => ({ fitView: () => {}, viewportInitialized: true }), useStore: () => 1000, useNodesInitialized: () => true,
+  useReactFlow: () => ({ fitView: () => {}, viewportInitialized: true, getViewport: () => ({ x: 10, y: 20, zoom: 0.75 }), setViewport: canvas.setViewport }), useStore: () => 1000, useNodesInitialized: () => true,
   ReactFlow: ({ nodes, edges, nodeTypes, children, onNodesChange }: { nodes: Node[]; edges: Edge[]; nodeTypes: NodeTypes; children: ReactNode; onNodesChange(changes: NodeChange[]): void }) => {
     canvas.nodes = nodes; canvas.change = onNodesChange;
-    return <>
-    {nodes.map(node => { const Card = nodeTypes[node.type!]; return <div data-testid="map-node" data-id={node.id} key={node.id}>
+    return <div className="react-flow">
+    {nodes.map(node => { const Card = nodeTypes[node.type!]; return <div className="react-flow__node" data-testid="map-node" data-id={node.id} key={node.id}>
       <Card {...{ ...node, dragging: false, isConnectable: true, positionAbsoluteX: 0, positionAbsoluteY: 0, zIndex: 0 } as NodeProps} />
-    </div>; })}<output data-testid="map-edges">{JSON.stringify(edges)}</output>{children}</>;
+    </div>; })}<output data-testid="map-edges">{JSON.stringify(edges)}</output>{children}</div>;
   },
 }));
 beforeEach(() => vi.stubGlobal('matchMedia', vi.fn(() => ({ matches: false, addEventListener: vi.fn(), removeEventListener: vi.fn() }))));
@@ -71,4 +71,25 @@ it('spaces tall parallel cards by measured size without resetting a manually arr
   await user.click(screen.getByRole('button', { name: 'Tidy up' }));
   expect(overlaps()).toEqual([]);
   expect(canvas.nodes.find(node => node.id === 'home_garden')!.position).not.toEqual({ x: 42, y: 73 });
+});
+
+
+it('reveals an off-canvas keyboard control without changing zoom or moving nodes', async () => {
+  const { container } = render(<JourneyMap tree={tree} selected={null} onSelect={() => {}} onSelectPath={() => {}} onConnect={() => {}} />);
+  const viewport = container.querySelector('.react-flow')!;
+  vi.spyOn(viewport, 'getBoundingClientRect').mockReturnValue({ left: 0, top: 0, right: 1000, bottom: 600, width: 1000, height: 600 } as DOMRect);
+  const ending = screen.getByRole('button', { name: /Ending/ });
+  vi.spyOn(ending, 'matches').mockReturnValue(true);
+  const bounds = vi.spyOn(ending, 'getBoundingClientRect').mockReturnValue({ left: 1100, top: 650, right: 1300, bottom: 730 } as DOMRect);
+  const before = canvas.nodes.map(node => node.position);
+  canvas.setViewport.mockClear();
+  ending.focus();
+  await waitFor(() => expect(canvas.setViewport).toHaveBeenCalledWith({ x: -302, y: -122, zoom: 0.75 }));
+  expect(canvas.nodes.map(node => node.position)).toEqual(before);
+  ending.blur();
+  bounds.mockReturnValue({ left: 20, top: 20, right: 220, bottom: 100 } as DOMRect);
+  canvas.setViewport.mockClear();
+  ending.focus();
+  await act(() => new Promise<void>(resolve => requestAnimationFrame(() => resolve())));
+  expect(canvas.setViewport).not.toHaveBeenCalled();
 });

@@ -40,6 +40,8 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
   }, [focused, embedded]);
   const testTrigger = useRef<HTMLButtonElement>(null);
   const settingsHeading = useRef<HTMLHeadingElement>(null);
+  const inspectorTrigger = useRef<HTMLElement | null>(null);
+  const findInput = useRef<HTMLInputElement>(null);
   const returnToTestTrigger = useRef(true);
   const [view, setView] = useState<'flow' | 'screens'>('flow');
   const [query, setQuery] = useState('');
@@ -55,6 +57,7 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
   useEffect(() => {
     if (!repairRequest || handledRepair.current === repairRequest.serial) return;
     handledRepair.current = repairRequest.serial;
+    inspectorTrigger.current = null;
     const index = tree.steps.findIndex(screen => screen.id === repairRequest.screenId);
     if (index < 0) return;
     selectedId.current = repairRequest.screenId;
@@ -99,7 +102,7 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
   }, [focused, testOpen, confirmRemoval, confirmGraphRemoval, pendingRoute]);
   const screenList = useRef<HTMLOListElement>(null);
   const previousTree = useRef(tree);
-  const select = (index: number) => { selectedId.current = tree.steps[index]?.id; setInspecting(true); setSampleOpen(false); setPanelSection('content'); setPathFocus(null); setMobilePane('details'); onSelect(index); };
+  const select = (index: number) => { inspectorTrigger.current = document.activeElement instanceof HTMLElement ? document.activeElement : null; selectedId.current = tree.steps[index]?.id; setInspecting(true); setSampleOpen(false); setPanelSection('content'); setPathFocus(null); setMobilePane('details'); onSelect(index); };
   useEffect(() => {
     if (previousTree.current !== tree) {
       // A later edit or Undo invalidates instructions about a prior operation.
@@ -384,7 +387,7 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
         <div className="wconvert-journey-view" role="group" aria-label={__('Journey view', 'wconvert')}>
           <button type="button" aria-pressed={view === 'flow'} onClick={() => { setView('flow'); setMobilePane('map'); }}>{__('Flow', 'wconvert')}</button>
           <button type="button" aria-pressed={view === 'screens'} onClick={() => { setView('screens'); setInspecting(true); setMobilePane('map'); }}>{__('Screens', 'wconvert')}</button>
-          <div className="wconvert-journey-find"><label><Search aria-hidden="true" /><span className="sr-only">{__('Find a screen', 'wconvert')}</span><input type="search" value={query} placeholder={__('Find a screen…', 'wconvert')} onChange={event => setQuery(event.target.value)} /></label>
+          <div className="wconvert-journey-find"><label><Search aria-hidden="true" /><span className="sr-only">{__('Find a screen', 'wconvert')}</span><input ref={findInput} type="search" value={query} placeholder={__('Find a screen…', 'wconvert')} onChange={event => setQuery(event.target.value)} /></label>
             {query.trim() && <div className="wconvert-journey-find__results" role="group" aria-label={__('Matching screens', 'wconvert')}>
               {matches.length ? matches.map(({ screen, index }) => <button type="button" key={screen.id} onClick={() => { select(index); setView('flow'); setQuery(''); }}>{screen.name}<small>{sprintf(__('Screen %d', 'wconvert'), ordinal(index))}</small></button>)
                 : <p>{__('No matching screens.', 'wconvert')}</p>}
@@ -421,7 +424,13 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
           {sampleOpen ? <JourneySample tree={tree} onTrace={setSamplePath} onSelect={select} onClose={() => { setSampleOpen(false); setSamplePath(null); setMobilePane('map'); }} />
             : inspecting && <section className="wconvert-journey-pane" aria-label={__('Selected screen settings', 'wconvert')}>
             <div className="wconvert-journey-pane__heading"><div className="wconvert-journey-dialog__selected"><span>{ordinal(step)}</span><div><h3 ref={settingsHeading} tabIndex={-1}>{current.name}</h3><small>{sprintf(__('Screen %1$d of %2$d', 'wconvert'), ordinal(step), tree.steps.length)}</small></div></div>
-              <button type="button" className="wconvert-journey-pane__close" aria-label={__('Close screen settings', 'wconvert')} onClick={() => { setInspecting(false); setPathFocus(null); setView('flow'); setMobilePane('map'); }}><X aria-hidden="true" /></button>
+              <button type="button" className="wconvert-journey-pane__close" aria-label={__('Close screen settings', 'wconvert')} onClick={() => {
+                setInspecting(false); setPathFocus(null); setMobilePane('map');
+                requestAnimationFrame(() => {
+                  const trigger = inspectorTrigger.current;
+                  (trigger?.isConnected ? trigger : findInput.current)?.focus();
+                });
+              }}><X aria-hidden="true" /></button>
             </div>
             <div className="wconvert-journey-pane__tabs" role="group" aria-label={__('Screen settings section', 'wconvert')}>
               <button type="button" aria-pressed={panelSection === 'content'} onClick={() => setPanelSection('content')}>{__('Content & visibility', 'wconvert')}</button>

@@ -35,6 +35,39 @@ again or turn conditional follow-ups into mutually exclusive branches.
 
 ## Progress after this audit
 
+### September 26: keyboard canvas traversal and inspector return
+
+A real keyboard walkthrough exposed extra Tab stops on raw connection lines,
+internal IDs in their accessible names, and focus disappearing beyond the
+canvas. The map now tabs through its actual screen/path buttons and grouped
+follow-up controls. React Flow's redundant wrapper/edge Tab stops are disabled;
+edge names use campaign screen names, and the node description explains the
+available editing controls instead of promising unsupported Delete behavior.
+The shared focus camera pans only as needed to reveal a keyboard-focused control,
+preserving zoom and card positions. It waits a frame for WebKit's focus-visible
+state and any internal group scrolling before measuring the control.
+
+Closing screen settings returns focus to its originating control, or the screen
+search when that control no longer exists. It preserves the merchant's Flow or
+Screens view. The inventory no longer draws downward arrows between adjacent
+cards: those cards may belong to different branches and are not necessarily
+connected.
+
+The 13-screen local WordPress fixture was traversed using Tab from screen search
+through the first screen, both branch controls, both groups of four follow-ups,
+the combined save and ending. All 21 canvas controls were visible when focused
+at default zoom on desktop, 390px and 320px viewports. Enter opened the selected
+screen. Closing its settings restored the card's focus; the equivalent inventory
+interaction preserved Screens view and focused its originating card. The viewport
+was reset, and no campaign edits were saved or published. These checks do not yet
+prove 200% browser zoom, RTL or assistive-technology behavior.
+
+The full JavaScript suite passed 2,881 tests across 150 files with four workers;
+the initial unconstrained run timed out in an unrelated builder-history test,
+which passed both focused and final full runs. The 98-test focused editor/map/
+builder suite, TypeScript, ESLint and both admin builds passed. The visitor
+runtime and PHP contract are unchanged in this slice.
+
 ### September 26: real product availability and result repair
 
 Selected products now require a fallback destination and label even when the

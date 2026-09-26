@@ -18,9 +18,10 @@ import finder from '../../pro/modules/journeys/templates/journey-product-finder.
 import graphFixture from '../fixtures/journey-graph-enquiry.json';
 
 vi.mock('../../resources/admin/src/builder/Preview', () => ({ Preview: () => <div /> }));
-vi.mock('../../resources/admin/src/builder/JourneyMap', () => ({ JourneyMap: ({ onConnect, onReconnect }: {
-  onConnect(source: string, target: string): void; onReconnect(edge: string, target: string): void;
+vi.mock('../../resources/admin/src/builder/JourneyMap', () => ({ JourneyMap: ({ onConnect, onReconnect, onSelect }: {
+  onConnect(source: string, target: string): void; onReconnect(edge: string, target: string): void; onSelect(index: number): void;
 }) => <div aria-label="Journey map">
+  <button onClick={() => onSelect(0)}>Select first screen</button>
   <button onClick={() => onConnect('interests', 'contact')}>Draw test branch</button>
   <button onClick={() => onReconnect('start', 'contact')}>Reconnect test route</button>
   <button onClick={() => onReconnect('balcony_hidden', 'received')}>Bypass test save</button>
@@ -317,8 +318,9 @@ it('starts the embedded journey with a readable overview and can return to it af
   await user.click(screen.getByRole('button', { name: 'Screens' }));
   expect(screen.getByLabelText('Selected screen settings')).toBeInTheDocument();
   await user.click(screen.getByRole('button', { name: 'Close screen settings' }));
-  expect(screen.getByLabelText('Journey map')).toBeInTheDocument();
+  expect(screen.getByRole('list', { name: 'Journey screen inventory' })).toBeInTheDocument();
   expect(screen.queryByLabelText('Selected screen settings')).not.toBeInTheDocument();
+  await waitFor(() => expect(screen.getByRole('searchbox', { name: 'Find a screen' })).toHaveFocus());
 });
 
 it('opens on the flow and creates an ordered answer path through the inspector', async () => {
@@ -611,4 +613,15 @@ it('opens the specific result and focuses its fallback link when repairing publi
   render(<RepairEditor />);
   await waitFor(() => expect(screen.getByRole('textbox', { name: 'Heading' })).toHaveValue('Balcony picks'));
   await waitFor(() => expect(screen.getByRole('textbox', { name: 'Fallback shop or guide link' })).toHaveFocus());
+});
+
+
+it('returns keyboard focus to the screen control when closing its settings', async () => {
+  const user = userEvent.setup();
+  render(<JourneyEditor embedded tree={source.tree as TemplateTree} step={0} onChange={() => {}} onSelect={() => {}} />);
+  const opener = await screen.findByRole('button', { name: 'Select first screen' });
+  await user.click(opener);
+  await user.click(screen.getByRole('button', { name: 'Close screen settings' }));
+  await waitFor(() => expect(opener).toHaveFocus());
+  expect(screen.queryByRole('region', { name: 'Selected screen settings' })).not.toBeInTheDocument();
 });

@@ -1,4 +1,4 @@
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState, type RefObject } from 'react';
 import { createPortal } from 'react-dom';
 import { Background, Handle, MarkerType, Position, ReactFlow, useReactFlow, useStore, useNodesInitialized, type Connection, type Edge, type Node, type NodeProps } from '@xyflow/react';
 import dagre from '@dagrejs/dagre';
@@ -95,10 +95,37 @@ const ScreenCard = memo(function ScreenCard({ data, selected }: NodeProps) {
 });
 const nodeTypes = { screen: ScreenCard, followups: FollowupGroupCard };
 
-function FocusCamera({ selectedId, nextId, firstId, initialOverview, overviewWidth = 600, revision, onTidy, preview, onPreview, grouping, toolbar, onNodesReady }: {
-  selectedId: string; nextId?: string; firstId: string; initialOverview: boolean; overviewWidth?: number; revision: number; onTidy(): void; preview: boolean; onPreview(): void; grouping?: { active: boolean; toggle(): void }; toolbar: HTMLElement | null; onNodesReady(): void;
+function FocusCamera({ mapRoot, selectedId, nextId, firstId, initialOverview, overviewWidth = 600, revision, onTidy, preview, onPreview, grouping, toolbar, onNodesReady }: {
+  mapRoot: RefObject<HTMLDivElement | null>; selectedId: string; nextId?: string; firstId: string; initialOverview: boolean; overviewWidth?: number; revision: number; onTidy(): void; preview: boolean; onPreview(): void; grouping?: { active: boolean; toggle(): void }; toolbar: HTMLElement | null; onNodesReady(): void;
 }) {
-  const { fitView, zoomIn, zoomOut, viewportInitialized } = useReactFlow();
+  const { fitView, zoomIn, zoomOut, viewportInitialized, getViewport, setViewport } = useReactFlow();
+  useEffect(() => {
+    const root = mapRoot.current;
+    if (!root) return;
+    let frame = 0;
+    const reveal = (event: FocusEvent) => {
+      const target = event.target;
+      if (!(target instanceof HTMLElement) || !target.closest('.react-flow__node')) return;
+      cancelAnimationFrame(frame);
+      // WebKit applies :focus-visible after focusin; the group may also scroll.
+      frame = requestAnimationFrame(() => {
+        if (document.activeElement !== target || !target.matches(':focus-visible')) return;
+        const bounds = root.querySelector('.react-flow')?.getBoundingClientRect();
+        if (!bounds?.width || !bounds.height) return;
+        const rect = target.getBoundingClientRect();
+        const dx = rect.left < bounds.left + 12 ? bounds.left + 12 - rect.left
+          : rect.right > bounds.right - 12 ? bounds.right - 12 - rect.right : 0;
+        const dy = rect.top < bounds.top + 12 ? bounds.top + 12 - rect.top
+          : rect.bottom > bounds.bottom - 12 ? bounds.bottom - 12 - rect.bottom : 0;
+        if (dx || dy) {
+          const viewport = getViewport();
+          void setViewport({ ...viewport, x: viewport.x + dx, y: viewport.y + dy });
+        }
+      });
+    };
+    root.addEventListener('focusin', reveal);
+    return () => { cancelAnimationFrame(frame); root.removeEventListener('focusin', reveal); };
+  }, [mapRoot, getViewport, setViewport]);
   const width = useStore(state => state.width);
   const height = useStore(state => state.height);
   const nodesReady = useNodesInitialized();
@@ -252,10 +279,11 @@ export function JourneyMap({ tree, selected, focusedPath = null, onSelect, onSel
     const source = visibleId(edge.source), target = visibleId(edge.target);
     if (source === target) return [];
     return [{ ...edge, source, target,
+      ariaLabel: sprintf(__('%1$s to %2$s', 'wconvert'), tree.steps.find(step => step.id === edge.source)?.name ?? edge.source, tree.steps.find(step => step.id === edge.target)?.name ?? edge.target),
       sourceHandle: source !== edge.source ? 'out' : edge.sourceHandle,
       targetHandle: target !== edge.target ? 'in' : edge.targetHandle,
       reconnectable: source !== edge.source || target !== edge.target ? false : edge.reconnectable }];
-  }), [rawEdges, visibleId]);
+  }), [rawEdges, visibleId, tree.steps]);
   const valid = (connection: Connection | Edge) => {
     const from = tree.steps.findIndex(step => step.id === connection.source);
     const to = tree.steps.findIndex(step => step.id === connection.target);
@@ -269,6 +297,8 @@ export function JourneyMap({ tree, selected, focusedPath = null, onSelect, onSel
   };
   return <div ref={mapRoot} className="wconvert-journey-map" aria-label={__('Journey map', 'wconvert')}>
     <ReactFlow nodes={nodes} edges={edges} nodeTypes={nodeTypes}
+      nodesFocusable={false} edgesFocusable={false}
+      ariaLabelConfig={{ 'node.a11yDescription.default': __('Use Tab to reach screen and path buttons. Press Enter to edit. Connections can also be edited in Next screen settings.', 'wconvert') }}
       minZoom={0.25} maxZoom={1.5} deleteKeyCode={null} panOnScroll={!narrow} preventScrolling={!narrow} zoomOnScroll={false} zoomOnPinch
       onNodeClick={(_, node) => { if (node.type === 'screen') onSelect(tree.steps.findIndex(step => step.id === node.id)); }}
       onEdgeClick={(_, edge) => { const data = edge.data as { sourceIndex?: number; priority?: number } | undefined; if (data?.sourceIndex !== undefined) onSelectPath(data.sourceIndex, data.priority ?? 0); }}
@@ -291,7 +321,7 @@ export function JourneyMap({ tree, selected, focusedPath = null, onSelect, onSel
         }
       }}>
       <Background gap={24} size={1} color="#dce5dd" />
-      <FocusCamera selectedId={visibleId(tree.steps[cameraIndex]?.id ?? tree.steps[0].id)} nextId={routesFor(tree, cameraIndex)[0]?.to ? visibleId(routesFor(tree, cameraIndex)[0].to) : undefined}
+      <FocusCamera mapRoot={mapRoot} selectedId={visibleId(tree.steps[cameraIndex]?.id ?? tree.steps[0].id)} nextId={routesFor(tree, cameraIndex)[0]?.to ? visibleId(routesFor(tree, cameraIndex)[0].to) : undefined}
         firstId={visibleId(tree.graph?.entry ?? tree.steps[0].id)}
         initialOverview={selected === null && view.length <= (groups.length ? 4 : 3)} overviewWidth={groups.length && view.length > 3 ? 900 : 600}
         grouping={detectedGroups.length ? { active: groups.length > 0, toggle: () => { setGrouping(groups.length === 0); setExpandedGroups([]); } } : undefined}
