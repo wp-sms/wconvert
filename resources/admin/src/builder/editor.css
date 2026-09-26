@@ -1486,6 +1486,7 @@ body .wconvert-rule-picker__unavailable {
 .wconvert-flow-node__path .react-flow__handle { inset-inline-end: -18px; inset-block-start: 50%; }
 .wconvert-flow-node__paths span { display: block; color: #64776a; }
 .wconvert-flow-node__hidden { position: relative; padding: 7px 15px; border-block-start: 1px solid #e3ece6; color: #64776a; font-size: var(--text-label); }
+.wconvert-flow-node__hidden button { inline-size: 100%; padding: 0; border: 0; background: transparent; color: inherit; font: inherit; text-align: start; cursor: pointer; }
 .wconvert-flow-node__hidden .react-flow__handle { inset-inline-end: -6px; inset-block-start: 50%; }
 .wconvert-flow-node__add { padding: 7px 15px; border-block-start: 1px solid #e3ece6; color: #397c58; font-size: var(--text-label); }
 .wconvert-flow-node :is(button):focus-visible,.wconvert-journey-view button:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }

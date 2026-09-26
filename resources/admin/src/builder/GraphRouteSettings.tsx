@@ -10,16 +10,18 @@ import { unreachableScreens, walkNodes } from './structure/journey';
 
 /** A keyboard-complete editor for the actual v3 connections, not array order. */
 export function GraphRouteSettings({ tree, step, focusPath, onChange, onInsert }: {
-  tree: TemplateTree; step: number; focusPath?: number | null; onChange(next: TemplateTree): void;
+  tree: TemplateTree; step: number; focusPath?: number | 'hidden' | null; onChange(next: TemplateTree): void;
   onInsert(edgeId: string, kind: 'content' | 'input'): void;
 }) {
   const graph = tree.graph;
   const screen = tree.steps[step];
   const list = useRef<HTMLOListElement>(null);
+  const hiddenSelect = useRef<HTMLSelectElement>(null);
   const returnFocus = useRef<HTMLElement | null>(null);
   const [pending, setPending] = useState<{ tree: TemplateTree; description: string } | null>(null);
   useEffect(() => {
     if (focusPath === null || focusPath === undefined) return;
+    if (focusPath === 'hidden') { hiddenSelect.current?.focus(); return; }
     const row = list.current?.querySelector<HTMLElement>(`[data-path-priority="${focusPath}"]`);
     row?.scrollIntoView?.({ block: 'nearest' });
     const clause = row?.querySelector<HTMLElement>('.wconvert-journey-settings__clause');
@@ -96,7 +98,7 @@ export function GraphRouteSettings({ tree, step, focusPath, onChange, onInsert }
     {fallback && sources.length > 0 && targets.length > 0 && <button type="button" onClick={add}>{__('Add answer path', 'wconvert')}</button>}
     {!sources.length && <p>{__('Add a choice question here or on a screen that leads here to branch by answer.', 'wconvert')}</p>}
     {screen.when && <div className="wconvert-journey-settings__skip"><strong>{__('When this screen is hidden', 'wconvert')}</strong>
-      <label>{__('Continue at', 'wconvert')}<select value={hidden?.to ?? ''} onChange={event => write(answers, fallback,
+      <label>{__('Continue at', 'wconvert')}<select ref={hiddenSelect} value={hidden?.to ?? ''} onChange={event => write(answers, fallback,
         { id: hidden?.id ?? graphEdgeId(graph), from: screen.id, kind: 'hidden', to: event.target.value })}>
         {!hidden && <option value="" disabled>{__('Choose hidden destination…', 'wconvert')}</option>}
         {targets.map(target => <option key={target.id} value={target.id}>{target.name}</option>)}

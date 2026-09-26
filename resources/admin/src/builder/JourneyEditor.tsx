@@ -50,7 +50,7 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
   const [samplePath, setSamplePath] = useState<readonly number[] | null>(null);
   const [panelSection, setPanelSection] = useState<'content' | 'paths'>('content');
   const [mobilePane, setMobilePane] = useState<'map' | 'details'>('map');
-  const [pathFocus, setPathFocus] = useState<number | null>(null);
+  const [pathFocus, setPathFocus] = useState<number | 'hidden' | null>(null);
   const selectedId = useRef(tree.steps[step]?.id);
   useEffect(() => { if (openRequest) setOpen(true); }, [openRequest]);
   const handledRepair = useRef(0);
@@ -341,7 +341,7 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
     if (description) setPendingRoute({ tree: changed, description });
     else onChange(changed);
     select(tree.steps.findIndex(screen => screen.id === edge.from)); setPanelSection('paths');
-    setPathFocus(edge.kind === 'hidden' ? null : [...tree.graph!.edges.filter(item => item.from === edge.from && item.kind === 'answer'),
+    setPathFocus(edge.kind === 'hidden' ? 'hidden' : [...tree.graph!.edges.filter(item => item.from === edge.from && item.kind === 'answer'),
       ...tree.graph!.edges.filter(item => item.from === edge.from && item.kind === 'default')].findIndex(item => item.id === edgeId));
     if (!description) setSaid(__('Connection updated. Its condition and priority are unchanged.', 'wconvert'));
   };
@@ -408,7 +408,7 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
           <div className="wconvert-journey-mobile-picker"><label>{__('Screen', 'wconvert')}<select value={step} onChange={event => select(Number(event.target.value))}>{displayOrder.map((index, position) => <option key={tree.steps[index].id} value={index}>{position + 1}. {tree.steps[index].name}</option>)}</select></label></div>
           {view === 'flow' && <Suspense fallback={<div className="wconvert-journey-map">{__('Loading journey map…', 'wconvert')}</div>}>
             <JourneyMap tree={tree} selected={inspecting ? step : null} focusedPath={inspecting && panelSection === 'paths' ? pathFocus : null}
-              onSelect={select} onSelectPath={(index, priority) => { select(index); setPanelSection('paths'); setPathFocus(priority); }} onConnect={connect} onReconnect={reconnect} samplePath={samplePath}
+              onSelect={select} onSelectPath={(index, priority) => { select(index); setPanelSection(priority === 'hidden' && !tree.graph ? 'content' : 'paths'); setPathFocus(priority); }} onConnect={connect} onReconnect={reconnect} samplePath={samplePath}
               destinationSummary={destinationSummary} onGoToDestinations={onGoToDestinations} />
           </Suspense>}
           {view === 'screens' && <aside className="wconvert-journey-rail" aria-label={__('Journey screens', 'wconvert')}>
@@ -509,7 +509,7 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
             <small>{__('Review where visitors go next', 'wconvert')}</small>
           </button>}
           </> : tree.graph ? <GraphRouteSettings tree={tree} step={step} focusPath={pathFocus} onChange={onChange} onInsert={insertOnGraphPath} />
-            : <RouteSettings tree={tree} step={step} focusPath={pathFocus} onChange={onChange} onInsert={insertOnPath} />}
+            : <RouteSettings tree={tree} step={step} focusPath={typeof pathFocus === 'number' ? pathFocus : null} onChange={onChange} onInsert={insertOnPath} />}
             </div>
             <div className="wconvert-journey-dialog__actions-row">
               {tree.graph && <Button type="button" size="sm" variant="outline" disabled={!graphDelete} onClick={() => setConfirmGraphRemoval(true)}>

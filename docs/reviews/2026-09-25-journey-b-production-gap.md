@@ -35,6 +35,35 @@ again or turn conditional follow-ups into mutually exclusive branches.
 
 ## Progress after this audit
 
+### September 26: direct path actions and hidden continuations
+
+A real map-card click exposed an event-bubbling defect: its path button opened
+Next screen, then React Flow's enclosing node handler immediately reset the
+inspector to Content & visibility. The node handler now leaves button actions
+to their own handlers. Regression coverage models the enclosing click handler,
+so testing a path button alone no longer hides this failure.
+
+Conditional graph cards expose their “When hidden” continuation as a keyboard
+button. Distinct dashed hidden connections carry the source and hidden-route
+identity used by pointer selection. Both open Next screen and focus Continue at;
+reconnecting a hidden edge selects the same inspector. Route highlighting
+includes the hidden destination and preserves the normal line when visible and
+hidden continuations share that line. Hidden connections have named accessible
+labels identifying their meaning.
+
+In the 13-screen WordPress draft, clicking the first-match Home path now opens
+Next screen and focuses its answer. Temporarily changing Garden's hidden route
+to the combined save separated it from its visible continuation and removed it
+from the independent-follow-up group. Enter on the new When hidden button and
+an actual pointer click on the dashed line each opened and focused the correct
+Continue at control. Undo restored the original Balcony continuation; Save draft
+was disabled afterward. No campaign was saved or published. Complex dashed
+connections can still pass behind other cards in the all-map overview; this
+readability issue remains part of the complex-layout release gate.
+
+Validation passed: all 2,884 JavaScript tests, TypeScript, ESLint, and Free/Pro
+admin builds. The PHP contract and visitor runtime are unchanged in this slice.
+
 ### September 26: keyboard canvas traversal and inspector return
 
 A real keyboard walkthrough exposed extra Tab stops on raw connection lines,

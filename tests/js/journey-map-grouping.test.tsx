@@ -2,22 +2,22 @@ import { act, cleanup, render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import type { Node, NodeChange, Edge, NodeProps, NodeTypes } from '@xyflow/react';
-import type { ReactNode } from 'react';
+import type { ReactNode, MouseEvent } from 'react';
 import { JourneyMap } from '../../resources/admin/src/builder/JourneyMap';
 import type { TemplateTree } from '@renderer/types';
 import fixture from '../fixtures/journey-graph-enquiry.json';
 import branchedFixture from '../fixtures/journey-graph-branch-groups.json';
 
-const canvas = vi.hoisted(() => ({ setViewport: vi.fn(), nodes: [] as Node[], change: (() => {}) as (changes: NodeChange[]) => void }));
+const canvas = vi.hoisted(() => ({ setViewport: vi.fn(), edgeClick: (() => {}) as (edge: Edge) => void, nodes: [] as Node[], change: (() => {}) as (changes: NodeChange[]) => void }));
 
 vi.mock('@xyflow/react', () => ({
   Position: { Left: 'left', Right: 'right' }, MarkerType: { ArrowClosed: 'arrowclosed' },
   Handle: () => null, Controls: () => null, Background: () => null,
   useReactFlow: () => ({ fitView: () => {}, viewportInitialized: true, getViewport: () => ({ x: 10, y: 20, zoom: 0.75 }), setViewport: canvas.setViewport }), useStore: () => 1000, useNodesInitialized: () => true,
-  ReactFlow: ({ nodes, edges, nodeTypes, children, onNodesChange }: { nodes: Node[]; edges: Edge[]; nodeTypes: NodeTypes; children: ReactNode; onNodesChange(changes: NodeChange[]): void }) => {
-    canvas.nodes = nodes; canvas.change = onNodesChange;
+  ReactFlow: ({ nodes, edges, nodeTypes, children, onNodesChange, onNodeClick, onEdgeClick }: { nodes: Node[]; edges: Edge[]; nodeTypes: NodeTypes; children: ReactNode; onNodesChange(changes: NodeChange[]): void; onNodeClick(event: MouseEvent, node: Node): void; onEdgeClick(event: MouseEvent, edge: Edge): void }) => {
+    canvas.nodes = nodes; canvas.change = onNodesChange; canvas.edgeClick = edge => onEdgeClick({} as MouseEvent, edge);
     return <div className="react-flow">
-    {nodes.map(node => { const Card = nodeTypes[node.type!]; return <div className="react-flow__node" data-testid="map-node" data-id={node.id} key={node.id}>
+    {nodes.map(node => { const Card = nodeTypes[node.type!]; return <div role="presentation" className="react-flow__node" data-testid="map-node" data-id={node.id} key={node.id} onClick={event => onNodeClick(event, node)}>
       <Card {...{ ...node, dragging: false, isConnectable: true, positionAbsoluteX: 0, positionAbsoluteY: 0, zIndex: 0 } as NodeProps} />
     </div>; })}<output data-testid="map-edges">{JSON.stringify(edges)}</output>{children}</div>;
   },
@@ -92,4 +92,33 @@ it('reveals an off-canvas keyboard control without changing zoom or moving nodes
   ending.focus();
   await act(() => new Promise<void>(resolve => requestAnimationFrame(() => resolve())));
   expect(canvas.setViewport).not.toHaveBeenCalled();
+});
+
+
+it('opens normal and hidden paths without the enclosing card overriding the action', async () => {
+  const user = userEvent.setup(), select = vi.fn(), path = vi.fn();
+  const changed = { ...tree, graph: { ...tree.graph!, edges: tree.graph!.edges.map(edge => edge.id === 'garden_hidden' ? { ...edge, to: 'contact' } : edge) } };
+  render(<JourneyMap tree={changed} selected={null} onSelect={select} onSelectPath={path} onConnect={() => {}} />);
+  await user.click(screen.getByRole('button', { name: 'Check next: Garden details' }));
+  expect(path).toHaveBeenLastCalledWith(tree.steps.findIndex(step => step.id === 'interests'), 0);
+  expect(select).not.toHaveBeenCalled();
+  await user.click(screen.getByRole('button', { name: 'When hidden → One enquiry' }));
+  const garden = tree.steps.findIndex(step => step.id === 'garden');
+  expect(path).toHaveBeenLastCalledWith(garden, 'hidden');
+  expect(select).not.toHaveBeenCalled();
+  const edges = JSON.parse(screen.getByTestId('map-edges').textContent!) as Edge[];
+  canvas.edgeClick(edges.find(edge => edge.id === 'garden_hidden')!);
+  expect(path).toHaveBeenLastCalledWith(garden, 'hidden');
+  await user.click(screen.getByRole('button', { name: /Question Garden details/ }));
+  expect(select).toHaveBeenCalledExactlyOnceWith(garden);
+});
+
+
+it('keeps a shared visible/hidden connection highlighted when inspecting the hidden continuation', async () => {
+  const user = userEvent.setup();
+  render(<JourneyMap tree={tree} selected={tree.steps.findIndex(step => step.id === 'garden')} focusedPath="hidden" onSelect={() => {}} onSelectPath={() => {}} onConnect={() => {}} />);
+  await user.click(screen.getByRole('button', { name: 'Group follow-ups' }));
+  const edges = JSON.parse(screen.getByTestId('map-edges').textContent!) as Edge[];
+  expect(edges.find(edge => edge.id === 'garden_next')?.style?.opacity).toBe(1);
+  expect(edges.find(edge => edge.id === 'indoor_next')?.style?.opacity).toBe(0.2);
 });

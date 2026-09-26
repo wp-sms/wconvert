@@ -117,3 +117,10 @@ it('reviews a save bypass without disconnecting screens and returns focus after 
   await user.click(screen.getByRole('button', { name: 'Apply path change' }));
   expect(hiddenDestination).toHaveValue('received');
 });
+
+
+it('focuses the hidden continuation when that map connection is selected', () => {
+  const tree = fixture as unknown as TemplateTree;
+  render(<GraphRouteSettings tree={tree} step={tree.steps.findIndex(screen => screen.id === 'garden')} focusPath="hidden" onChange={() => {}} onInsert={() => {}} />);
+  expect(screen.getByRole('combobox', { name: 'Continue at' })).toHaveFocus();
+});
