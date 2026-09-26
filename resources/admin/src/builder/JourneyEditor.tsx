@@ -12,7 +12,8 @@ import { GraphRouteSettings } from './GraphRouteSettings';
 import { __, sprintf } from '@wordpress/i18n';
 import { Button } from '../components/ui/button';
 import type { TemplateTree, TemplateNode, QuestionNode, Tokens } from '@renderer/types';
-import { addGraphResultSignup, duplicateScreen, freshScreen, referencedJourney, walkNodes, submissionScreen, movedScreen, screenRemoval, removedScreen, resultAccess, unreachableScreenIds, unreachableScreens, withBackButton } from './structure/journey';
+import { addGraphResultSignup, duplicateScreen, freshScreen, referencedJourney, walkNodes, submissionScreen, movedScreen, screenRemoval, removedScreen, resultAccess, unreachableScreens, withBackButton } from './structure/journey';
+import { graphChangeImpact } from './structure/graphChangeImpact';
 import { addGraphConnection, reconnectGraphEdge } from './structure/graphConnections';
 import { conditionText } from './structure/conditionText';
 import { graphDisplayOrder, graphReaches, graphRemoval, insertOnGraphEdge, upgradeToGraph } from './structure/graph';
@@ -63,13 +64,17 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
     setMobilePane('details');
     setPanelSection(repairRequest.section);
     const answerPaths = tree.graph?.edges.filter(edge => edge.from === repairRequest.screenId && edge.kind === 'answer');
-    const priority = repairRequest.edgeId ? answerPaths?.findIndex(edge => edge.id === repairRequest.edgeId)
+    const repairEdge = tree.graph?.edges.find(edge => edge.id === repairRequest.edgeId);
+    const priority = repairEdge?.kind === 'default' ? answerPaths?.length
+      : repairRequest.edgeId ? answerPaths?.findIndex(edge => edge.id === repairRequest.edgeId)
       : repairRequest.pathPriority;
     setPathFocus(priority !== undefined && priority >= 0 ? priority : null);
     onSelect(index);
     if (repairRequest.section === 'content' || priority === undefined || priority < 0) requestAnimationFrame(() => {
       const heading = settingsHeading.current;
-      const condition = repairRequest.section === 'content'
+      const condition = repairRequest.focus === 'hidden-route'
+        ? heading?.closest('.wconvert-journey-pane')?.querySelector<HTMLElement>('.wconvert-journey-settings__skip select')
+        : repairRequest.section === 'content'
         ? heading?.closest('.wconvert-journey-pane')?.querySelector<HTMLElement>(repairRequest.focus === 'questions'
           ? '.wconvert-journey-settings__question input' : '.wconvert-journey-settings__clause select') : null;
       (condition ?? heading)?.focus();
@@ -81,7 +86,7 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
   const previousNotice = useRef(notice);
   const [confirmRemoval, setConfirmRemoval] = useState(false);
   const [confirmGraphRemoval, setConfirmGraphRemoval] = useState(false);
-  const [pendingRoute, setPendingRoute] = useState<{ tree: TemplateTree; disconnected: readonly string[] } | null>(null);
+  const [pendingRoute, setPendingRoute] = useState<{ tree: TemplateTree; description: string } | null>(null);
   useEffect(() => {
     if (!focused) return;
     const escape = (event: KeyboardEvent) => {
@@ -295,9 +300,12 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
       const changed = addGraphConnection(tree, source, target);
       if (changed === tree) return;
       const edge = changed.graph!.edges.at(-1)!;
-      onChange(changed); select(from); setPanelSection('paths');
+      const description = graphChangeImpact(tree, changed);
+      if (description) setPendingRoute({ tree: changed, description });
+      else onChange(changed);
+      select(from); setPanelSection('paths');
       setPathFocus(changed.graph!.edges.filter(item => item.from === source && item.kind === 'answer').length - (edge.kind === 'answer' ? 1 : 0));
-      setSaid(edge.kind === 'answer' ? __('Answer path added after the existing priorities. Choose its condition before publishing; Everyone else is unchanged.', 'wconvert')
+      if (!description) setSaid(edge.kind === 'answer' ? __('Answer path added after the existing priorities. Choose its condition before publishing; Everyone else is unchanged.', 'wconvert')
         : __('Next connection added. Review where visitors continue in the right panel.', 'wconvert'));
       return;
     }
@@ -312,7 +320,7 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
         const changed = { ...tree, steps: tree.steps.map((item, index) => index === from ? { ...item, paths: [{ to: target }] } : item) };
         const previously = new Set(unreachableScreens(tree));
         const disconnected = unreachableScreens(changed).filter(name => !previously.has(name));
-        if (disconnected.length) setPendingRoute({ tree: changed, disconnected });
+        if (disconnected.length) setPendingRoute({ tree: changed, description: sprintf(__('These screens would become unreachable: %s. They stay in the draft, but visitors cannot reach or submit from them. You can Undo after applying.', 'wconvert'), disconnected.join(', ')) });
         else onChange(changed);
       }
       else setSaid(__('Add a choice question here or earlier before drawing another branch.', 'wconvert'));
@@ -326,15 +334,13 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
     const changed = reconnectGraphEdge(tree, edgeId, target);
     if (changed === tree) return;
     const edge = tree.graph!.edges.find(item => item.id === edgeId)!;
-    const before = new Set(unreachableScreenIds(tree));
-    const disconnected = unreachableScreenIds(changed).filter(id => !before.has(id))
-      .map(id => tree.steps.find(screen => screen.id === id)?.name ?? id);
-    if (disconnected.length) setPendingRoute({ tree: changed, disconnected });
+    const description = graphChangeImpact(tree, changed);
+    if (description) setPendingRoute({ tree: changed, description });
     else onChange(changed);
     select(tree.steps.findIndex(screen => screen.id === edge.from)); setPanelSection('paths');
     setPathFocus(edge.kind === 'hidden' ? null : [...tree.graph!.edges.filter(item => item.from === edge.from && item.kind === 'answer'),
       ...tree.graph!.edges.filter(item => item.from === edge.from && item.kind === 'default')].findIndex(item => item.id === edgeId));
-    if (!disconnected.length) setSaid(__('Connection updated. Its condition and priority are unchanged.', 'wconvert'));
+    if (!description) setSaid(__('Connection updated. Its condition and priority are unchanged.', 'wconvert'));
   };
   const workspace = <>
         <div className="wconvert-journey-dialog__header">
@@ -536,8 +542,8 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
             write(graphDelete.next, target >= 0 ? target : 0);
             setSaid(__('Screen removed. Its incoming paths now continue to the named destination. Undo restores it.', 'wconvert'));
           }} />
-        <ConfirmDialog open={pendingRoute !== null} onOpenChange={value => { if (!value) setPendingRoute(null); }} title={__('Review this path change', 'wconvert')}
-          description={pendingRoute ? sprintf(__('These screens would become unreachable: %s. They stay in the draft, but visitors cannot reach or submit from them. You can Undo after applying.', 'wconvert'), pendingRoute.disconnected.join(', ')) : ''}
+        <ConfirmDialog open={pendingRoute !== null} onOpenChange={value => { if (!value) setPendingRoute(null); }} title={__('Review this path change', 'wconvert')} returnFocusTo={settingsHeading}
+          description={pendingRoute?.description ?? ''}
           confirmLabel={__('Apply path change', 'wconvert')} onConfirm={() => { if (pendingRoute) onChange(pendingRoute.tree); setPendingRoute(null); }} />
   </>;
   return <>

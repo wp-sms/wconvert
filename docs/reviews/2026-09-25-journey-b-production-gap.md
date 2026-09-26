@@ -35,6 +35,33 @@ again or turn conditional follow-ups into mutually exclusive branches.
 
 ## Progress after this audit
 
+### September 26: path-change save consequences and direct capture repair
+
+Reconnecting a line, drawing a new path or changing the path inspector now
+reviews newly bypassed required saves as well as newly unreachable screens.
+The confirmation names the ending/result and the save screen even when all
+screens still have incoming connections. Existing bypasses do not trigger
+repeated confirmation on unrelated edits, and optional captures are not treated
+as required gates. This is conservative connectivity analysis, not a claim
+that every rule combination can occur.
+
+Publish review now blocks these required-save bypasses before the server write
+and provides a repair link to the implicated connection. Hidden exits focus
+Continue at; default exits focus Go to. Cancel restores focus to the path
+control; canvas impact review returns to the selected screen heading.
+
+In local WordPress, Indoor details' hidden exit was redirected to Request
+received while Contact details stayed connected. The warning named the skipped
+save. Applying it produced a disabled Save & publish action and a named issue.
+Its repair link focused Continue at; restoring Contact details removed the
+blocker. Both draft changes were undone, leaving Save draft disabled. No
+campaign was saved or published during this check.
+
+Validation: the complete JavaScript suite passed 2,870 tests; the final
+connection-focus regression is also covered by the editor suite. TypeScript,
+ESLint and both admin builds pass. This closes the required-save bypass repair
+gap, not all server-only validation or the broader release gate.
+
 ### September 26: focused journey workspace and nested keyboard behavior
 
 An embedded journey can now expand into Focus journey without remounting its

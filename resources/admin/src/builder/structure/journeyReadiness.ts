@@ -3,13 +3,14 @@ import type { QuestionCondition, QuestionNode, TemplateTree } from '@renderer/ty
 import { unreachableScreenIds, walkNodes } from './journey';
 import { graphReaches } from './graph';
 import { MAX_PATH_QUESTIONS, questionPath } from './questionBudget';
+import { requiredSaveBypasses } from './graphChangeImpact';
 
 export interface JourneyRepair {
   readonly screenId: string;
   readonly section: 'content' | 'paths';
   readonly edgeId?: string;
   readonly pathPriority?: number;
-  readonly focus?: 'questions';
+  readonly focus?: 'questions' | 'hidden-route';
 }
 
 export interface JourneyReadinessIssue {
@@ -21,6 +22,15 @@ export interface JourneyReadinessIssue {
 /** Name the incomplete authoring controls we can locate before the server's final validation. */
 export function journeyReadinessIssues(tree: TemplateTree): JourneyReadinessIssue[] {
   const issues: JourneyReadinessIssue[] = [];
+  for (const bypass of requiredSaveBypasses(tree)) {
+    if (!bypass.edge || !bypass.saving.length) continue;
+    const ending = tree.steps.find(screen => screen.id === bypass.endingId)?.name ?? bypass.endingId;
+    issues.push({ key: bypass.key,
+      said: sprintf(__('A path reaches “%1$s” without the required save at %2$s. Reconnect this path through the save screen.', 'wconvert'),
+        ending, bypass.saving.map(screen => `“${screen.name}”`).join(', ')),
+      repair: { screenId: bypass.edge.from, section: 'paths', edgeId: bypass.edge.id,
+        ...(bypass.edge.kind === 'hidden' ? { focus: 'hidden-route' as const } : {}) } });
+  }
   const budget = questionPath(tree);
   if (budget && budget.count > MAX_PATH_QUESTIONS) {
     const screenId = budget.screens[budget.screens.length - 1];

@@ -96,3 +96,24 @@ it('lets a merchant add a condition to an existing answer path whose condition i
     { question: 'n1', operator: 'includes_any', values: ['garden'] },
   ]);
 });
+
+it('reviews a save bypass without disconnecting screens and returns focus after cancellation', async () => {
+  const user = userEvent.setup();
+  const base = fixture as unknown as TemplateTree;
+  function Routes() {
+    const [tree, setTree] = useState(base);
+    return <><GraphRouteSettings tree={tree} step={tree.steps.findIndex(item => item.id === 'balcony')} onChange={setTree} onInsert={() => {}} />
+      <output data-testid="tree">{JSON.stringify(tree)}</output></>;
+  }
+  render(<Routes />);
+  const hiddenDestination = screen.getByRole('combobox', { name: 'Continue at' });
+  await user.selectOptions(hiddenDestination, 'received');
+  expect(screen.getByRole('alertdialog')).toHaveTextContent('could reach “Received” without saving at “One enquiry”');
+  expect(JSON.parse(screen.getByTestId('tree').textContent!).graph.edges.find((edge: { id: string }) => edge.id === 'balcony_hidden').to).toBe('contact');
+  await user.click(screen.getByRole('button', { name: 'Cancel' }));
+  expect(hiddenDestination).toHaveFocus();
+  expect(hiddenDestination).toHaveValue('contact');
+  await user.selectOptions(hiddenDestination, 'received');
+  await user.click(screen.getByRole('button', { name: 'Apply path change' }));
+  expect(hiddenDestination).toHaveValue('received');
+});

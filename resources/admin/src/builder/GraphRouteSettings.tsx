@@ -4,8 +4,9 @@ import type { JourneyGraphEdge, TemplateTree } from '@renderer/types';
 import { ConfirmDialog } from '../shell/ConfirmDialog';
 import { ConditionSettings } from './JourneySettings';
 import { graphEdgeId, graphTargets } from './structure/graph';
+import { graphChangeImpact } from './structure/graphChangeImpact';
 import { graphChoiceSources } from './structure/graphConnections';
-import { unreachableScreenIds, unreachableScreens, walkNodes } from './structure/journey';
+import { unreachableScreens, walkNodes } from './structure/journey';
 
 /** A keyboard-complete editor for the actual v3 connections, not array order. */
 export function GraphRouteSettings({ tree, step, focusPath, onChange, onInsert }: {
@@ -15,7 +16,8 @@ export function GraphRouteSettings({ tree, step, focusPath, onChange, onInsert }
   const graph = tree.graph;
   const screen = tree.steps[step];
   const list = useRef<HTMLOListElement>(null);
-  const [pending, setPending] = useState<{ tree: TemplateTree; disconnected: readonly string[] } | null>(null);
+  const returnFocus = useRef<HTMLElement | null>(null);
+  const [pending, setPending] = useState<{ tree: TemplateTree; description: string } | null>(null);
   useEffect(() => {
     if (focusPath === null || focusPath === undefined) return;
     const row = list.current?.querySelector<HTMLElement>(`[data-path-priority="${focusPath}"]`);
@@ -38,10 +40,11 @@ export function GraphRouteSettings({ tree, step, focusPath, onChange, onInsert }
   const sources = graphChoiceSources(tree, screen.id);
   const apply = (next: readonly JourneyGraphEdge[]) => {
     const changed = { ...tree, graph: { ...graph, edges: [...graph.edges.filter(edge => edge.from !== screen.id), ...next] } };
-    const before = new Set(unreachableScreenIds(tree));
-    const disconnected = unreachableScreenIds(changed).filter(id => !before.has(id))
-      .map(id => tree.steps.find(screen => screen.id === id)?.name ?? id);
-    if (disconnected.length) setPending({ tree: changed, disconnected });
+    const description = graphChangeImpact(tree, changed);
+    if (description) {
+      returnFocus.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+      setPending({ tree: changed, description });
+    }
     else onChange(changed);
   };
   const write = (nextAnswers: readonly JourneyGraphEdge[], nextFallback = fallback, nextHidden = hidden) =>
@@ -99,8 +102,8 @@ export function GraphRouteSettings({ tree, step, focusPath, onChange, onInsert }
         {targets.map(target => <option key={target.id} value={target.id}>{target.name}</option>)}
       </select></label><p>{__('Hidden screens do not collect an answer or submit details.', 'wconvert')}</p></div>}
     {unreachableScreens(tree).length > 0 && <p className="wconvert-journey-settings__warning" role="status">{sprintf(__('No path reaches: %s. Connect or remove these screens before publishing.', 'wconvert'), unreachableScreens(tree).join(', '))}</p>}
-    <ConfirmDialog open={pending !== null} onOpenChange={open => { if (!open) setPending(null); }} title={__('Review this path change', 'wconvert')}
-      description={pending ? sprintf(__('These screens would become unreachable: %s. They stay in the draft, but visitors cannot reach them. Undo restores the connection.', 'wconvert'), pending.disconnected.join(', ')) : ''}
+    <ConfirmDialog open={pending !== null} onOpenChange={open => { if (!open) setPending(null); }} title={__('Review this path change', 'wconvert')} returnFocusTo={returnFocus}
+      description={pending?.description ?? ''}
       confirmLabel={__('Apply path change', 'wconvert')} onConfirm={() => { if (pending) onChange(pending.tree); setPending(null); }} />
   </section>;
 }

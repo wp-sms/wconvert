@@ -21,6 +21,7 @@ vi.mock('../../resources/admin/src/builder/JourneyMap', () => ({ JourneyMap: ({ 
 }) => <div aria-label="Journey map">
   <button onClick={() => onConnect('interests', 'contact')}>Draw test branch</button>
   <button onClick={() => onReconnect('start', 'contact')}>Reconnect test route</button>
+  <button onClick={() => onReconnect('balcony_hidden', 'received')}>Bypass test save</button>
 </div> }));
 beforeEach(() => vi.stubGlobal('ResizeObserver', class { observe() {} unobserve() {} disconnect() {} }));
 afterEach(() => { cleanup(); vi.unstubAllGlobals(); });
@@ -107,6 +108,17 @@ it('reviews newly unreachable screens before applying a canvas reconnection', as
   await user.click(screen.getByRole('button', { name: 'Apply path change' }));
   expect(draft().graph!.edges.find(edge => edge.id === 'start')?.to).toBe('contact');
   expect(draft().steps).toEqual(graphFixture.steps);
+});
+it('reviews a canvas save bypass even when no screens are disconnected', async () => {
+  const user = userEvent.setup();
+  render(<Editor initial={graphFixture as unknown as TemplateTree} />);
+  await user.click(screen.getByRole('button', { name: 'Manage screens' }));
+  await user.click(await screen.findByRole('button', { name: 'Bypass test save' }));
+  expect(screen.getByRole('alertdialog')).toHaveTextContent('could reach “Received” without saving at “One enquiry”');
+  expect(draft().graph!.edges.find(edge => edge.id === 'balcony_hidden')?.to).toBe('contact');
+  await user.click(screen.getByRole('button', { name: 'Cancel' }));
+  expect(screen.getByRole('heading', { name: 'Balcony details' })).toHaveFocus();
+  expect(draft().graph!.edges.find(edge => edge.id === 'balcony_hidden')?.to).toBe('contact');
 });
 it.each([true, false])('restores focus after closing Test journey (embedded: %s)', async embedded => {
   const user = userEvent.setup();
@@ -533,4 +545,26 @@ it('warns when two matching results can receive the same answer', async () => {
   await user.click(within(screen.getByRole('tablist', { name: 'Possible results' })).getByRole('tab', { name: /More garden ideas/ }));
   await user.click(screen.getByRole('button', { name: 'Move earlier' }));
   expect(draft().steps[3].results?.[0].id).toBe('also-garden');
+});
+
+it('focuses the hidden continuation when repairing a required-save bypass', async () => {
+  const tree = graphFixture as unknown as TemplateTree;
+  function RepairEditor() {
+    const [step, setStep] = useState(0);
+    return <JourneyEditor embedded tree={tree} step={step} onChange={() => {}} onSelect={setStep}
+      repairRequest={{ serial: 1, screenId: 'balcony', section: 'paths', edgeId: 'balcony_hidden', focus: 'hidden-route' }} />;
+  }
+  render(<RepairEditor />);
+  await waitFor(() => expect(screen.getByRole('combobox', { name: 'Continue at' })).toHaveFocus());
+});
+
+it('focuses the default destination when repairing a required-save bypass', async () => {
+  const tree = graphFixture as unknown as TemplateTree;
+  function RepairEditor() {
+    const [step, setStep] = useState(0);
+    return <JourneyEditor embedded tree={tree} step={step} onChange={() => {}} onSelect={setStep}
+      repairRequest={{ serial: 1, screenId: 'balcony', section: 'paths', edgeId: 'balcony_next' }} />;
+  }
+  render(<RepairEditor />);
+  await waitFor(() => expect(screen.getByRole('combobox', { name: 'Go to' })).toHaveFocus());
 });
