@@ -8,6 +8,7 @@ defined('ABSPATH') || exit;
 final class CaptureJourney
 {
     public const ACTIONS = ['next', 'back', 'submit', 'skip', 'close', 'link'];
+    public const MAX_QUESTIONS = 10;
     /** @param array<string, mixed> $tree */
     public static function requiresPremium(array $tree): bool
     {
@@ -202,7 +203,7 @@ final class CaptureJourney
                 if (is_array($route) && isset($route['when']) && self::conditionIssue($route['when'], $earlier) !== null) { return 'conditions'; }
             }
         }
-        if ($resultCount > 1 || $questionCount > 10) { return 'flow'; }
+        if ($resultCount > 1 || $questionCount > self::MAX_QUESTIONS) { return 'flow'; }
         return null;
     }
 

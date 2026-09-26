@@ -49,7 +49,7 @@ final class QuestionCapture
      */
     public static function validate(array $tree, $posted, string $submissionId = ''): array|Refusal
     {
-        if (!is_array($posted) || count($posted) > 10) {
+        if (!is_array($posted) || count($posted) > CaptureJourney::MAX_QUESTIONS) {
             return new Refusal(RefusalCode::ChoiceInvalid);
         }
         $answers = [];

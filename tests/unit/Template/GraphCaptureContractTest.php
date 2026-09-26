@@ -11,6 +11,47 @@ use WConvert\Template\TemplateVocabulary;
 
 final class GraphCaptureContractTest extends TestCase
 {
+    public function testExclusiveBranchesHaveSeparateQuestionBudgetsAndCaptureOnlyTheirOwnAnswers(): void
+    {
+        $tree = json_decode((string) file_get_contents(WCONVERT_DIR . '/tests/fixtures/journey-graph-branch-groups.json'), true);
+        self::assertNull(CaptureContract::issue(['template' => ['tree' => $tree]], 'collect_enquiries', ''));
+        $byId = array_column($tree['steps'], null, 'id');
+        $question = static fn (string $id): string => $byId[$id]['content']['children'][0]['id'];
+        $posted = [$question('scope') => 'business', $question('business') => ['office', 'maintenance'],
+            $question('business_office') => 'Thirty workspaces', $question('business_maintenance') => 'Monthly',
+            $question('home') => ['garden'], $question('home_garden') => 'An obsolete answer'];
+        $snapshots = QuestionCapture::validate($tree, $posted, 'enquiry');
+        self::assertIsArray($snapshots);
+        self::assertSame([$question('scope'), $question('business'), $question('business_office'), $question('business_maintenance')], array_column($snapshots, 'id'));
+
+        foreach ($tree['steps'] as &$screen) {
+            if ($screen['id'] !== 'home_garden') continue;
+            for ($i = 0; $i < 4; $i++) $screen['content']['children'][] = [
+                'type' => 'question', 'id' => 'n' . (100 + $i), 'label' => 'Additional detail', 'answer_type' => 'text', 'required' => false,
+            ];
+        }
+        unset($screen);
+        self::assertNull(CaptureContract::issue(['template' => ['tree' => $tree]], 'collect_enquiries', ''));
+        $tenAnswers = [$question('scope') => 'home', $question('home') => ['garden', 'balcony', 'indoor', 'irrigation']];
+        foreach (['home_garden', 'home_balcony', 'home_indoor', 'home_irrigation'] as $id) $tenAnswers[$question($id)] = 'Details';
+        for ($i = 0; $i < 4; $i++) $tenAnswers['n' . (100 + $i)] = 'Additional detail';
+        $accepted = QuestionCapture::validate($tree, $tenAnswers, 'enquiry');
+        self::assertIsArray($accepted);
+        self::assertCount(10, $accepted);
+        self::assertInstanceOf(\WConvert\Lead\Refusal::class, QuestionCapture::validate($tree, $tenAnswers + ['unknown' => 'overflow'], 'enquiry'));
+        $hidden = $tree;
+        foreach ($hidden['graph']['edges'] as &$edge) if ($edge['id'] === 'home_garden_hidden') $edge['to'] = 'business';
+        unset($edge);
+        self::assertNull(CaptureContract::issue(['template' => ['tree' => $hidden]], 'collect_enquiries', ''));
+        foreach ($tree['steps'] as &$screen) {
+            if ($screen['id'] === 'home_garden') $screen['content']['children'][] = [
+                'type' => 'question', 'id' => 'n104', 'label' => 'Too many on this path', 'answer_type' => 'text', 'required' => false,
+            ];
+        }
+        unset($screen);
+        self::assertSame('question_path_limit', CaptureContract::issue(['template' => ['tree' => $tree]], 'collect_enquiries', ''));
+    }
+
     public function testThreeIndependentInterestsAllJoinOneEnquiryWithOnlyVisitedAnswers(): void
     {
         $tree = json_decode((string) file_get_contents(WCONVERT_DIR . '/tests/fixtures/journey-graph-enquiry.json'), true);

@@ -35,6 +35,42 @@ again or turn conditional follow-ups into mutually exclusive branches.
 
 ## Progress after this audit
 
+### September 26: question budgets follow routes, with actual capture evidence
+
+The eleven-question bank in the two-branch fixture now passes publication.
+Version 3 counts the longest connected route, with hidden exits skipping their
+source questions, instead of summing mutually exclusive branches. The existing
+ten-answer capture request bound is unchanged. The Add question control applies
+the same route capacity, so an already-full home branch does not disable adding
+a question to the shorter business branch. This is a conservative topology bound,
+not predicate solving: a connected route over ten is refused even if particular
+answers might hide enough screens. Version 2 keeps its existing total bound.
+
+Review names an over-limit route and disables Publish. In the local browser,
+the repair link opened Irrigation and maintenance and focused its question text.
+The delete confirmation explained reconnection of its two incoming routes to
+the common enquiry. Removing that one screen cleared the blocker; Undo restored
+the untouched draft. No negative test campaign was published or saved by the UI.
+
+A separate clone of the 13-screen fixture was published through the real REST
+publication service, restricted to the existing local QA page with local-only
+capture and no destinations. Keyboard interaction with the production visitor
+popup selected Business, Office planting and Ongoing care, answered those two
+follow-ups and submitted. The database confirmed one Lead, one enquiry snapshot,
+and exactly the branch choice, business interests and two selected follow-up
+answers. No home answers were saved. The campaign was then unpublished and the
+QA page returned to draft. Test Lead: `branch-budget-20260926@example.test`.
+
+JS covers separate branch budgets, additions on a full versus shorter branch,
+repair text/target, hidden exits and malformed cycles. PHP covers the same shared
+fixture, ten accepted answers, rejection of an eleven-answer request, hidden
+exit accounting and refusal of an eleven-question route. Full suites passed
+2,859 JavaScript and 2,126 PHP tests. Final focus-related checks passed 70 JS
+tests; expanded contract coverage passed 10 PHP tests / 56 assertions. TypeScript,
+ESLint, PHPStan and Free/Pro admin builds passed. The first full JS run timed out
+under concurrent load; the rerun used four workers with unchanged test timeouts
+and passed. Visitor loader code and payload bounds were not changed.
+
 ### September 26: parallel branches, measured layout and reading order
 
 A new 13-screen draft fixture has mutually exclusive home/business branches,
@@ -55,14 +91,10 @@ Ongoing care: two business follow-ups shown, no home follow-ups, and one simulat
 enquiry. The fixture and test assert exclusion of stale home answers. These were
 draft-only checks, with no publication, Lead creation or destination request.
 
-The server check identified an additional required gap: `GraphCaptureContract`
-still caps the entire graph at ten questions because `QuestionCapture` accepts
-ten submitted answers. This fixture has eleven total questions but only six on
-either visitor path, so publication currently returns `questions`. Do not treat
-this fixture as publishable evidence. Reconcile the publication, authoring and
-request limits for exclusive branches, with explicit merchant-facing limits and
-shared server/client coverage. Do not merely raise the request bound or hide the
-failure. Fit-all on a branching map also remains too small in a short desktop
+The server check initially identified a graph-wide ten-question cap despite
+only six questions on either visitor path. The route-budget change and actual
+publication/capture evidence above supersede that gap. Fit-all on a branching
+map remains too small in a short desktop
 canvas; selecting a screen is usable, but the broader workspace-size/focus view
 still needs work.
 

@@ -25,9 +25,11 @@ final class GraphCaptureContract
         $terminal = [];
         $result = null;
         $questionCount = 0;
+        $questionWeights = [];
         $questionScreens = [];
         foreach ($steps as $screen) {
             $id = $screen['id'];
+            $questionWeights[$id] = 0;
             $kind = $screen['kind'] ?? null;
             if (!in_array($kind, ['content', 'input', 'result', 'acknowledgement'], true)
                 || !is_string($screen['name'] ?? null) || trim($screen['name']) === ''
@@ -53,6 +55,7 @@ final class GraphCaptureContract
                 if (in_array($type, ['field', 'consent', 'question'], true) && ($kind !== 'input' || !is_string($nodeId))) { return 'screens'; }
                 if ($type === 'question') {
                     $questionCount++;
+                    $questionWeights[$id]++;
                     if (!isset($screen['when'])) $questionScreens[$id] = true;
                     if (($issue = self::questionIssue($node)) !== null) { return $issue; }
                 }
@@ -81,7 +84,7 @@ final class GraphCaptureContract
             if ($outgoing === [] && in_array($kind, ['content', 'input'], true)) { return 'screens'; }
             if ($outgoing === [] && array_intersect($actions, ['next', 'submit', 'skip']) !== []) { return 'navigation'; }
         }
-        if ($questionCount > 10) { return 'questions'; } // The capture endpoint currently accepts at most ten answers.
+        if (self::maximumQuestions($graph, $questionWeights) > CaptureJourney::MAX_QUESTIONS) { return 'question_path_limit'; }
         if ($terminal === []) { return 'routes'; }
         if ($goal === 'find_match') {
             if ($result === null || count($submissions) > 1 || self::bypasses($graph, $entry, $result, $terminal)) { return 'capture_paths'; }
@@ -160,6 +163,29 @@ final class GraphCaptureContract
             foreach ($graph['edges'] as $edge) if ($edge['from'] === $id) $pending[] = $edge['to'];
         }
         return false;
+    }
+
+    /** Longest question-bearing route in an already validated acyclic graph.
+     * Answer rules can narrow this bound, never increase it. Hidden exits skip
+     * their source questions. Exclusive branches must not share one total cap.
+     * @param array<string, mixed> $graph
+     * @param array<string, int> $weights
+     */
+    private static function maximumQuestions(array $graph, array $weights): int
+    {
+        $outgoing = [];
+        foreach ($graph['edges'] as $edge) $outgoing[$edge['from']][] = $edge;
+        $memo = [];
+        $visit = static function (string $id) use (&$visit, &$memo, $weights, $outgoing): int {
+            if (isset($memo[$id])) return $memo[$id];
+            $best = $weights[$id];
+            foreach ($outgoing[$id] ?? [] as $edge) {
+                $own = $edge['kind'] === 'hidden' ? 0 : $weights[$id];
+                $best = max($best, $own + $visit($edge['to']));
+            }
+            return $memo[$id] = $best;
+        };
+        return $visit($graph['entry']);
     }
 
     /** @param array<string, mixed> $node */

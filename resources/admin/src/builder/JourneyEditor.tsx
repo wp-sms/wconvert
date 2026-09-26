@@ -61,7 +61,8 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
     if (repairRequest.section === 'content' || priority === undefined || priority < 0) requestAnimationFrame(() => {
       const heading = settingsHeading.current;
       const condition = repairRequest.section === 'content'
-        ? heading?.closest('.wconvert-journey-pane')?.querySelector<HTMLElement>('.wconvert-journey-settings__clause select') : null;
+        ? heading?.closest('.wconvert-journey-pane')?.querySelector<HTMLElement>(repairRequest.focus === 'questions'
+          ? '.wconvert-journey-settings__question input' : '.wconvert-journey-settings__clause select') : null;
       (condition ?? heading)?.focus();
     });
   }, [repairRequest, tree.steps, tree.graph, onSelect]);

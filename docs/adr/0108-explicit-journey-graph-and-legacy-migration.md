@@ -14,6 +14,16 @@ that condition is false; none of its answer edges run. An ending has no outgoing
 edge. The graph must be acyclic and every screen must be reachable from the
 entry. Canvas coordinates and screen array order never route a visitor.
 
+The capture request currently accepts at most ten question answers. For v3,
+publication and the Add question control therefore bound the longest connected
+route at ten questions, not the total question bank across exclusive branches.
+Hidden exits omit their source screen's questions. This is a conservative
+structural bound: conditions may reduce the questions actually seen, but we do
+not solve combinations of answer predicates to relax the limit. Publish review
+names an over-limit route and links to its question controls. Version 2 retains
+its total ten-question bound. A higher per-visitor limit requires separate
+payload and capture verification; the request bound has not been raised.
+
 Independent conditional follow-ups remain separate screens connected in
 sequence. Each has a show condition, a normal continuation, and a named hidden
 continuation to the next relevant screen. Several follow-ups can therefore run

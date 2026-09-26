@@ -3,6 +3,7 @@ import { AUTHORED_ROLES, FIELDS, LAYOUTS, LEAVES, ROLES, childKeysOf } from '../
 import { capturesTaken, nodeAt, rolesTaken, type Spot } from './tree';
 import { submissionScreen, walkNodes } from './journey';
 import { graphReaches } from './graph';
+import { MAX_PATH_QUESTIONS, questionPath } from './questionBudget';
 import type { TemplateNode, TemplateTree } from '@renderer/types';
 
 /**
@@ -162,7 +163,9 @@ function whyRefused(
     const boundary = tree.steps.findIndex(item => item.kind === 'result' || walkNodes(item.content).some(node => node.type === 'button' && 'action' in node && node.action === 'submit'));
     if (screen?.kind !== 'input') return __('Add questions to a question screen.', 'wconvert');
     if (!tree.graph && boundary >= 0 && Number(at.parent[0]) >= boundary) return __('Add questions on a screen before the result or contact submission.', 'wconvert');
-    if (tree.steps.flatMap(item => walkNodes(item.content)).filter(node => node.type === 'question').length >= 10) return __('This journey already has ten questions.', 'wconvert');
+    if ((questionPath(tree, screen.id)?.count ?? 0) > MAX_PATH_QUESTIONS) return tree.graph
+      ? __('Adding here would put more than ten questions on one connected route. Use a separate branch or remove a question from that route.', 'wconvert')
+      : __('This journey already has ten questions.', 'wconvert');
   }
 
   if (type === 'field' && freeCapture(tree) === null) {

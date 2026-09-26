@@ -610,6 +610,7 @@ final class OptinController implements RestController
                 'result_link' => __('Give each result link a label and destination before publishing.', 'wconvert'),
                 'routes' => __('In Manage screens, connect every screen with forward paths that rejoin before a signup or result. You can keep saving this Campaign as a draft.', 'wconvert'),
                 'capture_paths' => __('Every route to the ending must pass the required save or result screen. Review the connections in Manage screens.', 'wconvert'),
+                'question_path_limit' => __('A connected journey route can contain at most ten questions. In Journey, remove questions from the affected route or move them to a separate branch.', 'wconvert'),
                 'conditions' => __('In Manage screens, choose an answer for every conditional screen and path before publishing. You can keep saving this Campaign as a draft.', 'wconvert'),
                 default => __('Complete the screen order, navigation and submission fields before publishing. You can keep saving this Campaign as a draft.', 'wconvert'),
             };

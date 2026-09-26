@@ -2,12 +2,14 @@ import { __, sprintf } from '@wordpress/i18n';
 import type { QuestionCondition, QuestionNode, TemplateTree } from '@renderer/types';
 import { unreachableScreenIds, walkNodes } from './journey';
 import { graphReaches } from './graph';
+import { MAX_PATH_QUESTIONS, questionPath } from './questionBudget';
 
 export interface JourneyRepair {
   readonly screenId: string;
   readonly section: 'content' | 'paths';
   readonly edgeId?: string;
   readonly pathPriority?: number;
+  readonly focus?: 'questions';
 }
 
 export interface JourneyReadinessIssue {
@@ -19,6 +21,14 @@ export interface JourneyReadinessIssue {
 /** Name the incomplete authoring controls we can locate before the server's final validation. */
 export function journeyReadinessIssues(tree: TemplateTree): JourneyReadinessIssue[] {
   const issues: JourneyReadinessIssue[] = [];
+  const budget = questionPath(tree);
+  if (budget && budget.count > MAX_PATH_QUESTIONS) {
+    const screenId = budget.screens[budget.screens.length - 1];
+    const names = budget.screens.map(id => tree.steps.find(screen => screen.id === id)?.name ?? id).join(' → ');
+    issues.push({ key: 'question-path-limit',
+      said: sprintf(__('This connected route contains %1$d questions; the limit is ten: %2$s. Remove questions or move them to a separate branch.', 'wconvert'), budget.count, names),
+      repair: { screenId, section: 'content', focus: 'questions' } });
+  }
   const incomplete = (condition: QuestionCondition | undefined) => !condition || !condition.clauses.length
     || condition.clauses.some(clause => !clause.question || !clause.values.length || clause.values.some(value => !value));
   const questions = new Map<string, { screen: string; index: number; node: QuestionNode }>();
