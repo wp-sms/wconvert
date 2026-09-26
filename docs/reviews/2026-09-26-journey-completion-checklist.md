@@ -46,6 +46,8 @@ to guess when answers are saved or which path wins does not meet the UX goal.
    when details are saved, and repair a wrong condition. Record completion,
    wrong predictions and hesitation. Agent walkthroughs cannot supply that user
    evidence. Keep this separate from code correctness and visual preference.
+   The [session guide and observation sheet](2026-09-26-journey-merchant-validation.md)
+   are ready; participant sessions have not been run.
 
 ## Final integrated verification
 
