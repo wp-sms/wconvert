@@ -35,6 +35,36 @@ again or turn conditional follow-ups into mutually exclusive branches.
 
 ## Progress after this audit
 
+### September 26: canvas authoring for explicit graphs
+
+The graph inspector supported v3 edits, but the map still refused every v3
+connection. Flexible graph cards now expose new-connection handles, and existing
+edge arrowheads can be dragged to change their destination. New answer branches
+append after existing answer priorities, preserve Everyone else, and deliberately
+start with an unchosen answer. Drawing repairs a missing default when necessary.
+Cycles, self-loops, unknown targets and duplicate new routes are refused. A
+reconnection preserves its edge ID, condition and priority; newly stranded
+screens are named in a review before application. The old five-answer-branch UI
+limit no longer applies to flexible graphs. Parser bounds remain unchanged.
+
+The real WordPress draft was used to draw a branch from the initial interests
+question to Balcony. The condition panel opened with focus on its answer choices.
+Review blocked publication with a named missing-answer repair link; choosing
+Balcony repaired it. Drawing an existing arrow from the Garden destination to
+Balcony first warned that Garden would become unreachable. Applying showed the
+unreachable-screen warning; Undo restored the original route. A backward drag
+from Garden to the initial question left the draft unchanged. All test edits
+were undone without saving or publishing. An obsolete branch instruction after
+Undo was found and corrected, with a browser recheck. Card data now remains stable
+while positions change, so moving a box does not recreate all card content.
+
+The full JavaScript suite passed 2,842 tests. The expanded focused suite, including
+the additional six-branch regression, passed 35 tests. TypeScript, ESLint and
+Free/Pro admin builds passed. No visitor or PHP changes were made. This closes
+canvas branch creation/reconnection, not the whole layout gate: Fit journey on
+the six-screen enquiry still makes cards too small for comfortable reading.
+Grouped independent follow-ups and complex-map readability remain required work.
+
 ### September 26: actual publication and visitor capture
 
 The first real graph publication attempt exposed a missed boundary:

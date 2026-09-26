@@ -6,6 +6,7 @@ import type { TemplateTree } from '@renderer/types';
 import { walkNodes } from './structure/journey';
 import { conditionText } from './structure/conditionText';
 import { graphDisplayOrder } from './structure/graph';
+import { canAddGraphConnection, canTargetGraphScreen, graphChoiceSources } from './structure/graphConnections';
 import '@xyflow/react/dist/style.css';
 
 interface CardData { tree: TemplateTree; index: number; ordinal: number; rtl: boolean; muted: boolean; preview: boolean; destinationSummary?: string; select(index: number): void; selectPath(index: number, priority: number): void; goToDestinations?(): void }
@@ -35,6 +36,11 @@ const ScreenCard = memo(function ScreenCard({ data, selected }: NodeProps) {
     : tree.steps.slice(0, index).filter((item, at) => (item.paths ?? (tree.steps[at + 1] ? [{ to: tree.steps[at + 1].id }] : []))
       .some(path => path.to === screen.id)).length;
   const paths = routesFor(tree, index);
+  const branching = paths.some(path => 'kind' in path ? path.kind === 'answer' : !!path.when);
+  const missingContinuation = !!tree.graph && !paths.some(path => 'kind' in path && path.kind === 'default');
+  const canDraw = tree.graph ? screen.kind !== 'acknowledgement' && (missingContinuation
+    ? screen.kind !== 'result' || branching : graphChoiceSources(tree, screen.id).length > 0)
+    : paths.length > 0;
   const hiddenId = hiddenFor(tree, index);
   const hiddenTarget = hiddenId && !paths.some(path => path.to === hiddenId) ? tree.steps.find(item => item.id === hiddenId) : undefined;
   const kind = screen.kind === 'acknowledgement' ? __('Ending', 'wconvert') : screen.kind === 'result' ? __('Result', 'wconvert')
@@ -55,17 +61,17 @@ const ScreenCard = memo(function ScreenCard({ data, selected }: NodeProps) {
       {destinationSummary && <span>{destinationSummary}</span>}
       {goToDestinations && <button type="button" className="nodrag" onClick={goToDestinations}>{__('Edit destinations', 'wconvert')}</button>}
     </div>}
-    {paths.length > 1 && <div className="wconvert-flow-node__paths">
+    {branching && <div className="wconvert-flow-node__paths">
       <small>{__('First matching path wins', 'wconvert')}</small>
       {paths.map((path, priority) => <div key={'id' in path && typeof path.id === 'string' ? path.id : `${path.to}-${priority}`} className="wconvert-flow-node__path">
         <button type="button" className="nodrag" onClick={() => selectPath(index, priority)}>
-          {priority === paths.length - 1 ? __('Everyone else', 'wconvert') : `${priority + 1}. ${path.when ? conditionText(tree, path.when) : ''}`}
+          {('kind' in path ? path.kind === 'default' : !path.when) ? __('Everyone else', 'wconvert') : `${priority + 1}. ${path.when ? conditionText(tree, path.when) : ''}`}
           <span> → {tree.steps.find(item => item.id === path.to)?.name}</span>
         </button>
         <Handle id={`route-${priority}`} type="source" position={rtl ? Position.Left : Position.Right} isConnectable={false} />
       </div>)}
     </div>}
-    {paths.length === 1 && <div className="wconvert-flow-node__continue">
+    {!branching && paths.length === 1 && <div className="wconvert-flow-node__continue">
       <button type="button" className="nodrag" onClick={() => selectPath(index, 0)}>
         {sprintf(tree.steps.find(item => item.id === paths[0].to)?.when ? __('Check next: %s', 'wconvert') : __('Then: %s', 'wconvert'), tree.steps.find(item => item.id === paths[0].to)?.name ?? __('Next screen', 'wconvert'))}
       </button>
@@ -77,8 +83,8 @@ const ScreenCard = memo(function ScreenCard({ data, selected }: NodeProps) {
       <Handle id="hidden" type="source" position={rtl ? Position.Left : Position.Right} isConnectable={false} />
       }
     </div>}
-    {!tree.graph && paths.length > 0 && <>
-      <div className="wconvert-flow-node__add">+ {__('Drag to add a path', 'wconvert')}</div>
+    {canDraw && <>
+      <div className="wconvert-flow-node__add">+ {missingContinuation ? __('Drag to connect the next screen', 'wconvert') : __('Drag to add an answer path', 'wconvert')}</div>
       <Handle id="new" type="source" position={rtl ? Position.Left : Position.Right} style={{ top: 'calc(100% - 15px)' }} />
     </>}
   </div>;
@@ -109,9 +115,10 @@ function FocusCamera({ selectedId, nextId, firstId, initialOverview, revision, o
 }
 
 /** The canvas is an overview; the same routes are editable through selects in the inspector. */
-export function JourneyMap({ tree, selected, focusedPath = null, onSelect, onSelectPath, onConnect, samplePath = null, destinationSummary, onGoToDestinations }: {
+export function JourneyMap({ tree, selected, focusedPath = null, onSelect, onSelectPath, onConnect, onReconnect, samplePath = null, destinationSummary, onGoToDestinations }: {
   tree: TemplateTree; selected: number | null; onSelect(index: number): void; onSelectPath(index: number, priority: number): void;
   onConnect(source: string, target: string): void; samplePath?: readonly number[] | null; focusedPath?: number | null;
+  onReconnect?(edgeId: string, target: string): void;
   destinationSummary?: string; onGoToDestinations?(): void;
 }) {
   const [positions, setPositions] = useState<Record<string, { x: number; y: number }>>({});
@@ -150,23 +157,25 @@ export function JourneyMap({ tree, selected, focusedPath = null, onSelect, onSel
   const focusTarget = focusedPath === null || selected === null ? null
     : tree.steps.findIndex(item => item.id === routesFor(tree, selected)[focusedPath]?.to);
   const ordinals = useMemo(() => graphDisplayOrder(tree), [tree]);
+  const cardData = useMemo(() => tree.steps.map((_, index) => ({ tree, index, ordinal: ordinals.indexOf(index) + 1, rtl,
+      muted: samplePath !== null ? !samplePath.includes(index) : focusTarget !== null && index !== selected && index !== focusTarget,
+      preview, destinationSummary, goToDestinations: onGoToDestinations, select: onSelect, selectPath: onSelectPath })),
+    [tree, ordinals, selected, onSelect, onSelectPath, rtl, samplePath, focusTarget, preview, destinationSummary, onGoToDestinations]);
   const nodes = useMemo<Node[]>(() => tree.steps.map((step, index) => ({ id: step.id, type: 'screen',
     position: positions[step.id] ?? { x: (rtl ? tree.steps.length - 1 - index : index) * 340, y: 60 }, measured: measurements[step.id],
-    selected: index === selected && samplePath === null, data: { tree, index, ordinal: ordinals.indexOf(index) + 1, rtl,
-      muted: samplePath !== null ? !samplePath.includes(index) : focusTarget !== null && index !== selected && index !== focusTarget,
-      preview, destinationSummary, goToDestinations: onGoToDestinations, select: onSelect, selectPath: onSelectPath } })), [tree, ordinals, selected, positions, measurements, onSelect, onSelectPath, rtl, samplePath, focusTarget, preview, destinationSummary, onGoToDestinations]);
+    selected: index === selected && samplePath === null, data: cardData[index] })), [tree.steps, selected, positions, measurements, rtl, samplePath, cardData]);
   const edges = useMemo<Edge[]>(() => tree.steps.flatMap((step, index) => {
     const paths = routesFor(tree, index);
     const routes: Edge[] = paths
       .map((path, priority) => ({ id: 'id' in path && typeof path.id === 'string' ? path.id : `${step.id}-${priority}`, source: step.id, target: path.to, data: { sourceIndex: index, priority },
-        sourceHandle: `route-${priority}`, targetHandle: 'in', type: 'smoothstep',
-        label: paths.length > 1 ? priority === paths.length - 1 ? __('Else', 'wconvert') : String(priority + 1) : undefined,
+        sourceHandle: `route-${priority}`, targetHandle: 'in', type: 'smoothstep', reconnectable: tree.graph ? 'target' : false,
+        label: paths.length > 1 || path.when ? ('kind' in path ? path.kind === 'default' : !path.when) ? __('Else', 'wconvert') : String(priority + 1) : undefined,
         markerEnd: { type: MarkerType.ArrowClosed, color: '#719987', width: 15, height: 15 },
         style: { stroke: '#719987', strokeWidth: 2, opacity: samplePath !== null ? 1 : focusedPath !== null && (index !== selected || priority !== focusedPath) ? .2 : 1 } }));
     const hidden = hiddenFor(tree, index);
     if (hidden && !paths.some(path => path.to === hidden)) routes.push({
       id: tree.graph?.edges.find(edge => edge.from === step.id && edge.kind === 'hidden')?.id ?? `${step.id}-hidden`,
-      source: step.id, target: hidden, sourceHandle: 'hidden', targetHandle: 'in', type: 'smoothstep',
+      source: step.id, target: hidden, sourceHandle: 'hidden', targetHandle: 'in', type: 'smoothstep', reconnectable: 'target',
       label: __('Hidden', 'wconvert'), markerEnd: { type: MarkerType.ArrowClosed, color: '#9aa8a0', width: 15, height: 15 },
       style: { stroke: '#9aa8a0', strokeWidth: 1.5, strokeDasharray: '5 4', opacity: samplePath !== null ? 1 : focusedPath !== null ? .2 : 1 },
     });
@@ -175,7 +184,9 @@ export function JourneyMap({ tree, selected, focusedPath = null, onSelect, onSel
   const valid = (connection: Connection | Edge) => {
     const from = tree.steps.findIndex(step => step.id === connection.source);
     const to = tree.steps.findIndex(step => step.id === connection.target);
-    if (tree.graph) return false;
+    if (tree.graph) return connection.sourceHandle === 'new'
+      ? canAddGraphConnection(tree, connection.source, connection.target)
+      : canTargetGraphScreen(tree, connection.source, connection.target);
     if (from < 0 || to <= from || tree.steps[from].paths?.some(path => path.to === connection.target)) return false;
     const boundary = tree.steps.findIndex((step, index) => index > from && (['result', 'acknowledgement'].includes(step.kind)
       || walkNodes(step.content).some(node => node.type === 'button' && 'action' in node && node.action === 'submit')));
@@ -187,6 +198,9 @@ export function JourneyMap({ tree, selected, focusedPath = null, onSelect, onSel
       onNodeClick={(_, node) => onSelect(tree.steps.findIndex(step => step.id === node.id))}
       onEdgeClick={(_, edge) => { const data = edge.data as { sourceIndex?: number; priority?: number } | undefined; if (data?.sourceIndex !== undefined) onSelectPath(data.sourceIndex, data.priority ?? 0); }}
       isValidConnection={valid} onConnect={connection => { if (connection.source && connection.target && valid(connection)) onConnect(connection.source, connection.target); }}
+      onReconnect={(edge, connection) => {
+        if (tree.graph && connection.source === edge.source && valid(connection)) onReconnect?.(edge.id, connection.target);
+      }}
       onNodesChange={changes => {
         // Retaining measured dimensions prevents every edge from disappearing
         // briefly when a controlled node moves.
@@ -205,7 +219,7 @@ export function JourneyMap({ tree, selected, focusedPath = null, onSelect, onSel
         revision={revision} preview={preview} onPreview={() => setPreview(value => !value)} onTidy={() => setTidyRevision(value => value + 1)} />
     </ReactFlow>
     <p className="wconvert-journey-map__hint">{tree.graph
-      ? __('Follow the connected screens from the first screen. Moving a box changes only the map layout.', 'wconvert')
+      ? __('Drag from “+” to add an answer path, or move a line’s arrow to change its destination. Next screen settings offer the same controls. Moving a box changes only the layout.', 'wconvert')
       : rtl ? __('Follow arrows from right to left. Scroll to move through the map; select a screen to edit or draw a forward path.', 'wconvert')
         : __('Follow arrows from left to right. Scroll to move through the map; select a screen to edit or draw a forward path.', 'wconvert')}</p>
   </div>;

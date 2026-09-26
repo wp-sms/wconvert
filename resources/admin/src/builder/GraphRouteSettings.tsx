@@ -1,12 +1,11 @@
 import { useEffect, useRef, useState } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
-import type { JourneyGraphEdge, QuestionNode, TemplateTree } from '@renderer/types';
+import type { JourneyGraphEdge, TemplateTree } from '@renderer/types';
 import { ConfirmDialog } from '../shell/ConfirmDialog';
 import { ConditionSettings } from './JourneySettings';
-import { graphEdgeId, graphReaches, graphTargets } from './structure/graph';
+import { graphEdgeId, graphTargets } from './structure/graph';
+import { graphChoiceSources } from './structure/graphConnections';
 import { unreachableScreenIds, unreachableScreens, walkNodes } from './structure/journey';
-
-type ChoiceQuestion = QuestionNode & { id: string };
 
 /** A keyboard-complete editor for the actual v3 connections, not array order. */
 export function GraphRouteSettings({ tree, step, focusPath, onChange, onInsert }: {
@@ -36,10 +35,7 @@ export function GraphRouteSettings({ tree, step, focusPath, onChange, onInsert }
   const fallback = routes.find(edge => edge.kind === 'default');
   const hidden = routes.find(edge => edge.kind === 'hidden');
   const targets = graphTargets(tree, screen.id);
-  const sources = tree.steps.filter(candidate => candidate.id === screen.id || graphReaches(graph, candidate.id, screen.id))
-    .flatMap(candidate => walkNodes(candidate.content))
-    .filter((node): node is ChoiceQuestion => node.type === 'question' && 'id' in node && typeof node.id === 'string'
-      && 'answer_type' in node && node.answer_type !== 'text') as ChoiceQuestion[];
+  const sources = graphChoiceSources(tree, screen.id);
   const apply = (next: readonly JourneyGraphEdge[]) => {
     const changed = { ...tree, graph: { ...graph, edges: [...graph.edges.filter(edge => edge.from !== screen.id), ...next] } };
     const before = new Set(unreachableScreenIds(tree));
@@ -94,7 +90,7 @@ export function GraphRouteSettings({ tree, step, focusPath, onChange, onInsert }
       </select></label>
     </li>}</ol>
     {questionAfterSave && <p>{__('Ask questions before this save so their answers can be included. Select an earlier connection to insert a question.', 'wconvert')}</p>}
-    {fallback && sources.length > 0 && targets.length > 0 && answers.length < 5 && <button type="button" onClick={add}>{__('Add answer path', 'wconvert')}</button>}
+    {fallback && sources.length > 0 && targets.length > 0 && <button type="button" onClick={add}>{__('Add answer path', 'wconvert')}</button>}
     {!sources.length && <p>{__('Add a choice question here or on a screen that leads here to branch by answer.', 'wconvert')}</p>}
     {screen.when && <div className="wconvert-journey-settings__skip"><strong>{__('When this screen is hidden', 'wconvert')}</strong>
       <label>{__('Continue at', 'wconvert')}<select value={hidden?.to ?? ''} onChange={event => write(answers, fallback,

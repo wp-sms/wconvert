@@ -15,7 +15,12 @@ import finder from '../../pro/modules/journeys/templates/journey-product-finder.
 import graphFixture from '../fixtures/journey-graph-enquiry.json';
 
 vi.mock('../../resources/admin/src/builder/Preview', () => ({ Preview: () => <div /> }));
-vi.mock('../../resources/admin/src/builder/JourneyMap', () => ({ JourneyMap: () => <div aria-label="Journey map" /> }));
+vi.mock('../../resources/admin/src/builder/JourneyMap', () => ({ JourneyMap: ({ onConnect, onReconnect }: {
+  onConnect(source: string, target: string): void; onReconnect(edge: string, target: string): void;
+}) => <div aria-label="Journey map">
+  <button onClick={() => onConnect('interests', 'contact')}>Draw test branch</button>
+  <button onClick={() => onReconnect('start', 'contact')}>Reconnect test route</button>
+</div> }));
 beforeEach(() => vi.stubGlobal('ResizeObserver', class { observe() {} unobserve() {} disconnect() {} }));
 afterEach(() => { cleanup(); vi.unstubAllGlobals(); });
 function Editor({ initial = source.tree as TemplateTree }: { initial?: TemplateTree }) {
@@ -25,6 +30,46 @@ function Editor({ initial = source.tree as TemplateTree }: { initial?: TemplateT
     <output data-testid="draft">{JSON.stringify(tree)}</output></>;
 }
 function draft(): TemplateTree { return JSON.parse(screen.getByTestId('draft').textContent!); }
+it('clears stale branch instructions when Undo restores the prior draft', async () => {
+  const user = userEvent.setup();
+  const initial = graphFixture as unknown as TemplateTree;
+  function HistoryEditor() {
+    const [tree, setTree] = useState(initial);
+    const [step, setStep] = useState(0);
+    return <><button onClick={() => setTree(initial)}>Undo fixture edit</button>
+      <JourneyEditor embedded tree={tree} step={step} onChange={setTree} onSelect={setStep} /></>;
+  }
+  render(<HistoryEditor />);
+  await user.click(await screen.findByRole('button', { name: 'Draw test branch' }));
+  expect(screen.getByText(/Answer path added after the existing priorities/)).toBeInTheDocument();
+  await user.click(screen.getByRole('button', { name: 'Undo fixture edit' }));
+  expect(screen.queryByText(/Answer path added after the existing priorities/)).not.toBeInTheDocument();
+});
+it('opens a drawn graph branch for repair without guessing its condition', async () => {
+  const user = userEvent.setup();
+  render(<Editor initial={graphFixture as unknown as TemplateTree} />);
+  await user.click(screen.getByRole('button', { name: 'Manage screens' }));
+  await user.click(await screen.findByRole('button', { name: 'Draw test branch' }));
+  expect(draft().graph!.edges.at(-1)).toMatchObject({ from: 'interests', to: 'contact', kind: 'answer',
+    when: { clauses: [{ question: 'n1', values: [''] }] } });
+  expect(screen.getByText(/Answer path added after the existing priorities/)).toBeInTheDocument();
+  expect(screen.getByText('1. If the answer matches')).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: 'Next screen' })).toHaveAttribute('aria-pressed', 'true');
+});
+
+it('reviews newly unreachable screens before applying a canvas reconnection', async () => {
+  const user = userEvent.setup();
+  render(<Editor initial={graphFixture as unknown as TemplateTree} />);
+  await user.click(screen.getByRole('button', { name: 'Manage screens' }));
+  await user.click(await screen.findByRole('button', { name: 'Reconnect test route' }));
+  expect(screen.getByRole('heading', { name: 'Review this path change' })).toBeInTheDocument();
+  const explanation = screen.getByText(/These screens would become unreachable:/);
+  for (const name of ['Garden details', 'Indoor details', 'Balcony details']) expect(explanation).toHaveTextContent(name);
+  expect(draft().graph!.edges.find(edge => edge.id === 'start')?.to).toBe('garden');
+  await user.click(screen.getByRole('button', { name: 'Apply path change' }));
+  expect(draft().graph!.edges.find(edge => edge.id === 'start')?.to).toBe('contact');
+  expect(draft().steps).toEqual(graphFixture.steps);
+});
 it.each([true, false])('restores focus after closing Test journey (embedded: %s)', async embedded => {
   const user = userEvent.setup();
   render(<JourneyEditor embedded={embedded} tree={source.tree as TemplateTree} step={0} onChange={() => {}} onSelect={() => {}} />);

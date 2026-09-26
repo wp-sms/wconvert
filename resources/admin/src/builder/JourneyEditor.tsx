@@ -12,7 +12,8 @@ import { GraphRouteSettings } from './GraphRouteSettings';
 import { __, sprintf } from '@wordpress/i18n';
 import { Button } from '../components/ui/button';
 import type { TemplateTree, TemplateNode, QuestionNode, Tokens } from '@renderer/types';
-import { addGraphResultSignup, duplicateScreen, freshScreen, referencedJourney, walkNodes, submissionScreen, movedScreen, screenRemoval, removedScreen, resultAccess, unreachableScreens, withBackButton } from './structure/journey';
+import { addGraphResultSignup, duplicateScreen, freshScreen, referencedJourney, walkNodes, submissionScreen, movedScreen, screenRemoval, removedScreen, resultAccess, unreachableScreenIds, unreachableScreens, withBackButton } from './structure/journey';
+import { addGraphConnection, reconnectGraphEdge } from './structure/graphConnections';
 import { conditionText } from './structure/conditionText';
 import { graphDisplayOrder, graphReaches, graphRemoval, insertOnGraphEdge, upgradeToGraph } from './structure/graph';
 import type { JourneyRepair } from './structure/journeyReadiness';
@@ -64,7 +65,10 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
       (condition ?? heading)?.focus();
     });
   }, [repairRequest, tree.steps, tree.graph, onSelect]);
-  const [said, setSaid] = useState('');
+  const [notice, setNotice] = useState({ text: '' });
+  const setSaid = (text: string) => setNotice({ text });
+  const said = notice.text;
+  const previousNotice = useRef(notice);
   const [confirmRemoval, setConfirmRemoval] = useState(false);
   const [confirmGraphRemoval, setConfirmGraphRemoval] = useState(false);
   const [pendingRoute, setPendingRoute] = useState<{ tree: TemplateTree; disconnected: readonly string[] } | null>(null);
@@ -73,12 +77,16 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
   const select = (index: number) => { selectedId.current = tree.steps[index]?.id; setInspecting(true); setSampleOpen(false); setPanelSection('content'); setPathFocus(null); setMobilePane('details'); onSelect(index); };
   useEffect(() => {
     if (previousTree.current !== tree) {
+      // A later edit or Undo invalidates instructions about a prior operation.
+      // Keep a new notice issued in the same render as its own draft change.
+      if (notice === previousNotice.current && notice.text) setNotice({ text: '' });
       const index = tree.steps.findIndex(screen => screen.id === selectedId.current);
       if (index >= 0 && index !== step) onSelect(index);
       else selectedId.current = tree.steps[step]?.id;
       previousTree.current = tree;
     } else selectedId.current = tree.steps[step]?.id;
-  }, [tree, step, onSelect]);
+    previousNotice.current = notice;
+  }, [tree, step, onSelect, notice]);
   useEffect(() => { screenList.current?.querySelector('[data-selected="true"]')?.scrollIntoView?.({ block: 'nearest' }); }, [step]);
   const current = tree.steps[step];
   if (!current) return null;
@@ -262,7 +270,17 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
   const panelOpen = sampleOpen || inspecting;
   const connect = (source: string, target: string) => {
     const from = tree.steps.findIndex(screen => screen.id === source);
-    if (from < 0 || tree.graph) return;
+    if (from < 0) return;
+    if (tree.graph) {
+      const changed = addGraphConnection(tree, source, target);
+      if (changed === tree) return;
+      const edge = changed.graph!.edges.at(-1)!;
+      onChange(changed); select(from); setPanelSection('paths');
+      setPathFocus(changed.graph!.edges.filter(item => item.from === source && item.kind === 'answer').length - (edge.kind === 'answer' ? 1 : 0));
+      setSaid(edge.kind === 'answer' ? __('Answer path added after the existing priorities. Choose its condition before publishing; Everyone else is unchanged.', 'wconvert')
+        : __('Next connection added. Review where visitors continue in the right panel.', 'wconvert'));
+      return;
+    }
     const screen = tree.steps[from];
     const fallback = { to: tree.steps[from + 1]?.id ?? target };
     const paths = screen.paths ?? [fallback];
@@ -283,6 +301,20 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
     const when = { match: 'all' as const, clauses: [{ question: question.id, operator: question.answer_type === 'multi' ? 'includes_any' as const : 'is' as const, values: [''] }] };
     onChange({ ...tree, steps: tree.steps.map((item, index) => index === from ? { ...item, paths: [{ to: target, when }, ...paths] } : item) });
     select(from); setPanelSection('paths'); setSaid(__('Path added. Choose its answer in the right panel before publishing.', 'wconvert'));
+  };
+  const reconnect = (edgeId: string, target: string) => {
+    const changed = reconnectGraphEdge(tree, edgeId, target);
+    if (changed === tree) return;
+    const edge = tree.graph!.edges.find(item => item.id === edgeId)!;
+    const before = new Set(unreachableScreenIds(tree));
+    const disconnected = unreachableScreenIds(changed).filter(id => !before.has(id))
+      .map(id => tree.steps.find(screen => screen.id === id)?.name ?? id);
+    if (disconnected.length) setPendingRoute({ tree: changed, disconnected });
+    else onChange(changed);
+    select(tree.steps.findIndex(screen => screen.id === edge.from)); setPanelSection('paths');
+    setPathFocus(edge.kind === 'hidden' ? null : [...tree.graph!.edges.filter(item => item.from === edge.from && item.kind === 'answer'),
+      ...tree.graph!.edges.filter(item => item.from === edge.from && item.kind === 'default')].findIndex(item => item.id === edgeId));
+    if (!disconnected.length) setSaid(__('Connection updated. Its condition and priority are unchanged.', 'wconvert'));
   };
   const workspace = <>
         <div className="wconvert-journey-dialog__header">
@@ -342,7 +374,7 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
           <div className="wconvert-journey-mobile-picker"><label>{__('Screen', 'wconvert')}<select value={step} onChange={event => select(Number(event.target.value))}>{displayOrder.map((index, position) => <option key={tree.steps[index].id} value={index}>{position + 1}. {tree.steps[index].name}</option>)}</select></label></div>
           {view === 'flow' && <Suspense fallback={<div className="wconvert-journey-map">{__('Loading journey map…', 'wconvert')}</div>}>
             <JourneyMap tree={tree} selected={inspecting ? step : null} focusedPath={inspecting && panelSection === 'paths' ? pathFocus : null}
-              onSelect={select} onSelectPath={(index, priority) => { select(index); setPanelSection('paths'); setPathFocus(priority); }} onConnect={connect} samplePath={samplePath}
+              onSelect={select} onSelectPath={(index, priority) => { select(index); setPanelSection('paths'); setPathFocus(priority); }} onConnect={connect} onReconnect={reconnect} samplePath={samplePath}
               destinationSummary={destinationSummary} onGoToDestinations={onGoToDestinations} />
           </Suspense>}
           {view === 'screens' && <aside className="wconvert-journey-rail" aria-label={__('Journey screens', 'wconvert')}>
