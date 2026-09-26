@@ -1,4 +1,4 @@
-import type { JourneyGraph, JourneyGraphEdge, TemplateNode, TemplateScreen, TemplateTree } from '@renderer/types';
+import type { JourneyGraph, JourneyGraphEdge, TemplateScreen, TemplateTree } from '@renderer/types';
 
 /** One-time v2 migration. Storage order seeds edges; it never routes v3 visitors. */
 export function graphFromOrderedJourney(tree: TemplateTree): JourneyGraph {
@@ -103,29 +103,4 @@ export function insertOnGraphEdge(tree: TemplateTree, edgeId: string, screen: Te
     edges: [...tree.graph.edges.map(item => item.id === edgeId
       || edge.kind === 'default' && item.from === edge.from && item.kind === 'hidden' && item.to === edge.to
         ? { ...item, to: screen.id } : item), continuation, ...(hidden ? [hidden] : [])] } };
-}
-
-export function graphRemoval(tree: TemplateTree, screenId: string): { next: TemplateTree; destination: string; incoming: number } | null {
-  if (!tree.graph || tree.graph.entry === screenId) return null;
-  const screen = tree.steps.find(item => item.id === screenId);
-  if (!screen || screen.kind === 'result' || screen.kind === 'acknowledgement') return null;
-  const flatten = (node: TemplateNode): TemplateNode[] => {
-    const branches = node as TemplateNode & { children?: readonly TemplateNode[]; start?: readonly TemplateNode[]; end?: readonly TemplateNode[] };
-    return [node, ...[...(branches.children ?? []), ...(branches.start ?? []), ...(branches.end ?? [])].flatMap(flatten)];
-  };
-  const referenced = (question: string) => tree.steps.some(item => [item.when, ...(item.paths?.map(path => path.when) ?? []),
-    ...(item.results?.map(result => result.when) ?? [])].some(condition => condition?.clauses.some(clause => clause.question === question)))
-    || tree.graph!.edges.some(edge => edge.when?.clauses.some(clause => clause.question === question));
-  const nodes = flatten(screen.content);
-  if (nodes.some(node => node.type === 'field' || node.type === 'consent'
-    || node.type === 'button' && 'action' in node && node.action === 'submit'
-    || node.type === 'question' && 'id' in node && typeof node.id === 'string' && referenced(node.id))) return null;
-  const outgoing = tree.graph.edges.filter(edge => edge.from === screenId);
-  const fallback = outgoing.find(edge => edge.kind === 'default');
-  if (!fallback || outgoing.some(edge => edge.kind === 'answer' || edge.to !== fallback.to)) return null;
-  const incoming = tree.graph.edges.filter(edge => edge.to === screenId);
-  if (!incoming.length) return null;
-  return { destination: fallback.to, incoming: incoming.length,
-    next: { ...tree, steps: tree.steps.filter(item => item.id !== screenId), graph: { ...tree.graph,
-      edges: tree.graph.edges.filter(edge => edge.from !== screenId).map(edge => edge.to === screenId ? { ...edge, to: fallback.to } : edge) } } };
 }

@@ -35,6 +35,48 @@ again or turn conditional follow-ups into mutually exclusive branches.
 
 ## Progress after this audit
 
+### Screen removal and disconnected drafts, September 26
+
+Graph deletion now offers an explicit continuation instead of silently assuming
+one outgoing destination. Screens with different exits require a selection;
+multiple incoming paths retain their identities, conditions and priority. The
+review names the affected incoming paths, discarded outgoing rules, newly
+unreachable screens and required saves that the chosen continuation bypasses.
+Detached work stays in the draft. An orphan with no incoming path can be removed
+without choosing an irrelevant destination. An unreferenced first offer/question
+can be removed by choosing an unconditional new first screen; its Back buttons
+are removed in the same edit. Cycle-producing targets are excluded.
+
+Deletion still protects result/ending screens, capture fields/consent/submit
+screens, and questions referenced by rules on other screens. The focusable Delete
+action now states the reason, including dependent screen names. Uses exclusively
+on the deleted screen or its outgoing edges no longer block its removal. Removal
+is one history entry, with focus returning to the destination heading after
+confirmation and the Delete trigger after cancellation.
+
+Unreachable screens are explicitly identified in grouped and expanded maps,
+Screens inventory and the inspector. The map hint no longer says every matching
+follow-up is shown when disconnected work exists. Groups remain selectable and
+expandable; their dashed border supplements the text explanation.
+
+Local WordPress checks used the six-screen multi-interest QA draft: different
+visible/hidden exits required an explicit deletion destination; choosing the
+ending warned about bypassing contact capture; choosing contact warned about two
+disconnected follow-ups; the resulting orphan could be removed. Undo restored
+both edits and returned Save draft to disabled. A separate valid deletion was
+saved through the admin and verified through the repository/CaptureContract
+(`issue: null`), then undone and saved back to the original six-screen graph.
+At 320×568 the dialog stayed within the viewport (288px wide, 286px scroll width),
+kept Cancel/Delete visible and scrolled its body; Cancel restored Delete focus.
+All checks stayed in unpublished QA drafts.
+
+Validation: 2,928 JavaScript tests pass; final editor/map/stylesheet checks pass
+505 tests after the last copy changes. TypeScript, ESLint, Free/Pro admin builds
+and the source-boundary check pass. PHP implementation was unchanged. Broader
+capture/result deletion workflows, native zoom/assistive-technology checks,
+merchant task feedback and the other release gates remain open.
+
+
 ### September 26: preserve imported references and refuse malformed test saves
 
 Node normalization now remembers the first claimant of each supplied identity.

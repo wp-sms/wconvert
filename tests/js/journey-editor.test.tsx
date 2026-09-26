@@ -666,3 +666,55 @@ it('returns keyboard focus to the screen control when closing its settings', asy
   await waitFor(() => expect(opener).toHaveFocus());
   expect(screen.queryByRole('region', { name: 'Selected screen settings' })).not.toBeInTheDocument();
 });
+
+it('reviews a branch deletion, keeps Cancel unchanged, and restores the entire edit with Undo', async () => {
+  const user = userEvent.setup();
+  const base = graphFixture as unknown as TemplateTree;
+  const initial: TemplateTree = { ...base, graph: { ...base.graph!, edges: base.graph!.edges.map(edge => edge.id === 'garden_hidden'
+    ? { ...edge, to: 'contact' } : edge) } };
+  function RemovalEditor() {
+    const [history, setHistory] = useState(historyOf({ name: 'Enquiry', config: { template: { tree: initial, tokens: {} } } }));
+    const [step, setStep] = useState(initial.steps.findIndex(item => item.id === 'garden'));
+    return <><button onClick={() => setHistory(undo)}>Undo edit</button><button onClick={() => setHistory(redo)}>Redo edit</button>
+      <JourneyEditor tree={history.present.config.template.tree} step={step} onSelect={setStep}
+        onChange={next => setHistory(current => remember(current, { ...current.present, config: { template: { tree: next, tokens: {} } } }))} />
+      <output data-testid="draft">{JSON.stringify(history.present.config.template.tree)}</output></>;
+  }
+  render(<RemovalEditor />);
+  await user.click(screen.getByRole('button', { name: 'Manage screens' }));
+  await user.click(screen.getByRole('button', { name: 'Delete screen' }));
+  let dialog = screen.getByRole('dialog', { name: 'Delete this screen?' });
+  expect(within(dialog).getByRole('button', { name: 'Delete screen' })).toBeDisabled();
+  await user.selectOptions(within(dialog).getByRole('combobox', { name: 'Continue incoming paths at' }), 'received');
+  expect(within(dialog).getByText(/without saving at “One enquiry”/)).toBeInTheDocument();
+  await user.click(within(dialog).getByRole('button', { name: 'Cancel' }));
+  expect(draft()).toEqual(initial);
+  await waitFor(() => expect(screen.getByRole('button', { name: 'Delete screen' })).toHaveFocus());
+  await user.click(screen.getByRole('button', { name: 'Delete screen' }));
+  dialog = screen.getByRole('dialog', { name: 'Delete this screen?' });
+  expect(within(dialog).getByRole('combobox')).toHaveValue('');
+  await user.selectOptions(within(dialog).getByRole('combobox'), 'contact');
+  expect(within(dialog).getByText(/would become unreachable: Indoor details, Balcony details/)).toBeInTheDocument();
+  await user.click(within(dialog).getByRole('button', { name: 'Delete screen' }));
+  await waitFor(() => expect(screen.getByRole('heading', { level: 3, name: 'One enquiry' })).toHaveFocus());
+  const removed = draft();
+  expect(removed.steps.map(item => item.id)).not.toContain('garden');
+  expect(removed.graph!.edges.find(edge => edge.id === 'start')?.to).toBe('contact');
+  await user.keyboard('{Escape}');
+  await user.click(screen.getByRole('button', { name: 'Undo edit' }));
+  expect(draft()).toEqual(initial);
+  await user.click(screen.getByRole('button', { name: 'Redo edit' }));
+  expect(draft()).toEqual(removed);
+});
+
+it('keeps a protected Delete action focusable and associates the reason with it', async () => {
+  const user = userEvent.setup();
+  render(<Editor initial={graphFixture as unknown as TemplateTree} />);
+  await user.click(screen.getByRole('button', { name: 'Manage screens' }));
+  const button = screen.getByRole('button', { name: 'Delete screen' });
+  expect(button).toHaveAttribute('aria-disabled', 'true');
+  expect(button).toHaveAccessibleDescription(/collects or saves contact details/);
+  await user.click(button);
+  expect(button).toHaveFocus();
+  expect(screen.queryByRole('dialog', { name: 'Delete this screen?' })).not.toBeInTheDocument();
+});

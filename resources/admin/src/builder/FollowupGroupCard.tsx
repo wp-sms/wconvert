@@ -6,19 +6,19 @@ import type { FollowupGroup } from './structure/followupGroups';
 import { conditionText } from './structure/conditionText';
 
 export interface FollowupGroupData {
-  tree: TemplateTree; group: FollowupGroup; rtl: boolean; selected: number | null; samplePath: readonly number[] | null;
+  tree: TemplateTree; group: FollowupGroup; rtl: boolean; unreachable?: boolean; selected: number | null; samplePath: readonly number[] | null;
   select(index: number): void; expand(group: FollowupGroup): void;
 }
 
 export const FollowupGroupCard = memo(function FollowupGroupCard({ data }: NodeProps) {
-  const { tree, group, rtl, selected, samplePath, select, expand } = data as unknown as FollowupGroupData;
+  const { tree, group, rtl, unreachable, selected, samplePath, select, expand } = data as unknown as FollowupGroupData;
   const selectedButton = useRef<HTMLButtonElement>(null);
   useEffect(() => { selectedButton.current?.scrollIntoView?.({ block: 'nearest', inline: 'nearest' }); }, [selected]);
-  return <section dir={rtl ? 'rtl' : 'ltr'} className="wconvert-followup-group" aria-label={__('Relevant follow-ups', 'wconvert')}>
+  return <section dir={rtl ? 'rtl' : 'ltr'} className={`wconvert-followup-group${unreachable ? ' is-unreachable' : ''}`} aria-label={__('Relevant follow-ups', 'wconvert')}>
     <Handle id="in" type="target" position={rtl ? Position.Right : Position.Left} isConnectable={false} />
     <header><strong>{__('Relevant follow-ups', 'wconvert')}</strong><span>{samplePath === null ? sprintf(__('%d screens', 'wconvert'), group.screens.length)
       : sprintf(__('%1$d of %2$d shown', 'wconvert'), group.screens.filter(index => samplePath.includes(index)).length, group.screens.length)}</span></header>
-    <p>{__('Show every matching screen, in this order.', 'wconvert')}</p>
+    <p>{unreachable ? __('Unreachable — connect an incoming path to show these screens.', 'wconvert') : __('Show every matching screen, in this order.', 'wconvert')}</p>
     <ol className="nodrag nopan nowheel">{group.screens.map(index => <li key={tree.steps[index].id} className={samplePath !== null && !samplePath.includes(index) ? 'is-muted' : ''}>
       <button ref={selected === index ? selectedButton : undefined} type="button" className="nodrag" aria-pressed={selected === index} onClick={() => select(index)}>
         <strong><bdi>{tree.steps[index].name}</bdi></strong><span>{conditionText(tree, tree.steps[index].when!)}</span>

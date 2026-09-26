@@ -1281,6 +1281,8 @@ body .wconvert-rule-picker__unavailable {
 .wconvert-graph-insert__summary { padding: 12px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow-wrap: anywhere; }
 .wconvert-graph-insert__summary p { margin-block-start: 6px; }
 .wconvert-graph-insert__actions { display: flex; justify-content: flex-end; gap: 8px; }
+.wconvert-graph-insert__body ul { margin: 0; padding-inline-start: 20px; list-style: disc; overflow-wrap: anywhere; }
+.wconvert-journey-delete-reason { margin: 0; padding: 0 16px 12px; font-size: var(--text-meta); line-height: 1.5; color: var(--muted-foreground); overflow-wrap: anywhere; }
 .wconvert-journey-test-dialog > [data-slot='dialog-title'] { padding-inline-end: 32px; }
 .wconvert-journey-test-dialog > [data-slot='dialog-close'] { inline-size: 44px; block-size: 44px; display: grid; place-items: center; inset-block-start: 8px; inset-inline-end: 8px; }
 .wconvert-journey-test-dialog__body { min-block-size: 0; min-inline-size: 0; overflow: auto; padding: 2px; }
@@ -1712,3 +1714,5 @@ body .wconvert-starting-picker .wconvert-starters-filters select:focus { outline
 @media (max-width: 480px) {
   .wconvert-starters-filters { grid-template-columns: minmax(0, 1fr); gap: 0; }
 }
+
+.wconvert-flow-node.is-unreachable, .wconvert-followup-group.is-unreachable { border-style: dashed; }

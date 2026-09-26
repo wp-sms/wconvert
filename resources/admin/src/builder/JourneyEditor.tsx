@@ -1,4 +1,4 @@
-import { lazy, Suspense, useEffect, useId, useRef, useState, type ReactNode } from 'react';
+import { lazy, Suspense, useEffect, useId, useMemo, useRef, useState, type ReactNode } from 'react';
 import { ArrowLeft, ArrowRight, ChevronDown, Copy, FilePlus2, ListPlus, Maximize2, Minimize2, Plus, Search, Trash2, Workflow, X } from 'lucide-react';
 import { ConfirmDialog } from '../shell/ConfirmDialog';
 import { Input } from '../components/ui/input';
@@ -10,15 +10,17 @@ import { JourneyTest } from './JourneyTest';
 import { JourneySample } from './JourneySample';
 import { GraphRouteSettings } from './GraphRouteSettings';
 import { GraphScreenInsert } from './GraphScreenInsert';
+import { GraphScreenRemove } from './GraphScreenRemove';
+import { graphRemovalPlan } from './structure/graphRemoval';
 import { addGraphScreen, type GraphScreenKind } from './structure/graphInsertion';
 import { __, sprintf } from '@wordpress/i18n';
 import { Button } from '../components/ui/button';
 import type { TemplateTree, TemplateNode, QuestionNode, Tokens } from '@renderer/types';
-import { addGraphResultSignup, duplicateScreen, freshScreen, referencedJourney, walkNodes, submissionScreen, movedScreen, screenRemoval, removedScreen, resultAccess, unreachableScreens, withBackButton } from './structure/journey';
+import { addGraphResultSignup, duplicateScreen, freshScreen, referencedJourney, walkNodes, submissionScreen, movedScreen, screenRemoval, removedScreen, resultAccess, unreachableScreenIds, unreachableScreens, withBackButton } from './structure/journey';
 import { graphChangeImpact } from './structure/graphChangeImpact';
 import { addGraphConnection, reconnectGraphEdge } from './structure/graphConnections';
 import { conditionText } from './structure/conditionText';
-import { graphDisplayOrder, graphReaches, graphRemoval, upgradeToGraph } from './structure/graph';
+import { graphDisplayOrder, graphReaches, upgradeToGraph } from './structure/graph';
 import type { JourneyRepair } from './structure/journeyReadiness';
 
 const JourneyMap = lazy(() => import('./JourneyMap').then(module => ({ default: module.JourneyMap })));
@@ -35,6 +37,8 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
   const [addKind, setAddKind] = useState<GraphScreenKind | null>(null);
   const addTrigger = useRef<HTMLButtonElement>(null);
   const insertedScreen = useRef(false);
+  const deleteTrigger = useRef<HTMLButtonElement>(null);
+  const deletedGraphScreen = useRef(false);
   const [focused, setFocused] = useState(false);
   const focusTrigger = useRef<HTMLButtonElement>(null);
   const workspaceRoot = useRef<HTMLElement>(null);
@@ -122,6 +126,7 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
   }, [tree, step, onSelect, notice]);
   useEffect(() => { screenList.current?.querySelector('[data-selected="true"]')?.scrollIntoView?.({ block: 'nearest' }); }, [step]);
   const current = tree.steps[step];
+  const disconnected = useMemo(() => new Set(unreachableScreenIds(tree)), [tree]);
   if (!current) return null;
   const canAddGraphResultSignup = !!tree.graph && tree.submissions.length === 0
     && !tree.steps.some(screen => screen.kind === 'acknowledgement')
@@ -269,7 +274,7 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
     }
   };
   const removal = screenRemoval(tree, step);
-  const graphDelete = tree.graph ? graphRemoval(tree, current.id) : null;
+  const graphDelete = tree.graph ? graphRemovalPlan(tree, current.id) : null;
   const remove = () => {
     const next = removedScreen(tree, step);
     write(next, Math.min(step, next.steps.length - 1));
@@ -401,7 +406,7 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
             <div className="wconvert-journey-rail__heading"><strong>{__('Screens', 'wconvert')}</strong><span>{tree.graph ? tree.steps.length : `${tree.steps.length} / 7`}</span><small>{__('Screen inventory · paths may skip screens', 'wconvert')}</small></div>
             <ol ref={screenList} className="wconvert-journey-dialog__screens" aria-label={__('Journey screen inventory', 'wconvert')}>
               {displayOrder.map((index, position) => <JourneyScreenCard key={tree.steps[index].id} template={{ tree, tokens }} index={index} ordinal={position + 1} selected={index === step}
-                scope={id} label={screenLabel(index)} condition={tree.steps[index].when ? sprintf(__('Show if %s', 'wconvert'), conditionText(tree, tree.steps[index].when!))
+                scope={id} label={disconnected.has(tree.steps[index].id) ? __('Unreachable', 'wconvert') : screenLabel(index)} condition={tree.steps[index].when ? sprintf(__('Show if %s', 'wconvert'), conditionText(tree, tree.steps[index].when!))
                   : tree.steps[index].kind === 'result' && (tree.steps[index].results?.length ?? 0) > 1 ? sprintf(__('%d possible results', 'wconvert'), tree.steps[index].results?.length ?? 0) : undefined}
                 onSelect={() => select(index)}
                 onMove={tree.graph ? undefined : (from, to) => move(tree.steps.findIndex(s => s.id === from), Math.min(tree.steps.findIndex(s => s.id === to), tree.steps.length - 2))} />)}
@@ -423,6 +428,7 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
               <button type="button" aria-pressed={panelSection === 'paths'} onClick={() => setPanelSection('paths')}>{__('Next screen', 'wconvert')}</button>
             </div>
             <div className="wconvert-journey-dialog__details">
+          {disconnected.has(current.id) && <p className="wconvert-graph-insert__summary">{__('Visitors cannot reach this screen. Connect an incoming path from a reachable screen to include it in the journey.', 'wconvert')}</p>}
           {panelSection === 'content' ? <>
           <div className="wconvert-journey-dialog__fields">
 
@@ -498,7 +504,7 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
             : <RouteSettings tree={tree} step={step} focusPath={typeof pathFocus === 'number' ? pathFocus : null} onChange={onChange} onInsert={insertOnPath} />}
             </div>
             <div className="wconvert-journey-dialog__actions-row">
-              {tree.graph && <Button type="button" size="sm" variant="outline" disabled={!graphDelete} onClick={() => setConfirmGraphRemoval(true)}>
+              {tree.graph && <Button ref={deleteTrigger} type="button" size="sm" variant="outline" aria-disabled={!!graphDelete?.reason} aria-describedby={graphDelete?.reason ? `${id}-delete-reason` : undefined} onClick={() => { if (!graphDelete?.reason) { deletedGraphScreen.current = false; setConfirmGraphRemoval(true); } }}>
                 <Trash2 aria-hidden="true" />{__('Delete screen', 'wconvert')}
               </Button>}
               {!tree.graph && <DropdownMenu>
@@ -522,21 +528,13 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
               </DropdownMenu>}
             <Button type="button" size="sm" onClick={() => { if (embedded) onGoToDesign?.(); else setOpen(false); }}>{__('Edit design', 'wconvert')}<ArrowRight aria-hidden="true" className="rtl:rotate-180" /></Button>
             </div>
+            {graphDelete?.reason && <p id={`${id}-delete-reason`} className="wconvert-journey-delete-reason">{graphDelete.reason}</p>}
           </section>}
         </div>
         <div className="wconvert-journey-dialog__footer"><p role="status">{said || __('Changes are part of your campaign draft. Save the draft to keep them.', 'wconvert')}</p>{!embedded && <DialogClose asChild><Button variant="outline">{__('Done', 'wconvert')}</Button></DialogClose>}</div>
         <ConfirmDialog open={confirmRemoval} onOpenChange={setConfirmRemoval} title={__('Remove this optional signup?', 'wconvert')}
           description={sprintf(__('These screens collect details for the same signup and will be removed: %s. Other screens stay. Undo brings them back.', 'wconvert'), tree.steps.filter(s => removal.screens.includes(s.id)).map(s => s.name).join(', '))}
           confirmLabel={__('Remove signup screens', 'wconvert')} onConfirm={remove} />
-        <ConfirmDialog open={confirmGraphRemoval} onOpenChange={setConfirmGraphRemoval} title={__('Delete this screen?', 'wconvert')}
-          description={graphDelete ? sprintf(__('“%1$s” will be removed. Its %2$d incoming connection(s) will continue to “%3$s”. Answers on this screen will be removed. Undo restores the screen and every connection.', 'wconvert'),
-            current.name, graphDelete.incoming, tree.steps.find(screen => screen.id === graphDelete.destination)?.name ?? graphDelete.destination) : ''}
-          confirmLabel={__('Delete screen', 'wconvert')} onConfirm={() => {
-            if (!graphDelete) return;
-            const target = graphDelete.next.steps.findIndex(screen => screen.id === graphDelete.destination);
-            write(graphDelete.next, target >= 0 ? target : 0);
-            setSaid(__('Screen removed. Its incoming paths now continue to the named destination. Undo restores it.', 'wconvert'));
-          }} />
         <ConfirmDialog open={pendingRoute !== null} onOpenChange={value => { if (!value) setPendingRoute(null); }} title={__('Review this path change', 'wconvert')} returnFocusTo={settingsHeading}
           description={pendingRoute?.description ?? ''}
           confirmLabel={__('Apply path change', 'wconvert')} onConfirm={() => { if (pendingRoute) onChange(pendingRoute.tree); setPendingRoute(null); }} />
@@ -547,6 +545,21 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
         <DialogTrigger asChild><Button type="button" variant="outline" size="sm"><Workflow aria-hidden="true" />{__('Manage screens', 'wconvert')}</Button></DialogTrigger>
         <DialogContent className="wconvert-journey-dialog" showCloseButton={false}>{workspace}</DialogContent>
       </Dialog>}
+    <Dialog open={confirmGraphRemoval} onOpenChange={setConfirmGraphRemoval}>
+      <DialogContent className="wconvert-graph-insert" onCloseAutoFocus={event => {
+        event.preventDefault();
+        requestAnimationFrame(() => (deletedGraphScreen.current ? settingsHeading.current : deleteTrigger.current)?.focus());
+      }}>
+        {confirmGraphRemoval && <GraphScreenRemove tree={tree} screenId={current.id} onCancel={() => setConfirmGraphRemoval(false)}
+          onRemove={(next, destination) => {
+            deletedGraphScreen.current = true;
+            const target = next.steps.findIndex(screen => screen.id === destination);
+            write(next, target >= 0 ? target : 0);
+            setPanelSection('content'); setMobilePane('details'); setConfirmGraphRemoval(false);
+            setSaid(__('Screen removed. Review the remaining paths. Undo restores the screen and its connections.', 'wconvert'));
+          }} />}
+      </DialogContent>
+    </Dialog>
     <Dialog open={addKind !== null} onOpenChange={value => { if (!value) setAddKind(null); }}>
       <DialogContent className="wconvert-graph-insert" onCloseAutoFocus={event => {
         event.preventDefault();

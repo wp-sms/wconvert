@@ -31,6 +31,18 @@ beforeEach(() => vi.stubGlobal('matchMedia', vi.fn(() => ({ matches: false, addE
 afterEach(() => { cleanup(); vi.unstubAllGlobals(); });
 const tree = fixture as unknown as TemplateTree;
 
+it('labels disconnected follow-ups in both grouped and expanded maps and keeps them selectable', async () => {
+  const user = userEvent.setup(), select = vi.fn();
+  const changed = { ...tree, graph: { ...tree.graph!, edges: tree.graph!.edges.map(edge => edge.id === 'start' ? { ...edge, to: 'contact' } : edge) } };
+  render(<JourneyMap tree={changed} selected={null} onSelect={select} onSelectPath={() => {}} onConnect={() => {}} />);
+  expect(screen.getByText('Unreachable — connect an incoming path to show these screens.')).toBeInTheDocument();
+  expect(screen.queryByText('Show every matching screen, in this order.')).not.toBeInTheDocument();
+  await user.click(screen.getByRole('button', { name: /^Garden details / }));
+  expect(select).toHaveBeenCalledWith(tree.steps.findIndex(item => item.id === 'garden'));
+  await user.click(screen.getByRole('button', { name: 'Expand screens' }));
+  expect(screen.getAllByText('Unreachable — connect an incoming path')).toHaveLength(3);
+});
+
 it.each(['ltr', 'rtl'])('keeps card content and path arrows aligned with the %s journey', direction => {
   const originalDirection = document.documentElement.dir;
   document.documentElement.dir = direction;

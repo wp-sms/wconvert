@@ -255,7 +255,7 @@ export function withBackButton(screen: TemplateScreen): TemplateScreen {
   ] } };
 }
 
-function withoutBackButtons(node: TemplateNode): TemplateNode {
+export function withoutBackButtons(node: TemplateNode): TemplateNode {
   if (node.type === 'button' && 'action' in node && node.action === 'back') return { type: 'stack', children: [] };
   const copy = { ...node } as Record<string, unknown>;
   for (const key of ['children', 'start', 'end']) if (Array.isArray(copy[key])) copy[key] = (copy[key] as TemplateNode[])
