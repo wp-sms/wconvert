@@ -35,6 +35,33 @@ again or turn conditional follow-ups into mutually exclusive branches.
 
 ## Progress after this audit
 
+### September 26: visitor-test progress without premature route decisions
+
+The actual 13-screen WordPress test marked Home as bypassed and Business as
+included before the visitor answered the required project question. Why this
+path also explained future hidden follow-ups using blank answers. The test now
+shows Current screen, Visited and Not reached yet, and confirms hidden or
+bypassed screens only behind the visitor's current position. Pending screens use
+structural reachability through all branches, not the fallback trace for missing
+answers. Why this path contains only completed transitions. Back reopens later
+route decisions while preserving relevant answers; Reset removes explanations.
+Bypassed screens offer Review screen instead of falsely offering Edit condition
+for a visibility rule that did not cause the bypass. Try answers remains the
+separate tool for exploring predicted routes from sample answers.
+
+Browser verification: blank entry showed twelve pending screens and no route
+explanation; Business confirmed Home's bypass; Office plus Ongoing care showed
+both follow-ups in sequence, confirming Hotel/Retail skips only when traversed.
+The explanation ended at Ongoing care rather than predicting the combined save.
+Back retained the typed Office answer and returned all later screens to pending
+at the project choice. Switching to Home reversed the branch statuses. Reset and
+Close left the draft unchanged and created no real submission.
+
+Validation: 2,912 JavaScript tests pass, including reordered graph storage,
+exclusive branches, independent follow-ups, retained answers on Back and legacy
+ordered journeys. Typecheck, lint and Free/Pro admin builds also pass.
+
+
 ### September 26: large-map overview, readable focus and drag evidence
 
 A local unpublished enquiry with 53 screens and 101 graph edges (ten exclusive

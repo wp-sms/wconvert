@@ -574,7 +574,7 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
           else requestAnimationFrame(restore);
         }}>
         <DialogTitle>{__('Test journey', 'wconvert')}</DialogTitle>
-        <DialogDescription>{__('Try answers and inspect the included and skipped screens. Nothing is submitted.', 'wconvert')}</DialogDescription>
+        <DialogDescription>{__('Walk through the journey and inspect visited or skipped screens. Nothing is submitted.', 'wconvert')}</DialogDescription>
         <div className="wconvert-journey-test-dialog__body">
           <JourneyTest template={{ tree, tokens }} deliveryMode={deliveryMode} destinationSummary={destinationSummary}
             onEdit={index => { returnToTestTrigger.current = false; select(index); setTestOpen(false); setOpen(true); }} />

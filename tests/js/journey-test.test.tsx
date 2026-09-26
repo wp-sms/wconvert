@@ -75,8 +75,9 @@ it('starts a graph test at its entry screen and resets to that entry', async () 
   render(<JourneyTest template={template} onEdit={() => {}} />);
   expect(screen.getByText('Interests').closest('li')).toHaveAttribute('data-current', 'true');
   expect(screen.getByText('One enquiry').closest('li')).toHaveAttribute('data-current', 'false');
-  await user.click(screen.getByText('Why this path?'));
-  expect(screen.getByText(/Garden details → Indoor details: Hidden because What interests you\? includes any of Garden did not match/)).toBeInTheDocument();
+  expect(screen.queryByText('Why this path?')).not.toBeInTheDocument();
+  expect(screen.getByText('Garden details').closest('li')).toHaveTextContent('Not reached yet');
+  expect(screen.queryByRole('button', { name: 'Edit condition' })).not.toBeInTheDocument();
   await user.click(screen.getByRole('button', { name: 'Reset test' }));
   expect(screen.getByText('Interests').closest('li')).toHaveAttribute('data-current', 'true');
 });

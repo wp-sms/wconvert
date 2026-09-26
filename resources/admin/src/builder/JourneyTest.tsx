@@ -1,3 +1,4 @@
+import { journeyTestProgress } from './structure/journeyTestProgress';
 import { journeyNotice } from '@renderer/journey-notice';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
@@ -35,7 +36,7 @@ export function JourneyTest({ template, onEdit, deliveryMode = 'none', destinati
   const trace = useMemo(() => tree.graph ? graphTrace(tree.steps, tree.graph, answers) : journeyTrace(tree.steps, answers), [tree.steps, tree.graph, answers]);
   const active = trace.answers;
   const readingOrder = graphDisplayOrder(tree);
-  const applicable = tree.steps.map((_, index) => trace.indices.includes(index));
+  const progress = journeyTestProgress(tree, step, visited, trace);
   const shownResult = tree.steps[step].kind === 'result' ? chooseResult(tree.steps[step].results ?? [], active) : undefined;
   const move = useCallback((direction: 1 | -1, current: Answers) => {
     const inPath = tree.graph ? graphTrace(tree.steps, tree.graph, current).answers : activeAnswers(tree.steps, current);
@@ -196,7 +197,7 @@ export function JourneyTest({ template, onEdit, deliveryMode = 'none', destinati
     return node && 'label' in node && typeof node.label === 'string' ? node.label
       : node?.type === 'consent' ? __('Consent', 'wconvert') : id;
   };
-  const routeSteps: { id: string; label: string }[] = trace.decisions.flatMap(decision => {
+  const routeSteps: { id: string; label: string }[] = progress.decisions.flatMap(decision => {
     if (tree.graph && 'edge' in decision) {
       const source = tree.steps.find(screen => screen.id === decision.from);
       const edge = tree.graph.edges.find(item => item.id === decision.edge);
@@ -230,11 +231,12 @@ export function JourneyTest({ template, onEdit, deliveryMode = 'none', destinati
     <div ref={anchor} className="wconvert-journey-test__stage" />
     <div className="wconvert-journey-test__side">
       <h3>{__('Path summary', 'wconvert')}</h3>
-      <ol>{readingOrder.map(at => { const screen = tree.steps[at]; return <li key={screen.id} data-current={at === step}>
-        <span>{screen.name}</span><small>{applicable[at] ? visited.includes(at) ? __('Visited', 'wconvert') : __('Included', 'wconvert')
-          : ('skips' in trace && trace.skips.find(skip => skip.index === at)?.reason === 'route') || ('hidden' in trace && !trace.hidden.includes(screen.id)) ? __('Bypassed by another path', 'wconvert')
+      <p>{__('Continue through the preview to see which screens are visited or skipped. Future screens are not evaluated yet.', 'wconvert')}</p>
+      <ol>{readingOrder.map(at => { const screen = tree.steps[at], state = progress.states[at]; return <li key={screen.id} data-current={at === step}>
+        <span>{screen.name}</span><small>{state === 'current' ? __('Current screen', 'wconvert') : state === 'visited' ? __('Visited', 'wconvert')
+          : state === 'pending' ? __('Not reached yet', 'wconvert') : state === 'bypassed' ? __('Bypassed by another path', 'wconvert')
             : __('Show condition did not match', 'wconvert')}</small>
-        {!applicable[at] && <button type="button" onClick={() => onEdit(at)}>{__('Edit condition', 'wconvert')}</button>}
+        {(state === 'hidden' || state === 'bypassed') && <button type="button" onClick={() => onEdit(at)}>{state === 'hidden' ? __('Edit condition', 'wconvert') : __('Review screen', 'wconvert')}</button>}
       </li>; })}</ol>
       {routeSteps.length > 0 && <details className="wconvert-journey-test__route"><summary>{__('Why this path?', 'wconvert')}</summary>
         <ol>{routeSteps.map(item => <li key={item.id} data-edge-id={item.id}>{item.label}</li>)}</ol></details>}
