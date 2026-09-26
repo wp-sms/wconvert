@@ -44,18 +44,57 @@ Unpublished local fixture `01M3EJK75SA40GBH933WRCHBMC`:
 admin builds pass. PHPStan also exposed a missing graph-presence guard in the
 previous coffee test; the explicit assertion now matches the normalized type.
 
+## Consent, ownership and navigation follow-up
+
+The next browser audit found a missing authoring control: an unowned graph
+field was told to choose a save without having any control to do so. Design
+now offers **Saved with** on fields and consent, listing the actual save-screen
+names. Choosing a save changes explicit ownership only; it does not reorder
+the graph or infer a save from screen storage order. Invalid assignments are
+disabled with an explanation: every path to that save must include the input
+screen, and each save can own only one consent checkbox. An explicit empty
+choice removes the assignment as a draft edit. Deleting a field/consent or its
+containing block removes only that deleted subtree's references, so a new
+checkbox is not blocked by the deleted checkbox's ID.
+
+Graph publication review now identifies missing/conflicting Continue/Save
+buttons, terminal advancing buttons, incorrect or duplicate optional exits,
+invalid button save references, missing consent assignment, hidden or blank
+consent, and the channel-specific required field for each signup. These links
+open the affected Design element, or its named screen when a new button or
+checkbox is needed. Button assignment uses the same named save points.
+
+Local WordPress verification used the same unpublished fixture:
+
+- Prepared unassigned, blank consent; review blocked publication and opened
+  the exact consent element. Selected Optional email signup under Saved with,
+  entered consent copy, and saved. The server capture contract passed.
+- Deleted No thanks in Layers. Review named the optional signup and opened
+  that screen. Added a button, entered No thanks, selected Skip optional signup
+  and the named save point; the blocker cleared and the saved contract passed.
+- Reproduced repair navigation leaving the inspector on Style, with the
+  required content control hidden. A new repair request now opens Content;
+  ordinary edits retain the chosen tab. Repeated the same browser sequence and
+  verified Content selected and Saved with visible before repairing and saving.
+- Final screenshot confirmed the full-width selector and explanatory copy fit
+  the inspector. The fixture remains unpublished; no visitor submission ran.
+
+The broader JS suite passed 3,017 tests before the final inspector-tab fix.
+After that fix, 114 inspector/structure/ownership tests passed; the final
+ownership/readiness tests additionally cover independent SMS requirements.
+TypeScript, ESLint, Free/Pro admin builds and the source contract pass.
+
 ## Still to inspect
 
-- Consent copy, hidden/owned consent and channel-specific required contact:
-  do not mistake optional signup for optional consent. A visible consent
-  checkbox is required when submitting that signup in the current renderer.
-- Missing/conflicting Continue/Save/No thanks buttons and buttons referencing
-  an unavailable save boundary.
 - Goal/save-boundary mismatches not explained by the existing required-save
   bypass repairs.
 - Imported duplicate identities, invalid topology, misplaced node types and
   malformed submission records: these must remain refused; do not silently
   invent a routing or ownership change to make the error disappear.
+
+Optional signup still does not mean optional consent: the checkbox is required
+when submitting that signup. Legacy v2 consent guidance is unchanged; these
+additional publication checks and assignment controls target explicit graphs.
 
 The new issue category is additive REST metadata. Product repair uses the
 single result screen permitted by the graph contract; it does not claim that

@@ -16,6 +16,7 @@ import { messageOf, type Loadable } from '../shell/loadable';
 import { destinationsSaid } from './destinations';
 import { capturedFields } from '../destinations/requirements';
 import { problemsIn, type Problem } from './structure/problems';
+import { captureReadiness } from './structure/captureReadiness';
 import { journeyReadinessIssues, type JourneyRepair } from './structure/journeyReadiness';
 import { capturesTaken, nodeAt, nodesOf } from './structure/tree';
 import { convertingActOf } from './structure/guards';
@@ -126,7 +127,7 @@ export function ReadinessDialog({
   const missingPolicyPage = reviewsPrivacy && !policyUrl;
   const missingNotice = reviewsPrivacy && privacyPath === null;
   const missingConsent = expectsConsent && visibleConsentPath === null;
-  const problems = hasDesign ? problemsIn(template, rules.schedule.ends_at) : [];
+  const problems = hasDesign ? [...problemsIn(template, rules.schedule.ends_at), ...captureReadiness(template, outcome?.audience_channel)] : [];
   const journeyIssues = template ? journeyReadinessIssues(template.tree) : [];
   const needsCapture = bound.length > 0;
   const goalIssue = outcome && hasDesign ? outcomeDesignIssue(outcome, template) : null;

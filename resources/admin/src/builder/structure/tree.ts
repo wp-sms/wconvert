@@ -304,9 +304,17 @@ export function withRemoved(tree: TemplateTree, path: Path): TemplateTree {
     return tree;
   }
 
-  return withChildren(tree, spot.parent, spot.key, (children) =>
+  const removedPaths = nodesOf(tree).filter(block => path.every((part, index) => block.path[index] === part));
+  const removedIds = new Set(removedPaths.flatMap(block => {
+    const node = nodeAt(tree, block.path);
+    return node && 'id' in node && node.id ? [node.id] : [];
+  }));
+  const next = withChildren(tree, spot.parent, spot.key, (children) =>
     children.filter((_child, at) => at !== spot.index),
   );
+  return !tree.graph ? next : { ...next, submissions: next.submissions.map(save => ({ ...save,
+    fields: save.fields.filter(id => !removedIds.has(id)), consents: save.consents.filter(id => !removedIds.has(id)),
+  })) };
 }
 
 /**
