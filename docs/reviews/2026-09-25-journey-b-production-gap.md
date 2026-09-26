@@ -35,6 +35,42 @@ again or turn conditional follow-ups into mutually exclusive branches.
 
 ## Progress after this audit
 
+### September 26: readable independent follow-ups
+
+The map now summarizes a safe sequence of independent conditional questions in
+one “Relevant follow-ups” card. Each screen retains its name and complete rule,
+and the card explains that every matching screen appears in order. Capture
+screens, exclusive branches, different hidden exits and external entries into
+the middle stay explicit. Grouping changes only the view; it does not rewrite
+screens, connections, priorities or visitor behavior. Expand restores the
+original nodes and connections and focuses the first screen. Group members open
+their existing inspector. Summary arrows cannot be reconnected as fake runtime
+nodes; expanding reveals the editable connections.
+
+The local WordPress six-screen enquiry now fits as four readable stages.
+Try answers with Garden + Indoor reports “2 of 3 shown,” marks Balcony skipped,
+and still describes one combined enquiry. Search selects a grouped screen and
+opens its actual condition editor. Expansion and regrouping were exercised in
+the browser, including restored keyboard focus. No campaign was changed, saved
+or published in this check.
+
+The map toolbar occupies its own row, including zoom controls, so it does not
+cover cards. Camera fitting responds to height changes as well as width. At
+390px and 320px, a compact View options menu exposes the remaining controls.
+Short phones scroll a workspace with a readable map height instead of shrinking
+cards into the remaining space. Wheel scrolling on those narrow screens moves
+the workspace rather than panning the diagram away. Header actions wrap, search
+fits, and campaign tabs can scroll horizontally. The normal viewport was restored
+after browser verification. This is focused responsive evidence, not a completed
+touch-device, RTL, zoom or full accessibility audit.
+
+The full JavaScript suite passed 2,854 tests; after relocating the final zoom
+controls, the focused grouping/stylesheet suite passed 456 tests. TypeScript,
+ESLint and Free/Pro admin builds passed. No visitor loader or PHP code changed.
+Complex nested branches/merges, long groups, larger maps and broader keyboard
+workflows remain required evidence. The grouped common enquiry is improved;
+the overall release gate is still open.
+
 ### September 26: canvas authoring for explicit graphs
 
 The graph inspector supported v3 edits, but the map still refused every v3
