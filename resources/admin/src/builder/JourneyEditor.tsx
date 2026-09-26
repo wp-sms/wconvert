@@ -10,6 +10,8 @@ import { JourneyTest } from './JourneyTest';
 import { JourneySample } from './JourneySample';
 import { GraphRouteSettings } from './GraphRouteSettings';
 import { GraphScreenInsert } from './GraphScreenInsert';
+import { GraphCaptureInsert } from './GraphCaptureInsert';
+import { addGraphCapture } from './structure/graphCaptureInsertion';
 import { GraphCaptureRemove } from './GraphCaptureRemove';
 import { captureOnScreen, graphCaptureRemovalPlan } from './structure/graphCaptureRemoval';
 import { GraphScreenRemove } from './GraphScreenRemove';
@@ -36,6 +38,7 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
   const id = useId();
   const [open, setOpen] = useState(false);
   const [testOpen, setTestOpen] = useState(false);
+  const [addCapture, setAddCapture] = useState(false);
   const [addKind, setAddKind] = useState<GraphScreenKind | null>(null);
   const addTrigger = useRef<HTMLButtonElement>(null);
   const insertedScreen = useRef(false);
@@ -104,13 +107,13 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
   useEffect(() => {
     if (!focused) return;
     const escape = (event: KeyboardEvent) => {
-      if (event.key !== 'Escape' || event.defaultPrevented || testOpen || addKind || confirmRemoval || confirmGraphRemoval || pendingRoute
+      if (event.key !== 'Escape' || event.defaultPrevented || testOpen || addKind || addCapture || confirmRemoval || confirmGraphRemoval || pendingRoute
         || !(event.target instanceof Node) || !workspaceRoot.current?.contains(event.target)) return;
       event.preventDefault(); setFocused(false); focusTrigger.current?.focus();
     };
     document.addEventListener('keydown', escape);
     return () => document.removeEventListener('keydown', escape);
-  }, [focused, testOpen, addKind, confirmRemoval, confirmGraphRemoval, pendingRoute]);
+  }, [focused, testOpen, addKind, addCapture, confirmRemoval, confirmGraphRemoval, pendingRoute]);
   const screenList = useRef<HTMLOListElement>(null);
   const previousTree = useRef(tree);
   const select = (index: number) => { inspectorTrigger.current = document.activeElement instanceof HTMLElement ? document.activeElement : null; selectedId.current = tree.steps[index]?.id; setInspecting(true); setSampleOpen(false); setPanelSection('content'); setPathFocus(null); setMobilePane('details'); onSelect(index); };
@@ -131,6 +134,7 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
   const disconnected = useMemo(() => new Set(unreachableScreenIds(tree)), [tree]);
   if (!current) return null;
   const canAddGraphResultSignup = !!graphResultSignupTarget(tree);
+  const canAddGraphCapture = !!tree.graph && tree.submissions.length === 1 && ['email', 'sms'].includes(primaryChannel ?? '');
   const canCondition = tree.steps.some((screen, index) => (tree.graph
     ? screen.id === current?.id || graphReaches(tree.graph, screen.id, current?.id ?? '')
     : index <= step) && walkNodes(screen.content).some(node => node.type === 'question' && 'answer_type' in node && node.answer_type !== 'text'));
@@ -228,6 +232,7 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
     setSaid(__('Screen inserted on this connection. The original path and its priority are preserved.', 'wconvert'));
   };
   const addOptional = () => {
+    if (tree.graph && tree.submissions.length) { insertedScreen.current = false; setAddCapture(true); return; }
     if (tree.graph) {
       const next = addGraphResultSignup(tree);
       if (next === tree) return;
@@ -369,12 +374,12 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
                 <DropdownMenuItem disabled={!tree.graph && tree.steps.length >= 7} onSelect={() => add('content')}><FilePlus2 aria-hidden="true" />{__('Add offer screen', 'wconvert')}</DropdownMenuItem>
                 <DropdownMenuItem disabled={!tree.graph && tree.steps.length >= 7} onSelect={() => add('input')}><ListPlus aria-hidden="true" />{__('Add question screen', 'wconvert')}</DropdownMenuItem>
                 <DropdownMenuItem disabled={!tree.graph && (tree.steps.length >= 7 || !canCondition)} onSelect={() => add('input', true)}><ListPlus aria-hidden="true" />{__('Add relevant follow-up', 'wconvert')}</DropdownMenuItem>
-                {(tree.graph ? canAddGraphResultSignup
+                {(tree.graph ? canAddGraphResultSignup || canAddGraphCapture
                   : primaryChannel && tree.submissions.length === 1 || tree.submissions.length === 0 && tree.steps.some(s => s.kind === 'result')) && <>
                   <DropdownMenuSeparator />
                   <DropdownMenuLabel>{tree.submissions.length === 0
                     ? __('After the result', 'wconvert')
-                    : sprintf(__('Before %s', 'wconvert'), tree.steps[tree.steps.length - 1].name)}</DropdownMenuLabel>
+                    : tree.graph ? __('After the primary signup', 'wconvert') : sprintf(__('Before %s', 'wconvert'), tree.steps[tree.steps.length - 1].name)}</DropdownMenuLabel>
                   <DropdownMenuItem disabled={!tree.graph && tree.steps.length >= (tree.submissions.length === 0 ? 6 : 7)} onSelect={addOptional}><Plus aria-hidden="true" />{__('Add optional signup', 'wconvert')}</DropdownMenuItem>
                 </>}
                 {!tree.graph && <><DropdownMenuSeparator /><DropdownMenuItem onSelect={() => {
@@ -564,6 +569,21 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
         {confirmGraphRemoval && (optionalRemoval && selectedCapture
           ? <GraphCaptureRemove tree={tree} submissionId={selectedCapture.id} onCancel={() => setConfirmGraphRemoval(false)} onRemove={applyGraphRemoval} />
           : <GraphScreenRemove tree={tree} screenId={current.id} onCancel={() => setConfirmGraphRemoval(false)} onRemove={applyGraphRemoval} />)}
+      </DialogContent>
+    </Dialog>
+    <Dialog open={addCapture} onOpenChange={setAddCapture}>
+      <DialogContent className="wconvert-graph-insert" onCloseAutoFocus={event => {
+        event.preventDefault();
+        requestAnimationFrame(() => (insertedScreen.current ? settingsHeading.current : addTrigger.current)?.focus());
+      }}>
+        {addCapture && <GraphCaptureInsert tree={tree} primaryChannel={primaryChannel} source={current.id} onCancel={() => setAddCapture(false)} onInsert={location => {
+          const next = addGraphCapture(tree, primaryChannel, location);
+          if (next === tree) return;
+          insertedScreen.current = true;
+          write(next, submissionScreen(next, next.submissions[1]?.id));
+          setPanelSection('content'); setMobilePane('details'); setAddCapture(false);
+          setSaid(__('Optional signup added. Review its consent and destinations before publishing. The primary signup stays saved when visitors skip this step.', 'wconvert'));
+        }} />}
       </DialogContent>
     </Dialog>
     <Dialog open={addKind !== null} onOpenChange={value => { if (!value) setAddKind(null); }}>

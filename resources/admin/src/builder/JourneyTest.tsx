@@ -23,6 +23,7 @@ export function JourneyTest({ template, onEdit, deliveryMode = 'none', destinati
   const [visited, setVisited] = useState<number[]>([entry]);
   const [productState, setProductState] = useState<'selected' | 'empty' | 'error'>('selected');
   const [captureValues, setCaptureValues] = useState<Record<string, string | boolean>>({});
+  const phoneCountries = useRef<Record<string, string>>({});
   const [accepted, setAccepted] = useState<string[]>([]);
   const [snapshots, setSnapshots] = useState<Record<string, TestCaptureSnapshot>>({});
   const [acceptedQuestions, setAcceptedQuestions] = useState<string[]>([]);
@@ -83,7 +84,10 @@ export function JourneyTest({ template, onEdit, deliveryMode = 'none', destinati
       const id = input.dataset.captureId ?? '';
       const value = captureValues[id];
       if (input instanceof HTMLInputElement && input.type === 'checkbox') input.checked = value === true;
-      else if (typeof value === 'string') input.value = value;
+      else if (typeof value === 'string') {
+        const restore = (input as HTMLInputElement & { __p?: (value: string, country?: string) => void }).__p;
+        if (restore) restore(value, phoneCountries.current[id]); else input.value = value;
+      }
       if (tree.submissions.some(submission => accepted.includes(submission.id) && [...submission.fields, ...submission.consents].includes(id))) {
         if (input instanceof HTMLInputElement && input.type === 'checkbox' || input instanceof HTMLSelectElement) input.disabled = true;
         else input.readOnly = true;
@@ -133,7 +137,9 @@ export function JourneyTest({ template, onEdit, deliveryMode = 'none', destinati
       const next = { ...captureValues };
       for (const input of root.querySelectorAll<HTMLInputElement | HTMLSelectElement>('[data-capture-id]')) {
         if (input.disabled || input instanceof HTMLInputElement && input.readOnly) continue;
-        next[input.dataset.captureId ?? ''] = input instanceof HTMLInputElement && input.type === 'checkbox' ? input.checked : input.value;
+        const id = input.dataset.captureId ?? '';
+        next[id] = input instanceof HTMLInputElement && input.type === 'checkbox' ? input.checked : input.dataset.e164 ?? input.value;
+        if (input.dataset.phoneCountry) phoneCountries.current[id] = input.dataset.phoneCountry;
       }
       setCaptureValues(next);
       return next;
@@ -180,7 +186,7 @@ export function JourneyTest({ template, onEdit, deliveryMode = 'none', destinati
           for (const field of [...submission.fields, ...submission.consents]) delete draft[field];
           setCaptureValues(draft);
           setSkipped(previous => previous.includes(id) ? previous : [...previous, id]);
-          setFeedback(__('Optional submission skipped. No details were saved.', 'wconvert'));
+          setFeedback(__('Optional signup skipped. No new details were saved; earlier accepted saves are unchanged.', 'wconvert'));
         } else setFeedback('');
         move(1, currentAnswers);
       }
@@ -270,7 +276,7 @@ export function JourneyTest({ template, onEdit, deliveryMode = 'none', destinati
       {tree.steps[step].kind === 'result' && <fieldset><legend>{__('Product state', 'wconvert')}</legend>
         {(['selected', 'empty', 'error'] as const).map(value => <label key={value}><input type="radio" name="product-state" checked={productState === value} onChange={() => setProductState(value)} />{value === 'selected' ? __('Selected', 'wconvert') : value === 'empty' ? __('None available', 'wconvert') : __('Loading error', 'wconvert')}</label>)}
       </fieldset>}
-      <button type="button" onClick={() => { setAnswers({}); setCaptureValues({}); setAccepted([]); setSnapshots({}); setAcceptedQuestions([]); setSkipped([]); setDelivery({});
+      <button type="button" onClick={() => { setAnswers({}); setCaptureValues({}); phoneCountries.current = {}; setAccepted([]); setSnapshots({}); setAcceptedQuestions([]); setSkipped([]); setDelivery({});
         failNextRef.current = false; setFailNext(false); failDeliveryNextRef.current = false; setFailDeliveryNext(false); setFeedback(''); setStep(entry); setVisited([entry]); }}>{__('Reset test', 'wconvert')}</button>
       <p>{__('Preview never saves answers, creates Leads, or counts conversions.', 'wconvert')}</p>
     </div>

@@ -14,8 +14,9 @@ export function SubmissionSettings({ template, primaryChannel, config, destinati
   const available = destinations.filter(d => d.requirements?.audience_channels?.includes(channel));
   return <fieldset className="space-y-2 border rounded-md p-4">
     <legend>{channel === 'sms' ? __('Optional SMS signup', 'wconvert') : __('Optional email signup', 'wconvert')}</legend>
-    <p>{__('Send this signup only after the visitor submits it. The primary signup is sent immediately and is not repeated.', 'wconvert')}</p>
+    <p>{__('Visitors can skip this signup. Their primary signup remains saved. This step saves its own details only when submitted.', 'wconvert')}</p>
     {config.capture_mode === 'local' ? <p>{__('Signups are saved only in WConvert.', 'wconvert')}</p> : <>
+      <p>{__('Only the services selected here receive this signup. Delivery of the primary signup is not repeated.', 'wconvert')}</p>
       {available.length === 0 && <p>{__('Connect a service supporting this channel before publishing.', 'wconvert')}</p>}
       {available.map(d => <label key={d.id} className="block"><input type="checkbox" checked={bound.includes(d.id)} onChange={event => onChange({
         submission_settings: { ...settings, [secondary.id]: { destination_ids: event.target.checked ? [...bound, d.id] : bound.filter(id => id !== d.id) } },

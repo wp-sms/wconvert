@@ -747,3 +747,25 @@ it('removes a graph optional signup as one undoable edit and explains its captur
   await user.click(screen.getByRole('button', { name: 'Undo edit' }));
   expect(draft()).toEqual(initial);
 });
+
+it('adds graph secondary capture at a named saved path and restores focus after Cancel', async () => {
+  const user = userEvent.setup();
+  const initial = upgradeToGraph(source.tree as TemplateTree);
+  render(<Editor initial={initial} />);
+  await user.click(screen.getByRole('button', { name: 'Manage screens' }));
+  await user.click(screen.getByRole('button', { name: 'Add screen' }));
+  await user.click(screen.getByRole('menuitem', { name: 'Add optional signup' }));
+  let dialog = screen.getByRole('dialog', { name: 'Add optional SMS signup' });
+  expect(within(dialog).getByRole('combobox', { name: 'Insert after primary signup' })).toHaveValue(`edge:${initial.graph!.edges[0].id}`);
+  await user.click(within(dialog).getByRole('button', { name: 'Cancel' }));
+  expect(draft()).toEqual(initial);
+  await waitFor(() => expect(screen.getByRole('button', { name: 'Add screen' })).toHaveFocus());
+  await user.click(screen.getByRole('button', { name: 'Add screen' }));
+  await user.click(screen.getByRole('menuitem', { name: 'Add optional signup' }));
+  dialog = screen.getByRole('dialog', { name: 'Add optional SMS signup' });
+  await user.click(within(dialog).getByRole('button', { name: 'Add signup' }));
+  expect(draft().submissions).toHaveLength(2);
+  expect(draft().submissions[0]).toEqual(initial.submissions[0]);
+  await waitFor(() => expect(screen.getByRole('heading', { name: 'Optional SMS signup', level: 3 })).toHaveFocus());
+  expect(screen.getByRole('button', { name: 'Remove optional signup' })).toBeEnabled();
+});

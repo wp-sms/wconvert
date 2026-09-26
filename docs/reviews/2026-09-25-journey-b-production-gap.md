@@ -35,6 +35,53 @@ again or turn conditional follow-ups into mutually exclusive branches.
 
 ## Progress after this audit
 
+### Optional second signup creation and phone-draft parity, September 26
+
+Email/SMS campaigns with one required primary capture can now add an optional
+second channel in a flexible graph. A named connection chooser offers only paths
+reached after primary acceptance, including checks for hidden exits and merges
+that can be reached without a save. The chosen edge keeps its identity, rule and
+priority; unchosen edges (including a shared hidden continuation) stay unchanged.
+The new capture owns its own required channel field, consent and submit/skip
+buttons. Both submitting and No thanks continue to the former destination, while
+Back returns to the prior path. Earned reward elements on a following ending are
+also displayed before the optional ask without deleting the ending’s originals.
+No thanks and Back use secondary styling.
+
+The chooser explains separate acceptance, skip behavior and destination review.
+Cancel restores Add screen focus; insertion selects the new save by submission
+identity. Existing-channel duplicates and unsupported capture configurations
+receive explanations. Local-only Destinations copy no longer claims that the
+primary signup was sent. Test journey’s skip notice now explicitly preserves
+earlier accepted saves.
+
+A real browser retry exposed another parity gap: Test journey stored a phone’s
+national display text and directly assigned the input value on remount, resetting
+its country. It now saves canonical E.164 and the selected country, restores via
+the enhancement API and clears the country draft on Reset. The enhancement’s
+optional country restore parameter is backward compatible with live loader
+callers. A real-widget regression covers Canada’s shared +1 code, failed capture,
+retry, accepted read-only Back and Reset to the site country.
+
+Local unpublished QA campaign `01M3EDDQ4V7565YEYX6DWWEX7F` was created with a primary
+email save. The WordPress UI added optional SMS, saved it and displayed separate
+SMS settings. The PHP capture contract returned null; purposes were
+email_marketing and sms_marketing with separate field/consent IDs and no external
+destinations. At 320×568 the chooser kept its actions visible and its full location
+readable in the summary; Cancel restored focus. Test journey verified email
+accepted/SMS skipped, then SMS failure retaining country/number/consent. After the
+fix, a US number survived failure and retry without re-entry; the accepted
+snapshot showed +12025550123, with email still accepted. Test was reset and closed;
+the saved QA draft remains unpublished and uses local-only storage.
+
+Validation: 2,940 JS tests pass, as do TypeScript, ESLint, Free/Pro admin builds,
+phone build, source-boundary verification and phone budgets (14,599 B gzip against
+16,384 B; all combined edition budgets pass). PHP source is unchanged. This is
+browser evidence for the admin test and saved contract, not an external-provider
+delivery test. Result topology, the remaining accessibility/merchant gates and
+required CI remain open.
+
+
 ### Coordinated optional capture removal, September 26
 
 The graph editor now offers **Remove optional signup** on screens that own an
