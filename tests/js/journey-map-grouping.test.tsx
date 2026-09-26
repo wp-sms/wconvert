@@ -30,6 +30,30 @@ beforeEach(() => vi.stubGlobal('matchMedia', vi.fn(() => ({ matches: false, addE
 afterEach(() => { cleanup(); vi.unstubAllGlobals(); });
 const tree = fixture as unknown as TemplateTree;
 
+it.each(['ltr', 'rtl'])('keeps card content and path arrows aligned with the %s journey', direction => {
+  const originalDirection = document.documentElement.dir;
+  document.documentElement.dir = direction;
+  try {
+    // React Flow deliberately uses LTR coordinates even within an RTL page.
+    // Content must set its own direction without changing that coordinate system.
+    const branched = branchedFixture as unknown as TemplateTree;
+    const changed = { ...branched, graph: { ...branched.graph!, edges: branched.graph!.edges.map(edge =>
+      edge.id === 'home_garden_hidden' ? { ...edge, to: 'contact' } : edge) } };
+    const { container } = render(<JourneyMap tree={changed} selected={null} onSelect={() => {}} onSelectPath={() => {}} onConnect={() => {}} />);
+    const cards = container.querySelectorAll('.wconvert-flow-node,.wconvert-followup-group');
+    expect(cards.length).toBeGreaterThan(0);
+    cards.forEach(card => expect(card).toHaveAttribute('dir', direction));
+    const arrow = direction === 'rtl' ? '←' : '→';
+    expect(screen.getByRole('button', { name: `Everyone else ${arrow} Your business interests` })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: `When hidden ${arrow} Send one combined enquiry` })).toBeInTheDocument();
+    const firstX = canvas.nodes.find(node => node.id === 'scope')!.position.x;
+    const endingX = canvas.nodes.find(node => node.id === 'received')!.position.x;
+    expect(direction === 'rtl' ? firstX > endingX : firstX < endingX).toBe(true);
+  } finally {
+    document.documentElement.dir = originalDirection;
+  }
+});
+
 it('summarizes independent follow-ups and expands to the exact original nodes and routes', async () => {
   const user = userEvent.setup(), select = vi.fn(), connect = vi.fn();
   render(<JourneyMap tree={tree} selected={null} onSelect={select} onSelectPath={() => {}} onConnect={connect} />);

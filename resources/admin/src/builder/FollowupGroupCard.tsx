@@ -14,14 +14,14 @@ export const FollowupGroupCard = memo(function FollowupGroupCard({ data }: NodeP
   const { tree, group, rtl, selected, samplePath, select, expand } = data as unknown as FollowupGroupData;
   const selectedButton = useRef<HTMLButtonElement>(null);
   useEffect(() => { selectedButton.current?.scrollIntoView?.({ block: 'nearest', inline: 'nearest' }); }, [selected]);
-  return <section className="wconvert-followup-group" aria-label={__('Relevant follow-ups', 'wconvert')}>
+  return <section dir={rtl ? 'rtl' : 'ltr'} className="wconvert-followup-group" aria-label={__('Relevant follow-ups', 'wconvert')}>
     <Handle id="in" type="target" position={rtl ? Position.Right : Position.Left} isConnectable={false} />
     <header><strong>{__('Relevant follow-ups', 'wconvert')}</strong><span>{samplePath === null ? sprintf(__('%d screens', 'wconvert'), group.screens.length)
       : sprintf(__('%1$d of %2$d shown', 'wconvert'), group.screens.filter(index => samplePath.includes(index)).length, group.screens.length)}</span></header>
     <p>{__('Show every matching screen, in this order.', 'wconvert')}</p>
     <ol className="nodrag nopan nowheel">{group.screens.map(index => <li key={tree.steps[index].id} className={samplePath !== null && !samplePath.includes(index) ? 'is-muted' : ''}>
       <button ref={selected === index ? selectedButton : undefined} type="button" className="nodrag" aria-pressed={selected === index} onClick={() => select(index)}>
-        <strong>{tree.steps[index].name}</strong><span>{conditionText(tree, tree.steps[index].when!)}</span>
+        <strong><bdi>{tree.steps[index].name}</bdi></strong><span>{conditionText(tree, tree.steps[index].when!)}</span>
         {samplePath !== null && <small>{samplePath.includes(index) ? __('Shown for these answers', 'wconvert') : __('Skipped for these answers', 'wconvert')}</small>}
       </button>
     </li>)}</ol>

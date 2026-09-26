@@ -423,7 +423,7 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
           </aside>}
           {sampleOpen ? <JourneySample tree={tree} onTrace={setSamplePath} onSelect={select} onClose={() => { setSampleOpen(false); setSamplePath(null); setMobilePane('map'); }} />
             : inspecting && <section className="wconvert-journey-pane" aria-label={__('Selected screen settings', 'wconvert')}>
-            <div className="wconvert-journey-pane__heading"><div className="wconvert-journey-dialog__selected"><span>{ordinal(step)}</span><div><h3 ref={settingsHeading} tabIndex={-1}>{current.name}</h3><small>{sprintf(__('Screen %1$d of %2$d', 'wconvert'), ordinal(step), tree.steps.length)}</small></div></div>
+            <div className="wconvert-journey-pane__heading"><div className="wconvert-journey-dialog__selected"><span>{ordinal(step)}</span><div><h3 ref={settingsHeading} tabIndex={-1}><bdi>{current.name}</bdi></h3><small>{sprintf(__('Screen %1$d of %2$d', 'wconvert'), ordinal(step), tree.steps.length)}</small></div></div>
               <button type="button" className="wconvert-journey-pane__close" aria-label={__('Close screen settings', 'wconvert')} onClick={() => {
                 setInspecting(false); setPathFocus(null); setMobilePane('map');
                 requestAnimationFrame(() => {

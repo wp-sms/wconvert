@@ -51,15 +51,15 @@ const ScreenCard = memo(function ScreenCard({ data, selected }: NodeProps) {
   const hiddenTarget = hiddenId && !paths.some(path => path.to === hiddenId) ? tree.steps.find(item => item.id === hiddenId) : undefined;
   const kind = screen.kind === 'acknowledgement' ? __('Ending', 'wconvert') : screen.kind === 'result' ? __('Result', 'wconvert')
     : question ? __('Question', 'wconvert') : screen.kind === 'input' ? __('Collect details', 'wconvert') : __('Screen', 'wconvert');
-  return <div className={`wconvert-flow-node${selected ? ' is-selected' : ''}${muted ? ' is-muted' : ''}${compactEnding && screen.kind === 'acknowledgement' ? ' is-compact-ending' : ''}`}>
+  return <div dir={rtl ? 'rtl' : 'ltr'} className={`wconvert-flow-node${selected ? ' is-selected' : ''}${muted ? ' is-muted' : ''}${compactEnding && screen.kind === 'acknowledgement' ? ' is-compact-ending' : ''}`}>
     <Handle id="in" type="target" position={rtl ? Position.Right : Position.Left} />
     <button type="button" className="wconvert-flow-node__main" onClick={() => select(index)}>
-      <small>{ordinal} · {kind}{screen.id === (tree.graph?.entry ?? tree.steps[0].id) ? ` · ${__('First screen', 'wconvert')}` : incoming > 1 ? ` · ${__('Paths rejoin', 'wconvert')}` : ''}</small><strong>{screen.name}</strong>
-      {question && 'label' in question && <span>{String(question.label)}</span>}
+      <small>{ordinal} · {kind}{screen.id === (tree.graph?.entry ?? tree.steps[0].id) ? ` · ${__('First screen', 'wconvert')}` : incoming > 1 ? ` · ${__('Paths rejoin', 'wconvert')}` : ''}</small><strong><bdi>{screen.name}</bdi></strong>
+      {question && 'label' in question && <span><bdi>{String(question.label)}</bdi></span>}
       {screen.when && <em>{sprintf(__('Show if %s', 'wconvert'), conditionText(tree, screen.when))}</em>}
       {screen.kind === 'result' && <span>{sprintf(__('%d possible results · first match wins', 'wconvert'), screen.results?.length ?? 0)}</span>}
     </button>
-    {preview && <div className="wconvert-flow-node__preview" aria-hidden="true"><small>{__('Screen preview', 'wconvert')}</small><strong>{heading && 'text' in heading ? String(heading.text) : screen.name}</strong>
+    {preview && <div className="wconvert-flow-node__preview" aria-hidden="true"><small>{__('Screen preview', 'wconvert')}</small><strong><bdi>{heading && 'text' in heading ? String(heading.text) : screen.name}</bdi></strong>
       {question && 'options' in question && <span>{question.options?.slice(0, 2).map(option => option.label).join(' · ')}</span>}
     </div>}
     {savesDetails && <div className="wconvert-flow-node__save">
@@ -72,7 +72,7 @@ const ScreenCard = memo(function ScreenCard({ data, selected }: NodeProps) {
       {paths.map((path, priority) => <div key={'id' in path && typeof path.id === 'string' ? path.id : `${path.to}-${priority}`} className="wconvert-flow-node__path">
         <button type="button" className="nodrag" onClick={() => selectPath(index, priority)}>
           {('kind' in path ? path.kind === 'default' : !path.when) ? __('Everyone else', 'wconvert') : `${priority + 1}. ${path.when ? conditionText(tree, path.when) : ''}`}
-          <span> → {tree.steps.find(item => item.id === path.to)?.name}</span>
+          <span> {rtl ? '←' : '→'} <bdi>{tree.steps.find(item => item.id === path.to)?.name}</bdi></span>
         </button>
         <Handle id={`route-${priority}`} type="source" position={rtl ? Position.Left : Position.Right} isConnectable={false} />
       </div>)}
@@ -84,8 +84,8 @@ const ScreenCard = memo(function ScreenCard({ data, selected }: NodeProps) {
       <Handle id="route-0" type="source" position={rtl ? Position.Left : Position.Right} isConnectable={false} />
     </div>}
     {screen.when && hiddenId && <div className="wconvert-flow-node__hidden">
-      {tree.graph ? <button type="button" className="nodrag" onClick={() => selectPath(index, 'hidden')}>{sprintf(__('When hidden → %s', 'wconvert'), tree.steps.find(item => item.id === hiddenId)?.name ?? hiddenId)}</button>
-        : sprintf(__('When hidden → %s', 'wconvert'), tree.steps.find(item => item.id === hiddenId)?.name ?? hiddenId)}
+      {tree.graph ? <button type="button" className="nodrag" onClick={() => selectPath(index, 'hidden')}>{sprintf(__('When hidden %1$s %2$s', 'wconvert'), rtl ? '←' : '→', tree.steps.find(item => item.id === hiddenId)?.name ?? hiddenId)}</button>
+        : sprintf(__('When hidden %1$s %2$s', 'wconvert'), rtl ? '←' : '→', tree.steps.find(item => item.id === hiddenId)?.name ?? hiddenId)}
       {hiddenTarget &&
       <Handle id="hidden" type="source" position={rtl ? Position.Left : Position.Right} isConnectable={false} />
       }

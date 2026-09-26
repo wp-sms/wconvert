@@ -35,6 +35,44 @@ again or turn conditional follow-ups into mutually exclusive branches.
 
 ## Progress after this audit
 
+### September 26: real RTL card and inspector walkthrough
+
+An actual WordPress Persian admin request (`lang=fa-IR`, `dir=rtl`) showed that
+React Flow correctly reversed the graph but imposed LTR direction on all card
+content. Screen and grouped-follow-up cards now set their content direction
+explicitly while leaving React Flow's coordinate system alone. Inline path and
+hidden-continuation arrows reverse with the graph. Screen names, question labels,
+preview headings and the inspector heading isolate merchant text with `bdi`, so
+an English question mark stays with its English name inside an RTL workspace.
+
+Browser checks verified right-to-left graph order and content alignment, twenty
+consecutive keyboard controls remaining inside the canvas, the selected inspector
+on the left, and the mirrored hidden-path button opening/focusing Continue at.
+The 320px visitor-test modal fit the viewport and navigated Business + Office +
+Ongoing care to the Office question; the remaining Ongoing care follow-up was
+Included. The 390px Next screen inspector exposed its rule controls and footer.
+Undo restored the temporary hidden route and Save draft was disabled. The locale
+override was scoped to the QA request, then removed; no language preference or
+campaign was saved. Plugin UI copy remains English in this installation, so this
+checks direction and mixed-language content, not translation completeness.
+
+Native browser 200% zoom remains unverified: the in-app browser did not change
+page zoom, and the Chrome attempt did not establish a verified zoom state. Do not
+treat earlier reduced-viewport checks as equivalent evidence. Large-map browser
+drag frame times and assistive-technology testing also remain open.
+
+The same walkthrough found a separate authoring gap: with an ending selected,
+Add screen labels its location “On Everyone else after [ending]” and disables
+all three standard screen actions. Replace this dead end with an explicit,
+accessible insertion-location choice that names the connection and preserves
+its condition/priority. Distinguish a normal continuation from Everyone else;
+keep questions before their capture and explain ineligible locations. This is
+remaining work, not resolved by the RTL fix.
+
+Validation passed: all 2,888 JavaScript tests, TypeScript, ESLint and Free/Pro
+admin builds. The two new map regressions verify LTR/RTL card direction, inline
+arrows and first-to-ending layout order. No PHP or visitor contract changed.
+
 ### September 26: connections route around cards
 
 The 13-screen enquiry exposed a long Garden hidden continuation passing behind
