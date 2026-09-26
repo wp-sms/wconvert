@@ -21,38 +21,49 @@ to guess when answers are saved or which path wins does not meet the UX goal.
 | Accepted saves freeze their encountered question/contact/consent snapshot | JS and PHP capture verification, local database runs, actual progressive capture | A save snapshot excludes later answers even if retained in memory |
 | Required versus optional result access | Both modes published and exercised; adjacent pair transformation preserves downstream branches and shared ending | Complex non-adjacent gates require named manual preparation, not automatic rewiring |
 | Add/remove optional second capture | Owned-field/consent insertion and removal tests; saved graph contract and browser skip/failure/retry | Shared/dependent/required captures are protected with explanations |
-| Graph edits and repair | Named insertion points, removal/reroute impact, missing choices, hidden/default exits, disconnected screens, result links and missing required contact repair. Blank screen/question/choice/result text has precise repair links; missing result conditions can be added; product refusals focus product requirements. Consent/field ownership is explicitly assignable; navigation and consent blockers open the affected Design control or screen, including from Style | Goal/save-boundary audit remains below; malformed imported identities are not automatically rewritten |
+| Graph edits and repair | Named insertion points, removal/reroute impact, missing choices, hidden/default exits, disconnected screens, result links and missing required contact repair. Blank text, missing conditions, consent ownership, navigation and product refusals have repair controls. Goal-boundary repairs identify result/primary-save bypasses before shared joins and questions after the combined save | Malformed imported identities/topology and unsupported goal/save combinations are refused; they are not automatically rewritten |
 | Save versus destination delivery | Actual visitor acceptance, real Action Scheduler retry against a loopback HTTP receiver, manual stored-submission recovery; one Lead and frozen separate payloads | Does not certify every external vendor's behavior; provider unit coverage is separate |
 | Product outcomes and catalog failure | Shared production fixture: all 48 coffee combinations through the visitor renderer and PHP; first-match/fallback, anonymous completion and Back/pruning. Actual WooCommerce stock exclusion, refetch, API 503/recovery and shop fallback. Preview simulation now supports Retry without remounting | Preview explicitly simulates availability; it does not fetch live prices or stock. Real catalog checks used representative products, not every possible external response |
 | Map clarity and drag continuity | Grouped independent follow-ups; 13-screen branch and 53-screen map checks; two instrumented drag samples without missing paths | Short local samples are not a broad performance guarantee |
-| Keyboard and narrow layouts | Canvas traversal, non-drag controls, modal focus/return, RTL walkthrough, 320/390px layouts, light/dark/no-palette button focus | Native 200% zoom and assistive-technology walkthrough are not yet verified |
+| Keyboard and narrow layouts | Canvas traversal, non-drag controls, modal focus/return, RTL walkthrough, 320/390px layouts, light/dark/no-palette button focus. [Native Chrome 200% zoom](2026-09-26-journey-native-zoom.md) covered creation, repair, priority, test and nested Escape; fixed map collapse | Assistive-technology walkthrough is pending permission; this is not a merchant user study |
 | Compatibility and publishing safety | Legacy evaluator/migration, Free/paid builds, import normalization, goal-aware PHP contract, mounted live snapshot retention and per-path question bound | Field/consent ownership must be present on every path to a save; ten questions per connected route remains a deliberate bound |
 
 ## Remaining work, in order
 
-1. **Finish server-only repair destinations.** The [repair audit](2026-09-26-journey-publication-repairs.md)
-   records the implemented text/result/product repairs and their browser checks.
-   Consent wording/ownership and navigation-button repairs now have regression
-   and browser evidence. Still check goal/save-boundary errors. Name the affected screen/control for routine
-   authoring mistakes; distinguish malformed imported structures rather than
-   promising automatic repair of every invalid graph.
-2. **Complete the accessibility task walkthrough.** Verify creation, priority
-   change, test, repair and publish review at native 200% browser zoom, including
-   nested dialogs. Extend current keyboard/RTL/narrow-layout evidence with an
-   assistive-technology check; do not label viewport resizing as browser zoom.
-3. **Run the final integrated release checks after those changes.** Existing full
-   suites passed 2,943 JS tests and 2,132 PHP tests before subsequent focused
-   fixes. Run the complete suites and required artifact/source/build checks on
-   the final revision, then require green CI. Runners currently cannot start
+1. **Complete the assistive-technology walkthrough.** Native 200% zoom tasks are
+   now verified separately. Permission has been requested to briefly enable
+   macOS VoiceOver and restore its prior setting. Do not represent accessibility
+   tree inspection as an actual screen-reader task walkthrough.
+2. **Require green CI.** Final local checks passed: 3,024 JS tests, 2,134 PHP
+   tests / 11,373 assertions, TypeScript, ESLint, PHPStan, all 60 template
+   registrations, the full Node 22 build, loader/phone budgets, source contract
+   and all four packaged artifact contracts. Runners currently cannot start
    because of account billing/spending-limit status; this needs the account
-   owner's intervention, not repeated unchanged reruns.
-4. **Merchant validation before replacing the old experience.** Have occasional
+   owner's intervention, not repeated unchanged reruns. Any further code changes
+   require appropriate verification before release.
+3. **Merchant validation before replacing the old experience.** Have occasional
    merchants create independent follow-ups, choose an exclusive branch, explain
    when details are saved, and repair a wrong condition. Record completion,
    wrong predictions and hesitation. Agent walkthroughs cannot supply that user
    evidence. Keep this separate from code correctness and visual preference.
 
+## Final integrated verification
+
+All current implementation changes passed 3,024 JS tests across 163 files and
+2,134 PHP tests / 11,373 assertions. PHPStan inspected 459 files without errors.
+All 60 designs survived registration. The complete production build and loader
+plus combined phone budgets passed using Node 22.23.2. `bin/build.sh all`
+produced Free, Basic, Pro and Elite ZIPs with passing artifact contracts.
+TypeScript, ESLint, source contract and whitespace checks passed. These are
+local results; they do not claim successful GitHub Actions execution.
+
 ## Latest focused verification
+
+Goal boundaries and native zoom: 95 JS tests; 12 PHP tests / 351 assertions;
+TypeScript, ESLint and both admin builds. Browser repaired a result bypass and
+verified the saved server contract. Native Chrome zoom was set to 200%, task
+checked and restored to 100%. See the linked [repair audit](2026-09-26-journey-publication-repairs.md)
+and [zoom evidence](2026-09-26-journey-native-zoom.md).
 
 Capture assignment/navigation: 3,017 JS tests passed before the final inspector
 tab repair, followed by 114 inspector/structure/ownership tests after that fix.

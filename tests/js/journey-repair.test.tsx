@@ -132,3 +132,12 @@ it('can create the missing condition on an imported matching result', async () =
   await user.click(screen.getByRole('button', { name: 'Add condition' }));
   expect(update).toHaveBeenCalledWith({ match: 'all', clauses: [{ question: 'q1', operator: 'includes_any', values: ['garden'] }] });
 });
+
+it('focuses the path destination when repairing a boundary rather than an answer rule', () => {
+  const original = fixture as TemplateTree;
+  const tree: TemplateTree = { ...original, graph: { ...original.graph!, edges: [...original.graph!.edges, {
+    id: 'shortcut', from: 'interests', to: 'received', kind: 'answer', when: { match: 'all', clauses: [{ question: 'n1', operator: 'includes_any', values: ['garden'] }] },
+  }] } };
+  render(<GraphRouteSettings tree={tree} step={tree.steps.findIndex(step => step.id === 'interests')} focusPath={0} focusTarget onChange={() => {}} onInsert={() => {}} />);
+  expect(screen.getAllByRole('combobox', { name: 'Go to' })[0]).toHaveFocus();
+});

@@ -530,7 +530,7 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
                 : sprintf(__('Next: %s', 'wconvert'), tree.steps.find(item => item.id === current.paths?.[0]?.to)?.name ?? tree.steps[step + 1].name)}</strong>
             <small>{__('Review where visitors go next', 'wconvert')}</small>
           </button>}
-          </> : tree.graph ? <GraphRouteSettings tree={tree} step={step} focusPath={pathFocus} onChange={onChange} onInsert={insertOnGraphPath} />
+          </> : tree.graph ? <GraphRouteSettings tree={tree} step={step} focusPath={pathFocus} focusTarget={repairRequest?.screenId === current.id && repairRequest.focus === 'route-target'} onChange={onChange} onInsert={insertOnGraphPath} />
             : <RouteSettings tree={tree} step={step} focusPath={typeof pathFocus === 'number' ? pathFocus : null} onChange={onChange} onInsert={insertOnPath} />}
             </div>
             <div className="wconvert-journey-dialog__actions-row">

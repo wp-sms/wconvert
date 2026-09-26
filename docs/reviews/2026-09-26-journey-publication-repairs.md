@@ -84,13 +84,38 @@ After that fix, 114 inspector/structure/ownership tests passed; the final
 ownership/readiness tests additionally cover independent SMS requirements.
 TypeScript, ESLint, Free/Pro admin builds and the source contract pass.
 
-## Still to inspect
+## Goal and save-boundary follow-up
 
-- Goal/save-boundary mismatches not explained by the existing required-save
-  bypass repairs.
+Publication review now names a quiz path reaching an ending without its result,
+a question screen downstream of the primary enquiry save, and a shortcut to a
+secondary signup before the primary save. Bypass repair uses a witness path
+and selects the connection before it rejoins the normal downstream route.
+Selecting the last shared edge could otherwise direct the merchant to create a
+cycle. The affected Go to control is focused; condition repairs still focus
+their answer controls.
+
+In local WordPress, prepared an Espresso answer path from How you brew directly
+to Optional email signup. The server reported `capture_paths`. Review named
+All set, Your coffee match and How you brew. Its link selected that exact answer
+path and focused Go to. Reconnecting it through Your coffee match cleared the
+blocker. Saving left the QA campaign unpublished with a passing capture
+contract. The corrected branch remains in this repair-only fixture; the
+separate 48-combination coffee fixture was not changed.
+
+95 JS tests across readiness, repair and Journey editor pass, as do 12 PHP
+graph/coffee tests with 351 assertions, TypeScript, ESLint and both admin builds.
+Existing PHP tests independently refuse questions after the combined save and
+secondary capture bypasses. Unit checks also prove screen storage order does
+not change the selected repair connection.
+
+## Scope limits
+
 - Imported duplicate identities, invalid topology, misplaced node types and
   malformed submission records: these must remain refused; do not silently
   invent a routing or ownership change to make the error disappear.
+- Unsupported goal/save combinations from malformed imports still require
+  choosing a supported journey structure; this audit does not promise an
+  automatic conversion of arbitrary imported records.
 
 Optional signup still does not mean optional consent: the checkbox is required
 when submitting that signup. Legacy v2 consent guidance is unchanged; these

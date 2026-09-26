@@ -13,7 +13,7 @@ export interface JourneyRepair {
   readonly resultId?: string;
   readonly questionId?: string;
   readonly choiceIndex?: number;
-  readonly focus?: 'questions' | 'hidden-route' | 'result-link' | 'result-heading' | 'products-required' | 'screen-name';
+  readonly focus?: 'questions' | 'hidden-route' | 'route-target' | 'result-link' | 'result-heading' | 'products-required' | 'screen-name';
 }
 
 export interface JourneyReadinessIssue {

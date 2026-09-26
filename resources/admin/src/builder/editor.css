@@ -1559,12 +1559,12 @@ body .wconvert-rule-picker__unavailable {
 #wconvert-admin .wconvert-journey-workspace .wconvert-journey-dialog__header h2 { margin: 0; font-size: var(--text-heading); }
 #wconvert-admin .wconvert-journey-workspace .wconvert-journey-description { margin: 5px 0 0; color: var(--muted-foreground); font-size: var(--text-note); }
 #wconvert-admin .wconvert-journey-workspace .wconvert-journey-dialog__footer { padding-block: 9px; }
-@media (max-width: 600px) {
-  /* Keep the map readable on short phones; scroll the workspace instead of shrinking every card. */
+@media (max-width: 800px) {
+  /* Includes native 200% zoom: scroll the workspace instead of collapsing the map below its controls. */
   #wconvert-admin .wconvert-journey-workspace { overflow-y: auto; }
   #wconvert-admin .wconvert-journey-workspace > :not(.wconvert-journey-side) { flex-shrink: 0; }
   #wconvert-admin .wconvert-journey-workspace .wconvert-journey-side[data-mobile-pane='map'] { flex: 1 0 420px; min-block-size: 420px; }
-  #wconvert-admin .wconvert-journey-workspace .wconvert-journey-dialog__header { padding: 12px; }
+  #wconvert-admin .wconvert-journey-workspace .wconvert-journey-dialog__header { padding: 12px; flex-wrap: wrap; }
   .wconvert-journey-dialog__header-actions { flex-wrap: wrap; gap: 6px; }
   .wconvert-journey-view { padding-inline: 12px; }
   .wconvert-journey-find { flex: 1; min-inline-size: 100px; }

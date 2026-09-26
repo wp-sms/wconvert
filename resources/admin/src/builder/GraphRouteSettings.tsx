@@ -10,8 +10,9 @@ import { unreachableScreens } from './structure/journey';
 import { graphInsertionLocations } from './structure/graphInsertion';
 
 /** A keyboard-complete editor for the actual v3 connections, not array order. */
-export function GraphRouteSettings({ tree, step, focusPath, onChange, onInsert }: {
+export function GraphRouteSettings({ tree, step, focusPath, focusTarget = false, onChange, onInsert }: {
   tree: TemplateTree; step: number; focusPath?: number | 'hidden' | null; onChange(next: TemplateTree): void;
+  focusTarget?: boolean;
   onInsert(edgeId: string, kind: 'content' | 'input'): void;
 }) {
   const graph = tree.graph;
@@ -25,13 +26,14 @@ export function GraphRouteSettings({ tree, step, focusPath, onChange, onInsert }
     if (focusPath === 'hidden') { hiddenSelect.current?.focus(); return; }
     const row = list.current?.querySelector<HTMLElement>(`[data-path-priority="${focusPath}"]`);
     row?.scrollIntoView?.({ block: 'nearest' });
+    if (focusTarget) { row?.querySelector<HTMLElement>('select')?.focus(); return; }
     const clause = row?.querySelector<HTMLElement>('.wconvert-journey-settings__clause');
     const invalidChoice = [...(clause?.querySelectorAll<HTMLSelectElement>('select:not(:disabled)') ?? [])]
       .find(select => select.selectedOptions[0]?.disabled);
     (invalidChoice ?? clause?.querySelector<HTMLElement>('.wconvert-journey-settings__answers input')
       ?? clause?.querySelector<HTMLElement>('select:last-of-type')
       ?? row?.querySelector<HTMLElement>('select'))?.focus();
-  }, [focusPath, step]);
+  }, [focusPath, step, focusTarget]);
   if (!graph || !screen) return null;
   const routes = graph.edges.filter(edge => edge.from === screen.id);
   const locations = graphInsertionLocations(tree);
