@@ -9,6 +9,8 @@ import { QuestionSettings, ResultSettings, RouteSettings, ScreenConditionSetting
 import { JourneyTest } from './JourneyTest';
 import { JourneySample } from './JourneySample';
 import { GraphRouteSettings } from './GraphRouteSettings';
+import { GraphScreenInsert } from './GraphScreenInsert';
+import { addGraphScreen, type GraphScreenKind } from './structure/graphInsertion';
 import { __, sprintf } from '@wordpress/i18n';
 import { Button } from '../components/ui/button';
 import type { TemplateTree, TemplateNode, QuestionNode, Tokens } from '@renderer/types';
@@ -16,7 +18,7 @@ import { addGraphResultSignup, duplicateScreen, freshScreen, referencedJourney, 
 import { graphChangeImpact } from './structure/graphChangeImpact';
 import { addGraphConnection, reconnectGraphEdge } from './structure/graphConnections';
 import { conditionText } from './structure/conditionText';
-import { graphDisplayOrder, graphReaches, graphRemoval, insertOnGraphEdge, upgradeToGraph } from './structure/graph';
+import { graphDisplayOrder, graphReaches, graphRemoval, upgradeToGraph } from './structure/graph';
 import type { JourneyRepair } from './structure/journeyReadiness';
 
 const JourneyMap = lazy(() => import('./JourneyMap').then(module => ({ default: module.JourneyMap })));
@@ -30,6 +32,9 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
   const id = useId();
   const [open, setOpen] = useState(false);
   const [testOpen, setTestOpen] = useState(false);
+  const [addKind, setAddKind] = useState<GraphScreenKind | null>(null);
+  const addTrigger = useRef<HTMLButtonElement>(null);
+  const insertedScreen = useRef(false);
   const [focused, setFocused] = useState(false);
   const focusTrigger = useRef<HTMLButtonElement>(null);
   const workspaceRoot = useRef<HTMLElement>(null);
@@ -93,13 +98,13 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
   useEffect(() => {
     if (!focused) return;
     const escape = (event: KeyboardEvent) => {
-      if (event.key !== 'Escape' || event.defaultPrevented || testOpen || confirmRemoval || confirmGraphRemoval || pendingRoute
+      if (event.key !== 'Escape' || event.defaultPrevented || testOpen || addKind || confirmRemoval || confirmGraphRemoval || pendingRoute
         || !(event.target instanceof Node) || !workspaceRoot.current?.contains(event.target)) return;
       event.preventDefault(); setFocused(false); focusTrigger.current?.focus();
     };
     document.addEventListener('keydown', escape);
     return () => document.removeEventListener('keydown', escape);
-  }, [focused, testOpen, confirmRemoval, confirmGraphRemoval, pendingRoute]);
+  }, [focused, testOpen, addKind, confirmRemoval, confirmGraphRemoval, pendingRoute]);
   const screenList = useRef<HTMLOListElement>(null);
   const previousTree = useRef(tree);
   const select = (index: number) => { inspectorTrigger.current = document.activeElement instanceof HTMLElement ? document.activeElement : null; selectedId.current = tree.steps[index]?.id; setInspecting(true); setSampleOpen(false); setPanelSection('content'); setPathFocus(null); setMobilePane('details'); onSelect(index); };
@@ -118,8 +123,6 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
   useEffect(() => { screenList.current?.querySelector('[data-selected="true"]')?.scrollIntoView?.({ block: 'nearest' }); }, [step]);
   const current = tree.steps[step];
   if (!current) return null;
-  const savedHere = walkNodes(current.content).some(node => node.type === 'button' && 'action' in node && node.action === 'submit');
-  const questionAfterSave = !!tree.graph && savedHere && !tree.steps.some(screen => screen.kind === 'result');
   const canAddGraphResultSignup = !!tree.graph && tree.submissions.length === 0
     && !tree.steps.some(screen => screen.kind === 'acknowledgement')
     && tree.steps.some(screen => screen.kind === 'result' && !tree.graph?.edges.some(edge => edge.from === screen.id));
@@ -156,24 +159,7 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
     : tree.steps[index].kind === 'acknowledgement' ? __('Journey complete', 'wconvert')
     : saving(index) ? saveLabel(saving(index)!.id) : __('Continue only', 'wconvert');
   const add = (kind: 'content' | 'input', conditional = false) => {
-    if (tree.graph) {
-      if (kind === 'input' && questionAfterSave) { setSaid(__('Ask questions before this save so their answers can be included.', 'wconvert')); return; }
-      const fallback = tree.graph.edges.find(edge => edge.from === current.id && edge.kind === 'default');
-      if (!fallback) { setSaid(__('Select a screen with a next connection before adding a screen.', 'wconvert')); return; }
-      let screen = freshScreen(tree, kind);
-      if (conditional) {
-        const question = tree.steps.filter(item => item.id === current.id || graphReaches(tree.graph!, item.id, current.id))
-          .flatMap(item => walkNodes(item.content)).find(node => node.type === 'question' && 'id' in node
-            && typeof node.id === 'string' && 'answer_type' in node && node.answer_type !== 'text') as (QuestionNode & { id: string }) | undefined;
-        if (!question) { setSaid(__('Add a choice question on a screen that leads here first.', 'wconvert')); return; }
-        screen = { ...screen, name: __('Relevant follow-up', 'wconvert'), when: { match: 'all', clauses: [{ question: question.id,
-          operator: question.answer_type === 'multi' ? 'includes_any' : 'is', values: [question.options?.[0]?.value ?? ''] }] } };
-      }
-      const next = insertOnGraphEdge(tree, fallback.id, screen);
-      write(next, next.steps.length - 1);
-      setSaid(sprintf(__('Screen added on Everyone else after %s. Change its condition and hidden destination in the right panel.', 'wconvert'), current.name));
-      return;
-    }
+    if (tree.graph) { insertedScreen.current = false; setAddKind(conditional ? 'followup' : kind); return; }
     const steps = [...tree.steps]; const boundary = steps.findIndex(s => s.kind === 'result' || walkNodes(s.content).some(n => 'action' in n && n.action === 'submit'));
     const at = Math.min(step + 1, boundary < 0 ? steps.length - 1 : boundary);
     let screen = freshScreen(tree, kind, at > 0);
@@ -230,7 +216,7 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
     setSaid(sprintf(__('Screen inserted on this path. Its condition and continuation to %s are preserved.', 'wconvert'), tree.steps.find(item => item.id === path.to)?.name ?? path.to));
   };
   const insertOnGraphPath = (edgeId: string, kind: 'content' | 'input') => {
-    const next = insertOnGraphEdge(tree, edgeId, freshScreen(tree, kind));
+    const next = addGraphScreen(tree, `edge:${edgeId}`, kind);
     if (next === tree) return;
     write(next, next.steps.length - 1);
     setPanelSection('content');
@@ -292,7 +278,7 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
   const submission = saving(step);
   const boundary = tree.steps.findIndex(s => s.kind === 'result' || walkNodes(s.content).some(n => 'action' in n && n.action === 'submit'));
   const insertionAt = Math.min(step + 1, boundary < 0 ? tree.steps.length - 1 : boundary);
-  const insertionLabel = tree.graph ? sprintf(__('On Everyone else after %s', 'wconvert'), current.name) : insertionAt <= step
+  const insertionLabel = tree.graph ? __('Choose a location in the journey', 'wconvert') : insertionAt <= step
     ? sprintf(__('Before %s', 'wconvert'), tree.steps[insertionAt].name)
     : sprintf(__('After %s', 'wconvert'), current.name);
   const panelOpen = sampleOpen || inspecting;
@@ -360,13 +346,13 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
             <Button ref={testTrigger} type="button" size="sm" variant="outline" onClick={() => { returnToTestTrigger.current = true; setOpen(false); setTestOpen(true); }}>{__('Test journey', 'wconvert')}</Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button type="button" size="sm" variant="outline"><Plus aria-hidden="true" />{__('Add screen', 'wconvert')}<ChevronDown aria-hidden="true" /></Button>
+                <Button ref={addTrigger} type="button" size="sm" variant="outline"><Plus aria-hidden="true" />{__('Add screen', 'wconvert')}<ChevronDown aria-hidden="true" /></Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuLabel>{insertionLabel}</DropdownMenuLabel>
-                <DropdownMenuItem disabled={tree.graph ? !tree.graph.edges.some(edge => edge.from === current.id && edge.kind === 'default') : tree.steps.length >= 7} onSelect={() => add('content')}><FilePlus2 aria-hidden="true" />{__('Add offer screen', 'wconvert')}</DropdownMenuItem>
-                <DropdownMenuItem disabled={tree.graph ? questionAfterSave || !tree.graph.edges.some(edge => edge.from === current.id && edge.kind === 'default') : tree.steps.length >= 7} onSelect={() => add('input')}><ListPlus aria-hidden="true" />{__('Add question screen', 'wconvert')}</DropdownMenuItem>
-                <DropdownMenuItem disabled={tree.graph ? questionAfterSave || !tree.graph.edges.some(edge => edge.from === current.id && edge.kind === 'default') || !canCondition : tree.steps.length >= 7 || !canCondition} onSelect={() => add('input', true)}><ListPlus aria-hidden="true" />{__('Add relevant follow-up', 'wconvert')}</DropdownMenuItem>
+                <DropdownMenuItem disabled={!tree.graph && tree.steps.length >= 7} onSelect={() => add('content')}><FilePlus2 aria-hidden="true" />{__('Add offer screen', 'wconvert')}</DropdownMenuItem>
+                <DropdownMenuItem disabled={!tree.graph && tree.steps.length >= 7} onSelect={() => add('input')}><ListPlus aria-hidden="true" />{__('Add question screen', 'wconvert')}</DropdownMenuItem>
+                <DropdownMenuItem disabled={!tree.graph && (tree.steps.length >= 7 || !canCondition)} onSelect={() => add('input', true)}><ListPlus aria-hidden="true" />{__('Add relevant follow-up', 'wconvert')}</DropdownMenuItem>
                 {(tree.graph ? canAddGraphResultSignup
                   : primaryChannel && tree.submissions.length === 1 || tree.submissions.length === 0 && tree.steps.some(s => s.kind === 'result')) && <>
                   <DropdownMenuSeparator />
@@ -561,6 +547,22 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
         <DialogTrigger asChild><Button type="button" variant="outline" size="sm"><Workflow aria-hidden="true" />{__('Manage screens', 'wconvert')}</Button></DialogTrigger>
         <DialogContent className="wconvert-journey-dialog" showCloseButton={false}>{workspace}</DialogContent>
       </Dialog>}
+    <Dialog open={addKind !== null} onOpenChange={value => { if (!value) setAddKind(null); }}>
+      <DialogContent className="wconvert-graph-insert" onCloseAutoFocus={event => {
+        event.preventDefault();
+        requestAnimationFrame(() => (insertedScreen.current ? settingsHeading.current : addTrigger.current)?.focus());
+      }}>
+        {addKind && <GraphScreenInsert tree={tree} source={current.id} kind={addKind} onCancel={() => setAddKind(null)}
+          onInsert={(location, when, includeHidden) => {
+            const next = addGraphScreen(tree, location, addKind, when, includeHidden);
+            if (next === tree) return;
+            insertedScreen.current = true;
+            write(next, next.steps.length - 1);
+            setPanelSection('content'); setMobilePane('details'); setSampleOpen(false); setAddKind(null);
+            setSaid(__('Screen added at the chosen location. Review its content and continuation in screen settings.', 'wconvert'));
+          }} />}
+      </DialogContent>
+    </Dialog>
     <Dialog open={testOpen} onOpenChange={value => { setTestOpen(value); if (!value && !embedded) setOpen(true); }}>
       <DialogContent className="wconvert-journey-test-dialog" onOpenAutoFocus={event => event.preventDefault()}
         onCloseAutoFocus={event => {

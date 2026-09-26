@@ -1270,6 +1270,17 @@ body .wconvert-rule-picker__unavailable {
 .wconvert-journey-settings__products li { display: flex; align-items: center; gap: 8px; padding-block: 6px; }
 .wconvert-journey-settings__products li span { flex: 1; min-inline-size: 0; overflow-wrap: anywhere; }
 .wconvert-journey-test-dialog { inline-size: min(100vw - 2rem, 980px); max-inline-size: 980px; max-block-size: min(90dvh,800px); overflow: hidden; grid-template-rows: auto auto minmax(0,1fr); }
+.wconvert-graph-insert { max-block-size: calc(100dvh - 32px); grid-template-rows: auto auto minmax(0,1fr) auto; overflow: hidden; }
+.wconvert-graph-insert > [data-slot='dialog-title'] { padding-inline-end: 24px; }
+.wconvert-graph-insert__body { min-block-size: 0; overflow: auto; display: grid; gap: 8px; padding: 2px; }
+.wconvert-graph-insert__body label { font-weight: 600; }
+.wconvert-graph-insert__check { display: flex; align-items: start; gap: 8px; line-height: 1.5; }
+.wconvert-graph-insert__check input { flex: none; margin-block-start: 3px; }
+.wconvert-graph-insert__body select { inline-size: 100%; max-inline-size: 100%; min-inline-size: 0; margin: 0; }
+.wconvert-graph-insert__body p { margin: 0; line-height: 1.5; color: var(--muted-foreground); }
+.wconvert-graph-insert__summary { padding: 12px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); overflow-wrap: anywhere; }
+.wconvert-graph-insert__summary p { margin-block-start: 6px; }
+.wconvert-graph-insert__actions { display: flex; justify-content: flex-end; gap: 8px; }
 .wconvert-journey-test-dialog > [data-slot='dialog-title'] { padding-inline-end: 32px; }
 .wconvert-journey-test-dialog > [data-slot='dialog-close'] { inline-size: 44px; block-size: 44px; display: grid; place-items: center; inset-block-start: 8px; inset-inline-end: 8px; }
 .wconvert-journey-test-dialog__body { min-block-size: 0; min-inline-size: 0; overflow: auto; padding: 2px; }

@@ -72,6 +72,47 @@ function Editor({ initial = source.tree as TemplateTree }: { initial?: TemplateT
     <output data-testid="draft">{JSON.stringify(tree)}</output></>;
 }
 function draft(): TemplateTree { return JSON.parse(screen.getByTestId('draft').textContent!); }
+
+it('lets an ending selection add a question at an explicit location and restores focus on cancel', async () => {
+  const user = userEvent.setup();
+  const initial = graphFixture as unknown as TemplateTree;
+  function EndingEditor() {
+    const [tree, setTree] = useState(initial);
+    const [step, setStep] = useState(initial.steps.findIndex(item => item.id === 'received'));
+    return <><JourneyEditor embedded tree={tree} step={step} onChange={setTree} onSelect={setStep} />
+      <output data-testid="draft">{JSON.stringify(tree)}</output></>;
+  }
+  render(<EndingEditor />);
+  await user.click(screen.getByRole('button', { name: 'Focus journey' }));
+  await user.click(screen.getByRole('button', { name: 'Add screen' }));
+  await user.click(screen.getByRole('menuitem', { name: 'Add question screen' }));
+  const dialog = screen.getByRole('dialog', { name: 'Add question screen' });
+  expect(within(dialog).getByRole('option', { name: /One enquiry — Continue — to Received/ })).toBeDisabled();
+  await user.keyboard('{Escape}');
+  expect(document.body).toHaveClass('wconvert-journey-focus');
+  await waitFor(() => expect(screen.getByRole('button', { name: 'Add screen' })).toHaveFocus());
+  expect(draft()).toEqual(initial);
+  await user.click(screen.getByRole('button', { name: 'Add screen' }));
+  await user.click(screen.getByRole('menuitem', { name: 'Add question screen' }));
+  await user.selectOptions(screen.getByRole('combobox', { name: 'Insert at' }), 'edge:start');
+  await user.click(screen.getByRole('button', { name: 'Add screen here' }));
+  expect(draft().graph!.edges.find(edge => edge.id === 'start')?.to).toBe(draft().steps.at(-1)!.id);
+  await waitFor(() => expect(screen.getByRole('heading', { level: 3, name: draft().steps.at(-1)!.name })).toHaveFocus());
+});
+
+it('requires a chosen answer before inserting a relevant follow-up from the toolbar', async () => {
+  const user = userEvent.setup();
+  render(<Editor initial={graphFixture as unknown as TemplateTree} />);
+  await user.click(screen.getByRole('button', { name: 'Manage screens' }));
+  await user.click(screen.getByRole('button', { name: 'Add screen' }));
+  await user.click(screen.getByRole('menuitem', { name: 'Add relevant follow-up' }));
+  await user.selectOptions(screen.getByRole('combobox', { name: 'Insert at' }), 'edge:start');
+  expect(screen.getByRole('button', { name: 'Add screen here' })).toBeDisabled();
+  await user.selectOptions(screen.getByRole('combobox', { name: 'Includes this choice' }), 'balcony');
+  await user.click(screen.getByRole('button', { name: 'Add screen here' }));
+  expect(draft().steps.at(-1)?.when?.clauses[0]).toEqual({ question: 'n1', operator: 'includes_any', values: ['balcony'] });
+});
+
 it('clears stale branch instructions when Undo restores the prior draft', async () => {
   const user = userEvent.setup();
   const initial = graphFixture as unknown as TemplateTree;

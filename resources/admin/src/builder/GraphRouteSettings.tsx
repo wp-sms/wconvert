@@ -6,7 +6,8 @@ import { ConditionSettings } from './JourneySettings';
 import { graphEdgeId, graphTargets } from './structure/graph';
 import { graphChangeImpact } from './structure/graphChangeImpact';
 import { graphChoiceSources } from './structure/graphConnections';
-import { unreachableScreens, walkNodes } from './structure/journey';
+import { unreachableScreens } from './structure/journey';
+import { graphInsertionLocations } from './structure/graphInsertion';
 
 /** A keyboard-complete editor for the actual v3 connections, not array order. */
 export function GraphRouteSettings({ tree, step, focusPath, onChange, onInsert }: {
@@ -33,8 +34,9 @@ export function GraphRouteSettings({ tree, step, focusPath, onChange, onInsert }
   }, [focusPath, step]);
   if (!graph || !screen) return null;
   const routes = graph.edges.filter(edge => edge.from === screen.id);
-  const savedHere = walkNodes(screen.content).some(node => node.type === 'button' && 'action' in node && node.action === 'submit');
-  const questionAfterSave = savedHere && !tree.steps.some(item => item.kind === 'result');
+  const locations = graphInsertionLocations(tree);
+  const canAsk = (edgeId: string) => locations.find(item => item.id === `edge:${edgeId}`)?.canAsk === true;
+  const questionAfterSave = routes.some(edge => edge.kind !== 'hidden' && !canAsk(edge.id));
   const answers = routes.filter(edge => edge.kind === 'answer');
   const fallback = routes.find(edge => edge.kind === 'default');
   const hidden = routes.find(edge => edge.kind === 'hidden');
@@ -68,7 +70,7 @@ export function GraphRouteSettings({ tree, step, focusPath, onChange, onInsert }
     <p>{answers.length ? __('Visitors take the first matching answer path. Everyone else follows the last path.', 'wconvert')
       : __('Everyone continues along this connection. Add an answer path to branch.', 'wconvert')}</p>
     <ol ref={list}>{[...answers, ...(fallback ? [fallback] : [])].map((edge, priority) => <li key={edge.id} data-path-priority={priority}>
-      <strong>{edge.kind === 'default' ? __('Everyone else', 'wconvert') : sprintf(__('%d. If the answer matches', 'wconvert'), priority + 1)}</strong>
+      <strong>{edge.kind === 'default' ? answers.length ? __('Everyone else', 'wconvert') : __('Continue', 'wconvert') : sprintf(__('%d. If the answer matches', 'wconvert'), priority + 1)}</strong>
       <label>{__('Go to', 'wconvert')}<select value={edge.to} onChange={event => {
         const updated = { ...edge, to: event.target.value };
         if (edge.kind === 'default') write(answers, updated);
@@ -78,7 +80,7 @@ export function GraphRouteSettings({ tree, step, focusPath, onChange, onInsert }
       </select></label>
       {edge.kind === 'answer' && <ConditionSettings required purpose="route" value={edge.when ?? { match: 'all', clauses: [] }} sources={sources}
         onChange={when => { if (when) write(answers.map(item => item.id === edge.id ? { ...item, when } : item)); }} />}
-      <button type="button" className="wconvert-journey-routes__insert" disabled={questionAfterSave} onClick={() => onInsert(edge.id, 'input')}>{__('Ask a question on this path', 'wconvert')}</button>
+      <button type="button" className="wconvert-journey-routes__insert" disabled={!canAsk(edge.id)} onClick={() => onInsert(edge.id, 'input')}>{__('Ask a question on this path', 'wconvert')}</button>
       <button type="button" className="wconvert-journey-routes__insert" onClick={() => onInsert(edge.id, 'content')}>{__('Show a message on this path', 'wconvert')}</button>
       {edge.kind === 'answer' && <div className="wconvert-journey-routes__actions">
         <button type="button" disabled={priority === 0} onClick={() => { const next = [...answers]; [next[priority - 1], next[priority]] = [next[priority], next[priority - 1]]; write(next); }}>{__('Higher priority', 'wconvert')}</button>

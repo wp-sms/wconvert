@@ -35,6 +35,52 @@ again or turn conditional follow-ups into mutually exclusive branches.
 
 ## Progress after this audit
 
+### September 26: explicit Add screen locations and skip-path scope
+
+Flexible journeys no longer disable the Add screen menu when an ending is
+selected. Choosing an offer, question or relevant follow-up opens a location
+dialog that names the source, path type/priority and destination. It includes
+Before first screen and distinguishes Continue from Everyone else. A suitable
+current connection can be preselected; when none fits, the merchant must choose
+a location rather than silently changing the entry. The summary shows the
+existing answer condition. Confirmation preserves edge identity, priority and
+condition. Before-first insertion changes the explicit graph entry and adds Back
+to the former entry without making storage order determine navigation.
+
+Enquiry questions require a reachable later save. Post-save messages remain
+available, and anonymous/quiz journeys retain their existing capture semantics.
+Both the toolbar and direct path-insertion action use the same eligibility rule;
+a post-save intermediate message can no longer be used to bypass that rule.
+Relevant follow-ups require an explicit answer selection. A hidden-source path
+does not offer the skipped source's own question as a condition source.
+
+The location walkthrough also exposed an old ambiguity: splitting a normal
+connection automatically split a shared hidden connection. Ordinary named-path
+insertion now changes only the chosen path. The dialog explicitly offers to
+include visitors who skip the source screen when both routes share a destination.
+That choice starts checked for an independent relevant follow-up and unchecked
+for an ordinary screen; the merchant can change it. The selected follow-up still
+tests its own answer condition and rejoins the original destination when skipped.
+
+Browser evidence on the 13-screen WordPress draft: starting with the ending
+selected, all screen types were available; Add question required a location. A
+Home answer-path insertion preserved its condition, left Business unchanged,
+continued to Home interests and focused the new Questions inspector. Cancel
+restored Add screen focus without an edit. At 320px, the follow-up dialog kept
+its footer visible and scrolled its fields/summary. A Balcony-conditioned
+follow-up inserted after Garden with the shared hidden path included appeared
+in Test journey for Home + Balcony while Garden was skipped, with the existing
+Balcony screen still included afterward. Each addition was undone; Save draft
+was disabled and no campaign was saved/published.
+
+Validation: 2,901 JavaScript tests, TypeScript, ESLint, Free/Pro admin builds and
+the source contract pass. Focused regressions exercise graph entry/Back behavior,
+exclusive priority preservation, both shared-hidden choices, unanswered/invalid
+follow-up conditions, post-save insertion, ending selection, Cancel/Escape and
+focus after insertion. PHP and visitor runtime are unchanged. This closes the
+Add screen dead end recorded below; large-map dragging, native 200% zoom and
+the other release gates remain open.
+
 ### September 26: real RTL card and inspector walkthrough
 
 An actual WordPress Persian admin request (`lang=fa-IR`, `dir=rtl`) showed that
