@@ -1285,10 +1285,10 @@ body .wconvert-rule-picker__unavailable {
 .wconvert-journey-delete-reason { margin: 0; padding: 0 16px 12px; font-size: var(--text-meta); line-height: 1.5; color: var(--muted-foreground); overflow-wrap: anywhere; }
 .wconvert-journey-test-dialog > [data-slot='dialog-title'] { padding-inline-end: 32px; }
 .wconvert-journey-test-dialog > [data-slot='dialog-close'] { inline-size: 44px; block-size: 44px; display: grid; place-items: center; inset-block-start: 8px; inset-inline-end: 8px; }
-.wconvert-journey-test-dialog__body { min-block-size: 0; min-inline-size: 0; overflow: auto; padding: 2px; }
-.wconvert-journey-test { display: grid; grid-template-columns: minmax(0,1.4fr) minmax(220px,.6fr); gap: 22px; min-block-size: 320px; }
-.wconvert-journey-test__stage { display: grid; align-items: start; min-inline-size: 0; min-block-size: 280px; }
-.wconvert-journey-test__side { display: grid; align-content: start; gap: 12px; }
+.wconvert-journey-test-dialog__body { display: grid; grid-template-rows: minmax(0,1fr); min-block-size: 0; min-inline-size: 0; overflow: hidden; padding: 2px; }
+.wconvert-journey-test { display: grid; grid-template-columns: minmax(0,1.4fr) minmax(220px,.6fr); gap: 22px; min-block-size: 0; }
+.wconvert-journey-test__stage { display: grid; align-items: start; min-inline-size: 0; min-block-size: 0; overflow: auto; padding: 2px; }
+.wconvert-journey-test__side { display: grid; align-content: start; gap: 12px; min-inline-size: 0; min-block-size: 0; overflow: auto; padding: 2px; }
 .wconvert-journey-test__side h3,.wconvert-journey-test__side p { margin: 0; }
 .wconvert-journey-test__side ol { margin: 0; padding-inline-start: 22px; }
 .wconvert-journey-test__side li { padding-block: 7px; }
@@ -1313,7 +1313,9 @@ body .wconvert-rule-picker__unavailable {
 .wconvert-journey-test__side fieldset { display: grid; gap: 6px; border: 1px solid var(--border); border-radius: var(--radius); }
 .wconvert-journey-test__side fieldset label { display: flex; gap: 6px; }
 @media (max-width: 700px) {
+  .wconvert-journey-test-dialog__body { display: block; overflow: auto; }
   .wconvert-journey-test { grid-template-columns: 1fr; }
+  .wconvert-journey-test__stage,.wconvert-journey-test__side { overflow: visible; }
   .wconvert-journey-test__checkpoint dl > div { display: grid; gap: 2px; }
   .wconvert-journey-test__checkpoint dd { text-align: start; }
 }

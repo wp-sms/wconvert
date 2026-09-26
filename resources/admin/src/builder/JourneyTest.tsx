@@ -1,7 +1,8 @@
 import { journeyTestProgress } from './structure/journeyTestProgress';
 import { journeyNotice } from '@renderer/journey-notice';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { __, sprintf } from '@wordpress/i18n';
+import { createPortal } from 'react-dom';
+import { __, _n, sprintf } from '@wordpress/i18n';
 import { mount } from '@renderer/mount';
 import type { Template, TemplateNode } from '@renderer/types';
 import { activeAnswers, chooseResult, journeyPath, journeyTrace, type Answers } from '../../../loader/src/journey-rules';
@@ -10,6 +11,22 @@ import { graphDisplayOrder } from './structure/graph';
 import { walkNodes } from './structure/journey';
 import { conditionText } from './structure/conditionText';
 import { testCaptureSnapshot, type TestCaptureSnapshot } from './structure/journeyTestState';
+
+type ProductState = 'selected' | 'empty' | 'error';
+
+function TestProducts({ count, state, onRetry }: { count: number; state: ProductState; onRetry(): void }) {
+  const status = useRef<HTMLParagraphElement>(null);
+  return <>
+    <p ref={status} role="status" tabIndex={-1}>{state === 'selected'
+      ? sprintf(_n('%d selected product would be checked for current price and availability.', '%d selected products would be checked for current price and availability.', count, 'wconvert'), count)
+      : state === 'empty' ? __('These products are unavailable right now. Please use the link below.', 'wconvert')
+        : __('Products could not load. You can still use the link below.', 'wconvert')}</p>
+    {state === 'error' && <button type="button" className="wc-button" onClick={() => {
+      // This same status stays mounted when Retry disappears.
+      status.current?.focus(); onRetry();
+    }}>{__('Retry products', 'wconvert')}</button>}
+  </>;
+}
 
 /** The real renderer, with in-memory answers and no capture or analytics calls. */
 export function JourneyTest({ template, onEdit, deliveryMode = 'none', destinationSummary }: {
@@ -21,7 +38,8 @@ export function JourneyTest({ template, onEdit, deliveryMode = 'none', destinati
   const [step, setStep] = useState(entry);
   const [answers, setAnswers] = useState<Answers>({});
   const [visited, setVisited] = useState<number[]>([entry]);
-  const [productState, setProductState] = useState<'selected' | 'empty' | 'error'>('selected');
+  const [productState, setProductState] = useState<ProductState>('selected');
+  const [productHost, setProductHost] = useState<HTMLElement | null>(null);
   const [captureValues, setCaptureValues] = useState<Record<string, string | boolean>>({});
   const phoneCountries = useRef<Record<string, string>>({});
   const [accepted, setAccepted] = useState<string[]>([]);
@@ -99,6 +117,7 @@ export function JourneyTest({ template, onEdit, deliveryMode = 'none', destinati
     for (const button of root.querySelectorAll<HTMLButtonElement>('button[data-action="submit"]')) {
       if (accepted.includes(button.dataset.submission ?? '')) { button.dataset.action = 'next'; button.textContent = __('Continue', 'wconvert'); }
     }
+    let productsHost: HTMLElement | null = null;
     if (tree.steps[step].kind === 'result') {
       const result = chooseResult(tree.steps[step].results ?? [], active);
       const heading = root.querySelector<HTMLElement>('[data-result-heading]');
@@ -113,11 +132,9 @@ export function JourneyTest({ template, onEdit, deliveryMode = 'none', destinati
         if (result?.href) link.href = result.href;
         else link.removeAttribute('href');
       }
-      if (products && result?.product_ids?.length) products.textContent = productState === 'selected'
-        ? sprintf(__('%d selected products would be checked for current price and availability.', 'wconvert'), result.product_ids.length)
-        : productState === 'empty' ? __('No selected products are currently available. The shop link remains visible.', 'wconvert')
-          : __('Product loading failed. Visitors see the fallback link and can retry.', 'wconvert');
+      if (products && result?.product_ids?.length) productsHost = products;
     }
+    setProductHost(productsHost);
     const read = (): Answers => {
       const next = { ...answers };
       const questions = walkNodes(tree.steps[step].content).filter(node => node.type === 'question' && 'id' in node) as (TemplateNode & { id: string })[];
@@ -196,7 +213,7 @@ export function JourneyTest({ template, onEdit, deliveryMode = 'none', destinati
     root.querySelectorAll('a').forEach(link => link.addEventListener('click', event => event.preventDefault()));
     return () => { cancelAnimationFrame(focusFrame); mounted.close(); };
   // Remount when the preview path or its answers change; this never sends data.
-  }, [template, step, entry, productState, answers, active, trace.indices, move, tree, captureValues, accepted, acceptedQuestions, deliveryMode]);
+  }, [template, step, entry, answers, active, trace.indices, move, tree, captureValues, accepted, acceptedQuestions, deliveryMode]);
   const nodes = tree.steps.flatMap(screen => walkNodes(screen.content));
   const nodeLabel = (id: string) => {
     const node = nodes.find(item => 'id' in item && item.id === id);
@@ -235,6 +252,8 @@ export function JourneyTest({ template, onEdit, deliveryMode = 'none', destinati
   };
   return <div className="wconvert-journey-test">
     <div ref={anchor} className="wconvert-journey-test__stage" />
+    {productHost && !!shownResult?.product_ids?.length && createPortal(<TestProducts count={shownResult.product_ids.length}
+      state={productState} onRetry={() => setProductState('selected')} />, productHost)}
     <div className="wconvert-journey-test__side">
       <h3>{__('Path summary', 'wconvert')}</h3>
       <p>{__('Continue through the preview to see which screens are visited or skipped. Future screens are not evaluated yet.', 'wconvert')}</p>
@@ -273,11 +292,12 @@ export function JourneyTest({ template, onEdit, deliveryMode = 'none', destinati
         <p>{destinationSummary ? sprintf(__('Destination setup: %s. Test outcomes are simulated.', 'wconvert'), destinationSummary)
           : __('Test outcomes are simulated; no destination receives a request.', 'wconvert')}</p>
       </section>}
-      {tree.steps[step].kind === 'result' && <fieldset><legend>{__('Product state', 'wconvert')}</legend>
-        {(['selected', 'empty', 'error'] as const).map(value => <label key={value}><input type="radio" name="product-state" checked={productState === value} onChange={() => setProductState(value)} />{value === 'selected' ? __('Selected', 'wconvert') : value === 'empty' ? __('None available', 'wconvert') : __('Loading error', 'wconvert')}</label>)}
+      {!!shownResult?.product_ids?.length && <fieldset><legend>{__('Product availability (simulation)', 'wconvert')}</legend>
+        {(['selected', 'empty', 'error'] as const).map(value => <label key={value}><input type="radio" name="product-state" checked={productState === value} onChange={() => setProductState(value)} />{value === 'selected' ? __('Available', 'wconvert') : value === 'empty' ? __('None available', 'wconvert') : __('Loading error', 'wconvert')}</label>)}
+        <p>{__('This test does not fetch your catalog. Retry simulates a successful response; check actual prices and stock on your website.', 'wconvert')}</p>
       </fieldset>}
       <button type="button" onClick={() => { setAnswers({}); setCaptureValues({}); phoneCountries.current = {}; setAccepted([]); setSnapshots({}); setAcceptedQuestions([]); setSkipped([]); setDelivery({});
-        failNextRef.current = false; setFailNext(false); failDeliveryNextRef.current = false; setFailDeliveryNext(false); setFeedback(''); setStep(entry); setVisited([entry]); }}>{__('Reset test', 'wconvert')}</button>
+        failNextRef.current = false; setFailNext(false); failDeliveryNextRef.current = false; setFailDeliveryNext(false); setProductState('selected'); setFeedback(''); setStep(entry); setVisited([entry]); }}>{__('Reset test', 'wconvert')}</button>
       <p>{__('Preview never saves answers, creates Leads, or counts conversions.', 'wconvert')}</p>
     </div>
   </div>;

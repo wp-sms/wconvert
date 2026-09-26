@@ -40,6 +40,44 @@ For current completion status and the next release checks, use the
 The sections below retain historical findings; their older “remaining work”
 sentences are not a second current backlog.
 
+### Coffee combinations and stable product simulation, September 26
+
+The production-schema coffee fixture now covers the prototype's complete
+3 brew methods × 8 taste selections × 2 grinder answers. Its stored screen
+order is deliberately scrambled. All 48 cases traverse the actual paid visitor
+renderer, show the expected first-match/fallback result, and finish through
+optional-signup skip without a capture or network request. Separate tests cover
+overlapping result priority and changing Filter → Espresso → Filter: taste
+survives, the excluded grinder answer does not return, and the newly relevant
+required grinder question blocks continuation until answered. PHP normalizes
+the same fixture, validates its publication contract, checks all 48 routes and
+results, excludes unvisited answers from signup snapshots, and freezes optional
+unanswered taste questions within their accepted boundary.
+
+Test journey no longer remounts the visitor screen when the merchant changes
+simulated product availability. It has an actual Retry control for the error
+case, preserves focus in the product status after simulated recovery, resets
+availability with Reset test, and offers catalog controls only for a selected
+result that contains products. The UI explicitly explains that this is a
+simulation, not a live price/stock lookup. Text-only results have no catalog
+simulation controls.
+
+A browser pass on the unpublished local coffee draft
+`01M3EHNAQSN7XTQV3BRSDRWNYV` verified Filter + Bright + Grinder, Back to change
+to Espresso with taste retained and grinder bypassed, and French press with no
+taste answer reaching the fallback. Retry and optional-signup skip worked at
+320px. The desktop pass exposed a separate issue: scrolling diagnostics moved
+the visitor preview entirely out of view. Desktop preview and diagnostics now
+scroll independently; at 320px the dialog retains one ordinary vertical scroll
+area and a visible title/Close control. The viewport was reset and the draft
+remains unchanged and unpublished.
+
+Verification: 524 focused JS tests; 15 PHP tests / 379 assertions (including
+292 assertions in the shared coffee fixture check); TypeScript; ESLint; both
+Free and Pro admin builds. No visitor code or visitor-byte caps changed in this
+pass. Native 200% zoom, assistive-technology and merchant validation remain
+separate release checks.
+
 ### Product API recovery and keyboard continuity, September 26
 
 The actual product loader removed its Retry button on activation, losing

@@ -23,40 +23,41 @@ to guess when answers are saved or which path wins does not meet the UX goal.
 | Add/remove optional second capture | Owned-field/consent insertion and removal tests; saved graph contract and browser skip/failure/retry | Shared/dependent/required captures are protected with explanations |
 | Graph edits and repair | Named insertion points, removal/reroute impact, missing choices, hidden/default exits, disconnected screens, result links and missing required contact repair | A complete audit of server-only error destinations remains below |
 | Save versus destination delivery | Actual visitor acceptance, real Action Scheduler retry against a loopback HTTP receiver, manual stored-submission recovery; one Lead and frozen separate payloads | Does not certify every external vendor's behavior; provider unit coverage is separate |
-| Product results survive catalog failure | Actual WooCommerce stock exclusion, refetch after Back, API 503/retry/recovery, unusable links and working shop fallback; zero Leads | Full prototype product combinations and preview parity remain below |
+| Product outcomes and catalog failure | Shared production fixture: all 48 coffee combinations through the visitor renderer and PHP; first-match/fallback, anonymous completion and Back/pruning. Actual WooCommerce stock exclusion, refetch, API 503/recovery and shop fallback. Preview simulation now supports Retry without remounting | Preview explicitly simulates availability; it does not fetch live prices or stock. Real catalog checks used representative products, not every possible external response |
 | Map clarity and drag continuity | Grouped independent follow-ups; 13-screen branch and 53-screen map checks; two instrumented drag samples without missing paths | Short local samples are not a broad performance guarantee |
 | Keyboard and narrow layouts | Canvas traversal, non-drag controls, modal focus/return, RTL walkthrough, 320/390px layouts, light/dark/no-palette button focus | Native 200% zoom and assistive-technology walkthrough are not yet verified |
 | Compatibility and publishing safety | Legacy evaluator/migration, Free/paid builds, import normalization, goal-aware PHP contract, mounted live snapshot retention and per-path question bound | Field/consent ownership must be present on every path to a save; ten questions per connected route remains a deliberate bound |
 
 ## Remaining work, in order
 
-1. **Finish product scenario coverage.** Port the prototype's 48 brew/taste/grinder
-   combinations to a production-model fixture and check first-match/fallback
-   outcomes, anonymous access and relevant-answer retention. Check whether Test
-   journey's product-error simulation communicates the actual retry behavior
-   sufficiently; it currently displays diagnostic copy rather than a live catalog.
-2. **Audit server-only repair destinations.** Compare publication error codes
+1. **Audit server-only repair destinations.** Compare publication error codes
    with readiness repair links. For merchant-editable errors still routed to
    generic settings, name the affected screen/control and verify the repair in
    the browser. Distinguish corrupted imported structures from routine authoring
    mistakes instead of promising an automatic repair for every invalid graph.
-3. **Complete the accessibility task walkthrough.** Verify creation, priority
+2. **Complete the accessibility task walkthrough.** Verify creation, priority
    change, test, repair and publish review at native 200% browser zoom, including
    nested dialogs. Extend current keyboard/RTL/narrow-layout evidence with an
    assistive-technology check; do not label viewport resizing as browser zoom.
-4. **Run the final integrated release checks after those changes.** Existing full
+3. **Run the final integrated release checks after those changes.** Existing full
    suites passed 2,943 JS tests and 2,132 PHP tests before subsequent focused
    fixes. Run the complete suites and required artifact/source/build checks on
    the final revision, then require green CI. Runners currently cannot start
    because of account billing/spending-limit status; this needs the account
    owner's intervention, not repeated unchanged reruns.
-5. **Merchant validation before replacing the old experience.** Have occasional
+4. **Merchant validation before replacing the old experience.** Have occasional
    merchants create independent follow-ups, choose an exclusive branch, explain
    when details are saved, and repair a wrong condition. Record completion,
    wrong predictions and hesitation. Agent walkthroughs cannot supply that user
    evidence. Keep this separate from code correctness and visual preference.
 
 ## Latest focused verification
+
+Coffee scenarios and preview: 524 JS tests; 15 PHP tests / 379 assertions;
+TypeScript; ESLint; Free/Pro admin builds. Local editor walkthrough covered
+matching/fallback results, Back/change branch, product-error simulation/Retry,
+optional signup skip and desktop/320px scrolling. The new coffee QA campaign
+is an unchanged unpublished draft; this walkthrough made no actual submission.
 
 Product recovery: 27 JS tests; 23 PHP loader-contract tests / 38 assertions;
 TypeScript and ESLint; Basic/Pro/Elite visitor builds; source contract; Node 22
