@@ -34,20 +34,23 @@ to guess when answers are saved or which path wins does not meet the UX goal.
    now verified separately. Permission has been requested to briefly enable
    macOS VoiceOver and restore its prior setting. Do not represent accessibility
    tree inspection as an actual screen-reader task walkthrough.
-2. **Require green CI.** Final local checks passed: 3,024 JS tests, 2,134 PHP
-   tests / 11,373 assertions, TypeScript, ESLint, PHPStan, all 60 template
-   registrations, the full Node 22 build, loader/phone budgets, source contract
-   and all four packaged artifact contracts. Runners currently cannot start
-   because of account billing/spending-limit status; this needs the account
-   owner's intervention, not repeated unchanged reruns. Any further code changes
-   require appropriate verification before release.
-3. **Merchant validation before replacing the old experience.** Have occasional
+2. **Merchant validation before replacing the old experience.** Have occasional
    merchants create independent follow-ups, choose an exclusive branch, explain
    when details are saved, and repair a wrong condition. Record completion,
    wrong predictions and hesitation. Agent walkthroughs cannot supply that user
    evidence. Keep this separate from code correctness and visual preference.
    The [session guide and observation sheet](2026-09-26-journey-merchant-validation.md)
    are ready; participant sessions have not been run.
+
+## GitHub CI exception
+
+On September 26, the owner explicitly instructed us to proceed without GitHub
+CI. Green GitHub Actions checks are no longer a gate for this work. The runs
+remain failed because runners could not start due to account billing/spending
+limits; this is not a passing CI result. The completed local verification below
+is the accepted technical check for this revision. Further code changes still
+require appropriate local verification. This exception does not authorize a
+merge or change repository branch-protection settings.
 
 ## Final integrated verification
 
