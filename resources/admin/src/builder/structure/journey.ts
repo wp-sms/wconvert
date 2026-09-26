@@ -168,25 +168,56 @@ export function addGraphResultSignup(tree: TemplateTree): TemplateTree {
     consents: walkNodes(owned.content).filter(node => node.type === 'consent' && 'id' in node && node.id).map(node => (node as { id: string }).id) }] };
 }
 
+/** Explain the exact preparation needed before swapping result and capture. */
+export function graphResultAccessIssue(tree: TemplateTree, required: boolean): { message: string; screenId?: string; section: 'content' | 'paths' } | null {
+  const graph = tree.graph;
+  if (!graph || tree.submissions.length !== 1) return { message: __('Keep one signup to choose when contact details are requested.', 'wconvert'), section: 'content' };
+  const submission = tree.submissions[0];
+  if (submission.required === required) return null;
+  const result = tree.steps.find(screen => screen.kind === 'result');
+  const signup = tree.steps[submissionScreen(tree, submission.id)];
+  if (!result || !signup) return { message: __('Choose the screen that saves this signup before changing result access.', 'wconvert'), section: 'content' };
+  const issue = (message: string, screenId: string, section: 'content' | 'paths' = 'paths') => ({ message, screenId, section });
+  if (result.id === graph.entry || signup.id === graph.entry)
+    return issue(__('Start with a question screen before the result and signup.', 'wconvert'), graph.entry);
+  if (signup.when) return issue(__('Show the signup to everyone on this path before changing result access.', 'wconvert'), signup.id, 'content');
+  if (!walkNodes(signup.content).some(node => node.type === 'field' && 'id' in node && submission.fields.includes(node.id ?? '')
+    && 'name' in node && node.name === 'email' && 'required' in node && node.required))
+    return issue(__('Place the required email field on the signup screen before changing result access.', 'wconvert'), signup.id, 'content');
+  const first = required ? result : signup, second = required ? signup : result;
+  const outgoing = graph.edges.filter(edge => edge.from === first.id);
+  if (outgoing.length !== 1 || outgoing[0].kind !== 'default' || outgoing[0].to !== second.id)
+    return issue(sprintf(__('Connect “%1$s” directly to “%2$s” with one Everyone else path. Move any answer branches after both screens first.', 'wconvert'), first.name, second.name), first.id);
+  const otherIncoming = graph.edges.find(edge => edge.to === second.id && edge.id !== outgoing[0].id);
+  if (otherIncoming) return issue(sprintf(__('The path from “%1$s” enters “%2$s” separately. Connect it to “%3$s” first so both screens move together.', 'wconvert'),
+    tree.steps.find(screen => screen.id === otherIncoming.from)?.name ?? otherIncoming.from, second.name, first.name), otherIncoming.from);
+  if (!required) {
+    const questions = new Set(walkNodes(signup.content).filter(node => node.type === 'question' && 'id' in node).map(node => 'id' in node ? node.id : ''));
+    if (result.results?.some(variant => variant.when?.clauses.some(clause => questions.has(clause.question))))
+      return issue(__('This result uses an answer collected on the signup screen. Move that question to an earlier screen before showing the result first.', 'wconvert'), signup.id, 'content');
+    if (walkNodes(result.content, false).some(node => node.type === 'followup'))
+      return issue(__('This result contains a signup reward. Move the reward after the signup before showing the result first.', 'wconvert'), result.id, 'content');
+  }
+  return null;
+}
+
 /** Move the one quiz signup across the result while preserving upstream route identities. */
 function graphResultAccess(tree: TemplateTree, required: boolean): TemplateTree {
   const graph = tree.graph;
-  if (!graph || tree.submissions.length !== 1) return tree;
+  if (!graph || tree.submissions.length !== 1 || tree.submissions[0].required === required || graphResultAccessIssue(tree, required)) return tree;
   const submission = tree.submissions[0];
   const result = tree.steps.find(screen => screen.kind === 'result');
   const signup = tree.steps[submissionScreen(tree, submission.id)];
-  if (!result || !signup || result.id === graph.entry || signup.id === graph.entry) return tree;
-  if (!walkNodes(signup.content).some(node => node.type === 'field' && 'id' in node && submission.fields.includes(node.id ?? '')
-    && 'name' in node && node.name === 'email' && 'required' in node && node.required)) return tree;
-  const outgoing = (id: string) => graph.edges.filter(edge => edge.from === id);
-  const incoming = (id: string) => graph.edges.filter(edge => edge.to === id);
-  const route = (from: string, to: string) => outgoing(from).length === 1 && outgoing(from)[0].kind === 'default' && outgoing(from)[0].to === to;
+  if (!result || !signup) return tree;
   const generatedConsent = (node: Record<string, unknown>) => node.type === 'consent'
     && [__('Send me email updates. %s', 'wconvert'), __('Send me email guides and updates. %s', 'wconvert')].some(text => text === node.text);
   const generatedConsentIds = walkNodes(signup.content).filter(node => generatedConsent(node as unknown as Record<string, unknown>) && 'id' in node)
     .map(node => (node as { id: string }).id);
   const consents = required ? submission.consents.filter(id => !generatedConsentIds.includes(id))
     : [...new Set([...submission.consents, ...generatedConsentIds])];
+  const continuationFrom = required ? signup.id : result.id;
+  const gateNextLabel = graph.edges.filter(edge => edge.from === continuationFrom).every(edge => tree.steps.find(screen => screen.id === edge.to)?.kind === 'acknowledgement')
+    ? __('Finish', 'wconvert') : __('Continue', 'wconvert');
   const rewrite = (node: TemplateNode, gate: boolean): TemplateNode => {
     const copy = { ...node } as Record<string, unknown>;
     // Preserve merchant-written copy. Only generated wording changes with the gate.
@@ -201,8 +232,8 @@ function graphResultAccess(tree: TemplateTree, required: boolean): TemplateTree 
     if (gate && copy.type === 'button' && copy.action === 'back'
       && (copy.label === __('Back to result', 'wconvert') || copy.label === __('Back to guide', 'wconvert')))
       copy.label = __('Back', 'wconvert');
-    if (copy.type === 'button' && copy.action === 'next' && copy.label === (gate ? __('Optional email updates', 'wconvert') : __('Finish', 'wconvert')))
-      copy.label = gate ? __('Finish', 'wconvert') : __('Optional email updates', 'wconvert');
+    if (copy.type === 'button' && copy.action === 'next' && copy.label === (gate ? __('Optional email updates', 'wconvert') : gateNextLabel))
+      copy.label = gate ? gateNextLabel : __('Optional email updates', 'wconvert');
     for (const key of ['children', 'start', 'end']) if (Array.isArray(copy[key])) copy[key] = (copy[key] as TemplateNode[]).map(child => rewrite(child, gate));
     return copy as unknown as TemplateNode;
   };
@@ -212,60 +243,37 @@ function graphResultAccess(tree: TemplateTree, required: boolean): TemplateTree 
       .filter(child => !(child.type === 'button' && 'action' in child && child.action === action)).map(child => withoutAction(child, action));
     return copy as unknown as TemplateNode;
   };
-  if (required) {
-    const end = outgoing(signup.id)[0]?.to;
-    const acknowledgement = tree.steps.find(screen => screen.id === end && screen.kind === 'acknowledgement');
-    if (submission.required || !route(result.id, signup.id) || !acknowledgement || !route(signup.id, acknowledgement.id)
-      || outgoing(acknowledgement.id).length || incoming(signup.id).length !== 1 || incoming(acknowledgement.id).length !== 1) return tree;
-    const crossed = outgoing(result.id)[0];
-    const endingEdge = outgoing(signup.id)[0];
-    const edges = graph.edges.map(edge => edge.id === crossed.id
-      ? { ...edge, from: signup.id, to: result.id }
-      : edge.id === endingEdge.id ? { ...edge, from: result.id, to: acknowledgement.id }
-      : edge.to === result.id ? { ...edge, to: signup.id } : edge);
-    return { ...tree, steps: tree.steps.map(screen => screen.id === result.id
-      ? { ...screen, content: rewrite(screen.content, true) }
-      : screen.id === signup.id ? { ...screen, name: (screen.name === __('Optional email signup', 'wconvert')
-        || screen.name === __('Optional email updates', 'wconvert'))
-        ? __('Contact details', 'wconvert') : screen.name, content: rewrite(withoutAction(screen.content, 'skip'), true) } : screen),
-    graph: { ...graph, edges }, submissions: [{ ...submission, required: true, consents }] };
+  const first = required ? result : signup, second = required ? signup : result;
+  const crossed = graph.edges.find(edge => edge.from === first.id)!;
+  const continuations = graph.edges.filter(edge => edge.from === second.id);
+  // Move the adjacent pair together. Downstream branches keep their rule,
+  // priority and destination; shared endings keep every unrelated incoming edge.
+  const edges = graph.edges.map(edge => edge.id === crossed.id ? { ...edge, from: second.id, to: first.id }
+    : edge.from === second.id ? { ...edge, from: first.id }
+    : edge.to === first.id ? { ...edge, to: second.id } : edge);
+  const newEnding: TemplateScreen[] = [];
+  if (!required && !continuations.length) {
+    const acknowledgementId = freshScreen(tree, 'content').id;
+    newEnding.push({ id: acknowledgementId, name: __('All set', 'wconvert'), kind: 'acknowledgement', content: { type: 'stack', children: [
+      { type: 'heading', text: __('Thanks for visiting', 'wconvert'), role: 'success_headline' },
+      { type: 'button', label: __('Back', 'wconvert'), action: 'back', tokens: { accent: 'transparent', 'accent-fg': '#475569' } },
+    ] } });
+    edges.push({ id: graphEdgeId({ ...graph, edges }), from: signup.id, to: acknowledgementId, kind: 'default' });
   }
-  if (!submission.required || !route(signup.id, result.id) || incoming(result.id).length !== 1) return tree;
-  const existingEnding = tree.steps.find(screen => screen.id === outgoing(result.id)[0]?.to && screen.kind === 'acknowledgement');
-  const keepEnding = !!existingEnding && route(result.id, existingEnding.id)
-    && incoming(existingEnding.id).length === 1 && outgoing(existingEnding.id).length === 0;
-  if (outgoing(result.id).length > 0 && !keepEnding) return tree;
-  if (!keepEnding && (tree.steps.some(screen => screen.kind === 'acknowledgement')
-    || walkNodes(result.content).some(node => node.type === 'button' && 'action' in node && node.action === 'next'))) return tree;
-  if (keepEnding) {
-    const crossed = outgoing(signup.id)[0];
-    const endEdge = outgoing(result.id)[0];
-    const edges = graph.edges.map(edge => edge.id === crossed.id ? { ...edge, from: result.id, to: signup.id }
-      : edge.id === endEdge.id ? { ...edge, from: signup.id, to: existingEnding!.id }
-      : edge.to === signup.id ? { ...edge, to: result.id } : edge);
-    return referencedJourney({ ...tree, steps: tree.steps.map(screen => screen.id === result.id
-      ? { ...screen, content: rewrite(screen.content, false) }
-      : screen.id === signup.id ? { ...screen, name: screen.name === __('Contact details', 'wconvert')
-        ? __('Optional email signup', 'wconvert') : screen.name, content: { type: 'stack', children: [rewrite(screen.content, false),
-        { type: 'button', label: __('No thanks', 'wconvert'), action: 'skip', submission: submission.id } as TemplateNode] } as TemplateNode } : screen),
-    graph: { ...graph, edges }, submissions: [{ ...submission, required: false, consents }] });
-  }
-  const acknowledgementId = freshScreen(tree, 'content').id;
-  const acknowledgement: TemplateScreen = { id: acknowledgementId, name: __('All set', 'wconvert'), kind: 'acknowledgement', content: { type: 'stack', children: [
-    { type: 'heading', text: __('Thanks for visiting', 'wconvert'), role: 'success_headline' },
-    { type: 'button', label: __('Back', 'wconvert'), action: 'back' },
-  ] } };
-  const crossed = outgoing(signup.id)[0];
-  const edges = graph.edges.map(edge => edge.id === crossed.id ? { ...edge, from: result.id, to: signup.id }
-    : edge.to === signup.id ? { ...edge, to: result.id } : edge);
-  edges.push({ id: graphEdgeId({ ...graph, edges }), from: signup.id, to: acknowledgementId, kind: 'default' });
-  return referencedJourney({ ...tree, steps: [...tree.steps.map(screen => screen.id === result.id
-    ? { ...screen, content: { type: 'stack', children: [screen.content,
-      { type: 'button', label: __('Optional email updates', 'wconvert'), action: 'next' } as TemplateNode] } as TemplateNode }
-    : screen.id === signup.id ? { ...screen, name: screen.name === __('Contact details', 'wconvert')
-      ? __('Optional email signup', 'wconvert') : screen.name, content: { type: 'stack', children: [rewrite(screen.content, false),
-      { type: 'button', label: __('No thanks', 'wconvert'), action: 'skip', submission: submission.id } as TemplateNode] } as TemplateNode } : screen), acknowledgement],
-    graph: { ...graph, edges }, submissions: [{ ...submission, required: false, consents }] });
+  return referencedJourney({ ...tree, steps: [...tree.steps.map(screen => {
+    if (screen.id === result.id) {
+      let content = rewrite(screen.content, required);
+      if (!required && !walkNodes(content).some(node => node.type === 'button' && 'action' in node && node.action === 'next'))
+        content = { type: 'stack', children: [content, { type: 'button', label: __('Optional email updates', 'wconvert'), action: 'next' }] };
+      return { ...screen, content };
+    }
+    if (screen.id !== signup.id) return screen;
+    const content = rewrite(withoutAction(screen.content, 'skip'), required);
+    return { ...screen, name: required && [__('Optional email signup', 'wconvert'), __('Optional email updates', 'wconvert')].some(name => name === screen.name)
+      ? __('Contact details', 'wconvert') : !required && screen.name === __('Contact details', 'wconvert') ? __('Optional email signup', 'wconvert') : screen.name,
+    content: required ? content : { type: 'stack', children: [content,
+      { type: 'button', label: __('No thanks', 'wconvert'), action: 'skip', submission: submission.id, tokens: { accent: 'transparent', 'accent-fg': '#475569' } } as TemplateNode] } as TemplateNode };
+  }), ...newEnding], graph: { ...graph, edges }, submissions: [{ ...submission, required, consents }] });
 }
 
 export function withBackButton(screen: TemplateScreen): TemplateScreen {

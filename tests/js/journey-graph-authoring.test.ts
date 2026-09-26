@@ -1,7 +1,7 @@
 import { expect, it } from 'vitest';
 import type { TemplateTree } from '@renderer/types';
 import { graphTrace } from '@loader/journey-graph';
-import { addGraphResultSignup, freshScreen, referencedJourney, replaceAnswer, resultAccess, unreachableScreens, usedBy, walkNodes } from '../../resources/admin/src/builder/structure/journey';
+import { addGraphResultSignup, freshScreen, referencedJourney, replaceAnswer, resultAccess, graphResultAccessIssue, unreachableScreens, usedBy, walkNodes } from '../../resources/admin/src/builder/structure/journey';
 import { graphDisplayOrder, graphTargets, insertOnGraphEdge, upgradeToGraph } from '../../resources/admin/src/builder/structure/graph';
 import { graphRemoval } from '../../resources/admin/src/builder/structure/graphRemoval';
 import fixture from '../fixtures/journey-graph-enquiry.json';
@@ -169,4 +169,49 @@ it('preserves merchant-written consent requirements when moving a signup before 
   const consent = walkNodes(required.steps.find(screen => screen.id === 'signup')!.content).find(node => node.type === 'consent');
   expect(consent).toMatchObject({ text: 'I agree to the stated use of my details.' });
   expect(consent && 'hidden' in consent && consent.hidden).not.toBe(true);
+});
+
+it('moves result access across downstream branches and shared endings without changing priorities', () => {
+  const original = upgradeToGraph(guide.tree as TemplateTree);
+  const offer = { ...freshScreen(original, 'content'), id: 'offer', name: 'Growing tips' };
+  const optional: TemplateTree = referencedJourney({ ...original, steps: [...original.steps, offer], graph: { ...original.graph!, edges: [
+    { id: 'growing-route', from: 'signup', to: offer.id, kind: 'answer', when: { match: 'all', clauses: [{ question: 'n3', operator: 'includes_any', values: ['grow'] }] } },
+    ...original.graph!.edges,
+    { id: 'shared-ending', from: offer.id, to: 'thanks', kind: 'default' },
+  ] } });
+  const required = resultAccess(optional, true);
+  expect(required.submissions[0].required).toBe(true);
+  expect(walkNodes(required.steps.find(screen => screen.id === 'guide')!.content).find(node => node.type === 'button' && 'action' in node && node.action === 'next')).toMatchObject({ label: 'Continue' });
+  expect(required.graph?.edges.find(edge => edge.id === 'growing-route')).toEqual({ ...optional.graph!.edges[0], from: 'guide' });
+  expect(required.graph?.edges.find(edge => edge.id === 'shared-ending')).toEqual(optional.graph!.edges.at(-1));
+  expect(graphTrace(required.steps, required.graph!, { n3: ['grow'] }).indices.map(index => required.steps[index].id))
+    .toEqual(['interests', 'signup', 'guide', 'offer', 'thanks']);
+  expect(graphTrace(required.steps, required.graph!, { n3: ['care'] }).indices.map(index => required.steps[index].id))
+    .toEqual(['interests', 'signup', 'guide', 'thanks']);
+  const restored = resultAccess(required, false);
+  expect(restored.graph).toEqual(optional.graph);
+  expect(restored.submissions).toEqual(optional.submissions);
+  expect(restored.steps.find(screen => screen.id === 'offer')).toEqual(optional.steps.find(screen => screen.id === 'offer'));
+  expect(restored.steps.find(screen => screen.id === 'thanks')).toEqual(optional.steps.find(screen => screen.id === 'thanks'));
+});
+
+it('explains independent entrances, conditional signup and result dependencies instead of silently moving them', () => {
+  const original = upgradeToGraph(guide.tree as TemplateTree);
+  const separate: TemplateTree = { ...original, graph: { ...original.graph!, edges: [
+    { id: 'separate', from: 'interests', to: 'signup', kind: 'answer', when: { match: 'all', clauses: [{ question: 'n3', operator: 'includes_any', values: ['care'] }] } },
+    ...original.graph!.edges,
+  ] } };
+  expect(graphResultAccessIssue(separate, true)).toMatchObject({ screenId: 'interests', section: 'paths', message: expect.stringContaining('enters “Optional email updates” separately') });
+  expect(resultAccess(separate, true)).toBe(separate);
+  const conditional = { ...original, steps: original.steps.map(screen => screen.id === 'signup'
+    ? { ...screen, when: { match: 'all' as const, clauses: [{ question: 'n3', operator: 'includes_any' as const, values: ['care'] }] } } : screen) };
+  expect(graphResultAccessIssue(conditional, true)).toMatchObject({ screenId: 'signup', section: 'content', message: expect.stringContaining('Show the signup to everyone') });
+  expect(resultAccess(conditional, true)).toBe(conditional);
+  const required = resultAccess(original, true);
+  const dependent: TemplateTree = { ...required, steps: required.steps.map(screen => screen.id === 'signup'
+    ? { ...screen, content: { type: 'stack', children: [screen.content, { type: 'question', id: 'on-signup', label: 'Choose', answer_type: 'single', required: true, options: [{ value: 'yes', label: 'Yes' }, { value: 'no', label: 'No' }] }] } }
+    : screen.id === 'guide' ? { ...screen, results: screen.results!.map((variant, index) => index === 0
+      ? { ...variant, when: { match: 'all', clauses: [{ question: 'on-signup', operator: 'is', values: ['yes'] }] } } : variant) } : screen) };
+  expect(graphResultAccessIssue(dependent, false)).toMatchObject({ screenId: 'signup', section: 'content', message: expect.stringContaining('uses an answer collected on the signup screen') });
+  expect(resultAccess(dependent, false)).toBe(dependent);
 });

@@ -8,7 +8,7 @@ import { JourneyEditor } from '../../resources/admin/src/builder/JourneyEditor';
 import { Fullscreen } from '../../resources/admin/src/builder/Fullscreen';
 import type { QuestionCondition, QuestionNode, TemplateTree } from '@renderer/types';
 import { ConditionSettings } from '../../resources/admin/src/builder/JourneySettings';
-import { movedScreen, removedScreen, referencedJourney, replaceAnswer, walkNodes } from '../../resources/admin/src/builder/structure/journey';
+import { addGraphResultSignup, movedScreen, removedScreen, referencedJourney, replaceAnswer, walkNodes } from '../../resources/admin/src/builder/structure/journey';
 import { upgradeToGraph } from '../../resources/admin/src/builder/structure/graph';
 import progressive from '../../resources/templates/library/journey-email-then-sms.json';
 import source from '../../resources/templates/library/journey-email-only.json';
@@ -768,4 +768,24 @@ it('adds graph secondary capture at a named saved path and restores focus after 
   expect(draft().submissions[0]).toEqual(initial.submissions[0]);
   await waitFor(() => expect(screen.getByRole('heading', { name: 'Optional SMS signup', level: 3 })).toHaveFocus());
   expect(screen.getByRole('button', { name: 'Remove optional signup' })).toBeEnabled();
+});
+
+it('explains a branched result timing restriction and opens the named paths for repair', async () => {
+  const user = userEvent.setup();
+  const optional = addGraphResultSignup(upgradeToGraph(finder.tree as TemplateTree));
+  const ending = optional.steps.find(item => item.kind === 'acknowledgement')!;
+  const initial: TemplateTree = { ...optional, graph: { ...optional.graph!, edges: [
+    { id: 'skip-signup', from: 'match', to: ending.id, kind: 'answer', when: { match: 'all', clauses: [{ question: 'n3', operator: 'is', values: ['garden'] }] } },
+    ...optional.graph!.edges,
+  ] } };
+  render(<Editor initial={initial} />);
+  await user.click(screen.getByRole('button', { name: 'Manage screens' }));
+  await user.click(screen.getByRole('button', { name: 'Screens' }));
+  await user.click(screen.getByRole('button', { name: /Your result Shows a selected result/ }));
+  expect(screen.getByRole('radio', { name: 'After required contact details' })).toBeDisabled();
+  expect(screen.getByText(/Move any answer branches after both screens first/)).toBeInTheDocument();
+  await user.click(screen.getByRole('button', { name: 'Review Your result' }));
+  expect(screen.getByRole('button', { name: 'Next screen' })).toHaveAttribute('aria-pressed', 'true');
+  await waitFor(() => expect(screen.getByRole('heading', { name: 'Your result' })).toHaveFocus());
+  expect(draft()).toEqual(initial);
 });

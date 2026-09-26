@@ -20,7 +20,7 @@ import { addGraphScreen, type GraphScreenKind } from './structure/graphInsertion
 import { __, sprintf } from '@wordpress/i18n';
 import { Button } from '../components/ui/button';
 import type { TemplateTree, TemplateNode, QuestionNode, Tokens } from '@renderer/types';
-import { addGraphResultSignup, graphResultSignupTarget, duplicateScreen, freshScreen, referencedJourney, walkNodes, submissionScreen, movedScreen, screenRemoval, removedScreen, resultAccess, unreachableScreenIds, unreachableScreens, withBackButton } from './structure/journey';
+import { addGraphResultSignup, graphResultSignupTarget, duplicateScreen, freshScreen, referencedJourney, walkNodes, submissionScreen, movedScreen, screenRemoval, removedScreen, resultAccess, graphResultAccessIssue, unreachableScreenIds, unreachableScreens, withBackButton } from './structure/journey';
 import { graphChangeImpact } from './structure/graphChangeImpact';
 import { addGraphConnection, reconnectGraphEdge } from './structure/graphConnections';
 import { conditionText } from './structure/conditionText';
@@ -134,6 +134,8 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
   const disconnected = useMemo(() => new Set(unreachableScreenIds(tree)), [tree]);
   if (!current) return null;
   const canAddGraphResultSignup = !!graphResultSignupTarget(tree);
+  const resultAccessIssue = tree.graph && tree.submissions.length === 1
+    ? graphResultAccessIssue(tree, !tree.submissions[0].required) : null;
   const canAddGraphCapture = !!tree.graph && tree.submissions.length === 1 && ['email', 'sms'].includes(primaryChannel ?? '');
   const canCondition = tree.steps.some((screen, index) => (tree.graph
     ? screen.id === current?.id || graphReaches(tree.graph, screen.id, current?.id ?? '')
@@ -483,17 +485,20 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
           <QuestionSettings tree={tree} step={step} onChange={onChange} onSelect={select} />
           {current.kind === 'result' && <fieldset className="wconvert-journey-settings__group">
             <legend>{__('When visitors see their result', 'wconvert')}</legend>
-            <label><input type="radio" name={`${id}-result-access`} disabled={tree.graph ? tree.submissions.length > 0 && resultAccess(tree, false) === tree && tree.submissions[0].required : tree.steps.some(screen => screen.paths?.length)} checked={tree.submissions.length === 0 || (tree.graph
+            <label><input type="radio" name={`${id}-result-access`} disabled={tree.graph ? tree.submissions.length > 0 && !!graphResultAccessIssue(tree, false) : tree.steps.some(screen => screen.paths?.length)} checked={tree.submissions.length === 0 || (tree.graph
               ? !tree.submissions[0].required : step < submissionScreen(tree, tree.submissions[0]?.id))}
               onChange={() => { if (tree.submissions.length) { const next = resultAccess(tree, false); write(next, next.steps.findIndex(s => s.id === current.id));
                 if (next !== tree) setSaid(__('Result moved before contact details. Signup is optional and visitors may finish without submitting.', 'wconvert')); } }} />{__('Immediately after the questions', 'wconvert')}</label>
-            <label><input type="radio" name={`${id}-result-access`} disabled={tree.submissions.length !== 1 || (tree.graph ? resultAccess(tree, true) === tree && !tree.submissions[0].required : tree.steps.some(screen => screen.paths?.length))}
+            <label><input type="radio" name={`${id}-result-access`} disabled={tree.submissions.length !== 1 || (tree.graph ? !!graphResultAccessIssue(tree, true) : tree.steps.some(screen => screen.paths?.length))}
               checked={tree.submissions.length === 1 && (tree.graph ? tree.submissions[0].required : step > submissionScreen(tree, tree.submissions[0].id))}
               onChange={() => { const next = resultAccess(tree, true); write(next, next.steps.findIndex(s => s.id === current.id));
                 if (next !== tree) setSaid(__('Contact details are now required before the result. Tell visitors on the first screen.', 'wconvert')); }} />{__('After required contact details', 'wconvert')}</label>
             {!tree.graph && tree.steps.some(screen => screen.paths?.length) && <p>{__('Remove answer paths before changing when results appear.', 'wconvert')}</p>}
             {tree.submissions.length === 0 && <p>{__('Add a signup screen first to make contact details required.', 'wconvert')} {(!tree.graph || canAddGraphResultSignup) && <button type="button" onClick={addOptional}>{__('Add optional signup', 'wconvert')}</button>}</p>}
-            {tree.graph && tree.submissions.length === 1 && resultAccess(tree, !tree.submissions[0].required) === tree && <p>{__('This result has other connections. Review its paths before changing when contact details are requested.', 'wconvert')}</p>}
+            {resultAccessIssue && <div><p>{resultAccessIssue.message}</p>{resultAccessIssue.screenId && <button type="button" onClick={() => {
+              const index = tree.steps.findIndex(screen => screen.id === resultAccessIssue.screenId);
+              if (index >= 0) { select(index); setPanelSection(resultAccessIssue.section); requestAnimationFrame(() => settingsHeading.current?.focus()); }
+            }}>{sprintf(__('Review %s', 'wconvert'), tree.steps.find(screen => screen.id === resultAccessIssue.screenId)?.name ?? '')}</button>}</div>}
             {tree.submissions.length > 0 && <p>{__('Tell visitors about any contact requirement on the first screen. Changing this choice is one undoable draft edit.', 'wconvert')}</p>}
           </fieldset>}
           <ResultSettings tree={tree} step={step} onChange={onChange} repairRequest={repairRequest?.screenId === current.id ? repairRequest : undefined} />

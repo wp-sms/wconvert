@@ -35,6 +35,51 @@ again or turn conditional follow-ups into mutually exclusive branches.
 
 ## Progress after this audit
 
+### Result timing with downstream branches and actionable repair, September 26
+
+The result timing control now moves an adjacent result/signup pair while keeping
+all downstream answer branches, edge IDs, rule priority, destinations and shared
+ending content. It no longer requires a unique linear acknowledgement after the
+pair. Switching back restores the original connections and explicit capture
+ownership. Generated result navigation says **Continue** when more content can
+follow, and **Finish** only when its outgoing paths end at acknowledgements.
+
+Configurations needing preparation now name the actual issue: an intervening
+branch, another entrance into the pair, conditional signup visibility, missing
+required email on the signup, or a result using a question/reward that must remain
+after capture. A **Review [screen]** action selects the relevant content or path
+settings and focuses its heading. This replaces the generic “other connections”
+message. The control does not guess how a merchant wants intervening branches
+rearranged, and arbitrary nonadjacent gate rearrangement is not claimed complete.
+
+Actual local WordPress evidence in **QA — Result access with shared ending
+(draft)** (`01M3EEJ0NAY4SFT2BH7Q6H56K5`):
+
+- Required mode saved with the original answer branch and two routes into the
+  same ending. Full PHP `CaptureContract::issue` returned null; capture purpose
+  was `request` with no generated marketing consent.
+- Test journey selected Growing, accepted contact, showed the matching result,
+  then followed the extra Growing tips screen into the shared ending. The final
+  build visibly labels result navigation Continue.
+- Result-first mode saved with the original edge structure restored. PHP again
+  returned null, with optional email-marketing ownership/consent restored.
+  Everyday care showed the fallback result before contact; No thanks reached the
+  ending, labelled Growing tips bypassed, and recorded Skipped with no acceptance.
+- Adding a temporary answer branch on the result disabled the timing change,
+  explained the precise preparation, and opened Next paths through Review Your
+  guide. DOM inspection confirmed keyboard focus on the Your guide heading.
+  Undo removed that temporary branch; the draft remains unpublished and clean.
+
+Validation: all 2,943 JS tests / 158 files passed with two workers after a run
+concurrent with builds encountered unrelated test timeouts. The final focused
+57-test run, typecheck, lint, and free/Pro admin builds pass. The browser preview
+created no real Leads or provider requests. The screenshot also shows the older
+content-guide template still styles its existing Back buttons as primary; this
+is a remaining default-template hierarchy detail, not changed merchant styling.
+Broader accessibility, product/API failure, controlled delivery and merchant
+feedback gates remain, as does green CI when runners are available.
+
+
 ### Optional second signup creation and phone-draft parity, September 26
 
 Email/SMS campaigns with one required primary capture can now add an optional
