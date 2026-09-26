@@ -1444,23 +1444,46 @@ body .wconvert-rule-picker__unavailable {
 .wconvert-journey-context button:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
 .wconvert-journey-side:has(.wconvert-journey-map) { grid-template-columns: minmax(0, 1fr) minmax(320px, 35%); }
 .wconvert-journey-side[data-panel-open='false']:has(.wconvert-journey-map) { grid-template-columns: minmax(0, 1fr); }
-.wconvert-journey-map { position: relative; display: grid; grid-template-rows: auto minmax(0, 1fr) auto; min-inline-size: 0; min-block-size: 0; background: #f8faf8; border-inline-end: 1px solid var(--border); }
+/* Canvas tools use the map width, including when an inspector is open. */
+.wconvert-journey-map { position: relative; container: journey-map / inline-size; display: grid; grid-template-rows: auto minmax(0, 1fr); min-inline-size: 0; min-block-size: 0; background: #f8faf8; border-inline-end: 1px solid var(--border); }
 .wconvert-journey-map .react-flow { grid-row: 2; inline-size: 100%; block-size: 100%; }
 .wconvert-journey-map__hint { grid-row: 1; margin: 0; padding: 8px 18px; border-block-end: 1px solid var(--border); background: #fff; color: var(--muted-foreground); font-size: var(--text-label); }
-.wconvert-journey-map__toolbar { grid-row: 3; background: var(--card); border-block-start: 1px solid var(--border); }
-.wconvert-journey-map__tools { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 5px; padding: 7px 12px; }
-.wconvert-journey-map__tools button { padding: 6px 9px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--card); color: var(--foreground); box-shadow: 0 2px 8px #1d342812; cursor: pointer; }
-.wconvert-journey-map__tools button[aria-pressed='true'] { background: var(--secondary); border-color: var(--primary); }
+.wconvert-journey-map .react-flow__panel { margin: 16px; }
+.wconvert-journey-map__controls { display: flex; flex-direction: column; align-items: flex-start; gap: 10px; max-inline-size: calc(100% - 32px); pointer-events: none !important; }
+.wconvert-journey-map__control-group { display: flex; align-items: center; gap: 2px; padding: 4px; border: 1px solid #d4e0d8; border-radius: 8px; background: var(--card); box-shadow: 0 2px 8px #1d342810; pointer-events: auto; }
+.wconvert-journey-map__control-group button { display: inline-flex; align-items: center; justify-content: center; gap: 6px; min-block-size: 34px; padding: 6px 8px; border: 0; border-radius: 4px; background: transparent; color: #496b5a; font-size: var(--text-label); line-height: 1.4; white-space: nowrap; box-shadow: none; cursor: pointer; }
+.wconvert-journey-map__control-group button svg { inline-size: 16px; block-size: 16px; flex: none; }
+.wconvert-journey-map__control-group button:hover { background: #f0f5f1; color: #254d39; }
+.wconvert-journey-map__control-group button:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+.wconvert-journey-map__control-group button[aria-pressed='true'] { background: #eaf3ed; color: #285c40; }
+.wconvert-journey-map__zoom { flex-direction: column; gap: 0; padding: 0; overflow: visible; }
+.wconvert-journey-map__zoom button { inline-size: 36px; block-size: 36px; padding: 6px; }
+.wconvert-journey-map__zoom button + button { border-block-start: 1px solid #d4e0d8; border-start-start-radius: 0; border-start-end-radius: 0; }
+.wconvert-journey-map__zoom button svg { inline-size: 20px; block-size: 20px; }
+.wconvert-journey-map__pan span { font-size: var(--text-label); color: var(--muted-foreground); }
+.wconvert-journey-map__pan button { inline-size: 34px; padding: 4px; }
+.wconvert-journey-map .wconvert-journey-map__pan { margin-block-end: 28px; }
+.wconvert-journey-map .wconvert-journey-map__controls { margin-block-end: 28px; }
 .wconvert-journey-map__tools .wconvert-journey-map__mobile-tool { display: none; }
-@media (max-width: 700px) {
+[dir='rtl'] .wconvert-journey-map__direction { transform: scaleX(-1); }
+@container journey-map (max-width: 1000px) {
+  .wconvert-journey-map__pan { display: none; }
+}
+@container journey-map (max-width: 700px) {
   .wconvert-journey-map__tools .wconvert-journey-map__desktop-tool { display: none; }
-  .wconvert-journey-map__tools .wconvert-journey-map__mobile-tool { display: block; }
-  .wconvert-journey-map__tools { justify-content: center; padding: 7px 8px; }
-  .wconvert-journey-map__tools button { font-size: var(--text-label); padding: 6px 7px; }
+  .wconvert-journey-map__tools .wconvert-journey-map__mobile-tool { display: inline-flex; }
+  .wconvert-journey-map__selection { flex-wrap: wrap; }
+  .wconvert-journey-map__control-group button { min-block-size: 36px; }
+}
+@container journey-map (max-width: 400px) {
+  .wconvert-journey-map .react-flow__panel { margin-inline: 10px; }
+  .wconvert-journey-map__controls { max-inline-size: calc(100% - 20px); gap: 6px; }
+  .wconvert-journey-map__selection { gap: 0; }
+  .wconvert-journey-map__selection button { padding-inline: 6px; font-size: var(--text-micro); }
 }
 .wconvert-flow-node { inline-size: 252px; border: 1px solid #c9d9d0; border-radius: 12px; background: white; box-shadow: 0 5px 14px #183f2712; text-align: start; }
 .wconvert-flow-node.is-selected { border-color: #397c58; box-shadow: 0 0 0 3px #397c5830, 0 5px 14px #183f2712; }
-.wconvert-flow-node.is-muted { opacity: .35; }
+.wconvert-flow-node.is-muted, .wconvert-followup-group.is-muted { opacity: .35; }
 .wconvert-flow-node.is-compact-ending { inline-size: 176px; }
 .wconvert-followup-group { inline-size: 320px; border: 1px solid #a9cbb6; border-radius: 12px; background: #f5fbf7; box-shadow: 0 5px 14px #183f2712; color: #244b36; text-align: start; }
 .wconvert-followup-group header { display: flex; justify-content: space-between; gap: 8px; padding: 10px 12px 0; }
@@ -1479,6 +1502,21 @@ body .wconvert-rule-picker__unavailable {
 .wconvert-followup-group button:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
 .wconvert-followup-group .react-flow__handle { inline-size: 10px; block-size: 10px; background: #397c58; border: 2px solid white; }
 .wconvert-flow-node__main { display: grid; gap: 7px; inline-size: 100%; padding: 16px; border: 0; background: none; text-align: start; color: #1d3428; cursor: grab; }
+.wconvert-flow-node__heading { display: flex; align-items: center; gap: 9px; }
+.wconvert-flow-node__heading>div { display: grid; gap: 4px; min-inline-size: 0; }
+.wconvert-flow-node__main .wconvert-flow-node__type-icon { display: grid; place-items: center; inline-size: 30px; block-size: 30px; flex: none; border-radius: 7px; background: #edf3ee; color: #4d715b; }
+.wconvert-flow-node__type-icon svg { inline-size: 17px; block-size: 17px; }
+.wconvert-flow-node__ending { display: flex; align-items: center; gap: 6px; padding: 9px 14px; border-block-start: 1px solid #e3ece6; background: #f2f7f1; color: #536b54; border-radius: 0 0 12px 12px; font-size: var(--text-label); }
+.wconvert-flow-node__ending svg { inline-size: 14px; block-size: 14px; }
+.wconvert-journey-arrival { margin-block-end: 16px; padding: 10px 12px; background: #f4f8f5; border: 1px solid #dce6df; border-radius: 7px; font-size: var(--text-label); }
+.wconvert-journey-arrival summary { color: #375f49; cursor: pointer; overflow-wrap: anywhere; }
+.wconvert-journey-arrival summary:focus-visible { outline: 2px solid var(--ring); outline-offset: 3px; }
+.wconvert-journey-arrival p { color: var(--muted-foreground); margin: 8px 0; }
+.wconvert-journey-arrival ul { display: grid; gap: 5px; margin: 0; padding: 0; list-style: none; }
+.wconvert-journey-arrival button { display: grid; gap: 3px; inline-size: 100%; padding: 8px; text-align: start; border: 1px solid #dce6df; border-radius: 5px; background: white; color: #375f49; cursor: pointer; }
+.wconvert-journey-arrival button span { color: var(--muted-foreground); }
+.wconvert-journey-arrival button:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+.wconvert-journey-arrival__entry { color: var(--muted-foreground); font-size: var(--text-label); margin: 0 0 16px; }
 .wconvert-flow-node__main:active { cursor: grabbing; }
 .wconvert-flow-node__main small { color: #587667; font-size: var(--text-label); text-transform: uppercase; letter-spacing: .05em; }
 .wconvert-flow-node__main strong { font-size: var(--text-body); line-height: 1.3; overflow-wrap: anywhere; }

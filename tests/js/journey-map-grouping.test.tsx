@@ -17,6 +17,7 @@ vi.mock('@tisoap/react-flow-smart-edge', () => ({
 vi.mock('@xyflow/react', async importOriginal => ({
   ...await importOriginal<typeof import('@xyflow/react')>(),
   Position: { Left: 'left', Right: 'right' }, MarkerType: { ArrowClosed: 'arrowclosed' },
+  Panel: ({ children }: { children: ReactNode }) => <div>{children}</div>,
   Handle: () => null, Controls: () => null, Background: () => null,
   useReactFlow: () => ({ getNodes: () => canvas.nodes, fitView: canvas.fitView, viewportInitialized: true, getViewport: () => ({ x: 10, y: 20, zoom: 0.75 }), setViewport: canvas.setViewport }), useStore: () => 1000, useNodesInitialized: () => true,
   ReactFlow: ({ nodes, edges, nodeTypes, children, onNodesChange, onNodeClick, onEdgeClick }: { nodes: Node[]; edges: Edge[]; nodeTypes: NodeTypes; children: ReactNode; onNodesChange(changes: NodeChange[]): void; onNodeClick(event: MouseEvent, node: Node): void; onEdgeClick(event: MouseEvent, edge: Edge): void }) => {
@@ -98,7 +99,7 @@ it('spaces tall parallel cards by measured size without resetting a manually arr
   const user = userEvent.setup();
   const branched = branchedFixture as unknown as TemplateTree;
   render(<JourneyMap tree={branched} selected={null} onSelect={() => {}} onSelectPath={() => {}} onConnect={() => {}} />);
-  await user.click(screen.getByRole('button', { name: 'Group follow-ups' }));
+  await user.click(screen.getByRole('button', { name: 'Expand follow-ups' }));
   expect(canvas.nodes).toHaveLength(13);
   act(() => canvas.change(canvas.nodes.map(node => ({ id: node.id, type: 'dimensions', dimensions: { width: 252, height: 500 } }))));
   const overlaps = () => canvas.nodes.flatMap((a, i) => canvas.nodes.slice(i + 1).filter(b =>
@@ -158,10 +159,11 @@ it('opens normal and hidden paths without the enclosing card overriding the acti
 it('keeps a shared visible/hidden connection highlighted when inspecting the hidden continuation', async () => {
   const user = userEvent.setup();
   render(<JourneyMap tree={tree} selected={tree.steps.findIndex(step => step.id === 'garden')} focusedPath="hidden" onSelect={() => {}} onSelectPath={() => {}} onConnect={() => {}} />);
-  await user.click(screen.getByRole('button', { name: 'Group follow-ups' }));
+  await user.click(screen.getByRole('button', { name: 'Expand follow-ups' }));
   const edges = JSON.parse(screen.getByTestId('map-edges').textContent!) as Edge[];
   expect(edges.find(edge => edge.id === 'garden_next')?.style?.opacity).toBe(1);
-  expect(edges.find(edge => edge.id === 'indoor_next')?.style?.opacity).toBe(0.2);
+  expect(edges.find(edge => edge.id === 'indoor_next')?.style?.opacity).toBe(1);
+  expect(edges.find(edge => edge.id === 'start')?.style?.opacity).toBe(0.2);
 });
 
 
@@ -177,4 +179,32 @@ it('keeps the last inspected screen in view after its settings close', async () 
   // Tidy up requests a fresh fit and must retain the last screen, not jump to entry.
   await userEvent.setup().click(screen.getByRole('button', { name: 'Tidy up' }));
   await waitFor(() => expect(canvas.fitView).toHaveBeenLastCalledWith(expect.objectContaining({ nodes: expect.arrayContaining([{ id: 'contact' }]) })));
+});
+
+
+it('lets merchants turn relationship highlighting off without moving cards or editing routes', async () => {
+  const user = userEvent.setup();
+  render(<JourneyMap tree={tree} selected={tree.steps.findIndex(step => step.id === 'interests')} onSelect={() => {}} onSelectPath={() => {}} onConnect={() => {}} />);
+  expect(screen.getByRole('button', { name: 'Related paths highlighted' })).toHaveAttribute('aria-pressed', 'true');
+  expect(canvas.nodes.find(node => node.id === 'contact')?.data.muted).toBe(true);
+  const positions = canvas.nodes.map(node => node.position);
+  await user.click(screen.getByRole('button', { name: 'Related paths highlighted' }));
+  expect(screen.getByRole('button', { name: 'Highlight related paths' })).toHaveAttribute('aria-pressed', 'false');
+  expect(canvas.nodes.every(node => !node.data.muted)).toBe(true);
+  expect(canvas.nodes.map(node => node.position)).toEqual(positions);
+  const edges = JSON.parse(screen.getByTestId('map-edges').textContent!) as Edge[];
+  expect(edges.every(edge => edge.style?.opacity === 1)).toBe(true);
+});
+
+it.each(['ltr', 'rtl'])('pans to later screens in %s without zooming or changing layout', async direction => {
+  const previous = document.documentElement.dir;
+  document.documentElement.dir = direction;
+  try {
+    render(<JourneyMap tree={tree} selected={null} onSelect={() => {}} onSelectPath={() => {}} onConnect={() => {}} />);
+    const positions = canvas.nodes.map(node => node.position);
+    canvas.setViewport.mockClear();
+    await userEvent.setup().click(screen.getByRole('button', { name: 'Pan to later screens' }));
+    expect(canvas.setViewport).toHaveBeenCalledWith({ x: direction === 'rtl' ? 660 : -640, y: 20, zoom: .75 }, { duration: 180 });
+    expect(canvas.nodes.map(node => node.position)).toEqual(positions);
+  } finally { document.documentElement.dir = previous; }
 });

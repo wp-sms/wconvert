@@ -6,15 +6,15 @@ import type { FollowupGroup } from './structure/followupGroups';
 import { conditionText } from './structure/conditionText';
 
 export interface FollowupGroupData {
-  tree: TemplateTree; group: FollowupGroup; rtl: boolean; unreachable?: boolean; selected: number | null; samplePath: readonly number[] | null;
+  tree: TemplateTree; group: FollowupGroup; rtl: boolean; unreachable?: boolean; muted?: boolean; selected: number | null; samplePath: readonly number[] | null;
   select(index: number): void; expand(group: FollowupGroup): void;
 }
 
 export const FollowupGroupCard = memo(function FollowupGroupCard({ data }: NodeProps) {
-  const { tree, group, rtl, unreachable, selected, samplePath, select, expand } = data as unknown as FollowupGroupData;
+  const { tree, group, rtl, unreachable, muted, selected, samplePath, select, expand } = data as unknown as FollowupGroupData;
   const selectedButton = useRef<HTMLButtonElement>(null);
   useEffect(() => { selectedButton.current?.scrollIntoView?.({ block: 'nearest', inline: 'nearest' }); }, [selected]);
-  return <section dir={rtl ? 'rtl' : 'ltr'} className={`wconvert-followup-group${unreachable ? ' is-unreachable' : ''}`} aria-label={__('Relevant follow-ups', 'wconvert')}>
+  return <section dir={rtl ? 'rtl' : 'ltr'} className={`wconvert-followup-group${unreachable ? ' is-unreachable' : ''}${muted ? ' is-muted' : ''}`} aria-label={__('Relevant follow-ups', 'wconvert')}>
     <Handle id="in" type="target" position={rtl ? Position.Right : Position.Left} isConnectable={false} />
     <header><strong>{__('Relevant follow-ups', 'wconvert')}</strong><span>{samplePath === null ? sprintf(__('%d screens', 'wconvert'), group.screens.length)
       : sprintf(__('%1$d of %2$d shown', 'wconvert'), group.screens.filter(index => samplePath.includes(index)).length, group.screens.length)}</span></header>

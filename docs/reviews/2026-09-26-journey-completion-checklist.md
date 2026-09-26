@@ -30,7 +30,14 @@ to guess when answers are saved or which path wins does not meet the UX goal.
 
 ## Remaining work, in order
 
-1. **Merchant validation before replacing the old experience.** Have occasional
+1. **Finish visual and interaction parity with B.** The owner’s screenshots
+   exposed missing production details despite passing behavioral checks. The
+   [visual parity correction](2026-09-26-journey-visual-parity.md) records restored
+   map controls and incoming-path context, plus outstanding contextual screen
+   actions, line insertion, low-zoom cards and inspector/modal comparisons.
+   These are engineering tasks; do not describe merchant feedback as the only
+   remaining work.
+2. **Merchant validation before replacing the old experience.** Have occasional
    merchants create independent follow-ups, choose an exclusive branch, explain
    when details are saved, and repair a wrong condition. Record completion,
    wrong predictions and hesitation. Agent walkthroughs cannot supply that user
@@ -57,9 +64,9 @@ is the accepted technical check for this revision. Further code changes still
 require appropriate local verification. This exception does not authorize a
 merge or change repository branch-protection settings.
 
-## Final integrated verification
+## Integrated verification before the visual parity correction
 
-All current implementation changes passed 3,024 JS tests across 163 files and
+The implementation before the visual parity correction passed 3,024 JS tests across 163 files and
 2,134 PHP tests / 11,373 assertions. PHPStan inspected 459 files without errors.
 All 60 designs survived registration. The complete production build and loader
 plus combined phone budgets passed using Node 22.23.2. `bin/build.sh all`
@@ -68,6 +75,11 @@ TypeScript, ESLint, source contract and whitespace checks passed. These are
 local results; they do not claim successful GitHub Actions execution.
 
 ## Latest focused verification
+
+Visual parity correction: 66 JS tests, TypeScript, ESLint, both admin builds and
+source contract. Desktop quiz/enquiry and 390/320px browser checks are recorded
+in the [new audit](2026-09-26-journey-visual-parity.md). Full visual parity remains
+open; this is not a complete replacement acceptance.
 
 Goal boundaries and native zoom: 95 JS tests; 12 PHP tests / 351 assertions;
 TypeScript, ESLint and both admin builds. Browser repaired a result bypass and

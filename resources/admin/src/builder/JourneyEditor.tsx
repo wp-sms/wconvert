@@ -5,6 +5,7 @@ import { Input } from '../components/ui/input';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '../components/ui/dropdown-menu';
 import { Dialog, DialogTrigger, DialogContent, DialogTitle, DialogDescription, DialogClose } from '../components/ui/dialog';
 import { JourneyScreenCard } from './JourneyScreenCard';
+import { JourneyArrivalSummary } from './JourneyArrivalSummary';
 import { QuestionSettings, ResultSettings, RouteSettings, ScreenConditionSettings } from './JourneySettings';
 import { JourneyTest } from './JourneyTest';
 import { JourneySample } from './JourneySample';
@@ -456,6 +457,7 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
             </div>
             <div className="wconvert-journey-dialog__details">
           {disconnected.has(current.id) && <p className="wconvert-graph-insert__summary">{__('Visitors cannot reach this screen. Connect an incoming path from a reachable screen to include it in the journey.', 'wconvert')}</p>}
+          <JourneyArrivalSummary tree={tree} step={step} onSelectPath={(index, priority) => { select(index); setPanelSection('paths'); setPathFocus(priority); }} />
           {panelSection === 'content' ? <>
           <div className="wconvert-journey-dialog__fields">
 

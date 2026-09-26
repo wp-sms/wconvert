@@ -1,7 +1,7 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState, type RefObject } from 'react';
-import { createPortal } from 'react-dom';
-import { Background, Handle, MarkerType, Position, ReactFlow, useReactFlow, useStore, useNodesInitialized, type Connection, type Edge, type Node, type NodeProps } from '@xyflow/react';
+import { Background, Handle, MarkerType, Panel, Position, ReactFlow, useReactFlow, useStore, useNodesInitialized, type Connection, type Edge, type Node, type NodeProps } from '@xyflow/react';
 import dagre from '@dagrejs/dagre';
+import { ArrowLeft, ArrowRight, Check, CircleHelp, FileText, Flag, Send, Eye, EyeOff, Focus, Layers, Maximize2, Minus, Plus, Settings2 } from 'lucide-react';
 import { createSmartEdge, SmartEdgeProvider } from '@tisoap/react-flow-smart-edge';
 import { __, sprintf } from '@wordpress/i18n';
 import type { TemplateTree } from '@renderer/types';
@@ -13,6 +13,7 @@ import { FollowupGroupCard } from './FollowupGroupCard';
 import { followupGroups, type FollowupGroup } from './structure/followupGroups';
 import { mapEdgeOptions, mapRoutingOptions } from './structure/mapRouting';
 import { cameraTargets, mapMinZoom } from './structure/mapCamera';
+import { relatedMapElements } from './structure/mapSelection';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuCheckboxItem } from '../components/ui/dropdown-menu';
 import '@xyflow/react/dist/style.css';
 
@@ -52,10 +53,11 @@ const ScreenCard = memo(function ScreenCard({ data, selected }: NodeProps) {
   const hiddenTarget = hiddenId && !paths.some(path => path.to === hiddenId) ? tree.steps.find(item => item.id === hiddenId) : undefined;
   const kind = screen.kind === 'acknowledgement' ? __('Ending', 'wconvert') : screen.kind === 'result' ? __('Result', 'wconvert')
     : question ? __('Question', 'wconvert') : screen.kind === 'input' ? __('Collect details', 'wconvert') : __('Screen', 'wconvert');
+  const KindIcon = screen.kind === 'acknowledgement' ? Check : screen.kind === 'result' ? Flag : question ? CircleHelp : savesDetails ? Send : FileText;
   return <div dir={rtl ? 'rtl' : 'ltr'} className={`wconvert-flow-node${selected ? ' is-selected' : ''}${unreachable ? ' is-unreachable' : ''}${muted ? ' is-muted' : ''}${compactEnding && screen.kind === 'acknowledgement' ? ' is-compact-ending' : ''}`}>
     <Handle id="in" type="target" position={rtl ? Position.Right : Position.Left} />
     <button type="button" className="wconvert-flow-node__main" onClick={() => select(index)}>
-      <small>{ordinal} · {kind}{screen.id === (tree.graph?.entry ?? tree.steps[0].id) ? ` · ${__('First screen', 'wconvert')}` : incoming > 1 ? ` · ${__('Paths rejoin', 'wconvert')}` : ''}</small><strong><bdi>{screen.name}</bdi></strong>
+      <div className="wconvert-flow-node__heading"><span className="wconvert-flow-node__type-icon" aria-hidden="true"><KindIcon /></span><div><small>{ordinal} · {kind}{screen.id === (tree.graph?.entry ?? tree.steps[0].id) ? ` · ${__('First screen', 'wconvert')}` : incoming > 1 ? ` · ${__('Paths rejoin', 'wconvert')}` : ''}</small><strong><bdi>{screen.name}</bdi></strong></div></div>
       {question && 'label' in question && <span><bdi>{String(question.label)}</bdi></span>}
       {screen.when && <em>{sprintf(__('Show if %s', 'wconvert'), conditionText(tree, screen.when))}</em>}
       {unreachable && <em>{__('Unreachable — connect an incoming path', 'wconvert')}</em>}
@@ -92,6 +94,7 @@ const ScreenCard = memo(function ScreenCard({ data, selected }: NodeProps) {
       <Handle id="hidden" type="source" position={rtl ? Position.Left : Position.Right} isConnectable={false} />
       }
     </div>}
+    {screen.kind === 'acknowledgement' && <div className="wconvert-flow-node__ending"><Check aria-hidden="true" />{__('Journey complete', 'wconvert')}</div>}
     {canDraw && <>
       <div className="wconvert-flow-node__add">+ {missingContinuation ? __('Drag to connect the next screen', 'wconvert') : __('Drag to add an answer path', 'wconvert')}</div>
       <Handle id="new" type="source" position={rtl ? Position.Left : Position.Right} style={{ top: 'calc(100% - 15px)' }} />
@@ -101,8 +104,8 @@ const ScreenCard = memo(function ScreenCard({ data, selected }: NodeProps) {
 const nodeTypes = { screen: ScreenCard, followups: FollowupGroupCard };
 const edgeTypes = { journey: createSmartEdge('smoothstep', mapEdgeOptions) };
 
-function FocusCamera({ mapRoot, selectedId, nextId, firstId, initialOverview, overviewWidth = 600, revision, onTidy, preview, onPreview, grouping, toolbar, onNodesReady }: {
-  mapRoot: RefObject<HTMLDivElement | null>; selectedId: string; nextId?: string; firstId: string; initialOverview: boolean; overviewWidth?: number; revision: number; onTidy(): void; preview: boolean; onPreview(): void; grouping?: { active: boolean; toggle(): void }; toolbar: HTMLElement | null; onNodesReady(): void;
+function FocusCamera({ mapRoot, selectedId, nextId, firstId, initialOverview, overviewWidth = 600, revision, onTidy, preview, onPreview, grouping, selection, onNodesReady }: {
+  mapRoot: RefObject<HTMLDivElement | null>; selectedId: string; nextId?: string; firstId: string; initialOverview: boolean; overviewWidth?: number; revision: number; onTidy(): void; preview: boolean; onPreview(): void; grouping?: { active: boolean; toggle(): void }; selection?: { highlighted: boolean; toggle(): void }; onNodesReady(): void;
 }) {
   const { fitView, zoomIn, zoomOut, viewportInitialized, getViewport, setViewport, getNodes } = useReactFlow();
   useEffect(() => {
@@ -119,10 +122,12 @@ function FocusCamera({ mapRoot, selectedId, nextId, firstId, initialOverview, ov
         const bounds = root.querySelector('.react-flow')?.getBoundingClientRect();
         if (!bounds?.width || !bounds.height) return;
         const rect = target.getBoundingClientRect();
+        const tools = root.querySelector('.wconvert-journey-map__controls')?.getBoundingClientRect();
+        const bottom = tools?.height ? Math.min(bounds.bottom - 12, tools.top - 12) : bounds.bottom - 12;
         const dx = rect.left < bounds.left + 12 ? bounds.left + 12 - rect.left
           : rect.right > bounds.right - 12 ? bounds.right - 12 - rect.right : 0;
         const dy = rect.top < bounds.top + 12 ? bounds.top + 12 - rect.top
-          : rect.bottom > bounds.bottom - 12 ? bounds.bottom - 12 - rect.bottom : 0;
+          : rect.bottom > bottom ? bottom - rect.bottom : 0;
         if (dx || dy) {
           const viewport = getViewport();
           void setViewport({ ...viewport, x: viewport.x + dx, y: viewport.y + dy });
@@ -135,6 +140,10 @@ function FocusCamera({ mapRoot, selectedId, nextId, firstId, initialOverview, ov
   const width = useStore(state => state.width);
   const height = useStore(state => state.height);
   const nodesReady = useNodesInitialized();
+  const viewPadding = useCallback(() => {
+    const tools = mapRoot.current?.querySelector('.wconvert-journey-map__controls')?.getBoundingClientRect();
+    return { top: '24px' as const, left: '24px' as const, right: '56px' as const, bottom: `${Math.ceil((tools?.height ?? 44) + 40)}px` as const };
+  }, [mapRoot]);
   useEffect(() => {
     if (!nodesReady) return;
     const frame = requestAnimationFrame(onNodesReady);
@@ -145,27 +154,52 @@ function FocusCamera({ mapRoot, selectedId, nextId, firstId, initialOverview, ov
     const overview = width >= overviewWidth && initialOverview;
     const frame = requestAnimationFrame(() => void fitView({
       ...(overview ? {} : { nodes: cameraTargets(getNodes(), selectedId, nextId, width, height) }),
-      padding: width < 600 ? .06 : overview ? .08 : .2, maxZoom: 1, duration: 180 }));
+      padding: viewPadding(), maxZoom: 1, duration: 180 }));
     return () => cancelAnimationFrame(frame);
-  }, [fitView, getNodes, nextId, initialOverview, revision, selectedId, viewportInitialized, width, height, overviewWidth]);
-  return toolbar && createPortal(<div className="wconvert-journey-map__tools">
-    <button type="button" className="wconvert-journey-map__desktop-tool" aria-label={__('Zoom in', 'wconvert')} onClick={() => void zoomIn()}>+</button>
-    <button type="button" className="wconvert-journey-map__desktop-tool" aria-label={__('Zoom out', 'wconvert')} onClick={() => void zoomOut()}>−</button>
-    <button type="button" className="wconvert-journey-map__desktop-tool" onClick={() => void fitView({ nodes: [{ id: firstId }], padding: .4, maxZoom: 1, duration: 180 })}>{__('Start', 'wconvert')}</button>
-    <button type="button" className="wconvert-journey-map__desktop-tool" aria-pressed={preview} onClick={onPreview}>{preview ? __('Hide previews', 'wconvert') : __('Screen previews', 'wconvert')}</button>
-    {grouping && <button type="button" aria-pressed={grouping.active} onClick={grouping.toggle}>{__('Group follow-ups', 'wconvert')}</button>}
-    <button type="button" className="wconvert-journey-map__desktop-tool" onClick={onTidy}>{__('Tidy up', 'wconvert')}</button>
-    <DropdownMenu><DropdownMenuTrigger asChild><button type="button" className="wconvert-journey-map__mobile-tool">{__('View options', 'wconvert')}</button></DropdownMenuTrigger>
-      <DropdownMenuContent align="end">
-        <DropdownMenuItem onSelect={() => void zoomIn()}>{__('Zoom in', 'wconvert')}</DropdownMenuItem>
-        <DropdownMenuItem onSelect={() => void zoomOut()}>{__('Zoom out', 'wconvert')}</DropdownMenuItem>
-        <DropdownMenuItem onSelect={() => void fitView({ nodes: [{ id: firstId }], padding: .1, maxZoom: 1, duration: 180 })}>{__('Go to first screen', 'wconvert')}</DropdownMenuItem>
-        <DropdownMenuCheckboxItem checked={preview} onCheckedChange={onPreview}>{__('Screen previews', 'wconvert')}</DropdownMenuCheckboxItem>
-        <DropdownMenuItem onSelect={onTidy}>{__('Tidy up', 'wconvert')}</DropdownMenuItem>
-      </DropdownMenuContent>
-    </DropdownMenu>
-    <button type="button" onClick={() => void fitView({ padding: .2, maxZoom: 1, duration: 180 })}>{__('Fit journey', 'wconvert')}</button>
-  </div>, toolbar);
+  }, [fitView, getNodes, nextId, initialOverview, revision, selectedId, viewportInitialized, width, height, overviewWidth, viewPadding]);
+  const focusSelection = () => void fitView({ nodes: cameraTargets(getNodes(), selectedId, nextId, width, height), padding: viewPadding(), maxZoom: 1, duration: 180 });
+  const goToStart = () => void fitView({ nodes: [{ id: firstId }], padding: viewPadding(), maxZoom: 1, duration: 180 });
+  const fitJourney = () => void fitView({ padding: viewPadding(), maxZoom: 1, duration: 180 });
+  const pan = (direction: number) => {
+    const viewport = getViewport();
+    const rtl = document.documentElement.dir === 'rtl';
+    void setViewport({ ...viewport, x: viewport.x + direction * (rtl ? -1 : 1) * width * .65 }, { duration: 180 });
+  };
+  return <>
+    <Panel position="top-right" className="wconvert-journey-map__zoom wconvert-journey-map__control-group">
+      <button type="button" aria-label={__('Zoom in', 'wconvert')} title={__('Zoom in', 'wconvert')} onClick={() => void zoomIn()}><Plus aria-hidden="true" /></button>
+      <button type="button" aria-label={__('Zoom out', 'wconvert')} title={__('Zoom out', 'wconvert')} onClick={() => void zoomOut()}><Minus aria-hidden="true" /></button>
+    </Panel>
+    <Panel position="bottom-left" className="wconvert-journey-map__controls">
+      {selection && <div className="wconvert-journey-map__selection wconvert-journey-map__control-group" role="group" aria-label={__('Selected screen and paths', 'wconvert')}>
+        <button type="button" aria-pressed={selection.highlighted} onClick={selection.toggle}><Focus aria-hidden="true" />{selection.highlighted ? __('Related paths highlighted', 'wconvert') : __('Highlight related paths', 'wconvert')}</button>
+        <button type="button" onClick={focusSelection}>{__('Focus selection', 'wconvert')}</button>
+      </div>}
+      <div className="wconvert-journey-map__tools wconvert-journey-map__control-group" role="group" aria-label={__('Map view', 'wconvert')}>
+        {grouping && <button type="button" className="wconvert-journey-map__desktop-tool" onClick={grouping.toggle}><Layers aria-hidden="true" />{grouping.active ? __('Expand follow-ups', 'wconvert') : __('Group follow-ups', 'wconvert')}</button>}
+        <button type="button" className="wconvert-journey-map__desktop-tool" onClick={goToStart}><ArrowRight className="wconvert-journey-map__direction" aria-hidden="true" />{__('Start', 'wconvert')}</button>
+        <button type="button" className="wconvert-journey-map__desktop-tool" aria-pressed={preview} onClick={onPreview}>{preview ? <EyeOff aria-hidden="true" /> : <Eye aria-hidden="true" />}{__('Screen previews', 'wconvert')}</button>
+        <button type="button" className="wconvert-journey-map__desktop-tool" onClick={onTidy}><Maximize2 aria-hidden="true" />{__('Tidy up', 'wconvert')}</button>
+        <DropdownMenu><DropdownMenuTrigger asChild><button type="button" className="wconvert-journey-map__mobile-tool"><Settings2 aria-hidden="true" />{__('View options', 'wconvert')}</button></DropdownMenuTrigger>
+          <DropdownMenuContent align="start">
+            <DropdownMenuItem onSelect={goToStart}>{__('Go to first screen', 'wconvert')}</DropdownMenuItem>
+            <DropdownMenuCheckboxItem checked={preview} onCheckedChange={onPreview}>{__('Screen previews', 'wconvert')}</DropdownMenuCheckboxItem>
+            {grouping && <DropdownMenuItem onSelect={grouping.toggle}>{grouping.active ? __('Expand follow-ups', 'wconvert') : __('Group follow-ups', 'wconvert')}</DropdownMenuItem>}
+            <DropdownMenuItem onSelect={onTidy}>{__('Tidy up', 'wconvert')}</DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => pan(1)}>{__('Pan to earlier screens', 'wconvert')}</DropdownMenuItem>
+            <DropdownMenuItem onSelect={() => pan(-1)}>{__('Pan to later screens', 'wconvert')}</DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+        <button type="button" onClick={fitJourney}><Focus aria-hidden="true" />{__('Fit journey', 'wconvert')}</button>
+      </div>
+    </Panel>
+    <Panel position="bottom-right" className="wconvert-journey-map__pan wconvert-journey-map__control-group">
+      <button type="button" aria-label={__('Pan to earlier screens', 'wconvert')} title={__('Pan to earlier screens', 'wconvert')} onClick={() => pan(1)}><ArrowLeft className="wconvert-journey-map__direction" aria-hidden="true" /></button>
+      <span>{__('Scroll to pan', 'wconvert')}</span>
+      <button type="button" aria-label={__('Pan to later screens', 'wconvert')} title={__('Pan to later screens', 'wconvert')} onClick={() => pan(-1)}><ArrowRight className="wconvert-journey-map__direction" aria-hidden="true" /></button>
+    </Panel>
+  </>;
+
 }
 
 /** The canvas is an overview; the same routes are editable through selects in the inspector. */
@@ -187,7 +221,7 @@ export function JourneyMap({ tree, selected, focusedPath = null, onSelect, onSel
     update(); query.addEventListener('change', update);
     return () => query.removeEventListener('change', update);
   }, []);
-  const [toolbar, setToolbar] = useState<HTMLDivElement | null>(null);
+  const [highlightRelated, setHighlightRelated] = useState(true);
   const [expandedGroups, setExpandedGroups] = useState<readonly string[]>([]);
   const [grouping, setGrouping] = useState(true);
   const [cameraFocus, setCameraFocus] = useState<string | null>(null);
@@ -257,17 +291,6 @@ export function JourneyMap({ tree, selected, focusedPath = null, onSelect, onSel
   // measurements must not reset that arrangement; Tidy up explicitly opts in.
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [layoutRequest, measurements]);
-  const focusTarget = focusedPath === null || selected === null ? null
-    : tree.steps.findIndex(item => item.id === (focusedPath === 'hidden' ? hiddenFor(tree, selected) : routesFor(tree, selected)[focusedPath]?.to));
-  const cardData = useMemo(() => tree.steps.map((_, index) => ({ tree, index, ordinal: ordinals.indexOf(index) + 1, rtl, unreachable: disconnected.has(tree.steps[index].id),
-      muted: samplePath !== null ? !samplePath.includes(index) : focusTarget !== null && index !== selected && index !== focusTarget,
-      preview, compactEnding: groups.length > 0, destinationSummary, goToDestinations: onGoToDestinations, select: onSelect, selectPath: onSelectPath })),
-    [tree, disconnected, ordinals, selected, onSelect, onSelectPath, rtl, samplePath, focusTarget, preview, groups.length, destinationSummary, onGoToDestinations]);
-  const groupData = useMemo(() => new Map(groups.map(group => [group.id, { tree, group, rtl, unreachable: disconnected.has(tree.steps[group.screens[0]].id), selected: samplePath === null ? selected : null, samplePath, select: onSelect, expand }])),
-    [groups, tree, disconnected, rtl, selected, samplePath, onSelect, expand]);
-  const nodes = useMemo<Node[]>(() => view.map(({ id, index, group }) => ({ id, type: group ? 'followups' : 'screen',
-    position: positions[id] ?? { x: index * 340, y: 60 }, measured: measurements[id],
-    selected: !group && index === selected && samplePath === null, data: group ? groupData.get(id)! : cardData[index] })), [view, positions, measurements, selected, samplePath, groupData, cardData]);
   const rawEdges = useMemo<Edge[]>(() => tree.steps.flatMap((step, index) => {
     const paths = routesFor(tree, index);
     const routes: Edge[] = paths
@@ -275,25 +298,40 @@ export function JourneyMap({ tree, selected, focusedPath = null, onSelect, onSel
         sourceHandle: `route-${priority}`, targetHandle: 'in', type: 'journey', reconnectable: tree.graph ? 'target' : false,
         label: paths.length > 1 || path.when ? ('kind' in path ? path.kind === 'default' : !path.when) ? __('Else', 'wconvert') : String(priority + 1) : undefined,
         markerEnd: { type: MarkerType.ArrowClosed, color: '#719987', width: 15, height: 15 },
-        style: { stroke: '#719987', strokeWidth: 2, opacity: samplePath !== null ? 1 : focusedPath !== null && (index !== selected || priority !== focusedPath && !(focusedPath === 'hidden' && path.to === hiddenFor(tree, index))) ? .2 : 1 } }));
+        style: { stroke: '#719987', strokeWidth: 2 } }));
     const hidden = hiddenFor(tree, index);
     if (hidden && !paths.some(path => path.to === hidden)) routes.push({
       id: tree.graph?.edges.find(edge => edge.from === step.id && edge.kind === 'hidden')?.id ?? `${step.id}-hidden`,
       source: step.id, target: hidden, data: { sourceIndex: index, priority: 'hidden' }, sourceHandle: 'hidden', targetHandle: 'in', type: 'journey', reconnectable: 'target',
       label: __('Hidden', 'wconvert'), markerEnd: { type: MarkerType.ArrowClosed, color: '#9aa8a0', width: 15, height: 15 },
-      style: { stroke: '#9aa8a0', strokeWidth: 1.5, strokeDasharray: '5 4', opacity: samplePath !== null ? 1 : focusedPath !== null && (index !== selected || focusedPath !== 'hidden') ? .2 : 1 },
+      style: { stroke: '#9aa8a0', strokeWidth: 1.5, strokeDasharray: '5 4' },
     });
     return routes;
-  }), [tree, focusedPath, samplePath, selected]);
+  }), [tree]);
+  const selectedId = selected === null ? undefined : tree.steps[selected]?.id;
+  const selectedEdge = focusedPath === null ? undefined : rawEdges.find(edge => edge.source === selectedId &&
+    (edge.data?.priority === focusedPath || focusedPath === 'hidden' && edge.target === hiddenFor(tree, selected!)));
+  const related = useMemo(() => relatedMapElements(rawEdges, selectedId, selectedEdge?.id), [rawEdges, selectedId, selectedEdge?.id]);
+  const highlighting = highlightRelated && selected !== null && samplePath === null;
+  const cardData = useMemo(() => tree.steps.map((_, index) => ({ tree, index, ordinal: ordinals.indexOf(index) + 1, rtl, unreachable: disconnected.has(tree.steps[index].id),
+      muted: samplePath !== null ? !samplePath.includes(index) : highlighting && !related.screens.has(tree.steps[index].id),
+      preview, compactEnding: groups.length > 0, destinationSummary, goToDestinations: onGoToDestinations, select: onSelect, selectPath: onSelectPath })),
+    [tree, disconnected, ordinals, onSelect, onSelectPath, rtl, samplePath, highlighting, related, preview, groups.length, destinationSummary, onGoToDestinations]);
+  const groupData = useMemo(() => new Map(groups.map(group => [group.id, { tree, group, rtl, unreachable: disconnected.has(tree.steps[group.screens[0]].id), selected: samplePath === null ? selected : null, muted: highlighting && !group.screens.some(index => related.screens.has(tree.steps[index].id)), samplePath, select: onSelect, expand }])),
+    [groups, tree, disconnected, rtl, selected, samplePath, highlighting, related, onSelect, expand]);
+  const nodes = useMemo<Node[]>(() => view.map(({ id, index, group }) => ({ id, type: group ? 'followups' : 'screen',
+    position: positions[id] ?? { x: index * 340, y: 60 }, measured: measurements[id],
+    selected: !group && index === selected && samplePath === null, data: group ? groupData.get(id)! : cardData[index] })), [view, positions, measurements, selected, samplePath, groupData, cardData]);
   const edges = useMemo(() => rawEdges.flatMap(edge => {
     const source = visibleId(edge.source), target = visibleId(edge.target);
     if (source === target) return [];
     return [{ ...edge, source, target,
+      style: { ...edge.style, opacity: highlighting && !related.paths.has(edge.id) ? .2 : 1 },
       ariaLabel: sprintf(edge.data?.priority === 'hidden' ? __('When hidden: %1$s to %2$s', 'wconvert') : __('%1$s to %2$s', 'wconvert'), tree.steps.find(step => step.id === edge.source)?.name ?? edge.source, tree.steps.find(step => step.id === edge.target)?.name ?? edge.target),
       sourceHandle: source !== edge.source ? 'out' : edge.sourceHandle,
       targetHandle: target !== edge.target ? 'in' : edge.targetHandle,
       reconnectable: source !== edge.source || target !== edge.target ? false : edge.reconnectable }];
-  }), [rawEdges, visibleId, tree.steps]);
+  }), [rawEdges, visibleId, tree.steps, highlighting, related]);
   const valid = (connection: Connection | Edge) => {
     const from = tree.steps.findIndex(step => step.id === connection.source);
     const to = tree.steps.findIndex(step => step.id === connection.target);
@@ -336,13 +374,12 @@ export function JourneyMap({ tree, selected, focusedPath = null, onSelect, onSel
         firstId={visibleId(tree.graph?.entry ?? tree.steps[0].id)}
         initialOverview={selected === null && cameraFocus === null && view.length <= (groups.length ? 4 : 3)} overviewWidth={groups.length && view.length > 3 ? 900 : 600}
         grouping={detectedGroups.length ? { active: groups.length > 0, toggle: () => { setGrouping(groups.length === 0); setExpandedGroups([]); } } : undefined}
-        revision={revision} toolbar={toolbar} onNodesReady={focusExpandedScreen} preview={preview} onPreview={() => setPreview(value => !value)} onTidy={() => setTidyRevision(value => value + 1)} />
+        revision={revision} selection={selected !== null && samplePath === null ? { highlighted: highlightRelated, toggle: () => setHighlightRelated(value => !value) } : undefined} onNodesReady={focusExpandedScreen} preview={preview} onPreview={() => setPreview(value => !value)} onTidy={() => setTidyRevision(value => value + 1)} />
     </ReactFlow>
     </SmartEdgeProvider>
     <p className="wconvert-journey-map__hint">{disconnected.size ? __('Unreachable screens stay in your draft. Connect their incoming paths or remove screens you no longer need.', 'wconvert') : groups.length ? __('Every matching follow-up is shown. Expand screens to edit their connections.', 'wconvert') : tree.graph
       ? __('Drag from “+” to add an answer path, or move a line’s arrow to change its destination. Next screen settings offer the same controls. Moving a box changes only the layout.', 'wconvert')
       : rtl ? __('Follow arrows from right to left. Scroll to move through the map; select a screen to edit or draw a forward path.', 'wconvert')
         : __('Follow arrows from left to right. Scroll to move through the map; select a screen to edit or draw a forward path.', 'wconvert')}</p>
-    <div ref={setToolbar} className="wconvert-journey-map__toolbar" />
   </div>;
 }
