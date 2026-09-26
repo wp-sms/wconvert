@@ -600,3 +600,15 @@ it('undoes a journey typing burst once and keeps separate fields as separate edi
   await user.click(screen.getByRole('button', { name: 'Manage screens' }));
   expect(screen.getByRole('textbox', { name: 'Question' })).toHaveValue('What interests you? today?');
 });
+
+it('opens the specific result and focuses its fallback link when repairing publication', async () => {
+  const tree = upgradeToGraph(finder.tree as TemplateTree);
+  function RepairEditor() {
+    const [step, setStep] = useState(0);
+    return <JourneyEditor embedded tree={tree} step={step} onChange={() => {}} onSelect={setStep}
+      repairRequest={{ serial: 1, screenId: 'match', section: 'content', resultId: 'balcony', focus: 'result-link' }} />;
+  }
+  render(<RepairEditor />);
+  await waitFor(() => expect(screen.getByRole('textbox', { name: 'Heading' })).toHaveValue('Balcony picks'));
+  await waitFor(() => expect(screen.getByRole('textbox', { name: 'Fallback shop or guide link' })).toHaveFocus());
+});

@@ -70,7 +70,10 @@ export function render(tree: TemplateTree, tokens: Tokens, step = 0, options: Re
     appendNode(root, node, tokens, EDITABLE && options.paths === true ? String(step) : null);
   }
 
-  if (screen?.kind === 'result' && journeyResult) root.prepend(journeyResult(screen));
+  if (screen?.kind === 'result' && journeyResult) {
+    root.prepend(journeyResult(screen));
+    root.classList.add('wc-stack');
+  }
 
   return root;
 }

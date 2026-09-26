@@ -58,7 +58,7 @@ final class CaptureContract
             foreach ($step['results'] ?? [] as $variant) {
                 $hasLink = trim((string) ($variant['href'] ?? '')) !== '';
                 $hasLabel = trim((string) ($variant['link_label'] ?? '')) !== '';
-                if ($hasLink !== $hasLabel) { return 'result_link'; }
+                if ($hasLink !== $hasLabel || (!empty($variant['product_ids']) && !$hasLink)) { return 'result_link'; }
             }
             if (($step['products_required'] ?? false) === true) {
                 if (!class_exists('WooCommerce') || count($step['results'] ?? []) < 2) { return 'products'; }

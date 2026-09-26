@@ -70,7 +70,7 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
       : repairRequest.pathPriority;
     setPathFocus(priority !== undefined && priority >= 0 ? priority : null);
     onSelect(index);
-    if (repairRequest.section === 'content' || priority === undefined || priority < 0) requestAnimationFrame(() => {
+    if (!repairRequest.resultId && (repairRequest.section === 'content' || priority === undefined || priority < 0)) requestAnimationFrame(() => {
       const heading = settingsHeading.current;
       const condition = repairRequest.focus === 'hidden-route'
         ? heading?.closest('.wconvert-journey-pane')?.querySelector<HTMLElement>('.wconvert-journey-settings__skip select')
@@ -479,7 +479,7 @@ export function JourneyEditor({ tree, tokens = {}, step, primaryChannel, onChang
             {tree.graph && tree.submissions.length === 1 && resultAccess(tree, !tree.submissions[0].required) === tree && <p>{__('This result has other connections. Review its paths before changing when contact details are requested.', 'wconvert')}</p>}
             {tree.submissions.length > 0 && <p>{__('Tell visitors about any contact requirement on the first screen. Changing this choice is one undoable draft edit.', 'wconvert')}</p>}
           </fieldset>}
-          <ResultSettings tree={tree} step={step} onChange={onChange} />
+          <ResultSettings tree={tree} step={step} onChange={onChange} repairRequest={repairRequest?.screenId === current.id ? repairRequest : undefined} />
           <div className="wconvert-journey-dialog__behavior"><strong>{screenLabel(step)}</strong><p>{current.kind === 'acknowledgement'
             ? __('The journey ends here. This screen always stays last.', 'wconvert')
             : submission?.required === false

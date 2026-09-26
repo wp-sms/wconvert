@@ -158,6 +158,19 @@ final class CaptureJourneyTest extends TestCase
         unset($variant);
         self::assertNull(\WConvert\Template\CaptureContract::issue($config, 'find_match', ''));
     }
+    public function testSelectedProductsNeedAFallbackEvenWithoutTheLiveProductRequirement(): void
+    {
+        $template = json_decode((string) file_get_contents(dirname(__DIR__, 3) . '/pro/modules/journeys/templates/journey-product-finder.json'), true);
+        $result = count($template['tree']['steps']) - 1;
+        unset($template['tree']['steps'][$result]['products_required']);
+        $template['tree']['steps'][$result]['results'][0]['product_ids'] = [12];
+        $config = ['template' => $template];
+        self::assertSame('result_link', \WConvert\Template\CaptureContract::issue($config, 'find_match', ''));
+        $config['template']['tree']['steps'][$result]['results'][0]['href'] = '/shop/';
+        $config['template']['tree']['steps'][$result]['results'][0]['link_label'] = 'Browse plants';
+        self::assertNull(\WConvert\Template\CaptureContract::issue($config, 'find_match', ''));
+    }
+
     public function testOptionalSmsKeepsASeparateSubmissionAndRejectsBypassingEmail(): void
     {
         $template = json_decode((string) file_get_contents(dirname(__DIR__, 3) . '/resources/templates/library/journey-email-then-sms.json'), true);

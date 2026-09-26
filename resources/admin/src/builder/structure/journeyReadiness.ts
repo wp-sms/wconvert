@@ -10,7 +10,8 @@ export interface JourneyRepair {
   readonly section: 'content' | 'paths';
   readonly edgeId?: string;
   readonly pathPriority?: number;
-  readonly focus?: 'questions' | 'hidden-route';
+  readonly resultId?: string;
+  readonly focus?: 'questions' | 'hidden-route' | 'result-link';
 }
 
 export interface JourneyReadinessIssue {
@@ -69,13 +70,22 @@ export function journeyReadinessIssues(tree: TemplateTree): JourneyReadinessIssu
       if (reason) issues.push({ key: `show:${screen.id}`, said: sprintf(__('Review when “%1$s” appears: %2$s', 'wconvert'), screen.name, reason), repair: { screenId: screen.id, section: 'content' } });
     }
     screen.results?.forEach((result, index) => {
+      const hasLink = !!result.href?.trim();
+      const hasLabel = !!result.link_label?.trim();
+      if (hasLink !== hasLabel || (!!result.product_ids?.length || screen.products_required) && !hasLink) {
+        issues.push({ key: `result-link:${screen.id}:${result.id}`,
+          said: sprintf(result.product_ids?.length || screen.products_required
+            ? __('Add a fallback link and label for “%1$s” on “%2$s”, so visitors can continue if products are unavailable.', 'wconvert')
+            : __('Complete the link destination and label for “%1$s” on “%2$s”.', 'wconvert'), result.heading, screen.name),
+          repair: { screenId: screen.id, section: 'content', resultId: result.id, focus: 'result-link' } });
+      }
       if (!result.when) return;
       const reason = incomplete(result.when) ? null : invalid(result.when, screen.id, false);
       if (!incomplete(result.when) && !reason) return;
       issues.push({ key: `result:${screen.id}:${index}`,
         said: reason ? sprintf(__('Review result %1$d on “%2$s”: %3$s', 'wconvert'), index + 1, screen.name, reason)
           : sprintf(__('Choose an answer for result %1$d on “%2$s”.', 'wconvert'), index + 1, screen.name),
-        repair: { screenId: screen.id, section: 'content' } });
+        repair: { screenId: screen.id, section: 'content', resultId: result.id } });
     });
     screen.paths?.forEach((path, index) => {
       if (!path.when) return;

@@ -1,9 +1,10 @@
-import { useEffect, useId, useRef, useState } from 'react';
+import { useEffect, useId, useLayoutEffect, useRef, useState } from 'react';
 import apiFetch from '@wordpress/api-fetch';
 import { __, sprintf } from '@wordpress/i18n';
 import type { QuestionClause, QuestionCondition, QuestionNode, ResultVariant, TemplateNode, TemplateTree } from '@renderer/types';
 import { replaceAnswer, unreachableScreens, walkNodes, usedBy } from './structure/journey';
 import { conditionText, resultsMayOverlap } from './structure/conditionText';
+import type { JourneyRepair } from './structure/journeyReadiness';
 import { graphEdgeId, graphReaches } from './structure/graph';
 import { ConfirmDialog } from '../shell/ConfirmDialog';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../components/ui/dropdown-menu';
@@ -284,9 +285,23 @@ function ProductPicker({ ids, onChange }: { ids: readonly number[]; onChange(ids
   </div>;
 }
 
-export function ResultSettings({ tree, step, onChange }: { tree: TemplateTree; step: number; onChange(next: TemplateTree, coalesce?: string): void }) {
+export function ResultSettings({ tree, step, onChange, repairRequest }: { tree: TemplateTree; step: number; onChange(next: TemplateTree, coalesce?: string): void;
+  repairRequest?: JourneyRepair & { readonly serial: number } }) {
   const tabsId = useId();
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const linkInput = useRef<HTMLInputElement>(null);
+  const settingsRoot = useRef<HTMLElement>(null);
+  const handledRepair = useRef(0);
+  useLayoutEffect(() => {
+    if (!repairRequest?.resultId || handledRepair.current === repairRequest.serial) return;
+    // Focus only after the requested result's inputs have committed. Focusing the
+    // previous result before switching tabs loses focus when that input unmounts.
+    if (selectedId !== repairRequest.resultId) { setSelectedId(repairRequest.resultId); return; }
+    const target = repairRequest.focus === 'result-link' ? linkInput.current
+      : settingsRoot.current?.querySelector<HTMLElement>('[role="tabpanel"] .wconvert-journey-settings__clause select');
+    (target ?? linkInput.current)?.focus();
+    handledRepair.current = repairRequest.serial;
+  }, [repairRequest, selectedId]);
   const screen = tree.steps[step];
   if (screen.kind !== 'result') return null;
   const variants = screen.results ?? [];
@@ -313,7 +328,7 @@ export function ResultSettings({ tree, step, onChange }: { tree: TemplateTree; s
     setVariants([...variants.slice(0, -1), { id, heading: __('Your result', 'wconvert'), body: __('Here is a good place to start.', 'wconvert'), product_ids: [], when: { match: 'all', clauses: [{ question: q.id, operator: q.answer_type === 'multi' ? 'includes_any' : 'is', values: [q.options?.[0]?.value ?? ''] }] } }, ...variants.slice(-1)]);
     setSelectedId(id);
   };
-  return <section className="wconvert-journey-settings"><div className="wconvert-journey-settings__result-heading"><h4>{__('Results', 'wconvert')}</h4>
+  return <section ref={settingsRoot} className="wconvert-journey-settings"><div className="wconvert-journey-settings__result-heading"><h4>{__('Results', 'wconvert')}</h4>
     {variants.length < 6 && sources.length > 0 && <button type="button" onClick={addResult}>{__('Add matching result', 'wconvert')}</button>}
   </div>
     <p>{__('Choose a result to edit. Visitors see the first matching result, or Everyone else.', 'wconvert')}</p>
@@ -345,7 +360,7 @@ export function ResultSettings({ tree, step, onChange }: { tree: TemplateTree; s
       {selectedAt < variants.length - 1 && <ConditionSettings required value={selected.when} sources={sources} onChange={when => { if (when) edit(selectedAt, { when }); }} />}
       <label>{__('Heading', 'wconvert')}<input value={selected.heading} maxLength={200} onChange={event => edit(selectedAt, { heading: event.target.value }, 'heading')} /></label>
       <label>{__('Message', 'wconvert')}<textarea value={selected.body ?? ''} maxLength={500} onChange={event => edit(selectedAt, { body: event.target.value }, 'body')} /></label>
-      <label>{__('Fallback shop or guide link', 'wconvert')}<input type="text" inputMode="url" placeholder="/shop/" value={selected.href ?? ''} onChange={event => edit(selectedAt, { href: event.target.value }, 'href')} /></label>
+      <label>{__('Fallback shop or guide link', 'wconvert')}<input ref={linkInput} type="text" inputMode="url" placeholder="/shop/" value={selected.href ?? ''} onChange={event => edit(selectedAt, { href: event.target.value }, 'href')} /></label>
       <label>{__('Link label', 'wconvert')}<input value={selected.link_label ?? ''} maxLength={120} onChange={event => edit(selectedAt, { link_label: event.target.value }, 'link_label')} /></label>
       <ProductPicker ids={selected.product_ids ?? []} onChange={product_ids => edit(selectedAt, { product_ids })} />
       {selectedAt < variants.length - 1 && <button type="button" onClick={() => { setSelectedId(null); setVariants(variants.filter((_, index) => index !== selectedAt)); }}>{__('Remove result', 'wconvert')}</button>}

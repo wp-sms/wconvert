@@ -65,3 +65,15 @@ it('blocks a required-save bypass and locates its hidden continuation', () => {
   const optional: TemplateTree = { ...tree, submissions: tree.submissions.map(item => ({ ...item, required: false })) };
   expect(journeyReadinessIssues(optional).some(issue => issue.key.startsWith('capture-path:'))).toBe(false);
 });
+
+it('requires a fallback for selected products independently of the live-product toggle', () => {
+  const result: TemplateTree = { ...base, steps: [{ id: 'match', name: 'Your match', kind: 'result', content: { type: 'stack', children: [] },
+    results: [{ id: 'default', heading: 'Garden picks', body: '', product_ids: [12] }] }], submissions: [], graph: { entry: 'match', edges: [] } };
+  expect(journeyReadinessIssues(result)).toContainEqual({ key: 'result-link:match:default',
+    said: 'Add a fallback link and label for “Garden picks” on “Your match”, so visitors can continue if products are unavailable.',
+    repair: { screenId: 'match', section: 'content', resultId: 'default', focus: 'result-link' } });
+  const fixed: TemplateTree = { ...result, steps: result.steps.map(screen => ({ ...screen, results: screen.results!.map(variant => ({ ...variant, href: '/shop/', link_label: 'Browse plants' })) })) };
+  expect(journeyReadinessIssues(fixed)).toEqual([]);
+  const contentOnly: TemplateTree = { ...result, steps: result.steps.map(screen => ({ ...screen, results: screen.results!.map(variant => ({ ...variant, product_ids: [] })) })) };
+  expect(journeyReadinessIssues(contentOnly)).toEqual([]);
+});

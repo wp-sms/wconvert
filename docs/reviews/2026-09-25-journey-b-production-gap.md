@@ -35,6 +35,37 @@ again or turn conditional follow-ups into mutually exclusive branches.
 
 ## Progress after this audit
 
+### September 26: real product availability and result repair
+
+Selected products now require a fallback destination and label even when the
+merchant disables “Require live products before publishing.” Disabling that
+catalogue check must not permit an unavailable-product dead end. The PHP
+publication contract and admin readiness both enforce this. Text-only results
+can still omit links. Review names the affected result and opens its specific
+variant, focusing the fallback field; broken result-condition repairs also
+select their own variant. Focus runs after the requested variant's controls
+commit, avoiding both parent focus competition and focus loss on tab replacement.
+
+A disposable WordPress 7.1.2 / WooCommerce 11.1.2 site verified the actual visitor
+popup, using keyboard controls throughout. Garden + Mostly sunny showed the
+$29 available product and excluded a selected sold-out product. Changing the
+remaining product to out of stock, going Back, and continuing preserved the
+answer and fetched the updated availability. The result retained its heading
+and message, displayed the unavailable-products explanation, and its fallback
+opened the actual shop. No Lead was created. A further browser pass confirmed
+the result action and Back have the shared vertical gap instead of touching.
+The temporary campaign was unpublished and its pages/products returned to draft.
+WooCommerce was installed only in this disposable site, not wconvert.local.
+
+A separate unpublished local admin fixture verified the missing-link blocker,
+correct-variant repair and keyboard focus, removal of the blocker after filling
+both fields, and Undo restoring the original draft. Full suites passed 2,879 JS
+tests and 2,127 PHP tests / 10,929 assertions. The final focus change passed the
+43-test editor/readiness suite, TypeScript, ESLint and both admin builds.
+PHPStan and unchanged loader budgets passed, including Node 22 compression.
+These checks cover basic live availability and fallback, not all product
+combinations, API failures or external destination delivery.
+
 ### September 26: named Undo/Redo and coherent journey typing
 
 Campaign history now describes the actual action being undone/redone: screen
@@ -567,9 +598,10 @@ classification too. The shared shell's result-first check now follows graph
 connections rather than storage order; fixtures reverse storage for both
 optional and required signup and retain the expected classification.
 
-Remaining release work includes external delivery and live-product evidence,
-precise repair targets for server-only failures, grouped follow-up readability,
-complex graph edits, and the responsive/keyboard/RTL checks below. Do not mark
+Remaining release work includes external delivery, broader product combinations
+and API-failure evidence, precise repair targets for server-only failures,
+complex/large-map readability, complex graph edits, and the responsive/keyboard/RTL
+checks below. Basic live-product availability and fallback are verified above. Do not mark
 the feature merge-ready solely from the successful admin simulation.
 
 ## Scenario contract before more visual polishing
