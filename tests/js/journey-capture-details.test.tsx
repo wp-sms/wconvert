@@ -42,3 +42,19 @@ it('edits all capture conveniences in the inspector without changing routes or a
   expect(next.graph).toEqual(tree.graph);
   expect(next.submissions).toHaveLength(1);
 });
+
+it('edits field wording in place while preserving save ownership, validation and layout', async () => {
+  const user = userEvent.setup();
+  function Harness() { const [draft, update] = useState(tree); return <><JourneyCaptureSettings tree={draft} step={0} onChange={update} /><output data-testid="draft">{JSON.stringify(draft)}</output></>; }
+  render(<Harness />);
+  await user.click(screen.getByText('Email address'));
+  await user.clear(screen.getByRole('textbox', { name: 'Field label' }));
+  await user.type(screen.getByRole('textbox', { name: 'Field label' }), 'Where can we reply?');
+  await user.type(screen.getByRole('textbox', { name: 'Placeholder' }), 'you@example.com');
+  const next = JSON.parse(screen.getByTestId('draft').textContent!) as TemplateTree;
+  const field = walkNodes(next.steps[0].content).find(node => node.type === 'field');
+  expect(field).toMatchObject({ id: 'n5', name: 'email', label: 'Where can we reply?', placeholder: 'you@example.com', required: true });
+  expect(next.submissions).toEqual(tree.submissions);
+  expect(next.graph).toEqual(tree.graph);
+  expect(walkNodes(next.steps[0].content).filter(node => node.type === 'button')).toEqual(walkNodes(tree.steps[0].content).filter(node => node.type === 'button'));
+});

@@ -14,7 +14,7 @@ export function conditionText(tree: TemplateTree, condition: QuestionCondition):
     const answer = labels.length ? labels.join(` ${__('or', 'wconvert')} `) : __('choose an answer', 'wconvert');
     const operator = clause.operator === 'is' ? __('is', 'wconvert')
       : clause.operator === 'is_not' ? __('is not', 'wconvert')
-        : clause.operator === 'includes_any' ? __('includes any of', 'wconvert') : __('includes none of', 'wconvert');
+        : clause.operator === 'includes_any' ? labels.length === 1 ? __('includes', 'wconvert') : __('includes any of', 'wconvert') : labels.length === 1 ? __('does not include', 'wconvert') : __('includes none of', 'wconvert');
     return sprintf(__('%1$s %2$s %3$s', 'wconvert'), label, operator, answer);
   });
   return parts.join(` ${condition.match === 'any' ? __('or', 'wconvert') : __('and', 'wconvert')} `);

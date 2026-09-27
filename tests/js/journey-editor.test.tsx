@@ -165,7 +165,7 @@ it('opens a drawn graph branch for repair without guessing its condition', async
   expect(draft().graph!.edges.at(-1)).toMatchObject({ from: 'interests', to: 'contact', kind: 'answer',
     when: { clauses: [{ question: 'n1', values: [''] }] } });
   expect(screen.getByText(/Answer path added after the existing priorities/)).toBeInTheDocument();
-  expect(screen.getByText('1. If the answer matches')).toBeInTheDocument();
+  expect(screen.getByText('Check 1 of 1')).toBeInTheDocument();
   expect(screen.getByRole('button', { name: 'Next screen' })).toHaveAttribute('aria-pressed', 'true');
 });
 
@@ -914,4 +914,46 @@ it('edits campaign context beside the same map and restores the selected screen 
   await user.click(screen.getByRole('button', { name: 'Select first screen' }));
   expect(screen.queryByRole('region', { name: 'Journey destinations' })).not.toBeInTheDocument();
   expect(screen.getByLabelText('Journey map')).toBe(map);
+});
+
+it('opens the exact referenced show condition and returns to its source question without editing the draft', async () => {
+  const user = userEvent.setup();
+  const initial = graphFixture as unknown as TemplateTree;
+  function References() {
+    const [step, setStep] = useState(initial.steps.findIndex(item => item.id === 'interests'));
+    return <JourneyEditor tree={initial} step={step} onChange={() => { throw new Error('Navigation must not edit the draft'); }} onSelect={setStep} />;
+  }
+  render(<References />);
+  await user.click(screen.getByRole('button', { name: 'Manage screens' }));
+  await user.click(screen.getByRole('button', { name: 'Garden details Show condition →' }));
+  await waitFor(() => expect(screen.getByRole('combobox', { name: 'Question' })).toHaveFocus());
+  expect(screen.getByRole('checkbox', { name: 'Garden' })).toBeChecked();
+  expect(screen.getByRole('combobox', { name: 'Question' }).closest('details')).toHaveAttribute('open');
+  await user.click(screen.getByRole('button', { name: 'Back to Interests' }));
+  expect(screen.getByRole('textbox', { name: 'Question' })).toHaveValue('What interests you?');
+});
+
+it('follows a path to its destination and returns to Next screen without changing the connection', async () => {
+  const user = userEvent.setup();
+  render(<Editor initial={graphFixture as unknown as TemplateTree} />);
+  await user.click(screen.getByRole('button', { name: 'Manage screens' }));
+  await user.click(screen.getByRole('button', { name: 'Next screen' }));
+  await user.click(screen.getByRole('button', { name: 'Edit destination screen' }));
+  expect(screen.getByRole('heading', { level: 3, name: 'Received' })).toBeInTheDocument();
+  await user.click(screen.getByRole('button', { name: 'Back to One enquiry' }));
+  expect(screen.getByRole('button', { name: 'Next screen' })).toHaveAttribute('aria-pressed', 'true');
+  expect(draft()).toEqual(graphFixture);
+});
+
+it('lets a two-choice question review references while keeping the two-choice minimum for removal', async () => {
+  const user = userEvent.setup();
+  render(<Editor initial={upgradeToGraph(finder.tree as TemplateTree)} />);
+  await user.click(screen.getByRole('button', { name: 'Manage screens' }));
+  await user.click(screen.getAllByRole('button', { name: 'Review uses' })[0]);
+  const review = screen.getByRole('region', { name: 'Review answer uses' });
+  expect(within(review).getByText(/Keep at least two choices/)).toBeInTheDocument();
+  expect(within(review).getByRole('button', { name: /Sunny garden picks/ })).toBeEnabled();
+  expect(within(review).queryByRole('button', { name: /Balcony picks/ })).not.toBeInTheDocument();
+  await user.selectOptions(within(review).getByRole('combobox', { name: 'Replace its uses with' }), 'balcony');
+  expect(within(review).getByRole('button', { name: 'Replace uses & remove' })).toBeDisabled();
 });

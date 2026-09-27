@@ -1,8 +1,10 @@
 import { useEffect, useId, useLayoutEffect, useRef, useState } from 'react';
 import apiFetch from '@wordpress/api-fetch';
+import { ChevronDown } from 'lucide-react';
 import { __, sprintf } from '@wordpress/i18n';
 import type { QuestionClause, QuestionCondition, QuestionNode, ResultVariant, TemplateNode, TemplateTree } from '@renderer/types';
-import { replaceAnswer, unreachableScreens, walkNodes, usedBy } from './structure/journey';
+import { replaceAnswer, unreachableScreens, walkNodes } from './structure/journey';
+import { answerReferences } from './structure/answerReferences';
 import { conditionText, resultsMayOverlap } from './structure/conditionText';
 import type { JourneyRepair } from './structure/journeyReadiness';
 import { graphEdgeId, graphReaches } from './structure/graph';
@@ -190,8 +192,8 @@ export function ScreenConditionSettings({ tree, step, reveal, onChange, onSelect
   </details>;
 }
 
-export function QuestionSettings({ tree, step, onChange, onSelect }: {
-  tree: TemplateTree; step: number; onChange(next: TemplateTree, coalesce?: string): void; onSelect(step: number): void;
+export function QuestionSettings({ tree, step, onChange, onSelect, onNavigate }: {
+  tree: TemplateTree; step: number; onChange(next: TemplateTree, coalesce?: string): void; onSelect(step: number): void; onNavigate?(repair: JourneyRepair): void;
 }) {
   const [repair, setRepair] = useState<{ question: string; value: string } | null>(null);
   const [replacement, setReplacement] = useState('');
@@ -201,7 +203,8 @@ export function QuestionSettings({ tree, step, onChange, onSelect }: {
   const change = (id: string, update: (node: QuestionNode) => TemplateNode, field?: string) => onChange({ ...tree, steps: tree.steps.map((item, at) => at === step ? { ...item, content: replaceNode(item.content, id, update) } : item) }, field ? `journey:${screen.id}:${id}:${field}` : undefined);
   return <section className="wconvert-journey-settings">{questions.length > 1 && <h4>{__('Questions on this screen', 'wconvert')}</h4>}
     {questions.map(question => {
-      const refs = usedBy(tree, question.id);
+      const refs = answerReferences(tree, question.id);
+      const openReference = (reference: typeof refs[number]) => onNavigate ? onNavigate(reference.repair) : onSelect(tree.steps.findIndex(item => item.id === reference.repair.screenId));
       const protectedValues = new Set([...tree.steps.flatMap(item => [item.when, ...(item.results?.map(result => result.when) ?? []), ...(item.paths?.map(path => path.when) ?? [])]),
         ...(tree.graph?.edges.map(edge => edge.when) ?? [])]
         .flatMap(condition => condition?.clauses ?? []).filter(clause => clause.question === question.id).flatMap(clause => clause.values));
@@ -214,20 +217,21 @@ export function QuestionSettings({ tree, step, onChange, onSelect }: {
         {question.answer_type !== 'text' && <div><strong>{__('Choices', 'wconvert')}</strong>
           {question.options?.map((option, at) => <div key={option.value} className="wconvert-journey-settings__choice"><span aria-hidden="true">{at + 1}</span><input aria-label={`${__('Choice', 'wconvert')} ${at + 1}`} value={option.label} maxLength={120}
             onChange={event => change(question.id, node => ({ ...node, options: node.options?.map((old, i) => i === at ? { ...old, label: event.target.value } : old) }), `choice:${option.value}`)} />
-            <button type="button" disabled={(question.options?.length ?? 0) <= 2} onClick={() => {
+            <button type="button" disabled={(question.options?.length ?? 0) <= 2 && !protectedValues.has(option.value)} onClick={() => {
               if (protectedValues.has(option.value)) { setRepair({ question: question.id, value: option.value }); setReplacement(''); }
               else change(question.id, node => ({ ...node, options: node.options?.filter((_, i) => i !== at) }));
             }}>{protectedValues.has(option.value) ? __('Review uses', 'wconvert') : __('Remove', 'wconvert')}</button></div>)}
           {repair?.question === question.id && <div className="wconvert-journey-answer-repair" role="region" aria-label={__('Review answer uses', 'wconvert')}>
             <strong>{sprintf(__('“%s” is used in journey rules', 'wconvert'), question.options?.find(option => option.value === repair.value)?.label ?? repair.value)}</strong>
             <p>{__('Edit each condition, or replace every use with another answer before removing this choice. Branch and result priority stay the same.', 'wconvert')}</p>
-            <div>{refs.map(id => <button type="button" key={id} onClick={() => onSelect(tree.steps.findIndex(item => item.id === id))}>{tree.steps.find(item => item.id === id)?.name} →</button>)}</div>
+            <div>{answerReferences(tree, question.id, repair.value).map(reference => <button type="button" key={reference.key} onClick={() => openReference(reference)}><strong>{reference.label}</strong>{' '}<small>{reference.detail} →</small></button>)}</div>
             <label>{__('Replace its uses with', 'wconvert')}<select value={replacement} onChange={event => setReplacement(event.target.value)}>
               <option value="">{__('Choose an existing answer…', 'wconvert')}</option>
               {question.options?.filter(option => option.value !== repair.value).map(option => <option key={option.value} value={option.value}>{option.label}</option>)}
             </select></label>
-            <div className="wconvert-journey-answer-repair__actions"><button type="button" disabled={!replacement} onClick={() => { onChange(replaceAnswer(tree, question.id, repair.value, replacement)); setRepair(null); }}>
+            <div className="wconvert-journey-answer-repair__actions"><button type="button" disabled={!replacement || (question.options?.length ?? 0) <= 2} onClick={() => { onChange(replaceAnswer(tree, question.id, repair.value, replacement)); setRepair(null); }}>
               {__('Replace uses & remove', 'wconvert')}</button><button type="button" onClick={() => setRepair(null)}>{__('Cancel', 'wconvert')}</button></div>
+            {(question.options?.length ?? 0) <= 2 && <p>{__('Keep at least two choices. Add another choice before removing this one.', 'wconvert')}</p>}
             <small>{__('One draft change. Undo restores the answer and its references.', 'wconvert')}</small>
           </div>}
           {(question.options?.length ?? 0) < 12 && <button type="button" onClick={() => change(question.id, node => {
@@ -239,7 +243,7 @@ export function QuestionSettings({ tree, step, onChange, onSelect }: {
         <label>{__('Help text (optional)', 'wconvert')}<input value={question.help ?? ''} maxLength={300} onChange={event => change(question.id, node => ({ ...node, help: event.target.value }), 'help')} /></label>
         {refs.length > 0 && <p>{__('This answer is used by other screens. Change its labels here; review those rules before changing the answer type.', 'wconvert')}</p>}
         {question.answer_type === 'multi' && <p>{__('Visitors can choose several answers. Show conditions can include every relevant follow-up; branches choose only the first matching path.', 'wconvert')}</p>}
-        {refs.length > 0 && <div className="wconvert-journey-used-by"><strong>{__('Used by', 'wconvert')}</strong> {refs.map(id => <button type="button" key={id} onClick={() => onSelect(tree.steps.findIndex(item => item.id === id))}>{tree.steps.find(item => item.id === id)?.name}</button>)}
+        {refs.length > 0 && <div className="wconvert-journey-used-by"><strong>{__('Used by', 'wconvert')}</strong> {refs.map(reference => <button type="button" key={reference.key} onClick={() => openReference(reference)}><strong>{reference.label}</strong>{' '}<small>{reference.detail} →</small></button>)}
           <p>{__('To change the answer type, remove its conditions first. Referenced choices can be replaced above.', 'wconvert')}</p></div>}
       </div>;
     })}
@@ -354,7 +358,7 @@ export function ResultSettings({ tree, step, onChange, repairRequest }: { tree: 
         aria-expanded={selected?.id === variant.id} onClick={() => setSelectedId(selected?.id === variant.id ? null : variant.id)}>
         <strong>{at === variants.length - 1 ? __('Everyone else', 'wconvert') : sprintf(__('%1$d. %2$s', 'wconvert'), at + 1, variant.heading || sprintf(__('Result %d', 'wconvert'), at + 1))}</strong>
         <span>{at === variants.length - 1 ? __('Default when no other result matches', 'wconvert')
-          : variant.when ? sprintf(__('If %s', 'wconvert'), conditionText(tree, variant.when)) : __('Set a condition', 'wconvert')}</span>
+          : variant.when ? sprintf(__('If %s', 'wconvert'), conditionText(tree, variant.when)) : __('Set a condition', 'wconvert')}</span><ChevronDown aria-hidden="true" className="wconvert-journey-result-chevron" />
       </button>
     {selected?.id === variant.id && <div className="wconvert-journey-settings__result" role="region" id={`${tabsId}-panel-${at}`} aria-labelledby={`${tabsId}-result-${at}`}>
 

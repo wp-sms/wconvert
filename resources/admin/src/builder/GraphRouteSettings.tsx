@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { ArrowRight, Eye } from 'lucide-react';
 import { __, sprintf } from '@wordpress/i18n';
 import type { JourneyGraphEdge, TemplateTree } from '@renderer/types';
 import { ConfirmDialog } from '../shell/ConfirmDialog';
@@ -11,9 +12,9 @@ import { unreachableScreens } from './structure/journey';
 import { graphInsertionLocations } from './structure/graphInsertion';
 
 /** A keyboard-complete editor for the actual v3 connections, not array order. */
-export function GraphRouteSettings({ tree, step, focusPath, focusTarget = false, onChange, onInsert, onOpenInsert, onAdd }: {
+export function GraphRouteSettings({ tree, step, focusPath, focusTarget = false, onChange, onInsert, onOpenInsert, onAdd, onSelect, onPreview }: {
   tree: TemplateTree; step: number; focusPath?: number | 'hidden' | null; onChange(next: TemplateTree): void;
-  focusTarget?: boolean;
+  focusTarget?: boolean; onSelect?(index: number): void; onPreview?(index: number): void;
   onInsert(edgeId: string, kind: 'content' | 'input'): void; onOpenInsert?(edgeId: string): void; onAdd?(intent: 'followup' | 'branch'): void;
 }) {
   const graph = tree.graph;
@@ -28,7 +29,7 @@ export function GraphRouteSettings({ tree, step, focusPath, focusTarget = false,
     const row = list.current?.querySelector<HTMLElement>(`[data-path-priority="${focusPath}"]`);
     const disclosure = row?.querySelector('details'); if (disclosure) disclosure.open = true;
     row?.scrollIntoView?.({ block: 'nearest' });
-    if (focusTarget) { row?.querySelector<HTMLElement>('select')?.focus(); return; }
+    if (focusTarget) { row?.querySelector<HTMLElement>('[data-route-target]')?.focus(); return; }
     const clause = row?.querySelector<HTMLElement>('.wconvert-journey-settings__clause');
     const invalidChoice = [...(clause?.querySelectorAll<HTMLSelectElement>('select:not(:disabled)') ?? [])]
       .find(select => select.selectedOptions[0]?.disabled);
@@ -70,23 +71,29 @@ export function GraphRouteSettings({ tree, step, focusPath, focusTarget = false,
   if (!routes.length && ['result', 'acknowledgement'].includes(screen.kind)) return <section className="wconvert-journey-settings"><h4>{__('Journey ends here', 'wconvert')}</h4>
     <p>{__('This screen has no next connection. Choose another screen to edit the journey.', 'wconvert')}</p></section>;
   return <section className="wconvert-journey-settings wconvert-journey-routes">
-    <h4>{__('Next paths', 'wconvert')}</h4>
+    <h4>{__('Choose the next screen', 'wconvert')}</h4>
     <p>{answers.length ? __('Visitors take the first matching answer path. Everyone else follows the last path.', 'wconvert')
-      : __('Everyone continues along this connection. Add an answer path to branch.', 'wconvert')}</p>
+      : __('Visitors continue here after completing this screen.', 'wconvert')}</p>
     <ol ref={list}>{[...answers, ...(fallback ? [fallback] : [])].map((edge, priority) => <li key={edge.id} data-path-priority={priority}>
       <details className="wconvert-journey-path-disclosure" open={focusPath === priority || !answers.length}>
       <summary><span className="wconvert-journey-path-disclosure__priority">{edge.kind === 'answer' ? priority + 1 : '↳'}</span><span><strong>{edge.kind === 'default' ? answers.length ? __('Everyone else', 'wconvert') : __('Continue', 'wconvert') : edge.when ? conditionText(tree, edge.when) : __('Choose an answer condition', 'wconvert')}</strong><small>{sprintf(__('Go to %s', 'wconvert'), tree.steps.find(item => item.id === edge.to)?.name ?? __('Choose a screen', 'wconvert'))}</small></span></summary>
       <div className="wconvert-journey-path-disclosure__body">
-      {edge.kind === 'answer' && <strong>{sprintf(__('%d. If the answer matches', 'wconvert'), priority + 1)}</strong>}
-      <label>{__('Go to', 'wconvert')}<select value={edge.to} onChange={event => {
+      {edge.kind === 'answer' && <><strong>{sprintf(__('Check %1$d of %2$d', 'wconvert'), priority + 1, answers.length)}</strong>
+        <ConditionSettings required purpose="route" value={edge.when ?? { match: 'all', clauses: [] }} sources={sources}
+          onChange={when => { if (when) write(answers.map(item => item.id === edge.id ? { ...item, when } : item)); }} />
+      </>}
+      <label>{__('Go to', 'wconvert')}<select data-route-target value={edge.to} onChange={event => {
         const updated = { ...edge, to: event.target.value };
         if (edge.kind === 'default') write(answers, updated);
         else write(answers.map(item => item.id === edge.id ? updated : item));
       }}>
         {targets.map(target => <option key={target.id} value={target.id}>{target.name}</option>)}
       </select></label>
-      {edge.kind === 'answer' && <ConditionSettings required purpose="route" value={edge.when ?? { match: 'all', clauses: [] }} sources={sources}
-        onChange={when => { if (when) write(answers.map(item => item.id === edge.id ? { ...item, when } : item)); }} />}
+      {(onSelect || onPreview) && <div className="wconvert-journey-route-destination">
+        {onSelect && <button type="button" disabled={!tree.steps.some(item => item.id === edge.to)} onClick={() => onSelect(tree.steps.findIndex(item => item.id === edge.to))}>{__('Edit destination screen', 'wconvert')}<ArrowRight aria-hidden="true" size={14}/></button>}
+        {onPreview && <button type="button" disabled={!tree.steps.some(item => item.id === edge.to)} onClick={() => onPreview(tree.steps.findIndex(item => item.id === edge.to))}><Eye aria-hidden="true" size={14}/>{__('Preview', 'wconvert')}</button>}
+      </div>}
+      {tree.steps.find(item => item.id === edge.to)?.when && <p className="wconvert-journey-route-check">{sprintf(__('Check its show condition on arrival: %s', 'wconvert'), conditionText(tree, tree.steps.find(item => item.id === edge.to)!.when!))}</p>}
       {onOpenInsert ? <button type="button" className="wconvert-journey-routes__insert" onClick={() => onOpenInsert(edge.id)}>{__('Insert a screen on this path', 'wconvert')}</button> : <>
       <button type="button" className="wconvert-journey-routes__insert" disabled={!canAsk(edge.id)} onClick={() => onInsert(edge.id, 'input')}>{__('Ask a question on this path', 'wconvert')}</button>
       <button type="button" className="wconvert-journey-routes__insert" onClick={() => onInsert(edge.id, 'content')}>{__('Show a message on this path', 'wconvert')}</button>
