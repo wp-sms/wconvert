@@ -96,6 +96,22 @@ it('explains shown and skipped group members when trying sample answers', () => 
   expect(screen.getAllByText('Skipped for these answers')).toHaveLength(2);
 });
 
+it('reveals a newly selected group member but respects manually grouping the current selection', async () => {
+  const user = userEvent.setup();
+  const props = { tree, onSelect: () => {}, onSelectPath: () => {}, onConnect: () => {} };
+  const { rerender } = render(<JourneyMap {...props} selected={null} />);
+  expect(canvas.nodes.some(node => node.id === 'followups:garden')).toBe(true);
+  const garden = tree.steps.findIndex(step => step.id === 'garden');
+  rerender(<JourneyMap {...props} selected={garden} />);
+  expect(canvas.nodes.some(node => node.id === 'garden')).toBe(true);
+  await user.click(screen.getByRole('button', { name: 'Group follow-ups' }));
+  expect(canvas.nodes.some(node => node.id === 'followups:garden')).toBe(true);
+  rerender(<JourneyMap {...props} selected={garden} />);
+  expect(canvas.nodes.some(node => node.id === 'followups:garden')).toBe(true);
+  rerender(<JourneyMap {...props} selected={tree.steps.findIndex(step => step.id === 'indoors')} />);
+  expect(canvas.nodes.some(node => node.id === 'indoors')).toBe(true);
+});
+
 it('spaces tall parallel cards by measured size without resetting a manually arranged map', async () => {
   const user = userEvent.setup();
   const branched = branchedFixture as unknown as TemplateTree;
@@ -158,9 +174,7 @@ it('opens normal and hidden paths without the enclosing card overriding the acti
 
 
 it('keeps a shared visible/hidden connection highlighted when inspecting the hidden continuation', async () => {
-  const user = userEvent.setup();
   render(<JourneyMap tree={tree} selected={tree.steps.findIndex(step => step.id === 'garden')} focusedPath="hidden" onSelect={() => {}} onSelectPath={() => {}} onConnect={() => {}} />);
-  await user.click(screen.getByRole('button', { name: 'Expand follow-ups' }));
   const edges = JSON.parse(screen.getByTestId('map-edges').textContent!) as Edge[];
   expect(edges.find(edge => edge.id === 'garden_next')?.style?.opacity).toBe(1);
   expect(edges.find(edge => edge.id === 'indoor_next')?.style?.opacity).toBe(1);

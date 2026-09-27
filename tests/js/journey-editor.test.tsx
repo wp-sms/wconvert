@@ -128,6 +128,35 @@ it('clears stale branch instructions when Undo restores the prior draft', async 
   await user.click(screen.getByRole('button', { name: 'Undo fixture edit' }));
   expect(screen.queryByText(/Answer path added after the existing priorities/)).not.toBeInTheDocument();
 });
+
+it.each(['followup', 'branch'] as const)('starts a %s from Next screen without confusing skip and branch semantics', async intent => {
+  const user = userEvent.setup();
+  const initial = graphFixture as unknown as TemplateTree;
+  render(<Editor initial={initial} />);
+  await user.click(screen.getByRole('button', { name: 'Manage screens' }));
+  await user.click(await screen.findByRole('button', { name: 'Select first screen' }));
+  await user.click(screen.getByRole('button', { name: 'Next screen' }));
+  const action = intent === 'followup' ? 'Add conditional follow-up' : 'Add branch';
+  await user.click(screen.getByRole('button', { name: action }));
+  expect(screen.getByRole('radio', { name: intent === 'followup' ? 'Ask a relevant follow-up' : 'Take a different path' })).toBeChecked();
+  expect(screen.getByRole('button', { name: 'Add screen here' })).toBeDisabled();
+  await user.selectOptions(screen.getByRole('combobox', { name: intent === 'followup' ? 'Show when the answer to' : 'Take this path when the answer to' }), 'n1');
+  await user.selectOptions(screen.getByRole('combobox', { name: 'Includes this choice' }), 'garden');
+  await user.click(screen.getByRole('button', { name: /Show a message Explain/ }));
+  await user.click(screen.getByRole('button', { name: 'Add screen here' }));
+  const next = draft(), added = next.steps.at(-1)!;
+  expect(screen.getByRole('textbox', { name: 'Message' })).toBeInTheDocument();
+  const fallback = initial.graph!.edges.find(edge => edge.from === initial.steps[0].id && edge.kind === 'default')!;
+  if (intent === 'branch') {
+    expect(added.when).toBeUndefined();
+    expect(next.graph!.edges).toContainEqual(fallback);
+    expect(next.graph!.edges.find(edge => edge.to === added.id)?.kind).toBe('answer');
+  } else {
+    expect(added.when?.clauses[0].values).toEqual(['garden']);
+    expect(next.graph!.edges.find(edge => edge.id === fallback.id)?.to).toBe(added.id);
+    expect(next.graph!.edges.filter(edge => edge.from === added.id).map(edge => edge.kind)).toEqual(['default', 'hidden']);
+  }
+});
 it('opens a drawn graph branch for repair without guessing its condition', async () => {
   const user = userEvent.setup();
   render(<Editor initial={graphFixture as unknown as TemplateTree} />);
@@ -558,16 +587,17 @@ it('shows readable screen conditions and edits one result at a time', async () =
   const cards = screen.getByRole('list', { name: 'Journey screen inventory' });
   expect(within(cards).getByRole('button', { name: /Garden size.*Show if Project\? is Garden/ })).toBeInTheDocument();
   await user.click(within(cards).getByRole('button', { name: /Result Shows a selected result/ }));
-  const results = screen.getByRole('tablist', { name: 'Possible results' });
-  const tabs = within(results).getAllByRole('tab');
-  expect(tabs).toHaveLength(2);
-  expect(tabs[0]).toHaveAttribute('aria-selected', 'true');
-  expect(screen.getByRole('tabpanel', { name: /Garden/ })).toBeInTheDocument();
+  const results = screen.getByRole('group', { name: 'Possible results' });
+  const choices = within(results).getAllByRole('button', { expanded: true });
+  expect(choices).toHaveLength(1);
+  expect(screen.getByRole('region', { name: /Garden/ })).toBeInTheDocument();
   expect(screen.getByLabelText('Heading')).toHaveValue('Garden');
-  await user.click(tabs[0]);
-  await user.keyboard('{ArrowDown}');
-  expect(tabs[1]).toHaveAttribute('aria-selected', 'true');
-  expect(screen.getByRole('tabpanel', { name: /Everyone else/ })).toBeInTheDocument();
+  await user.click(choices[0]);
+  expect(screen.queryByRole('textbox', { name: 'Heading' })).toBeNull();
+  await user.tab();
+  await user.keyboard('{Enter}');
+  expect(screen.getByRole('button', { name: /Everyone else Default/ })).toHaveAttribute('aria-expanded', 'true');
+  expect(screen.getByRole('region', { name: /Everyone else/ })).toBeInTheDocument();
   expect(screen.getByLabelText('Heading')).toHaveValue('Other');
   await user.clear(screen.getByLabelText('Heading'));
   await user.type(screen.getByLabelText('Heading'), 'A place to start');
@@ -587,7 +617,10 @@ it('warns when two matching results can receive the same answer', async () => {
   await user.click(screen.getByRole('button', { name: 'Screens' }));
   await user.click(screen.getByRole('list', { name: 'Journey screen inventory' }).querySelectorAll('button')[3]);
   expect(screen.getByText(/may match the same answers/)).toBeInTheDocument();
-  await user.click(within(screen.getByRole('tablist', { name: 'Possible results' })).getByRole('tab', { name: /More garden ideas/ }));
+  await user.click(screen.getByRole('button', { name: 'Move later' }));
+  expect(screen.getByLabelText('Heading')).toHaveValue('Garden');
+  await user.click(screen.getByRole('button', { name: 'Move earlier' }));
+  await user.click(within(screen.getByRole('group', { name: 'Possible results' })).getByRole('button', { name: /More garden ideas/ }));
   await user.click(screen.getByRole('button', { name: 'Move earlier' }));
   expect(draft().steps[3].results?.[0].id).toBe('also-garden');
 });

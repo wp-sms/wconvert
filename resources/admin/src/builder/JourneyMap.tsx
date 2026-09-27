@@ -249,6 +249,15 @@ export function JourneyMap({ tree, selected, focusedPath = null, onSelect, onSel
   const layoutState = useRef({ key: '', manuallyPositioned: false });
   const disconnected = useMemo(() => new Set(unreachableScreenIds(tree)), [tree]);
   const detectedGroups = useMemo(() => followupGroups(tree), [tree]);
+  const revealSelection = useRef<string | undefined>(undefined);
+  const selectionId = selected === null ? undefined : tree.steps[selected]?.id;
+  useEffect(() => {
+    if (revealSelection.current === selectionId) return;
+    revealSelection.current = selectionId;
+    if (!selectionId || selected === null) return;
+    const group = detectedGroups.find(item => item.screens.includes(selected));
+    if (group) setExpandedGroups(current => current.includes(group.id) ? current : [...current, group.id]);
+  }, [selectionId, selected, detectedGroups]);
   const groups = useMemo(() => grouping ? detectedGroups.filter(group => !expandedGroups.includes(group.id)) : [], [detectedGroups, expandedGroups, grouping]);
   const groupedScreens = useMemo(() => new Map(groups.flatMap(group => group.screens.map(index => [tree.steps[index].id, group.id] as const))), [groups, tree.steps]);
   const visibleId = useCallback((id: string) => groupedScreens.get(id) ?? id, [groupedScreens]);

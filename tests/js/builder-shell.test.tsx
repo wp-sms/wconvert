@@ -43,6 +43,7 @@ const publishing = vi.hoisted(() => ({ publishOptin: vi.fn() }));
 const stats = vi.hoisted(() => ({ readDashboard: vi.fn() }));
 const destinations = vi.hoisted(() => ({ readDestinations: vi.fn() }));
 const goals = vi.hoisted(() => ({ listGoals: vi.fn(), listPlaybooks: vi.fn() }));
+vi.mock('../../resources/admin/src/builder/JourneyMap', () => ({ JourneyMap: () => <div aria-label="Journey map" /> }));
 
 /*
  * Spread over the real module, like the three below it. `DEGRADED_FROM` is a
@@ -322,6 +323,21 @@ describe('the builder shell', () => {
       'Display rules',
       'Destinations',
     ]);
+  });
+
+  it('returns from Design to the selected Journey screen and open settings', async () => {
+    open();
+    await userEvent.click(await screen.findByRole('tab', { name: 'Journey' }));
+    await userEvent.type(screen.getByRole('searchbox', { name: 'Find a screen' }), 'Details');
+    await userEvent.click(screen.getByRole('button', { name: 'Details Screen 1' }));
+    await userEvent.click(screen.getByText('Screen options', { exact: true }));
+    const inspector = screen.getByRole('region', { name: 'Selected screen settings' });
+    await userEvent.click(within(inspector).getByRole('button', { name: 'Edit design' }));
+    expect(screen.getByRole('tab', { name: 'Design' })).toHaveAttribute('aria-selected', 'true');
+    expect(screen.queryByRole('region', { name: 'Selected screen settings' })).toBeNull();
+    await userEvent.click(screen.getByRole('tab', { name: 'Journey' }));
+    expect(screen.getByRole('region', { name: 'Selected screen settings' })).toBe(inspector);
+    expect(within(inspector).getByRole('textbox', { name: 'Screen name' })).toHaveValue('Details');
   });
 
   /**

@@ -31,8 +31,8 @@ Test counts alone do not establish those qualities.
 | Workspace height | Separate title/actions and view/search rows reduce useful editor space | One wrapping toolbar; 380px inspector on desktop. Narrow layouts retain Map/Edit screen navigation. |
 
 These changes are implemented, not a declaration that every acceptance state has
-passed. In particular, the contextual editors and final toolbar need the final
-browser comparison below.
+passed. The second browser pass below supersedes the startup blockage recorded
+in the crash-recovery history.
 
 ## Evidence and crash recovery
 
@@ -59,27 +59,96 @@ erased temporary logs. After recovery:
   artifact contracts passed. No PHP or visitor-loader source changed in this pass.
 - A final browser retry after these checks failed with the same startup error.
 
-## Remaining acceptance work — do before closing the goal
+## Second browser pass — concrete gaps found and fixed
 
-1. Compare B and the built plugin at the same desktop viewport: direct Add,
-   connection Add, conditional question/message, new/existing capture, and ending.
-   Check initial, selected, unavailable, Cancel, applied and Undo states.
-2. Inspect message, question, capture, result and ending panels. Confirm the main
-   task is visible without needless scrolling; exercise disclosure and repair
-   focus, edited preview, and changing selection.
-3. Exercise real display settings in the side panel: opening, audience, pages,
-   frequency; confirm full-tab consistency, Undo and return to the same map.
-   Exercise destination selection, unavailable/empty states, and shared setup
-   dialog Cancel without changing live provider settings.
-4. Inspect selected answer paths, fallback and hidden paths: priority changes,
-   destination changes, insertion, bypass review, Cancel and Undo.
-5. Test the explicit ordered-to-graph upgrade on a disposable legacy draft:
-   Cancel unchanged, preserved visitor paths after upgrade, and full Undo.
-6. Check 320/390px widths, desktop 200% zoom, long labels, keyboard traversal,
-   nested modal Escape and focus return. Fix issues discovered, rather than
-   relabeling them intentional differences.
-7. Save/reload only QA drafts; restore their starting data. Confirm that the local
-   plugin and draft PR contain the same revision. Do not publish or merge.
+The browser connection recovered. The built plugin was inspected in Chrome at
+1512 × 806 against B's interests scenario, then in the in-app browser at 390 × 844
+and 320 × 740. Chrome's viewport override returned successfully but did not resize
+the page; its dimensions were checked before switching to the in-app browser.
+All temporary viewport overrides were reset.
+
+| Gap found in the running plugin | Change |
+| --- | --- |
+| Display selector and opening editor overlapped in the narrow sidebar | Constrain all compact display-grid children to its single column. |
+| Fixed Delete/Edit design footer and deletion explanation consumed form space | Put Edit design in the scrolling content and destructive controls under Screen options, available from Content and Next screen. |
+| Question copy was squeezed into one line; choices had weak hierarchy | Two-line question input, numbered choices, later optional help, explicit multi-answer semantics and an explanation when referenced rules prevent answer-type changes. |
+| Selecting a grouped follow-up left its actual card hidden | Reveal the selected member automatically while preserving manual grouping until the selection changes. |
+| Next screen did not directly offer both forms of conditional behavior | Add conditional follow-up and Add branch open the common chooser in the correct mode. Branch context identifies the new branch and the unchanged fallback. |
+| Add screen remained 512px wide despite its intended width | Correct the important utility-layer override, use a stable 700px dialog and compact desktop grids, and stack narrow layouts. |
+| Newly added message screens had no message body | Include editable body copy in new messages and endings. Existing screen content is preserved. |
+| Capture panel lacked a field overview and destination handoff | Show actual fields with required/optional status and open real destination settings from the save context. |
+| Screen preview's desktop mode was also constrained to 512px | Correct its utility-layer override to 900px; desktop and mobile previews now have visibly distinct widths. |
+| Switching to Design and back discarded Journey inspection state | Keep the visited Journey workspace in React Activity, preserving state while suspending inactive effects. Avoid loading it before the first visit. |
+| Result choices appeared above a separate form, pushing the active result below the fold | Use B's expandable result cards. Copy opens under its summary; priority actions follow content and conditions. Reordering retains the opened result, including the initially opened result. |
+
+### Browser evidence
+
+- **Questions and grouped follow-ups:** selecting Garden details expands its map
+  group. Edited question copy appears on the card and Undo restores it. Changing
+  selection resets the inspector scroll to the top. Closing a deletion review
+  leaves the draft unchanged and returns focus to Delete screen inside the still
+  open Screen options.
+- **Add and paths:** inserted a conditional Garden advice message, inspected its
+  show/hidden continuation, then undid it. Added an exclusive Garden guide branch,
+  confirmed its message field and existing fallback continuation, edited its body,
+  and visually confirmed the text in Preview. Undid both edits. Existing contact
+  selection opens Contact details with Save draft still disabled. Ending insertion
+  identifies the newly unreachable ending before applying; Cancel leaves Draft.
+- **Capture and destinations:** adding the optional name updates the draft. The
+  capture handoff opens real destination settings. Selecting MailPoet Newsletter
+  is reflected in the full Destinations tab and can be undone. Shared destination
+  setup states its live scope; Cancel returns focus to Settings. No shared
+  destination was saved and no provider request was sent.
+- **Display settings:** exercised opening mode, Pages/Selected pages, the nested
+  Add pages chooser, Specific visitors and repeat frequency. Escape closes the
+  nested rule chooser. Undo restores the prior settings. A seven-day frequency
+  was saved only to the QA quiz draft, verified after reload, then restored to its
+  original once-per-tab behavior and saved again.
+- **Results:** switched between sunny-garden and balcony result copy; edited and
+  undid a heading. Design receives the selected result screen. Changed result
+  access from required capture to immediate result/optional signup and restored
+  it with one Undo. Catalog search reports a recoverable load error on this local
+  installation; successful live catalog selection is not established here.
+  After the final build, expanded result cards were visually inspected on desktop
+  and at 390px. Enter collapses the first result, Tab reaches the next summary,
+  and Enter opens its form. A Design round trip retains Balcony picks, expanded
+  Screen options and the exact map transform.
+- **Combined-enquiry simulation:** Garden and Balcony both reach their follow-ups.
+  Going Back and removing Garden skips it while retaining Balcony's Second option.
+  The journey reaches one contact checkpoint, skips Indoor, retains the test email
+  after a simulated failure, and reaches Request received on retry. The checkpoint
+  reports Accepted in test; no real Lead or delivery is created.
+- **Legacy transition:** on Reveal a welcome discount, upgrade Cancel leaves Save
+  draft disabled. Enabling flexible paths changes only the in-memory draft; Cancel
+  closes Add and Undo restores Ordered screen actions with Save disabled. Reload
+  discards temporary history. This campaign was never saved or published.
+- **Narrow layout:** the 390px selected question has no document horizontal
+  overflow. At 320px the chooser fits the viewport, its content scrolls and its
+  action footer remains reachable. Escape returns focus to Add screen. Desktop
+  and mobile screen-preview widths were visually checked after the CSS fix.
+
+### Acceptance still open
+
+Keep the original goal and PR open. Do not infer full experience parity from the
+regression suite or from this list of exercised paths. Remaining checks are:
+
+1. Native 200% browser zoom and the complete keyboard-only route through every
+   nested editor; the tested narrow CSS viewports are not a substitute for zoom.
+2. Successful live WooCommerce product selection and unavailable-product handling
+   with a working catalog. The current local browser test covers the error state.
+3. An occasional-merchant usability session for first-time understanding; none
+   has been conducted. VoiceOver remains explicitly deferred, not passed.
+
+### Local regression and packaging evidence for this pass
+
+- Full local JS suite: **168 files / 3,091 tests**, one worker.
+- Final focused inspector, repair and builder regression pass: **120 tests**.
+- TypeScript and ESLint pass; Free/Pro admin builds pass.
+- Free/Basic/Pro/Elite packaging and all artifact contracts pass.
+- No PHP or visitor-loader source changed. GitHub CI was not run.
+- Work remains on `codex/plan-questions-conditional-screens`, the branch behind
+  draft PR #190. Built assets are available in the local plugin; reload an editor
+  opened before the build so it uses the current asset manifest.
 
 ## Completion rule
 

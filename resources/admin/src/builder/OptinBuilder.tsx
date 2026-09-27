@@ -166,6 +166,8 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
     return () => document.body.classList.remove('wconvert-editing');
   }, []);
   const [tab, setTab] = useState<TabId>('design');
+  const [journeyVisited, setJourneyVisited] = useState(false);
+  useEffect(() => { if (tab === 'journey') setJourneyVisited(true); }, [tab]);
   const [journeyRepair, setJourneyRepair] = useState<(JourneyRepair & { serial: number }) | null>(null);
   const journeyRepairSerial = useRef(0);
 
@@ -848,7 +850,8 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
       </header>
       {error !== null && <PageError message={error} />}
       <div className="wconvert-workspace__body" inert={busy}>
-        <TabsContent value="journey" className="wconvert-workspace__journey">
+        <TabsContent value="journey" forceMount={journeyVisited || undefined} className="wconvert-workspace__journey">
+          <Activity mode={tab === 'journey' ? 'visible' : 'hidden'}>
           {entry && <JourneyEditor embedded primaryChannel={entryOfGoal?.outcome.audience_channel} tree={entry.tree} tokens={entry.tokens} step={shownStep} repairRequest={journeyRepair ?? undefined}
             focusActions={<><HistoryControls history={{ ...history, canUndo: !busy && history.canUndo, canRedo: !busy && history.canRedo }} />
               <Button type="button" variant="outline" size="sm" disabled={busy || !dirty} onClick={() => void save()}>{busy ? __('Saving…', 'wconvert') : __('Save draft', 'wconvert')}</Button></>}
@@ -857,6 +860,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
             deliveryMode={config?.capture_mode === 'local' ? 'local' : bound.length > 0 ? 'connected' : 'none'}
             onGoToDesign={() => { setTab('design'); setPreviewing(false); }}
             onGoToRules={() => setTab('rules')} onGoToDestinations={() => { setTab('destinations'); destinationsTab.current?.focus(); }} />}
+          </Activity>
         </TabsContent>
         <TabsContent value="design" forceMount className="wconvert-workspace__design">
           <Activity mode={tab === 'design' ? 'visible' : 'hidden'}>

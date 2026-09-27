@@ -93,6 +93,7 @@ export function addGraphBranchScreen(tree: TemplateTree, source: string, kind: '
 function freshEnding(tree: TemplateTree): TemplateScreen {
   return { ...freshScreen(tree, 'content'), name: __('All done', 'wconvert'), kind: 'acknowledgement', content: { type: 'stack', children: [
     { type: 'heading', role: 'headline', text: __('All done', 'wconvert') },
+    { type: 'text', role: 'body', text: __('Thank you for your time.', 'wconvert') },
     { type: 'button', label: __('Back', 'wconvert'), action: 'back', tokens: { accent: 'transparent', 'accent-fg': 'fg' } },
     { type: 'button', label: __('Close', 'wconvert'), action: 'close' },
   ] } };

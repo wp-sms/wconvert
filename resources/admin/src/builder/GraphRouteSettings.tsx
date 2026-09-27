@@ -11,10 +11,10 @@ import { unreachableScreens } from './structure/journey';
 import { graphInsertionLocations } from './structure/graphInsertion';
 
 /** A keyboard-complete editor for the actual v3 connections, not array order. */
-export function GraphRouteSettings({ tree, step, focusPath, focusTarget = false, onChange, onInsert, onOpenInsert }: {
+export function GraphRouteSettings({ tree, step, focusPath, focusTarget = false, onChange, onInsert, onOpenInsert, onAdd }: {
   tree: TemplateTree; step: number; focusPath?: number | 'hidden' | null; onChange(next: TemplateTree): void;
   focusTarget?: boolean;
-  onInsert(edgeId: string, kind: 'content' | 'input'): void; onOpenInsert?(edgeId: string): void;
+  onInsert(edgeId: string, kind: 'content' | 'input'): void; onOpenInsert?(edgeId: string): void; onAdd?(intent: 'followup' | 'branch'): void;
 }) {
   const graph = tree.graph;
   const screen = tree.steps[step];
@@ -77,7 +77,7 @@ export function GraphRouteSettings({ tree, step, focusPath, focusTarget = false,
       <details className="wconvert-journey-path-disclosure" open={focusPath === priority || !answers.length}>
       <summary><span className="wconvert-journey-path-disclosure__priority">{edge.kind === 'answer' ? priority + 1 : '↳'}</span><span><strong>{edge.kind === 'default' ? answers.length ? __('Everyone else', 'wconvert') : __('Continue', 'wconvert') : edge.when ? conditionText(tree, edge.when) : __('Choose an answer condition', 'wconvert')}</strong><small>{sprintf(__('Go to %s', 'wconvert'), tree.steps.find(item => item.id === edge.to)?.name ?? __('Choose a screen', 'wconvert'))}</small></span></summary>
       <div className="wconvert-journey-path-disclosure__body">
-      <strong>{edge.kind === 'default' ? answers.length ? __('Everyone else', 'wconvert') : __('Continue', 'wconvert') : sprintf(__('%d. If the answer matches', 'wconvert'), priority + 1)}</strong>
+      {edge.kind === 'answer' && <strong>{sprintf(__('%d. If the answer matches', 'wconvert'), priority + 1)}</strong>}
       <label>{__('Go to', 'wconvert')}<select value={edge.to} onChange={event => {
         const updated = { ...edge, to: event.target.value };
         if (edge.kind === 'default') write(answers, updated);
@@ -107,7 +107,8 @@ export function GraphRouteSettings({ tree, step, focusPath, focusTarget = false,
       </select></label>
     </li>}</ol>
     {questionAfterSave && <p>{__('Ask questions before this save so their answers can be included. Select an earlier connection to insert a question.', 'wconvert')}</p>}
-    {fallback && sources.length > 0 && targets.length > 0 && <button type="button" onClick={add}>{__('Add answer path', 'wconvert')}</button>}
+    {fallback && sources.length > 0 && onAdd && <div className="wconvert-journey-next-actions"><button type="button" onClick={() => onAdd('followup')}>{__('Add conditional follow-up', 'wconvert')}</button><button type="button" onClick={() => onAdd('branch')}>{__('Add branch', 'wconvert')}</button></div>}
+    {fallback && sources.length > 0 && targets.length > 0 && !onAdd && <button type="button" onClick={add}>{__('Add answer path', 'wconvert')}</button>}
     {!sources.length && <p>{__('Add a choice question here or on a screen that leads here to branch by answer.', 'wconvert')}</p>}
     {screen.when && <div className="wconvert-journey-settings__skip"><strong>{__('When this screen is hidden', 'wconvert')}</strong>
       <label>{__('Continue at', 'wconvert')}<select ref={hiddenSelect} value={hidden?.to ?? ''} onChange={event => write(answers, fallback,

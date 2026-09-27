@@ -295,9 +295,9 @@ export function freshScreen(tree: TemplateTree, kind: 'content' | 'input', canGo
   let i = 1; while (tree.steps.some(s => s.id === `s${i}`)) i++;
   const screen: TemplateScreen = { id: `s${i}`, name: kind === 'input' ? __('Questions', 'wconvert') : __('Offer', 'wconvert'), kind,
     content: { type: 'stack', children: [
-      { type: 'heading', role: 'headline', text: __('Tell us more', 'wconvert') },
+      { type: 'heading', role: 'headline', text: kind === 'input' ? __('Tell us more', 'wconvert') : __('A helpful message', 'wconvert') },
       ...(kind === 'input' ? [{ type: 'question', label: __('What matters most to you?', 'wconvert'), answer_type: 'single', required: false,
-        options: [{ value: 'first', label: __('First option', 'wconvert') }, { value: 'second', label: __('Second option', 'wconvert') }] } as TemplateNode] : []),
+        options: [{ value: 'first', label: __('First option', 'wconvert') }, { value: 'second', label: __('Second option', 'wconvert') }] } as TemplateNode] : [{ type: 'text', role: 'body', text: __('Add the information visitors need before continuing.', 'wconvert') } as TemplateNode]),
       { type: 'button', label: __('Continue', 'wconvert'), action: 'next' },
     ] } };
   return canGoBack ? withBackButton(screen) : screen;

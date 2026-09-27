@@ -9,15 +9,15 @@ import { DialogDescription, DialogTitle } from '../components/ui/dialog';
 import { graphInsertionLocations, insertionUnavailable, type GraphScreenKind } from './structure/graphInsertion';
 import { canAddGraphConnection, canTargetGraphScreen, graphChoiceSources } from './structure/graphConnections';
 
-export function GraphScreenInsert({ tree, source, kind: initialKind, initialLocation, onInsert, onExisting, onCapture, onEditCapture, onCancel }: {
-  tree: TemplateTree; source: string; kind: GraphScreenKind; initialLocation?: string;
+export function GraphScreenInsert({ tree, source, kind: initialKind, initialLocation, initialIntent, onInsert, onExisting, onCapture, onEditCapture, onCancel }: {
+  tree: TemplateTree; source: string; kind: GraphScreenKind; initialLocation?: string; initialIntent?: 'branch';
   onInsert(location: string, kind: GraphScreenKind, name: string, when?: QuestionCondition, includeSharedHidden?: boolean, branch?: boolean): void;
   onExisting?(target: string, when?: QuestionCondition, edgeId?: string): void;
   onCapture?(): void; onEditCapture?(screenId: string): void; onCancel(): void;
 }) {
   const id = useId();
   const [kind, setKind] = useState(initialKind === 'followup' ? 'input' : initialKind);
-  const [intent, setIntent] = useState<'continue' | 'followup' | 'branch'>(initialKind === 'followup' ? 'followup' : 'continue');
+  const [intent, setIntent] = useState<'continue' | 'followup' | 'branch'>(initialIntent ?? (initialKind === 'followup' ? 'followup' : 'continue'));
   const [existing, setExisting] = useState(false);
   const [target, setTarget] = useState('');
   const [name, setName] = useState('');
@@ -49,7 +49,7 @@ export function GraphScreenInsert({ tree, source, kind: initialKind, initialLoca
     <DialogTitle>{__('What happens next?', 'wconvert')}</DialogTitle>
     <DialogDescription>{__('Add a screen on a path, ask a relevant follow-up, or connect to a screen you already have.', 'wconvert')}</DialogDescription>
     <div className="wconvert-graph-insert__body">
-      {location && <div className="wconvert-graph-insert__context"><div><small>{__('INSERT ON THIS PATH', 'wconvert')}</small><span><strong>{tree.steps.find(screen => screen.id === location.source)?.name ?? __('Start', 'wconvert')}</strong><ArrowRight aria-hidden="true" size={14}/><strong>{tree.steps.find(screen => screen.id === location.target)?.name}</strong></span><small>{location.detail}</small></div>{intent !== 'branch' && <button type="button" onClick={() => setChangeLocation(value => !value)} aria-expanded={changeLocation}>{__('Change location', 'wconvert')}</button>}</div>}
+      {location && <div className="wconvert-graph-insert__context"><div><small>{intent === 'branch' ? __('ADD A BRANCH', 'wconvert') : __('INSERT ON THIS PATH', 'wconvert')}</small><span><strong>{tree.steps.find(screen => screen.id === location.source)?.name ?? __('Start', 'wconvert')}</strong><ArrowRight aria-hidden="true" size={14}/><strong>{intent === 'branch' ? existing ? tree.steps.find(screen => screen.id === target)?.name || __('Choose a screen', 'wconvert') : name.trim() || __('New screen', 'wconvert') : tree.steps.find(screen => screen.id === location.target)?.name}</strong></span><small>{intent === 'branch' ? sprintf(__('Everyone else continues to %s.', 'wconvert'), tree.steps.find(screen => screen.id === location.target)?.name ?? '') : location.detail}</small></div>{intent !== 'branch' && <button type="button" onClick={() => setChangeLocation(value => !value)} aria-expanded={changeLocation}>{__('Change location', 'wconvert')}</button>}</div>}
       <div className="wconvert-journey-pane__tabs" role="group" aria-label={__('Screen source', 'wconvert')}>
         <button type="button" aria-pressed={!existing} onClick={() => { setExisting(false); setCapture(false); }}>{__('New screen', 'wconvert')}</button>
         {onExisting && <button type="button" aria-pressed={existing} onClick={() => { setExisting(true); setCapture(false); if (intent === 'followup') setIntent('continue'); }}>{__('Existing screen', 'wconvert')}</button>}
