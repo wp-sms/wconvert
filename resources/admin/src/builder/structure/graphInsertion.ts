@@ -55,13 +55,13 @@ export function insertionUnavailable(location: ReturnType<typeof graphInsertionL
 export function addGraphScreen(tree: TemplateTree, locationId: string, kind: GraphScreenKind, when?: QuestionCondition, includeSharedHidden = false): TemplateTree {
   const location = graphInsertionLocations(tree).find(item => item.id === locationId);
   if (!tree.graph || !location || insertionUnavailable(location, kind)) return tree;
-  if (kind === 'followup' && (!when?.clauses.length || when.clauses.some(clause => {
+  if ((kind === 'followup' || when) && (!when?.clauses.length || when.clauses.some(clause => {
     const question = location.choices.find(item => item.id === clause.question);
     return !question || !clause.values.length || clause.values.some(value => !question.options?.some(option => option.value === value));
   }))) return tree;
   let screen = kind === 'ending' ? freshEnding(tree) : freshScreen(tree, kind === 'content' ? 'content' : 'input', locationId !== 'entry');
   if (kind === 'ending' && locationId === 'entry') return tree;
-  if (kind === 'followup') screen = { ...screen, name: __('Relevant follow-up', 'wconvert'), when };
+  if (when) screen = { ...screen, ...(kind === 'followup' ? { name: __('Relevant follow-up', 'wconvert') } : {}), when };
   if (locationId !== 'entry') {
     const inserted = insertOnGraphEdge(tree, locationId.slice(5), screen);
     const next = kind === 'ending' ? { ...inserted, graph: { ...inserted.graph!, edges: inserted.graph!.edges.filter(edge => edge.from !== screen.id) } } : inserted;

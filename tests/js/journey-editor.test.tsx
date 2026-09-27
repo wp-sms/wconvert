@@ -86,7 +86,6 @@ it('lets an ending selection add a question at an explicit location and restores
   render(<EndingEditor />);
   await user.click(screen.getByRole('button', { name: 'Focus journey' }));
   await user.click(screen.getByRole('button', { name: 'Add screen' }));
-  await user.click(screen.getByRole('menuitem', { name: 'Add question screen' }));
   const dialog = screen.getByRole('dialog', { name: 'What happens next?' });
   expect(within(dialog).getByRole('option', { name: /One enquiry — Continue — to Received/ })).toBeDisabled();
   await user.keyboard('{Escape}');
@@ -94,7 +93,6 @@ it('lets an ending selection add a question at an explicit location and restores
   await waitFor(() => expect(screen.getByRole('button', { name: 'Add screen' })).toHaveFocus());
   expect(draft()).toEqual(initial);
   await user.click(screen.getByRole('button', { name: 'Add screen' }));
-  await user.click(screen.getByRole('menuitem', { name: 'Add question screen' }));
   await user.selectOptions(screen.getByRole('combobox', { name: 'Insert at' }), 'edge:start');
   await user.click(screen.getByRole('button', { name: 'Add screen here' }));
   expect(draft().graph!.edges.find(edge => edge.id === 'start')?.to).toBe(draft().steps.at(-1)!.id);
@@ -106,7 +104,8 @@ it('requires a chosen answer before inserting a relevant follow-up from the tool
   render(<Editor initial={graphFixture as unknown as TemplateTree} />);
   await user.click(screen.getByRole('button', { name: 'Manage screens' }));
   await user.click(screen.getByRole('button', { name: 'Add screen' }));
-  await user.click(screen.getByRole('menuitem', { name: 'Add relevant follow-up' }));
+  await user.click(screen.getByRole('radio', { name: 'Ask a relevant follow-up' }));
+  await user.click(screen.getByRole('button', { name: 'Change location' }));
   await user.selectOptions(screen.getByRole('combobox', { name: 'Insert at' }), 'edge:start');
   expect(screen.getByRole('button', { name: 'Add screen here' })).toBeDisabled();
   await user.selectOptions(screen.getByRole('combobox', { name: 'Includes this choice' }), 'balcony');
@@ -237,7 +236,7 @@ it('adds and removes an optional SMS signup without changing the primary field o
   const user = userEvent.setup();
   render(<Editor />);
   await user.click(screen.getByRole('button', { name: 'Manage screens' }));
-  await user.click(screen.getByRole('button', {name:'Add screen'}));
+  await user.click(screen.getByRole('button', {name:'Ordered screen actions'}));
   await user.click(screen.getByRole('menuitem', {name:'Add optional signup'}));
   const tree = draft();
   expect(tree.submissions).toHaveLength(2);
@@ -256,7 +255,7 @@ it('keeps an explicit forward path connected when adding an optional signup', as
   const initial: TemplateTree = { ...base, steps: [{ ...base.steps[0], paths: [{ to: base.steps[1].id }] }, ...base.steps.slice(1)] };
   render(<Editor initial={initial} />);
   await user.click(screen.getByRole('button', { name: 'Manage screens' }));
-  await user.click(screen.getByRole('button', { name: 'Add screen' }));
+  await user.click(screen.getByRole('button', { name: 'Ordered screen actions' }));
   await user.click(screen.getByRole('menuitem', { name: 'Add optional signup' }));
   const tree = draft();
   expect(tree.steps[0].paths).toEqual([{ to: tree.steps[1].id }]);
@@ -284,7 +283,7 @@ it('preserves screen identity when reordering and gives a duplicate its own iden
   const user = userEvent.setup();
   render(<Editor />);
   await user.click(screen.getByRole('button', { name: 'Manage screens' }));
-  await user.click(screen.getByRole('button', {name:'Add screen'}));
+  await user.click(screen.getByRole('button', {name:'Ordered screen actions'}));
   await user.click(screen.getByRole('menuitem', {name:'Add offer screen'}));
   const added = draft().steps[0].id;
   const backs = (tree: TemplateTree, index: number) => walkNodes(tree.steps[index].content)
@@ -513,7 +512,7 @@ it('reveals the earned coupon immediately when adding SMS and preserves it when 
   thanks.children.push({ type: 'stack', hidden: true, children: [{ type: 'code', text: 'HIDDEN-REWARD' }] } as import('@renderer/types').TemplateNode);
   render(<Editor initial={initial} />);
   await user.click(screen.getByRole('button', { name: 'Manage screens' }));
-  await user.click(screen.getByRole('button', { name: 'Add screen' }));
+  await user.click(screen.getByRole('button', { name: 'Ordered screen actions' }));
   await user.click(screen.getByRole('menuitem', { name: 'Add optional signup' }));
   const tree = draft();
   const reward = walkNodes(tree.steps[1].content).find(n => n.type === 'code');
@@ -629,6 +628,7 @@ it('undoes a journey typing burst once and keeps separate fields as separate edi
   }
   render(<HistoryEditor />);
   await user.click(screen.getByRole('button', { name: 'Manage screens' }));
+  await user.click(screen.getByText('Screen options', { selector: 'summary' }));
   await user.type(screen.getByRole('textbox', { name: 'Screen name' }), ' and preferences');
   await user.type(screen.getByRole('textbox', { name: 'Question' }), ' today?');
   // Close the modal to use campaign history, then open it to inspect the result.
@@ -636,6 +636,7 @@ it('undoes a journey typing burst once and keeps separate fields as separate edi
   await user.click(screen.getByRole('button', { name: 'Undo: Edit questions on “Interests and preferences”' }));
   await user.click(screen.getByRole('button', { name: 'Undo: Rename screen “Interests”' }));
   await user.click(screen.getByRole('button', { name: 'Manage screens' }));
+  await user.click(screen.getByText('Screen options', { selector: 'summary' }));
   expect(screen.getByRole('textbox', { name: 'Screen name' })).toHaveValue('Interests');
   expect(screen.getByRole('textbox', { name: 'Question' })).toHaveValue('What interests you?');
   await user.keyboard('{Escape}');
@@ -755,14 +756,16 @@ it('adds graph secondary capture at a named saved path and restores focus after 
   render(<Editor initial={initial} />);
   await user.click(screen.getByRole('button', { name: 'Manage screens' }));
   await user.click(screen.getByRole('button', { name: 'Add screen' }));
-  await user.click(screen.getByRole('menuitem', { name: 'Add optional signup' }));
+  await user.click(screen.getByRole('button', { name: /Collect details Save a request/ }));
+  await user.click(screen.getByRole('button', { name: 'Set up optional signup' }));
   let dialog = screen.getByRole('dialog', { name: 'Add optional SMS signup' });
   expect(within(dialog).getByRole('combobox', { name: 'Insert after primary signup' })).toHaveValue(`edge:${initial.graph!.edges[0].id}`);
   await user.click(within(dialog).getByRole('button', { name: 'Cancel' }));
   expect(draft()).toEqual(initial);
   await waitFor(() => expect(screen.getByRole('button', { name: 'Add screen' })).toHaveFocus());
   await user.click(screen.getByRole('button', { name: 'Add screen' }));
-  await user.click(screen.getByRole('menuitem', { name: 'Add optional signup' }));
+  await user.click(screen.getByRole('button', { name: /Collect details Save a request/ }));
+  await user.click(screen.getByRole('button', { name: 'Set up optional signup' }));
   dialog = screen.getByRole('dialog', { name: 'Add optional SMS signup' });
   await user.click(within(dialog).getByRole('button', { name: 'Add signup' }));
   expect(draft().submissions).toHaveLength(2);
@@ -824,9 +827,58 @@ it('keeps the clicked connection when questions are unavailable after a save', a
   const draft = { ...tree, graph: { ...tree.graph!, edges: tree.graph!.edges.map(edge => edge.id === saved.id ? { ...edge, id: 'saved' } : edge) } };
   render(<JourneyEditor embedded tree={draft} step={0} onChange={() => {}} onSelect={() => {}} />);
   await user.click(await screen.findByRole('button', { name: 'Insert after save' }));
+  if (!screen.queryByRole('combobox', { name: 'Insert at' })) await user.click(screen.getByRole('button', { name: 'Change location' }));
   expect(screen.getByRole('combobox', { name: 'Insert at' })).toHaveValue('edge:saved');
   expect(screen.getByRole('button', { name: 'Add screen here' })).toBeDisabled();
-  await user.selectOptions(screen.getByRole('combobox', { name: 'Screen type' }), 'ending');
+  await user.click(screen.getByRole('button', { name: /Finish this path/ }));
   expect(screen.getByRole('combobox', { name: 'Insert at' })).toHaveValue('edge:saved');
   expect(screen.getByRole('button', { name: 'Add screen here' })).toBeEnabled();
+});
+
+
+it('offers an explicit legacy upgrade from Add screen, leaves Cancel unchanged, and lets history undo the upgrade', async () => {
+  const user = userEvent.setup();
+  const original = source.tree as TemplateTree;
+  function UpgradeEditor() {
+    const [history, setHistory] = useState(historyOf({ name: 'Signup', config: { template: { tree: original, tokens: {} } } }));
+    const [step, setStep] = useState(0);
+    return <><button onClick={() => setHistory(undo)}>Undo draft edit</button>
+      <JourneyEditor embedded tree={history.present.config.template.tree} step={step} onSelect={setStep}
+        onChange={tree => setHistory(current => remember(current, { ...current.present, config: { template: { tree, tokens: {} } } }))}/>
+      <output data-testid="draft">{JSON.stringify(history.present.config.template.tree)}</output></>;
+  }
+  render(<UpgradeEditor/>);
+  await user.click(screen.getByRole('button', { name: 'Add screen' }));
+  expect(screen.getByRole('dialog', { name: 'Use the new Journey editor' })).toBeInTheDocument();
+  await user.click(screen.getByRole('button', { name: 'Cancel' }));
+  expect(draft()).toEqual(original);
+  await user.click(screen.getByRole('button', { name: 'Add screen' }));
+  await user.click(screen.getByRole('button', { name: 'Enable flexible paths' }));
+  expect(draft()).toEqual(upgradeToGraph(original));
+  expect(screen.getByRole('dialog', { name: 'What happens next?' })).toBeInTheDocument();
+  await user.click(screen.getByRole('button', { name: 'Cancel' }));
+  await user.click(screen.getByRole('button', { name: 'Undo draft edit' }));
+  expect(draft()).toEqual(original);
+});
+
+it('edits campaign context beside the same map and restores the selected screen and invoking focus', async () => {
+  const user = userEvent.setup(); const navigate = vi.fn();
+  render(<JourneyEditor embedded tree={graphFixture as unknown as TemplateTree} step={0} onSelect={() => {}} onChange={() => {}}
+    displaySummary="After 5 seconds" destinationSummary="Local storage" onGoToRules={navigate} onGoToDestinations={navigate}
+    contextEditors={{ rules: <label>Delay<input defaultValue="5" /></label>, destinations: <label>Enquiry delivery<input defaultValue="Local" /></label> }} />);
+  const map = await screen.findByLabelText('Journey map');
+  await user.click(screen.getByRole('button', { name: 'Select first screen' }));
+  await user.click(screen.getByRole('button', { name: 'Edit display rules' }));
+  expect(screen.getByRole('region', { name: 'Journey display rules' })).toBeInTheDocument();
+  expect(screen.getByRole('heading', { name: 'When this appears' })).toHaveFocus();
+  expect(screen.getByLabelText('Journey map')).toBe(map);
+  await user.click(screen.getByRole('button', { name: 'Back to journey' }));
+  expect(screen.getByRole('region', { name: 'Selected screen settings' })).toBeInTheDocument();
+  await waitFor(() => expect(screen.getByRole('button', { name: 'Edit display rules' })).toHaveFocus());
+  await user.click(screen.getByRole('button', { name: 'Edit destinations' }));
+  expect(screen.getByLabelText('Enquiry delivery')).toHaveValue('Local');
+  expect(navigate).not.toHaveBeenCalled();
+  await user.click(screen.getByRole('button', { name: 'Select first screen' }));
+  expect(screen.queryByRole('region', { name: 'Journey destinations' })).not.toBeInTheDocument();
+  expect(screen.getByLabelText('Journey map')).toBe(map);
 });

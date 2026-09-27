@@ -4,16 +4,17 @@ import type { JourneyGraphEdge, TemplateTree } from '@renderer/types';
 import { ConfirmDialog } from '../shell/ConfirmDialog';
 import { ConditionSettings } from './JourneySettings';
 import { graphEdgeId, graphTargets } from './structure/graph';
+import { conditionText } from './structure/conditionText';
 import { graphChangeImpact } from './structure/graphChangeImpact';
 import { graphChoiceSources } from './structure/graphConnections';
 import { unreachableScreens } from './structure/journey';
 import { graphInsertionLocations } from './structure/graphInsertion';
 
 /** A keyboard-complete editor for the actual v3 connections, not array order. */
-export function GraphRouteSettings({ tree, step, focusPath, focusTarget = false, onChange, onInsert }: {
+export function GraphRouteSettings({ tree, step, focusPath, focusTarget = false, onChange, onInsert, onOpenInsert }: {
   tree: TemplateTree; step: number; focusPath?: number | 'hidden' | null; onChange(next: TemplateTree): void;
   focusTarget?: boolean;
-  onInsert(edgeId: string, kind: 'content' | 'input'): void;
+  onInsert(edgeId: string, kind: 'content' | 'input'): void; onOpenInsert?(edgeId: string): void;
 }) {
   const graph = tree.graph;
   const screen = tree.steps[step];
@@ -25,6 +26,7 @@ export function GraphRouteSettings({ tree, step, focusPath, focusTarget = false,
     if (focusPath === null || focusPath === undefined) return;
     if (focusPath === 'hidden') { hiddenSelect.current?.focus(); return; }
     const row = list.current?.querySelector<HTMLElement>(`[data-path-priority="${focusPath}"]`);
+    const disclosure = row?.querySelector('details'); if (disclosure) disclosure.open = true;
     row?.scrollIntoView?.({ block: 'nearest' });
     if (focusTarget) { row?.querySelector<HTMLElement>('select')?.focus(); return; }
     const clause = row?.querySelector<HTMLElement>('.wconvert-journey-settings__clause');
@@ -72,6 +74,9 @@ export function GraphRouteSettings({ tree, step, focusPath, focusTarget = false,
     <p>{answers.length ? __('Visitors take the first matching answer path. Everyone else follows the last path.', 'wconvert')
       : __('Everyone continues along this connection. Add an answer path to branch.', 'wconvert')}</p>
     <ol ref={list}>{[...answers, ...(fallback ? [fallback] : [])].map((edge, priority) => <li key={edge.id} data-path-priority={priority}>
+      <details className="wconvert-journey-path-disclosure" open={focusPath === priority || !answers.length}>
+      <summary><span className="wconvert-journey-path-disclosure__priority">{edge.kind === 'answer' ? priority + 1 : '↳'}</span><span><strong>{edge.kind === 'default' ? answers.length ? __('Everyone else', 'wconvert') : __('Continue', 'wconvert') : edge.when ? conditionText(tree, edge.when) : __('Choose an answer condition', 'wconvert')}</strong><small>{sprintf(__('Go to %s', 'wconvert'), tree.steps.find(item => item.id === edge.to)?.name ?? __('Choose a screen', 'wconvert'))}</small></span></summary>
+      <div className="wconvert-journey-path-disclosure__body">
       <strong>{edge.kind === 'default' ? answers.length ? __('Everyone else', 'wconvert') : __('Continue', 'wconvert') : sprintf(__('%d. If the answer matches', 'wconvert'), priority + 1)}</strong>
       <label>{__('Go to', 'wconvert')}<select value={edge.to} onChange={event => {
         const updated = { ...edge, to: event.target.value };
@@ -82,13 +87,16 @@ export function GraphRouteSettings({ tree, step, focusPath, focusTarget = false,
       </select></label>
       {edge.kind === 'answer' && <ConditionSettings required purpose="route" value={edge.when ?? { match: 'all', clauses: [] }} sources={sources}
         onChange={when => { if (when) write(answers.map(item => item.id === edge.id ? { ...item, when } : item)); }} />}
+      {onOpenInsert ? <button type="button" className="wconvert-journey-routes__insert" onClick={() => onOpenInsert(edge.id)}>{__('Insert a screen on this path', 'wconvert')}</button> : <>
       <button type="button" className="wconvert-journey-routes__insert" disabled={!canAsk(edge.id)} onClick={() => onInsert(edge.id, 'input')}>{__('Ask a question on this path', 'wconvert')}</button>
       <button type="button" className="wconvert-journey-routes__insert" onClick={() => onInsert(edge.id, 'content')}>{__('Show a message on this path', 'wconvert')}</button>
+      </>}
       {edge.kind === 'answer' && <div className="wconvert-journey-routes__actions">
         <button type="button" disabled={priority === 0} onClick={() => { const next = [...answers]; [next[priority - 1], next[priority]] = [next[priority], next[priority - 1]]; write(next); }}>{__('Higher priority', 'wconvert')}</button>
         <button type="button" disabled={priority === answers.length - 1} onClick={() => { const next = [...answers]; [next[priority], next[priority + 1]] = [next[priority + 1], next[priority]]; write(next); }}>{__('Lower priority', 'wconvert')}</button>
         <button type="button" onClick={() => write(answers.filter(item => item.id !== edge.id))}>{__('Remove path', 'wconvert')}</button>
       </div>}
+      </div></details>
     </li>)}{!fallback && <li data-path-priority={answers.length}>
       <strong>{answers.length ? __('Everyone else', 'wconvert') : __('Continue to the next screen', 'wconvert')}</strong>
       <p>{__('This screen needs a next connection before visitors can continue.', 'wconvert')}</p>

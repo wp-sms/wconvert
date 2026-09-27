@@ -17,6 +17,7 @@ import type { Rule, RuleVocabulary } from '../api';
 const SampleVisit = lazy(() => import('./SampleVisit'));
 export type { DisplayRulesValue } from './summaries';
 export interface DisplayRulesProps {
+  readonly compact?: boolean;
   readonly vocabulary: RuleVocabulary;
   readonly value: DisplayRulesValue;
   readonly overlay: boolean;
@@ -31,7 +32,7 @@ export interface DisplayRulesProps {
 }
 
 /** One canonical draft; navigation and the summary are views of it. */
-export function DisplayRules({ vocabulary, value, overlay, act = 'submit', onChange, reveal, placement, audienceRequirement, initialSection, onSectionChange, reopenEnabled }: DisplayRulesProps) {
+export function DisplayRules({ vocabulary, value, overlay, act = 'submit', onChange, reveal, placement, audienceRequirement, initialSection, onSectionChange, reopenEnabled, compact = false }: DisplayRulesProps) {
   const summaries = summarise(value, vocabulary, overlay, act);
   const [active, setActive] = useState(() => initialSection ?? summaries.find(section => section.attention)?.id ?? 'when');
   const [testing, setTesting] = useState(false);
@@ -47,9 +48,9 @@ export function DisplayRules({ vocabulary, value, overlay, act = 'submit', onCha
   const update = (next: DisplayPlan) => onChange({ display_rules: next });
   const audienceTypes = [...vocabulary.conditions, ...vocabulary.targeting.filter(type => type.kind === 'visitor')];
 
-  return <div className="wconvert-display">
+  return <div className="wconvert-display" data-compact={compact || undefined}>
     <div className="wconvert-display-header">
-      <h2>{__('Display setup', 'wconvert')}</h2>
+      {!compact && <h2>{__('Display setup', 'wconvert')}</h2>}
       <div className="wconvert-display-actions">
         <StartingPoints bundles={vocabulary.bundles} describe={bundle => {
           const nextValue = { ...value, ...applied(patchOf(bundle), value) };
@@ -63,11 +64,13 @@ export function DisplayRules({ vocabulary, value, overlay, act = 'submit', onCha
     {!plan && <div role="alert" className="wconvert-display-repair"><p>{__('This draft uses an older development rule format. Review and replace its display setup before saving or publishing.', 'wconvert')}</p>
       <Button onClick={() => update(incompletePlan())}>{__('Set up display rules', 'wconvert')}</Button></div>}
     <div className="wconvert-display-grid">
+      {compact ? <label className="wconvert-journey__field">{__('Display setting', 'wconvert')}<select value={active} onChange={event => setActive(event.target.value)}>{summaries.map(section => <option key={section.id} value={section.id}>{section.eyebrow}{section.attention ? ` · ${__('Needs attention', 'wconvert')}` : ''}</option>)}</select></label> : <>
       <nav aria-label={__('Display setup sections', 'wconvert')}>
         {summaries.map((section, index) => <button type="button" key={section.id} aria-current={active === section.id ? 'step' : undefined}
           onClick={() => setActive(section.id)}><span className="wconvert-display-step" aria-hidden="true">{index + 1}</span><span>{section.eyebrow}
           <small>{section.attention ? __('Needs attention', 'wconvert') : section.id === 'how-often' ? repeatHint(value) : section.text}</small></span></button>)}
       </nav>
+      </>}
       <section className="wconvert-display-editor" aria-labelledby="wconvert-display-heading">
         <h3 id="wconvert-display-heading" tabIndex={-1}>{current.eyebrow}</h3>
         {active === 'where' && <><Where types={vocabulary.targeting} targeting={value.targeting} onChange={targeting => onChange({ targeting })} />
@@ -79,7 +82,7 @@ export function DisplayRules({ vocabulary, value, overlay, act = 'submit', onCha
           reopenEnabled={reopenEnabled} onFrequency={frequency => onChange({ frequency })} onSchedule={schedule => onChange({ schedule })} onPriority={priority => onChange({ priority })} />}
       </section>
       <aside className="wconvert-display-summary" aria-label={__('Display summary', 'wconvert')}>
-        <details open><summary>{__('Your campaign will appear…', 'wconvert')}</summary>
+        <details open={!compact}><summary>{__('Your campaign will appear…', 'wconvert')}</summary>
         <dl>{summaries.map(section => <div key={section.id}><dt><button type="button" onClick={() => setActive(section.id)}>{section.eyebrow}</button></dt><dd>{section.text}</dd></div>)}</dl>
         <p className="text-note text-muted-foreground">{__('Page exclusions, required Goal conditions and site limits always apply.', 'wconvert')}</p>
         <Button variant="outline" className="wconvert-display-test" onClick={() => setTesting(true)}><FlaskConical aria-hidden="true" />{__('Test a sample visit', 'wconvert')}</Button>

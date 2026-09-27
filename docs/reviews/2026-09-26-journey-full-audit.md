@@ -1,5 +1,11 @@
 # Journey B → plugin: consolidated audit
 
+**Reopened September 27:** the owner identified continuing Add screen and right-panel
+mismatches. The prior “closes the identified gaps” conclusion was too broad:
+feature availability did not establish the same editing experience. Follow the
+[interaction acceptance review](2026-09-27-journey-interaction-acceptance.md) for
+current status. Retain the evidence below without treating it as completion.
+
 September 26, 2026. This supersedes the four open implementation items in
 `2026-09-26-journey-visual-parity.md`. It does not turn earlier test results into
 proof of the current revision. The owner requested one consolidated audit and

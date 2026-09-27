@@ -1442,7 +1442,7 @@ body .wconvert-rule-picker__unavailable {
 .wconvert-journey-context strong { min-inline-size: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font-size: var(--text-micro); }
 .wconvert-journey-context button { flex: none; padding: 0; border: 0; background: none; color: var(--primary); font-size: var(--text-label); cursor: pointer; }
 .wconvert-journey-context button:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
-.wconvert-journey-side:has(.wconvert-journey-map) { grid-template-columns: minmax(0, 1fr) minmax(320px, 35%); }
+.wconvert-journey-side:has(.wconvert-journey-map) { grid-template-columns: minmax(0, 1fr) minmax(320px, 380px); }
 .wconvert-journey-side[data-panel-open='false']:has(.wconvert-journey-map) { grid-template-columns: minmax(0, 1fr); }
 /* Canvas tools use the map width, including when an inspector is open. */
 .wconvert-journey-map { position: relative; container: journey-map / inline-size; display: grid; grid-template-rows: auto minmax(0, 1fr); min-inline-size: 0; min-block-size: 0; background: #f8faf8; border-inline-end: 1px solid var(--border); }
@@ -1795,3 +1795,62 @@ body .wconvert-journey-screen-preview { max-inline-size: min(900px, calc(100vw -
 .wconvert-graph-insert__intents small { font-weight: 400; line-height: 1.45; }
 .wconvert-journey-visibility > summary { cursor: pointer; }
 .wconvert-journey-visibility > summary span { display: block; margin-block: 5px 10px; color: var(--muted-foreground); font-size: var(--text-note); overflow-wrap: anywhere; }
+
+/* B's task hierarchy: context, content, then optional structural settings. */
+.wconvert-graph-insert__context { display: flex; align-items: center; flex-wrap: wrap; gap: 7px; padding: 12px; border-radius: var(--radius); background: var(--secondary); font-size: var(--text-note); }
+.wconvert-graph-insert__context small { font-size: var(--text-micro); color: var(--muted-foreground); }
+.wconvert-graph-insert__context>div { display: grid; gap: 5px; flex: 1; min-inline-size: 0; }
+.wconvert-graph-insert__context span { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; overflow-wrap: anywhere; }
+.wconvert-graph-insert__context span svg { flex: none; }
+.wconvert-graph-insert__context button { margin-inline-start: auto; color: var(--primary); font-size: var(--text-label); text-decoration: underline; }
+.wconvert-graph-insert__body .wconvert-journey-pane__tabs { padding: 4px; border: 0; border-radius: var(--radius); background: var(--secondary); }
+.wconvert-graph-insert__body .wconvert-journey-pane__tabs button { flex: 1; }
+.wconvert-graph-insert__body .wconvert-journey-pane__tabs button[aria-pressed='true'] { background: var(--card); }
+.wconvert-graph-insert__types { display: grid; gap: 8px; }
+.wconvert-graph-insert__types>button { display: flex; align-items: center; gap: 12px; padding: 13px; min-inline-size: 0; border: 1px solid var(--border); border-radius: var(--radius); text-align: start; background: var(--card); }
+.wconvert-graph-insert__types>button[aria-pressed='true'] { background: var(--secondary); border-color: var(--primary); box-shadow: inset 0 0 0 1px var(--primary); }
+.wconvert-graph-insert__types>button:disabled { opacity: .45; cursor: not-allowed; }
+.wconvert-graph-insert__types svg { flex: none; color: var(--muted-foreground); }
+.wconvert-graph-insert__types span { display: grid; gap: 4px; flex: 1; }
+.wconvert-graph-insert__types small { font-size: var(--text-label); line-height: 1.5; color: var(--muted-foreground); }
+.wconvert-graph-insert__summary>button { display: flex; align-items: center; gap: 8px; margin-block-start: 12px; color: var(--primary); }
+.wconvert-journey-options,.wconvert-journey-copy-options { margin-block-start: 20px; border-block-start: 1px solid var(--border); padding-block-start: 14px; }
+.wconvert-journey-options>summary,.wconvert-journey-copy-options>summary { cursor: pointer; color: var(--muted-foreground); font-size: var(--text-note); }
+.wconvert-journey-options .wconvert-journey-dialog__fields { margin-block-start: 16px; }
+.wconvert-journey-copy { border: 0; padding-block-start: 0; }
+.wconvert-journey-pane .wconvert-journey-pane__tabs { margin-block: 16px; padding: 0 0 8px; }
+.wconvert-journey-pane .wconvert-journey-settings__question { padding: 0; border: 0; background: none; }
+.wconvert-journey-pane .wconvert-journey-pane__tabs+.wconvert-journey-settings { margin-block-start: 0; padding-block-start: 0; border-block-start: 0; }
+.wconvert-journey-path-disclosure>summary { display: flex; align-items: center; gap: 10px; list-style: none; cursor: pointer; }
+.wconvert-journey-path-disclosure>summary::-webkit-details-marker { display: none; }
+.wconvert-journey-path-disclosure>summary:after { content: '+'; margin-inline-start: auto; color: var(--muted-foreground); }
+.wconvert-journey-path-disclosure[open]>summary:after { content: '−'; }
+.wconvert-journey-path-disclosure>summary>span:nth-child(2) { display: grid; gap: 4px; }
+.wconvert-journey-path-disclosure__priority { display: grid; place-items: center; min-inline-size: 25px; block-size: 25px; border-radius: var(--radius); background: var(--secondary); }
+.wconvert-journey-path-disclosure small { color: var(--muted-foreground); font-size: var(--text-label); }
+.wconvert-journey-path-disclosure__body { display: grid; gap: 12px; padding-block-start: 16px; }
+
+/* Keep the map and selected content visible without a second toolbar row. */
+#wconvert-admin .wconvert-journey-workspace .wconvert-journey-dialog__header { align-items: center; flex-wrap: wrap; gap: 12px; padding: 12px 20px; border-block-end: 1px solid var(--border); }
+.wconvert-journey-dialog__header .wconvert-journey-view { align-items: center; flex-wrap: wrap; padding: 0; border: 0; flex: 1; }
+.wconvert-journey-dialog__header .wconvert-journey-find { margin-inline-start: 8px; min-inline-size: 150px; max-inline-size: 180px; }
+.wconvert-journey-dialog__header-actions { flex-wrap: wrap; }
+@media(max-width: 900px) {
+  .wconvert-journey-dialog__header .wconvert-journey-view { flex-basis: 60%; }
+  .wconvert-journey-dialog__header-actions { inline-size: 100%; justify-content: flex-start; }
+}
+@media(max-width: 480px) {
+  .wconvert-journey-dialog__header .wconvert-journey-view { flex-basis: 100%; }
+  .wconvert-journey-dialog__header .wconvert-journey-find { max-inline-size: none; flex: 1; min-inline-size: 120px; }
+  .wconvert-graph-insert__context { align-items: flex-start; }
+}
+
+#wconvert-admin .wconvert-journey-context-pane .wconvert-display-grid { display: grid; grid-template-columns: minmax(0, 1fr); gap: 16px; }
+#wconvert-admin .wconvert-journey-context-pane .wconvert-display-editor { border: 0; padding: 0; }
+#wconvert-admin .wconvert-journey-context-pane .wconvert-display-summary { display: block; padding: 12px; }
+.wconvert-journey-context-pane .wconvert-display-header { flex-wrap: wrap; margin-block-end: 16px; }
+.wconvert-journey-context-pane .wconvert-display-actions { margin-inline-start: 0; }
+.wconvert-journey-context-help { margin: 0 0 20px; color: var(--muted-foreground); font-size: var(--text-note); line-height: 1.6; }
+.wconvert-journey-context-pane .wconvert-journey-dialog__actions-row small { font-size: var(--text-label); color: var(--muted-foreground); }
+.wconvert-journey-context-pane .wconvert-journey-pane__heading h3 { margin: 0; font-size: var(--text-heading); }
+.wconvert-journey-context-pane [data-slot='region-header'] { flex-direction: column; align-items: stretch; gap: 12px; }

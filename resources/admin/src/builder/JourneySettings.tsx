@@ -168,7 +168,7 @@ export function ScreenConditionSettings({ tree, step, reveal, onChange, onSelect
     || walkNodes(screen.content).some(node => node.type === 'button' && 'action' in node && node.action === 'submit')) return null;
   const sources = questionsBefore(tree, step);
   const hiddenDestination = tree.graph && tree.steps.find(item => item.id === tree.graph?.edges.find(edge => edge.from === screen.id && edge.kind === 'hidden')?.to);
-  return <details ref={disclosure} className="wconvert-journey-settings wconvert-journey-visibility" open={screen.when ? true : undefined}><summary><strong>{__('Screen visibility', 'wconvert')}</strong><span>{screen.when ? conditionText(tree, screen.when) : __('Everyone on this path', 'wconvert')}</span></summary>
+  return <details ref={disclosure} className="wconvert-journey-settings wconvert-journey-visibility"><summary><strong>{__('Show this screen when…', 'wconvert')}</strong><span>{screen.when ? conditionText(tree, screen.when) : __('Everyone on this path', 'wconvert')}</span></summary>
     <ConditionSettings value={screen.when} sources={sources} onChange={when => {
       const steps = tree.steps.map((item, at) => at === step ? { ...item, when } : item);
       if (!tree.graph) { onChange({ ...tree, steps }); return; }
@@ -369,12 +369,13 @@ export function ResultSettings({ tree, step, onChange, repairRequest }: { tree: 
         <button type="button" disabled={selectedAt === 0} onClick={() => move(selectedAt, selectedAt - 1)}>{__('Move earlier', 'wconvert')}</button>
         <button type="button" disabled={selectedAt >= variants.length - 2} onClick={() => move(selectedAt, selectedAt + 1)}>{__('Move later', 'wconvert')}</button>
       </div>}
-      {selectedAt < variants.length - 1 && <ConditionSettings required value={selected.when} sources={sources} onChange={when => { if (when) edit(selectedAt, { when }); }} />}
+
       <label>{__('Heading', 'wconvert')}<input ref={headingInput} value={selected.heading} maxLength={200} onChange={event => edit(selectedAt, { heading: event.target.value }, 'heading')} /></label>
       <label>{__('Message', 'wconvert')}<textarea value={selected.body ?? ''} maxLength={500} onChange={event => edit(selectedAt, { body: event.target.value }, 'body')} /></label>
       <label>{__('Fallback shop or guide link', 'wconvert')}<input ref={linkInput} type="text" inputMode="url" placeholder="/shop/" value={selected.href ?? ''} onChange={event => edit(selectedAt, { href: event.target.value }, 'href')} /></label>
       <label>{__('Link label', 'wconvert')}<input value={selected.link_label ?? ''} maxLength={120} onChange={event => edit(selectedAt, { link_label: event.target.value }, 'link_label')} /></label>
       <ProductPicker ids={selected.product_ids ?? []} onChange={product_ids => edit(selectedAt, { product_ids })} />
+      {selectedAt < variants.length - 1 && <ConditionSettings required value={selected.when} sources={sources} onChange={when => { if (when) edit(selectedAt, { when }); }} />}
       {selectedAt < variants.length - 1 && <button type="button" onClick={() => { setSelectedId(null); setVariants(variants.filter((_, index) => index !== selectedAt)); }}>{__('Remove result', 'wconvert')}</button>}
     </div>}
   </section>;

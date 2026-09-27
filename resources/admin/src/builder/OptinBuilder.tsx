@@ -659,6 +659,57 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
     setRevealSection({ id: 'placement', focus: 'wconvert-section-placement-trigger' });
   };
 
+  const displayEditor = (compactPanel = false) => <DisplayRules compact={compactPanel}
+              reopenEnabled={canPreviewReopen}
+              audienceRequirement={entryOfGoal?.audience_requirement}
+              initialSection={displaySection}
+              onSectionChange={setDisplaySection}
+              act={act}
+              vocabulary={vocabulary}
+              value={displayRules}
+              overlay={overlay}
+              onChange={(patch) => edit({ ...asConfigPatch(patch), ...(patch.display_rules ? { rules: undefined } : {}) } as Config)}
+              reveal={revealSection}
+              placement={displayTypeOf(config, templates) === 'inline' ? {
+                summary: inlineSummary,
+                controls: <InlinePlacementSettings optinId={id} published={publishedAt !== null} config={config} vocabulary={vocabulary} onChange={edit} />,
+              } : undefined}
+            />;
+  const destinationEditor = <>
+            {captureOutcome?.audience_channel && <CaptureModeChoice disabled={busy} selectedCount={bound.length} mode={config.capture_mode === 'local' ? 'local' : 'connected'}
+              onChange={(mode) => edit({ capture_mode: mode, ...(mode === 'local' ? { destinations: [] } : {}) })} />}
+            {captureOutcome?.audience_channel && config.capture_mode === 'local' ? null :
+            <DestinationsEditor
+              outcome={captureOutcome}
+              template={template}
+              bound={bound}
+              available={
+                destinations.status === 'ready' ? ready(destinations.data.destinations) : destinations
+              }
+              types={read(destinations)?.types ?? []}
+              connections={read(destinations)?.connections ?? []}
+              onRefresh={refreshDestinations}
+              onSaved={(updated) => {
+                destinationRequest.current++;
+                setDestinations((current) => current.status === 'ready'
+                  ? ready({ ...current.data, destinations: [...updated] }) : current);
+              }}
+              hint={
+                bound.length > 0
+                  ? null
+                  : hintSaid(
+                      hintIn(config),
+                      read(destinations)?.types ?? [],
+                      gallery.labels.fields,
+                      read(destinations)?.destinations ?? [],
+                    )
+              }
+              onChange={(next) => edit({ destinations: next, capture_mode: 'connected' })}
+            />
+            }
+            <SubmissionSettings template={template} primaryChannel={captureOutcome?.audience_channel} config={config} destinations={read(destinations)?.destinations ?? []} onChange={edit} />
+  </>;
+
   return (
     <Tabs
       value={tab}
@@ -802,6 +853,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
             focusActions={<><HistoryControls history={{ ...history, canUndo: !busy && history.canUndo, canRedo: !busy && history.canRedo }} />
               <Button type="button" variant="outline" size="sm" disabled={busy || !dirty} onClick={() => void save()}>{busy ? __('Saving…', 'wconvert') : __('Save draft', 'wconvert')}</Button></>}
             onChange={(tree, coalesce) => edit({ template: { ...entry, tree } }, coalesce)} onSelect={chooseStep} displaySummary={displaySummary} destinationSummary={destinationSummary}
+            contextEditors={{ rules: displayEditor(true), destinations: destinationEditor }}
             deliveryMode={config?.capture_mode === 'local' ? 'local' : bound.length > 0 ? 'connected' : 'none'}
             onGoToDesign={() => { setTab('design'); setPreviewing(false); }}
             onGoToRules={() => setTab('rules')} onGoToDestinations={() => { setTab('destinations'); destinationsTab.current?.focus(); }} />}
@@ -922,22 +974,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
         </TabsContent>
         <TabsContent value="rules" className="wconvert-workspace__secondary wconvert-workspace__display" data-content-lock={showingLock || undefined}>
           <div className="wconvert-workspace__settings">
-            <DisplayRules
-              reopenEnabled={canPreviewReopen}
-              audienceRequirement={entryOfGoal?.audience_requirement}
-              initialSection={displaySection}
-              onSectionChange={setDisplaySection}
-              act={act}
-              vocabulary={vocabulary}
-              value={displayRules}
-              overlay={overlay}
-              onChange={(patch) => edit({ ...asConfigPatch(patch), ...(patch.display_rules ? { rules: undefined } : {}) } as Config)}
-              reveal={revealSection}
-              placement={displayTypeOf(config, templates) === 'inline' ? {
-                summary: inlineSummary,
-                controls: <InlinePlacementSettings optinId={id} published={publishedAt !== null} config={config} vocabulary={vocabulary} onChange={edit} />,
-              } : undefined}
-            />
+            {displayEditor()}
           </div>
         </TabsContent>
         <TabsContent value="destinations" className="wconvert-workspace__secondary">
@@ -950,38 +987,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
                 <Eye aria-hidden="true" />{__('Preview campaign', 'wconvert')}
               </Button>
             </div>}
-            {captureOutcome?.audience_channel && <CaptureModeChoice disabled={busy} selectedCount={bound.length} mode={config.capture_mode === 'local' ? 'local' : 'connected'}
-              onChange={(mode) => edit({ capture_mode: mode, ...(mode === 'local' ? { destinations: [] } : {}) })} />}
-            {captureOutcome?.audience_channel && config.capture_mode === 'local' ? null :
-            <DestinationsEditor
-              outcome={captureOutcome}
-              template={template}
-              bound={bound}
-              available={
-                destinations.status === 'ready' ? ready(destinations.data.destinations) : destinations
-              }
-              types={read(destinations)?.types ?? []}
-              connections={read(destinations)?.connections ?? []}
-              onRefresh={refreshDestinations}
-              onSaved={(updated) => {
-                destinationRequest.current++;
-                setDestinations((current) => current.status === 'ready'
-                  ? ready({ ...current.data, destinations: [...updated] }) : current);
-              }}
-              hint={
-                bound.length > 0
-                  ? null
-                  : hintSaid(
-                      hintIn(config),
-                      read(destinations)?.types ?? [],
-                      gallery.labels.fields,
-                      read(destinations)?.destinations ?? [],
-                    )
-              }
-              onChange={(next) => edit({ destinations: next, capture_mode: 'connected' })}
-            />
-            }
-            <SubmissionSettings template={template} primaryChannel={captureOutcome?.audience_channel} config={config} destinations={read(destinations)?.destinations ?? []} onChange={edit} />
+            {destinationEditor}
           </div>
           {!compact && previewPane}
         </TabsContent>
