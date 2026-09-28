@@ -11,7 +11,7 @@ export function AudienceEditor({ value, types, onChange }: { value: Audience; ty
   const [saved, setSaved] = useState<readonly RuleGroup[]>(value.mode === 'groups' ? value.groups : []);
   const groups = value.mode === 'groups' ? value.groups : [];
   return <>
-    <p>{__('Choose who can see this Campaign. Page exclusions and limits apply to everyone.', 'wconvert')}</p>
+    <p>{__('Page exclusions and limits apply to all visitors.', 'wconvert')}</p>
     <fieldset className="wconvert-display-choices"><legend>{__('Audience', 'wconvert')}</legend>
       <label><input type="radio" name="display-audience" checked={value.mode === 'everyone'} onChange={() => { setSaved(groups); onChange({ mode: 'everyone' }); }} />{__('Everyone on the selected pages', 'wconvert')}</label>
       <label><input type="radio" name="display-audience" checked={value.mode === 'groups'} onChange={() => onChange({ mode: 'groups', groups: saved.length ? saved : [emptyGroup()] })} />{__('Specific visitors', 'wconvert')}</label>
@@ -25,7 +25,7 @@ export function AudienceEditor({ value, types, onChange }: { value: Audience; ty
         <GroupEditor group={group} types={types} offset={index * 10} onChange={next => onChange({ ...value, groups: groups.map((old, at) => at === index ? next : old) })} />
       </div>)}
       {!advanced ? <Button variant="ghost" className="mt-4" onClick={() => setAdvanced(true)}>{__('Advanced: alternative audiences', 'wconvert')}</Button>
-        : <div className="mt-4"><p>{__('A visitor only needs to match one audience group. For example: mobile visitors OR signed-in customers.', 'wconvert')}</p>
+        : <div className="mt-4"><p>{__('Match any group—for example, mobile visitors or signed-in customers.', 'wconvert')}</p>
           {groups.length < 5 && <Button variant="outline" onClick={() => onChange({ ...value, groups: [...groups, emptyGroup()] })}>{__('Add alternative audience', 'wconvert')}</Button>}
         </div>}
     </>}

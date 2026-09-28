@@ -107,11 +107,12 @@ export function EditorCanvas({
       const paper = page.current;
       const area = stage.current;
       if (!paper || !area) return;
+      const padding = getComputedStyle(area);
       const next = {
         width: paper.offsetWidth,
         height: paper.offsetHeight,
-        availableWidth: area.clientWidth,
-        availableHeight: area.clientHeight,
+        availableWidth: area.clientWidth - (parseFloat(padding.paddingLeft) || 0) - (parseFloat(padding.paddingRight) || 0),
+        availableHeight: area.clientHeight - (parseFloat(padding.paddingTop) || 0) - (parseFloat(padding.paddingBottom) || 0),
       };
       setSize((current) =>
         Object.keys(next).every((key) => current[key as keyof typeof next] === next[key as keyof typeof next])
@@ -137,8 +138,8 @@ export function EditorCanvas({
       ? 1
       : Math.min(
           1,
-          Math.max(0.1, (size.availableWidth - 32) / Math.max(1, size.width)),
-          Math.max(0.1, (size.availableHeight - 32) / Math.max(1, size.height)),
+          Math.max(0.1, size.availableWidth / Math.max(1, size.width)),
+          Math.max(0.1, size.availableHeight / Math.max(1, size.height)),
         );
   return (
     <section className="wconvert-canvas" data-width={width} aria-label={__('Design canvas', 'wconvert')}>

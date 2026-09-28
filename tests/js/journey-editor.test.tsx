@@ -1,3 +1,4 @@
+import { graphTrace } from '../../resources/loader/src/journey-graph';
 import userEvent from '@testing-library/user-event';
 import { useState } from 'react';
 import { render, screen, fireEvent, cleanup, within, waitFor } from '@testing-library/react';
@@ -16,6 +17,7 @@ import rules from '../fixtures/journey-rules.json';
 import service from '../../pro/modules/journeys/templates/journey-service-enquiry.json';
 import finder from '../../pro/modules/journeys/templates/journey-product-finder.json';
 import graphFixture from '../fixtures/journey-graph-enquiry.json';
+import branchGroups from '../fixtures/journey-graph-branch-groups.json';
 
 vi.mock('../../resources/admin/src/builder/Preview', () => ({ Preview: () => <div /> }));
 vi.mock('../../resources/admin/src/builder/JourneyMap', () => ({ JourneyMap: ({ onConnect, onReconnect, onSelect, onAdd }: {
@@ -86,7 +88,7 @@ it('lets an ending selection add a question at an explicit location and restores
   render(<EndingEditor />);
   await user.click(screen.getByRole('button', { name: 'Focus journey' }));
   await user.click(screen.getByRole('button', { name: 'Add screen' }));
-  const dialog = screen.getByRole('dialog', { name: 'What happens next?' });
+  const dialog = screen.getByRole('dialog', { name: 'Add a screen' });
   expect(within(dialog).getByRole('option', { name: /One enquiry — Continue — to Received/ })).toBeDisabled();
   await user.keyboard('{Escape}');
   expect(document.body).toHaveClass('wconvert-journey-focus');
@@ -862,14 +864,15 @@ it('keeps the clicked connection when questions are unavailable after a save', a
   await user.click(await screen.findByRole('button', { name: 'Insert after save' }));
   if (!screen.queryByRole('combobox', { name: 'Insert at' })) await user.click(screen.getByRole('button', { name: 'Change location' }));
   expect(screen.getByRole('combobox', { name: 'Insert at' })).toHaveValue('edge:saved');
-  expect(screen.getByRole('button', { name: 'Add screen here' })).toBeDisabled();
+  expect(screen.getByRole('button', { name: /Show a message/ })).toHaveAttribute('aria-pressed', 'true');
+  expect(screen.getByRole('button', { name: 'Add screen here' })).toBeEnabled();
   await user.click(screen.getByRole('button', { name: /Finish this path/ }));
   expect(screen.getByRole('combobox', { name: 'Insert at' })).toHaveValue('edge:saved');
   expect(screen.getByRole('button', { name: 'Add screen here' })).toBeEnabled();
 });
 
 
-it('offers an explicit legacy upgrade from Add screen, leaves Cancel unchanged, and lets history undo the upgrade', async () => {
+it('inserts into legacy campaigns as one undoable edit and leaves Cancel unchanged', async () => {
   const user = userEvent.setup();
   const original = source.tree as TemplateTree;
   function UpgradeEditor() {
@@ -882,14 +885,15 @@ it('offers an explicit legacy upgrade from Add screen, leaves Cancel unchanged, 
   }
   render(<UpgradeEditor/>);
   await user.click(screen.getByRole('button', { name: 'Add screen' }));
-  expect(screen.getByRole('dialog', { name: 'Use the new Journey editor' })).toBeInTheDocument();
+  expect(screen.getByRole('dialog', { name: 'Add a screen' })).toBeInTheDocument();
   await user.click(screen.getByRole('button', { name: 'Cancel' }));
   expect(draft()).toEqual(original);
   await user.click(screen.getByRole('button', { name: 'Add screen' }));
-  await user.click(screen.getByRole('button', { name: 'Enable flexible paths' }));
-  expect(draft()).toEqual(upgradeToGraph(original));
-  expect(screen.getByRole('dialog', { name: 'What happens next?' })).toBeInTheDocument();
-  await user.click(screen.getByRole('button', { name: 'Cancel' }));
+  await user.click(screen.getByRole('button', { name: /Show a message/ }));
+  await user.type(screen.getByRole('textbox', { name: 'Screen name' }), 'Welcome offer');
+  await user.click(screen.getByRole('button', { name: 'Add screen here' }));
+  expect(draft().graph).toBeDefined();
+  expect(draft().steps).toHaveLength(original.steps.length + 1);
   await user.click(screen.getByRole('button', { name: 'Undo draft edit' }));
   expect(draft()).toEqual(original);
 });
@@ -956,4 +960,105 @@ it('lets a two-choice question review references while keeping the two-choice mi
   expect(within(review).queryByRole('button', { name: /Balcony picks/ })).not.toBeInTheDocument();
   await user.selectOptions(within(review).getByRole('combobox', { name: 'Replace its uses with' }), 'balcony');
   expect(within(review).getByRole('button', { name: 'Replace uses & remove' })).toBeDisabled();
+});
+
+
+it('adds a follow-up beside its answer, preserves every relevant path, and undoes it in one edit', async () => {
+  const user = userEvent.setup();
+  const original = graphFixture as unknown as TemplateTree;
+  function Campaign() {
+    const [history, setHistory] = useState(historyOf(original));
+    const [step, setStep] = useState(2);
+    return <><button onClick={() => setHistory(undo)}>Undo test edit</button>
+      <JourneyEditor embedded editorCanvas={<div>Actual campaign canvas</div>} tree={history.present} step={step} onSelect={setStep}
+        onChange={tree => setHistory(current => remember(current, tree))} />
+      <output data-testid="draft">{JSON.stringify(history.present)}</output></>;
+  }
+  render(<Campaign />);
+  await user.click(screen.getByRole('button', { name: 'Add follow-up for Garden' }));
+  const dialog = within(screen.getByRole('dialog', { name: 'Add a follow-up question' }));
+  expect(dialog.queryByRole('combobox', { name: 'Show when the answer to' })).toBeNull();
+  expect(dialog.getByRole('button', { name: 'Add follow-up' })).toBeDisabled();
+  await user.type(dialog.getByRole('textbox', { name: 'Question' }), 'What is your garden budget?');
+  await user.click(dialog.getByRole('button', { name: 'Add follow-up' }));
+  const next = draft();
+  const added = next.steps.at(-1)!;
+  expect(added.when?.clauses[0]).toEqual({ question: 'n1', operator: 'includes_any', values: ['garden'] });
+  expect(walkNodes(added.content).find(node => node.type === 'question')).toMatchObject({ label: 'What is your garden budget?' });
+  expect(next.submissions).toEqual(original.submissions);
+  for (let mask = 1; mask <= 7; mask++) {
+    const selected = ['garden', 'indoors', 'balcony'].filter((_, index) => !!(mask & 1 << index));
+    const path = graphTrace(next.steps, next.graph!, { n1: selected }).indices.map(index => next.steps[index].id);
+    expect(path.includes(added.id)).toBe(selected.includes('garden'));
+    expect(path.filter(id => ['garden', 'indoors', 'balcony'].includes(id))).toEqual(selected);
+    expect(path.slice(-2)).toEqual(['contact', 'received']);
+  }
+  await user.click(screen.getByRole('button', { name: 'Flow' }));
+  await user.click(screen.getByRole('button', { name: 'Edit' }));
+  expect(screen.getByRole('textbox', { name: 'Question' })).toHaveValue('What is your garden budget?');
+  await user.click(screen.getByRole('button', { name: 'Undo test edit' }));
+  expect(draft()).toEqual(original);
+});
+
+it('reviews a shared follow-up continuation change and updates shown and skipped paths together', async () => {
+  const user = userEvent.setup();
+  const initial = graphFixture as unknown as TemplateTree;
+  function Campaign() {
+    const [tree, setTree] = useState(initial);
+    return <><JourneyEditor embedded editorCanvas={<div />} tree={tree} step={2} onSelect={() => {}} onChange={setTree} />
+      <output data-testid="draft">{JSON.stringify(tree)}</output></>;
+  }
+  render(<Campaign />);
+  await user.click(screen.getByRole('button', { name: 'Next screen' }));
+  expect(screen.getByRole('heading', { name: 'Relevant follow-ups' })).toBeInTheDocument();
+  expect(screen.queryByRole('combobox', { name: 'Go to' })).toBeNull();
+  await user.selectOptions(screen.getByRole('combobox', { name: 'After the relevant questions' }), 'received');
+  expect(screen.getByRole('alertdialog', { name: 'Review this path change' })).toBeInTheDocument();
+  expect(draft()).toEqual(initial);
+  await user.click(screen.getByRole('button', { name: 'Apply path change' }));
+  expect(draft().graph!.edges.filter(edge => edge.from === 'balcony').map(edge => edge.to)).toEqual(['received', 'received']);
+  expect(draft().graph!.edges.find(edge => edge.id === 'start')?.to).toBe('garden');
+});
+
+
+it.each(['home', 'business'])('adds a follow-up to the matching %s branch without changing the other visitor path', async answer => {
+  const user = userEvent.setup();
+  const original = branchGroups as unknown as TemplateTree;
+  function Campaign() {
+    const [tree, setTree] = useState(original);
+    const [step, setStep] = useState(original.steps.findIndex(item => item.id === 'scope'));
+    return <><JourneyEditor embedded editorCanvas={<div />} tree={tree} step={step} onSelect={setStep} onChange={setTree} />
+      <output data-testid="draft">{JSON.stringify(tree)}</output></>;
+  }
+  render(<Campaign />);
+  await user.click(screen.getByRole('button', { name: `Add follow-up for My ${answer}` }));
+  await user.type(screen.getByRole('textbox', { name: 'Question' }), 'When would you like to start?');
+  await user.click(screen.getByRole('button', { name: 'Add follow-up' }));
+  const next = draft();
+  const added = next.steps.at(-1)!.id;
+  for (const visitor of ['home', 'business']) {
+    const path = graphTrace(next.steps, next.graph!, { n1: visitor }).indices.map(index => next.steps[index].id);
+    expect(path.includes(added)).toBe(visitor === answer);
+    expect(path.filter(id => id !== added)).toEqual(graphTrace(original.steps, original.graph!, { n1: visitor }).indices.map(index => original.steps[index].id));
+  }
+});
+
+
+it('asks for placement when a multi-answer choice does not determine a single branch', async () => {
+  const user = userEvent.setup();
+  const original = structuredClone(branchGroups) as unknown as TemplateTree;
+  const at = original.steps.findIndex(item => item.id === 'scope');
+  const question = walkNodes(original.steps[at].content).find(node => node.type === 'question') as QuestionNode;
+  Object.assign(question, { answer_type: 'multi' });
+  const change = vi.fn();
+  render(<JourneyEditor embedded editorCanvas={<div />} tree={original} step={at} onSelect={() => {}} onChange={change} />);
+  await user.click(screen.getByRole('button', { name: 'Add follow-up for My home' }));
+  await user.type(screen.getByRole('textbox', { name: 'Question' }), 'When would you like to start?');
+  expect(screen.getByText('This answer can take more than one path. Choose where this follow-up belongs.')).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: 'Add follow-up' })).toBeDisabled();
+  const home = original.graph!.edges.find(edge => edge.from === 'scope' && edge.kind === 'answer')!;
+  await user.selectOptions(screen.getByRole('combobox', { name: 'Insert at' }), `edge:${home.id}`);
+  expect(screen.getByRole('button', { name: 'Add follow-up' })).toBeEnabled();
+  await user.click(screen.getByRole('button', { name: 'Add follow-up' }));
+  expect(change.mock.calls.at(-1)?.[0].steps.at(-1).when.clauses[0]).toEqual({ question: 'n1', operator: 'includes_any', values: ['home'] });
 });

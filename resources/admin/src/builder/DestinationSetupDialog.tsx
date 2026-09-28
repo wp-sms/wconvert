@@ -45,8 +45,8 @@ export function DestinationSetupDialog({
           </DialogTitle>
           <DialogDescription className="m-0" id={description}>
             {destination !== undefined
-              ? __('These settings are shared across the site. Saving changes this destination for every Campaign that uses it, including published Campaigns.', 'wconvert')
-              : __('Create a destination for this site, then select it for this Campaign. Your Campaign draft stays open.', 'wconvert')}
+              ? __('Changes affect every campaign using this destination, including published campaigns.', 'wconvert')
+              : __('Create a destination, then select it for this campaign.', 'wconvert')}
           </DialogDescription>
         </DialogHeader>
 

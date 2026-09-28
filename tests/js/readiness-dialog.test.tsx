@@ -92,7 +92,7 @@ describe('reviewing before publishing', () => {
   it('blocks a list campaign until a service is ready or collect-only is explicitly chosen', async () => {
     const { rerender, supplied } = await open({ captureMode: 'connected' });
     expect(screen.getByRole('button', { name: 'Publish Campaign' })).toBeDisabled();
-    expect(screen.getByText(/Choose and configure a service for this channel/)).toBeVisible();
+    expect(screen.getByText(/Before publishing, connect a service/)).toBeVisible();
     rerender(<ReadinessDialog {...supplied} captureMode="local" />);
     expect(screen.getByRole('button', { name: 'Publish Campaign' })).toBeEnabled();
     expect(screen.getByText(/Collect only: saved in Leads/)).toBeVisible();

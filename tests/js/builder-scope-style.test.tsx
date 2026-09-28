@@ -167,6 +167,7 @@ beforeEach(() => {
  */
 async function style(row: RegExp) {
   render(<OptinBuilder id={ID} onClose={vi.fn()} />);
+  await userEvent.click(await screen.findByRole('tab', { name: 'Theme & layout' }));
 
   await userEvent.click(await screen.findByRole('button', { name: 'Layers' }));
   const tree = await screen.findByRole('treegrid', { name: 'Blocks in this design' });
@@ -424,7 +425,7 @@ describe('the narrow bag, through the width switch', () => {
 
     // `pad` is the one the narrow bag names; `bg` is inherited from the box's
     // own wide bag, which is a different sentence.
-    expect(screen.getByText('Mobile override')).toBeInTheDocument();
+    expect(within(screen.getByRole('tabpanel', { name: 'Theme & layout' })).getByText('Mobile override')).toBeInTheDocument();
     expect(document.querySelector('.wconvert-scope__from [data-set="here"]')).toBeNull();
   });
 });
@@ -562,7 +563,7 @@ describe('the readability readout at a scope', () => {
 
     await style(/Colored box/);
 
-    expect(screen.getByText(/Quiet text on Background/)).toBeInTheDocument();
+    expect(within(screen.getByRole('tabpanel', { name: 'Theme & layout' })).getByText(/Quiet text on Background/)).toBeInTheDocument();
   });
 });
 
@@ -654,6 +655,7 @@ describe('the tree’s override count', () => {
     );
 
     render(<OptinBuilder id={ID} onClose={vi.fn()} />);
+  await userEvent.click(await screen.findByRole('tab', { name: 'Theme & layout' }));
 
     await userEvent.click(await screen.findByRole('button', { name: 'Layers' }));
   const tree = await screen.findByRole('treegrid', { name: 'Blocks in this design' });
@@ -679,6 +681,7 @@ describe('full width', () => {
    */
   it('starts folded, and hides wp-admins chrome only when asked', async () => {
     render(<OptinBuilder id={ID} onClose={vi.fn()} />);
+  await userEvent.click(await screen.findByRole('tab', { name: 'Theme & layout' }));
 
     const toggle = await screen.findByRole('button', { name: 'Full width' });
 
@@ -696,6 +699,7 @@ describe('full width', () => {
   /** A mode with no keyboard way out is a trap. */
   it('leaves on Escape', async () => {
     render(<OptinBuilder id={ID} onClose={vi.fn()} />);
+  await userEvent.click(await screen.findByRole('tab', { name: 'Theme & layout' }));
 
     await userEvent.click(await screen.findByRole('button', { name: 'Full width' }));
     await userEvent.keyboard('{Escape}');
@@ -710,6 +714,7 @@ describe('full width', () => {
    */
   it('remembers the choice across a visit', async () => {
     render(<OptinBuilder id={ID} onClose={vi.fn()} />);
+  await userEvent.click(await screen.findByRole('tab', { name: 'Theme & layout' }));
 
     await userEvent.click(await screen.findByRole('button', { name: 'Full width' }));
 
@@ -723,6 +728,7 @@ describe('full width', () => {
    */
   it('puts the chrome back when the builder unmounts', async () => {
     const { unmount } = render(<OptinBuilder id={ID} onClose={vi.fn()} />);
+  await userEvent.click(await screen.findByRole('tab', { name: 'Theme & layout' }));
 
     await userEvent.click(await screen.findByRole('button', { name: 'Full width' }));
 

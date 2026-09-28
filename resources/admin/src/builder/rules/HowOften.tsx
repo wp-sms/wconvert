@@ -71,7 +71,7 @@ export function HowOften({ frequency, schedule, priority, overlay, reopenEnabled
           <option value="every">{__('On every eligible page', 'wconvert')}</option>
           <option value="custom">{__('Custom limits', 'wconvert')}</option>
         </select>
-        <p className="text-note text-muted-foreground">{__('Limits apply in each visitor’s browser. Clearing browsing data resets them.', 'wconvert')}</p>
+        <p className="text-note text-muted-foreground">{__('Limits are per browser and reset when browsing data is cleared.', 'wconvert')}</p>
       </div>
       {(repeat === 'days' || repeat === 'custom') && <div className="wconvert-schedule-fields">
         {repeat === 'custom' && <div><Label htmlFor="wconvert-session-max">{__('Automatic appearances per tab session', 'wconvert')}</Label>
@@ -122,13 +122,13 @@ export function HowOften({ frequency, schedule, priority, overlay, reopenEnabled
             <div><Label htmlFor="wconvert-starts-at">{__('Start showing it on', 'wconvert')}</Label>
               <Input id="wconvert-starts-at" type="datetime-local" value={(schedule.starts_at ?? '').replace(' ', 'T')}
                 onChange={event => setBoundary('starts_at', event.target.value)} aria-describedby="wconvert-starts-help" />
-              <p id="wconvert-starts-help" className="text-note text-muted-foreground">{__('Leave empty to start when published and its other rules allow.', 'wconvert')}</p>
+              <p id="wconvert-starts-help" className="text-note text-muted-foreground">{__('Empty: start when published, subject to other rules.', 'wconvert')}</p>
             </div>
             <div><Label htmlFor="wconvert-ends-at">{__('Stop showing it on', 'wconvert')}</Label>
               <Input id="wconvert-ends-at" type="datetime-local" value={(schedule.ends_at ?? '').replace(' ', 'T')}
                 onChange={event => setBoundary('ends_at', event.target.value)} aria-invalid={invalidWindow || undefined}
                 aria-describedby={invalidWindow ? 'wconvert-schedule-error' : 'wconvert-ends-help'} />
-              <p id="wconvert-ends-help" className="text-note text-muted-foreground">{__('Leave empty to keep running until you unpublish it.', 'wconvert')}</p>
+              <p id="wconvert-ends-help" className="text-note text-muted-foreground">{__('Empty: run until unpublished.', 'wconvert')}</p>
             </div>
           </div>
           {invalidWindow && <p id="wconvert-schedule-error" role="alert" className="text-note text-destructive">{__('Choose an end date and time after the start.', 'wconvert')}</p>}
@@ -145,7 +145,7 @@ export function HowOften({ frequency, schedule, priority, overlay, reopenEnabled
           <Input id="wconvert-priority" type="number" className="max-w-28" value={priority === 0 ? '' : priority}
             onChange={event => { const next = Number(event.target.value); onPriority(event.target.value === '' || !Number.isFinite(next) ? 0 : Math.trunc(next)); }} />
         </div>
-        <Description>{__('When several popups are ready at the same moment, the highest priority wins. A popup that appears earlier keeps the place; closing it does not show another on that page view.', 'wconvert')}</Description>
+        <Description>{__('If popups are ready together, the highest priority wins. An earlier popup keeps its place; closing it does not open another on that page view.', 'wconvert')}</Description>
       </div>
     </details>}
   </div>;

@@ -1,6 +1,6 @@
 import { expect, it } from 'vitest';
 import type { TemplateTree } from '@renderer/types';
-import { followupGroups } from '../../resources/admin/src/builder/structure/followupGroups';
+import { followupGroups, followupGroupSource } from '../../resources/admin/src/builder/structure/followupGroups';
 import fixture from '../fixtures/journey-graph-enquiry.json';
 import branchedFixture from '../fixtures/journey-graph-branch-groups.json';
 import { graphTrace } from '@loader/journey-graph';
@@ -60,4 +60,14 @@ it('keeps exclusive branches distinct while both follow-up groups rejoin the sam
   expect(trace.indices.map(index => value.steps[index].id)).toEqual(['scope', 'business', 'business_office', 'business_maintenance', 'contact', 'received']);
   expect(trace.answers[question('home_garden')]).toBeUndefined();
   expect(trace.decisions[0].edge).toBe('business_entry');
+});
+
+
+it('nests each group only under its own directly preceding question', () => {
+  const value = branchedFixture as unknown as TemplateTree;
+  expect(followupGroups(value).map(group => value.steps[followupGroupSource(value, group)!].id)).toEqual(['home', 'business']);
+  const group = followupGroups(tree)[0];
+  const multipleEntries = { ...tree, graph: { ...tree.graph!, edges: [...tree.graph!.edges,
+    { id: 'extra-entry', from: 'contact', to: tree.steps[group.screens[0]].id, kind: 'default' as const }] } };
+  expect(followupGroupSource(multipleEntries, group)).toBeUndefined();
 });

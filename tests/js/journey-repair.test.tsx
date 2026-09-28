@@ -106,6 +106,7 @@ it('reviews a save bypass without disconnecting screens and returns focus after 
       <output data-testid="tree">{JSON.stringify(tree)}</output></>;
   }
   render(<Routes />);
+  await user.click(screen.getByRole('button', { name: 'Custom routing…' }));
   const hiddenDestination = screen.getByRole('combobox', { name: 'Continue at' });
   await user.selectOptions(hiddenDestination, 'received');
   expect(screen.getByRole('alertdialog')).toHaveTextContent('could reach “Received” without saving at “One enquiry”');

@@ -150,14 +150,14 @@ final class LeadMagnetDestinationType implements DestinationType
                 'type' => 'url',
                 'label' => __('Link to the file', 'wconvert'),
                 'description' => __(
-                    'The email carries this link rather than an attachment, so the file stays yours to move or revoke.',
+                    'Emails include this download link, without attaching the file.',
                     'wconvert'
                 ),
             ],
             self::SUBJECT => [
                 'type' => 'text',
                 'label' => __('Subject line', 'wconvert'),
-                'description' => __('What the email says it is, in the inbox.', 'wconvert'),
+                'description' => __('Shown in the recipient’s inbox.', 'wconvert'),
             ],
             self::BODY => [
                 'type' => 'multiline',
@@ -171,7 +171,7 @@ final class LeadMagnetDestinationType implements DestinationType
                 'description' => sprintf(
                     /* translators: %s: the literal token {link}, which must not be translated. */
                     __(
-                        'Write %s where the download should go. Leave it out and the link is added at the end.',
+                        'Insert %s for the download link, or it will be added at the end.',
                         'wconvert'
                     ),
                     self::LINK

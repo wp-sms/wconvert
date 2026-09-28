@@ -1,5 +1,6 @@
+import { followupGroups, followupGroupSource } from './structure/followupGroups';
 import { useEffect, useRef, useState } from 'react';
-import { ArrowRight, Eye } from 'lucide-react';
+import { ArrowRight, ChevronDown, Eye } from 'lucide-react';
 import { __, sprintf } from '@wordpress/i18n';
 import type { JourneyGraphEdge, TemplateTree } from '@renderer/types';
 import { ConfirmDialog } from '../shell/ConfirmDialog';
@@ -22,6 +23,8 @@ export function GraphRouteSettings({ tree, step, focusPath, focusTarget = false,
   const list = useRef<HTMLOListElement>(null);
   const hiddenSelect = useRef<HTMLSelectElement>(null);
   const returnFocus = useRef<HTMLElement | null>(null);
+  const [connectionsOpen, setConnectionsOpen] = useState(false);
+  useEffect(() => { setConnectionsOpen(false); }, [step]);
   const [pending, setPending] = useState<{ tree: TemplateTree; description: string } | null>(null);
   useEffect(() => {
     if (focusPath === null || focusPath === undefined) return;
@@ -44,6 +47,9 @@ export function GraphRouteSettings({ tree, step, focusPath, focusTarget = false,
   const questionAfterSave = routes.some(edge => edge.kind !== 'hidden' && !canAsk(edge.id));
   const answers = routes.filter(edge => edge.kind === 'answer');
   const fallback = routes.find(edge => edge.kind === 'default');
+  const groups = followupGroups(tree);
+  const memberGroup = groups.find(item => item.screens.includes(step));
+  const group = memberGroup ?? (!answers.length ? groups.find(item => followupGroupSource(tree, item) === step) : undefined);
   const hidden = routes.find(edge => edge.kind === 'hidden');
   const targets = graphTargets(tree, screen.id);
   const sources = graphChoiceSources(tree, screen.id);
@@ -71,12 +77,25 @@ export function GraphRouteSettings({ tree, step, focusPath, focusTarget = false,
   if (!routes.length && ['result', 'acknowledgement'].includes(screen.kind)) return <section className="wconvert-journey-settings"><h4>{__('Journey ends here', 'wconvert')}</h4>
     <p>{__('This screen has no next connection. Choose another screen to edit the journey.', 'wconvert')}</p></section>;
   return <section className="wconvert-journey-settings wconvert-journey-routes">
-    <h4>{__('Choose the next screen', 'wconvert')}</h4>
-    <p>{answers.length ? __('Visitors take the first matching answer path. Everyone else follows the last path.', 'wconvert')
+    <h4>{group ? __('Relevant follow-ups', 'wconvert') : answers.length ? __('Choose one path', 'wconvert') : __('Continue', 'wconvert')}</h4>
+    <p>{group ? __('Ask each matching question in order, skip the rest, then continue together.', 'wconvert') : answers.length ? __('Visitors take the first matching answer path. Everyone else follows the last path.', 'wconvert')
       : __('Visitors continue here after completing this screen.', 'wconvert')}</p>
-    <ol ref={list}>{[...answers, ...(fallback ? [fallback] : [])].map((edge, priority) => <li key={edge.id} data-path-priority={priority}>
+    {group && <div className="wconvert-followup-continuation">
+      {!memberGroup && group.screens.map(index => <button type="button" key={tree.steps[index].id} onClick={() => onSelect?.(index)}><strong>{tree.steps[index].name}</strong><small>{conditionText(tree, tree.steps[index].when!)}</small></button>)}
+      <label>{__('After the relevant questions', 'wconvert')}<select value={group.next} onChange={event => {
+        const last = tree.steps[group.screens[group.screens.length - 1]].id;
+        const next = { ...tree, graph: { ...graph, edges: graph.edges.map(edge => edge.from === last && ['default', 'hidden'].includes(edge.kind) ? { ...edge, to: event.target.value } : edge) } };
+        const description = graphChangeImpact(tree, next);
+        if (description) { returnFocus.current = event.currentTarget; setPending({ tree: next, description }); } else onChange(next);
+      }}>{graphTargets(tree, tree.steps[group.screens[group.screens.length - 1]].id).map(target => <option key={target.id} value={target.id}>{target.name}</option>)}</select></label>
+      <button type="button" aria-expanded={connectionsOpen || focusPath != null} onClick={() => setConnectionsOpen(value => !value)}>{connectionsOpen || focusPath != null ? __('Hide custom routing', 'wconvert') : __('Custom routing…', 'wconvert')}</button>
+    </div>}
+    <div hidden={!!group && !connectionsOpen && focusPath == null}>
+    {group && <p className="wconvert-journey-settings__warning">{__('Changing individual connections can separate this question from its follow-up group. Use the shared continuation above to keep every matching question.', 'wconvert')}</p>}
+    {/* eslint-disable-next-line jsx-a11y/no-redundant-roles -- Preserve list semantics in WebKit when list-style is none. */}
+    <ol ref={list} className="wconvert-journey-routes__list" role="list">{[...answers, ...(fallback ? [fallback] : [])].map((edge, priority) => <li key={edge.id} className="wconvert-journey-routes__disclosure" data-path-priority={priority}>
       <details className="wconvert-journey-path-disclosure" open={focusPath === priority || !answers.length}>
-      <summary><span className="wconvert-journey-path-disclosure__priority">{edge.kind === 'answer' ? priority + 1 : '↳'}</span><span><strong>{edge.kind === 'default' ? answers.length ? __('Everyone else', 'wconvert') : __('Continue', 'wconvert') : edge.when ? conditionText(tree, edge.when) : __('Choose an answer condition', 'wconvert')}</strong><small>{sprintf(__('Go to %s', 'wconvert'), tree.steps.find(item => item.id === edge.to)?.name ?? __('Choose a screen', 'wconvert'))}</small></span></summary>
+      <summary><span className="wconvert-journey-path-disclosure__priority">{edge.kind === 'answer' ? priority + 1 : '↳'}</span><span><strong>{edge.kind === 'default' ? answers.length ? __('Everyone else', 'wconvert') : __('Continue', 'wconvert') : edge.when ? conditionText(tree, edge.when) : __('Choose an answer condition', 'wconvert')}</strong><small>{sprintf(__('Go to %s', 'wconvert'), tree.steps.find(item => item.id === edge.to)?.name ?? __('Choose a screen', 'wconvert'))}</small></span><ChevronDown className="wconvert-editor-disclosure-icon" aria-hidden="true" /></summary>
       <div className="wconvert-journey-path-disclosure__body">
       {edge.kind === 'answer' && <><strong>{sprintf(__('Check %1$d of %2$d', 'wconvert'), priority + 1, answers.length)}</strong>
         <ConditionSettings required purpose="route" value={edge.when ?? { match: 'all', clauses: [] }} sources={sources}
@@ -101,7 +120,7 @@ export function GraphRouteSettings({ tree, step, focusPath, focusTarget = false,
       {edge.kind === 'answer' && <div className="wconvert-journey-routes__actions">
         <button type="button" disabled={priority === 0} onClick={() => { const next = [...answers]; [next[priority - 1], next[priority]] = [next[priority], next[priority - 1]]; write(next); }}>{__('Higher priority', 'wconvert')}</button>
         <button type="button" disabled={priority === answers.length - 1} onClick={() => { const next = [...answers]; [next[priority], next[priority + 1]] = [next[priority + 1], next[priority]]; write(next); }}>{__('Lower priority', 'wconvert')}</button>
-        <button type="button" onClick={() => write(answers.filter(item => item.id !== edge.id))}>{__('Remove path', 'wconvert')}</button>
+        <button type="button" data-destructive="true" onClick={() => write(answers.filter(item => item.id !== edge.id))}>{__('Remove path', 'wconvert')}</button>
       </div>}
       </div></details>
     </li>)}{!fallback && <li data-path-priority={answers.length}>
@@ -123,6 +142,7 @@ export function GraphRouteSettings({ tree, step, focusPath, focusTarget = false,
         {!hidden && <option value="" disabled>{__('Choose hidden destination…', 'wconvert')}</option>}
         {targets.map(target => <option key={target.id} value={target.id}>{target.name}</option>)}
       </select></label><p>{__('Hidden screens do not collect an answer or submit details.', 'wconvert')}</p></div>}
+    </div>
     {unreachableScreens(tree).length > 0 && <p className="wconvert-journey-settings__warning" role="status">{sprintf(__('No path reaches: %s. Connect or remove these screens before publishing.', 'wconvert'), unreachableScreens(tree).join(', '))}</p>}
     <ConfirmDialog open={pending !== null} onOpenChange={open => { if (!open) setPending(null); }} title={__('Review this path change', 'wconvert')} returnFocusTo={returnFocus}
       description={pending?.description ?? ''}

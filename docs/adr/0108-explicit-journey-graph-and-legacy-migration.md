@@ -27,8 +27,30 @@ payload and capture verification; the request bound has not been raised.
 Independent conditional follow-ups remain separate screens connected in
 sequence. Each has a show condition, a normal continuation, and a named hidden
 continuation to the next relevant screen. Several follow-ups can therefore run
-for one multi-answer choice before one enquiry submission. Exclusive answer
-edges are used only when one path must win. A merge is several edges targeting
+for one multi-answer choice before one enquiry submission. The editor presents
+these as a group of independently checked follow-ups. When
+one directly preceding question supplies all conditions, its follow-ups nest
+under that question in the screen navigator. Selecting a child keeps the Flow
+group intact; expanding individual connections is explicit. Ambiguous ownership
+or multiple incoming paths remains un-nested rather than implying a false parent.
+The ordinary inspector exposes one shared continuation for a group, both from
+its source and from each member. It updates the last member's shown and hidden
+exits together. Individual exits remain available through explicit Custom routing;
+changing them can dissolve the inferred group, and existing impact review still
+applies. Broken-path repair opens the necessary individual control directly.
+The canvas defaults to selection and layout: drawing/reconnecting requires Edit
+connections. This is an authoring guard, not a new stored graph mode.
+
+Edit and Flow share screen/element controls and draft history. Consent wording
+and visibility reuse the element controls beside capture fields. Theme & layout
+owns campaign-wide styling, with presets first and detailed controls on request.
+Result selection is preview-only state and does not rewrite matching rules.
+Referenced single/multiple-choice type changes require review, preserve choice
+IDs/order and map compatible comparison operators in one draft edit. Free-text
+conversion and multi-value-to-single comparisons require explicit rule repair;
+no conditions are silently dropped.
+
+Exclusive answer edges are used only when one path must win. A merge is several edges targeting
 the same screen, which is visited once in the acyclic traversal.
 
 An unanswered or unvisited source question makes either positive or negative
@@ -66,13 +88,25 @@ rearrangement.
 
 React Flow is an admin view of this data, not the source of routing semantics.
 The Screens inventory and inspector must support every authoring action without
-dragging, including changing priority, fallback and hidden exits. Layout and
+dragging, including changing priority, fallback and hidden exits. Route lists own
+their layout through an explicit list class, so disclosure or visibility wrappers
+cannot remove the card styling. Priority appears once; fallback remains
+unnumbered. Shared native-control defaults must not override card controls. See
+[Admin guidelines §21](../../tools/design-system/GUIDELINES.md#21-editor-cards-lists-and-disclosures).
+Layout and
 viewport metadata stay outside the visitor graph. The product-facing scale
 limit will follow payload, loader and dense-map measurements rather than the
 old seven-screen limit or a new arbitrary number.
 
-Dagre continues to position cards using their measured sizes. The lazy admin map
-uses React Flow Smart Edge for obstacle-aware smooth-step connections: long
+Before Dagre, a conservative presentation pass identifies single-entry paths
+that rejoin. One optional detour is stacked below its entry; competing paths
+occupy priority-ordered lanes; the shared continuation appears once. Independent
+matching follow-ups retain their own grouped semantics. Nested forks, outside
+entries and unproven regions keep explicit graph layout. Measured card sizes
+reserve each region's full bounds, including RTL mirroring. This never changes
+stored edges, priority or visitor behavior. Dagre positions the remaining blocks. The lazy admin map
+uses central orthogonal corridors for clear forward connections and React Flow
+Smart Edge for obstructed/backward connections: long
 branches and hidden exits must go around intervening cards. Its worker batches
 routing updates while dragging; retained measurements and controlled positions
 prevent layout resets. When workers are unavailable it routes on the main

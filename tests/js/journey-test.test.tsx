@@ -77,6 +77,9 @@ it('starts a graph test at its entry screen and resets to that entry', async () 
   expect(screen.getByText('One enquiry').closest('li')).toHaveAttribute('data-current', 'false');
   expect(screen.queryByText('Why this path?')).not.toBeInTheDocument();
   expect(screen.getByText('Garden details').closest('li')).toHaveTextContent('Not reached yet');
+  expect(screen.getByText('Garden details')).not.toBeVisible();
+  await user.click(screen.getByText(/^Not reached yet \(/));
+  expect(screen.getByText('Garden details')).toBeVisible();
   expect(screen.queryByRole('button', { name: 'Edit condition' })).not.toBeInTheDocument();
   await user.click(screen.getByRole('button', { name: 'Reset test' }));
   expect(screen.getByText('Interests').closest('li')).toHaveAttribute('data-current', 'true');
@@ -156,4 +159,22 @@ it('returns only the path actually visited to the map, before and after a save',
   await user.click(screen.getByRole('button', { name: 'Show this path on the map' }));
   expect(show.mock.lastCall?.[0]).toEqual([0, 1]);
   expect(show.mock.lastCall?.[1]).toHaveLength(1);
+});
+
+
+it('keeps skipped-condition repairs available inside the collapsed summary', async () => {
+  const user = userEvent.setup();
+  const edit = vi.fn();
+  const template = { ...source, tree: { ...source.tree, steps: [source.tree.steps[0], {
+    id: 'conditional', name: 'Extra details', kind: 'input', content: { type: 'stack', children: [] },
+    when: { match: 'all', clauses: [{ question: 'unanswered', operator: 'is', values: ['yes'] }] },
+  }, source.tree.steps[1]] } } as unknown as Template;
+  render(<JourneyTest template={template} onEdit={edit} />);
+  await user.type(screen.getByLabelText('Email address'), 'visitor@example.com');
+  await user.click(screen.getByLabelText('Consent'));
+  await user.click(screen.getByRole('button', { name: 'Sign up' }));
+  expect(screen.getByText('Edit condition')).not.toBeVisible();
+  await user.click(screen.getByText('Skipped screens (1)'));
+  await user.click(screen.getByRole('button', { name: 'Edit condition' }));
+  expect(edit).toHaveBeenCalledWith(1, 'condition');
 });

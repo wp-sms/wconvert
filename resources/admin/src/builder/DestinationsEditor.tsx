@@ -4,6 +4,7 @@ import { Plug, Plus, RefreshCw, Settings2 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { DestinationSetupDialog } from './DestinationSetupDialog';
 import { Description } from '../shell/Description';
+import { Toolbar } from '../shell/Toolbar';
 import { EmptyState } from '../shell/EmptyState';
 import {
   Region,
@@ -111,11 +112,11 @@ export function DestinationsEditor({
   return (
     <>
       <Region>
-        <RegionHeader title={__('Where these leads go', 'wconvert')} level={3}
+        <RegionHeader title={__('Send leads to', 'wconvert')} level={3}
           description={bound.length > 0
             ? sprintf(__('%d selected', 'wconvert'), bound.length)
-            : __('No destinations selected', 'wconvert')}
-          trailing={<div className="flex flex-wrap items-center gap-2">
+            : __('No destinations selected', 'wconvert')} />
+        <Toolbar>
             <Button variant="outline" size="sm" disabled={available.status === 'loading'} onClick={onRefresh}>
               <RefreshCw aria-hidden="true" />{__('Refresh', 'wconvert')}
             </Button>
@@ -124,13 +125,13 @@ export function DestinationsEditor({
               setNotice(null);
               setSetup('add');
             }}><Plus aria-hidden="true" />{__('Add destination', 'wconvert')}</Button>
-          </div>} />
+        </Toolbar>
 
         {notice !== null && <RegionBody className="border-b border-border"><p role="status" className="m-0 text-note">{notice}</p></RegionBody>}
         {handoffIssue && <RegionBody className="border-b border-border"><Description>{handoffIssue}</Description></RegionBody>}
 
         {available.status === 'loading' ? <RowsSkeleton />
-          : available.status === 'failed' ? <RegionErrorState message={available.message} hint={__('Use Refresh to try again. Your Campaign draft stays here.', 'wconvert')} />
+          : available.status === 'failed' ? <RegionErrorState message={available.message} hint={__('Refresh to retry. Your draft is unchanged.', 'wconvert')} />
           : available.data.length === 0 ? (
             <EmptyState icon={Plug} title={__('No destinations yet', 'wconvert')}>
               {outcome && !handoffIssue
@@ -166,7 +167,7 @@ export function DestinationsEditor({
                           {compatibility.map((problem) => <li key={problem}>{problem}</li>)}
                         </ul>}
                         {missingConnection && <Description as="span" id={`${control}-connection`} className="block text-warning">
-                          {__('This destination needs an account. Open Settings to review its connection.', 'wconvert')}
+                          {__('Account connection needed. Open Settings to connect.', 'wconvert')}
                         </Description>}
                         {destination.availability !== 'ready' && (
                           <Description as="span" id={`${control}-availability`} className="block text-warning">
@@ -211,8 +212,8 @@ export function DestinationsEditor({
         onSaved={(destinations) => {
           onSaved(destinations);
           setNotice(setup === 'add'
-            ? __('Destination added. Select its checkbox to use it for this Campaign.', 'wconvert')
-            : __('Destination updated for every Campaign that uses it.', 'wconvert'));
+            ? __('Destination added. Select it to use it for this campaign.', 'wconvert')
+            : __('Destination updated for all campaigns using it.', 'wconvert'));
         }} />}
     </>
   );

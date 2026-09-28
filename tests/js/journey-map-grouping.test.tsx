@@ -20,6 +20,7 @@ vi.mock('@xyflow/react', async importOriginal => ({
   NodeToolbar: ({ children, isVisible }: { children: ReactNode; isVisible: boolean }) => isVisible ? <div>{children}</div> : null,
   Panel: ({ children }: { children: ReactNode }) => <div>{children}</div>,
   Handle: () => null, Controls: () => null, Background: () => null,
+  useUpdateNodeInternals: () => () => {},
   useReactFlow: () => ({ getNodes: () => canvas.nodes, fitView: canvas.fitView, viewportInitialized: true, getViewport: () => ({ x: 10, y: 20, zoom: 0.75 }), setViewport: canvas.setViewport }), useStore: (selector: (state: { width: number; height: number; transform: number[] }) => unknown) => selector({ width: 1000, height: 700, transform: [0, 0, 1] }), useNodesInitialized: () => true,
   ReactFlow: ({ nodes, edges, nodeTypes, children, onNodesChange, onNodeClick, onEdgeClick }: { nodes: Node[]; edges: Edge[]; nodeTypes: NodeTypes; children: ReactNode; onNodesChange(changes: NodeChange[]): void; onNodeClick(event: MouseEvent, node: Node): void; onEdgeClick(event: MouseEvent, edge: Edge): void }) => {
     canvas.nodes = nodes; canvas.change = onNodesChange; canvas.edgeClick = edge => onEdgeClick({} as MouseEvent, edge);
@@ -38,10 +39,10 @@ it('labels disconnected follow-ups in both grouped and expanded maps and keeps t
   const changed = { ...tree, graph: { ...tree.graph!, edges: tree.graph!.edges.map(edge => edge.id === 'start' ? { ...edge, to: 'contact' } : edge) } };
   render(<JourneyMap tree={changed} selected={null} onSelect={select} onSelectPath={() => {}} onConnect={() => {}} />);
   expect(screen.getByText('Unreachable — connect an incoming path to show these screens.')).toBeInTheDocument();
-  expect(screen.queryByText('Show every matching screen, in this order.')).not.toBeInTheDocument();
-  await user.click(screen.getByRole('button', { name: /^Garden details / }));
+  expect(screen.queryByText('Ask every match, one at a time. Skip the rest.')).not.toBeInTheDocument();
+  await user.click(screen.getByRole('button', { name: /Garden details$/ }));
   expect(select).toHaveBeenCalledWith(tree.steps.findIndex(item => item.id === 'garden'));
-  await user.click(screen.getByRole('button', { name: 'Expand screens' }));
+  await user.click(screen.getByRole('button', { name: 'Edit individual connections' }));
   expect(screen.getAllByText('Unreachable — connect an incoming path')).toHaveLength(3);
 });
 
@@ -74,17 +75,17 @@ it('summarizes independent follow-ups and expands to the exact original nodes an
   render(<JourneyMap tree={tree} selected={null} onSelect={select} onSelectPath={() => {}} onConnect={connect} />);
   expect(screen.getAllByTestId('map-node')).toHaveLength(4);
   expect(canvas.nodes.map(node => node.id)).toEqual(['interests', 'followups:garden', 'contact', 'received']);
-  expect(screen.getByText('Show every matching screen, in this order.')).toBeInTheDocument();
-  await user.click(screen.getByRole('button', { name: /^Indoor details / }));
+  expect(screen.getByText('Ask every match, one at a time. Skip the rest.')).toBeInTheDocument();
+  await user.click(screen.getByRole('button', { name: /Indoor details$/ }));
   expect(select).toHaveBeenCalledWith(tree.steps.findIndex(step => step.id === 'indoors'));
   const edges = JSON.parse(screen.getByTestId('map-edges').textContent!) as Edge[];
   expect(edges.map(edge => [edge.source, edge.target])).toContainEqual(['interests', 'followups:garden']);
   expect(edges.find(edge => edge.target === 'followups:garden')?.reconnectable).toBe(false);
-  await user.click(screen.getByRole('button', { name: 'Expand screens' }));
+  await user.click(screen.getByRole('button', { name: 'Edit individual connections' }));
   expect(screen.getAllByTestId('map-node')).toHaveLength(6);
   expect(canvas.nodes.map(node => node.id)).toEqual(['interests', 'garden', 'indoors', 'balcony', 'contact', 'received']);
-  expect(screen.queryByText('Show every matching screen, in this order.')).not.toBeInTheDocument();
-  await waitFor(() => expect(screen.getByRole('button', { name: /2 · Question Garden details/ })).toHaveFocus());
+  expect(screen.queryByText('Ask every match, one at a time. Skip the rest.')).not.toBeInTheDocument();
+  await waitFor(() => expect(screen.getByRole('button', { name: /Question Garden details/ })).toHaveFocus());
   expect(connect).not.toHaveBeenCalled();
   await user.click(screen.getByRole('button', { name: 'Group follow-ups' }));
   expect(screen.getAllByTestId('map-node')).toHaveLength(4);
@@ -96,20 +97,22 @@ it('explains shown and skipped group members when trying sample answers', () => 
   expect(screen.getAllByText('Skipped for these answers')).toHaveLength(2);
 });
 
-it('reveals a newly selected group member but respects manually grouping the current selection', async () => {
+it('keeps members grouped until connections are explicitly inspected', async () => {
   const user = userEvent.setup();
   const props = { tree, onSelect: () => {}, onSelectPath: () => {}, onConnect: () => {} };
   const { rerender } = render(<JourneyMap {...props} selected={null} />);
   expect(canvas.nodes.some(node => node.id === 'followups:garden')).toBe(true);
   const garden = tree.steps.findIndex(step => step.id === 'garden');
   rerender(<JourneyMap {...props} selected={garden} />);
+  expect(canvas.nodes.some(node => node.id === 'followups:garden')).toBe(true);
+  await user.click(screen.getByRole('button', { name: 'Edit individual connections' }));
   expect(canvas.nodes.some(node => node.id === 'garden')).toBe(true);
   await user.click(screen.getByRole('button', { name: 'Group follow-ups' }));
   expect(canvas.nodes.some(node => node.id === 'followups:garden')).toBe(true);
   rerender(<JourneyMap {...props} selected={garden} />);
   expect(canvas.nodes.some(node => node.id === 'followups:garden')).toBe(true);
   rerender(<JourneyMap {...props} selected={tree.steps.findIndex(step => step.id === 'indoors')} />);
-  expect(canvas.nodes.some(node => node.id === 'indoors')).toBe(true);
+  expect(canvas.nodes.some(node => node.id === 'followups:garden')).toBe(true);
 });
 
 it('spaces tall parallel cards by measured size without resetting a manually arranged map', async () => {
@@ -200,11 +203,11 @@ it('keeps the last inspected screen in view after its settings close', async () 
 it('lets merchants turn relationship highlighting off without moving cards or editing routes', async () => {
   const user = userEvent.setup();
   render(<JourneyMap tree={tree} selected={tree.steps.findIndex(step => step.id === 'interests')} onSelect={() => {}} onSelectPath={() => {}} onConnect={() => {}} />);
-  expect(screen.getByRole('button', { name: 'Related paths highlighted' })).toHaveAttribute('aria-pressed', 'true');
+  await user.click(screen.getByRole('button', { name: 'View options' }));
+  expect(screen.getByRole('menuitemcheckbox', { name: 'Highlight related paths' })).toHaveAttribute('aria-checked', 'true');
   expect(canvas.nodes.find(node => node.id === 'contact')?.data.muted).toBe(true);
   const positions = canvas.nodes.map(node => node.position);
-  await user.click(screen.getByRole('button', { name: 'Related paths highlighted' }));
-  expect(screen.getByRole('button', { name: 'Highlight related paths' })).toHaveAttribute('aria-pressed', 'false');
+  await user.click(screen.getByRole('menuitemcheckbox', { name: 'Highlight related paths' }));
   expect(canvas.nodes.every(node => !node.data.muted)).toBe(true);
   expect(canvas.nodes.map(node => node.position)).toEqual(positions);
   const edges = JSON.parse(screen.getByTestId('map-edges').textContent!) as Edge[];
@@ -218,7 +221,8 @@ it.each(['ltr', 'rtl'])('pans to later screens in %s without zooming or changing
     render(<JourneyMap tree={tree} selected={null} onSelect={() => {}} onSelectPath={() => {}} onConnect={() => {}} />);
     const positions = canvas.nodes.map(node => node.position);
     canvas.setViewport.mockClear();
-    await userEvent.setup().click(screen.getByRole('button', { name: 'Pan to later screens' }));
+    await userEvent.setup().click(screen.getByRole('button', { name: 'View options' }));
+    await userEvent.setup().click(screen.getByRole('menuitem', { name: 'Pan to later screens' }));
     expect(canvas.setViewport).toHaveBeenCalledWith({ x: direction === 'rtl' ? 660 : -640, y: 20, zoom: .75 }, { duration: 180 });
     expect(canvas.nodes.map(node => node.position)).toEqual(positions);
   } finally { document.documentElement.dir = previous; }
@@ -226,10 +230,41 @@ it.each(['ltr', 'rtl'])('pans to later screens in %s without zooming or changing
 
 it('highlights a tested hidden continuation when it shares the visible default line', async () => {
   render(<JourneyMap tree={tree} selected={null} samplePath={[2, 4, 0]} sampleEdges={['start', 'garden_hidden', 'indoor_hidden', 'balcony_next']} onSelect={() => {}} onSelectPath={() => {}} onConnect={() => {}} />);
-  await userEvent.click(screen.getByRole('button', { name: 'Expand screens' }));
+  await userEvent.click(screen.getByRole('button', { name: 'Edit individual connections' }));
   const edges = JSON.parse(screen.getByTestId('map-edges').textContent!) as Edge[];
   expect(edges.find(edge => edge.id === 'garden_next')?.style?.opacity).toBe(1);
   expect(edges.find(edge => edge.id === 'indoor_next')?.style?.opacity).toBe(1);
   expect(edges.find(edge => edge.id === 'balcony_next')?.style?.opacity).toBe(1);
   expect(edges.find(edge => edge.id === 'submitted')?.style?.opacity).toBe(.15);
+});
+
+
+it('connects an optional grouped follow-up through its vertical handles and keeps the join horizontal', () => {
+  const optional: TemplateTree = { ...tree, graph: { ...tree.graph!, edges: [
+    ...tree.graph!.edges.map(edge => edge.id === 'start' ? { ...edge, to: 'contact' } : edge),
+    { id: 'optional-group', from: 'interests', to: 'garden', kind: 'answer', when: {
+      match: 'all', clauses: [{ question: 'n1', operator: 'includes_any', values: ['garden'] }],
+    } },
+  ] } };
+  render(<JourneyMap tree={optional} selected={null} onSelect={() => {}} onSelectPath={() => {}} onConnect={() => {}} />);
+  const entry = canvas.nodes.find(node => node.id === 'interests')!;
+  const group = canvas.nodes.find(node => node.id === 'followups:garden')!;
+  const join = canvas.nodes.find(node => node.id === 'contact')!;
+  expect(group.data.detourEntry).toBe(true);
+  expect(group.position.x).toBe(entry.position.x);
+  expect(group.position.y).toBeGreaterThan(entry.position.y);
+  expect(join.position.x).toBeGreaterThan(entry.position.x);
+  const edges = JSON.parse(screen.getByTestId('map-edges').textContent!) as Edge[];
+  expect(edges.find(edge => edge.id === 'optional-group')).toMatchObject({ sourceHandle: 'detour-out', targetHandle: 'detour-in' });
+  expect(edges.find(edge => edge.id === 'start')).toMatchObject({ label: 'Everyone else', target: 'contact' });
+});
+
+
+it('gives each path into a shared screen its own named target port and approach lane', () => {
+  render(<JourneyMap tree={branchedFixture as unknown as TemplateTree} selected={null} onSelect={()=>{}} onSelectPath={()=>{}} onConnect={()=>{}} />);
+  const edges = (JSON.parse(screen.getByTestId('map-edges').textContent!) as Edge[]).filter(edge=>edge.target==='contact');
+  expect(edges.length).toBeGreaterThan(1);
+  expect(new Set(edges.map(edge=>edge.targetHandle)).size).toBe(edges.length);
+  expect(new Set(edges.map(edge=>edge.data?.corridorOffset)).size).toBe(edges.length);
+  expect(canvas.nodes.find(node=>node.id==='contact')?.data.incomingPorts).toEqual(expect.arrayContaining(edges.map(edge=>edge.id)));
 });

@@ -1,3 +1,4 @@
+import { followupGroups } from './structure/followupGroups';
 import { journeyTestProgress } from './structure/journeyTestProgress';
 import { answerReview } from '@renderer/answer-review';
 import { journeyNotice } from '@renderer/journey-notice';
@@ -31,7 +32,7 @@ function TestProducts({ count, state, onRetry }: { count: number; state: Product
 
 /** The real renderer, with in-memory answers and no capture or analytics calls. */
 export function JourneyTest({ template, onEdit, onShowPath, deliveryMode = 'none', destinationSummary }: {
-  template: Template; onEdit(step: number): void; onShowPath?(screens: readonly number[], edges: readonly string[]): void; deliveryMode?: 'local' | 'connected' | 'none'; destinationSummary?: string;
+  template: Template; onEdit(step: number, focus?: 'condition'): void; onShowPath?(screens: readonly number[], edges: readonly string[]): void; deliveryMode?: 'local' | 'connected' | 'none'; destinationSummary?: string;
 }) {
   const tree = template.tree;
   const entry = tree.graph ? Math.max(0, tree.steps.findIndex(screen => screen.id === tree.graph?.entry)) : 0;
@@ -57,6 +58,7 @@ export function JourneyTest({ template, onEdit, onShowPath, deliveryMode = 'none
   const active = trace.answers;
   const readingOrder = graphDisplayOrder(tree);
   const progress = journeyTestProgress(tree, step, visited, trace);
+  const followups = followupGroups(tree).find(group => group.screens.includes(step))?.screens.filter(at => trace.indices.includes(at));
   const shownResult = tree.steps[step].kind === 'result' ? chooseResult(tree.steps[step].results ?? [], active) : undefined;
   const move = useCallback((direction: 1 | -1, current: Answers) => {
     const inPath = tree.graph ? graphTrace(tree.steps, tree.graph, current).answers : activeAnswers(tree.steps, current);
@@ -258,13 +260,26 @@ export function JourneyTest({ template, onEdit, onShowPath, deliveryMode = 'none
       state={productState} onRetry={() => setProductState('selected')} />, productHost)}
     <div className="wconvert-journey-test__side">
       <h3>{__('Path summary', 'wconvert')}</h3>
-      <p>{__('Continue through the preview to see which screens are visited or skipped. Future screens are not evaluated yet.', 'wconvert')}</p>
-      <ol>{readingOrder.map(at => { const screen = tree.steps[at], state = progress.states[at]; return <li key={screen.id} data-current={at === step}>
-        <span>{screen.name}</span><small>{state === 'current' ? __('Current screen', 'wconvert') : state === 'visited' ? __('Visited', 'wconvert')
-          : state === 'pending' ? __('Not reached yet', 'wconvert') : state === 'bypassed' ? __('Bypassed by another path', 'wconvert')
-            : __('Show condition did not match', 'wconvert')}</small>
-        {(state === 'hidden' || state === 'bypassed') && <button type="button" onClick={() => onEdit(at)}>{state === 'hidden' ? __('Edit condition', 'wconvert') : __('Review screen', 'wconvert')}</button>}
-      </li>; })}</ol>
+      <ol className="wconvert-journey-test__current" aria-label={__('Current screen', 'wconvert')}>
+        <li data-current="true"><small>{__('Current screen', 'wconvert')}</small><span>{tree.steps[step].name}</span>
+          {followups && <small>{sprintf(__('Follow-up %1$d of %2$d for these answers', 'wconvert'), followups.indexOf(step) + 1, followups.length)}</small>}
+        </li>
+      </ol>
+      {visited.filter(at => at !== step).length > 0 && <details className="wconvert-journey-test__history">
+        <summary>{sprintf(__('Visited screens (%d)', 'wconvert'), visited.filter(at => at !== step).length)}</summary>
+        <ol>{visited.filter(at => at !== step).map(at => <li key={tree.steps[at].id} data-current="false"><span>{tree.steps[at].name}</span><small>{__('Visited', 'wconvert')}</small></li>)}</ol>
+      </details>}
+      {(['skipped', 'pending'] as const).map(category => {
+        const screens = readingOrder.filter(at => category === 'pending' ? progress.states[at] === 'pending' : ['hidden', 'bypassed'].includes(progress.states[at]));
+        return screens.length > 0 && <details className="wconvert-journey-test__history" key={category}>
+          <summary>{sprintf(category === 'pending' ? __('Not reached yet (%d)', 'wconvert') : __('Skipped screens (%d)', 'wconvert'), screens.length)}</summary>
+          {category === 'pending' && <p>{__('These screens may appear later. Their conditions have not been checked yet.', 'wconvert')}</p>}
+          <ol>{screens.map(at => <li key={tree.steps[at].id} data-current="false"><span>{tree.steps[at].name}</span>
+            <small>{progress.states[at] === 'pending' ? __('Not reached yet', 'wconvert') : progress.states[at] === 'bypassed' ? __('Bypassed by another path', 'wconvert') : __('Show condition did not match', 'wconvert')}</small>
+            {category === 'skipped' && <button type="button" onClick={() => onEdit(at, progress.states[at] === 'hidden' ? 'condition' : undefined)}>{progress.states[at] === 'hidden' ? __('Edit condition', 'wconvert') : __('Review screen', 'wconvert')}</button>}
+          </li>)}</ol>
+        </details>;
+      })}
       {routeSteps.length > 0 && <details className="wconvert-journey-test__route"><summary>{__('Why this path?', 'wconvert')}</summary>
         <ol>{routeSteps.map(item => <li key={item.id} data-edge-id={item.id}>{item.label}</li>)}</ol></details>}
       {shownResult && <p className="wconvert-journey-test__result">{sprintf(__('Result shown: %s', 'wconvert'), shownResult.heading)}</p>}

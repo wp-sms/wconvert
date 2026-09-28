@@ -101,7 +101,7 @@ describe('binding an optin to a destination', () => {
     const onChange = vi.fn();
     editor(ready([]), [], [], { outcome: CAPTURE_OUTCOME, onChange });
     expect(screen.getByText('No destinations selected')).toBeVisible();
-    expect(screen.getByText(/Choose and configure a service for this channel/)).toBeVisible();
+    expect(screen.getByText(/Before publishing, connect a service/)).toBeVisible();
     expect(screen.queryByText(/You can also keep using WConvert on its own/)).not.toBeInTheDocument();
     expect(onChange).not.toHaveBeenCalled();
   });
@@ -109,13 +109,13 @@ describe('binding an optin to a destination', () => {
   it('counts selections without calling an unavailable route ready', () => {
     editor(ready([destination({ id: 'a', label: 'Newsletter', availability: 'unavailable' })]), ['a'], [], { outcome: CAPTURE_OUTCOME });
     expect(screen.getByText('1 selected')).toBeVisible();
-    expect(screen.getByText(/Choose and configure a service for this channel/)).toBeVisible();
+    expect(screen.getByText(/Before publishing, connect a service/)).toBeVisible();
   });
 
   it('keeps forwarding optional for an enquiry with no handoff requirement', () => {
     editor(ready([]), [], [], { outcome: { ...CAPTURE_OUTCOME, audience_channel: null } });
     expect(screen.getByText('Leads stay in WConvert. Add a destination only if you want to forward them.')).toBeVisible();
-    expect(screen.queryByText(/Choose and configure a service/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/Before publishing, connect a service/)).not.toBeInTheDocument();
   });
 
   it('keeps optional setup guidance out of the initial decision', async () => {
@@ -331,7 +331,7 @@ describe('setting up shared destinations without leaving the Optin draft', () =>
     });
     expect(screen.getByRole('checkbox', { name: saved.label })).not.toBeChecked();
     expect(screen.getByRole('checkbox', { name: saved.label })).toHaveAccessibleDescription('MailPoet Sending to Newsletter.');
-    expect(screen.getByRole('status')).toHaveTextContent('Select its checkbox');
+    expect(screen.getByRole('status')).toHaveTextContent('Select it to use it');
     expect(onChange).not.toHaveBeenCalled();
     await waitFor(() => expect(screen.getByRole('button', { name: 'Add destination' })).toHaveFocus());
     await userEvent.click(screen.getByRole('checkbox', { name: saved.label }));
@@ -347,7 +347,7 @@ describe('setting up shared destinations without leaving the Optin draft', () =>
     // Use the real Settings entry point: selecting a route must not open it.
     await userEvent.click(screen.getByRole('button', { name: 'Settings for Newsletter signups' }));
     const dialog = within(screen.getByRole('dialog'));
-    expect(dialog.getByRole('button', { name: 'Save destination' })).toHaveAccessibleDescription(/every Campaign.*including published Campaigns/);
+    expect(dialog.getByRole('button', { name: 'Save destination' })).toHaveAccessibleDescription(/every campaign.*including published campaigns/);
     await userEvent.click(dialog.getByRole('checkbox', { name: 'Product updates' }));
     await userEvent.click(dialog.getByRole('button', { name: 'Save destination' }));
     await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
@@ -356,7 +356,7 @@ describe('setting up shared destinations without leaving the Optin draft', () =>
       settings: { lists: ['3', '5'], retained_setting: 'keep' },
     });
     expect(screen.getByRole('checkbox', { name: route.label })).toBeChecked();
-    expect(screen.getByRole('status')).toHaveTextContent('Destination updated for every Campaign');
+    expect(screen.getByRole('status')).toHaveTextContent('Destination updated for all campaigns');
     expect(onChange).not.toHaveBeenCalled();
     expect(onSaved).toHaveBeenCalledExactlyOnceWith([route]);
   });
@@ -424,6 +424,6 @@ describe('setting up shared destinations without leaving the Optin draft', () =>
         connections: [{ id: 'other', type: 'different-provider', label: 'Other service', credentials: {} }],
       });
     expect(screen.getByRole('checkbox', { name: 'Connected route' })).toBeChecked();
-    expect(screen.getByRole('checkbox', { name: 'Connected route' })).toHaveAccessibleDescription(/needs an account.*Open Settings/);
+    expect(screen.getByRole('checkbox', { name: 'Connected route' })).toHaveAccessibleDescription(/Account connection needed.*Open Settings/);
   });
 });

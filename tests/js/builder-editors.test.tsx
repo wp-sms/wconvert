@@ -24,7 +24,7 @@ describe('display workspace', () => {
     setup();
     expect(within(screen.getByRole('navigation')).getAllByRole('button')).toHaveLength(4);
     expect(screen.getByRole('radio', { name: 'After a delay or visitor activity' })).toBeChecked();
-    expect(screen.getByText('This is your draft. Changes go live only when published.')).toBeInTheDocument();
+    expect(screen.getByText('Changes go live when published.')).toBeInTheDocument();
   });
   it('keeps an empty selected-pages choice incomplete after navigating away and back', async () => {
     setup(); await section('Pages'); await userEvent.click(screen.getByRole('radio', { name: 'Selected pages' }));

@@ -17,3 +17,10 @@ it('focuses one screen on narrow displays and ignores an absent or identical nex
   expect(cameraTargets(nodes, 'a', 'missing', 900, 600)).toEqual([{ id: 'a' }]);
   expect(cameraTargets(nodes, 'a', 'a', 900, 600)).toEqual([{ id: 'a' }]);
 });
+
+it('frames the optional detour and its shared result when all three stay readable', () => {
+  const nodes = [card('entry',0,0),card('extra',0,400),card('result',492,0)];
+  expect(cameraTargets(nodes,'entry','extra',924,984,['entry','extra','result'])).toEqual([{id:'entry'},{id:'extra'},{id:'result'}]);
+  expect(cameraTargets(nodes,'extra','result',924,984,['entry','extra','result'])).toEqual([{id:'entry'},{id:'extra'},{id:'result'}]);
+  expect(cameraTargets(nodes,'entry','extra',390,600,['entry','extra','result'])).toEqual([{id:'entry'}]);
+});

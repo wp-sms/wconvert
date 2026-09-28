@@ -3,6 +3,7 @@ import type { Ref } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import { LayoutTemplate } from 'lucide-react';
 import { Button } from '../components/ui/button';
+import { InfoTip } from '../shell/InfoTip';
 import { displayTypeDescription, displayTypeLabel } from '../displayTypes';
 import { useDirection } from '../hooks/useDirection';
 import { Themes, Tokens } from './Tokens';
@@ -51,6 +52,8 @@ export function DesignSettings({
 
   return (
     <div className="wconvert-design-settings">
+      <div className="wconvert-editor-scope wconvert-editor-help"><span>{__('Applies to all screens', 'wconvert')}</span><InfoTip label={__('How theme styles apply', 'wconvert')}>{__('Elements with their own styles keep those overrides. Reset an element’s styles to use the theme again.', 'wconvert')}</InfoTip></div>
+      <Themes template={template} onChange={onChange} />
       <div className="wconvert-design-card">
         <div className="wconvert-design-card__image" aria-hidden="true">
           <Preview template={template} />
@@ -85,10 +88,7 @@ export function DesignSettings({
         onChange={onChange}
         onError={onError}
       />
-      <details className="wconvert-style-advanced">
-        <summary>{__('Ready-made palettes', 'wconvert')}</summary>
-        <Themes template={template} onChange={onChange} />
-      </details>
+
     </div>
   );
 }

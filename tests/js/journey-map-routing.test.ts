@@ -1,7 +1,7 @@
 import { expect, it } from 'vitest';
 import { Position, type Node } from '@xyflow/react';
 import { getSmartEdge, smartEdgePresets, svgDrawSmoothStepLinePath } from '@tisoap/react-flow-smart-edge';
-import { mapEdgeOptions } from '../../resources/admin/src/builder/structure/mapRouting';
+import { mapEdgeOptions, mapLabelPlacement, structuredMapRoute } from '../../resources/admin/src/builder/structure/mapRouting';
 
 // Measured from the real 13-screen enquiry: Garden's hidden continuation goes
 // straight to capture, past the remaining independent Home follow-ups.
@@ -47,4 +47,25 @@ it.each([false, true])('routes a hidden continuation around cards after moving a
     if (groupY === 406.889) expect(route.svgPathString).not.toBe(previous);
     previous = route.svgPathString;
   }
+});
+
+
+it.each([false,true])('uses a central corridor for clear forward paths (RTL: %s)', rtl => {
+  const edge={source:'a',target:'b',sourceX:rtl?500:250,sourceY:400,targetX:rtl?250:500,targetY:100,sourcePosition:rtl?'left':'right',targetPosition:rtl?'right':'left'};
+  const route=structuredMapRoute(edge,[]);
+  expect(route?.points).toEqual([[edge.sourceX,400],[375,400],[375,100],[edge.targetX,100]]);
+  expect(structuredMapRoute(edge,[{id:'obstacle',x:360,y:200,width:30,height:40}])).toBeUndefined();
+});
+it('reserves the label and action rectangle away from cards, including on vertical sections', () => {
+  const boxes=[{id:'a',x:0,y:300,width:252,height:300},{id:'b',x:492,y:0,width:252,height:200}];
+  const points=[[252,500],[270,500],[270,100],[492,100]];
+  const place=mapLabelPlacement(points,boxes,216,100)!;
+  expect(place).toEqual({x:270,y:200});
+  for (const box of boxes) expect(place.x+108 <= box.x-12 || place.x-108 >= box.x+box.width+12 || place.y+50 <= box.y-12 || place.y-50 >= box.y+box.height+12).toBe(true);
+  expect(mapLabelPlacement([[252,500],[270,500]],boxes,216,100)).toBeUndefined();
+});
+it('keeps a vertical detour and defers backwards or obstructed connections to the smart router', () => {
+  const edge={source:'a',target:'b',sourceX:126,sourceY:200,targetX:126,targetY:400,sourcePosition:'bottom',targetPosition:'top'};
+  expect(structuredMapRoute(edge,[])?.points).toEqual([[126,200],[126,300],[126,300],[126,400]]);
+  expect(structuredMapRoute({...edge,targetY:100},[])).toBeUndefined();
 });

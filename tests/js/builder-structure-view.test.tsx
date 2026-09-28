@@ -195,6 +195,7 @@ beforeEach(() => {
  */
 async function structure() {
   render(<OptinBuilder id={ID} onClose={vi.fn()} />);
+  await userEvent.click(await screen.findByRole('tab', { name: 'Theme & layout' }));
 
   await userEvent.click(await screen.findByRole('button', { name: 'Layers' }));
 }
@@ -209,6 +210,7 @@ async function structure() {
  */
 async function designLook() {
   render(<OptinBuilder id={ID} onClose={vi.fn()} />);
+  await userEvent.click(await screen.findByRole('tab', { name: 'Theme & layout' }));
   await screen.findByRole('button', { name: 'Browse designs and formats' });
 }
 
@@ -1162,7 +1164,7 @@ describe('the verdict', () => {
     await designLook();
     await userEvent.click(screen.getByRole('tab', { name: 'Destinations' }));
     await userEvent.click(screen.getByRole('radio', { name: /Collect only in WConvert/ }));
-    await userEvent.click(screen.getByRole('tab', { name: 'Design' }));
+    await userEvent.click(screen.getByRole('tab', { name: 'Theme & layout' }));
 
     // The stub names no tokens, so `nameOf` falls back to the raw key — which
     // is what a build whose vocabulary is ahead of its translations shows too.
@@ -1819,7 +1821,7 @@ describe('a countdown’s inspector', () => {
 
     // Not the exact spelling: `Intl` renders a medium date in the reader's own
     // locale, and pinning "27 Nov 2099" would pin a test runner's locale.
-    expect(screen.getByText(/Counts down to .*2099.* — when this Campaign stops running\./)).toBeInTheDocument();
+    expect(within(screen.getByRole('tabpanel', { name: 'Theme & layout' })).getByText(/Counts down to .*2099.* — when this Campaign stops running\./)).toBeInTheDocument();
   });
 
   it('says the clock will be empty where there is no end date', async () => {
@@ -1828,7 +1830,7 @@ describe('a countdown’s inspector', () => {
     await openTheClock();
 
     expect(
-      screen.getByText('This Campaign has no end date, so the clock will be empty on the page.'),
+      within(screen.getByRole('tabpanel', { name: 'Theme & layout' })).getByText('This Campaign has no end date, so the clock will be empty on the page.'),
     ).toBeInTheDocument();
   });
 
@@ -1842,7 +1844,7 @@ describe('a countdown’s inspector', () => {
 
     await openTheClock();
 
-    expect(screen.getByText(/Counted down to .*2020.*already stopped running\./)).toBeInTheDocument();
+    expect(within(screen.getByRole('tabpanel', { name: 'Theme & layout' })).getByText(/Counted down to .*2020.*already stopped running\./)).toBeInTheDocument();
   });
 
   /**
@@ -1998,9 +2000,9 @@ describe('adaptive editor and signup deletion', () => {
     const config = { template_id: ENTRY.id, template: journey, submission_settings: { 'sms-signup': { destination_ids: ['sms-route'] } } };
     builder.getOptin.mockResolvedValue(optin({ config }));
     render(<OptinBuilder id={ID} onClose={vi.fn()} />);
-    await userEvent.click(await screen.findByRole('button', { name: 'Manage screens' }));
-    await userEvent.click(screen.getByRole('button', { name: 'Screens' }));
-    await userEvent.click(screen.getByRole('button', { name: /Optional SMS signup Save/ }));
+  await userEvent.click(await screen.findByRole('tab', { name: 'Theme & layout' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Edit screens & conditions' }));
+    await userEvent.click(within(screen.getByRole('navigation', { name: 'Campaign screens' })).getByRole('button', { name: 'Optional SMS signup' }));
     await userEvent.click(screen.getByRole('button', { name: 'Screen actions' }));
     await userEvent.click(screen.getByRole('menuitem', { name: 'Delete screen' }));
     await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));

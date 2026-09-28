@@ -44,3 +44,14 @@ export function followupGroups(tree: TemplateTree): FollowupGroup[] {
   }
   return groups;
 }
+
+/** Nest only beneath an unambiguous question that directly enters the group. */
+export function followupGroupSource(tree: TemplateTree, group: FollowupGroup): number | undefined {
+  const incoming = tree.graph?.edges.filter(edge => edge.to === tree.steps[group.screens[0]].id) ?? [];
+  const sources = [...new Set(incoming.map(edge => edge.from))];
+  if (sources.length !== 1 || incoming.some(edge => edge.kind !== 'default')) return undefined;
+  const index = tree.steps.findIndex(screen => screen.id === sources[0]);
+  if (index < 0 || tree.graph?.edges.some(edge => edge.from === sources[0] && edge.kind === 'answer')) return undefined;
+  const questions = new Set(walkNodes(tree.steps[index].content).filter(node => node.type === 'question' && 'id' in node).map(node => 'id' in node ? node.id : undefined));
+  return group.screens.every(at => tree.steps[at].when?.clauses.every(clause => questions.has(clause.question))) ? index : undefined;
+}

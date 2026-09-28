@@ -84,9 +84,9 @@ export function DisplayRules({ vocabulary, value, overlay, act = 'submit', onCha
       <aside className="wconvert-display-summary" aria-label={__('Display summary', 'wconvert')}>
         <details open={!compact}><summary>{__('Your campaign will appear…', 'wconvert')}</summary>
         <dl>{summaries.map(section => <div key={section.id}><dt><button type="button" onClick={() => setActive(section.id)}>{section.eyebrow}</button></dt><dd>{section.text}</dd></div>)}</dl>
-        <p className="text-note text-muted-foreground">{__('Page exclusions, required Goal conditions and site limits always apply.', 'wconvert')}</p>
+        <p className="text-note text-muted-foreground">{__('Page exclusions, goal requirements and site limits still apply.', 'wconvert')}</p>
         <Button variant="outline" className="wconvert-display-test" onClick={() => setTesting(true)}><FlaskConical aria-hidden="true" />{__('Test a sample visit', 'wconvert')}</Button>
-        <p className="text-note text-muted-foreground">{__('This is your draft. Changes go live only when published.', 'wconvert')}</p>
+        <p className="text-note text-muted-foreground">{__('Changes go live when published.', 'wconvert')}</p>
         </details>
       </aside>
     </div>

@@ -527,3 +527,112 @@ Not gaps. Each was decided:
 - New stylesheets must join the type/RTL source-contract checks. Verify actual
   WordPress at desktop and 360px, including keyboard selection, long labels,
   RTL and effective coarse-pointer target sizes. Source tests cannot prove layout.
+
+## 21. Editor cards, lists and disclosures
+
+These contracts apply in Edit, Flow inspectors, Theme & layout, Display rules,
+Destinations and their dialogs. See ADR 0108 for journey semantics; presentation
+must not imply that mutually exclusive paths are sequential visitor steps.
+
+### Ownership and cascade
+
+- Put the layout class on the element that owns the layout. A route list uses
+  `.wconvert-journey-routes__list`, not `.wconvert-journey-routes > ol`: adding a
+  visibility wrapper must not remove its reset, spacing or card treatment.
+  Direct-child selectors remain useful *inside* an owned component.
+- Generic native-control defaults must have lower specificity than component
+  classes. Use `:where()` for the generic element/attribute selector. Never let a
+  text-button reset erase a navigation card's padding, border or background.
+  Shared `data-slot` components retain their own variants.
+- Fix the owning rule in place. Do not append competing overrides for the same
+  property or add `!important` to conceal an ownership/specificity problem.
+  Use the existing utility-layer convention only when overriding important
+  Tailwind utilities deliberately, and document that boundary.
+- Control lists explicitly reset markers, margin and padding. Preserve list
+  semantics where WebKit suppresses them with `list-style: none`. Prose lists keep
+  their bullets. Show priority once; a fallback is “Everyone else”, not another
+  numbered decision. Never globally strip list markers to fix one component.
+
+### Card anatomy and text
+
+- Route cards use a white `--card` surface, `--border`, shared corner radius,
+  12px insets and 12px between cards. Expanded content has its own 12px inset and
+  one divider; avoid nested tinted panels for ordinary settings.
+- Route condition text uses the note role (13px, medium/semibold); its destination
+  uses the micro size (12px, normal weight). Keep explanation text secondary,
+  without shrinking actionable labels to the 9px metadata role.
+- Disclosure summaries are full clickable rows. Use one 16px chevron for custom
+  card disclosures; it changes direction when expanded. Plus/minus is for adding
+  and removing, not a second visual language for opening settings. Native
+  disclosure markers remain appropriate for simple text sections.
+- Use a fixed badge/icon column, `minmax(0, 1fr)` for the label, and a fixed
+  trailing indicator. Labels allow wrapping, including unbroken merchant text;
+  decorative icons never shrink. Do not truncate conditions needed to predict
+  the visitor's path.
+- Navigation cards show their title and context on separate lines. Action rows
+  wrap with an explicit gap and remain separated from the last card. Do not
+  align controls by inserting spaces or relying on paragraph margins.
+
+### Interaction and verification
+
+- Every enabled action has pointer feedback and visible keyboard focus. Hover
+  must not change geometry. Selected/open state remains identifiable; destructive
+  actions use the shared destructive treatment. Disabled controls keep their
+  disabled appearance and do not respond as enabled actions.
+- Native `details`/`summary` provides disclosure behavior. A custom button must
+  expose `aria-expanded`; decorative icons are hidden from assistive technology.
+  Follow the [WAI disclosure pattern](https://www.w3.org/WAI/ARIA/apg/patterns/disclosure/).
+- Inspect the real WordPress cascade, including portal dialogs. Test a collapsed
+  and expanded route, fallback-only routing, grouped follow-ups, results, contact
+  fields, display-rule controls and destination selection. Include long labels,
+  a narrow inspector, keyboard focus and disabled/destructive actions.
+- Check reflow at 320 CSS pixels as well as desktop. The map may pan in two
+  dimensions; text/forms in its inspector must still wrap. See
+  [WCAG reflow guidance](https://www.w3.org/WAI/WCAG22/Understanding/reflow.html).
+- Tests that render components in jsdom do not establish visual correctness.
+  Record real-browser computed styles and overflow checks for cascade defects,
+  together with the states actually inspected. Never describe a partial sample
+  as proof that every screen or locale is correct.
+
+
+## 22. Journey map hierarchy
+
+- Keep the ordinary sequence horizontal. Place a proven optional detour below
+  its entry, with top/bottom ports and the shared continuation on the main row.
+  Vertical proximity must not imply that mutually exclusive paths both run.
+- Stack competing alternatives in separate lanes in priority order. Show the
+  shared result or submission once after those paths rejoin. Keep “ask every
+  match” groups distinct from “choose one path” branches.
+- Only simplify closed, single-entry paths with an identifiable rejoin. Keep
+  nested forks and external entries explicit; never infer visitor behavior from
+  a diagram's positions. Manual arrangements persist until Tidy up or a change
+  that requires a new layout.
+- Use meaningful condition labels and “Everyone else,” with numbers only when
+  priority distinguishes multiple conditional paths. Labels open the exact rule;
+  insertion buttons are separate. Prefer long straight segments over short
+  elbows beside cards. Keep full rules in the inspector and accessible labels.
+- Keep selection actions outside the pannable map, so they cannot obscure
+  nodes/lines. Selecting a small detour includes its rejoin when readable;
+  narrow or dense views prioritize the selected screen. Explicit “Show selected
+  screen” always focuses that screen alone.
+- Check simple sequences, one/multi-screen detours, ordered alternatives,
+  grouped follow-ups, expanded groups, shared endings, external entries, measured
+  long cards and RTL. Check actual browser framing at laptop sizes in addition
+  to pure layout tests. Overlapping manually moved cards still need repositioning.
+
+- Screen numbers are inventory positions, not visit order. Do not display them
+  on flow cards or the flow inspector; keep numbers only for genuine sequences
+  and branch priority. Names, screen type, Start and Paths rejoin orient the map.
+- Edge insertion uses “Add screen here”, revealed on path selection, hover or
+  keyboard focus (always available on touch). Its accessible name includes the
+  visible label and destination. Drawing a connection remains a separate mode.
+- Put the affected path and resulting source → new screen → destination at the
+  top of insertion dialogs. Explicitly state path-only scope. Update the preview
+  for a renamed screen, a closing screen, a changed location or an existing
+  screen connection. Never promise continuation for a closing screen.
+- Give distinct paths into a shared screen stable, separate attachment points
+  and approach lanes; do not merge their editable lines before the destination.
+- Prefer a central orthogonal corridor when clear; fall back to obstacle routing
+  when a card blocks it. Reserve measured label/action rectangles against cards,
+  including keyboard-revealed actions. If no safe location exists, keep controls
+  in the path inspector rather than covering content.
