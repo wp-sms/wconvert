@@ -1,6 +1,12 @@
 <?php
 /** Small working example resources; source templates contain no site-local links. */
 function wconvert_demo_resource(string $id): string {
+    $contextual = json_decode(file_get_contents(__DIR__ . '/../contextual-fixtures.json'), true);
+    if (isset($contextual[$id])) {
+        $html = '<p>A fictional working resource for campaign review.</p>';
+        foreach ($contextual[$id][1] as $heading => $body) $html .= '<h2>' . esc_html($heading) . '</h2><p>' . esc_html($body) . '</p>';
+        return $html;
+    }
     $topics = match ($id) {
         'sizing-guide' => ['Measure the garment you already like' => 'Lay it flat and record its width and length. Compare like-for-like garment measurements.', 'Check the product chart' => 'Use the chart for the exact item. A body measurement and a garment measurement describe different things.', 'Allow room to move' => 'Consider the intended fit and fabric stretch. Ask the shop if the measurements or instructions are unclear.'],
         'gift-planning-guide' => ['Start with their interests' => 'Write down what they enjoy using, making or learning.', 'Choose a useful occasion' => 'Think about when the gift will be used. Prefer a specific everyday use to a vague trend.', 'Check the practical details' => 'Confirm size, compatibility, delivery timing and the gift returns policy before ordering.'],

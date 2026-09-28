@@ -1,6 +1,6 @@
 # Real campaign review site
 
-This development-only harness creates the current 48 campaign examples in a
+This development-only harness creates the current 96 campaign examples in a
 **disposable WordPress + MySQL + WooCommerce site**. It uses the normal Prefill,
 create, publish and capture paths. There are no mocked REST responses. Nothing
 under `tools/` ships in either plugin ZIP.
@@ -22,7 +22,7 @@ local outbox. Use fictional visitor details. No payment gateway is needed.
 3. Build the repository (`composer install`, `npm ci`, `npm run build`). Link the
    repository into `wp-content/plugins/wconvert`, and its `pro/` directory into
    `wp-content/plugins/wconvert-pro`. Install and activate official WooCommerce.
-   Use the Pro development build with journey/display modules for all 48 examples.
+   Use the Pro development build with journey/display modules for all 96 examples.
 4. Symlink `demo/mu/library-demo.php` into `wp-content/mu-plugins/`. It loads the
    repository's Free and Pro entry points and installs WConvert through its normal
    installer. Keep the symlink: its sibling `resources.php` resolves in this source

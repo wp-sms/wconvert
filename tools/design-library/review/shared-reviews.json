@@ -6500,6 +6500,1442 @@
         }
       },
       "record_id": "9e92cfc799dc2f26b54fde0c0a089b00bb561aa38d2be0e83065853c29450cd1"
+    },
+    {
+      "id": "gift-planning-guide",
+      "revision": "27cf0740b9a807ea4011c51c2a5c6a8ec3cd52362e56b895f09c2b7940caba90",
+      "base_id": "a61c05acfb01db6eba3818be234a6b4590e5f638b4e76adb361fc88db5a9fb36",
+      "decision": "approved",
+      "reviewer": "Codex — contextual-help editorial review",
+      "note": "Inspected every affected screen at desktop and 320px, LTR and RTL. Final layout audit has zero findings. Relevant preview flows and all 96 configured WordPress campaigns pass. See evidence for native link/placement checks, comparison-only neighbours and explicit delivery/release limits.",
+      "at": "2026-09-28T15:38:49.395Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            },
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            }
+          ]
+        }
+      },
+      "record_id": "67a2c0c2000f767ad024437831a69ae1a9a9b972c034e47b7a3685416052613d"
+    },
+    {
+      "id": "fitness-introduction",
+      "revision": "95a617a14429c562a06291c1639071e24841986dfade312a0d1b7fd90ddc8931",
+      "base_id": "5631e5ed03487bc3f7c676ba52c58e6028e20eb058aa6df6f441c7388fde1582",
+      "decision": "approved",
+      "reviewer": "Codex — contextual-help editorial review",
+      "note": "Inspected every affected screen at desktop and 320px, LTR and RTL. Final layout audit has zero findings. Relevant preview flows and all 96 configured WordPress campaigns pass. See evidence for native link/placement checks, comparison-only neighbours and explicit delivery/release limits.",
+      "at": "2026-09-28T15:38:49.396Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            },
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            }
+          ]
+        }
+      },
+      "record_id": "3cafefa355e9a66eda763dff9cb5faa1b18a887ae996ce9335c849c92e1d4eb5"
+    },
+    {
+      "id": "accounting-consultation",
+      "revision": "9a6de99937fc7757e17256bfa57dcb9cfa8ac05d47231f1e014a2c7446343db0",
+      "base_id": "0680c806ee9650a538ae97fa557abd6a77c43d2c734e37c75f6e06de1b1a66cc",
+      "decision": "approved",
+      "reviewer": "Codex — contextual-help editorial review",
+      "note": "Inspected every affected screen at desktop and 320px, LTR and RTL. Final layout audit has zero findings. Relevant preview flows and all 96 configured WordPress campaigns pass. See evidence for native link/placement checks, comparison-only neighbours and explicit delivery/release limits.",
+      "at": "2026-09-28T15:38:49.396Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            }
+          ]
+        }
+      },
+      "record_id": "c280346c2f94146e6bda15e98cd1fcd9891061966b58a9c974b4486d1a92cf33"
+    },
+    {
+      "id": "project-readiness-guide",
+      "revision": "e9d0be09a822d9dbd761989bab6da9d1e5bc3f573bb9fcabedccc208b9862c37",
+      "base_id": "19a8d9a451be5e4adbda2ed1179176b58738e29018a0096402a01716c97328d1",
+      "decision": "approved",
+      "reviewer": "Codex — contextual-help editorial review",
+      "note": "Inspected every affected screen at desktop and 320px, LTR and RTL. Final layout audit has zero findings. Relevant preview flows and all 96 configured WordPress campaigns pass. See evidence for native link/placement checks, comparison-only neighbours and explicit delivery/release limits.",
+      "at": "2026-09-28T15:38:49.396Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            }
+          ]
+        }
+      },
+      "record_id": "9979a91ca59bdaec1324c52d38078b8d3f29ba40458a162266cb50a739c05066"
+    },
+    {
+      "id": "gift-wrap-details",
+      "revision": "c0985951edaeac82ee25e17fefd986051801d3cca3dcbce9714c062e49fc8f9d",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — contextual-help editorial review",
+      "note": "Inspected every affected screen at desktop and 320px, LTR and RTL. Final layout audit has zero findings. Relevant preview flows and all 96 configured WordPress campaigns pass. See evidence for native link/placement checks, comparison-only neighbours and explicit delivery/release limits.",
+      "at": "2026-09-28T15:38:49.396Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            }
+          ]
+        }
+      },
+      "record_id": "034cc4ec32b1403487d3a95e4fa2031e22d1f6139236c576b834683241453eb9"
+    },
+    {
+      "id": "dispatch-schedule",
+      "revision": "6cf24e0cf3a14faa406418ec318e020ff7db65ae522f58631f87ba00bc841ff6",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — contextual-help editorial review",
+      "note": "Inspected every affected screen at desktop and 320px, LTR and RTL. Final layout audit has zero findings. Relevant preview flows and all 96 configured WordPress campaigns pass. See evidence for native link/placement checks, comparison-only neighbours and explicit delivery/release limits.",
+      "at": "2026-09-28T15:38:49.396Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            }
+          ]
+        }
+      },
+      "record_id": "dcb865c356fb187a00180d84bb5cc5ce852ec30aa57cdedfebbbdda907fceb12"
+    },
+    {
+      "id": "showroom-information",
+      "revision": "0fe232861c80753aabc846eac7cd0d6e59a2fdee9214a11632f5dc365858df3c",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — contextual-help editorial review",
+      "note": "Inspected every affected screen at desktop and 320px, LTR and RTL. Final layout audit has zero findings. Relevant preview flows and all 96 configured WordPress campaigns pass. See evidence for native link/placement checks, comparison-only neighbours and explicit delivery/release limits.",
+      "at": "2026-09-28T15:38:49.396Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            }
+          ]
+        }
+      },
+      "record_id": "6a434dd31a66265c4f6a1f5c047622d72138c7329e3ba32ddda69ab92d4669a1"
+    },
+    {
+      "id": "holiday-service-hours",
+      "revision": "bfa3f7116e36a1489924bf5e42f5b3fd4345ea4f963bbe68bcfa4eae438d25ba",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — contextual-help editorial review",
+      "note": "Inspected every affected screen at desktop and 320px, LTR and RTL. Final layout audit has zero findings. Relevant preview flows and all 96 configured WordPress campaigns pass. See evidence for native link/placement checks, comparison-only neighbours and explicit delivery/release limits.",
+      "at": "2026-09-28T15:38:49.396Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            }
+          ]
+        }
+      },
+      "record_id": "fa404309c5e0c667fbebe9ffcf973a0c38fc02aba120cacaef0a60c26527a4c6"
+    },
+    {
+      "id": "remote-consultation-details",
+      "revision": "b157f7664d1e9b46cafca6f9d3108866e9a2a28eefafa41b55f6bc2f7c85690b",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — contextual-help editorial review",
+      "note": "Inspected every affected screen at desktop and 320px, LTR and RTL. Final layout audit has zero findings. Relevant preview flows and all 96 configured WordPress campaigns pass. See evidence for native link/placement checks, comparison-only neighbours and explicit delivery/release limits.",
+      "at": "2026-09-28T15:38:49.396Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            }
+          ]
+        }
+      },
+      "record_id": "470a229b7d66437459b31a98bee509edaede36bcd435228e0c41a4c9461f77f3"
+    },
+    {
+      "id": "contributor-guidelines",
+      "revision": "ba8538614c7fcb18630d3414196fff19d058dc0c74f1824568ebc2f1b11ecc7a",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — contextual-help editorial review",
+      "note": "Inspected every affected screen at desktop and 320px, LTR and RTL. Final layout audit has zero findings. Relevant preview flows and all 96 configured WordPress campaigns pass. See evidence for native link/placement checks, comparison-only neighbours and explicit delivery/release limits.",
+      "at": "2026-09-28T15:38:49.396Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            }
+          ]
+        }
+      },
+      "record_id": "9e411aa434a8c568ea3076b892cef43f3d7d54057b73f5a5c6e0604e9a8c8eb9"
+    },
+    {
+      "id": "repair-workshop-news",
+      "revision": "ddc88aa60ea89fefd6cdb86724feba7b0fdfd3d35a2d9d7d31294fee52767e53",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — contextual-help editorial review",
+      "note": "Inspected every affected screen at desktop and 320px, LTR and RTL. Final layout audit has zero findings. Relevant preview flows and all 96 configured WordPress campaigns pass. See evidence for native link/placement checks, comparison-only neighbours and explicit delivery/release limits.",
+      "at": "2026-09-28T15:38:49.396Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            }
+          ]
+        }
+      },
+      "record_id": "e6537f4e2af38545c4dd7c5a8e21e22f5427f2cb67977c0ece7c0431a0092720"
+    },
+    {
+      "id": "local-class-news",
+      "revision": "c758b8871967914f6fad37705021a2a2368776958066ba171470581cde12f675",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — contextual-help editorial review",
+      "note": "Inspected every affected screen at desktop and 320px, LTR and RTL. Final layout audit has zero findings. Relevant preview flows and all 96 configured WordPress campaigns pass. See evidence for native link/placement checks, comparison-only neighbours and explicit delivery/release limits.",
+      "at": "2026-09-28T15:38:49.396Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            }
+          ]
+        }
+      },
+      "record_id": "701daaf40502ac1ef075d3aba0aa8c06b5b0ecfd55736f5f9ac913b2691be3af"
+    },
+    {
+      "id": "spare-parts-advice",
+      "revision": "e4cd84e76c752fb3d029e4910eaf6a53b642905e972584712ff5c87c71c35a6d",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — contextual-help editorial review",
+      "note": "Inspected every affected screen at desktop and 320px, LTR and RTL. Final layout audit has zero findings. Relevant preview flows and all 96 configured WordPress campaigns pass. See evidence for native link/placement checks, comparison-only neighbours and explicit delivery/release limits.",
+      "at": "2026-09-28T15:38:49.396Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            }
+          ]
+        }
+      },
+      "record_id": "de5245227ef349e226aff90f5672e538f83fbb1f1705666505b4565c97927a6a"
+    },
+    {
+      "id": "assembly-guidance",
+      "revision": "eb52ec3a659c9469e8d388191e5a4d735dc7064fd008f392cb48387c542eb508",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — contextual-help editorial review",
+      "note": "Inspected every affected screen at desktop and 320px, LTR and RTL. Final layout audit has zero findings. Relevant preview flows and all 96 configured WordPress campaigns pass. See evidence for native link/placement checks, comparison-only neighbours and explicit delivery/release limits.",
+      "at": "2026-09-28T15:38:49.396Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            }
+          ]
+        }
+      },
+      "record_id": "9f624a5c9c44e96914a296da4ac378c518af815cc407d95f0ce7b467672a29a2"
+    },
+    {
+      "id": "trade-account-enquiry",
+      "revision": "d3ccdc7419d1bbad86563e67d24cdfbd1a478b479daa453193c66cdda8ffeaaa",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — contextual-help editorial review",
+      "note": "Inspected every affected screen at desktop and 320px, LTR and RTL. Final layout audit has zero findings. Relevant preview flows and all 96 configured WordPress campaigns pass. See evidence for native link/placement checks, comparison-only neighbours and explicit delivery/release limits.",
+      "at": "2026-09-28T15:38:49.396Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            }
+          ]
+        }
+      },
+      "record_id": "6a80e689a1ea1298682bbb6f9332a5393fb04c379aef2c56274b1f03647671f3"
+    },
+    {
+      "id": "access-enquiry",
+      "revision": "33dc1063c7a77a4db5afbb2688b912c36f1bc72cb1f067bd2989cc891ff4c548",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — contextual-help editorial review",
+      "note": "Inspected every affected screen at desktop and 320px, LTR and RTL. Final layout audit has zero findings. Relevant preview flows and all 96 configured WordPress campaigns pass. See evidence for native link/placement checks, comparison-only neighbours and explicit delivery/release limits.",
+      "at": "2026-09-28T15:38:49.396Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            }
+          ]
+        }
+      },
+      "record_id": "bb7bd7a508d5c84a31828fcc7c089e3fa794baf6a0fc76baa730cb308bd37be6"
+    },
+    {
+      "id": "language-support-enquiry",
+      "revision": "9ab421459c295926601ddd438e516d09b73243455e3ff4509ea916e0c2fd7142",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — contextual-help editorial review",
+      "note": "Inspected every affected screen at desktop and 320px, LTR and RTL. Final layout audit has zero findings. Relevant preview flows and all 96 configured WordPress campaigns pass. See evidence for native link/placement checks, comparison-only neighbours and explicit delivery/release limits.",
+      "at": "2026-09-28T15:38:49.396Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            }
+          ]
+        }
+      },
+      "record_id": "af4578ec8aca0847c0ebf973c9d1e36f639c3c75a9ae1b0eba0ce07e246a57be"
+    },
+    {
+      "id": "equipment-hire-enquiry",
+      "revision": "b87e6723bac773e238e8dbc40801d251276d07bab536c0f85add5217567150aa",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — contextual-help editorial review",
+      "note": "Inspected every affected screen at desktop and 320px, LTR and RTL. Final layout audit has zero findings. Relevant preview flows and all 96 configured WordPress campaigns pass. See evidence for native link/placement checks, comparison-only neighbours and explicit delivery/release limits.",
+      "at": "2026-09-28T15:38:49.396Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            }
+          ]
+        }
+      },
+      "record_id": "3a21049c7b87094e0fe52183775e4e4e3e8a54968a5262c5817fa55b498edb25"
+    },
+    {
+      "id": "reader-panel-interest",
+      "revision": "f3f08befb95f11e8a65374ca428fdeaa56834afa086f940efbc40149c1b417ed",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — contextual-help editorial review",
+      "note": "Inspected every affected screen at desktop and 320px, LTR and RTL. Final layout audit has zero findings. Relevant preview flows and all 96 configured WordPress campaigns pass. See evidence for native link/placement checks, comparison-only neighbours and explicit delivery/release limits.",
+      "at": "2026-09-28T15:38:49.396Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            }
+          ]
+        }
+      },
+      "record_id": "77e9dd1e2bd0944b42126527cbbb39875dd64ec96a36d365794a57cb853b2822"
+    },
+    {
+      "id": "product-demo-enquiry",
+      "revision": "6e376d20c19d0f78eb28f25e7466922be7d0b569fe19a185d0217360321839b6",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — contextual-help editorial review",
+      "note": "Inspected every affected screen at desktop and 320px, LTR and RTL. Final layout audit has zero findings. Relevant preview flows and all 96 configured WordPress campaigns pass. See evidence for native link/placement checks, comparison-only neighbours and explicit delivery/release limits.",
+      "at": "2026-09-28T15:38:49.396Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            }
+          ]
+        }
+      },
+      "record_id": "79e13c186337a595fb85e217cd8a34149143195e674262cce58110ad13f3dae8"
+    },
+    {
+      "id": "care-clinic-request",
+      "revision": "42675a7da79eed66a256047045ca150cb5bdd52f3339652d11820f9758f5260b",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — contextual-help editorial review",
+      "note": "Inspected every affected screen at desktop and 320px, LTR and RTL. Final layout audit has zero findings. Relevant preview flows and all 96 configured WordPress campaigns pass. See evidence for native link/placement checks, comparison-only neighbours and explicit delivery/release limits.",
+      "at": "2026-09-28T15:38:49.396Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            }
+          ]
+        }
+      },
+      "record_id": "1abc4be3ee8f8ab12401e808dfa1158c125765a94c9a69aec86be20efe9c12a5"
+    },
+    {
+      "id": "gift-message-enquiry",
+      "revision": "53433986b53b5dd34f23284fb9f60a43fb6051dfa1452ef29fca22b53568c610",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — contextual-help editorial review",
+      "note": "Inspected every affected screen at desktop and 320px, LTR and RTL. Final layout audit has zero findings. Relevant preview flows and all 96 configured WordPress campaigns pass. See evidence for native link/placement checks, comparison-only neighbours and explicit delivery/release limits.",
+      "at": "2026-09-28T15:38:49.396Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            }
+          ]
+        }
+      },
+      "record_id": "4c6b15ab4be6ef001e778a6a2ba6a1a99b1d40b7ddca0651a3a56fcbbe7930d7"
+    },
+    {
+      "id": "remote-walkthrough-request",
+      "revision": "6208f96b5f5b6f68331ac1622e14c9339771c49e4ac6d4e4396148c671a72dd8",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — contextual-help editorial review",
+      "note": "Inspected every affected screen at desktop and 320px, LTR and RTL. Final layout audit has zero findings. Relevant preview flows and all 96 configured WordPress campaigns pass. See evidence for native link/placement checks, comparison-only neighbours and explicit delivery/release limits.",
+      "at": "2026-09-28T15:38:49.396Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            }
+          ]
+        }
+      },
+      "record_id": "c8c78b66acfa7c338f4aa6a61dfb2f99d97d69c4fd8d98d4735e6f891ce17ab3"
+    },
+    {
+      "id": "portfolio-feedback-request",
+      "revision": "4c33a562f5af03abc650d4327c3173511ac07c7833ca65a793368e41aaca94df",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — contextual-help editorial review",
+      "note": "Inspected every affected screen at desktop and 320px, LTR and RTL. Final layout audit has zero findings. Relevant preview flows and all 96 configured WordPress campaigns pass. See evidence for native link/placement checks, comparison-only neighbours and explicit delivery/release limits.",
+      "at": "2026-09-28T15:38:49.396Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            }
+          ]
+        }
+      },
+      "record_id": "d1ebd831484596547dce54a7486f7d31fcd51b88e782d00d47185e8fc5d2290d"
+    },
+    {
+      "id": "translation-project-enquiry",
+      "revision": "1d2b04f6babc1b619fb37a7cd555464aaff75f11187adce3226483a650e5d2d2",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — contextual-help editorial review",
+      "note": "Inspected every affected screen at desktop and 320px, LTR and RTL. Final layout audit has zero findings. Relevant preview flows and all 96 configured WordPress campaigns pass. See evidence for native link/placement checks, comparison-only neighbours and explicit delivery/release limits.",
+      "at": "2026-09-28T15:38:49.396Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            }
+          ]
+        }
+      },
+      "record_id": "7d30e0b938178b4c094dfb9288097574928c10df7af0ba19234302b75ec17296"
+    },
+    {
+      "id": "maker-session-invitation",
+      "revision": "f23908700cf79026f50ff747e7d0845615e811a85779cba697e553cbd8df8f65",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — contextual-help editorial review",
+      "note": "Inspected every affected screen at desktop and 320px, LTR and RTL. Final layout audit has zero findings. Relevant preview flows and all 96 configured WordPress campaigns pass. See evidence for native link/placement checks, comparison-only neighbours and explicit delivery/release limits.",
+      "at": "2026-09-28T15:38:49.396Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            }
+          ]
+        }
+      },
+      "record_id": "07cdf4937e418cbedd0089e20c4b1fad861a53c6a77f145d77a4195573015d8c"
+    },
+    {
+      "id": "venue-hire-checklist",
+      "revision": "07e875afc9dcf42bcb80cc41d2a6d3d6903a353d71b83a144856c3ed8abbdec8",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — contextual-help editorial review",
+      "note": "Inspected every affected screen at desktop and 320px, LTR and RTL. Final layout audit has zero findings. Relevant preview flows and all 96 configured WordPress campaigns pass. See evidence for native link/placement checks, comparison-only neighbours and explicit delivery/release limits.",
+      "at": "2026-09-28T15:38:49.396Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            }
+          ]
+        }
+      },
+      "record_id": "42028b3d1bfb160ccfba91ea0e719e1a72023daac4296b3495b5849f0f5bb9fa"
+    },
+    {
+      "id": "contributor-pitch-checklist",
+      "revision": "0a635f852991846d0fa002efe6fc2a57f17b50e8dc4a757aa099bc22d466d457",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — contextual-help editorial review",
+      "note": "Inspected every affected screen at desktop and 320px, LTR and RTL. Final layout audit has zero findings. Relevant preview flows and all 96 configured WordPress campaigns pass. See evidence for native link/placement checks, comparison-only neighbours and explicit delivery/release limits.",
+      "at": "2026-09-28T15:38:49.396Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            }
+          ]
+        }
+      },
+      "record_id": "0d322001d10986cf47fae9626aeb935a4c3e78080de2fefd98cfda5625539332"
     }
   ]
 }

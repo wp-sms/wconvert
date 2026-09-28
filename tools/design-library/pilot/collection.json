@@ -2039,6 +2039,649 @@
         "Both preferences survive capture and retry.",
         "Merchant has a follow-up process for each choice."
       ]
+    },
+    {
+      "id": "gift-wrap-details",
+      "audience": "stores",
+      "family": "bar-announcement",
+      "visitor_need": "Check wrapping price, eligible items and whether a message can be added.",
+      "difference": "Check wrapping price, eligible items and whether a message can be added. Show on gift collection pages. Link to wrapping prices, eligible items and message limits; this bar does not add wrapping to an order.",
+      "requirements": [
+        "Review the real wording and page targeting",
+        "Provide the actual destination page"
+      ],
+      "status": "review",
+      "source": "Original WConvert contextual-help batch; Depicter reference observations recorded in template-editorial-refinement-2026-09-28.md.",
+      "suggested_setup": [
+        "Show on gift collection pages. Link to wrapping prices, eligible items and message limits; this bar does not add wrapping to an order.",
+        "Show only on relevant pages; avoid repeated interruption and exclude unrelated journeys."
+      ],
+      "measure": "Relevant link clicks; resulting decisions are measured separately.",
+      "batch": "contextual-help",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "bar-announcement"
+        ],
+        "reason": "Reuse the established composition; the distinct visitor need and follow-up are: Check wrapping price, eligible items and whether a message can be added."
+      }
+    },
+    {
+      "id": "dispatch-schedule",
+      "audience": "stores",
+      "family": "bar-announcement",
+      "visitor_need": "Distinguish dispatch time from a delivery guarantee.",
+      "difference": "Distinguish dispatch time from a delivery guarantee. Target product browsing before purchase. Link to current dispatch days, cutoff and exceptions. Do not imply that dispatch means delivery.",
+      "requirements": [
+        "Review the real wording and page targeting",
+        "Provide the actual destination page"
+      ],
+      "status": "review",
+      "source": "Original WConvert contextual-help batch; Depicter reference observations recorded in template-editorial-refinement-2026-09-28.md.",
+      "suggested_setup": [
+        "Target product browsing before purchase. Link to current dispatch days, cutoff and exceptions. Do not imply that dispatch means delivery.",
+        "Show only on relevant pages; avoid repeated interruption and exclude unrelated journeys."
+      ],
+      "measure": "Relevant link clicks; resulting decisions are measured separately.",
+      "batch": "contextual-help",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "bar-announcement"
+        ],
+        "reason": "Reuse the established composition; the distinct visitor need and follow-up are: Distinguish dispatch time from a delivery guarantee."
+      }
+    },
+    {
+      "id": "showroom-information",
+      "audience": "stores",
+      "family": "bar-announcement",
+      "visitor_need": "Check showroom hours, access and which products can be viewed before travelling.",
+      "difference": "Check showroom hours, access and which products can be viewed before travelling. Show on furniture and collection pages. Link to actual hours, access information and displayed stock. This is not a visit booking.",
+      "requirements": [
+        "Review the real wording and page targeting",
+        "Provide the actual destination page"
+      ],
+      "status": "review",
+      "source": "Original WConvert contextual-help batch; Depicter reference observations recorded in template-editorial-refinement-2026-09-28.md.",
+      "suggested_setup": [
+        "Show on furniture and collection pages. Link to actual hours, access information and displayed stock. This is not a visit booking.",
+        "Show only on relevant pages; avoid repeated interruption and exclude unrelated journeys."
+      ],
+      "measure": "Relevant link clicks; resulting decisions are measured separately.",
+      "batch": "contextual-help",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "bar-announcement"
+        ],
+        "reason": "Reuse the established composition; the distinct visitor need and follow-up are: Check showroom hours, access and which products can be viewed before travelling."
+      }
+    },
+    {
+      "id": "holiday-service-hours",
+      "audience": "services",
+      "family": "bar-announcement",
+      "visitor_need": "Find opening days and expected reply timing without submitting an unnecessary form.",
+      "difference": "Find opening days and expected reply timing without submitting an unnecessary form. Publish only around a real closure and remove it afterwards. Link to dated opening hours and explain whether support is monitored.",
+      "requirements": [
+        "Review the real wording and page targeting",
+        "Provide the actual destination page"
+      ],
+      "status": "review",
+      "source": "Original WConvert contextual-help batch; Depicter reference observations recorded in template-editorial-refinement-2026-09-28.md.",
+      "suggested_setup": [
+        "Publish only around a real closure and remove it afterwards. Link to dated opening hours and explain whether support is monitored.",
+        "Show only on relevant pages; avoid repeated interruption and exclude unrelated journeys."
+      ],
+      "measure": "Relevant link clicks; resulting decisions are measured separately.",
+      "batch": "contextual-help",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "bar-announcement"
+        ],
+        "reason": "Reuse the established composition; the distinct visitor need and follow-up are: Find opening days and expected reply timing without submitting an unnecessary form."
+      }
+    },
+    {
+      "id": "remote-consultation-details",
+      "audience": "services",
+      "family": "bar-announcement",
+      "visitor_need": "Understand the format, preparation and limitations of a remote consultation.",
+      "difference": "Understand the format, preparation and limitations of a remote consultation. Target consultation pages. Link to actual duration, fees, access requirements and next steps; clicking does not book an appointment.",
+      "requirements": [
+        "Review the real wording and page targeting",
+        "Provide the actual destination page"
+      ],
+      "status": "review",
+      "source": "Original WConvert contextual-help batch; Depicter reference observations recorded in template-editorial-refinement-2026-09-28.md.",
+      "suggested_setup": [
+        "Target consultation pages. Link to actual duration, fees, access requirements and next steps; clicking does not book an appointment.",
+        "Show only on relevant pages; avoid repeated interruption and exclude unrelated journeys."
+      ],
+      "measure": "Relevant link clicks; resulting decisions are measured separately.",
+      "batch": "contextual-help",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "bar-announcement"
+        ],
+        "reason": "Reuse the established composition; the distinct visitor need and follow-up are: Understand the format, preparation and limitations of a remote consultation."
+      }
+    },
+    {
+      "id": "contributor-guidelines",
+      "audience": "publishers",
+      "family": "bar-announcement",
+      "visitor_need": "Check topic fit, pitch format and editorial expectations before submitting work.",
+      "difference": "Check topic fit, pitch format and editorial expectations before submitting work. Show on editorial and about pages. Link to real submission guidance and a working pitch route. The campaign itself collects no pitch or file.",
+      "requirements": [
+        "Review the real wording and page targeting",
+        "Provide the actual destination page"
+      ],
+      "status": "review",
+      "source": "Original WConvert contextual-help batch; Depicter reference observations recorded in template-editorial-refinement-2026-09-28.md.",
+      "suggested_setup": [
+        "Show on editorial and about pages. Link to real submission guidance and a working pitch route. The campaign itself collects no pitch or file.",
+        "Show only on relevant pages; avoid repeated interruption and exclude unrelated journeys."
+      ],
+      "measure": "Relevant link clicks; resulting decisions are measured separately.",
+      "batch": "contextual-help",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "bar-announcement"
+        ],
+        "reason": "Reuse the established composition; the distinct visitor need and follow-up are: Check topic fit, pitch format and editorial expectations before submitting work."
+      }
+    },
+    {
+      "id": "repair-workshop-news",
+      "audience": "stores",
+      "family": "bar-email-capture",
+      "visitor_need": "Hear when practical repair sessions are announced without reserving a place.",
+      "difference": "Hear when practical repair sessions are announced without reserving a place. Use on repair and care pages. Send only real workshop announcements; event registration is a separate step.",
+      "requirements": [
+        "Review the real wording and page targeting",
+        "Choose a destination or explicit Collect only",
+        "Assign an owner for follow-up"
+      ],
+      "status": "review",
+      "source": "Original WConvert contextual-help batch; Depicter reference observations recorded in template-editorial-refinement-2026-09-28.md.",
+      "suggested_setup": [
+        "Use on repair and care pages. Send only real workshop announcements; event registration is a separate step.",
+        "Show only on relevant pages; avoid repeated interruption and exclude unrelated journeys."
+      ],
+      "measure": "Accepted requests with a useful follow-up, measured separately.",
+      "batch": "contextual-help",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "bar-email-capture"
+        ],
+        "reason": "Reuse the established composition; the distinct visitor need and follow-up are: Hear when practical repair sessions are announced without reserving a place."
+      }
+    },
+    {
+      "id": "local-class-news",
+      "audience": "services",
+      "family": "bar-email-capture",
+      "visitor_need": "Follow new class announcements without making a booking.",
+      "difference": "Follow new class announcements without making a booking. Use on class information pages. Assign an owner for announcements and link each future message to actual dates and booking terms.",
+      "requirements": [
+        "Review the real wording and page targeting",
+        "Choose a destination or explicit Collect only",
+        "Assign an owner for follow-up"
+      ],
+      "status": "review",
+      "source": "Original WConvert contextual-help batch; Depicter reference observations recorded in template-editorial-refinement-2026-09-28.md.",
+      "suggested_setup": [
+        "Use on class information pages. Assign an owner for announcements and link each future message to actual dates and booking terms.",
+        "Show only on relevant pages; avoid repeated interruption and exclude unrelated journeys."
+      ],
+      "measure": "Accepted requests with a useful follow-up, measured separately.",
+      "batch": "contextual-help",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "bar-email-capture"
+        ],
+        "reason": "Reuse the established composition; the distinct visitor need and follow-up are: Follow new class announcements without making a booking."
+      }
+    },
+    {
+      "id": "spare-parts-advice",
+      "audience": "stores",
+      "family": "slide-in-question",
+      "visitor_need": "Start a compatibility enquiry before ordering a replacement part.",
+      "difference": "Start a compatibility enquiry before ordering a replacement part. Place on spare-parts pages. Follow up for model numbers and photographs; the form does not identify a compatible part or reserve stock.",
+      "requirements": [
+        "Review the real wording and page targeting",
+        "Choose a destination or explicit Collect only",
+        "Assign an owner for follow-up"
+      ],
+      "status": "review",
+      "source": "Original WConvert contextual-help batch; Depicter reference observations recorded in template-editorial-refinement-2026-09-28.md.",
+      "suggested_setup": [
+        "Place on spare-parts pages. Follow up for model numbers and photographs; the form does not identify a compatible part or reserve stock.",
+        "Show only on relevant pages; avoid repeated interruption and exclude unrelated journeys."
+      ],
+      "measure": "Accepted requests with a useful follow-up, measured separately.",
+      "batch": "contextual-help",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "appointment-note",
+          "slide-in-photo"
+        ],
+        "reason": "A compact corner enquiry adds a useful category choice without a picture or modal interruption. Start a compatibility enquiry before ordering a replacement part."
+      }
+    },
+    {
+      "id": "assembly-guidance",
+      "audience": "stores",
+      "family": "slide-in-question",
+      "visitor_need": "Find the right assembly instructions or clarify a step for an owned product.",
+      "difference": "Find the right assembly instructions or clarify a step for an owned product. Show beside assembly resources. Ask for the product model during follow-up. Do not provide safety-critical repair instructions in the template.",
+      "requirements": [
+        "Review the real wording and page targeting",
+        "Choose a destination or explicit Collect only",
+        "Assign an owner for follow-up"
+      ],
+      "status": "review",
+      "source": "Original WConvert contextual-help batch; Depicter reference observations recorded in template-editorial-refinement-2026-09-28.md.",
+      "suggested_setup": [
+        "Show beside assembly resources. Ask for the product model during follow-up. Do not provide safety-critical repair instructions in the template.",
+        "Show only on relevant pages; avoid repeated interruption and exclude unrelated journeys."
+      ],
+      "measure": "Accepted requests with a useful follow-up, measured separately.",
+      "batch": "contextual-help",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "slide-in-question"
+        ],
+        "reason": "Reuse the established composition; the distinct visitor need and follow-up are: Find the right assembly instructions or clarify a step for an owned product."
+      }
+    },
+    {
+      "id": "trade-account-enquiry",
+      "audience": "stores",
+      "family": "slide-in-question",
+      "visitor_need": "Check trade-account requirements before applying or placing an order.",
+      "difference": "Check trade-account requirements before applying or placing an order. Use on trade information pages. Follow up for business details and eligibility. No account, credit approval or trade price is granted here.",
+      "requirements": [
+        "Review the real wording and page targeting",
+        "Choose a destination or explicit Collect only",
+        "Assign an owner for follow-up"
+      ],
+      "status": "review",
+      "source": "Original WConvert contextual-help batch; Depicter reference observations recorded in template-editorial-refinement-2026-09-28.md.",
+      "suggested_setup": [
+        "Use on trade information pages. Follow up for business details and eligibility. No account, credit approval or trade price is granted here.",
+        "Show only on relevant pages; avoid repeated interruption and exclude unrelated journeys."
+      ],
+      "measure": "Accepted requests with a useful follow-up, measured separately.",
+      "batch": "contextual-help",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "slide-in-question"
+        ],
+        "reason": "Reuse the established composition; the distinct visitor need and follow-up are: Check trade-account requirements before applying or placing an order."
+      }
+    },
+    {
+      "id": "access-enquiry",
+      "audience": "services",
+      "family": "slide-in-question",
+      "visitor_need": "Check practical access arrangements before deciding whether to visit.",
+      "difference": "Check practical access arrangements before deciding whether to visit. Use on visit pages. Reply with verified physical access information. Collect no health information; confirm any arrangement directly.",
+      "requirements": [
+        "Review the real wording and page targeting",
+        "Choose a destination or explicit Collect only",
+        "Assign an owner for follow-up"
+      ],
+      "status": "review",
+      "source": "Original WConvert contextual-help batch; Depicter reference observations recorded in template-editorial-refinement-2026-09-28.md.",
+      "suggested_setup": [
+        "Use on visit pages. Reply with verified physical access information. Collect no health information; confirm any arrangement directly.",
+        "Show only on relevant pages; avoid repeated interruption and exclude unrelated journeys."
+      ],
+      "measure": "Accepted requests with a useful follow-up, measured separately.",
+      "batch": "contextual-help",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "slide-in-question"
+        ],
+        "reason": "Reuse the established composition; the distinct visitor need and follow-up are: Check practical access arrangements before deciding whether to visit."
+      }
+    },
+    {
+      "id": "language-support-enquiry",
+      "audience": "services",
+      "family": "slide-in-question",
+      "visitor_need": "Check communication options before arranging a service appointment.",
+      "difference": "Check communication options before arranging a service appointment. Use on contact and consultation pages. Verify available languages, costs and interpreter arrangements before confirming support.",
+      "requirements": [
+        "Review the real wording and page targeting",
+        "Choose a destination or explicit Collect only",
+        "Assign an owner for follow-up"
+      ],
+      "status": "review",
+      "source": "Original WConvert contextual-help batch; Depicter reference observations recorded in template-editorial-refinement-2026-09-28.md.",
+      "suggested_setup": [
+        "Use on contact and consultation pages. Verify available languages, costs and interpreter arrangements before confirming support.",
+        "Show only on relevant pages; avoid repeated interruption and exclude unrelated journeys."
+      ],
+      "measure": "Accepted requests with a useful follow-up, measured separately.",
+      "batch": "contextual-help",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "slide-in-question"
+        ],
+        "reason": "Reuse the established composition; the distinct visitor need and follow-up are: Check communication options before arranging a service appointment."
+      }
+    },
+    {
+      "id": "equipment-hire-enquiry",
+      "audience": "services",
+      "family": "slide-in-question",
+      "visitor_need": "Check suitability and hire conditions before reserving equipment.",
+      "difference": "Check suitability and hire conditions before reserving equipment. Use on hire catalogue pages. Follow up for dates, specifications, collection and deposit terms. No equipment is reserved here.",
+      "requirements": [
+        "Review the real wording and page targeting",
+        "Choose a destination or explicit Collect only",
+        "Assign an owner for follow-up"
+      ],
+      "status": "review",
+      "source": "Original WConvert contextual-help batch; Depicter reference observations recorded in template-editorial-refinement-2026-09-28.md.",
+      "suggested_setup": [
+        "Use on hire catalogue pages. Follow up for dates, specifications, collection and deposit terms. No equipment is reserved here.",
+        "Show only on relevant pages; avoid repeated interruption and exclude unrelated journeys."
+      ],
+      "measure": "Accepted requests with a useful follow-up, measured separately.",
+      "batch": "contextual-help",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "slide-in-question"
+        ],
+        "reason": "Reuse the established composition; the distinct visitor need and follow-up are: Check suitability and hire conditions before reserving equipment."
+      }
+    },
+    {
+      "id": "reader-panel-interest",
+      "audience": "publishers",
+      "family": "slide-in-question",
+      "visitor_need": "Offer to contribute editorial feedback without signing up for general marketing.",
+      "difference": "Offer to contribute editorial feedback without signing up for general marketing. Use on community pages. Follow up with the purpose and time commitment. No panel place or research participation is confirmed.",
+      "requirements": [
+        "Review the real wording and page targeting",
+        "Choose a destination or explicit Collect only",
+        "Assign an owner for follow-up"
+      ],
+      "status": "review",
+      "source": "Original WConvert contextual-help batch; Depicter reference observations recorded in template-editorial-refinement-2026-09-28.md.",
+      "suggested_setup": [
+        "Use on community pages. Follow up with the purpose and time commitment. No panel place or research participation is confirmed.",
+        "Show only on relevant pages; avoid repeated interruption and exclude unrelated journeys."
+      ],
+      "measure": "Accepted requests with a useful follow-up, measured separately.",
+      "batch": "contextual-help",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "slide-in-question"
+        ],
+        "reason": "Reuse the established composition; the distinct visitor need and follow-up are: Offer to contribute editorial feedback without signing up for general marketing."
+      }
+    },
+    {
+      "id": "product-demo-enquiry",
+      "audience": "stores",
+      "family": "slide-in-question",
+      "visitor_need": "Check how a product works before agreeing to a demonstration.",
+      "difference": "Check how a product works before agreeing to a demonstration. Use on demonstration pages. Ask for the product and preferred format during follow-up. No live session is booked by this form.",
+      "requirements": [
+        "Review the real wording and page targeting",
+        "Choose a destination or explicit Collect only",
+        "Assign an owner for follow-up"
+      ],
+      "status": "review",
+      "source": "Original WConvert contextual-help batch; Depicter reference observations recorded in template-editorial-refinement-2026-09-28.md.",
+      "suggested_setup": [
+        "Use on demonstration pages. Ask for the product and preferred format during follow-up. No live session is booked by this form.",
+        "Show only on relevant pages; avoid repeated interruption and exclude unrelated journeys."
+      ],
+      "measure": "Accepted requests with a useful follow-up, measured separately.",
+      "batch": "contextual-help",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "slide-in-question"
+        ],
+        "reason": "Reuse the established composition; the distinct visitor need and follow-up are: Check how a product works before agreeing to a demonstration."
+      }
+    },
+    {
+      "id": "care-clinic-request",
+      "audience": "stores",
+      "family": "appointment-note",
+      "visitor_need": "Find a suitable hands-on care session for an item already owned.",
+      "difference": "Find a suitable hands-on care session for an item already owned. Use on care-session pages. Follow up for the item and materials. The request does not diagnose damage or book a clinic place.",
+      "requirements": [
+        "Review the real wording and page targeting",
+        "Choose a destination or explicit Collect only",
+        "Assign an owner for follow-up"
+      ],
+      "status": "review",
+      "source": "Original WConvert contextual-help batch; Depicter reference observations recorded in template-editorial-refinement-2026-09-28.md.",
+      "suggested_setup": [
+        "Use on care-session pages. Follow up for the item and materials. The request does not diagnose damage or book a clinic place.",
+        "Show only on relevant pages; avoid repeated interruption and exclude unrelated journeys."
+      ],
+      "measure": "Accepted requests with a useful follow-up, measured separately.",
+      "batch": "contextual-help",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "appointment-note"
+        ],
+        "reason": "Reuse the established composition; the distinct visitor need and follow-up are: Find a suitable hands-on care session for an item already owned."
+      }
+    },
+    {
+      "id": "gift-message-enquiry",
+      "audience": "stores",
+      "family": "appointment-note",
+      "visitor_need": "Check supported message formats, length and price before ordering.",
+      "difference": "Check supported message formats, length and price before ordering. Show on personalisation pages. Collect the exact message through the order process or follow-up, not this category field. No order is changed here.",
+      "requirements": [
+        "Review the real wording and page targeting",
+        "Choose a destination or explicit Collect only",
+        "Assign an owner for follow-up"
+      ],
+      "status": "review",
+      "source": "Original WConvert contextual-help batch; Depicter reference observations recorded in template-editorial-refinement-2026-09-28.md.",
+      "suggested_setup": [
+        "Show on personalisation pages. Collect the exact message through the order process or follow-up, not this category field. No order is changed here.",
+        "Show only on relevant pages; avoid repeated interruption and exclude unrelated journeys."
+      ],
+      "measure": "Accepted requests with a useful follow-up, measured separately.",
+      "batch": "contextual-help",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "appointment-note"
+        ],
+        "reason": "Reuse the established composition; the distinct visitor need and follow-up are: Check supported message formats, length and price before ordering."
+      }
+    },
+    {
+      "id": "remote-walkthrough-request",
+      "audience": "services",
+      "family": "appointment-note",
+      "visitor_need": "Decide whether a remote visual walkthrough can establish a useful project scope.",
+      "difference": "Decide whether a remote visual walkthrough can establish a useful project scope. Show on remote assessment pages. Agree a time and suitable video method in follow-up; no assessment or price is confirmed.",
+      "requirements": [
+        "Review the real wording and page targeting",
+        "Choose a destination or explicit Collect only",
+        "Assign an owner for follow-up"
+      ],
+      "status": "review",
+      "source": "Original WConvert contextual-help batch; Depicter reference observations recorded in template-editorial-refinement-2026-09-28.md.",
+      "suggested_setup": [
+        "Show on remote assessment pages. Agree a time and suitable video method in follow-up; no assessment or price is confirmed.",
+        "Show only on relevant pages; avoid repeated interruption and exclude unrelated journeys."
+      ],
+      "measure": "Accepted requests with a useful follow-up, measured separately.",
+      "batch": "contextual-help",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "appointment-note"
+        ],
+        "reason": "Reuse the established composition; the distinct visitor need and follow-up are: Decide whether a remote visual walkthrough can establish a useful project scope."
+      }
+    },
+    {
+      "id": "portfolio-feedback-request",
+      "audience": "services",
+      "family": "appointment-note",
+      "visitor_need": "Check whether the reviewer and format suit the work before sharing a portfolio.",
+      "difference": "Check whether the reviewer and format suit the work before sharing a portfolio. Target portfolio-review pages. Agree fees, confidentiality and file-sharing arrangements in follow-up. This form uploads no work.",
+      "requirements": [
+        "Review the real wording and page targeting",
+        "Choose a destination or explicit Collect only",
+        "Assign an owner for follow-up"
+      ],
+      "status": "review",
+      "source": "Original WConvert contextual-help batch; Depicter reference observations recorded in template-editorial-refinement-2026-09-28.md.",
+      "suggested_setup": [
+        "Target portfolio-review pages. Agree fees, confidentiality and file-sharing arrangements in follow-up. This form uploads no work.",
+        "Show only on relevant pages; avoid repeated interruption and exclude unrelated journeys."
+      ],
+      "measure": "Accepted requests with a useful follow-up, measured separately.",
+      "batch": "contextual-help",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "appointment-note"
+        ],
+        "reason": "Reuse the established composition; the distinct visitor need and follow-up are: Check whether the reviewer and format suit the work before sharing a portfolio."
+      }
+    },
+    {
+      "id": "translation-project-enquiry",
+      "audience": "services",
+      "family": "appointment-note",
+      "visitor_need": "Establish project type before sharing documents for a translation estimate.",
+      "difference": "Establish project type before sharing documents for a translation estimate. Use on translation pages. Follow up for languages, word count, deadline and confidentiality; do not collect documents or promise certified translation here.",
+      "requirements": [
+        "Review the real wording and page targeting",
+        "Choose a destination or explicit Collect only",
+        "Assign an owner for follow-up"
+      ],
+      "status": "review",
+      "source": "Original WConvert contextual-help batch; Depicter reference observations recorded in template-editorial-refinement-2026-09-28.md.",
+      "suggested_setup": [
+        "Use on translation pages. Follow up for languages, word count, deadline and confidentiality; do not collect documents or promise certified translation here.",
+        "Show only on relevant pages; avoid repeated interruption and exclude unrelated journeys."
+      ],
+      "measure": "Accepted requests with a useful follow-up, measured separately.",
+      "batch": "contextual-help",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "appointment-note"
+        ],
+        "reason": "Reuse the established composition; the distinct visitor need and follow-up are: Establish project type before sharing documents for a translation estimate."
+      }
+    },
+    {
+      "id": "maker-session-invitation",
+      "audience": "stores",
+      "family": "journey-offer-first",
+      "visitor_need": "Understand what maker-session announcements contain before sharing an email.",
+      "difference": "Understand what maker-session announcements contain before sharing an email. Use on maker-story pages after meaningful reading. Continue only reveals the form; it saves nothing. Announcements do not reserve a place.",
+      "requirements": [
+        "Review the real wording and page targeting",
+        "Choose a destination or explicit Collect only",
+        "Assign an owner for follow-up"
+      ],
+      "status": "review",
+      "source": "Original WConvert contextual-help batch; Depicter reference observations recorded in template-editorial-refinement-2026-09-28.md.",
+      "suggested_setup": [
+        "Use on maker-story pages after meaningful reading. Continue only reveals the form; it saves nothing. Announcements do not reserve a place.",
+        "Show only on relevant pages; avoid repeated interruption and exclude unrelated journeys."
+      ],
+      "measure": "Accepted requests with a useful follow-up, measured separately.",
+      "batch": "contextual-help",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "journey-offer-first"
+        ],
+        "reason": "Reuse the established composition; the distinct visitor need and follow-up are: Understand what maker-session announcements contain before sharing an email."
+      }
+    },
+    {
+      "id": "venue-hire-checklist",
+      "audience": "services",
+      "family": "resource-index",
+      "visitor_need": "Prepare useful venue requirements before requesting a hire proposal.",
+      "difference": "Prepare useful venue requirements before requesting a hire proposal. Embed in venue planning content. Provide a real checklist with capacity, access and timing questions, then configure its resource destination.",
+      "requirements": [
+        "Publish the promised checklist",
+        "Configure the resource email destination",
+        "Verify the acknowledgement resource link"
+      ],
+      "status": "review",
+      "source": "Original WConvert contextual-help batch; Depicter reference observations recorded in template-editorial-refinement-2026-09-28.md.",
+      "suggested_setup": [
+        "Embed in venue planning content. Provide a real checklist with capacity, access and timing questions, then configure its resource destination.",
+        "Show only on relevant pages; avoid repeated interruption and exclude unrelated journeys."
+      ],
+      "measure": "Accepted requests with a useful follow-up, measured separately.",
+      "batch": "contextual-help",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "resource-index"
+        ],
+        "reason": "Reuse the established composition; the distinct visitor need and follow-up are: Prepare useful venue requirements before requesting a hire proposal."
+      }
+    },
+    {
+      "id": "contributor-pitch-checklist",
+      "audience": "publishers",
+      "family": "resource-index",
+      "visitor_need": "Prepare a concise editorial pitch rather than sending a vague topic suggestion.",
+      "difference": "Prepare a concise editorial pitch rather than sending a vague topic suggestion. Embed below contributor guidance. Provide the checklist and configure resource delivery. Requesting it does not submit a pitch or join a newsletter.",
+      "requirements": [
+        "Publish the promised checklist",
+        "Configure the resource email destination",
+        "Verify the acknowledgement resource link"
+      ],
+      "status": "review",
+      "source": "Original WConvert contextual-help batch; Depicter reference observations recorded in template-editorial-refinement-2026-09-28.md.",
+      "suggested_setup": [
+        "Embed below contributor guidance. Provide the checklist and configure resource delivery. Requesting it does not submit a pitch or join a newsletter.",
+        "Show only on relevant pages; avoid repeated interruption and exclude unrelated journeys."
+      ],
+      "measure": "Accepted requests with a useful follow-up, measured separately.",
+      "batch": "contextual-help",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "resource-index"
+        ],
+        "reason": "Reuse the established composition; the distinct visitor need and follow-up are: Prepare a concise editorial pitch rather than sending a vague topic suggestion."
+      }
     }
   ],
   "batches": [
@@ -2057,6 +2700,10 @@
     {
       "id": "decision-support",
       "name": "Next 24 · decisions and practical help"
+    },
+    {
+      "id": "contextual-help",
+      "name": "Next 24 · contextual help and announcements"
     }
   ]
 }

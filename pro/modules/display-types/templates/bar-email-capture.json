@@ -36,14 +36,9 @@
               "type": "row",
               "children": [
                 {
-                  "type": "icon",
-                  "id": "n1",
-                  "name": "gift"
-                },
-                {
                   "type": "heading",
                   "id": "n2",
-                  "level": 2,
+                  "level": 1,
                   "role": "headline",
                   "text": "Five good reads, every Friday"
                 },
@@ -96,7 +91,7 @@
             {
               "type": "heading",
               "id": "n7",
-              "level": 2,
+              "level": 1,
               "role": "success_headline",
               "text": "Request received"
             },

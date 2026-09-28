@@ -14,8 +14,8 @@ return [
             __('Before the conversation', 'wconvert'),
             __('Request received', 'wconvert')
         ],
-        'headline' => __('Before the visit.', 'wconvert'),
-        'body' => __('Request a checklist for photos, measurements and questions to prepare before discussing your project.', 'wconvert'),
+        'headline' => [__('Before the visit.', 'wconvert'), __('Prepare for a useful conversation.', 'wconvert')],
+        'body' => [__('Request a checklist for photos, measurements and questions to prepare before discussing your project.', 'wconvert'), __('Bring your priorities and a few questions. The checklist helps you organise what to discuss.', 'wconvert')],
         'fine_print' => [
             __('One resource email. No newsletter signup.', 'wconvert'),
             __('One resource email. No newsletter signup.', 'wconvert')

@@ -111,6 +111,17 @@ describe('the design inside the box', () => {
   );
 });
 
+it('clears browser popover insets before applying a logical corner', () => {
+  const browserDefaults = document.createElement('style');
+  browserDefaults.textContent = '[popover] { inset: 0px; }';
+  document.body.append(browserDefaults);
+  mountPopover({ displayType: 'slide_in', template: TEMPLATE }).show();
+
+  // jsdom cannot resolve logical positioning; the live-browser geometry check
+  // verifies the final corner. Here the unused physical defaults must be reset.
+  expect(getComputedStyle(popover()!).inset).toBe('auto');
+});
+
 describe('a floating bar', () => {
   /**
    * **`manual`, and promoted with `showPopover()`.**

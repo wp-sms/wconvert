@@ -47,9 +47,10 @@ visual inspection. Editorial approval never asserts external delivery, measured
 conversion improvement, physical-device verification or release approval.
 External email/SMS delivery is skipped at the user's request for this work.
 
-`pilot/next-batch.json` contains 24 planned briefs (12 store, eight service,
-four publisher). They are shown separately in the studio and do not add to its
-campaign or design counts. Each needs a comparison, a meaningful difference,
-acceptance checks, authoring and the same review process before entering the
-actual collection. When implementing a brief, move it out of the planned list;
-the validator rejects IDs already in the actual collection.
+`pilot/next-batch.json` is empty after the contextual-help batch. The collection
+contains 96 actual setups, with separate campaign and design counts. Add planned
+briefs only after choosing distinct visitor needs; the validator rejects IDs
+already in the collection.
+
+See [maintenance](../MAINTENANCE.md) for dependency inspection, design version
+notes, retirement metadata and the separate checks required for runtime changes.

@@ -8,3 +8,8 @@ const pending = selected.map(e => queue.find(q => q.id === e.id)).filter(q => q.
 console.log(`${selected.length - pending.length}/${selected.length} current editorial approvals. External delivery and release approval are outside this gate.`);
 for (const row of pending) console.log(`${row.id}: ${row.state} — ${row.reason}`);
 if (pending.length) process.exitCode = 1;
+
+const maintenance = JSON.parse(readFileSync(new URL('../out/maintenance.json', import.meta.url))).maintenance;
+const undocumented = maintenance.filter(d => d.unrecorded_change);
+for (const design of undocumented) console.log(`${design.id}: record the design change and review ${design.dependents.length} dependent setups.`);
+if (undocumented.length) process.exitCode = 1;

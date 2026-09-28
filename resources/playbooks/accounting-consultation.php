@@ -10,7 +10,7 @@ return [
     'business_types' => ['services'],
     'notes' => __('Offer a first conversation rather than financial advice. Collect no tax identifiers, balances or documents in this initial form.', 'wconvert'),
     'copy' => [
-        'eyebrow' => __('For small businesses', 'wconvert'),
+        'eyebrow' => [__('For small businesses', 'wconvert'), __('Next steps', 'wconvert')],
         'headline' => __('Make room for the work you do.', 'wconvert'),
         'body' => __('Request a conversation about bookkeeping and the support your business needs.', 'wconvert'),
         'email_label' => __('Email address', 'wconvert'),

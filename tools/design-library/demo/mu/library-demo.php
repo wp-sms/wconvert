@@ -96,6 +96,10 @@ function wconvert_demo_seed(): array {
         if ($existingResource) wp_update_post(['ID' => $existingResource->ID, 'post_content' => wconvert_demo_resource($resourceKey)]);
     }
     $decisionFixtures = wconvert_demo_decision_fixtures();
+    $contextualPages = [];
+    foreach (json_decode(file_get_contents(__DIR__ . '/../contextual-fixtures.json'), true) as $key => [$title, $sections]) {
+        $contextualPages[$key] = wconvert_demo_page('contextual-' . $key, $title, wconvert_demo_resource($key));
+    }
     foreach ($briefs as $brief) {
         $key = $brief['id'];
         try {
@@ -121,6 +125,7 @@ function wconvert_demo_seed(): array {
                 default => $brief['audience'] === 'services' ? $services : $shop,
             });
             if (isset($decisionFixtures['pages'][$key])) $url = get_permalink($decisionFixtures['pages'][$key]);
+            if (isset($contextualPages[$key])) $url = get_permalink($contextualPages[$key]);
             // Leave cart links unconfigured so the shipping WooCommerce adapter resolves them.
             if ($draft['goal'] === 'recover_cart') $url = '';
             $config = \WConvert\Template\TemplateTree::rewrittenIn($config, static function (array $node) use ($url, $guidePage): array {

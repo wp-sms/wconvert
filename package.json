@@ -39,7 +39,8 @@
     "templates:pilot": "bash tools/design-library/build.sh renderer pilot proof",
     "test:template-studio": "node --test tools/design-library/build/*.test.mjs",
     "templates:review": "npm run templates:pilot && node tools/design-library/build/import-review.mjs",
-    "templates:gate": "npm run templates:pilot && node tools/design-library/build/review-gate.mjs"
+    "templates:gate": "npm run templates:pilot && node tools/design-library/build/review-gate.mjs",
+    "templates:record": "node tools/design-library/build/record-design.mjs"
   },
   "dependencies": {
     "@atlaskit/pragmatic-drag-and-drop": "^3.0.0",

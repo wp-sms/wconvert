@@ -44,6 +44,10 @@ $options = new class implements OptionStore {
     public function set(string $key, $value): void { throw new RuntimeException('Read-only preview'); }
 };
 $prefill = new Prefill($playbooks, $templates, $vocabulary, new Degradation($rules, $supplied), new PrivacyGuidance($options));
+if (getenv('WCONVERT_EXPORT_USAGE')) {
+    echo json_encode(array_map(static fn ($p) => ['id' => $p->id, 'name' => $p->name, 'template_id' => $p->templateId], array_values($playbooks->all())), JSON_THROW_ON_ERROR);
+    exit;
+}
 $collection = json_decode(file_get_contents($root . '/tools/design-library/pilot/collection.json'), true, 512, JSON_THROW_ON_ERROR);
 $entries = [];
 foreach ($collection['entries'] as $brief) {

@@ -1,7 +1,7 @@
 {
   "schema": 1,
-  "id": "decision-support",
+  "id": "contextual-help",
   "name": "Next batch \u00b7 to be prioritised",
-  "target_setups": 72,
+  "target_setups": 96,
   "entries": []
 }

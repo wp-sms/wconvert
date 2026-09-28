@@ -1,0 +1,2054 @@
+{
+  "schema": 1,
+  "date": "2026-09-28",
+  "coverage": {
+    "setups": 96,
+    "designs": 47,
+    "audiences": {
+      "publishers": 16,
+      "services": 35,
+      "stores": 45
+    },
+    "goals": {
+      "collect_enquiries": 34,
+      "deliver_lead_magnet": 10,
+      "find_match": 8,
+      "grow_email_list": 17,
+      "grow_sms_list": 2,
+      "promote_offer": 23,
+      "recover_cart": 2
+    },
+    "types": {
+      "floating_bar": 12,
+      "fullscreen": 3,
+      "inline": 33,
+      "popup": 36,
+      "slide_in": 12
+    },
+    "batches": {
+      "benchmark": 12,
+      "contextual-help": 24,
+      "coverage": 24,
+      "decision-support": 24,
+      "expansion": 12
+    }
+  },
+  "reviewed_revisions": [
+    {
+      "id": "gift-planning-guide",
+      "revision": "27cf0740b9a807ea4011c51c2a5c6a8ec3cd52362e56b895f09c2b7940caba90",
+      "template_id": "name-and-email"
+    },
+    {
+      "id": "fitness-introduction",
+      "revision": "95a617a14429c562a06291c1639071e24841986dfade312a0d1b7fd90ddc8931",
+      "template_id": "inline-phone"
+    },
+    {
+      "id": "accounting-consultation",
+      "revision": "9a6de99937fc7757e17256bfa57dcb9cfa8ac05d47231f1e014a2c7446343db0",
+      "template_id": "portrait-frame"
+    },
+    {
+      "id": "project-readiness-guide",
+      "revision": "e9d0be09a822d9dbd761989bab6da9d1e5bc3f573bb9fcabedccc208b9862c37",
+      "template_id": "project-notebook"
+    },
+    {
+      "id": "gift-wrap-details",
+      "revision": "c0985951edaeac82ee25e17fefd986051801d3cca3dcbce9714c062e49fc8f9d",
+      "template_id": "bar-announcement"
+    },
+    {
+      "id": "dispatch-schedule",
+      "revision": "6cf24e0cf3a14faa406418ec318e020ff7db65ae522f58631f87ba00bc841ff6",
+      "template_id": "bar-announcement"
+    },
+    {
+      "id": "showroom-information",
+      "revision": "0fe232861c80753aabc846eac7cd0d6e59a2fdee9214a11632f5dc365858df3c",
+      "template_id": "bar-announcement"
+    },
+    {
+      "id": "holiday-service-hours",
+      "revision": "bfa3f7116e36a1489924bf5e42f5b3fd4345ea4f963bbe68bcfa4eae438d25ba",
+      "template_id": "bar-announcement"
+    },
+    {
+      "id": "remote-consultation-details",
+      "revision": "b157f7664d1e9b46cafca6f9d3108866e9a2a28eefafa41b55f6bc2f7c85690b",
+      "template_id": "bar-announcement"
+    },
+    {
+      "id": "contributor-guidelines",
+      "revision": "ba8538614c7fcb18630d3414196fff19d058dc0c74f1824568ebc2f1b11ecc7a",
+      "template_id": "bar-announcement"
+    },
+    {
+      "id": "repair-workshop-news",
+      "revision": "ddc88aa60ea89fefd6cdb86724feba7b0fdfd3d35a2d9d7d31294fee52767e53",
+      "template_id": "bar-email-capture"
+    },
+    {
+      "id": "local-class-news",
+      "revision": "c758b8871967914f6fad37705021a2a2368776958066ba171470581cde12f675",
+      "template_id": "bar-email-capture"
+    },
+    {
+      "id": "spare-parts-advice",
+      "revision": "e4cd84e76c752fb3d029e4910eaf6a53b642905e972584712ff5c87c71c35a6d",
+      "template_id": "slide-in-question"
+    },
+    {
+      "id": "assembly-guidance",
+      "revision": "eb52ec3a659c9469e8d388191e5a4d735dc7064fd008f392cb48387c542eb508",
+      "template_id": "slide-in-question"
+    },
+    {
+      "id": "trade-account-enquiry",
+      "revision": "d3ccdc7419d1bbad86563e67d24cdfbd1a478b479daa453193c66cdda8ffeaaa",
+      "template_id": "slide-in-question"
+    },
+    {
+      "id": "access-enquiry",
+      "revision": "33dc1063c7a77a4db5afbb2688b912c36f1bc72cb1f067bd2989cc891ff4c548",
+      "template_id": "slide-in-question"
+    },
+    {
+      "id": "language-support-enquiry",
+      "revision": "9ab421459c295926601ddd438e516d09b73243455e3ff4509ea916e0c2fd7142",
+      "template_id": "slide-in-question"
+    },
+    {
+      "id": "equipment-hire-enquiry",
+      "revision": "b87e6723bac773e238e8dbc40801d251276d07bab536c0f85add5217567150aa",
+      "template_id": "slide-in-question"
+    },
+    {
+      "id": "reader-panel-interest",
+      "revision": "f3f08befb95f11e8a65374ca428fdeaa56834afa086f940efbc40149c1b417ed",
+      "template_id": "slide-in-question"
+    },
+    {
+      "id": "product-demo-enquiry",
+      "revision": "6e376d20c19d0f78eb28f25e7466922be7d0b569fe19a185d0217360321839b6",
+      "template_id": "slide-in-question"
+    },
+    {
+      "id": "care-clinic-request",
+      "revision": "42675a7da79eed66a256047045ca150cb5bdd52f3339652d11820f9758f5260b",
+      "template_id": "appointment-note"
+    },
+    {
+      "id": "gift-message-enquiry",
+      "revision": "53433986b53b5dd34f23284fb9f60a43fb6051dfa1452ef29fca22b53568c610",
+      "template_id": "appointment-note"
+    },
+    {
+      "id": "remote-walkthrough-request",
+      "revision": "6208f96b5f5b6f68331ac1622e14c9339771c49e4ac6d4e4396148c671a72dd8",
+      "template_id": "appointment-note"
+    },
+    {
+      "id": "portfolio-feedback-request",
+      "revision": "4c33a562f5af03abc650d4327c3173511ac07c7833ca65a793368e41aaca94df",
+      "template_id": "appointment-note"
+    },
+    {
+      "id": "translation-project-enquiry",
+      "revision": "1d2b04f6babc1b619fb37a7cd555464aaff75f11187adce3226483a650e5d2d2",
+      "template_id": "appointment-note"
+    },
+    {
+      "id": "maker-session-invitation",
+      "revision": "f23908700cf79026f50ff747e7d0845615e811a85779cba697e553cbd8df8f65",
+      "template_id": "journey-offer-first"
+    },
+    {
+      "id": "venue-hire-checklist",
+      "revision": "07e875afc9dcf42bcb80cc41d2a6d3d6903a353d71b83a144856c3ed8abbdec8",
+      "template_id": "resource-index"
+    },
+    {
+      "id": "contributor-pitch-checklist",
+      "revision": "0a635f852991846d0fa002efe6fc2a57f17b50e8dc4a757aa099bc22d466d457",
+      "template_id": "resource-index"
+    }
+  ],
+  "audit": {
+    "cases": 1616,
+    "findings": 0,
+    "widths": [
+      320,
+      390,
+      768,
+      1440
+    ],
+    "directions": [
+      "ltr",
+      "rtl"
+    ]
+  },
+  "screens": [
+    {
+      "id": "gift-wrap-details",
+      "screen": "Offer",
+      "value": "0:",
+      "direction": "ltr",
+      "file": "gift-wrap-details-0--ltr.png",
+      "sha256": "f89db41453117f5d65fb28fde2098ea04f6053cc9b24c28a3f45592158498e2f"
+    },
+    {
+      "id": "gift-wrap-details",
+      "screen": "Offer",
+      "value": "0:",
+      "direction": "rtl",
+      "file": "gift-wrap-details-0--rtl.png",
+      "sha256": "6bcd8b4cdd40eb0fb763051fdc291379d6c49ce5c228b4687e4dc03703ab361d"
+    },
+    {
+      "id": "dispatch-schedule",
+      "screen": "Offer",
+      "value": "0:",
+      "direction": "ltr",
+      "file": "dispatch-schedule-0--ltr.png",
+      "sha256": "8f8abc452e3d1f0711c4103cdf371009d8051b2af48f4c554af6e3491d694a40"
+    },
+    {
+      "id": "dispatch-schedule",
+      "screen": "Offer",
+      "value": "0:",
+      "direction": "rtl",
+      "file": "dispatch-schedule-0--rtl.png",
+      "sha256": "54b1e8a7db0b7dc7a13a33f8dc6bd968d8466101ec9b642d579259e4c60907ec"
+    },
+    {
+      "id": "showroom-information",
+      "screen": "Offer",
+      "value": "0:",
+      "direction": "ltr",
+      "file": "showroom-information-0--ltr.png",
+      "sha256": "7f55e0b6a5cd1803603b9df62a9a51e265deeb9e3548426bba1322d2e8805e2f"
+    },
+    {
+      "id": "showroom-information",
+      "screen": "Offer",
+      "value": "0:",
+      "direction": "rtl",
+      "file": "showroom-information-0--rtl.png",
+      "sha256": "b48e3508c691027b2e8cce72a2a5a62a4bfaa5adc0b467cf5ffb2117f7699dfb"
+    },
+    {
+      "id": "holiday-service-hours",
+      "screen": "Offer",
+      "value": "0:",
+      "direction": "ltr",
+      "file": "holiday-service-hours-0--ltr.png",
+      "sha256": "16957853a97b5d5ed50790b7a69e9d10cc3ab165c5c4aefd12c9d08c2d0e3b20"
+    },
+    {
+      "id": "holiday-service-hours",
+      "screen": "Offer",
+      "value": "0:",
+      "direction": "rtl",
+      "file": "holiday-service-hours-0--rtl.png",
+      "sha256": "71806df3022dde6669d808428c45f874ec94729be05e75a611c52346b4ec9729"
+    },
+    {
+      "id": "remote-consultation-details",
+      "screen": "Offer",
+      "value": "0:",
+      "direction": "ltr",
+      "file": "remote-consultation-details-0--ltr.png",
+      "sha256": "a4f72c1a55eff652e83127d0b1e86dd4e577eaa6d5f4d19881ca35fa8f7dc220"
+    },
+    {
+      "id": "remote-consultation-details",
+      "screen": "Offer",
+      "value": "0:",
+      "direction": "rtl",
+      "file": "remote-consultation-details-0--rtl.png",
+      "sha256": "377485e9a8d053b24277f9250203a957ff32165519072f8168eb7e62b057f7e0"
+    },
+    {
+      "id": "contributor-guidelines",
+      "screen": "Offer",
+      "value": "0:",
+      "direction": "ltr",
+      "file": "contributor-guidelines-0--ltr.png",
+      "sha256": "4e2d5d20a6fee01a7d72c1d86034bfe9f0dac7fb2c9375296b9ce5ee34f422f8"
+    },
+    {
+      "id": "contributor-guidelines",
+      "screen": "Offer",
+      "value": "0:",
+      "direction": "rtl",
+      "file": "contributor-guidelines-0--rtl.png",
+      "sha256": "70e9a5e8648329fdacbe16f6eb8ab9d3622d83ed211f6e51f247f06c3b17cc54"
+    },
+    {
+      "id": "repair-workshop-news",
+      "screen": "Details",
+      "value": "0:",
+      "direction": "ltr",
+      "file": "repair-workshop-news-0--ltr.png",
+      "sha256": "5cd803c2912febcfb2d9cf812f49aa036aeb9835d50469cdef34dd10dd692d0a"
+    },
+    {
+      "id": "repair-workshop-news",
+      "screen": "Details",
+      "value": "0:",
+      "direction": "rtl",
+      "file": "repair-workshop-news-0--rtl.png",
+      "sha256": "cfe07728952307b6243af9620ba283a42de21a66c2612f68c72b7870f6c786dd"
+    },
+    {
+      "id": "repair-workshop-news",
+      "screen": "Received",
+      "value": "1:",
+      "direction": "ltr",
+      "file": "repair-workshop-news-1--ltr.png",
+      "sha256": "bde00696e511259d89c3ac0e14f4222dd5bacd4b3f1e3ea30556a061f650a13b"
+    },
+    {
+      "id": "repair-workshop-news",
+      "screen": "Received",
+      "value": "1:",
+      "direction": "rtl",
+      "file": "repair-workshop-news-1--rtl.png",
+      "sha256": "f326cc53dad8e99f2fe7624a8dfed2458b722a4660df8e9a89b4e2d11035043f"
+    },
+    {
+      "id": "local-class-news",
+      "screen": "Details",
+      "value": "0:",
+      "direction": "ltr",
+      "file": "local-class-news-0--ltr.png",
+      "sha256": "027dcd9b3a4029b47b8fb668599c4c750127e9e85874cdcf0ec71ad19683614e"
+    },
+    {
+      "id": "local-class-news",
+      "screen": "Details",
+      "value": "0:",
+      "direction": "rtl",
+      "file": "local-class-news-0--rtl.png",
+      "sha256": "f1f9adcb5b0b2d6762a50513fcbc7e1a3ff67f3b698b4519fccfaa9554082dbf"
+    },
+    {
+      "id": "local-class-news",
+      "screen": "Received",
+      "value": "1:",
+      "direction": "ltr",
+      "file": "local-class-news-1--ltr.png",
+      "sha256": "dea32db3f1274b79b4175eb02496a3c5499a09a80e34f9ed0c61a776d34f5de6"
+    },
+    {
+      "id": "local-class-news",
+      "screen": "Received",
+      "value": "1:",
+      "direction": "rtl",
+      "file": "local-class-news-1--rtl.png",
+      "sha256": "bea98bda80b319053abce8c1d30d96f53f6d476a1689c9d443a58302f3423e78"
+    },
+    {
+      "id": "spare-parts-advice",
+      "screen": "Your details",
+      "value": "0:",
+      "direction": "ltr",
+      "file": "spare-parts-advice-0--ltr.png",
+      "sha256": "cea9daee8927af132a31d545df5f161030c91608894238ddbce956fd07d08ff4"
+    },
+    {
+      "id": "spare-parts-advice",
+      "screen": "Your details",
+      "value": "0:",
+      "direction": "rtl",
+      "file": "spare-parts-advice-0--rtl.png",
+      "sha256": "b789567d621f6bf8fbc60b185a5bcaefeebd1d90f849d2d7e69a8931b8df1ada"
+    },
+    {
+      "id": "spare-parts-advice",
+      "screen": "Request received",
+      "value": "1:",
+      "direction": "ltr",
+      "file": "spare-parts-advice-1--ltr.png",
+      "sha256": "c89c24e4c972a82d00ecb73d42a535fd0db3359b9b75dd66446173ae1772a77e"
+    },
+    {
+      "id": "spare-parts-advice",
+      "screen": "Request received",
+      "value": "1:",
+      "direction": "rtl",
+      "file": "spare-parts-advice-1--rtl.png",
+      "sha256": "83b7618d2ca58262ca98d199b16bc784aa70ef83e24f1dd35f534ec2f3d3df1d"
+    },
+    {
+      "id": "assembly-guidance",
+      "screen": "Your details",
+      "value": "0:",
+      "direction": "ltr",
+      "file": "assembly-guidance-0--ltr.png",
+      "sha256": "bfb7e38dd1db193dfa5cd0dba5ee1d2be96a8004979153e33ea9d5d6fd29a7dc"
+    },
+    {
+      "id": "assembly-guidance",
+      "screen": "Your details",
+      "value": "0:",
+      "direction": "rtl",
+      "file": "assembly-guidance-0--rtl.png",
+      "sha256": "7309789be2417409c7effd00fddc193c2b79401019b9a639f3f548aa2c9634fc"
+    },
+    {
+      "id": "assembly-guidance",
+      "screen": "Request received",
+      "value": "1:",
+      "direction": "ltr",
+      "file": "assembly-guidance-1--ltr.png",
+      "sha256": "a9ceb817cf7f3231df0fcc9c9271b6e2de60927a1c996f63ec018744f7bc29fe"
+    },
+    {
+      "id": "assembly-guidance",
+      "screen": "Request received",
+      "value": "1:",
+      "direction": "rtl",
+      "file": "assembly-guidance-1--rtl.png",
+      "sha256": "837039bc9d718b2c34b8e3dfbdfdc24fd74be4792e02813c299805a211cfb988"
+    },
+    {
+      "id": "trade-account-enquiry",
+      "screen": "Your details",
+      "value": "0:",
+      "direction": "ltr",
+      "file": "trade-account-enquiry-0--ltr.png",
+      "sha256": "67f09832077d67d6a00e4cb60a059cbf66bff79d0abcc825ad49abf8853cee74"
+    },
+    {
+      "id": "trade-account-enquiry",
+      "screen": "Your details",
+      "value": "0:",
+      "direction": "rtl",
+      "file": "trade-account-enquiry-0--rtl.png",
+      "sha256": "2499f609427eb941f61b771b251ba02782edb5491f48c3f736b7946f8380573b"
+    },
+    {
+      "id": "trade-account-enquiry",
+      "screen": "Request received",
+      "value": "1:",
+      "direction": "ltr",
+      "file": "trade-account-enquiry-1--ltr.png",
+      "sha256": "34920662e664e16d68c9821dd126466ed5dfa64638e0c00870675e72d69dee30"
+    },
+    {
+      "id": "trade-account-enquiry",
+      "screen": "Request received",
+      "value": "1:",
+      "direction": "rtl",
+      "file": "trade-account-enquiry-1--rtl.png",
+      "sha256": "a9fd13f7453e01afdd2f90ca5fd30311a4451cdae640dabca285b3e7376087fa"
+    },
+    {
+      "id": "access-enquiry",
+      "screen": "Your details",
+      "value": "0:",
+      "direction": "ltr",
+      "file": "access-enquiry-0--ltr.png",
+      "sha256": "46857f9fd46c8ecc1f9e0bdf7daedcaced928ce96732acb47ac01235ad2a81b1"
+    },
+    {
+      "id": "access-enquiry",
+      "screen": "Your details",
+      "value": "0:",
+      "direction": "rtl",
+      "file": "access-enquiry-0--rtl.png",
+      "sha256": "9701be5fcdbe096ec037eeec41ab2a2b2bca86d811386ba715031982e7cddf24"
+    },
+    {
+      "id": "access-enquiry",
+      "screen": "Request received",
+      "value": "1:",
+      "direction": "ltr",
+      "file": "access-enquiry-1--ltr.png",
+      "sha256": "91a08aa6da35687e8373db70d40c1f6e0f40fb4c2cf8806441dbf5be01837ba5"
+    },
+    {
+      "id": "access-enquiry",
+      "screen": "Request received",
+      "value": "1:",
+      "direction": "rtl",
+      "file": "access-enquiry-1--rtl.png",
+      "sha256": "8484ba1fef0a0f8356c0aa34eb93079fba250c36347048ca75aa0d68913b2d7a"
+    },
+    {
+      "id": "language-support-enquiry",
+      "screen": "Your details",
+      "value": "0:",
+      "direction": "ltr",
+      "file": "language-support-enquiry-0--ltr.png",
+      "sha256": "fd6cfc3f956bee95fbe246270bf2d7f67ee9e5f0fe7d9363997ce47ee80a2e82"
+    },
+    {
+      "id": "language-support-enquiry",
+      "screen": "Your details",
+      "value": "0:",
+      "direction": "rtl",
+      "file": "language-support-enquiry-0--rtl.png",
+      "sha256": "a0e2dda51141f5455b5e57f7f613afdf3208c4baa49d82b99943b4903efab450"
+    },
+    {
+      "id": "language-support-enquiry",
+      "screen": "Request received",
+      "value": "1:",
+      "direction": "ltr",
+      "file": "language-support-enquiry-1--ltr.png",
+      "sha256": "f259d91e25a8eb312d68cae1672cc3ffa4fa6aaf36f081bdcc0de271f4a55b57"
+    },
+    {
+      "id": "language-support-enquiry",
+      "screen": "Request received",
+      "value": "1:",
+      "direction": "rtl",
+      "file": "language-support-enquiry-1--rtl.png",
+      "sha256": "4583df81ab6ea07b5556efa46f263db0732f7dd60b1bf110e946568f41e0d7ed"
+    },
+    {
+      "id": "equipment-hire-enquiry",
+      "screen": "Your details",
+      "value": "0:",
+      "direction": "ltr",
+      "file": "equipment-hire-enquiry-0--ltr.png",
+      "sha256": "709853c41597323c0d8711f0ded6a6a0cd985b55e1a4fa4e6f530c30ae05b554"
+    },
+    {
+      "id": "equipment-hire-enquiry",
+      "screen": "Your details",
+      "value": "0:",
+      "direction": "rtl",
+      "file": "equipment-hire-enquiry-0--rtl.png",
+      "sha256": "0e4f16a0ba36be4a1739995b352e89b8ec1570707ac91e383d69c574cd779489"
+    },
+    {
+      "id": "equipment-hire-enquiry",
+      "screen": "Request received",
+      "value": "1:",
+      "direction": "ltr",
+      "file": "equipment-hire-enquiry-1--ltr.png",
+      "sha256": "b3f6360b912dc48095eb8c73d229eb4d845adbb6d3f6e05ebc03653c8a636350"
+    },
+    {
+      "id": "equipment-hire-enquiry",
+      "screen": "Request received",
+      "value": "1:",
+      "direction": "rtl",
+      "file": "equipment-hire-enquiry-1--rtl.png",
+      "sha256": "a5882b178fc0838f52a05c1df6e84f27d16566d4ffa455799714245e9f2bab14"
+    },
+    {
+      "id": "reader-panel-interest",
+      "screen": "Your details",
+      "value": "0:",
+      "direction": "ltr",
+      "file": "reader-panel-interest-0--ltr.png",
+      "sha256": "7bc1094a97824aa7555968fcfa7c6d581453789b15cd1b904653b85ae7a19515"
+    },
+    {
+      "id": "reader-panel-interest",
+      "screen": "Your details",
+      "value": "0:",
+      "direction": "rtl",
+      "file": "reader-panel-interest-0--rtl.png",
+      "sha256": "84e354798d757ef9a9b454dc59269ab49dac2ee0939c597af79816666c81dc6b"
+    },
+    {
+      "id": "reader-panel-interest",
+      "screen": "Request received",
+      "value": "1:",
+      "direction": "ltr",
+      "file": "reader-panel-interest-1--ltr.png",
+      "sha256": "9e2f1be692e92343f8a5cc2d0bd236514fed7a98f867d78e1262ef417bc9afce"
+    },
+    {
+      "id": "reader-panel-interest",
+      "screen": "Request received",
+      "value": "1:",
+      "direction": "rtl",
+      "file": "reader-panel-interest-1--rtl.png",
+      "sha256": "f47d226205182c83d4720dd344261f699b17c9f98d1270028f4775f4e4e0c1c2"
+    },
+    {
+      "id": "product-demo-enquiry",
+      "screen": "Your details",
+      "value": "0:",
+      "direction": "ltr",
+      "file": "product-demo-enquiry-0--ltr.png",
+      "sha256": "f25878fe7ee8b22ff21c297068d54311c89c156b3cae49a01817ce635cdcb8b3"
+    },
+    {
+      "id": "product-demo-enquiry",
+      "screen": "Your details",
+      "value": "0:",
+      "direction": "rtl",
+      "file": "product-demo-enquiry-0--rtl.png",
+      "sha256": "4dad3a8a5ef998d1dcf15ec63ff2ab6a35db3b06c216350dc35d23a7b9c515b8"
+    },
+    {
+      "id": "product-demo-enquiry",
+      "screen": "Request received",
+      "value": "1:",
+      "direction": "ltr",
+      "file": "product-demo-enquiry-1--ltr.png",
+      "sha256": "9c9140e6294c0058bb6c61ad1131fa3ecf1bd89a585e21537c4362518258ff5c"
+    },
+    {
+      "id": "product-demo-enquiry",
+      "screen": "Request received",
+      "value": "1:",
+      "direction": "rtl",
+      "file": "product-demo-enquiry-1--rtl.png",
+      "sha256": "5a1caf28d6596528325a2e8cc294d651bbe2ccceb5c9e0e5004913b002a4e66a"
+    },
+    {
+      "id": "care-clinic-request",
+      "screen": "Your details",
+      "value": "0:",
+      "direction": "ltr",
+      "file": "care-clinic-request-0--ltr.png",
+      "sha256": "f84a1d01162fdc401bb2377fd8c81cc991b699b5931b965de20dc24cf3686a5b"
+    },
+    {
+      "id": "care-clinic-request",
+      "screen": "Your details",
+      "value": "0:",
+      "direction": "rtl",
+      "file": "care-clinic-request-0--rtl.png",
+      "sha256": "e76a0a66ac849117f1acd887a0f9bad2b178fd9fd3448f8b5357840483d5652f"
+    },
+    {
+      "id": "care-clinic-request",
+      "screen": "Request received",
+      "value": "1:",
+      "direction": "ltr",
+      "file": "care-clinic-request-1--ltr.png",
+      "sha256": "1b05ba55daff9a74caea5f446e1cb1da1359f65cabdb367ae9abad1252fbeca2"
+    },
+    {
+      "id": "care-clinic-request",
+      "screen": "Request received",
+      "value": "1:",
+      "direction": "rtl",
+      "file": "care-clinic-request-1--rtl.png",
+      "sha256": "3ba830220f58569a5b680e95e9317e2b97bdc1ea0386ccd510594bf3cd1dc1ca"
+    },
+    {
+      "id": "gift-message-enquiry",
+      "screen": "Your details",
+      "value": "0:",
+      "direction": "ltr",
+      "file": "gift-message-enquiry-0--ltr.png",
+      "sha256": "e4b160f245c46944404d2b330e1902bc13f7566cfa802a20af52adbd5bf0e9db"
+    },
+    {
+      "id": "gift-message-enquiry",
+      "screen": "Your details",
+      "value": "0:",
+      "direction": "rtl",
+      "file": "gift-message-enquiry-0--rtl.png",
+      "sha256": "b7964e4566725efc10b45ccbfd13d9128052f7e6952b4c83e927e9ce6a0c8b61"
+    },
+    {
+      "id": "gift-message-enquiry",
+      "screen": "Request received",
+      "value": "1:",
+      "direction": "ltr",
+      "file": "gift-message-enquiry-1--ltr.png",
+      "sha256": "b5c31532bf0b37038149491b3e66ecf82b8e925a17feb0fa917af70693574192"
+    },
+    {
+      "id": "gift-message-enquiry",
+      "screen": "Request received",
+      "value": "1:",
+      "direction": "rtl",
+      "file": "gift-message-enquiry-1--rtl.png",
+      "sha256": "ae30b6c187424bbfa0ff1d574ebc533b9048e24786c1c76ba003e1062d9559b8"
+    },
+    {
+      "id": "remote-walkthrough-request",
+      "screen": "Your details",
+      "value": "0:",
+      "direction": "ltr",
+      "file": "remote-walkthrough-request-0--ltr.png",
+      "sha256": "2be4f794afb22d5c8310c23a5f04b48e7b5b1cc1fc89ef9d12631584e54ea8ec"
+    },
+    {
+      "id": "remote-walkthrough-request",
+      "screen": "Your details",
+      "value": "0:",
+      "direction": "rtl",
+      "file": "remote-walkthrough-request-0--rtl.png",
+      "sha256": "ad77a42a33c51262b91a2153da7649410319062c44209b3687add63e32206878"
+    },
+    {
+      "id": "remote-walkthrough-request",
+      "screen": "Request received",
+      "value": "1:",
+      "direction": "ltr",
+      "file": "remote-walkthrough-request-1--ltr.png",
+      "sha256": "3392ab288b3c3ec0a90183de24fa6fa5159e0c32b983567ec5141c378b81faa1"
+    },
+    {
+      "id": "remote-walkthrough-request",
+      "screen": "Request received",
+      "value": "1:",
+      "direction": "rtl",
+      "file": "remote-walkthrough-request-1--rtl.png",
+      "sha256": "4daa9a2116e83524f14872b1ea0a9080c6327118be1ebc1bd815366349dc595d"
+    },
+    {
+      "id": "portfolio-feedback-request",
+      "screen": "Your details",
+      "value": "0:",
+      "direction": "ltr",
+      "file": "portfolio-feedback-request-0--ltr.png",
+      "sha256": "28af4db497a1cb313d3e8962ba64e8dd2415d4c0c2be7785146f88b7637da7d2"
+    },
+    {
+      "id": "portfolio-feedback-request",
+      "screen": "Your details",
+      "value": "0:",
+      "direction": "rtl",
+      "file": "portfolio-feedback-request-0--rtl.png",
+      "sha256": "d365f44e4053a9f422883371ba198bddf7bfa0b58dbf7f0aaa91e3f9f2900351"
+    },
+    {
+      "id": "portfolio-feedback-request",
+      "screen": "Request received",
+      "value": "1:",
+      "direction": "ltr",
+      "file": "portfolio-feedback-request-1--ltr.png",
+      "sha256": "caf10dba856503b316c94ea218b6401e1f80027c98ffa98c24dc3f92a095484e"
+    },
+    {
+      "id": "portfolio-feedback-request",
+      "screen": "Request received",
+      "value": "1:",
+      "direction": "rtl",
+      "file": "portfolio-feedback-request-1--rtl.png",
+      "sha256": "8f4c291352678fa051a3387c9ac051f92bb2a981906640d297ad0177c3b061aa"
+    },
+    {
+      "id": "translation-project-enquiry",
+      "screen": "Your details",
+      "value": "0:",
+      "direction": "ltr",
+      "file": "translation-project-enquiry-0--ltr.png",
+      "sha256": "5ce0f8132a99348334662a41f11b1b9bb5901f051ccd1d3474b58b88d1a4f146"
+    },
+    {
+      "id": "translation-project-enquiry",
+      "screen": "Your details",
+      "value": "0:",
+      "direction": "rtl",
+      "file": "translation-project-enquiry-0--rtl.png",
+      "sha256": "0b2aadf060fa9b8409c5092df0fea29449e8a1553cb16c3c8b3ff5911fe3c8a4"
+    },
+    {
+      "id": "translation-project-enquiry",
+      "screen": "Request received",
+      "value": "1:",
+      "direction": "ltr",
+      "file": "translation-project-enquiry-1--ltr.png",
+      "sha256": "29215c75a6d14f0e87307a271e72abd5b6a6e0e9141a2295c53e5ecd1c80f36f"
+    },
+    {
+      "id": "translation-project-enquiry",
+      "screen": "Request received",
+      "value": "1:",
+      "direction": "rtl",
+      "file": "translation-project-enquiry-1--rtl.png",
+      "sha256": "8e3eac94d30ec2e950ee2313759448ef764739166044d2c693f528d63c1a4244"
+    },
+    {
+      "id": "maker-session-invitation",
+      "screen": "Invitation",
+      "value": "0:",
+      "direction": "ltr",
+      "file": "maker-session-invitation-0--ltr.png",
+      "sha256": "a51846e2f5192406c957eab3c0f87e0d7ec5b753ef8693e62862121540d59cbb"
+    },
+    {
+      "id": "maker-session-invitation",
+      "screen": "Invitation",
+      "value": "0:",
+      "direction": "rtl",
+      "file": "maker-session-invitation-0--rtl.png",
+      "sha256": "767673ae14976d6f3811d8dacc43a6c583b3fdb0194984054fc282303b6c37fa"
+    },
+    {
+      "id": "maker-session-invitation",
+      "screen": "Email signup",
+      "value": "1:",
+      "direction": "ltr",
+      "file": "maker-session-invitation-1--ltr.png",
+      "sha256": "04fb513e620b40b15a6d928db37c4194a9b1c33f9043e0ff39b14c22ab0e4dd7"
+    },
+    {
+      "id": "maker-session-invitation",
+      "screen": "Email signup",
+      "value": "1:",
+      "direction": "rtl",
+      "file": "maker-session-invitation-1--rtl.png",
+      "sha256": "ca3cc494e765eba6e9dfaf8e866af214f6cc1f3f22fb09866fe7b24906b83197"
+    },
+    {
+      "id": "maker-session-invitation",
+      "screen": "Acknowledgement",
+      "value": "2:",
+      "direction": "ltr",
+      "file": "maker-session-invitation-2--ltr.png",
+      "sha256": "c5c9432efed61c9bbecfc7dfb66c9664fe6240b13b470f1ddf4e5559a0b7a80e"
+    },
+    {
+      "id": "maker-session-invitation",
+      "screen": "Acknowledgement",
+      "value": "2:",
+      "direction": "rtl",
+      "file": "maker-session-invitation-2--rtl.png",
+      "sha256": "38ebe30330f28761ddce6c3079447af82cea5353e70c6599b443d97f5475c991"
+    },
+    {
+      "id": "venue-hire-checklist",
+      "screen": "Your details",
+      "value": "0:",
+      "direction": "ltr",
+      "file": "venue-hire-checklist-0--ltr.png",
+      "sha256": "9ccf97cae0ef1f5c674a2e272e6fc66685ae76a259e6712f174fe836b9869ee8"
+    },
+    {
+      "id": "venue-hire-checklist",
+      "screen": "Your details",
+      "value": "0:",
+      "direction": "rtl",
+      "file": "venue-hire-checklist-0--rtl.png",
+      "sha256": "8dfb67ce9f6ae6d7fc36a8d5a88fb989d1c92ad8fffb04cfc03e01e3c680d156"
+    },
+    {
+      "id": "venue-hire-checklist",
+      "screen": "Request received",
+      "value": "1:",
+      "direction": "ltr",
+      "file": "venue-hire-checklist-1--ltr.png",
+      "sha256": "5ce9297199f395a54102d52b6141a5acc4f66a540d63e5e79eb0cfd86fb58847"
+    },
+    {
+      "id": "venue-hire-checklist",
+      "screen": "Request received",
+      "value": "1:",
+      "direction": "rtl",
+      "file": "venue-hire-checklist-1--rtl.png",
+      "sha256": "afb918705d8af95eaca955c0592785f243b70ed702485ebda5b075880bfe5b01"
+    },
+    {
+      "id": "contributor-pitch-checklist",
+      "screen": "Your details",
+      "value": "0:",
+      "direction": "ltr",
+      "file": "contributor-pitch-checklist-0--ltr.png",
+      "sha256": "e3a91779b8e0f0939d5ae36f15128c431bdc5d72b683ba0477c006649c833197"
+    },
+    {
+      "id": "contributor-pitch-checklist",
+      "screen": "Your details",
+      "value": "0:",
+      "direction": "rtl",
+      "file": "contributor-pitch-checklist-0--rtl.png",
+      "sha256": "b8725926fd6c5fe44ea384cf96531ac922ac0c037f44fd324788291c46a2c0e2"
+    },
+    {
+      "id": "contributor-pitch-checklist",
+      "screen": "Request received",
+      "value": "1:",
+      "direction": "ltr",
+      "file": "contributor-pitch-checklist-1--ltr.png",
+      "sha256": "714bd1999c9f60f70405a2e87f4bf48973d457a48f7d93a02cad781cc25678cf"
+    },
+    {
+      "id": "contributor-pitch-checklist",
+      "screen": "Request received",
+      "value": "1:",
+      "direction": "rtl",
+      "file": "contributor-pitch-checklist-1--rtl.png",
+      "sha256": "8453d2365c9927f186ff0c9229d30565dec4de112fadfe5b0515592fd24a72a1"
+    },
+    {
+      "id": "gift-planning-guide",
+      "screen": "Details",
+      "value": "0:",
+      "direction": "ltr",
+      "file": "gift-planning-guide-0--ltr.png",
+      "sha256": "6c0f114d493556e7bbef01262fdcc1be2c59b044945994ced8a66576721a989a"
+    },
+    {
+      "id": "gift-planning-guide",
+      "screen": "Details",
+      "value": "0:",
+      "direction": "rtl",
+      "file": "gift-planning-guide-0--rtl.png",
+      "sha256": "5b5ad7e6ffbcaeb38959fd9d6b5e2d53c2ce5bc896758e47f49641213c99f7f2"
+    },
+    {
+      "id": "gift-planning-guide",
+      "screen": "Received",
+      "value": "1:",
+      "direction": "ltr",
+      "file": "gift-planning-guide-1--ltr.png",
+      "sha256": "0d018d7e587709862cdae68e6260ea4e84c3536ef238f4524dbabd237752401b"
+    },
+    {
+      "id": "gift-planning-guide",
+      "screen": "Received",
+      "value": "1:",
+      "direction": "rtl",
+      "file": "gift-planning-guide-1--rtl.png",
+      "sha256": "fbbb3d3cabe706e3b50adb7eb5fa875f1f14a656bac6b38b2c32a14d9e5c69ee"
+    },
+    {
+      "id": "fitness-introduction",
+      "screen": "Details",
+      "value": "0:",
+      "direction": "ltr",
+      "file": "fitness-introduction-0--ltr.png",
+      "sha256": "e1f26c173af5b8ccafe823254d49eace4197b3f802363184655c69a497e3a8f9"
+    },
+    {
+      "id": "fitness-introduction",
+      "screen": "Details",
+      "value": "0:",
+      "direction": "rtl",
+      "file": "fitness-introduction-0--rtl.png",
+      "sha256": "ed732fd402e15455b6ba81f98f061d966f9bdea889d92d1299048c1f65d1b96c"
+    },
+    {
+      "id": "fitness-introduction",
+      "screen": "Received",
+      "value": "1:",
+      "direction": "ltr",
+      "file": "fitness-introduction-1--ltr.png",
+      "sha256": "0a20122c39a3bbf81407b37137869a5b5d33b33d5376fdf457cc19707973ce92"
+    },
+    {
+      "id": "fitness-introduction",
+      "screen": "Received",
+      "value": "1:",
+      "direction": "rtl",
+      "file": "fitness-introduction-1--rtl.png",
+      "sha256": "a07f33ab72b2439438140f6e12e0c79b98e960f57635652a66f2e9161cc5b54d"
+    },
+    {
+      "id": "accounting-consultation",
+      "screen": "Your details",
+      "value": "0:",
+      "direction": "ltr",
+      "file": "accounting-consultation-0--ltr.png",
+      "sha256": "794444ffa66b6a23347fb20b7e89e8fdeb48080aadd7f3f0d7ce2f25275ea73b"
+    },
+    {
+      "id": "accounting-consultation",
+      "screen": "Your details",
+      "value": "0:",
+      "direction": "rtl",
+      "file": "accounting-consultation-0--rtl.png",
+      "sha256": "2a0df815884befd36e3c8feea6a500aca790b51d7a64829205c73e29ca71c85e"
+    },
+    {
+      "id": "accounting-consultation",
+      "screen": "Request received",
+      "value": "1:",
+      "direction": "ltr",
+      "file": "accounting-consultation-1--ltr.png",
+      "sha256": "c6de9f14ce4635ae50b945364ce30cf901bfc620aef660727449c2f545e421d2"
+    },
+    {
+      "id": "accounting-consultation",
+      "screen": "Request received",
+      "value": "1:",
+      "direction": "rtl",
+      "file": "accounting-consultation-1--rtl.png",
+      "sha256": "f07166330189d04b19c5ef4d7687c5e3b1349444213a7d3bc0772796250b81e3"
+    },
+    {
+      "id": "project-readiness-guide",
+      "screen": "Your details",
+      "value": "0:",
+      "direction": "ltr",
+      "file": "project-readiness-guide-0--ltr.png",
+      "sha256": "6c8a241ad395ccec64f4308053ff735f056eeeb6d7785bebafb417ae82990d48"
+    },
+    {
+      "id": "project-readiness-guide",
+      "screen": "Your details",
+      "value": "0:",
+      "direction": "rtl",
+      "file": "project-readiness-guide-0--rtl.png",
+      "sha256": "7668a3dddd69333621aca325e477b624c82b8bab926d2516545467ae458538cc"
+    },
+    {
+      "id": "project-readiness-guide",
+      "screen": "Request received",
+      "value": "1:",
+      "direction": "ltr",
+      "file": "project-readiness-guide-1--ltr.png",
+      "sha256": "4680b2b20411e731dc3789373ebd5ca4f9f3709c96151a6066e6ece11b0f894d"
+    },
+    {
+      "id": "project-readiness-guide",
+      "screen": "Request received",
+      "value": "1:",
+      "direction": "rtl",
+      "file": "project-readiness-guide-1--rtl.png",
+      "sha256": "6047d84e818ae05b9d984f5c20056d01e6e77ccc0d58ef7c967f6cdea87f2e7a"
+    },
+    {
+      "id": "restyling-notes",
+      "screen": "Details",
+      "value": "0:",
+      "direction": "ltr",
+      "file": "restyling-notes-0--ltr.png",
+      "sha256": "b1011fd2e50ff2b889f12e8a3d8faf37a9a2a4de5307cb821dfe88678c6ce66f"
+    },
+    {
+      "id": "restyling-notes",
+      "screen": "Details",
+      "value": "0:",
+      "direction": "rtl",
+      "file": "restyling-notes-0--rtl.png",
+      "sha256": "a345ea3a86d3f3017115d5f9ef2cc43fb5140cbb5b5d325ae3e901ae18013d17"
+    },
+    {
+      "id": "restyling-notes",
+      "screen": "Received",
+      "value": "1:",
+      "direction": "ltr",
+      "file": "restyling-notes-1--ltr.png",
+      "sha256": "f4b1618bc3790926d78477c638ef80a8bf2e1bf13ad4bf06993e79cb1c00dd22"
+    },
+    {
+      "id": "restyling-notes",
+      "screen": "Received",
+      "value": "1:",
+      "direction": "rtl",
+      "file": "restyling-notes-1--rtl.png",
+      "sha256": "fd401a4930f55011e37aaa6f69f51c777e9f457bcd2787677fd6b932094b3dcc"
+    },
+    {
+      "id": "editorial-weekly",
+      "screen": "Details",
+      "value": "0:",
+      "direction": "ltr",
+      "file": "editorial-weekly-0--ltr.png",
+      "sha256": "5d088529a045932aee6eba2d0dec09c618f489881447edf18cf813fd61ba4dab"
+    },
+    {
+      "id": "editorial-weekly",
+      "screen": "Details",
+      "value": "0:",
+      "direction": "rtl",
+      "file": "editorial-weekly-0--rtl.png",
+      "sha256": "a9de58174d682cb3addbda4442d912b469af0c10175448b61f0c28634777f799"
+    },
+    {
+      "id": "editorial-weekly",
+      "screen": "Received",
+      "value": "1:",
+      "direction": "ltr",
+      "file": "editorial-weekly-1--ltr.png",
+      "sha256": "e9044708caf6e55a8903b61f35bb55aeb2ff8a8f484827758fc57ee6faaf76b8"
+    },
+    {
+      "id": "editorial-weekly",
+      "screen": "Received",
+      "value": "1:",
+      "direction": "rtl",
+      "file": "editorial-weekly-1--rtl.png",
+      "sha256": "d7145bd6fc2eada5bd84e936b96c26cab890c6f730e90061e30ce71099e5ec8c"
+    }
+  ],
+  "flows": {
+    "maker_invitation_dismissed": true,
+    "forms": [
+      {
+        "name": "Offer repair workshop announcements",
+        "invalid_email_blocked": true,
+        "failure": "Submission not confirmed (simulated). Your details are still here. Try again.",
+        "retained": true,
+        "accepted": "Preview only: simulated acceptance. No details were saved or sent.",
+        "acknowledgement": "Request received\n\nThank you. Your request for announcements has been received."
+      },
+      {
+        "name": "Offer local class announcements",
+        "invalid_email_blocked": true,
+        "failure": "Submission not confirmed (simulated). Your details are still here. Try again.",
+        "retained": true,
+        "accepted": "Preview only: simulated acceptance. No details were saved or sent.",
+        "acknowledgement": "Request received\n\nThank you. Your request for announcements has been received."
+      },
+      {
+        "name": "Ask about a replacement part",
+        "invalid_email_blocked": true,
+        "failure": "Submission not confirmed (simulated). Your details are still here. Try again.",
+        "retained": true,
+        "accepted": "Preview only: simulated acceptance. No details were saved or sent.",
+        "acknowledgement": "Request received\n\nThank you. We have received your request. Arrangements still need to be agreed."
+      },
+      {
+        "name": "Request assembly guidance",
+        "invalid_email_blocked": true,
+        "failure": "Submission not confirmed (simulated). Your details are still here. Try again.",
+        "retained": true,
+        "accepted": "Preview only: simulated acceptance. No details were saved or sent.",
+        "acknowledgement": "Request received\n\nThank you. We have received your request. Arrangements still need to be agreed."
+      },
+      {
+        "name": "Ask about buying for a business",
+        "invalid_email_blocked": true,
+        "failure": "Submission not confirmed (simulated). Your details are still here. Try again.",
+        "retained": true,
+        "accepted": "Preview only: simulated acceptance. No details were saved or sent.",
+        "acknowledgement": "Request received\n\nThank you. We have received your request. Arrangements still need to be agreed."
+      },
+      {
+        "name": "Ask about access before visiting",
+        "invalid_email_blocked": true,
+        "failure": "Submission not confirmed (simulated). Your details are still here. Try again.",
+        "retained": true,
+        "accepted": "Preview only: simulated acceptance. No details were saved or sent.",
+        "acknowledgement": "Request received\n\nThank you. We have received your request. Arrangements still need to be agreed."
+      },
+      {
+        "name": "Ask about language support",
+        "invalid_email_blocked": true,
+        "failure": "Submission not confirmed (simulated). Your details are still here. Try again.",
+        "retained": true,
+        "accepted": "Preview only: simulated acceptance. No details were saved or sent.",
+        "acknowledgement": "Request received\n\nThank you. We have received your request. Arrangements still need to be agreed."
+      },
+      {
+        "name": "Ask about equipment hire",
+        "invalid_email_blocked": true,
+        "failure": "Submission not confirmed (simulated). Your details are still here. Try again.",
+        "retained": true,
+        "accepted": "Preview only: simulated acceptance. No details were saved or sent.",
+        "acknowledgement": "Request received\n\nThank you. We have received your request. Arrangements still need to be agreed."
+      },
+      {
+        "name": "Collect interest in a reader panel",
+        "invalid_email_blocked": true,
+        "failure": "Submission not confirmed (simulated). Your details are still here. Try again.",
+        "retained": true,
+        "accepted": "Preview only: simulated acceptance. No details were saved or sent.",
+        "acknowledgement": "Request received\n\nThank you. We have received your request. Arrangements still need to be agreed."
+      },
+      {
+        "name": "Ask for a product demonstration",
+        "invalid_email_blocked": true,
+        "failure": "Submission not confirmed (simulated). Your details are still here. Try again.",
+        "retained": true,
+        "accepted": "Preview only: simulated acceptance. No details were saved or sent.",
+        "acknowledgement": "Request received\n\nThank you. We have received your request. Arrangements still need to be agreed."
+      },
+      {
+        "name": "Ask about a product care clinic",
+        "invalid_email_blocked": true,
+        "failure": "Submission not confirmed (simulated). Your details are still here. Try again.",
+        "retained": true,
+        "accepted": "Preview only: simulated acceptance. No details were saved or sent.",
+        "acknowledgement": "Request received\n\nThank you. We have received your request and the topic you selected."
+      },
+      {
+        "name": "Ask about a personalised gift message",
+        "invalid_email_blocked": true,
+        "failure": "Submission not confirmed (simulated). Your details are still here. Try again.",
+        "retained": true,
+        "accepted": "Preview only: simulated acceptance. No details were saved or sent.",
+        "acknowledgement": "Request received\n\nThank you. We have received your request and the topic you selected."
+      },
+      {
+        "name": "Request a remote project walkthrough",
+        "invalid_email_blocked": true,
+        "failure": "Submission not confirmed (simulated). Your details are still here. Try again.",
+        "retained": true,
+        "accepted": "Preview only: simulated acceptance. No details were saved or sent.",
+        "acknowledgement": "Request received\n\nThank you. We have received your request and the topic you selected."
+      },
+      {
+        "name": "Ask about a portfolio feedback session",
+        "invalid_email_blocked": true,
+        "failure": "Submission not confirmed (simulated). Your details are still here. Try again.",
+        "retained": true,
+        "accepted": "Preview only: simulated acceptance. No details were saved or sent.",
+        "acknowledgement": "Request received\n\nThank you. We have received your request and the topic you selected."
+      },
+      {
+        "name": "Start a translation project enquiry",
+        "invalid_email_blocked": true,
+        "failure": "Submission not confirmed (simulated). Your details are still here. Try again.",
+        "retained": true,
+        "accepted": "Preview only: simulated acceptance. No details were saved or sent.",
+        "acknowledgement": "Request received\n\nThank you. We have received your request and the topic you selected."
+      },
+      {
+        "name": "Introduce maker-session news before signup",
+        "invalid_email_blocked": true,
+        "failure": "Submission not confirmed (simulated). Your details are still here. Try again.",
+        "retained": true,
+        "accepted": "Preview only: simulated acceptance. No details were saved or sent.",
+        "acknowledgement": "Request received\n\nThank you. We have received your request for maker-session announcements."
+      },
+      {
+        "name": "Offer a venue hire planning checklist",
+        "invalid_email_blocked": true,
+        "failure": "Submission not confirmed (simulated). Your details are still here. Try again.",
+        "retained": true,
+        "accepted": "Preview only: simulated acceptance. No details were saved or sent.",
+        "acknowledgement": "Checklist request received\n\nThank you for requesting the checklist."
+      },
+      {
+        "name": "Offer an editorial pitch checklist",
+        "invalid_email_blocked": true,
+        "failure": "Submission not confirmed (simulated). Your details are still here. Try again.",
+        "retained": true,
+        "accepted": "Preview only: simulated acceptance. No details were saved or sent.",
+        "acknowledgement": "Checklist request received\n\nThank you for requesting the checklist."
+      },
+      {
+        "name": "Ask about small-business accounting support",
+        "failure": "Submission not confirmed (simulated). Your details are still here. Try again.",
+        "acknowledgement": "NEXT STEPS\n\nRequest received\n\nThank you. We have received your request."
+      },
+      {
+        "name": "Help customers prepare for a contractor visit",
+        "failure": "Submission not confirmed (simulated). Your details are still here. Try again.",
+        "acknowledgement": "REQUEST RECEIVED\n\nRequest received\n\nThank you. We have received your request."
+      }
+    ]
+  },
+  "native_links": [
+    {
+      "id": "gift-wrap-details",
+      "destination": "http://127.0.0.1:9421/?page_id=467",
+      "heading": "Sample gift wrapping"
+    },
+    {
+      "id": "dispatch-schedule",
+      "destination": "http://127.0.0.1:9421/?page_id=468",
+      "heading": "Sample dispatch schedule"
+    },
+    {
+      "id": "showroom-information",
+      "destination": "http://127.0.0.1:9421/?page_id=469",
+      "heading": "Sample showroom visit"
+    },
+    {
+      "id": "holiday-service-hours",
+      "destination": "http://127.0.0.1:9421/?page_id=470",
+      "heading": "Example holiday hours"
+    },
+    {
+      "id": "remote-consultation-details",
+      "destination": "http://127.0.0.1:9421/?page_id=471",
+      "heading": "A sample remote consultation"
+    },
+    {
+      "id": "contributor-guidelines",
+      "destination": "http://127.0.0.1:9421/?page_id=472",
+      "heading": "Sample contributor guidance"
+    }
+  ],
+  "wordpress": {
+    "studio-welcome": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "edition-early-access": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "journey-email-then-sms": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "email-signup: required fields, capture, retry, saved values",
+        "sms-signup: required fields, capture, retry, saved values"
+      ]
+    },
+    "delivery-announcement": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "real link destination"
+      ]
+    },
+    "fullscreen-announcement": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "real link destination"
+      ]
+    },
+    "product-finder": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "result garden_sun: destination and products",
+        "result balcony: destination and products",
+        "result fallback: destination and products"
+      ]
+    },
+    "home-repair-quote": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "photography-enquiry": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "consultation-corner": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "project-planning-guide": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values",
+        "one local resource email with an accessible content page"
+      ]
+    },
+    "sunday-reading": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "content-guide": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "email-signup: required fields, capture, retry, saved values",
+        "result growing: destination and products",
+        "result fallback: destination and products"
+      ]
+    },
+    "cart-straight-away": {
+      "status": "passed",
+      "checks": [
+        "published"
+      ]
+    },
+    "cart-delivery-help": {
+      "status": "passed",
+      "checks": [
+        "published"
+      ]
+    },
+    "drop-alerts": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "sale-deadline": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "real link destination"
+      ]
+    },
+    "product-care-guide": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "visible acknowledgement resource link",
+        "primary: required fields, capture, retry, saved values",
+        "one local resource email with an accessible content page"
+      ]
+    },
+    "wholesale-enquiry": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "venue-visit-request": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "course-advice-request": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "maintenance-letter": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "seasonal-service-link": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "real link destination"
+      ]
+    },
+    "event-registration-link": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "real link destination"
+      ]
+    },
+    "topic-reading-list": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "new-arrivals-link": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "real link destination"
+      ]
+    },
+    "maker-notes": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "restyling-notes": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "sizing-guide": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values",
+        "one local resource email with an accessible content page"
+      ]
+    },
+    "launch-interest": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "gift-planning-guide": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values",
+        "one local resource email with an accessible content page"
+      ]
+    },
+    "product-advice-request": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "restock-announcements": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "collection-discovery": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "real link destination"
+      ]
+    },
+    "packaging-details": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "real link destination"
+      ]
+    },
+    "cleaning-quote": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "landscaping-enquiry": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "enquiry-request: required fields, capture, retry, saved values"
+      ]
+    },
+    "renovation-callback": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "agency-project-enquiry": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "tutoring-introduction": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "fitness-introduction": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "accounting-consultation": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "service-text-updates": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "project-readiness-guide": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values",
+        "one local resource email with an accessible content page"
+      ]
+    },
+    "editorial-weekly": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "writing-checklist": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "visible acknowledgement resource link",
+        "primary: required fields, capture, retry, saved values",
+        "one local resource email with an accessible content page"
+      ]
+    },
+    "related-essay": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "real link destination"
+      ]
+    },
+    "membership-details": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "real link destination"
+      ]
+    },
+    "headlines-optional-sms": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "email-signup: required fields, capture, retry, saved values",
+        "sms-signup: required fields, capture, retry, saved values"
+      ]
+    },
+    "gift-finder": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "gift price matches selected budget",
+        "result growing_small: destination and products",
+        "gift price matches selected budget",
+        "result growing_set: destination and products",
+        "gift price matches selected budget",
+        "result home_small: destination and products",
+        "gift price matches selected budget",
+        "result home_set: destination and products",
+        "result fallback: destination and products"
+      ]
+    },
+    "space-fit-finder": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "result compact_plant: destination and products",
+        "result roomy_plant: destination and products",
+        "result compact_storage: destination and products",
+        "result roomy_storage: destination and products",
+        "result fallback: destination and products"
+      ]
+    },
+    "experience-kit-finder": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "result starter: destination and products",
+        "result compact: destination and products",
+        "result collection: destination and products",
+        "result fallback: destination and products"
+      ]
+    },
+    "material-comparison": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "real link destination"
+      ]
+    },
+    "sample-request": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "bulk-gift-enquiry": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "personalisation-enquiry": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "collection-interest": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "fit-checklist": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "visible acknowledgement resource link",
+        "primary: required fields, capture, retry, saved values",
+        "one local resource email with an accessible content page"
+      ]
+    },
+    "local-pickup-details": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "real link destination"
+      ]
+    },
+    "basket-product-help": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "return-policy-guide": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "real link destination"
+      ]
+    },
+    "service-finder": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "result room_ideas: destination and products",
+        "result room_ready: destination and products",
+        "result garden_ideas: destination and products",
+        "result garden_ready: destination and products",
+        "result fallback: destination and products"
+      ]
+    },
+    "project-stage-finder": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "result planning: destination and products",
+        "result consulting: destination and products",
+        "result estimating: destination and products",
+        "result fallback: destination and products"
+      ]
+    },
+    "service-area-check": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "real link destination"
+      ]
+    },
+    "repair-assessment": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "group-training-enquiry": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "service-options-guide": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "real link destination"
+      ]
+    },
+    "pre-visit-checklist": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "visible acknowledgement resource link",
+        "primary: required fields, capture, retry, saved values",
+        "one local resource email with an accessible content page"
+      ]
+    },
+    "service-open-day": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "real link destination"
+      ]
+    },
+    "reading-path-finder": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "result writing_beginner: destination and products",
+        "result writing_deeper: destination and products",
+        "result growing_beginner: destination and products",
+        "result growing_deeper: destination and products",
+        "result fallback: destination and products"
+      ]
+    },
+    "reader-question": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "series-start": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "real link destination"
+      ]
+    },
+    "reader-format-choice": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "gift-wrap-details": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "real link destination"
+      ]
+    },
+    "dispatch-schedule": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "real link destination"
+      ]
+    },
+    "showroom-information": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "real link destination"
+      ]
+    },
+    "holiday-service-hours": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "real link destination"
+      ]
+    },
+    "remote-consultation-details": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "real link destination"
+      ]
+    },
+    "contributor-guidelines": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "real link destination"
+      ]
+    },
+    "repair-workshop-news": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "local-class-news": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "spare-parts-advice": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "assembly-guidance": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "trade-account-enquiry": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "access-enquiry": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "language-support-enquiry": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "equipment-hire-enquiry": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "reader-panel-interest": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "product-demo-enquiry": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "care-clinic-request": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "gift-message-enquiry": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "remote-walkthrough-request": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "portfolio-feedback-request": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "translation-project-enquiry": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "maker-session-invitation": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "email-signup: required fields, capture, retry, saved values"
+      ]
+    },
+    "venue-hire-checklist": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "visible acknowledgement resource link",
+        "primary: required fields, capture, retry, saved values",
+        "one local resource email with an accessible content page"
+      ]
+    },
+    "contributor-pitch-checklist": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "visible acknowledgement resource link",
+        "primary: required fields, capture, retry, saved values",
+        "one local resource email with an accessible content page"
+      ]
+    },
+    "_outbox": {
+      "messages": 85,
+      "scope": "Local wp_mail handoff only; no external inbox delivery"
+    }
+  },
+  "placement": {
+    "before": {
+      "bottom": "16px",
+      "inlineStyle": "position: fixed !important; margin: 0px !important; padding: 0px !important; border: 0px !important; background: transparent !important; overflow: visible !important; z-index: auto !important; block-size: auto !important; max-block-size: none !important; max-inline-size: none !important; pointer-events: none !important; --wcv-w: 24rem; inset-block-end: max(1rem, env(safe-area-inset-bottom)) !important; inset-inline-end: max(1rem, var(--wcv-ie, 0px)) !important; inline-size: min(100% - 2rem, 26rem, var(--wcv-w, 28rem)) !important; --wcv-f: 0 1rem;",
+      "left": "0px",
+      "rect": {
+        "bottom": 704,
+        "height": 704,
+        "left": 0,
+        "right": 384,
+        "top": 0,
+        "width": 384,
+        "x": 0,
+        "y": 0
+      },
+      "right": "16px",
+      "top": "0px"
+    },
+    "after": {
+      "viewport": [
+        1280,
+        720
+      ],
+      "x": 880,
+      "y": 307.359375,
+      "width": 384,
+      "height": 396.640625,
+      "right_gap": 16,
+      "bottom_gap": 16
+    }
+  },
+  "source_hashes": {
+    "pro/modules/display-types/loader/popover.ts": "51e737d723c1b00b22951080b6df489803cba2344921d5a795b610ffc7cb7afa",
+    "tools/design-library/review/design-history.json": "49db47598d2f6323604e1a29a9c5f66a2ed6fd8e40939715dc86d0a61763f7e0",
+    "tools/design-library/pilot/collection.json": "0ead9e8bdfc7a44a3c83e488d5b8c16b0ad43a3bbdb3d9d8f65893c691a77897",
+    "tools/design-library/demo/contextual-fixtures.json": "281833e30ddc2dfce4e8993c4f5e887068552ca377e622f82f751fef232a554f"
+  },
+  "retained_images": [
+    {
+      "path": "docs/reviews/contextual-help-2026-09-28/bar-live.png",
+      "sha256": "27286c2bc8919042d765f2b4c5b59b2801eb32c7160a92f137e71e3a4f8b8d27"
+    },
+    {
+      "path": "docs/reviews/contextual-help-2026-09-28/form-proofs.jpg",
+      "sha256": "4acfa083f42711ae8bfed3ab9a1afeef09e68c1ed91f3f0bb558106879fd7466"
+    },
+    {
+      "path": "docs/reviews/contextual-help-2026-09-28/journey-proofs.jpg",
+      "sha256": "aa27df845db7db13afbf9e31e2186d32639f0f704cdc6392914f3a611eb0dc03"
+    },
+    {
+      "path": "docs/reviews/contextual-help-2026-09-28/slide-in-acknowledgement.png",
+      "sha256": "be7018f77a8d3c978bf61fa927b6b80cb281333bebebb479b7966bd41b0c6ed9"
+    },
+    {
+      "path": "docs/reviews/contextual-help-2026-09-28/slide-in-live.png",
+      "sha256": "40ff570576dadc6a9a4109f0415fe4b9e33c72af029a43e198f45374f257c5c5"
+    }
+  ],
+  "limits": [
+    "No external delivery",
+    "No measured conversion lift",
+    "No CI or release approval",
+    "Native default placement checked in the in-app browser; no cross-browser or physical-device certification"
+  ]
+}

@@ -1,0 +1,156 @@
+{
+  "id": "slide-in-question",
+  "name": "A question in the corner",
+  "display_type": "slide_in",
+  "tier": "basic",
+  "tokens": {
+    "bg": "#f8fafc",
+    "fg": "#193548",
+    "muted": "#475d6b",
+    "accent": "#193548",
+    "accent-fg": "#ffffff",
+    "border": "#bccbd4",
+    "input-bg": "#ffffff",
+    "heading-font": "system-ui, sans-serif",
+    "heading-weight": "700",
+    "heading-size": "1.375rem",
+    "tracking": "-0.025em",
+    "text-size": "1rem",
+    "leading": "1.5",
+    "pad": "1.25rem",
+    "gap": "0.875rem",
+    "radius": "0.75rem",
+    "width": "24rem",
+    "shadow": "0 18px 45px -18px rgba(25,53,72,.3)"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "details",
+        "name": "Your details",
+        "kind": "input",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "heading",
+              "id": "n2",
+              "role": "headline",
+              "text": "A little help choosing?"
+            },
+            {
+              "type": "text",
+              "id": "n3",
+              "role": "body",
+              "text": "Tell us what you need help with. We will reply by email."
+            },
+            {
+              "type": "field",
+              "id": "n4",
+              "name": "interest",
+              "label": "What would help? (optional)",
+              "placeholder": "Choose an option",
+              "required": false,
+              "options": [
+                {
+                  "value": "compatibility",
+                  "label": "Compatibility"
+                },
+                {
+                  "value": "care",
+                  "label": "Care and maintenance"
+                },
+                {
+                  "value": "other",
+                  "label": "Another question"
+                }
+              ]
+            },
+            {
+              "type": "field",
+              "id": "n5",
+              "name": "email",
+              "label": "Email address",
+              "placeholder": "you@example.com",
+              "required": true
+            },
+            {
+              "type": "consent",
+              "id": "n6",
+              "role": "consent_text",
+              "text": "Use my details for this request.",
+              "hidden": true,
+              "tokens": {
+                "text-size": "1.125rem"
+              }
+            },
+            {
+              "type": "button",
+              "id": "n7",
+              "role": "cta_label",
+              "label": "Request advice",
+              "action": "submit",
+              "submission": "primary"
+            },
+            {
+              "type": "text",
+              "id": "n8",
+              "role": "fine_print",
+              "text": "We use your details to reply to this request.",
+              "size": "s",
+              "tokens": {
+                "text-size": "1.167rem"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "received",
+        "name": "Request received",
+        "kind": "acknowledgement",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "row",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "n90",
+                  "name": "check"
+                }
+              ]
+            },
+            {
+              "type": "heading",
+              "id": "n91",
+              "role": "success_headline",
+              "text": "Request received"
+            },
+            {
+              "type": "text",
+              "id": "n92",
+              "role": "success_body",
+              "text": "Thank you. Your request has been received."
+            }
+          ]
+        }
+      }
+    ],
+    "submissions": [
+      {
+        "id": "primary",
+        "required": true,
+        "fields": [
+          "n4",
+          "n5"
+        ],
+        "consents": [
+          "n6"
+        ]
+      }
+    ]
+  }
+}
