@@ -3,6 +3,7 @@
 defined('ABSPATH') || exit;
 
 return [
+    'business_types' => ['stores'],
     'id' => 'edition-early-access',
     'name' => __('New collection early access', 'wconvert'),
     'goal' => 'grow_email_list',

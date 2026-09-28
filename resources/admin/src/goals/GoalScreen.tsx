@@ -38,6 +38,7 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins }: GoalScree
   const detailTrigger = useRef<HTMLButtonElement | null>(null);
   const [collectionId, setCollectionId] = useState('all');
   const [formatId, setFormatId] = useState('all');
+  const [businessId, setBusinessId] = useState('all');
   const [query, setQuery] = useState('');
   const packTrigger = useRef<HTMLButtonElement>(null);
   const collectionPicker = useRef<HTMLSelectElement>(null);
@@ -105,6 +106,7 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins }: GoalScree
     setGoal(chosen);
     setCollectionId('all');
     setFormatId('all');
+    setBusinessId('all');
     setQuery('');
     setPlaybooks(LOADING);
     setError(null);
@@ -164,17 +166,20 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins }: GoalScree
 
   const allEntries = playbooks.status === 'ready' ? playbooks.data : [];
   const collections = new Map(allEntries.flatMap((entry) => entry.collection ? [[entry.collection.id, entry.collection.name] as const] : []));
+  const businesses = new Map(allEntries.flatMap((entry) => (entry.business_types ?? []).map(({ id, label }) => [id, label] as const)));
   const availableFormats = new Set(allEntries.map(startingPointDisplayType));
   const formatOptions = displayTypeOptions().filter(({ value }) => availableFormats.has(value));
   const search = query.trim().toLocaleLowerCase();
   const matchingCollection = allEntries.filter((entry) =>
     (collectionId === 'all' || (collectionId === 'bundled' ? !entry.collection : entry.collection?.id === collectionId))
-    && (!search || [entry.name, entry.notes, entry.recommendation, entry.collection?.name, displayTypeLabel(startingPointDisplayType(entry))]
+    && (businessId === 'all' || entry.business_types?.some(({ id }) => id === businessId))
+    && (!search || [entry.name, entry.notes, entry.recommendation, entry.collection?.name, ...(entry.business_types ?? []).map(({ label }) => label), displayTypeLabel(startingPointDisplayType(entry))]
       .some((text) => text?.toLocaleLowerCase().includes(search))));
   const entries = matchingCollection.filter((entry) => formatId === 'all' || startingPointDisplayType(entry) === formatId);
-  const clearFilters = () => { setCollectionId('all'); setFormatId('all'); setQuery(''); };
+  const clearFilters = () => { setCollectionId('all'); setFormatId('all'); setBusinessId('all'); setQuery(''); };
   const activeFilters = [
     ...(query ? [{ id: 'query', label: query, remove: () => setQuery('') }] : []),
+    ...(businessId !== 'all' ? [{ id: 'business', label: businesses.get(businessId) ?? __('Selected business', 'wconvert'), remove: () => setBusinessId('all') }] : []),
     ...(formatId !== 'all' ? [{ id: 'format', label: displayTypeLabel(formatId), remove: () => setFormatId('all') }] : []),
     ...(collectionId !== 'all' ? [{ id: 'collection', label: collectionId === 'bundled'
       ? __('Included with WConvert', 'wconvert') : collections.get(collectionId) ?? __('Selected pack', 'wconvert'), remove: () => setCollectionId('all') }] : []),
@@ -192,6 +197,12 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins }: GoalScree
           <Input type="search" className="ps-9" value={query} disabled={starting !== null}
             placeholder={__('Search campaign setups', 'wconvert')} onChange={(event) => setQuery(event.target.value)} />
         </label>
+        {businesses.size > 0 && <label className="flex items-center gap-2 text-note">{__('Business', 'wconvert')}
+          <select className="wconvert-picker__select" value={businessId} disabled={starting !== null} onChange={(event) => setBusinessId(event.target.value)}>
+            <option value="all">{__('All businesses', 'wconvert')}</option>
+            {[...businesses].map(([id, label]) => <option key={id} value={id}>{label}</option>)}
+          </select>
+        </label>}
         <label className="flex items-center gap-2 text-note">{__('Collection', 'wconvert')}
           <select className="wconvert-picker__select" ref={collectionPicker} value={collectionId} disabled={starting !== null} onChange={(event) => setCollectionId(event.target.value)}>
             <option value="all">{__('All campaign setups', 'wconvert')}</option>
@@ -239,7 +250,7 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins }: GoalScree
         </DialogHeader>
         <TemplatePacks displayType="" goal={goal.id}
           onInstalled={async () => { setPlaybooksRetry((value) => value + 1); }}
-          onChooseStartingPoints={(id) => { choseCollection.current = true; setCollectionId(id); setFormatId('all'); setQuery(''); setPacksOpen(false); }} />
+          onChooseStartingPoints={(id) => { choseCollection.current = true; setCollectionId(id); setFormatId('all'); setBusinessId('all'); setQuery(''); setPacksOpen(false); }} />
       </DialogContent>
     </Dialog>
     {error !== null && <RegionError message={error} />}
@@ -256,7 +267,7 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins }: GoalScree
         {__('You can create a blank draft for this goal and choose a design in the editor.', 'wconvert')}
       </EmptyState> : entries.length === 0 ? <EmptyState icon={Sparkles} title={__('No campaign setups match', 'wconvert')}
         action={<Button variant="outline" disabled={starting !== null} onClick={clearFilters}>{__('Show all campaign setups', 'wconvert')}</Button>}>
-        {__('Try another search, format or collection.', 'wconvert')}
+        {__('Try another search, business, format or collection.', 'wconvert')}
       </EmptyState> : <RegionBody>
         {vocabulary.status === 'failed' && <div className="mb-4 flex flex-wrap items-center gap-2 text-note">
           <span>{__('Setup details could not be loaded. You can still choose a campaign setup and review its rules in the editor.', 'wconvert')}</span>
@@ -270,6 +281,7 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins }: GoalScree
           action={(describedBy) => <div className="flex w-full flex-col items-start gap-2">
             <div className="flex flex-wrap items-center gap-2">
               <Badge variant="secondary">{displayTypeLabel(startingPointDisplayType(playbook))}</Badge>
+              {playbook.business_types?.map(({ id, label }) => <Badge key={id} variant="outline">{label}</Badge>)}
               {playbook.collection && <Badge variant="outline">{playbook.collection.name}</Badge>}
             </div>
             {playbook.recommendation ? <p className="m-0 text-note font-medium text-foreground">{playbook.recommendation}</p> : null}

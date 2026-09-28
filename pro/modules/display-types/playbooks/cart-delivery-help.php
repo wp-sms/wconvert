@@ -3,6 +3,7 @@
 defined('ABSPATH') || exit;
 
 return [
+    'business_types' => ['stores'],
     'id' => 'cart-delivery-help',
     'name' => __('Return to the basket with delivery guidance', 'wconvert'),
     'goal' => 'recover_cart',

@@ -3,6 +3,7 @@
 defined('ABSPATH') || exit;
 
 return [
+    'business_types' => ['services'],
     'id' => 'maintenance-letter',
     'name' => __('Offer monthly home maintenance notes', 'wconvert'),
     'goal' => 'grow_email_list',

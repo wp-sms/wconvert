@@ -30,7 +30,7 @@ the merchant's settings.
 source fingerprint pins the reviewed design JSON or bundled Playbook PHP bytes; the design itself stays in
 `resources/templates/library/`. The builder refuses a changed source, duplicate
 membership, incompatible pack or replacement of an existing release file with
-different bytes. It also enforces the catalog's 20-collection limit and unique
+different bytes. It also enforces the catalog's 50-collection limit and unique
 collection IDs. It validates every pack with the shipping installer before
 writing. Packages and index use temporary files and atomic renames; the index
 is replaced only after all packages are available.
@@ -85,7 +85,7 @@ styles, so the earlier responsive reviews still apply. No renderer changes or
 new artwork are introduced by packaging.
 
 Index contract: `schema: 1`, `packs: [{id, version, name, description, url,
-sha256}]`; at most 20 packs. Pack examples are generated JSON. Minimum
+sha256}]`; at most 50 packs. Pack examples are generated JSON. Minimum
 plugin/tree/capability declarations are mandatory. Pack URLs share the index
 origin. Only Free popup/inline packs with empty assets are supported. Remote
 service strings must be localised by that service; bundled PHP translations are

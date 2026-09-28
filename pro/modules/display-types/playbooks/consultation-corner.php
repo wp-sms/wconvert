@@ -3,6 +3,7 @@
 defined('ABSPATH') || exit;
 
 return [
+    'business_types' => ['services'],
     'id' => 'consultation-corner',
     'name' => __('Ask about a design consultation', 'wconvert'),
     'goal' => 'collect_enquiries',

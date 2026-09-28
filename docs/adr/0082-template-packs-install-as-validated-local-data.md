@@ -44,7 +44,11 @@ no IDs; leaf IDs must be unique. An index pins its exact
 bytes with SHA-256; install rechecks the digest the merchant previewed.
 
 WordPress safe HTTP handles requests, with a 15-second timeout, 256 KiB response
-cap, no redirects and HTTPS. The only HTTP exception is the current site's host
+cap, no redirects and HTTPS. The index accepts at most 50 packs (raised from
+20 for library expansion on 2026-09-28); the per-pack limit remains 12 designs.
+The build and reader share one bound. A 51-pack response is refused without
+replacing the cached index. This supplies bounded capacity for 600 design slots,
+not an assertion that 600 designs have been authored or reviewed. The only HTTP exception is the current site's host
 in WordPress's `local` environment. Pack URLs must share the configured origin.
 No licence, lead, campaign, cookie or site identifier is deliberately transmitted;
 the service necessarily receives the server IP and requested URL. The user agent

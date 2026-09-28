@@ -3,6 +3,7 @@
 defined('ABSPATH') || exit;
 
 return [
+    'business_types' => ['publishers'],
     'id' => 'content-guide',
     'name' => __('Recommend a guide before asking for email', 'wconvert'),
     'goal' => 'find_match',

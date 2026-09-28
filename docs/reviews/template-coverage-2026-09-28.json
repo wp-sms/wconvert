@@ -1,0 +1,1048 @@
+{
+  "schema": 1,
+  "exported_at": "2026-09-28T12:38:14.314Z",
+  "reviews": [
+    {
+      "id": "new-arrivals-link",
+      "revision": "d68d617a269bcb5389ae7d8a1fdf2e4f45bec44a147b483c8bbba4af646cf73e",
+      "decision": "approved",
+      "note": "Editorial review: all screens inspected at desktop and 320px; final 720-case layout audit passed. Applicable form journeys tested with simulated failure/retry and acknowledgements. Real WordPress publication and native capture/link checks recorded in the batch report. Merchant branding, resources and external provider delivery still need configured-site release review.",
+      "at": "2026-09-28T12:38:00.447Z"
+    },
+    {
+      "id": "maker-notes",
+      "revision": "f6e0a3298a01bf756f95c0be9e2d006f0765bf8b0d2a8a0df0e070c6272dc602",
+      "decision": "approved",
+      "note": "Editorial review: all screens inspected at desktop and 320px; final 720-case layout audit passed. Applicable form journeys tested with simulated failure/retry and acknowledgements. Real WordPress publication and native capture/link checks recorded in the batch report. Merchant branding, resources and external provider delivery still need configured-site release review.",
+      "at": "2026-09-28T12:38:01.041Z"
+    },
+    {
+      "id": "restyling-notes",
+      "revision": "89056058865d3d53f049a5691af093000d144c6e6e2aa35d5e91afd3ac2f5736",
+      "decision": "approved",
+      "note": "Editorial review: all screens inspected at desktop and 320px; final 720-case layout audit passed. Applicable form journeys tested with simulated failure/retry and acknowledgements. Real WordPress publication and native capture/link checks recorded in the batch report. Merchant branding, resources and external provider delivery still need configured-site release review.",
+      "at": "2026-09-28T12:38:01.638Z"
+    },
+    {
+      "id": "sizing-guide",
+      "revision": "05a918b137aa1e2fbfb1ffd143516cad8a360797bce7fb223a62d044878b4ff1",
+      "decision": "approved",
+      "note": "Editorial review: all screens inspected at desktop and 320px; final 720-case layout audit passed. Applicable form journeys tested with simulated failure/retry and acknowledgements. Real WordPress publication and native capture/link checks recorded in the batch report. Merchant branding, resources and external provider delivery still need configured-site release review.",
+      "at": "2026-09-28T12:38:02.229Z"
+    },
+    {
+      "id": "launch-interest",
+      "revision": "e58a513b774bfa40eecb495c30fb96d532fef8adbe54c4a18256462b0eb0a484",
+      "decision": "approved",
+      "note": "Editorial review: all screens inspected at desktop and 320px; final 720-case layout audit passed. Applicable form journeys tested with simulated failure/retry and acknowledgements. Real WordPress publication and native capture/link checks recorded in the batch report. Merchant branding, resources and external provider delivery still need configured-site release review.",
+      "at": "2026-09-28T12:38:02.817Z"
+    },
+    {
+      "id": "gift-planning-guide",
+      "revision": "6db58258c6b847a91b529d1e5c99b71af37bd5600472892079e63597bc12a898",
+      "decision": "approved",
+      "note": "Editorial review: all screens inspected at desktop and 320px; final 720-case layout audit passed. Applicable form journeys tested with simulated failure/retry and acknowledgements. Real WordPress publication and native capture/link checks recorded in the batch report. Merchant branding, resources and external provider delivery still need configured-site release review.",
+      "at": "2026-09-28T12:38:03.404Z"
+    },
+    {
+      "id": "product-advice-request",
+      "revision": "182f0ce5f329f93df6c0dfa28f8b430ea6bd50045e7d6ac9481c4e73493aae4c",
+      "decision": "approved",
+      "note": "Editorial review: all screens inspected at desktop and 320px; final 720-case layout audit passed. Applicable form journeys tested with simulated failure/retry and acknowledgements. Real WordPress publication and native capture/link checks recorded in the batch report. Merchant branding, resources and external provider delivery still need configured-site release review.",
+      "at": "2026-09-28T12:38:03.985Z"
+    },
+    {
+      "id": "restock-announcements",
+      "revision": "a983f8a2d82e2d76cd0e6f7a6437ea78ad4ba91a88d05e307c83f2049df6f5cd",
+      "decision": "approved",
+      "note": "Editorial review: all screens inspected at desktop and 320px; final 720-case layout audit passed. Applicable form journeys tested with simulated failure/retry and acknowledgements. Real WordPress publication and native capture/link checks recorded in the batch report. Merchant branding, resources and external provider delivery still need configured-site release review.",
+      "at": "2026-09-28T12:38:04.570Z"
+    },
+    {
+      "id": "collection-discovery",
+      "revision": "21ba8d33fea09e4d87979870207dbe0affb7c2ec7b75a30f35936334b9001c3e",
+      "decision": "approved",
+      "note": "Editorial review: all screens inspected at desktop and 320px; final 720-case layout audit passed. Applicable form journeys tested with simulated failure/retry and acknowledgements. Real WordPress publication and native capture/link checks recorded in the batch report. Merchant branding, resources and external provider delivery still need configured-site release review.",
+      "at": "2026-09-28T12:38:05.168Z"
+    },
+    {
+      "id": "packaging-details",
+      "revision": "a3333ace2c693abee9eb9a2f35c8462461748470045d7fabfc696417939a2bff",
+      "decision": "approved",
+      "note": "Editorial review: all screens inspected at desktop and 320px; final 720-case layout audit passed. Applicable form journeys tested with simulated failure/retry and acknowledgements. Real WordPress publication and native capture/link checks recorded in the batch report. Merchant branding, resources and external provider delivery still need configured-site release review.",
+      "at": "2026-09-28T12:38:05.767Z"
+    },
+    {
+      "id": "cleaning-quote",
+      "revision": "05775cb85d6e642dc37e4f4bd935d01e4ce285aad89d98a6a36bfdb71f19dd89",
+      "decision": "approved",
+      "note": "Editorial review: all screens inspected at desktop and 320px; final 720-case layout audit passed. Applicable form journeys tested with simulated failure/retry and acknowledgements. Real WordPress publication and native capture/link checks recorded in the batch report. Merchant branding, resources and external provider delivery still need configured-site release review.",
+      "at": "2026-09-28T12:38:06.351Z"
+    },
+    {
+      "id": "landscaping-enquiry",
+      "revision": "9d56a0c03d4d108504f8c2c93d9a57b2c26b7acaf0013f49d809b6cda9489b4a",
+      "decision": "approved",
+      "note": "Editorial review: all screens inspected at desktop and 320px; final 720-case layout audit passed. Applicable form journeys tested with simulated failure/retry and acknowledgements. Real WordPress publication and native capture/link checks recorded in the batch report. Merchant branding, resources and external provider delivery still need configured-site release review.",
+      "at": "2026-09-28T12:38:06.936Z"
+    },
+    {
+      "id": "renovation-callback",
+      "revision": "ec1214e84ac961522838e8969c9ba1cdf49b976fb205221a14b1136e4a44d297",
+      "decision": "approved",
+      "note": "Editorial review: all screens inspected at desktop and 320px; final 720-case layout audit passed. Applicable form journeys tested with simulated failure/retry and acknowledgements. Real WordPress publication and native capture/link checks recorded in the batch report. Merchant branding, resources and external provider delivery still need configured-site release review.",
+      "at": "2026-09-28T12:38:07.505Z"
+    },
+    {
+      "id": "agency-project-enquiry",
+      "revision": "ef5e7158591368b56a888a9fed271b816caeeea4161ae673413a8460b4e76ce2",
+      "decision": "approved",
+      "note": "Editorial review: all screens inspected at desktop and 320px; final 720-case layout audit passed. Applicable form journeys tested with simulated failure/retry and acknowledgements. Real WordPress publication and native capture/link checks recorded in the batch report. Merchant branding, resources and external provider delivery still need configured-site release review.",
+      "at": "2026-09-28T12:38:08.086Z"
+    },
+    {
+      "id": "tutoring-introduction",
+      "revision": "433c18dc75cd25932db1cee49c8a6e81a3ef04189cc7ccbec8e20c7cc49eb1ac",
+      "decision": "approved",
+      "note": "Editorial review: all screens inspected at desktop and 320px; final 720-case layout audit passed. Applicable form journeys tested with simulated failure/retry and acknowledgements. Real WordPress publication and native capture/link checks recorded in the batch report. Merchant branding, resources and external provider delivery still need configured-site release review.",
+      "at": "2026-09-28T12:38:08.670Z"
+    },
+    {
+      "id": "fitness-introduction",
+      "revision": "c463fd8c64dca705d787e8e2c2caf071690ae5b3ff6b902ef7b263ae34603c91",
+      "decision": "approved",
+      "note": "Editorial review: all screens inspected at desktop and 320px; final 720-case layout audit passed. Applicable form journeys tested with simulated failure/retry and acknowledgements. Real WordPress publication and native capture/link checks recorded in the batch report. Merchant branding, resources and external provider delivery still need configured-site release review.",
+      "at": "2026-09-28T12:38:09.271Z"
+    },
+    {
+      "id": "accounting-consultation",
+      "revision": "04d50d5e91489691097c27524731ecf6346b577c2c902ae14bbfeab1b4f29996",
+      "decision": "approved",
+      "note": "Editorial review: all screens inspected at desktop and 320px; final 720-case layout audit passed. Applicable form journeys tested with simulated failure/retry and acknowledgements. Real WordPress publication and native capture/link checks recorded in the batch report. Merchant branding, resources and external provider delivery still need configured-site release review.",
+      "at": "2026-09-28T12:38:09.869Z"
+    },
+    {
+      "id": "service-text-updates",
+      "revision": "c9f01e2525857cbb37a03cd8535053a8416c18706124f0dd4ac4251c522b2771",
+      "decision": "approved",
+      "note": "Editorial review: all screens inspected at desktop and 320px; final 720-case layout audit passed. Applicable form journeys tested with simulated failure/retry and acknowledgements. Real WordPress publication and native capture/link checks recorded in the batch report. Merchant branding, resources and external provider delivery still need configured-site release review.",
+      "at": "2026-09-28T12:38:10.449Z"
+    },
+    {
+      "id": "project-readiness-guide",
+      "revision": "672790151ec873dfcbcc888991f41fb4cbf0146a4ffb7fc9847e261270e15b45",
+      "decision": "approved",
+      "note": "Editorial review: all screens inspected at desktop and 320px; final 720-case layout audit passed. Applicable form journeys tested with simulated failure/retry and acknowledgements. Real WordPress publication and native capture/link checks recorded in the batch report. Merchant branding, resources and external provider delivery still need configured-site release review.",
+      "at": "2026-09-28T12:38:11.021Z"
+    },
+    {
+      "id": "editorial-weekly",
+      "revision": "b6867afb3a99a94d07fd0c7af5bfb05e48699a5c2ddc6e1dcfa142f2362bd0e2",
+      "decision": "approved",
+      "note": "Editorial review: all screens inspected at desktop and 320px; final 720-case layout audit passed. Applicable form journeys tested with simulated failure/retry and acknowledgements. Real WordPress publication and native capture/link checks recorded in the batch report. Merchant branding, resources and external provider delivery still need configured-site release review.",
+      "at": "2026-09-28T12:38:11.606Z"
+    },
+    {
+      "id": "writing-checklist",
+      "revision": "ad9eb487e8f30f3099ff30abef648161e5bf526369f671ec257e1070e6492a70",
+      "decision": "approved",
+      "note": "Editorial review: all screens inspected at desktop and 320px; final 720-case layout audit passed. Applicable form journeys tested with simulated failure/retry and acknowledgements. Real WordPress publication and native capture/link checks recorded in the batch report. Merchant branding, resources and external provider delivery still need configured-site release review.",
+      "at": "2026-09-28T12:38:12.198Z"
+    },
+    {
+      "id": "related-essay",
+      "revision": "de697a78a60f9329106ca6b933326de31fb8b300356f5eed84a72f00ae751f68",
+      "decision": "approved",
+      "note": "Editorial review: all screens inspected at desktop and 320px; final 720-case layout audit passed. Applicable form journeys tested with simulated failure/retry and acknowledgements. Real WordPress publication and native capture/link checks recorded in the batch report. Merchant branding, resources and external provider delivery still need configured-site release review.",
+      "at": "2026-09-28T12:38:12.804Z"
+    },
+    {
+      "id": "membership-details",
+      "revision": "27d6b8a433ac41217dd9e388b017a6949cd9be93775168d515113079a89786fc",
+      "decision": "approved",
+      "note": "Editorial review: all screens inspected at desktop and 320px; final 720-case layout audit passed. Applicable form journeys tested with simulated failure/retry and acknowledgements. Real WordPress publication and native capture/link checks recorded in the batch report. Merchant branding, resources and external provider delivery still need configured-site release review.",
+      "at": "2026-09-28T12:38:13.405Z"
+    },
+    {
+      "id": "headlines-optional-sms",
+      "revision": "47714ee3d627a2b2c0e9558200012fd7ba05991271c1f8b7b80b2df134dee358",
+      "decision": "approved",
+      "note": "Editorial review: all screens inspected at desktop and 320px; final 720-case layout audit passed. Applicable form journeys tested with simulated failure/retry and acknowledgements. Real WordPress publication and native capture/link checks recorded in the batch report. Merchant branding, resources and external provider delivery still need configured-site release review."
+    }
+  ],
+  "layout_checks": {
+    "cases": 720,
+    "failures": [],
+    "checked_at": "2026-09-28T12:22:57.901Z"
+  },
+  "release_approved": false,
+  "scope": "24 new editorial reviews; native WordPress verification covers all 48 campaigns. External provider/inbox delivery is not tested.",
+  "coverage": {
+    "campaigns": 48,
+    "distinct_designs": 36
+  },
+  "wordpress_checks": {
+    "studio-welcome": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "edition-early-access": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "journey-email-then-sms": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "email-signup: required fields, capture, retry, saved values",
+        "sms-signup: required fields, capture, retry, saved values"
+      ]
+    },
+    "delivery-announcement": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "real link destination"
+      ]
+    },
+    "fullscreen-announcement": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "real link destination"
+      ]
+    },
+    "product-finder": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "result garden_sun: destination and products",
+        "result balcony: destination and products",
+        "result fallback: destination and products"
+      ]
+    },
+    "home-repair-quote": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "photography-enquiry": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "consultation-corner": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "project-planning-guide": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values",
+        "one local resource email with an accessible content page"
+      ]
+    },
+    "sunday-reading": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "content-guide": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "email-signup: required fields, capture, retry, saved values",
+        "result growing: destination and products",
+        "result fallback: destination and products"
+      ]
+    },
+    "cart-straight-away": {
+      "status": "passed",
+      "checks": [
+        "published"
+      ]
+    },
+    "cart-delivery-help": {
+      "status": "passed",
+      "checks": [
+        "published"
+      ]
+    },
+    "drop-alerts": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "sale-deadline": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "real link destination"
+      ]
+    },
+    "product-care-guide": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values",
+        "one local resource email with an accessible content page"
+      ]
+    },
+    "wholesale-enquiry": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "venue-visit-request": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "course-advice-request": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "maintenance-letter": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "seasonal-service-link": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "real link destination"
+      ]
+    },
+    "event-registration-link": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "real link destination"
+      ]
+    },
+    "topic-reading-list": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "new-arrivals-link": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "real link destination"
+      ]
+    },
+    "maker-notes": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "restyling-notes": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "sizing-guide": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values",
+        "one local resource email with an accessible content page"
+      ]
+    },
+    "launch-interest": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "gift-planning-guide": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values",
+        "one local resource email with an accessible content page"
+      ]
+    },
+    "product-advice-request": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "restock-announcements": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "collection-discovery": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "real link destination"
+      ]
+    },
+    "packaging-details": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "real link destination"
+      ]
+    },
+    "cleaning-quote": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "landscaping-enquiry": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "enquiry-request: required fields, capture, retry, saved values"
+      ]
+    },
+    "renovation-callback": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "agency-project-enquiry": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "tutoring-introduction": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "fitness-introduction": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "accounting-consultation": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "service-text-updates": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "project-readiness-guide": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values",
+        "one local resource email with an accessible content page"
+      ]
+    },
+    "editorial-weekly": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "writing-checklist": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values",
+        "one local resource email with an accessible content page"
+      ]
+    },
+    "related-essay": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "real link destination"
+      ]
+    },
+    "membership-details": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "real link destination"
+      ]
+    },
+    "headlines-optional-sms": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "email-signup: required fields, capture, retry, saved values",
+        "sms-signup: required fields, capture, retry, saved values"
+      ]
+    },
+    "_outbox": {
+      "messages": 20,
+      "scope": "Local wp_mail handoff only; no external inbox delivery"
+    }
+  },
+  "preview_interactions": [
+    {
+      "id": "new-arrivals-link",
+      "steps": [
+        {
+          "screen": "1. Offer",
+          "ending": true,
+          "text": ""
+        }
+      ]
+    },
+    {
+      "id": "maker-notes",
+      "steps": [
+        {
+          "screen": "1. Details",
+          "simulatedFailure": true
+        },
+        {
+          "screen": "1. Details",
+          "next": "2. Received"
+        },
+        {
+          "screen": "2. Received",
+          "ending": true,
+          "text": ""
+        }
+      ]
+    },
+    {
+      "id": "restyling-notes",
+      "steps": [
+        {
+          "screen": "1. Details",
+          "simulatedFailure": true
+        },
+        {
+          "screen": "1. Details",
+          "next": "2. Received"
+        },
+        {
+          "screen": "2. Received",
+          "ending": true,
+          "text": ""
+        }
+      ]
+    },
+    {
+      "id": "sizing-guide",
+      "steps": [
+        {
+          "screen": "1. Details",
+          "simulatedFailure": true
+        },
+        {
+          "screen": "1. Details",
+          "next": "2. Received"
+        },
+        {
+          "screen": "2. Received",
+          "ending": true,
+          "text": ""
+        }
+      ]
+    },
+    {
+      "id": "launch-interest",
+      "steps": [
+        {
+          "screen": "1. Details",
+          "simulatedFailure": true
+        },
+        {
+          "screen": "1. Details",
+          "next": "2. Received"
+        },
+        {
+          "screen": "2. Received",
+          "ending": true,
+          "text": ""
+        }
+      ]
+    },
+    {
+      "id": "gift-planning-guide",
+      "steps": [
+        {
+          "screen": "1. Details",
+          "simulatedFailure": true
+        },
+        {
+          "screen": "1. Details",
+          "next": "2. Received"
+        },
+        {
+          "screen": "2. Received",
+          "ending": true,
+          "text": ""
+        }
+      ]
+    },
+    {
+      "id": "product-advice-request",
+      "steps": [
+        {
+          "screen": "1. Details",
+          "simulatedFailure": true
+        },
+        {
+          "screen": "1. Details",
+          "next": "2. Received"
+        },
+        {
+          "screen": "2. Received",
+          "ending": true,
+          "text": ""
+        }
+      ]
+    },
+    {
+      "id": "restock-announcements",
+      "steps": [
+        {
+          "screen": "1. Your details",
+          "simulatedFailure": true
+        },
+        {
+          "screen": "1. Your details",
+          "next": "2. Request received"
+        },
+        {
+          "screen": "2. Request received",
+          "ending": true,
+          "text": ""
+        }
+      ]
+    },
+    {
+      "id": "collection-discovery",
+      "steps": [
+        {
+          "screen": "1. Offer",
+          "ending": true,
+          "text": ""
+        }
+      ]
+    },
+    {
+      "id": "packaging-details",
+      "steps": [
+        {
+          "screen": "1. Offer",
+          "ending": true,
+          "text": ""
+        }
+      ]
+    },
+    {
+      "id": "cleaning-quote",
+      "steps": [
+        {
+          "screen": "1. Your details",
+          "simulatedFailure": true
+        },
+        {
+          "screen": "1. Your details",
+          "next": "2. Request received"
+        },
+        {
+          "screen": "2. Request received",
+          "ending": true,
+          "text": ""
+        }
+      ]
+    },
+    {
+      "id": "landscaping-enquiry",
+      "steps": [
+        {
+          "screen": "1. Your request",
+          "next": "2. Contact details"
+        },
+        {
+          "screen": "2. Contact details",
+          "simulatedFailure": true
+        },
+        {
+          "screen": "2. Contact details",
+          "next": "3. Acknowledgement"
+        },
+        {
+          "screen": "3. Acknowledgement",
+          "ending": true,
+          "text": ""
+        }
+      ]
+    },
+    {
+      "id": "renovation-callback",
+      "steps": [
+        {
+          "screen": "1. Details",
+          "simulatedFailure": true
+        },
+        {
+          "screen": "1. Details",
+          "next": "2. Received"
+        },
+        {
+          "screen": "2. Received",
+          "ending": true,
+          "text": ""
+        }
+      ]
+    },
+    {
+      "id": "agency-project-enquiry",
+      "steps": [
+        {
+          "screen": "1. Details",
+          "simulatedFailure": true
+        },
+        {
+          "screen": "1. Details",
+          "next": "2. Received"
+        },
+        {
+          "screen": "2. Received",
+          "ending": true,
+          "text": ""
+        }
+      ]
+    },
+    {
+      "id": "tutoring-introduction",
+      "steps": [
+        {
+          "screen": "1. Your details",
+          "simulatedFailure": true
+        },
+        {
+          "screen": "1. Your details",
+          "next": "2. Request received"
+        },
+        {
+          "screen": "2. Request received",
+          "ending": true,
+          "text": ""
+        }
+      ]
+    },
+    {
+      "id": "fitness-introduction",
+      "steps": [
+        {
+          "screen": "1. Details",
+          "simulatedFailure": true
+        },
+        {
+          "screen": "1. Details",
+          "next": "2. Received"
+        },
+        {
+          "screen": "2. Received",
+          "ending": true,
+          "text": ""
+        }
+      ]
+    },
+    {
+      "id": "accounting-consultation",
+      "steps": [
+        {
+          "screen": "1. Your details",
+          "simulatedFailure": true
+        },
+        {
+          "screen": "1. Your details",
+          "next": "2. Request received"
+        },
+        {
+          "screen": "2. Request received",
+          "ending": true,
+          "text": ""
+        }
+      ]
+    },
+    {
+      "id": "service-text-updates",
+      "steps": [
+        {
+          "screen": "1. Details",
+          "simulatedFailure": true
+        },
+        {
+          "screen": "1. Details",
+          "next": "2. Received"
+        },
+        {
+          "screen": "2. Received",
+          "ending": true,
+          "text": ""
+        }
+      ]
+    },
+    {
+      "id": "project-readiness-guide",
+      "steps": [
+        {
+          "screen": "1. Your details",
+          "simulatedFailure": true
+        },
+        {
+          "screen": "1. Your details",
+          "next": "2. Request received"
+        },
+        {
+          "screen": "2. Request received",
+          "ending": true,
+          "text": ""
+        }
+      ]
+    },
+    {
+      "id": "editorial-weekly",
+      "steps": [
+        {
+          "screen": "1. Details",
+          "simulatedFailure": true
+        },
+        {
+          "screen": "1. Details",
+          "next": "2. Received"
+        },
+        {
+          "screen": "2. Received",
+          "ending": true,
+          "text": ""
+        }
+      ]
+    },
+    {
+      "id": "writing-checklist",
+      "steps": [
+        {
+          "screen": "1. Details",
+          "simulatedFailure": true
+        },
+        {
+          "screen": "1. Details",
+          "next": "2. Received"
+        },
+        {
+          "screen": "2. Received",
+          "ending": true,
+          "text": ""
+        }
+      ]
+    },
+    {
+      "id": "related-essay",
+      "steps": [
+        {
+          "screen": "1. Offer",
+          "ending": true,
+          "text": ""
+        }
+      ]
+    },
+    {
+      "id": "membership-details",
+      "steps": [
+        {
+          "screen": "1. Offer",
+          "ending": true,
+          "text": ""
+        }
+      ]
+    },
+    {
+      "id": "headlines-optional-sms",
+      "steps": [
+        {
+          "screen": "1. Email signup",
+          "simulatedFailure": true
+        },
+        {
+          "screen": "1. Email signup",
+          "next": "2. Optional SMS signup"
+        },
+        {
+          "screen": "2. Optional SMS signup",
+          "simulatedFailure": true
+        },
+        {
+          "screen": "2. Optional SMS signup",
+          "next": "3. Acknowledgement"
+        },
+        {
+          "screen": "3. Acknowledgement",
+          "ending": true,
+          "text": ""
+        }
+      ]
+    }
+  ],
+  "additional_browser_checks": [
+    "Goal-first business filter, draft creation, edit, save and publish",
+    "Live welcome form capture and coupon reveal",
+    "Live phone picker GB to US, service select, canonical capture and acknowledgement",
+    "WooCommerce coupon DEMO10: 10% discount; UK delivery £4 below threshold and free over £40 after discount",
+    "Cart return button resolves native basket URL; reminder visible with items and hidden with empty cart",
+    "Optional headline SMS: Back protects accepted email; Finish without texts reaches acknowledgement at 320px"
+  ],
+  "screenshots": [
+    {
+      "file": "coverage-proofs/accounting-consultation.png",
+      "sha256": "b167c36653674de369d9b7c0caa52ca48848ae9dca9eb8a1225b4968a7a2d5ae"
+    },
+    {
+      "file": "coverage-proofs/agency-project-enquiry.png",
+      "sha256": "a8e8b5fb72e45614234aa33b55eba333abc74cf01f42813c72ff0ec5036e43b9"
+    },
+    {
+      "file": "coverage-proofs/cleaning-quote.png",
+      "sha256": "bfa79dec59140160b3095496783dd340e64d16262d973f6c6616fa37c0b7b7a2"
+    },
+    {
+      "file": "coverage-proofs/collection-discovery.png",
+      "sha256": "a701af65351a1cd5996c5069f24b3faf3e19761b891b889c410063b3e9ccbd38"
+    },
+    {
+      "file": "coverage-proofs/editorial-weekly.png",
+      "sha256": "f98f0aca74f2556a3ca8cf7029c6be8cc24756e983055d893b7ead5a955a4b47"
+    },
+    {
+      "file": "coverage-proofs/fitness-introduction.png",
+      "sha256": "9a2c43b8e86cf4d106a1c132e65ce496af9e0044c9276c67cf7f6ae162c667b5"
+    },
+    {
+      "file": "coverage-proofs/gift-planning-guide.png",
+      "sha256": "a2e7bee35ae08ceaa24c40e29b191f3d4d7a2a64f8e068fc479f3f3be08f2eb7"
+    },
+    {
+      "file": "coverage-proofs/headlines-optional-sms.png",
+      "sha256": "8dda4ac4c1196ac4506f9c8e4fb8db17b9eef213a60daaa29ddbe2ddba3858f0"
+    },
+    {
+      "file": "coverage-proofs/landscaping-enquiry.png",
+      "sha256": "3e9e470287f0975b9c7345ec2abb6ab3c5377e2119e6c74c23d9dffae2ad563e"
+    },
+    {
+      "file": "coverage-proofs/launch-interest.png",
+      "sha256": "6abadf13fd806fb1328dcf359b2957cde3cd3d6399f961b73eb3c177189735a2"
+    },
+    {
+      "file": "coverage-proofs/maker-notes.png",
+      "sha256": "ca768eed19dfbe4fbefe98fb6afefd5e7a5a317ee82059f78936ab03d6ad237c"
+    },
+    {
+      "file": "coverage-proofs/membership-details.png",
+      "sha256": "941ebb0bfe3c596f6f047e49ee06ca615c5df57f8246e2dfaedfda702745f28a"
+    },
+    {
+      "file": "coverage-proofs/new-arrivals-link.png",
+      "sha256": "fb4fcf79d6263432a64790471fb40cdd4d433d11c36c3843cda0825e7a085101"
+    },
+    {
+      "file": "coverage-proofs/packaging-details.png",
+      "sha256": "3ed3c17f9c96189300c9f761d270c9c693139c479e2c5bb4779d8796952feb8a"
+    },
+    {
+      "file": "coverage-proofs/product-advice-request.png",
+      "sha256": "9d2781f5146540c75362b859c409358f1d956f7cb3527ddd851468d6f113cf1d"
+    },
+    {
+      "file": "coverage-proofs/project-readiness-guide.png",
+      "sha256": "5c34ca50a09ec70e796b1f262ecc0ef60da8369c499a574e73a6bf3389a86683"
+    },
+    {
+      "file": "coverage-proofs/related-essay.png",
+      "sha256": "d13a372c9cf80382ad0067dc3843703b084516916a8372bad5c20e33c42d711c"
+    },
+    {
+      "file": "coverage-proofs/renovation-callback.png",
+      "sha256": "9f71efc9a5656a7c3fadb3ff3acc74051fcbdae511f470b8607bebf8007d04e6"
+    },
+    {
+      "file": "coverage-proofs/restock-announcements.png",
+      "sha256": "71c78610ee986c0c331a3a9f5159c4b9013e2f085a648defd4a12054d52b768d"
+    },
+    {
+      "file": "coverage-proofs/restyling-notes.png",
+      "sha256": "ecaf55c0553fdb190f96d7bbf9e70e785b32ccb95c2485f4c34f0f14ab8a8c82"
+    },
+    {
+      "file": "coverage-proofs/service-text-updates.png",
+      "sha256": "46d87bdc61245d0251685f2ece1416d6dbff3299f5a522e44427c2fc4ff80dff"
+    },
+    {
+      "file": "coverage-proofs/sizing-guide.png",
+      "sha256": "855d92ab2e873138e28daf5bf3fa2e27c695aa60ac38137dbf797f2fe4c1cde3"
+    },
+    {
+      "file": "coverage-proofs/tutoring-introduction.png",
+      "sha256": "f0234a1ce35a129d46f02781c00b878b163c396a6cff688befae85b23ce74409"
+    },
+    {
+      "file": "coverage-proofs/writing-checklist.png",
+      "sha256": "44e21a8d595a02dc0238a21d807338b3846c50d9c4a41f2babfc14b84a704fe0"
+    }
+  ]
+}

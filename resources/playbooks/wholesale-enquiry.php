@@ -3,6 +3,7 @@
 defined('ABSPATH') || exit;
 
 return [
+    'business_types' => ['stores'],
     'id' => 'wholesale-enquiry',
     'name' => __('Ask about stocking a collection', 'wconvert'),
     'goal' => 'collect_enquiries',

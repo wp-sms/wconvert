@@ -453,7 +453,7 @@ it('recovers when collection and format filters have no setup in common', async 
   await userEvent.click(screen.getByRole('button', { name: 'Inline form' }));
   await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Collection' }), 'bundled');
   expect(screen.getByText('No campaign setups match')).toBeVisible();
-  expect(screen.getByText('Try another search, format or collection.')).toBeVisible();
+  expect(screen.getByText('Try another search, business, format or collection.')).toBeVisible();
   await userEvent.click(screen.getByRole('button', { name: 'Clear filters' }));
   expect(screen.getAllByRole('button', { name: 'Use this setup' })).toHaveLength(2);
   expect(screen.getByRole('button', { name: 'All formats' })).toHaveAttribute('aria-pressed', 'true');
@@ -519,4 +519,23 @@ it('installs a pack from creation, then returns to its starting points without c
   await screen.findByRole('button', { name: 'Use this setup' });
   expect(optins.createOptin).not.toHaveBeenCalled();
   expect(goals.prefill).not.toHaveBeenCalled();
+});
+it('combines business and format filters without writing a draft', async () => {
+  goals.listPlaybooks.mockResolvedValue([
+    { ...PLAYBOOK, business_types: [{ id: 'stores', label: 'Stores' }] },
+    { ...PLAYBOOK, id: 'service', name: 'Service newsletter', business_types: [{ id: 'services', label: 'Service businesses' }], setup: { ...PLAYBOOK.setup, display_type: 'inline' } },
+  ]);
+  render(<GoalScreen onCreated={vi.fn()} />);
+  await userEvent.click((await screen.findAllByRole('button', { name: 'Choose' }))[0]);
+  await userEvent.selectOptions(await screen.findByRole('combobox', { name: 'Business' }), 'services');
+  expect(screen.getAllByRole('button', { name: 'Use this setup' })).toHaveLength(1);
+  expect(screen.getByText('Service newsletter')).toBeVisible();
+  expect(screen.getByRole('button', { name: 'Popup', exact: true })).toBeDisabled();
+  await userEvent.click(screen.getByRole('button', { name: 'Inline form', exact: true }));
+  expect(screen.getByText('Service newsletter')).toBeVisible();
+  await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Collection' }), 'bundled');
+  expect(screen.getAllByRole('button', { name: 'Use this setup' })).toHaveLength(1);
+  await userEvent.click(screen.getByRole('button', { name: 'Clear filters' }));
+  expect(screen.getAllByRole('button', { name: 'Use this setup' })).toHaveLength(2);
+  expect(optins.createOptin).not.toHaveBeenCalled();
 });

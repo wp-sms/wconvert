@@ -623,6 +623,630 @@
         ],
         "reason": "New preference-first form with a native select and a two-pane explanation; extra field is justified by the editorial workflow."
       }
+    },
+    {
+      "id": "new-arrivals-link",
+      "audience": "stores",
+      "family": "Photo Offer",
+      "visitor_need": "Introduce new arrivals without a discount.",
+      "difference": "Link to the current collection. Use relevant product imagery and remove the campaign when the collection changes.",
+      "requirements": [
+        "Review sample wording and page targeting",
+        "Set and test the real destination link"
+      ],
+      "status": "review",
+      "source": "Original WConvert coverage expansion; existing reviewed composition reused for a distinct visitor task.",
+      "suggested_setup": [
+        "Link to the current collection. Use relevant product imagery and remove the campaign when the collection changes.",
+        "Start after meaningful engagement; limit repeated interruption."
+      ],
+      "measure": "Clicks to the promised destination; purchases and registrations are separate outcomes.",
+      "batch": "coverage",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "photo-offer"
+        ],
+        "reason": "Reuse the established photo-offer composition. Link to the current collection. Use relevant product imagery and remove the campaign when the collection changes."
+      }
+    },
+    {
+      "id": "maker-notes",
+      "audience": "stores",
+      "family": "Quieter Frequency",
+      "visitor_need": "Share the stories behind your products.",
+      "difference": "Offer a real editorial programme on about and maker-story pages. Assign someone to write the monthly note.",
+      "requirements": [
+        "Review sample wording and page targeting",
+        "Choose a service or explicit Collect only"
+      ],
+      "status": "review",
+      "source": "Original WConvert coverage expansion; existing reviewed composition reused for a distinct visitor task.",
+      "suggested_setup": [
+        "Offer a real editorial programme on about and maker-story pages. Assign someone to write the monthly note.",
+        "Start after meaningful engagement; limit repeated interruption."
+      ],
+      "measure": "Accepted requests and completed follow-up, measured separately.",
+      "batch": "coverage",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "quieter-frequency"
+        ],
+        "reason": "Reuse the established quieter-frequency composition. Offer a real editorial programme on about and maker-story pages. Assign someone to write the monthly note."
+      }
+    },
+    {
+      "id": "restyling-notes",
+      "audience": "stores",
+      "family": "Benefit Grid",
+      "visitor_need": "Offer useful room restyling ideas.",
+      "difference": "Place on home styling content. The promise is useful editorial advice, not a discount or design consultation.",
+      "requirements": [
+        "Review sample wording and page targeting",
+        "Choose a service or explicit Collect only"
+      ],
+      "status": "review",
+      "source": "Original WConvert coverage expansion; existing reviewed composition reused for a distinct visitor task.",
+      "suggested_setup": [
+        "Place on home styling content. The promise is useful editorial advice, not a discount or design consultation.",
+        "Start after meaningful engagement; limit repeated interruption."
+      ],
+      "measure": "Accepted requests and completed follow-up, measured separately.",
+      "batch": "coverage",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "benefit-grid"
+        ],
+        "reason": "Reuse the established benefit-grid composition. Place on home styling content. The promise is useful editorial advice, not a discount or design consultation."
+      }
+    },
+    {
+      "id": "sizing-guide",
+      "audience": "stores",
+      "family": "Inline Split",
+      "visitor_need": "Help shoppers measure before choosing a size.",
+      "difference": "Embed below sizing advice. Supply an accurate guide for the collection and configure its resource email. Do not imply that a generic chart fits every product.",
+      "requirements": [
+        "Review sample wording and page targeting",
+        "Configure and test the real resource email"
+      ],
+      "status": "review",
+      "source": "Original WConvert coverage expansion; existing reviewed composition reused for a distinct visitor task.",
+      "suggested_setup": [
+        "Embed below sizing advice. Supply an accurate guide for the collection and configure its resource email. Do not imply that a generic chart fits every product.",
+        "Embed within relevant content."
+      ],
+      "measure": "Accepted requests and completed follow-up, measured separately.",
+      "batch": "coverage",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "inline-split"
+        ],
+        "reason": "Reuse the established inline-split composition. Embed below sizing advice. Supply an accurate guide for the collection and configure its resource email. Do not imply that a generic chart fits every product."
+      }
+    },
+    {
+      "id": "launch-interest",
+      "audience": "stores",
+      "family": "Ink Split",
+      "visitor_need": "Collect interest before a product launch.",
+      "difference": "Use only for a planned release with an owner and announcement date. This records interest; it does not reserve products.",
+      "requirements": [
+        "Review sample wording and page targeting",
+        "Choose a service or explicit Collect only"
+      ],
+      "status": "review",
+      "source": "Original WConvert coverage expansion; existing reviewed composition reused for a distinct visitor task.",
+      "suggested_setup": [
+        "Use only for a planned release with an owner and announcement date. This records interest; it does not reserve products.",
+        "Start after meaningful engagement; limit repeated interruption."
+      ],
+      "measure": "Accepted requests and completed follow-up, measured separately.",
+      "batch": "coverage",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "ink-split"
+        ],
+        "reason": "Reuse the established ink-split composition. Use only for a planned release with an owner and announcement date. This records interest; it does not reserve products."
+      }
+    },
+    {
+      "id": "gift-planning-guide",
+      "audience": "stores",
+      "family": "Name And Email",
+      "visitor_need": "Offer a thoughtful gift planning guide.",
+      "difference": "Place on gift inspiration pages. Provide a useful guide and configure its resource email. Update recommendations as availability changes.",
+      "requirements": [
+        "Review sample wording and page targeting",
+        "Configure and test the real resource email"
+      ],
+      "status": "review",
+      "source": "Original WConvert coverage expansion; existing reviewed composition reused for a distinct visitor task.",
+      "suggested_setup": [
+        "Place on gift inspiration pages. Provide a useful guide and configure its resource email. Update recommendations as availability changes.",
+        "Start after meaningful engagement; limit repeated interruption."
+      ],
+      "measure": "Accepted requests and completed follow-up, measured separately.",
+      "batch": "coverage",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "name-and-email"
+        ],
+        "reason": "Reuse the established name-and-email composition. Place on gift inspiration pages. Provide a useful guide and configure its resource email. Update recommendations as availability changes."
+      }
+    },
+    {
+      "id": "product-advice-request",
+      "audience": "stores",
+      "family": "Inline Choice",
+      "visitor_need": "Let shoppers ask for product advice.",
+      "difference": "Embed on the relevant product page and tailor the choices to that product. Assign a person to reply; this form does not reserve stock.",
+      "requirements": [
+        "Review sample wording and page targeting",
+        "Assign the person who responds"
+      ],
+      "status": "review",
+      "source": "Original WConvert coverage expansion; existing reviewed composition reused for a distinct visitor task.",
+      "suggested_setup": [
+        "Embed on the relevant product page and tailor the choices to that product. Assign a person to reply; this form does not reserve stock.",
+        "Embed within relevant content."
+      ],
+      "measure": "Accepted requests and completed follow-up, measured separately.",
+      "batch": "coverage",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "inline-choice"
+        ],
+        "reason": "Reuse the established inline-choice composition. Embed on the relevant product page and tailor the choices to that product. Assign a person to reply; this form does not reserve stock."
+      }
+    },
+    {
+      "id": "restock-announcements",
+      "audience": "stores",
+      "family": "Edition Pass",
+      "visitor_need": "Invite collection restock announcements.",
+      "difference": "Use for manually managed collection announcements. This is not a per-product stock alert: arrange the actual restock mailing before launch.",
+      "requirements": [
+        "Review sample wording and page targeting",
+        "Choose a service or explicit Collect only"
+      ],
+      "status": "review",
+      "source": "Original WConvert coverage expansion; existing reviewed composition reused for a distinct visitor task.",
+      "suggested_setup": [
+        "Use for manually managed collection announcements. This is not a per-product stock alert: arrange the actual restock mailing before launch.",
+        "Start after meaningful engagement; limit repeated interruption."
+      ],
+      "measure": "Accepted requests and completed follow-up, measured separately.",
+      "batch": "coverage",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "edition-pass"
+        ],
+        "reason": "Reuse the established edition-pass composition. Use for manually managed collection announcements. This is not a per-product stock alert: arrange the actual restock mailing before launch."
+      }
+    },
+    {
+      "id": "collection-discovery",
+      "audience": "stores",
+      "family": "Offer Panel",
+      "visitor_need": "Help undecided shoppers explore a collection.",
+      "difference": "Suggest the collection after visitors have spent time browsing. On a Pro site, consider desktop exit intent after reviewing the placement. Point to a useful collection page, not another interruption.",
+      "requirements": [
+        "Review sample wording and page targeting",
+        "Set and test the real destination link"
+      ],
+      "status": "review",
+      "source": "Original WConvert coverage expansion; existing reviewed composition reused for a distinct visitor task.",
+      "suggested_setup": [
+        "Suggest the collection after visitors have spent time browsing. On a Pro site, consider desktop exit intent after reviewing the placement. Point to a useful collection page, not another interruption.",
+        "Start after meaningful engagement; limit repeated interruption."
+      ],
+      "measure": "Clicks to the promised destination; purchases and registrations are separate outcomes.",
+      "batch": "coverage",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "offer-panel"
+        ],
+        "reason": "Reuse the established offer-panel composition. Suggest the collection after visitors have spent time browsing. On a Pro site, consider desktop exit intent after reviewing the placement. Point to a useful collection page, not another interruption."
+      }
+    },
+    {
+      "id": "packaging-details",
+      "audience": "stores",
+      "family": "Reading Slip",
+      "visitor_need": "Explain packaging before checkout.",
+      "difference": "Embed near delivery information. Link to your actual packaging policy and substantiate environmental claims.",
+      "requirements": [
+        "Review sample wording and page targeting",
+        "Set and test the real destination link"
+      ],
+      "status": "review",
+      "source": "Original WConvert coverage expansion; existing reviewed composition reused for a distinct visitor task.",
+      "suggested_setup": [
+        "Embed near delivery information. Link to your actual packaging policy and substantiate environmental claims.",
+        "Embed within relevant content."
+      ],
+      "measure": "Clicks to the promised destination; purchases and registrations are separate outcomes.",
+      "batch": "coverage",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "reading-slip"
+        ],
+        "reason": "Reuse the established reading-slip composition. Embed near delivery information. Link to your actual packaging policy and substantiate environmental claims."
+      }
+    },
+    {
+      "id": "cleaning-quote",
+      "audience": "services",
+      "family": "Service Docket",
+      "visitor_need": "Request a home cleaning estimate.",
+      "difference": "Place on cleaning service pages. Follow up for property size, location and timing before quoting. No appointment is booked.",
+      "requirements": [
+        "Review sample wording and page targeting",
+        "Assign the person who responds"
+      ],
+      "status": "review",
+      "source": "Original WConvert coverage expansion; existing reviewed composition reused for a distinct visitor task.",
+      "suggested_setup": [
+        "Place on cleaning service pages. Follow up for property size, location and timing before quoting. No appointment is booked.",
+        "Embed within relevant content."
+      ],
+      "measure": "Accepted requests and completed follow-up, measured separately.",
+      "batch": "coverage",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "service-docket"
+        ],
+        "reason": "Reuse the established service-docket composition. Place on cleaning service pages. Follow up for property size, location and timing before quoting. No appointment is booked."
+      }
+    },
+    {
+      "id": "landscaping-enquiry",
+      "audience": "services",
+      "family": "Journey Enquiry",
+      "visitor_need": "Start a garden landscaping enquiry.",
+      "difference": "Ask the project type first, then contact details. The answers remain a single enquiry. Review the brief before arranging a site visit.",
+      "requirements": [
+        "Review sample wording and page targeting",
+        "Assign the person who responds"
+      ],
+      "status": "review",
+      "source": "Original WConvert coverage expansion; existing reviewed composition reused for a distinct visitor task.",
+      "suggested_setup": [
+        "Ask the project type first, then contact details. The answers remain a single enquiry. Review the brief before arranging a site visit.",
+        "Embed within relevant content."
+      ],
+      "measure": "Accepted requests and completed follow-up, measured separately.",
+      "batch": "coverage",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "journey-enquiry"
+        ],
+        "reason": "Reuse the established journey-enquiry composition. Ask the project type first, then contact details. The answers remain a single enquiry. Review the brief before arranging a site visit."
+      }
+    },
+    {
+      "id": "renovation-callback",
+      "audience": "services",
+      "family": "Callback Notes",
+      "visitor_need": "Request a renovation planning call.",
+      "difference": "Place below renovation services. Use the phone library and confirm country selection. Agree timing separately; this does not book a call.",
+      "requirements": [
+        "Review sample wording and page targeting",
+        "Assign the person who responds"
+      ],
+      "status": "review",
+      "source": "Original WConvert coverage expansion; existing reviewed composition reused for a distinct visitor task.",
+      "suggested_setup": [
+        "Place below renovation services. Use the phone library and confirm country selection. Agree timing separately; this does not book a call.",
+        "Start after meaningful engagement; limit repeated interruption."
+      ],
+      "measure": "Accepted requests and completed follow-up, measured separately.",
+      "batch": "coverage",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "callback-notes"
+        ],
+        "reason": "Reuse the established callback-notes composition. Place below renovation services. Use the phone library and confirm country selection. Agree timing separately; this does not book a call."
+      }
+    },
+    {
+      "id": "agency-project-enquiry",
+      "audience": "services",
+      "family": "Inline Choice",
+      "visitor_need": "Start a website project conversation.",
+      "difference": "Embed below agency services or portfolio work. Qualify scope, budget and timing in the reply instead of asking for an excessive first-contact form.",
+      "requirements": [
+        "Review sample wording and page targeting",
+        "Assign the person who responds"
+      ],
+      "status": "review",
+      "source": "Original WConvert coverage expansion; existing reviewed composition reused for a distinct visitor task.",
+      "suggested_setup": [
+        "Embed below agency services or portfolio work. Qualify scope, budget and timing in the reply instead of asking for an excessive first-contact form.",
+        "Embed within relevant content."
+      ],
+      "measure": "Accepted requests and completed follow-up, measured separately.",
+      "batch": "coverage",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "inline-choice"
+        ],
+        "reason": "Reuse the established inline-choice composition. Embed below agency services or portfolio work. Qualify scope, budget and timing in the reply instead of asking for an excessive first-contact form."
+      }
+    },
+    {
+      "id": "tutoring-introduction",
+      "audience": "services",
+      "family": "Appointment Note",
+      "visitor_need": "Ask about a tutoring introduction.",
+      "difference": "Ask adults to enquire on behalf of children. Avoid collecting children’s contact details or sensitive learning information here. Confirm suitability and availability before booking.",
+      "requirements": [
+        "Review sample wording and page targeting",
+        "Assign the person who responds"
+      ],
+      "status": "review",
+      "source": "Original WConvert coverage expansion; existing reviewed composition reused for a distinct visitor task.",
+      "suggested_setup": [
+        "Ask adults to enquire on behalf of children. Avoid collecting children’s contact details or sensitive learning information here. Confirm suitability and availability before booking.",
+        "Start after meaningful engagement; limit repeated interruption."
+      ],
+      "measure": "Accepted requests and completed follow-up, measured separately.",
+      "batch": "coverage",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "appointment-note"
+        ],
+        "reason": "Reuse the established appointment-note composition. Ask adults to enquire on behalf of children. Avoid collecting children’s contact details or sensitive learning information here. Confirm suitability and availability before booking."
+      }
+    },
+    {
+      "id": "fitness-introduction",
+      "audience": "services",
+      "family": "Inline Phone",
+      "visitor_need": "Request a fitness studio introduction.",
+      "difference": "Embed below introductory class information. Keep health history out of this form and discuss requirements through the studio’s appropriate intake process. A trial is not booked.",
+      "requirements": [
+        "Review sample wording and page targeting",
+        "Assign the person who responds"
+      ],
+      "status": "review",
+      "source": "Original WConvert coverage expansion; existing reviewed composition reused for a distinct visitor task.",
+      "suggested_setup": [
+        "Embed below introductory class information. Keep health history out of this form and discuss requirements through the studio’s appropriate intake process. A trial is not booked.",
+        "Embed within relevant content."
+      ],
+      "measure": "Accepted requests and completed follow-up, measured separately.",
+      "batch": "coverage",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "inline-phone"
+        ],
+        "reason": "Reuse the established inline-phone composition. Embed below introductory class information. Keep health history out of this form and discuss requirements through the studio’s appropriate intake process. A trial is not booked."
+      }
+    },
+    {
+      "id": "accounting-consultation",
+      "audience": "services",
+      "family": "Portrait Frame",
+      "visitor_need": "Ask about small-business accounting support.",
+      "difference": "Offer a first conversation rather than financial advice. Collect no tax identifiers, balances or documents in this initial form.",
+      "requirements": [
+        "Review sample wording and page targeting",
+        "Assign the person who responds"
+      ],
+      "status": "review",
+      "source": "Original WConvert coverage expansion; existing reviewed composition reused for a distinct visitor task.",
+      "suggested_setup": [
+        "Offer a first conversation rather than financial advice. Collect no tax identifiers, balances or documents in this initial form.",
+        "Start after meaningful engagement; limit repeated interruption."
+      ],
+      "measure": "Accepted requests and completed follow-up, measured separately.",
+      "batch": "coverage",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "portrait-frame"
+        ],
+        "reason": "Reuse the established portrait-frame composition. Offer a first conversation rather than financial advice. Collect no tax identifiers, balances or documents in this initial form."
+      }
+    },
+    {
+      "id": "service-text-updates",
+      "audience": "services",
+      "family": "Stacked Signup",
+      "visitor_need": "Offer occasional service announcements.",
+      "difference": "Connect a supported SMS service or choose Collect only with a defined follow-up process. These are marketing announcements, not appointment reminders.",
+      "requirements": [
+        "Review sample wording and page targeting",
+        "Choose a service or explicit Collect only"
+      ],
+      "status": "review",
+      "source": "Original WConvert coverage expansion; existing reviewed composition reused for a distinct visitor task.",
+      "suggested_setup": [
+        "Connect a supported SMS service or choose Collect only with a defined follow-up process. These are marketing announcements, not appointment reminders.",
+        "Start after meaningful engagement; limit repeated interruption."
+      ],
+      "measure": "Accepted requests and completed follow-up, measured separately.",
+      "batch": "coverage",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "stacked-signup"
+        ],
+        "reason": "Reuse the established stacked-signup composition. Connect a supported SMS service or choose Collect only with a defined follow-up process. These are marketing announcements, not appointment reminders."
+      }
+    },
+    {
+      "id": "project-readiness-guide",
+      "audience": "services",
+      "family": "Project Notebook",
+      "visitor_need": "Help customers prepare for a contractor visit.",
+      "difference": "Place on project advice pages. Supply a checklist matching the service and configure resource email. This neither assesses project readiness automatically nor books a visit.",
+      "requirements": [
+        "Review sample wording and page targeting",
+        "Configure and test the real resource email"
+      ],
+      "status": "review",
+      "source": "Original WConvert coverage expansion; existing reviewed composition reused for a distinct visitor task.",
+      "suggested_setup": [
+        "Place on project advice pages. Supply a checklist matching the service and configure resource email. This neither assesses project readiness automatically nor books a visit.",
+        "Start after meaningful engagement; limit repeated interruption."
+      ],
+      "measure": "Accepted requests and completed follow-up, measured separately.",
+      "batch": "coverage",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "project-notebook"
+        ],
+        "reason": "Reuse the established project-notebook composition. Place on project advice pages. Supply a checklist matching the service and configure resource email. This neither assesses project readiness automatically nor books a visit."
+      }
+    },
+    {
+      "id": "editorial-weekly",
+      "audience": "publishers",
+      "family": "Ledger Card",
+      "visitor_need": "Offer a weekly editorial letter.",
+      "difference": "Use on editorial pages with an established weekly publishing schedule. Keep the frequency promise realistic.",
+      "requirements": [
+        "Review sample wording and page targeting",
+        "Choose a service or explicit Collect only"
+      ],
+      "status": "review",
+      "source": "Original WConvert coverage expansion; existing reviewed composition reused for a distinct visitor task.",
+      "suggested_setup": [
+        "Use on editorial pages with an established weekly publishing schedule. Keep the frequency promise realistic.",
+        "Start after meaningful engagement; limit repeated interruption."
+      ],
+      "measure": "Accepted requests and completed follow-up, measured separately.",
+      "batch": "coverage",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "ledger-card"
+        ],
+        "reason": "Reuse the established ledger-card composition. Use on editorial pages with an established weekly publishing schedule. Keep the frequency promise realistic."
+      }
+    },
+    {
+      "id": "writing-checklist",
+      "audience": "publishers",
+      "family": "Useful Guide",
+      "visitor_need": "Offer a seven-point writing checklist.",
+      "difference": "Create the promised seven checks and configure resource email. Add the actual checklist address to the optional follow-up link before publishing.",
+      "requirements": [
+        "Review sample wording and page targeting",
+        "Configure and test the real resource email"
+      ],
+      "status": "review",
+      "source": "Original WConvert coverage expansion; existing reviewed composition reused for a distinct visitor task.",
+      "suggested_setup": [
+        "Create the promised seven checks and configure resource email. Add the actual checklist address to the optional follow-up link before publishing.",
+        "Start after meaningful engagement; limit repeated interruption."
+      ],
+      "measure": "Accepted requests and completed follow-up, measured separately.",
+      "batch": "coverage",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "useful-guide"
+        ],
+        "reason": "Reuse the established useful-guide composition. Create the promised seven checks and configure resource email. Add the actual checklist address to the optional follow-up link before publishing."
+      }
+    },
+    {
+      "id": "related-essay",
+      "audience": "publishers",
+      "family": "Reading Slip",
+      "visitor_need": "Suggest a useful next article.",
+      "difference": "Embed after a genuinely related article. Link to the promised follow-up and check that it is available to the same audience.",
+      "requirements": [
+        "Review sample wording and page targeting",
+        "Set and test the real destination link"
+      ],
+      "status": "review",
+      "source": "Original WConvert coverage expansion; existing reviewed composition reused for a distinct visitor task.",
+      "suggested_setup": [
+        "Embed after a genuinely related article. Link to the promised follow-up and check that it is available to the same audience.",
+        "Embed within relevant content."
+      ],
+      "measure": "Clicks to the promised destination; purchases and registrations are separate outcomes.",
+      "batch": "coverage",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "reading-slip"
+        ],
+        "reason": "Reuse the established reading-slip composition. Embed after a genuinely related article. Link to the promised follow-up and check that it is available to the same audience."
+      }
+    },
+    {
+      "id": "membership-details",
+      "audience": "publishers",
+      "family": "Inline Benefits",
+      "visitor_need": "Explain a publication’s membership.",
+      "difference": "List only real member benefits. Link to a page explaining pricing, renewal and cancellation before visitors decide.",
+      "requirements": [
+        "Review sample wording and page targeting",
+        "Set and test the real destination link"
+      ],
+      "status": "review",
+      "source": "Original WConvert coverage expansion; existing reviewed composition reused for a distinct visitor task.",
+      "suggested_setup": [
+        "List only real member benefits. Link to a page explaining pricing, renewal and cancellation before visitors decide.",
+        "Embed within relevant content."
+      ],
+      "measure": "Clicks to the promised destination; purchases and registrations are separate outcomes.",
+      "batch": "coverage",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "inline-benefits"
+        ],
+        "reason": "Reuse the established inline-benefits composition. List only real member benefits. Link to a page explaining pricing, renewal and cancellation before visitors decide."
+      }
+    },
+    {
+      "id": "headlines-optional-sms",
+      "audience": "publishers",
+      "family": "Journey Email Then Sms",
+      "visitor_need": "Offer headlines by email with optional texts.",
+      "difference": "Save the email request first. SMS is optional and needs its own consent and service. Publish only with a defined editorial schedule for both channels.",
+      "requirements": [
+        "Review sample wording and page targeting",
+        "Choose a service or explicit Collect only"
+      ],
+      "status": "review",
+      "source": "Original WConvert coverage expansion; existing reviewed composition reused for a distinct visitor task.",
+      "suggested_setup": [
+        "Save the email request first. SMS is optional and needs its own consent and service. Publish only with a defined editorial schedule for both channels.",
+        "Start after meaningful engagement; limit repeated interruption."
+      ],
+      "measure": "Accepted requests and completed follow-up, measured separately.",
+      "batch": "coverage",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "journey-email-then-sms"
+        ],
+        "reason": "Reuse the established journey-email-then-sms composition. Save the email request first. SMS is optional and needs its own consent and service. Publish only with a defined editorial schedule for both channels."
+      }
     }
   ],
   "batches": [
@@ -633,6 +1257,10 @@
     {
       "id": "expansion",
       "name": "Next 12 · expansion"
+    },
+    {
+      "id": "coverage",
+      "name": "Next 24 · practical coverage"
     }
   ]
 }

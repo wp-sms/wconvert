@@ -3,6 +3,7 @@
 defined('ABSPATH') || exit;
 
 return [
+    'business_types' => ['services'],
     'id' => 'home-repair-quote',
     'name' => __('Request a home repair quote', 'wconvert'),
     'goal' => 'collect_enquiries',

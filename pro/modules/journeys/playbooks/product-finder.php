@@ -3,6 +3,7 @@
 defined('ABSPATH') || exit;
 
 return [
+    'business_types' => ['stores'],
     'id' => 'product-finder',
     'name' => __('Help shoppers choose garden products', 'wconvert'),
     'goal' => 'find_match',

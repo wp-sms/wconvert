@@ -3,6 +3,7 @@
 defined('ABSPATH') || exit;
 
 return [
+    'business_types' => ['services'],
     'id' => 'seasonal-service-link',
     'name' => __('Point visitors to seasonal service details', 'wconvert'),
     'goal' => 'promote_offer',

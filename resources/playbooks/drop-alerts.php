@@ -12,6 +12,7 @@
 defined('ABSPATH') || exit;
 
 return [
+    'business_types' => ['stores'],
     'id' => 'drop-alerts',
     'name' => __('New-release SMS alerts', 'wconvert'),
     'goal' => 'grow_sms_list',

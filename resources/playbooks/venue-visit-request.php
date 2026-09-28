@@ -3,6 +3,7 @@
 defined('ABSPATH') || exit;
 
 return [
+    'business_types' => ['services'],
     'id' => 'venue-visit-request',
     'name' => __('Request a wedding venue visit', 'wconvert'),
     'goal' => 'collect_enquiries',

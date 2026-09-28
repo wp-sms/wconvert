@@ -3,6 +3,7 @@
 defined('ABSPATH') || exit;
 
 return [
+    'business_types' => ['stores'],
     'id' => 'studio-welcome',
     'name' => __('Welcome offer for a home and garden shop', 'wconvert'),
     'goal' => 'grow_email_list',

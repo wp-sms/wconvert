@@ -3,6 +3,7 @@
 defined('ABSPATH') || exit;
 
 return [
+    'business_types' => ['services'],
     'id' => 'project-planning-guide',
     'name' => __('Request a renovation planning checklist', 'wconvert'),
     'goal' => 'deliver_lead_magnet',

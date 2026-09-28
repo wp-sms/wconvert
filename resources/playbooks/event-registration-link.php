@@ -3,6 +3,7 @@
 defined('ABSPATH') || exit;
 
 return [
+    'business_types' => ['publishers'],
     'id' => 'event-registration-link',
     'name' => __('Link to a writing workshop registration', 'wconvert'),
     'goal' => 'promote_offer',

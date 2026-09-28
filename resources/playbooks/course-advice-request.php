@@ -3,6 +3,7 @@
 defined('ABSPATH') || exit;
 
 return [
+    'business_types' => ['services'],
     'id' => 'course-advice-request',
     'name' => __('Ask which course to start with', 'wconvert'),
     'goal' => 'collect_enquiries',

@@ -3,6 +3,7 @@
 defined('ABSPATH') || exit;
 
 return [
+    'business_types' => ['services'],
     'id' => 'photography-enquiry',
     'name' => __('Enquire about a portrait session', 'wconvert'),
     'goal' => 'collect_enquiries',

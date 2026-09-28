@@ -3,6 +3,7 @@
 defined('ABSPATH') || exit;
 
 return [
+    'business_types' => ['stores'],
     'id' => 'product-care-guide',
     'name' => __('Offer a knitwear care guide', 'wconvert'),
     'goal' => 'deliver_lead_magnet',

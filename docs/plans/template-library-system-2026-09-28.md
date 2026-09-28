@@ -325,3 +325,35 @@ composition decision. The studio exposes batch and goal filters, a coverage matr
 and correct campaign-level paid requirements. This remains an internal production
 workflow. Customer discovery, catalog scaling, asset transport, 48-campaign
 completion and actual merchant conversion trials remain separate next milestones.
+
+
+## Practical coverage batch implemented, 2026-09-28
+
+The user approved the next steps. The collection now has 48 campaign setups using
+36 designs: 22 stores, 17 services and 9 publishers. Twenty-four additional
+Playbooks reuse existing compositions. This is useful campaign breadth, not a
+claim of 24 new visual designs. Discovery now combines business, Goal, format,
+collection and search, with setup details and previews retained.
+
+The final selection adapts the proposed briefs to supported, testable workflows.
+Gift-planning and sizing resources, manual restock announcements and enquiries
+are implemented; the proposed skincare/gift/service finders and third cart variant
+remain coverage opportunities rather than being mislabeled as completed.
+
+A disposable real WordPress/MySQL/WooCommerce site publishes all 48 through the
+normal API. Capture checks cover required fields, canonical phones, preferences,
+idempotent retries and one Lead across optional-channel submissions. Six resource
+campaigns hand off actual emails into a local outbox with working content links.
+Browser checks cover creation/edit/publication, real phone selection, capture,
+and coupon/cart use. All new screens were visually reviewed at desktop and phone
+widths; final responsive audit: 720 cases, zero measured layout findings.
+
+The catalog bound is now 50 packs, using one shared constant; per-pack and byte
+limits remain. This removes the old 240-design capacity ceiling but does not
+complete paid asset transport, shared design references or a 500-entry end-to-end
+installation trial. Those remain prerequisites for broad distribution.
+
+Continue in reviewed batches selected from uncovered needs. Preserve revisioned
+review evidence, distinguish editorial review from release approval, and obtain
+real merchant outcome evidence before claiming conversion improvements. No remote
+tracking or external email/SMS sending was introduced.

@@ -31,3 +31,10 @@ revision and renderer revision; rebuild and inspect again after the last edit.
 The studio defaults the sample phone country to GB; shipping campaigns use the
 configured site/field country. It sends no data and cannot prove provider delivery
 or store behaviour. Complete the configured WordPress test before release.
+
+The [disposable MySQL demo](../demo/README.md) provides real sample products,
+coupons, pages, resources, capture and a local mail outbox. Its verifier records
+per-campaign database evidence. Store that result alongside the studio revision
+and screen evidence; it does not replace clicking the visitor's routes. Review
+records must state separately what was simulated, tested through native REST,
+observed in the browser, and left for a merchant's configured provider.

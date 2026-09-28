@@ -13,19 +13,21 @@ npm install --no-save playwright       # not a repo dependency; see below
 Output goes to `tools/design-library/out/`, which is gitignored. Nothing here
 ships: `/tools` is in `.distignore`.
 
-## Internal creation and review studio: 24 campaigns
+## Internal creation and review studio: 48 campaigns
 
 Run `npm run templates:pilot`, then open `out/pilot.html` through the local site
-(or serve `out/` over HTTP). Add `?batch=expansion` to show the newest twelve.
+(or serve `out/` over HTTP). Add `?batch=coverage` to show the newest 24. `out/proof.html` pairs every
+screen at desktop and phone widths for visual review.
 `npm run test:template-studio` tests discovery, duplicate detection, brief validation
 and all prepared campaigns. Composer dependencies are required for the PHP exporter.
 
-The studio contains **24 campaign setups using 21 designs**, drawn from a complete
+The studio contains **48 campaign setups using 36 designs**, drawn from a complete
 inventory of **70 designs**. The first twelve received user approval of the design
 direction. The next twelve add four new Free designs and reuse existing designs,
 including deliberate reuse between two different enquiry workflows. Ten Playbooks
 are new; cart return and standalone SMS already had useful registered starts.
-There are now 49 registered Playbooks across Free and Pro modules. All seven Goals,
+The latest 24 reuse existing designs for distinct practical needs.
+There are now 73 registered Playbooks across Free and Pro modules. All seven Goals,
 all five Display Types and three audiences are represented. These are editorial
 candidates, not measured conversion winners or automatically approved releases.
 
@@ -89,9 +91,15 @@ Original artwork and provenance live in `pilot/assets/`. These SVG illustrations
 are embedded in the bundled JSON, with no remote asset dependency. This does not
 add asset support to downloadable catalog packs.
 
-The remaining expansion to 48 campaigns, 400-campaign coverage plan, automated generation,
-shared review storage, screenshot similarity, conversion measurement and catalog
-scaling remain future work. This studio is the first reviewable implementation.
+A [real WordPress demo](demo/README.md) exercises publication, saved leads, retry
+handling, sample products/coupons, useful resource pages and a local mail outbox.
+It uses MySQL, not a mocked capture endpoint. The shipping Goal-first screen now
+filters by business as well as format, collection and search. The bounded catalog
+accepts 50 packs, retaining the existing 12-design and 256 KiB limits.
+
+Automated generation, shared review storage, screenshot similarity, conversion
+measurement, paid asset distribution and broad 300–500 campaign rollout remain
+future work. The current 48 are reviewed editorial candidates, not measured winners.
 
 ## A sibling of `tools/design-system`, not a step inside it
 
@@ -125,6 +133,7 @@ a second copy of both.
 | `review` | Builds `out/flagships.html` for Fieldwork, Sunday marginalia and Callback notes; needs `renderer` |
 | `library-review` | Builds `out/library-review.html` for every Free and Pro design, both screens, four widths and automated browser measurements; needs `renderer` |
 | `pilot` | Builds `out/pilot.html`, `pilot.json` and `inventory.json` from registered campaigns and all module designs; needs `renderer` and Composer dependencies |
+| `proof` | Builds `out/proof.html`, pairing all screens at desktop/320px widths; needs `pilot` and `renderer` |
 | `starting-points` | Builds `out/starting-points.html` from the twelve flagship Playbooks through the shipping PHP Prefill, with setup notes and the same size checks; needs `renderer` and Composer dependencies |
 
 For a complete library review, run `./tools/design-library/build.sh renderer library-review`

@@ -140,7 +140,7 @@ final class CuratedCollectionsTest extends TestCase
         $duplicate[1]['version'] = '1.0.1';
         try {
             foreach ([
-                'at most 20' => array_fill(0, 21, $collections[0]),
+                'at most 50' => array_fill(0, 51, $collections[0]),
                 'Repeated collection' => $duplicate,
             ] as $error => $definition) {
                 file_put_contents($tool . '/collections.json', json_encode($definition, JSON_THROW_ON_ERROR));

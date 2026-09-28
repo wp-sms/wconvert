@@ -3,6 +3,7 @@
 defined('ABSPATH') || exit;
 
 return [
+    'business_types' => ['stores'],
     'id' => 'journey-email-then-sms',
     'name' => __('Launch updates with optional SMS', 'wconvert'),
     'goal' => 'grow_email_list',

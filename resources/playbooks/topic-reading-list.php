@@ -3,6 +3,7 @@
 defined('ABSPATH') || exit;
 
 return [
+    'business_types' => ['publishers'],
     'id' => 'topic-reading-list',
     'name' => __('Collect a reading preference with signup', 'wconvert'),
     'goal' => 'grow_email_list',

@@ -40,8 +40,8 @@ try {
         throw new RuntimeException('Supply an HTTP(S) directory URL without credentials, query or fragment.');
     }
     $collections = json_decode(file_get_contents(__DIR__ . '/collections.json'), true, 512, JSON_THROW_ON_ERROR);
-    if (!is_array($collections) || !array_is_list($collections) || count($collections) > 20) {
-        throw new RuntimeException('A catalog must list at most 20 collections.');
+    if (!is_array($collections) || !array_is_list($collections) || count($collections) > \WConvert\Template\Catalog\TemplateCatalog::MAX_PACKS) {
+        throw new RuntimeException(sprintf('A catalog must list at most %d collections.', \WConvert\Template\Catalog\TemplateCatalog::MAX_PACKS));
     }
     $validator = PackValidator::shipping();
     $files = [];

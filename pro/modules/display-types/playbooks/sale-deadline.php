@@ -3,6 +3,7 @@
 defined('ABSPATH') || exit;
 
 return [
+    'business_types' => ['stores'],
     'id' => 'sale-deadline',
     'name' => __('Show a real sale deadline', 'wconvert'),
     'goal' => 'promote_offer',
