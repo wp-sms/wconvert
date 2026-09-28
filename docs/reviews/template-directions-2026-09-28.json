@@ -1,0 +1,918 @@
+{
+  "date": "2026-09-28",
+  "setups": 100,
+  "referenced_designs": 51,
+  "inventory_designs": 83,
+  "registered_playbooks": 125,
+  "new_designs": [
+    "product-shelf",
+    "request-folio",
+    "session-card",
+    "split-notice"
+  ],
+  "refined_design": "journey-offer-first",
+  "new_and_refined_campaigns": [
+    "homeware-care-notes",
+    "repair-advice-request",
+    "writing-session-details",
+    "furniture-fit-guide",
+    "maker-session-invitation"
+  ],
+  "layout": {
+    "cases": 1672,
+    "findings": 0,
+    "widths": [
+      320,
+      390,
+      768,
+      1440
+    ],
+    "directions": [
+      "ltr",
+      "rtl"
+    ]
+  },
+  "visual": {
+    "paired_screens": 10,
+    "paired_captures": 20,
+    "available_widths": [
+      768,
+      320
+    ],
+    "native_phone_viewport": [
+      390,
+      844
+    ],
+    "notes": "Every new/refined screen inspected in both directions; native desktop and phone output inspected after final source edits. Product phone also captured in full."
+  },
+  "journey": {
+    "preview": [
+      "required email validation",
+      "simulated failure and retry",
+      "Back preserves choice and email",
+      "acknowledgements"
+    ],
+    "native": [
+      "Product email and consent captured",
+      "Enquiry with optional choice omitted captured",
+      "Enquiry with chair selection saved both email and interest",
+      "Continue left the stored enquiry count unchanged at 2",
+      "Writing-session link opened useful local information",
+      "Measuring-guide link opened useful local information",
+      "Invitation progressed and submitted on a 390px phone",
+      "Grouped admin use case opened matching setup details and created matching unpublished draft"
+    ]
+  },
+  "wordpress": {
+    "studio-welcome": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "edition-early-access": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "journey-email-then-sms": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "email-signup: required fields, capture, retry, saved values",
+        "sms-signup: required fields, capture, retry, saved values"
+      ]
+    },
+    "delivery-announcement": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "real link destination"
+      ]
+    },
+    "fullscreen-announcement": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "real link destination"
+      ]
+    },
+    "product-finder": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "result garden_sun: destination and products",
+        "result balcony: destination and products",
+        "result fallback: destination and products"
+      ]
+    },
+    "home-repair-quote": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "photography-enquiry": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "consultation-corner": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "project-planning-guide": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values",
+        "one local resource email with an accessible content page"
+      ]
+    },
+    "sunday-reading": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "content-guide": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "email-signup: required fields, capture, retry, saved values",
+        "result growing: destination and products",
+        "result fallback: destination and products"
+      ]
+    },
+    "cart-straight-away": {
+      "status": "passed",
+      "checks": [
+        "published"
+      ]
+    },
+    "cart-delivery-help": {
+      "status": "passed",
+      "checks": [
+        "published"
+      ]
+    },
+    "drop-alerts": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "sale-deadline": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "real link destination"
+      ]
+    },
+    "product-care-guide": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "visible acknowledgement resource link",
+        "primary: required fields, capture, retry, saved values",
+        "one local resource email with an accessible content page"
+      ]
+    },
+    "wholesale-enquiry": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "venue-visit-request": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "course-advice-request": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "maintenance-letter": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "seasonal-service-link": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "real link destination"
+      ]
+    },
+    "event-registration-link": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "real link destination"
+      ]
+    },
+    "topic-reading-list": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "new-arrivals-link": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "real link destination"
+      ]
+    },
+    "maker-notes": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "restyling-notes": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "sizing-guide": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values",
+        "one local resource email with an accessible content page"
+      ]
+    },
+    "launch-interest": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "gift-planning-guide": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values",
+        "one local resource email with an accessible content page"
+      ]
+    },
+    "product-advice-request": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "restock-announcements": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "collection-discovery": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "real link destination"
+      ]
+    },
+    "packaging-details": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "real link destination"
+      ]
+    },
+    "cleaning-quote": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "landscaping-enquiry": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "enquiry-request: required fields, capture, retry, saved values"
+      ]
+    },
+    "renovation-callback": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "agency-project-enquiry": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "tutoring-introduction": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "fitness-introduction": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "accounting-consultation": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "service-text-updates": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "project-readiness-guide": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values",
+        "one local resource email with an accessible content page"
+      ]
+    },
+    "editorial-weekly": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "writing-checklist": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "visible acknowledgement resource link",
+        "primary: required fields, capture, retry, saved values",
+        "one local resource email with an accessible content page"
+      ]
+    },
+    "related-essay": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "real link destination"
+      ]
+    },
+    "membership-details": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "real link destination"
+      ]
+    },
+    "headlines-optional-sms": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "email-signup: required fields, capture, retry, saved values",
+        "sms-signup: required fields, capture, retry, saved values"
+      ]
+    },
+    "gift-finder": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "gift price matches selected budget",
+        "result growing_small: destination and products",
+        "gift price matches selected budget",
+        "result growing_set: destination and products",
+        "gift price matches selected budget",
+        "result home_small: destination and products",
+        "gift price matches selected budget",
+        "result home_set: destination and products",
+        "result fallback: destination and products"
+      ]
+    },
+    "space-fit-finder": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "result compact_plant: destination and products",
+        "result roomy_plant: destination and products",
+        "result compact_storage: destination and products",
+        "result roomy_storage: destination and products",
+        "result fallback: destination and products"
+      ]
+    },
+    "experience-kit-finder": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "result starter: destination and products",
+        "result compact: destination and products",
+        "result collection: destination and products",
+        "result fallback: destination and products"
+      ]
+    },
+    "material-comparison": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "real link destination"
+      ]
+    },
+    "sample-request": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "bulk-gift-enquiry": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "personalisation-enquiry": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "collection-interest": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "fit-checklist": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "visible acknowledgement resource link",
+        "primary: required fields, capture, retry, saved values",
+        "one local resource email with an accessible content page"
+      ]
+    },
+    "local-pickup-details": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "real link destination"
+      ]
+    },
+    "basket-product-help": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "return-policy-guide": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "real link destination"
+      ]
+    },
+    "service-finder": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "result room_ideas: destination and products",
+        "result room_ready: destination and products",
+        "result garden_ideas: destination and products",
+        "result garden_ready: destination and products",
+        "result fallback: destination and products"
+      ]
+    },
+    "project-stage-finder": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "result planning: destination and products",
+        "result consulting: destination and products",
+        "result estimating: destination and products",
+        "result fallback: destination and products"
+      ]
+    },
+    "service-area-check": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "real link destination"
+      ]
+    },
+    "repair-assessment": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "group-training-enquiry": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "service-options-guide": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "real link destination"
+      ]
+    },
+    "pre-visit-checklist": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "visible acknowledgement resource link",
+        "primary: required fields, capture, retry, saved values",
+        "one local resource email with an accessible content page"
+      ]
+    },
+    "service-open-day": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "real link destination"
+      ]
+    },
+    "reading-path-finder": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "result writing_beginner: destination and products",
+        "result writing_deeper: destination and products",
+        "result growing_beginner: destination and products",
+        "result growing_deeper: destination and products",
+        "result fallback: destination and products"
+      ]
+    },
+    "reader-question": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "series-start": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "real link destination"
+      ]
+    },
+    "reader-format-choice": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "gift-wrap-details": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "real link destination"
+      ]
+    },
+    "dispatch-schedule": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "real link destination"
+      ]
+    },
+    "showroom-information": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "real link destination"
+      ]
+    },
+    "holiday-service-hours": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "real link destination"
+      ]
+    },
+    "remote-consultation-details": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "real link destination"
+      ]
+    },
+    "contributor-guidelines": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "real link destination"
+      ]
+    },
+    "repair-workshop-news": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "local-class-news": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "spare-parts-advice": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "assembly-guidance": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "trade-account-enquiry": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "access-enquiry": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "language-support-enquiry": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "equipment-hire-enquiry": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "reader-panel-interest": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "product-demo-enquiry": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "care-clinic-request": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "gift-message-enquiry": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "remote-walkthrough-request": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "portfolio-feedback-request": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "translation-project-enquiry": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "maker-session-invitation": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "email-signup: required fields, capture, retry, saved values"
+      ]
+    },
+    "venue-hire-checklist": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "visible acknowledgement resource link",
+        "primary: required fields, capture, retry, saved values",
+        "one local resource email with an accessible content page"
+      ]
+    },
+    "contributor-pitch-checklist": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "visible acknowledgement resource link",
+        "primary: required fields, capture, retry, saved values",
+        "one local resource email with an accessible content page"
+      ]
+    },
+    "homeware-care-notes": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "repair-advice-request": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "primary: required fields, capture, retry, saved values"
+      ]
+    },
+    "writing-session-details": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "real link destination"
+      ]
+    },
+    "furniture-fit-guide": {
+      "status": "passed",
+      "checks": [
+        "published",
+        "real link destination"
+      ]
+    },
+    "_outbox": {
+      "messages": 95,
+      "scope": "Local wp_mail handoff only; no external inbox delivery"
+    }
+  },
+  "comparison_only_reviews": [
+    {
+      "id": "journey-email-then-sms",
+      "reason": "Only derived nearest-design comparison changed; renderer, design, Playbook and brief are unchanged.",
+      "verified_source_paths": [
+        "resources/templates/library/journey-email-then-sms.json",
+        "resources/playbooks/journey-email-then-sms.php"
+      ],
+      "prior_record": "fd3c206547f17c9f81f17351ddfca7f0fff715dcdb5c497c8af3d4be13ec5871"
+    },
+    {
+      "id": "product-finder",
+      "reason": "Only derived nearest-design comparison changed; renderer, design, Playbook and brief are unchanged.",
+      "verified_source_paths": [
+        "pro/modules/journeys/templates/journey-product-finder.json",
+        "pro/modules/journeys/playbooks/product-finder.php"
+      ],
+      "prior_record": "c6faa3e3bf0baf455cfb08361f086d8e64546f6cff571400844c2666712c9564"
+    },
+    {
+      "id": "photography-enquiry",
+      "reason": "Only derived nearest-design comparison changed; renderer, design, Playbook and brief are unchanged.",
+      "verified_source_paths": [
+        "resources/templates/library/portrait-frame.json",
+        "resources/playbooks/photography-enquiry.php"
+      ],
+      "prior_record": "0c9e095e139801a7d913aeacd283018b3ab0034fa8c8fb8ad56518188a37b852"
+    },
+    {
+      "id": "content-guide",
+      "reason": "Only derived nearest-design comparison changed; renderer, design, Playbook and brief are unchanged.",
+      "verified_source_paths": [
+        "pro/modules/journeys/templates/journey-content-guide.json",
+        "pro/modules/journeys/playbooks/content-guide.php"
+      ],
+      "prior_record": "8dfab642baef2d28d28e6152ea8f2f02c2ebcddbf8856ccf4f85da27b2b4b04b"
+    },
+    {
+      "id": "cart-delivery-help",
+      "reason": "Only derived nearest-design comparison changed; renderer, design, Playbook and brief are unchanged.",
+      "verified_source_paths": [
+        "pro/modules/display-types/templates/inline-cart-nudge.json",
+        "pro/modules/display-types/playbooks/cart-delivery-help.php"
+      ],
+      "prior_record": "c76c947e2e1da78de34f761ffda6b0f1e74f1cb3d408d114f253945403ebe75c"
+    },
+    {
+      "id": "event-registration-link",
+      "reason": "Only derived nearest-design comparison changed; renderer, design, Playbook and brief are unchanged.",
+      "verified_source_paths": [
+        "resources/templates/library/agenda-card.json",
+        "resources/playbooks/event-registration-link.php"
+      ],
+      "prior_record": "f5c40914687d50cc5b7aa2140077248dad54928552d877b8d5e0f61375dd9e77"
+    },
+    {
+      "id": "landscaping-enquiry",
+      "reason": "Only derived nearest-design comparison changed; renderer, design, Playbook and brief are unchanged.",
+      "verified_source_paths": [
+        "resources/templates/library/journey-enquiry.json",
+        "resources/playbooks/landscaping-enquiry.php"
+      ],
+      "prior_record": "75ed1d0ebbfcf799705049cee08c6359501666ad3f113537fde2cbea6ba312fa"
+    },
+    {
+      "id": "accounting-consultation",
+      "reason": "Only derived nearest-design comparison changed; renderer, design, Playbook and brief are unchanged.",
+      "verified_source_paths": [
+        "resources/templates/library/portrait-frame.json",
+        "resources/playbooks/accounting-consultation.php"
+      ],
+      "prior_record": "c280346c2f94146e6bda15e98cd1fcd9891061966b58a9c974b4486d1a92cf33"
+    },
+    {
+      "id": "headlines-optional-sms",
+      "reason": "Only derived nearest-design comparison changed; renderer, design, Playbook and brief are unchanged.",
+      "verified_source_paths": [
+        "resources/templates/library/journey-email-then-sms.json",
+        "resources/playbooks/headlines-optional-sms.php"
+      ],
+      "prior_record": "da8d47b1d96bb879914b94259434778b4e6a3e12af3783651ba36b04101a2dba"
+    },
+    {
+      "id": "gift-finder",
+      "reason": "Only derived nearest-design comparison changed; renderer, design, Playbook and brief are unchanged.",
+      "verified_source_paths": [
+        "pro/modules/journeys/templates/gift-edit.json",
+        "pro/modules/journeys/playbooks/gift-finder.php"
+      ],
+      "prior_record": "578f5c79ef055db719d95cc65c2d0d8bf9f9fb93060e87638c1d3196453b0cd9"
+    }
+  ],
+  "external_delivery": "skipped by request",
+  "ci": "skipped by request",
+  "limits": [
+    "No measured conversion lift",
+    "No hosted preview pages for the two new paid designs",
+    "Local in-app-browser evidence only; no cross-browser or physical-device certification",
+    "Eight additional visual-variety briefs remain planned pending review of these first four"
+  ]
+}

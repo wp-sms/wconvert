@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { __, sprintf } from '@wordpress/i18n';
+import { __, _n, sprintf } from '@wordpress/i18n';
 import { ArrowLeft, Check, LayoutTemplate, Search, Sparkles, X } from 'lucide-react';
 import { Input } from '../components/ui/input';
 import { Badge } from '../components/ui/badge';
@@ -40,6 +40,7 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins }: GoalScree
   const [formatId, setFormatId] = useState('all');
   const [businessId, setBusinessId] = useState('all');
   const [query, setQuery] = useState('');
+  const [useCases, setUseCases] = useState<Record<string, string>>({});
   const packTrigger = useRef<HTMLButtonElement>(null);
   const collectionPicker = useRef<HTMLSelectElement>(null);
   const choseCollection = useRef(false);
@@ -184,7 +185,17 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins }: GoalScree
     ...(collectionId !== 'all' ? [{ id: 'collection', label: collectionId === 'bundled'
       ? __('Included with WConvert', 'wconvert') : collections.get(collectionId) ?? __('Selected pack', 'wconvert'), remove: () => setCollectionId('all') }] : []),
   ];
-  const singleStartingPoint = entries.length === 1;
+  // Group only after filtering; each choice keeps its own prepared preview and settings.
+  // Entries without a design ID remain independent.
+  const groups = new Map<string, PlaybookEntry[]>();
+  for (const entry of entries) {
+    const key = `${startingPointDisplayType(entry)}:${entry.template_id || entry.id}`;
+    const group = groups.get(key) ?? [];
+    group.push(entry);
+    groups.set(key, group);
+  }
+  const designCount = new Set(entries.map((entry) => entry.template_id || entry.id)).size;
+  const singleStartingPoint = groups.size === 1;
   return <Region className="wconvert-creation">
     <Step at={2} />
     <RegionHeader title={__('Choose a campaign setup', 'wconvert')}
@@ -229,7 +240,7 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins }: GoalScree
       <div className="wconvert-picker__results">
         <span role="status">{playbooks.status === 'ready' ? sprintf(
           /* translators: 1: matching setups, 2: setups for the selected goal. */
-          __('%1$s of %2$s campaign setups', 'wconvert'), String(entries.length), String(allEntries.length))
+          __('%1$s of %2$s campaign setups', 'wconvert'), String(entries.length), String(allEntries.length)) + ' · ' + sprintf(_n('%s design', '%s designs', designCount, 'wconvert'), String(designCount))
           : playbooks.status === 'loading' ? __('Loading campaign setups…', 'wconvert') : __('Campaign setups could not be loaded.', 'wconvert')}</span>
         {activeFilters.length > 0 && <div className="wconvert-picker__active">
           {activeFilters.map(({ id, label, remove }) => <button key={id} type="button" className="wconvert-picker__active-filter"
@@ -273,12 +284,22 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins }: GoalScree
           <span>{__('Setup details could not be loaded. You can still choose a campaign setup and review its rules in the editor.', 'wconvert')}</span>
           <Button variant="outline" size="sm" onClick={() => setRulesRetry((value) => value + 1)}>{__('Retry setup details', 'wconvert')}</Button>
         </div>}
-        <ul className={`wconvert-gallery${singleStartingPoint ? ' wconvert-gallery--single-start' : ''}`}>{entries.map((playbook) => <TemplateCard
-          key={playbook.id} id={playbook.id} name={playbook.name} template={playbook.template}
+        <ul className={`wconvert-gallery${singleStartingPoint ? ' wconvert-gallery--single-start' : ''}`}>{[...groups].map(([designId, variants]) => {
+          const playbook = variants.find((entry) => entry.id === useCases[designId]) ?? variants[0];
+          return <TemplateCard
+          key={designId} id={playbook.id} name={playbook.name} template={playbook.template}
           displayType={startingPointDisplayType(playbook)}
           featured={singleStartingPoint}
           absent={playbook.template === undefined ? <p>{__('This design is not available on this site. Choose a design after opening the draft.', 'wconvert')}</p> : undefined}
           action={(describedBy) => <div className="flex w-full flex-col items-start gap-2">
+            {variants.length > 1 && <label className="flex w-full flex-col gap-1 text-note">
+              {sprintf(__('Use case · %s setups share this design', 'wconvert'), String(variants.length))}
+              <select className="wconvert-picker__select max-w-full" value={playbook.id} disabled={starting !== null}
+                aria-label={sprintf(__('Use case for %s', 'wconvert'), variants[0].name)}
+                onChange={(event) => { const id = event.target.value; setUseCases((current) => ({ ...current, [designId]: id })); }}>
+                {variants.map((entry) => <option key={entry.id} value={entry.id}>{entry.name}</option>)}
+              </select>
+            </label>}
             <div className="flex flex-wrap items-center gap-2">
               <Badge variant="secondary">{displayTypeLabel(startingPointDisplayType(playbook))}</Badge>
               {playbook.business_types?.map(({ id, label }) => <Badge key={id} variant="outline">{label}</Badge>)}
@@ -296,7 +317,7 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins }: GoalScree
                 {__('Setup details', 'wconvert')}
               </Button>
             </div>
-          </div>} />)}</ul>
+          </div>} />; })}</ul>
       </RegionBody>}
     <Dialog open={inspected !== null} onOpenChange={(open) => { if (!open) setInspected(null); }}>
       <DialogContent className="max-h-[80dvh] overflow-y-auto" onCloseAutoFocus={(event) => {

@@ -82,6 +82,20 @@ must preview the change, preserve custom content, create a recoverable draft and
 require explicit application. That feature is not implemented here.
 
 Work in batches: identify a useful uncovered need, compare, author, inspect, test,
-record evidence, then expand. The working library currently contains 96 setups
-using 47 designs; the full design inventory contains 79 designs. Do not count
+record evidence, then expand. The working library currently contains 100 setups
+using 51 designs; the full design inventory contains 83 designs. Do not count
 planned briefs, colour variants or unreviewed candidates as additional designs.
+
+## Browse designs without duplicate cards
+
+The studio groups filtered setups by design. Its use-case control changes the
+prepared preview, goal, requirements and review target together. The customer
+creation picker groups by design and effective format after filtering by goal,
+business, search and collection; selecting a use case keeps that exact Playbook
+for setup details and draft creation. A filter never hides a matching use case
+behind a nonmatching default. Browsing and switching use cases save nothing.
+
+The first four visual-variety directions are implemented. Eight further briefs
+are planned separately; review the first four before authoring them. Palette or
+copy changes do not qualify as a new design. Current design counts refer to
+source designs, not independently proven conversion performance.

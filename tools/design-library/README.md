@@ -13,16 +13,16 @@ npm install --no-save playwright       # not a repo dependency; see below
 Output goes to `tools/design-library/out/`, which is gitignored. Nothing here
 ships: `/tools` is in `.distignore`.
 
-## Internal creation and review studio: 96 campaigns
+## Internal creation and review studio: 100 campaigns
 
 Run `npm run templates:pilot`, then open `out/pilot.html` through the local site
-(or serve `out/` over HTTP). Add `?batch=contextual-help` to show the newest 24. `out/proof.html` pairs every
+(or serve `out/` over HTTP). Add `?batch=new-directions` to show the first four visual-variety directions. `out/proof.html` pairs every
 screen at desktop and phone widths for visual review.
 `npm run test:template-studio` tests discovery, duplicate detection, brief validation
 and all prepared campaigns. Composer dependencies are required for the PHP exporter.
 
-The studio contains **96 campaign setups using 47 designs**, drawn from a complete
-inventory of **79 designs**. The first twelve received user approval of the design
+The studio contains **100 campaign setups using 51 designs**, drawn from a complete
+inventory of **83 designs**. The first twelve received user approval of the design
 direction. The next twelve add four new Free designs and reuse existing designs,
 including deliberate reuse between two different enquiry workflows. Ten Playbooks
 are new; cart return and standalone SMS already had useful registered starts.
@@ -32,7 +32,9 @@ intentional design reuses. Every result variant is included in the layout audit
 and paired proofs; the proof screen picker allows focused inspection.
 The contextual-help batch adds eight bars, eight slide-ins, six popups and two
 inline checklists, including one compact enquiry design and deliberate reuse.
-There are now 121 registered Playbooks across Free and Pro modules. All seven Goals,
+Four visual-variety designs add two popups, an illustrated slide-in and a compact bar.
+Shared designs now have one card with a use-case choice in both studio and customer creation.
+There are now 125 registered Playbooks across Free and Pro modules. All seven Goals,
 all five Display Types and three audiences are represented. These are editorial
 candidates, not measured conversion winners or automatically approved releases.
 
@@ -109,12 +111,12 @@ filters by business as well as format, collection and search. The bounded catalo
 accepts 50 packs, retaining the existing 12-design and 256 KiB limits.
 
 The [shared editorial queue](review/README.md) now stores revision-bound decisions
-and evidence in Git. The studio shows review-state filters for 96 actual setups.
+and evidence in Git. The studio shows review-state filters for 100 actual setups.
 The completed decision-support briefs are archived under `pilot/batches/`; the
-next-batch queue is empty until another set of distinct needs is selected. `npm run templates:gate` checks the
+next-batch queue holds eight proposed visual-variety briefs, to follow review of the first four. `npm run templates:gate` checks the
 current evidence locally without CI. Automated generation, hosted multi-user
 review, screenshot similarity, conversion measurement, paid asset distribution
-and broad 300–500 campaign rollout remain future work. The current 96 are reviewed editorial candidates, not measured winners.
+and broad 300–500 campaign rollout remain future work. The current 100 are reviewed editorial candidates, not measured winners.
 
 ## A sibling of `tools/design-system`, not a step inside it
 

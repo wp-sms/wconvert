@@ -2682,6 +2682,110 @@
         ],
         "reason": "Reuse the established composition; the distinct visitor need and follow-up are: Prepare a concise editorial pitch rather than sending a vague topic suggestion."
       }
+    },
+    {
+      "id": "homeware-care-notes",
+      "audience": "stores",
+      "family": "Panoramic product shelf",
+      "visitor_need": "Receive useful care advice for handmade homeware.",
+      "difference": "A panoramic still life above two small editorial and signup columns, with a compact matching receipt.",
+      "requirements": [
+        "Monthly factual care advice and an email destination."
+      ],
+      "status": "review",
+      "source": "Original WConvert designs responding to the visual-variety review; no competitor artwork copied.",
+      "suggested_setup": [
+        "Monthly factual care advice and an email destination.",
+        "Show on relevant content after 20 seconds; exclude checkout and suppress repeated interruption."
+      ],
+      "measure": "Accepted requests or guide openings; fulfilment and sales are separate outcomes.",
+      "batch": "new-directions",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "studio-window",
+          "fieldwork"
+        ],
+        "reason": "A panoramic still life above two small editorial and signup columns, with a compact matching receipt."
+      }
+    },
+    {
+      "id": "repair-advice-request",
+      "audience": "services",
+      "family": "Framed request folio",
+      "visitor_need": "Ask whether a piece of furniture can be repaired without a long form.",
+      "difference": "A framed working area within a paper folio, two short screens and optional item choice.",
+      "requirements": [
+        "A team to review repair enquiries; verify the optional answer reaches the chosen workflow."
+      ],
+      "status": "review",
+      "source": "Original WConvert designs responding to the visual-variety review; no competitor artwork copied.",
+      "suggested_setup": [
+        "A team to review repair enquiries; verify the optional answer reaches the chosen workflow.",
+        "Show on relevant content after 20 seconds; exclude checkout and suppress repeated interruption."
+      ],
+      "measure": "Accepted requests or guide openings; fulfilment and sales are separate outcomes.",
+      "batch": "new-directions",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "journey-enquiry",
+          "service-docket"
+        ],
+        "reason": "A framed working area within a paper folio, two short screens and optional item choice."
+      }
+    },
+    {
+      "id": "writing-session-details",
+      "audience": "publishers",
+      "family": "Illustrated corner invitation",
+      "visitor_need": "Understand a writing session before deciding whether to attend.",
+      "difference": "An open-notebook illustration above a compact sans-serif corner invitation and content-width link.",
+      "requirements": [
+        "A real writing-session page with format, accessibility and attendance information."
+      ],
+      "status": "review",
+      "source": "Original WConvert designs responding to the visual-variety review; no competitor artwork copied.",
+      "suggested_setup": [
+        "A real writing-session page with format, accessibility and attendance information.",
+        "Show on writing-advice pages after 20 seconds; avoid repeated interruption."
+      ],
+      "measure": "Accepted requests or guide openings; fulfilment and sales are separate outcomes.",
+      "batch": "new-directions",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "slide-in-photo",
+          "slide-in-nudge"
+        ],
+        "reason": "An open-notebook illustration above a compact sans-serif corner invitation and content-width link."
+      }
+    },
+    {
+      "id": "furniture-fit-guide",
+      "audience": "stores",
+      "family": "Two-level useful detail bar",
+      "visitor_need": "Avoid ordering furniture that cannot fit the room or access route.",
+      "difference": "A two-line text group beside a compact action, with no badge or oversize button.",
+      "requirements": [
+        "A useful measuring guide with room and delivery access instructions."
+      ],
+      "status": "review",
+      "source": "Original WConvert designs responding to the visual-variety review; no competitor artwork copied.",
+      "suggested_setup": [
+        "A useful measuring guide with room and delivery access instructions.",
+        "Show on relevant content after 20 seconds; exclude checkout and suppress repeated interruption."
+      ],
+      "measure": "Accepted requests or guide openings; fulfilment and sales are separate outcomes.",
+      "batch": "new-directions",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "bar-announcement",
+          "bar-code"
+        ],
+        "reason": "A two-line text group beside a compact action, with no badge or oversize button."
+      }
     }
   ],
   "batches": [
@@ -2704,6 +2808,10 @@
     {
       "id": "contextual-help",
       "name": "Next 24 · contextual help and announcements"
+    },
+    {
+      "id": "new-directions",
+      "name": "Four new design directions"
     }
   ]
 }

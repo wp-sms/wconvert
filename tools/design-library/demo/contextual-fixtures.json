@@ -62,5 +62,21 @@
       "Outline the evidence": "List the examples, primary sources or reporting you can use. Distinguish what you already know from what still needs research.",
       "Explain your approach": "Prepare a short outline, likely length, proposed format and a short author introduction. Ask about commissioning terms before writing a full draft."
     }
+  ],
+  "furniture-fit-guide": [
+    "Sample furniture measuring guide",
+    {
+      "Measure the room": "Measure the available floor area and leave space for moving around the furniture and opening drawers.",
+      "Check the route": "Measure doorways, hallway corners, stairs and lifts along the delivery route. Compare all dimensions with the actual item.",
+      "Before ordering": "Ask the shop about packaging dimensions and delivery access when uncertain. This sample does not guarantee a fit."
+    }
+  ],
+  "writing-session-details": [
+    "Sample writing sessions",
+    {
+      "What to expect": "A short writing prompt, quiet drafting time and optional discussion. Participants can keep their work private.",
+      "Who it suits": "This fictional example is intended for adults starting or returning to personal writing. No experience is required.",
+      "Taking part": "This review page has no open dates and takes no bookings. A real publisher must explain current dates, cost, attendance and accessibility."
+    }
   ]
 }

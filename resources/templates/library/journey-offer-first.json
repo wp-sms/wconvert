@@ -4,10 +4,24 @@
   "display_type": "popup",
   "tier": "free",
   "tokens": {
-    "width": "28rem",
-    "pad": "1.5rem",
+    "bg": "#ffffff",
+    "fg": "#252c26",
+    "muted": "#596158",
+    "accent": "#244b38",
+    "border": "#c5cbc1",
+    "accent-fg": "#ffffff",
+    "input-bg": "#ffffff",
+    "heading-font": "Georgia, serif",
+    "heading-size": "2rem",
+    "heading-weight": "400",
+    "tracking": "-0.035em",
+    "text-size": "1rem",
+    "leading": "1.5",
+    "radius": "0.875rem",
+    "pad": "1.75rem",
     "gap": "1rem",
-    "align": "start"
+    "width": "29rem",
+    "shadow": "0 20px 56px -20px rgba(28,42,31,.3)"
   },
   "tree": {
     "v": 2,
@@ -32,36 +46,54 @@
           "type": "stack",
           "children": [
             {
+              "type": "eyebrow",
+              "id": "n11",
+              "role": "eyebrow",
+              "text": "Behind the making"
+            },
+            {
               "type": "heading",
               "id": "n1",
               "role": "headline",
-              "text": "Want occasional updates?"
+              "text": "A closer look at how it is made."
             },
             {
               "type": "text",
               "id": "n2",
               "role": "body",
-              "text": "Find out what is new and receive our latest offers."
+              "text": "Occasional email invitations to maker demonstrations, with details when announced."
             },
             {
-              "type": "button",
-              "id": "n3",
-              "role": "next_label",
-              "label": "Show me the signup",
-              "action": "next"
-            },
-            {
-              "type": "button",
-              "id": "n4",
-              "role": "close_label",
-              "label": "No thanks",
-              "action": "close",
+              "type": "row",
+              "children": [
+                {
+                  "type": "button",
+                  "id": "n3",
+                  "role": "next_label",
+                  "label": "Tell me more",
+                  "action": "next"
+                },
+                {
+                  "type": "button",
+                  "id": "n4",
+                  "role": "close_label",
+                  "label": "Maybe later",
+                  "action": "close",
+                  "tokens": {
+                    "accent": "transparent",
+                    "accent-fg": "muted"
+                  }
+                }
+              ],
               "tokens": {
-                "accent": "transparent",
-                "accent-fg": "#475569"
+                "gap": "0.5rem"
               }
             }
-          ]
+          ],
+          "narrow": {
+            "pad": "1.25rem",
+            "heading-size": "1.875rem"
+          }
         }
       },
       {
@@ -72,30 +104,40 @@
           "type": "stack",
           "children": [
             {
+              "type": "eyebrow",
+              "id": "n12",
+              "role": "eyebrow",
+              "text": "A little closer to the craft"
+            },
+            {
               "type": "heading",
               "id": "n5",
               "role": "headline",
-              "text": "Get our email updates"
+              "text": "Get maker-session news."
             },
             {
               "type": "field",
               "id": "n6",
               "name": "email",
               "label": "Email address",
-              "required": true
+              "required": true,
+              "placeholder": "you@example.com"
             },
             {
               "type": "consent",
               "id": "n7",
               "role": "consent_text",
               "hidden": false,
-              "text": "Email me news and offers."
+              "text": "Email me maker-session announcements. I can unsubscribe anytime.",
+              "tokens": {
+                "text-size": "1.125rem"
+              }
             },
             {
               "type": "button",
               "id": "n8",
               "role": "cta_label",
-              "label": "Sign up for email",
+              "label": "Request session news",
               "action": "submit",
               "submission": "email-signup"
             }
@@ -109,6 +151,11 @@
         "content": {
           "type": "stack",
           "children": [
+            {
+              "type": "icon",
+              "id": "n13",
+              "name": "check"
+            },
             {
               "type": "heading",
               "id": "n9",

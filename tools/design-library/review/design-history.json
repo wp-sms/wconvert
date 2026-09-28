@@ -310,6 +310,12 @@
           "date": "2026-09-28",
           "revision": "33dcc1d6380be19cbb2416ea728f00ca9b53713b6c827aaac23073ebc8df8d5c",
           "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        },
+        {
+          "version": 2,
+          "date": "2026-09-28",
+          "revision": "ba1a72787d396b251f55d33aa84b15434f37fa9df56b6c02664a9f5459b75f5d",
+          "note": "Refine the invitation with editorial typography, shorter copy and content-width actions; retain all existing field IDs."
         }
       ]
     },
@@ -958,6 +964,72 @@
           "date": "2026-09-28",
           "revision": "3c9c4f6c55b488fb1f0bf42f98863e11604a3be3fc2e8f4e581d516011a65057",
           "note": "Add a compact corner enquiry with an optional topic choice and email; no decorative media."
+        }
+      ]
+    },
+    {
+      "id": "product-shelf",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "a19ad7a3cf870e7e77dacb88761e9191a5ec8f3ba87c5a7d77911f7f68ab0ea6",
+          "note": "Initial panoramic product artwork above a compact editorial and form split."
+        },
+        {
+          "version": 2,
+          "date": "2026-09-28",
+          "revision": "c1868b009b6e4b5d352c83e0fa050ab5de1f4605ff22891c3bd8ac03afb6d5a2",
+          "note": "Compress the original SVG and remove the inset image corners after phone review."
+        }
+      ]
+    },
+    {
+      "id": "request-folio",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "9b13862f2bb62174343f1e07e682ed3c323881cb433277a05b1150fc993255e2",
+          "note": "Initial framed two-step enquiry with an optional choice and separate reply address."
+        },
+        {
+          "version": 2,
+          "date": "2026-09-28",
+          "revision": "090c63ebc95ae650841a7d4db06544adadbd9101ab1034941e73f94a734f3794",
+          "note": "Keep Back and the shorter Send request action together on a narrow phone."
+        }
+      ]
+    },
+    {
+      "id": "session-card",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "de9be893860728fa5ee505eb608fccb32b12b342a0fd32b73dfedfe8efbd73d3",
+          "note": "Initial illustrated corner invitation to practical event information."
+        },
+        {
+          "version": 2,
+          "date": "2026-09-28",
+          "revision": "99bb2a3065d70fa194a54881e2bfdb4461d70bd3168d241afa43081c0c587a99",
+          "note": "Use an original notebook illustration and a distinct sans-serif palette for writing-session information."
+        }
+      ]
+    },
+    {
+      "id": "split-notice",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "ecd5740d2cc2bf119d0f91f47064e16e401a274509a6bd3d8fb6ba4772a8a0d6",
+          "note": "Initial two-level utility message beside a compact link."
         }
       ]
     }
