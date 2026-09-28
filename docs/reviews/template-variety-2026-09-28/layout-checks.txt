@@ -1,0 +1,1 @@
+1760 screen cases checked. 0 layout findings. Alignment and compact-bar hierarchy included. Visual, contrast, keyboard and real-site review remain separate.

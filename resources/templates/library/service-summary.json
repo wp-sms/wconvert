@@ -1,0 +1,204 @@
+{
+  "id": "service-summary",
+  "name": "Service summary",
+  "display_type": "popup",
+  "tier": "free",
+  "tokens": {
+    "bg": "#ffffff",
+    "fg": "#202b31",
+    "muted": "#53626b",
+    "accent": "#234861",
+    "accent-fg": "#ffffff",
+    "border": "#ccd4d5",
+    "input-bg": "#ffffff",
+    "heading-size": "2rem",
+    "heading-weight": "600",
+    "tracking": "-0.035em",
+    "text-size": "1rem",
+    "leading": "1.5",
+    "radius": "0.5rem",
+    "pad": "0",
+    "gap": "1rem",
+    "width": "37rem",
+    "shadow": "0 20px 56px -20px rgba(28,42,31,.3)"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "details",
+        "name": "Your details",
+        "kind": "input",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "panel",
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "id": "n1",
+                  "text": "Website review",
+                  "role": "eyebrow"
+                },
+                {
+                  "type": "heading",
+                  "id": "n2",
+                  "text": "Find the friction in your website.",
+                  "role": "headline"
+                },
+                {
+                  "type": "text",
+                  "id": "n3",
+                  "text": "A focused review of the pages your customers use most.",
+                  "role": "body"
+                },
+                {
+                  "type": "grid",
+                  "children": [
+                    {
+                      "type": "stack",
+                      "children": [
+                        {
+                          "type": "eyebrow",
+                          "id": "n4",
+                          "text": "01 / Clarity",
+                          "role": "eyebrow"
+                        },
+                        {
+                          "type": "text",
+                          "id": "n5",
+                          "text": "Can visitors find the answer?",
+                          "role": "body"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "stack",
+                      "children": [
+                        {
+                          "type": "eyebrow",
+                          "id": "n6",
+                          "text": "02 / Usability",
+                          "role": "eyebrow"
+                        },
+                        {
+                          "type": "text",
+                          "id": "n7",
+                          "text": "Can they take the next step?",
+                          "role": "body"
+                        }
+                      ]
+                    }
+                  ],
+                  "tokens": {
+                    "gap": "1.25rem"
+                  }
+                }
+              ],
+              "tokens": {
+                "pad": "2rem",
+                "gap": "1.25rem"
+              },
+              "narrow": {
+                "pad": "1.25rem"
+              }
+            },
+            {
+              "type": "panel",
+              "children": [
+                {
+                  "type": "field",
+                  "id": "n8",
+                  "name": "email",
+                  "label": "Email address",
+                  "placeholder": "you@example.com",
+                  "required": true
+                },
+                {
+                  "type": "row",
+                  "children": [
+                    {
+                      "type": "button",
+                      "id": "n9",
+                      "label": "Ask about a review",
+                      "role": "cta_label",
+                      "action": "submit",
+                      "submission": "primary"
+                    }
+                  ]
+                },
+                {
+                  "type": "text",
+                  "id": "n10",
+                  "text": "We use your email to discuss scope and pricing. This does not book a review.",
+                  "role": "fine_print",
+                  "size": "s",
+                  "tokens": {
+                    "text-size": "1.167rem"
+                  }
+                }
+              ],
+              "tokens": {
+                "pad": "1.5rem 2rem",
+                "bg": "#eef3f7",
+                "gap": "1rem",
+                "radius": "0"
+              },
+              "narrow": {
+                "pad": "1.25rem"
+              }
+            }
+          ],
+          "tokens": {
+            "gap": "0"
+          }
+        }
+      },
+      {
+        "id": "received",
+        "name": "Request received",
+        "kind": "acknowledgement",
+        "content": {
+          "type": "panel",
+          "children": [
+            {
+              "type": "icon",
+              "id": "n90",
+              "name": "check"
+            },
+            {
+              "type": "heading",
+              "id": "n91",
+              "text": "Request received",
+              "role": "success_headline"
+            },
+            {
+              "type": "text",
+              "id": "n92",
+              "text": "Your website review enquiry is received. Scope, pricing and timing are agreed separately.",
+              "role": "success_body"
+            }
+          ],
+          "tokens": {
+            "pad": "2rem",
+            "gap": "1rem"
+          },
+          "narrow": {
+            "pad": "1.25rem"
+          }
+        }
+      }
+    ],
+    "submissions": [
+      {
+        "id": "primary",
+        "required": true,
+        "fields": [
+          "n8"
+        ],
+        "consents": []
+      }
+    ]
+  }
+}

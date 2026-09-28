@@ -1,0 +1,32 @@
+PHP
+ ✔ It writes no lifecycle state on a match
+ ✔ The both identifiers conflict resolves as success with existing
+ ✔ A create conflict is also success with existing
+ ✔ A retry of a partially completed sequence leaves one contact
+ ✔ A lead with no identifier is skipped rather than failed
+ ✔ A throw from wsms becomes a retryable failure
+ ✔ Wsms failure text is stored exactly as wsms wrote it
+
+OK (2328 tests, 13873 assertions)
+
+JavaScript full rerun, two workers
+ ✓ pro/tests/js/content-lock-selection.test.ts (2 tests) 1ms
+ ✓ tests/js/display-matcher.test.ts (4 tests) 2ms
+ ✓ tests/js/journey-map-graph.test.ts (2 tests) 2ms
+
+ Test Files  180 passed (180)
+      Tests  3387 passed (3387)
+   Start at  22:29:07
+   Duration  97.11s (transform 2.53s, setup 4.77s, collect 17.27s, tests 116.28s, environment 32.26s, prepare 6.03s)
+
+
+Studio
+✔ unreviewed entries stay pending and record tampering fails closed (0.990375ms)
+ℹ tests 15
+ℹ suites 0
+ℹ pass 15
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 340.873417

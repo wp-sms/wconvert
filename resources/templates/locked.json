@@ -315,6 +315,53 @@
         "captures": [],
         "has_image": false
       }
+    },
+    {
+      "id": "margin-note",
+      "name": "Margin note",
+      "display_type": "slide_in",
+      "tier": "basic",
+      "facets": {
+        "shape": "row",
+        "captures": [],
+        "has_image": false
+      }
+    },
+    {
+      "id": "sample-envelope",
+      "name": "Sample envelope",
+      "display_type": "slide_in",
+      "tier": "basic",
+      "facets": {
+        "shape": "stack",
+        "captures": [
+          "email",
+          "interest"
+        ],
+        "has_image": true
+      }
+    },
+    {
+      "id": "availability-note",
+      "name": "Availability note",
+      "display_type": "slide_in",
+      "tier": "basic",
+      "facets": {
+        "shape": "panel",
+        "captures": [],
+        "has_image": false
+      }
+    },
+    {
+      "id": "inline-signpost",
+      "name": "Inline signpost",
+      "display_type": "floating_bar",
+      "tier": "basic",
+      "facets": {
+        "shape": "row",
+        "captures": [],
+        "has_image": false
+      }
     }
   ]
 }

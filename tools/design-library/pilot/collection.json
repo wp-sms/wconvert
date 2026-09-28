@@ -2786,6 +2786,206 @@
         ],
         "reason": "A two-line text group beside a compact action, with no badge or oversize button."
       }
+    },
+    {
+      "id": "first-order-receipt",
+      "audience": "stores",
+      "family": "Offer receipt",
+      "visitor_need": "Understand and copy a genuine offer before shopping.",
+      "difference": "A narrow receipt with oversized offer type and a separated copyable code area; no capture form or ticket notch.",
+      "requirements": [
+        "Create a valid first-order coupon, match the terms to its restrictions and set the shop link. No email is collected."
+      ],
+      "status": "review",
+      "source": "Original WConvert composition and artwork; no competitor assets copied.",
+      "suggested_setup": [
+        "Create a valid first-order coupon, match the terms to its restrictions and set the shop link. No email is collected.",
+        "Show after 20 seconds on relevant pages; suppress repeated interruption and exclude checkout."
+      ],
+      "measure": "Accepted enquiries or resource requests; link openings for information campaigns. Sales and fulfilment are separate outcomes.",
+      "batch": "visual-variety",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "code-reveal"
+        ],
+        "reason": "A narrow receipt with oversized offer type and a separated copyable code area; no capture form or ticket notch."
+      }
+    },
+    {
+      "id": "reading-notes-guide",
+      "audience": "publishers",
+      "family": "Reading cover",
+      "visitor_need": "Preview the substance of a guide before requesting it.",
+      "difference": "A portrait typographic cover beside a narrow request column; no numbered badge or image above a form.",
+      "requirements": [
+        "Create the five-part reading guide, configure resource email and set the acknowledgement resource link. This request is not a newsletter signup."
+      ],
+      "status": "review",
+      "source": "Original WConvert composition and artwork; no competitor assets copied.",
+      "suggested_setup": [
+        "Create the five-part reading guide, configure resource email and set the acknowledgement resource link. This request is not a newsletter signup.",
+        "Show after 20 seconds on relevant pages; suppress repeated interruption and exclude checkout."
+      ],
+      "measure": "Accepted enquiries or resource requests; link openings for information campaigns. Sales and fulfilment are separate outcomes.",
+      "batch": "visual-variety",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "useful-guide"
+        ],
+        "reason": "A portrait typographic cover beside a narrow request column; no numbered badge or image above a form."
+      }
+    },
+    {
+      "id": "website-review-enquiry",
+      "audience": "services",
+      "family": "Service summary",
+      "visitor_need": "Understand the scope of a service before asking for help.",
+      "difference": "An editorial summary with two scope columns above a full-width tinted request band, rather than two equal form panes.",
+      "requirements": [
+        "Describe the review you actually offer, show on relevant service pages and choose a monitored enquiry workflow or Collect only. No review is booked here."
+      ],
+      "status": "review",
+      "source": "Original WConvert composition and artwork; no competitor assets copied.",
+      "suggested_setup": [
+        "Describe the review you actually offer, show on relevant service pages and choose a monitored enquiry workflow or Collect only. No review is booked here.",
+        "Show after 20 seconds on relevant pages; suppress repeated interruption and exclude checkout."
+      ],
+      "measure": "Accepted enquiries or resource requests; link openings for information campaigns. Sales and fulfilment are separate outcomes.",
+      "batch": "visual-variety",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "service-docket"
+        ],
+        "reason": "An editorial summary with two scope columns above a full-width tinted request band, rather than two equal form panes."
+      }
+    },
+    {
+      "id": "lighting-collection",
+      "audience": "stores",
+      "family": "Collection poster",
+      "visitor_need": "See what makes a new collection relevant before opening it.",
+      "difference": "Large serif headline above an edge-to-edge product composition, with a short caption and edge-aligned compact action.",
+      "requirements": [
+        "Link to a real lighting collection with product specifications. Replace the original illustrative lamps if they misrepresent your products."
+      ],
+      "status": "review",
+      "source": "Original WConvert composition and artwork; no competitor assets copied.",
+      "suggested_setup": [
+        "Link to a real lighting collection with product specifications. Replace the original illustrative lamps if they misrepresent your products.",
+        "Show after 20 seconds on relevant pages; suppress repeated interruption and exclude checkout."
+      ],
+      "measure": "Accepted enquiries or resource requests; link openings for information campaigns. Sales and fulfilment are separate outcomes.",
+      "batch": "visual-variety",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "photo-offer"
+        ],
+        "reason": "Large serif headline above an edge-to-edge product composition, with a short caption and edge-aligned compact action."
+      }
+    },
+    {
+      "id": "rereading-essay",
+      "audience": "publishers",
+      "family": "Margin note",
+      "visitor_need": "Continue a topic without losing the current article.",
+      "difference": "Source gutter beside an editorial title and a quiet text action; no full-width button or generic vertical promo stack.",
+      "requirements": [
+        "Link to a complete relevant essay. Show after the visitor has read related content and avoid repeated interruptions."
+      ],
+      "status": "review",
+      "source": "Original WConvert composition and artwork; no competitor assets copied.",
+      "suggested_setup": [
+        "Link to a complete relevant essay. Show after the visitor has read related content and avoid repeated interruptions.",
+        "Show after 20 seconds on relevant pages; suppress repeated interruption and exclude checkout."
+      ],
+      "measure": "Accepted enquiries or resource requests; link openings for information campaigns. Sales and fulfilment are separate outcomes.",
+      "batch": "visual-variety",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "reading-slip"
+        ],
+        "reason": "Source gutter beside an editorial title and a quiet text action; no full-width button or generic vertical promo stack."
+      }
+    },
+    {
+      "id": "upholstery-samples",
+      "audience": "stores",
+      "family": "Sample envelope",
+      "visitor_need": "Ask which material sample is appropriate before ordering.",
+      "difference": "A shallow original swatch strip at the edge, a compact labelled request and separated privacy note; no generic icon or split form.",
+      "requirements": [
+        "Use near upholstery options. Explain sample availability and postage in follow-up; monitor capture history for the optional answer, which not every destination forwards."
+      ],
+      "status": "review",
+      "source": "Original WConvert composition and artwork; no competitor assets copied.",
+      "suggested_setup": [
+        "Use near upholstery options. Explain sample availability and postage in follow-up; monitor capture history for the optional answer, which not every destination forwards.",
+        "Show after 20 seconds on relevant pages; suppress repeated interruption and exclude checkout."
+      ],
+      "measure": "Accepted enquiries or resource requests; link openings for information campaigns. Sales and fulfilment are separate outcomes.",
+      "batch": "visual-variety",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "slide-in-question"
+        ],
+        "reason": "A shallow original swatch strip at the edge, a compact labelled request and separated privacy note; no generic icon or split form."
+      }
+    },
+    {
+      "id": "visiting-details",
+      "audience": "services",
+      "family": "Availability note",
+      "visitor_need": "Understand where and when a service operates before enquiring.",
+      "difference": "A structured where/when note inside a bordered information inset, with a small action and no decorative artwork.",
+      "requirements": [
+        "Link to accurate service areas, hours and visit arrangements. Keep the destination up to date and never imply a slot has been reserved."
+      ],
+      "status": "review",
+      "source": "Original WConvert composition and artwork; no competitor assets copied.",
+      "suggested_setup": [
+        "Link to accurate service areas, hours and visit arrangements. Keep the destination up to date and never imply a slot has been reserved.",
+        "Show after 20 seconds on relevant pages; suppress repeated interruption and exclude checkout."
+      ],
+      "measure": "Accepted enquiries or resource requests; link openings for information campaigns. Sales and fulfilment are separate outcomes.",
+      "batch": "visual-variety",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "session-card"
+        ],
+        "reason": "A structured where/when note inside a bordered information inset, with a small action and no decorative artwork."
+      }
+    },
+    {
+      "id": "opening-hours-signpost",
+      "audience": "services",
+      "family": "Inline signpost",
+      "visitor_need": "Find a relevant service notice while continuing to browse.",
+      "difference": "A single text-first signpost with a source label, compact heading and quiet text action; no two-line explanatory block or filled button.",
+      "requirements": [
+        "Link to current hours and exceptional closures. Show on contact or location pages, avoiding irrelevant pages and repeated interruptions."
+      ],
+      "status": "review",
+      "source": "Original WConvert composition and artwork; no competitor assets copied.",
+      "suggested_setup": [
+        "Link to current hours and exceptional closures. Show on contact or location pages, avoiding irrelevant pages and repeated interruptions.",
+        "Show after 20 seconds on relevant pages; suppress repeated interruption and exclude checkout."
+      ],
+      "measure": "Accepted enquiries or resource requests; link openings for information campaigns. Sales and fulfilment are separate outcomes.",
+      "batch": "visual-variety",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "split-notice"
+        ],
+        "reason": "A single text-first signpost with a source label, compact heading and quiet text action; no two-line explanatory block or filled button."
+      }
     }
   ],
   "batches": [
@@ -2812,6 +3012,10 @@
     {
       "id": "new-directions",
       "name": "Four new design directions"
+    },
+    {
+      "id": "visual-variety",
+      "name": "Eight distinct practical designs"
     }
   ]
 }

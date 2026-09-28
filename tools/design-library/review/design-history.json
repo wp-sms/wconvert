@@ -1032,6 +1032,132 @@
           "note": "Initial two-level utility message beside a compact link."
         }
       ]
+    },
+    {
+      "id": "offer-receipt",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "c25bf11694e8dc55bbe0e43e344355c7108f786cc4573dd19df67cd5d4a30581",
+          "note": "Initial distinct composition with practical campaign setup."
+        }
+      ]
+    },
+    {
+      "id": "reading-cover",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "c38b94f9544281128bab6631ea028351ed122c74e839db6c2bbac825b5195a2d",
+          "note": "Initial distinct composition with practical campaign setup."
+        },
+        {
+          "version": 2,
+          "date": "2026-09-28",
+          "revision": "11af393b4a58adfeafc92695b50310be6e1c34f2e91eab25e91dd1a690f65ae2",
+          "note": "Keep acknowledgement truthful when the optional resource link is not configured."
+        },
+        {
+          "version": 3,
+          "date": "2026-09-28",
+          "revision": "92d0af40add6739913fe25ef2c273eed34211609b3d5b0085450b3ecfd8f8e89",
+          "note": "Reserve clear space above the cover for the real popup close control."
+        }
+      ]
+    },
+    {
+      "id": "service-summary",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "f26d6a3781a82a2efecd177f826a75a7edb4dae5a61c5fab36937330343772a0",
+          "note": "Initial distinct composition with practical campaign setup."
+        }
+      ]
+    },
+    {
+      "id": "collection-poster",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "81ed1c37728072680175d6e1fdf5815b3f8a5c69f88c82a5163643736b16c974",
+          "note": "Initial distinct composition with practical campaign setup."
+        },
+        {
+          "version": 2,
+          "date": "2026-09-28",
+          "revision": "e8c73d0be6cfe494b46ad0ac5d779121a5041cb872393d742de93fb1e2a50a6d",
+          "note": "Remove a redundant top label to give the phone close control clear space."
+        }
+      ]
+    },
+    {
+      "id": "margin-note",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "728ab2dd7573ef4dd18ed860d7b249683ed949fdd13a11dbf6ab2370816a285d",
+          "note": "Initial distinct composition with practical campaign setup."
+        },
+        {
+          "version": 2,
+          "date": "2026-09-28",
+          "revision": "4ee3c86d047ad101cf3fc4624026f2d9c94742e0ae30446e449b1c2865d6ed25",
+          "note": "Retune source gutter to fit the actual slide-in width."
+        }
+      ]
+    },
+    {
+      "id": "sample-envelope",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "51d040df89dc4bd25fd6c46a9df90289195d3cf6bba556f3e14cf9903fa2527c",
+          "note": "Initial distinct composition with practical campaign setup."
+        },
+        {
+          "version": 2,
+          "date": "2026-09-28",
+          "revision": "2076c6daf95f036dd1e9adf5254a8fc50351e8cd87cefc6cf5405775b4bb7587",
+          "note": "Lighten the final swatch so the live close control stays visible over artwork."
+        }
+      ]
+    },
+    {
+      "id": "availability-note",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "4b1ad4748eb37d8fe0df6ff394cdc33483c8f66287c45f7e4b12fde876db628d",
+          "note": "Initial distinct composition with practical campaign setup."
+        }
+      ]
+    },
+    {
+      "id": "inline-signpost",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "5fcea252a090f9aa947008c35e4ce1ef950df64665ad5a17eeaa7599eec02442",
+          "note": "Initial distinct composition with practical campaign setup."
+        }
+      ]
     }
   ]
 }

@@ -1,0 +1,688 @@
+[
+  {
+    "id": "first-order-receipt",
+    "screen": "0:",
+    "colors": [
+      {
+        "bg": "rgb(255, 252, 246)",
+        "color": "rgb(101, 94, 82)",
+        "text": "For your first order"
+      },
+      {
+        "bg": "rgb(255, 252, 246)",
+        "color": "rgb(56, 52, 46)",
+        "text": "10% off"
+      },
+      {
+        "bg": "rgb(255, 252, 246)",
+        "color": "rgb(56, 52, 46)",
+        "text": "A little towards something you will keep."
+      },
+      {
+        "bg": "rgb(240, 237, 230)",
+        "color": "rgb(101, 94, 82)",
+        "text": "Your checkout code"
+      },
+      {
+        "bg": "rgb(240, 237, 230)",
+        "color": "rgb(56, 52, 46)",
+        "text": "YOUR CODE"
+      },
+      {
+        "bg": "rgb(56, 52, 46)",
+        "color": "rgb(255, 255, 255)",
+        "text": "Copy code"
+      },
+      {
+        "bg": "rgb(255, 252, 246)",
+        "color": "rgb(101, 94, 82)",
+        "text": "First order only. One use per customer. Cannot be combined with other "
+      },
+      {
+        "bg": "rgb(56, 52, 46)",
+        "color": "rgb(255, 255, 255)",
+        "text": "Find your first piece"
+      },
+      {
+        "bg": "rgb(255, 252, 246)",
+        "color": "rgb(101, 94, 82)",
+        "text": "For your first order"
+      },
+      {
+        "bg": "rgb(255, 252, 246)",
+        "color": "rgb(56, 52, 46)",
+        "text": "10% off"
+      },
+      {
+        "bg": "rgb(255, 252, 246)",
+        "color": "rgb(56, 52, 46)",
+        "text": "A little towards something you will keep."
+      },
+      {
+        "bg": "rgb(240, 237, 230)",
+        "color": "rgb(101, 94, 82)",
+        "text": "Your checkout code"
+      },
+      {
+        "bg": "rgb(240, 237, 230)",
+        "color": "rgb(56, 52, 46)",
+        "text": "YOUR CODE"
+      },
+      {
+        "bg": "rgb(56, 52, 46)",
+        "color": "rgb(255, 255, 255)",
+        "text": "Copy code"
+      },
+      {
+        "bg": "rgb(255, 252, 246)",
+        "color": "rgb(101, 94, 82)",
+        "text": "First order only. One use per customer. Cannot be combined with other "
+      },
+      {
+        "bg": "rgb(56, 52, 46)",
+        "color": "rgb(255, 255, 255)",
+        "text": "Find your first piece"
+      }
+    ]
+  },
+  {
+    "id": "reading-notes-guide",
+    "screen": "0:",
+    "colors": [
+      {
+        "bg": "rgb(37, 77, 80)",
+        "color": "rgb(215, 230, 226)",
+        "text": "A practical guide"
+      },
+      {
+        "bg": "rgb(37, 77, 80)",
+        "color": "rgb(255, 255, 255)",
+        "text": "Read.Notice.Remember."
+      },
+      {
+        "bg": "rgb(37, 77, 80)",
+        "color": "rgb(255, 255, 255)",
+        "text": "Five ways to get more from a book."
+      },
+      {
+        "bg": "rgb(248, 247, 242)",
+        "color": "rgb(32, 43, 49)",
+        "text": "Keep more of what you read."
+      },
+      {
+        "bg": "rgb(248, 247, 242)",
+        "color": "rgb(32, 43, 49)",
+        "text": "A short guide to choosing a question, taking notes and returning to us"
+      },
+      {
+        "bg": "rgb(248, 247, 242)",
+        "color": "rgb(83, 98, 107)",
+        "text": "Email address *"
+      },
+      {
+        "bg": "rgb(255, 255, 255)",
+        "color": "rgb(32, 43, 49)",
+        "text": "you@example.com"
+      },
+      {
+        "bg": "rgb(38, 79, 81)",
+        "color": "rgb(255, 255, 255)",
+        "text": "Request the guide"
+      },
+      {
+        "bg": "rgb(248, 247, 242)",
+        "color": "rgb(83, 98, 107)",
+        "text": "One guide email. No newsletter signup."
+      },
+      {
+        "bg": "rgb(37, 77, 80)",
+        "color": "rgb(215, 230, 226)",
+        "text": "A practical guide"
+      },
+      {
+        "bg": "rgb(37, 77, 80)",
+        "color": "rgb(255, 255, 255)",
+        "text": "Read.Notice.Remember."
+      },
+      {
+        "bg": "rgb(37, 77, 80)",
+        "color": "rgb(255, 255, 255)",
+        "text": "Five ways to get more from a book."
+      },
+      {
+        "bg": "rgb(248, 247, 242)",
+        "color": "rgb(32, 43, 49)",
+        "text": "Keep more of what you read."
+      },
+      {
+        "bg": "rgb(248, 247, 242)",
+        "color": "rgb(32, 43, 49)",
+        "text": "A short guide to choosing a question, taking notes and returning to us"
+      },
+      {
+        "bg": "rgb(248, 247, 242)",
+        "color": "rgb(83, 98, 107)",
+        "text": "Email address *"
+      },
+      {
+        "bg": "rgb(255, 255, 255)",
+        "color": "rgb(32, 43, 49)",
+        "text": "you@example.com"
+      },
+      {
+        "bg": "rgb(38, 79, 81)",
+        "color": "rgb(255, 255, 255)",
+        "text": "Request the guide"
+      },
+      {
+        "bg": "rgb(248, 247, 242)",
+        "color": "rgb(83, 98, 107)",
+        "text": "One guide email. No newsletter signup."
+      }
+    ]
+  },
+  {
+    "id": "reading-notes-guide",
+    "screen": "1:",
+    "colors": [
+      {
+        "bg": "rgb(248, 247, 242)",
+        "color": "rgb(32, 43, 49)",
+        "text": "Request received"
+      },
+      {
+        "bg": "rgb(248, 247, 242)",
+        "color": "rgb(32, 43, 49)",
+        "text": "Thank you. Your request for the reading guide is received."
+      },
+      {
+        "bg": "rgb(248, 247, 242)",
+        "color": "rgb(32, 43, 49)",
+        "text": "Request received"
+      },
+      {
+        "bg": "rgb(248, 247, 242)",
+        "color": "rgb(32, 43, 49)",
+        "text": "Thank you. Your request for the reading guide is received."
+      }
+    ]
+  },
+  {
+    "id": "website-review-enquiry",
+    "screen": "0:",
+    "colors": [
+      {
+        "bg": "rgb(255, 255, 255)",
+        "color": "rgb(83, 98, 107)",
+        "text": "Website review"
+      },
+      {
+        "bg": "rgb(255, 255, 255)",
+        "color": "rgb(32, 43, 49)",
+        "text": "Find the friction in your website."
+      },
+      {
+        "bg": "rgb(255, 255, 255)",
+        "color": "rgb(32, 43, 49)",
+        "text": "A focused review of the pages your customers use most."
+      },
+      {
+        "bg": "rgb(255, 255, 255)",
+        "color": "rgb(83, 98, 107)",
+        "text": "01 / Clarity"
+      },
+      {
+        "bg": "rgb(255, 255, 255)",
+        "color": "rgb(32, 43, 49)",
+        "text": "Can visitors find the answer?"
+      },
+      {
+        "bg": "rgb(255, 255, 255)",
+        "color": "rgb(83, 98, 107)",
+        "text": "02 / Usability"
+      },
+      {
+        "bg": "rgb(255, 255, 255)",
+        "color": "rgb(32, 43, 49)",
+        "text": "Can they take the next step?"
+      },
+      {
+        "bg": "rgb(238, 243, 247)",
+        "color": "rgb(83, 98, 107)",
+        "text": "Email address *"
+      },
+      {
+        "bg": "rgb(255, 255, 255)",
+        "color": "rgb(32, 43, 49)",
+        "text": "you@example.com"
+      },
+      {
+        "bg": "rgb(35, 72, 97)",
+        "color": "rgb(255, 255, 255)",
+        "text": "Ask about a review"
+      },
+      {
+        "bg": "rgb(238, 243, 247)",
+        "color": "rgb(83, 98, 107)",
+        "text": "We use your email to discuss scope and pricing. This does not book a r"
+      },
+      {
+        "bg": "rgb(255, 255, 255)",
+        "color": "rgb(83, 98, 107)",
+        "text": "Website review"
+      },
+      {
+        "bg": "rgb(255, 255, 255)",
+        "color": "rgb(32, 43, 49)",
+        "text": "Find the friction in your website."
+      },
+      {
+        "bg": "rgb(255, 255, 255)",
+        "color": "rgb(32, 43, 49)",
+        "text": "A focused review of the pages your customers use most."
+      },
+      {
+        "bg": "rgb(255, 255, 255)",
+        "color": "rgb(83, 98, 107)",
+        "text": "01 / Clarity"
+      },
+      {
+        "bg": "rgb(255, 255, 255)",
+        "color": "rgb(32, 43, 49)",
+        "text": "Can visitors find the answer?"
+      },
+      {
+        "bg": "rgb(255, 255, 255)",
+        "color": "rgb(83, 98, 107)",
+        "text": "02 / Usability"
+      },
+      {
+        "bg": "rgb(255, 255, 255)",
+        "color": "rgb(32, 43, 49)",
+        "text": "Can they take the next step?"
+      },
+      {
+        "bg": "rgb(238, 243, 247)",
+        "color": "rgb(83, 98, 107)",
+        "text": "Email address *"
+      },
+      {
+        "bg": "rgb(255, 255, 255)",
+        "color": "rgb(32, 43, 49)",
+        "text": "you@example.com"
+      },
+      {
+        "bg": "rgb(35, 72, 97)",
+        "color": "rgb(255, 255, 255)",
+        "text": "Ask about a review"
+      },
+      {
+        "bg": "rgb(238, 243, 247)",
+        "color": "rgb(83, 98, 107)",
+        "text": "We use your email to discuss scope and pricing. This does not book a r"
+      }
+    ]
+  },
+  {
+    "id": "website-review-enquiry",
+    "screen": "1:",
+    "colors": [
+      {
+        "bg": "rgb(255, 255, 255)",
+        "color": "rgb(32, 43, 49)",
+        "text": "Request received"
+      },
+      {
+        "bg": "rgb(255, 255, 255)",
+        "color": "rgb(32, 43, 49)",
+        "text": "Your website review enquiry is received. Scope, pricing and timing are"
+      },
+      {
+        "bg": "rgb(255, 255, 255)",
+        "color": "rgb(32, 43, 49)",
+        "text": "Request received"
+      },
+      {
+        "bg": "rgb(255, 255, 255)",
+        "color": "rgb(32, 43, 49)",
+        "text": "Your website review enquiry is received. Scope, pricing and timing are"
+      }
+    ]
+  },
+  {
+    "id": "lighting-collection",
+    "screen": "0:",
+    "colors": [
+      {
+        "bg": "rgb(228, 219, 201)",
+        "color": "rgb(93, 82, 69)",
+        "text": "The lighting edit"
+      },
+      {
+        "bg": "rgb(228, 219, 201)",
+        "color": "rgb(52, 46, 39)",
+        "text": "A softer kind of evening."
+      },
+      {
+        "bg": "rgb(228, 219, 201)",
+        "color": "rgb(52, 46, 39)",
+        "text": "Table lamps for reading corners and quiet rooms."
+      },
+      {
+        "bg": "rgb(52, 70, 55)",
+        "color": "rgb(255, 255, 255)",
+        "text": "Explore the lighting edit"
+      },
+      {
+        "bg": "rgb(228, 219, 201)",
+        "color": "rgb(93, 82, 69)",
+        "text": "The lighting edit"
+      },
+      {
+        "bg": "rgb(228, 219, 201)",
+        "color": "rgb(52, 46, 39)",
+        "text": "A softer kind of evening."
+      },
+      {
+        "bg": "rgb(228, 219, 201)",
+        "color": "rgb(52, 46, 39)",
+        "text": "Table lamps for reading corners and quiet rooms."
+      },
+      {
+        "bg": "rgb(52, 70, 55)",
+        "color": "rgb(255, 255, 255)",
+        "text": "Explore the lighting edit"
+      }
+    ]
+  },
+  {
+    "id": "rereading-essay",
+    "screen": "0:",
+    "colors": [
+      {
+        "bg": "rgb(250, 249, 245)",
+        "color": "rgb(83, 98, 107)",
+        "text": "Journal"
+      },
+      {
+        "bg": "rgb(250, 249, 245)",
+        "color": "rgb(83, 98, 107)",
+        "text": "Reading notes"
+      },
+      {
+        "bg": "rgb(250, 249, 245)",
+        "color": "rgb(32, 43, 49)",
+        "text": "The value ofreading twice."
+      },
+      {
+        "bg": "rgb(250, 249, 245)",
+        "color": "rgb(32, 43, 49)",
+        "text": "A second look. A new idea."
+      },
+      {
+        "bg": "rgb(250, 249, 245)",
+        "color": "rgb(36, 76, 66)",
+        "text": "Read the essay"
+      },
+      {
+        "bg": "rgb(250, 249, 245)",
+        "color": "rgb(83, 98, 107)",
+        "text": "Journal"
+      },
+      {
+        "bg": "rgb(250, 249, 245)",
+        "color": "rgb(83, 98, 107)",
+        "text": "Reading notes"
+      },
+      {
+        "bg": "rgb(250, 249, 245)",
+        "color": "rgb(32, 43, 49)",
+        "text": "The value ofreading twice."
+      },
+      {
+        "bg": "rgb(250, 249, 245)",
+        "color": "rgb(32, 43, 49)",
+        "text": "A second look. A new idea."
+      },
+      {
+        "bg": "rgb(250, 249, 245)",
+        "color": "rgb(36, 76, 66)",
+        "text": "Read the essay"
+      }
+    ]
+  },
+  {
+    "id": "upholstery-samples",
+    "screen": "0:",
+    "colors": [
+      {
+        "bg": "rgb(247, 243, 235)",
+        "color": "rgb(54, 58, 50)",
+        "text": "Find the right fabric."
+      },
+      {
+        "bg": "rgb(247, 243, 235)",
+        "color": "rgb(54, 58, 50)",
+        "text": "Ask about samples before choosing your upholstery."
+      },
+      {
+        "bg": "rgb(247, 243, 235)",
+        "color": "rgb(97, 100, 84)",
+        "text": "What matters most? (optional)"
+      },
+      {
+        "bg": "rgb(255, 255, 255)",
+        "color": "rgb(54, 58, 50)",
+        "text": "Choose an optionHow it feelsMatching a colourEveryday care"
+      },
+      {
+        "bg": "rgb(247, 243, 235)",
+        "color": "rgb(97, 100, 84)",
+        "text": "Email address *"
+      },
+      {
+        "bg": "rgb(255, 255, 255)",
+        "color": "rgb(54, 58, 50)",
+        "text": "you@example.com"
+      },
+      {
+        "bg": "rgb(65, 74, 55)",
+        "color": "rgb(255, 255, 255)",
+        "text": "Ask about fabric samples"
+      },
+      {
+        "bg": "rgb(247, 243, 235)",
+        "color": "rgb(97, 100, 84)",
+        "text": "We use your details to respond. Samples and postage are agreed separat"
+      },
+      {
+        "bg": "rgb(247, 243, 235)",
+        "color": "rgb(54, 58, 50)",
+        "text": "Find the right fabric."
+      },
+      {
+        "bg": "rgb(247, 243, 235)",
+        "color": "rgb(54, 58, 50)",
+        "text": "Ask about samples before choosing your upholstery."
+      },
+      {
+        "bg": "rgb(247, 243, 235)",
+        "color": "rgb(97, 100, 84)",
+        "text": "What matters most? (optional)"
+      },
+      {
+        "bg": "rgb(255, 255, 255)",
+        "color": "rgb(54, 58, 50)",
+        "text": "Choose an optionHow it feelsMatching a colourEveryday care"
+      },
+      {
+        "bg": "rgb(247, 243, 235)",
+        "color": "rgb(97, 100, 84)",
+        "text": "Email address *"
+      },
+      {
+        "bg": "rgb(255, 255, 255)",
+        "color": "rgb(54, 58, 50)",
+        "text": "you@example.com"
+      },
+      {
+        "bg": "rgb(65, 74, 55)",
+        "color": "rgb(255, 255, 255)",
+        "text": "Ask about fabric samples"
+      },
+      {
+        "bg": "rgb(247, 243, 235)",
+        "color": "rgb(97, 100, 84)",
+        "text": "We use your details to respond. Samples and postage are agreed separat"
+      }
+    ]
+  },
+  {
+    "id": "upholstery-samples",
+    "screen": "1:",
+    "colors": [
+      {
+        "bg": "rgb(247, 243, 235)",
+        "color": "rgb(54, 58, 50)",
+        "text": "Request received"
+      },
+      {
+        "bg": "rgb(247, 243, 235)",
+        "color": "rgb(54, 58, 50)",
+        "text": "Your fabric sample enquiry is received. No sample order or payment has"
+      },
+      {
+        "bg": "rgb(247, 243, 235)",
+        "color": "rgb(54, 58, 50)",
+        "text": "Request received"
+      },
+      {
+        "bg": "rgb(247, 243, 235)",
+        "color": "rgb(54, 58, 50)",
+        "text": "Your fabric sample enquiry is received. No sample order or payment has"
+      }
+    ]
+  },
+  {
+    "id": "visiting-details",
+    "screen": "0:",
+    "colors": [
+      {
+        "bg": "rgb(237, 243, 239)",
+        "color": "rgb(82, 102, 90)",
+        "text": "Before you enquire"
+      },
+      {
+        "bg": "rgb(237, 243, 239)",
+        "color": "rgb(38, 62, 52)",
+        "text": "A visit that fits your plans."
+      },
+      {
+        "bg": "rgb(255, 255, 255)",
+        "color": "rgb(82, 102, 90)",
+        "text": "Where"
+      },
+      {
+        "bg": "rgb(255, 255, 255)",
+        "color": "rgb(38, 62, 52)",
+        "text": "Check the areas we serve."
+      },
+      {
+        "bg": "rgb(255, 255, 255)",
+        "color": "rgb(82, 102, 90)",
+        "text": "When"
+      },
+      {
+        "bg": "rgb(255, 255, 255)",
+        "color": "rgb(38, 62, 52)",
+        "text": "See current hours and visit arrangements."
+      },
+      {
+        "bg": "rgb(49, 91, 69)",
+        "color": "rgb(255, 255, 255)",
+        "text": "Check visiting details"
+      },
+      {
+        "bg": "rgb(237, 243, 239)",
+        "color": "rgb(82, 102, 90)",
+        "text": "An enquiry does not reserve a visit."
+      },
+      {
+        "bg": "rgb(237, 243, 239)",
+        "color": "rgb(82, 102, 90)",
+        "text": "Before you enquire"
+      },
+      {
+        "bg": "rgb(237, 243, 239)",
+        "color": "rgb(38, 62, 52)",
+        "text": "A visit that fits your plans."
+      },
+      {
+        "bg": "rgb(255, 255, 255)",
+        "color": "rgb(82, 102, 90)",
+        "text": "Where"
+      },
+      {
+        "bg": "rgb(255, 255, 255)",
+        "color": "rgb(38, 62, 52)",
+        "text": "Check the areas we serve."
+      },
+      {
+        "bg": "rgb(255, 255, 255)",
+        "color": "rgb(82, 102, 90)",
+        "text": "When"
+      },
+      {
+        "bg": "rgb(255, 255, 255)",
+        "color": "rgb(38, 62, 52)",
+        "text": "See current hours and visit arrangements."
+      },
+      {
+        "bg": "rgb(49, 91, 69)",
+        "color": "rgb(255, 255, 255)",
+        "text": "Check visiting details"
+      },
+      {
+        "bg": "rgb(237, 243, 239)",
+        "color": "rgb(82, 102, 90)",
+        "text": "An enquiry does not reserve a visit."
+      }
+    ]
+  },
+  {
+    "id": "opening-hours-signpost",
+    "screen": "0:",
+    "colors": [
+      {
+        "bg": "rgb(247, 249, 246)",
+        "color": "rgb(83, 103, 88)",
+        "text": "Service update"
+      },
+      {
+        "bg": "rgb(247, 249, 246)",
+        "color": "rgb(46, 60, 51)",
+        "text": "Planning a visit?"
+      },
+      {
+        "bg": "rgb(247, 249, 246)",
+        "color": "rgb(36, 76, 66)",
+        "text": "Check current opening hours"
+      },
+      {
+        "bg": "rgb(247, 249, 246)",
+        "color": "rgb(83, 103, 88)",
+        "text": "Service update"
+      },
+      {
+        "bg": "rgb(247, 249, 246)",
+        "color": "rgb(46, 60, 51)",
+        "text": "Planning a visit?"
+      },
+      {
+        "bg": "rgb(247, 249, 246)",
+        "color": "rgb(36, 76, 66)",
+        "text": "Check current opening hours"
+      }
+    ]
+  }
+]

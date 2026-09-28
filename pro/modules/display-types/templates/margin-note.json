@@ -1,0 +1,110 @@
+{
+  "id": "margin-note",
+  "name": "Margin note",
+  "display_type": "slide_in",
+  "tier": "basic",
+  "tokens": {
+    "bg": "#faf9f5",
+    "fg": "#202b31",
+    "muted": "#53626b",
+    "accent": "#244c42",
+    "accent-fg": "#ffffff",
+    "border": "#ccd4d5",
+    "input-bg": "#ffffff",
+    "heading-size": "2rem",
+    "heading-weight": "600",
+    "tracking": "-0.035em",
+    "text-size": "1rem",
+    "leading": "1.5",
+    "radius": "0.125rem",
+    "pad": "1.5rem",
+    "gap": "1rem",
+    "width": "26rem",
+    "shadow": "0 20px 56px -20px rgba(28,42,31,.3)"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "information",
+        "name": "Information",
+        "kind": "content",
+        "content": {
+          "type": "row",
+          "tokens": {
+            "gap": "1.25rem"
+          },
+          "children": [
+            {
+              "type": "stack",
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "id": "n1",
+                  "text": "Journal",
+                  "role": "eyebrow"
+                },
+                {
+                  "type": "text",
+                  "id": "n2",
+                  "text": "Reading notes",
+                  "role": "fine_print",
+                  "size": "s",
+                  "tokens": {
+                    "text-size": "1.167rem"
+                  }
+                }
+              ],
+              "tokens": {
+                "gap": "0.375rem"
+              }
+            },
+            {
+              "type": "stack",
+              "children": [
+                {
+                  "type": "heading",
+                  "id": "n3",
+                  "text": "The value of\nreading twice.",
+                  "role": "headline",
+                  "tokens": {
+                    "heading-font": "Georgia, serif",
+                    "heading-size": "1.75rem",
+                    "heading-weight": "400"
+                  }
+                },
+                {
+                  "type": "text",
+                  "id": "n4",
+                  "text": "A second look. A new idea.",
+                  "role": "body"
+                },
+                {
+                  "type": "row",
+                  "children": [
+                    {
+                      "type": "button",
+                      "id": "n5",
+                      "label": "Read the essay",
+                      "role": "cta_label",
+                      "action": "link",
+                      "tokens": {
+                        "accent": "transparent",
+                        "accent-fg": "#244c42",
+                        "pad": "0"
+                      }
+                    }
+                  ]
+                }
+              ],
+              "tokens": {
+                "gap": "0.75rem"
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "submissions": []
+  }
+}

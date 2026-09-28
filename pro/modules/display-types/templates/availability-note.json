@@ -1,0 +1,133 @@
+{
+  "id": "availability-note",
+  "name": "Availability note",
+  "display_type": "slide_in",
+  "tier": "basic",
+  "tokens": {
+    "bg": "#edf3ef",
+    "fg": "#263e34",
+    "muted": "#52665a",
+    "accent": "#315b45",
+    "accent-fg": "#ffffff",
+    "border": "#ccd4d5",
+    "input-bg": "#ffffff",
+    "heading-size": "1.75rem",
+    "heading-weight": "600",
+    "tracking": "-0.035em",
+    "text-size": "1rem",
+    "leading": "1.5",
+    "radius": "0.75rem",
+    "pad": "0",
+    "gap": "1rem",
+    "width": "25rem",
+    "shadow": "0 20px 56px -20px rgba(28,42,31,.3)"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "information",
+        "name": "Information",
+        "kind": "content",
+        "content": {
+          "type": "panel",
+          "children": [
+            {
+              "type": "eyebrow",
+              "id": "n1",
+              "text": "Before you enquire",
+              "role": "eyebrow"
+            },
+            {
+              "type": "heading",
+              "id": "n2",
+              "text": "A visit that fits your plans.",
+              "role": "headline"
+            },
+            {
+              "type": "panel",
+              "children": [
+                {
+                  "type": "stack",
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "id": "n3",
+                      "text": "Where",
+                      "role": "eyebrow"
+                    },
+                    {
+                      "type": "text",
+                      "id": "n4",
+                      "text": "Check the areas we serve.",
+                      "role": "body"
+                    }
+                  ]
+                },
+                {
+                  "type": "divider",
+                  "id": "n5"
+                },
+                {
+                  "type": "stack",
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "id": "n6",
+                      "text": "When",
+                      "role": "eyebrow"
+                    },
+                    {
+                      "type": "text",
+                      "id": "n7",
+                      "text": "See current hours and visit arrangements.",
+                      "role": "body"
+                    }
+                  ]
+                }
+              ],
+              "tokens": {
+                "pad": "1rem",
+                "bg": "#ffffff",
+                "border": "#c8d5d0",
+                "gap": "0.75rem",
+                "radius": "0.25rem"
+              },
+              "edges": "all"
+            },
+            {
+              "type": "row",
+              "children": [
+                {
+                  "type": "button",
+                  "id": "n8",
+                  "label": "Check visiting details",
+                  "role": "cta_label",
+                  "action": "link"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "id": "n9",
+              "text": "An enquiry does not reserve a visit.",
+              "role": "fine_print",
+              "size": "s",
+              "tokens": {
+                "text-size": "1.167rem"
+              }
+            }
+          ],
+          "tokens": {
+            "pad": "1.5rem",
+            "gap": "1rem"
+          },
+          "narrow": {
+            "pad": "1.25rem"
+          }
+        }
+      }
+    ],
+    "submissions": []
+  }
+}

@@ -78,5 +78,46 @@
       "Who it suits": "This fictional example is intended for adults starting or returning to personal writing. No experience is required.",
       "Taking part": "This review page has no open dates and takes no bookings. A real publisher must explain current dates, cost, attendance and accessibility."
     }
+  ],
+  "reading-notes-guide": [
+    "Five ways to get more from a book",
+    {
+      "1. Choose a question": "Before reading, write one question you hope the book will help you explore.",
+      "2. Mark a useful passage": "Choose a passage that changes or challenges your thinking; note its page.",
+      "3. Explain it yourself": "Close the book and describe the idea in your own words.",
+      "4. Make a connection": "Connect that idea to an experience or another book.",
+      "5. Return later": "Revisit the note after a few days. Add what you remember and what you would like to read again."
+    }
+  ],
+  "lighting-collection": [
+    "The lighting edit",
+    {
+      "Reading lamp": "An illustrative terracotta table lamp for a reading corner. Confirm dimensions, bulb compatibility and electrical specifications with the actual seller.",
+      "Ambient lamp": "An illustrative cream-shaded table lamp for softer background light. This demonstration does not list real products for sale."
+    }
+  ],
+  "rereading-essay": [
+    "The value of reading twice",
+    {
+      "A changed question": "On a first reading we often follow what happens. Returning with a question lets us notice how the argument or story is made.",
+      "A different pace": "Try rereading one paragraph slowly. Notice a word or connection you missed and describe why it matters.",
+      "Keep a small note": "Record one changed impression. Rereading need not produce agreement; it may simply make your own response clearer."
+    }
+  ],
+  "visiting-details": [
+    "Service visit arrangements",
+    {
+      "Where we work": "This fictional studio discusses service areas before arranging a visit. Give your general area when enquiring; do not assume every location is covered.",
+      "When to visit": "Visits are by prior arrangement in this demonstration. Agree a date and time before travelling.",
+      "Next step": "Contact the service team to discuss area, scope and timing. Opening this page does not book a visit."
+    }
+  ],
+  "opening-hours-signpost": [
+    "Current opening hours",
+    {
+      "Fictional studio hours": "Monday to Friday, 09:00–17:00. Closed Saturday and Sunday. These are demonstration hours for this local review site.",
+      "Exceptional closures": "Confirm holiday and exceptional opening arrangements before travelling.",
+      "Visits": "Arrange a visit with the team first. A page view does not reserve an appointment."
+    }
   ]
 }
