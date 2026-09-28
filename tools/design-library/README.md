@@ -82,9 +82,11 @@ to every campaign before publication, including every branch and acknowledgement
    the final output again. Record typography, spacing, balance and line-break
    review for all screens, including acknowledgements and result variants.
    Then verify creation in WordPress and the actual configured destination journey.
-6. Save the editorial decision and notes, and export the review JSON. Browser-local
-   decisions are tied to the full prepared campaign and renderer hash; changes
-   invalidate them. Store the export with the batch review. Editorial review is
+6. Record the reviewer, decision, notes and three evidence stages, then export the
+   review JSON. Import with `npm run templates:review -- /path/to/export.json`;
+   commit the shared records and evidence together. Campaign, renderer or evidence
+   changes invalidate the shared approval. Run `npm run templates:gate -- BATCH_ID`
+   locally. See [the shared-review workflow](review/README.md). Editorial review is
    separate from release approval. Publish through the normal branch/PR process.
 
 Original artwork and provenance live in `pilot/assets/`. These SVG illustrations
@@ -97,9 +99,12 @@ It uses MySQL, not a mocked capture endpoint. The shipping Goal-first screen now
 filters by business as well as format, collection and search. The bounded catalog
 accepts 50 packs, retaining the existing 12-design and 256 KiB limits.
 
-Automated generation, shared review storage, screenshot similarity, conversion
-measurement, paid asset distribution and broad 300–500 campaign rollout remain
-future work. The current 48 are reviewed editorial candidates, not measured winners.
+The [shared editorial queue](review/README.md) now stores revision-bound decisions
+and evidence in Git. The studio shows review-state filters and the next 24 planned
+briefs separately from its 48 actual setups. `npm run templates:gate` checks the
+current evidence locally without CI. Automated generation, hosted multi-user
+review, screenshot similarity, conversion measurement, paid asset distribution
+and broad 300–500 campaign rollout remain future work. The current 48 are reviewed editorial candidates, not measured winners.
 
 ## A sibling of `tools/design-system`, not a step inside it
 

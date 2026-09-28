@@ -7,6 +7,7 @@ wp_register_plugin_realpath(WP_CONTENT_DIR . '/plugins/wconvert-pro/wconvert-pro
 require_once WP_CONTENT_DIR . '/plugins/wconvert/wconvert.php';
 require_once WP_CONTENT_DIR . '/plugins/wconvert-pro/wconvert-pro.php';
 require_once __DIR__ . '/resources.php';
+require_once __DIR__ . '/scenarios.php';
 
 add_action('init', static function (): void {
     if (get_option('wconvert_demo_installed')) return;
@@ -172,6 +173,7 @@ add_action('template_redirect', static function (): void {
     wp_nonce_field('wconvert-library-demo');
     echo '<button>Create missing demos & process queued mail</button></form>';
     foreach ($errors as $key => $error) echo '<p role="alert">' . esc_html($key . ': ' . $error) . '</p>';
+    echo '<p><a href="' . esc_url(home_url('/?library-scenarios=1')) . '">Open the three business walkthroughs →</a></p>';
     echo '<table><thead><tr><th>Campaign</th><th>Type</th><th>Leads</th><th>Edit</th></tr></thead><tbody>';
     foreach ($campaigns as $entry) {
         echo '<tr><td><a href="' . esc_url(get_permalink($entry['page'])) . '">' . esc_html($entry['name']) . '</a></td><td>' . esc_html($entry['type']) . '</td><td>' . $leads->submissions($entry['id']) . '</td><td><a href="' . esc_url(admin_url('admin.php?page=wconvert#optins?edit=' . $entry['id'])) . '">Edit campaign</a></td></tr>';

@@ -5,6 +5,8 @@ import { fileURLToPath } from 'node:url';
 import { createHash } from 'node:crypto';
 import { readDesigns, analyseDesigns } from './inventory.mjs';
 import { validateBriefs, coverage } from './briefs.mjs';
+import { reviewQueue } from './reviews.mjs';
+import { validateBacklog } from './backlog.mjs';
 
 const here = dirname(fileURLToPath(import.meta.url));
 const root = process.env.WCONVERT_PLUGIN ?? resolve(here, '../../..');
@@ -23,7 +25,12 @@ for (const entry of entries) {
   entry.fingerprint = design.fingerprint;
   entry.revision = createHash('sha256').update(rendererRevision).update(JSON.stringify(entry)).digest('hex');
 }
-const data = { entries, inventory, designs, rendererRevision, batches: collection.batches, coverage: coverage(entries) };
+const sharedReviews = JSON.parse(readFileSync(resolve(root, 'tools/design-library/review/shared-reviews.json'), 'utf8'));
+const queue = reviewQueue(sharedReviews, entries, root);
+writeFileSync(resolve(out, 'review-queue.json'), JSON.stringify(queue, null, 2) + '\n');
+const backlog = JSON.parse(readFileSync(resolve(root, 'tools/design-library/pilot/next-batch.json'), 'utf8'));
+validateBacklog(backlog, entries);
+const data = { backlog, queue, entries, inventory, designs, rendererRevision, batches: collection.batches, coverage: coverage(entries) };
 writeFileSync(resolve(out, 'coverage.json'), JSON.stringify(data.coverage, null, 2) + '\n');
 writeFileSync(resolve(out, 'inventory.json'), JSON.stringify(inventory, null, 2) + '\n');
 writeFileSync(resolve(out, 'pilot.json'), JSON.stringify(entries, null, 2) + '\n');

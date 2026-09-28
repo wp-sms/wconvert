@@ -55,3 +55,13 @@ WordPress/MySQL/WooCommerce harness verifies published snapshots, native capture
 retries, saved values and local resource-email handoff. Local handoff does not
 prove provider or inbox delivery. See the
 [48-campaign review](../reviews/template-coverage-2026-09-28.md).
+
+The studio now shares editorial decisions through a repository review ledger,
+with reviewer attribution and separate visual, journey and WordPress evidence.
+Campaign/renderer revisions and evidence-file hashes invalidate outdated
+approvals. Atomic imports reject conflicting reviewer bases; a local gate checks
+current approvals independently of CI. Existing matching evidence was reconciled
+for all 48 setups. Browser edits remain drafts until imported and committed.
+This introduces no database storage or hosted review service. The next 24 briefs
+are explicitly planned and excluded from the actual library counts. See the
+[shared-review workflow](../../tools/design-library/review/README.md).

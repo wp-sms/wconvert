@@ -357,3 +357,18 @@ Continue in reviewed batches selected from uncovered needs. Preserve revisioned
 review evidence, distinguish editorial review from release approval, and obtain
 real merchant outcome evidence before claiming conversion improvements. No remote
 tracking or external email/SMS sending was introduced.
+
+## Shared review and next-batch preparation, 2026-09-28
+
+The internal review queue is now repository-backed. All 48 current campaign
+revisions have reconciled visual, journey and WordPress evidence; a local gate
+checks that evidence without CI. Changes to campaign output or evidence invalidate
+its approval. External delivery is skipped at the user's request.
+
+`tools/design-library/pilot/next-batch.json` prepares 24 needs (12 stores, eight
+services, four publishers) toward 72 setups. Each brief includes type, existing
+comparisons, a proposed reuse/new-design decision, meaningful differences and
+practical acceptance checks. These remain planned, not added to the 48/36 counts.
+Three real-WordPress walkthroughs make the whole visitor task reviewable across
+store selection, service enquiries and publisher recommendations/optional signup.
+See the [implementation review](../reviews/template-review-system-2026-09-28.md).

@@ -8,7 +8,7 @@ $container = \WConvert\Bootstrap::container();
 $repo = $container->get(\WConvert\Optin\OptinRepository::class);
 $leads = $container->get(\WConvert\Lead\LeadRepository::class);
 $report = [];
-$outboxBefore = count(get_option('wconvert_demo_outbox', []));
+$runId = bin2hex(random_bytes(6));
 $resourceRecipients = [];
 function demo_assert(bool $condition, string $message): void { if (!$condition) throw new RuntimeException($message); }
 function demo_capture(array $body): WP_REST_Response {
@@ -17,7 +17,10 @@ function demo_capture(array $body): WP_REST_Response {
     $request->set_body(wp_json_encode($body));
     return rest_do_request($request);
 }
-foreach (get_option('wconvert_demo_campaigns', []) as $key => $entry) {
+$campaigns = get_option('wconvert_demo_campaigns', []);
+$briefs = json_decode(file_get_contents(WP_CONTENT_DIR . '/plugins/wconvert/tools/design-library/pilot/collection.json'), true, 512, JSON_THROW_ON_ERROR)['entries'];
+foreach ($briefs as $brief) demo_assert(isset($campaigns[$brief['id']]), 'Demo not seeded: ' . $brief['id']);
+foreach ($campaigns as $key => $entry) {
     try {
         $optin = $repo->find($entry['id']);
         demo_assert($optin !== null && $optin->publishedConfig !== null, 'Missing published campaign');
@@ -45,7 +48,7 @@ foreach (get_option('wconvert_demo_campaigns', []) as $key => $entry) {
                 foreach ($tree['steps'] as $step) foreach (\WConvert\Template\CaptureJourney::nodes($step['content']) as $node) {
                     if (($node['type'] ?? '') !== 'field' || !in_array($node['id'], $submission['fields'], true)) continue;
                     $fields[$node['name']] = match ($node['name']) {
-                        'email' => 'review-' . $key . '@example.test', 'phone' => '+12025550123',
+                        'email' => 'review-' . $runId . '-' . $key . '@example.test', 'phone' => '+12025550123',
                         'name' => 'Demo visitor', 'interest' => $node['options'][0]['value'] ?? '', default => '',
                     };
                 }
@@ -78,7 +81,8 @@ foreach (get_option('wconvert_demo_campaigns', []) as $key => $entry) {
     } catch (Throwable $error) { $report[$key] = ['status' => 'failed', 'error' => $error->getMessage()]; }
 }
 ActionScheduler_QueueRunner::instance()->run();
-$newMail = array_slice(get_option('wconvert_demo_outbox', []), $outboxBefore);
+// The outbox is capped at 100. Unique run recipients distinguish new mail even at capacity.
+$newMail = get_option('wconvert_demo_outbox', []);
 foreach ($resourceRecipients as $key => $recipient) {
     $mail = array_values(array_filter($newMail, static fn ($mail) => in_array($recipient, (array) $mail['to'], true)));
     try {

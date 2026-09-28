@@ -1,0 +1,45 @@
+{
+  "schema": 1,
+  "scope": "Local business walkthroughs. Fictional visitors and businesses; no external delivery or measured conversion claims.",
+  "scenarios": [
+    {
+      "id": "store",
+      "name": "A shopper choosing a gift",
+      "need": "A visitor is unsure what to choose, wants to understand the offer, and checks delivery before ordering.",
+      "campaigns": ["product-finder", "studio-welcome", "cart-delivery-help"],
+      "steps": [
+        "Try every product-finder route, then change an earlier answer. Check the recommendation and fallback against real sample products.",
+        "Submit the welcome form with fictional details and use the revealed DEMO10 code in the sample basket.",
+        "Check one £24 item: £2.40 discount and £4 delivery. Check two: £4.80 discount and free UK delivery above £40 after discounts.",
+        "Follow the cart reminder with a non-empty basket; empty it and confirm the reminder no longer appears."
+      ],
+      "success": "The visitor reaches a suitable available product and understands the real basket total. Capture, coupon reveal and cart navigation do not prove a purchase."
+    },
+    {
+      "id": "service",
+      "name": "A homeowner planning work",
+      "need": "A visitor wants a useful first conversation, not a falsely confirmed appointment.",
+      "campaigns": ["landscaping-enquiry", "renovation-callback", "project-readiness-guide"],
+      "steps": [
+        "Choose a landscaping request, continue to contact details, go Back, and confirm the request is preserved.",
+        "Try missing details, then valid fictional details. Check that the final acknowledgement confirms only receipt of the enquiry.",
+        "In the callback form, change the phone country and select a service. Confirm canonical phone and service choice in the saved Lead.",
+        "Request the preparation guide and open the actual sample resource. The local outbox is evidence of mail handoff only."
+      ],
+      "success": "The business receives enough context to reply once, with correct contact details. No booking, quote or provider delivery is implied."
+    },
+    {
+      "id": "publisher",
+      "name": "A reader looking for useful advice",
+      "need": "A reader wants a relevant guide and may prefer email without text messages.",
+      "campaigns": ["content-guide", "writing-checklist", "headlines-optional-sms"],
+      "steps": [
+        "Find a content recommendation and open its guide without subscribing. Test the fallback as well as a matched result.",
+        "Request the writing checklist and verify the accessible resource contains all seven promised points.",
+        "Submit email in the headlines campaign, go Back, and confirm the accepted email is protected.",
+        "Finish without SMS and reach the acknowledgement. On a separate run, add SMS and confirm the same Lead is enriched rather than duplicated."
+      ],
+      "success": "The reader gets the promised content and controls the optional channel. Subscription delivery and future engagement are outside this local trial."
+    }
+  ]
+}

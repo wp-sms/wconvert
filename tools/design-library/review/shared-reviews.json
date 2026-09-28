@@ -1,0 +1,2069 @@
+{
+  "schema": 1,
+  "records": [
+    {
+      "id": "new-arrivals-link",
+      "revision": "d68d617a269bcb5389ae7d8a1fdf2e4f45bec44a147b483c8bbba4af646cf73e",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — recorded coverage-batch review",
+      "note": "Editorial review: all screens inspected at desktop and 320px; final 720-case layout audit passed. Applicable form journeys tested with simulated failure/retry and acknowledgements. Real WordPress publication and native capture/link checks recorded in the batch report. Merchant branding, resources and external provider delivery still need configured-site release review.",
+      "at": "2026-09-28T12:38:00.447Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        }
+      },
+      "record_id": "c1d9ad0760502e261cf69105f4281b92f4d84432c924db2fc79480a5f0eb0160"
+    },
+    {
+      "id": "maker-notes",
+      "revision": "f6e0a3298a01bf756f95c0be9e2d006f0765bf8b0d2a8a0df0e070c6272dc602",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — recorded coverage-batch review",
+      "note": "Editorial review: all screens inspected at desktop and 320px; final 720-case layout audit passed. Applicable form journeys tested with simulated failure/retry and acknowledgements. Real WordPress publication and native capture/link checks recorded in the batch report. Merchant branding, resources and external provider delivery still need configured-site release review.",
+      "at": "2026-09-28T12:38:01.041Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        }
+      },
+      "record_id": "3ec5aa1ef69007de5b83b4c2290121a6f2c6a4c863fb0c20f22069cd55fb497b"
+    },
+    {
+      "id": "restyling-notes",
+      "revision": "89056058865d3d53f049a5691af093000d144c6e6e2aa35d5e91afd3ac2f5736",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — recorded coverage-batch review",
+      "note": "Editorial review: all screens inspected at desktop and 320px; final 720-case layout audit passed. Applicable form journeys tested with simulated failure/retry and acknowledgements. Real WordPress publication and native capture/link checks recorded in the batch report. Merchant branding, resources and external provider delivery still need configured-site release review.",
+      "at": "2026-09-28T12:38:01.638Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        }
+      },
+      "record_id": "d5bac1a222bd21955b23e861a70142e3def5980d83959f256a48bf768807c49f"
+    },
+    {
+      "id": "sizing-guide",
+      "revision": "05a918b137aa1e2fbfb1ffd143516cad8a360797bce7fb223a62d044878b4ff1",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — recorded coverage-batch review",
+      "note": "Editorial review: all screens inspected at desktop and 320px; final 720-case layout audit passed. Applicable form journeys tested with simulated failure/retry and acknowledgements. Real WordPress publication and native capture/link checks recorded in the batch report. Merchant branding, resources and external provider delivery still need configured-site release review.",
+      "at": "2026-09-28T12:38:02.229Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        }
+      },
+      "record_id": "9eddf9a3812156e5de1eafbeb86ea9a0adb656d223d61757a0a611ac45706745"
+    },
+    {
+      "id": "launch-interest",
+      "revision": "e58a513b774bfa40eecb495c30fb96d532fef8adbe54c4a18256462b0eb0a484",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — recorded coverage-batch review",
+      "note": "Editorial review: all screens inspected at desktop and 320px; final 720-case layout audit passed. Applicable form journeys tested with simulated failure/retry and acknowledgements. Real WordPress publication and native capture/link checks recorded in the batch report. Merchant branding, resources and external provider delivery still need configured-site release review.",
+      "at": "2026-09-28T12:38:02.817Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        }
+      },
+      "record_id": "2f54635755470ae90a5c1b1e211e0c5e479cc84e77fbabcc7ab2104376170037"
+    },
+    {
+      "id": "gift-planning-guide",
+      "revision": "6db58258c6b847a91b529d1e5c99b71af37bd5600472892079e63597bc12a898",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — recorded coverage-batch review",
+      "note": "Editorial review: all screens inspected at desktop and 320px; final 720-case layout audit passed. Applicable form journeys tested with simulated failure/retry and acknowledgements. Real WordPress publication and native capture/link checks recorded in the batch report. Merchant branding, resources and external provider delivery still need configured-site release review.",
+      "at": "2026-09-28T12:38:03.404Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        }
+      },
+      "record_id": "a61c05acfb01db6eba3818be234a6b4590e5f638b4e76adb361fc88db5a9fb36"
+    },
+    {
+      "id": "product-advice-request",
+      "revision": "182f0ce5f329f93df6c0dfa28f8b430ea6bd50045e7d6ac9481c4e73493aae4c",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — recorded coverage-batch review",
+      "note": "Editorial review: all screens inspected at desktop and 320px; final 720-case layout audit passed. Applicable form journeys tested with simulated failure/retry and acknowledgements. Real WordPress publication and native capture/link checks recorded in the batch report. Merchant branding, resources and external provider delivery still need configured-site release review.",
+      "at": "2026-09-28T12:38:03.985Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        }
+      },
+      "record_id": "5096a62e8438f09ea3dfdf53d471c9fa033dab817cbc16ac1f25298d24d43605"
+    },
+    {
+      "id": "restock-announcements",
+      "revision": "a983f8a2d82e2d76cd0e6f7a6437ea78ad4ba91a88d05e307c83f2049df6f5cd",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — recorded coverage-batch review",
+      "note": "Editorial review: all screens inspected at desktop and 320px; final 720-case layout audit passed. Applicable form journeys tested with simulated failure/retry and acknowledgements. Real WordPress publication and native capture/link checks recorded in the batch report. Merchant branding, resources and external provider delivery still need configured-site release review.",
+      "at": "2026-09-28T12:38:04.570Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        }
+      },
+      "record_id": "e49472ba2d3912e57532a90a008b82e11d82af2a248b91d632dc309e40054710"
+    },
+    {
+      "id": "collection-discovery",
+      "revision": "21ba8d33fea09e4d87979870207dbe0affb7c2ec7b75a30f35936334b9001c3e",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — recorded coverage-batch review",
+      "note": "Editorial review: all screens inspected at desktop and 320px; final 720-case layout audit passed. Applicable form journeys tested with simulated failure/retry and acknowledgements. Real WordPress publication and native capture/link checks recorded in the batch report. Merchant branding, resources and external provider delivery still need configured-site release review.",
+      "at": "2026-09-28T12:38:05.168Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        }
+      },
+      "record_id": "45d35b975250e0ac83b7ab7247d909c6e5f25f71f0bbca0444111b9d2cda157a"
+    },
+    {
+      "id": "packaging-details",
+      "revision": "a3333ace2c693abee9eb9a2f35c8462461748470045d7fabfc696417939a2bff",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — recorded coverage-batch review",
+      "note": "Editorial review: all screens inspected at desktop and 320px; final 720-case layout audit passed. Applicable form journeys tested with simulated failure/retry and acknowledgements. Real WordPress publication and native capture/link checks recorded in the batch report. Merchant branding, resources and external provider delivery still need configured-site release review.",
+      "at": "2026-09-28T12:38:05.767Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        }
+      },
+      "record_id": "07b9ba1be2ef83c9bc017f3caf9b7cef36863228ef080d3716dd61d784c2d82a"
+    },
+    {
+      "id": "cleaning-quote",
+      "revision": "05775cb85d6e642dc37e4f4bd935d01e4ce285aad89d98a6a36bfdb71f19dd89",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — recorded coverage-batch review",
+      "note": "Editorial review: all screens inspected at desktop and 320px; final 720-case layout audit passed. Applicable form journeys tested with simulated failure/retry and acknowledgements. Real WordPress publication and native capture/link checks recorded in the batch report. Merchant branding, resources and external provider delivery still need configured-site release review.",
+      "at": "2026-09-28T12:38:06.351Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        }
+      },
+      "record_id": "8360772d639feded64a0543c971333fa29d7aedd2ad0c8670722e3b4060ecc33"
+    },
+    {
+      "id": "landscaping-enquiry",
+      "revision": "9d56a0c03d4d108504f8c2c93d9a57b2c26b7acaf0013f49d809b6cda9489b4a",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — recorded coverage-batch review",
+      "note": "Editorial review: all screens inspected at desktop and 320px; final 720-case layout audit passed. Applicable form journeys tested with simulated failure/retry and acknowledgements. Real WordPress publication and native capture/link checks recorded in the batch report. Merchant branding, resources and external provider delivery still need configured-site release review.",
+      "at": "2026-09-28T12:38:06.936Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        }
+      },
+      "record_id": "75ed1d0ebbfcf799705049cee08c6359501666ad3f113537fde2cbea6ba312fa"
+    },
+    {
+      "id": "renovation-callback",
+      "revision": "ec1214e84ac961522838e8969c9ba1cdf49b976fb205221a14b1136e4a44d297",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — recorded coverage-batch review",
+      "note": "Editorial review: all screens inspected at desktop and 320px; final 720-case layout audit passed. Applicable form journeys tested with simulated failure/retry and acknowledgements. Real WordPress publication and native capture/link checks recorded in the batch report. Merchant branding, resources and external provider delivery still need configured-site release review.",
+      "at": "2026-09-28T12:38:07.505Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        }
+      },
+      "record_id": "00e01e0faf01bfe036da926a9a59b88ce39a042ab6e8431a175f114348925ed4"
+    },
+    {
+      "id": "agency-project-enquiry",
+      "revision": "ef5e7158591368b56a888a9fed271b816caeeea4161ae673413a8460b4e76ce2",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — recorded coverage-batch review",
+      "note": "Editorial review: all screens inspected at desktop and 320px; final 720-case layout audit passed. Applicable form journeys tested with simulated failure/retry and acknowledgements. Real WordPress publication and native capture/link checks recorded in the batch report. Merchant branding, resources and external provider delivery still need configured-site release review.",
+      "at": "2026-09-28T12:38:08.086Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        }
+      },
+      "record_id": "415f6d63f33e7aa3a63938c034fe81a689bc87988cc04aadec75ef8125206da4"
+    },
+    {
+      "id": "tutoring-introduction",
+      "revision": "433c18dc75cd25932db1cee49c8a6e81a3ef04189cc7ccbec8e20c7cc49eb1ac",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — recorded coverage-batch review",
+      "note": "Editorial review: all screens inspected at desktop and 320px; final 720-case layout audit passed. Applicable form journeys tested with simulated failure/retry and acknowledgements. Real WordPress publication and native capture/link checks recorded in the batch report. Merchant branding, resources and external provider delivery still need configured-site release review.",
+      "at": "2026-09-28T12:38:08.670Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        }
+      },
+      "record_id": "37dd803506406f74c1ed59301a720aca07e6dfb1c26c540241aa52d4f586f2bf"
+    },
+    {
+      "id": "fitness-introduction",
+      "revision": "c463fd8c64dca705d787e8e2c2caf071690ae5b3ff6b902ef7b263ae34603c91",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — recorded coverage-batch review",
+      "note": "Editorial review: all screens inspected at desktop and 320px; final 720-case layout audit passed. Applicable form journeys tested with simulated failure/retry and acknowledgements. Real WordPress publication and native capture/link checks recorded in the batch report. Merchant branding, resources and external provider delivery still need configured-site release review.",
+      "at": "2026-09-28T12:38:09.271Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        }
+      },
+      "record_id": "5631e5ed03487bc3f7c676ba52c58e6028e20eb058aa6df6f441c7388fde1582"
+    },
+    {
+      "id": "accounting-consultation",
+      "revision": "04d50d5e91489691097c27524731ecf6346b577c2c902ae14bbfeab1b4f29996",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — recorded coverage-batch review",
+      "note": "Editorial review: all screens inspected at desktop and 320px; final 720-case layout audit passed. Applicable form journeys tested with simulated failure/retry and acknowledgements. Real WordPress publication and native capture/link checks recorded in the batch report. Merchant branding, resources and external provider delivery still need configured-site release review.",
+      "at": "2026-09-28T12:38:09.869Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        }
+      },
+      "record_id": "0680c806ee9650a538ae97fa557abd6a77c43d2c734e37c75f6e06de1b1a66cc"
+    },
+    {
+      "id": "service-text-updates",
+      "revision": "c9f01e2525857cbb37a03cd8535053a8416c18706124f0dd4ac4251c522b2771",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — recorded coverage-batch review",
+      "note": "Editorial review: all screens inspected at desktop and 320px; final 720-case layout audit passed. Applicable form journeys tested with simulated failure/retry and acknowledgements. Real WordPress publication and native capture/link checks recorded in the batch report. Merchant branding, resources and external provider delivery still need configured-site release review.",
+      "at": "2026-09-28T12:38:10.449Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        }
+      },
+      "record_id": "298195fd1e3377b16bbc0a0dd440d4e7a17e85f7a09a96cd9000111c20134e04"
+    },
+    {
+      "id": "project-readiness-guide",
+      "revision": "672790151ec873dfcbcc888991f41fb4cbf0146a4ffb7fc9847e261270e15b45",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — recorded coverage-batch review",
+      "note": "Editorial review: all screens inspected at desktop and 320px; final 720-case layout audit passed. Applicable form journeys tested with simulated failure/retry and acknowledgements. Real WordPress publication and native capture/link checks recorded in the batch report. Merchant branding, resources and external provider delivery still need configured-site release review.",
+      "at": "2026-09-28T12:38:11.021Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        }
+      },
+      "record_id": "19a8d9a451be5e4adbda2ed1179176b58738e29018a0096402a01716c97328d1"
+    },
+    {
+      "id": "editorial-weekly",
+      "revision": "b6867afb3a99a94d07fd0c7af5bfb05e48699a5c2ddc6e1dcfa142f2362bd0e2",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — recorded coverage-batch review",
+      "note": "Editorial review: all screens inspected at desktop and 320px; final 720-case layout audit passed. Applicable form journeys tested with simulated failure/retry and acknowledgements. Real WordPress publication and native capture/link checks recorded in the batch report. Merchant branding, resources and external provider delivery still need configured-site release review.",
+      "at": "2026-09-28T12:38:11.606Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        }
+      },
+      "record_id": "63e28d60c6c4f8131b27b20382c2ae673fdda1c7bedc6365842f074335e95e38"
+    },
+    {
+      "id": "writing-checklist",
+      "revision": "ad9eb487e8f30f3099ff30abef648161e5bf526369f671ec257e1070e6492a70",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — recorded coverage-batch review",
+      "note": "Editorial review: all screens inspected at desktop and 320px; final 720-case layout audit passed. Applicable form journeys tested with simulated failure/retry and acknowledgements. Real WordPress publication and native capture/link checks recorded in the batch report. Merchant branding, resources and external provider delivery still need configured-site release review.",
+      "at": "2026-09-28T12:38:12.198Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        }
+      },
+      "record_id": "bc1c2fa24586501cc4ffd00d73b81f09e60f4aa135e92c4b5d6729eaaa5f22a8"
+    },
+    {
+      "id": "related-essay",
+      "revision": "de697a78a60f9329106ca6b933326de31fb8b300356f5eed84a72f00ae751f68",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — recorded coverage-batch review",
+      "note": "Editorial review: all screens inspected at desktop and 320px; final 720-case layout audit passed. Applicable form journeys tested with simulated failure/retry and acknowledgements. Real WordPress publication and native capture/link checks recorded in the batch report. Merchant branding, resources and external provider delivery still need configured-site release review.",
+      "at": "2026-09-28T12:38:12.804Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        }
+      },
+      "record_id": "f40c46c56f5b65c2a7c8bce193bcc054a1a71c94d7608f1b3f7b442628d44a04"
+    },
+    {
+      "id": "membership-details",
+      "revision": "27d6b8a433ac41217dd9e388b017a6949cd9be93775168d515113079a89786fc",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — recorded coverage-batch review",
+      "note": "Editorial review: all screens inspected at desktop and 320px; final 720-case layout audit passed. Applicable form journeys tested with simulated failure/retry and acknowledgements. Real WordPress publication and native capture/link checks recorded in the batch report. Merchant branding, resources and external provider delivery still need configured-site release review.",
+      "at": "2026-09-28T12:38:13.405Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        }
+      },
+      "record_id": "19383dc643cad9692e77edd9fe0cec2d3f28d2f6c5bbc4a32b5b314fdb4e64a1"
+    },
+    {
+      "id": "headlines-optional-sms",
+      "revision": "47714ee3d627a2b2c0e9558200012fd7ba05991271c1f8b7b80b2df134dee358",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — recorded coverage-batch review",
+      "note": "Editorial review: all screens inspected at desktop and 320px; final 720-case layout audit passed. Applicable form journeys tested with simulated failure/retry and acknowledgements. Real WordPress publication and native capture/link checks recorded in the batch report. Merchant branding, resources and external provider delivery still need configured-site release review.",
+      "at": "2026-09-28T12:38:14.314Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        }
+      },
+      "record_id": "da8d47b1d96bb879914b94259434778b4e6a3e12af3783651ba36b04101a2dba"
+    },
+    {
+      "id": "studio-welcome",
+      "revision": "0a2c3d35f6bb79ee8d3f670e28d48ede8562665e52060fde4ac18f388bf2815c",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — reconciled existing practical and WordPress reviews",
+      "note": "Existing visual and visitor-route evidence matches this exact campaign revision. Configured WordPress publication, native capture and destination checks are recorded in the later coverage report. This reconciles existing evidence into the shared queue; it does not claim a new visual review or external delivery.",
+      "at": "2026-09-28T13:12:39.652Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.json",
+              "sha256": "bf0a9de21dd3e07fd51b69a9b93fdda4a7340f4ba8fb70a842f27db98e315091"
+            },
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.md",
+              "sha256": "169d0ea638de592de9e1dff9b0692c96369994f0b79ed673ccbf83c62a9d3e2e"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.json",
+              "sha256": "bf0a9de21dd3e07fd51b69a9b93fdda4a7340f4ba8fb70a842f27db98e315091"
+            },
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.md",
+              "sha256": "169d0ea638de592de9e1dff9b0692c96369994f0b79ed673ccbf83c62a9d3e2e"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        }
+      },
+      "record_id": "62444f1936362ef0cf447b5a82311c28a32a8e86c7f7c1d674cc1334d028433a"
+    },
+    {
+      "id": "edition-early-access",
+      "revision": "6b569a957193d71dd1029a0ce2a4e34e1707dbfd113311bd7322768389c06114",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — reconciled existing practical and WordPress reviews",
+      "note": "Existing visual and visitor-route evidence matches this exact campaign revision. Configured WordPress publication, native capture and destination checks are recorded in the later coverage report. This reconciles existing evidence into the shared queue; it does not claim a new visual review or external delivery.",
+      "at": "2026-09-28T13:12:39.653Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.json",
+              "sha256": "bf0a9de21dd3e07fd51b69a9b93fdda4a7340f4ba8fb70a842f27db98e315091"
+            },
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.md",
+              "sha256": "169d0ea638de592de9e1dff9b0692c96369994f0b79ed673ccbf83c62a9d3e2e"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.json",
+              "sha256": "bf0a9de21dd3e07fd51b69a9b93fdda4a7340f4ba8fb70a842f27db98e315091"
+            },
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.md",
+              "sha256": "169d0ea638de592de9e1dff9b0692c96369994f0b79ed673ccbf83c62a9d3e2e"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        }
+      },
+      "record_id": "06c2f6d7b8ca1b65f0c85af30bfb5eeb9e23137396b090cc65d7be527ac4cf7e"
+    },
+    {
+      "id": "journey-email-then-sms",
+      "revision": "7cfdebc8b245eb0e897828db307dfbbcc1d802cab703a6031c66b7d1b2d6707e",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — reconciled existing practical and WordPress reviews",
+      "note": "Existing visual and visitor-route evidence matches this exact campaign revision. Configured WordPress publication, native capture and destination checks are recorded in the later coverage report. This reconciles existing evidence into the shared queue; it does not claim a new visual review or external delivery.",
+      "at": "2026-09-28T13:12:39.653Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.json",
+              "sha256": "bf0a9de21dd3e07fd51b69a9b93fdda4a7340f4ba8fb70a842f27db98e315091"
+            },
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.md",
+              "sha256": "169d0ea638de592de9e1dff9b0692c96369994f0b79ed673ccbf83c62a9d3e2e"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.json",
+              "sha256": "bf0a9de21dd3e07fd51b69a9b93fdda4a7340f4ba8fb70a842f27db98e315091"
+            },
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.md",
+              "sha256": "169d0ea638de592de9e1dff9b0692c96369994f0b79ed673ccbf83c62a9d3e2e"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        }
+      },
+      "record_id": "fd3c206547f17c9f81f17351ddfca7f0fff715dcdb5c497c8af3d4be13ec5871"
+    },
+    {
+      "id": "delivery-announcement",
+      "revision": "c1e947385c6fa085011da3163d8544f624466f12e0c4dccd07889cbfec40207e",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — reconciled existing practical and WordPress reviews",
+      "note": "Existing visual and visitor-route evidence matches this exact campaign revision. Configured WordPress publication, native capture and destination checks are recorded in the later coverage report. This reconciles existing evidence into the shared queue; it does not claim a new visual review or external delivery.",
+      "at": "2026-09-28T13:12:39.653Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.json",
+              "sha256": "bf0a9de21dd3e07fd51b69a9b93fdda4a7340f4ba8fb70a842f27db98e315091"
+            },
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.md",
+              "sha256": "169d0ea638de592de9e1dff9b0692c96369994f0b79ed673ccbf83c62a9d3e2e"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.json",
+              "sha256": "bf0a9de21dd3e07fd51b69a9b93fdda4a7340f4ba8fb70a842f27db98e315091"
+            },
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.md",
+              "sha256": "169d0ea638de592de9e1dff9b0692c96369994f0b79ed673ccbf83c62a9d3e2e"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        }
+      },
+      "record_id": "fe206b446b6160886c7e394c4f0dec8ae5961a5eb2c6ef8fcab63e6b760d446b"
+    },
+    {
+      "id": "fullscreen-announcement",
+      "revision": "8c615d43ddd9e7d0953f298acc8477dbd88e5d9d96dad153049f044f9e0afbad",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — reconciled existing practical and WordPress reviews",
+      "note": "Existing visual and visitor-route evidence matches this exact campaign revision. Configured WordPress publication, native capture and destination checks are recorded in the later coverage report. This reconciles existing evidence into the shared queue; it does not claim a new visual review or external delivery.",
+      "at": "2026-09-28T13:12:39.653Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.json",
+              "sha256": "bf0a9de21dd3e07fd51b69a9b93fdda4a7340f4ba8fb70a842f27db98e315091"
+            },
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.md",
+              "sha256": "169d0ea638de592de9e1dff9b0692c96369994f0b79ed673ccbf83c62a9d3e2e"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.json",
+              "sha256": "bf0a9de21dd3e07fd51b69a9b93fdda4a7340f4ba8fb70a842f27db98e315091"
+            },
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.md",
+              "sha256": "169d0ea638de592de9e1dff9b0692c96369994f0b79ed673ccbf83c62a9d3e2e"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        }
+      },
+      "record_id": "526d45e92a6dd8dde99d296096ffbaa98b67a80619ae2c56f96753fb74693874"
+    },
+    {
+      "id": "product-finder",
+      "revision": "73cc70d14eeedbe4ad71f0f8509bbebc7d12a3c59ead89d4f0a5b98116e891e8",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — reconciled existing practical and WordPress reviews",
+      "note": "Existing visual and visitor-route evidence matches this exact campaign revision. Configured WordPress publication, native capture and destination checks are recorded in the later coverage report. This reconciles existing evidence into the shared queue; it does not claim a new visual review or external delivery.",
+      "at": "2026-09-28T13:12:39.653Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.json",
+              "sha256": "bf0a9de21dd3e07fd51b69a9b93fdda4a7340f4ba8fb70a842f27db98e315091"
+            },
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.md",
+              "sha256": "169d0ea638de592de9e1dff9b0692c96369994f0b79ed673ccbf83c62a9d3e2e"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.json",
+              "sha256": "bf0a9de21dd3e07fd51b69a9b93fdda4a7340f4ba8fb70a842f27db98e315091"
+            },
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.md",
+              "sha256": "169d0ea638de592de9e1dff9b0692c96369994f0b79ed673ccbf83c62a9d3e2e"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        }
+      },
+      "record_id": "c6faa3e3bf0baf455cfb08361f086d8e64546f6cff571400844c2666712c9564"
+    },
+    {
+      "id": "home-repair-quote",
+      "revision": "1d0c88fdb64dbccc16203e000132872806de6f196e4f62bf06bd964d7b6108f2",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — reconciled existing practical and WordPress reviews",
+      "note": "Existing visual and visitor-route evidence matches this exact campaign revision. Configured WordPress publication, native capture and destination checks are recorded in the later coverage report. This reconciles existing evidence into the shared queue; it does not claim a new visual review or external delivery.",
+      "at": "2026-09-28T13:12:39.653Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.json",
+              "sha256": "bf0a9de21dd3e07fd51b69a9b93fdda4a7340f4ba8fb70a842f27db98e315091"
+            },
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.md",
+              "sha256": "169d0ea638de592de9e1dff9b0692c96369994f0b79ed673ccbf83c62a9d3e2e"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.json",
+              "sha256": "bf0a9de21dd3e07fd51b69a9b93fdda4a7340f4ba8fb70a842f27db98e315091"
+            },
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.md",
+              "sha256": "169d0ea638de592de9e1dff9b0692c96369994f0b79ed673ccbf83c62a9d3e2e"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        }
+      },
+      "record_id": "fc31e2d7fa38ee82114a631ae6787150d4157d811de8ad201a25bc001e073055"
+    },
+    {
+      "id": "photography-enquiry",
+      "revision": "44b9d057b74f342712908c413f6e5c479925c6077d76b284361d0a9d2f5ece96",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — reconciled existing practical and WordPress reviews",
+      "note": "Existing visual and visitor-route evidence matches this exact campaign revision. Configured WordPress publication, native capture and destination checks are recorded in the later coverage report. This reconciles existing evidence into the shared queue; it does not claim a new visual review or external delivery.",
+      "at": "2026-09-28T13:12:39.653Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.json",
+              "sha256": "bf0a9de21dd3e07fd51b69a9b93fdda4a7340f4ba8fb70a842f27db98e315091"
+            },
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.md",
+              "sha256": "169d0ea638de592de9e1dff9b0692c96369994f0b79ed673ccbf83c62a9d3e2e"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.json",
+              "sha256": "bf0a9de21dd3e07fd51b69a9b93fdda4a7340f4ba8fb70a842f27db98e315091"
+            },
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.md",
+              "sha256": "169d0ea638de592de9e1dff9b0692c96369994f0b79ed673ccbf83c62a9d3e2e"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        }
+      },
+      "record_id": "0c9e095e139801a7d913aeacd283018b3ab0034fa8c8fb8ad56518188a37b852"
+    },
+    {
+      "id": "consultation-corner",
+      "revision": "54e5ce8858d20ac38824798d11e4b3721f1970f8bc31307df94d9af5bea7cead",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — reconciled existing practical and WordPress reviews",
+      "note": "Existing visual and visitor-route evidence matches this exact campaign revision. Configured WordPress publication, native capture and destination checks are recorded in the later coverage report. This reconciles existing evidence into the shared queue; it does not claim a new visual review or external delivery.",
+      "at": "2026-09-28T13:12:39.653Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.json",
+              "sha256": "bf0a9de21dd3e07fd51b69a9b93fdda4a7340f4ba8fb70a842f27db98e315091"
+            },
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.md",
+              "sha256": "169d0ea638de592de9e1dff9b0692c96369994f0b79ed673ccbf83c62a9d3e2e"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.json",
+              "sha256": "bf0a9de21dd3e07fd51b69a9b93fdda4a7340f4ba8fb70a842f27db98e315091"
+            },
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.md",
+              "sha256": "169d0ea638de592de9e1dff9b0692c96369994f0b79ed673ccbf83c62a9d3e2e"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        }
+      },
+      "record_id": "e9975d52509d754425968bddb71c583784f016a01f91d6cf2399cbc0af2cc3f2"
+    },
+    {
+      "id": "project-planning-guide",
+      "revision": "fe02fb25cd82542ec9662fabad203e24b35f027eb95e3ee930aadaa6b071b4a0",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — reconciled existing practical and WordPress reviews",
+      "note": "Existing visual and visitor-route evidence matches this exact campaign revision. Configured WordPress publication, native capture and destination checks are recorded in the later coverage report. This reconciles existing evidence into the shared queue; it does not claim a new visual review or external delivery.",
+      "at": "2026-09-28T13:12:39.653Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.json",
+              "sha256": "bf0a9de21dd3e07fd51b69a9b93fdda4a7340f4ba8fb70a842f27db98e315091"
+            },
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.md",
+              "sha256": "169d0ea638de592de9e1dff9b0692c96369994f0b79ed673ccbf83c62a9d3e2e"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.json",
+              "sha256": "bf0a9de21dd3e07fd51b69a9b93fdda4a7340f4ba8fb70a842f27db98e315091"
+            },
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.md",
+              "sha256": "169d0ea638de592de9e1dff9b0692c96369994f0b79ed673ccbf83c62a9d3e2e"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        }
+      },
+      "record_id": "838efc27b46acdddf3202db12527a0e4f626345e1adbc77d4cd0a1e39bd7000e"
+    },
+    {
+      "id": "sunday-reading",
+      "revision": "f0ab0624c433599275713403995c786386401019189e468ce507a3f915e69a56",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — reconciled existing practical and WordPress reviews",
+      "note": "Existing visual and visitor-route evidence matches this exact campaign revision. Configured WordPress publication, native capture and destination checks are recorded in the later coverage report. This reconciles existing evidence into the shared queue; it does not claim a new visual review or external delivery.",
+      "at": "2026-09-28T13:12:39.653Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.json",
+              "sha256": "bf0a9de21dd3e07fd51b69a9b93fdda4a7340f4ba8fb70a842f27db98e315091"
+            },
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.md",
+              "sha256": "169d0ea638de592de9e1dff9b0692c96369994f0b79ed673ccbf83c62a9d3e2e"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.json",
+              "sha256": "bf0a9de21dd3e07fd51b69a9b93fdda4a7340f4ba8fb70a842f27db98e315091"
+            },
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.md",
+              "sha256": "169d0ea638de592de9e1dff9b0692c96369994f0b79ed673ccbf83c62a9d3e2e"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        }
+      },
+      "record_id": "68978ce4e049981f7c1bb996113558b287f86ace9728071e069d2e7a0c78168d"
+    },
+    {
+      "id": "content-guide",
+      "revision": "303e5f595a66e06d996e19b23caa2d4de2b68f4031f7b9b09db3923b6917b1a0",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — reconciled existing practical and WordPress reviews",
+      "note": "Existing visual and visitor-route evidence matches this exact campaign revision. Configured WordPress publication, native capture and destination checks are recorded in the later coverage report. This reconciles existing evidence into the shared queue; it does not claim a new visual review or external delivery.",
+      "at": "2026-09-28T13:12:39.653Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.json",
+              "sha256": "bf0a9de21dd3e07fd51b69a9b93fdda4a7340f4ba8fb70a842f27db98e315091"
+            },
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.md",
+              "sha256": "169d0ea638de592de9e1dff9b0692c96369994f0b79ed673ccbf83c62a9d3e2e"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.json",
+              "sha256": "bf0a9de21dd3e07fd51b69a9b93fdda4a7340f4ba8fb70a842f27db98e315091"
+            },
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.md",
+              "sha256": "169d0ea638de592de9e1dff9b0692c96369994f0b79ed673ccbf83c62a9d3e2e"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        }
+      },
+      "record_id": "8dfab642baef2d28d28e6152ea8f2f02c2ebcddbf8856ccf4f85da27b2b4b04b"
+    },
+    {
+      "id": "cart-straight-away",
+      "revision": "423a95877d4cfb364abb409af4f51f0ff0cf44213a45979c7939c6581b8cab5b",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — reconciled existing practical and WordPress reviews",
+      "note": "Existing visual and visitor-route evidence matches this exact campaign revision. Configured WordPress publication, native capture and destination checks are recorded in the later coverage report. This reconciles existing evidence into the shared queue; it does not claim a new visual review or external delivery.",
+      "at": "2026-09-28T13:12:39.653Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.json",
+              "sha256": "bf0a9de21dd3e07fd51b69a9b93fdda4a7340f4ba8fb70a842f27db98e315091"
+            },
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.md",
+              "sha256": "169d0ea638de592de9e1dff9b0692c96369994f0b79ed673ccbf83c62a9d3e2e"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.json",
+              "sha256": "bf0a9de21dd3e07fd51b69a9b93fdda4a7340f4ba8fb70a842f27db98e315091"
+            },
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.md",
+              "sha256": "169d0ea638de592de9e1dff9b0692c96369994f0b79ed673ccbf83c62a9d3e2e"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        }
+      },
+      "record_id": "2e4746fd5269453039b6e53b8dba209e58b572c84ec955ab222afbc5ca48b2e1"
+    },
+    {
+      "id": "cart-delivery-help",
+      "revision": "05d32387d8583999f0a2bf4145f1df32ece756fe8bc7848d875ad33bc82381bd",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — reconciled existing practical and WordPress reviews",
+      "note": "Existing visual and visitor-route evidence matches this exact campaign revision. Configured WordPress publication, native capture and destination checks are recorded in the later coverage report. This reconciles existing evidence into the shared queue; it does not claim a new visual review or external delivery.",
+      "at": "2026-09-28T13:12:39.653Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.json",
+              "sha256": "bf0a9de21dd3e07fd51b69a9b93fdda4a7340f4ba8fb70a842f27db98e315091"
+            },
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.md",
+              "sha256": "169d0ea638de592de9e1dff9b0692c96369994f0b79ed673ccbf83c62a9d3e2e"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.json",
+              "sha256": "bf0a9de21dd3e07fd51b69a9b93fdda4a7340f4ba8fb70a842f27db98e315091"
+            },
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.md",
+              "sha256": "169d0ea638de592de9e1dff9b0692c96369994f0b79ed673ccbf83c62a9d3e2e"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        }
+      },
+      "record_id": "fbf68496f0da49cc71c299ff81267c74d7e415229bf6fe4a6450b60754082d99"
+    },
+    {
+      "id": "drop-alerts",
+      "revision": "12d1726b1a365ae44cac2c6f365d3b5670d21f1f8be68de0c1a4b310f4217252",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — reconciled existing practical and WordPress reviews",
+      "note": "Existing visual and visitor-route evidence matches this exact campaign revision. Configured WordPress publication, native capture and destination checks are recorded in the later coverage report. This reconciles existing evidence into the shared queue; it does not claim a new visual review or external delivery.",
+      "at": "2026-09-28T13:12:39.653Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.json",
+              "sha256": "bf0a9de21dd3e07fd51b69a9b93fdda4a7340f4ba8fb70a842f27db98e315091"
+            },
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.md",
+              "sha256": "169d0ea638de592de9e1dff9b0692c96369994f0b79ed673ccbf83c62a9d3e2e"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.json",
+              "sha256": "bf0a9de21dd3e07fd51b69a9b93fdda4a7340f4ba8fb70a842f27db98e315091"
+            },
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.md",
+              "sha256": "169d0ea638de592de9e1dff9b0692c96369994f0b79ed673ccbf83c62a9d3e2e"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        }
+      },
+      "record_id": "b7138528a0d8c01b7df6ddebf27f1fcde9962aacd9935ea10803756e56db3a33"
+    },
+    {
+      "id": "sale-deadline",
+      "revision": "5eb07f52d9ad9c8a089c7228fe5cf6bcc488006f023fbabdab27daedbc71ca96",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — reconciled existing practical and WordPress reviews",
+      "note": "Existing visual and visitor-route evidence matches this exact campaign revision. Configured WordPress publication, native capture and destination checks are recorded in the later coverage report. This reconciles existing evidence into the shared queue; it does not claim a new visual review or external delivery.",
+      "at": "2026-09-28T13:12:39.653Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.json",
+              "sha256": "bf0a9de21dd3e07fd51b69a9b93fdda4a7340f4ba8fb70a842f27db98e315091"
+            },
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.md",
+              "sha256": "169d0ea638de592de9e1dff9b0692c96369994f0b79ed673ccbf83c62a9d3e2e"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.json",
+              "sha256": "bf0a9de21dd3e07fd51b69a9b93fdda4a7340f4ba8fb70a842f27db98e315091"
+            },
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.md",
+              "sha256": "169d0ea638de592de9e1dff9b0692c96369994f0b79ed673ccbf83c62a9d3e2e"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        }
+      },
+      "record_id": "cbe610f72a2b21e62a4e187ffb58d7a8f221e1716d85d7b5650ec570a2b1d60c"
+    },
+    {
+      "id": "product-care-guide",
+      "revision": "7106104876ca82037fa9d25557ef08b897435399c2b71c0da2e1054c0f07592d",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — reconciled existing practical and WordPress reviews",
+      "note": "Existing visual and visitor-route evidence matches this exact campaign revision. Configured WordPress publication, native capture and destination checks are recorded in the later coverage report. This reconciles existing evidence into the shared queue; it does not claim a new visual review or external delivery.",
+      "at": "2026-09-28T13:12:39.653Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.json",
+              "sha256": "bf0a9de21dd3e07fd51b69a9b93fdda4a7340f4ba8fb70a842f27db98e315091"
+            },
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.md",
+              "sha256": "169d0ea638de592de9e1dff9b0692c96369994f0b79ed673ccbf83c62a9d3e2e"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.json",
+              "sha256": "bf0a9de21dd3e07fd51b69a9b93fdda4a7340f4ba8fb70a842f27db98e315091"
+            },
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.md",
+              "sha256": "169d0ea638de592de9e1dff9b0692c96369994f0b79ed673ccbf83c62a9d3e2e"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        }
+      },
+      "record_id": "ae278ebb51e4c35077c76e3b53dc96d37b8688381df017533c129fb26e94b32d"
+    },
+    {
+      "id": "wholesale-enquiry",
+      "revision": "70b1230f9cd7154178c506b9847aa359d4673afe0cdd2f81b5225b20d62daaea",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — reconciled existing practical and WordPress reviews",
+      "note": "Existing visual and visitor-route evidence matches this exact campaign revision. Configured WordPress publication, native capture and destination checks are recorded in the later coverage report. This reconciles existing evidence into the shared queue; it does not claim a new visual review or external delivery.",
+      "at": "2026-09-28T13:12:39.653Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.json",
+              "sha256": "bf0a9de21dd3e07fd51b69a9b93fdda4a7340f4ba8fb70a842f27db98e315091"
+            },
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.md",
+              "sha256": "169d0ea638de592de9e1dff9b0692c96369994f0b79ed673ccbf83c62a9d3e2e"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.json",
+              "sha256": "bf0a9de21dd3e07fd51b69a9b93fdda4a7340f4ba8fb70a842f27db98e315091"
+            },
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.md",
+              "sha256": "169d0ea638de592de9e1dff9b0692c96369994f0b79ed673ccbf83c62a9d3e2e"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        }
+      },
+      "record_id": "89c4246844e85f899452cb4ec2b63993ef94d7b621497761917e32afab87be94"
+    },
+    {
+      "id": "venue-visit-request",
+      "revision": "1cc9b62f91352754c722b411048985d29694d94cad4c9081201350b6afbe55a4",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — reconciled existing practical and WordPress reviews",
+      "note": "Existing visual and visitor-route evidence matches this exact campaign revision. Configured WordPress publication, native capture and destination checks are recorded in the later coverage report. This reconciles existing evidence into the shared queue; it does not claim a new visual review or external delivery.",
+      "at": "2026-09-28T13:12:39.653Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.json",
+              "sha256": "bf0a9de21dd3e07fd51b69a9b93fdda4a7340f4ba8fb70a842f27db98e315091"
+            },
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.md",
+              "sha256": "169d0ea638de592de9e1dff9b0692c96369994f0b79ed673ccbf83c62a9d3e2e"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.json",
+              "sha256": "bf0a9de21dd3e07fd51b69a9b93fdda4a7340f4ba8fb70a842f27db98e315091"
+            },
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.md",
+              "sha256": "169d0ea638de592de9e1dff9b0692c96369994f0b79ed673ccbf83c62a9d3e2e"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        }
+      },
+      "record_id": "3d07a02d7cc5ea28708571360c7ef3009130f71ed86568024bf642fce7598a98"
+    },
+    {
+      "id": "course-advice-request",
+      "revision": "a04858422808c4de3a73630873fb7988d11f6c6928f942e7a922f7eb3e7432e3",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — reconciled existing practical and WordPress reviews",
+      "note": "Existing visual and visitor-route evidence matches this exact campaign revision. Configured WordPress publication, native capture and destination checks are recorded in the later coverage report. This reconciles existing evidence into the shared queue; it does not claim a new visual review or external delivery.",
+      "at": "2026-09-28T13:12:39.653Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.json",
+              "sha256": "bf0a9de21dd3e07fd51b69a9b93fdda4a7340f4ba8fb70a842f27db98e315091"
+            },
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.md",
+              "sha256": "169d0ea638de592de9e1dff9b0692c96369994f0b79ed673ccbf83c62a9d3e2e"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.json",
+              "sha256": "bf0a9de21dd3e07fd51b69a9b93fdda4a7340f4ba8fb70a842f27db98e315091"
+            },
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.md",
+              "sha256": "169d0ea638de592de9e1dff9b0692c96369994f0b79ed673ccbf83c62a9d3e2e"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        }
+      },
+      "record_id": "ed0f446a8a6688414d7665a820e2a8cb2e99f346184d28a866a4faed4b662a53"
+    },
+    {
+      "id": "maintenance-letter",
+      "revision": "46d419873603e1f00d1d9c7b23e9f51de6382ea21eb4e2fb3c79ec74ae7180fe",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — reconciled existing practical and WordPress reviews",
+      "note": "Existing visual and visitor-route evidence matches this exact campaign revision. Configured WordPress publication, native capture and destination checks are recorded in the later coverage report. This reconciles existing evidence into the shared queue; it does not claim a new visual review or external delivery.",
+      "at": "2026-09-28T13:12:39.653Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.json",
+              "sha256": "bf0a9de21dd3e07fd51b69a9b93fdda4a7340f4ba8fb70a842f27db98e315091"
+            },
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.md",
+              "sha256": "169d0ea638de592de9e1dff9b0692c96369994f0b79ed673ccbf83c62a9d3e2e"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.json",
+              "sha256": "bf0a9de21dd3e07fd51b69a9b93fdda4a7340f4ba8fb70a842f27db98e315091"
+            },
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.md",
+              "sha256": "169d0ea638de592de9e1dff9b0692c96369994f0b79ed673ccbf83c62a9d3e2e"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        }
+      },
+      "record_id": "d31282c1b2edc49474842f0e00526bf1c0b54736e3afe6710601ee5c7501581a"
+    },
+    {
+      "id": "seasonal-service-link",
+      "revision": "d35ddcc0a1e647ffbfafb36a53582353b5deef4ddfabee24e8bdaa6f5882f0ee",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — reconciled existing practical and WordPress reviews",
+      "note": "Existing visual and visitor-route evidence matches this exact campaign revision. Configured WordPress publication, native capture and destination checks are recorded in the later coverage report. This reconciles existing evidence into the shared queue; it does not claim a new visual review or external delivery.",
+      "at": "2026-09-28T13:12:39.653Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.json",
+              "sha256": "bf0a9de21dd3e07fd51b69a9b93fdda4a7340f4ba8fb70a842f27db98e315091"
+            },
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.md",
+              "sha256": "169d0ea638de592de9e1dff9b0692c96369994f0b79ed673ccbf83c62a9d3e2e"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.json",
+              "sha256": "bf0a9de21dd3e07fd51b69a9b93fdda4a7340f4ba8fb70a842f27db98e315091"
+            },
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.md",
+              "sha256": "169d0ea638de592de9e1dff9b0692c96369994f0b79ed673ccbf83c62a9d3e2e"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        }
+      },
+      "record_id": "798d7045a3cd29faedbc372adbae9e682161564018ce9f20471c346fd456f04a"
+    },
+    {
+      "id": "event-registration-link",
+      "revision": "d16e20857d0281433ebee5d300491535f200d94f4cbf60778876d1682eea8d5a",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — reconciled existing practical and WordPress reviews",
+      "note": "Existing visual and visitor-route evidence matches this exact campaign revision. Configured WordPress publication, native capture and destination checks are recorded in the later coverage report. This reconciles existing evidence into the shared queue; it does not claim a new visual review or external delivery.",
+      "at": "2026-09-28T13:12:39.653Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.json",
+              "sha256": "bf0a9de21dd3e07fd51b69a9b93fdda4a7340f4ba8fb70a842f27db98e315091"
+            },
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.md",
+              "sha256": "169d0ea638de592de9e1dff9b0692c96369994f0b79ed673ccbf83c62a9d3e2e"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.json",
+              "sha256": "bf0a9de21dd3e07fd51b69a9b93fdda4a7340f4ba8fb70a842f27db98e315091"
+            },
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.md",
+              "sha256": "169d0ea638de592de9e1dff9b0692c96369994f0b79ed673ccbf83c62a9d3e2e"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        }
+      },
+      "record_id": "f5c40914687d50cc5b7aa2140077248dad54928552d877b8d5e0f61375dd9e77"
+    },
+    {
+      "id": "topic-reading-list",
+      "revision": "69ac1b41a4d9ab7e7461cad22a1de905a63350db72b41b942fd08ced077359a7",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex — reconciled existing practical and WordPress reviews",
+      "note": "Existing visual and visitor-route evidence matches this exact campaign revision. Configured WordPress publication, native capture and destination checks are recorded in the later coverage report. This reconciles existing evidence into the shared queue; it does not claim a new visual review or external delivery.",
+      "at": "2026-09-28T13:12:39.653Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.json",
+              "sha256": "bf0a9de21dd3e07fd51b69a9b93fdda4a7340f4ba8fb70a842f27db98e315091"
+            },
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.md",
+              "sha256": "169d0ea638de592de9e1dff9b0692c96369994f0b79ed673ccbf83c62a9d3e2e"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.json",
+              "sha256": "bf0a9de21dd3e07fd51b69a9b93fdda4a7340f4ba8fb70a842f27db98e315091"
+            },
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.md",
+              "sha256": "169d0ea638de592de9e1dff9b0692c96369994f0b79ed673ccbf83c62a9d3e2e"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            }
+          ]
+        }
+      },
+      "record_id": "499bf622289c2fccbd5bca9d43d115221b74f1878a4160813bd033e6d85545ab"
+    }
+  ]
+}

@@ -78,3 +78,18 @@ resource page. Results are written to `../out/demo-verification.json`.
 All demo state is disposable and outside the repository. Stop the server and its
 private MySQL process when done. Removing this harness from a site does not undo
 its created rows/options, which is why it must only run in a disposable site.
+
+## Business walkthroughs
+
+Open <http://127.0.0.1:9421/?library-scenarios=1> while signed in to the
+disposable site. The store, service and publisher walkthroughs link to the
+actual seeded campaigns and describe the whole task, useful outcomes and
+limitations. Their source is `scenarios.json`; they are reviewer instructions,
+not automatic passes or real-merchant research. The regular review hub links
+to them.
+
+The verifier now refuses missing seeded campaigns instead of reporting an empty
+run as success. Unique fictional recipients per run make local mail checks
+repeatable even after the 100-message outbox fills. The capacity regression was
+verified against the real demo with temporary local fixture messages, removed
+after the run. External delivery remains skipped.
