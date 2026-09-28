@@ -45,15 +45,16 @@ export function captureReadiness(template: Template, primaryChannel?: string | n
     if (!save.required && !skips.length) add(sprintf(__('Add a No thanks button to “%s” so visitors can skip this optional signup.', 'wconvert'), screen.name), [at]);
     if (!save.required && skips.some(button => button.path[0] !== at)) add(sprintf(__('Move this No thanks button onto “%s”, beside its Save button.', 'wconvert'), screen.name), skips.find(button => button.path[0] !== at)!.path);
     if (!save.required && skips.length > 1) add(sprintf(__('Keep one No thanks button for “%s”. Remove this extra button.', 'wconvert'), screen.name), skips[1].path);
-    const channel = index === 0 ? primaryChannel : primaryChannel === 'sms' ? 'email' : primaryChannel === 'email' ? 'sms' : null;
+    const primary = primaryChannel === 'sms' ? 'phone' : primaryChannel;
+    const channel = index === 0 ? primary : primary === 'phone' ? 'email' : primary === 'email' ? 'phone' : null;
     if (!channel) continue;
     const owned = blocks.filter(block => {
       const node = nodeAt(tree, block.path);
       return node && 'id' in node && node.id && [...save.fields, ...save.consents].includes(node.id);
     });
-    const identifier = owned.find(block => block.type === 'field' && (nodeAt(tree, block.path) as FieldNode).name === (channel === 'sms' ? 'phone' : 'email'));
+    const identifier = owned.find(block => block.type === 'field' && (nodeAt(tree, block.path) as FieldNode).name === (channel === 'phone' ? 'phone' : 'email'));
     if (!identifier || identifier.hidden || !(nodeAt(tree, identifier.path) as FieldNode).required)
-      add(sprintf(channel === 'sms' ? __('Require a phone field for “%s” before accepting SMS consent.', 'wconvert') : __('Require an email field for “%s” before accepting email consent.', 'wconvert'), screen.name), identifier?.path ?? [at]);
+      add(sprintf(channel === 'phone' ? __('Require a phone field for “%s” before accepting SMS consent.', 'wconvert') : __('Require an email field for “%s” before accepting email consent.', 'wconvert'), screen.name), identifier?.path ?? [at]);
     const consents = owned.filter(block => block.type === 'consent');
     if (!consents.length) {
       const existing = blocks.find(block => block.type === 'consent' && block.path[0] === at);

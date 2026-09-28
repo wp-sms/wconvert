@@ -718,7 +718,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
               onChange={(next) => edit({ destinations: next, capture_mode: 'connected' })}
             />
             }
-            <SubmissionSettings template={template} primaryChannel={captureOutcome?.audience_channel} config={config} destinations={read(destinations)?.destinations ?? []} onChange={edit} />
+            <SubmissionSettings types={read(destinations)?.types ?? []} connections={read(destinations)?.connections ?? []} onSaved={updated => { destinationRequest.current++; setDestinations(current => current.status === 'ready' ? ready({ ...current.data, destinations: [...updated] }) : current); }} template={template} primaryChannel={captureOutcome?.audience_channel} config={config} destinations={read(destinations)?.destinations ?? []} onChange={edit} />
   </>;
 
   return (
@@ -853,7 +853,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
         <TabsContent value="journey" forceMount={journeyVisited || undefined} className="wconvert-workspace__journey">
           <Activity mode={tab === 'journey' ? 'visible' : 'hidden'}>
           {!entry && <EmptyState icon={Blocks} title={__('Choose a campaign to customize', 'wconvert')} action={<Button onClick={() => setBrowsing(true)}>{__('Browse designs and formats', 'wconvert')}</Button>}>{__('Start with a ready-made design, then make it yours.', 'wconvert')}</EmptyState>}
-          {entry && <JourneyEditor embedded labels={gallery.labels} onResultSelect={setEditingResult}
+          {entry && <JourneyEditor onUndo={history.canUndo ? history.undo : undefined} embedded labels={gallery.labels} onResultSelect={setEditingResult}
             editorCanvas={previewPane}
             editorTools={<DeviceControls width={width} onChange={setWidth} />}
             elementSelection={selection ?? undefined}

@@ -1,3 +1,4 @@
+import { changeTestGuide, type JourneyChange } from './structure/changeTestGuide';
 import { followupGroups } from './structure/followupGroups';
 import { journeyTestProgress } from './structure/journeyTestProgress';
 import { answerReview } from '@renderer/answer-review';
@@ -31,8 +32,8 @@ function TestProducts({ count, state, onRetry }: { count: number; state: Product
 }
 
 /** The real renderer, with in-memory answers and no capture or analytics calls. */
-export function JourneyTest({ template, onEdit, onShowPath, deliveryMode = 'none', destinationSummary }: {
-  template: Template; onEdit(step: number, focus?: 'condition'): void; onShowPath?(screens: readonly number[], edges: readonly string[]): void; deliveryMode?: 'local' | 'connected' | 'none'; destinationSummary?: string;
+export function JourneyTest({ template, onEdit, onShowPath, deliveryMode = 'none', destinationSummary, changeToCheck }: {
+  template: Template; onEdit(step: number, focus?: 'condition'): void; onShowPath?(screens: readonly number[], edges: readonly string[]): void; deliveryMode?: 'local' | 'connected' | 'none'; destinationSummary?: string; changeToCheck?: JourneyChange;
 }) {
   const tree = template.tree;
   const entry = tree.graph ? Math.max(0, tree.steps.findIndex(screen => screen.id === tree.graph?.entry)) : 0;
@@ -259,6 +260,7 @@ export function JourneyTest({ template, onEdit, onShowPath, deliveryMode = 'none
     {productHost && !!shownResult?.product_ids?.length && createPortal(<TestProducts count={shownResult.product_ids.length}
       state={productState} onRetry={() => setProductState('selected')} />, productHost)}
     <div className="wconvert-journey-test__side">
+      {changeToCheck && <section className="wconvert-journey-test__change" aria-label={__('Change to check', 'wconvert')}><strong>{__('Change to check', 'wconvert')}</strong><p><strong>{changeToCheck.screenName}</strong></p><p>{changeToCheck.text}</p><details><summary>{__('Suggested checks', 'wconvert')}</summary><ul>{changeTestGuide(tree, changeToCheck.screenId).map(check => <li key={check}>{check}</li>)}</ul><p>{__('These are cases to try, not proof that a rule is reachable or wins. Earlier answers and rule priority still apply.', 'wconvert')}</p></details><small>{__('Start at the beginning and try answers that use the changed path. No answers are preselected.', 'wconvert')}</small></section>}
       <h3>{__('Path summary', 'wconvert')}</h3>
       <ol className="wconvert-journey-test__current" aria-label={__('Current screen', 'wconvert')}>
         <li data-current="true"><small>{__('Current screen', 'wconvert')}</small><span>{tree.steps[step].name}</span>
@@ -283,11 +285,11 @@ export function JourneyTest({ template, onEdit, onShowPath, deliveryMode = 'none
       {routeSteps.length > 0 && <details className="wconvert-journey-test__route"><summary>{__('Why this path?', 'wconvert')}</summary>
         <ol>{routeSteps.map(item => <li key={item.id} data-edge-id={item.id}>{item.label}</li>)}</ol></details>}
       {shownResult && <p className="wconvert-journey-test__result">{sprintf(__('Result shown: %s', 'wconvert'), shownResult.heading)}</p>}
-      {tree.submissions.length > 0 && <section className="wconvert-journey-test__capture"><h4>{__('Capture checkpoints', 'wconvert')}</h4>
+      {tree.submissions.length > 0 && <section className="wconvert-journey-test__capture"><h4>{__('Submissions', 'wconvert')}</h4>
         <ol>{tree.submissions.map(submission => <li key={submission.id} className="wconvert-journey-test__checkpoint"><div><strong>{tree.steps.find(screen => walkNodes(screen.content).some(node => node.type === 'button' && 'action' in node && node.action === 'submit' && 'submission' in node && node.submission === submission.id))?.name ?? submission.id}</strong><span>{accepted.includes(submission.id)
           ? __('Accepted in test', 'wconvert') : skipped.includes(submission.id) ? __('Skipped', 'wconvert')
             : walkNodes(tree.steps[step].content).some(node => node.type === 'button' && 'submission' in node && node.submission === submission.id && 'action' in node && node.action === 'submit')
-              ? __('Current save point', 'wconvert') : [...submission.fields, ...submission.consents].some(id => id in captureValues) ? __('Draft only', 'wconvert') : __('Not reached', 'wconvert')}</span></div>
+              ? __('Ready to submit', 'wconvert') : [...submission.fields, ...submission.consents].some(id => id in captureValues) ? __('Draft only', 'wconvert') : __('Not reached', 'wconvert')}</span></div>
           {accepted.includes(submission.id) && <>
             <small>{deliveryMode === 'connected' ? delivery[submission.id] === 'failed'
               ? __('Destination delivery failed in this simulation. The accepted save remains; retry delivery without resubmitting.', 'wconvert')
@@ -296,15 +298,15 @@ export function JourneyTest({ template, onEdit, onShowPath, deliveryMode = 'none
                 : __('No destination is configured for this test.', 'wconvert')}</small>
             {deliveryMode === 'connected' && delivery[submission.id] === 'failed' && <button type="button" onClick={() => setDelivery(previous => ({ ...previous, [submission.id]: 'queued' }))}>
               {__('Simulate delivery retry', 'wconvert')}</button>}
-            {snapshots[submission.id] && <details><summary>{__('Review accepted snapshot', 'wconvert')}</summary><dl>
+            {snapshots[submission.id] && <details><summary>{__('Submitted answers', 'wconvert')}</summary><dl>
               {Object.entries(snapshots[submission.id].values).map(([id, value]) => <div key={id}><dt>{nodeLabel(id)}</dt><dd>{typeof value === 'boolean'
                 ? value ? __('Agreed', 'wconvert') : __('Not agreed', 'wconvert') : answerText(id, value)}</dd></div>)}
               {snapshots[submission.id].questionIds.map(id => <div key={id}><dt>{nodeLabel(id)}</dt><dd>{answerText(id, snapshots[submission.id].answers[id])}</dd></div>)}
             </dl></details>}
           </>}
         </li>)}</ol>
-        <label><input type="checkbox" checked={failNext} onChange={event => { failNextRef.current = event.target.checked; setFailNext(event.target.checked); }} />{__('Simulate failure on next submission', 'wconvert')}</label>
-        {deliveryMode === 'connected' && <label><input type="checkbox" checked={failDeliveryNext} onChange={event => { failDeliveryNextRef.current = event.target.checked; setFailDeliveryNext(event.target.checked); }} />{__('Simulate delivery failure after next accepted save', 'wconvert')}</label>}
+        <details className="wconvert-test-diagnostics"><summary>{__('Test failure & recovery', 'wconvert')}</summary><label><input type="checkbox" checked={failNext} onChange={event => { failNextRef.current = event.target.checked; setFailNext(event.target.checked); }} />{__('Simulate failure on next submission', 'wconvert')}</label>
+        {deliveryMode === 'connected' && <label><input type="checkbox" checked={failDeliveryNext} onChange={event => { failDeliveryNextRef.current = event.target.checked; setFailDeliveryNext(event.target.checked); }} />{__('Simulate delivery failure after next accepted save', 'wconvert')}</label>}</details>
         {feedback && <p role="status">{feedback}</p>}
         <p>{destinationSummary ? sprintf(__('Destination setup: %s. Test outcomes are simulated.', 'wconvert'), destinationSummary)
           : __('Test outcomes are simulated; no destination receives a request.', 'wconvert')}</p>

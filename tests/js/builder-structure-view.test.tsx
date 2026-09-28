@@ -2004,12 +2004,13 @@ describe('adaptive editor and signup deletion', () => {
     await userEvent.click(await screen.findByRole('button', { name: 'Edit screens & conditions' }));
     await userEvent.click(within(screen.getByRole('navigation', { name: 'Campaign screens' })).getByRole('button', { name: 'Optional SMS signup' }));
     await userEvent.click(screen.getByRole('button', { name: 'Screen actions' }));
-    await userEvent.click(screen.getByRole('menuitem', { name: 'Delete screen' }));
+    await userEvent.click(screen.getByRole('menuitem', { name: 'Remove optional signup' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Remove signup screens' }));
     await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
     expect(savedTree().submissions).toHaveLength(1);
     expect(builder.saveOptin.mock.calls.at(-1)?.[2].submission_settings).toEqual({});
     await screen.findByRole('button', { name: 'Save draft' });
-    await userEvent.click(screen.getByRole('button', { name: /^Undo/ }));
+    await userEvent.click(screen.getByRole('button', { name: /^Undo:/ }));
     await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
     expect(savedTree().submissions).toHaveLength(2);
     expect(builder.saveOptin.mock.calls.at(-1)?.[2].submission_settings).toEqual(config.submission_settings);

@@ -6,11 +6,15 @@ import type { QuestionClause, QuestionCondition, QuestionNode, ResultVariant, Te
 import { replaceAnswer, unreachableScreens, walkNodes } from './structure/journey';
 import { followupGroups } from './structure/followupGroups';
 import { questionTypeChange } from './structure/questionTypeChange';
+import { retireAnswerPlan } from './structure/retireAnswer';
 import { answerReferences } from './structure/answerReferences';
 import { conditionText, resultsMayOverlap } from './structure/conditionText';
 import type { JourneyRepair } from './structure/journeyReadiness';
 import { graphEdgeId, graphReaches } from './structure/graph';
 import { ConfirmDialog } from '../shell/ConfirmDialog';
+import { Dialog, DialogContent, DialogTitle, DialogDescription } from '../components/ui/dialog';
+import { Button } from '../components/ui/button';
+import { Input } from '../components/ui/input';
 import { InfoTip } from '../shell/InfoTip';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../components/ui/dropdown-menu';
 
@@ -29,11 +33,11 @@ function replaceNode(node: TemplateNode, id: string, update: (node: QuestionNode
   return copy as TemplateNode;
 }
 
-export function ConditionSettings({ value, sources, onChange, required = false, purpose = 'screen' }: {
+export function ConditionSettings({ value, sources, onChange, required = false, purpose = 'screen', deliberate = false }: {
   value?: QuestionCondition; sources: ChoiceQuestion[]; onChange(value?: QuestionCondition): void; required?: boolean;
-  purpose?: 'screen' | 'route' | 'result';
+  purpose?: 'screen' | 'route' | 'result'; deliberate?: boolean;
 }) {
-  const initial = (q: ChoiceQuestion): QuestionClause => ({ question: q.id, operator: q.answer_type === 'multi' ? 'includes_any' : 'is', values: [q.options?.[0]?.value ?? ''] });
+  const initial = (q: ChoiceQuestion): QuestionClause => ({ question: q.id, operator: q.answer_type === 'multi' ? 'includes_any' : 'is', values: deliberate ? [] : [q.options?.[0]?.value ?? ''] });
   const patch = (index: number, clause: QuestionCondition['clauses'][number]) => onChange({ match: value?.match ?? 'all', clauses: (value?.clauses ?? []).map((old, at) => at === index ? clause : old) });
   return <div className="wconvert-journey-settings wconvert-condition-settings">
     {!required && <label>{__('Show this screen', 'wconvert')}
@@ -57,7 +61,7 @@ export function ConditionSettings({ value, sources, onChange, required = false, 
         return <div key={index} className="wconvert-journey-settings__clause">
           <span>{index === 0 ? __('If', 'wconvert') : value.match === 'all' ? __('And', 'wconvert') : __('Or', 'wconvert')}</span>
           <select aria-label={__('Question', 'wconvert')} value={clause.question} onChange={event => { const q = sources.find(item => item.id === event.target.value)!; patch(index, initial(q)); }}>
-            {!source && <option value={clause.question} disabled>{__('Question unavailable on this path — choose another', 'wconvert')}</option>}
+            {!source && <option value={clause.question} disabled>{clause.question ? __('Question unavailable on this path — choose another', 'wconvert') : __('Choose a question…', 'wconvert')}</option>}
             {sources.map(q => <option key={q.id} value={q.id}>{q.label}</option>)}
           </select>
           <select aria-label={__('Comparison', 'wconvert')} value={clause.operator} disabled={!source} onChange={event => patch(index, { ...clause, operator: event.target.value as typeof clause.operator })}>
@@ -201,23 +205,49 @@ export function ScreenConditionSettings({ tree, step, reveal, onChange, onSelect
   </details>;
 }
 
-export function QuestionSettings({ tree, step, onChange, onSelect, onNavigate, onFollowup }: {
-  tree: TemplateTree; step: number; onChange(next: TemplateTree, coalesce?: string): void; onSelect(step: number): void; onNavigate?(repair: JourneyRepair): void; onFollowup?(question: string, value: string): void;
+export interface QuestionReviewContext {
+  questionId: string;
+  choiceValue?: string;
+  replacement: string;
+  retiring: boolean;
+  answerType?: QuestionNode['answer_type'];
+}
+
+export function QuestionSettings({ tree, step, onChange, onSelect, onNavigate, onFollowup, onAction, resumeReview }: {
+  tree: TemplateTree; step: number; onChange(next: TemplateTree, coalesce?: string): void; onSelect(step: number): void; onNavigate?(repair: JourneyRepair, review: QuestionReviewContext): void; resumeReview?: QuestionReviewContext & { serial: number }; onFollowup?(question: string, value: string): void; onAction?(message: string): void;
 }) {
   const [repair, setRepair] = useState<{ question: string; value: string } | null>(null);
   const [replacement, setReplacement] = useState('');
+  const [retiring, setRetiring] = useState(false);
   const [typeReview, setTypeReview] = useState<{ question: string; type: QuestionNode['answer_type'] } | null>(null);
+  const reviewRoot = useRef<HTMLElement>(null);
+  useLayoutEffect(() => {
+    if (!resumeReview) return;
+    // Restore the review before paint so focus cannot race its state update.
+    setRepair(resumeReview.choiceValue ? { question: resumeReview.questionId, value: resumeReview.choiceValue } : null);
+    setReplacement(resumeReview.replacement);
+    setRetiring(resumeReview.retiring);
+    setTypeReview(resumeReview.answerType ? { question: resumeReview.questionId, type: resumeReview.answerType } : null);
+    const frame = requestAnimationFrame(() => {
+      const section = [...(reviewRoot.current?.querySelectorAll<HTMLElement>('[data-question-id]') ?? [])].find(item => item.dataset.questionId === resumeReview.questionId);
+      const target = section?.querySelector<HTMLElement>('.wconvert-journey-answer-repair') ?? section?.querySelector<HTMLElement>('textarea');
+      target?.focus();
+    });
+    return () => cancelAnimationFrame(frame);
+  }, [resumeReview]);
   const screen = tree.steps[step];
   const questions = walkNodes(screen.content).filter((node): node is ChoiceQuestion => node.type === 'question' && 'id' in node && typeof node.id === 'string') as ChoiceQuestion[];
   if (!questions.length) return null;
   const change = (id: string, update: (node: QuestionNode) => TemplateNode, field?: string) => onChange({ ...tree, steps: tree.steps.map((item, at) => at === step ? { ...item, content: replaceNode(item.content, id, update) } : item) }, field ? `journey:${screen.id}:${id}:${field}` : undefined);
-  return <section className="wconvert-journey-settings">{questions.length > 1 && <h4>{__('Questions on this screen', 'wconvert')}</h4>}
+  return <section ref={reviewRoot} className="wconvert-journey-settings">{questions.length > 1 && <h4>{__('Questions on this screen', 'wconvert')}</h4>}
     {questions.map(question => {
       const refs = answerReferences(tree, question.id);
-      const openReference = (reference: typeof refs[number]) => onNavigate ? onNavigate(reference.repair) : onSelect(tree.steps.findIndex(item => item.id === reference.repair.screenId));
+      const openReference = (reference: typeof refs[number]) => onNavigate ? onNavigate(reference.repair, { questionId: question.id, choiceValue: repair?.question === question.id ? repair.value : undefined, replacement, retiring, answerType: typeReview?.question === question.id ? typeReview.type : undefined }) : onSelect(tree.steps.findIndex(item => item.id === reference.repair.screenId));
       const protectedValues = new Set([...tree.steps.flatMap(item => [item.when, ...(item.results?.map(result => result.when) ?? []), ...(item.paths?.map(path => path.when) ?? [])]),
         ...(tree.graph?.edges.map(edge => edge.when) ?? [])]
         .flatMap(condition => condition?.clauses ?? []).filter(clause => clause.question === question.id).flatMap(clause => clause.values));
+      const retirement = repair?.question === question.id ? retireAnswerPlan(tree, question.id, repair.value) : null;
+      const reviewRefs = repair?.question === question.id ? answerReferences(tree, question.id, repair.value) : [];
       return <div key={question.id} data-question-id={question.id} className="wconvert-journey-settings__question">
         <label>{__('Question', 'wconvert')}<textarea rows={2} value={question.label} maxLength={200} onChange={event => change(question.id, node => ({ ...node, label: event.target.value }), 'label')} /></label>
 
@@ -228,7 +258,7 @@ export function QuestionSettings({ tree, step, onChange, onSelect, onNavigate, o
         }}>
           <option value="single">{__('Choose one', 'wconvert')}</option><option value="multi">{__('Choose several', 'wconvert')}</option><option value="text">{__('Short answer', 'wconvert')}</option>
         </select></label>
-        {typeReview?.question === question.id && <section className="wconvert-journey-answer-repair" aria-label={__('Review answer type change', 'wconvert')}>
+        {typeReview?.question === question.id && <section tabIndex={-1} className="wconvert-journey-answer-repair" aria-label={__('Review answer type change', 'wconvert')}>
           <strong>{__('Review the affected conditions', 'wconvert')}</strong>
           <p>{typeReview.type === 'text' ? __('Short answers cannot keep rules based on selected choices. Edit the rules below first, then change the answer type.', 'wconvert')
             : questionTypeChange(tree, question.id, typeReview.type) ? __('Choice labels and connections will stay. Condition operators will be updated. Choosing several answers can match several rules; first-match priority still applies to exclusive paths and results. Test the journey after this change.', 'wconvert')
@@ -240,20 +270,24 @@ export function QuestionSettings({ tree, step, onChange, onSelect, onNavigate, o
           {question.options?.map((option, at) => <div key={option.value} className="wconvert-journey-settings__choice"><span aria-hidden="true">{at + 1}</span><input aria-label={`${__('Choice', 'wconvert')} ${at + 1}`} value={option.label} maxLength={120}
             onChange={event => change(question.id, node => ({ ...node, options: node.options?.map((old, i) => i === at ? { ...old, label: event.target.value } : old) }), `choice:${option.value}`)} />
             <button type="button" data-destructive={!protectedValues.has(option.value) || undefined} disabled={(question.options?.length ?? 0) <= 2 && !protectedValues.has(option.value)} onClick={() => {
-              if (protectedValues.has(option.value)) { setRepair({ question: question.id, value: option.value }); setReplacement(''); }
+              if (protectedValues.has(option.value)) { setRepair({ question: question.id, value: option.value }); setReplacement(''); setRetiring(false); }
               else change(question.id, node => ({ ...node, options: node.options?.filter((_, i) => i !== at) }));
             }}>{protectedValues.has(option.value) ? __('Review uses', 'wconvert') : __('Remove', 'wconvert')}</button>
             {onFollowup && <button type="button" className="wconvert-answer-followup" aria-label={sprintf(__('Add follow-up for %s', 'wconvert'), option.label)} onClick={() => onFollowup(question.id, option.value)}>{__('+ Follow-up', 'wconvert')}</button>}</div>)}
-          {repair?.question === question.id && <div className="wconvert-journey-answer-repair" role="region" aria-label={__('Review answer uses', 'wconvert')}>
-            <strong>{sprintf(__('“%s” is used in journey rules', 'wconvert'), question.options?.find(option => option.value === repair.value)?.label ?? repair.value)}</strong>
-            <p>{__('Edit each condition, or replace every use with another answer before removing this choice. Branch and result priority stay the same.', 'wconvert')}</p>
-            <div>{answerReferences(tree, question.id, repair.value).map(reference => <button type="button" key={reference.key} onClick={() => openReference(reference)}><strong>{reference.label}</strong>{' '}<small>{reference.detail} →</small></button>)}</div>
-            <label>{__('Replace its uses with', 'wconvert')}<select value={replacement} onChange={event => setReplacement(event.target.value)}>
+          {repair?.question === question.id && <div tabIndex={-1} className="wconvert-journey-answer-repair" role="region" aria-label={__('Review answer uses', 'wconvert')}>
+            <strong>{sprintf(reviewRefs.length ? __('“%s” is used in journey rules', 'wconvert') : __('No rules use “%s” now', 'wconvert'), question.options?.find(option => option.value === repair.value)?.label ?? repair.value)}</strong>
+            <p>{reviewRefs.length ? __('Review the rules below. Replace this answer with another choice, or stop offering it and review what will be removed.', 'wconvert') : __('Your rule changes are kept. You can now remove this choice without changing other behavior.', 'wconvert')}</p>
+            <div>{reviewRefs.map(reference => <button type="button" key={reference.key} onClick={() => openReference(reference)}><strong>{reference.label}</strong>{' '}<small>{reference.detail} →</small></button>)}</div>
+            {retirement && (question.options?.length ?? 0) > 2 && <details className="wconvert-answer-retirement" open={retiring} onToggle={event => setRetiring(event.currentTarget.open)}><summary>{__('Stop offering this answer…', 'wconvert')}</summary>
+              <p>{__('Review the matching behavior that will be removed with this choice. Other choices and previously saved Leads stay unchanged.', 'wconvert')}</p>
+              {retirement.reason ? <p role="status">{retirement.reason}</p> : <>{retirement.removed.length > 0 && <><strong>{__('Also remove', 'wconvert')}</strong><ul>{retirement.removed.map((name, index) => <li key={index}>{name}</li>)}</ul></>}<Button type="button" variant="destructive" onClick={() => { if (retirement.next) { onChange(retirement.next); setRepair(null); onAction?.(__('Choice and listed behavior removed. Test the remaining answers.', 'wconvert')); } }}>{retirement.removed.length ? __('Remove choice and listed behavior', 'wconvert') : __('Remove choice', 'wconvert')}</Button></>}
+            </details>}
+            {reviewRefs.length > 0 && <label>{__('Replace its uses with', 'wconvert')}<select value={question.options?.some(option => option.value === replacement && option.value !== repair.value) ? replacement : ''} onChange={event => setReplacement(event.target.value)}>
               <option value="">{__('Choose an existing answer…', 'wconvert')}</option>
               {question.options?.filter(option => option.value !== repair.value).map(option => <option key={option.value} value={option.value}>{option.label}</option>)}
-            </select></label>
-            <div className="wconvert-journey-answer-repair__actions"><button type="button" disabled={!replacement || (question.options?.length ?? 0) <= 2} onClick={() => { onChange(replaceAnswer(tree, question.id, repair.value, replacement)); setRepair(null); }}>
-              {__('Replace uses & remove', 'wconvert')}</button><button type="button" onClick={() => setRepair(null)}>{__('Cancel', 'wconvert')}</button></div>
+            </select></label>}
+            <div className="wconvert-journey-answer-repair__actions">{reviewRefs.length > 0 && <button type="button" disabled={!question.options?.some(option => option.value === replacement && option.value !== repair.value) || (question.options?.length ?? 0) <= 2} onClick={() => { onChange(replaceAnswer(tree, question.id, repair.value, replacement)); setRepair(null); }}>
+              {__('Replace uses & remove', 'wconvert')}</button>}<button type="button" onClick={() => setRepair(null)}>{__('Cancel', 'wconvert')}</button></div>
             {(question.options?.length ?? 0) <= 2 && <p>{__('Keep at least two choices. Add another choice before removing this one.', 'wconvert')}</p>}
             <small>{__('One draft change. Undo restores the answer and its references.', 'wconvert')}</small>
           </div>}
@@ -323,6 +357,7 @@ function ProductPicker({ ids, onChange }: { ids: readonly number[]; onChange(ids
 export function ResultSettings({ tree, step, onChange, repairRequest, onResultSelect }: { onResultSelect?(id: string | undefined): void; tree: TemplateTree; step: number; onChange(next: TemplateTree, coalesce?: string): void;
   repairRequest?: JourneyRepair & { readonly serial: number } }) {
   const tabsId = useId();
+  const [draftResult, setDraftResult] = useState<{ heading: string; when: QuestionCondition } | null>(null);
   const [selectedId, setSelectedId] = useState<string | null | undefined>(undefined);
   const linkInput = useRef<HTMLInputElement>(null);
   const headingInput = useRef<HTMLInputElement>(null);
@@ -367,14 +402,19 @@ export function ResultSettings({ tree, step, onChange, repairRequest, onResultSe
     setVariants(next);
     setSelectedId(item.id);
   };
+  const resultReady = draftResult && draftResult.heading.trim() && draftResult.when.clauses.length > 0 && draftResult.when.clauses.every(clause => {
+    const source = sources.find(question => question.id === clause.question);
+    return source && clause.values.length > 0 && clause.values.every(value => source.options?.some(option => option.value === value));
+  });
   const addResult = () => {
-    const q = sources[0]; let i = 1; while (variants.some(item => item.id === `result_${i}`)) i++;
+    if (!draftResult || !resultReady) return;
+    let i = 1; while (variants.some(item => item.id === `result_${i}`)) i++;
     const id = `result_${i}`;
-    setVariants([...variants.slice(0, -1), { id, heading: __('Your result', 'wconvert'), body: __('Here is a good place to start.', 'wconvert'), product_ids: [], when: { match: 'all', clauses: [{ question: q.id, operator: q.answer_type === 'multi' ? 'includes_any' : 'is', values: [q.options?.[0]?.value ?? ''] }] } }, ...variants.slice(-1)]);
-    setSelectedId(id);
+    setVariants([...variants.slice(0, -1), { id, heading: draftResult.heading.trim(), body: '', product_ids: [], when: draftResult.when }, ...variants.slice(-1)]);
+    setSelectedId(id); setDraftResult(null);
   };
   return <section ref={settingsRoot} className="wconvert-journey-settings"><div className="wconvert-journey-settings__result-heading"><h4>{__('Results', 'wconvert')}</h4>
-    {variants.length < 6 && sources.length > 0 && <button type="button" onClick={addResult}>{__('Add matching result', 'wconvert')}</button>}
+    {variants.length < 6 && sources.length > 0 && <button type="button" onClick={() => setDraftResult({ heading: '', when: { match: 'all', clauses: [{ question: '', operator: 'is', values: [] }] } })}>{__('Add matching result', 'wconvert')}</button>}
   </div>
     <div className="wconvert-editor-help"><p>{__('First matching result wins.', 'wconvert')}</p><InfoTip label={__('How results are chosen', 'wconvert')}>{__('Results are checked from top to bottom. Visitors see the first match, or Everyone else if none match. Move results to change their priority.', 'wconvert')}</InfoTip></div>
     {overlap && <p className="wconvert-journey-settings__warning" role="status">{sprintf(__('“%1$s” and “%2$s” may match the same answers. The result listed first wins; test both paths.', 'wconvert'), overlap[0].heading, overlap[1].heading)}</p>}
@@ -403,5 +443,13 @@ export function ResultSettings({ tree, step, onChange, repairRequest, onResultSe
     </div>}</div>)}
     </div>
     <details className="wconvert-result-products" open={screen.products_required || repairRequest?.focus === 'products-required' || undefined}><summary>{__('Product availability requirements', 'wconvert')}</summary><label className="wconvert-journey-settings__check"><input ref={productsRequired} type="checkbox" checked={screen.products_required === true} onChange={event => onChange({ ...tree, steps: tree.steps.map((item, at) => at === step ? { ...item, products_required: event.target.checked } : item) })} />{__('Require live products before publishing', 'wconvert')}</label></details>
+    <Dialog open={draftResult !== null} onOpenChange={open => { if (!open) setDraftResult(null); }}><DialogContent className="wconvert-graph-insert">
+      <DialogTitle>{__('Add matching result', 'wconvert')}</DialogTitle><DialogDescription>{__('Choose who sees this result. Nothing changes until you add it.', 'wconvert')}</DialogDescription>
+      {draftResult && <><div className="wconvert-graph-insert__body"><label>{__('Result heading', 'wconvert')}<Input value={draftResult.heading} maxLength={200} onChange={event => setDraftResult({ ...draftResult, heading: event.target.value })} /></label>
+        <ConditionSettings deliberate required purpose="result" value={draftResult.when} sources={sources} onChange={when => setDraftResult({ ...draftResult, when: when ?? { match: 'all', clauses: [] } })} />
+        <p>{__('Checked after your existing results, before Everyone else. You can change its priority afterward.', 'wconvert')}</p>
+        {variants.slice(0, -1).filter(result => resultReady && resultsMayOverlap(tree, result, { ...draftResult, id: 'new-result' })).map(result => <p key={result.id} role="status">{sprintf(__('“%s” may match the same answers and is checked first.', 'wconvert'), result.heading)}</p>)}
+      </div><div className="wconvert-graph-insert__actions"><Button type="button" variant="outline" onClick={() => setDraftResult(null)}>{__('Cancel', 'wconvert')}</Button><Button type="button" disabled={!resultReady} onClick={addResult}>{__('Add result', 'wconvert')}</Button></div></>}
+    </DialogContent></Dialog>
   </section>;
 }

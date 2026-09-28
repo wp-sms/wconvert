@@ -102,6 +102,7 @@ export function DestinationsEditor({
   bound, available, types, hint, connections, onChange, onRefresh, onSaved, template, outcome,
 }: DestinationsEditorProps) {
   const [setup, setSetup] = useState<'add' | Destination | null>(null);
+  const [addedIds, setAddedIds] = useState<string[]>([]);
   const [notice, setNotice] = useState<string | null>(null);
   const returnFocus = useRef<HTMLElement | null>(null);
   const missing = available.status === 'ready'
@@ -127,7 +128,7 @@ export function DestinationsEditor({
             }}><Plus aria-hidden="true" />{__('Add destination', 'wconvert')}</Button>
         </Toolbar>
 
-        {notice !== null && <RegionBody className="border-b border-border"><p role="status" className="m-0 text-note">{notice}</p></RegionBody>}
+        {notice !== null && <RegionBody className="border-b border-border"><p role="status" className="m-0 text-note">{notice}</p>{available.status === 'ready' && available.data.filter(item => addedIds.includes(item.id) && !bound.includes(item.id)).map(item => <Button key={item.id} type="button" size="sm" variant="outline" onClick={() => onChange([...bound, item.id])}>{sprintf(__('Select %s for this campaign', 'wconvert'), item.label)}</Button>)}</RegionBody>}
         {handoffIssue && <RegionBody className="border-b border-border"><Description>{handoffIssue}</Description></RegionBody>}
 
         {available.status === 'loading' ? <RowsSkeleton />
@@ -210,6 +211,7 @@ export function DestinationsEditor({
       {setup !== null && <DestinationSetupDialog destination={setup === 'add' ? undefined : setup}
         types={types} connections={connections} returnFocusTo={returnFocus} onClose={() => setSetup(null)}
         onSaved={(destinations) => {
+          if (setup === 'add' && available.status === 'ready') setAddedIds(destinations.filter(item => !available.data.some(old => old.id === item.id)).map(item => item.id));
           onSaved(destinations);
           setNotice(setup === 'add'
             ? __('Destination added. Select it to use it for this campaign.', 'wconvert')

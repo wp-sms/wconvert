@@ -28,7 +28,8 @@ it('adds separate optional SMS ownership after primary acceptance and removes it
 it('offers email for SMS campaigns and refuses non-list or duplicate-channel configurations', () => {
   const phone: TemplateTree = { ...tree, steps: tree.steps.map(screen => ({ ...screen, content: { type: 'stack', children: walkNodes(screen.content)
     .filter(node => node.type !== 'stack').map(node => node.type === 'field' ? { ...node, name: 'phone' } : node) } })) };
-  const next = addGraphCapture(phone, 'sms', location);
+  const next = addGraphCapture(phone, 'phone', location);
+  expect(addGraphCapture(phone, 'sms', location)).toEqual(next);
   expect(walkNodes(next.steps.at(-1)!.content).find(node => node.type === 'field')).toMatchObject({ name: 'email' });
   expect(graphCaptureInsertion(tree, null).reason).toMatch(/list campaigns/);
   expect(addGraphCapture(tree, null, location)).toBe(tree);

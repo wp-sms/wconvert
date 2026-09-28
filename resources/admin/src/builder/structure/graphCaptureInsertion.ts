@@ -27,8 +27,8 @@ function acceptedBeforeEdge(tree: TemplateTree, submission: string, target: stri
 }
 
 export function graphCaptureInsertion(tree: TemplateTree, primaryChannel: string | null | undefined) {
-  const channel = primaryChannel === 'sms' ? 'email' : 'phone';
-  const reason = !tree.graph || !['email', 'sms'].includes(primaryChannel ?? '')
+  const channel = (primaryChannel === 'sms' || primaryChannel === 'phone') ? 'email' : 'phone';
+  const reason = !tree.graph || !['email', 'phone', 'sms'].includes(primaryChannel ?? '')
     ? __('Optional second signups are available for email or SMS list campaigns.', 'wconvert')
     : tree.submissions.length !== 1 || !tree.submissions[0].required
       ? __('Keep one required primary signup before adding an optional second signup.', 'wconvert')

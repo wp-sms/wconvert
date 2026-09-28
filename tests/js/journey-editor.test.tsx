@@ -259,15 +259,17 @@ it('lets a merchant choose several answers for a multi-select condition', async 
   await user.click(screen.getByRole('checkbox', { name: 'Garden' }));
   expect(JSON.parse(screen.getByTestId('condition').textContent!).clauses[0].values).toEqual(['indoors']);
 });
-async function action(user: ReturnType<typeof userEvent.setup>, name: string) {
+async function action(user: ReturnType<typeof userEvent.setup>, name: string, confirm = true) {
   await user.click(screen.getByRole('button', { name: 'Screen actions' }));
-  await user.click(screen.getByRole('menuitem', { name }));
+  const actionName = name === 'Delete screen' && screen.queryByRole('menuitem', { name: 'Remove optional signup' }) ? 'Remove optional signup' : name;
+  await user.click(screen.getByRole('menuitem', { name: actionName }));
+  if (confirm && actionName === 'Remove optional signup' && screen.queryByRole('button', { name: 'Remove signup screens' })) await user.click(screen.getByRole('button', { name: 'Remove signup screens' }));
 }
 it('adds and removes an optional SMS signup without changing the primary field ownership', async () => {
   const user = userEvent.setup();
   render(<Editor />);
   await user.click(screen.getByRole('button', { name: 'Manage screens' }));
-  await user.click(screen.getByRole('button', {name:'Ordered screen actions'}));
+  await user.click(screen.getByRole('button', {name:'More screen options'}));
   await user.click(screen.getByRole('menuitem', {name:'Add optional signup'}));
   const tree = draft();
   expect(tree.submissions).toHaveLength(2);
@@ -286,7 +288,7 @@ it('keeps an explicit forward path connected when adding an optional signup', as
   const initial: TemplateTree = { ...base, steps: [{ ...base.steps[0], paths: [{ to: base.steps[1].id }] }, ...base.steps.slice(1)] };
   render(<Editor initial={initial} />);
   await user.click(screen.getByRole('button', { name: 'Manage screens' }));
-  await user.click(screen.getByRole('button', { name: 'Ordered screen actions' }));
+  await user.click(screen.getByRole('button', { name: 'More screen options' }));
   await user.click(screen.getByRole('menuitem', { name: 'Add optional signup' }));
   const tree = draft();
   expect(tree.steps[0].paths).toEqual([{ to: tree.steps[1].id }]);
@@ -314,7 +316,7 @@ it('preserves screen identity when reordering and gives a duplicate its own iden
   const user = userEvent.setup();
   render(<Editor />);
   await user.click(screen.getByRole('button', { name: 'Manage screens' }));
-  await user.click(screen.getByRole('button', {name:'Ordered screen actions'}));
+  await user.click(screen.getByRole('button', {name:'More screen options'}));
   await user.click(screen.getByRole('menuitem', {name:'Add offer screen'}));
   const added = draft().steps[0].id;
   const backs = (tree: TemplateTree, index: number) => walkNodes(tree.steps[index].content)
@@ -513,12 +515,12 @@ it('names the affected screens before removing a signup spread across multiple s
   await user.click(screen.getByRole('button', { name: 'Manage screens' }));
   await user.click(screen.getByRole('button', { name: 'Screens' }));
   await user.click(screen.getByRole('button', { name: /Optional SMS signup Save/ }));
-  await action(user, 'Delete screen');
+  await action(user, 'Delete screen', false);
   const confirmation = screen.getByRole('alertdialog');
   expect(confirmation).toHaveTextContent('Phone question, Optional SMS signup');
   await user.click(within(confirmation).getByRole('button', { name: 'Cancel' }));
   expect(draft()).toEqual(initial);
-  await action(user, 'Delete screen');
+  await action(user, 'Delete screen', false);
   await user.click(screen.getByRole('button', { name: 'Remove signup screens' }));
   expect(draft().steps).toHaveLength(2);
   expect(draft().submissions).toHaveLength(1);
@@ -543,7 +545,7 @@ it('reveals the earned coupon immediately when adding SMS and preserves it when 
   thanks.children.push({ type: 'stack', hidden: true, children: [{ type: 'code', text: 'HIDDEN-REWARD' }] } as import('@renderer/types').TemplateNode);
   render(<Editor initial={initial} />);
   await user.click(screen.getByRole('button', { name: 'Manage screens' }));
-  await user.click(screen.getByRole('button', { name: 'Ordered screen actions' }));
+  await user.click(screen.getByRole('button', { name: 'More screen options' }));
   await user.click(screen.getByRole('menuitem', { name: 'Add optional signup' }));
   const tree = draft();
   const reward = walkNodes(tree.steps[1].content).find(n => n.type === 'code');
@@ -1061,4 +1063,32 @@ it('asks for placement when a multi-answer choice does not determine a single br
   expect(screen.getByRole('button', { name: 'Add follow-up' })).toBeEnabled();
   await user.click(screen.getByRole('button', { name: 'Add follow-up' }));
   expect(change.mock.calls.at(-1)?.[0].steps.at(-1).when.clauses[0]).toEqual({ question: 'n1', operator: 'includes_any', values: ['home'] });
+});
+
+it('restores the pending answer review after editing a referenced branch', async () => {
+  const { default: coffee } = await import('../fixtures/journey-graph-coffee.json');
+  const initial = coffee.template.tree as unknown as TemplateTree;
+  const user = userEvent.setup();
+  function ReviewEditor() {
+    const [tree, setTree] = useState(initial), [step, setStep] = useState(initial.steps.findIndex(item => item.id === 'brew'));
+    return <><JourneyEditor tree={tree} step={step} onSelect={setStep} onChange={setTree} /><output data-testid="draft">{JSON.stringify(tree)}</output></>;
+  }
+  render(<ReviewEditor />);
+  await user.click(screen.getByRole('button', { name: 'Manage screens' }));
+  await user.click(screen.getAllByRole('button', { name: 'Review uses' })[1]);
+  const review = screen.getByRole('region', { name: 'Review answer uses' });
+  await user.selectOptions(within(review).getByRole('combobox', { name: 'Replace its uses with' }), 'press');
+  await user.click(within(review).getByText('Stop offering this answer…'));
+  await user.click(within(review).getByRole('button', { name: /Your taste Branch 1/ }));
+  expect(screen.getByRole('button', { name: 'Next screen' })).toHaveAttribute('aria-pressed', 'true');
+  await user.selectOptions(screen.getByRole('combobox', { name: 'Answer' }), 'press');
+  const repaired = draft();
+  expect(repaired).not.toEqual(initial);
+  await user.click(screen.getByRole('button', { name: 'Back to How you brew' }));
+  const resumed = screen.getByRole('region', { name: 'Review answer uses' });
+  expect(resumed).toHaveTextContent('Filter or pour-over');
+  expect(within(resumed).getByRole('combobox', { name: 'Replace its uses with' })).toHaveValue('press');
+  expect(within(resumed).getByText('Stop offering this answer…').closest('details')).toHaveAttribute('open');
+  await waitFor(() => expect(resumed).toHaveFocus());
+  expect(draft()).toEqual(repaired);
 });

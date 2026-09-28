@@ -67,6 +67,7 @@ export function StartingPointFacts({ playbook, goal, vocabulary }: {
   if (types.has('countdown')) checklist.push(__('Set the real deadline and time zone in Schedule.', 'wconvert'));
   checklist.push(__('Review pages, display rules and frequency, then test the visitor journey.', 'wconvert'));
   return <div className="flex flex-col gap-2 text-note">
+    {playbook.template && playbook.template.tree.steps.length > 1 && <section aria-label={__('Visitor journey', 'wconvert')} className="rounded-md border p-3"><strong>{__('Visitor journey', 'wconvert')}</strong><p className="m-0">{playbook.notes || __('Visitors move through the relevant screens, then complete this campaign’s action.', 'wconvert')}</p></section>}
     <p className="m-0 text-muted-foreground">{goal.outcome.measurement}</p>
     <dl className="m-0 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1">
       {facts.map((fact) => <div key={fact.label} className="contents"><dt className="text-muted-foreground">{fact.label}</dt><dd className="m-0">{fact.text}</dd></div>)}

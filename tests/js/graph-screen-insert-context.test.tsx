@@ -21,7 +21,7 @@ it.each(['default','answer'] as const)('previews and inserts on exactly the sele
   fireEvent.change(screen.getByRole('textbox',{name:'Question'}),{target:{value:'When should we contact you?'}});
   expect(context).toHaveTextContent('When should we contact you?');
   fireEvent.click(screen.getByRole('button',{name:'Add screen here'}));
-  expect(insert).toHaveBeenCalledWith(`edge:${edge.id}`,'input','When should we contact you?',undefined,false,false);
+  expect(insert).toHaveBeenCalledWith(`edge:${edge.id}`,'input','When should we contact you?',undefined,false,false,'single');
   const added = changed!.steps.at(-1)!;
   expect(changed!.graph!.edges.find(item=>item.id===edge.id)).toEqual({...edge,to:added.id});
   expect(changed!.graph!.edges.find(item=>item.from===added.id)).toMatchObject({to:edge.to,kind:'default'});

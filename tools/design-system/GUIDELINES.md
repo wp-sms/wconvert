@@ -636,3 +636,37 @@ must not imply that mutually exclusive paths are sequential visitor steps.
   when a card blocks it. Reserve measured label/action rectangles against cards,
   including keyboard-revealed actions. If no safe location exists, keep controls
   in the path inspector rather than covering content.
+
+### Merchant editing tasks
+
+- Add questions with an explicit answer type. If the chosen path is after contact
+  collection, explain the constraint and offer a named valid position. Never
+  silently redirect an explicit path insertion.
+- For independent follow-ups, show the source answer, position in the group and
+  shared continuation. Reorder both shown and skipped paths as one undoable edit;
+  dragging map cards changes layout only. Preserve custom order.
+- Lead deletion dialogs with the visitor outcome. Hide alternate continuation
+  controls for a unique safe continuation, but keep them available. Ambiguous
+  exits require an explicit choice. Optional signup removal includes its fields,
+  consent and configuration, with historical Leads preserved.
+- Stage new result rules until a heading and deliberate answer selection exist.
+  Opening or cancelling a dialog must not invent a matching rule. Keep the
+  fallback last and explain first-match priority.
+- Retiring a used answer must list the exclusive behavior being removed. Preserve
+  shared screens and protect contact collection. Mixed or negative conditions
+  require explicit repair; never broaden them automatically.
+- Offer Undo and a visitor walkthrough after structural changes. A test starts
+  from the real entry and must not claim reachability or delivery it did not
+  observe. Keep submission failure controls available under test details.
+- Carry the changed screen's name into the walkthrough and suggest cases from
+  its actual conditions, choices and result priority. Treat these as manual
+  checks; never fabricate answers or imply every suggested rule is reachable.
+- When a dependency review opens another screen's rule, provide a return action
+  that restores the pending choice or answer-type review, replacement selection,
+  disclosures and keyboard focus. Preserve the rule edits made during the detour.
+- Use shared input components inside dialogs, including locally staged forms.
+  Verify field heights and keyboard focus, narrow layouts and scrollable bodies.
+- Match service compatibility to the provider contract: SMS uses the `phone`
+  audience channel. Explain missing dependencies rather than presenting a falsely
+  empty provider list. Creating a shared destination and selecting it for a
+  campaign remain explicit, distinct actions.

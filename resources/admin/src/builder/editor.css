@@ -2190,3 +2190,22 @@ details[open]>summary>.wconvert-editor-disclosure-icon { transform: rotate(180de
 #wconvert-admin .wconvert-workspace select:not(:disabled):hover {
   border-color: var(--primary);
 }
+
+/* Merchant tasks share the same compact, readable controls in Edit and Flow. */
+.wconvert-followup-order { display: grid; gap: 8px; border-block-start: 1px solid var(--border); padding-block: 12px; }
+.wconvert-followup-order p { margin: 0; font-size: var(--text-note); color: var(--muted-foreground); }
+.wconvert-followup-order > div { display: flex; flex-wrap: wrap; gap: 8px; }
+.wconvert-answer-retirement { margin-block: 12px; padding: 12px; border: 1px solid var(--border); border-radius: var(--radius); }
+.wconvert-answer-retirement ul { list-style: disc; padding-inline-start: 20px; margin-block: 8px; }
+.wconvert-test-diagnostics { margin-block: 8px; }
+.wconvert-test-diagnostics > label { display: flex; align-items: start; gap: 8px; margin-block-start: 8px; }
+.wconvert-graph-insert__body > label:has(input, select) { display: grid; gap: 6px; }
+.wconvert-graph-insert__body > label > input { inline-size: 100%; min-inline-size: 0; }
+.wconvert-journey-dialog__footer { flex-wrap: wrap; }
+
+.wconvert-journey-test__change { padding: 12px; margin-bottom: 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--muted); }
+.wconvert-journey-test__change p { margin: 6px 0; font-size: var(--text-note); line-height: 1.5; }
+.wconvert-journey-test__change small { font-size: var(--text-meta); line-height: 1.5; color: var(--muted-foreground); }
+/* Choice lists need the full dialog width, just as they do in the inspector. */
+.wconvert-graph-insert .wconvert-journey-settings__clause:has(.wconvert-journey-settings__answers) { grid-template-columns: minmax(0, 1fr); }
+.wconvert-graph-insert .wconvert-journey-settings__answers label { font-weight: 500; }

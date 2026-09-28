@@ -22,13 +22,13 @@ export function GraphCaptureRemove({ tree, submissionId, onRemove, onCancel }: {
       <strong>{__('Screens to remove', 'wconvert')}</strong><ul>{plan.screens.map(screen => <li key={screen.id}>{screen.name}</li>)}</ul>
       <p>{__('Questions and other content on these screens are also removed. Other screens stay in the draft; review any wording that invites visitors to this signup.', 'wconvert')}</p>
       {plan.reason ? <p role="status">{plan.reason}</p> : plan.routes.map((route, index) => <div className="wconvert-graph-insert__summary" key={route.from}>
-        <label htmlFor={`${id}-${index}`}>{route.from === tree.graph?.entry ? __('New first screen', 'wconvert')
-          : sprintf(__('Paths entering “%s” continue at', 'wconvert'), name(route.from))}</label>
+        {route.preferred ? <p><strong>{sprintf(__('After removing: continue to %s.', 'wconvert'), name(route.preferred))}</strong></p> : <label htmlFor={`${id}-${index}`}>{route.from === tree.graph?.entry ? __('New first screen', 'wconvert')
+          : sprintf(__('Paths entering “%s” continue at', 'wconvert'), name(route.from))}</label>}
         {route.incoming.length > 0 && <p>{sprintf(__('From: %s. Incoming conditions and priority stay the same.', 'wconvert'), [...new Set(route.incoming.map(edge => name(edge.from)))].join(', '))}</p>}
-        <select id={`${id}-${index}`} value={destinations[route.from] ?? route.preferred} onChange={event => setDestinations({ ...destinations, [route.from]: event.target.value })}>
+        {!route.preferred && <select id={`${id}-${index}`} value={destinations[route.from] ?? route.preferred} onChange={event => setDestinations({ ...destinations, [route.from]: event.target.value })}>
           <option value="" disabled>{__('Choose a continuation…', 'wconvert')}</option>
           {route.targets.map(screen => <option key={screen.id} value={screen.id}>{screen.name}</option>)}
-        </select>
+        </select>}
       </div>)}
       {!plan.reason && !plan.routes.length && <p>{__('No incoming paths need to change.', 'wconvert')}</p>}
       <div aria-live="polite">{impact && <p className="wconvert-graph-insert__summary">{impact}</p>}</div>
