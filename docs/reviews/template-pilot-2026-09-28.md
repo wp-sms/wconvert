@@ -49,8 +49,9 @@ email/SMS, redeem a coupon, place an order or confirm a booking. Merchant links,
 products, offers and destinations must be configured and tested. Cleared coupon
 values display a documented `YOUR CODE` placeholder in the studio only.
 
-Browser export needs a manual download check; automated browser download waiting
-was inconclusive. Review data stays local to the browser until exported.
+Review JSON downloaded successfully and was parsed from the browser download:
+the saved editorial note and all 208 layout cases were preserved. Review data
+stays local to the browser until exported.
 
 Artwork is original bundled SVG, with provenance under `pilot/assets/`.
 Downloaded pack assets and catalog scaling remain separate engineering work.
