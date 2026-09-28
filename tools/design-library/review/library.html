@@ -4,7 +4,7 @@
 <style>
 *{box-sizing:border-box}[hidden]{display:none!important}body{margin:0;background:#e9ece6;color:#253b33;font:14px/1.5 system-ui,sans-serif}header{padding:20px 28px;background:#fafaf5;border-bottom:1px solid #ccd3c7}h1{font:32px/1.1 Georgia,serif;margin:0 0 8px}p{margin:0;max-width:1000px}.controls{display:flex;flex-wrap:wrap;gap:12px 20px;padding:16px 28px;align-items:center;background:#fafaf5}label{display:flex;gap:6px;align-items:center}button,select,input{font:inherit}select,button{padding:6px 9px;background:white;border:1px solid #b5c0b2;border-radius:4px;color:inherit}button{cursor:pointer}#summary{padding:12px 28px}.cards{padding:12px 28px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:20px;align-items:start}article{min-width:0;background:#f8f9f4;border:1px solid #cbd3c6;border-radius:6px;overflow:hidden}h2{font-size:15px;margin:0}article>header{padding:12px 14px}small{color:#576852}.canvases{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;padding:14px}.screen{min-width:0}.preview{overflow:hidden;width:100%}.sized{transform-origin:top left}.metric{display:block;padding:0 14px 14px;font-size:12px}.retire{color:#953b30}.improve{color:#766018}#checks{padding:16px 28px;overflow:auto}table{border-collapse:collapse;background:#fafaf5;width:100%}th,td{text-align:start;border-bottom:1px solid #d5dacd;padding:6px 10px}#workbench{overflow:auto}details{padding:12px 28px}pre{white-space:pre-wrap;font-size:12px}a{color:inherit}@media(max-width:1000px){.cards{grid-template-columns:repeat(2,minmax(0,1fr))}}@media(max-width:600px){.cards{grid-template-columns:1fr}}
 </style>
-<header><h1>A library worth starting from.</h1><p>Every design, every screen, with the shipping renderer. Compare widths, longer copy and consent. Images remain editable. Countdown times are preview samples. Local forms only demonstrate the next screen; no details are sent.</p></header>
+<header><h1>A library worth starting from.</h1><p>Every design, every screen, with the shipping renderer. Compare widths, longer copy and consent. Images remain editable. Countdown times are preview samples. Use the template studio to test visitor journeys; no details are sent here.</p></header>
 <div class="controls">
 <label>Version <select id="version"><option value="entries">Current library</option><option value="before">Before this review</option></select></label>
 <label>Viewport <select id="width"><option>320</option><option>390</option><option>768</option><option>1440</option></select></label>
@@ -29,8 +29,8 @@ function mount(e,step,width,stress,rtl){
  const host=document.createElement('div');frame.append(host);const shadow=host.attachShadow({mode:'open'});
  const style=document.createElement('style');style.textContent=WConvertRenderer.SHADOW_CSS;shadow.append(style);
  e=prepared(e,stress);const tokens={...e.tokens,...(type==='popup'||type==='slide_in'?{width:'100%'}:{})};
- const root=WConvertRenderer.render(e.tree,tokens,step);root.querySelectorAll('.wc-count').forEach(n=>{n.textContent='2d 04:32:18';n.parentElement.setAttribute('aria-label','Sample countdown, not a configured deadline');});if(type==='fullscreen')WConvertRenderer.decorateFullscreen(root,e.tokens.width,'550px');shadow.append(root);root.style.maxBlockSize='none';
- root.addEventListener('submit',event=>{event.preventDefault();root.replaceWith(WConvertRenderer.render(e.tree,tokens,1))});
+ const root=WConvertRenderer.render(e.tree,tokens,step);root.querySelectorAll('.wc-count').forEach(n=>{n.textContent='2d 04:32:18';n.parentElement.setAttribute('aria-label','Sample countdown, not a configured deadline');});if(type==='fullscreen')WConvertRenderer.decorateFullscreen(root,e.tokens.width,'550px');shadow.append(root);WConvertRenderer.prepareControls(root,shadow);root.style.maxBlockSize='none';
+ root.addEventListener('submit',event=>{event.preventDefault()});
  // Prevent sample links from leaving this local review.
  root.addEventListener('click',event=>{if(event.target.closest('a'))event.preventDefault()});
  return {frame,root};
@@ -53,7 +53,7 @@ function measure(root,width){
 }
 function options(){const entries=all();$('page').replaceChildren(...Array.from({length:Math.ceil(entries.length/6)},(_,i)=>new Option(`${i+1} / ${Math.ceil(entries.length/6)}`,i)));$('design').replaceChildren(new Option('All designs',''),...entries.map(e=>new Option(e.name,e.id)))}
 function draw(){
- $('cards').replaceChildren();const entries=all();const selected=$('design').value;$('cards').style.gridTemplateColumns=selected?'1fr':'';const shown=selected?entries.filter(e=>e.id===selected):entries.slice(Number($('page').value)*6,Number($('page').value)*6+6);
+ WConvertRenderer.disposePreview($('cards'));$('cards').replaceChildren();const entries=all();const selected=$('design').value;$('cards').style.gridTemplateColumns=selected?'1fr':'';const shown=selected?entries.filter(e=>e.id===selected):entries.slice(Number($('page').value)*6,Number($('page').value)*6+6);
  $('summary').textContent=`${entries.length} designs · ${$('width').value}px viewport · All screens shown together. ${data.before.length?'The Before view includes designs removed from the picker.':''}`;
  for(const e of shown){const article=document.createElement('article');article.dataset.design=e.id;const header=document.createElement('header');const h=document.createElement('h2');h.textContent=e.name;const note=document.createElement('small');const d=data.decisions[e.id];note.textContent=`${e.display_type} · ${e.tier} · ${d?.decision||'Reviewing'}${d?' — '+d.reason:''}`;note.className=d?.decision||'';header.append(h,note);if(e.notes){const setup=document.createElement('details');const label=document.createElement('summary');label.textContent=e.recommendation+' · Setup notes';const copy=document.createElement('p');copy.textContent=e.notes;setup.append(label,copy);header.append(setup);}article.append(header);const canvases=document.createElement('div');canvases.className='canvases';article.append(canvases);$('cards').append(article);
   e.tree.steps.forEach((screenData,step)=>{const p=document.createElement('div');p.className='preview';const label=document.createElement('small');label.textContent=`${step+1}. ${screenData.name}`;const screen=document.createElement('div');screen.className='screen';screen.append(label,p);canvases.append(screen);const {frame,root}=mount(e,step,Number($('width').value),$('stress').checked,$('rtl').checked);p.append(frame);
@@ -65,7 +65,7 @@ async function check(){
  $('run').disabled=true;$('checks').textContent='Checking every design at four widths, both directions, with normal and longer copy…';const results=[];
  for(const e of all()){
   for(const width of [320,390,768,1440])for(const rtl of [false,true])for(const stress of [false,true])for(let step=0;step<e.tree.steps.length;step++){
-   const {frame,root}=mount(e,step,width,stress,rtl);$('workbench').append(frame);await settled(root);const m=measure(root,width);results.push({id:e.id,viewport:width,rtl,stress,step,...m});frame.remove();
+   const {frame,root}=mount(e,step,width,stress,rtl);$('workbench').append(frame);await settled(root);const m=measure(root,width);results.push({id:e.id,viewport:width,rtl,stress,step,...m});WConvertRenderer.disposePreview(frame);frame.remove();
   }
   await new Promise(resolve=>setTimeout(resolve,0));
  }

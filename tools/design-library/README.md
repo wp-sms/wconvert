@@ -42,6 +42,13 @@ never become campaign configuration. Submitting a preview creates no Lead and do
 not contact a Destination. Measurement images load eagerly so an offscreen lazy
 image cannot stall either audit.
 
+The studio uses the shipping `lite-phone-input` adapter, with GB as its labelled
+sample site country. Country selection and canonical phone values survive screen
+and width changes. Use **Simulate failure on next submission** to exercise retry;
+accepted fields are locked when revisited. Unconfigured result links and shop
+handoffs show setup notices. Apply the [practical review gate](pilot/PRACTICAL-REVIEW.md)
+to every campaign before publication, including every branch and acknowledgement.
+
 ### Adding the next reviewed batch
 
 1. Choose an uncovered visitor need from the [library plan](../../docs/plans/template-library-system-2026-09-28.md).

@@ -1,0 +1,109 @@
+{
+  "schema": 1,
+  "reviewed_at": "2026-09-28T09:40:31.469Z",
+  "status": "local-practical-review-complete; configured-site-trial-required",
+  "renderer_sha256": "c69fd3e282540d893750c0bd43bdfb7cbedf9d3aa9e26423709968f988dc8940",
+  "campaigns": [
+    {
+      "id": "studio-welcome",
+      "revision": "0a2c3d35f6bb79ee8d3f670e28d48ede8562665e52060fde4ac18f388bf2815c"
+    },
+    {
+      "id": "edition-early-access",
+      "revision": "6b569a957193d71dd1029a0ce2a4e34e1707dbfd113311bd7322768389c06114"
+    },
+    {
+      "id": "journey-email-then-sms",
+      "revision": "7cfdebc8b245eb0e897828db307dfbbcc1d802cab703a6031c66b7d1b2d6707e"
+    },
+    {
+      "id": "delivery-announcement",
+      "revision": "c1e947385c6fa085011da3163d8544f624466f12e0c4dccd07889cbfec40207e"
+    },
+    {
+      "id": "fullscreen-announcement",
+      "revision": "8c615d43ddd9e7d0953f298acc8477dbd88e5d9d96dad153049f044f9e0afbad"
+    },
+    {
+      "id": "product-finder",
+      "revision": "73cc70d14eeedbe4ad71f0f8509bbebc7d12a3c59ead89d4f0a5b98116e891e8"
+    },
+    {
+      "id": "home-repair-quote",
+      "revision": "1d0c88fdb64dbccc16203e000132872806de6f196e4f62bf06bd964d7b6108f2"
+    },
+    {
+      "id": "photography-enquiry",
+      "revision": "44b9d057b74f342712908c413f6e5c479925c6077d76b284361d0a9d2f5ece96"
+    },
+    {
+      "id": "consultation-corner",
+      "revision": "54e5ce8858d20ac38824798d11e4b3721f1970f8bc31307df94d9af5bea7cead"
+    },
+    {
+      "id": "project-planning-guide",
+      "revision": "fe02fb25cd82542ec9662fabad203e24b35f027eb95e3ee930aadaa6b071b4a0"
+    },
+    {
+      "id": "sunday-reading",
+      "revision": "f0ab0624c433599275713403995c786386401019189e468ce507a3f915e69a56"
+    },
+    {
+      "id": "content-guide",
+      "revision": "303e5f595a66e06d996e19b23caa2d4de2b68f4031f7b9b09db3923b6917b1a0"
+    },
+    {
+      "id": "cart-straight-away",
+      "revision": "423a95877d4cfb364abb409af4f51f0ff0cf44213a45979c7939c6581b8cab5b"
+    },
+    {
+      "id": "cart-delivery-help",
+      "revision": "05d32387d8583999f0a2bf4145f1df32ece756fe8bc7848d875ad33bc82381bd"
+    },
+    {
+      "id": "drop-alerts",
+      "revision": "12d1726b1a365ae44cac2c6f365d3b5670d21f1f8be68de0c1a4b310f4217252"
+    },
+    {
+      "id": "sale-deadline",
+      "revision": "5eb07f52d9ad9c8a089c7228fe5cf6bcc488006f023fbabdab27daedbc71ca96"
+    },
+    {
+      "id": "product-care-guide",
+      "revision": "7106104876ca82037fa9d25557ef08b897435399c2b71c0da2e1054c0f07592d"
+    },
+    {
+      "id": "wholesale-enquiry",
+      "revision": "70b1230f9cd7154178c506b9847aa359d4673afe0cdd2f81b5225b20d62daaea"
+    },
+    {
+      "id": "venue-visit-request",
+      "revision": "1cc9b62f91352754c722b411048985d29694d94cad4c9081201350b6afbe55a4"
+    },
+    {
+      "id": "course-advice-request",
+      "revision": "a04858422808c4de3a73630873fb7988d11f6c6928f942e7a922f7eb3e7432e3"
+    },
+    {
+      "id": "maintenance-letter",
+      "revision": "46d419873603e1f00d1d9c7b23e9f51de6382ea21eb4e2fb3c79ec74ae7180fe"
+    },
+    {
+      "id": "seasonal-service-link",
+      "revision": "d35ddcc0a1e647ffbfafb36a53582353b5deef4ddfabee24e8bdaa6f5882f0ee"
+    },
+    {
+      "id": "event-registration-link",
+      "revision": "d16e20857d0281433ebee5d300491535f200d94f4cbf60778876d1682eea8d5a"
+    },
+    {
+      "id": "topic-reading-list",
+      "revision": "69ac1b41a4d9ab7e7461cad22a1de905a63350db72b41b942fd08ced077359a7"
+    }
+  ],
+  "measurements": {
+    "pilot": "360 screen cases checked. 0 layout findings. Alignment and compact-bar hierarchy included. Visual, contrast, keyboard and real-site review remain separate.\n",
+    "library": "2128 rendered cases across 70 designs. 0 cases need attention (horizontal overflow, controls under 44px, input text under 16px or low solid-colour text contrast).",
+    "at": "2026-09-28T09:39:34.991Z"
+  }
+}

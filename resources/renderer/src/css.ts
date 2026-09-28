@@ -521,7 +521,7 @@ export const SHADOW_CSS = [
    * `grid` cell or a `split` pane needs neither: neither parent is a flex
    * container, so the shorthand was already inert there.
    */
-  `.wc-field{display:flex;flex-direction:column;gap:.25rem;text-align:start}`,
+  `.wc-field{display:flex;flex-direction:column;gap:.25rem;text-align:start;position:relative}`,
   `.wc-product{display:grid;grid-template-columns:4.5rem minmax(0,1fr);gap:.75rem;padding:.75rem;border:1px solid var(--wc-border,#e5e7eb);border-radius:var(--wc-radius,.5rem)}`,
   `.wc-product>img{inline-size:4.5rem;block-size:4.5rem;object-fit:cover}`,
   `.wc-row>.wc-field{flex:1 1 12rem}`,
@@ -544,7 +544,7 @@ export const SHADOW_CSS = [
    */
   `.wc-row{justify-content:var(--wc-align,start)}`,
   `.wc-label{font-size:.8125em;font-weight:500;color:var(--wc-muted,#6b7280)}`,
-  `.wc-field>select{appearance:auto}`,
+  `select.wc-input{appearance:none;padding-inline-end:2rem}.wc-field:has(select):after{content:"▾"/"";position:absolute;inset-inline-end:1rem;bottom:.75rem;pointer-events:none}`,
   /*
    * ==========================================================================
    * A compact field-and-button row can use its placeholder as the visible cue.

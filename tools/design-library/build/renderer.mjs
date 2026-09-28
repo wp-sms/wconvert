@@ -43,6 +43,7 @@ const entry = resolve(OUT, 'renderer-entry.ts');
 writeFileSync(
   entry,
   [
+    `export { prepareControls, readFields, restoreFields, disposePreview, validQuestions } from '${resolve(PLUGIN, 'tools/design-library/preview/controls')}';`,
     `export { render } from '${resolve(PLUGIN, 'resources/renderer/src/mount')}';`,
     `import { mountedStyles } from '${resolve(PLUGIN, 'resources/renderer/src/css')}';`,
     `import { registerPremiumJourneyRenderer } from '${resolve(PLUGIN, 'pro/modules/journeys/loader/render')}';`,
