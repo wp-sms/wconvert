@@ -35,7 +35,9 @@
     "test:visual:fullscreen": "playwright test -c tools/visual-tests/fullscreen.config.mjs",
     "test:visual:inline": "playwright test -c tools/visual-tests/inline.config.mjs",
     "test:visual:content-lock": "playwright test -c tools/visual-tests/content-lock.config.mjs",
-    "test:visual:reopen": "playwright test -c tools/visual-tests/reopen.config.mjs"
+    "test:visual:reopen": "playwright test -c tools/visual-tests/reopen.config.mjs",
+    "templates:pilot": "bash tools/design-library/build.sh renderer pilot",
+    "test:template-studio": "node --test tools/design-library/build/inventory.test.mjs"
   },
   "dependencies": {
     "@atlaskit/pragmatic-drag-and-drop": "^3.0.0",

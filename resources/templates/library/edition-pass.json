@@ -1,0 +1,177 @@
+{
+  "id": "edition-pass",
+  "name": "Edition pass",
+  "display_type": "popup",
+  "tier": "free",
+  "tokens": {
+    "bg": "#f4f0e5",
+    "fg": "#22264b",
+    "muted": "#22264b",
+    "accent": "#273ad6",
+    "accent-fg": "#ffffff",
+    "border": "#cec8bd",
+    "input-bg": "#ffffff",
+    "heading-font": "system-ui, sans-serif",
+    "heading-weight": "800",
+    "heading-size": "2.5rem",
+    "text-size": "1rem",
+    "tracking": "-0.035em",
+    "leading": "1.5",
+    "pad": "0",
+    "gap": "1rem",
+    "radius": "0.75rem",
+    "width": "27rem",
+    "shadow": "0 24px 64px -20px rgba(20,30,25,.3)"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "details",
+        "name": "Your details",
+        "kind": "input",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "panel",
+              "tokens": {
+                "bg": "#273ad6",
+                "fg": "#ffffff",
+                "muted": "#ffffff",
+                "pad": "2rem",
+                "gap": "1rem"
+              },
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "id": "n1",
+                  "role": "eyebrow",
+                  "text": "The next edition"
+                },
+                {
+                  "type": "heading",
+                  "id": "n2",
+                  "role": "headline",
+                  "text": "First look.\nYour inbox."
+                },
+                {
+                  "type": "text",
+                  "id": "n3",
+                  "role": "body",
+                  "text": "A short email when a new collection arrives. No daily noise."
+                }
+              ],
+              "narrow": {
+                "pad": "1.25rem"
+              }
+            },
+            {
+              "type": "panel",
+              "tokens": {
+                "bg": "#f4f0e5",
+                "fg": "#22264b",
+                "muted": "#22264b",
+                "pad": "1.75rem",
+                "gap": "1rem"
+              },
+              "children": [
+                {
+                  "type": "field",
+                  "id": "n4",
+                  "name": "email",
+                  "label": "Email address",
+                  "placeholder": "you@example.com",
+                  "required": true
+                },
+                {
+                  "type": "consent",
+                  "id": "n5",
+                  "role": "consent_text",
+                  "hidden": true,
+                  "text": "Email me new-collection announcements. I can unsubscribe anytime.",
+                  "tokens": {
+                    "text-size": "1.125rem"
+                  }
+                },
+                {
+                  "type": "button",
+                  "id": "n6",
+                  "role": "cta_label",
+                  "label": "Request first access",
+                  "action": "submit",
+                  "submission": "primary"
+                },
+                {
+                  "type": "text",
+                  "id": "n7",
+                  "role": "fine_print",
+                  "text": "Collection announcements only. Access and availability depend on the release.",
+                  "size": "s",
+                  "tokens": {
+                    "text-size": "1.167rem"
+                  }
+                }
+              ],
+              "narrow": {
+                "pad": "1.25rem"
+              },
+              "notch": true,
+              "edges": "block-start"
+            }
+          ],
+          "tokens": {
+            "gap": "0"
+          }
+        }
+      },
+      {
+        "id": "received",
+        "name": "Request received",
+        "kind": "acknowledgement",
+        "content": {
+          "type": "panel",
+          "tokens": {
+            "pad": "2rem",
+            "gap": "1rem"
+          },
+          "children": [
+            {
+              "type": "eyebrow",
+              "id": "n8",
+              "role": "eyebrow",
+              "text": "Thank you"
+            },
+            {
+              "type": "heading",
+              "id": "n9",
+              "role": "success_headline",
+              "text": "You’re on our request list."
+            },
+            {
+              "type": "text",
+              "id": "n10",
+              "role": "success_body",
+              "text": "We have received your request for collection announcements."
+            }
+          ],
+          "narrow": {
+            "pad": "1.25rem"
+          }
+        }
+      }
+    ],
+    "submissions": [
+      {
+        "id": "primary",
+        "required": true,
+        "fields": [
+          "n4"
+        ],
+        "consents": [
+          "n5"
+        ]
+      }
+    ]
+  }
+}

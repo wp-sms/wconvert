@@ -135,7 +135,8 @@ final class TemplateCatalogTest extends TestCase
         file_put_contents($this->directory . '/bad.json', '<?php throw new Exception("executed");');
         $library = TemplateLibrary::from(TemplateVocabulary::fromManifest(), new \WConvert\Template\BundledTemplates(WCONVERT_DIR), $this->installed);
         $this->assertNotNull($library->find('reading-slip'));
-        $this->assertCount(41, $library->all());
+        $bundled = TemplateLibrary::from(TemplateVocabulary::fromManifest(), new \WConvert\Template\BundledTemplates(WCONVERT_DIR));
+        $this->assertSame(array_keys($bundled->all()), array_keys($library->all()));
     }
 
     public function testSameReleaseIsIdempotentAndCannotOverwriteItsBaseline(): void

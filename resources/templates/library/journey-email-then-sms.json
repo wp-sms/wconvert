@@ -4,10 +4,24 @@
   "display_type": "popup",
   "tier": "free",
   "tokens": {
-    "width": "28rem",
-    "pad": "1.5rem",
+    "bg": "#f5f1e8",
+    "fg": "#383144",
+    "muted": "#383144",
+    "accent": "#69547c",
+    "accent-fg": "#ffffff",
+    "border": "#cec8bd",
+    "input-bg": "#ffffff",
+    "heading-font": "Georgia, serif",
+    "heading-weight": "400",
+    "heading-size": "2rem",
+    "text-size": "1rem",
+    "tracking": "-0.035em",
+    "leading": "1.5",
+    "pad": "1.75rem",
     "gap": "1rem",
-    "align": "start"
+    "radius": "0.75rem",
+    "width": "29rem",
+    "shadow": "0 24px 64px -20px rgba(20,30,25,.3)"
   },
   "tree": {
     "v": 2,

@@ -1,0 +1,210 @@
+{
+  "id": "studio-window",
+  "name": "Botanical window",
+  "display_type": "popup",
+  "tier": "free",
+  "tokens": {
+    "bg": "#faf8f1",
+    "fg": "#273b30",
+    "muted": "#273b30",
+    "accent": "#345440",
+    "accent-fg": "#ffffff",
+    "border": "#cec8bd",
+    "input-bg": "#ffffff",
+    "heading-font": "Georgia, serif",
+    "heading-weight": "400",
+    "heading-size": "2.25rem",
+    "text-size": "1rem",
+    "tracking": "-0.035em",
+    "leading": "1.5",
+    "pad": "0",
+    "gap": "1rem",
+    "radius": "0.75rem",
+    "width": "44rem",
+    "shadow": "0 24px 64px -20px rgba(20,30,25,.3)"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "details",
+        "name": "Your details",
+        "kind": "input",
+        "content": {
+          "type": "split",
+          "basis": "16rem",
+          "ratio": "0.5",
+          "tokens": {
+            "gap": "0"
+          },
+          "start": [
+            {
+              "type": "panel",
+              "tokens": {
+                "bg": "#e7e6da",
+                "pad": "1.5rem",
+                "gap": "1rem"
+              },
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "id": "n1",
+                  "role": "eyebrow",
+                  "text": "A little room to grow"
+                },
+                {
+                  "type": "image",
+                  "id": "n2",
+                  "src": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20500%20480%22%3E%3Crect%20width%3D%22500%22%20height%3D%22480%22%20fill%3D%22%23e7e6da%22%2F%3E%3Cpath%20d%3D%22M65%20400V185a185%20185%200%200%201%20370%200v215%22%20fill%3D%22%23c3c9b3%22%2F%3E%3Cellipse%20cx%3D%22250%22%20cy%3D%22420%22%20rx%3D%22162%22%20ry%3D%2218%22%20fill%3D%22%23a6ad91%22%2F%3E%3Cpath%20d%3D%22M155%20280h160l-22%20125H177z%22%20fill%3D%22%23af6348%22%2F%3E%3Cpath%20d%3D%22M230%20289V94%22%20stroke%3D%22%23465c40%22%20stroke-width%3D%2210%22%2F%3E%3Cpath%20d%3D%22M230%20242C107%20258%20100%20137%20230%20208M231%20173C331%20167%20338%2063%20231%20143M229%20123C136%20113%20146%2038%20229%2096%22%20fill%3D%22%234b6844%22%2F%3E%3Cpath%20d%3D%22M337%20324h58l-8%2080h-42z%22%20fill%3D%22%23f7f1df%22%2F%3E%3Ccircle%20cx%3D%22366%22%20cy%3D%22305%22%20r%3D%2235%22%20fill%3D%22%23d0a259%22%2F%3E%3C%2Fsvg%3E",
+                  "alt": "Original illustration of a leafy plant in a terracotta pot",
+                  "fit": "cover"
+                },
+                {
+                  "type": "text",
+                  "id": "n3",
+                  "role": "body",
+                  "text": "Everyday objects.\nA slower kind of living."
+                }
+              ],
+              "narrow": {
+                "pad": "1.25rem"
+              }
+            }
+          ],
+          "end": [
+            {
+              "type": "panel",
+              "tokens": {
+                "pad": "2rem",
+                "gap": "1rem"
+              },
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "id": "n4",
+                  "role": "eyebrow",
+                  "text": "Your first order"
+                },
+                {
+                  "type": "heading",
+                  "id": "n5",
+                  "role": "headline",
+                  "text": "Make yourself\nat home."
+                },
+                {
+                  "type": "text",
+                  "id": "n6",
+                  "role": "body",
+                  "text": "Join our monthly home and garden notes and reveal 10% off your first order."
+                },
+                {
+                  "type": "field",
+                  "id": "n7",
+                  "name": "email",
+                  "label": "Email address",
+                  "placeholder": "you@example.com",
+                  "required": true
+                },
+                {
+                  "type": "consent",
+                  "id": "n8",
+                  "role": "consent_text",
+                  "hidden": true,
+                  "text": "Email me monthly home and garden notes. I can unsubscribe anytime.",
+                  "tokens": {
+                    "text-size": "1.125rem"
+                  }
+                },
+                {
+                  "type": "button",
+                  "id": "n9",
+                  "role": "cta_label",
+                  "label": "Join and reveal my code",
+                  "action": "submit",
+                  "submission": "primary"
+                },
+                {
+                  "type": "text",
+                  "id": "n10",
+                  "role": "fine_print",
+                  "text": "First order only. Review the store’s offer terms before checkout.",
+                  "size": "s",
+                  "tokens": {
+                    "text-size": "1.167rem"
+                  }
+                }
+              ],
+              "narrow": {
+                "pad": "1.25rem"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "received",
+        "name": "Request received",
+        "kind": "acknowledgement",
+        "content": {
+          "type": "panel",
+          "tokens": {
+            "pad": "2rem",
+            "gap": "1rem"
+          },
+          "children": [
+            {
+              "type": "eyebrow",
+              "id": "n11",
+              "role": "eyebrow",
+              "text": "Thank you"
+            },
+            {
+              "type": "heading",
+              "id": "n12",
+              "role": "success_headline",
+              "text": "A little welcome, for you."
+            },
+            {
+              "type": "text",
+              "id": "n13",
+              "role": "success_body",
+              "text": "Your signup request was received. Use your welcome code at checkout."
+            },
+            {
+              "type": "code",
+              "id": "n14",
+              "role": "code_value",
+              "text": "WELCOME10",
+              "copy": true
+            },
+            {
+              "type": "text",
+              "id": "n15",
+              "role": "fine_print",
+              "text": "First order only. Offer terms apply.",
+              "size": "s",
+              "tokens": {
+                "text-size": "1.167rem"
+              }
+            }
+          ],
+          "narrow": {
+            "pad": "1.25rem"
+          }
+        }
+      }
+    ],
+    "submissions": [
+      {
+        "id": "primary",
+        "required": true,
+        "fields": [
+          "n7"
+        ],
+        "consents": [
+          "n8"
+        ]
+      }
+    ]
+  }
+}

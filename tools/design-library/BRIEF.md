@@ -55,7 +55,10 @@ Write privacy sentences that remain complete without a configured policy URL.
 
 ## Artwork and fonts
 
-For this phase, **use placeholders; do not generate images**. Fieldwork uses
+The original three-design phase used placeholders. The 28 September 2026
+library programme supersedes that restriction: use a mix of complete text-led
+designs and original or reusable licensed artwork, with provenance recorded.
+Existing placeholder designs remain available. Fieldwork uses
 a small CSS gradient in its editable media background. Do not disguise a
 placeholder as a real photograph or manufacture a testimonial. Replacing it
 with production artwork is a later visual review, not a blocker to this batch.

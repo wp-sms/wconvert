@@ -4,25 +4,24 @@
   "display_type": "slide_in",
   "tier": "basic",
   "tokens": {
-    "bg": "#fffbf5",
-    "fg": "#1c1917",
-    "muted": "#78716c",
-    "accent": "#b45309",
+    "bg": "#f4f0e9",
+    "fg": "#343f40",
+    "muted": "#343f40",
+    "accent": "#35535a",
     "accent-fg": "#ffffff",
-    "border": "#e7e5e4",
-    "heading-size": "1.3125rem",
-    "heading-weight": "700",
-    "tracking": "-0.02em",
+    "border": "#cec8bd",
+    "input-bg": "#ffffff",
+    "heading-font": "Georgia, serif",
+    "heading-weight": "400",
+    "heading-size": "2rem",
     "text-size": "1rem",
+    "tracking": "-0.035em",
     "leading": "1.5",
+    "pad": "1.75rem",
+    "gap": "1rem",
     "radius": "0.75rem",
-    "pad": "1rem",
-    "gap": "0.875rem",
     "width": "25rem",
-    "align": "start",
-    "shadow": "0 18px 50px -12px rgba(15, 23, 42, 0.35)",
-    "motion": "300ms",
-    "input-bg": "#ffffff"
+    "shadow": "0 24px 64px -20px rgba(20,30,25,.3)"
   },
   "tree": {
     "steps": [
@@ -37,8 +36,8 @@
             {
               "type": "image",
               "id": "n1",
-              "src": "data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%203%201.5'%3E%3Cdefs%3E%3ClinearGradient%20id='g'%20x1='0'%20y1='0'%20x2='1'%20y2='1'%3E%3Cstop%20offset='0'%20stop-color='%237f1d1d'/%3E%3Cstop%20offset='.5'%20stop-color='%23c2410c'/%3E%3Cstop%20offset='1'%20stop-color='%23f59e0b'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width='3'%20height='4'%20fill='url%28%23g%29'/%3E%3Ccircle%20cx='2.1'%20cy='1.0'%20r='0.7'%20fill='%23fde68a'%20opacity='.55'/%3E%3Ccircle%20cx='0.7'%20cy='2.9'%20r='0.95'%20fill='%23fb923c'%20opacity='.6'/%3E%3C/svg%3E",
-              "alt": "Image placeholder",
+              "src": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20500%20480%22%3E%3Crect%20width%3D%22500%22%20height%3D%22480%22%20fill%3D%22%23e7e6da%22%2F%3E%3Cpath%20d%3D%22M65%20400V185a185%20185%200%200%201%20370%200v215%22%20fill%3D%22%23c3c9b3%22%2F%3E%3Cellipse%20cx%3D%22250%22%20cy%3D%22420%22%20rx%3D%22162%22%20ry%3D%2218%22%20fill%3D%22%23a6ad91%22%2F%3E%3Cpath%20d%3D%22M155%20280h160l-22%20125H177z%22%20fill%3D%22%23af6348%22%2F%3E%3Cpath%20d%3D%22M230%20289V94%22%20stroke%3D%22%23465c40%22%20stroke-width%3D%2210%22%2F%3E%3Cpath%20d%3D%22M230%20242C107%20258%20100%20137%20230%20208M231%20173C331%20167%20338%2063%20231%20143M229%20123C136%20113%20146%2038%20229%2096%22%20fill%3D%22%234b6844%22%2F%3E%3Cpath%20d%3D%22M337%20324h58l-8%2080h-42z%22%20fill%3D%22%23f7f1df%22%2F%3E%3Ccircle%20cx%3D%22366%22%20cy%3D%22305%22%20r%3D%2235%22%20fill%3D%22%23d0a259%22%2F%3E%3C%2Fsvg%3E",
+              "alt": "Original illustration of a leafy plant in a terracotta pot",
               "fit": "cover"
             }
           ],

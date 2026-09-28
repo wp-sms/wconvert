@@ -33,8 +33,8 @@ a usable Optin must not require rebuilding its layout.
    Roles and step counts is in it.
 2. **Author** one JSON file. Free designs go in
    `resources/templates/library/`, Pro ones in
-   `pro/modules/display-types/templates/`. The `id` must be unique across
-   **both**.
+   `pro/modules/display-types/templates/`; paid question designs go in
+   `pro/modules/journeys/templates/`. The `id` must be unique across all modules.
    Give each shipped leaf a stable `n1`…`n9999` id, unique within its tree, and
    preserve that id when reordering it. Author `tree.v: 2`; do not author derived facets.
    PHP mints missing ids on newly added draft leaves; that fallback is not a

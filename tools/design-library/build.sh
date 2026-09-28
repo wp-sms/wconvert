@@ -53,7 +53,7 @@ fi
 STEPS=("$@")
 
 if [[ ${#STEPS[@]} -eq 0 ]]; then
-  STEPS=(vocabulary prose renderer designs sheet bench gallery review library-review)
+  STEPS=(vocabulary prose renderer designs sheet bench gallery review library-review pilot)
 fi
 
 mkdir -p "$HERE/out/previews"
@@ -128,8 +128,13 @@ for step in "${STEPS[@]}"; do
       node "$HERE/build/starting-points.mjs"
       ;;
 
+    pilot)
+      ran "Building the campaign pilot and similarity inventory"
+      node "$HERE/build/pilot.mjs"
+      ;;
+
     *)
-      echo "unknown step: $step (vocabulary prose renderer designs sheet bench gallery review library-review starting-points)" >&2
+      echo "unknown step: $step (vocabulary prose renderer designs sheet bench gallery review library-review starting-points pilot)" >&2
       exit 2
       ;;
   esac

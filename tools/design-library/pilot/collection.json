@@ -1,0 +1,232 @@
+{
+  "schema": 1,
+  "name": "First twelve",
+  "target_setups": 400,
+  "entries": [
+    {
+      "id": "studio-welcome",
+      "audience": "stores",
+      "family": "Botanical product stage",
+      "visitor_need": "Reveal a welcome offer while inviting useful monthly notes.",
+      "difference": "An illustrated product stage beside signup, followed by an offer reveal.",
+      "requirements": [
+        "Valid coupon and terms",
+        "Email service or Collect only",
+        "Store page targeting"
+      ],
+      "status": "review",
+      "source": "Original WConvert pilot; informed by the research plan dated 2026-09-28.",
+      "suggested_setup": [
+        "Store browsing pages; exclude cart and checkout.",
+        "Start after 15 seconds; avoid repeating after dismissal."
+      ],
+      "measure": "Email requests accepted; offer use is a separate store metric."
+    },
+    {
+      "id": "edition-early-access",
+      "audience": "stores",
+      "family": "Typographic ticket",
+      "visitor_need": "Offer first knowledge of a collection without defaulting to a discount.",
+      "difference": "A bold typographic ticket with no discount and a compact signup.",
+      "requirements": [
+        "Email service or Collect only",
+        "Real announcement plan"
+      ],
+      "status": "review",
+      "source": "Original WConvert pilot; informed by the research plan dated 2026-09-28.",
+      "suggested_setup": [
+        "Collection and launch pages before the release.",
+        "Start after 15 seconds; end the campaign when the launch closes."
+      ],
+      "measure": "Accepted requests for collection announcements."
+    },
+    {
+      "id": "journey-email-then-sms",
+      "audience": "stores",
+      "family": "Progressive signup",
+      "visitor_need": "Save email first and let visitors choose whether to add SMS.",
+      "difference": "Email is saved independently before an optional second-channel request.",
+      "requirements": [
+        "Email destination",
+        "Optional SMS destination",
+        "Separate channel wording"
+      ],
+      "status": "review",
+      "source": "Original WConvert pilot; informed by the research plan dated 2026-09-28.",
+      "suggested_setup": [
+        "Relevant store pages with a real announcement programme.",
+        "Start after 15 seconds; keep SMS optional."
+      ],
+      "measure": "Email acceptance and optional SMS acceptance separately."
+    },
+    {
+      "id": "delivery-announcement",
+      "audience": "stores",
+      "family": "Compact utility",
+      "visitor_need": "Answer a shipping question without interrupting browsing.",
+      "difference": "A compact utility bar answers a delivery question without asking for contact details.",
+      "requirements": [
+        "Actual delivery terms",
+        "Shop link",
+        "Relevant store pages"
+      ],
+      "status": "review",
+      "source": "Original WConvert pilot; informed by the research plan dated 2026-09-28.",
+      "suggested_setup": [
+        "Store browsing pages where delivery information helps.",
+        "Show on page load; keep it easy to dismiss."
+      ],
+      "measure": "Clicks to the shop; sales are a separate metric."
+    },
+    {
+      "id": "fullscreen-announcement",
+      "audience": "stores",
+      "family": "Fullscreen poster",
+      "visitor_need": "Make a focused collection introduction with a single shopping link.",
+      "difference": "A large editorial announcement focused on one collection link.",
+      "requirements": [
+        "Collection URL",
+        "Schedule and targeting",
+        "Paid fullscreen format"
+      ],
+      "status": "review",
+      "source": "Original WConvert pilot; informed by the research plan dated 2026-09-28.",
+      "suggested_setup": [
+        "A relevant landing page for a time-limited collection.",
+        "Use sparingly; review the schedule and exclude checkout."
+      ],
+      "measure": "Collection-link clicks; not confirmed purchases."
+    },
+    {
+      "id": "product-finder",
+      "audience": "stores",
+      "family": "Question and result cards",
+      "visitor_need": "Ask only relevant questions, then show a matching selection.",
+      "difference": "A branching question journey skips irrelevant questions and gives a result before asking for contact details.",
+      "requirements": [
+        "Paid question journeys",
+        "WooCommerce products",
+        "Result fallbacks"
+      ],
+      "status": "review",
+      "source": "Original WConvert pilot; informed by the research plan dated 2026-09-28.",
+      "suggested_setup": [
+        "A guide or category page where product choice is difficult.",
+        "Invite visitors where recommendations are useful; test every branch."
+      ],
+      "measure": "Result views and product clicks; not sales."
+    },
+    {
+      "id": "home-repair-quote",
+      "audience": "services",
+      "family": "Split service docket",
+      "visitor_need": "Give the business enough context to start a useful reply.",
+      "difference": "An inline service docket captures the type of work alongside a reply address.",
+      "requirements": [
+        "Inline placement",
+        "Service choices",
+        "Person responsible for replies"
+      ],
+      "status": "review",
+      "source": "Original WConvert pilot; informed by the research plan dated 2026-09-28.",
+      "suggested_setup": [
+        "Embed below service details or a work example.",
+        "Visible in the page; no interruption."
+      ],
+      "measure": "Accepted enquiries; a quote is provided separately."
+    },
+    {
+      "id": "photography-enquiry",
+      "audience": "services",
+      "family": "Illustrated portrait card",
+      "visitor_need": "Make a low-friction first contact after viewing a portfolio.",
+      "difference": "An image-led portrait invitation asks for the minimum needed to start a conversation.",
+      "requirements": [
+        "Portfolio context",
+        "Reply workflow"
+      ],
+      "status": "review",
+      "source": "Original WConvert pilot; informed by the research plan dated 2026-09-28.",
+      "suggested_setup": [
+        "Portrait portfolio and session-information pages.",
+        "Start after 15 seconds of viewing; avoid repeated interruptions."
+      ],
+      "measure": "Accepted enquiries; not confirmed bookings."
+    },
+    {
+      "id": "consultation-corner",
+      "audience": "services",
+      "family": "Quiet corner invitation",
+      "visitor_need": "Offer a small invitation while a visitor explores your services.",
+      "difference": "A small corner invitation leaves the service page visible during the request.",
+      "requirements": [
+        "Paid slide-in format",
+        "Relevant service pages",
+        "Reply workflow"
+      ],
+      "status": "review",
+      "source": "Original WConvert pilot; informed by the research plan dated 2026-09-28.",
+      "suggested_setup": [
+        "Design service and project-detail pages.",
+        "Start after 15 seconds; keep dismissal clear."
+      ],
+      "measure": "Consultation requests; appointments are confirmed separately."
+    },
+    {
+      "id": "project-planning-guide",
+      "audience": "services",
+      "family": "Resource notebook",
+      "visitor_need": "Help visitors prepare before they ask for a quote.",
+      "difference": "A numbered notebook cover makes a single planning resource tangible.",
+      "requirements": [
+        "Completed checklist",
+        "Configured lead-magnet email"
+      ],
+      "status": "review",
+      "source": "Original WConvert pilot; informed by the research plan dated 2026-09-28.",
+      "suggested_setup": [
+        "Renovation articles and planning service pages.",
+        "Start after 15 seconds; connect the actual checklist delivery."
+      ],
+      "measure": "Accepted resource requests; delivery must be tested separately."
+    },
+    {
+      "id": "sunday-reading",
+      "audience": "publishers",
+      "family": "Editorial desk",
+      "visitor_need": "Invite readers who have finished an article to return next week.",
+      "difference": "An inline editorial composition continues the reading experience at the end of an article.",
+      "requirements": [
+        "Article-end placement",
+        "Email service or Collect only",
+        "Real weekly cadence"
+      ],
+      "status": "review",
+      "source": "Original WConvert pilot; informed by the research plan dated 2026-09-28.",
+      "suggested_setup": [
+        "Embed after an article or beside a reading-list introduction.",
+        "Visible in the page; set an honest weekly expectation."
+      ],
+      "measure": "Accepted newsletter requests; monitor downstream subscriptions."
+    },
+    {
+      "id": "content-guide",
+      "audience": "publishers",
+      "family": "Result-first reading",
+      "visitor_need": "Let visitors receive a useful recommendation without requiring signup.",
+      "difference": "An ungated recommendation appears before an optional email request.",
+      "requirements": [
+        "Paid question journeys",
+        "Real resource links",
+        "Optional email destination"
+      ],
+      "status": "review",
+      "source": "Original WConvert pilot; informed by the research plan dated 2026-09-28.",
+      "suggested_setup": [
+        "Resource hubs and related articles.",
+        "Let the visitor see the result even if they skip email."
+      ],
+      "measure": "Result views and optional email requests separately."
+    }
+  ]
+}

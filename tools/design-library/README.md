@@ -13,6 +13,63 @@ npm install --no-save playwright       # not a repo dependency; see below
 Output goes to `tools/design-library/out/`, which is gitignored. Nothing here
 ships: `/tools` is in `.distignore`.
 
+## First twelve: internal creation and review studio
+
+Run `npm run templates:pilot`, then open `out/pilot.html` through the local site
+(or serve `out/` over HTTP). `npm run test:template-studio` tests source discovery,
+duplicate detection and all twelve prepared campaigns. Composer dependencies are
+required for the PHP exporter. The default build includes the pilot.
+
+The collection contains **12 campaign setups using 12 designs**: six new Free
+designs, five existing designs revised, and one existing design reused. Eight
+Playbooks are new and four are revisions of existing Playbooks. It covers stores,
+services and publishers across all five display formats. These are editorial
+candidates, not approved releases or measured conversion winners.
+
+The studio provides audience/search filters, real renderer previews, individual
+screens and result variants, mobile widths, RTL, local form demonstrations,
+nearest-design comparison, layout checks and exportable review notes. Coupon
+codes cleared by Prefill use a clearly documented `YOUR CODE` preview placeholder.
+Submitting a preview creates no Lead and does not contact a Destination.
+
+### Adding the next reviewed batch
+
+1. Choose an uncovered visitor need from the [library plan](../../docs/plans/template-library-system-2026-09-28.md).
+   Record audience, composition family, meaningful difference and publication
+   requirements in `pilot/collection.json`. Campaign IDs must reference registered
+   Playbooks. The Goal and format come from those Playbooks rather than a second list.
+2. Author or reuse a design with `.claude/skills/design-a-template/SKILL.md` and
+   the generated vocabulary. Author the complete campaign using
+   `.claude/skills/design-a-playbook/SKILL.md`. Supply translated copy, display-rule
+   suggestions, honest acknowledgement and setup notes. Changing only colour or
+   industry wording does not justify counting another distinct design.
+3. Run `composer verify:templates`, `composer verify:source`,
+   `npm run test:template-studio` and `npm run templates:pilot`.
+   The inventory discovers every Free and Pro module and fails on invalid JSON,
+   duplicate design IDs and missing campaign references.
+4. Compare the nearest designs in the studio. `out/inventory.json` records style
+   and structure fingerprints plus the five nearest structures. IDs and copy are
+   ignored consistently; references, field types, requiredness and journey paths
+   remain meaningful. Colour variants share a structure fingerprint. Similarity
+   uses structural features, not screenshot/AI comparison: a reviewer decides
+   whether the difference is useful. It does not automatically reject reuse.
+5. Inspect every screen and result on desktop and phone, keyboard behaviour,
+   contrast, long copy and RTL. Run the built-in layout checks. Those checks cover
+   overflow, control height and input text size; they do not certify accessibility.
+   Then verify creation in WordPress and the actual configured destination journey.
+6. Save the editorial decision and notes, and export the review JSON. Browser-local
+   decisions are tied to the full prepared campaign and renderer hash; changes
+   invalidate them. Store the export with the batch review. Editorial review is
+   separate from release approval. Publish through the normal branch/PR process.
+
+Original artwork and provenance live in `pilot/assets/`. These SVG illustrations
+are embedded in the bundled JSON, with no remote asset dependency. This does not
+add asset support to downloadable catalog packs.
+
+The 48-campaign expansion, 400-campaign coverage plan, automated generation,
+shared review storage, screenshot similarity, conversion measurement and catalog
+scaling remain future work. This studio is the first reviewable implementation.
+
 ## A sibling of `tools/design-system`, not a step inside it
 
 Same machinery, different subject. That one mirrors the **wp-admin screens**;
@@ -44,6 +101,7 @@ a second copy of both.
 | `gallery` | Inlines every entry into `out/gallery.html` — the whole library, one page |
 | `review` | Builds `out/flagships.html` for Fieldwork, Sunday marginalia and Callback notes; needs `renderer` |
 | `library-review` | Builds `out/library-review.html` for every Free and Pro design, both screens, four widths and automated browser measurements; needs `renderer` |
+| `pilot` | Builds `out/pilot.html`, `pilot.json` and `inventory.json` from registered campaigns and all module designs; needs `renderer` and Composer dependencies |
 | `starting-points` | Builds `out/starting-points.html` from the twelve flagship Playbooks through the shipping PHP Prefill, with setup notes and the same size checks; needs `renderer` and Composer dependencies |
 
 For a complete library review, run `./tools/design-library/build.sh renderer library-review`
