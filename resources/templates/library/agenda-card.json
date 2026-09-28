@@ -1,0 +1,204 @@
+{
+  "id": "agenda-card",
+  "name": "Agenda card",
+  "display_type": "inline",
+  "tier": "free",
+  "tokens": {
+    "bg": "#f5edc7",
+    "fg": "#24251e",
+    "muted": "#48493d",
+    "accent": "#292b21",
+    "accent-fg": "#ffffff",
+    "border": "#c8c5a8",
+    "input-bg": "#ffffff",
+    "heading-font": "system-ui, sans-serif",
+    "heading-weight": "800",
+    "heading-size": "2.75rem",
+    "tracking": "-0.045em",
+    "text-size": "1rem",
+    "leading": "1.5",
+    "pad": "0",
+    "gap": "1rem",
+    "radius": "0",
+    "width": "48rem",
+    "shadow": "none"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "details",
+        "name": "Invitation",
+        "kind": "content",
+        "content": {
+          "type": "stack",
+          "tokens": {
+            "gap": "0"
+          },
+          "children": [
+            {
+              "type": "split",
+              "basis": "16rem",
+              "ratio": "0.5",
+              "tokens": {
+                "gap": "0"
+              },
+              "start": [
+                {
+                  "type": "panel",
+                  "tokens": {
+                    "pad": "2rem",
+                    "gap": "1.25rem"
+                  },
+                  "narrow": {
+                    "pad": "1.25rem"
+                  },
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "id": "n1",
+                      "role": "eyebrow",
+                      "text": "An online conversation"
+                    },
+                    {
+                      "type": "heading",
+                      "id": "n2",
+                      "role": "headline",
+                      "text": "Make room for\nbetter ideas.",
+                      "narrow": {
+                        "heading-size": "2.25rem"
+                      }
+                    },
+                    {
+                      "type": "text",
+                      "id": "n3",
+                      "role": "body",
+                      "text": "A live editorial workshop on turning reading notes into a useful writing practice."
+                    }
+                  ]
+                }
+              ],
+              "end": [
+                {
+                  "type": "panel",
+                  "tokens": {
+                    "pad": "2rem",
+                    "gap": "1.25rem",
+                    "bg": "#e8e3c8"
+                  },
+                  "narrow": {
+                    "pad": "1.25rem"
+                  },
+                  "children": [
+                    {
+                      "type": "row",
+                      "tokens": {
+                        "gap": ".75rem"
+                      },
+                      "children": [
+                        {
+                          "type": "eyebrow",
+                          "id": "n4",
+                          "role": "eyebrow",
+                          "text": "Explore"
+                        },
+                        {
+                          "type": "text",
+                          "id": "n5",
+                          "role": "body",
+                          "text": "Collect ideas"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "divider",
+                      "id": "n21"
+                    },
+                    {
+                      "type": "row",
+                      "tokens": {
+                        "gap": ".75rem"
+                      },
+                      "children": [
+                        {
+                          "type": "eyebrow",
+                          "id": "n6",
+                          "role": "eyebrow",
+                          "text": "Practise"
+                        },
+                        {
+                          "type": "text",
+                          "id": "n7",
+                          "role": "body",
+                          "text": "Shape a draft"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "divider",
+                      "id": "n23"
+                    },
+                    {
+                      "type": "row",
+                      "tokens": {
+                        "gap": ".75rem"
+                      },
+                      "children": [
+                        {
+                          "type": "eyebrow",
+                          "id": "n8",
+                          "role": "eyebrow",
+                          "text": "Discuss"
+                        },
+                        {
+                          "type": "text",
+                          "id": "n9",
+                          "role": "body",
+                          "text": "Ask questions"
+                        }
+                      ]
+                    },
+                    {
+                      "type": "divider",
+                      "id": "n25"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "panel",
+              "tokens": {
+                "pad": "1.25rem 2rem",
+                "gap": ".75rem"
+              },
+              "narrow": {
+                "pad": "1.25rem"
+              },
+              "children": [
+                {
+                  "type": "button",
+                  "id": "n10",
+                  "role": "cta_label",
+                  "label": "View dates and register",
+                  "action": "link"
+                },
+                {
+                  "type": "text",
+                  "id": "n11",
+                  "role": "fine_print",
+                  "text": "Dates, availability and registration are on the event page.",
+                  "size": "s",
+                  "tokens": {
+                    "text-size": "1.167rem"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      }
+    ],
+    "submissions": []
+  }
+}

@@ -50,7 +50,11 @@ foreach ($collection['entries'] as $brief) {
     $playbook = $playbooks->find($brief['id']);
     $draft = $prefill->fromPlaybook($brief['id']);
     if ($playbook === null || $draft === null) throw new RuntimeException('Missing pilot: ' . $brief['id']);
+    $designTier = Tier::from($templates->find($playbook->templateId)['tier']);
+    $goalTier = $playbook->goal->tier();
+    $tier = $designTier->includes($goalTier) ? $designTier : $goalTier;
     $entries[] = array_merge($brief, [
+        'tier' => $tier->value, 'design_tier' => $designTier->value,
         'name' => $playbook->name, 'goal' => $playbook->goal->value,
         'display_type' => $playbook->displayType, 'template_id' => $playbook->templateId,
         'notes' => $playbook->notes, 'config' => $draft['config'],

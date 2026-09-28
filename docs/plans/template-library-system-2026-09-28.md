@@ -304,3 +304,24 @@ Do not aggregate all edited descendants into a universal “template conversion 
 ## Immediate recommendation
 
 Build the internal inventory, brief and review workflow first; then produce the twelve benchmarks. Use that evidence to approve the 48-setup pilot and the catalog/asset work. Preserve and improve useful existing templates while retiring repetition deliberately. This establishes a repeatable process for reaching 400 setups and continuing beyond it without allowing the count to replace usefulness.
+
+
+## Second batch implemented, 2026-09-28
+
+The user approved the twelve benchmarks and asked to move forward. The studio now
+contains 24 campaigns using 21 distinct design IDs. The full inventory is 70 designs
+and 49 Playbooks. The second batch covers six store, four service and two publisher
+needs: plain cart return, delivery guidance, standalone SMS, scheduled sale,
+product care resource, wholesale enquiry, venue visit, course advice, maintenance
+newsletter, seasonal service link, external workshop registration and topic signup.
+
+Four new Free compositions are Resource index, Appointment note, Agenda card and
+Preference card. Venue and course enquiries intentionally share Appointment note;
+existing designs are reused where the visitor workflow, rather than appearance,
+is the reason for a new setup. Ten Playbooks are new and two already existed.
+
+Versioned briefs now require a batch, comparison designs and a written reuse/new
+composition decision. The studio exposes batch and goal filters, a coverage matrix
+and correct campaign-level paid requirements. This remains an internal production
+workflow. Customer discovery, catalog scaling, asset transport, 48-campaign
+completion and actual merchant conversion trials remain separate next milestones.

@@ -13,32 +13,43 @@ npm install --no-save playwright       # not a repo dependency; see below
 Output goes to `tools/design-library/out/`, which is gitignored. Nothing here
 ships: `/tools` is in `.distignore`.
 
-## First twelve: internal creation and review studio
+## Internal creation and review studio: 24 campaigns
 
 Run `npm run templates:pilot`, then open `out/pilot.html` through the local site
-(or serve `out/` over HTTP). `npm run test:template-studio` tests source discovery,
-duplicate detection and all twelve prepared campaigns. Composer dependencies are
-required for the PHP exporter. The default build includes the pilot.
+(or serve `out/` over HTTP). Add `?batch=expansion` to show the newest twelve.
+`npm run test:template-studio` tests discovery, duplicate detection, brief validation
+and all prepared campaigns. Composer dependencies are required for the PHP exporter.
 
-The collection contains **12 campaign setups using 12 designs**: six new Free
-designs and six existing designs revised. A seventh existing design, outside
-this collection, received a placeholder-contrast fix during the follow-up audit. Eight
-Playbooks are new and four are revisions of existing Playbooks. It covers stores,
-services and publishers across all five display formats. These are editorial
-candidates, not approved releases or measured conversion winners.
+The studio contains **24 campaign setups using 21 designs**, drawn from a complete
+inventory of **70 designs**. The first twelve received user approval of the design
+direction. The next twelve add four new Free designs and reuse existing designs,
+including deliberate reuse between two different enquiry workflows. Ten Playbooks
+are new; cart return and standalone SMS already had useful registered starts.
+There are now 49 registered Playbooks across Free and Pro modules. All seven Goals,
+all five Display Types and three audiences are represented. These are editorial
+candidates, not measured conversion winners or automatically approved releases.
 
-The studio provides explicit type labels and audience/type/search filters, real renderer previews, individual
-screens and result variants, mobile widths, RTL, local form demonstrations,
-nearest-design comparison, layout checks and exportable review notes. Coupon
-codes cleared by Prefill use a clearly documented `YOUR CODE` preview placeholder.
-Submitting a preview creates no Lead and does not contact a Destination.
+The studio provides explicit type labels, audience/type/goal/batch/search filters,
+a coverage table, real renderer previews, individual screens and result variants,
+mobile widths, RTL, local form demonstrations, nearest-design comparison, layout
+checks and exportable review notes. Campaign tier includes the Goal requirement:
+a Free design serving cart recovery is correctly labelled Pro. Counts distinguish
+campaign setups from unique referenced designs.
+
+Coupon codes cleared by Prefill use `YOUR CODE`; countdowns display a static sample
+so their occupied space is reviewed. Both are labelled as preview placeholders and
+never become campaign configuration. Submitting a preview creates no Lead and does
+not contact a Destination. Measurement images load eagerly so an offscreen lazy
+image cannot stall either audit.
 
 ### Adding the next reviewed batch
 
 1. Choose an uncovered visitor need from the [library plan](../../docs/plans/template-library-system-2026-09-28.md).
-   Record audience, composition family, meaningful difference and publication
+   Record the batch, audience, composition family, meaningful difference and publication
    requirements in `pilot/collection.json`. Campaign IDs must reference registered
-   Playbooks. The Goal and format come from those Playbooks rather than a second list.
+   Playbooks. Each expansion brief must name existing comparison designs, state
+   new-design or reuse-design, and explain the decision. The build rejects missing
+   comparisons, unknown batches and unsupported audiences. The Goal and format come from those Playbooks rather than a second list.
 2. Author or reuse a design with `.claude/skills/design-a-template/SKILL.md` and
    the generated vocabulary. Author the complete campaign using
    `.claude/skills/design-a-playbook/SKILL.md`. Supply translated copy, display-rule
@@ -71,7 +82,7 @@ Original artwork and provenance live in `pilot/assets/`. These SVG illustrations
 are embedded in the bundled JSON, with no remote asset dependency. This does not
 add asset support to downloadable catalog packs.
 
-The 48-campaign expansion, 400-campaign coverage plan, automated generation,
+The remaining expansion to 48 campaigns, 400-campaign coverage plan, automated generation,
 shared review storage, screenshot similarity, conversion measurement and catalog
 scaling remain future work. This studio is the first reviewable implementation.
 

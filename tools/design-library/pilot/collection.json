@@ -1,6 +1,6 @@
 {
-  "schema": 1,
-  "name": "First twelve",
+  "schema": 2,
+  "name": "Purpose-built campaign library",
   "target_setups": 400,
   "entries": [
     {
@@ -20,7 +20,13 @@
         "Store browsing pages; exclude cart and checkout.",
         "Start after 15 seconds; avoid repeating after dismissal."
       ],
-      "measure": "Email requests accepted; offer use is a separate store metric."
+      "measure": "Email requests accepted; offer use is a separate store metric.",
+      "batch": "benchmark",
+      "comparison": {
+        "decision": "new_design",
+        "against": [],
+        "reason": "An illustrated product stage beside signup, followed by an offer reveal."
+      }
     },
     {
       "id": "edition-early-access",
@@ -38,7 +44,13 @@
         "Collection and launch pages before the release.",
         "Start after 15 seconds; end the campaign when the launch closes."
       ],
-      "measure": "Accepted requests for collection announcements."
+      "measure": "Accepted requests for collection announcements.",
+      "batch": "benchmark",
+      "comparison": {
+        "decision": "new_design",
+        "against": [],
+        "reason": "A bold typographic ticket with no discount and a compact signup."
+      }
     },
     {
       "id": "journey-email-then-sms",
@@ -57,7 +69,13 @@
         "Relevant store pages with a real announcement programme.",
         "Start after 15 seconds; keep SMS optional."
       ],
-      "measure": "Email acceptance and optional SMS acceptance separately."
+      "measure": "Email acceptance and optional SMS acceptance separately.",
+      "batch": "benchmark",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [],
+        "reason": "Email is saved independently before an optional second-channel request."
+      }
     },
     {
       "id": "delivery-announcement",
@@ -76,7 +94,13 @@
         "Store browsing pages where delivery information helps.",
         "Show on page load; keep it easy to dismiss."
       ],
-      "measure": "Clicks to the shop; sales are a separate metric."
+      "measure": "Clicks to the shop; sales are a separate metric.",
+      "batch": "benchmark",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [],
+        "reason": "A compact utility bar answers a delivery question without asking for contact details."
+      }
     },
     {
       "id": "fullscreen-announcement",
@@ -95,7 +119,13 @@
         "A relevant landing page for a time-limited collection.",
         "Use sparingly; review the schedule and exclude checkout."
       ],
-      "measure": "Collection-link clicks; not confirmed purchases."
+      "measure": "Collection-link clicks; not confirmed purchases.",
+      "batch": "benchmark",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [],
+        "reason": "A large editorial announcement focused on one collection link."
+      }
     },
     {
       "id": "product-finder",
@@ -114,7 +144,13 @@
         "A guide or category page where product choice is difficult.",
         "Invite visitors where recommendations are useful; test every branch."
       ],
-      "measure": "Result views and product clicks; not sales."
+      "measure": "Result views and product clicks; not sales.",
+      "batch": "benchmark",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [],
+        "reason": "A branching question journey skips irrelevant questions and gives a result before asking for contact details."
+      }
     },
     {
       "id": "home-repair-quote",
@@ -133,7 +169,13 @@
         "Embed below service details or a work example.",
         "Visible in the page; no interruption."
       ],
-      "measure": "Accepted enquiries; a quote is provided separately."
+      "measure": "Accepted enquiries; a quote is provided separately.",
+      "batch": "benchmark",
+      "comparison": {
+        "decision": "new_design",
+        "against": [],
+        "reason": "An inline service docket captures the type of work alongside a reply address."
+      }
     },
     {
       "id": "photography-enquiry",
@@ -151,7 +193,13 @@
         "Portrait portfolio and session-information pages.",
         "Start after 15 seconds of viewing; avoid repeated interruptions."
       ],
-      "measure": "Accepted enquiries; not confirmed bookings."
+      "measure": "Accepted enquiries; not confirmed bookings.",
+      "batch": "benchmark",
+      "comparison": {
+        "decision": "new_design",
+        "against": [],
+        "reason": "An image-led portrait invitation asks for the minimum needed to start a conversation."
+      }
     },
     {
       "id": "consultation-corner",
@@ -170,7 +218,13 @@
         "Design service and project-detail pages.",
         "Start after 15 seconds; keep dismissal clear."
       ],
-      "measure": "Consultation requests; appointments are confirmed separately."
+      "measure": "Consultation requests; appointments are confirmed separately.",
+      "batch": "benchmark",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [],
+        "reason": "A small corner invitation leaves the service page visible during the request."
+      }
     },
     {
       "id": "project-planning-guide",
@@ -188,7 +242,13 @@
         "Renovation articles and planning service pages.",
         "Start after 15 seconds; connect the actual checklist delivery."
       ],
-      "measure": "Accepted resource requests; delivery must be tested separately."
+      "measure": "Accepted resource requests; delivery must be tested separately.",
+      "batch": "benchmark",
+      "comparison": {
+        "decision": "new_design",
+        "against": [],
+        "reason": "A numbered notebook cover makes a single planning resource tangible."
+      }
     },
     {
       "id": "sunday-reading",
@@ -207,7 +267,13 @@
         "Embed after an article or beside a reading-list introduction.",
         "Visible in the page; set an honest weekly expectation."
       ],
-      "measure": "Accepted newsletter requests; monitor downstream subscriptions."
+      "measure": "Accepted newsletter requests; monitor downstream subscriptions.",
+      "batch": "benchmark",
+      "comparison": {
+        "decision": "new_design",
+        "against": [],
+        "reason": "An inline editorial composition continues the reading experience at the end of an article."
+      }
     },
     {
       "id": "content-guide",
@@ -226,7 +292,347 @@
         "Resource hubs and related articles.",
         "Let the visitor see the result even if they skip email."
       ],
-      "measure": "Result views and optional email requests separately."
+      "measure": "Result views and optional email requests separately.",
+      "batch": "benchmark",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [],
+        "reason": "An ungated recommendation appears before an optional email request."
+      }
+    },
+    {
+      "id": "cart-straight-away",
+      "batch": "expansion",
+      "audience": "stores",
+      "family": "Inline cart utility",
+      "visitor_need": "Return to items already selected without interrupting browsing.",
+      "difference": "A persistent in-page return link for an existing basket; no contact capture or timed overlay.",
+      "requirements": [
+        "WooCommerce and Pro cart rules",
+        "Inline placement on shop pages",
+        "Exclude cart and checkout"
+      ],
+      "status": "review",
+      "source": "Original WConvert expansion brief; supported capability audit and library plan 2026-09-28.",
+      "suggested_setup": [
+        "Embed near related products where returning shoppers browse.",
+        "Page load with a non-empty cart; never claim stock is reserved."
+      ],
+      "measure": "Basket-return clicks; purchases remain a separate store metric.",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "offer-panel"
+        ],
+        "reason": "Reuses a compact inline link instead of the existing delayed popup."
+      }
+    },
+    {
+      "id": "cart-delivery-help",
+      "batch": "expansion",
+      "audience": "stores",
+      "family": "Delivery reassurance",
+      "visitor_need": "Understand where delivery options can be checked before committing to an order.",
+      "difference": "Explains the next delivery-information step at a different point in shopping than a general return reminder.",
+      "requirements": [
+        "WooCommerce and Pro cart rules",
+        "Delivery options accurately configured",
+        "Inline placement; exclude checkout"
+      ],
+      "status": "review",
+      "source": "Original WConvert expansion brief; supported capability audit and library plan 2026-09-28.",
+      "suggested_setup": [
+        "Place below shipping guidance or relevant product details.",
+        "Show only with a non-empty cart; verify wording against the actual checkout."
+      ],
+      "measure": "Basket-return clicks; not delivery calculations or recovered revenue.",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "inline-cart-nudge"
+        ],
+        "reason": "Uses the existing cart nudge. Different page context and delivery guidance justify a setup, not another design."
+      }
+    },
+    {
+      "id": "drop-alerts",
+      "batch": "expansion",
+      "audience": "stores",
+      "family": "Single-channel SMS",
+      "visitor_need": "Request short new-release notices without supplying an email address.",
+      "difference": "A phone-only request with its own consent, unlike optional SMS after an accepted email.",
+      "requirements": [
+        "SMS destination and provider opt-out process",
+        "Actual message frequency",
+        "Country-aware phone input"
+      ],
+      "status": "review",
+      "source": "Original WConvert expansion brief; supported capability audit and library plan 2026-09-28.",
+      "suggested_setup": [
+        "Use on release-information pages with a real announcement programme.",
+        "Start after 12 seconds; review frequency and exclusions."
+      ],
+      "measure": "Accepted SMS requests; provider subscription and message delivery are separate.",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "journey-email-then-sms"
+        ],
+        "reason": "Reuses the existing standalone phone form; no second channel or extra journey step."
+      }
+    },
+    {
+      "id": "sale-deadline",
+      "batch": "expansion",
+      "audience": "stores",
+      "family": "Scheduled utility bar",
+      "visitor_need": "See how long a genuine offer remains available and reach its terms.",
+      "difference": "A countdown driven by an actual campaign end, not a seasonal label or resetting timer.",
+      "requirements": [
+        "Genuine Schedule end and time zone",
+        "Sale URL and matching terms",
+        "Exclude checkout; stop when the sale ends"
+      ],
+      "status": "review",
+      "source": "Original WConvert expansion brief; supported capability audit and library plan 2026-09-28.",
+      "suggested_setup": [
+        "Show on relevant sale and collection pages.",
+        "Page load; set the real deadline before publishing."
+      ],
+      "measure": "Sale-link clicks; not completed purchases.",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "bar-announcement"
+        ],
+        "reason": "Uses the existing deadline bar because temporal information is the actual difference."
+      }
+    },
+    {
+      "id": "product-care-guide",
+      "batch": "expansion",
+      "audience": "stores",
+      "family": "Resource contents index",
+      "visitor_need": "Keep a purchased or considered item in good condition with practical guidance.",
+      "difference": "Previews three concrete resource topics before requesting email; an evergreen care need instead of an incentive.",
+      "requirements": [
+        "Completed care guide",
+        "Lead-magnet email destination",
+        "Relevant product or care article placement"
+      ],
+      "status": "review",
+      "source": "Original WConvert expansion brief; supported capability audit and library plan 2026-09-28.",
+      "suggested_setup": [
+        "Embed after knitwear care information.",
+        "Visible in page; no marketing signup bundled with the request."
+      ],
+      "measure": "Accepted guide requests; test resource delivery separately.",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "project-notebook"
+        ],
+        "reason": "New index composition makes the contents visible in three short sections; a decorative cover alone cannot show that structure."
+      }
+    },
+    {
+      "id": "wholesale-enquiry",
+      "batch": "expansion",
+      "audience": "stores",
+      "family": "Trade enquiry docket",
+      "visitor_need": "Start a trade conversation about stocking products, eligibility or a catalogue.",
+      "difference": "The optional request type routes a business enquiry; no trade approval or price access is implied.",
+      "requirements": [
+        "Trade request choices",
+        "Named owner for replies",
+        "Wholesale page placement"
+      ],
+      "status": "review",
+      "source": "Original WConvert expansion brief; supported capability audit and library plan 2026-09-28.",
+      "suggested_setup": [
+        "Embed below trade eligibility and ordering information.",
+        "Keep it on business enquiry pages rather than consumer checkout."
+      ],
+      "measure": "Accepted trade enquiries; account approvals and orders happen elsewhere.",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "service-docket"
+        ],
+        "reason": "Reuses the service docket. Different qualification and follow-up needs justify the campaign, not a new layout."
+      }
+    },
+    {
+      "id": "venue-visit-request",
+      "batch": "expansion",
+      "audience": "services",
+      "family": "Appointment invitation",
+      "visitor_need": "Arrange an initial venue visit before making a booking decision.",
+      "difference": "Captures which spaces matter and a reply address without inventing booking or calendar capabilities.",
+      "requirements": [
+        "Actual visit options",
+        "Follow-up owner",
+        "Venue page targeting"
+      ],
+      "status": "review",
+      "source": "Original WConvert expansion brief; supported capability audit and library plan 2026-09-28.",
+      "suggested_setup": [
+        "Use after venue photographs and visit information.",
+        "Start after 20 seconds; agree the actual visit separately."
+      ],
+      "measure": "Visit requests; not confirmed appointments.",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "portrait-frame"
+        ],
+        "reason": "New text-led invitation with optional qualification in a separate form panel; no portrait artwork or required name."
+      }
+    },
+    {
+      "id": "course-advice-request",
+      "batch": "expansion",
+      "audience": "services",
+      "family": "Appointment invitation",
+      "visitor_need": "Ask a person for help choosing a course at the right experience level.",
+      "difference": "Experience-level qualification informs an adviser; this is not an automated recommendation or enrolment.",
+      "requirements": [
+        "Experience options matching the courses",
+        "Adviser follow-up",
+        "Course page targeting"
+      ],
+      "status": "review",
+      "source": "Original WConvert expansion brief; supported capability audit and library plan 2026-09-28.",
+      "suggested_setup": [
+        "Use alongside course descriptions and prerequisites.",
+        "Start after 20 seconds; do not interrupt lessons or enrolment checkout."
+      ],
+      "measure": "Accepted advice requests; not registrations or course recommendations.",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "appointment-note"
+        ],
+        "reason": "Deliberately reuses the venue invitation design. The answer choices, decision context and adviser workflow differ."
+      }
+    },
+    {
+      "id": "maintenance-letter",
+      "batch": "expansion",
+      "audience": "services",
+      "family": "Editorial desk",
+      "visitor_need": "Receive recurring practical maintenance guidance after reading a useful article.",
+      "difference": "An ongoing monthly advice programme, unlike a one-off project checklist or a service quote.",
+      "requirements": [
+        "Real monthly editorial programme",
+        "Email destination",
+        "Relevant article placement"
+      ],
+      "status": "review",
+      "source": "Original WConvert expansion brief; supported capability audit and library plan 2026-09-28.",
+      "suggested_setup": [
+        "Embed at the end of practical maintenance articles.",
+        "Keep emergency and urgent repair pages free of this invitation."
+      ],
+      "measure": "Accepted newsletter requests; not booked maintenance jobs.",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "reading-desk"
+        ],
+        "reason": "Reuses the editorial desk. Cadence, ongoing consent and practical follow-up distinguish it from the renovation resource."
+      }
+    },
+    {
+      "id": "seasonal-service-link",
+      "batch": "expansion",
+      "audience": "services",
+      "family": "Quiet corner link",
+      "visitor_need": "Find details of a seasonal service, its coverage and availability.",
+      "difference": "A small non-capture invitation to service information rather than a consultation form.",
+      "requirements": [
+        "Actual service URL and availability",
+        "Region-appropriate season and schedule",
+        "Service-page targeting"
+      ],
+      "status": "review",
+      "source": "Original WConvert expansion brief; supported capability audit and library plan 2026-09-28.",
+      "suggested_setup": [
+        "Use on relevant garden service pages; exclude contact and booking completion pages.",
+        "Start after 20 seconds; end when the seasonal offer is no longer relevant."
+      ],
+      "measure": "Service-page clicks; not enquiries or bookings.",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "slide-in-nudge"
+        ],
+        "reason": "Reuses the compact corner nudge for a service-information link; no new design count for seasonal copy."
+      }
+    },
+    {
+      "id": "event-registration-link",
+      "batch": "expansion",
+      "audience": "publishers",
+      "family": "Programme card",
+      "visitor_need": "Understand the agenda and reach an external event registration page.",
+      "difference": "Shows a three-part programme and hands off registration; no pretend ticketing or capture confirmation.",
+      "requirements": [
+        "Actual agenda, date and time zone",
+        "External registration URL",
+        "Event schedule and availability"
+      ],
+      "status": "review",
+      "source": "Original WConvert expansion brief; supported capability audit and library plan 2026-09-28.",
+      "suggested_setup": [
+        "Embed alongside writing articles relevant to the workshop.",
+        "Keep visible in page and retire it when registration closes."
+      ],
+      "measure": "Registration-page clicks; event registrations belong to the external service.",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "resource-index"
+        ],
+        "reason": "New programme composition pairs a typographic invitation with a ruled agenda and a full-width external action. There is no resource-delivery form."
+      }
+    },
+    {
+      "id": "topic-reading-list",
+      "batch": "expansion",
+      "audience": "publishers",
+      "family": "Preference invitation",
+      "visitor_need": "Express a reading interest while requesting a recurring editorial list.",
+      "difference": "Captures one optional subject with ongoing email consent; requires a tested preference handoff.",
+      "requirements": [
+        "Topic choices",
+        "Email destination and tested interest mapping",
+        "Reading hub placement"
+      ],
+      "status": "review",
+      "source": "Original WConvert expansion brief; supported capability audit and library plan 2026-09-28.",
+      "suggested_setup": [
+        "Embed on the reading hub or relevant article-end areas.",
+        "Do not promise tailored delivery until the downstream mapping is tested."
+      ],
+      "measure": "Accepted email requests with optional preference; not confirmed personalised delivery.",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "reading-desk"
+        ],
+        "reason": "New preference-first form with a native select and a two-pane explanation; extra field is justified by the editorial workflow."
+      }
+    }
+  ],
+  "batches": [
+    {
+      "id": "benchmark",
+      "name": "First 12 · approved direction"
+    },
+    {
+      "id": "expansion",
+      "name": "Next 12 · expansion"
     }
   ]
 }

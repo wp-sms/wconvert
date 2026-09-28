@@ -26,8 +26,8 @@ the **headline** — not the body, and never only the button.
 mechanism, and nobody wants the mechanism.
 
 Enforced structurally elsewhere: an Optin has exactly **one** converting act,
-so a second button is refused at registration. This is the same rule one level
-up — one ask, not two things a visitor must choose between.
+so navigation and optional signup buttons must not introduce unrelated asks.
+This is the same rule one level up — one ask, not two things a visitor must choose between.
 
 ### 1.2 The reward is specific, or it is not a reward
 
@@ -183,8 +183,8 @@ Role has nowhere to carry those choices; review the actual Keep/Sample candidate
 
 Give every shipped leaf a stable `n1`…`n9999` id, unique in its tree, and keep
 the id when moving the leaf. Slot Roles may repeat; node ids may not. This is
-how translation follows content rather than a changing array position. Do not
-author tree `v` or derived facets, and do not rely on PHP's new-node fallback
+how translation follows content rather than a changing array position. Author
+tree `v: 2`, but never derived facets, and do not rely on PHP's new-node fallback
 to renumber a library file on every edit.
 
 ---
