@@ -36,7 +36,7 @@
           "tokens": {
             "bg-image": "radial-gradient(ellipse at 90% 10%, #70517b, transparent 43%), linear-gradient(145deg, #2d2542, #181929 85%)",
             "pad": "1.81rem 1.75rem 1.56rem",
-            "gap": "1.38rem"
+            "gap": "1.125rem"
           },
           "narrow": {
             "pad": "1.25rem",
@@ -44,27 +44,6 @@
             "gap": "0.875rem"
           },
           "children": [
-            {
-              "type": "row",
-              "tokens": {
-                "gap": "0.5rem"
-              },
-              "children": [
-                {
-                  "type": "icon",
-                  "id": "n1",
-                  "name": "star"
-                },
-                {
-                  "type": "heading",
-                  "id": "n2",
-                  "level": 2,
-                  "size": "xs",
-                  "role": "wordmark",
-                  "text": "after hours"
-                }
-              ]
-            },
             {
               "type": "stack",
               "tokens": {
@@ -95,33 +74,6 @@
                   "id": "n5",
                   "role": "body",
                   "text": "Five good finds on music, design and slower living.\nA short letter for the end of your Sunday."
-                }
-              ]
-            },
-            {
-              "type": "divider",
-              "id": "n6"
-            },
-            {
-              "type": "row",
-              "tokens": {
-                "gap": "0.5rem"
-              },
-              "children": [
-                {
-                  "type": "icon",
-                  "id": "n7",
-                  "name": "clock"
-                },
-                {
-                  "type": "text",
-                  "id": "n8",
-                  "size": "s",
-                  "role": "body",
-                  "text": "Every Sunday. A three minute read.",
-                  "tokens": {
-                    "text-size": "1.167rem"
-                  }
                 }
               ]
             },
@@ -189,7 +141,7 @@
           "tokens": {
             "bg-image": "radial-gradient(ellipse at 90% 10%, #70517b, transparent 43%), linear-gradient(145deg, #2d2542, #181929 85%)",
             "pad": "1.81rem 1.75rem 1.56rem",
-            "gap": "1.38rem"
+            "gap": "1.125rem"
           },
           "narrow": {
             "pad": "1.25rem",
@@ -198,37 +150,29 @@
           },
           "children": [
             {
-              "type": "row",
-              "tokens": {
-                "gap": "0.5rem"
-              },
-              "children": [
-                {
-                  "type": "icon",
-                  "id": "n20",
-                  "name": "star"
-                },
-                {
-                  "type": "heading",
-                  "id": "n21",
-                  "level": 2,
-                  "size": "xs",
-                  "role": "wordmark",
-                  "text": "after hours"
-                }
-              ]
-            },
-            {
               "type": "stack",
               "tokens": {
                 "gap": "0.62rem"
               },
               "children": [
                 {
-                  "type": "image",
-                  "id": "n22",
-                  "src": "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 3'%3E%3Ccircle cx='1.5' cy='1.5' r='1.4' fill='%23d4b3f225' stroke='%23ba9dda' stroke-width='.07'/%3E%3Cpath d='m1 1.5.35.4.65-.85' fill='none' stroke='%23faf6ff' stroke-width='.17' stroke-linecap='round'/%3E%3C/svg%3E",
-                  "alt": "A tick"
+                  "type": "row",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "n22",
+                      "name": "check"
+                    }
+                  ]
+                },
+                {
+                  "type": "eyebrow",
+                  "id": "n25",
+                  "role": "eyebrow",
+                  "text": "Next on the dial",
+                  "tokens": {
+                    "text-size": "1.0834rem"
+                  }
                 },
                 {
                   "type": "heading",
@@ -248,38 +192,6 @@
                   "emphasis": "the Sunday letter"
                 }
               ]
-            },
-            {
-              "type": "panel",
-              "edges": "all",
-              "tokens": {
-                "bg": "#ffffff0f",
-                "radius": "0.56rem",
-                "pad": "1.06rem",
-                "gap": "0.4rem"
-              },
-              "children": [
-                {
-                  "type": "eyebrow",
-                  "id": "n25",
-                  "role": "eyebrow",
-                  "text": "Next on the dial",
-                  "tokens": {
-                    "text-size": "1.0834rem"
-                  }
-                },
-                {
-                  "type": "text",
-                  "id": "n26",
-                  "size": "xl",
-                  "role": "success_body",
-                  "text": "A record for a rainy evening.\nA room worth staying in."
-                }
-              ],
-              "narrow": {
-                "pad": "1.25rem",
-                "gap": "0.875rem"
-              }
             },
             {
               "type": "text",

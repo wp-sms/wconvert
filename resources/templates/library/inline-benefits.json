@@ -9,16 +9,17 @@
     "muted": "#3f7c76",
     "accent": "#0f766e",
     "accent-fg": "#ffffff",
-    "border": "#ccfbf1",
-    "heading-size": "1.5rem",
+    "border": "#c7e5df",
+    "heading-size": "1.75rem",
     "radius": "0.75rem",
-    "pad": "1.75rem",
-    "gap": "1rem",
+    "pad": "2rem",
+    "gap": "1.5rem",
     "width": "100%",
-    "align": "center",
+    "align": "start",
     "shadow": "none",
     "tracking": "-0.02em",
-    "text-size": "1rem"
+    "text-size": "1rem",
+    "leading": "1.5"
   },
   "tree": {
     "steps": [
@@ -39,61 +40,75 @@
               "type": "grid",
               "children": [
                 {
-                  "type": "row",
+                  "type": "panel",
                   "children": [
-                    {
-                      "type": "icon",
-                      "id": "n2",
-                      "name": "truck"
-                    },
                     {
                       "type": "text",
                       "id": "n3",
                       "role": "body",
                       "text": "Free delivery over \u00a340"
                     }
-                  ]
+                  ],
+                  "edges": "all",
+                  "tokens": {
+                    "bg": "#ffffff",
+                    "pad": "1rem",
+                    "radius": "0.5rem"
+                  }
                 },
                 {
-                  "type": "row",
+                  "type": "panel",
                   "children": [
-                    {
-                      "type": "icon",
-                      "id": "n4",
-                      "name": "clock"
-                    },
                     {
                       "type": "text",
                       "id": "n5",
                       "role": "body",
                       "text": "Dispatch details upfront"
                     }
-                  ]
+                  ],
+                  "edges": "all",
+                  "tokens": {
+                    "bg": "#ffffff",
+                    "pad": "1rem",
+                    "radius": "0.5rem"
+                  }
                 },
                 {
-                  "type": "row",
+                  "type": "panel",
                   "children": [
-                    {
-                      "type": "icon",
-                      "id": "n6",
-                      "name": "check"
-                    },
                     {
                       "type": "text",
                       "id": "n7",
                       "role": "body",
                       "text": "Returns for 30 days"
                     }
-                  ]
+                  ],
+                  "edges": "all",
+                  "tokens": {
+                    "bg": "#ffffff",
+                    "pad": "1rem",
+                    "radius": "0.5rem"
+                  }
                 }
-              ]
+              ],
+              "tokens": {
+                "gap": "0.75rem"
+              }
             },
             {
-              "type": "button",
-              "id": "n8",
-              "role": "cta_label",
-              "label": "Start shopping",
-              "action": "link"
+              "type": "row",
+              "children": [
+                {
+                  "type": "button",
+                  "id": "n8",
+                  "role": "cta_label",
+                  "label": "Start shopping",
+                  "action": "link"
+                }
+              ],
+              "tokens": {
+                "radius": "0.5rem"
+              }
             },
             {
               "type": "text",
@@ -102,10 +117,15 @@
               "text": "UK mainland orders. See delivery and returns terms.",
               "size": "s",
               "tokens": {
-                "text-size": "1.167rem"
+                "text-size": "1rem"
               }
             }
-          ]
+          ],
+          "narrow": {
+            "pad": "1.25rem",
+            "heading-size": "1.5rem",
+            "gap": "1.25rem"
+          }
         }
       }
     ],

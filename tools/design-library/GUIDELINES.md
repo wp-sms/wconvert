@@ -240,8 +240,23 @@ is not a reason to leave the design's wording unfinished. Examples disappear
 while typing; include the country code in a phone example. Required fields
 receive their asterisk from the renderer, so do not author a second one.
 
-**A three-up label is two or three words.** Three benefits across a 32rem panel
-is ~9rem each; anything longer wraps to two lines and the icon wraps with it.
+**Review the filled campaign, not just the sample design.** A truck beside an
+essay archive is a failed review even if the layout audit passes. An icon must
+explain the adjacent content or a real state; remove decoration that merely
+adds a row. Inspect optional copy when absent: no orphan icon, empty heading,
+empty panel or leftover divider. Apply this to the acknowledgement too.
+
+**Benefit groups share one layout.** Use consistent text panels or stacked
+icon-and-text items when phrases can wrap. A wrapping row inside each grid cell
+can strand some icons above their labels and leave others beside them. Check
+unequal phrase lengths on desktop and 320px, in both directions. Do not shorten
+useful campaign wording merely to preserve a decorative icon.
+
+**CTA width follows the job.** A full-width submit works in a compact form; an
+inline information card usually needs a content-width link button in a row.
+Check the button against its actual label and surrounding content.
+
+Reference review: [Depicter popup, slide-in and notification-bar patterns](../../docs/reviews/template-editorial-refinement-2026-09-28.md).
 
 **A `split` is two sides, not two floating boxes.** The panes are equal height
 and each centres its own contents against the other; a pane holding nothing but
