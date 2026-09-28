@@ -52,6 +52,15 @@ final class QuestionCapture
         if (!is_array($posted) || count($posted) > CaptureJourney::MAX_QUESTIONS) {
             return new Refusal(RefusalCode::ChoiceInvalid);
         }
+        // The route evaluator reads these values before per-question validation.
+        // Reject malformed JSON shapes before comparisons can coerce them.
+        foreach ($posted as $value) {
+            if ($value === null || is_string($value)) { continue; }
+            if (!is_array($value) || !array_is_list($value) || count($value) > 12
+                || count(array_filter($value, 'is_string')) !== count($value)) {
+                return new Refusal(RefusalCode::ChoiceInvalid);
+            }
+        }
         $answers = [];
         $snapshots = [];
         $steps = $tree['steps'] ?? [];
@@ -77,7 +86,7 @@ final class QuestionCapture
                     if (mb_strlen($text) > 500) { return new Refusal(RefusalCode::FieldTooLong, $id); }
                     if ($text !== '') { $values = [$text]; }
                 } else {
-                    if ($raw !== null && !(is_string($raw) || ($type === 'multi' && is_array($raw) && array_is_list($raw)))) {
+                    if ($raw !== null && !is_string($raw) && $type !== 'multi') {
                         return new Refusal(RefusalCode::ChoiceInvalid, $id);
                     }
                     $values = $raw === null || $raw === '' ? [] : (is_array($raw) ? $raw : [$raw]);

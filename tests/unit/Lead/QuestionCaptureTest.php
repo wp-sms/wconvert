@@ -42,6 +42,25 @@ final class QuestionCaptureTest extends TestCase
         self::assertSame(RefusalCode::ChoiceInvalid, $invalid->code);
     }
 
+    public function testMalformedAnswerShapesAreRefusedBeforeEvaluatingConditions(): void
+    {
+        $tree = $this->productTree();
+        // A malformed POST must produce a validation refusal, not a PHP warning
+        // from evaluating the conditional second screen with a nested array.
+        set_error_handler(static function (int $severity, string $message): never {
+            throw new \ErrorException($message, 0, $severity);
+        });
+        try {
+            foreach ([[['garden']], ['value' => 'garden'], 1, true] as $value) {
+                $result = QuestionCapture::validate($tree, ['n3' => $value]);
+                self::assertInstanceOf(Refusal::class, $result);
+                self::assertSame(RefusalCode::ChoiceInvalid, $result->code);
+            }
+        } finally {
+            restore_error_handler();
+        }
+    }
+
     public function testCaptureSnapshotsOnlyQuestionsOnTheChosenBranch(): void
     {
         $template = json_decode((string) file_get_contents(WCONVERT_DIR . '/pro/modules/journeys/templates/journey-service-enquiry.json'), true, 512, JSON_THROW_ON_ERROR);
