@@ -1,0 +1,318 @@
+{
+  "id": "reading-path",
+  "name": "Reading path",
+  "display_type": "inline",
+  "tier": "basic",
+  "tokens": {
+    "bg": "#faf7f1",
+    "fg": "#382e27",
+    "muted": "#62564d",
+    "accent": "#604739",
+    "accent-fg": "#ffffff",
+    "border": "#d9cfc3",
+    "input-bg": "#ffffff",
+    "heading-font": "Georgia, serif",
+    "heading-weight": "400",
+    "heading-size": "2.25rem",
+    "text-size": "1rem",
+    "tracking": "-0.025em",
+    "leading": "1.5",
+    "pad": "1.75rem",
+    "gap": "1rem",
+    "radius": "0",
+    "width": "100%",
+    "shadow": "none"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "topic",
+        "name": "Choose a subject",
+        "kind": "input",
+        "content": {
+          "type": "split",
+          "start": [
+            {
+              "type": "stack",
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "id": "n3",
+                  "text": "A reading path",
+                  "role": "eyebrow"
+                },
+                {
+                  "type": "heading",
+                  "id": "n4",
+                  "text": "Follow your\ncuriosity.",
+                  "role": "headline"
+                },
+                {
+                  "type": "text",
+                  "id": "n5",
+                  "text": "A short sequence, chosen for where you are starting.",
+                  "role": "body"
+                }
+              ]
+            }
+          ],
+          "end": [
+            {
+              "type": "panel",
+              "children": [
+                {
+                  "type": "question",
+                  "id": "n1",
+                  "label": "Which topic would you like to explore?",
+                  "answer_type": "single",
+                  "required": true,
+                  "options": [
+                    {
+                      "value": "writing",
+                      "label": "Clearer writing"
+                    },
+                    {
+                      "value": "growing",
+                      "label": "Growing plants"
+                    }
+                  ]
+                },
+                {
+                  "type": "button",
+                  "id": "n6",
+                  "label": "Next: your starting point",
+                  "action": "next",
+                  "role": "next_label"
+                }
+              ],
+              "edges": "block-start",
+              "tokens": {
+                "bg": "#f1ece4",
+                "pad": "1.25rem"
+              }
+            }
+          ],
+          "basis": "16rem",
+          "ratio": "0.5"
+        }
+      },
+      {
+        "id": "depth",
+        "name": "Your starting point",
+        "kind": "input",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "eyebrow",
+              "id": "n7",
+              "text": "One more detail",
+              "role": "eyebrow"
+            },
+            {
+              "type": "heading",
+              "id": "n8",
+              "text": "Start at the\nright place.",
+              "role": "headline"
+            },
+            {
+              "type": "question",
+              "id": "n2",
+              "label": "How much background do you have?",
+              "answer_type": "single",
+              "required": true,
+              "options": [
+                {
+                  "value": "beginner",
+                  "label": "I am starting with the basics"
+                },
+                {
+                  "value": "deeper",
+                  "label": "I am ready to go deeper"
+                }
+              ]
+            },
+            {
+              "type": "row",
+              "children": [
+                {
+                  "type": "button",
+                  "id": "n9",
+                  "label": "Find my reading path",
+                  "action": "next",
+                  "role": "next_label"
+                },
+                {
+                  "type": "button",
+                  "id": "n10",
+                  "label": "Back to subjects",
+                  "action": "back",
+                  "role": "back_label",
+                  "tokens": {
+                    "accent": "transparent",
+                    "accent-fg": "fg"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "match",
+        "name": "Your reading path",
+        "kind": "result",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "divider",
+              "id": "n11"
+            },
+            {
+              "type": "text",
+              "id": "n12",
+              "text": "Read at your own pace. No signup is needed.",
+              "role": "fine_print",
+              "size": "s",
+              "tokens": {
+                "text-size": "1.167rem"
+              }
+            },
+            {
+              "type": "button",
+              "id": "n13",
+              "label": "Choose a different path",
+              "action": "back",
+              "role": "back_label",
+              "tokens": {
+                "accent": "transparent",
+                "accent-fg": "fg"
+              }
+            }
+          ]
+        },
+        "results": [
+          {
+            "id": "writing_beginner",
+            "heading": "Writing \u00b7 Start with the essentials",
+            "body": "State your point, give each paragraph a job, then revise the ending.",
+            "product_ids": [],
+            "href": "",
+            "link_label": "Explore this option",
+            "when": {
+              "match": "all",
+              "clauses": [
+                {
+                  "question": "n1",
+                  "operator": "is",
+                  "values": [
+                    "writing"
+                  ]
+                },
+                {
+                  "question": "n2",
+                  "operator": "is",
+                  "values": [
+                    "beginner"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": "writing_deeper",
+            "heading": "Writing \u00b7 Strengthen the argument",
+            "body": "Test the structure, check the evidence, then edit for precision.",
+            "product_ids": [],
+            "href": "",
+            "link_label": "Explore this option",
+            "when": {
+              "match": "all",
+              "clauses": [
+                {
+                  "question": "n1",
+                  "operator": "is",
+                  "values": [
+                    "writing"
+                  ]
+                },
+                {
+                  "question": "n2",
+                  "operator": "is",
+                  "values": [
+                    "deeper"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": "growing_beginner",
+            "heading": "Growing \u00b7 Start with one plant",
+            "body": "Choose a suitable spot, learn when to water, then keep a short care note.",
+            "product_ids": [],
+            "href": "",
+            "link_label": "Explore this option",
+            "when": {
+              "match": "all",
+              "clauses": [
+                {
+                  "question": "n1",
+                  "operator": "is",
+                  "values": [
+                    "growing"
+                  ]
+                },
+                {
+                  "question": "n2",
+                  "operator": "is",
+                  "values": [
+                    "beginner"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": "growing_deeper",
+            "heading": "Growing \u00b7 Observe and adapt",
+            "body": "Compare light through the day, notice seasonal changes, then refine your care routine.",
+            "product_ids": [],
+            "href": "",
+            "link_label": "Explore this option",
+            "when": {
+              "match": "all",
+              "clauses": [
+                {
+                  "question": "n1",
+                  "operator": "is",
+                  "values": [
+                    "growing"
+                  ]
+                },
+                {
+                  "question": "n2",
+                  "operator": "is",
+                  "values": [
+                    "deeper"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": "fallback",
+            "heading": "Browse the reading paths",
+            "body": "Explore the full set and choose a starting point that interests you.",
+            "product_ids": [],
+            "href": "",
+            "link_label": "Explore this option"
+          }
+        ]
+      }
+    ],
+    "submissions": []
+  }
+}

@@ -119,7 +119,7 @@ final class ProLibraryTest extends TestCase
             $buttons = array_values(array_filter($tree['steps'][0]['content']['children'], static fn (array $node): bool => $node['type'] === 'button'));
             self::assertNotSame('', $buttons[0]['label'] ?? '', $id . ' must have a visible continue button');
         }
-        self::assertCount(2, $library->servicing(\WConvert\Goal\Goal::FindMatch));
+        self::assertCount(8, $library->servicing(\WConvert\Goal\Goal::FindMatch));
     }
 
     /**

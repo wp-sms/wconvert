@@ -1,0 +1,280 @@
+{
+  "id": "service-directory",
+  "name": "Service directory",
+  "display_type": "inline",
+  "tier": "basic",
+  "tokens": {
+    "bg": "#ffffff",
+    "fg": "#23374c",
+    "muted": "#42556a",
+    "accent": "#2f4d67",
+    "accent-fg": "#ffffff",
+    "border": "#d9cfc3",
+    "input-bg": "#ffffff",
+    "heading-font": "Georgia, serif",
+    "heading-weight": "400",
+    "heading-size": "2rem",
+    "text-size": "1rem",
+    "tracking": "-0.025em",
+    "leading": "1.5",
+    "pad": "1.75rem",
+    "gap": "1rem",
+    "radius": "0.75rem",
+    "width": "100%",
+    "shadow": "none"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "needs",
+        "name": "Your project",
+        "kind": "input",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "row",
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "id": "n3",
+                  "text": "A useful next conversation",
+                  "role": "eyebrow"
+                },
+                {
+                  "type": "divider",
+                  "id": "n4"
+                }
+              ]
+            },
+            {
+              "type": "heading",
+              "id": "n5",
+              "text": "Find the right kind of help.",
+              "role": "headline"
+            },
+            {
+              "type": "text",
+              "id": "n6",
+              "text": "Choose your project and stage. Read the options before deciding to enquire.",
+              "role": "body"
+            },
+            {
+              "type": "split",
+              "start": [
+                {
+                  "type": "panel",
+                  "children": [
+                    {
+                      "type": "question",
+                      "id": "n1",
+                      "label": "What would you like help with?",
+                      "answer_type": "single",
+                      "required": true,
+                      "options": [
+                        {
+                          "value": "room",
+                          "label": "A room layout"
+                        },
+                        {
+                          "value": "garden",
+                          "label": "An outdoor space"
+                        },
+                        {
+                          "value": "unsure",
+                          "label": "I am not sure yet"
+                        }
+                      ]
+                    }
+                  ],
+                  "tokens": {
+                    "bg": "#eef2f6",
+                    "pad": "1.25rem"
+                  }
+                }
+              ],
+              "end": [
+                {
+                  "type": "panel",
+                  "children": [
+                    {
+                      "type": "question",
+                      "id": "n2",
+                      "label": "Where are you in the project?",
+                      "answer_type": "single",
+                      "required": true,
+                      "options": [
+                        {
+                          "value": "ideas",
+                          "label": "Exploring ideas"
+                        },
+                        {
+                          "value": "ready",
+                          "label": "Ready to discuss the work"
+                        }
+                      ]
+                    }
+                  ],
+                  "tokens": {
+                    "bg": "#f3f0e7",
+                    "pad": "1.25rem"
+                  }
+                }
+              ],
+              "basis": "16rem",
+              "ratio": "0.5"
+            },
+            {
+              "type": "button",
+              "id": "n7",
+              "label": "Explore my options",
+              "action": "next",
+              "role": "next_label"
+            }
+          ]
+        }
+      },
+      {
+        "id": "match",
+        "name": "Suggested next step",
+        "kind": "result",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "button",
+              "id": "n8",
+              "label": "Change my answers",
+              "action": "back",
+              "role": "back_label",
+              "tokens": {
+                "accent": "transparent",
+                "accent-fg": "fg"
+              }
+            }
+          ]
+        },
+        "results": [
+          {
+            "id": "room_ideas",
+            "heading": "Start with room planning",
+            "body": "Read the room-planning guide before arranging a conversation.",
+            "product_ids": [],
+            "href": "",
+            "link_label": "Explore this option",
+            "when": {
+              "match": "all",
+              "clauses": [
+                {
+                  "question": "n1",
+                  "operator": "is",
+                  "values": [
+                    "room"
+                  ]
+                },
+                {
+                  "question": "n2",
+                  "operator": "is",
+                  "values": [
+                    "ideas"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": "room_ready",
+            "heading": "Discuss your room layout",
+            "body": "See what a room consultation covers, then decide whether to send an enquiry.",
+            "product_ids": [],
+            "href": "",
+            "link_label": "Explore this option",
+            "when": {
+              "match": "all",
+              "clauses": [
+                {
+                  "question": "n1",
+                  "operator": "is",
+                  "values": [
+                    "room"
+                  ]
+                },
+                {
+                  "question": "n2",
+                  "operator": "is",
+                  "values": [
+                    "ready"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": "garden_ideas",
+            "heading": "Start with outdoor planning",
+            "body": "Explore light, access and how you want to use the space.",
+            "product_ids": [],
+            "href": "",
+            "link_label": "Explore this option",
+            "when": {
+              "match": "all",
+              "clauses": [
+                {
+                  "question": "n1",
+                  "operator": "is",
+                  "values": [
+                    "garden"
+                  ]
+                },
+                {
+                  "question": "n2",
+                  "operator": "is",
+                  "values": [
+                    "ideas"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": "garden_ready",
+            "heading": "Discuss your outdoor project",
+            "body": "Read the service scope before requesting a conversation.",
+            "product_ids": [],
+            "href": "",
+            "link_label": "Explore this option",
+            "when": {
+              "match": "all",
+              "clauses": [
+                {
+                  "question": "n1",
+                  "operator": "is",
+                  "values": [
+                    "garden"
+                  ]
+                },
+                {
+                  "question": "n2",
+                  "operator": "is",
+                  "values": [
+                    "ready"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": "fallback",
+            "heading": "Talk through the possibilities",
+            "body": "A first conversation can help clarify the project. No service or appointment is confirmed.",
+            "product_ids": [],
+            "href": "",
+            "link_label": "Explore this option"
+          }
+        ]
+      }
+    ],
+    "submissions": []
+  }
+}

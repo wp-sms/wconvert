@@ -1,0 +1,488 @@
+{
+  "schema": 1,
+  "id": "decision-support",
+  "name": "Next 24 · decisions and practical help",
+  "target_setups": 72,
+  "entries": [
+    {
+      "id": "gift-finder",
+      "name": "Find a gift by recipient and budget",
+      "status": "planned",
+      "priority": 1,
+      "audience": "stores",
+      "goal": "find_match",
+      "display_type": "popup",
+      "visitor_need": "Choose an appropriate gift without browsing every product.",
+      "difference": "Recipient and budget change the recommendation; out-of-stock results need a useful fallback.",
+      "design_intent": "new_design",
+      "compare_campaigns": [
+        "product-finder",
+        "gift-planning-guide"
+      ],
+      "acceptance": [
+        "Exercise each recipient/budget route and fallback.",
+        "A recommendation remains available without giving contact details."
+      ]
+    },
+    {
+      "id": "space-fit-finder",
+      "name": "Find products for a small space",
+      "status": "planned",
+      "priority": 2,
+      "audience": "stores",
+      "goal": "find_match",
+      "display_type": "inline",
+      "visitor_need": "Find products that fit a small room or balcony.",
+      "difference": "Available space and intended use determine a shortlist, with a visible reason for the match.",
+      "design_intent": "new_design",
+      "compare_campaigns": [
+        "product-finder",
+        "sizing-guide"
+      ],
+      "acceptance": [
+        "Test the smallest-space branch and no-match route.",
+        "Compare listed dimensions with actual product dimensions."
+      ]
+    },
+    {
+      "id": "experience-kit-finder",
+      "name": "Choose a starter or experienced kit",
+      "status": "planned",
+      "priority": 3,
+      "audience": "stores",
+      "goal": "find_match",
+      "display_type": "fullscreen",
+      "visitor_need": "Choose equipment suitable for current experience.",
+      "difference": "Experience gates follow-up questions; revising an earlier answer removes irrelevant later answers.",
+      "design_intent": "new_design",
+      "compare_campaigns": [
+        "product-finder",
+        "content-guide"
+      ],
+      "acceptance": [
+        "Back changes both the follow-up screen and recommendation.",
+        "No unsupported safety or performance claims."
+      ]
+    },
+    {
+      "id": "material-comparison",
+      "name": "Compare product materials",
+      "status": "planned",
+      "priority": 4,
+      "audience": "stores",
+      "goal": "promote_offer",
+      "display_type": "inline",
+      "visitor_need": "Understand material tradeoffs before buying.",
+      "difference": "A concise comparison leads to specifications rather than another collection announcement.",
+      "design_intent": "new_design",
+      "compare_campaigns": [
+        "packaging-details",
+        "collection-discovery"
+      ],
+      "acceptance": [
+        "Both materials have readable tradeoffs at 320px.",
+        "Destination provides care, dimensions and material details."
+      ]
+    },
+    {
+      "id": "sample-request",
+      "name": "Ask for a material sample",
+      "status": "planned",
+      "priority": 5,
+      "audience": "stores",
+      "goal": "collect_enquiries",
+      "display_type": "inline",
+      "visitor_need": "Request help obtaining a fabric or finish sample.",
+      "difference": "Capture material interest and contact details; avoid collecting addresses or claiming dispatch.",
+      "design_intent": "reuse_design",
+      "compare_campaigns": [
+        "product-advice-request",
+        "wholesale-enquiry"
+      ],
+      "acceptance": [
+        "Sample selection reaches the saved enquiry.",
+        "Acknowledgement promises a reply about samples, never shipment."
+      ]
+    },
+    {
+      "id": "bulk-gift-enquiry",
+      "name": "Plan a bulk gift order",
+      "status": "planned",
+      "priority": 6,
+      "audience": "stores",
+      "goal": "collect_enquiries",
+      "display_type": "popup",
+      "visitor_need": "Ask whether a business can supply a group gift order.",
+      "difference": "Quantity range changes the conversation; no invented quantity field or automatic quote.",
+      "design_intent": "reuse_design",
+      "compare_campaigns": [
+        "wholesale-enquiry",
+        "product-advice-request"
+      ],
+      "acceptance": [
+        "Quantity ranges use supported choice fields.",
+        "No price, availability or delivery promise before confirmation."
+      ]
+    },
+    {
+      "id": "personalisation-enquiry",
+      "name": "Ask about a custom product",
+      "status": "planned",
+      "priority": 7,
+      "audience": "stores",
+      "goal": "collect_enquiries",
+      "display_type": "slide_in",
+      "visitor_need": "Check whether a product can be personalised.",
+      "difference": "Personalisation type and follow-up needs differ from general product advice.",
+      "design_intent": "reuse_design",
+      "compare_campaigns": [
+        "consultation-corner",
+        "product-advice-request"
+      ],
+      "acceptance": [
+        "Request type survives retry.",
+        "The next action explains how specifications will be collected."
+      ]
+    },
+    {
+      "id": "collection-interest",
+      "name": "Choose a collection for shop news",
+      "status": "planned",
+      "priority": 8,
+      "audience": "stores",
+      "goal": "grow_email_list",
+      "display_type": "inline",
+      "visitor_need": "Receive updates about a chosen product category.",
+      "difference": "Saved category preference must correspond to an actual follow-up process.",
+      "design_intent": "reuse_design",
+      "compare_campaigns": [
+        "topic-reading-list",
+        "restock-announcements"
+      ],
+      "acceptance": [
+        "Preference and consent persist in the same lead.",
+        "Setup explains that capture alone does not create provider segmentation."
+      ]
+    },
+    {
+      "id": "fit-checklist",
+      "name": "Prepare measurements before buying",
+      "status": "planned",
+      "priority": 9,
+      "audience": "stores",
+      "goal": "deliver_lead_magnet",
+      "display_type": "popup",
+      "visitor_need": "Check doorway and room measurements before ordering furniture.",
+      "difference": "Delivery access checklist is distinct from clothing size or product care guidance.",
+      "design_intent": "reuse_design",
+      "compare_campaigns": [
+        "sizing-guide",
+        "product-care-guide"
+      ],
+      "acceptance": [
+        "Resource covers both access and placement measurements.",
+        "All units and diagrams agree."
+      ]
+    },
+    {
+      "id": "local-pickup-details",
+      "name": "Explain collection from a local shop",
+      "status": "planned",
+      "priority": 10,
+      "audience": "stores",
+      "goal": "promote_offer",
+      "display_type": "floating_bar",
+      "visitor_need": "Find pickup location, hours and collection terms.",
+      "difference": "Pickup information uses a merchant-authored destination and makes no delivery claim.",
+      "design_intent": "reuse_design",
+      "compare_campaigns": [
+        "delivery-announcement",
+        "packaging-details"
+      ],
+      "acceptance": [
+        "Hours and location appear on the destination.",
+        "Bar label, heading and action stay balanced at 320px."
+      ]
+    },
+    {
+      "id": "basket-product-help",
+      "name": "Offer product help near the basket",
+      "status": "planned",
+      "priority": 11,
+      "audience": "stores",
+      "goal": "collect_enquiries",
+      "display_type": "inline",
+      "visitor_need": "Resolve a product question before ordering.",
+      "difference": "A support enquiry placed near the basket; it must not imply automatic cart attachment.",
+      "design_intent": "reuse_design",
+      "compare_campaigns": [
+        "cart-delivery-help",
+        "product-advice-request"
+      ],
+      "acceptance": [
+        "Placement does not interrupt checkout or cover its controls.",
+        "Enquiry asks enough context without claiming knowledge of cart contents."
+      ]
+    },
+    {
+      "id": "return-policy-guide",
+      "name": "Explain return conditions before purchase",
+      "status": "planned",
+      "priority": 12,
+      "audience": "stores",
+      "goal": "promote_offer",
+      "display_type": "slide_in",
+      "visitor_need": "Understand the merchant’s return process and exclusions.",
+      "difference": "Reduces purchase uncertainty with actual policy details, separate from shipping terms.",
+      "design_intent": "reuse_design",
+      "compare_campaigns": [
+        "seasonal-service-link",
+        "packaging-details"
+      ],
+      "acceptance": [
+        "Merchant supplies the actual policy; no invented consumer-law claims.",
+        "Policy is accessible without signup."
+      ]
+    },
+    {
+      "id": "service-finder",
+      "name": "Find the right service",
+      "status": "planned",
+      "priority": 13,
+      "audience": "services",
+      "goal": "find_match",
+      "display_type": "inline",
+      "visitor_need": "Identify an appropriate service before asking for a quote.",
+      "difference": "Project type and stage route to specific service explanations; unknown needs get a human-help fallback.",
+      "design_intent": "new_design",
+      "compare_campaigns": [
+        "content-guide",
+        "course-advice-request"
+      ],
+      "acceptance": [
+        "Every answer combination has a useful outcome.",
+        "Results suggest services without quoting a price or confirming eligibility."
+      ]
+    },
+    {
+      "id": "project-stage-finder",
+      "name": "Choose a project’s next step",
+      "status": "planned",
+      "priority": 14,
+      "audience": "services",
+      "goal": "find_match",
+      "display_type": "popup",
+      "visitor_need": "Know whether to plan, consult or request an estimate.",
+      "difference": "Project stage drives guidance rather than simply collecting another enquiry.",
+      "design_intent": "new_design",
+      "compare_campaigns": [
+        "landscaping-enquiry",
+        "project-planning-guide"
+      ],
+      "acceptance": [
+        "Early-stage visitors can read guidance without signup.",
+        "Back and changed answers update results."
+      ]
+    },
+    {
+      "id": "service-area-check",
+      "name": "Find service area information",
+      "status": "planned",
+      "priority": 15,
+      "audience": "services",
+      "goal": "promote_offer",
+      "display_type": "floating_bar",
+      "visitor_need": "Check whether a business serves the visitor’s area.",
+      "difference": "A coverage-page handoff; do not pretend unsupported postcode validation exists.",
+      "design_intent": "reuse_design",
+      "compare_campaigns": [
+        "delivery-announcement",
+        "seasonal-service-link"
+      ],
+      "acceptance": [
+        "Coverage and exceptions are explicit on the linked page.",
+        "No false supported-address confirmation."
+      ]
+    },
+    {
+      "id": "repair-assessment",
+      "name": "Request a non-urgent repair assessment",
+      "status": "planned",
+      "priority": 16,
+      "audience": "services",
+      "goal": "collect_enquiries",
+      "display_type": "inline",
+      "visitor_need": "Describe the category of repair and arrange follow-up.",
+      "difference": "Service type and first-contact workflow differ from a general estimate; no emergency-response promise.",
+      "design_intent": "reuse_design",
+      "compare_campaigns": [
+        "home-repair-quote",
+        "renovation-callback"
+      ],
+      "acceptance": [
+        "Category reaches the saved enquiry.",
+        "Acknowledgement distinguishes a request from a confirmed visit."
+      ]
+    },
+    {
+      "id": "group-training-enquiry",
+      "name": "Ask about training for a team",
+      "status": "planned",
+      "priority": 17,
+      "audience": "services",
+      "goal": "collect_enquiries",
+      "display_type": "popup",
+      "visitor_need": "Discuss training for a group rather than an individual learner.",
+      "difference": "Team-size bands qualify the request; no new custom field type required.",
+      "design_intent": "reuse_design",
+      "compare_campaigns": [
+        "course-advice-request",
+        "agency-project-enquiry"
+      ],
+      "acceptance": [
+        "Group size options remain readable on phones.",
+        "No automatic enrolment or confirmed date."
+      ]
+    },
+    {
+      "id": "service-options-guide",
+      "name": "Compare service packages",
+      "status": "planned",
+      "priority": 18,
+      "audience": "services",
+      "goal": "promote_offer",
+      "display_type": "inline",
+      "visitor_need": "Understand what different service packages include.",
+      "difference": "Package comparison needs aligned inclusions and a clear next step.",
+      "design_intent": "new_design",
+      "compare_campaigns": [
+        "membership-details",
+        "seasonal-service-link"
+      ],
+      "acceptance": [
+        "Long inclusions wrap without misaligning comparison rows.",
+        "All displayed packages and terms exist on the destination."
+      ]
+    },
+    {
+      "id": "pre-visit-checklist",
+      "name": "Prepare for a service consultation",
+      "status": "planned",
+      "priority": 19,
+      "audience": "services",
+      "goal": "deliver_lead_magnet",
+      "display_type": "inline",
+      "visitor_need": "Gather basic information before an initial consultation.",
+      "difference": "Preparation checklist must reduce follow-up work and avoid requesting sensitive records in the form.",
+      "design_intent": "reuse_design",
+      "compare_campaigns": [
+        "project-readiness-guide",
+        "writing-checklist"
+      ],
+      "acceptance": [
+        "Resource states what to prepare and how the business will follow up.",
+        "Immediate access and local resource-mail handoff work."
+      ]
+    },
+    {
+      "id": "service-open-day",
+      "name": "Explore a business open day",
+      "status": "planned",
+      "priority": 20,
+      "audience": "services",
+      "goal": "promote_offer",
+      "display_type": "fullscreen",
+      "visitor_need": "See an open-day agenda and registration details.",
+      "difference": "Event explanation has a real date and venue; registration remains on the configured destination.",
+      "design_intent": "reuse_design",
+      "compare_campaigns": [
+        "event-registration-link",
+        "fullscreen-announcement"
+      ],
+      "acceptance": [
+        "Date, venue and accessibility information are present.",
+        "No claim that clicking completes registration."
+      ]
+    },
+    {
+      "id": "reading-path-finder",
+      "name": "Choose a reading path",
+      "status": "planned",
+      "priority": 21,
+      "audience": "publishers",
+      "goal": "find_match",
+      "display_type": "inline",
+      "visitor_need": "Find a beginner or deeper reading sequence.",
+      "difference": "Topic plus familiarity produces an ordered path rather than a single article suggestion.",
+      "design_intent": "new_design",
+      "compare_campaigns": [
+        "content-guide",
+        "related-essay"
+      ],
+      "acceptance": [
+        "Each path has useful accessible content.",
+        "No signup required to open recommendations."
+      ]
+    },
+    {
+      "id": "reader-question",
+      "name": "Send an editorial question",
+      "status": "planned",
+      "priority": 22,
+      "audience": "publishers",
+      "goal": "collect_enquiries",
+      "display_type": "inline",
+      "visitor_need": "Ask the editorial team about a topic.",
+      "difference": "Supported topic choice plus contact details starts a reply; do not invent a long-message field.",
+      "design_intent": "reuse_design",
+      "compare_campaigns": [
+        "topic-reading-list",
+        "product-advice-request"
+      ],
+      "acceptance": [
+        "Topic choice is saved; no public posting or publication claim.",
+        "Acknowledgement explains the editorial follow-up."
+      ]
+    },
+    {
+      "id": "series-start",
+      "name": "Start a multi-part article series",
+      "status": "planned",
+      "priority": 23,
+      "audience": "publishers",
+      "goal": "promote_offer",
+      "display_type": "slide_in",
+      "visitor_need": "Find the beginning of a series when arriving midway.",
+      "difference": "Contextual navigation to part one is different from a generic related-article card.",
+      "design_intent": "reuse_design",
+      "compare_campaigns": [
+        "related-essay",
+        "seasonal-service-link"
+      ],
+      "acceptance": [
+        "Link opens the correct first part.",
+        "Placement does not obscure the current article."
+      ]
+    },
+    {
+      "id": "reader-format-choice",
+      "name": "Choose a brief or detailed editorial letter",
+      "status": "planned",
+      "priority": 24,
+      "audience": "publishers",
+      "goal": "grow_email_list",
+      "display_type": "popup",
+      "visitor_need": "Choose the amount of reading to receive.",
+      "difference": "Format preference needs an explicit editorial/provider mapping; it is not automatic segmentation.",
+      "design_intent": "reuse_design",
+      "compare_campaigns": [
+        "topic-reading-list",
+        "editorial-weekly"
+      ],
+      "acceptance": [
+        "Both preferences survive capture and retry.",
+        "Merchant has a follow-up process for each choice."
+      ]
+    }
+  ]
+}

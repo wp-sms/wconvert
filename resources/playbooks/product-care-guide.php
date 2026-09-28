@@ -9,7 +9,7 @@ return [
     'goal' => 'deliver_lead_magnet',
     'template_id' => 'resource-index',
     'notes' => __('Create a guide matching these three care topics. Embed below knitwear care content and configure the lead-magnet email destination with the actual resource. Test email delivery separately from request acceptance.', 'wconvert'),
-    'copy' => [
+    'copy' => ['success_action' => __('Open the care guide', 'wconvert'),
         'eyebrow' => [__('The care index', 'wconvert'), __('01', 'wconvert'), __('02', 'wconvert'), __('03', 'wconvert')],
         'headline' => __('Keep good things
 for longer.', 'wconvert'),

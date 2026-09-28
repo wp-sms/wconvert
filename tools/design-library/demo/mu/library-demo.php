@@ -8,6 +8,7 @@ require_once WP_CONTENT_DIR . '/plugins/wconvert/wconvert.php';
 require_once WP_CONTENT_DIR . '/plugins/wconvert-pro/wconvert-pro.php';
 require_once __DIR__ . '/resources.php';
 require_once __DIR__ . '/scenarios.php';
+require_once __DIR__ . '/decision-support.php';
 
 add_action('init', static function (): void {
     if (get_option('wconvert_demo_installed')) return;
@@ -94,12 +95,14 @@ function wconvert_demo_seed(): array {
         $existingResource = get_page_by_path('resource-' . $resourceKey);
         if ($existingResource) wp_update_post(['ID' => $existingResource->ID, 'post_content' => wconvert_demo_resource($resourceKey)]);
     }
+    $decisionFixtures = wconvert_demo_decision_fixtures();
     foreach ($briefs as $brief) {
         $key = $brief['id'];
-        if (isset($saved[$key]) && ($saved[$key]['revision'] ?? 0) === 5) continue;
         try {
             $draft = $container->get(\WConvert\Playbook\Prefill::class)->fromPlaybook($key);
             if ($draft === null) throw new RuntimeException('Playbook unavailable');
+            $revision = hash('sha256', 'decision-fixtures-v2:' . wp_json_encode($draft));
+            if (($saved[$key]['revision'] ?? '') === $revision) continue;
             $page = wconvert_demo_page('demo-' . $key, $draft['name'], '<p>Practical campaign review. Use fictional contact details; submissions are stored on this disposable site.</p>');
             $config = $draft['config'];
             $config['capture_mode'] = 'local';
@@ -117,11 +120,15 @@ function wconvert_demo_seed(): array {
                 'membership-details' => $membership,
                 default => $brief['audience'] === 'services' ? $services : $shop,
             });
+            if (isset($decisionFixtures['pages'][$key])) $url = get_permalink($decisionFixtures['pages'][$key]);
             // Leave cart links unconfigured so the shipping WooCommerce adapter resolves them.
             if ($draft['goal'] === 'recover_cart') $url = '';
             $config = \WConvert\Template\TemplateTree::rewrittenIn($config, static function (array $node) use ($url, $guidePage): array {
                 if (($node['type'] ?? '') === 'button' && ($node['action'] ?? '') === 'link') $node['href'] = $url;
-                if (($node['role'] ?? '') === 'success_action' && $guidePage) $node['href'] = get_permalink($guidePage);
+                if (($node['role'] ?? '') === 'success_action' && $guidePage) {
+                    $node['href'] = get_permalink($guidePage);
+                    $node['hidden'] = false;
+                }
                 if (($node['type'] ?? '') === 'code') $node['text'] = 'DEMO10';
                 return $node;
             });
@@ -134,6 +141,8 @@ function wconvert_demo_seed(): array {
                         $step['results'][$index]['link_label'] = 'Read the guide';
                     }
                     if ($step['products_required'] ?? false) $step['results'][$index]['product_ids'] = [$products[$index % count($products)]];
+                    $decisionResult = wconvert_demo_decision_result($key, $result['id'], $decisionFixtures);
+                    if ($decisionResult !== null) $step['results'][$index] = array_replace($step['results'][$index], $decisionResult);
                 }
             }
             unset($step);
@@ -150,7 +159,7 @@ function wconvert_demo_seed(): array {
             $id = $created['id'];
             wconvert_demo_rest('POST', 'optins/' . $id . '/publish');
             if ($config['display_type'] === 'inline') wp_update_post(['ID' => $page, 'post_content' => '<p>Read the example, then try the campaign below.</p>[wconvert_optin id="' . $id . '"]']);
-            $saved[$key] = ['id' => $id, 'page' => $page, 'name' => $draft['name'], 'type' => $config['display_type'], 'revision' => 5, 'destination' => $config['destinations'][0] ?? null];
+            $saved[$key] = ['id' => $id, 'page' => $page, 'name' => $draft['name'], 'type' => $config['display_type'], 'revision' => $revision, 'destination' => $config['destinations'][0] ?? null];
             update_option('wconvert_demo_campaigns', $saved, false);
         } catch (Throwable $error) { $errors[$key] = $error->getMessage(); }
     }

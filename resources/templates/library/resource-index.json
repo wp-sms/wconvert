@@ -225,6 +225,13 @@
               "id": "n92",
               "role": "success_body",
               "text": "Thank you. Your request has been received."
+            },
+            {
+              "type": "followup",
+              "id": "n93",
+              "role": "success_action",
+              "label": "Open the guide",
+              "hidden": true
             }
           ],
           "narrow": {

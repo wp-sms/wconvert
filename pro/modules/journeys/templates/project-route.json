@@ -1,0 +1,198 @@
+{
+  "id": "project-route",
+  "name": "Project route",
+  "display_type": "popup",
+  "tier": "basic",
+  "tokens": {
+    "bg": "#fff8dc",
+    "fg": "#332e28",
+    "muted": "#62564d",
+    "accent": "#675128",
+    "accent-fg": "#ffffff",
+    "border": "#d8c88d",
+    "input-bg": "#ffffff",
+    "heading-font": "Georgia, serif",
+    "heading-weight": "400",
+    "heading-size": "2.125rem",
+    "text-size": "1rem",
+    "tracking": "-0.025em",
+    "leading": "1.5",
+    "pad": "1.75rem",
+    "gap": "1rem",
+    "radius": "0.25rem",
+    "width": "32rem",
+    "shadow": "0 24px 60px -24px rgba(36,30,24,.28)"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "stage",
+        "name": "Project stage",
+        "kind": "input",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "eyebrow",
+              "id": "n2",
+              "text": "The next-step notebook",
+              "role": "eyebrow"
+            },
+            {
+              "type": "heading",
+              "id": "n3",
+              "text": "A clear next step.",
+              "role": "headline"
+            },
+            {
+              "type": "text",
+              "id": "n4",
+              "text": "Start with where you are today. No enquiry is required to read the guidance.",
+              "role": "body"
+            },
+            {
+              "type": "divider",
+              "id": "n5"
+            },
+            {
+              "type": "question",
+              "id": "n1",
+              "label": "Which best describes your project?",
+              "answer_type": "single",
+              "required": true,
+              "options": [
+                {
+                  "value": "planning",
+                  "label": "I am gathering ideas"
+                },
+                {
+                  "value": "consulting",
+                  "label": "I need help defining the work"
+                },
+                {
+                  "value": "estimating",
+                  "label": "I have a clear scope to discuss"
+                }
+              ]
+            },
+            {
+              "type": "button",
+              "id": "n6",
+              "label": "Show my next step",
+              "action": "next",
+              "role": "next_label"
+            },
+            {
+              "type": "text",
+              "id": "n7",
+              "text": "You can change your answer on the next screen.",
+              "role": "fine_print",
+              "size": "s",
+              "tokens": {
+                "text-size": "1.167rem"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "match",
+        "name": "Your next step",
+        "kind": "result",
+        "content": {
+          "type": "panel",
+          "children": [
+            {
+              "type": "button",
+              "id": "n8",
+              "label": "Choose another stage",
+              "action": "back",
+              "role": "back_label",
+              "tokens": {
+                "accent": "transparent",
+                "accent-fg": "fg"
+              }
+            }
+          ],
+          "edges": "block-start",
+          "tokens": {
+            "pad": "1rem 0",
+            "bg": "transparent"
+          }
+        },
+        "results": [
+          {
+            "id": "planning",
+            "heading": "01 · Put your ideas in order",
+            "body": "List your priorities and the questions you want to answer. Start with the planning checklist.",
+            "product_ids": [],
+            "href": "",
+            "link_label": "Explore this option",
+            "when": {
+              "match": "all",
+              "clauses": [
+                {
+                  "question": "n1",
+                  "operator": "is",
+                  "values": [
+                    "planning"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": "consulting",
+            "heading": "02 · Define the scope together",
+            "body": "Read what an initial consultation covers before requesting one.",
+            "product_ids": [],
+            "href": "",
+            "link_label": "Explore this option",
+            "when": {
+              "match": "all",
+              "clauses": [
+                {
+                  "question": "n1",
+                  "operator": "is",
+                  "values": [
+                    "consulting"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": "estimating",
+            "heading": "03 · Prepare for an estimate",
+            "body": "Gather the scope, measurements and access details. A quote still needs a separate review.",
+            "product_ids": [],
+            "href": "",
+            "link_label": "Explore this option",
+            "when": {
+              "match": "all",
+              "clauses": [
+                {
+                  "question": "n1",
+                  "operator": "is",
+                  "values": [
+                    "estimating"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": "fallback",
+            "heading": "Start with a conversation",
+            "body": "Read the guidance and choose the help that feels useful to you.",
+            "product_ids": [],
+            "href": "",
+            "link_label": "Explore this option"
+          }
+        ]
+      }
+    ],
+    "submissions": []
+  }
+}

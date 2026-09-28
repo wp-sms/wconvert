@@ -1,0 +1,173 @@
+{
+  "id": "service-ledger",
+  "name": "Service ledger",
+  "display_type": "inline",
+  "tier": "free",
+  "tokens": {
+    "bg": "#edf2f6",
+    "fg": "#23374c",
+    "muted": "#42556a",
+    "accent": "#2f4d67",
+    "accent-fg": "#ffffff",
+    "border": "#d9cfc3",
+    "input-bg": "#ffffff",
+    "heading-font": "Georgia, serif",
+    "heading-weight": "400",
+    "heading-size": "2rem",
+    "text-size": "1rem",
+    "tracking": "-0.025em",
+    "leading": "1.5",
+    "pad": "1.75rem",
+    "gap": "1rem",
+    "radius": "0.25rem",
+    "width": "100%",
+    "shadow": "none"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "offer",
+        "name": "Service options",
+        "kind": "content",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "eyebrow",
+              "id": "n1",
+              "text": "Ways to work together",
+              "role": "eyebrow"
+            },
+            {
+              "type": "heading",
+              "id": "n2",
+              "text": "The right support.\nAt the right stage.",
+              "role": "headline"
+            },
+            {
+              "type": "text",
+              "id": "n3",
+              "text": "Compare the starting points before we discuss your project.",
+              "role": "body"
+            },
+            {
+              "type": "divider",
+              "id": "n4"
+            },
+            {
+              "type": "split",
+              "start": [
+                {
+                  "type": "stack",
+                  "children": [
+                    {
+                      "type": "heading",
+                      "id": "n5",
+                      "text": "Planning session",
+                      "role": "headline",
+                      "size": "s"
+                    },
+                    {
+                      "type": "text",
+                      "id": "n6",
+                      "text": "For an idea that needs direction.",
+                      "role": "body"
+                    }
+                  ]
+                }
+              ],
+              "end": [
+                {
+                  "type": "stack",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "n7",
+                      "text": "Discuss priorities and constraints.",
+                      "role": "body"
+                    },
+                    {
+                      "type": "text",
+                      "id": "n8",
+                      "text": "Leave with questions and next steps.",
+                      "role": "body"
+                    }
+                  ]
+                }
+              ],
+              "basis": "16rem",
+              "ratio": "0.5"
+            },
+            {
+              "type": "divider",
+              "id": "n9"
+            },
+            {
+              "type": "split",
+              "start": [
+                {
+                  "type": "stack",
+                  "children": [
+                    {
+                      "type": "heading",
+                      "id": "n10",
+                      "text": "Project support",
+                      "role": "headline",
+                      "size": "s"
+                    },
+                    {
+                      "type": "text",
+                      "id": "n11",
+                      "text": "For a defined piece of work.",
+                      "role": "body"
+                    }
+                  ]
+                }
+              ],
+              "end": [
+                {
+                  "type": "stack",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "n12",
+                      "text": "Agree the scope before work begins.",
+                      "role": "body"
+                    },
+                    {
+                      "type": "text",
+                      "id": "n13",
+                      "text": "Confirm timing and pricing separately.",
+                      "role": "body"
+                    }
+                  ]
+                }
+              ],
+              "basis": "16rem",
+              "ratio": "0.5"
+            },
+            {
+              "type": "button",
+              "id": "n14",
+              "label": "Explore the service details",
+              "action": "link",
+              "role": "cta_label"
+            },
+            {
+              "type": "text",
+              "id": "n15",
+              "text": "An enquiry does not confirm a service, price or appointment.",
+              "role": "fine_print",
+              "size": "s",
+              "tokens": {
+                "text-size": "1.167rem"
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "submissions": []
+  }
+}

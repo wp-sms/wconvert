@@ -62,10 +62,11 @@ resource page. Results are written to `../out/demo-verification.json`.
 
 - `DEMO10` supplies a real 10% coupon for new demo shoppers, limited to one use per
   user. Test the discount in the basket; no order or payment is necessary.
-- Three sample products support recommendation and cart checks. Product pictures
+- Seven sample products support recommendation and cart checks; four decision
+  fixtures have prices, dimensions and materials matching the finder answers. Product pictures
   are WooCommerce placeholders. Sample UK delivery is £4, free over £40 after
   discounts; GBP is the demo currency.
-- Six requested resources contain actual useful sample content. Article,
+- Eight requested resources contain actual useful sample content. Article,
   membership, workshop and packaging buttons lead to matching information pages.
   Workshop/membership pages explain that no real registration is created.
 - The outbox proves the WordPress mail handoff and correct resource link, **not**
@@ -93,3 +94,11 @@ run as success. Unique fictional recipients per run make local mail checks
 repeatable even after the 100-message outbox fills. The capacity regression was
 verified against the real demo with temporary local fixture messages, removed
 after the run. External delivery remains skipped.
+
+The decision-support fixture pages cover materials, pickup, returns, service
+areas, consultation scopes, open-day information and four ordered reading paths.
+All are fictional working examples, not offers from a real business. Demo seeding
+compares the prepared campaign hash and updates changed snapshots; unchanged
+campaigns are left alone. Resource follow-ups are enabled only after a real local
+resource page is assigned. The verifier also checks gift budgets and visible
+resource follow-up URLs, including plain WooCommerce product permalinks.

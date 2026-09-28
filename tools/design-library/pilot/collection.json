@@ -1247,6 +1247,798 @@
         ],
         "reason": "Reuse the established journey-email-then-sms composition. Save the email request first. SMS is optional and needs its own consent and service. Publish only with a defined editorial schedule for both channels."
       }
+    },
+    {
+      "id": "gift-finder",
+      "audience": "stores",
+      "family": "Gift edit",
+      "visitor_need": "Choose an appropriate gift without browsing every product.",
+      "difference": "Recipient and budget change the recommendation; out-of-stock results need a useful fallback.",
+      "requirements": [
+        "Exercise each recipient/budget route and fallback.",
+        "A recommendation remains available without giving contact details.",
+        "Review merchant wording and page targeting",
+        "Configure and test actual destinations"
+      ],
+      "status": "review",
+      "source": "Decision-support batch; original brief and comparison history in pilot/batches/decision-support.json.",
+      "suggested_setup": [
+        "Review the questions, answer conditions and every result. Set a useful destination for each outcome, including the fallback. Results are available without contact details. Select available WooCommerce products for every result; match their prices, dimensions and contents to the recommendation.",
+        "Start after 20 seconds on relevant pages; limit repeated interruption."
+      ],
+      "measure": "Result visits and useful next actions; purchases, bookings and provider delivery are separate outcomes.",
+      "batch": "decision-support",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "journey-product-finder",
+          "name-and-email"
+        ],
+        "reason": "Recipient and budget change the recommendation; out-of-stock results need a useful fallback."
+      },
+      "acceptance": [
+        "Exercise each recipient/budget route and fallback.",
+        "A recommendation remains available without giving contact details."
+      ]
+    },
+    {
+      "id": "space-fit-finder",
+      "audience": "stores",
+      "family": "Space planner",
+      "visitor_need": "Find products that fit a small room or balcony.",
+      "difference": "Available space and intended use determine a shortlist, with a visible reason for the match.",
+      "requirements": [
+        "Test the smallest-space branch and no-match route.",
+        "Compare listed dimensions with actual product dimensions.",
+        "Review merchant wording and page targeting",
+        "Configure and test actual destinations"
+      ],
+      "status": "review",
+      "source": "Decision-support batch; original brief and comparison history in pilot/batches/decision-support.json.",
+      "suggested_setup": [
+        "Review the questions, answer conditions and every result. Set a useful destination for each outcome, including the fallback. Results are available without contact details. Select available WooCommerce products for every result; match their prices, dimensions and contents to the recommendation.",
+        "Embed beside the relevant content."
+      ],
+      "measure": "Result visits and useful next actions; purchases, bookings and provider delivery are separate outcomes.",
+      "batch": "decision-support",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "journey-product-finder",
+          "inline-split"
+        ],
+        "reason": "Available space and intended use determine a shortlist, with a visible reason for the match."
+      },
+      "acceptance": [
+        "Test the smallest-space branch and no-match route.",
+        "Compare listed dimensions with actual product dimensions."
+      ]
+    },
+    {
+      "id": "experience-kit-finder",
+      "audience": "stores",
+      "family": "Kit workbench",
+      "visitor_need": "Choose equipment suitable for current experience.",
+      "difference": "Experience gates follow-up questions; revising an earlier answer removes irrelevant later answers.",
+      "requirements": [
+        "Back changes both the follow-up screen and recommendation.",
+        "No unsupported safety or performance claims.",
+        "Review merchant wording and page targeting",
+        "Configure and test actual destinations"
+      ],
+      "status": "review",
+      "source": "Decision-support batch; original brief and comparison history in pilot/batches/decision-support.json.",
+      "suggested_setup": [
+        "Review the questions, answer conditions and every result. Set a useful destination for each outcome, including the fallback. Results are available without contact details. Select available WooCommerce products for every result; match their prices, dimensions and contents to the recommendation.",
+        "Start after 20 seconds on relevant pages; limit repeated interruption."
+      ],
+      "measure": "Result visits and useful next actions; purchases, bookings and provider delivery are separate outcomes.",
+      "batch": "decision-support",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "journey-product-finder",
+          "journey-content-guide"
+        ],
+        "reason": "Experience gates follow-up questions; revising an earlier answer removes irrelevant later answers."
+      },
+      "acceptance": [
+        "Back changes both the follow-up screen and recommendation.",
+        "No unsupported safety or performance claims."
+      ]
+    },
+    {
+      "id": "material-comparison",
+      "audience": "stores",
+      "family": "Material pair",
+      "visitor_need": "Understand material tradeoffs before buying.",
+      "difference": "A concise comparison leads to specifications rather than another collection announcement.",
+      "requirements": [
+        "Both materials have readable tradeoffs at 320px.",
+        "Destination provides care, dimensions and material details.",
+        "Review merchant wording and page targeting",
+        "Configure and test actual destinations"
+      ],
+      "status": "review",
+      "source": "Decision-support batch; original brief and comparison history in pilot/batches/decision-support.json.",
+      "suggested_setup": [
+        "Replace the sample comparison with accurate materials or services. Set and test the details-page link; this campaign captures no contact information.",
+        "Embed beside the relevant content."
+      ],
+      "measure": "Clicks to the configured information page.",
+      "batch": "decision-support",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "reading-slip",
+          "offer-panel"
+        ],
+        "reason": "A concise comparison leads to specifications rather than another collection announcement."
+      },
+      "acceptance": [
+        "Both materials have readable tradeoffs at 320px.",
+        "Destination provides care, dimensions and material details."
+      ]
+    },
+    {
+      "id": "sample-request",
+      "audience": "stores",
+      "family": "Choice card",
+      "visitor_need": "Request help obtaining a fabric or finish sample.",
+      "difference": "Capture material interest and contact details; avoid collecting addresses or claiming dispatch.",
+      "requirements": [
+        "Sample selection reaches the saved enquiry.",
+        "Acknowledgement promises a reply about samples, never shipment.",
+        "Review merchant wording and page targeting",
+        "Configure and test actual destinations"
+      ],
+      "status": "review",
+      "source": "Decision-support batch; original brief and comparison history in pilot/batches/decision-support.json.",
+      "suggested_setup": [
+        "Embed beside the material selector. Configure who replies; this is a sample enquiry, not an order or dispatch confirmation.",
+        "Embed beside the relevant content."
+      ],
+      "measure": "Accepted requests and useful follow-up; capture does not prove a booking, purchase or subscription delivery.",
+      "batch": "decision-support",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "inline-choice",
+          "service-docket"
+        ],
+        "reason": "Capture material interest and contact details; avoid collecting addresses or claiming dispatch."
+      },
+      "acceptance": [
+        "Sample selection reaches the saved enquiry.",
+        "Acknowledgement promises a reply about samples, never shipment."
+      ]
+    },
+    {
+      "id": "bulk-gift-enquiry",
+      "audience": "stores",
+      "family": "Appointment note",
+      "visitor_need": "Ask whether a business can supply a group gift order.",
+      "difference": "Quantity range changes the conversation; no invented quantity field or automatic quote.",
+      "requirements": [
+        "Quantity ranges use supported choice fields.",
+        "No price, availability or delivery promise before confirmation.",
+        "Review merchant wording and page targeting",
+        "Configure and test actual destinations"
+      ],
+      "status": "review",
+      "source": "Decision-support batch; original brief and comparison history in pilot/batches/decision-support.json.",
+      "suggested_setup": [
+        "Show on business gifting pages. Assign a person to discuss the order; capture does not reserve products or create a quote.",
+        "Start after 20 seconds on relevant pages; limit repeated interruption."
+      ],
+      "measure": "Accepted requests and useful follow-up; capture does not prove a booking, purchase or subscription delivery.",
+      "batch": "decision-support",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "service-docket",
+          "inline-choice"
+        ],
+        "reason": "Quantity range changes the conversation; no invented quantity field or automatic quote."
+      },
+      "acceptance": [
+        "Quantity ranges use supported choice fields.",
+        "No price, availability or delivery promise before confirmation."
+      ]
+    },
+    {
+      "id": "personalisation-enquiry",
+      "audience": "stores",
+      "family": "Choice card",
+      "visitor_need": "Check whether a product can be personalised.",
+      "difference": "Personalisation type and follow-up needs differ from general product advice. Uses inline placement to preserve a useful choice field without adding a lookalike slide-in.",
+      "requirements": [
+        "Request type survives retry.",
+        "The next action explains how specifications will be collected.",
+        "Review merchant wording and page targeting",
+        "Configure and test actual destinations"
+      ],
+      "status": "review",
+      "source": "Decision-support batch; original brief and comparison history in pilot/batches/decision-support.json.",
+      "suggested_setup": [
+        "Embed beside personalisation information. Inline replaces the planned slide-in so the existing choice design can capture the request type without a near-duplicate design.",
+        "Embed beside the relevant content."
+      ],
+      "measure": "Accepted requests and useful follow-up; capture does not prove a booking, purchase or subscription delivery.",
+      "batch": "decision-support",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "slide-in-photo",
+          "inline-choice"
+        ],
+        "reason": "Personalisation type and follow-up needs differ from general product advice."
+      },
+      "acceptance": [
+        "Request type survives retry.",
+        "The next action explains how specifications will be collected."
+      ]
+    },
+    {
+      "id": "collection-interest",
+      "audience": "stores",
+      "family": "Preference card",
+      "visitor_need": "Receive updates about a chosen product category.",
+      "difference": "Saved category preference must correspond to an actual follow-up process.",
+      "requirements": [
+        "Preference and consent persist in the same lead.",
+        "Setup explains that capture alone does not create provider segmentation.",
+        "Review merchant wording and page targeting",
+        "Configure and test actual destinations"
+      ],
+      "status": "review",
+      "source": "Decision-support batch; original brief and comparison history in pilot/batches/decision-support.json.",
+      "suggested_setup": [
+        "Embed on the collection hub. Map interest in a supported destination or use saved Lead data in your follow-up process. Capture alone does not create segmentation; MailPoet mapping applies to new subscribers only.",
+        "Embed beside the relevant content."
+      ],
+      "measure": "Accepted requests and useful follow-up; capture does not prove a booking, purchase or subscription delivery.",
+      "batch": "decision-support",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "preference-card",
+          "edition-pass"
+        ],
+        "reason": "Saved category preference must correspond to an actual follow-up process."
+      },
+      "acceptance": [
+        "Preference and consent persist in the same lead.",
+        "Setup explains that capture alone does not create provider segmentation."
+      ]
+    },
+    {
+      "id": "fit-checklist",
+      "audience": "stores",
+      "family": "A useful little guide",
+      "visitor_need": "Check doorway and room measurements before ordering furniture.",
+      "difference": "Delivery access checklist is distinct from clothing size or product care guidance.",
+      "requirements": [
+        "Resource covers both access and placement measurements.",
+        "All units and diagrams agree.",
+        "Review merchant wording and page targeting",
+        "Configure and test actual destinations"
+      ],
+      "status": "review",
+      "source": "Decision-support batch; original brief and comparison history in pilot/batches/decision-support.json.",
+      "suggested_setup": [
+        "Show on furniture product pages. Supply a resource covering doorway clearance, stairs, access and final placement. Configure the resource-email destination; confirm delivery separately.",
+        "Start after 20 seconds on relevant pages; limit repeated interruption."
+      ],
+      "measure": "Accepted requests and useful follow-up; capture does not prove a booking, purchase or subscription delivery.",
+      "batch": "decision-support",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "inline-split",
+          "resource-index"
+        ],
+        "reason": "Delivery access checklist is distinct from clothing size or product care guidance."
+      },
+      "acceptance": [
+        "Resource covers both access and placement measurements.",
+        "All units and diagrams agree."
+      ]
+    },
+    {
+      "id": "local-pickup-details",
+      "audience": "stores",
+      "family": "Announcement bar",
+      "visitor_need": "Find pickup location, hours and collection terms.",
+      "difference": "Pickup information uses a merchant-authored destination and makes no delivery claim.",
+      "requirements": [
+        "Hours and location appear on the destination.",
+        "Bar label, heading and action stay balanced at 320px.",
+        "Review merchant wording and page targeting",
+        "Configure and test actual destinations"
+      ],
+      "status": "review",
+      "source": "Decision-support batch; original brief and comparison history in pilot/batches/decision-support.json.",
+      "suggested_setup": [
+        "Set the actual pickup-information URL. Check address, opening hours, collection process and exceptions; do not imply that a request reserves stock.",
+        "Start after 20 seconds on relevant pages; limit repeated interruption."
+      ],
+      "measure": "Clicks to the configured information page.",
+      "batch": "decision-support",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "bar-announcement",
+          "reading-slip"
+        ],
+        "reason": "Pickup information uses a merchant-authored destination and makes no delivery claim."
+      },
+      "acceptance": [
+        "Hours and location appear on the destination.",
+        "Bar label, heading and action stay balanced at 320px."
+      ]
+    },
+    {
+      "id": "basket-product-help",
+      "audience": "stores",
+      "family": "Choice card",
+      "visitor_need": "Resolve a product question before ordering.",
+      "difference": "A support enquiry placed near the basket; it must not imply automatic cart attachment.",
+      "requirements": [
+        "Placement does not interrupt checkout or cover its controls.",
+        "Enquiry asks enough context without claiming knowledge of cart contents.",
+        "Review merchant wording and page targeting",
+        "Configure and test actual destinations"
+      ],
+      "status": "review",
+      "source": "Decision-support batch; original brief and comparison history in pilot/batches/decision-support.json.",
+      "suggested_setup": [
+        "Embed near the basket, away from checkout controls. Assign a person to reply and ask which item is involved; the form does not attach cart contents.",
+        "Embed beside the relevant content."
+      ],
+      "measure": "Accepted requests and useful follow-up; capture does not prove a booking, purchase or subscription delivery.",
+      "batch": "decision-support",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "inline-cart-nudge",
+          "inline-choice"
+        ],
+        "reason": "A support enquiry placed near the basket; it must not imply automatic cart attachment."
+      },
+      "acceptance": [
+        "Placement does not interrupt checkout or cover its controls.",
+        "Enquiry asks enough context without claiming knowledge of cart contents."
+      ]
+    },
+    {
+      "id": "return-policy-guide",
+      "audience": "stores",
+      "family": "Corner nudge",
+      "visitor_need": "Understand the merchant’s return process and exclusions.",
+      "difference": "Reduces purchase uncertainty with actual policy details, separate from shipping terms.",
+      "requirements": [
+        "Merchant supplies the actual policy; no invented consumer-law claims.",
+        "Policy is accessible without signup.",
+        "Review merchant wording and page targeting",
+        "Configure and test actual destinations"
+      ],
+      "status": "review",
+      "source": "Decision-support batch; original brief and comparison history in pilot/batches/decision-support.json.",
+      "suggested_setup": [
+        "Show on relevant product pages. Link to the merchant’s actual current return policy; do not invent legal rights or require signup to read it.",
+        "Start after 20 seconds on relevant pages; limit repeated interruption."
+      ],
+      "measure": "Clicks to the configured information page.",
+      "batch": "decision-support",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "slide-in-nudge",
+          "reading-slip"
+        ],
+        "reason": "Reduces purchase uncertainty with actual policy details, separate from shipping terms."
+      },
+      "acceptance": [
+        "Merchant supplies the actual policy; no invented consumer-law claims.",
+        "Policy is accessible without signup."
+      ]
+    },
+    {
+      "id": "service-finder",
+      "audience": "services",
+      "family": "Service directory",
+      "visitor_need": "Identify an appropriate service before asking for a quote.",
+      "difference": "Project type and stage route to specific service explanations; unknown needs get a human-help fallback.",
+      "requirements": [
+        "Every answer combination has a useful outcome.",
+        "Results suggest services without quoting a price or confirming eligibility.",
+        "Review merchant wording and page targeting",
+        "Configure and test actual destinations"
+      ],
+      "status": "review",
+      "source": "Decision-support batch; original brief and comparison history in pilot/batches/decision-support.json.",
+      "suggested_setup": [
+        "Review the questions, answer conditions and every result. Set a useful destination for each outcome, including the fallback. Results are available without contact details.",
+        "Embed beside the relevant content."
+      ],
+      "measure": "Result visits and useful next actions; purchases, bookings and provider delivery are separate outcomes.",
+      "batch": "decision-support",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "journey-content-guide",
+          "appointment-note"
+        ],
+        "reason": "Project type and stage route to specific service explanations; unknown needs get a human-help fallback."
+      },
+      "acceptance": [
+        "Every answer combination has a useful outcome.",
+        "Results suggest services without quoting a price or confirming eligibility."
+      ]
+    },
+    {
+      "id": "project-stage-finder",
+      "audience": "services",
+      "family": "Project route",
+      "visitor_need": "Know whether to plan, consult or request an estimate.",
+      "difference": "Project stage drives guidance rather than simply collecting another enquiry.",
+      "requirements": [
+        "Early-stage visitors can read guidance without signup.",
+        "Back and changed answers update results.",
+        "Review merchant wording and page targeting",
+        "Configure and test actual destinations"
+      ],
+      "status": "review",
+      "source": "Decision-support batch; original brief and comparison history in pilot/batches/decision-support.json.",
+      "suggested_setup": [
+        "Review the questions, answer conditions and every result. Set a useful destination for each outcome, including the fallback. Results are available without contact details.",
+        "Start after 20 seconds on relevant pages; limit repeated interruption."
+      ],
+      "measure": "Result visits and useful next actions; purchases, bookings and provider delivery are separate outcomes.",
+      "batch": "decision-support",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "journey-enquiry",
+          "project-notebook"
+        ],
+        "reason": "Project stage drives guidance rather than simply collecting another enquiry."
+      },
+      "acceptance": [
+        "Early-stage visitors can read guidance without signup.",
+        "Back and changed answers update results."
+      ]
+    },
+    {
+      "id": "service-area-check",
+      "audience": "services",
+      "family": "Announcement bar",
+      "visitor_need": "Check whether a business serves the visitor’s area.",
+      "difference": "A coverage-page handoff; do not pretend unsupported postcode validation exists.",
+      "requirements": [
+        "Coverage and exceptions are explicit on the linked page.",
+        "No false supported-address confirmation.",
+        "Review merchant wording and page targeting",
+        "Configure and test actual destinations"
+      ],
+      "status": "review",
+      "source": "Decision-support batch; original brief and comparison history in pilot/batches/decision-support.json.",
+      "suggested_setup": [
+        "Link to a clear service-area page with coverage, exceptions and a contact route. This is an information link, not automatic address or postcode validation.",
+        "Start after 20 seconds on relevant pages; limit repeated interruption."
+      ],
+      "measure": "Clicks to the configured information page.",
+      "batch": "decision-support",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "bar-announcement",
+          "slide-in-nudge"
+        ],
+        "reason": "A coverage-page handoff; do not pretend unsupported postcode validation exists."
+      },
+      "acceptance": [
+        "Coverage and exceptions are explicit on the linked page.",
+        "No false supported-address confirmation."
+      ]
+    },
+    {
+      "id": "repair-assessment",
+      "audience": "services",
+      "family": "Service docket",
+      "visitor_need": "Describe the category of repair and arrange follow-up.",
+      "difference": "Service type and first-contact workflow differ from a general estimate; no emergency-response promise.",
+      "requirements": [
+        "Category reaches the saved enquiry.",
+        "Acknowledgement distinguishes a request from a confirmed visit.",
+        "Review merchant wording and page targeting",
+        "Configure and test actual destinations"
+      ],
+      "status": "review",
+      "source": "Decision-support batch; original brief and comparison history in pilot/batches/decision-support.json.",
+      "suggested_setup": [
+        "Embed on the repairs page. Assign follow-up ownership. Keep emergency instructions on the site; this form does not provide an emergency response or book a visit.",
+        "Embed beside the relevant content."
+      ],
+      "measure": "Accepted requests and useful follow-up; capture does not prove a booking, purchase or subscription delivery.",
+      "batch": "decision-support",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "service-docket",
+          "callback-notes"
+        ],
+        "reason": "Service type and first-contact workflow differ from a general estimate; no emergency-response promise."
+      },
+      "acceptance": [
+        "Category reaches the saved enquiry.",
+        "Acknowledgement distinguishes a request from a confirmed visit."
+      ]
+    },
+    {
+      "id": "group-training-enquiry",
+      "audience": "services",
+      "family": "Appointment note",
+      "visitor_need": "Discuss training for a group rather than an individual learner.",
+      "difference": "Team-size bands qualify the request; no new custom field type required.",
+      "requirements": [
+        "Group size options remain readable on phones.",
+        "No automatic enrolment or confirmed date.",
+        "Review merchant wording and page targeting",
+        "Configure and test actual destinations"
+      ],
+      "status": "review",
+      "source": "Decision-support batch; original brief and comparison history in pilot/batches/decision-support.json.",
+      "suggested_setup": [
+        "Show on team-training pages after useful engagement. Confirm goals, dates and availability separately; submitting does not enrol anyone.",
+        "Start after 20 seconds on relevant pages; limit repeated interruption."
+      ],
+      "measure": "Accepted requests and useful follow-up; capture does not prove a booking, purchase or subscription delivery.",
+      "batch": "decision-support",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "appointment-note",
+          "inline-choice"
+        ],
+        "reason": "Team-size bands qualify the request; no new custom field type required."
+      },
+      "acceptance": [
+        "Group size options remain readable on phones.",
+        "No automatic enrolment or confirmed date."
+      ]
+    },
+    {
+      "id": "service-options-guide",
+      "audience": "services",
+      "family": "Service ledger",
+      "visitor_need": "Understand what different service packages include.",
+      "difference": "Package comparison needs aligned inclusions and a clear next step.",
+      "requirements": [
+        "Long inclusions wrap without misaligning comparison rows.",
+        "All displayed packages and terms exist on the destination.",
+        "Review merchant wording and page targeting",
+        "Configure and test actual destinations"
+      ],
+      "status": "review",
+      "source": "Decision-support batch; original brief and comparison history in pilot/batches/decision-support.json.",
+      "suggested_setup": [
+        "Replace the sample comparison with accurate materials or services. Set and test the details-page link; this campaign captures no contact information.",
+        "Embed beside the relevant content."
+      ],
+      "measure": "Clicks to the configured information page.",
+      "batch": "decision-support",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "inline-benefits",
+          "slide-in-nudge"
+        ],
+        "reason": "Package comparison needs aligned inclusions and a clear next step."
+      },
+      "acceptance": [
+        "Long inclusions wrap without misaligning comparison rows.",
+        "All displayed packages and terms exist on the destination."
+      ]
+    },
+    {
+      "id": "pre-visit-checklist",
+      "audience": "services",
+      "family": "Resource index",
+      "visitor_need": "Gather basic information before an initial consultation.",
+      "difference": "Preparation checklist must reduce follow-up work and avoid requesting sensitive records in the form.",
+      "requirements": [
+        "Resource states what to prepare and how the business will follow up.",
+        "Immediate access and local resource-mail handoff work.",
+        "Review merchant wording and page targeting",
+        "Configure and test actual destinations"
+      ],
+      "status": "review",
+      "source": "Decision-support batch; original brief and comparison history in pilot/batches/decision-support.json.",
+      "suggested_setup": [
+        "Embed below the consultation description. Supply the actual checklist and immediate resource link, plus a configured resource-email destination. Do not ask visitors to send sensitive records through the form.",
+        "Embed beside the relevant content."
+      ],
+      "measure": "Accepted requests and useful follow-up; capture does not prove a booking, purchase or subscription delivery.",
+      "batch": "decision-support",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "project-notebook",
+          "useful-guide"
+        ],
+        "reason": "Preparation checklist must reduce follow-up work and avoid requesting sensitive records in the form."
+      },
+      "acceptance": [
+        "Resource states what to prepare and how the business will follow up.",
+        "Immediate access and local resource-mail handoff work."
+      ]
+    },
+    {
+      "id": "service-open-day",
+      "audience": "services",
+      "family": "Fullscreen poster",
+      "visitor_need": "See an open-day agenda and registration details.",
+      "difference": "Event explanation has a real date and venue; registration remains on the configured destination.",
+      "requirements": [
+        "Date, venue and accessibility information are present.",
+        "No claim that clicking completes registration.",
+        "Review merchant wording and page targeting",
+        "Configure and test actual destinations"
+      ],
+      "status": "review",
+      "source": "Decision-support batch; original brief and comparison history in pilot/batches/decision-support.json.",
+      "suggested_setup": [
+        "Use for a real open day with a confirmed date, venue and accessibility information. Configure the event page and campaign end date. A click does not register a visitor.",
+        "Start after 20 seconds on relevant pages; limit repeated interruption."
+      ],
+      "measure": "Clicks to the configured information page.",
+      "batch": "decision-support",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "agenda-card",
+          "fullscreen-poster"
+        ],
+        "reason": "Event explanation has a real date and venue; registration remains on the configured destination."
+      },
+      "acceptance": [
+        "Date, venue and accessibility information are present.",
+        "No claim that clicking completes registration."
+      ]
+    },
+    {
+      "id": "reading-path-finder",
+      "audience": "publishers",
+      "family": "Reading path",
+      "visitor_need": "Find a beginner or deeper reading sequence.",
+      "difference": "Topic plus familiarity produces an ordered path rather than a single article suggestion.",
+      "requirements": [
+        "Each path has useful accessible content.",
+        "No signup required to open recommendations.",
+        "Review merchant wording and page targeting",
+        "Configure and test actual destinations"
+      ],
+      "status": "review",
+      "source": "Decision-support batch; original brief and comparison history in pilot/batches/decision-support.json.",
+      "suggested_setup": [
+        "Review the questions, answer conditions and every result. Set a useful destination for each outcome, including the fallback. Results are available without contact details.",
+        "Embed beside the relevant content."
+      ],
+      "measure": "Result visits and useful next actions; purchases, bookings and provider delivery are separate outcomes.",
+      "batch": "decision-support",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "journey-content-guide",
+          "reading-slip"
+        ],
+        "reason": "Topic plus familiarity produces an ordered path rather than a single article suggestion."
+      },
+      "acceptance": [
+        "Each path has useful accessible content.",
+        "No signup required to open recommendations."
+      ]
+    },
+    {
+      "id": "reader-question",
+      "audience": "publishers",
+      "family": "Choice card",
+      "visitor_need": "Ask the editorial team about a topic.",
+      "difference": "Supported topic choice plus contact details starts a reply; do not invent a long-message field.",
+      "requirements": [
+        "Topic choice is saved; no public posting or publication claim.",
+        "Acknowledgement explains the editorial follow-up.",
+        "Review merchant wording and page targeting",
+        "Configure and test actual destinations"
+      ],
+      "status": "review",
+      "source": "Decision-support batch; original brief and comparison history in pilot/batches/decision-support.json.",
+      "suggested_setup": [
+        "Embed on the editorial contact page. Use the supported topic choice and email; a longer message can be requested in the follow-up. No public posting or publication is promised.",
+        "Embed beside the relevant content."
+      ],
+      "measure": "Accepted requests and useful follow-up; capture does not prove a booking, purchase or subscription delivery.",
+      "batch": "decision-support",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "preference-card",
+          "inline-choice"
+        ],
+        "reason": "Supported topic choice plus contact details starts a reply; do not invent a long-message field."
+      },
+      "acceptance": [
+        "Topic choice is saved; no public posting or publication claim.",
+        "Acknowledgement explains the editorial follow-up."
+      ]
+    },
+    {
+      "id": "series-start",
+      "audience": "publishers",
+      "family": "Corner nudge",
+      "visitor_need": "Find the beginning of a series when arriving midway.",
+      "difference": "Contextual navigation to part one is different from a generic related-article card.",
+      "requirements": [
+        "Link opens the correct first part.",
+        "Placement does not obscure the current article.",
+        "Review merchant wording and page targeting",
+        "Configure and test actual destinations"
+      ],
+      "status": "review",
+      "source": "Decision-support batch; original brief and comparison history in pilot/batches/decision-support.json.",
+      "suggested_setup": [
+        "Target later parts of the series, not part one. Set the actual first-article URL and check that the slide-in does not cover reading controls.",
+        "Start after 20 seconds on relevant pages; limit repeated interruption."
+      ],
+      "measure": "Clicks to the configured information page.",
+      "batch": "decision-support",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "reading-slip",
+          "slide-in-nudge"
+        ],
+        "reason": "Contextual navigation to part one is different from a generic related-article card."
+      },
+      "acceptance": [
+        "Link opens the correct first part.",
+        "Placement does not obscure the current article."
+      ]
+    },
+    {
+      "id": "reader-format-choice",
+      "audience": "publishers",
+      "family": "Appointment note",
+      "visitor_need": "Choose the amount of reading to receive.",
+      "difference": "Format preference needs an explicit editorial/provider mapping; it is not automatic segmentation.",
+      "requirements": [
+        "Both preferences survive capture and retry.",
+        "Merchant has a follow-up process for each choice.",
+        "Review merchant wording and page targeting",
+        "Configure and test actual destinations"
+      ],
+      "status": "review",
+      "source": "Decision-support batch; original brief and comparison history in pilot/batches/decision-support.json.",
+      "suggested_setup": [
+        "Show after meaningful reading. Configure a real follow-up process for each preference. Supported interest mapping is destination-specific and does not update existing MailPoet subscribers.",
+        "Start after 20 seconds on relevant pages; limit repeated interruption."
+      ],
+      "measure": "Accepted requests and useful follow-up; capture does not prove a booking, purchase or subscription delivery.",
+      "batch": "decision-support",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "preference-card",
+          "ledger-card"
+        ],
+        "reason": "Format preference needs an explicit editorial/provider mapping; it is not automatic segmentation."
+      },
+      "acceptance": [
+        "Both preferences survive capture and retry.",
+        "Merchant has a follow-up process for each choice."
+      ]
     }
   ],
   "batches": [
@@ -1261,6 +2053,10 @@
     {
       "id": "coverage",
       "name": "Next 24 · practical coverage"
+    },
+    {
+      "id": "decision-support",
+      "name": "Next 24 · decisions and practical help"
     }
   ]
 }

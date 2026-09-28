@@ -530,8 +530,8 @@ it('combines business and format filters without writing a draft', async () => {
   await userEvent.selectOptions(await screen.findByRole('combobox', { name: 'Business' }), 'services');
   expect(screen.getAllByRole('button', { name: 'Use this setup' })).toHaveLength(1);
   expect(screen.getByText('Service newsletter')).toBeVisible();
-  expect(screen.getByRole('button', { name: 'Popup', exact: true })).toBeDisabled();
-  await userEvent.click(screen.getByRole('button', { name: 'Inline form', exact: true }));
+  expect(screen.getByRole('button', { name: 'Popup' })).toBeDisabled();
+  await userEvent.click(screen.getByRole('button', { name: 'Inline form' }));
   expect(screen.getByText('Service newsletter')).toBeVisible();
   await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Collection' }), 'bundled');
   expect(screen.getAllByRole('button', { name: 'Use this setup' })).toHaveLength(1);

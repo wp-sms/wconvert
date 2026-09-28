@@ -11,6 +11,13 @@ $report = [];
 $runId = bin2hex(random_bytes(6));
 $resourceRecipients = [];
 function demo_assert(bool $condition, string $message): void { if (!$condition) throw new RuntimeException($message); }
+function demo_destination_id(string $url): int {
+    $id = url_to_postid($url);
+    if ($id) return $id;
+    // WooCommerce plain product permalinks use ?product=slug, which url_to_postid does not resolve.
+    parse_str((string) wp_parse_url($url, PHP_URL_QUERY), $query);
+    return isset($query['product']) ? (int) (get_page_by_path($query['product'], OBJECT, 'product')?->ID ?? 0) : 0;
+}
 function demo_capture(array $body): WP_REST_Response {
     $request = new WP_REST_Request('POST', '/wconvert/v1/capture');
     $request->set_header('Content-Type', 'application/json');
@@ -33,6 +40,10 @@ foreach ($campaigns as $key => $entry) {
         $questions = [];
         foreach ($tree['steps'] as $step) foreach (\WConvert\Template\CaptureJourney::nodes($step['content']) as $node) {
             if (($node['type'] ?? '') === 'question') $questions[$node['id']] = ($node['answer_type'] ?? '') === 'multi' ? [$node['options'][0]['value']] : ($node['options'][0]['value'] ?? 'Example project');
+            if (($node['type'] ?? '') === 'followup' && !($node['hidden'] ?? false)) {
+                demo_assert(demo_destination_id($node['href'] ?? '') > 0, 'Visible follow-up has no resource page');
+                $checks[] = 'visible acknowledgement resource link';
+            }
             if (($node['type'] ?? '') === 'button' && ($node['action'] ?? '') === 'link' && $optin->goal !== 'recover_cart') {
                 demo_assert(url_to_postid($node['href'] ?? '') > 0, 'Link does not resolve to a real sample page');
                 $checks[] = 'real link destination';
@@ -73,7 +84,13 @@ foreach ($campaigns as $key => $entry) {
             demo_assert($leads->submissions($optin->id) === $before + 1, 'Journey must create exactly one lead');
         }
         foreach ($tree['steps'] as $step) foreach ($step['results'] ?? [] as $result) {
-            demo_assert(url_to_postid($result['href'] ?? '') > 0, 'Result fallback link missing');
+            demo_assert(demo_destination_id($result['href'] ?? '') > 0, 'Result destination missing: ' . $result['id']);
+            if ($key === 'gift-finder' && $result['id'] !== 'fallback') {
+                $price = (float) wc_get_product($result['product_ids'][0])->get_price();
+                $small = str_ends_with($result['id'], '_small');
+                demo_assert($small ? $price <= 30 : ($price >= 30 && $price <= 60), 'Gift recommendation exceeds selected budget');
+                $checks[] = 'gift price matches selected budget';
+            }
             foreach ($result['product_ids'] ?? [] as $productId) demo_assert(wc_get_product($productId)?->is_visible() === true, 'Product is unavailable');
             $checks[] = 'result ' . $result['id'] . ': destination and products';
         }
