@@ -42,7 +42,10 @@
               "type": "heading",
               "role": "headline",
               "text": "A fresh perspective.",
-              "id": "n2"
+              "id": "n2",
+              "narrow": {
+                "heading-size": "2.125rem"
+              }
             },
             {
               "type": "text",

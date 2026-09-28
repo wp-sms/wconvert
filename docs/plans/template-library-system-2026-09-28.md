@@ -3,7 +3,7 @@
 Research and proposal: 28 September 2026. This document records the agreed direction and expansion plan.
 
 **Implementation update:** the first twelve campaign review studio is now implemented.
-It uses six new Free designs, five revised designs and one reused design; eight new
+It uses six new Free designs and six revised designs; eight new
 Playbooks and four revised Playbooks. The source inventory is now 66 designs and
 39 Playbooks. Build and review instructions are in the [design-library README](../../tools/design-library/README.md#first-twelve-internal-creation-and-review-studio).
 The original audit below is preserved as the baseline. The full 48/400 expansion,

@@ -21,12 +21,13 @@ duplicate detection and all twelve prepared campaigns. Composer dependencies are
 required for the PHP exporter. The default build includes the pilot.
 
 The collection contains **12 campaign setups using 12 designs**: six new Free
-designs, five existing designs revised, and one existing design reused. Eight
+designs and six existing designs revised. A seventh existing design, outside
+this collection, received a placeholder-contrast fix during the follow-up audit. Eight
 Playbooks are new and four are revisions of existing Playbooks. It covers stores,
 services and publishers across all five display formats. These are editorial
 candidates, not approved releases or measured conversion winners.
 
-The studio provides audience/search filters, real renderer previews, individual
+The studio provides explicit type labels and audience/type/search filters, real renderer previews, individual
 screens and result variants, mobile widths, RTL, local form demonstrations,
 nearest-design comparison, layout checks and exportable review notes. Coupon
 codes cleared by Prefill use a clearly documented `YOUR CODE` preview placeholder.
@@ -55,7 +56,11 @@ Submitting a preview creates no Lead and does not contact a Destination.
    whether the difference is useful. It does not automatically reject reuse.
 5. Inspect every screen and result on desktop and phone, keyboard behaviour,
    contrast, long copy and RTL. Run the built-in layout checks. Those checks cover
-   overflow, control height and input text size; they do not certify accessibility.
+   overflow, control height (including link buttons), input text size, badge row
+   alignment and compact-bar headline/button hierarchy; they do not certify
+   accessibility or good composition. Rebuild after the final edit and inspect
+   the final output again. Record typography, spacing, balance and line-break
+   review for all screens, including acknowledgements and result variants.
    Then verify creation in WordPress and the actual configured destination journey.
 6. Save the editorial decision and notes, and export the review JSON. Browser-local
    decisions are tied to the full prepared campaign and renderer hash; changes

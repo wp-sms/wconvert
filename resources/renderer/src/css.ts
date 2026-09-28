@@ -366,7 +366,7 @@ export const SHADOW_CSS = [
    * tracking stops being an eyebrow.
    */
   `.wc-eyebrow{margin:0;font-size:.75em;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--wc-muted,#6b7280)}`,
-  `.wc-badge{align-self:start;font-size:.75em;font-weight:600;line-height:1.4;padding-block:.125rem;padding-inline:.5rem;border-radius:calc(var(--wc-radius,.5rem)/2);background:var(--wc-accent,#2563eb);color:var(--wc-accent-fg,#fff)}`,
+  `.wc-badge{align-self:start;font-size:calc(var(--wc-text-size,1rem)*.75);font-weight:600;line-height:1.4;padding-block:.125rem;padding-inline:.5rem;border-radius:calc(var(--wc-radius,.5rem)/2);background:var(--wc-accent,#2563eb);color:var(--wc-accent-fg,#fff)}`,
   /*
    * ==========================================================================
    * THE CORNER FLASH — THE ONE PLACEMENT NO TOKEN REACHES, AT ANY SCOPE.
@@ -384,6 +384,8 @@ export const SHADOW_CSS = [
    * Logical properties, so a `fa_IR` site flashes the corner that side of the
    * page actually has with no second spelling (ADR 0009).
    */
+  // Rows centre their content vertically; stacked badges keep start alignment.
+  `.wc-row>.wc-badge:not(.wc-badge-corner){align-self:center}`,
   `.wc-badge-corner{position:absolute;inset-block-start:var(--wc-pad,1.5rem);inset-inline-end:var(--wc-pad,1.5rem)}`,
   // `1px` and not a token: a rule the merchant can make 8px thick is a rule
   // that stops being a rule. Its COLOUR is the design's border colour, which is
@@ -598,7 +600,7 @@ export const SHADOW_CSS = [
    * inline padding stays generous for the same reason it always was: a label
    * that says what happens ("Send my code") is longer than "Submit".
    */
-  `.wc-button{display:inline-block;font:inherit;font-weight:700;text-align:center;text-decoration:none;cursor:pointer;border:0;border-radius:var(--wc-radius,.5rem);background:var(--wc-accent,#2563eb);color:var(--wc-accent-fg,#fff);padding-block:.8125rem;padding-inline:1.25rem;transition:opacity var(--wc-motion,200ms) ease}`,
+  `.wc-button{display:inline-block;font:inherit;font-family:var(--wc-font,system-ui,sans-serif);font-size:var(--wc-text-size,1rem);font-weight:700;text-align:center;text-decoration:none;cursor:pointer;border:0;border-radius:var(--wc-radius,.5rem);background:var(--wc-accent,#2563eb);color:var(--wc-accent-fg,#fff);padding-block:.8125rem;padding-inline:1.25rem;transition:opacity var(--wc-motion,200ms) ease}`,
   /*
    * ==========================================================================
    * THE ONLY MOTION INSIDE THE BOUNDARY, AND IT IS ON THE CONTROL THAT MATTERS.

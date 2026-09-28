@@ -42,9 +42,17 @@ a usable Optin must not require rebuilding its layout.
 3. **`composer verify:templates`.** Not optional — see below.
 4. **Render it.** `./tools/design-library/build.sh renderer designs sheet` and
    read `out/contact-sheet-320-ltr.png` first.
-5. **Judge it** against `tools/design-library/GUIDELINES.md` §1, the
+5. **Inspect the final output again after the last edit.** Rebuild the renderer
+   and review pages, then inspect the actual rendered result in a browser. Check
+   every screen at desktop and phone widths, including acknowledgements and
+   result variants. Look at hierarchy, font sizes, line breaks, spacing, row
+   alignment, button prominence and overall balance. Run the size/contrast checks
+   as well. Zero automated findings is not visual approval. Record what was
+   actually inspected and keep a screenshot of the final result; an earlier
+   screenshot does not verify a later edit.
+6. **Judge it** against `tools/design-library/GUIDELINES.md` §1, the
    conversion heuristics. Walk all eleven.
-6. **Iterate**, then `composer test && npm test`.
+7. **Iterate**, then `composer test && npm test`.
 
 The [Design Bench](../../../tools/design-library/README.md) is the interactive
 half of steps 4–5: paste the tree in, drive every token live, switch container,

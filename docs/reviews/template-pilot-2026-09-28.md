@@ -7,7 +7,8 @@ released library of 400 campaigns. Run `npm run templates:pilot` and open
 ## Implemented
 
 - Twelve campaign setups across three audiences and five formats.
-- Six new Free designs, five revised existing designs and one reused design.
+- Six new Free designs and six revised existing designs in the pilot. One
+  additional fullscreen design received a placeholder-contrast fix.
 - Eight new Playbooks and four revised Playbooks; the inventory now contains 66
   designs and 39 Playbooks. Existing saved campaigns are not rewritten.
 - Actual registered Playbooks pass through shipping Prefill, including default
@@ -56,3 +57,40 @@ stays local to the browser until exported.
 Artwork is original bundled SVG, with provenance under `pilot/assets/`.
 Downloaded pack assets and catalog scaling remain separate engineering work.
 The 48-campaign batch and 400-campaign allocation remain the expansion plan.
+
+## Follow-up: output review and typography
+
+The delivery-bar screenshot exposed a vertical alignment problem that the first
+automated checks did not cover. Before correction, its badge centre was 13px
+above the headline/button centre; its 16px button also overpowered a 12.24px
+headline accidentally authored as a subheading. The final design centres the
+row, uses a 17px main heading, a 14px button and a quieter 12px badge. Its link
+button remains 45.6px high and the bar wraps cleanly at 320px.
+
+The shared renderer now honours button font/size tokens and badge size tokens;
+row badges follow the row's vertical alignment. A 34px mobile heading replaces
+the fullscreen poster's 56px desktop heading. The existing fullscreen editorial
+form now has a white input surface to improve placeholder contrast.
+
+The studio identifies Type explicitly in cards and detail headers and filters
+by Popup, Inline form, Floating bar, Slide-in and Fullscreen. The authoring
+workflow now explicitly requires rebuilding and visually inspecting the final
+output after the final edit; passing measurements alone is not visual approval.
+
+Verification after the fixes:
+
+- The 208 pilot cases pass expanded checks for row-badge alignment and compact-bar
+  hierarchy, link-button dimensions and full clickable question labels.
+- The full-library audit covers 2,016 rendered cases across all 66 designs, four
+  widths, both directions, normal/long copy and all screens: zero overflow,
+  undersized controls/inputs or measured solid-colour contrast findings.
+- Audit corrections use the actual fullscreen decorator, measure radio-choice
+  labels rather than native radio glyphs, and avoid per-case animation-frame
+  waits that stall in background tabs.
+- Browser inspection included the repaired bar on desktop and a 320px phone,
+  the mobile fullscreen heading, progressive email/SMS/acknowledgement screens,
+  and mobile form/success pairs for the new designs plus question/result layouts.
+  This remains a visual engineering review, not proof of conversion performance
+  or a complete accessibility certification.
+- All 3,283 JavaScript tests passed; admin/Pro admin builds and the loader/phone
+  size and source contracts passed after the renderer changes.

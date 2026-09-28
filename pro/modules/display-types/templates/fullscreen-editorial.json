@@ -13,7 +13,8 @@
     "heading-size": "clamp(2rem, 5vw, 3.5rem)",
     "tracking": "-0.04em",
     "width": "36rem",
-    "gap": "1.25rem"
+    "gap": "1.25rem",
+    "input-bg": "#ffffff"
   },
   "tree": {
     "steps": [

@@ -14,8 +14,7 @@ return [
         'cta_label' => __('Explore the shop', 'wconvert'),
     ],
     'rules' => [[
-            'type' => 'time_on_page',
-            'seconds' => 15,
+            'type' => 'page_load',
         ]],
     'destination_hint' => [
         'types' => [],
