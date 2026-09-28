@@ -1,5 +1,5 @@
 import type { Template } from './types';
-import { A_DESIGNS_OWN_WIDTH, DOCUMENT_CSS, SHADOW_CSS } from './css';
+import { A_DESIGNS_OWN_WIDTH, DOCUMENT_CSS, SHADOW_CSS, mountedStyles } from './css';
 import { COUNTDOWN_SLOT, render } from './render';
 
 export { render, SHADOW_CSS };
@@ -118,6 +118,8 @@ export interface MountOptions {
    * to select. {@see \@renderer/render's RenderOptions}.
    */
   readonly paths?: boolean;
+  /** Controlled admin tests may expose their rendered inputs to browser tooling. Visitor mounts remain closed. */
+  readonly shadowMode?: 'open';
 }
 
 export interface Mounted {
@@ -206,10 +208,10 @@ export function shell(template: Template, chrome: HTMLElement | null, options: M
   resume: () => void;
 } {
   const host = document.createElement('div');
-  const shadow = host.attachShadow({ mode: 'closed' });
+  const shadow = host.attachShadow({ mode: options.shadowMode ?? 'closed' });
   const style = document.createElement('style');
 
-  style.textContent = SHADOW_CSS;
+  style.textContent = mountedStyles();
   shadow.appendChild(style);
 
   let root = render(template.tree, template.tokens, 0, { paths: options.paths });
@@ -408,6 +410,7 @@ export function mountModal(options: MountOptions, surface: ModalSurface = {}): M
   });
 
   let dismissible = true;
+  const label = () => dialog.setAttribute('aria-label', parts.root.querySelector('h1,h2')?.textContent || 'Campaign');
 
   dialog.addEventListener('close', () => {
     dialog.style.setProperty('display', 'none', 'important');
@@ -434,7 +437,7 @@ export function mountModal(options: MountOptions, surface: ModalSurface = {}): M
       dismissible = true;
       parts.resume();
       surface.prepare?.(parts.root);
-      dialog.setAttribute('aria-label', parts.root.querySelector('h1,h2')?.textContent || 'Campaign');
+      label();
       documentStyle();
       document.body.appendChild(dialog);
       dialog.style.setProperty('display', 'block', 'important');
@@ -451,7 +454,10 @@ export function mountModal(options: MountOptions, surface: ModalSurface = {}): M
     showStep(step) {
       const root = parts.step(step);
       surface.prepare?.(root);
-      dialog.setAttribute('aria-label', root.querySelector('h1,h2')?.textContent || 'Campaign');
+      label();
+      // Journeys resolve their selected result immediately after the step swap.
+      // Name the completed screen, including that synchronous content update.
+      queueMicrotask(label);
     },
     close() {
       // The four ways a visitor dismisses are one thing; closing it OURSELVES

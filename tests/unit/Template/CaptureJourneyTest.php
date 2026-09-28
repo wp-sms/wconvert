@@ -53,6 +53,124 @@ final class CaptureJourneyTest extends TestCase
         $template['tree']['submissions'][0]['fields'][] = 'missing-field';
         self::assertSame('references', CaptureJourney::issue($template['tree']));
     }
+
+    public function testForwardBranchesRejoinBeforeTheRequiredCapture(): void
+    {
+        $template = json_decode((string) file_get_contents(dirname(__DIR__, 3) . '/pro/modules/journeys/templates/journey-service-enquiry.json'), true);
+        $tree = $template['tree'];
+        $design = ['id' => 'design', 'name' => 'Design details', 'kind' => 'content', 'content' => ['type' => 'stack', 'children' => [
+            ['type' => 'heading', 'text' => 'Design details'], ['type' => 'button', 'action' => 'next', 'label' => 'Continue'],
+        ]]];
+        array_splice($tree['steps'], 2, 0, [$design]);
+        $condition = static fn (string $value): array => ['match' => 'all', 'clauses' => [
+            ['question' => 'n2', 'operator' => 'is', 'values' => [$value]],
+        ]];
+        $tree['steps'][0]['paths'] = [['to' => 'repair', 'when' => $condition('repair')], ['to' => 'design', 'when' => $condition('design')], ['to' => 'contact']];
+        $tree['steps'][1]['paths'] = [['to' => 'contact']];
+        self::assertNull(CaptureJourney::issue($tree));
+        $vocabulary = \WConvert\Template\TemplateVocabulary::fromManifest(dirname(__DIR__, 3));
+        $normalized = $vocabulary->normalize(['tree' => $tree, 'tokens' => []])['tree'];
+        self::assertSame($tree['steps'][0]['paths'], $normalized['steps'][0]['paths']);
+        self::assertSame($tree['steps'][0]['paths'], $vocabulary->withoutCopy($normalized)['steps'][0]['paths']);
+        $steps = array_values(array_map(static fn (array $screen): array => $screen, $tree['steps']));
+        self::assertSame(['service', 'design', 'contact', 'received'], array_map(
+            static fn (int $at): string => $tree['steps'][$at]['id'],
+            \WConvert\Template\JourneyRules::path($steps, ['n2' => 'design'])['indices']
+        ));
+        $hiddenBranch = $tree;
+        $hiddenBranch['steps'][0]['paths'] = [['to' => 'repair']];
+        $hiddenBranch['steps'][1]['paths'] = [['to' => 'contact']];
+        self::assertNull(CaptureJourney::issue($hiddenBranch));
+        $hiddenSteps = array_values(array_map(static fn (array $screen): array => $screen, $hiddenBranch['steps']));
+        self::assertSame(['service', 'design', 'contact', 'received'], array_map(
+            static fn (int $at): string => $hiddenBranch['steps'][$at]['id'],
+            \WConvert\Template\JourneyRules::path($hiddenSteps, ['n2' => 'design'])['indices']
+        ));
+        $tree['steps'][0]['paths'][0]['when']['clauses'][0]['values'] = [''];
+        self::assertSame('conditions', CaptureJourney::issue($tree));
+        $tree['steps'][0]['paths'][0]['when']['clauses'][0]['values'] = ['repair'];
+        $tree['steps'][0]['paths'][0]['to'] = 'received';
+        self::assertSame('routes', CaptureJourney::issue($tree));
+        $tree['steps'][0]['paths'][0]['to'] = 'repair';
+        $tree['steps'][1]['paths'] = [['to' => 'service']];
+        self::assertSame('routes', CaptureJourney::issue($tree));
+        $tree['steps'][1]['paths'] = [['to' => 'contact']];
+        $tree['steps'][0]['paths'] = [['to' => 'contact']];
+        self::assertSame('routes', CaptureJourney::issue($tree));
+    }
+
+    public function testMultiChoiceConditionValidatesEveryReferencedAnswer(): void
+    {
+        $template = json_decode((string) file_get_contents(dirname(__DIR__, 3) . '/pro/modules/journeys/templates/journey-service-enquiry.json'), true);
+        $tree = $template['tree'];
+        $tree['steps'][0]['content']['children'][1]['answer_type'] = 'multi';
+        $tree['steps'][1]['when'] = ['match' => 'all', 'clauses' => [[
+            'question' => 'n2', 'operator' => 'includes_any', 'values' => ['design', 'repair'],
+        ]]];
+        self::assertNull(CaptureJourney::issue($tree));
+        $vocabulary = \WConvert\Template\TemplateVocabulary::fromManifest(dirname(__DIR__, 3));
+        $normalized = $vocabulary->normalize(['tree' => $tree, 'tokens' => []])['tree'];
+        self::assertSame(['design', 'repair'], $normalized['steps'][1]['when']['clauses'][0]['values']);
+        $tree['steps'][1]['when']['clauses'][0]['values'][] = 'missing';
+        self::assertSame('conditions', CaptureJourney::issue($tree));
+    }
+
+    public function testAQuizCanRequireCaptureBeforeItsTerminalResult(): void
+    {
+        $template = json_decode((string) file_get_contents(dirname(__DIR__, 3) . '/pro/modules/journeys/templates/journey-content-guide.json'), true);
+        $tree = $template['tree'];
+        $signup = $tree['steps'][2];
+        $signup['content']['children'] = array_values(array_filter($signup['content']['children'],
+            static fn (array $node): bool => ($node['action'] ?? '') !== 'skip'));
+        $result = $tree['steps'][1];
+        $result['content']['children'] = array_values(array_filter($result['content']['children'],
+            static fn (array $node): bool => ($node['action'] ?? '') !== 'next'));
+        $tree['steps'] = [$tree['steps'][0], $signup, $result];
+        $tree['submissions'][0]['required'] = true;
+
+        self::assertNull(CaptureJourney::issue($tree));
+        self::assertSame([\WConvert\Template\ConvertingAct::Match], \WConvert\Template\ConvertingAct::offeredIn($tree));
+        self::assertSame('request', \WConvert\Template\CaptureContract::settings(['template' => ['tree' => $tree]], 'find_match')['email-signup']['purpose']);
+        self::assertSame('email_marketing', \WConvert\Template\CaptureContract::settings(['template' => $template], 'find_match')['email-signup']['purpose']);
+    }
+
+    public function testGraphResultFirstPurposeUsesConnectionsRatherThanStorageOrder(): void
+    {
+        $template = json_decode((string) file_get_contents(dirname(__DIR__, 3) . '/pro/modules/journeys/templates/journey-content-guide.json'), true);
+        $tree = $template['tree'];
+        $tree['v'] = 3;
+        $tree['steps'] = [$tree['steps'][2], $tree['steps'][3], $tree['steps'][0], $tree['steps'][1]];
+        $tree['graph'] = ['entry' => 'interests', 'edges' => [
+            ['id' => 'a', 'from' => 'interests', 'to' => 'guide', 'kind' => 'default'],
+            ['id' => 'b', 'from' => 'guide', 'to' => 'signup', 'kind' => 'default'],
+            ['id' => 'c', 'from' => 'signup', 'to' => 'thanks', 'kind' => 'default'],
+        ]];
+        $settings = \WConvert\Template\CaptureContract::settings(['template' => ['tree' => $tree]], 'find_match');
+        self::assertSame('email_marketing', $settings['email-signup']['purpose']);
+    }
+
+    public function testAContentResultNeedsItsConfiguredGuideLinkBeforePublishing(): void
+    {
+        $template = json_decode((string) file_get_contents(dirname(__DIR__, 3) . '/pro/modules/journeys/templates/journey-content-guide.json'), true);
+        $config = ['template' => $template];
+        self::assertSame('result_link', \WConvert\Template\CaptureContract::issue($config, 'find_match', ''));
+        foreach ($config['template']['tree']['steps'][1]['results'] as &$variant) $variant['href'] = 'https://example.com/guide';
+        unset($variant);
+        self::assertNull(\WConvert\Template\CaptureContract::issue($config, 'find_match', ''));
+    }
+    public function testSelectedProductsNeedAFallbackEvenWithoutTheLiveProductRequirement(): void
+    {
+        $template = json_decode((string) file_get_contents(dirname(__DIR__, 3) . '/pro/modules/journeys/templates/journey-product-finder.json'), true);
+        $result = count($template['tree']['steps']) - 1;
+        unset($template['tree']['steps'][$result]['products_required']);
+        $template['tree']['steps'][$result]['results'][0]['product_ids'] = [12];
+        $config = ['template' => $template];
+        self::assertSame('result_link', \WConvert\Template\CaptureContract::issue($config, 'find_match', ''));
+        $config['template']['tree']['steps'][$result]['results'][0]['href'] = '/shop/';
+        $config['template']['tree']['steps'][$result]['results'][0]['link_label'] = 'Browse plants';
+        self::assertNull(\WConvert\Template\CaptureContract::issue($config, 'find_match', ''));
+    }
+
     public function testOptionalSmsKeepsASeparateSubmissionAndRejectsBypassingEmail(): void
     {
         $template = json_decode((string) file_get_contents(dirname(__DIR__, 3) . '/resources/templates/library/journey-email-then-sms.json'), true);

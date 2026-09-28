@@ -7,6 +7,9 @@ import { previewSurfaces } from '@/previewSurfaces';
 import { decorateFullscreen } from '../../../modules/display-types/loader/surface';
 import { reopenControls } from '@/reopenControls';
 import { inlinePlacementControls } from '@/inlinePlacement';
+import { registerPremiumJourneyRenderer } from '../../../modules/journeys/loader/render';
+
+registerPremiumJourneyRenderer();
 
 reopenControls.component = lazy(() => import('../../../modules/display-types/admin/ReopenSettings'));
 reopenControls.preview = lazy(() => import('../../../modules/display-types/admin/ReopenPreview'));

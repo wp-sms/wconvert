@@ -517,16 +517,16 @@ describe('confirming the change', () => {
   it('starts a fresh Undo history only after a successful Goal save', async () => {
     open();
     await userEvent.type(await screen.findByRole('textbox', { name: 'Name' }), ' revised');
-    expect(screen.getByRole('button', { name: 'Undo draft edit' })).toBeEnabled();
+    expect(screen.getByRole('button', { name: /^Undo/ })).toBeEnabled();
     await pick('Promote a sale or offer');
     const confirm = screen.getByRole('button', { name: 'Save draft and change goal' });
     expect(confirm).toHaveAccessibleDescription(/clears the current Undo and Redo history/);
     await userEvent.click(confirm);
-    await waitFor(() => expect(screen.getByRole('button', { name: 'Undo draft edit' })).toBeDisabled());
-    expect(screen.getByRole('button', { name: 'Redo draft edit' })).toBeDisabled();
+    await waitFor(() => expect(screen.getByRole('button', { name: /^Undo/ })).toBeDisabled());
+    expect(screen.getByRole('button', { name: /^Redo/ })).toBeDisabled();
     expect(builder.saveOptin).toHaveBeenCalledTimes(1);
     await userEvent.type(screen.getByRole('textbox', { name: 'Name' }), ' again');
-    await userEvent.click(screen.getByRole('button', { name: 'Undo draft edit' }));
+    await userEvent.click(screen.getByRole('button', { name: /^Undo/ }));
     expect(screen.getByRole('textbox', { name: 'Name' })).toHaveValue('Welcome discount revised');
     expect(builder.saveOptin).toHaveBeenCalledTimes(1);
   });
@@ -538,7 +538,7 @@ describe('confirming the change', () => {
     await pick('Promote a sale or offer');
     await userEvent.click(screen.getByRole('button', { name: 'Save draft and change goal' }));
     await screen.findByText('The goal change was refused.');
-    await userEvent.click(screen.getByRole('button', { name: 'Undo draft edit' }));
+    await userEvent.click(screen.getByRole('button', { name: /^Undo/ }));
     expect(screen.getByRole('textbox', { name: 'Name' })).toHaveValue('Welcome discount');
     expect(builder.saveOptin).toHaveBeenCalledTimes(1);
   });

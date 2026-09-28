@@ -169,7 +169,7 @@ final class MailPoetDestinationType implements DestinationType
             'type' => 'ids',
             'label' => __('Lists to add to', 'wconvert'),
             'description' => __(
-                'Added, never removed — a list WConvert did not put someone on is not WConvert’s to take them off. Whether a new subscriber has to confirm is MailPoet’s own signup-confirmation setting, not this one.',
+                'Adds subscribers to these lists without removing other memberships. MailPoet controls signup confirmation.',
                 'wconvert'
             ),
         ];
@@ -184,7 +184,7 @@ final class MailPoetDestinationType implements DestinationType
         return [self::LISTS => $field, self::INTEREST_FIELD => [
             'type' => 'select',
             'label' => __('Save interest in MailPoet', 'wconvert'),
-            'description' => __('Optional. Choose an existing custom text field. WConvert sends the stable answer value for new subscribers only; existing subscriber fields stay unchanged. Without a mapping, the answer stays in WConvert.', 'wconvert'),
+            'description' => __('Optional: send the answer value to a custom text field for new subscribers. Existing subscribers stay unchanged. Unmapped answers stay in WConvert.', 'wconvert'),
             'options' => array_map(static fn (array $field): array => ['value' => $field['id'], 'label' => $field['name']], $this->subscribers->textFields()),
         ]];
     }

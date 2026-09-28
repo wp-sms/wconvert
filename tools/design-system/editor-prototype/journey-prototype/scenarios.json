@@ -1,0 +1,48 @@
+[
+  {
+    "id": "garden", "name": "Garden consultation", "business": "Fern & Form", "purpose": "Collect enquiries", "description": "A relevant follow-up, then one clear submission.", "accent": "#205c57", "capture": "required",
+    "screens": [
+      {"id":"project","name":"Your project","kind":"question","question":{"id":"project","type":"single","label":"What would you like to transform?","required":true,"options":[{"value":"garden","label":"A garden"},{"value":"balcony","label":"A balcony"},{"value":"indoors","label":"An indoor space"}]}},
+      {"id":"space","name":"Garden size","kind":"question","condition":{"match":"all","clauses":[{"question":"project","operator":"is","values":["garden"]}]},"question":{"id":"size","type":"single","label":"How big is your garden?","required":true,"options":[{"value":"small","label":"A small courtyard"},{"value":"medium","label":"A medium garden"},{"value":"large","label":"A large outdoor space"}]}},
+      {"id":"contact","name":"Request a consultation","kind":"capture","heading":"Tell us where to reply","body":"We will use your details to respond to this request.","button":"Request a consultation","channel":"email"},
+      {"id":"thanks","name":"Request received","kind":"acknowledgement","heading":"Your request was received","body":"Your project details are included with your request."}
+    ]
+  },
+  {
+    "id":"coffee","name":"Find your coffee","business":"Sunday Coffee","purpose":"Help visitors find a match","description":"Useful results first. Signup is a separate choice.","accent":"#77573f","capture":"optional",
+    "screens":[
+      {"id":"brew","name":"How you brew","kind":"question","question":{"id":"brew","type":"single","label":"How do you make your coffee?","required":true,"options":[{"value":"espresso","label":"Espresso machine"},{"value":"filter","label":"Filter or pour-over"},{"value":"press","label":"French press"}]}},
+      {"id":"taste","name":"Your taste","kind":"question","question":{"id":"taste","type":"multi","label":"What flavours do you enjoy?","help":"Choose any that sound good. This is optional.","required":false,"options":[{"value":"bold","label":"Rich and chocolatey"},{"value":"bright","label":"Bright and fruity"},{"value":"smooth","label":"Smooth and balanced"}]}},
+      {"id":"grind","name":"Your grinder","kind":"question","condition":{"match":"all","clauses":[{"question":"brew","operator":"is","values":["filter"]}]},"question":{"id":"grind","type":"single","label":"Do you grind your own beans?","required":true,"options":[{"value":"yes","label":"Yes, I have a grinder"},{"value":"no","label":"No, I buy ground coffee"}]}},
+      {"id":"result","name":"Your coffee match","kind":"result","heading":"A good place to start","body":"Picked for the way you enjoy your coffee.","results":[
+        {"id":"espresso","name":"Rich espresso","condition":{"match":"all","clauses":[{"question":"brew","operator":"is","values":["espresso"]},{"question":"taste","operator":"includes_any","values":["bold"]}]},"title":"Rich espresso, made for your mornings","body":"Try a chocolate-led blend with milk or as a straight espresso.","product_ids":[101,102]},
+        {"id":"filter","name":"Bright filter","condition":{"match":"all","clauses":[{"question":"brew","operator":"is","values":["filter"]}]},"title":"A fresh start for your filter brew","body":"Explore a lighter roast with a clean, bright finish.","product_ids":[103,102]},
+        {"id":"fallback","name":"Everyone else","title":"An easy everyday favourite","body":"A balanced blend is a good place to start. You can explore from there.","product_ids":[102]}
+      ]},
+      {"id":"email","name":"Optional email signup","kind":"capture","optional":true,"heading":"More good coffee in your inbox?","body":"Get occasional coffee notes and offers. Your match is already available.","button":"Sign up for email","channel":"email"},
+      {"id":"thanks","name":"Signup received","kind":"acknowledgement","heading":"Your signup was received","body":"You can return to your coffee match whenever you like on this page."}
+    ],
+    "products":[{"id":101,"name":"Morning Espresso","detail":"Chocolate · Hazelnut · 250 g","price":"12.00","currency":"£","stock":true},{"id":102,"name":"Sunday House Blend","detail":"Caramel · Balanced · 250 g","price":"11.50","currency":"£","stock":true},{"id":103,"name":"Seasonal Filter","detail":"Citrus · Apricot · 250 g","price":"14.00","currency":"£","stock":true}]
+  },
+  {
+    "id":"guides","name":"Choose your next guide","business":"Little Weekend","purpose":"Help visitors find a match","description":"Multiple interests can reveal multiple useful follow-ups.","accent":"#475c8c","capture":"none",
+    "screens":[
+      {"id":"topics","name":"Your interests","kind":"question","question":{"id":"topics","type":"multi","label":"What would you like to try?","help":"Choose one or more interests.","required":true,"options":[{"value":"photo","label":"Photography"},{"value":"garden","label":"Growing plants"},{"value":"cook","label":"Cooking"}]}},
+      {"id":"camera","name":"Your camera","kind":"question","condition":{"match":"all","clauses":[{"question":"topics","operator":"includes_any","values":["photo"]}]},"question":{"id":"camera","type":"single","label":"What do you take photos with?","required":true,"options":[{"value":"phone","label":"My phone"},{"value":"camera","label":"A camera"}]}},
+      {"id":"growing","name":"Your growing space","kind":"question","condition":{"match":"all","clauses":[{"question":"topics","operator":"includes_any","values":["garden"]}]},"question":{"id":"growing","type":"single","label":"Where would you grow plants?","required":false,"options":[{"value":"inside","label":"Inside"},{"value":"outside","label":"Outside"}]}},
+      {"id":"result","name":"Your reading list","kind":"result","heading":"Make a little time for yourself","results":[
+        {"id":"photo","name":"Photography first","condition":{"match":"all","clauses":[{"question":"topics","operator":"includes_any","values":["photo"]}]},"title":"A better photo, this weekend","body":"Start with our simple guide to light and composition.","link_label":"Explore the photography guide"},
+        {"id":"garden","name":"Growing plants","condition":{"match":"all","clauses":[{"question":"topics","operator":"includes_any","values":["garden"]}]},"title":"Something small to grow","body":"Start with three forgiving plants and a sunny spot.","link_label":"Explore the growing guide"},
+        {"id":"fallback","name":"Everyone else","title":"Something good to make","body":"Try a simple weekend recipe from our collection.","link_label":"Explore the cooking guide"}
+      ]}
+    ]
+  },
+  {
+    "id":"newsletter","name":"Email + optional SMS","business":"Fern & Form","purpose":"Grow my email list","description":"The existing journey stays simple when no conditions are needed.","accent":"#205c57","capture":"required",
+    "screens":[
+      {"id":"email","name":"Email signup","kind":"capture","heading":"A little green in your inbox","body":"Join our monthly plant notes and offers.","button":"Sign up for email","channel":"email"},
+      {"id":"sms","name":"Optional SMS signup","kind":"capture","optional":true,"heading":"Plant notes by text, too?","body":"Your email signup is already received. Text updates are optional.","button":"Sign up for texts","channel":"sms"},
+      {"id":"thanks","name":"Signup received","kind":"acknowledgement","heading":"Your signup was received","body":"Thanks for joining us."}
+    ]
+  }
+]

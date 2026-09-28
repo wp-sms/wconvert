@@ -288,6 +288,7 @@ export function StructureView({
                 template={template}
                 labels={labels}
                 path={selected}
+                revealContent={focus}
                 act={act}
                 onChange={onChange}
                 onSwap={(next, sentence) => {

@@ -6,6 +6,9 @@ import manifest from '../../resources/templates/manifest.json';
 import { A_NARROW_DESIGN, DOCUMENT_CSS, SHADOW_CSS } from '@renderer/css';
 import { REFERABLE, SAFE_SCHEMES, render } from '@renderer/render';
 import type { TemplateTree } from '@renderer/types';
+import { registerPremiumJourneyRenderer } from '../../pro/modules/journeys/loader/render';
+
+registerPremiumJourneyRenderer();
 
 /**
  * The template vocabulary, asserted against the one renderer that implements
@@ -38,6 +41,7 @@ const MINIMAL: Readonly<Record<string, object>> = {
   image: { src: '/x.png', alt: '' },
   code: { text: 'x' },
   field: { name: 'email' },
+  question: { id: 'n1', label: 'Choice', answer_type: 'single', options: [{ value: 'yes', label: 'Yes' }, { value: 'no', label: 'No' }] },
   button: { label: 'x' },
   followup: { label: 'Open resource', href: '/guide' },
   consent: { text: 'x' },
@@ -636,7 +640,7 @@ describe('a token used as a value', () => {
     // the one case that stays verbatim — asserted on its own below.
     const on = name === 'bg' ? 'fg' : 'bg';
 
-    expect(scoped({ [on]: name }).style.getPropertyValue(`--wc-${on}`)).toBe(`var(--wc-${name})`);
+    expect(scoped({ [on]: name }).style.getPropertyValue(`--wc-${on}`)).toBe(`var(--wc-${name}${name === 'fg' ? `,${manifest.tokens.fg}` : ''})`);
   });
 
   it('writes every other value exactly as it was', () => {

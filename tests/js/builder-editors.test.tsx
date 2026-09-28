@@ -7,11 +7,11 @@ import { ruleTypes } from './support/rule-types';
 import { displayPlan } from './support/display-entry';
 
 const initial: DisplayRulesValue = { display_rules: displayPlan([{ type: 'time_on_page', seconds: 20 }, { type: 'scroll_depth', percent: 50 }]), targeting: {}, frequency: { maxPerSession: 1, stopAfterDismiss: false }, schedule: {}, priority: 0 };
-function setup(value = initial, availability = {}) {
+function setup(value = initial, availability = {}, compact = false) {
   const changed = vi.fn();
   function Harness() {
     const [draft, setDraft] = useState(value);
-    return <><DisplayRules value={draft} vocabulary={ruleTypes(availability)} overlay onChange={patch => { changed(patch); setDraft({ ...draft, ...patch }); }} /><output data-testid="draft">{JSON.stringify(draft)}</output></>;
+    return <><DisplayRules compact={compact} value={draft} vocabulary={ruleTypes(availability)} overlay onChange={patch => { changed(patch); setDraft({ ...draft, ...patch }); }} /><output data-testid="draft">{JSON.stringify(draft)}</output></>;
   }
   render(<Harness />);
   return changed;
@@ -24,7 +24,7 @@ describe('display workspace', () => {
     setup();
     expect(within(screen.getByRole('navigation')).getAllByRole('button')).toHaveLength(4);
     expect(screen.getByRole('radio', { name: 'After a delay or visitor activity' })).toBeChecked();
-    expect(screen.getByText('This is your draft. Changes go live only when published.')).toBeInTheDocument();
+    expect(screen.getByText('Changes go live when published.')).toBeInTheDocument();
   });
   it('keeps an empty selected-pages choice incomplete after navigating away and back', async () => {
     setup(); await section('Pages'); await userEvent.click(screen.getByRole('radio', { name: 'Selected pages' }));
@@ -181,4 +181,17 @@ describe('display editing without crypto.randomUUID', () => {
     await section('Pages'); await section('Opening moment');
     expect(draft().display_rules!.opening).toEqual(opening);
   });
+});
+
+it('uses the same rule editors in the journey panel and preserves rules while changing sections', async () => {
+  setup(initial, {}, true);
+  const user = userEvent.setup();
+  expect(screen.queryByRole('navigation', { name: 'Display setup sections' })).not.toBeInTheDocument();
+  await user.selectOptions(screen.getByRole('combobox', { name: 'Match requirements' }), 'all');
+  await user.selectOptions(screen.getByRole('combobox', { name: 'Display setting' }), 'where');
+  await user.click(screen.getByRole('radio', { name: 'Selected pages' }));
+  await user.selectOptions(screen.getByRole('combobox', { name: 'Display setting' }), 'when');
+  expect(screen.getByRole('combobox', { name: 'Match requirements' })).toHaveValue('all');
+  expect(draft().targeting.mode).toBe('selected');
+  expect(draft().display_rules!.opening).toMatchObject({ match: 'all', rules: [{ type: 'time_on_page', seconds: 20 }, { type: 'scroll_depth', percent: 50 }] });
 });

@@ -53,7 +53,10 @@ final class OptinRepository
      * memory at a few hundred rows, and the whole reason this constant exists.
      */
     private const SUMMARY_COLUMNS = 'id, name, goal, parent_id, published_at, deleted_at, '
-        . '(published_at IS NOT NULL AND deleted_at IS NULL AND NOT (BINARY config <=> BINARY published_config)) AS has_unpublished_changes';
+        . '(published_at IS NOT NULL AND deleted_at IS NULL AND CASE '
+        . 'WHEN config IS NULL AND published_config IS NULL THEN 0 '
+        . 'WHEN config IS NULL OR published_config IS NULL THEN 1 '
+        . 'ELSE BINARY config <> BINARY published_config END) AS has_unpublished_changes';
 
     /**
      * What the published set is built from.
@@ -758,7 +761,12 @@ final class OptinRepository
         // Keep this at the promotion boundary as well as in REST: a CLI or
         // future bulk action must not publish a draft with no design. Saving
         // that incomplete draft remains valid and never changes the live set.
-        if (!$optin->hasDesign() || \WConvert\Template\TemplateForm::issue($optin->config['template'] ?? null) !== null) {
+        // Graph publication needs the same goal-aware capture boundary as REST.
+        // The legacy form validator intentionally accepts only version 2.
+        $formIssue = ($optin->config['template']['tree']['v'] ?? null) === 3
+            ? \WConvert\Template\CaptureContract::issue($optin->config, $optin->goal, get_privacy_policy_url())
+            : \WConvert\Template\TemplateForm::issue($optin->config['template'] ?? null);
+        if (!$optin->hasDesign() || $formIssue !== null) {
             return null;
         }
 

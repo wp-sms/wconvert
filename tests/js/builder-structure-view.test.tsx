@@ -195,6 +195,7 @@ beforeEach(() => {
  */
 async function structure() {
   render(<OptinBuilder id={ID} onClose={vi.fn()} />);
+  await userEvent.click(await screen.findByRole('tab', { name: 'Theme & layout' }));
 
   await userEvent.click(await screen.findByRole('button', { name: 'Layers' }));
 }
@@ -209,6 +210,7 @@ async function structure() {
  */
 async function designLook() {
   render(<OptinBuilder id={ID} onClose={vi.fn()} />);
+  await userEvent.click(await screen.findByRole('tab', { name: 'Theme & layout' }));
   await screen.findByRole('button', { name: 'Browse designs and formats' });
 }
 
@@ -304,7 +306,7 @@ describe('moving a block', () => {
 
     await userEvent.click(within(row('Headline')).getByRole('button', { name: 'Move Headline down' }));
 
-    expect(rowNames().slice(0, 4)).toEqual(['The form', 'Body text', 'Headline', 'Row']);
+    expect(rowNames().slice(0, 4)).toEqual(['Details', 'Body text', 'Headline', 'Row']);
   });
 
   /**
@@ -337,7 +339,7 @@ describe('moving a block', () => {
 
     await userEvent.click(up);
 
-    expect(rowNames().slice(0, 3)).toEqual(['The form', 'Headline', 'Body text']);
+    expect(rowNames().slice(0, 3)).toEqual(['Details', 'Headline', 'Body text']);
   });
 
   /**
@@ -359,7 +361,7 @@ describe('moving a block', () => {
     // Past the `row`, whose own two children sit between them in the list —
     // the block moved two places among its SIBLINGS, which is what ↓ means.
     expect(rowNames().slice(0, 6)).toEqual([
-      'The form',
+      'Details',
       'Body text',
       'Row',
       'Email address',
@@ -451,7 +453,7 @@ describe('the row', () => {
 
     await userEvent.click(screen.getByRole('menuitem', { name: 'Move down' }));
 
-    expect(rowNames().slice(0, 3)).toEqual(['The form', 'Body text', 'Headline']);
+    expect(rowNames().slice(0, 3)).toEqual(['Details', 'Body text', 'Headline']);
   });
 
   /** A third pointer-free path, for repeat moves without hunting for a button. */
@@ -461,11 +463,11 @@ describe('the row', () => {
 
     await userEvent.keyboard('{Alt>}{ArrowDown}{/Alt}');
 
-    expect(rowNames().slice(0, 3)).toEqual(['The form', 'Body text', 'Headline']);
+    expect(rowNames().slice(0, 3)).toEqual(['Details', 'Body text', 'Headline']);
 
     await userEvent.keyboard('{Alt>}{ArrowDown}{/Alt}');
 
-    expect(rowNames().slice(0, 4)).toEqual(['The form', 'Body text', 'Row', 'Email address']);
+    expect(rowNames().slice(0, 4)).toEqual(['Details', 'Body text', 'Row', 'Email address']);
   });
 
   /**
@@ -477,7 +479,7 @@ describe('the row', () => {
     await structure();
 
     expect(row('Headline').querySelector('.wconvert-block__grip')).not.toBeNull();
-    expect(row('The form').querySelector('.wconvert-block__grip')).toBeNull();
+    expect(row('Details').querySelector('.wconvert-block__grip')).toBeNull();
   });
 
   /**
@@ -734,7 +736,7 @@ describe('adding a block', () => {
     await userEvent.click(screen.getByRole('menuitem', { name: 'Add a block after this' }));
     await userEvent.click(await screen.findByRole('menuitem', { name: 'Image' }));
 
-    expect(rowNames().slice(0, 3)).toEqual(['The form', 'Headline', 'Image']);
+    expect(rowNames().slice(0, 3)).toEqual(['Details', 'Headline', 'Image']);
     expect(screen.getByRole('status', { name: 'Layer changes' })).toHaveTextContent('Image added.');
   });
 
@@ -844,10 +846,10 @@ describe('the inspector', () => {
 
   it('says what a step is rather than offering it a text box', async () => {
     await structure();
-    await select('The form');
+    await select('Details');
 
-    expect(inspector('The form').queryByLabelText('Text')).toBeNull();
-    expect(inspector('The form').getByText(/Appearance for Column/)).toBeInTheDocument();
+    expect(inspector('Details').queryByLabelText('Text')).toBeNull();
+    expect(inspector('Details').getByText(/Appearance for Column/)).toBeInTheDocument();
   });
 
   it('writes what is typed into the tree, and the Save sends it', async () => {
@@ -876,7 +878,7 @@ describe('the inspector', () => {
 
     await userEvent.clear(text);
     await userEvent.type(text, 'Half price');
-    await userEvent.click(screen.getByRole('button', { name: 'Undo draft edit' }));
+    await userEvent.click(screen.getByRole('button', { name: /^Undo/ }));
 
     expect(inspector('Headline').getByLabelText('Text')).toHaveValue('Get 10% off your first order');
   });
@@ -1105,7 +1107,7 @@ describe('the inspector', () => {
     // Whatever took focus. The fine print is the last block in its list, so
     // there is no next sibling and what was holding it takes focus — here the
     // step itself, which the inspector names rather than blanking.
-    expect(screen.getByRole('group', { name: 'The form' })).toBeInTheDocument();
+    expect(screen.getByRole('group', { name: 'Details' })).toBeInTheDocument();
   });
 });
 
@@ -1162,7 +1164,7 @@ describe('the verdict', () => {
     await designLook();
     await userEvent.click(screen.getByRole('tab', { name: 'Destinations' }));
     await userEvent.click(screen.getByRole('radio', { name: /Collect only in WConvert/ }));
-    await userEvent.click(screen.getByRole('tab', { name: 'Design' }));
+    await userEvent.click(screen.getByRole('tab', { name: 'Theme & layout' }));
 
     // The stub names no tokens, so `nameOf` falls back to the raw key — which
     // is what a build whose vocabulary is ahead of its translations shows too.
@@ -1218,8 +1220,8 @@ describe('undo and redo', () => {
   it('has nothing to undo before anything has changed', async () => {
     await structure();
 
-    expect(screen.getByRole('button', { name: 'Undo draft edit' })).toBeDisabled();
-    expect(screen.getByRole('button', { name: 'Redo draft edit' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: /^Undo/ })).toBeDisabled();
+    expect(screen.getByRole('button', { name: /^Redo/ })).toBeDisabled();
   });
 
   it('takes a delete back, and then puts it forward again', async () => {
@@ -1232,11 +1234,11 @@ describe('undo and redo', () => {
 
     expect(rowNames()).not.toContain('Fine print');
 
-    await userEvent.click(screen.getByRole('button', { name: 'Undo draft edit' }));
+    await userEvent.click(screen.getByRole('button', { name: /^Undo/ }));
 
     expect(rowNames()).toContain('Fine print');
 
-    await userEvent.click(screen.getByRole('button', { name: 'Redo draft edit' }));
+    await userEvent.click(screen.getByRole('button', { name: /^Redo/ }));
 
     expect(rowNames()).not.toContain('Fine print');
   });
@@ -1244,8 +1246,8 @@ describe('undo and redo', () => {
   it('keeps the design unchanged when an undo shortcut is pressed inside launch review', async () => {
     await structure();
     await userEvent.click(within(row('Headline')).getByRole('button', { name: 'Move Headline down' }));
-    expect(rowNames().slice(0, 3)).toEqual(['The form', 'Body text', 'Headline']);
-    expect(screen.getByRole('button', { name: 'Undo draft edit' })).toBeEnabled();
+    expect(rowNames().slice(0, 3)).toEqual(['Details', 'Body text', 'Headline']);
+    expect(screen.getByRole('button', { name: /^Undo/ })).toBeEnabled();
 
     await userEvent.click(screen.getByRole('button', { name: 'Review & publish' }));
     // Focus a non-text control: text inputs already have their own undo guard.
@@ -1257,12 +1259,12 @@ describe('undo and redo', () => {
     expect(screen.getByRole('dialog', { name: 'Review & publish' })).toBeInTheDocument();
     await userEvent.click(keepEditing);
 
-    expect(rowNames().slice(0, 3)).toEqual(['The form', 'Body text', 'Headline']);
-    expect(screen.getByRole('button', { name: 'Undo draft edit' })).toBeEnabled();
-    expect(screen.getByRole('button', { name: 'Redo draft edit' })).toBeDisabled();
+    expect(rowNames().slice(0, 3)).toEqual(['Details', 'Body text', 'Headline']);
+    expect(screen.getByRole('button', { name: /^Undo/ })).toBeEnabled();
+    expect(screen.getByRole('button', { name: /^Redo/ })).toBeDisabled();
     // The history still works once the merchant has deliberately returned to editing.
-    await userEvent.click(screen.getByRole('button', { name: 'Undo draft edit' }));
-    expect(rowNames().slice(0, 3)).toEqual(['The form', 'Headline', 'Body text']);
+    await userEvent.click(screen.getByRole('button', { name: /^Undo/ }));
+    expect(rowNames().slice(0, 3)).toEqual(['Details', 'Headline', 'Body text']);
   });
 
   /**
@@ -1280,9 +1282,9 @@ describe('undo and redo', () => {
 
     expect(await screen.findByText(/^Draft saved$/)).toBeInTheDocument();
 
-    await userEvent.click(screen.getByRole('button', { name: 'Undo draft edit' }));
+    await userEvent.click(screen.getByRole('button', { name: /^Undo/ }));
 
-    expect(rowNames().slice(0, 3)).toEqual(['The form', 'Headline', 'Body text']);
+    expect(rowNames().slice(0, 3)).toEqual(['Details', 'Headline', 'Body text']);
     expect(screen.queryByText(/^Draft saved$/)).toBeNull();
   });
 });
@@ -1320,9 +1322,9 @@ describe('undo and redo, where they act on the whole draft', () => {
   it('puts Undo and Redo in the page header, beside the action with the same scope', async () => {
     await design();
 
-    expect(screen.getByRole('button', { name: 'Undo draft edit' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Redo draft edit' })).toBeInTheDocument();
-    expect(within(panel()).queryByRole('button', { name: 'Undo draft edit' })).toBeNull();
+    expect(screen.getByRole('button', { name: /^Undo/ })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /^Redo/ })).toBeInTheDocument();
+    expect(within(panel()).queryByRole('button', { name: /^Undo/ })).toBeNull();
   });
 
   /**
@@ -1345,10 +1347,10 @@ describe('undo and redo, where they act on the whole draft', () => {
     await userEvent.click(screen.getByRole('button', { name: /Custom look|Classic/ }));
     await userEvent.click(await screen.findByRole('button', { name: /Midnight/ }));
 
-    await userEvent.click(screen.getByRole('button', { name: 'Undo draft edit' }));
+    await userEvent.click(screen.getByRole('button', { name: /^Undo/ }));
     expect(screen.getByRole('button', { name: 'Save draft' })).toBeDisabled();
     expect(builder.saveOptin).not.toHaveBeenCalled();
-    await userEvent.click(screen.getByRole('button', { name: 'Redo draft edit' }));
+    await userEvent.click(screen.getByRole('button', { name: /^Redo/ }));
     await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
     expect(savedTokens()).not.toEqual(ENTRY.tokens);
   });
@@ -1549,7 +1551,7 @@ describe('a layout’s own settings', () => {
             tokens: ENTRY.tokens,
             /*
               Nested rather than at the top of the step: a step's root layout is
-              the step's own row ("The form"), so a `split` there has no row of
+              the step's own row ("Details"), so a `split` there has no row of
               its own to select.
             */
             tree: treeFixture({
@@ -1744,7 +1746,7 @@ describe('a leaf’s own settings', () => {
     await userEvent.type(screen.getByRole('textbox', { name: 'Text' }), '!');
     await userEvent.click(screen.getByRole('tab', { name: 'Style' }));
     await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Heading rank' }), '2');
-    await userEvent.click(screen.getByRole('button', { name: 'Undo draft edit' }));
+    await userEvent.click(screen.getByRole('button', { name: /^Undo/ }));
     await save();
 
     const heading = firstLeaf();
@@ -1819,7 +1821,7 @@ describe('a countdown’s inspector', () => {
 
     // Not the exact spelling: `Intl` renders a medium date in the reader's own
     // locale, and pinning "27 Nov 2099" would pin a test runner's locale.
-    expect(screen.getByText(/Counts down to .*2099.* — when this Campaign stops running\./)).toBeInTheDocument();
+    expect(within(screen.getByRole('tabpanel', { name: 'Theme & layout' })).getByText(/Counts down to .*2099.* — when this Campaign stops running\./)).toBeInTheDocument();
   });
 
   it('says the clock will be empty where there is no end date', async () => {
@@ -1828,7 +1830,7 @@ describe('a countdown’s inspector', () => {
     await openTheClock();
 
     expect(
-      screen.getByText('This Campaign has no end date, so the clock will be empty on the page.'),
+      within(screen.getByRole('tabpanel', { name: 'Theme & layout' })).getByText('This Campaign has no end date, so the clock will be empty on the page.'),
     ).toBeInTheDocument();
   });
 
@@ -1842,7 +1844,7 @@ describe('a countdown’s inspector', () => {
 
     await openTheClock();
 
-    expect(screen.getByText(/Counted down to .*2020.*already stopped running\./)).toBeInTheDocument();
+    expect(within(screen.getByRole('tabpanel', { name: 'Theme & layout' })).getByText(/Counted down to .*2020.*already stopped running\./)).toBeInTheDocument();
   });
 
   /**
@@ -1953,9 +1955,9 @@ describe('the visible Add element picker', () => {
     await userEvent.selectOptions(screen.getByLabelText('Insert position'), '1');
     await userEvent.type(screen.getByLabelText('Find an element'), 'Image');
     await userEvent.click(screen.getByRole('button', { name: 'Image' }));
-    expect(rowNames().slice(0, 3)).toEqual(['The form', 'Image', 'Headline']);
-    await userEvent.click(screen.getByRole('button', { name: 'Undo draft edit' }));
-    expect(rowNames().slice(0, 2)).toEqual(['The form', 'Headline']);
+    expect(rowNames().slice(0, 3)).toEqual(['Details', 'Image', 'Headline']);
+    await userEvent.click(screen.getByRole('button', { name: /^Undo/ }));
+    expect(rowNames().slice(0, 2)).toEqual(['Details', 'Headline']);
   });
 
   it('lets the merchant choose the field to add and disables a duplicate capture', async () => {
@@ -1998,15 +2000,17 @@ describe('adaptive editor and signup deletion', () => {
     const config = { template_id: ENTRY.id, template: journey, submission_settings: { 'sms-signup': { destination_ids: ['sms-route'] } } };
     builder.getOptin.mockResolvedValue(optin({ config }));
     render(<OptinBuilder id={ID} onClose={vi.fn()} />);
-    await userEvent.click(await screen.findByRole('button', { name: 'Manage screens' }));
-    await userEvent.click(screen.getByRole('button', { name: /Optional SMS signup Save/ }));
-    await userEvent.click(screen.getByRole('button', { name: 'Delete screen' }));
-    await userEvent.click(screen.getByRole('button', { name: 'Done' }));
+  await userEvent.click(await screen.findByRole('tab', { name: 'Theme & layout' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Edit screens & conditions' }));
+    await userEvent.click(within(screen.getByRole('navigation', { name: 'Campaign screens' })).getByRole('button', { name: 'Optional SMS signup' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Screen actions' }));
+    await userEvent.click(screen.getByRole('menuitem', { name: 'Remove optional signup' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Remove signup screens' }));
     await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
     expect(savedTree().submissions).toHaveLength(1);
     expect(builder.saveOptin.mock.calls.at(-1)?.[2].submission_settings).toEqual({});
     await screen.findByRole('button', { name: 'Save draft' });
-    await userEvent.click(screen.getByRole('button', { name: 'Undo draft edit' }));
+    await userEvent.click(screen.getByRole('button', { name: /^Undo:/ }));
     await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
     expect(savedTree().submissions).toHaveLength(2);
     expect(builder.saveOptin.mock.calls.at(-1)?.[2].submission_settings).toEqual(config.submission_settings);

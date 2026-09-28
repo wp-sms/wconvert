@@ -305,6 +305,7 @@ export const SHADOW_CSS = [
    */
   `h3.wc-heading{font-size:calc(var(--wc-heading-size,1.5rem)*.72)}`,
   `.wc-text{margin:0}`,
+  `.wc-answer-review{margin-block:.75rem;text-align:start;overflow-wrap:anywhere}.wc-answer-review h3{font-size:inherit}.wc-answer-review dl{margin:.5rem 0}.wc-answer-review dt{font-weight:600;margin-block-start:.5rem}.wc-answer-review dd{margin:0;white-space:pre-wrap}.wc-capture-note{font-size:.875em;white-space:pre-wrap}`,
   // `.8125em` is small body text, not fine print — it sat close enough to the
   // body copy that a design with both read as two paragraphs of equal weight.
   // `.6875em` is the size this genre actually sets a consent line at.
@@ -519,6 +520,8 @@ export const SHADOW_CSS = [
    * container, so the shorthand was already inert there.
    */
   `.wc-field{display:flex;flex-direction:column;gap:.25rem;text-align:start}`,
+  `.wc-product{display:grid;grid-template-columns:4.5rem minmax(0,1fr);gap:.75rem;padding:.75rem;border:1px solid var(--wc-border,#e5e7eb);border-radius:var(--wc-radius,.5rem)}`,
+  `.wc-product>img{inline-size:4.5rem;block-size:4.5rem;object-fit:cover}`,
   `.wc-row>.wc-field{flex:1 1 12rem}`,
   /*
    * ==========================================================================
@@ -657,6 +660,9 @@ export const SHADOW_CSS = [
   // One visible focus ring for everything focusable, so the keyboard path
   // `showModal()` supplies for free is actually followable.
   `:focus-visible{outline:2px solid var(--wc-accent,#2563eb);outline-offset:2px}`,
+  // A secondary button can override its accent with transparent. Its focus
+  // ring must still contrast with the surrounding surface in any palette.
+  `.wc-button:focus-visible{outline-color:var(--wc-fg,#0f172a)}`,
 
   /*
    * ==========================================================================
@@ -713,3 +719,7 @@ export const SHADOW_CSS = [
    * --------------------------------------------------------------------- */
   `@container wc (max-width:24rem){[data-narrow]{${'bg fg muted accent accent-fg border input-bg font heading-font heading-size heading-weight tracking text-size leading radius pad gap width align bg-image image-position overlay shadow motion backdrop'.split(' ').map(name => `--wc-${name}:var(--wc-n-${name})!important`).join(';')}}}`,
 ].join('');
+
+let premiumStyles = '';
+export function registerJourneyStyles(css: string): void { premiumStyles = css; }
+export function mountedStyles(): string { return SHADOW_CSS + premiumStyles; }

@@ -1,0 +1,658 @@
+{
+  "v": 3,
+  "submissions": [
+    {
+      "id": "enquiry",
+      "required": true,
+      "fields": [
+        "n34"
+      ],
+      "consents": []
+    }
+  ],
+  "steps": [
+    {
+      "id": "received",
+      "name": "Request received",
+      "kind": "acknowledgement",
+      "content": {
+        "type": "stack",
+        "children": [
+          {
+            "type": "heading",
+            "id": "n37",
+            "text": "Thank you for your enquiry"
+          }
+        ]
+      }
+    },
+    {
+      "id": "contact",
+      "name": "Send one combined enquiry",
+      "kind": "input",
+      "content": {
+        "type": "stack",
+        "children": [
+          {
+            "type": "field",
+            "id": "n34",
+            "name": "email",
+            "label": "Email address",
+            "required": true
+          },
+          {
+            "type": "button",
+            "id": "n35",
+            "action": "submit",
+            "submission": "enquiry",
+            "label": "Send enquiry"
+          },
+          {
+            "type": "button",
+            "id": "n36",
+            "action": "back",
+            "label": "Back"
+          }
+        ]
+      }
+    },
+    {
+      "id": "business_maintenance",
+      "name": "Ongoing care across multiple premises details",
+      "kind": "input",
+      "content": {
+        "type": "stack",
+        "children": [
+          {
+            "type": "question",
+            "id": "n31",
+            "label": "Tell us about your ongoing care across multiple premises project, including your available space, timing and any existing arrangements.",
+            "answer_type": "text",
+            "required": false
+          },
+          {
+            "type": "button",
+            "id": "n32",
+            "action": "next",
+            "label": "Continue"
+          },
+          {
+            "type": "button",
+            "id": "n33",
+            "action": "back",
+            "label": "Back"
+          }
+        ]
+      },
+      "when": {
+        "match": "all",
+        "clauses": [
+          {
+            "question": "n19",
+            "operator": "includes_any",
+            "values": [
+              "maintenance"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "business_retail",
+      "name": "Retail seasonal displays details",
+      "kind": "input",
+      "content": {
+        "type": "stack",
+        "children": [
+          {
+            "type": "question",
+            "id": "n28",
+            "label": "Tell us about your retail seasonal displays project, including your available space, timing and any existing arrangements.",
+            "answer_type": "text",
+            "required": false
+          },
+          {
+            "type": "button",
+            "id": "n29",
+            "action": "next",
+            "label": "Continue"
+          },
+          {
+            "type": "button",
+            "id": "n30",
+            "action": "back",
+            "label": "Back"
+          }
+        ]
+      },
+      "when": {
+        "match": "all",
+        "clauses": [
+          {
+            "question": "n19",
+            "operator": "includes_any",
+            "values": [
+              "retail"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "business_hospitality",
+      "name": "Hotel and restaurant outdoor spaces details",
+      "kind": "input",
+      "content": {
+        "type": "stack",
+        "children": [
+          {
+            "type": "question",
+            "id": "n25",
+            "label": "Tell us about your hotel and restaurant outdoor spaces project, including your available space, timing and any existing arrangements.",
+            "answer_type": "text",
+            "required": false
+          },
+          {
+            "type": "button",
+            "id": "n26",
+            "action": "next",
+            "label": "Continue"
+          },
+          {
+            "type": "button",
+            "id": "n27",
+            "action": "back",
+            "label": "Back"
+          }
+        ]
+      },
+      "when": {
+        "match": "all",
+        "clauses": [
+          {
+            "question": "n19",
+            "operator": "includes_any",
+            "values": [
+              "hospitality"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "business_office",
+      "name": "Office planting and staff wellbeing details",
+      "kind": "input",
+      "content": {
+        "type": "stack",
+        "children": [
+          {
+            "type": "question",
+            "id": "n22",
+            "label": "Tell us about your office planting and staff wellbeing project, including your available space, timing and any existing arrangements.",
+            "answer_type": "text",
+            "required": false
+          },
+          {
+            "type": "button",
+            "id": "n23",
+            "action": "next",
+            "label": "Continue"
+          },
+          {
+            "type": "button",
+            "id": "n24",
+            "action": "back",
+            "label": "Back"
+          }
+        ]
+      },
+      "when": {
+        "match": "all",
+        "clauses": [
+          {
+            "question": "n19",
+            "operator": "includes_any",
+            "values": [
+              "office"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "business",
+      "name": "Your business interests",
+      "kind": "input",
+      "content": {
+        "type": "stack",
+        "children": [
+          {
+            "type": "question",
+            "id": "n19",
+            "label": "Which areas would you like help with? Choose every relevant area.",
+            "answer_type": "multi",
+            "required": false,
+            "options": [
+              {
+                "value": "office",
+                "label": "Office planting and staff wellbeing"
+              },
+              {
+                "value": "hospitality",
+                "label": "Hotel and restaurant outdoor spaces"
+              },
+              {
+                "value": "retail",
+                "label": "Retail seasonal displays"
+              },
+              {
+                "value": "maintenance",
+                "label": "Ongoing care across multiple premises"
+              }
+            ]
+          },
+          {
+            "type": "button",
+            "id": "n20",
+            "action": "next",
+            "label": "Continue"
+          },
+          {
+            "type": "button",
+            "id": "n21",
+            "action": "back",
+            "label": "Back"
+          }
+        ]
+      }
+    },
+    {
+      "id": "home_irrigation",
+      "name": "Irrigation and maintenance details",
+      "kind": "input",
+      "content": {
+        "type": "stack",
+        "children": [
+          {
+            "type": "question",
+            "id": "n16",
+            "label": "Tell us about your irrigation and maintenance project, including your available space, timing and any existing arrangements.",
+            "answer_type": "text",
+            "required": false
+          },
+          {
+            "type": "button",
+            "id": "n17",
+            "action": "next",
+            "label": "Continue"
+          },
+          {
+            "type": "button",
+            "id": "n18",
+            "action": "back",
+            "label": "Back"
+          }
+        ]
+      },
+      "when": {
+        "match": "all",
+        "clauses": [
+          {
+            "question": "n4",
+            "operator": "includes_any",
+            "values": [
+              "irrigation"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "home_indoor",
+      "name": "Indoor plants details",
+      "kind": "input",
+      "content": {
+        "type": "stack",
+        "children": [
+          {
+            "type": "question",
+            "id": "n13",
+            "label": "Tell us about your indoor plants project, including your available space, timing and any existing arrangements.",
+            "answer_type": "text",
+            "required": false
+          },
+          {
+            "type": "button",
+            "id": "n14",
+            "action": "next",
+            "label": "Continue"
+          },
+          {
+            "type": "button",
+            "id": "n15",
+            "action": "back",
+            "label": "Back"
+          }
+        ]
+      },
+      "when": {
+        "match": "all",
+        "clauses": [
+          {
+            "question": "n4",
+            "operator": "includes_any",
+            "values": [
+              "indoor"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "home_balcony",
+      "name": "Balcony planting details",
+      "kind": "input",
+      "content": {
+        "type": "stack",
+        "children": [
+          {
+            "type": "question",
+            "id": "n10",
+            "label": "Tell us about your balcony planting project, including your available space, timing and any existing arrangements.",
+            "answer_type": "text",
+            "required": false
+          },
+          {
+            "type": "button",
+            "id": "n11",
+            "action": "next",
+            "label": "Continue"
+          },
+          {
+            "type": "button",
+            "id": "n12",
+            "action": "back",
+            "label": "Back"
+          }
+        ]
+      },
+      "when": {
+        "match": "all",
+        "clauses": [
+          {
+            "question": "n4",
+            "operator": "includes_any",
+            "values": [
+              "balcony"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "home_garden",
+      "name": "Garden landscaping details",
+      "kind": "input",
+      "content": {
+        "type": "stack",
+        "children": [
+          {
+            "type": "question",
+            "id": "n7",
+            "label": "Tell us about your garden landscaping project, including your available space, timing and any existing arrangements.",
+            "answer_type": "text",
+            "required": false
+          },
+          {
+            "type": "button",
+            "id": "n8",
+            "action": "next",
+            "label": "Continue"
+          },
+          {
+            "type": "button",
+            "id": "n9",
+            "action": "back",
+            "label": "Back"
+          }
+        ]
+      },
+      "when": {
+        "match": "all",
+        "clauses": [
+          {
+            "question": "n4",
+            "operator": "includes_any",
+            "values": [
+              "garden"
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "id": "home",
+      "name": "Your home interests",
+      "kind": "input",
+      "content": {
+        "type": "stack",
+        "children": [
+          {
+            "type": "question",
+            "id": "n4",
+            "label": "Which areas would you like help with? Choose every relevant area.",
+            "answer_type": "multi",
+            "required": false,
+            "options": [
+              {
+                "value": "garden",
+                "label": "Garden landscaping"
+              },
+              {
+                "value": "balcony",
+                "label": "Balcony planting"
+              },
+              {
+                "value": "indoor",
+                "label": "Indoor plants"
+              },
+              {
+                "value": "irrigation",
+                "label": "Irrigation and maintenance"
+              }
+            ]
+          },
+          {
+            "type": "button",
+            "id": "n5",
+            "action": "next",
+            "label": "Continue"
+          },
+          {
+            "type": "button",
+            "id": "n6",
+            "action": "back",
+            "label": "Back"
+          }
+        ]
+      }
+    },
+    {
+      "id": "scope",
+      "name": "Who is this enquiry for?",
+      "kind": "input",
+      "content": {
+        "type": "stack",
+        "children": [
+          {
+            "type": "question",
+            "id": "n1",
+            "label": "Choose the project you would like us to help with",
+            "answer_type": "single",
+            "required": true,
+            "options": [
+              {
+                "value": "home",
+                "label": "My home"
+              },
+              {
+                "value": "business",
+                "label": "My business"
+              }
+            ]
+          },
+          {
+            "type": "button",
+            "id": "n2",
+            "action": "next",
+            "label": "Continue"
+          }
+        ]
+      }
+    }
+  ],
+  "graph": {
+    "entry": "scope",
+    "edges": [
+      {
+        "id": "home_entry",
+        "from": "scope",
+        "to": "home",
+        "kind": "answer",
+        "when": {
+          "match": "all",
+          "clauses": [
+            {
+              "question": "n1",
+              "operator": "is",
+              "values": [
+                "home"
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "home_start",
+        "from": "home",
+        "to": "home_garden",
+        "kind": "default"
+      },
+      {
+        "id": "home_garden_default",
+        "from": "home_garden",
+        "to": "home_balcony",
+        "kind": "default"
+      },
+      {
+        "id": "home_garden_hidden",
+        "from": "home_garden",
+        "to": "home_balcony",
+        "kind": "hidden"
+      },
+      {
+        "id": "home_balcony_default",
+        "from": "home_balcony",
+        "to": "home_indoor",
+        "kind": "default"
+      },
+      {
+        "id": "home_balcony_hidden",
+        "from": "home_balcony",
+        "to": "home_indoor",
+        "kind": "hidden"
+      },
+      {
+        "id": "home_indoor_default",
+        "from": "home_indoor",
+        "to": "home_irrigation",
+        "kind": "default"
+      },
+      {
+        "id": "home_indoor_hidden",
+        "from": "home_indoor",
+        "to": "home_irrigation",
+        "kind": "hidden"
+      },
+      {
+        "id": "home_irrigation_default",
+        "from": "home_irrigation",
+        "to": "contact",
+        "kind": "default"
+      },
+      {
+        "id": "home_irrigation_hidden",
+        "from": "home_irrigation",
+        "to": "contact",
+        "kind": "hidden"
+      },
+      {
+        "id": "business_entry",
+        "from": "scope",
+        "to": "business",
+        "kind": "default"
+      },
+      {
+        "id": "business_start",
+        "from": "business",
+        "to": "business_office",
+        "kind": "default"
+      },
+      {
+        "id": "business_office_default",
+        "from": "business_office",
+        "to": "business_hospitality",
+        "kind": "default"
+      },
+      {
+        "id": "business_office_hidden",
+        "from": "business_office",
+        "to": "business_hospitality",
+        "kind": "hidden"
+      },
+      {
+        "id": "business_hospitality_default",
+        "from": "business_hospitality",
+        "to": "business_retail",
+        "kind": "default"
+      },
+      {
+        "id": "business_hospitality_hidden",
+        "from": "business_hospitality",
+        "to": "business_retail",
+        "kind": "hidden"
+      },
+      {
+        "id": "business_retail_default",
+        "from": "business_retail",
+        "to": "business_maintenance",
+        "kind": "default"
+      },
+      {
+        "id": "business_retail_hidden",
+        "from": "business_retail",
+        "to": "business_maintenance",
+        "kind": "hidden"
+      },
+      {
+        "id": "business_maintenance_default",
+        "from": "business_maintenance",
+        "to": "contact",
+        "kind": "default"
+      },
+      {
+        "id": "business_maintenance_hidden",
+        "from": "business_maintenance",
+        "to": "contact",
+        "kind": "hidden"
+      },
+      {
+        "id": "saved",
+        "from": "contact",
+        "to": "received",
+        "kind": "default"
+      }
+    ]
+  }
+}

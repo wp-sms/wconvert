@@ -101,7 +101,15 @@ foreach (['email-signup' => $emailRoute->id, 'sms-signup' => $smsRoute->id] as $
 }
 journeyCheck(count($provider->pushed) === 2, 'each accepted signup has one independent provider handoff');
 $rows = $db->results(Connection::TABLE_STATS, 'SELECT kind, scope, `count` FROM %i WHERE optin_id = %s', $optin->id);
-journeyCheck(count($rows) === 3 && array_sum(array_column($rows, 'count')) === 3, 'one Campaign Conversion and two channel captures');
+$counts = [];
+foreach ($rows as $row) { $counts[$row['kind'] . ':' . $row['scope']] = (int) $row['count']; }
+ksort($counts);
+journeyCheck($counts === [
+    'capture:' => 2,
+    'conversion:' => 1,
+    'conversion:channel:email_marketing' => 1,
+    'conversion:channel:sms_marketing' => 1,
+], 'one Campaign Conversion, two captured submissions, and two channel counts');
 journeyCheck(get_option('wconvert_flow_' . $optin->id . '_' . $base['contract'], null) !== null, 'publication saves the reporting screen definitions');
 $changed = $body; $changed['fields'] = ['email' => 'replacement@example.test'];
 journeyCheck((journeyRequest($changed)['error'] ?? '') === 'wconvert_capture_conflict', 'an accepted email cannot be changed');
@@ -177,4 +185,32 @@ journeyCheck(true, 'recovery hands off all 120 pending signups across bounded ba
 $leads->eraseByEmail($email);
 as_unschedule_all_actions(SubmissionDispatcher::RECOVER, [], ActionSchedulerQueue::GROUP);
 $optins->delete($optin->id);
+
+// Exercise the actual promotion boundary as well as the graph validator.
+// A validator-only test missed the repository's former v2-only publish guard.
+$graphTree = json_decode((string) file_get_contents(dirname(__DIR__) . '/tests/fixtures/journey-graph-enquiry.json'), true, 32, JSON_THROW_ON_ERROR);
+$graphConfig = ['template' => ['tree' => $graphTree], 'capture_mode' => 'local', 'display_type' => 'popup',
+    'display_rules' => \WConvert\Rules\DisplayPlan::immediate()];
+$graphOptin = $optins->create('Graph enquiry verification', 'collect_enquiries', $graphConfig);
+journeyCheck($optins->publish($graphOptin->id) !== null, 'a graph enquiry passes the repository publication boundary');
+$graphBase = ['optin_id' => $graphOptin->id, 'contract' => CaptureContract::fingerprint($graphConfig, $graphOptin->goal, get_privacy_policy_url())];
+$graphStart = journeyRequest($graphBase + ['phase' => 'start']);
+if (!$c->resolve(\WConvert\Goal\GoalRegistry::class)->supportsJourneys()) {
+    journeyCheck(($graphStart['error'] ?? '') === 'wconvert_journey_unavailable', 'Free cannot capture a graph that requires Pro');
+} else {
+    journeyCheck(isset($graphStart['grant']), 'a published graph starts a visitor capture session');
+    $graphBody = $graphBase + ['grant' => $graphStart['grant'], 'submission' => 'enquiry',
+        'fields' => ['email' => $email], 'question_answers' => ['n1' => ['balcony'], 'n2' => 'small', 'n4' => 'large']];
+    $graphCapture = journeyRequest($graphBody);
+    journeyCheck(isset($graphCapture['id']), 'a published graph accepts its combined enquiry');
+    $graphLead = $leads->find($graphCapture['id']);
+    $graphSnapshot = $graphLead?->submission('enquiry');
+    journeyCheck(array_column($graphSnapshot->questionAnswers ?? [], 'id') === ['n1', 'n4'],
+        'the graph save excludes an answer from a deselected follow-up');
+    $graphReplay = journeyRequest($graphBody);
+    journeyCheck(($graphReplay['id'] ?? null) === $graphCapture['id'] && ($graphReplay['replay'] ?? false),
+        'a repeated graph save returns the same Lead');
+    $leads->eraseByEmail($email);
+}
+$optins->delete($graphOptin->id);
 echo "Capture journey verification complete.\n";

@@ -50,6 +50,7 @@ final class CaptureController implements RestController
         private readonly \WConvert\Lead\CaptureGrant $grants,
         private readonly TemplateVocabulary $vocabulary,
         private readonly CaptureRateLimit $rateLimit,
+        private readonly ?\WConvert\Goal\GoalRegistry $goals = null,
     ) {
     }
 
@@ -126,6 +127,10 @@ final class CaptureController implements RestController
         $saved = $this->optins->find($optin->id);
         if ($saved === null) { return new WP_Error('wconvert_unavailable', __('This form is no longer available.', 'wconvert'), ['status' => 404]); }
         $config = $saved->publishedConfig;
+        if (\WConvert\Template\CaptureJourney::requiresPremium($config['template']['tree'] ?? [])
+            && ($this->goals === null || !$this->goals->supportsJourneys())) {
+            return new WP_Error('wconvert_journey_unavailable', __('This journey is temporarily unavailable. Please try again later.', 'wconvert'), ['status' => 503]);
+        }
         $goal = $saved->goal;
         $policy = get_privacy_policy_url();
         $contract = \WConvert\Template\CaptureContract::fingerprint($config, $goal, $policy);
@@ -147,6 +152,9 @@ final class CaptureController implements RestController
         if (!isset($settings[$id])) { return new WP_Error('wconvert_capture_invalid', __('This submission is unavailable.', 'wconvert'), ['status' => 422]); }
         $result = CaptureForm::fromTemplate($template, $this->vocabulary, $id)->validate($body);
         if ($result instanceof Refusal) { return self::refuse($result); }
+        $questionAnswers = \WConvert\Lead\QuestionCapture::validate($template['tree'], $body['question_answers'] ?? [], $id);
+        if ($questionAnswers instanceof Refusal) { return self::refuse($questionAnswers); }
+        $result = new \WConvert\Lead\Submission($result->email, $result->phone, $result->fields, $questionAnswers);
         try {
             $accepted = $this->capture->accept($optin->id, $contract, $grant, $template['tree'], $id, $result, $settings[$id]);
         } catch (\WConvert\Lead\CaptureConflict) {

@@ -12,6 +12,8 @@ field and a starting point that demonstrates it, using existing snapshots and
 the Lead's existing `fields` JSON. There is no table, column, index, stored
 person, delivery ledger or additional analytics dimension.
 
+**Extended by [ADR 0106](0106-question-journeys-extend-the-paid-loader.md):** the canonical Free `interest` field remains; paid question journeys add bounded single-choice, multiple-choice, and short-text questions for enquiries and quizzes. Answers enter existing Lead JSON only on an explicit contact submission, and anonymous quiz answers disappear with the visit.
+
 > **Amended by [ADR 0085](0085-goals-have-publish-contracts-and-stable-history.md):** Enquiry capture is now required at publication, not advisory. Its headline is Enquiries captured, not replies or bookings.
 
 ## The Goal names a captured enquiry, not completed work

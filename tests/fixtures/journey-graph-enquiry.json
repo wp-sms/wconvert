@@ -1,0 +1,22 @@
+{
+  "v": 3,
+  "submissions": [{"id":"enquiry","required":true,"fields":["n5"],"consents":[]}],
+  "steps": [
+    {"id":"contact","name":"One enquiry","kind":"input","content":{"type":"stack","children":[{"type":"field","id":"n5","name":"email","label":"Email address","required":true},{"type":"button","id":"n6","action":"submit","submission":"enquiry","label":"Send enquiry"},{"type":"button","id":"n7","action":"back","label":"Back"}]}},
+    {"id":"indoors","name":"Indoor details","kind":"input","when":{"match":"all","clauses":[{"question":"n1","operator":"includes_any","values":["indoors"]}]},"content":{"type":"stack","children":[{"type":"question","id":"n3","label":"Indoor light?","answer_type":"single","required":false,"options":[{"value":"bright","label":"Bright"},{"value":"shade","label":"Shade"}]},{"type":"button","id":"n11","action":"next","label":"Continue"},{"type":"button","id":"n14","action":"back","label":"Back"}]}},
+    {"id":"interests","name":"Interests","kind":"input","content":{"type":"stack","children":[{"type":"question","id":"n1","label":"What interests you?","answer_type":"multi","required":true,"options":[{"value":"garden","label":"Garden"},{"value":"indoors","label":"Indoors"},{"value":"balcony","label":"Balcony"}]},{"type":"button","id":"n10","action":"next","label":"Continue"}]}},
+    {"id":"received","name":"Received","kind":"acknowledgement","content":{"type":"stack","children":[{"type":"heading","id":"n8","text":"Request received"},{"type":"button","id":"n9","action":"back","label":"Back"}]}},
+    {"id":"balcony","name":"Balcony details","kind":"input","when":{"match":"all","clauses":[{"question":"n1","operator":"includes_any","values":["balcony"]}]},"content":{"type":"stack","children":[{"type":"question","id":"n4","label":"Balcony size?","answer_type":"single","required":false,"options":[{"value":"small","label":"Small"},{"value":"large","label":"Large"}]},{"type":"button","id":"n13","action":"next","label":"Continue"},{"type":"button","id":"n15","action":"back","label":"Back"}]}},
+    {"id":"garden","name":"Garden details","kind":"input","when":{"match":"all","clauses":[{"question":"n1","operator":"includes_any","values":["garden"]}]},"content":{"type":"stack","children":[{"type":"question","id":"n2","label":"Garden size?","answer_type":"single","required":false,"options":[{"value":"small","label":"Small"},{"value":"large","label":"Large"}]},{"type":"button","id":"n12","action":"next","label":"Continue"},{"type":"button","id":"n16","action":"back","label":"Back"}]}}
+  ],
+  "graph": {"entry":"interests","edges":[
+    {"id":"start","from":"interests","to":"garden","kind":"default"},
+    {"id":"garden_next","from":"garden","to":"indoors","kind":"default"},
+    {"id":"garden_hidden","from":"garden","to":"indoors","kind":"hidden"},
+    {"id":"indoor_next","from":"indoors","to":"balcony","kind":"default"},
+    {"id":"indoor_hidden","from":"indoors","to":"balcony","kind":"hidden"},
+    {"id":"balcony_next","from":"balcony","to":"contact","kind":"default"},
+    {"id":"balcony_hidden","from":"balcony","to":"contact","kind":"hidden"},
+    {"id":"submitted","from":"contact","to":"received","kind":"default"}
+  ]}
+}

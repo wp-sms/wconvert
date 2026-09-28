@@ -598,14 +598,26 @@ final class OptinController implements RestController
         }
 
         $issue = \WConvert\Template\CaptureContract::issue($optin->config, $optin->goal, get_privacy_policy_url());
+        if (\WConvert\Template\CaptureJourney::requiresPremium($optin->config['template']['tree'] ?? []) && !$this->goals->supportsJourneys()) {
+            return new WP_Error('wconvert_journey_requires_pro', __('Questions, conditions and results require WConvert Pro before publishing.', 'wconvert'), ['status' => 400]);
+        }
         if ($issue !== null) {
             $message = match ($issue) {
                 'choices' => __('Add at least one choice to the interest field before publishing. You can keep saving this Campaign as a draft.', 'wconvert'),
                 'followup' => __('Give each resource link a label and address, and place it after the form. You can keep saving this Campaign as a draft.', 'wconvert'),
                 'consent' => __('Each signup needs its required contact field and its own consent wording.', 'wconvert'),
+                'products' => __('Connect WooCommerce, choose products for each matching result, and add a fallback link with a label to every result before publishing.', 'wconvert'),
+                'result_link' => __('Give each result link a label and destination before publishing.', 'wconvert'),
+                'routes' => __('In Journey, connect every screen, give continuing screens a fallback path, and remove loops. You can keep saving this Campaign as a draft.', 'wconvert'),
+                'capture_paths' => __('Every route to the ending must pass the required save or result screen. Review the connections in Journey.', 'wconvert'),
+                'question_path_limit' => __('A connected journey route can contain at most ten questions. In Journey, remove questions from the affected route or move them to a separate branch.', 'wconvert'),
+                'conditions' => __('In Journey, complete each rule using a question available before it. You can keep saving this Campaign as a draft.', 'wconvert'),
+                'questions' => __('In Journey, complete the question text and answer choices. Choice questions need 2 to 12 named answers.', 'wconvert'),
+                'results' => __('In Journey, give each result a heading and a condition, with one unconditional Everyone else result last.', 'wconvert'),
+                'navigation' => __('Review each screen’s buttons in Design. Continuing screens need either Continue or Save, not both. Optional saves also need No thanks.', 'wconvert'),
                 default => __('Complete the screen order, navigation and submission fields before publishing. You can keep saving this Campaign as a draft.', 'wconvert'),
             };
-            return new WP_Error('wconvert_optin_form_incomplete', $message, ['status' => 400]);
+            return new WP_Error('wconvert_optin_form_incomplete', $message, ['status' => 400, 'issue' => $issue]);
         }
 
         $outcome = Goal::tryFrom($optin->goal)?->outcome();
@@ -748,7 +760,7 @@ final class OptinController implements RestController
     private function refuseMalformedChoices($template): ?WP_Error
     {
         if (is_array($template) && is_array($template['tree'] ?? null)
-            && ($template['tree']['v'] ?? null) !== \WConvert\Template\TemplateTree::VERSION) {
+            && !in_array($template['tree']['v'] ?? null, [\WConvert\Template\TemplateTree::VERSION, 3], true)) {
             return new WP_Error('wconvert_template_version', __('This design uses an unsupported format. Choose a current design.', 'wconvert'), ['status' => 400]);
         }
 

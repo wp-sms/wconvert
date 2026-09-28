@@ -66,6 +66,7 @@ final class BundledPlaybooksTest extends TestCase
         $library = self::library();
 
         foreach (Goal::cases() as $goal) {
+            if ($goal->tier() !== Tier::Free) continue;
             $this->assertNotSame([], $library->servicing($goal), "{$goal->value} has no Playbook");
         }
     }

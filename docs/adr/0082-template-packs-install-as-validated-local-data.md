@@ -18,6 +18,8 @@ installed and available collections, keeps updates explicit, and presents a
 selected design at desktop/mobile widths. Continue with this design opens the
 existing content-choice review; it does not apply the design.
 
+> **Amended by [ADR 0106](0106-question-journeys-extend-the-paid-loader.md):** The pack boundary also accepts bounded Pro question journeys on a paid install when `question-journey:1` is declared. Product IDs and links remain site-local and must be chosen after installation. Free installs still refuse paid designs.
+
 Version 1 installs Free popup/inline designs with placeholders. The initial local
 sample reused Reading slip, Callback notes and A useful little guide. The
 [first curated collections](../reviews/curated-template-collections-2026-09-14.md)

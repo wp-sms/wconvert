@@ -95,6 +95,20 @@ final class PrivacyGuidanceTest extends TestCase
         $this->assertArrayNotHasKey('fine_print', $copy);
     }
 
+    public function testTurningGuidanceOffAlsoStripsScopedQuizSignupCopy(): void
+    {
+        $guidance = new PrivacyGuidance(new FakeOptionStore());
+        $guidance->set(false);
+        $copy = $guidance->copyFor(['screens' => [
+            'screen:result' => ['next_label' => 'Continue'],
+            'submission:email' => ['consent_text' => ['text' => 'Email me news.'], 'cta_label' => 'Sign up'],
+        ]]);
+
+        $this->assertSame('Continue', $copy['screens']['screen:result']['next_label']);
+        $this->assertArrayNotHasKey('consent_text', $copy['screens']['submission:email']);
+        $this->assertSame('Sign up', $copy['screens']['submission:email']['cta_label']);
+    }
+
     public function testOngoingMarketingShowsConsentButOneTimeRequestsDoNot(): void
     {
         $guidance = new PrivacyGuidance(new FakeOptionStore());
@@ -111,10 +125,12 @@ final class PrivacyGuidanceTest extends TestCase
         $marketing = self::consentIn($guidance->treeFor($tree, Goal::GrowEmailList));
         $request = self::consentIn($guidance->treeFor($tree, Goal::CollectEnquiries));
         $download = self::consentIn($guidance->treeFor($tree, Goal::DeliverLeadMagnet));
+        $optionalQuizSignup = self::consentIn($guidance->treeFor($tree, Goal::FindMatch));
 
         $this->assertFalse($marketing['hidden'] ?? true);
         $this->assertTrue($request['hidden'] ?? false);
         $this->assertTrue($download['hidden'] ?? false);
+        $this->assertFalse($optionalQuizSignup['hidden'] ?? true);
     }
 
     public function testMarketingNeverRevealsABlankConsentControl(): void

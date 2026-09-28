@@ -28,7 +28,7 @@ final class GoalRegistryTest extends TestCase
     public function testTheRegistryHoldsTheGoalsInTheirDeclaredOrder(): void
     {
         $this->assertSame(
-            ['grow_email_list', 'grow_sms_list', 'recover_cart', 'promote_offer', 'deliver_lead_magnet', 'collect_enquiries'],
+            ['grow_email_list', 'grow_sms_list', 'recover_cart', 'promote_offer', 'deliver_lead_magnet', 'collect_enquiries', 'find_match'],
             array_map(static fn (Goal $goal): string => $goal->value, Goal::cases())
         );
     }

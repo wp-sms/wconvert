@@ -26,7 +26,7 @@ import { isOverlay } from './decide';
  */
 export const INLINE_ANCHOR_ATTRIBUTE = 'data-wconvert-optin';
 
-export const templatePresenter: Presenter = {
+export function createTemplatePresenter(bind: typeof captureInto): Presenter { return {
   show(entry: PayloadEntry, controls: OptinControls): void {
     const template = entry.template;
 
@@ -71,7 +71,7 @@ export const templatePresenter: Presenter = {
 
     mounted.show();
 
-    captureInto(mounted, entry, controls);
+    bind(mounted, entry, controls);
 
     // **An Impression has two moments and only a renderer can tell them
     // apart.** For the three overlays it is the moment it is shown, because
@@ -87,7 +87,9 @@ export const templatePresenter: Presenter = {
 
     whenInViewport(anchor, () => controls.impression());
   },
-};
+}; }
+
+export const templatePresenter: Presenter = createTemplatePresenter(captureInto);
 
 /**
  * Wire a mounted Optin's form to the capture endpoint.

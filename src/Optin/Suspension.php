@@ -122,6 +122,9 @@ final class Suspension
      */
     public function reason(): string
     {
+        if ($this->rule === 'journey_questions') {
+            return __('Suspended — this question journey needs WConvert Pro, which is not active.', 'wconvert');
+        }
         // **Not an upsell, and never one**: a rule the SITE cannot serve is
         // not something we can sell (ADR 0026). Reachable as of #36, whose two
         // cart Conditions are the first rule types to declare a

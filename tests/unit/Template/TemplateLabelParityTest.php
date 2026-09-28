@@ -4,7 +4,6 @@ namespace WConvert\Tests\Unit\Template;
 
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\TestCase;
-use WConvert\Template\ConvertingAct;
 use WConvert\Template\TemplateFacets;
 use WConvert\Template\TemplateLabels;
 use WConvert\Template\TemplateManifest;
@@ -388,18 +387,13 @@ final class TemplateLabelParityTest extends TestCase
      * pins to exactly the content keys — a label for `action` in there would be
      * a control the editor must not offer as words.
      *
-     * The manifest declares no list of `action` values to assert against, and
-     * adding one would be a fifth hand-maintained cross-cutting list (ADR 0019)
-     * for data PHP already owns: {@see ConvertingAct} is the closed set, and
-     * `action()` is where each act's node spelling lives. So parity is asked of
-     * the enum, in both directions — a third act would arrive unnamed, and a
-     * label for an action nothing produces would be a word for a state that
-     * cannot exist.
+     * Button actions include navigation as well as conversion. Read the full
+     * manifest choice list so Back, Skip and Close cannot fall back to raw keys.
      */
     public function testEveryButtonActionIsNamedAndNothingElseIs(): void
     {
         $this->assertNamesExactly(
-            array_map(static fn (ConvertingAct $act): string => $act->action(), ConvertingAct::cases()),
+            self::manifest()['nodes']['button']['choices']['action'],
             TemplateLabels::params(),
             'button actions'
         );

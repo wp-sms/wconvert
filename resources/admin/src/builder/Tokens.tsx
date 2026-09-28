@@ -249,6 +249,7 @@ export function Tokens({
   onError: (cause: unknown) => void;
 }) {
   const [copied, setCopied] = useState<number | null>(null);
+  const [detailed, setDetailed] = useState(false);
   const groups = groupsOf(styleTokens(template, null));
   const hasDesign = Object.keys(design).length > 0;
 
@@ -279,8 +280,8 @@ export function Tokens({
         docblock describes for the tabs that had a `RegionHeader`. The groups
         below are the structure, in one register, and this is the first of them.
       */}
-      <section className="wconvert-group" aria-label={__('Your theme’s own palette', 'wconvert')}>
-        <h5 className="wconvert-group__name">{__('Your theme’s own palette', 'wconvert')}</h5>
+      <section className="wconvert-group" aria-label={__('WordPress theme palette', 'wconvert')}>
+        <h5 className="wconvert-group__name">{__('WordPress theme palette', 'wconvert')}</h5>
 
         <p className="wconvert-themes__theme">
         {/*
@@ -299,7 +300,7 @@ export function Tokens({
               screen to press — the 24px tier, like the resets and swatches
               around it. */}
           <Button type="button" variant="outline" size="xs" onClick={copyTheme}>
-            {__('Copy my theme’s palette and font', 'wconvert')}
+            {__('Use theme colors and font', 'wconvert')}
           </Button>
           {copied !== null && (
             <span className="text-note text-muted-foreground">
@@ -311,7 +312,8 @@ export function Tokens({
         </p>
       </section>
 
-      {groups.map((group) => (
+      <button type="button" className="wconvert-style-detail-toggle" aria-expanded={detailed} onClick={() => { onOpenToken(null); setDetailed(value => !value); }}>{detailed ? __('Show essential styles', 'wconvert') : __('Detailed styling…', 'wconvert')}</button>
+      {groups.filter(group => detailed || ['color', 'type', 'heading', 'space'].includes(group.id)).map((group) => (
         <section key={group.id} className="wconvert-group" aria-label={groupName(group.id)}>
           <h5 className="wconvert-group__name">{groupName(group.id)}</h5>
 
@@ -327,9 +329,9 @@ export function Tokens({
             />
           ) : (
             <div className="wconvert-fields">
-              {group.tokens.map((token) => (
+              {group.tokens.filter(token => detailed || ['font', 'heading-font', 'heading-size', 'text-size', 'width', 'pad', 'gap', 'radius', 'align'].includes(token.name)).map((token) => (
                 <div key={token.name} className="wconvert-fields__item" data-compact={['gap', 'radius'].includes(token.name) || undefined}>
-                  <TokenField
+                  <TokenField simple={!detailed}
                     token={token.name}
                     label={nameOf(labels.tokens, token.name)}
                     labels={labels}
@@ -473,6 +475,7 @@ function Palette({
  * to destroy it.
  */
 export function TokenField({
+  simple = false,
   token,
   label,
   labels,
@@ -485,6 +488,7 @@ export function TokenField({
   onChange,
   resetSaid,
 }: {
+  simple?: boolean;
   /** The token's own name — the key its choices and its value labels are under. */
   token: string;
   label: string;
@@ -528,6 +532,14 @@ export function TokenField({
   );
   const offered = CHOICES[token];
 
+  const presetBase = measuresOf(fallback);
+  if (simple && ['heading-size', 'text-size', 'width', 'pad', 'gap', 'radius'].includes(token) && presetBase) {
+    const presets = [.8, 1, 1.2].map((factor, index) => ({ value: presetBase.map(part => `${Math.round(part.amount * factor * 100) / 100}${part.unit}`).join(' '), label: [__('Smaller', 'wconvert'), __('Design default', 'wconvert'), __('Larger', 'wconvert')][index] }));
+    return <div className="wconvert-token"><label htmlFor={field}>{label}</label><select id={field} value={shown} onChange={event => onChange(event.target.value)}>
+      {!presets.some(preset => preset.value === shown) && <option value={shown}>{sprintf(__('Custom (%s)', 'wconvert'), shown)}</option>}
+      {presets.filter((preset, index) => presets.findIndex(item => item.value === preset.value) === index).map(preset => <option key={preset.value} value={preset.value}>{preset.label}</option>)}
+      </select>{reset}</div>;
+  }
   const control = TOKENS.find(declaration => declaration.name === token)?.control;
   if (control === 'position') return <PositionField label={label} shown={shown} offered={offered ?? []}
     nameOfValue={choice => nameOf(labels.tokenValues, `${token}.${choice}`)} reset={reset} onChange={onChange} />;
@@ -1026,7 +1038,7 @@ function FontField({
             {search && ![...theirs.map(font => font.label), ...offered.map(nameOfStack)].some(name => name.toLowerCase().includes(search.toLowerCase())) && <p role="status">{__('No matching fonts.', 'wconvert')}</p>}
             <div className="wconvert-font-library">
               <strong>{__('Want a Google Font?', 'wconvert')}</strong>
-              <p>{__('Install it in the WordPress Font Library. Save your draft and reload the editor to refresh font previews. WordPress hosts the font on your site.', 'wconvert')}</p>
+              <p>{__('Install it in the WordPress Font Library, then save your draft and reload. Fonts are hosted on your site.', 'wconvert')}</p>
               <a href={libraryUrl ?? 'https://wordpress.org/documentation/article/the-font-library/'} target="_blank" rel="noreferrer">{libraryUrl ? __('Open Font Library ↗', 'wconvert') : __('Font Library instructions ↗', 'wconvert')}</a>
             </div>
             {/*

@@ -1,4 +1,4 @@
-import { walkNodes } from './journey';
+import { walkNodes, usedBy } from './journey';
 import { __, _n, sprintf } from '@wordpress/i18n';
 import { childKeysOf } from '../panel';
 import { nodeAt, nodesOf, withRemoved, type Block } from './tree';
@@ -51,6 +51,8 @@ import type { TemplateNode, TemplateTree } from '@renderer/types';
  * to the renderer and another to whatever counts.
  */
 export function convertingActOf(tree: TemplateTree): ConvertingAct[] {
+  const result = tree.steps.findIndex(step => step.kind === 'result');
+  if (result >= 0) return ['match'];
   const found: ConvertingAct[] = [];
 
   for (const step of tree.steps) {
@@ -120,8 +122,12 @@ export const isConvertingAct = (block: Block): boolean => block.type === 'button
  *    field back.
  */
 export function whyRemovalIsRefused(tree: TemplateTree, path: Path): string | null {
-  if (nodeAt(tree, path) === null) {
+  const current = nodeAt(tree, path);
+  if (current === null) {
     return null;
+  }
+  if (walkNodes(current).some(node => node.type === 'question' && 'id' in node && usedBy(tree, node.id as string).length > 0)) {
+    return __('This question controls another screen or result. Remove those conditions first.', 'wconvert');
   }
 
   const after = withRemoved(tree, path);

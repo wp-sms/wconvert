@@ -296,7 +296,7 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins }: GoalScree
             <DialogDescription>{__('Review this setup. You can change it in the editor.', 'wconvert')}</DialogDescription>
           </DialogHeader>
           <StartingPointFacts playbook={inspected} goal={goal} vocabulary={vocabulary.status === 'ready' ? vocabulary.data : null} />
-          {inspected.notes && <p className="m-0 text-note text-muted-foreground">{inspected.notes}</p>}
+          {inspected.notes && !(inspected.template && inspected.template.tree.steps.length > 1) && <p className="m-0 text-note text-muted-foreground">{inspected.notes}</p>}
           <Button variant="outline" onClick={() => setInspected(null)}>{__('Back to setups', 'wconvert')}</Button>
         </>}
       </DialogContent>

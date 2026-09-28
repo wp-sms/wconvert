@@ -20,7 +20,7 @@ final class StatKindTest extends TestCase
     public function testItIsExactlyTheseFour(): void
     {
         $this->assertSame(
-            ['impression', 'screen_shown', 'screen_advanced', 'screen_skipped', 'screen_dismissed', 'conversion', 'dismiss', 'lead_magnet_delivered'],
+            ['impression', 'screen_shown', 'screen_advanced', 'screen_skipped', 'screen_dismissed', 'conversion', 'capture', 'result_click', 'dismiss', 'lead_magnet_delivered'],
             array_map(static fn (StatKind $kind): string => $kind->value, StatKind::cases())
         );
     }

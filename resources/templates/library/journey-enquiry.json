@@ -105,7 +105,7 @@
               "action": "back",
               "tokens": {
                 "accent": "transparent",
-                "accent-fg": "#475569"
+                "accent-fg": "fg"
               }
             },
             {

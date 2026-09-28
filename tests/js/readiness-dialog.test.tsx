@@ -10,6 +10,8 @@ import { ready } from '../../resources/admin/src/shell/loadable';
 import type { GoalEntry } from '../../resources/admin/src/goals/api';
 import type { Template } from '@renderer/types';
 import { ruleTypes } from './support/rule-types';
+import graphFixture from '../fixtures/journey-graph-enquiry.json';
+import coffee from '../fixtures/journey-graph-coffee.json';
 
 const design = (id: string): Template => JSON.parse(readFileSync(
   resolve(import.meta.dirname, `../../resources/templates/library/${id}.json`), 'utf8',
@@ -54,6 +56,19 @@ async function open(overrides: Partial<ReadinessDialogProps> = {}) {
 afterEach(() => { delete window.wconvertAdmin; });
 
 describe('reviewing before publishing', () => {
+  it('opens the exact unfinished graph path from the publish review', async () => {
+    const onEditJourney = vi.fn();
+    const tree = graphFixture as unknown as Template['tree'];
+    const template: Template = { ...FORM, tree: { ...tree, graph: { ...tree.graph!, edges: [...tree.graph!.edges,
+      { id: 'unfinished', from: 'interests', to: 'balcony', kind: 'answer',
+        when: { match: 'all', clauses: [{ question: 'n1', operator: 'includes_any', values: [] }] } },
+    ] } } };
+    await open({ template, onEditJourney });
+    expect(screen.getByRole('button', { name: 'Publish Campaign' })).toBeDisabled();
+    await userEvent.click(screen.getByRole('button', { name: /Choose an answer for the path from “Interests” to “Balcony details”/ }));
+    await waitFor(() => expect(onEditJourney).toHaveBeenCalledExactlyOnceWith({ screenId: 'interests', section: 'paths', edgeId: 'unfinished' }));
+  });
+
   it('links the inline placement recap to its placement settings', async () => {
     const placement = vi.fn();
     const { supplied } = await open({ displayType: 'inline', inlinePlacement: { position: 'after_content' }, onGoToPlacement: placement });
@@ -77,7 +92,7 @@ describe('reviewing before publishing', () => {
   it('blocks a list campaign until a service is ready or collect-only is explicitly chosen', async () => {
     const { rerender, supplied } = await open({ captureMode: 'connected' });
     expect(screen.getByRole('button', { name: 'Publish Campaign' })).toBeDisabled();
-    expect(screen.getByText(/Choose and configure a service for this channel/)).toBeVisible();
+    expect(screen.getByText(/Before publishing, connect a service/)).toBeVisible();
     rerender(<ReadinessDialog {...supplied} captureMode="local" />);
     expect(screen.getByRole('button', { name: 'Publish Campaign' })).toBeEnabled();
     expect(screen.getByText(/Collect only: saved in Leads/)).toBeVisible();
@@ -353,4 +368,32 @@ describe('review actions return to the place that can resolve them', () => {
     expect(screen.queryByRole('dialog')).toBeNull();
     await waitFor(() => expect(screen.getByRole('button', { name: 'Preview canvas' })).toHaveFocus());
   });
+});
+
+
+it('offers a focused repair after the server refuses the live-product requirement', async () => {
+  const onEditJourney = vi.fn();
+  const original = coffee.template as Template;
+  const template: Template = { ...original, tree: { ...original.tree, steps: original.tree.steps.map(step => step.kind === 'result'
+    ? { ...step, products_required: true } : step) } };
+  const goal = { ...GOAL, id: 'find_match', outcome: { ...GOAL.outcome, action: 'match' as const, audience_channel: null, capture_any_of: [] } };
+  await open({ template, goal: ready(goal), goalId: goal.id, onEditJourney,
+    onPublish: vi.fn().mockRejectedValue({ code: 'wconvert_optin_form_incomplete', message: 'WooCommerce is required.', data: { issue: 'products' } }) });
+  await userEvent.click(screen.getByRole('button', { name: 'Publish Campaign' }));
+  expect(await screen.findByRole('alert')).toHaveTextContent('WooCommerce is required.');
+  await userEvent.click(screen.getByRole('button', { name: 'Review product requirements' }));
+  expect(onEditJourney).toHaveBeenCalledWith({ screenId: 'result', section: 'content', focus: 'products-required' });
+  expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+});
+
+it('opens the exact unassigned consent block and blocks publication until it is repaired', async () => {
+  const original = coffee.template as Template;
+  const template: Template = { ...original, tree: { ...original.tree, submissions: original.tree.submissions.map(save => ({ ...save, consents: [] })) } };
+  const goal = { ...GOAL, id: 'find_match', outcome: { ...GOAL.outcome, action: 'match' as const, audience_channel: 'email', capture_any_of: [] } };
+  const { supplied } = await open({ template, goal: ready(goal), goalId: goal.id });
+  expect(screen.getByRole('button', { name: 'Publish Campaign' })).toBeDisabled();
+  await userEvent.click(screen.getByRole('button', { name: 'Assign the consent checkbox to “Optional email signup” under Saved with.' }));
+  const at = original.tree.steps.findIndex(step => step.id === 'email');
+  expect(supplied.onGoTo).toHaveBeenCalledWith([at, 'children', 3]);
+  expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
 });

@@ -113,7 +113,7 @@
               "action": "back",
               "tokens": {
                 "accent": "transparent",
-                "accent-fg": "#475569"
+                "accent-fg": "fg"
               }
             },
             {
@@ -133,7 +133,7 @@
               "submission": "sms-signup",
               "tokens": {
                 "accent": "transparent",
-                "accent-fg": "#475569"
+                "accent-fg": "fg"
               }
             }
           ]

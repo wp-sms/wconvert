@@ -145,10 +145,22 @@ final class PayloadTag
             && $lockLabels !== ['Content unlocked.', 'Continue to content', 'Your submission could not be confirmed. The content is available below.']) {
             $localized .= ' data-content-lock="' . esc_attr((string) json_encode($lockLabels, JSON_UNESCAPED_UNICODE)) . '"';
         }
-        $journeyLabels = [__('Continue', 'wconvert'), __('Submission not confirmed. Please try again.', 'wconvert')];
+        $journeyLabels = [__('Continue', 'wconvert'), __('Submission not confirmed. Please try again.', 'wconvert'), __('Contact details are required before you see your result.', 'wconvert'), __('Already saved. You can review these details, but cannot change them.', 'wconvert'), __('Review your answers', 'wconvert')];
         if (array_filter($entries, static fn (array $entry): bool => isset($entry['capture_contract'])) !== []
-            && $journeyLabels !== ['Continue', 'Submission not confirmed. Please try again.']) {
+            && $journeyLabels !== ['Continue', 'Submission not confirmed. Please try again.', 'Contact details are required before you see your result.', 'Already saved. You can review these details, but cannot change them.', 'Review your answers']) {
             $localized .= ' data-journey="' . esc_attr((string) json_encode($journeyLabels, JSON_UNESCAPED_UNICODE)) . '"';
+        }
+        foreach ($entries as $entry) {
+            $steps = $entry['template']['tree']['steps'] ?? [];
+            if (!is_array($steps)) { continue; }
+            foreach ($steps as $step) {
+                foreach ($step['results'] ?? [] as $result) {
+                    if (!empty($result['product_ids'])) {
+                        $localized .= ' data-products="' . esc_url(rest_url('wc/store/v1/products')) . '"';
+                        break 3;
+                    }
+                }
+            }
         }
         return sprintf(
             '<script type="application/json" id="%s" %s="%s" %s="%s" %s="%s"%s%s>%s</script>',

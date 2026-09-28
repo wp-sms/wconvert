@@ -1,0 +1,209 @@
+{
+  "id": "journey-product-finder",
+  "name": "Product finder",
+  "display_type": "popup",
+  "tier": "basic",
+  "tokens": {
+    "bg": "#ffffff",
+    "fg": "#17324a",
+    "muted": "#607288",
+    "accent": "#315f89",
+    "accent-fg": "#ffffff",
+    "border": "#d7e2eb",
+    "heading-size": "1.875rem",
+    "text-size": "1rem",
+    "radius": "0.75rem",
+    "pad": "1.5rem",
+    "gap": "1rem",
+    "width": "32rem",
+    "align": "start"
+  },
+  "tree": {
+    "v": 2,
+    "submissions": [],
+    "steps": [
+      {
+        "id": "need",
+        "name": "What are you shopping for?",
+        "kind": "input",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "heading",
+              "id": "n1",
+              "text": "Find the right products",
+              "role": "headline"
+            },
+            {
+              "type": "text",
+              "id": "n2",
+              "text": "Two quick questions help us recommend the right products.",
+              "role": "body"
+            },
+            {
+              "type": "question",
+              "id": "n3",
+              "label": "Where will you use it?",
+              "answer_type": "single",
+              "required": true,
+              "options": [
+                {
+                  "value": "garden",
+                  "label": "Garden"
+                },
+                {
+                  "value": "balcony",
+                  "label": "Balcony"
+                }
+              ]
+            },
+            {
+              "type": "button",
+              "id": "n4",
+              "label": "Continue",
+              "action": "next",
+              "role": "next_label"
+            }
+          ]
+        }
+      },
+      {
+        "id": "garden",
+        "name": "Your garden",
+        "kind": "input",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "heading",
+              "id": "n5",
+              "text": "Tell us about your garden",
+              "role": "headline"
+            },
+            {
+              "type": "question",
+              "id": "n6",
+              "label": "How much sun does it get?",
+              "answer_type": "single",
+              "required": true,
+              "options": [
+                {
+                  "value": "sun",
+                  "label": "Mostly sunny"
+                },
+                {
+                  "value": "shade",
+                  "label": "Mostly shady"
+                }
+              ]
+            },
+            {
+              "type": "button",
+              "id": "n7",
+              "label": "Continue",
+              "action": "next",
+              "role": "next_label"
+            },
+            {
+              "type": "button",
+              "id": "n8",
+              "label": "Back",
+              "action": "back",
+              "role": "back_label",
+              "tokens": {
+                "accent": "transparent",
+                "accent-fg": "fg"
+              }
+            }
+          ]
+        },
+        "when": {
+          "match": "all",
+          "clauses": [
+            {
+              "question": "n3",
+              "operator": "is",
+              "values": [
+                "garden"
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "match",
+        "name": "Your result",
+        "kind": "result",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "button",
+              "id": "n9",
+              "label": "Back",
+              "action": "back",
+              "role": "back_label",
+              "tokens": {
+                "accent": "transparent",
+                "accent-fg": "fg"
+              }
+            }
+          ]
+        },
+        "results": [
+          {
+            "id": "garden_sun",
+            "heading": "Sunny garden picks",
+            "body": "Here are products for a sunny garden. If they are unavailable, browse the shop.",
+            "product_ids": [],
+            "when": {
+              "match": "all",
+              "clauses": [
+                {
+                  "question": "n3",
+                  "operator": "is",
+                  "values": [
+                    "garden"
+                  ]
+                },
+                {
+                  "question": "n6",
+                  "operator": "is",
+                  "values": [
+                    "sun"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": "balcony",
+            "heading": "Balcony picks",
+            "body": "These products work in compact spaces. If none are available, browse the shop.",
+            "product_ids": [],
+            "when": {
+              "match": "all",
+              "clauses": [
+                {
+                  "question": "n3",
+                  "operator": "is",
+                  "values": [
+                    "balcony"
+                  ]
+                }
+              ]
+            }
+          },
+          {
+            "id": "fallback",
+            "heading": "Explore the shop",
+            "body": "Browse the full range if your preferences did not match or products are unavailable.",
+            "product_ids": []
+          }
+        ],
+        "products_required": true
+      }
+    ]
+  }
+}

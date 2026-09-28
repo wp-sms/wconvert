@@ -8,6 +8,7 @@ export interface Lead {
   email: string | null;
   phone: string | null;
   fields: Record<string, string>;
+  question_answers?: readonly { id: string; question: string; type: string; values: readonly string[]; labels: readonly string[] }[];
   created_at: string;
 }
 
@@ -108,7 +109,7 @@ export const eraseIdentifier = (identifier: string) =>
 export const canExport = (): boolean => adminSettings()?.exportUrl !== undefined;
 
 /** Submit export filters in the request body so contact details never enter browser or server URL logs. */
-export const exportLeads = (filter: LeadPage = {}): boolean => {
+export const exportLeads = (filter: LeadPage = {}, format: 'leads' | 'questions' = 'leads'): boolean => {
   const base = adminSettings()?.exportUrl;
 
   if (base === undefined) {
@@ -116,6 +117,7 @@ export const exportLeads = (filter: LeadPage = {}): boolean => {
   }
 
   const params = leadParams({ ...filter, cursor: undefined });
+  if (format === 'questions') params.format = 'questions';
   const form = document.createElement('form');
   form.method = 'post';
   form.action = base;

@@ -1,7 +1,9 @@
 import { __ } from '@wordpress/i18n';
 import { AUTHORED_ROLES, FIELDS, LAYOUTS, LEAVES, ROLES, childKeysOf } from '../panel';
 import { capturesTaken, nodeAt, rolesTaken, type Spot } from './tree';
-import { submissionScreen } from './journey';
+import { submissionScreen, walkNodes } from './journey';
+import { graphReaches } from './graph';
+import { MAX_PATH_QUESTIONS, questionPath } from './questionBudget';
 import type { TemplateNode, TemplateTree } from '@renderer/types';
 
 /**
@@ -80,7 +82,7 @@ export interface Addition {
  * passed `act ?? 'submit'` — the structure editor briefly offering a
  * click-metered Optin the wrong menu. There is nothing left to wait for.
  */
-export type ConvertingAct = 'submit' | 'click';
+export type ConvertingAct = 'submit' | 'click' | 'match';
 
 /**
  * Everything that may be added inside this parent, in the manifest's own order.
@@ -148,12 +150,22 @@ function whyRefused(
   if (type === 'followup') {
     const primary = tree.submissions[0]?.id;
     const acceptedAt = submissionScreen(tree, primary);
-    if (acceptedAt < 0 || Number(at.parent[0]) <= acceptedAt) {
+    if (acceptedAt < 0 || !screen || (tree.graph
+      ? screen.id === tree.steps[acceptedAt].id || !graphReaches(tree.graph, tree.steps[acceptedAt].id, screen.id)
+      : Number(at.parent[0]) <= acceptedAt)) {
       return __('Resource links belong after capture.', 'wconvert');
     }
   }
   if ((type === 'field' || type === 'consent') && screen?.kind !== 'input') {
     return __('Add contact fields to a question screen.', 'wconvert');
+  }
+  if (type === 'question') {
+    const boundary = tree.steps.findIndex(item => item.kind === 'result' || walkNodes(item.content).some(node => node.type === 'button' && 'action' in node && node.action === 'submit'));
+    if (screen?.kind !== 'input') return __('Add questions to a question screen.', 'wconvert');
+    if (!tree.graph && boundary >= 0 && Number(at.parent[0]) >= boundary) return __('Add questions on a screen before the result or contact submission.', 'wconvert');
+    if ((questionPath(tree, screen.id)?.count ?? 0) > MAX_PATH_QUESTIONS) return tree.graph
+      ? __('Adding here would put more than ten questions on one connected route. Use a separate branch or remove a question from that route.', 'wconvert')
+      : __('This journey already has ten questions.', 'wconvert');
   }
 
   if (type === 'field' && freeCapture(tree) === null) {
@@ -237,6 +249,13 @@ export function nodeFor(
     node.name = captures;
     node.required = captures !== 'interest';
     if (captures === 'interest') node.options = [];
+  }
+
+  if (type === 'question') {
+    node.label = __('What matters most to you?', 'wconvert');
+    node.answer_type = 'single';
+    node.required = false;
+    node.options = [{ value: 'first', label: __('First option', 'wconvert') }, { value: 'second', label: __('Second option', 'wconvert') }];
   }
 
   if (type === 'button') {
@@ -360,7 +379,7 @@ export function losesWordsOnSwitch(block: { type: string; role: string | null })
  * carries, and those are two vocabularies for one distinction that PHP already
  * keeps apart.
  */
-export const actionFor = (act: ConvertingAct): string => (act === 'click' ? 'link' : 'submit');
+export const actionFor = (act: ConvertingAct): string => (act === 'click' ? 'link' : act === 'match' ? 'next' : 'submit');
 
 /** Every `action` a `button` may carry, in the order the acts are declared. */
 export const ACTIONS: readonly string[] = ['submit', 'link', 'next', 'back', 'skip', 'close'];

@@ -210,7 +210,7 @@ describe('the destinations screen', () => {
     render(<Destinations />);
 
     expect(await screen.findByText(/3 failures in a row. Last error: Gateway timeout/)).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: /Re-push leads/ })).toBeVisible();
+    expect(screen.getByRole('button', { name: /Re-push stored submissions/ })).toBeVisible();
   });
 
   /**
@@ -575,7 +575,7 @@ describe('the destinations screen', () => {
     render(<Destinations />);
     await userEvent.click(await screen.findByRole('button', { name: 'Settings' }));
 
-    await userEvent.click(await screen.findByRole('button', { name: /Re-push leads/ }));
+    await userEvent.click(await screen.findByRole('button', { name: /Re-push stored submissions/ }));
     await userEvent.click(screen.getByRole('button', { name: 'Queue re-push' }));
 
     await waitFor(() => {
@@ -611,7 +611,7 @@ describe('the destinations screen', () => {
 
     // The other Destination is untouched — all three of its controls still work.
     expect(within(magnet).getByRole('button', { name: 'Save' })).not.toBeDisabled();
-    expect(within(magnet).getByRole('button', { name: /Re-push leads/ })).not.toBeDisabled();
+    expect(within(magnet).getByRole('button', { name: /Re-push stored submissions/ })).not.toBeDisabled();
     expect(within(magnet).getByRole('button', { name: 'Remove' })).not.toBeDisabled();
   });
 
@@ -682,10 +682,10 @@ describe('the destinations screen', () => {
 
     const wsms = regionFor(await screen.findByRole('heading', { name: 'WP SMS contacts' }));
 
-    await userEvent.click(within(wsms).getByRole('button', { name: /Re-push leads/ }));
+    await userEvent.click(within(wsms).getByRole('button', { name: /Re-push stored submissions/ }));
     await userEvent.click(screen.getByRole('button', { name: 'Queue re-push' }));
 
-    expect(await within(wsms).findByText(/4 Leads queued for re-pushing/)).toBeInTheDocument();
+    expect(await within(wsms).findByText(/4 submissions queued for re-pushing/)).toBeInTheDocument();
 
     // Saving anything at all re-reads the payload, and the report is a fact
     // about the moment before that read.
@@ -1102,7 +1102,7 @@ describe('testing a destination', () => {
     const region = regionFor(await screen.findByRole('heading', { name: 'WP SMS contacts' }));
     const settings = within(region).getByRole('button', { name: 'Settings' });
     expect(settings).toHaveAttribute('aria-expanded', 'false');
-    expect(within(region).queryByRole('button', { name: /Re-push leads/ })).toBeNull();
+    expect(within(region).queryByRole('button', { name: /Re-push stored submissions/ })).toBeNull();
     expect(within(region).queryByRole('textbox', { name: 'Name' })).not.toBeInTheDocument();
     expect(within(region).getByRole('button', { name: 'Send a test' })).toBeVisible();
     await userEvent.click(settings);
@@ -1227,7 +1227,7 @@ describe('destination recovery entry points', () => {
     render(<Destinations />);
     const region = regionFor(await screen.findByRole('heading', { name: 'WP SMS contacts' }));
     expect(within(region).getByRole('button', { name: 'Settings' })).toHaveAttribute('aria-expanded', 'false');
-    const replay = within(region).getByRole('button', { name: /Re-push leads/ });
+    const replay = within(region).getByRole('button', { name: /Re-push stored submissions/ });
     expect(replay).toHaveAccessibleDescription(/published configuration.*since its last success/);
     expect(api.rePush).not.toHaveBeenCalled();
     await userEvent.click(replay);
@@ -1235,7 +1235,7 @@ describe('destination recovery entry points', () => {
     expect(await screen.findByRole('alertdialog', { name: 'Re-push stored submissions?' })).toHaveTextContent('published configuration');
     await userEvent.click(screen.getByRole('button', { name: 'Queue re-push' }));
     expect(api.rePush).toHaveBeenCalledExactlyOnceWith(HEALTHY.id);
-    expect(await within(region).findByText(/12 Leads queued/)).toBeVisible();
+    expect(await within(region).findByText(/12 submissions queued/)).toBeVisible();
   });
 
   it('opens and focuses the destination named by a failure link', async () => {

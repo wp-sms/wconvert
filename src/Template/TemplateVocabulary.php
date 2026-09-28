@@ -261,7 +261,7 @@ final class TemplateVocabulary
      * somewhere downstream instead.
      *
      * @param mixed $template
-     * @return array{tree: array{v: int, steps: list<array<string, mixed>>, submissions: list<array<string, mixed>>}, tokens: array<string, string>}
+     * @return array{tree: array{v: int, steps: list<array<string, mixed>>, submissions: list<array<string, mixed>>, graph?: array{entry: string, edges: list<array<string, mixed>>}}, tokens: array<string, string>}
      */
     public function normalize($template): array
     {
@@ -275,25 +275,56 @@ final class TemplateVocabulary
         // a leaf with no id cannot be minted one that a leaf further down
         // already holds ({@see NodeIdentities::in()}).
         $ids = NodeIdentities::in($steps, $this->identity);
+        self::reserveJourneyReferences($tree, $ids);
 
         foreach (is_array($steps) ? $steps : [] as $step) {
             $node = is_array($step) && is_array($step['content'] ?? null) ? $this->node($step['content'], $ids) : null;
 
             if ($node !== null) {
-                $normalized[] = [
+                $screen = [
                     'id' => is_string($step['id'] ?? null) ? $step['id'] : '',
                     'name' => is_string($step['name'] ?? null) ? mb_substr($step['name'], 0, 120) : '',
                     'kind' => is_string($step['kind'] ?? null) ? $step['kind'] : '',
                     'content' => $node,
                 ];
+                if (($step['kind'] ?? '') === 'input') {
+                    if (($step['review_answers'] ?? false) === true) $screen['review_answers'] = true;
+                    if (is_string($step['details_note'] ?? null) && trim($step['details_note']) !== '') $screen['details_note'] = mb_substr($step['details_note'], 0, 500);
+                }
+                if (array_key_exists('when', $step)) {
+                    // An invalid condition must never turn into Always by being dropped.
+                    $screen['when'] = JourneyRules::normalize($step['when']) ?? ['match' => 'invalid', 'clauses' => []];
+                }
+                if (array_key_exists('paths', $step)) {
+                    $screen['paths'] = [];
+                    foreach (is_array($step['paths']) ? $step['paths'] : [] as $route) {
+                        if (!is_array($route)) { $screen['paths'][] = ['to' => '']; continue; }
+                        $entry = ['to' => is_string($route['to'] ?? null) ? $route['to'] : ''];
+                        if (array_key_exists('when', $route)) {
+                            $entry['when'] = JourneyRules::normalize($route['when']) ?? ['match' => 'invalid', 'clauses' => []];
+                        }
+                        $screen['paths'][] = $entry;
+                    }
+                }
+                if (($step['kind'] ?? '') === 'result') {
+                    $screen['results'] = $this->resultVariants($step['results'] ?? null);
+                    if (($step['products_required'] ?? false) === true) { $screen['products_required'] = true; }
+                }
+                $normalized[] = $screen;
             }
         }
 
+        $storedTree = TemplateTree::stamped(['steps' => $normalized, 'submissions' => self::submissions($tree['submissions'] ?? [])]);
+        if (($tree['v'] ?? null) === 3) {
+            $storedTree['v'] = 3;
+            $storedTree['graph'] = self::graph($tree['graph'] ?? null);
+        }
+        self::remapJourneyReferences($storedTree, $ids);
         return [
             // Stamped with the vocabulary version that produced it, so a
             // narrowing change one day has a fact to migrate FROM rather than
             // a guess about what each stored design meant ({@see TemplateTree::VERSION}).
-            'tree' => TemplateTree::stamped(['steps' => $normalized, 'submissions' => self::submissions($tree['submissions'] ?? [])]),
+            'tree' => $storedTree,
             'tokens' => $this->tokens($template['tokens'] ?? []),
         ];
     }
@@ -317,7 +348,7 @@ final class TemplateVocabulary
      * is declared per node in the manifest rather than guessed at here.
      *
      * @param mixed $tree
-     * @return array{v: int, steps: list<array<string, mixed>>, submissions: list<array<string, mixed>>}
+     * @return array{v: int, steps: list<array<string, mixed>>, submissions: list<array<string, mixed>>, graph?: array{entry: string, edges: list<array<string, mixed>>}}
      */
     public function withoutCopy($tree): array
     {
@@ -333,7 +364,80 @@ final class TemplateVocabulary
             }
         }
 
-        return TemplateTree::stamped(['steps' => $stripped, 'submissions' => self::submissions($tree['submissions'] ?? [])]);
+        $storedTree = TemplateTree::stamped(['steps' => $stripped, 'submissions' => self::submissions($tree['submissions'] ?? [])]);
+        if (($tree['v'] ?? null) === 3) {
+            $storedTree['v'] = 3;
+            $storedTree['graph'] = self::graph($tree['graph'] ?? null);
+        }
+        return $storedTree;
+    }
+
+    /** Reserve referenced identities even when their source is absent from an import.
+     * @param mixed $value
+     */
+    private static function reserveJourneyReferences($value, NodeIdentities $ids): void
+    {
+        if (!is_array($value)) return;
+        foreach ($value as $key => $item) {
+            if ($key === 'question' && is_string($item)) $ids->reserveReference($item);
+            elseif (in_array($key, ['fields', 'consents'], true) && is_array($item)) {
+                foreach ($item as $reference) if (is_string($reference)) $ids->reserveReference($reference);
+            } elseif (is_array($item)) self::reserveJourneyReferences($item, $ids);
+        }
+    }
+
+    /** Rewrite node references only after every source node has claimed its ID.
+     * Screen, edge, submission and answer IDs belong to separate namespaces.
+     * @param array{v: int, steps: list<array<string, mixed>>, submissions: list<array<string, mixed>>, graph?: array{entry: string, edges: list<array<string, mixed>>}} $tree
+     */
+    private static function remapJourneyReferences(array &$tree, NodeIdentities $ids): void
+    {
+        $condition = static function (array &$value) use ($ids): void {
+            if (!isset($value['clauses']) || !is_array($value['clauses'])) return;
+            foreach ($value['clauses'] as &$clause) {
+                if (is_array($clause) && is_string($clause['question'] ?? null)) $clause['question'] = $ids->reference($clause['question']);
+            }
+            unset($clause);
+        };
+        foreach ($tree['submissions'] as &$submission) {
+            foreach (['fields', 'consents'] as $key) $submission[$key] = array_map($ids->reference(...), $submission[$key]);
+        }
+        unset($submission);
+        foreach ($tree['steps'] as &$screen) {
+            if (isset($screen['when'])) $condition($screen['when']);
+            foreach (['paths', 'results'] as $key) {
+                if (!isset($screen[$key])) continue;
+                foreach ($screen[$key] as &$item) if (isset($item['when'])) $condition($item['when']);
+                unset($item);
+            }
+        }
+        unset($screen);
+        if (isset($tree['graph'])) {
+            foreach ($tree['graph']['edges'] as &$edge) if (isset($edge['when'])) $condition($edge['when']);
+            unset($edge);
+        }
+    }
+
+    /** Keep draft graph IDs and priority while closing its storage vocabulary.
+     * @param mixed $input
+     * @return array{entry: string, edges: list<array<string, mixed>>}
+     */
+    private static function graph($input): array
+    {
+        $input = is_array($input) ? $input : [];
+        $edges = [];
+        foreach (is_array($input['edges'] ?? null) ? $input['edges'] : [] as $edge) {
+            $edge = is_array($edge) ? $edge : [];
+            $route = [];
+            foreach (['id', 'from', 'to', 'kind'] as $key) {
+                $route[$key] = is_string($edge[$key] ?? null) ? $edge[$key] : '';
+            }
+            if (array_key_exists('when', $edge)) {
+                $route['when'] = JourneyRules::normalize($edge['when']) ?? ['match' => 'invalid', 'clauses' => []];
+            }
+            $edges[] = $route;
+        }
+        return ['entry' => is_string($input['entry'] ?? null) ? $input['entry'] : '', 'edges' => $edges];
     }
 
     /** @param mixed $input
@@ -418,7 +522,7 @@ final class TemplateVocabulary
             }
 
             if ($key === 'options') {
-                if ($type === 'field' && ($node['name'] ?? null) === 'interest') {
+                if (($type === 'field' && ($node['name'] ?? null) === 'interest') || $type === 'question') {
                     $kept[$key] = $this->choiceOptions($node[$key]);
                 }
                 continue;
@@ -534,6 +638,33 @@ final class TemplateVocabulary
         }
 
         return $kept;
+    }
+
+    /** @param mixed $input
+     * @return list<array<string, mixed>>
+     */
+    private function resultVariants($input): array
+    {
+        if (!is_array($input) || !array_is_list($input)) { return []; }
+        $result = [];
+        foreach (array_slice($input, 0, 6) as $variant) {
+            if (!is_array($variant)) { continue; }
+            $entry = [
+                'id' => is_string($variant['id'] ?? null) ? mb_substr($variant['id'], 0, 48) : '',
+                'heading' => is_string($variant['heading'] ?? null) ? mb_substr($variant['heading'], 0, 200) : '',
+                'body' => is_string($variant['body'] ?? null) ? mb_substr($variant['body'], 0, 500) : '',
+            ];
+            if (array_key_exists('when', $variant)) {
+                $entry['when'] = JourneyRules::normalize($variant['when']) ?? ['match' => 'invalid', 'clauses' => []];
+            }
+            $href = $this->href($variant['href'] ?? null);
+            if ($href !== null) { $entry['href'] = $href; }
+            if (is_string($variant['link_label'] ?? null)) { $entry['link_label'] = mb_substr($variant['link_label'], 0, 120); }
+            $ids = is_array($variant['product_ids'] ?? null) ? $variant['product_ids'] : [];
+            $entry['product_ids'] = array_values(array_unique(array_filter(array_slice($ids, 0, 6), static fn ($id): bool => is_int($id) && $id > 0)));
+            $result[] = $entry;
+        }
+        return $result;
     }
 
     /**

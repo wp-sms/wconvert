@@ -1,5 +1,6 @@
 import type { OptinControls, PayloadEntry, Presenter } from '@loader/types';
-import { captureInto, templatePresenter } from '@loader/present';
+import { createTemplatePresenter } from '@loader/present';
+import { premiumCaptureInto } from '../../journeys/loader';
 import { mountPopover } from './popover';
 import { mountFullscreen } from './fullscreen';
 import { selectAutomatic, showAutomatic } from '../../inline-placement/loader';
@@ -47,7 +48,7 @@ export const proPresenter: Presenter = {
   select: selectAutomatic,
   show(entry: PayloadEntry, controls: OptinControls): void {
     if (entry.display_type !== 'floating_bar' && entry.display_type !== 'slide_in' && entry.display_type !== 'fullscreen') {
-      showAutomatic(entry, controls, templatePresenter);
+      showAutomatic(entry, controls, createTemplatePresenter(premiumCaptureInto));
 
       return;
     }
@@ -87,7 +88,7 @@ export const proPresenter: Presenter = {
       return;
     }
 
-    captureInto(mounted, entry, controls);
+    premiumCaptureInto(mounted, entry, controls);
 
     controls.impression();
   },

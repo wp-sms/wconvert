@@ -1,5 +1,7 @@
 # Phone input is a conditional shared asset
 
+> **Paid-loader cap amended by [ADR 0106](0106-question-journeys-extend-the-paid-loader.md):** Basic / Pro / Elite now cap at 24,064 / 25,088 / 25,344 bytes. The phone asset and Free cap are unchanged. The paid sizes below are historical phone-release measurements.
+
 Accepted 2026-09-23. Implements the [phone-input plan](../plans/phone-input/README.md) with `lite-phone-input` pinned to 0.6.0.
 
 Phone is a Free field used by every tier. A site setting chooses its starting country, and a phone field may override it. Publication resolves `site` into a country code in `published_config`; changing the site setting does not change a live Campaign until it is republished. All countries remain available in the picker. The field can hide the picker, which does not restrict what the server accepts. The capture endpoint keeps its E.164 acceptance rule; browser-side length plausibility is guidance, not authorization.

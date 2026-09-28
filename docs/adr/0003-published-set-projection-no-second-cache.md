@@ -41,6 +41,8 @@ targeting rule, and inlines the survivors — so a site with 40 Optins does not
 ship 40 rule sets on every page. Everything else (time delay, scroll depth, exit
 intent, device) is evaluated client-side.
 
+*Extended by [ADR 0106](0106-question-journeys-extend-the-paid-loader.md): the published quiz configuration remains in this cacheable projection. Current product price and availability are read from WooCommerce's public Store API only when a result is shown; they are not frozen into the published set or a second WConvert cache.*
+
 *Extended by [ADR 0099](0099-automatic-inline-placement-uses-rendered-content.md):
 automatic inline placement reuses this targeting/degradation result to emit
 hidden content candidates. PHP must not pick the winner: browser eligibility

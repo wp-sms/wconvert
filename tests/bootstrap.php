@@ -21,6 +21,15 @@ if (!defined('ABSPATH')) {
 // file here keeps one definition of where Pro's classes live.
 require_once dirname(__DIR__) . '/pro/src/autoload.php';
 
+// Plain-text answer fixtures retain newlines; WordPress integration verifies
+// the real sanitization boundary rather than this standalone test shim.
+if (!function_exists('sanitize_textarea_field')) {
+    function sanitize_textarea_field(string $text): string
+    {
+        return trim(strip_tags($text));
+    }
+}
+
 /*
  * The handful of WordPress functions the units under test call.
  *
@@ -41,6 +50,12 @@ if (!function_exists('wp_json_encode')) {
     function wp_json_encode($data, int $options = 0): string|false
     {
         return json_encode($data, $options);
+    }
+}
+
+if (!function_exists('wp_cache_delete')) {
+    function wp_cache_delete(string $key, string $group = ''): void
+    {
     }
 }
 

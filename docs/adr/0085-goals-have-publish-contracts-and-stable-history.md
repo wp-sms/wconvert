@@ -17,6 +17,8 @@ require a click design with a link; cart recovery uses its runtime-injected cart
 Lead magnets additionally require a selected dispatchable lead-magnet email
 Destination with its required settings completed at REST publication.
 
+**Extended by [ADR 0106](0106-question-journeys-extend-the-paid-loader.md):** Find Match requires a Results screen and allows an anonymous completion. Required contact before results is a request; optional contact after immediate results is a separate marketing signup with consent. The server validates either edited order before publication.
+
 The shared contract drives starting-point facts, fit-first browsing, readiness and
 reporting copy. The server checks the final edited tree. Incomplete pairings can
 save as drafts. Show all designs remains available, and Templates acquire no Goal

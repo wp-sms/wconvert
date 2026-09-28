@@ -447,7 +447,7 @@ function Control({
  */
 export function nameOfBlock(block: Block, labels: TemplateLabels): string {
   if (block.level === 1) {
-    return stepName(block.position);
+    return block.screenName || sprintf(__('Screen %d', 'wconvert'), block.position);
   }
 
   if (block.role !== null) {
@@ -524,17 +524,6 @@ export function paneName(block: Block): string | null {
 
   return block.pane === 'end' ? __('Second pane', 'wconvert') : null;
 }
-
-/**
- * What a step is called, from its position.
- *
- * **Terminal is STRUCTURAL** — the success state is the last step rather than a
- * flagged one (ADR 0025) — so the name follows from where the step sits and
- * there is no second spelling to keep in step. Shared with the preview's own
- * step buttons, which said the same two words in their own file.
- */
-export const stepName = (position: number): string =>
-  position === 1 ? __('The form', 'wconvert') : __('After they submit', 'wconvert');
 
 /**
  * The row's whole accessible name, for a live region that has to say it out

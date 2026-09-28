@@ -16,6 +16,9 @@ import { messageOf, type Loadable } from '../shell/loadable';
 import { destinationsSaid } from './destinations';
 import { capturedFields } from '../destinations/requirements';
 import { problemsIn, type Problem } from './structure/problems';
+import { captureReadiness } from './structure/captureReadiness';
+import { journeyBoundaryIssues } from './structure/journeyBoundaryReadiness';
+import { journeyReadinessIssues, type JourneyRepair } from './structure/journeyReadiness';
 import { capturesTaken, nodeAt, nodesOf } from './structure/tree';
 import { convertingActOf } from './structure/guards';
 import { summarise } from './rules/summaries';
@@ -62,6 +65,7 @@ export interface ReadinessDialogProps {
   readonly onGoToDesign: () => void;
   readonly onGoToPlacement?: () => void;
   readonly onEditDesign: () => void;
+  readonly onEditJourney?: (repair?: JourneyRepair) => void;
   readonly onPreview: () => void;
   /** Saves any unsaved draft before promoting it; rejects without hiding the dialog. */
   readonly onPublish: () => Promise<void>;
@@ -97,6 +101,7 @@ export function ReadinessDialog({
   onGoToDesign,
   onGoToPlacement = onGoToDesign,
   onEditDesign,
+  onEditJourney = onEditDesign,
   onPreview,
   onPublish,
 }: ReadinessDialogProps) {
@@ -105,6 +110,7 @@ export function ReadinessDialog({
   const [publishing, setPublishing] = useState(false);
   const [published, setPublished] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [errorRepair, setErrorRepair] = useState<JourneyRepair | null>(null);
   const trigger = useRef<HTMLButtonElement>(null);
   const afterClose = useRef<(() => void) | null>(null);
   const where = destinationsSaid(bound, destinations, capturedFields(template));
@@ -122,7 +128,8 @@ export function ReadinessDialog({
   const missingPolicyPage = reviewsPrivacy && !policyUrl;
   const missingNotice = reviewsPrivacy && privacyPath === null;
   const missingConsent = expectsConsent && visibleConsentPath === null;
-  const problems = hasDesign ? problemsIn(template, rules.schedule.ends_at) : [];
+  const problems = hasDesign ? [...problemsIn(template, rules.schedule.ends_at), ...captureReadiness(template, outcome?.audience_channel)] : [];
+  const journeyIssues = template ? [...journeyReadinessIssues(template.tree), ...journeyBoundaryIssues(template.tree, outcome?.action)] : [];
   const needsCapture = bound.length > 0;
   const goalIssue = outcome && hasDesign ? outcomeDesignIssue(outcome, template) : null;
   const handoffIssue = outcome ? outcomeHandoffIssue(outcome, bound, destinations, captureMode) : null;
@@ -138,6 +145,7 @@ export function ReadinessDialog({
     ...(goalIssue ? [{ said: goalIssue, fix: template && convertingActOf(template.tree)[0] === outcome?.action ? onEditDesign : onGoToDesign }] : []),
     ...(handoffIssue ? [{ said: handoffIssue, fix: onGoToDestinations }] : []),
     ...(!hasDesign ? [{ said: __('Choose a design before publishing.', 'wconvert'), fix: onGoToDesign }] : []),
+    ...journeyIssues.map(issue => ({ said: issue.said, fix: () => onEditJourney(issue.repair) })),
     ...problems.filter((problem) => problem.check === 'converts' || problem.blocksPublish).map((problem) => ({
       said: problem.said,
       fix: problem.path !== null ? () => onGoTo(problem.path as Path) : onEditDesign,
@@ -166,11 +174,17 @@ export function ReadinessDialog({
   const publish = async () => {
     setPublishing(true);
     setError(null);
+    setErrorRepair(null);
     try {
       await onPublish();
       setPublished(true);
     } catch (cause) {
       setError(messageOf(cause));
+      const refusal = cause as { code?: unknown; data?: { issue?: unknown } } | null;
+      if (refusal?.code === 'wconvert_optin_form_incomplete' && refusal.data?.issue === 'products') {
+        const result = template?.tree.steps.find(screen => screen.kind === 'result' && screen.products_required);
+        if (result) setErrorRepair({ screenId: result.id, section: 'content', focus: 'products-required' });
+      }
     } finally {
       setPublishing(false);
     }
@@ -184,6 +198,7 @@ export function ReadinessDialog({
         onClick={() => {
           setPublished(false);
           setError(null);
+          setErrorRepair(null);
           setOpen(true);
         }}
       >
@@ -436,6 +451,9 @@ export function ReadinessDialog({
             {error !== null && (
               <p role="alert" className="wconvert-launch-review__notice">{error}</p>
             )}
+            {errorRepair && <button className="wconvert-readiness__go" onClick={() => jump(() => onEditJourney(errorRepair))}>
+              {__('Review product requirements', 'wconvert')}
+            </button>}
             {!published && (
               <p className="text-note text-muted-foreground">
                 {current

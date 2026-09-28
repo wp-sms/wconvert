@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { useState } from 'react';
-import { fireEvent, render, screen, within } from '@testing-library/react';
+import { useState, type ReactElement } from 'react';
+import { fireEvent, render as renderBase, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import type { TemplateEntry, TemplateLabels } from '../../resources/admin/src/templates/api';
@@ -31,6 +31,14 @@ import type { TemplateEntry, TemplateLabels } from '../../resources/admin/src/te
  * from, and a preset still cannot express a shape, which is the one clause this
  * file still holds.
  */
+
+// These checks exercise the detailed controls; essentials are covered separately.
+function render(ui: ReactElement) {
+  const view = renderBase(ui);
+  const detailed = screen.queryByRole('button', { name: 'Detailed styling…' });
+  if (detailed) fireEvent.click(detailed);
+  return view;
+}
 
 const api = vi.hoisted(() => ({ getThemeTokens: vi.fn() }));
 
@@ -183,7 +191,7 @@ describe('the look', () => {
 
     expect(api.getThemeTokens).not.toHaveBeenCalled();
 
-    await userEvent.click(screen.getByRole('button', { name: /Copy my theme/ }));
+    await userEvent.click(screen.getByRole('button', { name: /Use theme colors and font/ }));
 
     expect(api.getThemeTokens).toHaveBeenCalled();
     await vi.waitFor(() =>

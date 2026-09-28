@@ -70,6 +70,16 @@ export function render(tree: TemplateTree, tokens: Tokens, step = 0, options: Re
     appendNode(root, node, tokens, EDITABLE && options.paths === true ? String(step) : null);
   }
 
+  if (screen?.kind === 'input' && screen.details_note?.trim()) {
+    const note = document.createElement('p'); note.className = 'wc-text wc-capture-note'; note.textContent = screen.details_note;
+    const heading = root.querySelector('h1,h2,h3'); if (heading) heading.after(note); else root.prepend(note);
+  }
+
+  if (screen?.kind === 'result' && journeyResult) {
+    root.prepend(journeyResult(screen));
+    root.classList.add('wc-stack');
+  }
+
   return root;
 }
 
@@ -102,6 +112,18 @@ export interface RenderOptions {
    * what was clicked. Off by default — see above.
    */
   readonly paths?: boolean;
+}
+
+let journeyQuestion: ((node: TemplateNode) => HTMLElement) | undefined;
+let journeyResult: ((screen: TemplateTree['steps'][number]) => HTMLElement) | undefined;
+
+/** Pro supplies its renderer in the same compiled bundle before mounting. */
+export function registerJourneyRenderer(implementation: {
+  question(node: TemplateNode): HTMLElement;
+  result(screen: TemplateTree['steps'][number]): HTMLElement;
+}): void {
+  journeyQuestion = implementation.question;
+  journeyResult = implementation.result;
 }
 
 /**
@@ -164,7 +186,10 @@ function scope(element: HTMLElement, tokens: Tokens | undefined, prefix = TOKEN_
         `--wc-n-accent` exists only on a box that carries a narrow bag, so
         pointing the mirror at itself would resolve to nothing on most of them.
       */
-      value !== name && REFERABLE.includes(value) ? `var(${TOKEN_PREFIX}${value})` : value,
+      value !== name && REFERABLE.includes(value)
+        // Secondary actions can follow foreground even in an unstyled template.
+        // Match the root's CSS fallback when that optional token is absent.
+        ? `var(${TOKEN_PREFIX}${value}${value === 'fg' ? ',#111827' : ''})` : value,
     );
   }
 }
@@ -266,6 +291,8 @@ function elementFor(node: TemplateNode, scoped: Tokens, at: string | null): HTML
       return image(node as ImageNode);
     case 'field':
       return field(node as FieldNode);
+    case 'question':
+      return journeyQuestion?.(node) ?? null;
     case 'button':
     case 'followup':
       return button(node as ButtonNode | FollowupNode);
