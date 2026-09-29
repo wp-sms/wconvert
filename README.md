@@ -16,6 +16,10 @@ Read [`CONTEXT.md`](CONTEXT.md) before using any domain term.
 
 Planned follow-ups and deferred work: [Product todo list](docs/TODO.md).
 
+React to live campaign opening, closing, and first lead capture with the
+[JavaScript events API](docs/guides/javascript-events.md). Campaign details
+include a copy button for the existing campaign/variant ID.
+
 ## Multi-screen capture
 
 Free includes editable linear journeys: offer screens, questions, a final Submit,

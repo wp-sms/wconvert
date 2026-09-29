@@ -35,6 +35,7 @@
     "test:visual:fullscreen": "playwright test -c tools/visual-tests/fullscreen.config.mjs",
     "test:visual:inline": "playwright test -c tools/visual-tests/inline.config.mjs",
     "test:visual:content-lock": "playwright test -c tools/visual-tests/content-lock.config.mjs",
+    "test:visual:events": "playwright test -c tools/visual-tests/events.config.mjs",
     "test:visual:reopen": "playwright test -c tools/visual-tests/reopen.config.mjs",
     "templates:pilot": "bash tools/design-library/build.sh renderer pilot proof roadmap",
     "test:template-studio": "node --test tools/design-library/build/*.test.mjs",
