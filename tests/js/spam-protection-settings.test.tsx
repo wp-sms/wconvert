@@ -9,7 +9,7 @@ const saved = { site_hostname: 'example.test', provider: 'none', site_key: '', h
 beforeEach(() => { vi.mocked(verify).mockReset(); vi.mocked(apiFetch).mockReset(); vi.mocked(apiFetch).mockResolvedValue(saved); });
 it('offers all three providers without a Pro gate and preserves drafts after failed saves', async () => {
   render(<SpamProtection />);
-  fireEvent.change(await screen.findByLabelText('Additional bot protection'), { target: { value: 'turnstile' } });
+  fireEvent.change(await screen.findByLabelText('Bot verification'), { target: { value: 'turnstile' } });
   expect(screen.getByRole('option', { name: 'Google reCAPTCHA v2 checkbox' })).toBeInTheDocument();
   expect(screen.getByRole('option', { name: 'hCaptcha' })).toBeInTheDocument();
   fireEvent.change(screen.getByLabelText('Site key'), { target: { value: 'site' } });
@@ -29,11 +29,11 @@ it('distinguishes testing from saving and clears successful verification when ke
   expect(screen.getByRole('button', { name: 'Save protection' })).toBeDisabled();
   await waitFor(() => expect(verify).toHaveBeenCalledOnce());
   complete('verified-token');
-  await screen.findByText('Verification passed. No lead was created and nothing was sent.');
+  await screen.findByText('Test passed. No lead created or messages sent.');
   await waitFor(() => expect(screen.getByRole('button', { name: 'Test saved setup' })).toHaveFocus());
   expect(apiFetch).toHaveBeenLastCalledWith({ path: '/wconvert/v1/protection/test', method: 'POST', data: { verification_token: 'verified-token' } });
   fireEvent.change(screen.getByLabelText('Site key'), { target: { value: 'edited-key' } });
-  expect(screen.queryByText('Verification passed. No lead was created and nothing was sent.')).not.toBeInTheDocument();
+  expect(screen.queryByText('Test passed. No lead created or messages sent.')).not.toBeInTheDocument();
   expect(screen.getByRole('button', { name: 'Test saved setup' })).toBeDisabled();
 });
 it('gives a useful retry message and restores focus when the setup challenge cannot load', async () => {
@@ -41,7 +41,7 @@ it('gives a useful retry message and restores focus when the setup challenge can
   vi.mocked(verify).mockRejectedValue(undefined);
   render(<SpamProtection />);
   fireEvent.click(await screen.findByRole('button', { name: 'Test saved setup' }));
-  await screen.findByText('Verification could not finish. Check your saved provider keys and hostname, then try again.');
+  await screen.findByText('Test failed. Check your saved keys and hostname, then retry.');
   await waitFor(() => expect(screen.getByRole('button', { name: 'Test saved setup' })).toHaveFocus());
   expect(apiFetch).toHaveBeenCalledTimes(2);
   expect(screen.getByText('example.test')).toBeInTheDocument();
@@ -53,5 +53,5 @@ it('sends an empty secret to retain an existing key and clears it from the UI af
   fireEvent.change(screen.getByLabelText('Site key'), { target: { value: 'new-site' } });
   fireEvent.click(screen.getByRole('button', { name: 'Save protection' }));
   await waitFor(() => expect(apiFetch).toHaveBeenLastCalledWith({ path: '/wconvert/v1/protection', method: 'POST', data: { provider: 'turnstile', site_key: 'new-site', secret: '' } }));
-  await screen.findByText('Protection settings saved.');
+  await screen.findByText('Settings saved.');
 });

@@ -67,7 +67,7 @@ final class ProtectionController implements RestController
         $settings = $this->settings->read();
         $config = ['provider' => $settings['provider'], 'siteKey' => $settings['site_key'],
             'origin' => self::origin(home_url('/')), 'waiting' => __('Complete verification to continue.', 'wconvert'),
-            'failed' => __('Verification is unavailable. Close this window and try again.', 'wconvert')];
+            'failed' => __('Verification is unavailable. Please try again.', 'wconvert')];
         $html = '<!doctype html><html lang="' . esc_attr(get_bloginfo('language')) . '"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="referrer" content="no-referrer"><title>'
             . esc_html(__('Verify your submission', 'wconvert')) . '</title><style>body{margin:0;padding:16px;font:16px/1.5 system-ui;color:#17202a;background:white}#widget{margin:16px 0}a{color:#164da0}</style></head><body><p id="status" role="status">'
             . esc_html($config['waiting']) . '</p><div id="widget"></div><script type="application/json" id="wconvert-verification-config">'

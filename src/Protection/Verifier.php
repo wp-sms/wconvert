@@ -48,10 +48,10 @@ final class Verifier
 
     public static function unavailable(): WP_Error
     {
-        return new WP_Error('wconvert_verification_unavailable', __('Verification is temporarily unavailable. Your details are still here. Please try again.', 'wconvert'), ['status' => 503]);
+        return new WP_Error('wconvert_verification_unavailable', __('Verification is unavailable. Please try again.', 'wconvert'), ['status' => 503]);
     }
     public static function failed(): WP_Error
     {
-        return new WP_Error('wconvert_verification_failed', __('Verification could not be completed. Please try again.', 'wconvert'), ['status' => 422]);
+        return new WP_Error('wconvert_verification_failed', __('Verification failed. Please try again.', 'wconvert'), ['status' => 422]);
     }
 }

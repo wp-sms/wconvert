@@ -118,3 +118,19 @@ release artifact contracts. No new behavior or configuration was introduced.
 Updated gzip-9 loader sizes: 14,499 / 25,016 / 26,581 / 26,850 bytes.
 
 ![Cancellation notice with clear spacing and matching focus color](polish-error-spacing-mobile.png)
+
+## Shorter product copy
+
+Removed plan comparisons from the normal protection settings, shortened setup,
+filter and activity guidance, and reduced visitor cancellation/failure messages.
+Key-type compatibility, provider data disclosure, site-wide scope and the
+unavailable-filter recovery action remain explicit. The guide now matches
+“Bot verification”, “Built-in checks only” and “Email filters”.
+
+Verified the updated settings in disposable WordPress and the shorter mobile
+cancellation message with preserved input. Passed 14 relevant JavaScript tests,
+15 PHP tests / 81 assertions, TypeScript, targeted ESLint, full build,
+source/loader/phone checks and all four artifact contracts. This changes copy,
+not protection behavior.
+
+![Shorter cancellation message](short-cancel-mobile.png)

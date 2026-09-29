@@ -16,7 +16,7 @@ final class Protection
     {
         if (isset($body['website']) && $body['website'] !== '') {
             $this->diagnostics->record('honeypot');
-            return new WP_Error('wconvert_form_protection', __('This submission could not be accepted. Please refresh the page and try again.', 'wconvert'), ['status' => 422]);
+            return new WP_Error('wconvert_form_protection', __('Please refresh the page and try again.', 'wconvert'), ['status' => 422]);
         }
         return null;
     }
@@ -30,8 +30,8 @@ final class Protection
         if (!is_string($body['verification_token'] ?? null) || $body['verification_token'] === '') {
             return ['challenge' => ['url' => rest_url('wconvert/v1/protection/challenge'), 'asset' => WCONVERT_URL . 'public/protection/protection.js',
                 'title' => __('Verify your submission', 'wconvert'), 'cancel' => __('Cancel verification', 'wconvert'),
-                'cancelled' => __('Verification cancelled. Your details are still here. Submit again when you are ready.', 'wconvert'),
-                'failed' => __('Verification could not finish. Your details are still here. Please try again.', 'wconvert'),
+                'cancelled' => __('Verification cancelled. Submit again to retry.', 'wconvert'),
+                'failed' => __('Verification failed. Please try again.', 'wconvert'),
                 'loading' => __('Loading verification…', 'wconvert')]];
         }
         $error = $this->verifier->verify($settings, $body['verification_token'], (string) wp_parse_url(home_url('/'), PHP_URL_HOST));

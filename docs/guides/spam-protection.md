@@ -9,7 +9,7 @@ included in Free and Pro.
    Turnstile Managed, Google v2 checkbox, or standard hCaptcha. Google v3 and
    Google Cloud assessment/API keys are not accepted by this adapter.
 2. Enter the public site key and secret key. A saved secret is never shown;
-   leaving it blank retains it only for the same provider. Choosing None clears
+   leaving it blank retains it only for the same provider. Choosing **Built-in checks only** clears
    both provider keys while keeping built-in protection.
 3. Save and run **Test saved setup**. This verifies a real challenge against the
    saved credentials without creating a Lead or sending anything to a Destination.
@@ -30,7 +30,7 @@ on the same origin as the visitor page.
 
 ## Pro filters
 
-**Advanced email filters** contains exact blocked domains, exact blocked email
+**Email filters** contains exact blocked domains, exact blocked email
 addresses, and email exceptions. Put one value per line, up to 100 per list.
 Subdomains are separate; wildcards are not supported. Empty lists impose no
 restrictions. These lists apply to every campaign on this WordPress site and
