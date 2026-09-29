@@ -115,7 +115,7 @@
       "tier": "basic",
       "preview_url": "https://wconvert.com/designs/cart-nudge/",
       "facets": {
-        "shape": "row",
+        "shape": "split",
         "captures": [],
         "has_image": false
       }

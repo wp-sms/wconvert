@@ -34,6 +34,12 @@
           "date": "2026-09-28",
           "revision": "b622b94f3d80a1349dc66bde6994b27a5728402bea0e85b38997126853da33af",
           "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        },
+        {
+          "version": 2,
+          "date": "2026-09-29",
+          "revision": "3a9f34d92b6f9af21deb68d30ee032336012941cba2e1179e5dc9c0468769552",
+          "note": "Replace inconsistently wrapping benefit icons with a quiet text panel; align the form and improve field contrast."
         }
       ]
     },
@@ -340,6 +346,12 @@
           "date": "2026-09-28",
           "revision": "e0d22c497fd14a3784f71c677e880739ad5741f6787734f5b7bbc67872f37ed5",
           "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        },
+        {
+          "version": 2,
+          "date": "2026-09-29",
+          "revision": "1afea31894df500000041913de114677f35d5283755a0190c22ddd58e75c6ab1",
+          "note": "Remove decorative benefit icons, use a consistent editorial list and labelled full-width form, and strengthen field contrast."
         }
       ]
     },
@@ -376,6 +388,12 @@
           "date": "2026-09-28",
           "revision": "2bef933314e554147e8afecf218b2fe11d862264d04ad0b5705d3eb963355197",
           "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        },
+        {
+          "version": 2,
+          "date": "2026-09-29",
+          "revision": "abeabcd33d07ed2fb8bd08462f9eb00d2bdc8da05306da8c139596d86c4544a5",
+          "note": "Use quieter warm colours, accessible field outlines, compact typography and request-specific copy with an optional name."
         }
       ]
     },
@@ -748,6 +766,12 @@
           "date": "2026-09-28",
           "revision": "d54c23b73d638dca59780d16423fd1316c13b17fd41abff3222571ad2522ae43",
           "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        },
+        {
+          "version": 2,
+          "date": "2026-09-29",
+          "revision": "f0efcaacba9f935846a2187e76524ea778aad7ca6aa4ab5a12f4c44c9964d1ba",
+          "note": "Remove the unrelated delivery icon and use a responsive message/action split with clear spacing."
         }
       ]
     },
@@ -796,6 +820,12 @@
           "date": "2026-09-28",
           "revision": "8cec459f5bc2cbe95e9400e2a95611bc6edb6474934f011aea88b79daab86c2d",
           "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        },
+        {
+          "version": 2,
+          "date": "2026-09-29",
+          "revision": "f32a16a33be2f06d1370046fb438036e878037173d18c029bb61d661e118c81b",
+          "note": "Replace abstract placeholder with original product artwork, balance split panels, refine mobile hierarchy and strengthen field boundaries."
         }
       ]
     },
@@ -808,6 +838,12 @@
           "date": "2026-09-28",
           "revision": "c84bc5737e8420b89229b5432c8581af508fd90eb8770494ff54c65232c9e9c4",
           "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        },
+        {
+          "version": 2,
+          "date": "2026-09-29",
+          "revision": "7ff2dcac7c434466e059b1e3ec6cc6d6d8ae13c7aa48e7f778d83b7450f6c143",
+          "note": "Remove unrelated benefit icons, use a compact text panel and strengthen field outlines and secondary copy."
         }
       ]
     },

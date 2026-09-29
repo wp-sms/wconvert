@@ -15480,6 +15480,3418 @@
         }
       },
       "record_id": "3b75d4f2c0bba88541579b8d5955b7819fb9db1acfc4fda5aa3c71c99b6c7427"
+    },
+    {
+      "id": "studio-welcome",
+      "revision": "fbca03cc447137535154b75b76bcc7dede16bc20712340e88ada0d30ac618b4c",
+      "base_id": "62444f1936362ef0cf447b5a82311c28a32a8e86c7f7c1d674cc1334d028433a",
+      "decision": "approved",
+      "reviewer": "Codex — six-design refinement review",
+      "note": "Only nearest-design comparison metadata and review hash changed. Field-by-field comparison confirms the campaign output/configuration is unchanged; retain previous stage evidence with the new comparison report.",
+      "at": "2026-09-29T01:30:05.464Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.json",
+              "sha256": "bf0a9de21dd3e07fd51b69a9b93fdda4a7340f4ba8fb70a842f27db98e315091"
+            },
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.md",
+              "sha256": "169d0ea638de592de9e1dff9b0692c96369994f0b79ed673ccbf83c62a9d3e2e"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.json",
+              "sha256": "bf0a9de21dd3e07fd51b69a9b93fdda4a7340f4ba8fb70a842f27db98e315091"
+            },
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.md",
+              "sha256": "169d0ea638de592de9e1dff9b0692c96369994f0b79ed673ccbf83c62a9d3e2e"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        }
+      },
+      "record_id": "5628d23ff0c765a9c0313d41795278c5f0aaeebe1bd4a81abe9c4fd9b62aa391"
+    },
+    {
+      "id": "delivery-announcement",
+      "revision": "b3794682469fb4dd67a6bb5e070e762745a95a387057f7d1ec44ac28f72bafd3",
+      "base_id": "b9e24c7500a8f4a8f2b2b2cf64dddfd0155780150d819e363a5ba096c7caf91f",
+      "decision": "approved",
+      "reviewer": "Codex — six-design refinement review",
+      "note": "Only nearest-design comparison metadata and review hash changed. Field-by-field comparison confirms the campaign output/configuration is unchanged; retain previous stage evidence with the new comparison report.",
+      "at": "2026-09-29T01:30:05.465Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.json",
+              "sha256": "bf0a9de21dd3e07fd51b69a9b93fdda4a7340f4ba8fb70a842f27db98e315091"
+            },
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.md",
+              "sha256": "169d0ea638de592de9e1dff9b0692c96369994f0b79ed673ccbf83c62a9d3e2e"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.md",
+              "sha256": "3ea5695192fdcc6204a14365c77a4be6fb6cdf8a0d3263f471014bf552fcb964"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.json",
+              "sha256": "1d82dfeee5da84e437ac77d7b57d57491feb1dbbbf0137ece403c24e4f67f84c"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28/layout-checks.txt",
+              "sha256": "723d8217576a2c5f98d3f86319b35e9404215573a33aa0043ee01bc731912954"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28/contrast.json",
+              "sha256": "c12dd16c93afaaab72f08593258a590f716e8af149ce07b79399eac98e09c44b"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.json",
+              "sha256": "bf0a9de21dd3e07fd51b69a9b93fdda4a7340f4ba8fb70a842f27db98e315091"
+            },
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.md",
+              "sha256": "169d0ea638de592de9e1dff9b0692c96369994f0b79ed673ccbf83c62a9d3e2e"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.md",
+              "sha256": "3ea5695192fdcc6204a14365c77a4be6fb6cdf8a0d3263f471014bf552fcb964"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.json",
+              "sha256": "1d82dfeee5da84e437ac77d7b57d57491feb1dbbbf0137ece403c24e4f67f84c"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.md",
+              "sha256": "3ea5695192fdcc6204a14365c77a4be6fb6cdf8a0d3263f471014bf552fcb964"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.json",
+              "sha256": "1d82dfeee5da84e437ac77d7b57d57491feb1dbbbf0137ece403c24e4f67f84c"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28/native-verification.json",
+              "sha256": "a0d049acdd67dcd2c79cfe14bec7e56eb20b64471b832ece38bb2d04682e8c21"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28/browser-captures.json",
+              "sha256": "fd498f3309a03422696460a7e187c98943456e7fad56116e82fcae52eb02e53d"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        }
+      },
+      "record_id": "46bf5ae366870f208eb47f9d4faed37ae3f85be19c62eab91e01bd9e0682872f"
+    },
+    {
+      "id": "photography-enquiry",
+      "revision": "ec188f21490f23e445f3dd981645993eb27eb1b39912bba7000d4a5201b8f626",
+      "base_id": "99a3092df86770be5615d66202283d9ccdc3d8382ae2763b270c511b49d81119",
+      "decision": "approved",
+      "reviewer": "Codex — six-design refinement review",
+      "note": "Only nearest-design comparison metadata and review hash changed. Field-by-field comparison confirms the campaign output/configuration is unchanged; retain previous stage evidence with the new comparison report.",
+      "at": "2026-09-29T01:30:05.465Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-directions-2026-09-28.md",
+              "sha256": "0a2f6dc2d799b234dfa06671f1986db0a991275a09973eab8115e86dab813d08"
+            },
+            {
+              "path": "docs/reviews/template-directions-2026-09-28.json",
+              "sha256": "1d9fd3a77e648626a80b0d6161f788b41acba7fbf06f4a02df96b04e2f24b603"
+            },
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.json",
+              "sha256": "bf0a9de21dd3e07fd51b69a9b93fdda4a7340f4ba8fb70a842f27db98e315091"
+            },
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.md",
+              "sha256": "169d0ea638de592de9e1dff9b0692c96369994f0b79ed673ccbf83c62a9d3e2e"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.md",
+              "sha256": "3ea5695192fdcc6204a14365c77a4be6fb6cdf8a0d3263f471014bf552fcb964"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.json",
+              "sha256": "1d82dfeee5da84e437ac77d7b57d57491feb1dbbbf0137ece403c24e4f67f84c"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28/layout-checks.txt",
+              "sha256": "723d8217576a2c5f98d3f86319b35e9404215573a33aa0043ee01bc731912954"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28/contrast.json",
+              "sha256": "c12dd16c93afaaab72f08593258a590f716e8af149ce07b79399eac98e09c44b"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-directions-2026-09-28.md",
+              "sha256": "0a2f6dc2d799b234dfa06671f1986db0a991275a09973eab8115e86dab813d08"
+            },
+            {
+              "path": "docs/reviews/template-directions-2026-09-28.json",
+              "sha256": "1d9fd3a77e648626a80b0d6161f788b41acba7fbf06f4a02df96b04e2f24b603"
+            },
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.json",
+              "sha256": "bf0a9de21dd3e07fd51b69a9b93fdda4a7340f4ba8fb70a842f27db98e315091"
+            },
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.md",
+              "sha256": "169d0ea638de592de9e1dff9b0692c96369994f0b79ed673ccbf83c62a9d3e2e"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.md",
+              "sha256": "3ea5695192fdcc6204a14365c77a4be6fb6cdf8a0d3263f471014bf552fcb964"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.json",
+              "sha256": "1d82dfeee5da84e437ac77d7b57d57491feb1dbbbf0137ece403c24e4f67f84c"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-directions-2026-09-28.md",
+              "sha256": "0a2f6dc2d799b234dfa06671f1986db0a991275a09973eab8115e86dab813d08"
+            },
+            {
+              "path": "docs/reviews/template-directions-2026-09-28.json",
+              "sha256": "1d9fd3a77e648626a80b0d6161f788b41acba7fbf06f4a02df96b04e2f24b603"
+            },
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.md",
+              "sha256": "3ea5695192fdcc6204a14365c77a4be6fb6cdf8a0d3263f471014bf552fcb964"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.json",
+              "sha256": "1d82dfeee5da84e437ac77d7b57d57491feb1dbbbf0137ece403c24e4f67f84c"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28/native-verification.json",
+              "sha256": "a0d049acdd67dcd2c79cfe14bec7e56eb20b64471b832ece38bb2d04682e8c21"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28/browser-captures.json",
+              "sha256": "fd498f3309a03422696460a7e187c98943456e7fad56116e82fcae52eb02e53d"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        }
+      },
+      "record_id": "ea8cf2242467ebacc597ecde3d6964fdc6afa01ac6264daad25f07f3379f22c8"
+    },
+    {
+      "id": "consultation-corner",
+      "revision": "20f6aa7f5b296ba98c94e528ef79b38df467c12658b1c16fc124692df9e53900",
+      "base_id": "e9975d52509d754425968bddb71c583784f016a01f91d6cf2399cbc0af2cc3f2",
+      "decision": "approved",
+      "reviewer": "Codex — six-design refinement review",
+      "note": "Only nearest-design comparison metadata and review hash changed. Field-by-field comparison confirms the campaign output/configuration is unchanged; retain previous stage evidence with the new comparison report.",
+      "at": "2026-09-29T01:30:05.465Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.json",
+              "sha256": "bf0a9de21dd3e07fd51b69a9b93fdda4a7340f4ba8fb70a842f27db98e315091"
+            },
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.md",
+              "sha256": "169d0ea638de592de9e1dff9b0692c96369994f0b79ed673ccbf83c62a9d3e2e"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.json",
+              "sha256": "bf0a9de21dd3e07fd51b69a9b93fdda4a7340f4ba8fb70a842f27db98e315091"
+            },
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.md",
+              "sha256": "169d0ea638de592de9e1dff9b0692c96369994f0b79ed673ccbf83c62a9d3e2e"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        }
+      },
+      "record_id": "3a44c3bde8c3f36505727b008837e70ec13305bd2cfa79fab1d48ae2cc8085dd"
+    },
+    {
+      "id": "cart-straight-away",
+      "revision": "5cabee86e9183d618685022ed98351fd22fb138af107cdbddd5d8f6b573ef96d",
+      "base_id": "2e4746fd5269453039b6e53b8dba209e58b572c84ec955ab222afbc5ca48b2e1",
+      "decision": "approved",
+      "reviewer": "Codex — six-design refinement review",
+      "note": "Only nearest-design comparison metadata and review hash changed. Field-by-field comparison confirms the campaign output/configuration is unchanged; retain previous stage evidence with the new comparison report.",
+      "at": "2026-09-29T01:30:05.465Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.json",
+              "sha256": "bf0a9de21dd3e07fd51b69a9b93fdda4a7340f4ba8fb70a842f27db98e315091"
+            },
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.md",
+              "sha256": "169d0ea638de592de9e1dff9b0692c96369994f0b79ed673ccbf83c62a9d3e2e"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.json",
+              "sha256": "bf0a9de21dd3e07fd51b69a9b93fdda4a7340f4ba8fb70a842f27db98e315091"
+            },
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.md",
+              "sha256": "169d0ea638de592de9e1dff9b0692c96369994f0b79ed673ccbf83c62a9d3e2e"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        }
+      },
+      "record_id": "9d3f2f8425a9665962c310619129ff5a7075452e288582192563cb122c01bb20"
+    },
+    {
+      "id": "cart-delivery-help",
+      "revision": "df3287fce1fb65b9c21eb504829fb73f6ea96d5b4c0e7d9019d8bc771dd1dbb7",
+      "base_id": "7ae38a7998fadc134083de8310b617c7dc9212716d9d03476f4f8b9bd00e1d76",
+      "decision": "approved",
+      "reviewer": "Codex — six-design refinement review",
+      "note": "All source/dependent screens inspected; corrected 176-case source and 176-case dependent matrices pass. Native WordPress checks confirm validation, capture/retry, saved values or configured destination as applicable. No external delivery or conversion-lift claim.",
+      "at": "2026-09-29T01:30:05.465Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        }
+      },
+      "record_id": "47821e2dae1bc56827d80a7df719cbe9c8a9f6a538690e5c339c711b66b9d531"
+    },
+    {
+      "id": "drop-alerts",
+      "revision": "3146a23981cf758df9aa0108e2d73bac1902e0e5ad96e35129a43f2103140ffe",
+      "base_id": "b7138528a0d8c01b7df6ddebf27f1fcde9962aacd9935ea10803756e56db3a33",
+      "decision": "approved",
+      "reviewer": "Codex — six-design refinement review",
+      "note": "Only nearest-design comparison metadata and review hash changed. Field-by-field comparison confirms the campaign output/configuration is unchanged; retain previous stage evidence with the new comparison report.",
+      "at": "2026-09-29T01:30:05.465Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.json",
+              "sha256": "bf0a9de21dd3e07fd51b69a9b93fdda4a7340f4ba8fb70a842f27db98e315091"
+            },
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.md",
+              "sha256": "169d0ea638de592de9e1dff9b0692c96369994f0b79ed673ccbf83c62a9d3e2e"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.json",
+              "sha256": "bf0a9de21dd3e07fd51b69a9b93fdda4a7340f4ba8fb70a842f27db98e315091"
+            },
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.md",
+              "sha256": "169d0ea638de592de9e1dff9b0692c96369994f0b79ed673ccbf83c62a9d3e2e"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        }
+      },
+      "record_id": "5ca292ecc626162b7f3336d4a3ccbeb994736cb853f9d00a9e175f4dcc818de8"
+    },
+    {
+      "id": "seasonal-service-link",
+      "revision": "8d72362f9c8230350979f29cee4ec5fec8cc0de1bf597d211dbee2aa7eb30fc4",
+      "base_id": "9100d809bb9cb18c20e9fe3b6dea1f4370f6225d4bbba5b6788eb13b8e4ab8f0",
+      "decision": "approved",
+      "reviewer": "Codex — six-design refinement review",
+      "note": "Only nearest-design comparison metadata and review hash changed. Field-by-field comparison confirms the campaign output/configuration is unchanged; retain previous stage evidence with the new comparison report.",
+      "at": "2026-09-29T01:30:05.465Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.json",
+              "sha256": "bf0a9de21dd3e07fd51b69a9b93fdda4a7340f4ba8fb70a842f27db98e315091"
+            },
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.md",
+              "sha256": "169d0ea638de592de9e1dff9b0692c96369994f0b79ed673ccbf83c62a9d3e2e"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.md",
+              "sha256": "3ea5695192fdcc6204a14365c77a4be6fb6cdf8a0d3263f471014bf552fcb964"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.json",
+              "sha256": "1d82dfeee5da84e437ac77d7b57d57491feb1dbbbf0137ece403c24e4f67f84c"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28/layout-checks.txt",
+              "sha256": "723d8217576a2c5f98d3f86319b35e9404215573a33aa0043ee01bc731912954"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28/contrast.json",
+              "sha256": "c12dd16c93afaaab72f08593258a590f716e8af149ce07b79399eac98e09c44b"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.json",
+              "sha256": "bf0a9de21dd3e07fd51b69a9b93fdda4a7340f4ba8fb70a842f27db98e315091"
+            },
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.md",
+              "sha256": "169d0ea638de592de9e1dff9b0692c96369994f0b79ed673ccbf83c62a9d3e2e"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.md",
+              "sha256": "3ea5695192fdcc6204a14365c77a4be6fb6cdf8a0d3263f471014bf552fcb964"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.json",
+              "sha256": "1d82dfeee5da84e437ac77d7b57d57491feb1dbbbf0137ece403c24e4f67f84c"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.md",
+              "sha256": "3ea5695192fdcc6204a14365c77a4be6fb6cdf8a0d3263f471014bf552fcb964"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.json",
+              "sha256": "1d82dfeee5da84e437ac77d7b57d57491feb1dbbbf0137ece403c24e4f67f84c"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28/native-verification.json",
+              "sha256": "a0d049acdd67dcd2c79cfe14bec7e56eb20b64471b832ece38bb2d04682e8c21"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28/browser-captures.json",
+              "sha256": "fd498f3309a03422696460a7e187c98943456e7fad56116e82fcae52eb02e53d"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        }
+      },
+      "record_id": "d140ecb814bb7dc86e0c34aaa9ba6a18d462bd51637523d38ca14008efe19b75"
+    },
+    {
+      "id": "event-registration-link",
+      "revision": "ca77054aefbe1fe931973ba80ba18eb7262108b10e48ffd0b5a7b13f3a066a8c",
+      "base_id": "b5f182d4e3c39192129959cfd17a886d61b31a8841c1bd4daf57ab7576266647",
+      "decision": "approved",
+      "reviewer": "Codex — six-design refinement review",
+      "note": "Only nearest-design comparison metadata and review hash changed. Field-by-field comparison confirms the campaign output/configuration is unchanged; retain previous stage evidence with the new comparison report.",
+      "at": "2026-09-29T01:30:05.465Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-directions-2026-09-28.md",
+              "sha256": "0a2f6dc2d799b234dfa06671f1986db0a991275a09973eab8115e86dab813d08"
+            },
+            {
+              "path": "docs/reviews/template-directions-2026-09-28.json",
+              "sha256": "1d9fd3a77e648626a80b0d6161f788b41acba7fbf06f4a02df96b04e2f24b603"
+            },
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.json",
+              "sha256": "bf0a9de21dd3e07fd51b69a9b93fdda4a7340f4ba8fb70a842f27db98e315091"
+            },
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.md",
+              "sha256": "169d0ea638de592de9e1dff9b0692c96369994f0b79ed673ccbf83c62a9d3e2e"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-directions-2026-09-28.md",
+              "sha256": "0a2f6dc2d799b234dfa06671f1986db0a991275a09973eab8115e86dab813d08"
+            },
+            {
+              "path": "docs/reviews/template-directions-2026-09-28.json",
+              "sha256": "1d9fd3a77e648626a80b0d6161f788b41acba7fbf06f4a02df96b04e2f24b603"
+            },
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.json",
+              "sha256": "bf0a9de21dd3e07fd51b69a9b93fdda4a7340f4ba8fb70a842f27db98e315091"
+            },
+            {
+              "path": "docs/reviews/template-practical-review-2026-09-28.md",
+              "sha256": "169d0ea638de592de9e1dff9b0692c96369994f0b79ed673ccbf83c62a9d3e2e"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-directions-2026-09-28.md",
+              "sha256": "0a2f6dc2d799b234dfa06671f1986db0a991275a09973eab8115e86dab813d08"
+            },
+            {
+              "path": "docs/reviews/template-directions-2026-09-28.json",
+              "sha256": "1d9fd3a77e648626a80b0d6161f788b41acba7fbf06f4a02df96b04e2f24b603"
+            },
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        }
+      },
+      "record_id": "faea9602af4a52074543eef2f396a07ce7a81f9b05f30d1009ba3428a950e82b"
+    },
+    {
+      "id": "restyling-notes",
+      "revision": "973a9e13edebc1b6360a80da18252214be35abb58b1f0e3e292d6bcb6cb72c57",
+      "base_id": "d5bac1a222bd21955b23e861a70142e3def5980d83959f256a48bf768807c49f",
+      "decision": "approved",
+      "reviewer": "Codex — six-design refinement review",
+      "note": "All source/dependent screens inspected; corrected 176-case source and 176-case dependent matrices pass. Native WordPress checks confirm validation, capture/retry, saved values or configured destination as applicable. No external delivery or conversion-lift claim.",
+      "at": "2026-09-29T01:30:05.465Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        }
+      },
+      "record_id": "8284d9130b8ac0bcc6c86d0c1b84c86c821f9d674b1114eef58da0365a68ae29"
+    },
+    {
+      "id": "gift-planning-guide",
+      "revision": "cb68ef96a1d3017f7ba68c76a7a3dbd37970702f8e197b0be7ef158a81506f45",
+      "base_id": "67a2c0c2000f767ad024437831a69ae1a9a9b972c034e47b7a3685416052613d",
+      "decision": "approved",
+      "reviewer": "Codex — six-design refinement review",
+      "note": "All source/dependent screens inspected; corrected 176-case source and 176-case dependent matrices pass. Native WordPress checks confirm validation, capture/retry, saved values or configured destination as applicable. No external delivery or conversion-lift claim.",
+      "at": "2026-09-29T01:30:05.465Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        }
+      },
+      "record_id": "0214dfe4856bbb0652906fe9d85e9f702138f3d85723d6ccd1ec35e649d95002"
+    },
+    {
+      "id": "product-advice-request",
+      "revision": "6ba81de00abb2ef88216e1c22924db4edd105c5013d0e19c4ae75aad739ff471",
+      "base_id": "5096a62e8438f09ea3dfdf53d471c9fa033dab817cbc16ac1f25298d24d43605",
+      "decision": "approved",
+      "reviewer": "Codex — six-design refinement review",
+      "note": "Only nearest-design comparison metadata and review hash changed. Field-by-field comparison confirms the campaign output/configuration is unchanged; retain previous stage evidence with the new comparison report.",
+      "at": "2026-09-29T01:30:05.465Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        }
+      },
+      "record_id": "e44ea8ae40df1d70f2657f72139545947b38aca1db9c6fbf4f77ef7d98ddf155"
+    },
+    {
+      "id": "agency-project-enquiry",
+      "revision": "df08ce67bdcac289366c3cb72029526e1e8ed6c4e7b3f7018508d93696149316",
+      "base_id": "415f6d63f33e7aa3a63938c034fe81a689bc87988cc04aadec75ef8125206da4",
+      "decision": "approved",
+      "reviewer": "Codex — six-design refinement review",
+      "note": "Only nearest-design comparison metadata and review hash changed. Field-by-field comparison confirms the campaign output/configuration is unchanged; retain previous stage evidence with the new comparison report.",
+      "at": "2026-09-29T01:30:05.465Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        }
+      },
+      "record_id": "11be86126dc5452a3f63bc713051eb2ae36f15f900a24a2b5a99bc45e49d24d1"
+    },
+    {
+      "id": "fitness-introduction",
+      "revision": "18924724c818dd1d85d1547361344f8dcc723a1a847603f0ed5c52d6d571c120",
+      "base_id": "3cafefa355e9a66eda763dff9cb5faa1b18a887ae996ce9335c849c92e1d4eb5",
+      "decision": "approved",
+      "reviewer": "Codex — six-design refinement review",
+      "note": "Only nearest-design comparison metadata and review hash changed. Field-by-field comparison confirms the campaign output/configuration is unchanged; retain previous stage evidence with the new comparison report.",
+      "at": "2026-09-29T01:30:05.465Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            },
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        }
+      },
+      "record_id": "3bba11baa3e7189e7844f44d7e89109b70a8f95ab7fb95faba12e4708fc7ff39"
+    },
+    {
+      "id": "accounting-consultation",
+      "revision": "9a6e5ebe2369473d0cbfafc8251aa4fe05b4ac8bb07a17e5010179e5e9711b97",
+      "base_id": "ab923e2499729ca0f429b9446fae9f290a8d219b161159bae5fa5b7cbe649ee3",
+      "decision": "approved",
+      "reviewer": "Codex — six-design refinement review",
+      "note": "Only nearest-design comparison metadata and review hash changed. Field-by-field comparison confirms the campaign output/configuration is unchanged; retain previous stage evidence with the new comparison report.",
+      "at": "2026-09-29T01:30:05.465Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-directions-2026-09-28.md",
+              "sha256": "0a2f6dc2d799b234dfa06671f1986db0a991275a09973eab8115e86dab813d08"
+            },
+            {
+              "path": "docs/reviews/template-directions-2026-09-28.json",
+              "sha256": "1d9fd3a77e648626a80b0d6161f788b41acba7fbf06f4a02df96b04e2f24b603"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.md",
+              "sha256": "3ea5695192fdcc6204a14365c77a4be6fb6cdf8a0d3263f471014bf552fcb964"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.json",
+              "sha256": "1d82dfeee5da84e437ac77d7b57d57491feb1dbbbf0137ece403c24e4f67f84c"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28/layout-checks.txt",
+              "sha256": "723d8217576a2c5f98d3f86319b35e9404215573a33aa0043ee01bc731912954"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28/contrast.json",
+              "sha256": "c12dd16c93afaaab72f08593258a590f716e8af149ce07b79399eac98e09c44b"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-directions-2026-09-28.md",
+              "sha256": "0a2f6dc2d799b234dfa06671f1986db0a991275a09973eab8115e86dab813d08"
+            },
+            {
+              "path": "docs/reviews/template-directions-2026-09-28.json",
+              "sha256": "1d9fd3a77e648626a80b0d6161f788b41acba7fbf06f4a02df96b04e2f24b603"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.md",
+              "sha256": "3ea5695192fdcc6204a14365c77a4be6fb6cdf8a0d3263f471014bf552fcb964"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.json",
+              "sha256": "1d82dfeee5da84e437ac77d7b57d57491feb1dbbbf0137ece403c24e4f67f84c"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-directions-2026-09-28.md",
+              "sha256": "0a2f6dc2d799b234dfa06671f1986db0a991275a09973eab8115e86dab813d08"
+            },
+            {
+              "path": "docs/reviews/template-directions-2026-09-28.json",
+              "sha256": "1d9fd3a77e648626a80b0d6161f788b41acba7fbf06f4a02df96b04e2f24b603"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.md",
+              "sha256": "3ea5695192fdcc6204a14365c77a4be6fb6cdf8a0d3263f471014bf552fcb964"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.json",
+              "sha256": "1d82dfeee5da84e437ac77d7b57d57491feb1dbbbf0137ece403c24e4f67f84c"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28/native-verification.json",
+              "sha256": "a0d049acdd67dcd2c79cfe14bec7e56eb20b64471b832ece38bb2d04682e8c21"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28/browser-captures.json",
+              "sha256": "fd498f3309a03422696460a7e187c98943456e7fad56116e82fcae52eb02e53d"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        }
+      },
+      "record_id": "082ffd44b2a5e94f80709b9dccd1c5267f5676df9a6dd8be48a12a33bc2b5b22"
+    },
+    {
+      "id": "service-text-updates",
+      "revision": "d0dd87643f52ff6333fa7f7818adc220c364fda3bcc30ee42489eb6c5029fade",
+      "base_id": "298195fd1e3377b16bbc0a0dd440d4e7a17e85f7a09a96cd9000111c20134e04",
+      "decision": "approved",
+      "reviewer": "Codex — six-design refinement review",
+      "note": "Only nearest-design comparison metadata and review hash changed. Field-by-field comparison confirms the campaign output/configuration is unchanged; retain previous stage evidence with the new comparison report.",
+      "at": "2026-09-29T01:30:05.465Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        }
+      },
+      "record_id": "a2c3098f4c3f90bb81b02108e605e0dd8e83071e09a24b7c1495709b664474ee"
+    },
+    {
+      "id": "editorial-weekly",
+      "revision": "a7da15f897a6c1eaac673edab6dea535b1ca4a97499cd77d216942f661815890",
+      "base_id": "63e28d60c6c4f8131b27b20382c2ae673fdda1c7bedc6365842f074335e95e38",
+      "decision": "approved",
+      "reviewer": "Codex — six-design refinement review",
+      "note": "All source/dependent screens inspected; corrected 176-case source and 176-case dependent matrices pass. Native WordPress checks confirm validation, capture/retry, saved values or configured destination as applicable. No external delivery or conversion-lift claim.",
+      "at": "2026-09-29T01:30:05.465Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        }
+      },
+      "record_id": "e3fc11943b1be275c5b3645bbf0ddbce6f3fd5d3aff088988210358f8ad63800"
+    },
+    {
+      "id": "writing-checklist",
+      "revision": "729b1d0fd45584eabcac6def6c10b3d1c5ed4c85a91805998f407f97718ba9b3",
+      "base_id": "bc1c2fa24586501cc4ffd00d73b81f09e60f4aa135e92c4b5d6729eaaa5f22a8",
+      "decision": "approved",
+      "reviewer": "Codex — six-design refinement review",
+      "note": "Only nearest-design comparison metadata and review hash changed. Field-by-field comparison confirms the campaign output/configuration is unchanged; retain previous stage evidence with the new comparison report.",
+      "at": "2026-09-29T01:30:05.465Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-coverage-2026-09-28.json",
+              "sha256": "5fe16906cbdf7607f57d557bf116eb81879df15393cfed52fa2e7a8ffefdb8c3"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        }
+      },
+      "record_id": "7f727cf03f1f80567e193944880e8ade191f18f3faee377ea55bbaf919471465"
+    },
+    {
+      "id": "sample-request",
+      "revision": "5e0a74d70739b0ea51b6e110095c6d6cac235ecff6ecf052fff5fca19d272a2b",
+      "base_id": "154bd0e55ba686f849105d7944e17c57b6199a85749fe40b6ac181278e0f2957",
+      "decision": "approved",
+      "reviewer": "Codex — six-design refinement review",
+      "note": "Only nearest-design comparison metadata and review hash changed. Field-by-field comparison confirms the campaign output/configuration is unchanged; retain previous stage evidence with the new comparison report.",
+      "at": "2026-09-29T01:30:05.465Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-decision-support-2026-09-28.md",
+              "sha256": "42a1f6ff6b10354e6b161e13a8ae3d518d9440d98a849f04ae9d38a09a47a5e6"
+            },
+            {
+              "path": "docs/reviews/template-decision-support-2026-09-28.json",
+              "sha256": "35c0caf18f69b656e6c64813c34b20dc23cb04af9c9ec7de198a6d4c0b06cfc6"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/checklist-acknowledgement.png",
+              "sha256": "503f77fe4ab16ebdf1495af5d4f5df83105a422c81e1d6f4ca292ed2a226a542"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/gift-proofs.jpg",
+              "sha256": "274f4be8dc181a10c75d9a014708baf515b0f55ae0a32da27abe048e54f14355"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/gift-result.png",
+              "sha256": "5a677606a31c474ace999b17a0bab55640286a911c7a78b7527e6417efa259a6"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/reading-proofs.jpg",
+              "sha256": "4be6b33e6ba158f47a4cfe38cc96313ac9bbd668e9edb27a998c32fb81a7eeb6"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/service-and-store-proofs.jpg",
+              "sha256": "6f5c93034cc2f01ceb44d67a152d7f7279439beffa1784895898ef927ad5b049"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-decision-support-2026-09-28.md",
+              "sha256": "42a1f6ff6b10354e6b161e13a8ae3d518d9440d98a849f04ae9d38a09a47a5e6"
+            },
+            {
+              "path": "docs/reviews/template-decision-support-2026-09-28.json",
+              "sha256": "35c0caf18f69b656e6c64813c34b20dc23cb04af9c9ec7de198a6d4c0b06cfc6"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/checklist-acknowledgement.png",
+              "sha256": "503f77fe4ab16ebdf1495af5d4f5df83105a422c81e1d6f4ca292ed2a226a542"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/gift-proofs.jpg",
+              "sha256": "274f4be8dc181a10c75d9a014708baf515b0f55ae0a32da27abe048e54f14355"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/gift-result.png",
+              "sha256": "5a677606a31c474ace999b17a0bab55640286a911c7a78b7527e6417efa259a6"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/reading-proofs.jpg",
+              "sha256": "4be6b33e6ba158f47a4cfe38cc96313ac9bbd668e9edb27a998c32fb81a7eeb6"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/service-and-store-proofs.jpg",
+              "sha256": "6f5c93034cc2f01ceb44d67a152d7f7279439beffa1784895898ef927ad5b049"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-decision-support-2026-09-28.md",
+              "sha256": "42a1f6ff6b10354e6b161e13a8ae3d518d9440d98a849f04ae9d38a09a47a5e6"
+            },
+            {
+              "path": "docs/reviews/template-decision-support-2026-09-28.json",
+              "sha256": "35c0caf18f69b656e6c64813c34b20dc23cb04af9c9ec7de198a6d4c0b06cfc6"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/checklist-acknowledgement.png",
+              "sha256": "503f77fe4ab16ebdf1495af5d4f5df83105a422c81e1d6f4ca292ed2a226a542"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/gift-proofs.jpg",
+              "sha256": "274f4be8dc181a10c75d9a014708baf515b0f55ae0a32da27abe048e54f14355"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/gift-result.png",
+              "sha256": "5a677606a31c474ace999b17a0bab55640286a911c7a78b7527e6417efa259a6"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/reading-proofs.jpg",
+              "sha256": "4be6b33e6ba158f47a4cfe38cc96313ac9bbd668e9edb27a998c32fb81a7eeb6"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/service-and-store-proofs.jpg",
+              "sha256": "6f5c93034cc2f01ceb44d67a152d7f7279439beffa1784895898ef927ad5b049"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        }
+      },
+      "record_id": "a9cf9db054828129e30eeb237c0fd6ef3b868c0a9b3376cb57bdf4d281321fd0"
+    },
+    {
+      "id": "personalisation-enquiry",
+      "revision": "5ba137941fe2e715301dd81a44a485d220d485568fdb8bf65eb86ac8ab601bdf",
+      "base_id": "3498204d8b9bf5e3aaf0fc0becdddc4560c09bb4f9fb19b5ccd8531aa22d1905",
+      "decision": "approved",
+      "reviewer": "Codex — six-design refinement review",
+      "note": "Only nearest-design comparison metadata and review hash changed. Field-by-field comparison confirms the campaign output/configuration is unchanged; retain previous stage evidence with the new comparison report.",
+      "at": "2026-09-29T01:30:05.465Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-decision-support-2026-09-28.md",
+              "sha256": "42a1f6ff6b10354e6b161e13a8ae3d518d9440d98a849f04ae9d38a09a47a5e6"
+            },
+            {
+              "path": "docs/reviews/template-decision-support-2026-09-28.json",
+              "sha256": "35c0caf18f69b656e6c64813c34b20dc23cb04af9c9ec7de198a6d4c0b06cfc6"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/checklist-acknowledgement.png",
+              "sha256": "503f77fe4ab16ebdf1495af5d4f5df83105a422c81e1d6f4ca292ed2a226a542"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/gift-proofs.jpg",
+              "sha256": "274f4be8dc181a10c75d9a014708baf515b0f55ae0a32da27abe048e54f14355"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/gift-result.png",
+              "sha256": "5a677606a31c474ace999b17a0bab55640286a911c7a78b7527e6417efa259a6"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/reading-proofs.jpg",
+              "sha256": "4be6b33e6ba158f47a4cfe38cc96313ac9bbd668e9edb27a998c32fb81a7eeb6"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/service-and-store-proofs.jpg",
+              "sha256": "6f5c93034cc2f01ceb44d67a152d7f7279439beffa1784895898ef927ad5b049"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-decision-support-2026-09-28.md",
+              "sha256": "42a1f6ff6b10354e6b161e13a8ae3d518d9440d98a849f04ae9d38a09a47a5e6"
+            },
+            {
+              "path": "docs/reviews/template-decision-support-2026-09-28.json",
+              "sha256": "35c0caf18f69b656e6c64813c34b20dc23cb04af9c9ec7de198a6d4c0b06cfc6"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/checklist-acknowledgement.png",
+              "sha256": "503f77fe4ab16ebdf1495af5d4f5df83105a422c81e1d6f4ca292ed2a226a542"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/gift-proofs.jpg",
+              "sha256": "274f4be8dc181a10c75d9a014708baf515b0f55ae0a32da27abe048e54f14355"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/gift-result.png",
+              "sha256": "5a677606a31c474ace999b17a0bab55640286a911c7a78b7527e6417efa259a6"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/reading-proofs.jpg",
+              "sha256": "4be6b33e6ba158f47a4cfe38cc96313ac9bbd668e9edb27a998c32fb81a7eeb6"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/service-and-store-proofs.jpg",
+              "sha256": "6f5c93034cc2f01ceb44d67a152d7f7279439beffa1784895898ef927ad5b049"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-decision-support-2026-09-28.md",
+              "sha256": "42a1f6ff6b10354e6b161e13a8ae3d518d9440d98a849f04ae9d38a09a47a5e6"
+            },
+            {
+              "path": "docs/reviews/template-decision-support-2026-09-28.json",
+              "sha256": "35c0caf18f69b656e6c64813c34b20dc23cb04af9c9ec7de198a6d4c0b06cfc6"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/checklist-acknowledgement.png",
+              "sha256": "503f77fe4ab16ebdf1495af5d4f5df83105a422c81e1d6f4ca292ed2a226a542"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/gift-proofs.jpg",
+              "sha256": "274f4be8dc181a10c75d9a014708baf515b0f55ae0a32da27abe048e54f14355"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/gift-result.png",
+              "sha256": "5a677606a31c474ace999b17a0bab55640286a911c7a78b7527e6417efa259a6"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/reading-proofs.jpg",
+              "sha256": "4be6b33e6ba158f47a4cfe38cc96313ac9bbd668e9edb27a998c32fb81a7eeb6"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/service-and-store-proofs.jpg",
+              "sha256": "6f5c93034cc2f01ceb44d67a152d7f7279439beffa1784895898ef927ad5b049"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        }
+      },
+      "record_id": "4682be2a563e5cc659be80be74692d2169a727dd5e5fce9a235a4063ae03c318"
+    },
+    {
+      "id": "fit-checklist",
+      "revision": "fa349f93e0bb98c3d56ea2a29643f9a2d0f2e6591d1443dd855496e584c04e93",
+      "base_id": "84039a0fde5ae335912d6041a521505edd24a022114400b522bf70fdd314341c",
+      "decision": "approved",
+      "reviewer": "Codex — six-design refinement review",
+      "note": "Only nearest-design comparison metadata and review hash changed. Field-by-field comparison confirms the campaign output/configuration is unchanged; retain previous stage evidence with the new comparison report.",
+      "at": "2026-09-29T01:30:05.465Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-decision-support-2026-09-28.md",
+              "sha256": "42a1f6ff6b10354e6b161e13a8ae3d518d9440d98a849f04ae9d38a09a47a5e6"
+            },
+            {
+              "path": "docs/reviews/template-decision-support-2026-09-28.json",
+              "sha256": "35c0caf18f69b656e6c64813c34b20dc23cb04af9c9ec7de198a6d4c0b06cfc6"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/checklist-acknowledgement.png",
+              "sha256": "503f77fe4ab16ebdf1495af5d4f5df83105a422c81e1d6f4ca292ed2a226a542"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/gift-proofs.jpg",
+              "sha256": "274f4be8dc181a10c75d9a014708baf515b0f55ae0a32da27abe048e54f14355"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/gift-result.png",
+              "sha256": "5a677606a31c474ace999b17a0bab55640286a911c7a78b7527e6417efa259a6"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/reading-proofs.jpg",
+              "sha256": "4be6b33e6ba158f47a4cfe38cc96313ac9bbd668e9edb27a998c32fb81a7eeb6"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/service-and-store-proofs.jpg",
+              "sha256": "6f5c93034cc2f01ceb44d67a152d7f7279439beffa1784895898ef927ad5b049"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-decision-support-2026-09-28.md",
+              "sha256": "42a1f6ff6b10354e6b161e13a8ae3d518d9440d98a849f04ae9d38a09a47a5e6"
+            },
+            {
+              "path": "docs/reviews/template-decision-support-2026-09-28.json",
+              "sha256": "35c0caf18f69b656e6c64813c34b20dc23cb04af9c9ec7de198a6d4c0b06cfc6"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/checklist-acknowledgement.png",
+              "sha256": "503f77fe4ab16ebdf1495af5d4f5df83105a422c81e1d6f4ca292ed2a226a542"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/gift-proofs.jpg",
+              "sha256": "274f4be8dc181a10c75d9a014708baf515b0f55ae0a32da27abe048e54f14355"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/gift-result.png",
+              "sha256": "5a677606a31c474ace999b17a0bab55640286a911c7a78b7527e6417efa259a6"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/reading-proofs.jpg",
+              "sha256": "4be6b33e6ba158f47a4cfe38cc96313ac9bbd668e9edb27a998c32fb81a7eeb6"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/service-and-store-proofs.jpg",
+              "sha256": "6f5c93034cc2f01ceb44d67a152d7f7279439beffa1784895898ef927ad5b049"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-decision-support-2026-09-28.md",
+              "sha256": "42a1f6ff6b10354e6b161e13a8ae3d518d9440d98a849f04ae9d38a09a47a5e6"
+            },
+            {
+              "path": "docs/reviews/template-decision-support-2026-09-28.json",
+              "sha256": "35c0caf18f69b656e6c64813c34b20dc23cb04af9c9ec7de198a6d4c0b06cfc6"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/checklist-acknowledgement.png",
+              "sha256": "503f77fe4ab16ebdf1495af5d4f5df83105a422c81e1d6f4ca292ed2a226a542"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/gift-proofs.jpg",
+              "sha256": "274f4be8dc181a10c75d9a014708baf515b0f55ae0a32da27abe048e54f14355"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/gift-result.png",
+              "sha256": "5a677606a31c474ace999b17a0bab55640286a911c7a78b7527e6417efa259a6"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/reading-proofs.jpg",
+              "sha256": "4be6b33e6ba158f47a4cfe38cc96313ac9bbd668e9edb27a998c32fb81a7eeb6"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/service-and-store-proofs.jpg",
+              "sha256": "6f5c93034cc2f01ceb44d67a152d7f7279439beffa1784895898ef927ad5b049"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        }
+      },
+      "record_id": "3b1269b948780bcbd2751d3d9aad27a3964abc08a084ae634cd7a1b01119f3cf"
+    },
+    {
+      "id": "local-pickup-details",
+      "revision": "4542e031a55bff8720f4e241871eadd03e5eb420b8d2d940ef0842ed2b035e35",
+      "base_id": "26e8148dddbc91446672e922b343f001f806075941500dc043019a38f8736bf8",
+      "decision": "approved",
+      "reviewer": "Codex — six-design refinement review",
+      "note": "Only nearest-design comparison metadata and review hash changed. Field-by-field comparison confirms the campaign output/configuration is unchanged; retain previous stage evidence with the new comparison report.",
+      "at": "2026-09-29T01:30:05.465Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-decision-support-2026-09-28.md",
+              "sha256": "42a1f6ff6b10354e6b161e13a8ae3d518d9440d98a849f04ae9d38a09a47a5e6"
+            },
+            {
+              "path": "docs/reviews/template-decision-support-2026-09-28.json",
+              "sha256": "35c0caf18f69b656e6c64813c34b20dc23cb04af9c9ec7de198a6d4c0b06cfc6"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/checklist-acknowledgement.png",
+              "sha256": "503f77fe4ab16ebdf1495af5d4f5df83105a422c81e1d6f4ca292ed2a226a542"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/gift-proofs.jpg",
+              "sha256": "274f4be8dc181a10c75d9a014708baf515b0f55ae0a32da27abe048e54f14355"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/gift-result.png",
+              "sha256": "5a677606a31c474ace999b17a0bab55640286a911c7a78b7527e6417efa259a6"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/reading-proofs.jpg",
+              "sha256": "4be6b33e6ba158f47a4cfe38cc96313ac9bbd668e9edb27a998c32fb81a7eeb6"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/service-and-store-proofs.jpg",
+              "sha256": "6f5c93034cc2f01ceb44d67a152d7f7279439beffa1784895898ef927ad5b049"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.md",
+              "sha256": "3ea5695192fdcc6204a14365c77a4be6fb6cdf8a0d3263f471014bf552fcb964"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.json",
+              "sha256": "1d82dfeee5da84e437ac77d7b57d57491feb1dbbbf0137ece403c24e4f67f84c"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28/layout-checks.txt",
+              "sha256": "723d8217576a2c5f98d3f86319b35e9404215573a33aa0043ee01bc731912954"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28/contrast.json",
+              "sha256": "c12dd16c93afaaab72f08593258a590f716e8af149ce07b79399eac98e09c44b"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-decision-support-2026-09-28.md",
+              "sha256": "42a1f6ff6b10354e6b161e13a8ae3d518d9440d98a849f04ae9d38a09a47a5e6"
+            },
+            {
+              "path": "docs/reviews/template-decision-support-2026-09-28.json",
+              "sha256": "35c0caf18f69b656e6c64813c34b20dc23cb04af9c9ec7de198a6d4c0b06cfc6"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/checklist-acknowledgement.png",
+              "sha256": "503f77fe4ab16ebdf1495af5d4f5df83105a422c81e1d6f4ca292ed2a226a542"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/gift-proofs.jpg",
+              "sha256": "274f4be8dc181a10c75d9a014708baf515b0f55ae0a32da27abe048e54f14355"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/gift-result.png",
+              "sha256": "5a677606a31c474ace999b17a0bab55640286a911c7a78b7527e6417efa259a6"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/reading-proofs.jpg",
+              "sha256": "4be6b33e6ba158f47a4cfe38cc96313ac9bbd668e9edb27a998c32fb81a7eeb6"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/service-and-store-proofs.jpg",
+              "sha256": "6f5c93034cc2f01ceb44d67a152d7f7279439beffa1784895898ef927ad5b049"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.md",
+              "sha256": "3ea5695192fdcc6204a14365c77a4be6fb6cdf8a0d3263f471014bf552fcb964"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.json",
+              "sha256": "1d82dfeee5da84e437ac77d7b57d57491feb1dbbbf0137ece403c24e4f67f84c"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-decision-support-2026-09-28.md",
+              "sha256": "42a1f6ff6b10354e6b161e13a8ae3d518d9440d98a849f04ae9d38a09a47a5e6"
+            },
+            {
+              "path": "docs/reviews/template-decision-support-2026-09-28.json",
+              "sha256": "35c0caf18f69b656e6c64813c34b20dc23cb04af9c9ec7de198a6d4c0b06cfc6"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/checklist-acknowledgement.png",
+              "sha256": "503f77fe4ab16ebdf1495af5d4f5df83105a422c81e1d6f4ca292ed2a226a542"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/gift-proofs.jpg",
+              "sha256": "274f4be8dc181a10c75d9a014708baf515b0f55ae0a32da27abe048e54f14355"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/gift-result.png",
+              "sha256": "5a677606a31c474ace999b17a0bab55640286a911c7a78b7527e6417efa259a6"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/reading-proofs.jpg",
+              "sha256": "4be6b33e6ba158f47a4cfe38cc96313ac9bbd668e9edb27a998c32fb81a7eeb6"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/service-and-store-proofs.jpg",
+              "sha256": "6f5c93034cc2f01ceb44d67a152d7f7279439beffa1784895898ef927ad5b049"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.md",
+              "sha256": "3ea5695192fdcc6204a14365c77a4be6fb6cdf8a0d3263f471014bf552fcb964"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.json",
+              "sha256": "1d82dfeee5da84e437ac77d7b57d57491feb1dbbbf0137ece403c24e4f67f84c"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28/native-verification.json",
+              "sha256": "a0d049acdd67dcd2c79cfe14bec7e56eb20b64471b832ece38bb2d04682e8c21"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28/browser-captures.json",
+              "sha256": "fd498f3309a03422696460a7e187c98943456e7fad56116e82fcae52eb02e53d"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        }
+      },
+      "record_id": "5cea9e97634c6cd6d15178e3cda8acdb0274e95fe9b26dea3721c7304848824c"
+    },
+    {
+      "id": "basket-product-help",
+      "revision": "6889ce51ef0a0b6da3f55b0b0d40de349050951884aa3fe737cdc12a034651ba",
+      "base_id": "2868d7358ce044254a2910fa25a65fd6498e375694b8742b96aa8f0781a5642d",
+      "decision": "approved",
+      "reviewer": "Codex — six-design refinement review",
+      "note": "Only nearest-design comparison metadata and review hash changed. Field-by-field comparison confirms the campaign output/configuration is unchanged; retain previous stage evidence with the new comparison report.",
+      "at": "2026-09-29T01:30:05.465Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-decision-support-2026-09-28.md",
+              "sha256": "42a1f6ff6b10354e6b161e13a8ae3d518d9440d98a849f04ae9d38a09a47a5e6"
+            },
+            {
+              "path": "docs/reviews/template-decision-support-2026-09-28.json",
+              "sha256": "35c0caf18f69b656e6c64813c34b20dc23cb04af9c9ec7de198a6d4c0b06cfc6"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/checklist-acknowledgement.png",
+              "sha256": "503f77fe4ab16ebdf1495af5d4f5df83105a422c81e1d6f4ca292ed2a226a542"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/gift-proofs.jpg",
+              "sha256": "274f4be8dc181a10c75d9a014708baf515b0f55ae0a32da27abe048e54f14355"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/gift-result.png",
+              "sha256": "5a677606a31c474ace999b17a0bab55640286a911c7a78b7527e6417efa259a6"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/reading-proofs.jpg",
+              "sha256": "4be6b33e6ba158f47a4cfe38cc96313ac9bbd668e9edb27a998c32fb81a7eeb6"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/service-and-store-proofs.jpg",
+              "sha256": "6f5c93034cc2f01ceb44d67a152d7f7279439beffa1784895898ef927ad5b049"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-decision-support-2026-09-28.md",
+              "sha256": "42a1f6ff6b10354e6b161e13a8ae3d518d9440d98a849f04ae9d38a09a47a5e6"
+            },
+            {
+              "path": "docs/reviews/template-decision-support-2026-09-28.json",
+              "sha256": "35c0caf18f69b656e6c64813c34b20dc23cb04af9c9ec7de198a6d4c0b06cfc6"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/checklist-acknowledgement.png",
+              "sha256": "503f77fe4ab16ebdf1495af5d4f5df83105a422c81e1d6f4ca292ed2a226a542"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/gift-proofs.jpg",
+              "sha256": "274f4be8dc181a10c75d9a014708baf515b0f55ae0a32da27abe048e54f14355"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/gift-result.png",
+              "sha256": "5a677606a31c474ace999b17a0bab55640286a911c7a78b7527e6417efa259a6"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/reading-proofs.jpg",
+              "sha256": "4be6b33e6ba158f47a4cfe38cc96313ac9bbd668e9edb27a998c32fb81a7eeb6"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/service-and-store-proofs.jpg",
+              "sha256": "6f5c93034cc2f01ceb44d67a152d7f7279439beffa1784895898ef927ad5b049"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-decision-support-2026-09-28.md",
+              "sha256": "42a1f6ff6b10354e6b161e13a8ae3d518d9440d98a849f04ae9d38a09a47a5e6"
+            },
+            {
+              "path": "docs/reviews/template-decision-support-2026-09-28.json",
+              "sha256": "35c0caf18f69b656e6c64813c34b20dc23cb04af9c9ec7de198a6d4c0b06cfc6"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/checklist-acknowledgement.png",
+              "sha256": "503f77fe4ab16ebdf1495af5d4f5df83105a422c81e1d6f4ca292ed2a226a542"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/gift-proofs.jpg",
+              "sha256": "274f4be8dc181a10c75d9a014708baf515b0f55ae0a32da27abe048e54f14355"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/gift-result.png",
+              "sha256": "5a677606a31c474ace999b17a0bab55640286a911c7a78b7527e6417efa259a6"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/reading-proofs.jpg",
+              "sha256": "4be6b33e6ba158f47a4cfe38cc96313ac9bbd668e9edb27a998c32fb81a7eeb6"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/service-and-store-proofs.jpg",
+              "sha256": "6f5c93034cc2f01ceb44d67a152d7f7279439beffa1784895898ef927ad5b049"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        }
+      },
+      "record_id": "b80a01e4a8c959c065bb9627f738c96de950fc186dfc6b7d3c17788ea3a26235"
+    },
+    {
+      "id": "return-policy-guide",
+      "revision": "5031e8fb4b77a5dfcf51b68b27cf0c1fcd59fd20313b8752a4751077493d5ed0",
+      "base_id": "1fc6fa68aaae244dcfa45381b45715c84a5fa5f5e5a37332ed5f7de219262e40",
+      "decision": "approved",
+      "reviewer": "Codex — six-design refinement review",
+      "note": "Only nearest-design comparison metadata and review hash changed. Field-by-field comparison confirms the campaign output/configuration is unchanged; retain previous stage evidence with the new comparison report.",
+      "at": "2026-09-29T01:30:05.465Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-decision-support-2026-09-28.md",
+              "sha256": "42a1f6ff6b10354e6b161e13a8ae3d518d9440d98a849f04ae9d38a09a47a5e6"
+            },
+            {
+              "path": "docs/reviews/template-decision-support-2026-09-28.json",
+              "sha256": "35c0caf18f69b656e6c64813c34b20dc23cb04af9c9ec7de198a6d4c0b06cfc6"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/checklist-acknowledgement.png",
+              "sha256": "503f77fe4ab16ebdf1495af5d4f5df83105a422c81e1d6f4ca292ed2a226a542"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/gift-proofs.jpg",
+              "sha256": "274f4be8dc181a10c75d9a014708baf515b0f55ae0a32da27abe048e54f14355"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/gift-result.png",
+              "sha256": "5a677606a31c474ace999b17a0bab55640286a911c7a78b7527e6417efa259a6"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/reading-proofs.jpg",
+              "sha256": "4be6b33e6ba158f47a4cfe38cc96313ac9bbd668e9edb27a998c32fb81a7eeb6"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/service-and-store-proofs.jpg",
+              "sha256": "6f5c93034cc2f01ceb44d67a152d7f7279439beffa1784895898ef927ad5b049"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.md",
+              "sha256": "3ea5695192fdcc6204a14365c77a4be6fb6cdf8a0d3263f471014bf552fcb964"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.json",
+              "sha256": "1d82dfeee5da84e437ac77d7b57d57491feb1dbbbf0137ece403c24e4f67f84c"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28/layout-checks.txt",
+              "sha256": "723d8217576a2c5f98d3f86319b35e9404215573a33aa0043ee01bc731912954"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28/contrast.json",
+              "sha256": "c12dd16c93afaaab72f08593258a590f716e8af149ce07b79399eac98e09c44b"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-decision-support-2026-09-28.md",
+              "sha256": "42a1f6ff6b10354e6b161e13a8ae3d518d9440d98a849f04ae9d38a09a47a5e6"
+            },
+            {
+              "path": "docs/reviews/template-decision-support-2026-09-28.json",
+              "sha256": "35c0caf18f69b656e6c64813c34b20dc23cb04af9c9ec7de198a6d4c0b06cfc6"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/checklist-acknowledgement.png",
+              "sha256": "503f77fe4ab16ebdf1495af5d4f5df83105a422c81e1d6f4ca292ed2a226a542"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/gift-proofs.jpg",
+              "sha256": "274f4be8dc181a10c75d9a014708baf515b0f55ae0a32da27abe048e54f14355"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/gift-result.png",
+              "sha256": "5a677606a31c474ace999b17a0bab55640286a911c7a78b7527e6417efa259a6"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/reading-proofs.jpg",
+              "sha256": "4be6b33e6ba158f47a4cfe38cc96313ac9bbd668e9edb27a998c32fb81a7eeb6"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/service-and-store-proofs.jpg",
+              "sha256": "6f5c93034cc2f01ceb44d67a152d7f7279439beffa1784895898ef927ad5b049"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.md",
+              "sha256": "3ea5695192fdcc6204a14365c77a4be6fb6cdf8a0d3263f471014bf552fcb964"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.json",
+              "sha256": "1d82dfeee5da84e437ac77d7b57d57491feb1dbbbf0137ece403c24e4f67f84c"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-decision-support-2026-09-28.md",
+              "sha256": "42a1f6ff6b10354e6b161e13a8ae3d518d9440d98a849f04ae9d38a09a47a5e6"
+            },
+            {
+              "path": "docs/reviews/template-decision-support-2026-09-28.json",
+              "sha256": "35c0caf18f69b656e6c64813c34b20dc23cb04af9c9ec7de198a6d4c0b06cfc6"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/checklist-acknowledgement.png",
+              "sha256": "503f77fe4ab16ebdf1495af5d4f5df83105a422c81e1d6f4ca292ed2a226a542"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/gift-proofs.jpg",
+              "sha256": "274f4be8dc181a10c75d9a014708baf515b0f55ae0a32da27abe048e54f14355"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/gift-result.png",
+              "sha256": "5a677606a31c474ace999b17a0bab55640286a911c7a78b7527e6417efa259a6"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/reading-proofs.jpg",
+              "sha256": "4be6b33e6ba158f47a4cfe38cc96313ac9bbd668e9edb27a998c32fb81a7eeb6"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/service-and-store-proofs.jpg",
+              "sha256": "6f5c93034cc2f01ceb44d67a152d7f7279439beffa1784895898ef927ad5b049"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.md",
+              "sha256": "3ea5695192fdcc6204a14365c77a4be6fb6cdf8a0d3263f471014bf552fcb964"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.json",
+              "sha256": "1d82dfeee5da84e437ac77d7b57d57491feb1dbbbf0137ece403c24e4f67f84c"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28/native-verification.json",
+              "sha256": "a0d049acdd67dcd2c79cfe14bec7e56eb20b64471b832ece38bb2d04682e8c21"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28/browser-captures.json",
+              "sha256": "fd498f3309a03422696460a7e187c98943456e7fad56116e82fcae52eb02e53d"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        }
+      },
+      "record_id": "f7dad8f88e2501b5592c5f12b7947265cec3cdca50c85e3e2bd645073a74ae7f"
+    },
+    {
+      "id": "service-area-check",
+      "revision": "8e9dd761b58546b9452d42c9d630f4d8f6cbdd02e551e13f8e0f3bba25c3d7eb",
+      "base_id": "93d93198a1d65be2ed357a6147033c193bde5b50911a25dc14cfb0520e2078a0",
+      "decision": "approved",
+      "reviewer": "Codex — six-design refinement review",
+      "note": "Only nearest-design comparison metadata and review hash changed. Field-by-field comparison confirms the campaign output/configuration is unchanged; retain previous stage evidence with the new comparison report.",
+      "at": "2026-09-29T01:30:05.465Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-decision-support-2026-09-28.md",
+              "sha256": "42a1f6ff6b10354e6b161e13a8ae3d518d9440d98a849f04ae9d38a09a47a5e6"
+            },
+            {
+              "path": "docs/reviews/template-decision-support-2026-09-28.json",
+              "sha256": "35c0caf18f69b656e6c64813c34b20dc23cb04af9c9ec7de198a6d4c0b06cfc6"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/checklist-acknowledgement.png",
+              "sha256": "503f77fe4ab16ebdf1495af5d4f5df83105a422c81e1d6f4ca292ed2a226a542"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/gift-proofs.jpg",
+              "sha256": "274f4be8dc181a10c75d9a014708baf515b0f55ae0a32da27abe048e54f14355"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/gift-result.png",
+              "sha256": "5a677606a31c474ace999b17a0bab55640286a911c7a78b7527e6417efa259a6"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/reading-proofs.jpg",
+              "sha256": "4be6b33e6ba158f47a4cfe38cc96313ac9bbd668e9edb27a998c32fb81a7eeb6"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/service-and-store-proofs.jpg",
+              "sha256": "6f5c93034cc2f01ceb44d67a152d7f7279439beffa1784895898ef927ad5b049"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.md",
+              "sha256": "3ea5695192fdcc6204a14365c77a4be6fb6cdf8a0d3263f471014bf552fcb964"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.json",
+              "sha256": "1d82dfeee5da84e437ac77d7b57d57491feb1dbbbf0137ece403c24e4f67f84c"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28/layout-checks.txt",
+              "sha256": "723d8217576a2c5f98d3f86319b35e9404215573a33aa0043ee01bc731912954"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28/contrast.json",
+              "sha256": "c12dd16c93afaaab72f08593258a590f716e8af149ce07b79399eac98e09c44b"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-decision-support-2026-09-28.md",
+              "sha256": "42a1f6ff6b10354e6b161e13a8ae3d518d9440d98a849f04ae9d38a09a47a5e6"
+            },
+            {
+              "path": "docs/reviews/template-decision-support-2026-09-28.json",
+              "sha256": "35c0caf18f69b656e6c64813c34b20dc23cb04af9c9ec7de198a6d4c0b06cfc6"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/checklist-acknowledgement.png",
+              "sha256": "503f77fe4ab16ebdf1495af5d4f5df83105a422c81e1d6f4ca292ed2a226a542"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/gift-proofs.jpg",
+              "sha256": "274f4be8dc181a10c75d9a014708baf515b0f55ae0a32da27abe048e54f14355"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/gift-result.png",
+              "sha256": "5a677606a31c474ace999b17a0bab55640286a911c7a78b7527e6417efa259a6"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/reading-proofs.jpg",
+              "sha256": "4be6b33e6ba158f47a4cfe38cc96313ac9bbd668e9edb27a998c32fb81a7eeb6"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/service-and-store-proofs.jpg",
+              "sha256": "6f5c93034cc2f01ceb44d67a152d7f7279439beffa1784895898ef927ad5b049"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.md",
+              "sha256": "3ea5695192fdcc6204a14365c77a4be6fb6cdf8a0d3263f471014bf552fcb964"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.json",
+              "sha256": "1d82dfeee5da84e437ac77d7b57d57491feb1dbbbf0137ece403c24e4f67f84c"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-decision-support-2026-09-28.md",
+              "sha256": "42a1f6ff6b10354e6b161e13a8ae3d518d9440d98a849f04ae9d38a09a47a5e6"
+            },
+            {
+              "path": "docs/reviews/template-decision-support-2026-09-28.json",
+              "sha256": "35c0caf18f69b656e6c64813c34b20dc23cb04af9c9ec7de198a6d4c0b06cfc6"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/checklist-acknowledgement.png",
+              "sha256": "503f77fe4ab16ebdf1495af5d4f5df83105a422c81e1d6f4ca292ed2a226a542"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/gift-proofs.jpg",
+              "sha256": "274f4be8dc181a10c75d9a014708baf515b0f55ae0a32da27abe048e54f14355"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/gift-result.png",
+              "sha256": "5a677606a31c474ace999b17a0bab55640286a911c7a78b7527e6417efa259a6"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/reading-proofs.jpg",
+              "sha256": "4be6b33e6ba158f47a4cfe38cc96313ac9bbd668e9edb27a998c32fb81a7eeb6"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/service-and-store-proofs.jpg",
+              "sha256": "6f5c93034cc2f01ceb44d67a152d7f7279439beffa1784895898ef927ad5b049"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.md",
+              "sha256": "3ea5695192fdcc6204a14365c77a4be6fb6cdf8a0d3263f471014bf552fcb964"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.json",
+              "sha256": "1d82dfeee5da84e437ac77d7b57d57491feb1dbbbf0137ece403c24e4f67f84c"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28/native-verification.json",
+              "sha256": "a0d049acdd67dcd2c79cfe14bec7e56eb20b64471b832ece38bb2d04682e8c21"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28/browser-captures.json",
+              "sha256": "fd498f3309a03422696460a7e187c98943456e7fad56116e82fcae52eb02e53d"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        }
+      },
+      "record_id": "74dfefa88ac28fd6fad19de1b10df7f5e8e3124346eb8499c9991a6839ffa58e"
+    },
+    {
+      "id": "reader-question",
+      "revision": "bcf3444dde673a7ad3ab7654c9e576762465e9fb5537f564d9843c571f071cbf",
+      "base_id": "fbdc239468a7d05d6fd44d5480d0ed1e2674b170e0fedad72bd81ddba508edff",
+      "decision": "approved",
+      "reviewer": "Codex — six-design refinement review",
+      "note": "Only nearest-design comparison metadata and review hash changed. Field-by-field comparison confirms the campaign output/configuration is unchanged; retain previous stage evidence with the new comparison report.",
+      "at": "2026-09-29T01:30:05.465Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-decision-support-2026-09-28.md",
+              "sha256": "42a1f6ff6b10354e6b161e13a8ae3d518d9440d98a849f04ae9d38a09a47a5e6"
+            },
+            {
+              "path": "docs/reviews/template-decision-support-2026-09-28.json",
+              "sha256": "35c0caf18f69b656e6c64813c34b20dc23cb04af9c9ec7de198a6d4c0b06cfc6"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/checklist-acknowledgement.png",
+              "sha256": "503f77fe4ab16ebdf1495af5d4f5df83105a422c81e1d6f4ca292ed2a226a542"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/gift-proofs.jpg",
+              "sha256": "274f4be8dc181a10c75d9a014708baf515b0f55ae0a32da27abe048e54f14355"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/gift-result.png",
+              "sha256": "5a677606a31c474ace999b17a0bab55640286a911c7a78b7527e6417efa259a6"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/reading-proofs.jpg",
+              "sha256": "4be6b33e6ba158f47a4cfe38cc96313ac9bbd668e9edb27a998c32fb81a7eeb6"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/service-and-store-proofs.jpg",
+              "sha256": "6f5c93034cc2f01ceb44d67a152d7f7279439beffa1784895898ef927ad5b049"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-decision-support-2026-09-28.md",
+              "sha256": "42a1f6ff6b10354e6b161e13a8ae3d518d9440d98a849f04ae9d38a09a47a5e6"
+            },
+            {
+              "path": "docs/reviews/template-decision-support-2026-09-28.json",
+              "sha256": "35c0caf18f69b656e6c64813c34b20dc23cb04af9c9ec7de198a6d4c0b06cfc6"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/checklist-acknowledgement.png",
+              "sha256": "503f77fe4ab16ebdf1495af5d4f5df83105a422c81e1d6f4ca292ed2a226a542"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/gift-proofs.jpg",
+              "sha256": "274f4be8dc181a10c75d9a014708baf515b0f55ae0a32da27abe048e54f14355"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/gift-result.png",
+              "sha256": "5a677606a31c474ace999b17a0bab55640286a911c7a78b7527e6417efa259a6"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/reading-proofs.jpg",
+              "sha256": "4be6b33e6ba158f47a4cfe38cc96313ac9bbd668e9edb27a998c32fb81a7eeb6"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/service-and-store-proofs.jpg",
+              "sha256": "6f5c93034cc2f01ceb44d67a152d7f7279439beffa1784895898ef927ad5b049"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-decision-support-2026-09-28.md",
+              "sha256": "42a1f6ff6b10354e6b161e13a8ae3d518d9440d98a849f04ae9d38a09a47a5e6"
+            },
+            {
+              "path": "docs/reviews/template-decision-support-2026-09-28.json",
+              "sha256": "35c0caf18f69b656e6c64813c34b20dc23cb04af9c9ec7de198a6d4c0b06cfc6"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/checklist-acknowledgement.png",
+              "sha256": "503f77fe4ab16ebdf1495af5d4f5df83105a422c81e1d6f4ca292ed2a226a542"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/gift-proofs.jpg",
+              "sha256": "274f4be8dc181a10c75d9a014708baf515b0f55ae0a32da27abe048e54f14355"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/gift-result.png",
+              "sha256": "5a677606a31c474ace999b17a0bab55640286a911c7a78b7527e6417efa259a6"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/reading-proofs.jpg",
+              "sha256": "4be6b33e6ba158f47a4cfe38cc96313ac9bbd668e9edb27a998c32fb81a7eeb6"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/service-and-store-proofs.jpg",
+              "sha256": "6f5c93034cc2f01ceb44d67a152d7f7279439beffa1784895898ef927ad5b049"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        }
+      },
+      "record_id": "aaddb838eaa753e2b49cea93014c23fa4470cb6e8a31d3366a959a75416e857c"
+    },
+    {
+      "id": "series-start",
+      "revision": "442a9e32fed717227da52a5ae33ac798dce17094e9352b4f0cb91447c3185a61",
+      "base_id": "97f707e3963f0e54bf05caea68ee730616af43f9fb29c628abb29c8f321005d6",
+      "decision": "approved",
+      "reviewer": "Codex — six-design refinement review",
+      "note": "Only nearest-design comparison metadata and review hash changed. Field-by-field comparison confirms the campaign output/configuration is unchanged; retain previous stage evidence with the new comparison report.",
+      "at": "2026-09-29T01:30:05.465Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-decision-support-2026-09-28.md",
+              "sha256": "42a1f6ff6b10354e6b161e13a8ae3d518d9440d98a849f04ae9d38a09a47a5e6"
+            },
+            {
+              "path": "docs/reviews/template-decision-support-2026-09-28.json",
+              "sha256": "35c0caf18f69b656e6c64813c34b20dc23cb04af9c9ec7de198a6d4c0b06cfc6"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/checklist-acknowledgement.png",
+              "sha256": "503f77fe4ab16ebdf1495af5d4f5df83105a422c81e1d6f4ca292ed2a226a542"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/gift-proofs.jpg",
+              "sha256": "274f4be8dc181a10c75d9a014708baf515b0f55ae0a32da27abe048e54f14355"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/gift-result.png",
+              "sha256": "5a677606a31c474ace999b17a0bab55640286a911c7a78b7527e6417efa259a6"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/reading-proofs.jpg",
+              "sha256": "4be6b33e6ba158f47a4cfe38cc96313ac9bbd668e9edb27a998c32fb81a7eeb6"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/service-and-store-proofs.jpg",
+              "sha256": "6f5c93034cc2f01ceb44d67a152d7f7279439beffa1784895898ef927ad5b049"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.md",
+              "sha256": "3ea5695192fdcc6204a14365c77a4be6fb6cdf8a0d3263f471014bf552fcb964"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.json",
+              "sha256": "1d82dfeee5da84e437ac77d7b57d57491feb1dbbbf0137ece403c24e4f67f84c"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28/layout-checks.txt",
+              "sha256": "723d8217576a2c5f98d3f86319b35e9404215573a33aa0043ee01bc731912954"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28/contrast.json",
+              "sha256": "c12dd16c93afaaab72f08593258a590f716e8af149ce07b79399eac98e09c44b"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-decision-support-2026-09-28.md",
+              "sha256": "42a1f6ff6b10354e6b161e13a8ae3d518d9440d98a849f04ae9d38a09a47a5e6"
+            },
+            {
+              "path": "docs/reviews/template-decision-support-2026-09-28.json",
+              "sha256": "35c0caf18f69b656e6c64813c34b20dc23cb04af9c9ec7de198a6d4c0b06cfc6"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/checklist-acknowledgement.png",
+              "sha256": "503f77fe4ab16ebdf1495af5d4f5df83105a422c81e1d6f4ca292ed2a226a542"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/gift-proofs.jpg",
+              "sha256": "274f4be8dc181a10c75d9a014708baf515b0f55ae0a32da27abe048e54f14355"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/gift-result.png",
+              "sha256": "5a677606a31c474ace999b17a0bab55640286a911c7a78b7527e6417efa259a6"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/reading-proofs.jpg",
+              "sha256": "4be6b33e6ba158f47a4cfe38cc96313ac9bbd668e9edb27a998c32fb81a7eeb6"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/service-and-store-proofs.jpg",
+              "sha256": "6f5c93034cc2f01ceb44d67a152d7f7279439beffa1784895898ef927ad5b049"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.md",
+              "sha256": "3ea5695192fdcc6204a14365c77a4be6fb6cdf8a0d3263f471014bf552fcb964"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.json",
+              "sha256": "1d82dfeee5da84e437ac77d7b57d57491feb1dbbbf0137ece403c24e4f67f84c"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-decision-support-2026-09-28.md",
+              "sha256": "42a1f6ff6b10354e6b161e13a8ae3d518d9440d98a849f04ae9d38a09a47a5e6"
+            },
+            {
+              "path": "docs/reviews/template-decision-support-2026-09-28.json",
+              "sha256": "35c0caf18f69b656e6c64813c34b20dc23cb04af9c9ec7de198a6d4c0b06cfc6"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/checklist-acknowledgement.png",
+              "sha256": "503f77fe4ab16ebdf1495af5d4f5df83105a422c81e1d6f4ca292ed2a226a542"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/gift-proofs.jpg",
+              "sha256": "274f4be8dc181a10c75d9a014708baf515b0f55ae0a32da27abe048e54f14355"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/gift-result.png",
+              "sha256": "5a677606a31c474ace999b17a0bab55640286a911c7a78b7527e6417efa259a6"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/reading-proofs.jpg",
+              "sha256": "4be6b33e6ba158f47a4cfe38cc96313ac9bbd668e9edb27a998c32fb81a7eeb6"
+            },
+            {
+              "path": "docs/reviews/decision-support-2026-09-28/service-and-store-proofs.jpg",
+              "sha256": "6f5c93034cc2f01ceb44d67a152d7f7279439beffa1784895898ef927ad5b049"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.md",
+              "sha256": "3ea5695192fdcc6204a14365c77a4be6fb6cdf8a0d3263f471014bf552fcb964"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.json",
+              "sha256": "1d82dfeee5da84e437ac77d7b57d57491feb1dbbbf0137ece403c24e4f67f84c"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28/native-verification.json",
+              "sha256": "a0d049acdd67dcd2c79cfe14bec7e56eb20b64471b832ece38bb2d04682e8c21"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28/browser-captures.json",
+              "sha256": "fd498f3309a03422696460a7e187c98943456e7fad56116e82fcae52eb02e53d"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        }
+      },
+      "record_id": "3925a9c070a7b4983b5a2119a8e79ec855fb575d09e79d6f70b47d136b865eef"
+    },
+    {
+      "id": "gift-wrap-details",
+      "revision": "bd963b34fab8d18c574f2242e0839a7e096c8748ecd7d0d4c5aa737f051c8e5e",
+      "base_id": "6ec970f8b9d45e9195afdeec52873e7cda05655748c09079eca967d684296395",
+      "decision": "approved",
+      "reviewer": "Codex — six-design refinement review",
+      "note": "Only nearest-design comparison metadata and review hash changed. Field-by-field comparison confirms the campaign output/configuration is unchanged; retain previous stage evidence with the new comparison report.",
+      "at": "2026-09-29T01:30:05.465Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.md",
+              "sha256": "3ea5695192fdcc6204a14365c77a4be6fb6cdf8a0d3263f471014bf552fcb964"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.json",
+              "sha256": "1d82dfeee5da84e437ac77d7b57d57491feb1dbbbf0137ece403c24e4f67f84c"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28/layout-checks.txt",
+              "sha256": "723d8217576a2c5f98d3f86319b35e9404215573a33aa0043ee01bc731912954"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28/contrast.json",
+              "sha256": "c12dd16c93afaaab72f08593258a590f716e8af149ce07b79399eac98e09c44b"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.md",
+              "sha256": "3ea5695192fdcc6204a14365c77a4be6fb6cdf8a0d3263f471014bf552fcb964"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.json",
+              "sha256": "1d82dfeee5da84e437ac77d7b57d57491feb1dbbbf0137ece403c24e4f67f84c"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.md",
+              "sha256": "3ea5695192fdcc6204a14365c77a4be6fb6cdf8a0d3263f471014bf552fcb964"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.json",
+              "sha256": "1d82dfeee5da84e437ac77d7b57d57491feb1dbbbf0137ece403c24e4f67f84c"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28/native-verification.json",
+              "sha256": "a0d049acdd67dcd2c79cfe14bec7e56eb20b64471b832ece38bb2d04682e8c21"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28/browser-captures.json",
+              "sha256": "fd498f3309a03422696460a7e187c98943456e7fad56116e82fcae52eb02e53d"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        }
+      },
+      "record_id": "6b2c7f9914c102b39b58f5840761c77a6b868aa8c3746ed92914b082c06c15f3"
+    },
+    {
+      "id": "dispatch-schedule",
+      "revision": "3145b9ea21d617e517fda9d0f65244f492fcea8319c535c69d7e5210cb63baa8",
+      "base_id": "ca2f3bd9b99a2a697696c42031948d85716a2651ddabb90e77e795124fbbdbc4",
+      "decision": "approved",
+      "reviewer": "Codex — six-design refinement review",
+      "note": "Only nearest-design comparison metadata and review hash changed. Field-by-field comparison confirms the campaign output/configuration is unchanged; retain previous stage evidence with the new comparison report.",
+      "at": "2026-09-29T01:30:05.465Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.md",
+              "sha256": "3ea5695192fdcc6204a14365c77a4be6fb6cdf8a0d3263f471014bf552fcb964"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.json",
+              "sha256": "1d82dfeee5da84e437ac77d7b57d57491feb1dbbbf0137ece403c24e4f67f84c"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28/layout-checks.txt",
+              "sha256": "723d8217576a2c5f98d3f86319b35e9404215573a33aa0043ee01bc731912954"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28/contrast.json",
+              "sha256": "c12dd16c93afaaab72f08593258a590f716e8af149ce07b79399eac98e09c44b"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.md",
+              "sha256": "3ea5695192fdcc6204a14365c77a4be6fb6cdf8a0d3263f471014bf552fcb964"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.json",
+              "sha256": "1d82dfeee5da84e437ac77d7b57d57491feb1dbbbf0137ece403c24e4f67f84c"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.md",
+              "sha256": "3ea5695192fdcc6204a14365c77a4be6fb6cdf8a0d3263f471014bf552fcb964"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.json",
+              "sha256": "1d82dfeee5da84e437ac77d7b57d57491feb1dbbbf0137ece403c24e4f67f84c"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28/native-verification.json",
+              "sha256": "a0d049acdd67dcd2c79cfe14bec7e56eb20b64471b832ece38bb2d04682e8c21"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28/browser-captures.json",
+              "sha256": "fd498f3309a03422696460a7e187c98943456e7fad56116e82fcae52eb02e53d"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        }
+      },
+      "record_id": "b41f178add68419c580b605fe6ddb3ab5c5f0e4d0171ee9447d1b3c79c449282"
+    },
+    {
+      "id": "showroom-information",
+      "revision": "0cca73c7140e0e33675bbf176ca7e9dfa7951f9fc3016743fc4441904b275c44",
+      "base_id": "d8eda89c5e04fd096039dde496a5b0ab9f5234f5dfe461008226710266bbd4ae",
+      "decision": "approved",
+      "reviewer": "Codex — six-design refinement review",
+      "note": "Only nearest-design comparison metadata and review hash changed. Field-by-field comparison confirms the campaign output/configuration is unchanged; retain previous stage evidence with the new comparison report.",
+      "at": "2026-09-29T01:30:05.465Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.md",
+              "sha256": "3ea5695192fdcc6204a14365c77a4be6fb6cdf8a0d3263f471014bf552fcb964"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.json",
+              "sha256": "1d82dfeee5da84e437ac77d7b57d57491feb1dbbbf0137ece403c24e4f67f84c"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28/layout-checks.txt",
+              "sha256": "723d8217576a2c5f98d3f86319b35e9404215573a33aa0043ee01bc731912954"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28/contrast.json",
+              "sha256": "c12dd16c93afaaab72f08593258a590f716e8af149ce07b79399eac98e09c44b"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.md",
+              "sha256": "3ea5695192fdcc6204a14365c77a4be6fb6cdf8a0d3263f471014bf552fcb964"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.json",
+              "sha256": "1d82dfeee5da84e437ac77d7b57d57491feb1dbbbf0137ece403c24e4f67f84c"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.md",
+              "sha256": "3ea5695192fdcc6204a14365c77a4be6fb6cdf8a0d3263f471014bf552fcb964"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.json",
+              "sha256": "1d82dfeee5da84e437ac77d7b57d57491feb1dbbbf0137ece403c24e4f67f84c"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28/native-verification.json",
+              "sha256": "a0d049acdd67dcd2c79cfe14bec7e56eb20b64471b832ece38bb2d04682e8c21"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28/browser-captures.json",
+              "sha256": "fd498f3309a03422696460a7e187c98943456e7fad56116e82fcae52eb02e53d"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        }
+      },
+      "record_id": "efd703f8406539154994ec3af22ea233b01f8d9031ea03445284090ba54c9730"
+    },
+    {
+      "id": "holiday-service-hours",
+      "revision": "6e0ae917e42ff1609b154b4f8c59b3c2c350c77dc64ba8a430078cd6cf05e3be",
+      "base_id": "2ee47f1aad52401a5140b7f841df3ba195328c350209eec119aa2ba6b6c2262b",
+      "decision": "approved",
+      "reviewer": "Codex — six-design refinement review",
+      "note": "Only nearest-design comparison metadata and review hash changed. Field-by-field comparison confirms the campaign output/configuration is unchanged; retain previous stage evidence with the new comparison report.",
+      "at": "2026-09-29T01:30:05.465Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.md",
+              "sha256": "3ea5695192fdcc6204a14365c77a4be6fb6cdf8a0d3263f471014bf552fcb964"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.json",
+              "sha256": "1d82dfeee5da84e437ac77d7b57d57491feb1dbbbf0137ece403c24e4f67f84c"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28/layout-checks.txt",
+              "sha256": "723d8217576a2c5f98d3f86319b35e9404215573a33aa0043ee01bc731912954"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28/contrast.json",
+              "sha256": "c12dd16c93afaaab72f08593258a590f716e8af149ce07b79399eac98e09c44b"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.md",
+              "sha256": "3ea5695192fdcc6204a14365c77a4be6fb6cdf8a0d3263f471014bf552fcb964"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.json",
+              "sha256": "1d82dfeee5da84e437ac77d7b57d57491feb1dbbbf0137ece403c24e4f67f84c"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.md",
+              "sha256": "3ea5695192fdcc6204a14365c77a4be6fb6cdf8a0d3263f471014bf552fcb964"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.json",
+              "sha256": "1d82dfeee5da84e437ac77d7b57d57491feb1dbbbf0137ece403c24e4f67f84c"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28/native-verification.json",
+              "sha256": "a0d049acdd67dcd2c79cfe14bec7e56eb20b64471b832ece38bb2d04682e8c21"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28/browser-captures.json",
+              "sha256": "fd498f3309a03422696460a7e187c98943456e7fad56116e82fcae52eb02e53d"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        }
+      },
+      "record_id": "8fe50f04394b55b18da6db6570d00420d6d37673b936083efa04a4cdb35c65d1"
+    },
+    {
+      "id": "remote-consultation-details",
+      "revision": "d28b97f4af07616fa1b4c4c115f51a10f9bf9102def959ad936a20b3ded7bdc8",
+      "base_id": "ed4454485ed2e38e1021442d16b627f8ed0a785b27941da601f337f4c759d285",
+      "decision": "approved",
+      "reviewer": "Codex — six-design refinement review",
+      "note": "Only nearest-design comparison metadata and review hash changed. Field-by-field comparison confirms the campaign output/configuration is unchanged; retain previous stage evidence with the new comparison report.",
+      "at": "2026-09-29T01:30:05.465Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.md",
+              "sha256": "3ea5695192fdcc6204a14365c77a4be6fb6cdf8a0d3263f471014bf552fcb964"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.json",
+              "sha256": "1d82dfeee5da84e437ac77d7b57d57491feb1dbbbf0137ece403c24e4f67f84c"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28/layout-checks.txt",
+              "sha256": "723d8217576a2c5f98d3f86319b35e9404215573a33aa0043ee01bc731912954"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28/contrast.json",
+              "sha256": "c12dd16c93afaaab72f08593258a590f716e8af149ce07b79399eac98e09c44b"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.md",
+              "sha256": "3ea5695192fdcc6204a14365c77a4be6fb6cdf8a0d3263f471014bf552fcb964"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.json",
+              "sha256": "1d82dfeee5da84e437ac77d7b57d57491feb1dbbbf0137ece403c24e4f67f84c"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.md",
+              "sha256": "3ea5695192fdcc6204a14365c77a4be6fb6cdf8a0d3263f471014bf552fcb964"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.json",
+              "sha256": "1d82dfeee5da84e437ac77d7b57d57491feb1dbbbf0137ece403c24e4f67f84c"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28/native-verification.json",
+              "sha256": "a0d049acdd67dcd2c79cfe14bec7e56eb20b64471b832ece38bb2d04682e8c21"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28/browser-captures.json",
+              "sha256": "fd498f3309a03422696460a7e187c98943456e7fad56116e82fcae52eb02e53d"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        }
+      },
+      "record_id": "2b48fcc22dbff40d21da2986cb670cc4a0aad82f2de26c1851f721e9fe55d2ac"
+    },
+    {
+      "id": "contributor-guidelines",
+      "revision": "5dd5598f69e91749f964e4e6b989a3f439718ee4fd0d1fe30efbc2a925586965",
+      "base_id": "d9306b5d8af770671a74234725a6054735b0022ec0af937ef264e9f1c0e27098",
+      "decision": "approved",
+      "reviewer": "Codex — six-design refinement review",
+      "note": "Only nearest-design comparison metadata and review hash changed. Field-by-field comparison confirms the campaign output/configuration is unchanged; retain previous stage evidence with the new comparison report.",
+      "at": "2026-09-29T01:30:05.465Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.md",
+              "sha256": "3ea5695192fdcc6204a14365c77a4be6fb6cdf8a0d3263f471014bf552fcb964"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.json",
+              "sha256": "1d82dfeee5da84e437ac77d7b57d57491feb1dbbbf0137ece403c24e4f67f84c"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28/layout-checks.txt",
+              "sha256": "723d8217576a2c5f98d3f86319b35e9404215573a33aa0043ee01bc731912954"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28/contrast.json",
+              "sha256": "c12dd16c93afaaab72f08593258a590f716e8af149ce07b79399eac98e09c44b"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.md",
+              "sha256": "3ea5695192fdcc6204a14365c77a4be6fb6cdf8a0d3263f471014bf552fcb964"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.json",
+              "sha256": "1d82dfeee5da84e437ac77d7b57d57491feb1dbbbf0137ece403c24e4f67f84c"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.md",
+              "sha256": "4c8206c5a8e596a3cb01bbe1dfb326d0b70f67174393b27edb9a8c42a29e56d4"
+            },
+            {
+              "path": "docs/reviews/template-contextual-help-2026-09-28.json",
+              "sha256": "586eb678c19d35169f31351a5e3b4c78ed3d67514c49b74fdf09f24671036268"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.md",
+              "sha256": "3ea5695192fdcc6204a14365c77a4be6fb6cdf8a0d3263f471014bf552fcb964"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.json",
+              "sha256": "1d82dfeee5da84e437ac77d7b57d57491feb1dbbbf0137ece403c24e4f67f84c"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28/native-verification.json",
+              "sha256": "a0d049acdd67dcd2c79cfe14bec7e56eb20b64471b832ece38bb2d04682e8c21"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28/browser-captures.json",
+              "sha256": "fd498f3309a03422696460a7e187c98943456e7fad56116e82fcae52eb02e53d"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        }
+      },
+      "record_id": "5a0560470ffe21afd204a255d815ecfde075fd5251f4adf33cee987825a74fcb"
+    },
+    {
+      "id": "writing-session-details",
+      "revision": "b90ba109bbf1a7756ef13580526d7c5a94fd77b3a9395e6529d96933d2bd3a60",
+      "base_id": "260481d73923472b2e94963d0ab1e8e0a83659960950debf782bf187f52e18f0",
+      "decision": "approved",
+      "reviewer": "Codex — six-design refinement review",
+      "note": "Only nearest-design comparison metadata and review hash changed. Field-by-field comparison confirms the campaign output/configuration is unchanged; retain previous stage evidence with the new comparison report.",
+      "at": "2026-09-29T01:30:05.465Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-directions-2026-09-28.md",
+              "sha256": "0a2f6dc2d799b234dfa06671f1986db0a991275a09973eab8115e86dab813d08"
+            },
+            {
+              "path": "docs/reviews/template-directions-2026-09-28.json",
+              "sha256": "1d9fd3a77e648626a80b0d6161f788b41acba7fbf06f4a02df96b04e2f24b603"
+            },
+            {
+              "path": "docs/reviews/template-directions-2026-09-28/four-directions.png",
+              "sha256": "bf0ac513ca8e9f18a370faa2406a9a14142863ea2d3189ff0e1a13256804d249"
+            },
+            {
+              "path": "docs/reviews/template-directions-2026-09-28/sheet-0.png",
+              "sha256": "595b2c8fb029f8197aa874cb07d344bfc29eb41073e4f11ed64b473ac162bd75"
+            },
+            {
+              "path": "docs/reviews/template-directions-2026-09-28/sheet-1.png",
+              "sha256": "402acd56e25b6439ff267d3a653d0c34426927b2c00cc0db024635d224cc51db"
+            },
+            {
+              "path": "docs/reviews/template-directions-2026-09-28/sheet-2.png",
+              "sha256": "5f1ecf16097615f0d70d4d4e491aabe984c6c009505daae03da79da0f2c90722"
+            },
+            {
+              "path": "docs/reviews/template-directions-2026-09-28/sheet-3.png",
+              "sha256": "43443875abd387f5d95d3cd4749bd5754a8eb7c88e72641175a0fccaedb39815"
+            },
+            {
+              "path": "docs/reviews/template-directions-2026-09-28/sheet-4.png",
+              "sha256": "2ec679e2b45ed3382cea2a4012d217a4598673f5a4bec9109c21e8beebc0a372"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.md",
+              "sha256": "3ea5695192fdcc6204a14365c77a4be6fb6cdf8a0d3263f471014bf552fcb964"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.json",
+              "sha256": "1d82dfeee5da84e437ac77d7b57d57491feb1dbbbf0137ece403c24e4f67f84c"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28/layout-checks.txt",
+              "sha256": "723d8217576a2c5f98d3f86319b35e9404215573a33aa0043ee01bc731912954"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28/contrast.json",
+              "sha256": "c12dd16c93afaaab72f08593258a590f716e8af149ce07b79399eac98e09c44b"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-directions-2026-09-28.md",
+              "sha256": "0a2f6dc2d799b234dfa06671f1986db0a991275a09973eab8115e86dab813d08"
+            },
+            {
+              "path": "docs/reviews/template-directions-2026-09-28.json",
+              "sha256": "1d9fd3a77e648626a80b0d6161f788b41acba7fbf06f4a02df96b04e2f24b603"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.md",
+              "sha256": "3ea5695192fdcc6204a14365c77a4be6fb6cdf8a0d3263f471014bf552fcb964"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.json",
+              "sha256": "1d82dfeee5da84e437ac77d7b57d57491feb1dbbbf0137ece403c24e4f67f84c"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-directions-2026-09-28.md",
+              "sha256": "0a2f6dc2d799b234dfa06671f1986db0a991275a09973eab8115e86dab813d08"
+            },
+            {
+              "path": "docs/reviews/template-directions-2026-09-28.json",
+              "sha256": "1d9fd3a77e648626a80b0d6161f788b41acba7fbf06f4a02df96b04e2f24b603"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.md",
+              "sha256": "3ea5695192fdcc6204a14365c77a4be6fb6cdf8a0d3263f471014bf552fcb964"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.json",
+              "sha256": "1d82dfeee5da84e437ac77d7b57d57491feb1dbbbf0137ece403c24e4f67f84c"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28/native-verification.json",
+              "sha256": "a0d049acdd67dcd2c79cfe14bec7e56eb20b64471b832ece38bb2d04682e8c21"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28/browser-captures.json",
+              "sha256": "fd498f3309a03422696460a7e187c98943456e7fad56116e82fcae52eb02e53d"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        }
+      },
+      "record_id": "eaefca3d567c25b1c8e12022032591c62124a6d7623b72e7f9fd24583cf96828"
+    },
+    {
+      "id": "rereading-essay",
+      "revision": "6bca5bac8987918a5063cb585b804ad4c50fef6fb656d2dc1eac10911d7f8fa5",
+      "base_id": "62f160553ea4a34d45a4fd348d12f1c737ffd5faa8ffbbe7f8463e1176dd971c",
+      "decision": "approved",
+      "reviewer": "Codex — six-design refinement review",
+      "note": "Only nearest-design comparison metadata and review hash changed. Field-by-field comparison confirms the campaign output/configuration is unchanged; retain previous stage evidence with the new comparison report.",
+      "at": "2026-09-29T01:30:05.465Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.md",
+              "sha256": "3ea5695192fdcc6204a14365c77a4be6fb6cdf8a0d3263f471014bf552fcb964"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.json",
+              "sha256": "1d82dfeee5da84e437ac77d7b57d57491feb1dbbbf0137ece403c24e4f67f84c"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28/layout-checks.txt",
+              "sha256": "723d8217576a2c5f98d3f86319b35e9404215573a33aa0043ee01bc731912954"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28/contrast.json",
+              "sha256": "c12dd16c93afaaab72f08593258a590f716e8af149ce07b79399eac98e09c44b"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28/rereading-essay-0-ltr.png",
+              "sha256": "c41f61b5f00c0606609c633a79842c00280f699511f8eeea2521fcb7488d7a55"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28/rereading-essay-0-rtl.png",
+              "sha256": "eb055113820ce324c32e48a2b8afd9d16bdc233bb4aa024a044d21f1de73d076"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28/native-eight.jpg",
+              "sha256": "389d957e1aad26a53655b64111509142775e5b8ae8e052c5c7eb979e5fec6d46"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.md",
+              "sha256": "3ea5695192fdcc6204a14365c77a4be6fb6cdf8a0d3263f471014bf552fcb964"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.json",
+              "sha256": "1d82dfeee5da84e437ac77d7b57d57491feb1dbbbf0137ece403c24e4f67f84c"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28/studio-retry-preserves-details.png",
+              "sha256": "46027ed4baa746f81c3b95237dd09316f652ce82ca3deeda985435444e805409"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28/browser-captures.json",
+              "sha256": "fd498f3309a03422696460a7e187c98943456e7fad56116e82fcae52eb02e53d"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.md",
+              "sha256": "3ea5695192fdcc6204a14365c77a4be6fb6cdf8a0d3263f471014bf552fcb964"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.json",
+              "sha256": "1d82dfeee5da84e437ac77d7b57d57491feb1dbbbf0137ece403c24e4f67f84c"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28/native-verification.json",
+              "sha256": "a0d049acdd67dcd2c79cfe14bec7e56eb20b64471b832ece38bb2d04682e8c21"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28/browser-captures.json",
+              "sha256": "fd498f3309a03422696460a7e187c98943456e7fad56116e82fcae52eb02e53d"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        }
+      },
+      "record_id": "82a3385d1c6280368fd4d866a5e92c1cb69cf107b7c5a7f95650cdf4a22638ba"
+    },
+    {
+      "id": "upholstery-samples",
+      "revision": "91571c9007eea202f2f795a5af65d357e187b6f3b41ae3304276ec84ba406275",
+      "base_id": "613b2ff2da60644b5ce535373118ab1044910e80cc409c560bd1ae9ce3398092",
+      "decision": "approved",
+      "reviewer": "Codex — six-design refinement review",
+      "note": "Only nearest-design comparison metadata and review hash changed. Field-by-field comparison confirms the campaign output/configuration is unchanged; retain previous stage evidence with the new comparison report.",
+      "at": "2026-09-29T01:30:05.465Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.md",
+              "sha256": "3ea5695192fdcc6204a14365c77a4be6fb6cdf8a0d3263f471014bf552fcb964"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.json",
+              "sha256": "1d82dfeee5da84e437ac77d7b57d57491feb1dbbbf0137ece403c24e4f67f84c"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28/layout-checks.txt",
+              "sha256": "723d8217576a2c5f98d3f86319b35e9404215573a33aa0043ee01bc731912954"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28/contrast.json",
+              "sha256": "c12dd16c93afaaab72f08593258a590f716e8af149ce07b79399eac98e09c44b"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28/upholstery-samples-0-ltr.png",
+              "sha256": "30061563f58fff0171332285704bb6b6d62feef241005aac17234ab939021057"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28/upholstery-samples-0-rtl.png",
+              "sha256": "fdbba33ac2ec5116784f7a34cc61ec0cdebe6cba2511913b0b8df279925b3b82"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28/upholstery-samples-1-ltr.png",
+              "sha256": "e2cd815a17b41409640fefc2bb7765e8040688c817fb7fe15d9b5478796808e2"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28/upholstery-samples-1-rtl.png",
+              "sha256": "1b74127fbfeb5fb10513244542ca275daa36a834b6a1f6a8ad19f3fe4e9e94e4"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28/native-eight.jpg",
+              "sha256": "389d957e1aad26a53655b64111509142775e5b8ae8e052c5c7eb979e5fec6d46"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.md",
+              "sha256": "3ea5695192fdcc6204a14365c77a4be6fb6cdf8a0d3263f471014bf552fcb964"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.json",
+              "sha256": "1d82dfeee5da84e437ac77d7b57d57491feb1dbbbf0137ece403c24e4f67f84c"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28/studio-retry-preserves-details.png",
+              "sha256": "46027ed4baa746f81c3b95237dd09316f652ce82ca3deeda985435444e805409"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28/browser-captures.json",
+              "sha256": "fd498f3309a03422696460a7e187c98943456e7fad56116e82fcae52eb02e53d"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.md",
+              "sha256": "3ea5695192fdcc6204a14365c77a4be6fb6cdf8a0d3263f471014bf552fcb964"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28.json",
+              "sha256": "1d82dfeee5da84e437ac77d7b57d57491feb1dbbbf0137ece403c24e4f67f84c"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28/native-verification.json",
+              "sha256": "a0d049acdd67dcd2c79cfe14bec7e56eb20b64471b832ece38bb2d04682e8c21"
+            },
+            {
+              "path": "docs/reviews/template-variety-2026-09-28/browser-captures.json",
+              "sha256": "fd498f3309a03422696460a7e187c98943456e7fad56116e82fcae52eb02e53d"
+            },
+            {
+              "path": "docs/reviews/template-six-refinements-2026-09-29.md",
+              "sha256": "65d24c035035f10dac37aeb49f286588e1cd1ac161d3d5691c014e9900130dd6"
+            }
+          ]
+        }
+      },
+      "record_id": "d085012361bab0c84248721ad11bf88afba395ecb8ba56f8dceddd7473eceacd"
     }
   ]
 }

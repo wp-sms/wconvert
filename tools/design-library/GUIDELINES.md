@@ -226,9 +226,12 @@ the renderer now (`700` at `.8125rem` of block padding) so no design has to
 remember it.
 
 **A field's ground is `--wc-bg`, so on a dark design only the ring shows it.**
-Pick a `border` clearly lighter than the ground or the input is invisible — a
-bar asking for an address with nothing that looks like a box to type in. Aim
-for 2:1 against the ground; it is a boundary, not text, so AA does not apply.
+Pick a `border` that clearly distinguishes the input from its surroundings.
+Where the outline identifies the field, require at least **3:1** against the
+adjacent surface, including the input fill when the ring is inset. Check the
+focused state too. This is separate from text contrast (normally 4.5:1);
+passing label and placeholder checks does not prove that a pale field outline
+is usable. See [WCAG non-text contrast](https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast.html).
 
 **Write both a field label and a useful example.** Field-only rows keep visible
 labels. In a compact row with a direct button, direct fields with a non-empty

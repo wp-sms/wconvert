@@ -12,7 +12,9 @@ The library still contains **108 prepared campaigns using 59 source designs**. T
 | Improve | 15 | Preserve its purpose while fixing the specific UI or sample-content issue. |
 | Compare for consolidation | 6 | Investigate overlap and dependencies before any retirement decision. |
 
-No design was retired or changed in this pass. No customer availability, saved campaign snapshot or shipping renderer changed. Existing campaign approvals were not regenerated merely to attach this advisory review.
+This records the initial audit. The subsequent [six-design refinement](template-six-refinements-2026-09-29.md) changes six sources and updates the current advisory totals to 74 keep, 11 improve and 6 consolidation candidates.
+
+No design was retired or changed in this initial pass. No customer availability, saved campaign snapshot or shipping renderer changed. Existing campaign approvals were not regenerated merely to attach this advisory review.
 
 Run `npm run templates:pilot` and open `tools/design-library/out/roadmap.html`. The board includes type and tier labels, actual source previews, source-versus-prepared-copy selection, all authored screen selectors, viewport/RTL controls, explicit comparators and dependencies across all registered Playbooks. Links open the exact prepared campaign in the studio. Board previews are inert; the studio remains the place to test interactions.
 
@@ -53,7 +55,7 @@ The Inspiration view records the scope of the earlier Depicter review: the [hori
 
 ## Validation and evidence
 
-- **2,720 rendered cases, zero automated findings:** all 170 authored source screens at 320/390/768/1440, LTR/RTL and normal/longer copy. Checks cover horizontal overflow, minimum 44px controls, minimum 16px input text and solid-colour text contrast. These source checks use default result states; they do not replace the earlier campaign-specific alternate-result checks.
+- **Historical run: 2,720 rendered cases, zero findings from the original checker.** A later [six-design review](template-six-refinements-2026-09-29.md) found that longer-copy traversal skipped screen contents and the transparent renderer overlay excluded most text contrast measurements. This original run therefore does **not** establish longer-copy or comprehensive contrast coverage. It still covered geometry/control sizing in the normal-copy renders at 320/390/768/1440 and LTR/RTL. The corrected checker now also measures inset field outlines; the six changed designs and their six dependent setups were checked with it. These source checks use default result states; they do not replace the earlier campaign-specific alternate-result checks.
 - **32 contact sheets manually inspected:** every source screen at 320 and 768. Phone popup content is narrower than the viewport because of container gutters. `320-1.jpg` through `320-16.jpg` and `768-1.jpg` through `768-16.jpg` preserve those sheets as JPEG proofs. Original PNG captures remain in ignored local build output. Passing geometry checks did not hide the editorial/alignment problems listed above.
 - **108 local WordPress campaign checks passed**, including configured captures, retries, saved values, destinations and resource handoffs. The local intercepted outbox remained in use; no external email/SMS delivery was attempted.
 - One fresh manual studio walkthrough exercised `restyling-notes`: simulated failure retained the fictional email and consent, and retry reached the truthful request acknowledgement. It explicitly reported that no details were saved or sent. This is not represented as a fresh manual walkthrough of all 108 campaigns.

@@ -1,7 +1,7 @@
 {
   "benefit-grid": {
-    "decision": "improve",
-    "reason": "Keep the three-benefit layout; replace the invented reader count, clarify the weekly reward and enlarge fine print."
+    "decision": "keep",
+    "reason": "Replace inconsistently wrapping benefit icons with a quiet text panel; align the form and improve field contrast. All authored screens and dependent setups rechecked; see template-six-refinements-2026-09-29 review."
   },
   "bold-ask": {
     "decision": "improve",
@@ -84,16 +84,16 @@
     "reason": "Keep the tinted form panel; enlarge body and fine print, protect form width and align the success copy with the tide note."
   },
   "ledger-card": {
-    "decision": "improve",
-    "reason": "Keep the ruled benefit cards; enlarge input text, tighten the mobile panels and remove a sample access promise."
+    "decision": "keep",
+    "reason": "Remove decorative benefit icons, use a consistent editorial list and labelled full-width form, and strengthen field contrast. All authored screens and dependent setups rechecked; see template-six-refinements-2026-09-29 review."
   },
   "makers-index": {
     "decision": "improve",
     "reason": "Keep the premade maker composition; shorten its picture area, improve readable type and adapt restock automation to a product enquiry."
   },
   "name-and-email": {
-    "decision": "improve",
-    "reason": "Keep for the named-download playbook; make the name optional and offer a specific resource instead of asking for a name as the reward."
+    "decision": "consolidate",
+    "reason": "Use quieter warm colours, accessible field outlines, compact typography and request-specific copy with an optional name. All authored screens and dependent setups rechecked; see template-six-refinements-2026-09-29 review."
   },
   "number-invitation": {
     "decision": "improve",
@@ -180,8 +180,8 @@
     "reason": "Two fields make a floating bar too demanding. Use the single-field bar or an inline enquiry form."
   },
   "inline-cart-nudge": {
-    "decision": "improve",
-    "reason": "Keep the basket-link nudge; remove the unverified assertion that every item is saved."
+    "decision": "keep",
+    "reason": "Remove the unrelated delivery icon and use a responsive message/action split with clear spacing. All authored screens and dependent setups rechecked; see template-six-refinements-2026-09-29 review."
   },
   "inline-code-strip": {
     "decision": "improve",
@@ -200,12 +200,12 @@
     "reason": "Collects email and phone for two marketing purposes with one consent. Retire until channel-specific consent and follow-up are designed."
   },
   "popup-two-column": {
-    "decision": "improve",
-    "reason": "Keep the optional-name form split; shorten the placeholder, replace fabricated ratings with a product-detail line and enlarge inputs."
+    "decision": "consolidate",
+    "reason": "Replace abstract placeholder with original product artwork, balance split panels, refine mobile hierarchy and strengthen field boundaries. All authored screens and dependent setups rechecked; see template-six-refinements-2026-09-29 review."
   },
   "slide-in-benefits": {
-    "decision": "improve",
-    "reason": "Keep one compact corner benefit list; make all three benefits explain the newsletter reward and improve contrast."
+    "decision": "keep",
+    "reason": "Remove unrelated benefit icons, use a compact text panel and strengthen field outlines and secondary copy. All authored screens and dependent setups rechecked; see template-six-refinements-2026-09-29 review."
   },
   "slide-in-card": {
     "decision": "retire",
