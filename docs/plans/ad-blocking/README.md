@@ -3,8 +3,9 @@
 Status: implemented on the ad-blocking branch, 2026-09-29. The detector has
 been checked with clean pages and a synthetic cosmetic filter in real browser
 engines; coverage against live blocker extensions remains unverified. This
-document records the product scope and its limits. It does not authorize a
-release.
+document records the product scope and its limits. The
+[plan audit](../../reviews/ad-blocking-audit.md) records the remaining merge
+and release checks. It does not authorize a release.
 
 ## Outcome
 

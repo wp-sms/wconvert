@@ -271,6 +271,15 @@ describe('when the browser has no sendBeacon', () => {
 
     vi.unstubAllGlobals();
   });
+
+  it('isolates a synchronous fetch refusal from visitor behavior', () => {
+    Reflect.deleteProperty(navigator, 'sendBeacon');
+    vi.stubGlobal('fetch', vi.fn(() => { throw new TypeError('blocked'); }));
+
+    expect(() => beaconFor(ENDPOINT).report(OPTIN, 'impression')).not.toThrow();
+
+    vi.unstubAllGlobals();
+  });
 });
 
 describe('when sendBeacon refuses a batch', () => {

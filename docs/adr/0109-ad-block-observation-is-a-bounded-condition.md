@@ -32,8 +32,8 @@ is retried because counters have no event IDs for deduplication.
 
 Before this change the measured gzip-9 sizes were 14,011 / 24,524 / 25,496 /
 25,761 bytes for Free / Basic / Pro / Elite. The first complete feature build
-measured 14,107 / 24,607 / 26,127 / 26,408 bytes. The final feature build
-measured 14,107 / 24,607 / 26,142 / 26,421 bytes. The resulting hard caps are
+measured 14,107 / 24,607 / 26,127 / 26,408 bytes. The reviewed feature build
+measured 14,107 / 24,611 / 26,146 / 26,426 bytes. The resulting hard caps are
 14,336 / 24,832 / 26,368 / 26,624 bytes. The Free and Basic increase covers
 boot observation and beacon transport; Pro and Elite additionally include the
 lazy ad-block detector. Every cap remains a flagless failure in CI, with the

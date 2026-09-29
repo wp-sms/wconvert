@@ -66,8 +66,9 @@ const LABELS: Labels = {
     won: 'Won the page view',
   },
   arrival: {
-    aggregated: 'Combined into a bundle.', defer: 'defer removed.', order: 'Above its data.',
-    completed: 'Loader completed.', check: 'Check analytics connection', checking: 'Checking…',
+    aggregated: 'Loader tag missing; combined or not delivered.', defer: 'defer removed.', order: 'Above its data.',
+    completed: 'Loader completed.', waiting: 'Waiting for loader…', unobserved: 'Loader not observed yet.', recheck: 'Recheck loader',
+    check: 'Check analytics connection', checking: 'Checking…',
     connected: 'Endpoint responded.', rate_limited: 'Rate limited.', failed: 'Request failed.',
     http_error: 'HTTP %s',
   },
@@ -142,7 +143,50 @@ it('checks the configured analytics endpoint without fabricating an event', asyn
   vi.unstubAllGlobals();
 });
 
-afterEach(() => document.getElementById('wconvert-inspector-panel')?.remove());
+it.each([
+  [429, 'Rate limited.'],
+  [403, 'HTTP 403'],
+  [404, 'HTTP 404'],
+  [503, 'HTTP 503'],
+])('reports analytics endpoint status %i accurately', async (status, expected) => {
+  vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ status }));
+  const server: ServerReport = { request: {}, optins: [optin()], labels: LABELS };
+  const panel = createPanel(LABELS, 'https://example.test/wp-json/wconvert/v1/beacon');
+  panel.render(funnel(server, { entries: [entry()], siteCapped: false }, new Set(['A']), ARRIVAL));
+  const root = document.getElementById('wconvert-inspector-panel')?.shadowRoot as ShadowRoot;
+  (root.querySelector('button.check') as HTMLButtonElement).click();
+  await vi.waitFor(() => expect(root.textContent).toContain(expected));
+});
+
+it('reports a rejected analytics request without blaming an ad blocker', async () => {
+  vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new TypeError('Failed to fetch')));
+  const server: ServerReport = { request: {}, optins: [optin()], labels: LABELS };
+  const panel = createPanel(LABELS, 'https://example.test/wp-json/wconvert/v1/beacon');
+  panel.render(funnel(server, { entries: [entry()], siteCapped: false }, new Set(['A']), ARRIVAL));
+  const root = document.getElementById('wconvert-inspector-panel')?.shadowRoot as ShadowRoot;
+  (root.querySelector('button.check') as HTMLButtonElement).click();
+  await vi.waitFor(() => expect(root.textContent).toContain('Request failed.'));
+});
+
+it('bounds an analytics connection check that never responds', async () => {
+  vi.useFakeTimers();
+  vi.stubGlobal('fetch', vi.fn().mockImplementation((_url: string, options: { signal: AbortSignal }) =>
+    new Promise((_resolve, reject) => options.signal.addEventListener('abort', () => reject(new DOMException('Aborted', 'AbortError'))))));
+  const server: ServerReport = { request: {}, optins: [optin()], labels: LABELS };
+  const panel = createPanel(LABELS, 'https://example.test/wp-json/wconvert/v1/beacon');
+  panel.render(funnel(server, { entries: [entry()], siteCapped: false }, new Set(['A']), ARRIVAL));
+  const root = document.getElementById('wconvert-inspector-panel')?.shadowRoot as ShadowRoot;
+  (root.querySelector('button.check') as HTMLButtonElement).click();
+  expect(root.textContent).toContain('Checking…');
+  await vi.advanceTimersByTimeAsync(5000);
+  expect(root.textContent).toContain('Request failed.');
+});
+
+afterEach(() => {
+  document.getElementById('wconvert-inspector-panel')?.remove();
+  vi.unstubAllGlobals();
+  vi.useRealTimers();
+});
 
 describe('the panel', () => {
   it('names fullscreen without inventing a placement', () => {
@@ -413,7 +457,7 @@ describe('the panel', () => {
     expect(root.textContent).toContain('Above its data.');
   });
 
-  it('names an aggregated loader, which is the case where the tag is gone', () => {
+  it('does not claim a missing loader tag was definitely aggregated', () => {
     const server: ServerReport = { request: {}, optins: [optin()], labels: LABELS };
     const panel = createPanel(LABELS);
 
@@ -426,6 +470,35 @@ describe('the panel', () => {
 
     const root = document.getElementById('wconvert-inspector-panel')?.shadowRoot as ShadowRoot;
 
-    expect(root.textContent).toContain('Combined into a bundle.');
+    expect(root.textContent).toContain('Loader tag missing; combined or not delivered.');
+  });
+
+  it('waits before reporting missing execution and lets the merchant recheck', () => {
+    const server: ServerReport = { request: {}, optins: [optin()], labels: LABELS };
+    const recheck = vi.fn();
+    const panel = createPanel(LABELS, null, recheck);
+    const missing = funnel(server, { entries: [entry()], siteCapped: false }, new Set(['A']), { ...ARRIVAL, loaderStatus: 'unobserved' });
+    const root = document.getElementById('wconvert-inspector-panel')?.shadowRoot as ShadowRoot;
+
+    panel.render(missing, true);
+    expect(root.textContent).toContain('Waiting for loader…');
+    expect(root.querySelector('button.recheck')).toBeNull();
+
+    panel.render(missing, false);
+    expect(root.textContent).toContain('Loader not observed yet.');
+    (root.querySelector('button.recheck') as HTMLButtonElement).click();
+    expect(recheck).toHaveBeenCalledOnce();
+
+    panel.render(funnel(server, { entries: [entry()], siteCapped: false }, new Set(['A']), ARRIVAL));
+    expect(root.textContent).toContain('Loader completed.');
+    expect(root.querySelector('button.recheck')).toBeNull();
+  });
+
+  it('does not warn about loader execution on a page with no eligible Campaign', () => {
+    const server: ServerReport = { request: {}, optins: [], labels: LABELS };
+    const panel = createPanel(LABELS);
+    panel.render(funnel(server, { entries: [], siteCapped: false }, new Set(), { ...ARRIVAL, payloadFound: false, entries: 0, loaderFound: false, loaderStatus: 'unobserved' }));
+    const root = document.getElementById('wconvert-inspector-panel')?.shadowRoot as ShadowRoot;
+    expect(root.textContent).not.toContain('Loader not observed yet.');
   });
 });

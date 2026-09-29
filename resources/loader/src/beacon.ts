@@ -104,16 +104,18 @@ export function createBeacon(endpoint: string | null): Beacon {
     // The long tail. `keepalive` is what lets a fetch outlive the document;
     // without it this is a request the browser cancels on the way out, which
     // is still better than not trying.
-    void fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body,
-      keepalive: true,
-    }).catch(() => {
-      // A count that did not arrive is a count that did not arrive. It is not
-      // a reason to throw on a page WConvert was asked to leave alone
-      // (ADR 0004).
-    });
+    try {
+      void fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body,
+        keepalive: true,
+      }).catch(() => {
+        // A failed count must not interrupt a page WConvert was asked to leave alone.
+      });
+    } catch {
+      // A custom fetch or browser policy can also refuse synchronously.
+    }
   }
 
   function flush(): void {

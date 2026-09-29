@@ -28,13 +28,13 @@ import type { EntryReport, RuleReport } from './explain';
  */
 
 export interface Panel {
-  render(funnel: Funnel): void;
+  render(funnel: Funnel, waitingForLoader?: boolean): void;
   destroy(): void;
 }
 
 const HOST_ID = 'wconvert-inspector-panel';
 
-export function createPanel(labels: Labels, endpoint: string | null = null): Panel {
+export function createPanel(labels: Labels, endpoint: string | null = null, recheckLoader?: () => void): Panel {
   let connection = '';
   let checking = false;
   const host = document.createElement('div');
@@ -118,8 +118,8 @@ export function createPanel(labels: Labels, endpoint: string | null = null): Pan
   });
 
   return {
-    render(funnel: Funnel): void {
-      body.replaceChildren(arrivalOf(funnel, labels, endpoint, connection, checkConnection), ...rowsOf(funnel, labels));
+    render(funnel: Funnel, waitingForLoader = false): void {
+      body.replaceChildren(arrivalOf(funnel, labels, endpoint, connection, checkConnection, waitingForLoader, recheckLoader), ...rowsOf(funnel, labels));
     },
     destroy(): void {
       host.remove();
@@ -163,13 +163,24 @@ export function createPanel(labels: Labels, endpoint: string | null = null): Pan
  * can make every row below it wrong: a payload that never arrived explains
  * every Optin on the page at once.
  */
-function arrivalOf(funnel: Funnel, labels: Labels, endpoint: string | null, connection: string, check: () => void): HTMLElement {
+function arrivalOf(funnel: Funnel, labels: Labels, endpoint: string | null, connection: string, check: () => void, waitingForLoader: boolean, recheckLoader?: () => void): HTMLElement {
   const section = el('div', 'arrival');
   const intro = el('p', 'muted');
 
   intro.textContent = text(labels, 'intro');
   section.append(intro);
-  section.append(note(text(labels, 'arrival', funnel.arrival.loaderStatus)));
+  if (funnel.arrival.loaderStatus !== 'unobserved') {
+    section.append(note(text(labels, 'arrival', funnel.arrival.loaderStatus)));
+  } else if (funnel.arrival.entries > 0) {
+    section.append(note(text(labels, 'arrival', waitingForLoader ? 'waiting' : 'unobserved')));
+    if (!waitingForLoader && recheckLoader) {
+      const recheck = el('button', 'recheck') as HTMLButtonElement;
+      recheck.type = 'button';
+      recheck.textContent = text(labels, 'arrival', 'recheck');
+      recheck.addEventListener('click', recheckLoader);
+      section.append(recheck);
+    }
+  }
 
   if (!funnel.arrival.payloadFound || funnel.arrival.entries === 0) {
     // Absent is NORMAL on most pages of most sites — no published Optin

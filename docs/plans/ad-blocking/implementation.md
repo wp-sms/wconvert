@@ -1,20 +1,24 @@
 # Implementation slices and verification
 
-The implementation is complete in source; the release qualification matrix
-below remains open. See [the contract](contract.md).
+The core implementation is present in source. The plan's end-to-end and release
+qualification work remains open; see [the audit](../../reviews/ad-blocking-audit.md)
+and [the contract](contract.md).
 
 ## Implementation evidence (2026-09-29)
 
 - Baseline Free/Basic/Pro/Elite loader sizes: 14,011 / 24,524 / 25,496 /
-  25,761 bytes gzip-9. Implemented sizes: 14,107 / 24,607 / 26,142 /
-  26,421 bytes. The measured caps are 14,336 / 24,832 / 26,368 /
+  25,761 bytes gzip-9. Implemented sizes: 14,107 / 24,611 / 26,146 /
+  26,426 bytes. The measured caps are 14,336 / 24,832 / 26,368 /
   26,624 bytes; all four pass `npm run check:loader` and `check-phone`.
-- The complete JavaScript suite passed 3,400 tests in 181 files with two
+- The complete JavaScript suite passed 3,409 tests in 181 files with two
   workers. `composer test` passed 2,330 tests and 13,893 assertions.
   TypeScript, ESLint, PHPStan, source contract, full bundle build, and loader
   checks passed.
 - The staged Free, Basic, Pro, and Elite packages passed the artifact contract,
   including the check that lower tiers carry no Pro detector identifier.
+- The inspector now waits briefly before reporting unobserved loader execution,
+  offers a manual recheck, and treats a missing loader tag as ambiguous rather
+  than proof that an optimizer aggregated it.
 - WordPress Playground with PHP 8.1 loaded both plugins and passed the five
   `bin/verify-loader-replacement.php` checks. A real REST dispatch of the
   inspector's empty beacon batch returned 204 and left the stats table at zero
