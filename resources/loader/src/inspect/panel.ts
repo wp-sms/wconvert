@@ -34,7 +34,9 @@ export interface Panel {
 
 const HOST_ID = 'wconvert-inspector-panel';
 
-export function createPanel(labels: Labels): Panel {
+export function createPanel(labels: Labels, endpoint: string | null = null): Panel {
+  let connection = '';
+  let checking = false;
   const host = document.createElement('div');
 
   host.id = HOST_ID;
@@ -117,12 +119,41 @@ export function createPanel(labels: Labels): Panel {
 
   return {
     render(funnel: Funnel): void {
-      body.replaceChildren(arrivalOf(funnel, labels), ...rowsOf(funnel, labels));
+      body.replaceChildren(arrivalOf(funnel, labels, endpoint, connection, checkConnection), ...rowsOf(funnel, labels));
     },
     destroy(): void {
       host.remove();
     },
   };
+
+  function showConnection(): void {
+    const status = root.querySelector<HTMLElement>('[data-wconvert-connection]');
+    if (status) status.textContent = connection;
+  }
+
+  async function checkConnection(): Promise<void> {
+    if (!endpoint || checking) return;
+    checking = true;
+    connection = text(labels, 'arrival', 'checking');
+    showConnection();
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), 5000);
+    try {
+      const response = await fetch(endpoint, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: '{"events":[]}', signal: controller.signal,
+      });
+      connection = response.status === 204 ? text(labels, 'arrival', 'connected')
+        : response.status === 429 ? text(labels, 'arrival', 'rate_limited')
+          : text(labels, 'arrival', 'http_error').replace('%s', String(response.status));
+    } catch {
+      connection = text(labels, 'arrival', 'failed');
+    } finally {
+      window.clearTimeout(timeout);
+      checking = false;
+      showConnection();
+    }
+  }
 }
 
 /**
@@ -132,12 +163,13 @@ export function createPanel(labels: Labels): Panel {
  * can make every row below it wrong: a payload that never arrived explains
  * every Optin on the page at once.
  */
-function arrivalOf(funnel: Funnel, labels: Labels): HTMLElement {
+function arrivalOf(funnel: Funnel, labels: Labels, endpoint: string | null, connection: string, check: () => void): HTMLElement {
   const section = el('div', 'arrival');
   const intro = el('p', 'muted');
 
   intro.textContent = text(labels, 'intro');
   section.append(intro);
+  section.append(note(text(labels, 'arrival', funnel.arrival.loaderStatus)));
 
   if (!funnel.arrival.payloadFound || funnel.arrival.entries === 0) {
     // Absent is NORMAL on most pages of most sites — no published Optin
@@ -157,6 +189,18 @@ function arrivalOf(funnel: Funnel, labels: Labels): HTMLElement {
 
   if (funnel.arrival.loaderFound && funnel.arrival.loaderBeforePayload) {
     section.append(note(text(labels, 'arrival', 'order')));
+  }
+
+  if (endpoint) {
+    const button = el('button', 'check') as HTMLButtonElement;
+    button.type = 'button';
+    button.textContent = text(labels, 'arrival', 'check');
+    const status = note(connection);
+    status.dataset.wconvertConnection = '1';
+    button.addEventListener('click', () => void check());
+    section.append(button, status);
+  } else {
+    section.append(note(text(labels, 'arrival', 'unavailable')));
   }
 
   return section;
@@ -389,7 +433,9 @@ function ruleTable(heading: string, rules: readonly RuleReport[], labels: Labels
       ? text(labels, 'answer', 'unsupported')
       : text(labels, 'answer', report.answer === true ? 'yes' : report.answer === false ? 'no' : 'unknown');
 
-    words.textContent = `${text(labels, 'rules', report.rule.type)} — ${answer}`;
+    const diagnostic = report.diagnostic
+      ? ` — ${text(labels, report.rule.type, report.diagnostic)}` : '';
+    words.textContent = `${text(labels, 'rules', report.rule.type)} — ${answer}${diagnostic}`;
     item.append(mark, words);
     list.append(item);
   }

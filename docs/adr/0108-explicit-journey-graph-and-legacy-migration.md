@@ -1,5 +1,7 @@
 # Explicit journey graph and legacy migration
 
+> **Budget amended by [ADR 0109](0109-ad-block-observation-is-a-bounded-condition.md):** The current loader caps are 14,336 / 24,832 / 26,368 / 26,624 bytes gzip for Free / Basic / Pro / Elite. The earlier measured limits below describe this ADR's feature cost at that time.
+
 Accepted 2026-09-25. Supersedes the routing and size assumptions in
 [ADR 0107](0107-forward-journey-paths-and-flow-editor.md) for graph journeys;
 version 2 campaigns remain readable and keep their existing behavior.

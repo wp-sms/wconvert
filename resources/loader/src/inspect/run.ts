@@ -4,7 +4,7 @@ import { explain, type PresentationChecks } from './explain';
 import { funnel } from './report';
 import { readArrival } from './arrival';
 import type { PayloadNarrowing } from '../boot';
-import { readPayload, siteAllowance } from '../payload';
+import { readPayload, siteAllowance, beaconEndpoint } from '../payload';
 import { withheldTypes } from '../consent';
 import { onConsentChange } from '../consent';
 import { persistentStore } from '../storage';
@@ -86,8 +86,7 @@ export function runInspector(loader: Loader, narrow?: PayloadNarrowing, presenta
   // Read off the page the loader read it off, so the panel explains the
   // allowance the page is actually being decided against.
   const siteFrequency = siteAllowance();
-  const arrival = readArrival();
-  const panel = createPanel(server.labels);
+  const panel = createPanel(server.labels, beaconEndpoint());
 
   const evaluators = new Map<string, RuleEvaluator>();
   const inPlay = new Set(entries.flatMap((entry) => rulesOf(entry).map((rule) => rule.type)));
@@ -132,7 +131,7 @@ export function runInspector(loader: Loader, narrow?: PayloadNarrowing, presenta
       overlayDone: false,
     }, presentation);
 
-    panel.render(funnel(server as ServerReport, report, reached, arrival));
+    panel.render(funnel(server as ServerReport, report, reached, readArrival()));
   }
 
   onConsentChange(() => {
@@ -144,6 +143,7 @@ export function runInspector(loader: Loader, narrow?: PayloadNarrowing, presenta
   attach();
   render();
   document.addEventListener('visibilitychange', render);
+  document.addEventListener('wconvert-loader-status', render);
   const deadlines = entries.flatMap(entry => [entry.starts_at, entry.ends_at, entry.display_rules?.opening.mode === 'automatic' ? Date.now() + (entry.display_rules.opening.minimum_seconds ?? 0) * 1000 - performance.now() : undefined]);
   for (const at of deadlines) if (at !== undefined && at > Date.now()) setTimeout(render, Math.min(at - Date.now(), 2147483647));
 }

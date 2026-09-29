@@ -17,6 +17,7 @@ const ARRIVAL: Arrival = {
   loaderFound: true,
   loaderBeforePayload: false,
   deferred: true,
+  loaderStatus: 'completed',
 };
 
 const optin = (over: Partial<ServerOptin> = {}): ServerOptin => ({

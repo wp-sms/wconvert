@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it, vi } from 'vitest';
 import { createPanel } from '@loader/inspect/panel';
 import { funnel, type Labels, type ServerOptin, type ServerReport } from '@loader/inspect/report';
 import type { Arrival } from '@loader/inspect/arrival';
@@ -24,6 +24,7 @@ const ARRIVAL: Arrival = {
   loaderFound: true,
   loaderBeforePayload: false,
   deferred: true,
+  loaderStatus: 'completed',
 };
 
 const LABELS: Labels = {
@@ -64,7 +65,12 @@ const LABELS: Labels = {
     fired: 'A trigger fired',
     won: 'Won the page view',
   },
-  arrival: { aggregated: 'Combined into a bundle.', defer: 'defer removed.', order: 'Above its data.' },
+  arrival: {
+    aggregated: 'Combined into a bundle.', defer: 'defer removed.', order: 'Above its data.',
+    completed: 'Loader completed.', check: 'Check analytics connection', checking: 'Checking…',
+    connected: 'Endpoint responded.', rate_limited: 'Rate limited.', failed: 'Request failed.',
+    http_error: 'HTTP %s',
+  },
   rules: { device: 'Device', cart_has_items: 'Has something in their cart', time_on_page: 'Time on the page' },
 };
 
@@ -113,6 +119,28 @@ function draw(optins: ServerOptin[] = [optin()], entries: EntryReport[] = [entry
 
   return { panel, root };
 }
+
+it('checks the configured analytics endpoint without fabricating an event', async () => {
+  const endpoint = 'https://example.test/wp-json/wconvert/v1/beacon';
+  let finishRequest!: (response: { status: number }) => void;
+  const fetched = vi.fn().mockImplementation(() => new Promise(resolve => { finishRequest = resolve; }));
+  vi.stubGlobal('fetch', fetched);
+  const server: ServerReport = { request: {}, optins: [optin()], labels: LABELS };
+  const panel = createPanel(LABELS, endpoint);
+  panel.render(funnel(server, { entries: [entry()], siteCapped: false }, new Set(['A']), ARRIVAL));
+  const root = document.getElementById('wconvert-inspector-panel')?.shadowRoot;
+  const button = root?.querySelector('button.check') as HTMLButtonElement;
+  button.click();
+  // A delayed loader can redraw the report while the check is in flight.
+  panel.render(funnel(server, { entries: [entry()], siteCapped: false }, new Set(['A']), ARRIVAL));
+  finishRequest({ status: 204 });
+  await vi.waitFor(() => expect(root?.textContent).toContain('Endpoint responded.'));
+  expect(fetched).toHaveBeenCalledWith(endpoint, expect.objectContaining({
+    method: 'POST', body: '{"events":[]}',
+  }));
+  panel.destroy();
+  vi.unstubAllGlobals();
+});
 
 afterEach(() => document.getElementById('wconvert-inspector-panel')?.remove());
 

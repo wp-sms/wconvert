@@ -12,4 +12,11 @@ describe('display validation', () => {
     expect(groupProblems({ match: 'all', rules }, ruleTypes().conditions)).not.toEqual([]);
     expect(groupProblems({ match: 'any', rules }, ruleTypes().conditions)).toEqual([]);
   });
+  it('keeps ad-block statuses closed and rejects a contradictory ALL group', () => {
+    const conditions = ruleTypes().conditions;
+    const rules = [{ type: 'ad_blocking', value: 'detected' }, { type: 'ad_blocking', value: 'not_detected' }];
+    expect(groupProblems({ match: 'all', rules }, conditions)).not.toEqual([]);
+    expect(groupProblems({ match: 'any', rules }, conditions)).toEqual([]);
+    expect(groupProblems({ match: 'all', rules: [{ type: 'ad_blocking', value: 'maybe' }] }, conditions)).not.toEqual([]);
+  });
 });

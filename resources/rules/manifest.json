@@ -218,6 +218,21 @@
     }
   },
   "conditions": {
+    "ad_blocking": {
+      "kind": "condition",
+      "tier": "pro",
+      "requires": null,
+      "params": {
+        "value": {
+          "control": "enum",
+          "options": ["detected", "not_detected"]
+        }
+      },
+      "presets": {},
+      "consent_category": null,
+      "on_absence": "suspend",
+      "substitute": null
+    },
     "device": {
       "kind": "condition",
       "tier": "free",

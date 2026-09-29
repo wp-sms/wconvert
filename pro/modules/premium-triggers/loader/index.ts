@@ -3,6 +3,7 @@ import { clickElement } from './click-element';
 import { exitIntent } from './exit-intent';
 import { queryParam } from './query-param';
 import { referrer } from './referrer';
+import { adBlocking } from './ad-blocking';
 import { scrollUp } from './scroll-up';
 
 /**
@@ -46,4 +47,5 @@ export const PREMIUM_TRIGGER_MODULES: readonly LoaderModule[] = [
   scrollUp,
   queryParam,
   referrer,
+  adBlocking,
 ];

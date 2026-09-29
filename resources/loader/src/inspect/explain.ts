@@ -39,6 +39,7 @@ export type Answer = boolean | null;
 export interface RuleReport {
   readonly rule: Rule;
   readonly answer: Answer;
+  readonly diagnostic?: string;
   /**
    * No module in this build evaluates this rule type.
    *
@@ -265,5 +266,6 @@ function held(decision: Decision, rule: Rule): boolean {
 const report = (rule: Rule, answers: ReadonlyMap<Rule, boolean>, decision: Decision): RuleReport => ({
   rule,
   answer: answers.has(rule) ? (answers.get(rule) as boolean) : null,
+  diagnostic: decision.evaluators.get(rule.type)?.diagnostic?.(),
   unsupported: !decision.evaluators.has(rule.type) && !decision.withheld.has(rule.type),
 });
