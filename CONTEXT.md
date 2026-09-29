@@ -249,6 +249,14 @@ submission is anonymous and matched on one identifier, so honouring it would let
 whoever knows an email rewrite the phone beside it. And it never touches lifecycle
 state at all: not the subscription status, not an opt-out, not on a re-subscribe.
 
+> **Accepted extension, not yet implemented:**
+> [ADR 0109](docs/adr/0109-integrations-share-setup-and-map-extra-answers-per-campaign.md)
+> adds a per-Destination choice to update eligible mapped **non-identity** values
+> on adapters with a verified safe write path. Keep existing details is the
+> default. The existing prohibition on identifier replacement, merging and
+> subscription/suppression changes remains. WSMS and MailPoet retain their current
+> behavior until their individual adapter support is verified.
+
 That asymmetry is deliberate. Creating a Contact is a claim about someone the owning
 system has never heard of, where the form the visitor filled in is the only evidence
 that exists. Matching one is meeting a system that already holds an opinion about that
@@ -1281,6 +1289,15 @@ owning system made and WConvert has no standing to revise. An
 audience reference one Destination. Where several Destinations share credentials,
 those live on a [[Connection]] underneath them.
 
+> **Accepted extension, not yet implemented:**
+> [ADR 0109](docs/adr/0109-integrations-share-setup-and-map-extra-answers-per-campaign.md)
+> replaces "Destination ids and nothing more" with ids plus optional extra-answer
+> mappings in the Campaign configuration, scoped by Destination and accepted
+> submission. Accounts, targets and existing-contact policy stay shared; basic
+> fields are automatic. Extra mappings have one Campaign-owned home, with no
+> Destination default/override hierarchy. See the
+> [implementation plan](docs/plans/integration-foundation.md).
+
 Editing a shared Destination shows its saved users: **Saved draft only**,
 **Live only**, or **Live and saved draft**. Those facts are read from existing
 Optin snapshots, exclude unsaved editor bindings, and do not count deleted or
@@ -1297,6 +1314,11 @@ forwards that answer; without a compatible mapping it remains local. The editor
 distinguishes an absent required identifier from an optional one and explains
 unsupported answers without claiming provider delivery. See
 [ADR 0074](docs/adr/0074-destinations-declare-requirements-and-show-shared-usage.md).
+
+That paragraph describes the shipped mapping support. ADR 0109 plans contact
+details and accepted form/quiz answers through the shared mapper; its MailPoet
+adoption moves interest mapping into Campaign configuration while retaining the
+existing-contact limitation until a safe update path is verified.
 
 Data flow through a Destination is **one-way at capture time**: WConvert →
 Destination. WConvert never reads [[Contact]] state back — not subscription
@@ -1363,6 +1385,12 @@ exact selection. Analytics now presents daily conversion and send totals
 separately, not their same-period difference as a per-Lead pending or failure
 count ([ADR 0089](docs/adr/0089-analytics-starts-with-impact-and-keeps-history-inspectable.md)). Named-route and capture links help investigate those facts
 without creating a delivery ledger ([ADR 0071](docs/adr/0071-reports-capture-history-and-recovery-form-a-connected-admin-flow.md)).
+
+The accepted history extension in ADR 0109 records explicit provider outcomes
+against recent Action Scheduler attempts. Scheduler completion alone does not mean
+the push landed. Missing/expired or inconclusive evidence is Unknown; no permanent
+per-Lead outcome record or inbox/subscription confirmation is promised. This is
+planned alongside Destination health, not implemented by the planning document.
 
 ### Connection
 
