@@ -165,6 +165,15 @@ export function PrivacyDataMap() {
           </Description>
         </section>
 
+        <section className="border-t border-border pt-5">
+          <h3 className="m-0 text-body font-medium">{__('Spam protection services', 'wconvert')}</h3>
+          <Description className="mt-2">{data.protection_provider && data.protection_provider !== 'none'
+            ? sprintf(__('Configured provider: %s. Verification sends browser and network information to that provider; WConvert sends the verification token, not the contact fields.', 'wconvert'), data.protection_provider)
+            : __('No external bot verification provider is enabled.', 'wconvert')}</Description>
+          <Description className="mt-2">{__('Repeated resource emails use a ten-minute limit keyed by a site-specific one-way code of the recipient and resource. Expired codes are removed during scheduled maintenance. Protection diagnostics contain only approximate totals and expire after 24 hours.', 'wconvert')}</Description>
+          <a href={settingsHref('protection')} className="text-note underline">{__('Open spam protection', 'wconvert')}</a>
+        </section>
+
         <section aria-labelledby="wconvert-destination-data" className="border-t border-border pt-5">
           <h3 id="wconvert-destination-data" className="m-0 text-body font-medium">
             {__('Sent to other services', 'wconvert')}

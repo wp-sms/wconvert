@@ -5,6 +5,7 @@ import { Eye, Plug, Search, Shield } from 'lucide-react';
 import { Input } from '../components/ui/input';
 import { settingsHref, type SettingsGroup } from '../nav';
 import { SiteAllowance } from '../optins/SiteAllowance';
+import { SpamProtection } from './SpamProtection';
 import { SitePhoneCountry } from './SitePhoneCountry';
 import { LeadRetention } from '../leads/LeadRetention';
 import { PrivacyDataMap } from '../privacy/PrivacyDataMap';
@@ -26,6 +27,7 @@ export function Settings({
 }) {
   const [search, setSearch] = useState('');
   const categories = [
+    { id: 'protection', label: __('Spam protection', 'wconvert'), description: __('Bot verification and form filters', 'wconvert'), icon: Shield, terms: __('spam captcha turnstile recaptcha hcaptcha bot protection filters', 'wconvert') },
     {
       id: 'experience',
       label: __('Visitor experience', 'wconvert'),
@@ -76,6 +78,7 @@ export function Settings({
         <p className="mb-1 mt-5 border-t border-border px-3 pt-4 text-note text-muted-foreground">{__('Need a campaign’s design, timing or audience?', 'wconvert')} <a href="#optins" className="underline">{__('Open that campaign.', 'wconvert')}</a></p>
       </nav>
       <div className="min-w-0">
+        {group === 'protection' && <SpamProtection onEditingStateChange={onEditingStateChange} />}
         {group === 'experience' && (
           <div className="grid gap-6"><SiteAllowance onEditingStateChange={onEditingStateChange} /><SitePhoneCountry /></div>
         )}

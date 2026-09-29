@@ -20,6 +20,24 @@ React to live campaign opening, closing, and first lead capture with the
 [JavaScript events API](docs/guides/javascript-events.md). Campaign details
 include a copy button for the existing campaign/variant ID.
 
+## Spam protection
+
+Settings → Spam protection offers optional Cloudflare Turnstile Managed,
+Google reCAPTCHA v2 checkbox, or hCaptcha with merchant-owned keys in Free.
+Baseline hidden-field checks and request limits work without a provider.
+Every queued resource email also uses a ten-minute recipient/resource guard;
+this can suppress recent bulk re-pushes while preserving separate Leads.
+Pro adds exact email/domain blocklists and email exceptions on every paid rung.
+
+No external verification service is enabled by default. Saving keys is not a
+connection test: use **Test saved setup** on the configured hostname before
+relying on it. Verification errors preserve the form for retry. Secrets never
+appear in API read responses. No table or column is added.
+
+See the [setup guide](docs/guides/spam-protection.md),
+[implementation and deferred work](docs/plans/spam-protection.md), and
+[architecture decision](docs/adr/0111-spam-protection-precedes-capture.md).
+
 ## Multi-screen capture
 
 Free includes editable linear journeys: offer screens, questions, a final Submit,
@@ -129,7 +147,7 @@ reaches for first.
 
 `npm run check:loader` is the **one build a pull request pays for**, and it
 earns it: both of its assertions are about build output. Free's and Pro's
-loader, gzip -9, hard-fail at 14,012 bytes for Free and 19,456 bytes for paid builds (ADR 0103); and free's loader is scanned for
+loader, gzip -9, hard-fail at 14,592 / 25,088 / 26,624 / 26,880 bytes for Free / Basic / Pro / Elite (ADR 0111); and free's loader is scanned for
 every rule identifier the manifest calls premium — free's *admin* bundle is
 deliberately never scanned, because it carries premium identifiers on purpose
 for its `locked` cards.

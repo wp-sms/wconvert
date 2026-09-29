@@ -1,5 +1,7 @@
 # Progressive capture keeps one Lead per journey
 
+*Byte limits amended by [ADR 0111](0111-spam-protection-precedes-capture.md): Free / Basic / Pro / Elite now cap at 14,592 / 25,088 / 26,624 / 26,880 bytes gzip-9 after pre-capture verification and campaign events. Other asset limits are unchanged.*
+
 Product direction agreed during the [#184 planning interview](../plans/184-progressive-capture.md)
 on 2026-09-22 and confirmed after the
 [use-case review](../plans/184-progressive-capture/decision-review.md). Implemented on the issue branch; see the

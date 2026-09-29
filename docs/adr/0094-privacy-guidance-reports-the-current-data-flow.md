@@ -23,6 +23,14 @@ credentials or provider settings. A configured destination whose implementation
 is currently unavailable remains visible with unknown fields; missing code does
 not make a configured data flow disappear.
 
+**Extended by [ADR 0111](0111-spam-protection-precedes-capture.md):** the map
+also names the configured bot-verification provider and the resource-email
+guard's ten-minute active window. Browser/network information goes to the
+verification provider; WConvert forwards only its verification token and
+required credentials, never the form's contact fields. The map exposes no
+keys. Suggested policy text discloses these checks and no longer claims the
+site makes no automated decisions.
+
 **Extended by [ADR 0106](0106-question-journeys-extend-the-paid-loader.md):** paid question answers stay in page memory unless a visitor explicitly submits contact details, when the submitted answers join the Lead snapshot and its export/erasure path. Product recommendations read only merchant-selected IDs from the public WooCommerce Store API; aggregate completions and clicks contain no individual answer set.
 
 The REST representation is available only to administrators with

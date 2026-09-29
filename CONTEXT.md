@@ -361,6 +361,17 @@ never stores the raw address. A missing server address fails open so a proxy
 configuration mistake cannot block every real visitor. This is an operational
 security default, not an optional privacy feature.
 
+Optional bot verification is a separate pre-capture boundary, never a
+[[Destination]]. Free includes Turnstile Managed, reCAPTCHA v2 checkbox and
+hCaptcha with merchant-owned keys, a hidden-field check, and a ten-minute
+recipient/resource guard on queued resource emails. Pro adds explicit exact
+email/domain filters and email exceptions. One server-verified grant covers one
+[[Capture journey]]; independent captures remain independent Leads. Unverified
+requests receive a retryable form response, not a saved Lead or success screen.
+Settings → Spam protection owns these site-wide choices. No external provider
+is enabled by default. See [ADR 0111](docs/adr/0111-spam-protection-precedes-capture.md)
+and the [setup guide](docs/guides/spam-protection.md).
+
 ### Retention Period
 
 How long the merchant keeps their [[Lead]]s before WConvert deletes them

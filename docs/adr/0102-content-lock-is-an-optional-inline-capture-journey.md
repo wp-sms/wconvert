@@ -127,7 +127,9 @@ preview contexts intentionally remain readable.
 Only the existing acknowledged capture callback reveals success and records one
 Conversion. Generic click conversions, frequency `c` state, Destination delivery,
 email verification and provider membership never establish access. Correctable
-field/consent refusals retain the form and values. Network, server, malformed
+field/consent refusals retain the form and values. Cancelled, failed or unavailable
+CAPTCHA verification is also correctable: no submission has been accepted, so
+it keeps the content locked and permits retry (ADR 0111). Network, server, malformed
 acknowledgement and rate-limit failures expose the content with truthful feedback,
 without a success receipt or invented Conversion. Form values are never persisted
 by the locking module.

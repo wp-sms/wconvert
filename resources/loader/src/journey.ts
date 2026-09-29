@@ -1,4 +1,5 @@
 import { requestCapture, type Reply } from './capture-request';
+import { protectionField } from './protection';
 import { journeyLabel } from './journey-labels';
 import { journeyNotice } from '@renderer/journey-notice';
 import type { Mounted } from '@renderer/mount';
@@ -52,6 +53,7 @@ export function bindJourney(mounted: Mounted, entry: PayloadEntry, options: Opti
   function bind() {
     const root = mounted.root;
     if (!root) return;
+    const website = protectionField(root);
     root.setAttribute('aria-label', tree!.steps[step].name);
     const index = step;
     let observer: IntersectionObserver | undefined;
@@ -132,7 +134,7 @@ export function bindJourney(mounted: Mounted, entry: PayloadEntry, options: Opti
       busy = true; clear(root); const release = pending(root);
       void (async () => {
         try {
-          const base = { optin_id: entry.id, contract: entry.capture_contract };
+          const base = { optin_id: entry.id, contract: entry.capture_contract, website: website() };
           if (!grant) {
             const start = await requestCapture({ ...base, phase: 'start' });
             if (typeof start.grant !== 'string' || start.grant.trim() === '') throw {};
@@ -157,7 +159,7 @@ export function bindJourney(mounted: Mounted, entry: PayloadEntry, options: Opti
             if (target && target.screen !== step) show(target.screen);
           }
           if (mounted.root) refuse(mounted.root, reply?.message || journeyLabel(1), field ?? null);
-          options.onRefused?.(field ? 'correctable' : 'unconfirmed');
+          options.onRefused?.(field || reply?.code?.startsWith('wconvert_verification_') ? 'correctable' : 'unconfirmed');
         }
       })();
     });

@@ -1,4 +1,5 @@
 import { requestCapture, type Reply } from '@loader/capture-request';
+import { protectionField } from '@loader/protection';
 import { journeyLabel } from '@loader/journey-labels';
 import { answerReview } from '@renderer/answer-review';
 import { journeyNotice } from '@renderer/journey-notice';
@@ -127,6 +128,7 @@ export function bindJourney(mounted: Mounted, entry: PayloadEntry, options: Opti
   function bind() {
     const root = mounted.root;
     if (!root) return;
+    const website = protectionField(root);
     root.setAttribute('aria-label', tree!.steps[step].name);
     if (tree!.steps[step].review_answers) answerReview(root, visited.filter(index => index !== step).flatMap(index => journeyNodes(tree!.steps[index].content)), activeFor(questionAnswers), journeyLabel(4));
     if (step === entryIndex && resultAt >= 0 && !resultFirst) {
@@ -225,7 +227,7 @@ export function bindJourney(mounted: Mounted, entry: PayloadEntry, options: Opti
       busy = true; clear(root); const release = pending(root);
       void (async () => {
         try {
-          const base = { optin_id: entry.id, contract: entry.capture_contract };
+          const base = { optin_id: entry.id, contract: entry.capture_contract, website: website() };
           if (!grant) {
             const start = await requestCapture({ ...base, phase: 'start' });
             if (typeof start.grant !== 'string' || start.grant.trim() === '') throw {};
@@ -252,7 +254,7 @@ export function bindJourney(mounted: Mounted, entry: PayloadEntry, options: Opti
           }
           if (mounted.root) refuse(mounted.root, reply?.message || journeyLabel(1), field ?? null);
           if (field && nodes.get(field)?.node.type === 'question') mounted.root?.querySelector<HTMLElement>(`[data-question-id="${field}"]`)?.focus();
-          options.onRefused?.(field ? 'correctable' : 'unconfirmed');
+          options.onRefused?.(field || reply?.code?.startsWith('wconvert_verification_') ? 'correctable' : 'unconfirmed');
         }
       })();
     });
