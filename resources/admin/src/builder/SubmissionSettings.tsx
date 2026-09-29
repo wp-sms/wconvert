@@ -6,8 +6,8 @@ import type { Connection, Destination, DestinationType } from '../destinations/a
 import type { Template } from '@renderer/types';
 import { ExtraAnswerMapping } from './ExtraAnswerMapping';
 
-export function SubmissionSettings({ template, primaryChannel, config, destinations, onChange, types = [], connections = [], onSaved }: {
-  types?: readonly DestinationType[]; connections?: readonly Connection[]; onSaved?(destinations: readonly Destination[]): void;
+export function SubmissionSettings({ template, primaryChannel, config, destinations, onChange, types = [], connections = [], onSaved, onConnectionSaved }: {
+  types?: readonly DestinationType[]; connections?: readonly Connection[]; onSaved?(destinations: readonly Destination[]): void; onConnectionSaved?(connection: Connection): void;
   template?: Template; primaryChannel?: string | null; config: Record<string, unknown>; destinations: readonly Destination[];
   onChange(config: Record<string, unknown>): void;
 }) {
@@ -37,6 +37,6 @@ export function SubmissionSettings({ template, primaryChannel, config, destinati
           <ExtraAnswerMapping destination={d} submissionId={secondary.id} template={template} value={mappings[secondary.id]?.[d.id] ?? {}} onChange={(map) => onChange({ integration_mappings: { ...mappings, [secondary.id]: { ...mappings[secondary.id], [d.id]: map } } })} />}
       </div>)}
     </>}
-    {setup && onSaved && <DestinationSetupDialog types={types.filter(type => type.requirements?.audience_channels?.includes(channel))} connections={connections} returnFocusTo={trigger} onClose={() => setSetup(false)} onSaved={onSaved} />}
+    {setup && onSaved && <DestinationSetupDialog types={types.filter(type => type.requirements?.audience_channels?.includes(channel))} connections={connections} onConnectionSaved={onConnectionSaved} returnFocusTo={trigger} onClose={() => setSetup(false)} onSaved={onSaved} />}
   </fieldset>;
 }

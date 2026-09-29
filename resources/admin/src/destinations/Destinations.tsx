@@ -458,6 +458,11 @@ export function Destinations({ destinationId, mode = 'settings', onEditingStateC
             add(adding, draft);
           }
         }}
+        onConnectionSaved={(account) => {
+          setPayload((current) => current.status === 'ready'
+            ? ready({ ...current.data, connections: [...current.data.connections.filter((existing) => existing.id !== account.id), account] }) : current);
+          void refresh();
+        }}
       >
         <Types types={data?.types ?? []} errors={errors} busyIds={busyIds} onAdd={(type) => {
           setAdding(type);

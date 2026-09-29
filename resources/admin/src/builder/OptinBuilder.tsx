@@ -83,7 +83,7 @@ import {
 } from '../templates/api';
 import { numbersByOptin, readDashboard, type OptinNumbers } from '../stats/api';
 import { formatCount, formatRate } from '../stats/format';
-import { readDestinations, type DestinationsPayload } from '../destinations/api';
+import { readDestinations, type Connection, type DestinationsPayload } from '../destinations/api';
 import { adminSettings } from '../settings';
 import { readPrivacyGuidance } from '../privacy/api';
 import { createOptin, publishOptin } from '../optins/api';
@@ -698,6 +698,11 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
                 controls: <InlinePlacementSettings optinId={id} published={publishedAt !== null} config={config} vocabulary={vocabulary} onChange={edit} />,
               } : undefined}
             />;
+  const connectionSaved = (account: Connection) => {
+    destinationRequest.current++;
+    setDestinations((current) => current.status === 'ready'
+      ? ready({ ...current.data, connections: [...current.data.connections.filter((existing) => existing.id !== account.id), account] }) : current);
+  };
   const destinationEditor = <>
             {captureOutcome?.audience_channel && <CaptureModeChoice disabled={busy} selectedCount={bound.length} mode={config.capture_mode === 'local' ? 'local' : 'connected'}
               onChange={(mode) => edit({ capture_mode: mode, ...(mode === 'local' ? { destinations: [] } : {}) })} />}
@@ -711,6 +716,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
               }
               types={read(destinations)?.types ?? []}
               connections={read(destinations)?.connections ?? []}
+              onConnectionSaved={connectionSaved}
               onRefresh={refreshDestinations}
               onSaved={(updated) => {
                 destinationRequest.current++;
@@ -742,7 +748,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
               }}
             />
             }
-            <SubmissionSettings types={read(destinations)?.types ?? []} connections={read(destinations)?.connections ?? []} onSaved={updated => { destinationRequest.current++; setDestinations(current => current.status === 'ready' ? ready({ ...current.data, destinations: [...updated] }) : current); }} template={template} primaryChannel={captureOutcome?.audience_channel} config={config} destinations={read(destinations)?.destinations ?? []} onChange={edit} />
+            <SubmissionSettings types={read(destinations)?.types ?? []} connections={read(destinations)?.connections ?? []} onConnectionSaved={connectionSaved} onSaved={updated => { destinationRequest.current++; setDestinations(current => current.status === 'ready' ? ready({ ...current.data, destinations: [...updated] }) : current); }} template={template} primaryChannel={captureOutcome?.audience_channel} config={config} destinations={read(destinations)?.destinations ?? []} onChange={edit} />
   </>;
 
   return (

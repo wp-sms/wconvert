@@ -93,13 +93,14 @@ export interface DestinationsEditorProps {
   readonly connections: readonly Connection[];
   readonly onRefresh: () => void;
   readonly onSaved: (destinations: readonly Destination[]) => void;
+  readonly onConnectionSaved?: (connection: Connection) => void;
   readonly mappings?: Readonly<Record<string, Record<string, string>>>;
   readonly onMappingChange?: (destinationId: string, map: Record<string, string>) => void;
 }
 
 /** Choices edit this Optin's draft; setup edits a shared site destination. */
 export function DestinationsEditor({
-  bound, available, types, hint, connections, onChange, onRefresh, onSaved, template, outcome, mappings = {}, onMappingChange,
+  bound, available, types, hint, connections, onChange, onRefresh, onSaved, onConnectionSaved, template, outcome, mappings = {}, onMappingChange,
 }: DestinationsEditorProps) {
   const [setup, setSetup] = useState<'add' | Destination | null>(null);
   const [addedIds, setAddedIds] = useState<string[]>([]);
@@ -224,7 +225,7 @@ export function DestinationsEditor({
         </details></RegionFooter>}
       </Region>
       {setup !== null && <DestinationSetupDialog destination={setup === 'add' ? undefined : setup}
-        types={types} connections={connections} returnFocusTo={returnFocus} onClose={() => setSetup(null)}
+        types={types} connections={connections} onConnectionSaved={onConnectionSaved} returnFocusTo={returnFocus} onClose={() => setSetup(null)}
         onSaved={(destinations) => {
           if (setup === 'add' && available.status === 'ready') setAddedIds(destinations.filter(item => !available.data.some(old => old.id === item.id)).map(item => item.id));
           onSaved(destinations);

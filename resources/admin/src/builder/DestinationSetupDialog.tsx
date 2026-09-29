@@ -11,7 +11,7 @@ import { messageOf } from '../shell/loadable';
 
 /** The shared route can be configured without leaving the Optin's draft. */
 export function DestinationSetupDialog({
-  destination, types, connections, returnFocusTo, onClose, onSaved,
+  destination, types, connections, returnFocusTo, onClose, onSaved, onConnectionSaved,
 }: {
   destination?: Destination;
   types: readonly DestinationType[];
@@ -19,6 +19,7 @@ export function DestinationSetupDialog({
   returnFocusTo: RefObject<HTMLElement | null>;
   onClose: () => void;
   onSaved: (destinations: readonly Destination[]) => void;
+  onConnectionSaved?: (connection: Connection) => void;
 }) {
   const [selected, setSelected] = useState<string | null>(destination?.type ?? null);
   const [busy, setBusy] = useState(false);
@@ -44,7 +45,9 @@ export function DestinationSetupDialog({
               : sprintf(__('Add a %s destination', 'wconvert'), type.label)}
           </DialogTitle>
           <DialogDescription className="m-0" id={description}>
-            {destination !== undefined
+            {type?.needs_connection && !connections.some((account) => account.type === type.id)
+              ? sprintf(__('Connect %s, then choose where submissions should go.', 'wconvert'), type.label)
+              : destination !== undefined
               ? __('Changes affect every campaign using this destination, including published campaigns.', 'wconvert')
               : __('Create a destination, then select it for this campaign.', 'wconvert')}
           </DialogDescription>
@@ -80,6 +83,7 @@ export function DestinationSetupDialog({
             </Button>}
             <DestinationSettingsForm key={destination?.id ?? type.id} type={type} destination={destination}
               connections={connections.filter((connection) => connection.type === type.id)}
+              onConnectionSaved={onConnectionSaved}
               busy={busy} error={error} submitDescription={description} onCancel={close}
               onConfirm={(draft) => {
                 if (busy) return;

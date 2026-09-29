@@ -3,12 +3,10 @@ import { __, sprintf } from '@wordpress/i18n';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../components/ui/dialog';
-import { Input } from '../components/ui/input';
-import { Label } from '../components/ui/label';
-import { RegionError } from '../shell/Region';
 import { ConfirmDialog } from '../shell/ConfirmDialog';
 import { messageOf } from '../shell/loadable';
-import { checkConnection, deleteConnection, saveConnection, type Connection, type DestinationType, type TestReport } from './api';
+import { checkConnection, deleteConnection, type Connection, type DestinationType, type TestReport } from './api';
+import { ConnectionForm } from './ConnectionForm';
 import { ProviderMark } from './ProviderMark';
 
 export function AccountEditor({ types, connections, usage, onChange }: {
@@ -18,15 +16,12 @@ export function AccountEditor({ types, connections, usage, onChange }: {
   onChange: () => Promise<void>;
 }) {
   const [editing, setEditing] = useState<{ type: DestinationType; account?: Connection } | null>(null);
-  const [label, setLabel] = useState('');
-  const [credentials, setCredentials] = useState<Record<string, string>>({});
   const [busy, setBusy] = useState(false);
-  const [error, setError] = useState<string | null>(null);
   const [checks, setChecks] = useState<Record<string, TestReport>>({});
   const [removing, setRemoving] = useState<Connection | null>(null);
   const removeTrigger = useRef<HTMLElement | null>(null);
   const open = (type: DestinationType, account?: Connection) => {
-    setEditing({ type, account }); setLabel(account?.label ?? type.label); setCredentials({}); setError(null);
+    setEditing({ type, account });
   };
   const remoteTypes = types.filter((type) => type.needs_connection && type.availability === 'ready');
   return <>
@@ -52,16 +47,8 @@ export function AccountEditor({ types, connections, usage, onChange }: {
     <Dialog open={editing !== null} onOpenChange={(open) => { if (!open) setEditing(null); }}>
       <DialogContent>
         <DialogHeader><DialogTitle>{editing?.account ? __('Edit account', 'wconvert') : __('Connect account', 'wconvert')}</DialogTitle><DialogDescription>{__('We check new credentials before saving them. Leave a key blank to keep the current one.', 'wconvert')}</DialogDescription></DialogHeader>
-        {error && <RegionError message={error} />}
-        {editing && <fieldset disabled={busy} className="flex flex-col gap-4 border-0 p-0">
-          <div className="flex flex-col gap-1"><Label htmlFor="account-label">{__('Name', 'wconvert')}</Label><Input id="account-label" value={label} onChange={(event) => setLabel(event.target.value)} /></div>
-          {Object.entries(editing.type.connection_schema ?? {}).map(([key, field]) => <div key={key} className="flex flex-col gap-1"><Label htmlFor={`account-${key}`}>{field.label}</Label><Input id={`account-${key}`} type="password" autoComplete="off" value={credentials[key] ?? ''} onChange={(event) => setCredentials({ ...credentials, [key]: event.target.value })} placeholder={editing.account?.credentials[key] ? __('Stored; enter a replacement', 'wconvert') : ''} /></div>)}
-          <Button disabled={busy || label.trim() === ''} onClick={async () => {
-            setBusy(true); setError(null);
-            try { await saveConnection({ id: editing.account?.id, type: editing.type.id, label, credentials: Object.fromEntries(Object.entries(credentials).filter(([, value]) => value.trim() !== '')) }); await onChange(); setEditing(null); }
-            catch (cause) { setError(messageOf(cause)); } finally { setBusy(false); }
-          }}>{busy ? __('Checking…', 'wconvert') : __('Check and save account', 'wconvert')}</Button>
-        </fieldset>}
+        {editing && <ConnectionForm key={editing.account?.id ?? editing.type.id} type={editing.type} account={editing.account}
+          onCancel={() => setEditing(null)} onSaved={async () => { await onChange(); setEditing(null); }} />}
       </DialogContent>
     </Dialog>
     <ConfirmDialog open={removing !== null} onOpenChange={(open) => { if (!open) setRemoving(null); }}
