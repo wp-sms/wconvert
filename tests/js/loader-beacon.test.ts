@@ -271,6 +271,42 @@ describe('when the browser has no sendBeacon', () => {
 
     vi.unstubAllGlobals();
   });
+
+  it('isolates a synchronous fetch refusal from visitor behavior', () => {
+    Reflect.deleteProperty(navigator, 'sendBeacon');
+    vi.stubGlobal('fetch', vi.fn(() => { throw new TypeError('blocked'); }));
+
+    expect(() => beaconFor(ENDPOINT).report(OPTIN, 'impression')).not.toThrow();
+
+    vi.unstubAllGlobals();
+  });
+});
+
+describe('when sendBeacon refuses a batch', () => {
+  it.each(['false', 'throw'])('tries fetch once after %s', async (kind) => {
+    Object.defineProperty(navigator, 'sendBeacon', {
+      configurable: true,
+      value: kind === 'false' ? () => false : () => { throw new Error('blocked'); },
+    });
+    const fetched = vi.fn().mockResolvedValue(new Response(null, { status: 204 }));
+    vi.stubGlobal('fetch', fetched);
+    beaconFor(ENDPOINT).report(OPTIN, 'impression');
+    await settled();
+    expect(fetched).toHaveBeenCalledTimes(1);
+    expect(fetched.mock.calls[0][1]).toMatchObject({ method: 'POST', keepalive: true });
+    vi.unstubAllGlobals();
+  });
+});
+
+it('flushes queued actions when the page becomes hidden, without repeating on pagehide', async () => {
+  const beacon = beaconFor(ENDPOINT);
+  beacon.report(OPTIN, 'dismiss');
+  vi.spyOn(document, 'visibilityState', 'get').mockReturnValue('hidden');
+  document.dispatchEvent(new Event('visibilitychange'));
+  pagehide();
+  const batchesSent = await sent();
+  expect(batchesSent).toHaveLength(1);
+  expect(batchesSent[0].events).toEqual([{ optin_id: OPTIN, kind: 'dismiss' }]);
 });
 
 describe('a page with nowhere to post', () => {

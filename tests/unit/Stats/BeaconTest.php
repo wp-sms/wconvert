@@ -33,6 +33,11 @@ final class BeaconTest extends TestCase
         return ['events' => $events];
     }
 
+    public function testAnEmptyDiagnosticBatchContainsNoCountableEvents(): void
+    {
+        $this->assertSame([], Beacon::eventsIn(self::body([])));
+    }
+
     public function testItReadsTheThreeActsABrowserCanReport(): void
     {
         $events = Beacon::eventsIn(self::body([

@@ -4,7 +4,7 @@ import { explain, type PresentationChecks } from './explain';
 import { funnel } from './report';
 import { readArrival } from './arrival';
 import type { PayloadNarrowing } from '../boot';
-import { readPayload, siteAllowance } from '../payload';
+import { readPayload, siteAllowance, beaconEndpoint } from '../payload';
 import { withheldTypes } from '../consent';
 import { onConsentChange } from '../consent';
 import { persistentStore } from '../storage';
@@ -17,7 +17,7 @@ import type { ServerReport } from './report';
  * The inspector, composed and run — shared by free's entry and Pro's.
  *
  * ============================================================================
- * IT RUNS BESIDE THE REAL LOADER, WHICH IS UNAWARE OF IT.
+ * IT RUNS BESIDE THE REAL LOADER, SHARING ONLY BOOT MILESTONES.
  * ============================================================================
  * The merchant watches the popup actually fire while reading why. That is the
  * whole design: the context is not *equivalent to* the served one, it **is**
@@ -26,9 +26,9 @@ import type { ServerReport } from './report';
  *
  * **Its evaluators are its own.** Two scroll listeners and two timers on one
  * page, and that is the right trade: sharing them would mean the diagnostic
- * could perturb the thing it is diagnosing, and the loader has no seam for a
- * second reader anyway. Both sets start at page load, so what they observe
- * agrees.
+ * could perturb the thing it is diagnosing. The visitor loader publishes only
+ * two anonymous startup milestones; it does not expose its rule evaluators or
+ * visitor decisions. Both sets start at page load, so what they observe agrees.
  *
  * ============================================================================
  * THE WHOLE PANEL ANSWERS ONE QUESTION: *AS THIS PAGE VIEW BEGAN*.
@@ -86,8 +86,8 @@ export function runInspector(loader: Loader, narrow?: PayloadNarrowing, presenta
   // Read off the page the loader read it off, so the panel explains the
   // allowance the page is actually being decided against.
   const siteFrequency = siteAllowance();
-  const arrival = readArrival();
-  const panel = createPanel(server.labels);
+  const loaderObservationDeadline = performance.now() + 2000;
+  const panel = createPanel(server.labels, beaconEndpoint(), render);
 
   const evaluators = new Map<string, RuleEvaluator>();
   const inPlay = new Set(entries.flatMap((entry) => rulesOf(entry).map((rule) => rule.type)));
@@ -132,7 +132,7 @@ export function runInspector(loader: Loader, narrow?: PayloadNarrowing, presenta
       overlayDone: false,
     }, presentation);
 
-    panel.render(funnel(server as ServerReport, report, reached, arrival));
+    panel.render(funnel(server as ServerReport, report, reached, readArrival()), performance.now() < loaderObservationDeadline);
   }
 
   onConsentChange(() => {
@@ -144,6 +144,8 @@ export function runInspector(loader: Loader, narrow?: PayloadNarrowing, presenta
   attach();
   render();
   document.addEventListener('visibilitychange', render);
+  document.addEventListener('wconvert-loader-status', render);
+  window.setTimeout(render, Math.max(0, loaderObservationDeadline - performance.now()));
   const deadlines = entries.flatMap(entry => [entry.starts_at, entry.ends_at, entry.display_rules?.opening.mode === 'automatic' ? Date.now() + (entry.display_rules.opening.minimum_seconds ?? 0) * 1000 - performance.now() : undefined]);
   for (const at of deadlines) if (at !== undefined && at > Date.now()) setTimeout(render, Math.min(at - Date.now(), 2147483647));
 }

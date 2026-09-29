@@ -45,6 +45,7 @@ export interface Arrival {
   readonly loaderBeforePayload: boolean;
   /** The loader still carries `defer`, as PHP enqueued it. */
   readonly deferred: boolean;
+  readonly loaderStatus: 'unobserved' | 'entered' | 'completed';
 }
 
 /** How we recognise our own script among everything else on the page. */
@@ -67,6 +68,8 @@ export function readArrival(): Arrival {
       payload !== null &&
       (loader.compareDocumentPosition(payload) & Node.DOCUMENT_POSITION_FOLLOWING) !== 0,
     deferred: loader?.defer === true,
+    loaderStatus: document.documentElement.dataset.wconvertLoader === 'completed' ? 'completed'
+      : document.documentElement.dataset.wconvertLoader === 'entered' ? 'entered' : 'unobserved',
   };
 }
 

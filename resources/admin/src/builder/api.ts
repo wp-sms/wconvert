@@ -58,6 +58,7 @@ export type Control =
   | 'hours'
   | 'role_set'
   | 'boolean'
+  | 'enum'
   | 'post_id'
   | 'term_id'
   | 'post_type'

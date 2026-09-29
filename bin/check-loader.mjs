@@ -12,8 +12,8 @@
 //
 // Two assertions, and neither is optional:
 //
-//   1. THE BYTE BUDGET, HARD. gzip -9: Free 14012 B; Basic 24576 B;
-//      Pro 25600 B; Elite 25856 B (ADR 0108), per build. It blocks rather than warns, and there is no
+//   1. THE BYTE BUDGET, HARD. gzip -9: Free 14336 B; Basic 24832 B;
+//      Pro 26368 B; Elite 26624 B (ADR 0109), per build. It blocks rather than warns, and there is no
 //      second warn band nobody would read.
 //
 //      IT WAS 8192, AND THE NUMBER MOVED ONCE, ON PURPOSE. The original was
@@ -87,14 +87,14 @@ const ROOT = process.argv[2] ? resolve(process.argv[2]) : REPO_ROOT;
  * limit is about what every visitor of every matching page downloads, and that
  * bundle is enqueued only for an administrator who asked for it.
  */
-const FREE_BYTE_BUDGET = 14012;
+const FREE_BYTE_BUDGET = 14336;
 // ADR 0103: shared journeys plus paid recovery/content access.
 // ADR 0104: user-approved 1 KiB increase for grouped display policies.
 // ADR 0108: 256 B for product recovery, then 256 B for path-scoped answer review.
-const PAID_BYTE_BUDGET = 24576;
+const PAID_BYTE_BUDGET = 24832;
 // ADR 0105: the complete shared phone-field seam has measured per-rung caps.
-const PRO_BYTE_BUDGET = 25600;
-const ELITE_BYTE_BUDGET = 25856;
+const PRO_BYTE_BUDGET = 26368;
+const ELITE_BYTE_BUDGET = 26624;
 
 const MANIFEST = 'resources/rules/manifest.json';
 

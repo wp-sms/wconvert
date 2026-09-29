@@ -750,6 +750,14 @@ semantics. See [ADR 0104](docs/adr/0104-display-workspace-uses-bounded-groups-an
 *Whether* a visitor is eligible to see an [[Optin]] — device, referrer, cart
 state, time of day.
 
+Pro can also check for signs of ad blocking with a short, document-local
+cosmetic-interference probe. The check reports detected, not detected or
+inconclusive; pending and inconclusive match neither authored status. It does
+not identify an extension, store a visitor profile or prove that WConvert's
+own loader and requests were delivered. A Campaign whose paid module is absent
+is suspended as for other authored unavailable Conditions. See
+[ADR 0109](docs/adr/0109-ad-block-observation-is-a-bounded-condition.md).
+
 Audience is Everyone or up to five alternative groups. A group requires ALL or
 ANY of up to eight Conditions/account leaves; the groups combine with OR.
 Required Goal predicates are outside those alternatives. The chosen expression

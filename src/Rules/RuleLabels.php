@@ -62,6 +62,7 @@ final class RuleLabels
             // stale, and naming what free does not would over-claim today.
             'role' => __('User role', 'wconvert'),
             'device' => __('Device', 'wconvert'),
+            'ad_blocking' => __('Ad-block status', 'wconvert'),
             'time_of_day' => __('Time of day', 'wconvert'),
             'query_param' => __('URL parameter / UTM tag', 'wconvert'),
             'referrer' => __('Where they came from', 'wconvert'),
@@ -93,6 +94,7 @@ final class RuleLabels
             'scroll_depth.percent' => __('Percent of the page', 'wconvert'),
             'click_element.selector' => __('CSS selector', 'wconvert'),
             'device.in' => __('Shows on', 'wconvert'),
+            'ad_blocking.value' => __('Status to match', 'wconvert'),
             'query_param.key' => __('Parameter name', 'wconvert'),
             // "Hours" rather than "Window" or "Between": the merchant is
             // choosing the hours it may show in, and the hint under the
@@ -196,6 +198,7 @@ final class RuleLabels
             'scroll_up' => __('when they scroll back up', 'wconvert'),
             /* translators: %1$s: one or more device names, already joined, e.g. “mobile or tablet”. */
             'device' => __('they are on %1$s', 'wconvert'),
+            'ad_blocking' => __('ad blocking is %1$s', 'wconvert'),
             /* translators: %1$s: a range of times on a 24-hour clock, e.g. “09:00-17:00”. */
             'time_of_day' => __('the time on your site is %1$s', 'wconvert'),
             /* translators: 1: a URL parameter name, e.g. “utm_source”. 2: one or more values, already joined. */
@@ -258,6 +261,8 @@ final class RuleLabels
             'device_set.mobile' => __('Mobile', 'wconvert'),
             'device_set.tablet' => __('Tablet', 'wconvert'),
             'device_set.desktop' => __('Desktop', 'wconvert'),
+            'enum.detected' => __('Detected', 'wconvert'),
+            'enum.not_detected' => __('Not detected', 'wconvert'),
             // The channel names a merchant already reads in their analytics,
             // so the control and the report agree about what "Direct" means.
             'referrer_set.direct' => __('Direct', 'wconvert'),

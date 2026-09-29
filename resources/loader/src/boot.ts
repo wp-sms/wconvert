@@ -46,6 +46,8 @@ export type PayloadNarrowing = (
 ) => readonly PayloadEntry[];
 
 export function boot(loader: Loader, presenter: Presenter, narrow?: PayloadNarrowing): void {
+  document.documentElement.dataset.wconvertLoader = 'entered';
+  document.dispatchEvent(new Event('wconvert-loader-status'));
   if (payloadWasInTheDom(loader, presenter, narrow)) {
     return;
   }
@@ -84,6 +86,9 @@ function payloadWasInTheDom(
   if (entries.length > 0) {
     start({ loader, entries, presenter });
   }
+
+  document.documentElement.dataset.wconvertLoader = 'completed';
+  document.dispatchEvent(new Event('wconvert-loader-status'));
 
   return true;
 }
