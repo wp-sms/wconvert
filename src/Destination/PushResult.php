@@ -36,6 +36,7 @@ final class PushResult
         public readonly ?string $providerRef,
         public readonly ?string $reason,
         public readonly bool $retryable,
+        public readonly bool $needsAttention = false,
     ) {
     }
 
@@ -72,6 +73,12 @@ final class PushResult
     public static function terminal(string $error): self
     {
         return new self(PushOutcome::Failed, null, $error, false);
+    }
+
+    /** Account or route needs merchant repair; automatic retries cannot fix it. */
+    public static function attention(string $error): self
+    {
+        return new self(PushOutcome::Failed, null, $error, false, true);
     }
 
     public function isFailure(): bool

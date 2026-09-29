@@ -40,6 +40,7 @@ export interface SettingsField {
   type: string;
   label: string;
   description?: string;
+  default?: string;
   options?: { value: string; label: string }[];
 }
 
@@ -63,13 +64,15 @@ export interface DestinationType {
   id: string;
   label: string;
   icon: string;
-  tier: 'free' | 'pro';
+  tier: 'free' | 'basic' | 'pro' | 'elite';
   /** The slug — never copy. Use `requires_label`. */
   requires: string | null;
   /** What the site is missing, in words the merchant can act on. */
   requires_label: string | null;
   availability: Availability;
   needs_connection: boolean;
+  supports_mapping?: boolean;
+  connection_schema?: Record<string, SettingsField> | null;
   settings_schema: Record<string, SettingsField>;
   requirements?: DestinationRequirements;
 }
@@ -147,6 +150,8 @@ export interface Connection {
   type: string;
   label: string;
   credentials: Record<string, string>;
+  checked_at?: string | null;
+  check_outcome?: 'success' | 'failed' | null;
 }
 
 /**
@@ -172,6 +177,7 @@ export interface DestinationsPayload {
 
 export interface RePushReport {
   jobs: number;
+  needs_review?: number;
   /** A truncated replay must never read as a complete one. */
   capped: boolean;
   since: string | null;
@@ -180,6 +186,46 @@ export interface RePushReport {
 const path = (suffix = '') => `/wconvert/v1/destinations${suffix}`;
 
 export const readDestinations = () => apiFetch<DestinationsPayload>({ path: path() });
+
+export const readSelectedSchema = (type: string, connection: string, refresh = false) =>
+  apiFetch<{ settings_schema: Record<string, SettingsField> }>({ path: `${path('/schema')}?type=${encodeURIComponent(type)}&connection=${encodeURIComponent(connection)}${refresh ? '&refresh=1' : ''}` });
+
+export const saveConnection = (data: { id?: string; type: string; label: string; credentials: Record<string, string> }) =>
+  apiFetch<{ connection: Connection }>({ path: '/wconvert/v1/connections', method: 'POST', data });
+
+export const deleteConnection = (id: string) =>
+  apiFetch<{ deleted: boolean }>({ path: `/wconvert/v1/connections/${id}`, method: 'DELETE' });
+
+export const checkConnection = (id: string) =>
+  apiFetch<TestReport>({ path: `/wconvert/v1/connections/${id}/check`, method: 'POST' });
+
+export interface RecentAttempt {
+  id: number;
+  lead: string;
+  submission: string;
+  attempt: number;
+  at: string | null;
+  status: string;
+  outcome: 'accepted' | 'retry_scheduled' | 'needs_attention' | 'skipped' | 'queued' | 'running' | 'unknown';
+}
+
+export const readRecentAttempts = (id: string) =>
+  apiFetch<{ attempts: RecentAttempt[] }>({ path: path(`/${id}/recent`) });
+
+export const readMappingFields = (id: string, refresh = false) =>
+  apiFetch<{ fields: { value: string; label: string }[] }>({ path: `${path(`/${id}/mapping-fields`)}${refresh ? '?refresh=1' : ''}` });
+
+export interface MappingSample {
+  email: string;
+  mapping: Record<string, string>;
+  sample: Record<string, string>;
+}
+
+export const previewMapping = (id: string, data: MappingSample) =>
+  apiFetch<{ email: string; mapped: Record<string, string> }>({ path: path(`/${id}/draft-preview`), method: 'POST', data });
+
+export const testMapping = (id: string, data: MappingSample) =>
+  apiFetch<TestReport>({ path: path(`/${id}/draft-test`), method: 'POST', data });
 
 export const saveDestination = (destination: {
   id?: string;

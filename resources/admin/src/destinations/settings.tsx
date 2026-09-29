@@ -58,7 +58,7 @@ export function SettingsControl({
     case 'select':
       return <select id={id} value={value} onChange={(event) => onChange(event.target.value)}
         className="h-(--control-height) max-w-full rounded-md border border-input bg-transparent ps-3 pe-9 text-body">
-        <option value="">{__('Do not send this answer', 'wconvert')}</option>
+        <option value="">{__('Choose an option', 'wconvert')}</option>
         {value !== '' && !field.options?.some((option) => option.value === value)
           && <option value={value}>{sprintf(__('Unavailable field (%s)', 'wconvert'), value)}</option>}
         {(field.options ?? []).map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
@@ -244,7 +244,7 @@ export function toDraft(
       ? (Array.isArray(stored) ? (stored as unknown[]) : []).filter((id) => typeof id === 'string').join(', ')
       : typeof stored === 'string'
         ? stored
-        : '';
+        : (field.default ?? '');
   }
 
   return draft;

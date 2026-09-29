@@ -43,6 +43,9 @@ final class Connection
         public readonly string $type,
         public readonly string $label,
         public readonly array $credentials = [],
+        public readonly ?string $accountIdentity = null,
+        public readonly ?string $checkedAt = null,
+        public readonly ?string $checkOutcome = null,
     ) {
     }
 
@@ -56,6 +59,9 @@ final class Connection
             (string) ($stored['type'] ?? ''),
             (string) ($stored['label'] ?? ''),
             is_array($stored['credentials'] ?? null) ? $stored['credentials'] : [],
+            is_string($stored['account_identity'] ?? null) ? $stored['account_identity'] : null,
+            is_string($stored['checked_at'] ?? null) ? $stored['checked_at'] : null,
+            is_string($stored['check_outcome'] ?? null) ? $stored['check_outcome'] : null,
         );
     }
 
@@ -64,7 +70,8 @@ final class Connection
      */
     public function toArray(): array
     {
-        return ['type' => $this->type, 'label' => $this->label, 'credentials' => $this->credentials];
+        return ['type' => $this->type, 'label' => $this->label, 'credentials' => $this->credentials, 'account_identity' => $this->accountIdentity,
+            'checked_at' => $this->checkedAt, 'check_outcome' => $this->checkOutcome];
     }
 
     /**
@@ -85,6 +92,7 @@ final class Connection
             $masked[(string) $field] = ($value === null || $value === '') ? '' : self::MASK;
         }
 
-        return ['id' => $this->id, 'type' => $this->type, 'label' => $this->label, 'credentials' => $masked];
+        return ['id' => $this->id, 'type' => $this->type, 'label' => $this->label, 'credentials' => $masked,
+            'checked_at' => $this->checkedAt, 'check_outcome' => $this->checkOutcome];
     }
 }

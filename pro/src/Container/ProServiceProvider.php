@@ -179,6 +179,11 @@ final class ProServiceProvider implements ServiceProvider
 
     public function boot(ServiceContainer $container): void
     {
+        if (class_exists(\WConvert\Pro\Module\Destinations\MailchimpDestinationType::class)) {
+            $registry = $container->resolve(\WConvert\Destination\DestinationRegistry::class);
+            $registry->register(new \WConvert\Pro\Module\Destinations\MailchimpDestinationType());
+            $registry->register(new \WConvert\Pro\Module\Destinations\BrevoDestinationType());
+        }
         if (class_exists(\WConvert\Pro\Module\ContentLock\ContentLock::class)) {
             \WConvert\Pro\Module\ContentLock\ContentLock::hooks();
             (new \WConvert\Pro\Module\ContentLock\ContentLockCampaigns(

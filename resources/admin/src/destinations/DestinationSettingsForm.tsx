@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { __ } from '@wordpress/i18n';
 import { Button } from '../components/ui/button';
 import { DialogFooter } from '../components/ui/dialog';
@@ -8,6 +8,7 @@ import { Description } from '../shell/Description';
 import { RegionError } from '../shell/Region';
 import { ConnectionPicker, SettingsControl, fromDraft, isGroup, suggestedName, toDraft } from './settings';
 import type { Connection, Destination, DestinationType } from './api';
+import { readSelectedSchema } from './api';
 import { DestinationUsageNotice } from './DestinationUsageNotice';
 import { settingsProblems } from './requirements';
 
@@ -62,15 +63,39 @@ export function DestinationSettingsForm({
    * three, so no picker is drawn and this never moves (#35).
    */
   const [connection, setConnection] = useState<string | null>(destination?.connection ?? null);
-  const label = named ?? suggestedName(type, draft);
-  const fields = Object.entries(type.settings_schema);
+  const [schema, setSchema] = useState(type.settings_schema);
+  const [metadataError, setMetadataError] = useState<string | null>(null);
+  const [loadingSchema, setLoadingSchema] = useState(false);
+  const [refreshSchema, setRefreshSchema] = useState(0);
+  useEffect(() => {
+    if (!type.needs_connection || connection === null) {
+      setSchema(type.settings_schema);
+      return;
+    }
+    let active = true;
+    setLoadingSchema(true);
+    setMetadataError(null);
+    void readSelectedSchema(type.id, connection, refreshSchema > 0).then((result) => {
+      if (!active) return;
+      setSchema(result.settings_schema);
+      setDraft(toDraft(result.settings_schema, destination?.settings ?? {}));
+    }).catch(() => {
+      if (active) setMetadataError(__('Could not load this account’s audiences. Check the account and try again.', 'wconvert'));
+    }).finally(() => { if (active) setLoadingSchema(false); });
+    return () => { active = false; };
+  }, [type, connection, destination, refreshSchema]);
+  const label = named ?? suggestedName({ ...type, settings_schema: schema }, draft);
+  const fields = Object.entries(schema);
   const id = (key: string) => `wconvert-add-${type.id}-${key}`;
 
   return (
     <>
       {error !== null && <RegionError message={error} />}
+      {metadataError !== null && <RegionError message={metadataError} />}
+      {loadingSchema && <p>{__('Loading audiences…', 'wconvert')}</p>}
+      {type.needs_connection && connection !== null && <Button type="button" size="sm" variant="outline" disabled={loadingSchema} onClick={() => setRefreshSchema((old) => old + 1)}>{__('Refresh audiences', 'wconvert')}</Button>}
       {destination && <DestinationUsageNotice usage={destination.usage} />}
-      {settingsProblems(type.requirements, fromDraft(type.settings_schema, draft), type.settings_schema).map((problem) =>
+      {settingsProblems(type.requirements, fromDraft(schema, draft), schema).map((problem) =>
         <p key={problem} className="m-0 text-note text-warning">{problem}</p>)}
 
       <fieldset disabled={busy} className="m-0 flex min-w-0 flex-col gap-4 border-0 p-0">
@@ -128,12 +153,12 @@ export function DestinationSettingsForm({
         */}
         <Button
           aria-describedby={submitDescription}
-          disabled={busy}
+          disabled={busy || loadingSchema || metadataError !== null || (type.needs_connection && connection === null)}
           onClick={() =>
             onConfirm({
               label,
               connection,
-              settings: { ...destination?.settings, ...fromDraft(type.settings_schema, draft) },
+              settings: { ...destination?.settings, ...fromDraft(schema, draft) },
             })
           }
         >

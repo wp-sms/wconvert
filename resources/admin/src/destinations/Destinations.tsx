@@ -24,6 +24,7 @@ import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
 import { AddDestinationDialog } from './AddDestinationDialog';
+import { AccountEditor } from './AccountEditor';
 import { SendTestDialog } from './SendTestDialog';
 import { destinationHref, leadsHref, sendingIssuesHref } from '../nav';
 import { useSettingsEditing, type SettingsEditing } from '../settings-page/useSettingsEditing';
@@ -55,6 +56,8 @@ import { LOADING, failed, messageOf, ready, type Loadable } from '../shell/loada
 import {
   deleteDestination,
   readDestinations,
+  readSelectedSchema,
+  readRecentAttempts,
   rePush,
   saveDestination,
   testConnection,
@@ -63,6 +66,7 @@ import {
   type DestinationType,
   type DestinationsPayload,
   type RePushReport,
+  type RecentAttempt,
   type TestReport,
 } from './api';
 import {
@@ -357,11 +361,7 @@ export function Destinations({ destinationId, mode = 'settings', onEditingStateC
         <Region>
           <RegionHeader title={__('Connected accounts', 'wconvert')} description={__('Accounts hold credentials. Destinations choose where submissions go.', 'wconvert')} />
           <RegionBody>
-            {data.connections.length === 0 ? <p className="m-0 text-note text-muted-foreground">{__('No remote accounts are configured. Local services such as MailPoet use this WordPress site and do not need a separate account connection.', 'wconvert')}</p>
-              : <ul className="m-0 list-none divide-y divide-border p-0">{data.connections.map((connection) => <li key={connection.id} className="flex flex-wrap items-start justify-between gap-3 py-4">
-                <div><strong className="block">{connection.label}</strong><span className="mt-1 block text-note text-muted-foreground">{data.types.find((type) => type.id === connection.type)?.label ?? connection.type} · {__('Credentials stored; connection not verified by this view.', 'wconvert')}</span></div>
-                <div className="flex flex-col gap-1 text-note">{data.destinations.filter((destination) => destination.connection === connection.id).map((destination) => <a key={destination.id} className="text-primary underline" href={destinationHref(destination.id)}>{destination.label}</a>)}</div>
-              </li>)}</ul>}
+            <AccountEditor types={data.types} connections={data.connections} usage={Object.fromEntries(data.connections.map((account) => [account.id, data.destinations.filter((destination) => destination.connection === account.id).map((destination) => destination.label)]))} onChange={refresh} />
           </RegionBody>
         </Region>
         <div><h2 className="mb-1 mt-2 text-heading font-semibold">{__('Destinations', 'wconvert')}</h2><p className="m-0 text-note text-muted-foreground">{__('Reusable places to send submissions. Choose them inside each campaign.', 'wconvert')}</p></div>
@@ -589,7 +589,9 @@ function Configured({
   // has one and the lead magnet email has three.
   // Every field its TYPE declares, in the order PHP returned them — copy
   // included — and an empty set where this build no longer ships the type.
-  const schema = type?.settings_schema ?? {};
+  const [schema, setSchema] = useState(type?.settings_schema ?? {});
+  const [metadataError, setMetadataError] = useState<string | null>(null);
+  const [loadingSchema, setLoadingSchema] = useState(false);
   const [draft, setDraft] = useState<Record<string, string>>(() => toDraft(schema, destination.settings));
   /**
    * **The name is the merchant's, and it is editable here.**
@@ -605,8 +607,27 @@ function Configured({
    */
   const [label, setLabel] = useState(destination.label);
   const [connection, setConnection] = useState(destination.connection);
+  useEffect(() => {
+    if (type?.needs_connection !== true || connection === null) {
+      setSchema(type?.settings_schema ?? {});
+      return;
+    }
+    let active = true;
+    setLoadingSchema(true);
+    setMetadataError(null);
+    void readSelectedSchema(type.id, connection).then((result) => {
+      if (!active) return;
+      setSchema(result.settings_schema);
+      setDraft(toDraft(result.settings_schema, destination.settings));
+    }).catch(() => {
+      if (active) setMetadataError(__('Could not load this account’s audiences. Check the account and try again.', 'wconvert'));
+    }).finally(() => { if (active) setLoadingSchema(false); });
+    return () => { active = false; };
+  }, [type?.id, type?.needs_connection, type?.settings_schema, connection, destination.settings]);
   const removeTrigger = useRef<HTMLButtonElement>(null);
   const [settingsOpen, setSettingsOpen] = useState(false);
+  const [recent, setRecent] = useState<readonly RecentAttempt[] | null>(null);
+  const [recentError, setRecentError] = useState<string | null>(null);
   const settingsTrigger = useRef<HTMLButtonElement>(null);
   const region = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -709,6 +730,18 @@ function Configured({
           )
         }
       />
+      <RegionBody>
+        <Button size="sm" variant="outline" onClick={async () => {
+          try { const result = await readRecentAttempts(destination.id); setRecent(result.attempts); setRecentError(null); }
+          catch (cause) { setRecentError(messageOf(cause)); }
+        }}>{__('Recent sends', 'wconvert')}</Button>
+        {recentError && <RegionError message={recentError} />}
+        {recent !== null && (recent.length === 0 ? <p>{__('No recent attempts are retained. Older status is unknown.', 'wconvert')}</p>
+          : <ul className="m-0 list-none divide-y divide-border p-0">{recent.map((attempt) => <li key={attempt.id} className="py-2 text-note">
+            <strong>{({ accepted: __('Provider accepted', 'wconvert'), retry_scheduled: __('Retry scheduled', 'wconvert'), needs_attention: __('Needs attention', 'wconvert'), skipped: __('Skipped', 'wconvert'), queued: __('Queued', 'wconvert'), running: __('Running', 'wconvert'), unknown: __('Unknown', 'wconvert') })[attempt.outcome]}</strong>
+            {' · '}{__('Attempt', 'wconvert')} {attempt.attempt}{attempt.at && ` · ${attempt.at}`}
+          </li>)}</ul>)}
+      </RegionBody>
       {reporting && (
         <RegionBody className="flex flex-col gap-3">
           {failing ? (
@@ -799,6 +832,7 @@ function Configured({
               <AlertDescription>
                 <p>{__('Each submission uses its original accepted details. Re-pushing does not create new Leads; queued submissions still need to be delivered.', 'wconvert')}</p>
                 {report.capped && <p>{__('That is the per-run limit — run it again once these have gone through.', 'wconvert')}</p>}
+                {(report.needs_review ?? 0) > 0 && <p>{sprintf(__('%d older submissions were not queued because this destination’s account, target or policy changed. Review them before resending.', 'wconvert'), report.needs_review ?? 0)}</p>}
               </AlertDescription>
             </Alert>
           )}
@@ -880,6 +914,9 @@ function Configured({
           </div>
         )}
 
+        {loadingSchema && <p>{__('Loading audiences…', 'wconvert')}</p>}
+        {metadataError && <RegionError message={metadataError} />}
+
         {fields.map(([key, field]) => (
           <div key={key} className="flex max-w-xl flex-col gap-1.5">
             {/*
@@ -909,7 +946,7 @@ function Configured({
         <div className="flex items-center gap-2">
           <Button
             variant="outline"
-            disabled={busy}
+            disabled={busy || loadingSchema || metadataError !== null || (type?.needs_connection === true && connection === null)}
             aria-describedby={`wconvert-shared-${destination.id}`}
             onClick={() =>
               onSave(destination, {

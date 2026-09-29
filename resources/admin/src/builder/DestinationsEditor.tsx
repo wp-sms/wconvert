@@ -21,16 +21,14 @@ import type { Loadable } from '../shell/loadable';
 import type { Connection, Destination, DestinationType } from '../destinations/api';
 import { capturedFields, compatibilityProblems } from '../destinations/requirements';
 import type { Template } from '@renderer/types';
+import { ExtraAnswerMapping } from './ExtraAnswerMapping';
 
 /**
  * Which [[Destination]]s this [[Optin]] pushes to.
  *
- * **An Optin holds Destination ids and nothing more.** No audience, no tags,
- * no field map: a Destination is configured once, site-wide, and *includes*
- * whatever selects the target inside the remote system, so two Optins feeding
- * one audience reference one Destination. The per-Optin field map that would
- * normally sit here is eliminated by canonical field keys (CONTEXT.md,
- * Destination).
+ * A Campaign binds shared Destination ids. Its optional extra-answer map is
+ * stored beside the binding and frozen with the accepted submission. Basic
+ * contact fields remain provider-owned and need no merchant mapping.
  *
  * A Destination whose type is not `ready` is still shown and still bindable —
  * the binding is a decision the merchant made, and unbinding it because a
@@ -95,11 +93,13 @@ export interface DestinationsEditorProps {
   readonly connections: readonly Connection[];
   readonly onRefresh: () => void;
   readonly onSaved: (destinations: readonly Destination[]) => void;
+  readonly mappings?: Readonly<Record<string, Record<string, string>>>;
+  readonly onMappingChange?: (destinationId: string, map: Record<string, string>) => void;
 }
 
 /** Choices edit this Optin's draft; setup edits a shared site destination. */
 export function DestinationsEditor({
-  bound, available, types, hint, connections, onChange, onRefresh, onSaved, template, outcome,
+  bound, available, types, hint, connections, onChange, onRefresh, onSaved, template, outcome, mappings = {}, onMappingChange,
 }: DestinationsEditorProps) {
   const [setup, setSetup] = useState<'add' | Destination | null>(null);
   const [addedIds, setAddedIds] = useState<string[]>([]);
@@ -177,6 +177,8 @@ export function DestinationsEditor({
                               : sprintf(__('Needs %s on this site, so captures are kept here, not sent. Re-push from Destinations once it runs.', 'wconvert'), type?.requires_label ?? __('something this site does not have', 'wconvert'))}
                           </Description>
                         )}
+                        {bound.includes(destination.id) && template && onMappingChange && type?.supports_mapping &&
+                          <ExtraAnswerMapping destinationId={destination.id} submissionId={template.tree.submissions[0]?.id ?? ''} template={template} value={mappings[destination.id] ?? {}} onChange={(map) => onMappingChange(destination.id, map)} />}
                       </div>
                       {type !== undefined && <Button variant="outline" size="sm" aria-label={sprintf(__('Settings for %s', 'wconvert'), destination.label)}
                         onClick={(event) => {

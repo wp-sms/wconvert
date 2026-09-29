@@ -1,9 +1,37 @@
 # Integration foundation and first remote providers
 
 Planning baseline: 2026-09-29, `origin/main` at `2d26053`.
-Product direction accepted in the integration planning conversation; detailed
-implementation recommendations below remain a design, not shipped behavior.
+Product direction accepted in the integration planning conversation. The
+foundation and both first adapters are implemented on the integration branch;
+the delivery gates below still distinguish code verification from live-provider
+validation and are not a claim that the release is shipped.
 See [ADR 0109](../adr/0109-integrations-share-setup-and-map-extra-answers-per-campaign.md).
+
+## Implementation status (2026-09-29)
+
+The branch has shared account create/edit/check/remove, selected-account target
+discovery, Mailchimp and Brevo adapters in Pro, campaign-level answer mapping,
+accepted-submission snapshots, a draft sample preview and explicit test send,
+route-change protection, and recent Action Scheduler outcomes. The existing
+Destination page presents account checks, health, recent attempts and recovery.
+MailPoet now uses the same campaign mapping for new subscribers. No database
+table or column was added.
+
+The accepted submission purpose controls the remote marketing action. An email
+marketing signup creates a pending Mailchimp member or a Brevo Contact in the
+selected list. An enquiry creates a transactional Mailchimp Contact or a Brevo
+Contact without list membership. Existing Contact updates never change status
+or suppression. Explicit sample sends use the merchant's own address and can
+join the selected marketing list.
+
+Local PHPUnit, Vitest, lint, type checking and WordPress Playground boot checks
+are the code gate. The provider write paths have mocked HTTP tests, but no
+Mailchimp or Brevo test-account credentials are available in this workspace, so
+confirmation emails, existing-contact writes and provider automations still need
+live end-to-end validation before release. Metadata uses request-local
+memoization and five-minute transients, with an explicit refresh control;
+load-more controls and automatic background health polling are deferred. Recent history is a
+bounded Destination view, not a permanent per-Lead delivery ledger.
 
 ## 1. What we are building
 

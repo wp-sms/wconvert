@@ -10,10 +10,9 @@ defined('ABSPATH') || exit;
  *
  * **Configured once, site-wide**, and it *includes whatever selects the target
  * inside the remote system* — the Mailchimp audience, the WSMS tags. That is
- * what collapses two concepts into one: an [[Optin]] holds Destination ids and
- * nothing more, so two Optins feeding one audience reference one Destination
- * and the per-Optin field map that would otherwise force a second concept is
- * eliminated by canonical field keys (CONTEXT.md, Destination).
+ * what collapses two concepts into one: two Optins feeding one audience
+ * reference one Destination. Optional extra-answer maps live in Campaign
+ * configuration and accepted submissions (ADR 0109).
  *
  * **It carries no delivery state and no health.** Those live in their own
  * non-autoloaded option, because two jobs completing at once lose an increment

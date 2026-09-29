@@ -1285,13 +1285,14 @@ one. Renaming breaks nothing — the binding is by id. Whatever the selector is,
 is only ever **added**: a Lead arriving cannot remove the audience or tag
 membership a [[Contact]] already has, because that membership is a decision the
 owning system made and WConvert has no standing to revise. An
-[[Optin]] holds Destination ids and nothing more, so two Optins feeding one
-audience reference one Destination. Where several Destinations share credentials,
-those live on a [[Connection]] underneath them.
+[[Optin]] holds Destination ids and optional extra-answer mappings scoped by
+Destination and accepted submission, so two Optins feeding one audience can send
+different question answers through one route. Where several Destinations share
+credentials, those live on a [[Connection]] underneath them.
 
-> **Accepted extension, not yet implemented:**
+> **Implemented foundation:**
 > [ADR 0109](docs/adr/0109-integrations-share-setup-and-map-extra-answers-per-campaign.md)
-> replaces "Destination ids and nothing more" with ids plus optional extra-answer
+> extends Destination ids with optional extra-answer
 > mappings in the Campaign configuration, scoped by Destination and accepted
 > submission. Accounts, targets and existing-contact policy stay shared; basic
 > fields are automatic. Extra mappings have one Campaign-owned home, with no
@@ -1307,18 +1308,17 @@ an unused route (ADR 0074).
 
 Each shipped adapter declares its identifiers, required settings and values it
 uses. WSMS accepts email or phone; MailPoet and lead-magnet email need email.
-MailPoet additionally needs a list and can map `interest` to an existing custom
-text field using **Save interest in MailPoet**, for new subscribers only.
+MailPoet additionally needs a list and can receive optional campaign-mapped
+answers in an existing custom text field, for new subscribers only.
 Existing subscriber fields remain unchanged. Neither WSMS nor lead-magnet email
-forwards that answer; without a compatible mapping it remains local. The editor
+forwards extra answers; without a compatible mapping they remain local. The editor
 distinguishes an absent required identifier from an optional one and explains
 unsupported answers without claiming provider delivery. See
 [ADR 0074](docs/adr/0074-destinations-declare-requirements-and-show-shared-usage.md).
 
-That paragraph describes the shipped mapping support. ADR 0109 plans contact
-details and accepted form/quiz answers through the shared mapper; its MailPoet
-adoption moves interest mapping into Campaign configuration while retaining the
-existing-contact limitation until a safe update path is verified.
+The campaign map can include accepted form/quiz answers, interest and message.
+The MailPoet existing-contact limitation remains until a safe update path is
+verified.
 
 Data flow through a Destination is **one-way at capture time**: WConvert →
 Destination. WConvert never reads [[Contact]] state back — not subscription
@@ -1386,11 +1386,11 @@ separately, not their same-period difference as a per-Lead pending or failure
 count ([ADR 0089](docs/adr/0089-analytics-starts-with-impact-and-keeps-history-inspectable.md)). Named-route and capture links help investigate those facts
 without creating a delivery ledger ([ADR 0071](docs/adr/0071-reports-capture-history-and-recovery-form-a-connected-admin-flow.md)).
 
-The accepted history extension in ADR 0109 records explicit provider outcomes
+The history extension in ADR 0109 records explicit provider outcomes
 against recent Action Scheduler attempts. Scheduler completion alone does not mean
 the push landed. Missing/expired or inconclusive evidence is Unknown; no permanent
 per-Lead outcome record or inbox/subscription confirmation is promised. This is
-planned alongside Destination health, not implemented by the planning document.
+shown alongside Destination health, with no durable delivery ledger.
 
 ### Connection
 

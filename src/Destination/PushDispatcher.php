@@ -144,8 +144,9 @@ final class PushDispatcher
      * nothing was.
      *
      * @param array<string, mixed> $values Canonical keys; anything else is dropped.
+     * @param array<string, string> $mapped
      */
-    public function test(string $destinationId, array $values): PushResult
+    public function test(string $destinationId, array $values, array $mapped = []): PushResult
     {
         $destination = $this->destinations->find($destinationId);
 
@@ -162,7 +163,7 @@ final class PushDispatcher
             return PushResult::skipped(self::unavailableHere());
         }
 
-        return $type->push(PushSubject::test($values), new PushContext(
+        return $type->push(PushSubject::test($values, $mapped), new PushContext(
             // Null, and deliberately so. `optinName` becomes `source_ref` on
             // the WSMS push, and a test send has no [[Optin]] — writing one
             // would assert provenance that does not exist, which is the case

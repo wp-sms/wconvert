@@ -1,8 +1,26 @@
 # Integration foundation: verification matrix
 
-Companion to [the implementation plan](integration-foundation.md). This is the
-required evidence for future implementation; the checks below have not been run
-as part of this documentation-only change.
+Companion to [the implementation plan](integration-foundation.md). This matrix
+also identifies release gates that cannot be proven by local mocks.
+
+## Evidence collected on the implementation branch
+
+- PHPUnit: full local suite passed, including accepted mapping, boundary,
+  provider write, existing-contact policy and enquiry-purpose tests.
+- Vitest, type checking, ESLint, PHPStan and source contract passed. The
+  production asset build and Free/Pro basic, pro and elite staged package
+  contracts passed; the destinations module ships only in the elite artifact.
+- WordPress Playground boot verified both adapter registrations and account,
+  selected-schema and recent-history REST route registration. It did not make
+  live provider calls.
+- The legacy `bin/verify-destinations.php` fixture still assumes the old
+  LeadCapture dispatch event rather than the current progressive
+  JourneyCapture path; its 18 failures are not evidence of working or broken
+  remote delivery and require a fixture update.
+- The Mailchimp/Brevo live-account checks below remain pending because no
+  provider test accounts are available in this workspace. Do not treat the
+  mocked provider responses as release acceptance for confirmation emails,
+  existing-contact behavior or provider automations.
 
 ## Contract and behavior checks
 
