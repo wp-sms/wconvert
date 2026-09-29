@@ -101,3 +101,20 @@ one capture callback. Final gzip-9 loader sizes: 14,479 / 24,983 / 26,557 / 26,8
 bytes for Free / Basic / Pro / Elite, within the existing limits.
 
 ![Mobile cancellation retains values and focuses the retry message](polish-cancel-mobile.png)
+
+## Error spacing correction
+
+The cancellation screenshot exposed a shared renderer issue: form-wide errors
+are appended outside the template's stack, so they inherited no vertical gap.
+Their generic focus outline also used the campaign accent and overlapped the
+submit button. A scoped `.wc-root > .wc-error` rule adds a 0.75rem top gap and
+uses the error's own color with zero outline offset. Keyboard focus remains
+visible; field and consent errors retain their existing spacing.
+
+The exact cancellation repro was checked before and after in the built WordPress
+popup at 390px and desktop widths. Existing renderer/capture tests passed
+(83 tests), as did ESLint, the full build, loader/phone budgets and all four
+release artifact contracts. No new behavior or configuration was introduced.
+Updated gzip-9 loader sizes: 14,499 / 25,016 / 26,581 / 26,850 bytes.
+
+![Cancellation notice with clear spacing and matching focus color](polish-error-spacing-mobile.png)
