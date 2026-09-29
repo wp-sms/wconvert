@@ -89,6 +89,31 @@ namespace WConvert\Tests\Unit\Pro\Destination {
                 json_decode($this->calls[1][1]['body'], true));
         }
 
+        public function testBrevoTooEarlyResponseIsRetried(): void
+        {
+            $this->reply([[425, ['code' => 'too_early']]]);
+            $result = (new BrevoDestinationType())->push(PushSubject::test(['email' => 'a@example.com']),
+                new PushContext(null, ['lists' => ['42']], ['api_key' => 'secret']));
+            self::assertSame(PushOutcome::Failed, $result->outcome);
+            self::assertTrue($result->retryable);
+            self::assertCount(1, $this->calls);
+        }
+
+        public function testProviderListPaginationUsesReportedTotal(): void
+        {
+            $mailchimp = new MailchimpDestinationType();
+            $mailchimpLists = array_map(static fn (int $id): array => ['id' => (string) $id, 'name' => "Audience {$id}"], range(1, 100));
+            $this->reply([[200, ['lists' => $mailchimpLists, 'total_items' => 100]]]);
+            self::assertCount(100, $mailchimp->settingsSchema(['api_key' => 'secret-us1'])['audiences']['options']);
+            self::assertCount(1, $this->calls);
+
+            $brevo = new BrevoDestinationType();
+            $brevoLists = array_map(static fn (int $id): array => ['id' => $id, 'name' => "List {$id}"], range(1, 50));
+            $this->reply([[200, ['lists' => $brevoLists, 'count' => 50]]]);
+            self::assertCount(50, $brevo->settingsSchema(['api_key' => 'secret'])['lists']['options']);
+            self::assertCount(1, $this->calls);
+        }
+
         public function testProviderAuthFailureNeedsRepairWithoutRepeatedWrites(): void
         {
             $type = new MailchimpDestinationType();

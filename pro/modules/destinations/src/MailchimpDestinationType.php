@@ -59,14 +59,15 @@ final class MailchimpDestinationType implements DestinationType
     {
         if (empty($credentials['api_key'])) return ['audiences' => ['type' => 'ids', 'label' => __('Audience', 'wconvert')]];
         $options = [];
-        for ($offset = 0; $offset < 1000; $offset += 100) {
+        for ($offset = 0; $offset < 10000; $offset += 100) {
             [$status, $body] = $this->request($credentials, 'GET', '/lists?count=100&offset=' . $offset . '&fields=lists.id,lists.name,total_items');
             if ($status !== 200) throw new \RuntimeException('Mailchimp audiences could not be read.');
             $lists = $body['lists'] ?? [];
             foreach ($lists as $list) {
                 if (is_array($list) && isset($list['id'], $list['name'])) $options[] = ['value' => (string) $list['id'], 'label' => (string) $list['name']];
             }
-            if (count($lists) < 100) break;
+            if (count($lists) < 100 || (isset($body['total_items']) && $offset + count($lists) >= (int) $body['total_items'])) break;
+            if ($offset + 100 >= 10000) throw new \RuntimeException('Mailchimp has too many audiences to display.');
         }
         return ['audiences' => ['type' => 'ids', 'label' => __('Audience', 'wconvert'), 'options' => $options],
             'existing_contact' => ['type' => 'select', 'label' => __('If the contact exists', 'wconvert'), 'default' => 'keep', 'options' => [
@@ -84,7 +85,7 @@ final class MailchimpDestinationType implements DestinationType
         $audiences = DestinationRequirements::ids($settings['audiences'] ?? null);
         if (count($audiences) !== 1) return [];
         $options = [];
-        for ($offset = 0; $offset < 1000; $offset += 100) {
+        for ($offset = 0; $offset < 10000; $offset += 100) {
             [$status, $body] = $this->request($credentials, 'GET', '/lists/' . rawurlencode($audiences[0]) . '/merge-fields?count=100&offset=' . $offset);
             if ($status !== 200) throw new \RuntimeException('Mailchimp fields could not be read.');
             $fields = $body['merge_fields'] ?? [];
@@ -93,7 +94,8 @@ final class MailchimpDestinationType implements DestinationType
                 if (in_array($field['tag'], ['FNAME', 'LNAME', 'EMAIL'], true)) continue;
                 $options[] = ['value' => $field['tag'], 'label' => (string) ($field['name'] ?? $field['tag'])];
             }
-            if (count($fields) < 100) break;
+            if (count($fields) < 100 || (isset($body['total_items']) && $offset + count($fields) >= (int) $body['total_items'])) break;
+            if ($offset + 100 >= 10000) throw new \RuntimeException('Mailchimp has too many fields to display.');
         }
         return $options;
     }

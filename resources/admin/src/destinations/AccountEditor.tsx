@@ -9,6 +9,7 @@ import { RegionError } from '../shell/Region';
 import { ConfirmDialog } from '../shell/ConfirmDialog';
 import { messageOf } from '../shell/loadable';
 import { checkConnection, deleteConnection, saveConnection, type Connection, type DestinationType, type TestReport } from './api';
+import { ProviderMark } from './ProviderMark';
 
 export function AccountEditor({ types, connections, usage, onChange }: {
   types: readonly DestinationType[];
@@ -30,16 +31,16 @@ export function AccountEditor({ types, connections, usage, onChange }: {
   const remoteTypes = types.filter((type) => type.needs_connection && type.availability === 'ready');
   return <>
     <div className="flex flex-wrap gap-2">
-      {remoteTypes.map((type) => <Button key={type.id} variant="outline" onClick={() => open(type)}>{__('Connect', 'wconvert')} {type.label}</Button>)}
+      {remoteTypes.map((type) => <Button key={type.id} variant="outline" onClick={() => open(type)}><ProviderMark type={type} className="size-5 shrink-0" />{__('Connect', 'wconvert')} {type.label}</Button>)}
     </div>
     {connections.length === 0 ? <p className="m-0 text-note text-muted-foreground">{__('No remote accounts are configured.', 'wconvert')}</p>
       : <ul className="m-0 list-none divide-y divide-border p-0">{connections.map((account) => {
         const type = types.find((candidate) => candidate.id === account.type);
         return <li key={account.id} className="flex flex-wrap items-start justify-between gap-3 py-4">
-          <div className="min-w-0 [overflow-wrap:anywhere]"><strong className="block">{account.label}</strong><span className="text-note text-muted-foreground">{type?.label ?? account.type}</span>
+          <div className="flex min-w-0 items-start gap-2 [overflow-wrap:anywhere]"><ProviderMark type={type} className="mt-0.5 size-5 shrink-0" /><div><strong className="block">{account.label}</strong><span className="text-note text-muted-foreground">{type?.label ?? account.type}</span>
             {account.checked_at && <p className="m-0 mt-1 flex flex-wrap items-center gap-2 text-note text-muted-foreground"><Badge variant={account.check_outcome === 'success' ? 'success' : 'warning'}>{account.check_outcome === 'success' ? __('Account check passed', 'wconvert') : __('Account check failed', 'wconvert')}</Badge>{new Date(account.checked_at).toLocaleString()}</p>}
             {checks[account.id] && <p className="m-0 text-note" role={checks[account.id].outcome === 'failed' ? 'alert' : 'status'}>{checks[account.id].message}</p>}
-          </div>
+          </div></div>
           <div className="flex min-w-0 flex-col gap-1 text-note [overflow-wrap:anywhere]">{(usage[account.id] ?? []).length > 0 && <span className="text-muted-foreground">{__('Used by:', 'wconvert')}</span>}{(usage[account.id] ?? []).map((name) => <span key={name}>{name}</span>)}</div>
           <div className="flex flex-wrap gap-2">
             <Button variant="outline" disabled={busy} onClick={async () => { setBusy(true); try { const result = await checkConnection(account.id); setChecks((old) => ({ ...old, [account.id]: result })); await onChange(); } catch (cause) { setChecks((old) => ({ ...old, [account.id]: { outcome: 'failed', message: messageOf(cause) } })); } finally { setBusy(false); } }}>{__('Check', 'wconvert')}</Button>

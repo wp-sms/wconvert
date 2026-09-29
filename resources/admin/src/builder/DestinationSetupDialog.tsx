@@ -6,7 +6,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { DestinationSettingsForm } from '../destinations/DestinationSettingsForm';
 import { saveDestination, type Connection, type Destination, type DestinationType } from '../destinations/api';
 import { renderingFor, tierProductName } from '../goals/availability';
-import { iconFor } from '../icons';
+import { ProviderMark } from '../destinations/ProviderMark';
 import { messageOf } from '../shell/loadable';
 
 /** The shared route can be configured without leaving the Optin's draft. */
@@ -53,11 +53,10 @@ export function DestinationSetupDialog({
         {type === undefined ? (
           <ul className="m-0 list-none divide-y divide-border p-0" aria-label={__('Destination providers', 'wconvert')}>
             {types.map((candidate) => {
-              const Icon = iconFor(candidate.icon);
               const rendering = renderingFor(candidate.availability, 'settings_list');
               return (
                 <li key={candidate.id} className="flex flex-wrap items-center justify-between gap-3 py-3">
-                  <span className="flex items-center gap-2 font-medium"><Icon aria-hidden="true" className="size-4" />{candidate.label}</span>
+                  <span className="flex items-center gap-2 font-medium"><ProviderMark type={candidate} className="size-4 shrink-0" />{candidate.label}</span>
                   {rendering === 'offer' ? (
                     <Button variant="outline" size="sm" aria-label={sprintf(__('Choose %s', 'wconvert'), candidate.label)}
                       onClick={() => setSelected(candidate.id)}>{__('Choose', 'wconvert')}</Button>

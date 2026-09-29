@@ -9,6 +9,9 @@ per-Lead delivery ledger.
 1. Register the type in `pro/modules/destinations/` and its internal tier in the
    catalog. Declare prerequisites, supported audience channel and automatic
    contact fields in `requirements()` so setup and capture readiness agree.
+   Add official provider artwork to `resources/admin/src/assets/branding/`,
+   record its source in that directory's README, and map the type ID in
+   `ProviderMark.tsx`. Keep the provider name visible beside the mark.
 2. Expose a credential schema without secret values. `testConnection()` must
    check both authentication and access to the metadata needed for setup.
    Where the provider has a stable account ID, implement `accountIdentity()` so
@@ -38,6 +41,14 @@ per-Lead delivery ledger.
 
 The [integration foundation plan](../plans/integration-foundation.md) and
 [verification matrix](../plans/integration-foundation-verification.md) remain
-the release checklist. Provider pagination, retry detail and live behavior are
-still open gates for the first two adapters, so this note does not imply they
-are production-ready.
+the release checklist. The first two adapters were checked against their
+published API references on 2026-09-29:
+
+| Provider | Contract checked | References |
+| --- | --- | --- |
+| Mailchimp | API-key Basic auth with key suffix as data center; `/ping`, account root, paged audiences and merge fields; `POST` member with `pending` for marketing or `transactional` for enquiries; duplicate member followed by merge-only `PATCH` when requested. | [Quick start](https://mailchimp.com/developer/marketing/guides/quick-start/), [API reference](https://mailchimp.com/developer/marketing/api/), [merge fields](https://mailchimp.com/developer/marketing/docs/merge-fields/), [transactional member status](https://mailchimp.com/developer/release-notes/added-transactional-accepted-status-for-batch-subscribe/) |
+| Brevo | `api-key` auth; `/account`, paged contact lists and text attributes; `POST /contacts` with `updateEnabled: false`; `PUT /contacts/{email}` for selected fields and list only, or add-existing-to-list for keep mode; `425` and `429` retry; check per-address failure in list-add response. | [Account](https://developers.brevo.com/reference/get-account), [create contact](https://developers.brevo.com/reference/create-contact), [update contact](https://developers.brevo.com/reference/update-contact), [lists](https://developers.brevo.com/reference/get-lists), [attributes](https://developers.brevo.com/reference/get-attributes), [add to list](https://developers.brevo.com/reference/add-contact-to-list) |
+
+The API review checks documented shapes and behavior, not a live provider
+account. Live confirmation, existing-contact, suppression and automation checks
+in the verification matrix are still release gates for these adapters.

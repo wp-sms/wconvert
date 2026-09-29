@@ -17,7 +17,7 @@ import {
   Zap,
   type LucideIcon,
 } from 'lucide-react';
-import { iconFor } from '../icons';
+import { ProviderMark } from './ProviderMark';
 import { Alert, AlertDescription, AlertTitle } from '../components/ui/alert';
 import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
@@ -638,7 +638,6 @@ function Configured({
     heading?.focus();
     region.current?.scrollIntoView?.({ block: 'start' });
   }, [focusRequested]);
-  const TypeIcon = iconFor(type?.icon ?? 'plug');
   const failing = destination.health.consecutive_failures > 0;
   /*
    * Whether the two *Test* buttons can do anything. The region above already
@@ -681,7 +680,7 @@ function Configured({
       {error !== null && <RegionError message={error} />}
 
       <RegionHeader
-        icon={<TypeIcon />}
+        icon={<ProviderMark type={type} />}
         title={destination.label}
         /*
           **`locked` and `unavailable` are two sentences, not one.** They were
@@ -1094,7 +1093,6 @@ function Types({
         <ul className="m-0 list-none p-0">
           {types.map((type) => {
             const rendering = renderingFor(type.availability, 'settings_list');
-            const TypeIcon = iconFor(type.icon);
 
             return (
               <li
@@ -1102,7 +1100,7 @@ function Types({
                 className="flex flex-wrap items-center justify-between gap-3 border-b border-border p-4 last:border-b-0"
               >
                 <span className="flex min-w-0 items-center gap-2.5">
-                  <TypeIcon aria-hidden="true" className="size-5 shrink-0 text-primary" />
+                  <ProviderMark type={type} className="size-5 shrink-0" />
                   <span className="font-medium text-foreground">{type.label}</span>
                 </span>
 

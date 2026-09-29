@@ -58,6 +58,8 @@ describe('integration setup controls', () => {
       connection_schema: { api_key: { type: 'password', label: 'API key' } } };
     render(<AccountEditor types={[type]} connections={[account]} usage={{}} onChange={vi.fn().mockResolvedValue(undefined)} />);
 
+    expect(screen.getByRole('button', { name: 'Connect Mailchimp' }).querySelector('img')).toHaveAttribute('alt', '');
+
     await user.click(screen.getByRole('button', { name: 'Remove' }));
     const dialog = within(screen.getByRole('alertdialog'));
     expect(dialog.getByText(/The saved credentials for “Newsletter key” will be removed/)).toBeVisible();

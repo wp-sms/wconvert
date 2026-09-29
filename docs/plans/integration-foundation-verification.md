@@ -31,6 +31,14 @@ also identifies release gates that cannot be proven by local mocks.
   provider test accounts are available in this workspace. Do not treat the
   mocked provider responses as release acceptance for confirmation emails,
   existing-contact behavior or provider automations.
+- On 2026-09-29 the two adapters were checked against the providers' published
+  API references, including auth, contact writes, list/field metadata and
+  response shapes. The review fixed Brevo `425 Too Early` classification and
+  made full-page discovery use reported totals; official provider marks were
+  added to account and destination UI. See the adapter onboarding note for
+  source links. Targeted PHP/JS tests, typecheck, lint, admin builds and local
+  WordPress UI review passed. This is documentation and mocked-contract
+  evidence, not the live-account acceptance described below.
 
 ## Open acceptance gaps found in the coverage audit
 

@@ -50,14 +50,15 @@ final class BrevoDestinationType implements DestinationType
     {
         if (empty($credentials['api_key'])) return ['lists' => ['type' => 'ids', 'label' => __('List', 'wconvert')]];
         $options = [];
-        for ($offset = 0; $offset < 500; $offset += 50) {
+        for ($offset = 0; $offset < 10000; $offset += 50) {
             [$status, $body] = $this->request($credentials, 'GET', '/contacts/lists?limit=50&offset=' . $offset);
             if ($status !== 200) throw new \RuntimeException('Brevo lists could not be read.');
             $lists = $body['lists'] ?? [];
             foreach ($lists as $list) {
                 if (is_array($list) && isset($list['id'], $list['name'])) $options[] = ['value' => (string) $list['id'], 'label' => (string) $list['name']];
             }
-            if (count($lists) < 50) break;
+            if (count($lists) < 50 || (isset($body['count']) && $offset + count($lists) >= (int) $body['count'])) break;
+            if ($offset + 50 >= 10000) throw new \RuntimeException('Brevo has too many lists to display.');
         }
         return ['lists' => ['type' => 'ids', 'label' => __('List', 'wconvert'), 'options' => $options],
             'existing_contact' => ['type' => 'select', 'label' => __('If the contact exists', 'wconvert'), 'default' => 'keep', 'options' => [
@@ -126,7 +127,7 @@ final class BrevoDestinationType implements DestinationType
     private function failure(int $status): PushResult
     {
         if ($status === 401 || $status === 403) return PushResult::attention(__('Brevo access was refused. Check this account.', 'wconvert'));
-        if ($status === 429 || $status >= 500) return PushResult::retryable(__('Brevo is temporarily unavailable.', 'wconvert'));
+        if ($status === 425 || $status === 429 || $status >= 500) return PushResult::retryable(__('Brevo is temporarily unavailable.', 'wconvert'));
         return PushResult::terminal(__('Brevo rejected this contact or list.', 'wconvert'));
     }
 
