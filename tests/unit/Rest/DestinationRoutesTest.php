@@ -143,8 +143,8 @@ final class DestinationRoutesTest extends TestCase
         self::assertStringNotContainsString('super-secret-key-abc123', $json);
         // The KEYS survive, so the admin can render the fields it has, and an
         // empty one still reads as empty rather than as filled.
-        self::assertSame('••••••••', $payload['connections'][0]['credentials']['api_key']);
-        self::assertSame('', $payload['connections'][0]['credentials']['server']);
+        self::assertTrue($payload['connections'][0]['credentials']['api_key']);
+        self::assertFalse($payload['connections'][0]['credentials']['server']);
     }
 
     public function testHealthTravelsBesideEachConfiguredDestination(): void

@@ -28,6 +28,7 @@ final class DataMap
         private readonly RetentionPeriod $retention,
         private readonly DestinationStore $destinations,
         private readonly DestinationRegistry $types,
+        private readonly ?\WConvert\Optin\OptinRepository $optins = null,
         private readonly ?\WConvert\Protection\Settings $protection = null,
     ) {
     }
@@ -116,6 +117,7 @@ final class DataMap
     private function configuredDestinations(): array
     {
         $rows = [];
+        $published = $this->optins?->publishedConfigs() ?? [];
 
         foreach ($this->destinations->all() as $destination) {
             $type = $this->types->find($destination->type);
@@ -128,6 +130,15 @@ final class DataMap
                 foreach ($requirements->mappedFields as $field => $mapping) {
                     if (DestinationRequirements::text($destination->settings[$mapping['setting']] ?? null) !== '') {
                         $fields[] = $field;
+                    }
+                }
+
+                foreach ($published as $config) {
+                    if (!is_array($config)) continue;
+                    foreach ($config['integration_mappings'] ?? [] as $byDestination) {
+                        if (is_array($byDestination) && !empty($byDestination[$destination->id])) {
+                            $fields[] = 'mapped form/quiz answers';
+                        }
                     }
                 }
 

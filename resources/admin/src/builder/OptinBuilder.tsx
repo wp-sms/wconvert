@@ -4,7 +4,7 @@ import { SubmissionSettings } from './SubmissionSettings';
 import { BlockInspector } from './BlockInspector';
 import { JourneyEditor } from './JourneyEditor';
 import { JourneyReport } from './JourneyReport';
-import { referencedJourney, submissionScreen } from './structure/journey';
+import { referencedJourney, submissionScreen, walkNodes } from './structure/journey';
 import { isResultFirst } from '../../../loader/src/journey-mode';
 import type { JourneyRepair } from './structure/journeyReadiness';
 import { contentLockDesignCompatible } from '../inlinePlacement';
@@ -83,7 +83,7 @@ import {
 } from '../templates/api';
 import { numbersByOptin, readDashboard, type OptinNumbers } from '../stats/api';
 import { formatCount, formatRate } from '../stats/format';
-import { readDestinations, type DestinationsPayload } from '../destinations/api';
+import { readDestinations, type Connection, type DestinationsPayload } from '../destinations/api';
 import { adminSettings } from '../settings';
 import { readPrivacyGuidance } from '../privacy/api';
 import { createOptin, publishOptin } from '../optins/api';
@@ -443,6 +443,18 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
         const kept = new Set(changedTemplate.tree.submissions.map(sub => sub.id));
         next.submission_settings = Object.fromEntries(Object.entries(next.submission_settings).filter(([id]) => kept.has(id)));
       }
+      if (changedTemplate && next.integration_mappings && typeof next.integration_mappings === 'object') {
+        const kept = new Set(changedTemplate.tree.submissions.map(sub => sub.id));
+        const sources = new Set<string>();
+        changedTemplate.tree.steps.flatMap(step => walkNodes(step.content)).forEach((node) => {
+          if (node.type === 'question' && 'id' in node) sources.add(String(node.id));
+          if (node.type === 'field' && 'name' in node && ['interest', 'message'].includes(String(node.name))) sources.add(`field:${String(node.name)}`);
+        });
+        const maps = next.integration_mappings as Record<string, Record<string, Record<string, string>>>;
+        next.integration_mappings = Object.fromEntries(Object.entries(maps).filter(([submission]) => kept.has(submission)).map(([submission, byDestination]) =>
+          [submission, Object.fromEntries(Object.entries(byDestination).map(([id, mapping]) =>
+            [id, Object.fromEntries(Object.entries(mapping).filter(([source]) => sources.has(source)))]) )]));
+      }
       return next;
     });
     setSaved(false);
@@ -686,6 +698,11 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
                 controls: <InlinePlacementSettings optinId={id} published={publishedAt !== null} config={config} vocabulary={vocabulary} onChange={edit} />,
               } : undefined}
             />;
+  const connectionSaved = (account: Connection) => {
+    destinationRequest.current++;
+    setDestinations((current) => current.status === 'ready'
+      ? ready({ ...current.data, connections: [...current.data.connections.filter((existing) => existing.id !== account.id), account] }) : current);
+  };
   const destinationEditor = <>
             {captureOutcome?.audience_channel && <CaptureModeChoice disabled={busy} selectedCount={bound.length} mode={config.capture_mode === 'local' ? 'local' : 'connected'}
               onChange={(mode) => edit({ capture_mode: mode, ...(mode === 'local' ? { destinations: [] } : {}) })} />}
@@ -699,6 +716,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
               }
               types={read(destinations)?.types ?? []}
               connections={read(destinations)?.connections ?? []}
+              onConnectionSaved={connectionSaved}
               onRefresh={refreshDestinations}
               onSaved={(updated) => {
                 destinationRequest.current++;
@@ -715,10 +733,22 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
                       read(destinations)?.destinations ?? [],
                     )
               }
-              onChange={(next) => edit({ destinations: next, capture_mode: 'connected' })}
+              onChange={(next) => {
+                const current = (config.integration_mappings ?? {}) as Record<string, Record<string, Record<string, string>>>;
+                const submissionId = template?.tree.submissions[0]?.id;
+                edit({ destinations: next, capture_mode: 'connected', ...(submissionId && Object.keys(current).length > 0 ? {
+                  integration_mappings: { ...current, [submissionId]: Object.fromEntries(Object.entries(current[submissionId] ?? {}).filter(([id]) => next.includes(id))) },
+                } : {}) });
+              }}
+              mappings={((config.integration_mappings as Record<string, Record<string, Record<string, string>>> | undefined)?.[template?.tree.submissions[0]?.id ?? ''] ?? {})}
+              onMappingChange={(destinationId, map) => {
+                const current = (config.integration_mappings ?? {}) as Record<string, Record<string, Record<string, string>>>;
+                const submissionId = template?.tree.submissions[0]?.id;
+                if (submissionId) edit({ integration_mappings: { ...current, [submissionId]: { ...current[submissionId], [destinationId]: map } } });
+              }}
             />
             }
-            <SubmissionSettings types={read(destinations)?.types ?? []} connections={read(destinations)?.connections ?? []} onSaved={updated => { destinationRequest.current++; setDestinations(current => current.status === 'ready' ? ready({ ...current.data, destinations: [...updated] }) : current); }} template={template} primaryChannel={captureOutcome?.audience_channel} config={config} destinations={read(destinations)?.destinations ?? []} onChange={edit} />
+            <SubmissionSettings types={read(destinations)?.types ?? []} connections={read(destinations)?.connections ?? []} onConnectionSaved={connectionSaved} onSaved={updated => { destinationRequest.current++; setDestinations(current => current.status === 'ready' ? ready({ ...current.data, destinations: [...updated] }) : current); }} template={template} primaryChannel={captureOutcome?.audience_channel} config={config} destinations={read(destinations)?.destinations ?? []} onChange={edit} />
   </>;
 
   return (

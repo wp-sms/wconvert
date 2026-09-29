@@ -6,12 +6,12 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { DestinationSettingsForm } from '../destinations/DestinationSettingsForm';
 import { saveDestination, type Connection, type Destination, type DestinationType } from '../destinations/api';
 import { renderingFor, tierProductName } from '../goals/availability';
-import { iconFor } from '../icons';
+import { ProviderMark } from '../destinations/ProviderMark';
 import { messageOf } from '../shell/loadable';
 
 /** The shared route can be configured without leaving the Optin's draft. */
 export function DestinationSetupDialog({
-  destination, types, connections, returnFocusTo, onClose, onSaved,
+  destination, types, connections, returnFocusTo, onClose, onSaved, onConnectionSaved,
 }: {
   destination?: Destination;
   types: readonly DestinationType[];
@@ -19,6 +19,7 @@ export function DestinationSetupDialog({
   returnFocusTo: RefObject<HTMLElement | null>;
   onClose: () => void;
   onSaved: (destinations: readonly Destination[]) => void;
+  onConnectionSaved?: (connection: Connection) => void;
 }) {
   const [selected, setSelected] = useState<string | null>(destination?.type ?? null);
   const [busy, setBusy] = useState(false);
@@ -44,7 +45,9 @@ export function DestinationSetupDialog({
               : sprintf(__('Add a %s destination', 'wconvert'), type.label)}
           </DialogTitle>
           <DialogDescription className="m-0" id={description}>
-            {destination !== undefined
+            {type?.needs_connection && !connections.some((account) => account.type === type.id)
+              ? sprintf(__('Connect %s, then choose where submissions should go.', 'wconvert'), type.label)
+              : destination !== undefined
               ? __('Changes affect every campaign using this destination, including published campaigns.', 'wconvert')
               : __('Create a destination, then select it for this campaign.', 'wconvert')}
           </DialogDescription>
@@ -53,11 +56,10 @@ export function DestinationSetupDialog({
         {type === undefined ? (
           <ul className="m-0 list-none divide-y divide-border p-0" aria-label={__('Destination providers', 'wconvert')}>
             {types.map((candidate) => {
-              const Icon = iconFor(candidate.icon);
               const rendering = renderingFor(candidate.availability, 'settings_list');
               return (
                 <li key={candidate.id} className="flex flex-wrap items-center justify-between gap-3 py-3">
-                  <span className="flex items-center gap-2 font-medium"><Icon aria-hidden="true" className="size-4" />{candidate.label}</span>
+                  <span className="flex items-center gap-2 font-medium"><ProviderMark type={candidate} className="size-4 shrink-0" />{candidate.label}</span>
                   {rendering === 'offer' ? (
                     <Button variant="outline" size="sm" aria-label={sprintf(__('Choose %s', 'wconvert'), candidate.label)}
                       onClick={() => setSelected(candidate.id)}>{__('Choose', 'wconvert')}</Button>
@@ -81,6 +83,7 @@ export function DestinationSetupDialog({
             </Button>}
             <DestinationSettingsForm key={destination?.id ?? type.id} type={type} destination={destination}
               connections={connections.filter((connection) => connection.type === type.id)}
+              onConnectionSaved={onConnectionSaved}
               busy={busy} error={error} submitDescription={description} onCancel={close}
               onConfirm={(draft) => {
                 if (busy) return;

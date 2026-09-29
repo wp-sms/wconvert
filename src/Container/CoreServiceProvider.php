@@ -479,7 +479,7 @@ final class CoreServiceProvider implements ServiceProvider
             CaptureController::class,
             static fn (ServiceContainer $c): CaptureController => new CaptureController(
                 $c->resolve(PublishedSet::class),
-                new \WConvert\Lead\JourneyCapture($c->resolve(Connection::class), $c->resolve(\WConvert\Stats\StatsRepository::class)),
+                new \WConvert\Lead\JourneyCapture($c->resolve(Connection::class), $c->resolve(\WConvert\Stats\StatsRepository::class), $c->resolve(DestinationStore::class)),
                 $c->resolve(OptinRepository::class),
                 new \WConvert\Lead\CaptureGrant(wp_salt('auth')),
                 $c->resolve(TemplateVocabulary::class),
@@ -843,6 +843,7 @@ final class CoreServiceProvider implements ServiceProvider
         // visitor's page; the worker attaches to an Action Scheduler hook,
         // which fires from a loopback request that is neither (#4).
         $container->resolve(PushWorker::class)->hooks();
+        \WConvert\Queue\RecentPushHistory::hooks();
         (new \WConvert\Destination\SubmissionDispatcher(
             $container->resolve(Connection::class), $container->resolve(\WConvert\Queue\Queue::class),
             $container->resolve(DestinationStore::class), $container->resolve(DestinationRegistry::class), $container->resolve(HealthStore::class)

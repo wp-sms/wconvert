@@ -302,8 +302,8 @@ final class MailPoetPushTest extends TestCase
     {
         $subscribers = new FakeMailPoetSubscribers();
         $type = new MailPoetDestinationType($subscribers);
-        $context = new PushContext('Enquiry', ['lists' => ['3'], 'interest_field' => 'cf_7']);
-        $first = $type->push($this->subject('new@example.com', ['interest' => 'installation', 'interest_label' => 'Installation service']), $context);
+        $context = new PushContext('Enquiry', ['lists' => ['3']]);
+        $first = $type->push(PushSubject::test(['email' => 'new@example.com', 'interest' => 'installation'], ['cf_7' => 'installation']), $context);
         self::assertSame(PushOutcome::Success, $first->outcome);
         self::assertSame('installation', $subscribers->added[0]['subscriber']['cf_7']);
         self::assertArrayNotHasKey('interest_label', $subscribers->added[0]['subscriber']);
@@ -318,8 +318,8 @@ final class MailPoetPushTest extends TestCase
         $type = new MailPoetDestinationType($subscribers);
         $type->push($this->subject('unmapped@example.com', ['interest' => 'installation']), $this->context());
         self::assertSame(['email' => 'unmapped@example.com'], $subscribers->added[0]['subscriber']);
-        $result = $type->push($this->subject('mapped@example.com', ['interest' => 'installation']),
-            new PushContext('Enquiry', ['lists' => ['3'], 'interest_field' => 'cf_999']));
+        $result = $type->push(PushSubject::test(['email' => 'mapped@example.com'], ['cf_999' => 'installation']),
+            new PushContext('Enquiry', ['lists' => ['3']]));
         self::assertSame(PushOutcome::Failed, $result->outcome);
         self::assertTrue($result->retryable);
         self::assertCount(1, $subscribers->added);

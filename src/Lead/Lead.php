@@ -77,7 +77,8 @@ final class Lead
         $email = $values['email'] ?? null;
         $phone = $values['phone'] ?? null;
         unset($values['email'], $values['phone']);
-        return new self($this->id, $this->optinId, $email, $phone, $values, $this->createdAt, [],
+        return new self($this->id, $this->optinId, $email, $phone, $values, $this->createdAt, ['field_mappings' => $snapshot['field_mappings'] ?? [], 'route_identities' => $snapshot['route_identities'] ?? [],
+            'purpose' => $snapshot['purpose'] ?? 'request'],
             self::questionAnswers($snapshot['question_answers'] ?? null));
     }
 

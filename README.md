@@ -363,9 +363,24 @@ A [[Destination]] is **outbound and fallible** — configured, optional, one of
 several, and able to fail without the capture failing
 ([ADR 0007](docs/adr/0007-destinations-are-outbound-and-fallible.md)). **The
 Lead log is not one**: it is the Lead store, written first and always. Free
-ships two Destination types — the in-process WSMS push, and the lead-magnet
-delivery email over `wp_mail()`. Every type that makes an outbound HTTP call is
-Pro's.
+ships the WSMS push, MailPoet push when MailPoet is installed, and lead-magnet
+delivery email over `wp_mail()`. The Pro `destinations` module adds Mailchimp
+and Brevo email-contact adapters.
+
+For a remote provider, connect an account on the Destinations page, create a
+named Destination for one audience/list, and choose whether existing contacts
+keep their details or receive the fields included in a new submission. A
+campaign sends basic supported contact details automatically. Its optional
+**Send extra answers** control maps captured questions, interest or message to
+provider text fields for each signup step. Preview uses sample values without
+sending; **Send test contact** sends the sample to the provider. Publishing the
+campaign makes edited mappings live.
+
+For marketing signups, Mailchimp requests confirmation for a new member and
+Brevo adds a new Contact to the selected list. An enquiry is saved as a
+Mailchimp transactional Contact or a Brevo Contact without list membership;
+its email address alone does not grant marketing consent. An explicit test send
+uses the merchant's own address and can enter the selected marketing list.
 
 **Everything is queued, including the WSMS push.** Action Scheduler is a core
 dependency bundled in the free plugin — three free features want a scheduler
@@ -379,7 +394,7 @@ period, which outlives any retention policy WConvert sets for itself — so
 personal data in one would survive both the prune and an honoured erasure
 request, in a table nothing here would ever look in again.
 
-**Delivery state is per-Destination health, not a per-Lead record**
+**Long-lived delivery state is per-Destination health, not a per-Lead record**
 ([ADR 0008](docs/adr/0008-delivery-state-is-destination-health-not-per-lead.md)).
 There is no `wconvert_lead_deliveries` table, because `push()` is idempotent:
 once re-pushing a Lead that already landed is harmless, per-Lead precision buys
@@ -392,6 +407,13 @@ guarded against. What is stored is `last_success_at`,
 non-autoloaded option — deliberately separate from Destination configuration,
 so the lost-increment race `update_option` allows can only ever eat advisory
 health and never an admin's edit.
+
+The Destinations page also shows recent Action Scheduler attempts for each
+route. WConvert records whether the provider accepted the request, a retry was
+scheduled, or the attempt needs attention. Scheduler completion alone does not
+prove provider acceptance, and attempts without a WConvert outcome marker are
+shown as unknown. This history lasts only as long as the site's Action
+Scheduler cleanup policy retains it.
 
 The failure split is the whole design, and it inverts under a naive
 implementation:

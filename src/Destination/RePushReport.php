@@ -20,6 +20,7 @@ final class RePushReport
         public readonly int $jobs,
         public readonly bool $capped,
         public readonly ?string $since,
+        public readonly int $needsReview = 0,
     ) {
     }
 
@@ -28,6 +29,6 @@ final class RePushReport
      */
     public function toArray(): array
     {
-        return ['jobs' => $this->jobs, 'capped' => $this->capped, 'since' => $this->since];
+        return ['jobs' => $this->jobs, 'capped' => $this->capped, 'since' => $this->since, 'needs_review' => $this->needsReview];
     }
 }

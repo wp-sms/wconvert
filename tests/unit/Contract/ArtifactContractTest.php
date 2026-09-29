@@ -214,6 +214,7 @@ final class ArtifactContractTest extends TestCase
             'modules/premium-triggers/module.json' => "{\"slug\":\"premium-triggers\"}\n",
             'modules/ab-testing/module.json' => "{\"slug\":\"ab-testing\"}\n",
             'modules/cart-recovery/module.json' => "{\"slug\":\"cart-recovery\"}\n",
+            'modules/destinations/module.json' => "{\"slug\":\"destinations\"}\n",
             // The premium designs, inside the module that owns them. Pro IS
             // where they ship, so a Pro artifact with an empty library is a
             // broken build rather than a clean one — it installs, replaces the
@@ -234,7 +235,7 @@ final class ArtifactContractTest extends TestCase
     {
         $withheld = [];
 
-        foreach (['display-types', 'journeys', 'spam-filters', 'premium-triggers', 'ab-testing', 'cart-recovery'] as $slug) {
+        foreach (['display-types', 'journeys', 'spam-filters', 'premium-triggers', 'ab-testing', 'cart-recovery', 'destinations'] as $slug) {
             if (!in_array($slug, $modules, true)) {
                 $withheld["modules/{$slug}/module.json"] = null;
             }
@@ -436,7 +437,7 @@ final class ArtifactContractTest extends TestCase
         foreach ([
             'basic' => ['display-types', 'journeys', 'spam-filters'],
             'pro' => ['display-types', 'journeys', 'spam-filters', 'premium-triggers', 'ab-testing'],
-            'elite' => ['display-types', 'journeys', 'spam-filters', 'premium-triggers', 'ab-testing', 'cart-recovery'],
+            'elite' => ['display-types', 'journeys', 'spam-filters', 'premium-triggers', 'ab-testing', 'cart-recovery', 'destinations'],
         ] as $rung => $modules) {
             $result = $this->verify($this->stagedProAt($modules));
 

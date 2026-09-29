@@ -6,6 +6,8 @@ use WConvert\Destination\LeadMagnet\DeliveryCount;
 use WConvert\Lead\LeadRepository;
 use WConvert\Optin\OptinRepository;
 use WConvert\Queue\Queue;
+use WConvert\Queue\QueueFailure;
+use WConvert\Queue\RecentPushHistory;
 use WConvert\Support\DiagnosticSanitizer;
 
 defined('ABSPATH') || exit;
@@ -96,6 +98,7 @@ final class PushWorker
         // plugin deactivated — is skipped rather than retried against a
         // handler that will never succeed (#4).
         if ($type === null || !$this->registry->isDispatchable($destination->type)) {
+            RecentPushHistory::record('skipped', $job->attempt);
             return;
         }
 
@@ -105,28 +108,52 @@ final class PushWorker
             // Erased or pruned since capture. **Not a delivery failure** —
             // nothing went wrong, and recording one would put a removed
             // person's id back into an option (ADR 0018).
+            RecentPushHistory::record('skipped', $job->attempt);
             return;
         }
 
         $snapshot = $lead->submission($job->submissionId);
-        if ($snapshot === null) { return; }
-        $subject = PushSubject::of($snapshot);
+        if ($snapshot === null) { RecentPushHistory::record('skipped', $job->attempt); return; }
+        $expected = $snapshot->capture['route_identities'][$job->destinationId] ?? null;
+        if (is_string($expected) && !hash_equals($expected, RouteIdentity::of($destination))) {
+            $this->record($job, $lead->optinId, $destination->type,
+                PushResult::terminal(__('This destination’s account, target or policy changed after capture. Review before resending.', 'wconvert')), [], []);
+            return;
+        }
+        $subject = PushSubject::of($snapshot, $job->destinationId);
         $credentials = $this->connections->credentialsFor($destination);
-        $send = fn (): PushResult => $type->push($subject, new PushContext(
-            // One name, by primary key. An Optin is never hard-deleted, so
-            // this is null only where something removed a row nothing should
-            // remove — and an empty `source_ref` would then assert provenance
-            // that is not there, which is worse than leaving the column unset
-            // (ADR 0023).
-            $this->optins->nameOf($lead->optinId),
-            $destination->settings,
-            $credentials
-        ));
-
-        $result = $destination->type === 'lead_magnet_email' && $this->sendGuard !== null
-            ? $this->sendGuard->send($subject->values['email'] ?? '', (string) ($destination->settings['file_url'] ?? ''), $send) : $send();
+        try {
+            $mappingIssue = $this->mappingIssue($type, $destination, $subject, $credentials);
+            $send = fn (): PushResult => $type->push($subject, new PushContext(
+                // Preserve the campaign's name as provider-side provenance.
+                $this->optins->nameOf($lead->optinId),
+                $destination->settings,
+                $credentials
+            ));
+            $result = $mappingIssue ?? ($destination->type === 'lead_magnet_email' && $this->sendGuard !== null
+                ? $this->sendGuard->send($subject->values['email'] ?? '', (string) ($destination->settings['file_url'] ?? ''), $send)
+                : $send());
+        } catch (\Throwable $failure) {
+            $result = PushResult::retryable(__('The destination stopped unexpectedly. The result may be uncertain.', 'wconvert'));
+        }
 
         $this->record($job, $lead->optinId, $destination->type, $result, $subject->values, $credentials);
+    }
+
+    /** @param array<string, mixed> $credentials */
+    private function mappingIssue(DestinationType $type, Destination $destination, PushSubject $subject, array $credentials): ?PushResult
+    {
+        if ($subject->mapped === []) return null;
+        if (!method_exists($type, 'mappingFields')) return PushResult::attention(__('This destination no longer supports the selected answer fields.', 'wconvert'));
+        try {
+            $available = array_column(MappingFields::for($type, $destination, $credentials), 'value');
+        } catch (\Throwable $failure) {
+            return PushResult::retryable(__('The destination fields could not be checked. Sending will retry.', 'wconvert'));
+        }
+        foreach (array_keys($subject->mapped) as $target) {
+            if (!in_array($target, $available, true)) return PushResult::attention(__('A mapped destination field is unavailable. Review this campaign’s mapping.', 'wconvert'));
+        }
+        return null;
     }
 
     /**
@@ -151,6 +178,7 @@ final class PushWorker
         $now = current_time('mysql');
 
         if ($result->outcome === PushOutcome::Success) {
+            RecentPushHistory::record('accepted', $job->attempt);
             $this->health->landed($job->destinationId, $now);
 
             // **This is the whole of exactly-once**, and it is the shape
@@ -164,10 +192,17 @@ final class PushWorker
         }
 
         if ($result->outcome === PushOutcome::Skipped) {
+            RecentPushHistory::record('skipped', $job->attempt);
             return;
         }
 
         $error = DiagnosticSanitizer::message((string) $result->reason, $personal, $secrets);
+
+        if ($result->needsAttention) {
+            $this->health->failed($job->destinationId, $error, $now);
+            RecentPushHistory::record('needs_attention', $job->attempt);
+            return;
+        }
 
         // An outage moves health. A Lead-specific rejection does not — see the
         // class docblock.
@@ -175,17 +210,23 @@ final class PushWorker
             $this->health->failed($job->destinationId, $error, $now);
 
             if ($job->hasAttemptsLeft()) {
-                $this->queue->schedule(
-                    time() + $job->backoffSeconds(),
-                    PushJob::HOOK,
-                    $job->next()->toArgs()
-                );
-
-                return;
+                try {
+                    $this->queue->schedule(
+                        time() + $job->backoffSeconds(),
+                        PushJob::HOOK,
+                        $job->next()->toArgs()
+                    );
+                    RecentPushHistory::record('retry_scheduled', $job->attempt);
+                    return;
+                } catch (QueueFailure $failure) {
+                    $error = DiagnosticSanitizer::message($failure->getMessage(), $personal, $secrets);
+                    $this->health->failed($job->destinationId, $error, $now);
+                }
             }
         }
 
         // Terminal: `retryable = false`, or retryable with its attempts spent.
         $this->failures->record($job->destinationId, $job->leadId, $error, $now);
+        RecentPushHistory::record('needs_attention', $job->attempt);
     }
 }

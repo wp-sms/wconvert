@@ -30,7 +30,10 @@ final class CaptureContract
             } : ($goal === 'grow_sms_list' ? 'email_marketing' : 'sms_marketing');
             $entry = $config['submission_settings'][$id] ?? [];
             $routes = ($config['capture_mode'] ?? '') === 'local' ? [] : ($index === 0 ? ($config['destinations'] ?? []) : ($entry['destination_ids'] ?? []));
-            $settings[$id] = ['purpose' => $purpose, 'destination_ids' => array_values(array_unique(array_filter(is_array($routes) ? $routes : [], 'is_string')))];
+            $destinationIds = array_values(array_unique(array_filter(is_array($routes) ? $routes : [], 'is_string')));
+            $maps = $config['integration_mappings'][$id] ?? [];
+            $settings[$id] = ['purpose' => $purpose, 'destination_ids' => $destinationIds,
+                'field_mappings' => array_intersect_key(is_array($maps) ? $maps : [], array_flip($destinationIds))];
         }
         return $settings;
     }
@@ -71,6 +74,7 @@ final class CaptureContract
             }
         }
         $settings = self::settings($config, $goal);
+        if (self::mappingIssue($settings, $tree)) { return 'integration_mapping'; }
         if (count($settings) > 1 && !in_array($goal, ['grow_email_list', 'grow_sms_list'], true)) { return 'purpose'; }
         foreach ($tree['submissions'] ?? [] as $submission) {
             $purpose = $settings[$submission['id']]['purpose'];
@@ -89,6 +93,36 @@ final class CaptureContract
             if (!$identifier || !$consent || count($submission['consents']) !== 1) { return 'consent'; }
         }
         return null;
+    }
+
+    /** A published map may name only captured sources and selected routes.
+     * @param array<string, array<string, mixed>> $settings
+     * @param array<string, mixed> $tree
+     */
+    private static function mappingIssue(array $settings, array $tree): bool
+    {
+        $questions = [];
+        $fields = [];
+        foreach ($tree['steps'] ?? [] as $index => $step) {
+            foreach (CaptureJourney::nodes($step['content'] ?? []) as $node) {
+                if (($node['type'] ?? '') === 'question' && is_string($node['id'] ?? null)) $questions[$node['id']] = $index;
+                if (($node['type'] ?? '') === 'field' && in_array($node['name'] ?? null, ['interest', 'message'], true)) $fields['field:' . $node['name']] = $index;
+            }
+        }
+        foreach ($settings as $submissionId => $setting) {
+            $boundary = CaptureJourney::submitScreen($tree, (string) $submissionId);
+            foreach ($setting['field_mappings'] ?? [] as $destinationId => $map) {
+                if (!in_array($destinationId, $setting['destination_ids'], true) || !is_array($map) || count($map) > 32) return true;
+                $targets = [];
+                foreach ($map as $source => $target) {
+                    $sourceIndex = $questions[$source] ?? $fields[$source] ?? null;
+                    if ($sourceIndex === null || $sourceIndex > $boundary) return true;
+                    if (!is_string($target) || preg_match('/^[A-Za-z][A-Za-z0-9_]{0,31}$/D', $target) !== 1 || isset($targets[$target])) return true;
+                    $targets[$target] = true;
+                }
+            }
+        }
+        return false;
     }
 
     /** @param array<string, mixed> $config */

@@ -46,13 +46,38 @@ final class PushSubject
     private function __construct(
         public readonly array $values,
         public readonly bool $isTest,
+        /** @var array<string, string> Provider field id => accepted text. */
+        public readonly array $mapped = [],
+        /** The accepted submission purpose; an email address alone is not marketing consent. */
+        public readonly string $purpose = 'request',
     ) {
     }
 
     /** One captured [[Lead]], as the thing a Destination receives. */
-    public static function of(Lead $lead): self
+    public static function of(Lead $lead, string $destinationId = ''): self
     {
-        return new self(CanonicalFields::of($lead), false);
+        $mapping = $lead->capture['field_mappings'][$destinationId] ?? [];
+        $mapped = [];
+        if (is_array($mapping)) {
+            foreach ($mapping as $source => $target) {
+                if (!is_string($target) || !preg_match('/^[A-Za-z][A-Za-z0-9_]{0,31}$/D', $target)) continue;
+                $value = null;
+                if (is_string($source) && str_starts_with($source, 'field:')) {
+                    $key = substr($source, 6);
+                    if (in_array($key, ['interest', 'message'], true)) $value = $lead->fields[$key] ?? null;
+                } else {
+                    foreach ($lead->questionAnswers as $answer) {
+                        if (($answer['id'] ?? null) !== $source) continue;
+                        $parts = ($answer['type'] ?? '') === 'text' ? ($answer['values'] ?? []) : ($answer['labels'] ?? []);
+                        $value = is_array($parts) ? implode('; ', array_filter($parts, 'is_string')) : null;
+                        break;
+                    }
+                }
+                if (is_string($value) && trim($value) !== '') $mapped[$target] = $value;
+            }
+        }
+        return new self(CanonicalFields::of($lead), false, $mapped,
+            is_string($lead->capture['purpose'] ?? null) ? $lead->capture['purpose'] : 'request');
     }
 
     /**
@@ -64,9 +89,10 @@ final class PushSubject
      * a path a capture never takes.
      *
      * @param array<string, mixed> $values
+     * @param array<string, string> $mapped
      */
-    public static function test(array $values): self
+    public static function test(array $values, array $mapped = [], string $purpose = 'email_marketing'): self
     {
-        return new self(CanonicalFields::present($values), true);
+        return new self(CanonicalFields::present($values), true, $mapped, $purpose);
     }
 }

@@ -36,7 +36,7 @@
         "name": "Pro",
         "plugin_name": "WConvert Pro",
         "description": "Everything, including cart recovery and the outbound Destinations.",
-        "modules": ["display-types", "inline-placement", "content-lock", "journeys", "spam-filters", "premium-triggers", "ab-testing", "cart-recovery"]
+        "modules": ["display-types", "inline-placement", "content-lock", "journeys", "spam-filters", "premium-triggers", "ab-testing", "cart-recovery", "destinations"]
       }
     ]
   }

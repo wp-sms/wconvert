@@ -16,21 +16,20 @@ import {
 import { RowsSkeleton } from '../shell/RowsSkeleton';
 import { tierProductName } from '../goals/availability';
 import { outcomeHandoffIssue, type OutcomeContract } from '../goals/outcome';
+import { ProviderMark } from '../destinations/ProviderMark';
 import { targetSaid } from '../destinations/settings';
 import type { Loadable } from '../shell/loadable';
 import type { Connection, Destination, DestinationType } from '../destinations/api';
 import { capturedFields, compatibilityProblems } from '../destinations/requirements';
 import type { Template } from '@renderer/types';
+import { ExtraAnswerMapping, hasExtraAnswers, UnsupportedAnswerMapping } from './ExtraAnswerMapping';
 
 /**
  * Which [[Destination]]s this [[Optin]] pushes to.
  *
- * **An Optin holds Destination ids and nothing more.** No audience, no tags,
- * no field map: a Destination is configured once, site-wide, and *includes*
- * whatever selects the target inside the remote system, so two Optins feeding
- * one audience reference one Destination. The per-Optin field map that would
- * normally sit here is eliminated by canonical field keys (CONTEXT.md,
- * Destination).
+ * A Campaign binds shared Destination ids. Its optional extra-answer map is
+ * stored beside the binding and frozen with the accepted submission. Basic
+ * contact fields remain provider-owned and need no merchant mapping.
  *
  * A Destination whose type is not `ready` is still shown and still bindable —
  * the binding is a decision the merchant made, and unbinding it because a
@@ -95,11 +94,14 @@ export interface DestinationsEditorProps {
   readonly connections: readonly Connection[];
   readonly onRefresh: () => void;
   readonly onSaved: (destinations: readonly Destination[]) => void;
+  readonly onConnectionSaved?: (connection: Connection) => void;
+  readonly mappings?: Readonly<Record<string, Record<string, string>>>;
+  readonly onMappingChange?: (destinationId: string, map: Record<string, string>) => void;
 }
 
 /** Choices edit this Optin's draft; setup edits a shared site destination. */
 export function DestinationsEditor({
-  bound, available, types, hint, connections, onChange, onRefresh, onSaved, template, outcome,
+  bound, available, types, hint, connections, onChange, onRefresh, onSaved, onConnectionSaved, template, outcome, mappings = {}, onMappingChange,
 }: DestinationsEditorProps) {
   const [setup, setSetup] = useState<'add' | Destination | null>(null);
   const [addedIds, setAddedIds] = useState<string[]>([]);
@@ -118,10 +120,10 @@ export function DestinationsEditor({
             ? sprintf(__('%d selected', 'wconvert'), bound.length)
             : __('No destinations selected', 'wconvert')} />
         <Toolbar>
-            <Button variant="outline" size="sm" disabled={available.status === 'loading'} onClick={onRefresh}>
+            <Button variant="outline" disabled={available.status === 'loading'} onClick={onRefresh}>
               <RefreshCw aria-hidden="true" />{__('Refresh', 'wconvert')}
             </Button>
-            <Button size="sm" disabled={available.status !== 'ready'} onClick={(event) => {
+            <Button disabled={available.status !== 'ready'} onClick={(event) => {
               returnFocus.current = event.currentTarget;
               setNotice(null);
               setSetup('add');
@@ -145,6 +147,15 @@ export function DestinationsEditor({
                 {available.data.map((destination) => {
                   const said = targetSaid(destination.target);
                   const compatibility = template ? compatibilityProblems(destination, capturedFields(template)) : [];
+                  const automaticNames: Record<string, string> = { email: __('email', 'wconvert'), name: __('name', 'wconvert'), phone: __('phone', 'wconvert') };
+                  const automatic = template ? capturedFields(template)
+                    .filter((field) => ['email', 'name', 'phone'].includes(field.name) && destination.requirements?.fields.includes(field.name))
+                    .map((field) => automaticNames[field.name]) : [];
+                  const automaticText = automatic.length === 2
+                    ? sprintf(__('%1$s and %2$s', 'wconvert'), automatic[0], automatic[1])
+                    : automatic.length === 3
+                      ? sprintf(__('%1$s, %2$s and %3$s', 'wconvert'), automatic[0], automatic[1], automatic[2])
+                      : automatic[0] ?? '';
                   const control = `wconvert-bind-${destination.id}`;
                   const type = types.find((candidate) => candidate.id === destination.type);
                   const missingConnection = type?.needs_connection === true
@@ -159,11 +170,13 @@ export function DestinationsEditor({
                         checked={bound.includes(destination.id)} onChange={(event) => onChange(event.target.checked
                           ? [...bound, destination.id] : bound.filter((id) => id !== destination.id))} />
                       <div className="min-w-0">
-                        <label htmlFor={control} className="font-medium">{destination.label}</label>
+                        <label htmlFor={control} className="inline-flex items-center gap-2 text-body font-medium">{type && <ProviderMark type={type} className="size-4 shrink-0" />}{destination.label}</label>
                         <div className="flex flex-wrap gap-x-2">
                           {type !== undefined && <Description as="span" id={`${control}-provider`}>{type.label}</Description>}
                           {said !== null && <Description as="span" id={`${control}-target`}>{said}</Description>}
                         </div>
+                        {bound.includes(destination.id) && automatic.length > 0 &&
+                          <Description className="mt-1 [overflow-wrap:anywhere]">{sprintf(__('Sending %s automatically.', 'wconvert'), automaticText)}</Description>}
                         {compatibility.length > 0 && <ul id={`${control}-compatibility`} className="mb-0 mt-2 ps-4 text-note text-warning">
                           {compatibility.map((problem) => <li key={problem}>{problem}</li>)}
                         </ul>}
@@ -177,6 +190,10 @@ export function DestinationsEditor({
                               : sprintf(__('Needs %s on this site, so captures are kept here, not sent. Re-push from Destinations once it runs.', 'wconvert'), type?.requires_label ?? __('something this site does not have', 'wconvert'))}
                           </Description>
                         )}
+                        {bound.includes(destination.id) && template && onMappingChange && type?.supports_mapping &&
+                          <ExtraAnswerMapping providerLabel={type.label} destination={destination} submissionId={template.tree.submissions[0]?.id ?? ''} template={template} value={mappings[destination.id] ?? {}} onChange={(map) => onMappingChange(destination.id, map)} />}
+                        {bound.includes(destination.id) && template && type && !type.supports_mapping && hasExtraAnswers(template, template.tree.submissions[0]?.id ?? '') &&
+                          <UnsupportedAnswerMapping />}
                       </div>
                       {type !== undefined && <Button variant="outline" size="sm" aria-label={sprintf(__('Settings for %s', 'wconvert'), destination.label)}
                         onClick={(event) => {
@@ -209,7 +226,7 @@ export function DestinationsEditor({
         </details></RegionFooter>}
       </Region>
       {setup !== null && <DestinationSetupDialog destination={setup === 'add' ? undefined : setup}
-        types={types} connections={connections} returnFocusTo={returnFocus} onClose={() => setSetup(null)}
+        types={types} connections={connections} onConnectionSaved={onConnectionSaved} returnFocusTo={returnFocus} onClose={() => setSetup(null)}
         onSaved={(destinations) => {
           if (setup === 'add' && available.status === 'ready') setAddedIds(destinations.filter(item => !available.data.some(old => old.id === item.id)).map(item => item.id));
           onSaved(destinations);

@@ -31,9 +31,6 @@ defined('ABSPATH') || exit;
  */
 final class Connection
 {
-    /** What a merchant sees instead of a stored secret. */
-    private const MASK = '••••••••';
-
     /**
      * @param string $type The {@see DestinationType} id these credentials belong to.
      * @param array<string, mixed> $credentials
@@ -43,6 +40,9 @@ final class Connection
         public readonly string $type,
         public readonly string $label,
         public readonly array $credentials = [],
+        public readonly ?string $accountIdentity = null,
+        public readonly ?string $checkedAt = null,
+        public readonly ?string $checkOutcome = null,
     ) {
     }
 
@@ -56,6 +56,9 @@ final class Connection
             (string) ($stored['type'] ?? ''),
             (string) ($stored['label'] ?? ''),
             is_array($stored['credentials'] ?? null) ? $stored['credentials'] : [],
+            is_string($stored['account_identity'] ?? null) ? $stored['account_identity'] : null,
+            is_string($stored['checked_at'] ?? null) ? $stored['checked_at'] : null,
+            is_string($stored['check_outcome'] ?? null) ? $stored['check_outcome'] : null,
         );
     }
 
@@ -64,27 +67,29 @@ final class Connection
      */
     public function toArray(): array
     {
-        return ['type' => $this->type, 'label' => $this->label, 'credentials' => $this->credentials];
+        return ['type' => $this->type, 'label' => $this->label, 'credentials' => $this->credentials, 'account_identity' => $this->accountIdentity,
+            'checked_at' => $this->checkedAt, 'check_outcome' => $this->checkOutcome];
     }
 
     /**
-     * The Connection as REST may return it: every credential replaced by a
-     * mask, and the KEYS kept so the admin can render the fields it has.
+     * The Connection as REST may return it: only configured flags, with keys
+     * kept so the admin can render the fields it has.
      *
      * A field is reported as filled or empty and never as its value. That is
      * the whole of the protection described in the class docblock, and it is
      * here rather than in the controller so a second caller cannot forget it.
      *
-     * @return array{id: string, type: string, label: string, credentials: array<string, string>}
+     * @return array{id: string, type: string, label: string, credentials: array<string, bool>}
      */
     public function masked(): array
     {
-        $masked = [];
+        $configured = [];
 
         foreach ($this->credentials as $field => $value) {
-            $masked[(string) $field] = ($value === null || $value === '') ? '' : self::MASK;
+            $configured[(string) $field] = $value !== null && $value !== '';
         }
 
-        return ['id' => $this->id, 'type' => $this->type, 'label' => $this->label, 'credentials' => $masked];
+        return ['id' => $this->id, 'type' => $this->type, 'label' => $this->label, 'credentials' => $configured,
+            'checked_at' => $this->checkedAt, 'check_outcome' => $this->checkOutcome];
     }
 }

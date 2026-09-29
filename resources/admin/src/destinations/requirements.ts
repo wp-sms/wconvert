@@ -34,7 +34,9 @@ const present = (value: unknown, type: string) => type === 'ids'
 
 export function settingsProblems(requirements: DestinationRequirements | null | undefined, settings: Readonly<Record<string, unknown>>, schema?: Readonly<Record<string, SettingsField>>): string[] {
   const problems: string[] = Object.entries(requirements?.settings ?? {}).filter(([key, field]) => !present(settings[key], field.type))
-    .map(([, field]) => sprintf(__('Complete “%s” before this destination can send.', 'wconvert'), field.label));
+    .map(([, field]) => field.type === 'ids'
+      ? sprintf(__('Choose “%s” before this destination can send.', 'wconvert'), field.label)
+      : sprintf(__('Complete “%s” before this destination can send.', 'wconvert'), field.label));
   for (const field of Object.values(requirements?.mapped_fields ?? {})) {
     const value = settings[field.setting];
     const options = schema?.[field.setting]?.options;

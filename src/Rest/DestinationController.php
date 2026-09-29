@@ -10,6 +10,7 @@ use WConvert\Destination\DestinationStore;
 use WConvert\Destination\DestinationType;
 use WConvert\Destination\DestinationUsage;
 use WConvert\Destination\HealthStore;
+use WConvert\Destination\MappingFields;
 use WConvert\Destination\ConfiguredTarget;
 use WConvert\Destination\PushDispatcher;
 use WConvert\Destination\PushOutcome;
@@ -17,6 +18,7 @@ use WConvert\Destination\TestReport;
 use WConvert\Lead\Identifier;
 use WConvert\Support\DiagnosticSanitizer;
 use WConvert\Support\Ulid;
+use WConvert\Queue\RecentPushHistory;
 use WP_Error;
 use WP_REST_Request;
 use WP_REST_Response;
@@ -65,6 +67,18 @@ final class DestinationController implements RestController
 
     public function registerRoutes(): void
     {
+        register_rest_route(Routes::NAMESPACE, '/connections', [
+            ['methods' => 'POST', 'callback' => [$this, 'saveConnection'], 'permission_callback' => [Routes::class, 'canManage']],
+        ]);
+        register_rest_route(Routes::NAMESPACE, '/connections/' . self::ID_PATTERN, [
+            ['methods' => 'DELETE', 'callback' => [$this, 'deleteConnection'], 'permission_callback' => [Routes::class, 'canManage']],
+        ]);
+        register_rest_route(Routes::NAMESPACE, '/connections/' . self::ID_PATTERN . '/check', [
+            ['methods' => 'POST', 'callback' => [$this, 'checkConnection'], 'permission_callback' => [Routes::class, 'canManage']],
+        ]);
+        register_rest_route(Routes::NAMESPACE, '/destinations/schema', [
+            ['methods' => 'GET', 'callback' => [$this, 'selectedSchema'], 'permission_callback' => [Routes::class, 'canManage']],
+        ]);
         register_rest_route(Routes::NAMESPACE, '/destinations', [
             [
                 'methods' => 'GET',
@@ -99,6 +113,19 @@ final class DestinationController implements RestController
                 'callback' => [$this, 'repush'],
                 'permission_callback' => [Routes::class, 'canManage'],
             ],
+        ]);
+
+        register_rest_route(Routes::NAMESPACE, '/destinations/' . self::ID_PATTERN . '/recent', [
+            ['methods' => 'GET', 'callback' => [$this, 'recent'], 'permission_callback' => [Routes::class, 'canManage']],
+        ]);
+        register_rest_route(Routes::NAMESPACE, '/destinations/' . self::ID_PATTERN . '/mapping-fields', [
+            ['methods' => 'GET', 'callback' => [$this, 'mappingFields'], 'permission_callback' => [Routes::class, 'canManage']],
+        ]);
+        register_rest_route(Routes::NAMESPACE, '/destinations/' . self::ID_PATTERN . '/draft-preview', [
+            ['methods' => 'POST', 'callback' => [$this, 'draftPreview'], 'permission_callback' => [Routes::class, 'canManage']],
+        ]);
+        register_rest_route(Routes::NAMESPACE, '/destinations/' . self::ID_PATTERN . '/draft-test', [
+            ['methods' => 'POST', 'callback' => [$this, 'draftTest'], 'permission_callback' => [Routes::class, 'canManage']],
         ]);
 
         // ====================================================================
@@ -158,6 +185,8 @@ final class DestinationController implements RestController
                     'requires' => $type->requires()?->value,
                     'availability' => $this->registry->availabilityOf($type->id())->value,
                     'needs_connection' => $type->connectionSchema() !== null,
+                    'supports_mapping' => method_exists($type, 'mappingFields'),
+                    'connection_schema' => $type->connectionSchema(),
                     'requirements' => $type->requirements()->toArray(),
                     // What a merchant is missing, in words. The enum's value
                     // is a slug — interpolating `wsms` into "Needs %s on this
@@ -168,7 +197,7 @@ final class DestinationController implements RestController
                     // `Supports*` capability split: list discovery, custom
                     // fields and the configuration UI all fall out of one
                     // method (#4).
-                    'settings_schema' => $this->schemaFor($type, $this->connectionForType($type->id())),
+                    'settings_schema' => $type->connectionSchema() === null ? $this->safeSchema($type, null) : [],
                 ],
                 $this->registry->all()
             )),
@@ -182,6 +211,98 @@ final class DestinationController implements RestController
             // malformed address is not an outage (ADR 0008).
             'failures' => $this->failures->all(),
         ]);
+    }
+
+    /** Metadata is loaded only for the account the merchant selected. */
+    public function selectedSchema(WP_REST_Request $request): WP_REST_Response|WP_Error
+    {
+        $type = $this->registry->find((string) $request->get_param('type'));
+        if ($type === null) return $this->badConnection();
+        $connection = $this->connections->find((string) $request->get_param('connection'));
+        if ($type->connectionSchema() !== null && ($connection === null || $connection->type !== $type->id())) return $this->badConnection();
+        try {
+            return new WP_REST_Response(['settings_schema' => $this->schemaFor($type, $connection, $request->get_param('refresh') === '1')]);
+        } catch (\Throwable $failure) {
+            return new WP_Error('wconvert_metadata_unavailable', __('Could not load the selected account’s lists. Check the account and try again.', 'wconvert'), ['status' => 503]);
+        }
+    }
+
+    /** Candidate credentials are checked before replacing a working key. */
+    public function saveConnection(WP_REST_Request $request): WP_REST_Response|WP_Error
+    {
+        $id = self::optionalString($request->get_param('id'));
+        $existing = $id === null ? null : $this->connections->find($id);
+        if ($id !== null && $existing === null) return $this->badConnection();
+        $typeId = $existing === null ? (string) $request->get_param('type') : $existing->type;
+        $type = $this->registry->find($typeId);
+        if ($type === null || $type->connectionSchema() === null || !$this->registry->isDispatchable($typeId)) return $this->badConnection();
+        if ($existing !== null && array_key_exists('type', $request->get_params()) && $request->get_param('type') !== $typeId) return $this->badConnection();
+        $incoming = $request->get_param('credentials');
+        if (!is_array($incoming)) $incoming = [];
+        $credentials = $existing === null ? [] : $existing->credentials;
+        foreach ($type->connectionSchema() as $key => $field) {
+            if (!array_key_exists($key, $incoming)) continue;
+            $value = $incoming[$key];
+            if (!is_string($value) || trim($value) === '' || str_contains($value, '•')) return $this->badConnection();
+            $credentials[$key] = trim($value);
+        }
+        foreach (array_keys($type->connectionSchema()) as $key) {
+            if (!isset($credentials[$key]) || $credentials[$key] === '') return $this->badConnection();
+        }
+        try {
+            $type->testConnection($credentials);
+            $identity = method_exists($type, 'accountIdentity') ? $type->accountIdentity($credentials) : null;
+            if ($existing !== null && $credentials !== $existing->credentials) {
+                if (!is_string($identity) || $identity === '' || !is_string($existing->accountIdentity) || !hash_equals($existing->accountIdentity, $identity)) {
+                    return new WP_Error('wconvert_account_changed', __('This key belongs to a different or unverified account. Connect it as a new account instead.', 'wconvert'), ['status' => 409]);
+                }
+            }
+        } catch (\Throwable $failure) {
+            return new WP_Error('wconvert_connection_check_failed', __('The account check failed. Your saved credentials have not changed.', 'wconvert'), ['status' => 400]);
+        }
+        $label = self::named($request->get_param('label')) ?? ($existing === null ? $type->label() : $existing->label);
+        $saved = $this->connections->save($id, $typeId, $label, $credentials, is_string($identity) ? $identity : null);
+        return new WP_REST_Response(['connection' => $saved->masked()]);
+    }
+
+    public function checkConnection(WP_REST_Request $request): WP_REST_Response|WP_Error
+    {
+        $connection = $this->connections->find((string) $request->get_param('id'));
+        if ($connection === null) return $this->badConnection();
+        $type = $this->registry->find($connection->type);
+        if ($type === null) return $this->badConnection();
+        try {
+            $type->testConnection($connection->credentials);
+            $this->connections->recordCheck($connection->id, true);
+            return new WP_REST_Response(['outcome' => 'success', 'message' => __('Account and audience access checked.', 'wconvert')]);
+        } catch (\Throwable $failure) {
+            $this->connections->recordCheck($connection->id, false);
+            return new WP_REST_Response(['outcome' => 'failed', 'message' => __('Account check failed. Check the key and provider access.', 'wconvert')]);
+        }
+    }
+
+    public function deleteConnection(WP_REST_Request $request): WP_REST_Response|WP_Error
+    {
+        $id = (string) $request->get_param('id');
+        foreach ($this->destinations->all() as $destination) {
+            if ($destination->connectionId === $id) {
+                return new WP_Error('wconvert_connection_in_use', __('This account is used by a destination. Reassign or remove that destination first.', 'wconvert'), ['status' => 409]);
+            }
+        }
+        if (!$this->connections->delete($id)) return $this->badConnection();
+        return new WP_REST_Response(['deleted' => true]);
+    }
+
+    private function badConnection(): WP_Error
+    {
+        return new WP_Error('wconvert_invalid_connection', __('Choose a valid account for this service.', 'wconvert'), ['status' => 400]);
+    }
+
+    /** A failed provider metadata read must not break all other integrations. */
+    /** @return array<string, mixed> */
+    private function safeSchema(DestinationType $type, ?\WConvert\Destination\Connection $connection): array
+    {
+        try { return $this->schemaFor($type, $connection); } catch (\Throwable $failure) { return []; }
     }
 
     /**
@@ -203,8 +324,20 @@ final class DestinationController implements RestController
         $settings = $request->get_param('settings');
         $connection = $request->get_param('connection');
 
+        $connectionId = self::optionalString($connection);
+        if ($registered->connectionSchema() !== null) {
+            $account = $connectionId === null ? null : $this->connections->find($connectionId);
+            if ($account === null || $account->type !== $type) return $this->badConnection();
+        } elseif ($connectionId !== null) {
+            return $this->badConnection();
+        }
+        $id = self::optionalString($request->get_param('id'));
+        if ($id !== null && ($this->destinations->find($id)?->type !== $type)) {
+            return new WP_Error('wconvert_invalid_destination', __('This destination cannot change its service.', 'wconvert'), ['status' => 400]);
+        }
+
         $this->destinations->save(
-            self::optionalString($request->get_param('id')),
+            $id,
             $type,
             // **A route is named by the merchant, and a nameless one still
             // has to be findable.** Two MailPoet Destinations differ only in
@@ -252,6 +385,79 @@ final class DestinationController implements RestController
     public function repush(WP_REST_Request $request): WP_REST_Response
     {
         return new WP_REST_Response($this->rePush->run((string) $request->get_param('id'))->toArray());
+    }
+
+    public function recent(WP_REST_Request $request): WP_REST_Response|WP_Error
+    {
+        $id = (string) $request->get_param('id');
+        if ($this->destinations->find($id) === null) return $this->gone();
+        return new WP_REST_Response(['attempts' => RecentPushHistory::recent($id)]);
+    }
+
+    public function mappingFields(WP_REST_Request $request): WP_REST_Response|WP_Error
+    {
+        $destination = $this->destinations->find((string) $request->get_param('id'));
+        if ($destination === null) return $this->gone();
+        $type = $this->registry->find($destination->type);
+        if ($type === null || !method_exists($type, 'mappingFields')) return new WP_REST_Response(['fields' => []]);
+        try {
+            return new WP_REST_Response(['fields' => $this->fieldsFor($destination, $type, $request->get_param('refresh') === '1')]);
+        } catch (\Throwable $failure) {
+            return new WP_Error('wconvert_mapping_fields_unavailable', __('Could not load this destination’s fields. Check its account and target.', 'wconvert'), ['status' => 503]);
+        }
+    }
+
+    /** Preview is a server-validated projection and creates no Contact. */
+    public function draftPreview(WP_REST_Request $request): WP_REST_Response|WP_Error
+    {
+        $mapped = $this->draftMapped($request);
+        if ($mapped instanceof WP_Error) return $mapped;
+        return new WP_REST_Response(['email' => Identifier::email((string) $request->get_param('email')), 'mapped' => $mapped]);
+    }
+
+    /** Explicit sample send through the same adapter, with no Lead or queue job. */
+    public function draftTest(WP_REST_Request $request): WP_REST_Response|WP_Error
+    {
+        $mapped = $this->draftMapped($request);
+        if ($mapped instanceof WP_Error) return $mapped;
+        $destination = $this->destinations->find((string) $request->get_param('id'));
+        if ($destination === null) return $this->gone();
+        $email = Identifier::email((string) $request->get_param('email'));
+        if ($email === null) return new WP_Error('wconvert_invalid_sample', __('Enter a valid test email address.', 'wconvert'), ['status' => 400]);
+        $result = $this->dispatcher->test($destination->id, ['email' => $email], $mapped);
+        return $this->reported(TestReport::of($result, $destination->label,
+            $result->outcome === PushOutcome::Success ? ($this->targetOf($destination) ?? '') : ''),
+            ['email' => $email, ...$mapped], $this->connections->credentialsFor($destination));
+    }
+
+    /** @return array<string, string>|WP_Error */
+    private function draftMapped(WP_REST_Request $request): array|WP_Error
+    {
+        $destination = $this->destinations->find((string) $request->get_param('id'));
+        if ($destination === null) return $this->gone();
+        $email = Identifier::email((string) $request->get_param('email'));
+        if ($email === null) return new WP_Error('wconvert_invalid_sample', __('Enter a valid test email address.', 'wconvert'), ['status' => 400]);
+        $mapping = $request->get_param('mapping');
+        $sample = $request->get_param('sample');
+        if (!is_array($mapping) || !is_array($sample) || count($mapping) > 32) return new WP_Error('wconvert_invalid_sample', __('Check the draft mapping and sample values.', 'wconvert'), ['status' => 400]);
+        $type = $this->registry->find($destination->type);
+        if ($type === null || !method_exists($type, 'mappingFields')) return new WP_Error('wconvert_invalid_sample', __('This destination has no extra fields.', 'wconvert'), ['status' => 400]);
+        try {
+            $fields = $this->fieldsFor($destination, $type);
+        } catch (\Throwable $failure) {
+            return new WP_Error('wconvert_mapping_fields_unavailable', __('Could not check this destination’s fields.', 'wconvert'), ['status' => 503]);
+        }
+        $allowed = array_column($fields, 'value');
+        $mapped = [];
+        foreach ($mapping as $source => $target) {
+            if (!is_string($source) || !is_string($target) || !in_array($target, $allowed, true) || isset($mapped[$target])) {
+                return new WP_Error('wconvert_invalid_mapping', __('Choose one available destination field for each answer.', 'wconvert'), ['status' => 400]);
+            }
+            $value = $sample[$source] ?? null;
+            if (!is_string($value) || mb_strlen($value) > 500) return new WP_Error('wconvert_invalid_sample', __('Enter a short sample for every mapped answer.', 'wconvert'), ['status' => 400]);
+            if (trim($value) !== '') $mapped[$target] = trim($value);
+        }
+        return $mapped;
     }
 
     /**
@@ -398,13 +604,7 @@ final class DestinationController implements RestController
         }
 
         try {
-            // **This Destination's own Connection**, never the type's first.
-            // `connectionForType()` answers a question about the TYPE — which
-            // is right for the schema on the Destinations read, where there is
-            // no Destination yet — and wrong here: two Mailchimp audiences are
-            // two Destinations over one Connection, but two ACCOUNTS are two
-            // Connections, and the first one's id→label map names the wrong
-            // audience.
+            // Resolve options using this Destination's own Connection.
             $schema = $this->schemaFor(
                 $type,
                 $destination->connectionId === null
@@ -442,36 +642,14 @@ final class DestinationController implements RestController
     }
 
     /**
-     * The Connection a type's settings schema may need to read its options off
-     * the wire.
-     *
-     * The FIRST one for the type, because a schema describes the type rather
-     * than one configured Destination — and a type with no Connection at all
-     * gets null, which is every free type.
-     */
-    private function connectionForType(string $typeId): ?\WConvert\Destination\Connection
-    {
-        foreach ($this->connections->all() as $connection) {
-            if ($connection->type === $typeId) {
-                return $connection;
-            }
-        }
-
-        return null;
-    }
-
-    /**
      * One type's settings schema, **read once per request per account.**
      *
      * ========================================================================
      * THE MEMO IS THE POINT, NOT AN OPTIMISATION.
      * ========================================================================
-     * `settingsSchema()` may reach the provider — that is how a Mailchimp
-     * audience gets a NAME rather than an id — and this payload now asks for
-     * it once per type and again once per configured Destination. A merchant
-     * with five Mailchimp routes over one key would pay six round trips to
-     * that provider on every load of the Destinations screen and every load of
-     * the builder, for six identical answers.
+     * `settingsSchema()` may reach the provider. Remote schemas are loaded on
+     * demand for the selected Connection; configured target labels reuse the
+     * same request-local read for routes sharing that account.
      *
      * **Keyed by the Connection**, because the Connection is what changes the
      * answer: two Destinations over one key read one schema, and two ACCOUNTS
@@ -479,21 +657,22 @@ final class DestinationController implements RestController
      * no Connection is keyed by the type instead, under a prefix no ULID can
      * collide with.
      *
-     * A read that THREW is remembered as the throw and re-thrown, so a
-     * provider that is down is asked once rather than once per Destination.
-     * Re-thrown rather than swallowed because the two callers want opposite
-     * things from a failure: {@see self::targetOf()} says nothing, and the
-     * types list has always let it surface.
+     * A failed read is remembered too. Callers turn it into a local error or
+     * an absent target label without failing the entire destinations page.
      *
      * @return array<string, mixed>
      */
-    private function schemaFor(DestinationType $type, ?\WConvert\Destination\Connection $connection): array
+    private function schemaFor(DestinationType $type, ?\WConvert\Destination\Connection $connection, bool $refresh = false): array
     {
         $key = $connection === null ? 'type:' . $type->id() : $connection->id;
 
-        if (!array_key_exists($key, $this->schemas)) {
+        if ($refresh || !array_key_exists($key, $this->schemas)) {
             try {
-                $this->schemas[$key] = $type->settingsSchema($connection === null ? [] : $connection->credentials);
+                $cacheKey = $connection === null ? null : $this->metadataKey('schema', $type, $connection);
+                $cached = !$refresh && $cacheKey !== null && function_exists('get_transient') ? get_transient($cacheKey) : false;
+                $schema = is_array($cached) ? $cached : $type->settingsSchema($connection === null ? [] : $connection->credentials);
+                if ($cacheKey !== null && !is_array($cached) && function_exists('set_transient')) set_transient($cacheKey, $schema, 300);
+                $this->schemas[$key] = $schema;
             } catch (\Throwable $unreachable) {
                 $this->schemas[$key] = $unreachable;
             }
@@ -506,6 +685,20 @@ final class DestinationController implements RestController
         }
 
         return $schema;
+    }
+
+    /** @return list<array{value: string, label: string}> */
+    private function fieldsFor(\WConvert\Destination\Destination $destination, DestinationType $type, bool $refresh = false): array
+    {
+        return MappingFields::for($type, $destination, $this->connections->credentialsFor($destination), $refresh);
+    }
+
+    /** Opaque cache key changes when credentials or the selected target change. */
+    /** @param array<string, mixed> $settings */
+    private function metadataKey(string $kind, DestinationType $type, \WConvert\Destination\Connection $connection, array $settings = []): string
+    {
+        return 'wconvert_meta_' . substr(hash('sha256', (string) wp_json_encode([$kind, $type->id(), $connection->id,
+            $connection->credentials, $settings])), 0, 40);
     }
 
     /**

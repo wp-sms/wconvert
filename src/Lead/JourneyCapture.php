@@ -15,7 +15,8 @@ final class JourneyCapture
 {
     public const ACCEPTED = 'wconvert_submission_accepted';
 
-    public function __construct(private readonly Connection $db, private readonly StatsRepository $stats) {}
+    public function __construct(private readonly Connection $db, private readonly StatsRepository $stats,
+        private readonly ?\WConvert\Destination\DestinationStore $destinations = null) {}
 
     /** @param array{receipt: string, expires: int} $grant
      * @param array<string, mixed> $tree
@@ -66,11 +67,18 @@ final class JourneyCapture
                 }
             }
             $now = gmdate('Y-m-d\TH:i:s\Z');
+            $routes = [];
+            foreach ($setting['destination_ids'] as $destinationId) {
+                $destination = $this->destinations?->find($destinationId);
+                if ($destination !== null) $routes[$destinationId] = \WConvert\Destination\RouteIdentity::of($destination);
+            }
             $data['capture']['submissions'][$submissionId] = [
                 'accepted_at' => $now, 'request_hash' => $hash, 'consent_ids' => $tree['submissions'][array_search($submissionId, array_column($tree['submissions'], 'id'), true)]['consents'], 'purpose' => $setting['purpose'],
                 'values' => $values, 'question_answers' => $submitted->questionAnswers,
                 'question_ids' => QuestionCapture::coveredIds($tree, $submitted->questionAnswers, $submissionId),
                 'submission_id' => $submissionId, 'destination_ids' => $setting['destination_ids'],
+                'field_mappings' => is_array($setting['field_mappings'] ?? null) ? $setting['field_mappings'] : [],
+                'route_identities' => $routes,
                 'handoff' => $setting['destination_ids'] === [] ? 'complete' : 'pending',
             ];
             $data['answers'] += $submitted->fields;
