@@ -4,7 +4,7 @@ import { Button } from '../components/ui/button';
 import { __ } from '@wordpress/i18n';
 import type { Connection, Destination, DestinationType } from '../destinations/api';
 import type { Template } from '@renderer/types';
-import { ExtraAnswerMapping } from './ExtraAnswerMapping';
+import { ExtraAnswerMapping, hasExtraAnswers } from './ExtraAnswerMapping';
 
 export function SubmissionSettings({ template, primaryChannel, config, destinations, onChange, types = [], connections = [], onSaved, onConnectionSaved }: {
   types?: readonly DestinationType[]; connections?: readonly Connection[]; onSaved?(destinations: readonly Destination[]): void; onConnectionSaved?(connection: Connection): void;
@@ -35,6 +35,8 @@ export function SubmissionSettings({ template, primaryChannel, config, destinati
       }} /> {d.label}</label>
         {bound.includes(d.id) && template && types.find((type) => type.id === d.type)?.supports_mapping &&
           <ExtraAnswerMapping destination={d} submissionId={secondary.id} template={template} value={mappings[secondary.id]?.[d.id] ?? {}} onChange={(map) => onChange({ integration_mappings: { ...mappings, [secondary.id]: { ...mappings[secondary.id], [d.id]: map } } })} />}
+        {bound.includes(d.id) && template && types.some((type) => type.id === d.type && !type.supports_mapping) && hasExtraAnswers(template, secondary.id) &&
+          <p className="m-0 text-note text-muted-foreground">{__('This destination cannot send extra answers. They remain saved in WConvert.', 'wconvert')}</p>}
       </div>)}
     </>}
     {setup && onSaved && <DestinationSetupDialog types={types.filter(type => type.requirements?.audience_channels?.includes(channel))} connections={connections} onConnectionSaved={onConnectionSaved} returnFocusTo={trigger} onClose={() => setSetup(false)} onSaved={onSaved} />}

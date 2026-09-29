@@ -36,6 +36,10 @@ function sources(template: Template, submissionId: string): { id: string; label:
   return found.filter((item, index) => found.findIndex((other) => other.id === item.id) === index);
 }
 
+/** Whether this signup has an optional answer that could be mapped by a capable destination. */
+export const hasExtraAnswers = (template: Template, submissionId: string): boolean =>
+  sources(template, submissionId).length > 0;
+
 export function ExtraAnswerMapping({ destination, submissionId, template, value, onChange }: {
   destination: Destination;
   submissionId: string;
@@ -90,7 +94,7 @@ export function ExtraAnswerMapping({ destination, submissionId, template, value,
       <div><Button type="button" variant="outline" onClick={() => setRefreshFields((old) => old + 1)}>{__('Refresh fields', 'wconvert')}</Button></div>
       {error && <p role="alert" className="text-warning">{error}</p>}
       {fields === null && !error && <p role="status">{__('Loading fields…', 'wconvert')}</p>}
-      {fields?.length === 0 && <p>{__('No compatible text fields are available in this destination.', 'wconvert')}</p>}
+      {fields?.length === 0 && <p>{__('No compatible text fields were found. Add a text field in this service, then refresh fields.', 'wconvert')}</p>}
       {fields && fields.length > 0 && eligible.map((source, index) => <div key={source.id} className="flex min-w-0 flex-col gap-1.5"><Label htmlFor={`${id}-target-${index}`}>{source.label}</Label>
         <select id={`${id}-target-${index}`} className="h-(--control-height) w-full min-w-0 rounded-md border border-input bg-transparent ps-3 pe-9 text-body text-foreground" value={value[source.id] ?? ''} onChange={(event) => {
           const next = { ...value };

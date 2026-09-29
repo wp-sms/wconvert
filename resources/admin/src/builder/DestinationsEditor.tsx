@@ -21,7 +21,7 @@ import type { Loadable } from '../shell/loadable';
 import type { Connection, Destination, DestinationType } from '../destinations/api';
 import { capturedFields, compatibilityProblems } from '../destinations/requirements';
 import type { Template } from '@renderer/types';
-import { ExtraAnswerMapping } from './ExtraAnswerMapping';
+import { ExtraAnswerMapping, hasExtraAnswers } from './ExtraAnswerMapping';
 
 /**
  * Which [[Destination]]s this [[Optin]] pushes to.
@@ -193,6 +193,8 @@ export function DestinationsEditor({
                         )}
                         {bound.includes(destination.id) && template && onMappingChange && type?.supports_mapping &&
                           <ExtraAnswerMapping destination={destination} submissionId={template.tree.submissions[0]?.id ?? ''} template={template} value={mappings[destination.id] ?? {}} onChange={(map) => onMappingChange(destination.id, map)} />}
+                        {bound.includes(destination.id) && template && type && !type.supports_mapping && hasExtraAnswers(template, template.tree.submissions[0]?.id ?? '') &&
+                          <Description className="mt-2">{__('This destination cannot send extra answers. They remain saved in WConvert.', 'wconvert')}</Description>}
                       </div>
                       {type !== undefined && <Button variant="outline" size="sm" aria-label={sprintf(__('Settings for %s', 'wconvert'), destination.label)}
                         onClick={(event) => {

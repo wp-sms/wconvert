@@ -7,6 +7,7 @@ import { DestinationsEditor } from '../../resources/admin/src/builder/Destinatio
 import { LOADING, failed, ready } from '../../resources/admin/src/shell/loadable';
 import type { Loadable } from '../../resources/admin/src/shell/loadable';
 import type { Destination, DestinationType } from '../../resources/admin/src/destinations/api';
+import type { Template } from '../../resources/renderer/src/types';
 
 const api = vi.hoisted(() => ({ saveDestination: vi.fn() }));
 vi.mock('../../resources/admin/src/destinations/api', () => api);
@@ -97,6 +98,17 @@ const rowFor = (name: string): HTMLElement => {
 };
 
 describe('binding an optin to a destination', () => {
+  it('explains where extra answers go when a selected destination cannot map them', () => {
+    const template = { tree: {
+      steps: [{ content: { type: 'question', id: 'service-question', label: 'What service do you need?' } }],
+      submissions: [{ id: 'signup', fields: ['service-question'] }],
+    } } as unknown as Template;
+    const route = destination({ id: 'local', label: 'Local delivery' });
+    editor(ready([route]), ['local'], [type({ id: 'mailpoet', label: 'Local delivery' })], { template });
+    expect(screen.getByText('This destination cannot send extra answers. They remain saved in WConvert.')).toBeVisible();
+    expect(screen.queryByText('Send extra answers')).not.toBeInTheDocument();
+  });
+
   it('makes a required unfinished handoff explicit without selecting a destination', () => {
     const onChange = vi.fn();
     editor(ready([]), [], [], { outcome: CAPTURE_OUTCOME, onChange });

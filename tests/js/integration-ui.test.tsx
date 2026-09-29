@@ -24,6 +24,15 @@ const template = { tree: {
 } } as unknown as Template;
 
 describe('integration setup controls', () => {
+  it('explains how to add a provider field when none can be mapped', async () => {
+    api.readMappingFields.mockResolvedValue({ fields: [] });
+    const user = userEvent.setup();
+    render(<ExtraAnswerMapping destination={destination} submissionId="signup-1" template={template}
+      value={{}} onChange={vi.fn()} />);
+    await user.click(screen.getByText('Send extra answers'));
+    expect(await screen.findByText('No compatible text fields were found. Add a text field in this service, then refresh fields.')).toBeVisible();
+  });
+
   it('reviews the selected target, fields and update effect before an explicit sample send', async () => {
     api.readMappingFields.mockResolvedValue({ fields: [{ value: 'SERVICE', label: 'Service interest' }] });
     api.previewMapping.mockResolvedValue({ email: 'owner@example.com', mapped: { SERVICE: 'Repairs' } });
