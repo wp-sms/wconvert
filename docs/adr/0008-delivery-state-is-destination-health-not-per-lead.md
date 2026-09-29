@@ -151,7 +151,7 @@ refuse.*
   `QueueInterface::schedule()` accordingly. Immediate dispatch stays immediate.
   The public capture endpoint's separate abuse limiter protects local form
   intake and does not meter Destination delivery.
-  *Amended by [ADR 0110](0110-spam-protection-precedes-capture.md): queued
+  *Amended by [ADR 0111](0111-spam-protection-precedes-capture.md): queued
   resource emails now have a ten-minute guard per recipient/resource using
   short-lived HMAC option keys and a transaction. This includes bulk re-push,
   which skips a recent successful send. Other Destination types and explicit

@@ -87,14 +87,15 @@ const ROOT = process.argv[2] ? resolve(process.argv[2]) : REPO_ROOT;
  * limit is about what every visitor of every matching page downloads, and that
  * bundle is enqueued only for an administrator who asked for it.
  */
-const FREE_BYTE_BUDGET = 14336;
+// ADR 0111: 256 B per rung for pre-capture verification after ADR 0110 events.
+const FREE_BYTE_BUDGET = 14592;
 // ADR 0103: shared journeys plus paid recovery/content access.
 // ADR 0104: user-approved 1 KiB increase for grouped display policies.
 // ADR 0108: 256 B for product recovery, then 256 B for path-scoped answer review.
-const PAID_BYTE_BUDGET = 24832;
+const PAID_BYTE_BUDGET = 25088;
 // ADR 0105: the complete shared phone-field seam has measured per-rung caps.
-const PRO_BYTE_BUDGET = 26368;
-const ELITE_BYTE_BUDGET = 26624;
+const PRO_BYTE_BUDGET = 26624;
+const ELITE_BYTE_BUDGET = 26880;
 
 const MANIFEST = 'resources/rules/manifest.json';
 

@@ -1,7 +1,10 @@
 import { captureEndpoint } from './payload';
-import type { Challenge } from './protection';
+import { verify, type Challenge } from './protection';
+
 export interface Reply { id?: string; grant?: string; challenge?: Challenge; message?: string; data?: { field?: string }; }
-export async function request(body: Record<string, unknown>): Promise<Reply> {
+
+/** The same bounded capture request is used by Free and paid journeys. */
+export async function requestCapture(body: Record<string, unknown>): Promise<Reply> {
   const endpoint = captureEndpoint();
   if (!endpoint) throw {};
   const controller = new AbortController();
@@ -11,6 +14,8 @@ export async function request(body: Record<string, unknown>): Promise<Reply> {
     const reply: unknown = await response.json();
     if (!reply || typeof reply !== 'object' || Array.isArray(reply)) throw {};
     if (!response.ok) throw reply;
-    return reply as Reply;
+    const result = reply as Reply;
+    if (result.challenge && !body.verification_token) return requestCapture({ ...body, verification_token: await verify(result.challenge) });
+    return result;
   } finally { clearTimeout(timeout); }
 }

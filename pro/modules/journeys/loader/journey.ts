@@ -1,5 +1,5 @@
-import { request, type Reply } from '@loader/journey-request';
-import { protectionField, verify } from '@loader/protection';
+import { requestCapture, type Reply } from '@loader/capture-request';
+import { protectionField } from '@loader/protection';
 import { journeyLabel } from '@loader/journey-labels';
 import { answerReview } from '@renderer/answer-review';
 import { journeyNotice } from '@renderer/journey-notice';
@@ -18,7 +18,7 @@ import { showProducts } from '@loader/products';
 
 type Input = HTMLInputElement | HTMLSelectElement;
 type PhoneControl = HTMLInputElement & { __p?: (value: string) => void; __r?: () => void };
-interface Options { onCaptured(): void; onCompleted?(): void; onDismiss?(): void; onRefused?(kind: 'correctable' | 'unconfirmed'): void; }
+interface Options { onLeadAccepted?(): void; onCaptured(): void; onCompleted?(): void; onDismiss?(): void; onRefused?(kind: 'correctable' | 'unconfirmed'): void; }
 
 
 /** One mounted page owns unsaved answers and the expiring request capability. */
@@ -229,18 +229,18 @@ export function bindJourney(mounted: Mounted, entry: PayloadEntry, options: Opti
         try {
           const base = { optin_id: entry.id, contract: entry.capture_contract, website: website() };
           if (!grant) {
-            let start = await request({ ...base, phase: 'start' });
-            if (start.challenge) start = await request({ ...base, phase: 'start', verification_token: await verify(start.challenge) });
+            const start = await requestCapture({ ...base, phase: 'start' });
             if (typeof start.grant !== 'string' || start.grant.trim() === '') throw {};
             grant = start.grant;
           }
-          const result = await request({ ...base, grant, submission: submission.id, fields, question_answers: snapshot.answers,
+          const result = await requestCapture({ ...base, grant, submission: submission.id, fields, question_answers: snapshot.answers,
             consent: submission.consents.length > 0 ? submission.consents.every(id => answers.get(id) === true) : undefined });
           if (typeof result.id !== 'string' || result.id.trim() === '') throw {};
           accepted.add(submission.id);
           [...submission.fields, ...submission.consents].forEach(id => fixed.add(id));
           snapshot.questionIds.forEach(id => lockedQuestions.add(id));
           release(); busy = false;
+          if (accepted.size === 1) options.onLeadAccepted?.();
           report('screen_advanced'); const target = next(step, 1); if (target !== step) { visited.push(target); show(target); }
           if (accepted.size === 1 && resultAt < 0) options.onCaptured();
         } catch (error) {

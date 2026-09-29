@@ -23,7 +23,7 @@ credentials or provider settings. A configured destination whose implementation
 is currently unavailable remains visible with unknown fields; missing code does
 not make a configured data flow disappear.
 
-**Extended by [ADR 0110](0110-spam-protection-precedes-capture.md):** the map
+**Extended by [ADR 0111](0111-spam-protection-precedes-capture.md):** the map
 also names the configured bot-verification provider and the resource-email
 guard's ten-minute active window. Browser/network information goes to the
 verification provider; WConvert forwards only its verification token and

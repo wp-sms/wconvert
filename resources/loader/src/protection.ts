@@ -7,20 +7,14 @@ export function protectionField(root: HTMLElement): () => string {
 }
 
 export interface Challenge { url: string; asset: string; title: string; cancel: string; }
-type ProtectionWindow = Window & { WConvertProtection?: { verify(challenge: Challenge): Promise<string> } };
-let loading: Promise<void> | undefined;
+/** Native module loading deduplicates parallel requests; failures can be retried. */
 export async function verify(challenge: Challenge): Promise<string> {
-  const host = window as ProtectionWindow;
-  if (!host.WConvertProtection) {
-    loading ??= new Promise<void>((resolve, reject) => {
-      const script = document.createElement('script');
-      script.src = challenge.asset;
-      const timer = setTimeout(() => { script.remove(); reject({}); }, 15000);
-      script.onload = () => { clearTimeout(timer); resolve(); };
-      script.onerror = () => { clearTimeout(timer); script.remove(); reject({}); };
-      document.head.append(script);
-    }).catch(error => { loading = undefined; throw error; });
-    await loading;
-  }
-  return host.WConvertProtection!.verify(challenge);
+  let timer: ReturnType<typeof setTimeout>;
+  try {
+    const module = await Promise.race([
+      import(/* @vite-ignore */ challenge.asset) as Promise<{ verify(challenge: Challenge): Promise<string> }>,
+      new Promise<never>((_, reject) => { timer = setTimeout(() => reject({}), 15000); }),
+    ]);
+    return module.verify(challenge);
+  } finally { clearTimeout(timer!); }
 }

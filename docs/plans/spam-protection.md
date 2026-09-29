@@ -21,7 +21,7 @@ spam. WConvert still does not own double opt-in or contact lifecycle state.
 | Ten-minute repeated resource-email guard | Included on every paid rung |
 | Bounded, approximate diagnostics and privacy disclosures | No tier check on the visitor frontend |
 
-The implementation decision is [ADR 0110](../adr/0110-spam-protection-precedes-capture.md).
+The implementation decision is [ADR 0111](../adr/0111-spam-protection-precedes-capture.md).
 
 ## Deferred phases
 

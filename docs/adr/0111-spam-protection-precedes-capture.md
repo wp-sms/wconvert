@@ -46,8 +46,8 @@ origin, then sends the token to the existing capture endpoint.
 
 Only one configured provider loads, inside that document. It cannot collide
 with another WordPress plugin's CAPTCHA globals. The small host/verification
-bundle is loaded on demand, so ordinary pages retain the existing loader size
-ceilings. Closing verification preserves the original form. The document has
+bundle is loaded on demand, with bounded baseline loader costs
+documented below. Closing verification preserves the original form. The document has
 no-store headers and same-origin framing restrictions; secrets never enter it.
 
 ## Free and Pro
@@ -98,3 +98,19 @@ it is not a substitute for host/edge volumetric protection.
 
 External bot verification is a protection integration, not a Destination. The
 Free/Pro outbound Destination boundary remains unchanged (CONTEXT.md).
+
+
+## Measured loader-budget amendment
+
+After merging ADR 0110's campaign events, native module loading and the shared
+capture-request helper produce 14,423 / 24,926 / 26,502 / 26,753 bytes gzip-9
+for Free / Basic / Pro / Elite. The combined features exceed their previous
+ceilings by 87 / 94 / 134 / 129 bytes. Reserve 256 bytes per rung for this
+pre-capture boundary: new hard limits are 14,592 / 25,088 / 26,624 / 26,880.
+This is a bounded 0.96–1.79% ceiling increase, with no opt-out. Provider scripts
+and the isolated verification UI still load only when needed; their larger
+cost is not included in these baseline loader figures. Phone, payload and
+per-design limits are unchanged. Native module loading replaces a separate
+script-element cache/retry mechanism, and both journeys share one challenge
+handshake in `capture-request.ts`. A failed verification never fires the
+campaign capture event.

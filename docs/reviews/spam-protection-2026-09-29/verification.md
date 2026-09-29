@@ -24,6 +24,8 @@ Playwright Chromium exercised the built assets at 1360×1000 and 390×844:
 - A published popup requested verification, then accepted the visitor's capture.
 - Mobile cancellation preserved the entered email, and retry completed capture.
 - Both browser runs reported zero JavaScript page errors.
+- After merging campaign events, the protected flow emitted exactly one public
+  capture event after verification and server acceptance on desktop and mobile.
 
 The browser widget and Siteverify responses were simulated. These checks do
 not establish live provider availability, production keys, real challenge
@@ -35,13 +37,14 @@ requires the merchant's saved-setup test on the registered hostname.
 
 ## Automated and packaging checks
 
-- PHP: 2,345 tests and 13,995 assertions passed, including protection and
+- PHP: 2,345 tests and 14,002 assertions passed, including protection and
   uninstall regressions.
-- JavaScript: all 3,415 tests passed. Three unrelated editor tests initially hit the default
+- JavaScript: all 3,434 tests passed. Three unrelated editor tests initially hit the default
   five-second timeout under concurrent tool load, then all 165 tests in those
   files passed serially. The full suite was rerun with two workers.
 - TypeScript, ESLint, PHPStan, source contract and whitespace checks.
-- Full Vite build and unchanged loader/phone byte ceilings for all four tiers.
+- Full Vite build and loader/phone checks for all four tiers (the measured 256-byte loader
+  amendment after merging campaign events is documented in ADR 0111).
 - Free plus Basic, Pro and Elite release ZIPs built; all artifact contracts passed.
 
 ## Provider contracts used

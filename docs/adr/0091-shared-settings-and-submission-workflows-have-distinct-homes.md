@@ -13,7 +13,7 @@ addressable categories: Visitor experience, Connections & destinations, Data &
 privacy. No additional overview or banner. The category rail moves above forms
 on narrow screens.
 
-*Extended by [ADR 0110](0110-spam-protection-precedes-capture.md): Spam
+*Extended by [ADR 0111](0111-spam-protection-precedes-capture.md): Spam
 protection is a fourth addressable category. It owns optional verification
 credentials, the saved-setup test, Pro email rules and approximate diagnostic
 totals. Data & privacy describes the resulting external data flow.*

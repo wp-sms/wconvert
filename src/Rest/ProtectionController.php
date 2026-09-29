@@ -72,7 +72,7 @@ final class ProtectionController implements RestController
             . esc_html(__('Verify your submission', 'wconvert')) . '</title><style>body{margin:0;padding:16px;font:16px/1.5 system-ui;color:#17202a;background:white}#widget{margin:16px 0}a{color:#164da0}</style></head><body><p id="status" role="status">'
             . esc_html($config['waiting']) . '</p><div id="widget"></div><script type="application/json" id="wconvert-verification-config">'
             . wp_json_encode($config, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT)
-            . '</script><script src="' . esc_url(WCONVERT_URL . 'public/protection/protection.js') . '"></script></body></html>';
+            . '</script><script type="module" src="' . esc_url(WCONVERT_URL . 'public/protection/protection.js') . '"></script></body></html>';
         return new WP_REST_Response($html, 200, [
             'Content-Type' => 'text/html; charset=UTF-8', 'Cache-Control' => 'no-store, private',
             'X-Content-Type-Options' => 'nosniff', 'X-Frame-Options' => 'SAMEORIGIN',

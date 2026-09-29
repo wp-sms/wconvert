@@ -1,5 +1,5 @@
-import { request, type Reply } from './journey-request';
-import { protectionField, verify } from './protection';
+import { requestCapture, type Reply } from './capture-request';
+import { protectionField } from './protection';
 import { journeyLabel } from './journey-labels';
 import { journeyNotice } from '@renderer/journey-notice';
 import type { Mounted } from '@renderer/mount';
@@ -11,7 +11,7 @@ import { clear, pending, refuse } from './capture';
 
 type Input = HTMLInputElement | HTMLSelectElement;
 type PhoneControl = HTMLInputElement & { __p?: (value: string) => void; __r?: () => void };
-interface Options { onCaptured(): void; onDismiss?(): void; onRefused?(kind: 'correctable' | 'unconfirmed'): void; }
+interface Options { onLeadAccepted?(): void; onCaptured(): void; onDismiss?(): void; onRefused?(kind: 'correctable' | 'unconfirmed'): void; }
 
 /** One mounted page owns unsaved answers and the expiring request capability. */
 export function bindJourney(mounted: Mounted, entry: PayloadEntry, options: Options): void {
@@ -136,17 +136,17 @@ export function bindJourney(mounted: Mounted, entry: PayloadEntry, options: Opti
         try {
           const base = { optin_id: entry.id, contract: entry.capture_contract, website: website() };
           if (!grant) {
-            let start = await request({ ...base, phase: 'start' });
-            if (start.challenge) start = await request({ ...base, phase: 'start', verification_token: await verify(start.challenge) });
+            const start = await requestCapture({ ...base, phase: 'start' });
             if (typeof start.grant !== 'string' || start.grant.trim() === '') throw {};
             grant = start.grant;
           }
-          const result = await request({ ...base, grant, submission: submission.id, fields,
+          const result = await requestCapture({ ...base, grant, submission: submission.id, fields,
             consent: submission.consents.length > 0 ? submission.consents.every(id => answers.get(id) === true) : undefined });
           if (typeof result.id !== 'string' || result.id.trim() === '') throw {};
           accepted.add(submission.id);
           [...submission.fields, ...submission.consents].forEach(id => fixed.add(id));
           release(); busy = false;
+          if (accepted.size === 1) options.onLeadAccepted?.();
           report('screen_advanced'); show(step + 1);
           if (accepted.size === 1) options.onCaptured();
         } catch (error) {
