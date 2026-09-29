@@ -1,6 +1,6 @@
 import { useEffect, useId, useState } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, ChevronRight, Info } from 'lucide-react';
 import { Badge } from '../components/ui/badge';
 import { MappingTest } from './MappingTest';
 import { Button } from '../components/ui/button';
@@ -77,10 +77,11 @@ export function ExtraAnswerMapping({ destination, providerLabel, submissionId, t
     return () => { active = false; };
   }, [open, destination.id, context, eligible.length, refresh]);
   if (eligible.length === 0 && orphaned.length === 0) return null;
-  return <details className="mt-3 min-w-0 rounded-md border border-border bg-card" onToggle={(event) => setOpen(event.currentTarget.open)}>
-    <summary className="cursor-pointer rounded-md px-3 py-2 font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring">
-      {__('Field mapping', 'wconvert')}
-      <Badge variant={hasIssues ? "warning" : "secondary"} className="ms-2">{hasIssues ? __('Needs review', 'wconvert') : sprintf(__('%1$d of %2$d mapped', 'wconvert'), selected.length, eligible.length)}</Badge>
+  return <details className="group/mapping mt-3 min-w-0 rounded-md border border-border bg-card" onToggle={(event) => setOpen(event.currentTarget.open)}>
+    <summary className="flex min-h-(--control-height-sm) cursor-pointer list-none items-center gap-2 rounded-md px-3 py-2 text-note font-medium hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring [&::-webkit-details-marker]:hidden">
+      <ChevronRight aria-hidden="true" className="size-3.5 shrink-0 text-muted-foreground rtl:rotate-180 group-open/mapping:rotate-90" />
+      <span className="min-w-0 flex-1">{__('Field mapping', 'wconvert')}</span>
+      <Badge variant={hasIssues ? "warning" : "outline"} className="text-micro font-normal">{hasIssues ? __('Needs review', 'wconvert') : sprintf(__('%1$d of %2$d mapped', 'wconvert'), selected.length, eligible.length)}</Badge>
     </summary>
     {open && <div className="flex min-w-0 flex-col gap-4 border-t border-border p-3">
       <Description>{__('Send extra answers to existing text fields. Unmapped answers stay in WConvert only. Changes take effect when you publish.', 'wconvert')}</Description>
@@ -129,4 +130,15 @@ export function ExtraAnswerMapping({ destination, providerLabel, submissionId, t
         <MappingTest key={JSON.stringify([context, fields, selected, value])} destination={destination} fields={fields} sources={selected} mapping={Object.fromEntries(selected.map((source) => [source.id, value[source.id]]))} />}
     </div>}
   </details>;
+}
+
+/** A capability limit is supporting information, not a failed delivery. */
+export function UnsupportedAnswerMapping() {
+  return <div className="mt-3 flex items-start gap-2 rounded-md bg-muted p-3">
+    <Info aria-hidden="true" className="size-4 shrink-0 text-muted-foreground" />
+    <div className="flex min-w-0 flex-col gap-1">
+      <p className="m-0 text-note font-medium">{__('Extra answers stay in WConvert', 'wconvert')}</p>
+      <Description>{__('This destination does not support sending extra answers.', 'wconvert')}</Description>
+    </div>
+  </div>;
 }

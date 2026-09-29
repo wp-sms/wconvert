@@ -105,7 +105,7 @@ describe('binding an optin to a destination', () => {
     } } as unknown as Template;
     const route = destination({ id: 'local', label: 'Local delivery' });
     editor(ready([route]), ['local'], [type({ id: 'mailpoet', label: 'Local delivery' })], { template });
-    expect(screen.getByText('This destination cannot send extra answers. They remain saved in WConvert.')).toBeVisible();
+    expect(screen.getByText('Extra answers stay in WConvert')).toBeVisible();
     expect(screen.queryByText('Field mapping')).not.toBeInTheDocument();
   });
 

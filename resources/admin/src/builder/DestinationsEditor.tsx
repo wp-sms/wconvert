@@ -16,12 +16,13 @@ import {
 import { RowsSkeleton } from '../shell/RowsSkeleton';
 import { tierProductName } from '../goals/availability';
 import { outcomeHandoffIssue, type OutcomeContract } from '../goals/outcome';
+import { ProviderMark } from '../destinations/ProviderMark';
 import { targetSaid } from '../destinations/settings';
 import type { Loadable } from '../shell/loadable';
 import type { Connection, Destination, DestinationType } from '../destinations/api';
 import { capturedFields, compatibilityProblems } from '../destinations/requirements';
 import type { Template } from '@renderer/types';
-import { ExtraAnswerMapping, hasExtraAnswers } from './ExtraAnswerMapping';
+import { ExtraAnswerMapping, hasExtraAnswers, UnsupportedAnswerMapping } from './ExtraAnswerMapping';
 
 /**
  * Which [[Destination]]s this [[Optin]] pushes to.
@@ -169,15 +170,13 @@ export function DestinationsEditor({
                         checked={bound.includes(destination.id)} onChange={(event) => onChange(event.target.checked
                           ? [...bound, destination.id] : bound.filter((id) => id !== destination.id))} />
                       <div className="min-w-0">
-                        <label htmlFor={control} className="font-medium">{destination.label}</label>
+                        <label htmlFor={control} className="inline-flex items-center gap-2 text-body font-medium">{type && <ProviderMark type={type} className="size-4 shrink-0" />}{destination.label}</label>
                         <div className="flex flex-wrap gap-x-2">
                           {type !== undefined && <Description as="span" id={`${control}-provider`}>{type.label}</Description>}
                           {said !== null && <Description as="span" id={`${control}-target`}>{said}</Description>}
                         </div>
                         {bound.includes(destination.id) && automatic.length > 0 &&
-                          <Description className="mt-1 [overflow-wrap:anywhere]">{destination.target
-                            ? sprintf(__('Sending %1$s automatically to %2$s.', 'wconvert'), automaticText, destination.target)
-                            : sprintf(__('Sending %s automatically.', 'wconvert'), automaticText)}</Description>}
+                          <Description className="mt-1 [overflow-wrap:anywhere]">{sprintf(__('Sending %s automatically.', 'wconvert'), automaticText)}</Description>}
                         {compatibility.length > 0 && <ul id={`${control}-compatibility`} className="mb-0 mt-2 ps-4 text-note text-warning">
                           {compatibility.map((problem) => <li key={problem}>{problem}</li>)}
                         </ul>}
@@ -194,7 +193,7 @@ export function DestinationsEditor({
                         {bound.includes(destination.id) && template && onMappingChange && type?.supports_mapping &&
                           <ExtraAnswerMapping providerLabel={type.label} destination={destination} submissionId={template.tree.submissions[0]?.id ?? ''} template={template} value={mappings[destination.id] ?? {}} onChange={(map) => onMappingChange(destination.id, map)} />}
                         {bound.includes(destination.id) && template && type && !type.supports_mapping && hasExtraAnswers(template, template.tree.submissions[0]?.id ?? '') &&
-                          <Description className="mt-2">{__('This destination cannot send extra answers. They remain saved in WConvert.', 'wconvert')}</Description>}
+                          <UnsupportedAnswerMapping />}
                       </div>
                       {type !== undefined && <Button variant="outline" size="sm" aria-label={sprintf(__('Settings for %s', 'wconvert'), destination.label)}
                         onClick={(event) => {

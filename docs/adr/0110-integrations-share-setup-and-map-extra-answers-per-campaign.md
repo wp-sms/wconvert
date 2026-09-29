@@ -26,7 +26,11 @@ draft, Undo and Publish behavior. The control pairs each campaign answer with a
 provider-labelled field column and an explicit **Keep in WConvert only** choice.
 Unavailable targets and duplicate selections are explained beside the affected
 row; removed campaign answers can have their stale mappings removed. Empty
-metadata and failed discovery have distinct refresh/retry paths.
+metadata and failed discovery have distinct refresh/retry paths. The mapping
+summary uses the shared supporting-text size (13px) with a neutral outlined count,
+keeping the destination identity above it. Unsupported mapping is a neutral inset
+note, shared by both signup flows; it is not styled as a delivery failure. The
+automatic-field summary does not repeat the target already shown beside the provider.
 
 **Preview and test mapping** is a separate optional disclosure. A test reviews
 sample values, target and existing-contact behavior before offering a real send.
