@@ -1,0 +1,29 @@
+
+> wconvert@0.1.0 test:template-studio
+> node --test tools/design-library/build/*.test.mjs
+
+✔ planned needs are separate from actual campaigns and compared with known examples (0.862292ms)
+✔ renaming IDs and copy cannot disguise the same composition (3.795875ms)
+✔ colour variants share structure but not the style fingerprint (0.896375ms)
+✔ capture channels, required fields and submission links are meaningful differences (1.443666ms)
+✔ inventory covers paid questions and fullscreens as well as Free (0.122333ms)
+✔ every pilot is a registered, complete snapshot with the intended privacy behaviour (136.75425ms)
+✔ new batches require a real comparison, supported audience and complete setup guidance (114.802042ms)
+✔ design edits identify all dependent setups without touching saved campaigns (1.750875ms)
+✔ retirement requires an active replacement and rejects missing, cyclic or duplicate records (0.598834ms)
+✔ editorial review catches empty slots, stranded icons and wrapping benefit rows (0.417209ms)
+✔ shared approval is revision-bound and invalidated by changed or missing evidence (5.266ms)
+✔ imports are idempotent, keep history and reject concurrent decisions (4.244125ms)
+✔ rejects stale, unknown, duplicate, incomplete and unsupported exports atomically (1.773834ms)
+✔ refuses evidence outside the review directory, including symlinks (1.590916ms)
+✔ unreviewed entries stay pending and record tampering fails closed (1.068291ms)
+✔ visual triage becomes stale after source or renderer changes; new designs are not silently approved (9.539209ms)
+✔ comparison and reuse directions cannot silently point at absent or incompatible designs (0.680666ms)
+ℹ tests 17
+ℹ suites 0
+ℹ pass 17
+ℹ fail 0
+ℹ cancelled 0
+ℹ skipped 0
+ℹ todo 0
+ℹ duration_ms 339.539709

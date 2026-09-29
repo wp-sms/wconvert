@@ -64,6 +64,24 @@ The [maintenance workflow](MAINTENANCE.md) explains design dependencies, version
 notes, retirement/replacement metadata and the boundary around saved customer
 campaigns. The studio exposes affected setups and advisory editorial prompts.
 
+### Visual audit and reference board
+
+`npm run templates:pilot` also builds `out/roadmap.html`. It presents the
+29 September review of all 91 source designs: 70 retain recommendations, 15
+improvements and 6 consolidation candidates. Filter by type or decision, compare
+actual renders, inspect every authored screen, and switch to prepared campaign
+copy. Dependencies include registered setups outside the curated collection.
+
+The Next batch view pairs six original composition sketches and two deliberate
+reuses with existing designs. These eight briefs are planned, not shipped or
+added to the 108/59 library counts. The Inspiration view links the earlier
+Depicter references and states exactly what was reviewed.
+
+`review/visual-audit.json` holds advisory decisions bound to source and renderer
+revisions. Changes show “Needs a fresh review”; new designs receive no automatic
+decision. These records neither approve campaigns nor retire shipping designs.
+See [the review report](../../docs/reviews/template-visual-audit-2026-09-29.md).
+
 ### Adding the next reviewed batch
 
 1. Choose an uncovered visitor need from the [library plan](../../docs/plans/template-library-system-2026-09-28.md).
@@ -115,7 +133,8 @@ accepts 50 packs, retaining the existing 12-design and 256 KiB limits.
 The [shared editorial queue](review/README.md) now stores revision-bound decisions
 and evidence in Git. The studio shows review-state filters for 108 actual setups.
 The completed decision-support briefs are archived under `pilot/batches/`; the
-next-batch queue holds eight proposed visual-variety briefs, to follow review of the first four. `npm run templates:gate` checks the
+next-batch queue holds six new composition candidates and two deliberate reuses,
+following the full-inventory visual audit. `npm run templates:gate` checks the
 current evidence locally without CI. Automated generation, hosted multi-user
 review, screenshot similarity, conversion measurement, paid asset distribution
 and broad 300–500 campaign rollout remain future work. The current 108 are reviewed editorial candidates, not measured winners.
@@ -152,6 +171,7 @@ a second copy of both.
 | `review` | Builds `out/flagships.html` for Fieldwork, Sunday marginalia and Callback notes; needs `renderer` |
 | `library-review` | Builds `out/library-review.html` for every Free and Pro design, both screens, four widths and automated browser measurements; needs `renderer` |
 | `pilot` | Builds `out/pilot.html`, `pilot.json` and `inventory.json` from registered campaigns and all module designs; needs `renderer` and Composer dependencies |
+| `roadmap` | Builds `out/roadmap.html` with revision-aware visual triage, comparisons, reference principles and the next-batch sketches; needs `pilot` and `renderer` |
 | `proof` | Builds `out/proof.html`, pairing all screens at desktop/320px widths; needs `pilot` and `renderer` |
 | `starting-points` | Builds `out/starting-points.html` from the twelve flagship Playbooks through the shipping PHP Prefill, with setup notes and the same size checks; needs `renderer` and Composer dependencies |
 

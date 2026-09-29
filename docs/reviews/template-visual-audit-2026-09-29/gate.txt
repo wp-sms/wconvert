@@ -1,0 +1,24 @@
+
+> wconvert@0.1.0 templates:gate
+> npm run templates:pilot && node tools/design-library/build/review-gate.mjs
+
+
+> wconvert@0.1.0 templates:pilot
+> bash tools/design-library/build.sh renderer pilot proof roadmap
+
+
+[1mBundling the renderer[0m
+  renderer.iife.js (146.8 kB, unminified)
+
+[1mBuilding the campaign pilot and similarity inventory[0m
+  pilot.html (108 actual campaign setups; 91 indexed designs)
+
+[1mBuilding paired desktop and phone screen proofs[0m
+  proof.html (all campaign screens paired for visual review)
+
+[1mBuilding the visual audit and next-batch reference board[0m
+  roadmap.html (91 designs; 8 planned briefs, excluded from library counts)
+
+[1mDone[0m
+  /Users/navidkashani/Local Sites/wconvert/app/public/wp-content/plugins/wconvert/tools/design-library/out
+108/108 current editorial approvals. External delivery and release approval are outside this gate.

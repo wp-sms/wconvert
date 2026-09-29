@@ -82,8 +82,8 @@ must preview the change, preserve custom content, create a recoverable draft and
 require explicit application. That feature is not implemented here.
 
 Work in batches: identify a useful uncovered need, compare, author, inspect, test,
-record evidence, then expand. The working library currently contains 100 setups
-using 51 designs; the full design inventory contains 83 designs. Do not count
+record evidence, then expand. The working library currently contains 108 setups
+using 59 source designs; the full design inventory contains 91 designs. Do not count
 planned briefs, colour variants or unreviewed candidates as additional designs.
 
 ## Browse designs without duplicate cards
@@ -95,7 +95,28 @@ business, search and collection; selecting a use case keeps that exact Playbook
 for setup details and draft creation. A filter never hides a matching use case
 behind a nonmatching default. Browsing and switching use cases save nothing.
 
-The first four visual-variety directions are implemented. Eight further briefs
-are planned separately; review the first four before authoring them. Palette or
+The first four new directions and the next eight visual-variety designs are
+implemented. The next eight briefs are separate planned work: six composition
+candidates and two deliberate reuses. Palette or
 copy changes do not qualify as a new design. Current design counts refer to
 source designs, not independently proven conversion performance.
+
+## Visual audit before expansion
+
+Open `out/roadmap.html` after the pilot build. The 29 September audit retains
+70 compositions, identifies 15 improvement tasks and marks 6 candidates for
+comparison before consolidation. Its source is `review/visual-audit.json`.
+These are advisory priorities, not retired status, campaign approvals or changes
+to customer availability. Resolve priority-one improvements before registering
+the next expansion batch.
+
+Each record identifies the source revision and the whole audit identifies the
+renderer revision. A change makes its recommendation stale. Inspect the new
+output and save fresh evidence before updating those revisions; never update
+hashes just to remove a warning. New designs remain unreviewed in this board.
+
+Before consolidation, inspect every registered dependent, preserve the useful
+fields and Slot Roles, check Keep my content/Sample copy transfer, and review
+Free/paid packaging. Saved merchant snapshots must stay untouched. A high
+structural similarity score is a comparison prompt, not an automatic deletion.
+The next-batch sketches are not working templates and never enter design counts.
