@@ -148,7 +148,10 @@
                       "name": "email",
                       "label": "Email address",
                       "placeholder": "you@example.com",
-                      "required": true
+                      "required": true,
+                      "tokens": {
+                        "border": "#659497"
+                      }
                     },
                     {
                       "type": "consent",
@@ -167,7 +170,7 @@
                       "type": "button",
                       "id": "n11",
                       "role": "cta_label",
-                      "label": "Send me Monday\u2019s note",
+                      "label": "Send me Monday’s note",
                       "action": "submit",
                       "submission": "primary"
                     },

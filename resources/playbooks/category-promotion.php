@@ -31,7 +31,7 @@ return [
         'headline' => __('The new season has landed', 'wconvert'),
         'body' => __('Explore the newest pieces in the collection and find your favourite.', 'wconvert'),
         'cta_label' => __('See what is new', 'wconvert'),
-        'fine_print' => __('Free returns within thirty days.', 'wconvert'),
+        'fine_print' => __('See product details, delivery and returns in the shop.', 'wconvert'),
     ],
     // Six seconds. Long enough to have looked at a listing, short enough that
     // the visitor is still on it — a shop archive is browsed faster than an

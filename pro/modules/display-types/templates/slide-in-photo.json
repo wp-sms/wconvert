@@ -13,12 +13,12 @@
     "input-bg": "#ffffff",
     "heading-font": "Georgia, serif",
     "heading-weight": "400",
-    "heading-size": "2rem",
+    "heading-size": "1.625rem",
     "text-size": "1rem",
     "tracking": "-0.035em",
     "leading": "1.5",
-    "pad": "1.75rem",
-    "gap": "1rem",
+    "pad": "1.25rem",
+    "gap": ".875rem",
     "radius": "0.75rem",
     "width": "25rem",
     "shadow": "0 24px 64px -20px rgba(20,30,25,.3)"
@@ -36,8 +36,8 @@
             {
               "type": "image",
               "id": "n1",
-              "src": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20500%20480%22%3E%3Crect%20width%3D%22500%22%20height%3D%22480%22%20fill%3D%22%23e7e6da%22%2F%3E%3Cpath%20d%3D%22M65%20400V185a185%20185%200%200%201%20370%200v215%22%20fill%3D%22%23c3c9b3%22%2F%3E%3Cellipse%20cx%3D%22250%22%20cy%3D%22420%22%20rx%3D%22162%22%20ry%3D%2218%22%20fill%3D%22%23a6ad91%22%2F%3E%3Cpath%20d%3D%22M155%20280h160l-22%20125H177z%22%20fill%3D%22%23af6348%22%2F%3E%3Cpath%20d%3D%22M230%20289V94%22%20stroke%3D%22%23465c40%22%20stroke-width%3D%2210%22%2F%3E%3Cpath%20d%3D%22M230%20242C107%20258%20100%20137%20230%20208M231%20173C331%20167%20338%2063%20231%20143M229%20123C136%20113%20146%2038%20229%2096%22%20fill%3D%22%234b6844%22%2F%3E%3Cpath%20d%3D%22M337%20324h58l-8%2080h-42z%22%20fill%3D%22%23f7f1df%22%2F%3E%3Ccircle%20cx%3D%22366%22%20cy%3D%22305%22%20r%3D%2235%22%20fill%3D%22%23d0a259%22%2F%3E%3C%2Fsvg%3E",
-              "alt": "Original illustration of a leafy plant in a terracotta pot",
+              "src": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20320%20110%22%3E%3Crect%20width%3D%22320%22%20height%3D%22110%22%20rx%3D%2210%22%20fill%3D%22%23e4e7df%22%2F%3E%3Cpath%20d%3D%22M85%2038h150v54H85z%22%20fill%3D%22%23c9baa2%22%2F%3E%3Cpath%20d%3D%22M85%2038l75%2043%2075-43%22%20fill%3D%22%23e4d6bf%22%2F%3E%3Crect%20x%3D%22116%22%20y%3D%2214%22%20width%3D%2288%22%20height%3D%2253%22%20rx%3D%223%22%20fill%3D%22%23fffdf5%22%2F%3E%3Cpath%20d%3D%22M132%2030h54m-54%2013h40m-40%2012h47%22%20stroke%3D%22%236a7773%22%20stroke-width%3D%223%22%2F%3E%3C%2Fsvg%3E",
+              "alt": "Original illustration of a short note and envelope",
               "fit": "cover"
             }
           ],
@@ -72,7 +72,10 @@
                   "name": "email",
                   "label": "Email address",
                   "placeholder": "you@example.com",
-                  "required": true
+                  "required": true,
+                  "tokens": {
+                    "border": "#91836b"
+                  }
                 },
                 {
                   "type": "button",
@@ -87,7 +90,7 @@
                   "id": "n7",
                   "role": "consent_text",
                   "hidden": true,
-                  "text": "Email me offers and news. %s",
+                  "text": "Email me the weekly bakery note. %s",
                   "link": {
                     "label": "Privacy Policy"
                   },

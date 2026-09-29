@@ -1,7 +1,7 @@
 {
   "schema": 1,
   "date": "2026-09-29",
-  "scope": "Visual triage of all 91 registered source designs at 320px and 768px viewport width, all authored screens and default result states. Layout stress checks also cover 390/1440px, RTL and longer copy. This is not a new campaign approval or proof of conversion lift.",
+  "scope": "All 91 source designs, all authored screens/default results at 320/768px; automated 320/390/768/1440px, RTL and long-copy checks. Eleven outstanding UI recommendations resolved, six consolidation candidates reviewed (four grouped variants, two retained distinct). Internal triage only; not a conversion-lift claim or customer migration.",
   "records": [
     {
       "id": "bold-ask",
@@ -21,7 +21,7 @@
       "reason": "A short invitation with one clear action remains a useful neutral starting point.",
       "action": "Retain in the library. Recheck all dependent campaigns when editing.",
       "compare_to": [],
-      "source_revision": "871954fd99735784154e3942134eb4492915a6bf2a137a9d687f5d4a89c0de73"
+      "source_revision": "315638656d95fd124dc4968ff8f6c80caf8e5c2b6f297ed6f36c5f54bd1cd08a"
     },
     {
       "id": "offer-panel",
@@ -51,7 +51,7 @@
       "reason": "A short invitation with one clear action remains a useful neutral starting point.",
       "action": "Retain in the library. Recheck all dependent campaigns when editing.",
       "compare_to": [],
-      "source_revision": "3c9c4f6c55b488fb1f0bf42f98863e11604a3be3fc2e8f4e581d516011a65057"
+      "source_revision": "ac3e9dcf33e7f7aa89722f8d2851b3deb1138af72544751f45f1381b1147fd6c"
     },
     {
       "id": "stacked-signup",
@@ -61,7 +61,7 @@
       "reason": "A short invitation with one clear action remains a useful neutral starting point.",
       "action": "Retain in the library. Recheck all dependent campaigns when editing.",
       "compare_to": [],
-      "source_revision": "4a9a8eaf95b48d06eb88863b7fe0afe22afec8e4b3e94031c04a2d0fac02843b"
+      "source_revision": "54933e0db55a1e582d5cd6c8e945d2a85535165ef8bbb09f6a1d7302f8d121c8"
     },
     {
       "id": "inline-bar",
@@ -71,7 +71,7 @@
       "reason": "The field/action or message/action row has a practical place in a small strip. Preserve deliberate phone wrapping.",
       "action": "Retain in the library. Recheck all dependent campaigns when editing.",
       "compare_to": [],
-      "source_revision": "821b55692a515ee89f68fd8e9a1cf069788d5e04bb5ba76e0a64f22f9755be61"
+      "source_revision": "959e1a04011613f1774edbd39a787eb70421d9d5edc6db4318399cec8cb32c32"
     },
     {
       "id": "inline-cta",
@@ -91,7 +91,7 @@
       "reason": "The field/action or message/action row has a practical place in a small strip. Preserve deliberate phone wrapping.",
       "action": "Retain in the library. Recheck all dependent campaigns when editing.",
       "compare_to": [],
-      "source_revision": "b9fd93968a6160a37917240dbc5624d4b2b30138de4a2049adb550416485d99d"
+      "source_revision": "8729c61281b8bd94360f90a4db41e34c56bfd67d991c9fef487af056cdc70742"
     },
     {
       "id": "bar-announcement",
@@ -111,7 +111,7 @@
       "reason": "The field/action or message/action row has a practical place in a small strip. Preserve deliberate phone wrapping.",
       "action": "Retain in the library. Recheck all dependent campaigns when editing.",
       "compare_to": [],
-      "source_revision": "1984f6f61023022f77c37f9ef25f7189915cc85927f4dc3cd58c095400214fdc"
+      "source_revision": "746cfb4abee80a9f59e343a8b175005bbc3d9dd816e966d03d4d1005944eaa71"
     },
     {
       "id": "inline-signpost",
@@ -141,7 +141,7 @@
       "reason": "The code panel and copy action explain the offer without relying on a delivery promise. Keep offer terms with the code.",
       "action": "Retain in the library. Recheck all dependent campaigns when editing.",
       "compare_to": [],
-      "source_revision": "70f75547b9925033a31607cfb5299cb1b38d0f36fdcf3f5fa736b65d91e86207"
+      "source_revision": "f1960b4932a42b513dc555265e0e311424ab007a6d9042b22e8688238dd7a4ec"
     },
     {
       "id": "cream-coupon",
@@ -171,7 +171,7 @@
       "reason": "The code panel and copy action explain the offer without relying on a delivery promise. Keep offer terms with the code.",
       "action": "Retain in the library. Recheck all dependent campaigns when editing.",
       "compare_to": [],
-      "source_revision": "e738a479f07e63b9326ded84c99044e350b6deaa07ff55ba46176ce91821d24f"
+      "source_revision": "8da94f43e5553eb9ebee86eb229dbce4cbdc6dce22714e4e13ee6248ff0c54ef"
     },
     {
       "id": "bar-code",
@@ -191,7 +191,7 @@
       "reason": "The code panel and copy action explain the offer without relying on a delivery promise. Keep offer terms with the code.",
       "action": "Retain in the library. Recheck all dependent campaigns when editing.",
       "compare_to": [],
-      "source_revision": "479ba02c3cac968de71c641266e753d93d571730c9eaefb97395019cf521d2ac"
+      "source_revision": "dff7e6fa643aae5267d68cf8db2e6af772d7290111387f6bfb42235c59aafbf0"
     },
     {
       "id": "slide-in-code",
@@ -201,7 +201,7 @@
       "reason": "The code panel and copy action explain the offer without relying on a delivery promise. Keep offer terms with the code.",
       "action": "Retain in the library. Recheck all dependent campaigns when editing.",
       "compare_to": [],
-      "source_revision": "201fd2e63fc20114ae570e3b18f4dce0bf1860c259b7b040f42f0bafe7a45e77"
+      "source_revision": "d72d51b834506ec323dc64ba7f44bb52b3c89459e30089865468b67e672e8779"
     },
     {
       "id": "callback-notes",
@@ -211,7 +211,7 @@
       "reason": "The message and form occupy distinct panes. Keep the form readable when the panes stack.",
       "action": "Retain in the library. Recheck all dependent campaigns when editing.",
       "compare_to": [],
-      "source_revision": "496baf5d65685c97a8de3b24740fafddc9d27c0e717aa80f30a23a9a0a31cca4"
+      "source_revision": "93a6e708a4ed963c3eb60150415da95ae350189ceffad039248e977b2f47423a"
     },
     {
       "id": "fieldwork",
@@ -221,7 +221,7 @@
       "reason": "The message and form occupy distinct panes. Keep the form readable when the panes stack.",
       "action": "Retain in the library. Recheck all dependent campaigns when editing.",
       "compare_to": [],
-      "source_revision": "aaf14352ed7d360c30d9af1a19f191c16ab707e3cb78ba2bbf9235fda0225bbb"
+      "source_revision": "6ddea91fda70519fb7e8d7f19114dbc7f4d5ab8d9b8fcf3824a077968518d301"
     },
     {
       "id": "ink-split",
@@ -231,7 +231,7 @@
       "reason": "The message and form occupy distinct panes. Keep the form readable when the panes stack.",
       "action": "Retain in the library. Recheck all dependent campaigns when editing.",
       "compare_to": [],
-      "source_revision": "26481e1e9330e2249b6c66f21e509550cb7798ef2106cac9f26b8165a4ecd9c2"
+      "source_revision": "11165f8e8947130ae08fc0fa9fb16245103e3ec7032070ce3bffbaab24ca1b67"
     },
     {
       "id": "launch-checklist",
@@ -241,7 +241,7 @@
       "reason": "The message and form occupy distinct panes. Keep the form readable when the panes stack.",
       "action": "Retain in the library. Recheck all dependent campaigns when editing.",
       "compare_to": [],
-      "source_revision": "f40322c9abd43f47c48dbbe9b88a0dbf8e4a797577a01d4ac06052b323843698"
+      "source_revision": "b739e6bea292dbd482277858fc682177ad4e433de401916674b8945cebc7380c"
     },
     {
       "id": "portrait-frame",
@@ -251,7 +251,7 @@
       "reason": "The message and form occupy distinct panes. Keep the form readable when the panes stack.",
       "action": "Retain in the library. Recheck all dependent campaigns when editing.",
       "compare_to": [],
-      "source_revision": "9bca2cabf36de5e14a9645098f7bff026906abb14dafa1a789e301b53c982522"
+      "source_revision": "21e5180d13d93c5ac0da67d4347244db08354f0dc0885e18533ec7721b4934ce"
     },
     {
       "id": "preference-card",
@@ -261,7 +261,7 @@
       "reason": "The message and form occupy distinct panes. Keep the form readable when the panes stack.",
       "action": "Retain in the library. Recheck all dependent campaigns when editing.",
       "compare_to": [],
-      "source_revision": "d12b05aede05fff383c3a9ae362d903d878ad5557e1ab98c982caad2678ad8b9"
+      "source_revision": "4e5c5b19a44226d652ca987f50d285ea5ae9ec9a4d4de92836103c0151259a97"
     },
     {
       "id": "project-notebook",
@@ -271,7 +271,7 @@
       "reason": "The message and form occupy distinct panes. Keep the form readable when the panes stack.",
       "action": "Retain in the library. Recheck all dependent campaigns when editing.",
       "compare_to": [],
-      "source_revision": "018da28c4433ac6034ca1b359724697e0f05258d5f37f2b85cde9710879cdab2"
+      "source_revision": "62399527e40af44de0a14f89b6296ca4456a7024664e4b1502e37bfa780292f2"
     },
     {
       "id": "reading-desk",
@@ -281,7 +281,7 @@
       "reason": "The message and form occupy distinct panes. Keep the form readable when the panes stack.",
       "action": "Retain in the library. Recheck all dependent campaigns when editing.",
       "compare_to": [],
-      "source_revision": "8d53f18445aa9df715663819e3ce8b1e104701823166ad46aae707b9cb39e0d2"
+      "source_revision": "a3cbd57c993fa950c1144fbe2d4fae9ed5e3459c3ba17b5ffcdec87019e0717c"
     },
     {
       "id": "split-hero",
@@ -291,7 +291,7 @@
       "reason": "The message and form occupy distinct panes. Keep the form readable when the panes stack.",
       "action": "Retain in the library. Recheck all dependent campaigns when editing.",
       "compare_to": [],
-      "source_revision": "adf0a3d10c57754da86b11b75d2326f50fd6c89cd0a5dc8be6951e887b6ecf03"
+      "source_revision": "dfc2d14320c6a12e2873db72c3fd72e9b2507f6835249ca46232aae4ea364ba7"
     },
     {
       "id": "studio-window",
@@ -301,7 +301,7 @@
       "reason": "The message and form occupy distinct panes. Keep the form readable when the panes stack.",
       "action": "Retain in the library. Recheck all dependent campaigns when editing.",
       "compare_to": [],
-      "source_revision": "38b5e3cb85e08d6ccabe853a6d0e61200b43d65e0b9644650a6bd1148f311daa"
+      "source_revision": "47d997b1306bdb4b4a0d83bce498564e60bbc36d21b09383c19c97b624890012"
     },
     {
       "id": "popup-editorial",
@@ -311,7 +311,7 @@
       "reason": "The message and form occupy distinct panes. Keep the form readable when the panes stack.",
       "action": "Retain in the library. Recheck all dependent campaigns when editing.",
       "compare_to": [],
-      "source_revision": "4ef91c68b2bb5c5f20e1a8feb1638043178f8e23527b9a2b71b6ca861a4fbcd1"
+      "source_revision": "915daf0c7b84528b467bb9b8a7804236fb3d87be00e0e4b38449563202dfe17b"
     },
     {
       "id": "edition-pass",
@@ -321,7 +321,7 @@
       "reason": "The typographic hierarchy, excerpt or cover gives this design a recognisable reading structure.",
       "action": "Retain in the library. Recheck all dependent campaigns when editing.",
       "compare_to": [],
-      "source_revision": "69d617b5b09e5e92892d4c5915076813e940147f731be349bb235ece019f189e"
+      "source_revision": "3df0979d792fe511e383caf894eb2ef06cf62d3b3cc9c83e700a53a8a529d8ca"
     },
     {
       "id": "quieter-frequency",
@@ -331,7 +331,7 @@
       "reason": "The typographic hierarchy, excerpt or cover gives this design a recognisable reading structure.",
       "action": "Retain in the library. Recheck all dependent campaigns when editing.",
       "compare_to": [],
-      "source_revision": "36b9a64b9aa8e20350d4cff9a5234720fc97117cab99a4d3057c4022c5f4bd1e"
+      "source_revision": "f4fc57290e92b527b8605508203c057a1ccbf0df12843c5c6a6610bf74821f83"
     },
     {
       "id": "reading-cover",
@@ -341,7 +341,7 @@
       "reason": "The typographic hierarchy, excerpt or cover gives this design a recognisable reading structure.",
       "action": "Retain in the library. Recheck all dependent campaigns when editing.",
       "compare_to": [],
-      "source_revision": "92d0af40add6739913fe25ef2c273eed34211609b3d5b0085450b3ecfd8f8e89"
+      "source_revision": "8519ffa6851464a5fbf891f0fcb9730dcb9886319153eb498ddfc0b59e7889bb"
     },
     {
       "id": "sunday-marginalia",
@@ -351,7 +351,7 @@
       "reason": "The typographic hierarchy, excerpt or cover gives this design a recognisable reading structure.",
       "action": "Retain in the library. Recheck all dependent campaigns when editing.",
       "compare_to": [],
-      "source_revision": "0338a1e16bace72ae425bf216b85860bcc6f62cc3e3bb481b9172f083d5d20c5"
+      "source_revision": "1a55602e77025084b146e5f02a8bd29e6c170751055b6d36bdd051d8c8045ba4"
     },
     {
       "id": "useful-guide",
@@ -361,7 +361,7 @@
       "reason": "The typographic hierarchy, excerpt or cover gives this design a recognisable reading structure.",
       "action": "Retain in the library. Recheck all dependent campaigns when editing.",
       "compare_to": [],
-      "source_revision": "a0987b1e4f0a41e7620fa4b0d7afdc83bae7b8243a8a4e8b7bc1735a82051665"
+      "source_revision": "2d709ce0861914d6545f93f76484307b7117bf77c01e0109c977d14a4565c612"
     },
     {
       "id": "margin-note",
@@ -391,7 +391,7 @@
       "reason": "The illustration explains the subject, with a clearly separated action or request area.",
       "action": "Retain in the library. Recheck all dependent campaigns when editing.",
       "compare_to": [],
-      "source_revision": "c1868b009b6e4b5d352c83e0fa050ab5de1f4605ff22891c3bd8ac03afb6d5a2"
+      "source_revision": "91506a2bc5ee9ad9e75f42b8b59df1ef089c77ba3b098408206f98fc4b9d59c3"
     },
     {
       "id": "sample-envelope",
@@ -401,7 +401,7 @@
       "reason": "The illustration explains the subject, with a clearly separated action or request area.",
       "action": "Retain in the library. Recheck all dependent campaigns when editing.",
       "compare_to": [],
-      "source_revision": "2076c6daf95f036dd1e9adf5254a8fc50351e8cd87cefc6cf5405775b4bb7587"
+      "source_revision": "6a62a9e35523f5b80b06b4fd7e75c93e85cacceef3ab9314e2bda7bfdb65fd54"
     },
     {
       "id": "session-card",
@@ -431,7 +431,7 @@
       "reason": "Labelled information groups help the visitor decide before following the single action.",
       "action": "Retain in the library. Recheck all dependent campaigns when editing.",
       "compare_to": [],
-      "source_revision": "d4b599a4cf55e94fe5a5212486ab6d094b9947f8e2b09a7f35b1f164f626ca32"
+      "source_revision": "32c46973d6a8c819c84948ab11261fee1126c28db0b2a9ac3570d6de1980e50b"
     },
     {
       "id": "inline-benefits",
@@ -471,7 +471,7 @@
       "reason": "Labelled information groups help the visitor decide before following the single action.",
       "action": "Retain in the library. Recheck all dependent campaigns when editing.",
       "compare_to": [],
-      "source_revision": "f26d6a3781a82a2efecd177f826a75a7edb4dae5a61c5fab36937330343772a0"
+      "source_revision": "8e1f080830b40e698640566dc31d3ba2d0a11cf4ed7ee9e40cd3caca0ebddfb4"
     },
     {
       "id": "inline-choice",
@@ -481,7 +481,7 @@
       "reason": "Visible fields and a request acknowledgement suit a small enquiry; contact details do not imply booking.",
       "action": "Retain in the library. Recheck all dependent campaigns when editing.",
       "compare_to": [],
-      "source_revision": "6f9d74582e54c101b70e0e06cd4922413ac5c12ecaf73e3d183cbf00daffa546"
+      "source_revision": "1cedd28c8c758f3f545595c87d6449e9f5d87ea9feadaee6aa1efee90f529e14"
     },
     {
       "id": "inline-phone",
@@ -491,7 +491,7 @@
       "reason": "Visible fields and a request acknowledgement suit a small enquiry; contact details do not imply booking.",
       "action": "Retain in the library. Recheck all dependent campaigns when editing.",
       "compare_to": [],
-      "source_revision": "3b9c2f428d7815e52250f8100445dab07df3db019696425cd307f1316f05242c"
+      "source_revision": "08899dd7fc54ed7e465eed4174d91b8eb2f702a7da905fcee4c53f320d1bc336"
     },
     {
       "id": "deadline-panel",
@@ -511,7 +511,7 @@
       "reason": "A genuine scheduled event or offer justifies this focused announcement. Merchant terms and timing remain required.",
       "action": "Retain in the library. Recheck all dependent campaigns when editing.",
       "compare_to": [],
-      "source_revision": "0373da65f0c0ac79cef9d2e27a2f03255450dfd8141e270e14e47e73ebac1d47"
+      "source_revision": "92b6525716ae31cb0b7ec7effe7cab6b4a390d5a743c16f454dcb0d2d3d9b927"
     },
     {
       "id": "summer-archive",
@@ -551,7 +551,7 @@
       "reason": "The screens serve different jobs. Keep these steps separate from visual style counts and preserve Back/Skip behaviour.",
       "action": "Retain in the library. Recheck all dependent campaigns when editing.",
       "compare_to": [],
-      "source_revision": "7b661f409ea1643d42ad77e94ea6fea3df8bd562bd96f61d8c8cb698d7a09da8"
+      "source_revision": "3481242ceeb697d4481d1088cbad00f4d0d20041e768f2847b777335e18b9be0"
     },
     {
       "id": "journey-enquiry",
@@ -561,7 +561,7 @@
       "reason": "The screens serve different jobs. Keep these steps separate from visual style counts and preserve Back/Skip behaviour.",
       "action": "Retain in the library. Recheck all dependent campaigns when editing.",
       "compare_to": [],
-      "source_revision": "9a3b8cfd691753859c8f7dd3153a49cad86a5c7f853630032118f011e09598eb"
+      "source_revision": "166098f2f176d2986b120cd0c703a1d4ec1fecd8196508f0cae5151070c7c0c2"
     },
     {
       "id": "journey-offer-first",
@@ -571,7 +571,7 @@
       "reason": "The screens serve different jobs. Keep these steps separate from visual style counts and preserve Back/Skip behaviour.",
       "action": "Retain in the library. Recheck all dependent campaigns when editing.",
       "compare_to": [],
-      "source_revision": "ba1a72787d396b251f55d33aa84b15434f37fa9df56b6c02664a9f5459b75f5d"
+      "source_revision": "7c1e285b6e12d57b065148894b48ad0e780fc09f89e08c26a2c1fa39694f836a"
     },
     {
       "id": "request-folio",
@@ -581,7 +581,7 @@
       "reason": "The screens serve different jobs. Keep these steps separate from visual style counts and preserve Back/Skip behaviour.",
       "action": "Retain in the library. Recheck all dependent campaigns when editing.",
       "compare_to": [],
-      "source_revision": "090c63ebc95ae650841a7d4db06544adadbd9101ab1034941e73f94a734f3794"
+      "source_revision": "e8238b565bb7d820d679004f0c5715d57ec4a6ea9cbc9e022d236db674da7c1c"
     },
     {
       "id": "journey-service-enquiry",
@@ -591,7 +591,7 @@
       "reason": "The screens serve different jobs. Keep these steps separate from visual style counts and preserve Back/Skip behaviour.",
       "action": "Retain in the library. Recheck all dependent campaigns when editing.",
       "compare_to": [],
-      "source_revision": "497f607e2a97aad60bb7b8516d9c4af96e25852243a4db079771156742b48cb1"
+      "source_revision": "3cfdf3a173283243a2f5493bd42bf9d0c35128bf9bc8a16dedfdba03c8b578c2"
     },
     {
       "id": "gift-edit",
@@ -611,7 +611,7 @@
       "reason": "The question arrangement serves a different decision path; result links and every branch still need campaign-level review.",
       "action": "Retain in the library. Recheck all dependent campaigns when editing.",
       "compare_to": [],
-      "source_revision": "868db199284c39bb5dc66c113f05943ccf73b31bd2122523f14307991137c48c"
+      "source_revision": "4721e7afdfaaa272872cbb11eb3423dc57e7036fa3a32d996b26d2562d23882e"
     },
     {
       "id": "journey-product-finder",
@@ -681,7 +681,7 @@
       "reason": "The contained form is useful within an article; the distinct panel arrangement is more than a colour change.",
       "action": "Retain in the library. Recheck all dependent campaigns when editing.",
       "compare_to": [],
-      "source_revision": "aed4c0de5d6e3c0145048170f1016b29e4c76d3bc0ef61400304b056dcc17b59"
+      "source_revision": "f1020781bc140804e5e601eb4c332f4cdd1fca7dc5c224c523b8329f2b604a2c"
     },
     {
       "id": "inline-rule",
@@ -743,14 +743,14 @@
     {
       "id": "slide-in-nudge",
       "family": "Corner invitation",
-      "decision": "improve",
-      "priority": 1,
-      "reason": "The lightning symbol does not explain shipping, returns or related reading.",
-      "action": "Remove the generic icon and give the short heading/action their own compact spacing.",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "Compact invitation with a single content-width action and no unrelated icon.",
+      "action": "Retain this composition. All authored screens rechecked in template-library-cleanup-2026-09-29; recheck dependent setups after edits.",
       "compare_to": [
         "margin-note"
       ],
-      "source_revision": "905b6b4e32b39ddea7e59e2d19596d9b74ea5afcd064ba1993aa4fa1856ca13e"
+      "source_revision": "169ec8b91bfbe1067bbb872fa24f7834588a3f0dca7ccfba2c5fda856795d2e1"
     },
     {
       "id": "inline-cart-nudge",
@@ -767,147 +767,149 @@
     {
       "id": "inline-split",
       "family": "Resource split",
-      "decision": "improve",
-      "priority": 1,
-      "reason": "The sample requests one guide but retains marketing-consent wording.",
-      "action": "Align sample consent and privacy copy with a one-off resource request; retain meaningful merchant-editable imagery.",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "A shallow guide illustration, clear form column and request-specific acknowledgement.",
+      "action": "Retain this composition. All authored screens rechecked in template-library-cleanup-2026-09-29; recheck dependent setups after edits.",
       "compare_to": [
         "reading-cover",
         "useful-guide"
       ],
-      "source_revision": "db5f044edd39152e5ece1a59d596dbaaf403550b31bd90696a782fe954ab156d"
+      "source_revision": "ac371aa2587102e0c7b6c360ae9ecda0ce24c192bffc3337c9863c773940d20f"
     },
     {
       "id": "slide-in-photo",
       "family": "Image-led corner form",
-      "decision": "improve",
-      "priority": 1,
-      "reason": "The tall plant illustration is unrelated to the bakery sample and consumes much of the mobile card.",
-      "action": "Use relevant shallow artwork or a complete text-only state. Review the consultation campaign with its actual copy too.",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "A short note illustration replaces the unrelated picture; the form and acknowledgement remain compact.",
+      "action": "Retain this composition. All authored screens rechecked in template-library-cleanup-2026-09-29; recheck dependent setups after edits.",
       "compare_to": [
         "session-card",
         "sample-envelope"
       ],
-      "source_revision": "a4f9f92344455f62b5b630d583fb088d72c3a24b62767076b1bc68f5aae420f9"
+      "source_revision": "237c87219463e97172f351626e8e7b5e0fd870dd6bca16bf3d83e852c51724da"
     },
     {
       "id": "fullscreen-editorial",
       "family": "Fullscreen editorial",
-      "decision": "improve",
-      "priority": 2,
-      "reason": "At 320px the headline breaks into many short lines and pushes the form down.",
-      "action": "Retune narrow heading size and padding; inspect the native overlay, dismissal and keyboard route.",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "Quieter mobile typography and padding keep the signup readable within the fullscreen surface.",
+      "action": "Retain this composition. All authored screens rechecked in template-library-cleanup-2026-09-29; recheck dependent setups after edits.",
       "compare_to": [
         "quieter-frequency"
       ],
-      "source_revision": "8bb19d21f75ce930acd1d7419ecd726a93aa80665f1bf6db439b7789f451e079"
+      "source_revision": "ad50f061772c84bec3516975eb1f27c1f2878265766a584a3ba9e7b3f40c4bbe"
     },
     {
       "id": "fullscreen-split",
       "family": "Fullscreen guide",
-      "decision": "improve",
-      "priority": 2,
-      "reason": "At 320px two heavily padded panels make a short guide request unnecessarily tall.",
-      "action": "Reduce narrow panel padding and headline size, and keep request wording consistent across form and acknowledgement.",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "Shorter mobile panels explain the guide request without excessive heading scale.",
+      "action": "Retain this composition. All authored screens rechecked in template-library-cleanup-2026-09-29; recheck dependent setups after edits.",
       "compare_to": [
         "reading-cover",
         "ink-split"
       ],
-      "source_revision": "c0259d754d500271fc4fa111488d823bf858cab5fa9e1dba175f8f98bb52f5b8"
+      "source_revision": "1961477f1e22436df56bde5007371d80d74547cf0a93bd53ab5c47442b1aeeea"
     },
     {
       "id": "reader-review",
       "family": "Reader proof",
-      "decision": "improve",
-      "priority": 2,
-      "reason": "The clearly labelled sample review still takes substantial space before the form; a merchant needs genuine evidence.",
-      "action": "Shorten the proof area and provide a complete no-review state. Never publish fictional endorsements as real.",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "The default shows a real content promise. Optional reader proof stays hidden until verified attribution is supplied.",
+      "action": "Retain this composition. All authored screens rechecked in template-library-cleanup-2026-09-29; recheck dependent setups after edits.",
       "compare_to": [
         "sunday-marginalia"
       ],
-      "source_revision": "7508c827ae5eb35ba1ae93e938cdf307916d01254994b2ba96e8eb7ec2e23e04"
+      "source_revision": "b4d8d78d165a7c5895fbcb01e9b5b54b2d3a89b5bc91669487c691b59631f447"
     },
     {
       "id": "makers-index",
       "family": "Maker product enquiry",
-      "decision": "improve",
-      "priority": 2,
-      "reason": "The narrow sample and acknowledgement both devote substantial space to repeated product decoration.",
-      "action": "Shorten the mobile product pane and simplify the acknowledgement while retaining product identity.",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "The product panel is balanced on desktop; mobile loses the old decorative minimum. The acknowledgement removes repeated product decoration.",
+      "action": "Retain this composition. All authored screens rechecked in template-library-cleanup-2026-09-29; recheck dependent setups after edits.",
       "compare_to": [
         "product-shelf",
         "sample-envelope"
       ],
-      "source_revision": "a585282822140ae9ebcfbc61208865744eeced2b2b39d95b8d15c7a6baf24a87"
+      "source_revision": "7ec412f87c291a64cb9853d7528b796ebd50d7c30193365c47ae197aedf5f5bf"
     },
     {
       "id": "resource-index",
       "family": "Resource checklist",
-      "decision": "improve",
-      "priority": 2,
-      "reason": "The three topic tiles wrap as two plus one at 320px, weakening the ordered checklist.",
-      "action": "Use one consistent narrow arrangement; check longer translated topic labels and actual campaign copy.",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "Numbered topics form a consistent compact list; the form and resource request remain clear.",
+      "action": "Retain this composition. All authored screens rechecked in template-library-cleanup-2026-09-29; recheck dependent setups after edits.",
       "compare_to": [
         "service-summary"
       ],
-      "source_revision": "eb9ac66e20c83d49c6f1bfd7865d88acfaac8ea32dfc466f373d3e15b829b108"
+      "source_revision": "1e01b3691e377813821ff4ffd8ebdffda9fefa849e1d308e4aefae9cf4cdbb8f"
     },
     {
       "id": "service-ledger",
       "family": "Service comparison",
-      "decision": "improve",
-      "priority": 2,
-      "reason": "The sample is long on phones and ends with an unnecessarily wide information-link button.",
-      "action": "Tighten repetitive scope copy and use a content-width link; keep service limits understandable.",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "Short service descriptions, tighter mobile spacing and a content-width action support comparison.",
+      "action": "Retain this composition. All authored screens rechecked in template-library-cleanup-2026-09-29; recheck dependent setups after edits.",
       "compare_to": [
         "material-pair"
       ],
-      "source_revision": "6f3ce73c85cd82ede75c61abec8a6f8c580a26d822600c7b56292d99cd68f6eb"
+      "source_revision": "aa2ee5d36fbdf8d7229df9e43211c0cb5a1f1122948a62c96fa66b3c8e44329a"
     },
     {
       "id": "service-docket",
       "family": "Service enquiry",
-      "decision": "improve",
-      "priority": 2,
-      "reason": "Optional name plus topic and email make a tall phone request when the service introduction is long.",
-      "action": "Test a compact narrow introduction; only request the optional name where it improves the reply.",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "A concise introduction and compact mobile form preserve optional name and service selection.",
+      "action": "Retain this composition. All authored screens rechecked in template-library-cleanup-2026-09-29; recheck dependent setups after edits.",
       "compare_to": [
         "request-folio",
         "service-summary"
       ],
-      "source_revision": "544949e88af23fe79b15bbdd389d02868786e43f3026c73e7ef0c8cfbc162fbc"
+      "source_revision": "67eefb9e623ace74297170ae052ecd352eae4c387859af65dcf888e9548037c0"
     },
     {
       "id": "photo-offer",
       "family": "Collection invitation",
-      "decision": "improve",
-      "priority": 2,
-      "reason": "The abstract sample image does not explain the collection, while the returns claim needs merchant verification.",
-      "action": "Provide useful original product artwork or remove the image; make the returns prerequisite explicit for new uses.",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "Original product artwork replaces the abstract image; unverified return-policy claims are removed.",
+      "action": "Retain this composition. All authored screens rechecked in template-library-cleanup-2026-09-29; recheck dependent setups after edits.",
       "compare_to": [
         "collection-poster"
       ],
-      "source_revision": "c13609d1eb832f5fc45bd1607a1ae22a4fe599cc7cfa8f9a1f8a102d4f303970"
+      "source_revision": "43ef24e35698180326965993eae9ff8fa98ade7862f0a1feacb537c580fa3904"
     },
     {
       "id": "popup-flash",
       "family": "Consolidation candidate",
-      "decision": "consolidate",
-      "priority": 2,
-      "reason": "The same popup structure and converting action recur with different styling and sample words.",
-      "action": "Keep one sale composition as the future canonical base; first review Free/paid packaging and any dependents.",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "A sale-card visual variant with the same one-screen offer and shop action. No registered campaign depends on it.",
+      "action": "Grouped for internal authoring. Prefer the canonical design for new briefs; retain this source and its saved snapshots. Do not automatically move fields or campaign copy.",
       "compare_to": [
         "flash-offer"
       ],
-      "source_revision": "5014f59ccf23eec14279375cd3febcd46f40e079437c09218d02b6484e6de0ce"
+      "source_revision": "5014f59ccf23eec14279375cd3febcd46f40e079437c09218d02b6484e6de0ce",
+      "variant_of": "flash-offer",
+      "canonical_revision": "92b6525716ae31cb0b7ec7effe7cab6b4a390d5a743c16f454dcb0d2d3d9b927"
     },
     {
       "id": "popup-two-column",
       "family": "Consolidation candidate",
-      "decision": "consolidate",
-      "priority": 2,
-      "reason": "Replace abstract placeholder with original product artwork, balance split panels, refine mobile hierarchy and strengthen field boundaries. All authored screens and dependent setups rechecked; see template-six-refinements-2026-09-29 review.",
-      "action": "Compare content transfer and optional field support, then fold this into a variant instead of counting another visual direction.",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "Keep the inset artwork and optional-name offer form distinct from the email-only split hero.",
+      "action": "Retain as a separate choice when a merchant needs an optional first name. No automatic migration.",
       "compare_to": [
         "split-hero"
       ],
@@ -916,46 +918,52 @@
     {
       "id": "inline-quiet",
       "family": "Consolidation candidate",
-      "decision": "consolidate",
-      "priority": 2,
-      "reason": "Both supply a quiet editorial signup row; rule and palette differences are weak grounds for two visual directions.",
-      "action": "Preserve the preferred type treatment as a variant after checking existing use cases and copy transfer.",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "An editorial inline signup variant, with the same email capture and acknowledgement. No registered campaign depends on it.",
+      "action": "Grouped for internal authoring. Prefer the canonical design for new briefs; retain this source and its saved snapshots. Do not automatically move fields or campaign copy.",
       "compare_to": [
         "inline-rule"
       ],
-      "source_revision": "eb644ea5f490b05d52f44523806e58a377f66e1446730bf5079aaee0b8a22c7a"
+      "source_revision": "f3b86850d2b591c0f1cc41333fb8c95048f19a36b4252fe56b5126aa4fc6dc90",
+      "variant_of": "inline-rule",
+      "canonical_revision": "e9dca707f4650f27aaf25a262a7b2766e8904d4f44a766b1a59d34511fb28117"
     },
     {
       "id": "number-invitation",
       "family": "Consolidation candidate",
-      "decision": "consolidate",
-      "priority": 2,
-      "reason": "Both build an invitation around a large number in a media pane beside a request column.",
-      "action": "Keep both source files for now; evaluate a shared number-led family with editorial variants, not independent novelty claims.",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "A number-led split signup variant. Its extra body and acknowledgement roles remain editable; no registered campaign depends on it.",
+      "action": "Grouped for internal authoring. Prefer the canonical design for new briefs; retain this source and its saved snapshots. Do not automatically move fields or campaign copy.",
       "compare_to": [
         "launch-checklist"
       ],
-      "source_revision": "a1552f1d2a9d670b664aca32d332674c29c581be60f7092ed417fb782f4ca1dc"
+      "source_revision": "498b3d22529a0ca81906df7d8c1a0e3fc2117d12fccbaafe992bf4f2ca40dd92",
+      "variant_of": "launch-checklist",
+      "canonical_revision": "b739e6bea292dbd482277858fc682177ad4e433de401916674b8945cebc7380c"
     },
     {
       "id": "journey-email-only",
       "family": "Consolidation candidate",
-      "decision": "consolidate",
-      "priority": 2,
-      "reason": "The simple email journey has no additional visible step beyond a standard form and acknowledgement.",
-      "action": "Preserve its submission references and any dependent Playbooks when selecting one neutral email base.",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "A simple email signup variant with no additional journey step. Its registered Playbook keeps its own field and submission identifiers.",
+      "action": "Grouped for internal authoring. Prefer the canonical design for new briefs; retain this source and its saved snapshots. Do not automatically move fields or campaign copy.",
       "compare_to": [
         "centred-card"
       ],
-      "source_revision": "4b625c0807fd89d82d68174eb17d108038977d6f6fbfd25396cb3b31568472d3"
+      "source_revision": "7e588b43063e2be75f2d8c99d03021dd9299d8b9b229ade04c11cb713666f009",
+      "variant_of": "centred-card",
+      "canonical_revision": "315638656d95fd124dc4968ff8f6c80caf8e5c2b6f297ed6f36c5f54bd1cd08a"
     },
     {
       "id": "name-and-email",
       "family": "Consolidation candidate",
-      "decision": "consolidate",
-      "priority": 2,
-      "reason": "Use quieter warm colours, accessible field outlines, compact typography and request-specific copy with an optional name. All authored screens and dependent setups rechecked; see template-six-refinements-2026-09-29 review.",
-      "action": "Check guide-purpose copy and role transfer before grouping under the neutral card; do not remove the optional-name capability.",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "The optional-name form supports three registered guide and consultation setups; an email-only replacement would lose that capability.",
+      "action": "Retain this compact form separately. Preserve field IDs and review the three dependent setups after edits.",
       "compare_to": [
         "centred-card"
       ],

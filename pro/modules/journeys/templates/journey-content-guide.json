@@ -166,7 +166,10 @@
               "id": "n9",
               "name": "email",
               "required": true,
-              "label": "Email address"
+              "label": "Email address",
+              "tokens": {
+                "border": "#91836b"
+              }
             },
             {
               "type": "consent",

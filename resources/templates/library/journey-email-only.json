@@ -42,7 +42,10 @@
               "id": "n2",
               "name": "email",
               "label": "Email address",
-              "required": true
+              "required": true,
+              "tokens": {
+                "border": "#8790a3"
+              }
             },
             {
               "type": "consent",

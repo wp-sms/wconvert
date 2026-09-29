@@ -114,7 +114,9 @@ final class CuratedCollectionsTest extends TestCase
 
     public function testAConflictingReleaseDoesNotReplaceFilesOrIndex(): void
     {
-        $path = $this->directory . '/publisher-collection-1.4.0.json';
+        $collections = json_decode(file_get_contents(dirname(__DIR__, 4) . '/tools/template-catalog/collections.json'), true, 512, JSON_THROW_ON_ERROR);
+        $versions = array_column($collections, 'version', 'id');
+        $path = $this->directory . '/publisher-collection-' . $versions['publisher-collection'] . '.json';
         file_put_contents($path, 'previous release');
         file_put_contents($this->directory . '/index.json', 'previous index');
         [$code, $message] = $this->build();
@@ -122,7 +124,7 @@ final class CuratedCollectionsTest extends TestCase
         $this->assertStringContainsString('Refusing to replace', $message);
         $this->assertSame('previous release', file_get_contents($path));
         $this->assertSame('previous index', file_get_contents($this->directory . '/index.json'));
-        $this->assertFileDoesNotExist($this->directory . '/store-collection-1.4.0.json', 'All releases are checked before any output changes.');
+        $this->assertFileDoesNotExist($this->directory . '/store-collection-' . $versions['store-collection'] . '.json', 'All releases are checked before any output changes.');
     }
 
     public function testUnusableCatalogDefinitionsFailBeforeWriting(): void

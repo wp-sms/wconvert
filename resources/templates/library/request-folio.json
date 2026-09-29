@@ -86,7 +86,10 @@
                       "value": "other",
                       "label": "Another piece"
                     }
-                  ]
+                  ],
+                  "tokens": {
+                    "border": "#a6896a"
+                  }
                 },
                 {
                   "type": "row",
@@ -178,7 +181,10 @@
                   "name": "email",
                   "label": "Email address",
                   "placeholder": "you@example.com",
-                  "required": true
+                  "required": true,
+                  "tokens": {
+                    "border": "#a6896a"
+                  }
                 },
                 {
                   "type": "row",

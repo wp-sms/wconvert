@@ -77,7 +77,10 @@
                       "value": "care",
                       "label": "Everyday care"
                     }
-                  ]
+                  ],
+                  "tokens": {
+                    "border": "#768b8e"
+                  }
                 },
                 {
                   "type": "field",
@@ -85,7 +88,10 @@
                   "name": "email",
                   "label": "Email address",
                   "placeholder": "you@example.com",
-                  "required": true
+                  "required": true,
+                  "tokens": {
+                    "border": "#768b8e"
+                  }
                 },
                 {
                   "type": "button",

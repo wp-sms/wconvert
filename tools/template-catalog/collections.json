@@ -1,7 +1,7 @@
 [
   {
     "id": "store-collection",
-    "version": "1.4.0",
+    "version": "1.4.1",
     "name": "Store collection",
     "description": "Three offer layouts: Fieldwork, Punched ticket and The summer archive. Add your real code, terms, sale destination and schedule before publishing.",
     "requires": {
@@ -15,8 +15,8 @@
       ]
     },
     "templates": {
-      "fieldwork": "04d4fcc57ab50f5e3976063d0495b7a2c304d6b3421511b8b6aea0389c028cf3",
-      "punched-ticket": "b67fd6ff82e5bc91b5b17247a6c113c4620a2987d5b39f256496fbaef83aa099",
+      "fieldwork": "abe8a0e031a40f27f39a04897bbc0e674a0acb15dbf830c2168b5b1006b3dbe1",
+      "punched-ticket": "5803294dd7b7dc88035f6d03ba97f27a15b3d4bd5d816cbed2de42b3155438b6",
       "summer-archive": "9fab8bce6a4ae4fd314e38ef3fe96caff5c6ab7ebd1e3d5b4f7bbe1e09f6dc5d"
     },
     "playbooks": {
@@ -27,7 +27,7 @@
   },
   {
     "id": "publisher-collection",
-    "version": "1.4.0",
+    "version": "1.4.1",
     "name": "Publisher collection",
     "description": "Four layouts for newsletters, article-end signups, guides and reading recommendations. Add your publication details, destinations and resources before publishing.",
     "requires": {
@@ -41,9 +41,9 @@
       ]
     },
     "templates": {
-      "sunday-marginalia": "4a8faf6b76b8834aee44e44480884f71a8710a41d42bfaf8cd54d25d66b15cad",
+      "sunday-marginalia": "ef73bd73c19d6b69df7cac611f051169bf150630312fbb7f1aa1c42ce9e78251",
       "inline-rule": "c886cc22c8810d3c845e50f88fc7c691a2dda5533cca173e0dbe66f2e809bc4d",
-      "useful-guide": "0493084eede0ec2f4861e12cdb67c99a7226f29bd1eb658a847b3f820a444a79",
+      "useful-guide": "e444ff48261428a2b5c4cd130c574bc30ce04d06227f59805cc291461b18e4c7",
       "reading-slip": "8a1bb2268e59b975d2a0fb61885c681a059e5cd6b1275174d7fce59501b1971c"
     },
     "playbooks": {
@@ -55,7 +55,7 @@
   },
   {
     "id": "service-collection",
-    "version": "1.4.0",
+    "version": "1.4.1",
     "name": "Service collection",
     "description": "Three layouts for callbacks, service enquiries and checklists. Add your topics, response process and resources before publishing.",
     "requires": {
@@ -70,9 +70,9 @@
       ]
     },
     "templates": {
-      "callback-notes": "643b77cdb2d86c907fdf9a0801da77969aadc55015589b50f9a89db285252df0",
-      "inline-choice": "d832b65e168dc0ee84f238b7950153b0b019bba9107b4547e434aca8d67644f7",
-      "launch-checklist": "03dea5322c4a0d98b494e8344ca5110b4d710352eea2766c9eecaa4bd1d13735"
+      "callback-notes": "90a558d4a4dfb553347098d9e072fefb2e7f662a5273e51e00882bd11d3b797d",
+      "inline-choice": "7b00ed9d0773ba6ca5df9e08095bac14506d7a99ee9e438a7d1530b9cb12024f",
+      "launch-checklist": "bcb45108ff76fc5764259f5b332592f47273592468ecd95fe6aace9ff0fc7eec"
     },
     "playbooks": {
       "request-a-callback": "c975d28525e888e7b916312fd717fb46bf40786dcbfc70d0c30ac13adbd3f981",

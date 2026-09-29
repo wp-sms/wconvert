@@ -2,7 +2,7 @@ import { designRevision } from './maintenance.mjs';
 
 /** Advisory triage, deliberately separate from campaign approval and retirement. */
 export function visualAuditReport(audit, designs, rendererRevision) {
-  const known = new Set(designs.map(d => d.id)), records = new Map();
+  const known = new Set(designs.map(d => d.id)), byId = new Map(designs.map(d => [d.id, d])), records = new Map();
   if (audit.schema !== 1 || !Array.isArray(audit.records) || !audit.scope?.trim()) throw new Error('Invalid visual audit');
   for (const record of audit.records) {
     if (!known.has(record.id) || records.has(record.id)
@@ -17,10 +17,19 @@ export function visualAuditReport(audit, designs, rendererRevision) {
     }
     records.set(record.id, record);
   }
+  for (const record of records.values()) {
+    if (record.variant_of !== undefined && (!known.has(record.variant_of)
+      || record.variant_of === record.id || records.get(record.variant_of)?.variant_of
+      || byId.get(record.variant_of).display_type !== byId.get(record.id).display_type
+      || !/^[a-f0-9]{64}$/.test(record.canonical_revision))) {
+      throw new Error(`Invalid visual variant: ${record.id}`);
+    }
+  }
   return designs.map(design => {
     const record = records.get(design.id);
     return { id: design.id, ...record, current: Boolean(record && record.source_revision === designRevision(design)
-      && audit.renderer_revision === rendererRevision) };
+      && audit.renderer_revision === rendererRevision
+      && (!record.variant_of || record.canonical_revision === designRevision(byId.get(record.variant_of)))) };
   });
 }
 

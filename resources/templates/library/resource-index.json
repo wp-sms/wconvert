@@ -62,26 +62,34 @@
                   "text": "A practical guide to looking after your knitwear."
                 },
                 {
-                  "type": "grid",
+                  "type": "stack",
                   "children": [
                     {
                       "type": "panel",
                       "tokens": {
-                        "pad": "1rem",
+                        "pad": ".75rem 1rem",
                         "bg": "#e9eddf"
                       },
                       "children": [
                         {
-                          "type": "eyebrow",
-                          "id": "n4",
-                          "role": "eyebrow",
-                          "text": "01"
-                        },
-                        {
-                          "type": "text",
-                          "id": "n5",
-                          "role": "body",
-                          "text": "Wash gently"
+                          "type": "row",
+                          "tokens": {
+                            "gap": ".75rem"
+                          },
+                          "children": [
+                            {
+                              "type": "eyebrow",
+                              "id": "n4",
+                              "role": "eyebrow",
+                              "text": "01"
+                            },
+                            {
+                              "type": "text",
+                              "id": "n5",
+                              "role": "body",
+                              "text": "Wash gently"
+                            }
+                          ]
                         }
                       ],
                       "narrow": {
@@ -92,21 +100,29 @@
                     {
                       "type": "panel",
                       "tokens": {
-                        "pad": "1rem",
+                        "pad": ".75rem 1rem",
                         "bg": "#e9eddf"
                       },
                       "children": [
                         {
-                          "type": "eyebrow",
-                          "id": "n6",
-                          "role": "eyebrow",
-                          "text": "02"
-                        },
-                        {
-                          "type": "text",
-                          "id": "n7",
-                          "role": "body",
-                          "text": "Dry flat"
+                          "type": "row",
+                          "tokens": {
+                            "gap": ".75rem"
+                          },
+                          "children": [
+                            {
+                              "type": "eyebrow",
+                              "id": "n6",
+                              "role": "eyebrow",
+                              "text": "02"
+                            },
+                            {
+                              "type": "text",
+                              "id": "n7",
+                              "role": "body",
+                              "text": "Dry flat"
+                            }
+                          ]
                         }
                       ],
                       "narrow": {
@@ -117,21 +133,29 @@
                     {
                       "type": "panel",
                       "tokens": {
-                        "pad": "1rem",
+                        "pad": ".75rem 1rem",
                         "bg": "#e9eddf"
                       },
                       "children": [
                         {
-                          "type": "eyebrow",
-                          "id": "n8",
-                          "role": "eyebrow",
-                          "text": "03"
-                        },
-                        {
-                          "type": "text",
-                          "id": "n9",
-                          "role": "body",
-                          "text": "Store well"
+                          "type": "row",
+                          "tokens": {
+                            "gap": ".75rem"
+                          },
+                          "children": [
+                            {
+                              "type": "eyebrow",
+                              "id": "n8",
+                              "role": "eyebrow",
+                              "text": "03"
+                            },
+                            {
+                              "type": "text",
+                              "id": "n9",
+                              "role": "body",
+                              "text": "Store well"
+                            }
+                          ]
                         }
                       ],
                       "narrow": {
@@ -139,7 +163,10 @@
                         "gap": ".25rem"
                       }
                     }
-                  ]
+                  ],
+                  "tokens": {
+                    "gap": ".5rem"
+                  }
                 }
               ],
               "narrow": {
@@ -160,7 +187,10 @@
                   "name": "email",
                   "label": "Email address",
                   "placeholder": "you@example.com",
-                  "required": true
+                  "required": true,
+                  "tokens": {
+                    "border": "#728a7c"
+                  }
                 },
                 {
                   "type": "consent",

@@ -67,8 +67,11 @@ campaigns. The studio exposes affected setups and advisory editorial prompts.
 ### Visual audit and reference board
 
 `npm run templates:pilot` also builds `out/roadmap.html`. It presents the
-29 September review of all 91 source designs: 70 retain recommendations, 15
-improvements and 6 consolidation candidates. Filter by type or decision, compare
+29 September review of all 91 source designs: all retain recommendations, with
+four related variants grouped into 87 review groups. The eleven remaining UI
+recommendations and six consolidation candidates are resolved in the
+[full-library cleanup report](../../docs/reviews/template-library-cleanup-2026-09-29.md).
+Expand variants or filter by type or decision, compare
 actual renders, inspect every authored screen, and switch to prepared campaign
 copy. Dependencies include registered setups outside the curated collection.
 
@@ -181,10 +184,14 @@ draws each design at its available container width before scaling its preview.
 Choose one design to inspect it at a larger size. **Check all sizes** measures
 320, 390, 768 and 1440px in both directions, with sample and longer copy plus
 consent. It checks horizontal overflow, 44px controls, 16px input text and solid
-text/placeholder contrast. Gradients, composition and vertical scrolling still
+text/placeholder contrast and field boundaries, including phone wrappers.
+Gradients, composition and vertical scrolling still
 need visual review. The measurement details are available as JSON on the page.
 
-`review/library-decisions.json` records each improvement, retirement and addition.
+`review/visual-audit.json` supplies the current, revision-bound recommendations.
+`review/library-decisions.json` is the historical September 11 record, not the
+authority for current review labels. Related variants expire when their source
+or canonical source changes; grouping does not retire designs or migrate campaigns.
 Set `WCONVERT_REVIEW_BASELINE` to a JSON array of earlier entries while building
 to enable the Before view. Without that optional file, the current library and
 all checks still work. See `docs/reviews/template-library-curation-2026-09-11.md`

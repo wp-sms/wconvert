@@ -64,7 +64,7 @@
                   "type": "text",
                   "id": "n3",
                   "role": "body",
-                  "text": "Tell us which part of your home needs attention. We will use your details to discuss the job."
+                  "text": "Tell us what needs attention. Leave your email so we can discuss the job."
                 },
                 {
                   "type": "divider",
@@ -74,7 +74,7 @@
                   "type": "text",
                   "id": "n5",
                   "role": "fine_print",
-                  "text": "A request for a quote. No booking or payment is made here.",
+                  "text": "A quote request, with no booking or payment.",
                   "size": "s",
                   "tokens": {
                     "text-size": "1.167rem"
@@ -82,7 +82,9 @@
                 }
               ],
               "narrow": {
-                "pad": "1.25rem"
+                "pad": "1rem",
+                "gap": ".75rem",
+                "heading-size": "1.75rem"
               }
             }
           ],
@@ -101,7 +103,10 @@
                   "name": "name",
                   "label": "Your name (optional)",
                   "placeholder": "Your name",
-                  "required": false
+                  "required": false,
+                  "tokens": {
+                    "border": "#92856c"
+                  }
                 },
                 {
                   "type": "field",
@@ -109,7 +114,10 @@
                   "name": "email",
                   "label": "Email address",
                   "placeholder": "you@example.com",
-                  "required": true
+                  "required": true,
+                  "tokens": {
+                    "border": "#92856c"
+                  }
                 },
                 {
                   "type": "field",
@@ -131,7 +139,10 @@
                       "value": "advice",
                       "label": "Help deciding"
                     }
-                  ]
+                  ],
+                  "tokens": {
+                    "border": "#92856c"
+                  }
                 },
                 {
                   "type": "consent",
@@ -163,7 +174,9 @@
                 }
               ],
               "narrow": {
-                "pad": "1.25rem"
+                "pad": "1rem",
+                "gap": ".75rem",
+                "heading-size": "1.75rem"
               }
             }
           ]
@@ -200,7 +213,9 @@
             }
           ],
           "narrow": {
-            "pad": "1.25rem"
+            "pad": "1rem",
+            "gap": ".75rem",
+            "heading-size": "1.75rem"
           }
         }
       }

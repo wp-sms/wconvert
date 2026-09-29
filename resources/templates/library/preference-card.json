@@ -112,7 +112,10 @@
                       "value": "ideas",
                       "label": "Science and ideas"
                     }
-                  ]
+                  ],
+                  "tokens": {
+                    "border": "#7490ba"
+                  }
                 },
                 {
                   "type": "field",
@@ -120,7 +123,10 @@
                   "name": "email",
                   "label": "Email address",
                   "placeholder": "you@example.com",
-                  "required": true
+                  "required": true,
+                  "tokens": {
+                    "border": "#7490ba"
+                  }
                 },
                 {
                   "type": "consent",

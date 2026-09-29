@@ -65,7 +65,10 @@
                   "value": "other",
                   "label": "Another question"
                 }
-              ]
+              ],
+              "tokens": {
+                "border": "#7090a4"
+              }
             },
             {
               "type": "field",
@@ -73,7 +76,10 @@
               "name": "email",
               "label": "Email address",
               "placeholder": "you@example.com",
-              "required": true
+              "required": true,
+              "tokens": {
+                "border": "#7090a4"
+              }
             },
             {
               "type": "consent",

@@ -93,7 +93,10 @@
                   "name": "name",
                   "label": "Your name (optional)",
                   "placeholder": "Alex Morgan",
-                  "required": false
+                  "required": false,
+                  "tokens": {
+                    "border": "#78908d"
+                  }
                 },
                 {
                   "type": "field",
@@ -101,7 +104,10 @@
                   "name": "phone",
                   "label": "Phone number",
                   "placeholder": "+44 7700 900123",
-                  "required": true
+                  "required": true,
+                  "tokens": {
+                    "border": "#78908d"
+                  }
                 },
                 {
                   "type": "field",
@@ -123,7 +129,10 @@
                       "value": "advice",
                       "label": "Help choosing the next step"
                     }
-                  ]
+                  ],
+                  "tokens": {
+                    "border": "#78908d"
+                  }
                 },
                 {
                   "type": "consent",

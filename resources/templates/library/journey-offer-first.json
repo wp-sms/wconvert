@@ -121,7 +121,10 @@
               "name": "email",
               "label": "Email address",
               "required": true,
-              "placeholder": "you@example.com"
+              "placeholder": "you@example.com",
+              "tokens": {
+                "border": "#87937f"
+              }
             },
             {
               "type": "consent",

@@ -228,7 +228,7 @@ remember it.
 **A field's ground is `--wc-bg`, so on a dark design only the ring shows it.**
 Pick a `border` that clearly distinguishes the input from its surroundings.
 Where the outline identifies the field, require at least **3:1** against the
-adjacent surface, including the input fill when the ring is inset. Check the
+adjacent surface. A fill that already contrasts with its surroundings can identify the field; otherwise the outline must contrast with both adjacent surfaces, including the input fill when inset. Include the phone library wrapper in this check. Check the
 focused state too. This is separate from text contrast (normally 4.5:1);
 passing label and placeholder checks does not prove that a pale field outline
 is usable. See [WCAG non-text contrast](https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast.html).

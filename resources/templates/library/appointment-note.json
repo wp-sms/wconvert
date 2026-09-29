@@ -94,7 +94,10 @@
                       "value": "both",
                       "label": "Both"
                     }
-                  ]
+                  ],
+                  "tokens": {
+                    "border": "#a7858f"
+                  }
                 },
                 {
                   "type": "field",
@@ -102,7 +105,10 @@
                   "name": "email",
                   "label": "Email address",
                   "placeholder": "you@example.com",
-                  "required": true
+                  "required": true,
+                  "tokens": {
+                    "border": "#a7858f"
+                  }
                 },
                 {
                   "type": "consent",

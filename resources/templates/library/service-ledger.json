@@ -74,7 +74,10 @@
                       "text": "For an idea that needs direction.",
                       "role": "body"
                     }
-                  ]
+                  ],
+                  "tokens": {
+                    "gap": ".375rem"
+                  }
                 }
               ],
               "end": [
@@ -90,10 +93,13 @@
                     {
                       "type": "text",
                       "id": "n8",
-                      "text": "Leave with questions and next steps.",
+                      "text": "Identify the next steps.",
                       "role": "body"
                     }
-                  ]
+                  ],
+                  "tokens": {
+                    "gap": ".375rem"
+                  }
                 }
               ],
               "basis": "16rem",
@@ -122,7 +128,10 @@
                       "text": "For a defined piece of work.",
                       "role": "body"
                     }
-                  ]
+                  ],
+                  "tokens": {
+                    "gap": ".375rem"
+                  }
                 }
               ],
               "end": [
@@ -138,21 +147,29 @@
                     {
                       "type": "text",
                       "id": "n13",
-                      "text": "Confirm timing and pricing separately.",
+                      "text": "Confirm timing and price.",
                       "role": "body"
                     }
-                  ]
+                  ],
+                  "tokens": {
+                    "gap": ".375rem"
+                  }
                 }
               ],
               "basis": "16rem",
               "ratio": "0.5"
             },
             {
-              "type": "button",
-              "id": "n14",
-              "label": "Explore the service details",
-              "action": "link",
-              "role": "cta_label"
+              "type": "row",
+              "children": [
+                {
+                  "type": "button",
+                  "id": "n14",
+                  "label": "Explore the service details",
+                  "action": "link",
+                  "role": "cta_label"
+                }
+              ]
             },
             {
               "type": "text",
@@ -164,7 +181,12 @@
                 "text-size": "1.167rem"
               }
             }
-          ]
+          ],
+          "narrow": {
+            "pad": "1.25rem",
+            "gap": ".75rem",
+            "heading-size": "1.625rem"
+          }
         }
       }
     ],

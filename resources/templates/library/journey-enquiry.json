@@ -52,7 +52,10 @@
                   "value": "quote",
                   "label": "A quote"
                 }
-              ]
+              ],
+              "tokens": {
+                "border": "#8790a3"
+              }
             },
             {
               "type": "button",
@@ -82,14 +85,20 @@
               "id": "n5",
               "name": "name",
               "label": "Your name",
-              "required": false
+              "required": false,
+              "tokens": {
+                "border": "#8790a3"
+              }
             },
             {
               "type": "field",
               "id": "n6",
               "name": "email",
               "label": "Email address",
-              "required": true
+              "required": true,
+              "tokens": {
+                "border": "#8790a3"
+              }
             },
             {
               "type": "text",
