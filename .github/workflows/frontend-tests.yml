@@ -98,6 +98,7 @@ jobs:
       - run: npm run test:visual:popup
       - run: npm run test:visual:fullscreen
       - run: npm run test:visual:reopen
+      - run: npm run build:phone && npm run test:visual:events
       - name: Build block and inspectors for inline contracts
         run: npm run build:block && npm run build:inspector && npm run build:inspector:pro
       - run: npm run test:visual:inline

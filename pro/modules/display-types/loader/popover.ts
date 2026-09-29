@@ -477,6 +477,7 @@ export function mountPopover(options: MountOptions): Mounted {
       cancelClose();
       element.hidePopover?.();
       element.remove();
+      options.onClosed?.();
     };
 
     element.addEventListener('transitionend', finish, { once: true });
@@ -494,6 +495,8 @@ export function mountPopover(options: MountOptions): Mounted {
     },
     steps: options.template.tree.steps.length,
     show() {
+      const opened = element.isConnected;
+      if (opened && !element.hasAttribute('data-leaving')) return;
       cancelClose();
       element.removeAttribute('data-leaving');
       takesPointers(parts.root);
@@ -521,6 +524,7 @@ export function mountPopover(options: MountOptions): Mounted {
       if (reservesPage) {
         releaseReservation = reserveTopBar(element);
       }
+      if (!opened) options.onOpened?.();
     },
     showStep: (step) => {
       takesPointers(parts.step(step));

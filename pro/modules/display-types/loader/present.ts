@@ -1,3 +1,4 @@
+import { campaignLifecycle } from '@loader/events';
 import type { OptinControls, PayloadEntry, Presenter } from '@loader/types';
 import { createTemplatePresenter } from '@loader/present';
 import { premiumCaptureInto } from '../../journeys/loader';
@@ -64,6 +65,7 @@ export const proPresenter: Presenter = {
     }
 
     const mounted = (entry.display_type === 'fullscreen' ? mountFullscreen : mountPopover)({
+      ...campaignLifecycle(entry),
       displayType: entry.display_type,
       placement: entry.placement,
       template,

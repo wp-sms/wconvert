@@ -68,6 +68,32 @@ beforeEach(() => {
   ]);
 });
 
+it('copies the full campaign ID from details without publishing', async () => {
+  const user = userEvent.setup();
+  const write = vi.spyOn(navigator.clipboard, 'writeText').mockResolvedValue();
+  render(<OptinList onEdit={vi.fn()} onCreate={vi.fn()} />);
+  await user.click(await screen.findByRole('button', { name: OPTIN.name }));
+  await user.click(screen.getByRole('button', { name: 'Copy campaign ID' }));
+  expect(write).toHaveBeenCalledWith(OPTIN.id);
+  expect(await screen.findByText('ID copied.')).toHaveAttribute('role', 'status');
+  expect(optins.publishOptin).not.toHaveBeenCalled();
+  write.mockRestore();
+});
+
+it('selects the campaign ID for manual copying when clipboard permission is refused', async () => {
+  const user = userEvent.setup();
+  const write = vi.spyOn(navigator.clipboard, 'writeText').mockRejectedValue(new Error('denied'));
+  render(<OptinList onEdit={vi.fn()} />);
+  await user.click(await screen.findByRole('button', { name: OPTIN.name }));
+  await user.click(screen.getByRole('button', { name: 'Copy campaign ID' }));
+  expect(await screen.findByRole('alert')).toHaveTextContent('Could not copy automatically');
+  const field = screen.getByRole('textbox', { name: 'Campaign ID' }) as HTMLInputElement;
+  expect(field).toHaveFocus(); expect(field.value).toBe(OPTIN.id);
+  expect(field.selectionStart).toBe(0); expect(field.selectionEnd).toBe(OPTIN.id.length);
+  expect(screen.queryByText('ID copied.')).not.toBeInTheDocument();
+  write.mockRestore();
+});
+
 /**
  * ============================================================================
  * A SCREEN IS FOUR SITUATIONS, AND THIS ONE HAD TESTS FOR EXACTLY ONE.
@@ -400,6 +426,19 @@ describe('an A/B test on the list', () => {
   };
 
   const A_TEST = [{ ...OPTIN, arms: [ARM_B] }];
+
+  it('copies a variants own ID and distinguishes it from the parent campaign', async () => {
+    const user = userEvent.setup();
+    const write = vi.spyOn(navigator.clipboard, 'writeText').mockResolvedValue();
+    optins.listOptins.mockResolvedValue(A_TEST);
+    render(<OptinList onEdit={vi.fn()} />);
+    await user.click(await screen.findByRole('button', { name: ARM_B.name }));
+    await user.click(screen.getByRole('button', { name: 'Copy variant ID' }));
+    expect(write).toHaveBeenCalledWith(ARM_B.id);
+    expect(screen.getByRole('textbox', { name: 'Variant ID' })).toHaveValue(ARM_B.id);
+    expect(screen.queryByRole('button', { name: 'Copy campaign ID' })).not.toBeInTheDocument();
+    write.mockRestore();
+  });
 
   it('keeps an A/B family together when searching for an arm and can clear unmatched filters', async () => {
     optins.listOptins.mockResolvedValue(A_TEST);

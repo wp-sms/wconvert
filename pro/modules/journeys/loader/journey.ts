@@ -1,10 +1,11 @@
+import { requestCapture, type Reply } from '@loader/capture-request';
 import { journeyLabel } from '@loader/journey-labels';
 import { answerReview } from '@renderer/answer-review';
 import { journeyNotice } from '@renderer/journey-notice';
 import type { Mounted } from '@renderer/mount';
 import type { TemplateNode } from '@renderer/types';
 import type { PayloadEntry } from '@loader/types';
-import { captureEndpoint, beaconEndpoint } from '@loader/payload';
+import { beaconEndpoint } from '@loader/payload';
 import { createBeacon, type BeaconKind } from '@loader/beacon';
 import { clear, pending, refuse } from '@loader/capture';
 import { chooseResult, journeyTrace, type Answers } from '@loader/journey-rules';
@@ -16,8 +17,7 @@ import { showProducts } from '@loader/products';
 
 type Input = HTMLInputElement | HTMLSelectElement;
 type PhoneControl = HTMLInputElement & { __p?: (value: string) => void; __r?: () => void };
-interface Reply { id?: string; grant?: string; message?: string; data?: { field?: string }; }
-interface Options { onCaptured(): void; onCompleted?(): void; onDismiss?(): void; onRefused?(kind: 'correctable' | 'unconfirmed'): void; }
+interface Options { onLeadAccepted?(): void; onCaptured(): void; onCompleted?(): void; onDismiss?(): void; onRefused?(kind: 'correctable' | 'unconfirmed'): void; }
 
 
 /** One mounted page owns unsaved answers and the expiring request capability. */
@@ -227,17 +227,18 @@ export function bindJourney(mounted: Mounted, entry: PayloadEntry, options: Opti
         try {
           const base = { optin_id: entry.id, contract: entry.capture_contract };
           if (!grant) {
-            const start = await request({ ...base, phase: 'start' });
+            const start = await requestCapture({ ...base, phase: 'start' });
             if (typeof start.grant !== 'string' || start.grant.trim() === '') throw {};
             grant = start.grant;
           }
-          const result = await request({ ...base, grant, submission: submission.id, fields, question_answers: snapshot.answers,
+          const result = await requestCapture({ ...base, grant, submission: submission.id, fields, question_answers: snapshot.answers,
             consent: submission.consents.length > 0 ? submission.consents.every(id => answers.get(id) === true) : undefined });
           if (typeof result.id !== 'string' || result.id.trim() === '') throw {};
           accepted.add(submission.id);
           [...submission.fields, ...submission.consents].forEach(id => fixed.add(id));
           snapshot.questionIds.forEach(id => lockedQuestions.add(id));
           release(); busy = false;
+          if (accepted.size === 1) options.onLeadAccepted?.();
           report('screen_advanced'); const target = next(step, 1); if (target !== step) { visited.push(target); show(target); }
           if (accepted.size === 1 && resultAt < 0) options.onCaptured();
         } catch (error) {
@@ -258,18 +259,4 @@ export function bindJourney(mounted: Mounted, entry: PayloadEntry, options: Opti
   }
   if (tree.graph) mounted.showStep(step);
   bind();
-}
-
-async function request(body: Record<string, unknown>): Promise<Reply> {
-  const endpoint = captureEndpoint();
-  if (!endpoint) throw {};
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 15000);
-  try {
-    const response = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), signal: controller.signal });
-    const reply: unknown = await response.json();
-    if (!reply || typeof reply !== 'object' || Array.isArray(reply)) throw {};
-    if (!response.ok) throw reply;
-    return reply as Reply;
-  } finally { clearTimeout(timeout); }
 }

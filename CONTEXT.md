@@ -78,6 +78,11 @@ invented.
 
 WConvert owns Leads.
 
+The public browser `wconvert:capture` event acknowledges the first accepted Lead
+in a mounted journey, including quiz contact capture. It never denotes provider
+confirmation or repeats for optional additions. See
+[ADR 0110](docs/adr/0110-public-browser-events-describe-campaign-outcomes.md).
+
 When a visitor explicitly submits contact details after answering Pro questions,
 the Lead also holds a snapshot of the active question IDs, wording, values and
 choice labels in existing JSON storage. Skipped answers are excluded. An
@@ -408,6 +413,11 @@ shows real known issues on request. See [ADR 0092](docs/adr/0092-campaigns-use-a
 An Optin is never hard-deleted. Its counters reference it by id, so a removed row
 would make every count naming it uninterpretable — which is also why ending an
 A/B test cannot delete the losing [[Variant]].
+
+Live overlays notify page scripts through `wconvert:open` and `wconvert:close`.
+These describe actual presentation transitions, not changing journey screens or
+analytics impressions/dismissals. Campaign details can copy existing campaign
+or variant IDs. See [ADR 0110](docs/adr/0110-public-browser-events-describe-campaign-outcomes.md).
 
 ### Variant
 
