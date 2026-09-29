@@ -30,7 +30,7 @@ callers, different correct answers.
 
 ## Why this is not a merchant setting
 
-> **Narrowed by [ADR 0109](0109-integrations-share-setup-and-map-extra-answers-per-campaign.md),
+> **Narrowed by [ADR 0110](0110-integrations-share-setup-and-map-extra-answers-per-campaign.md),
 > accepted but not yet implemented:** the integration plan adds a merchant choice
 > for updating eligible mapped **non-identity** values on adapters with verified
 > support. It does not permit overwriting email/phone identity, merging Contacts,

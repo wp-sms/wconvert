@@ -5,7 +5,7 @@ Product direction accepted in the integration planning conversation. The
 foundation and both first adapters are implemented on the integration branch;
 the delivery gates below still distinguish code verification from live-provider
 validation and are not a claim that the release is shipped.
-See [ADR 0109](../adr/0109-integrations-share-setup-and-map-extra-answers-per-campaign.md).
+See [ADR 0110](../adr/0110-integrations-share-setup-and-map-extra-answers-per-campaign.md).
 
 ## Implementation status (2026-09-29)
 
@@ -602,7 +602,7 @@ claims live-provider acceptance before provider test accounts are exercised.
 
 ## Navigation
 
-- [Accepted decisions](../adr/0109-integrations-share-setup-and-map-extra-answers-per-campaign.md)
+- [Accepted decisions](../adr/0110-integrations-share-setup-and-map-extra-answers-per-campaign.md)
 - [Verification matrix](integration-foundation-verification.md)
 - Existing contracts: [outbound capture](../adr/0007-destinations-are-outbound-and-fallible.md),
   [health and recovery](../adr/0008-delivery-state-is-destination-health-not-per-lead.md),

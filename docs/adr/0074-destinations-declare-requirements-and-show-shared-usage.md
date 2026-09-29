@@ -49,7 +49,7 @@ Its stable selected option value is what can be forwarded; the captured display
 label remains part of the Lead's local evidence. This is not an arbitrary field
 mapping framework.
 
-> **Extended by [ADR 0109](0109-integrations-share-setup-and-map-extra-answers-per-campaign.md),
+> **Extended by [ADR 0110](0110-integrations-share-setup-and-map-extra-answers-per-campaign.md),
 > accepted but not yet implemented:** extra captured form/quiz answers will map
 > through a shared implementation, with selections owned by each Campaign and
 > scoped to its Destination/submission. Basic fields remain automatic. This
@@ -75,7 +75,7 @@ setting, editor compatibility advice and test dialog state this limitation.
 Neither WSMS nor the lead-magnet email forwards interest. Without a mapping, the
 answer remains available with the captured Lead and its export.
 
-> **Existing-contact policy under ADR 0109:** capable adapters will offer Keep
+> **Existing-contact policy under ADR 0110:** capable adapters will offer Keep
 > existing details or Update mapped fields. The MailPoet creation-only behavior
 > described here remains current and must remain visible until an eligible update
 > path is verified. Subscription, identity and provenance protections are not

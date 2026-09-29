@@ -92,27 +92,30 @@ export function createBeacon(endpoint: string | null): Beacon {
     // unload nor blocked on by it. A Blob carries the content type, because
     // the two-argument string form posts `text/plain`.
     if (typeof navigator.sendBeacon === 'function') {
-      // A queue the browser refuses — it is full, or the payload is over its
-      // limit — is a false return rather than a throw, and there is no second
-      // chance worth taking on a page that is closing.
-      navigator.sendBeacon(url, new Blob([body], { type: 'application/json' }));
-
-      return;
+      try {
+        // True means queued, not received. A false return or synchronous
+        // exception is the only unambiguous occasion for one fallback attempt.
+        if (navigator.sendBeacon(url, new Blob([body], { type: 'application/json' }))) return;
+      } catch {
+        // The browser refused to queue it; try the same batch once below.
+      }
     }
 
     // The long tail. `keepalive` is what lets a fetch outlive the document;
     // without it this is a request the browser cancels on the way out, which
     // is still better than not trying.
-    void fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body,
-      keepalive: true,
-    }).catch(() => {
-      // A count that did not arrive is a count that did not arrive. It is not
-      // a reason to throw on a page WConvert was asked to leave alone
-      // (ADR 0004).
-    });
+    try {
+      void fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body,
+        keepalive: true,
+      }).catch(() => {
+        // A failed count must not interrupt a page WConvert was asked to leave alone.
+      });
+    } catch {
+      // A custom fetch or browser policy can also refuse synchronously.
+    }
   }
 
   function flush(): void {
@@ -145,7 +148,12 @@ export function createBeacon(endpoint: string | null): Beacon {
   // every back-navigation on the site to collect a number.
   // And on activation, for the events held through a prerender.
   window.addEventListener('pagehide', flush);
+  document.addEventListener('visibilitychange', onHidden);
   document.addEventListener('prerenderingchange', flush, { once: true });
+
+  function onHidden(): void {
+    if (document.visibilityState === 'hidden') flush();
+  }
 
   return {
     report,
@@ -154,6 +162,7 @@ export function createBeacon(endpoint: string | null): Beacon {
       stopped = true;
       queued = [];
       window.removeEventListener('pagehide', flush);
+      document.removeEventListener('visibilitychange', onHidden);
       document.removeEventListener('prerenderingchange', flush);
     },
   };

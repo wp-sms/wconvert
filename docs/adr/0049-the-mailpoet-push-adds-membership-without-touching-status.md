@@ -133,7 +133,7 @@ the result *the owner's opinion wins*.
 ## Nothing is filled in on a match
 
 > **Planned extension recorded by
-> [ADR 0109](0109-integrations-share-setup-and-map-extra-answers-per-campaign.md):**
+> [ADR 0110](0110-integrations-share-setup-and-map-extra-answers-per-campaign.md):**
 > the shared integration model gains a per-Destination update choice, but this
 > MailPoet limitation still holds until a focused write path can preserve
 > provenance and lifecycle state. Do not expose an unsupported Update mapped

@@ -13,6 +13,7 @@ import type { DisplayRulesValue } from './summaries';
 /** Hypothetical facts only. This module has no storage, listeners, beacons or capture imports. */
 export default function SampleVisit({ value, vocabulary, onClose }: { value: DisplayRulesValue; vocabulary: RuleVocabulary; onClose: () => void }) {
   const [answers, setAnswers] = useState<Record<string, Answer>>({});
+  const [adBlocking, setAdBlocking] = useState<'detected' | 'not_detected' | 'unknown' | 'pending'>('unknown');
   const [seconds, setSeconds] = useState(0);
   const [scroll, setScroll] = useState(0);
   const [idle, setIdle] = useState(0);
@@ -26,7 +27,7 @@ export default function SampleVisit({ value, vocabulary, onClose }: { value: Dis
   const [gesture, setGesture] = useState<string | null>(null);
   const change = <T,>(setter: (value: T) => void, next: T) => { setGesture(null); setter(next); };
   const reset = () => {
-    setAnswers({}); setSeconds(0); setScroll(0); setIdle(0); setGesture(null);
+    setAnswers({}); setAdBlocking('unknown'); setSeconds(0); setScroll(0); setIdle(0); setGesture(null);
     setPage(true); setLimits(true); setPacing(true); setCompletion(true); setGoal(true);
   };
   const plan = value.display_rules;
@@ -34,7 +35,8 @@ export default function SampleVisit({ value, vocabulary, onClose }: { value: Dis
   const isGesture = (type: string) => ['exit_intent', 'scroll_up', 'click_element'].includes(type);
   const read = (rule: { readonly [key: string]: unknown }): Answer => rule.type === 'time_on_page' ? seconds >= Number(rule.seconds)
     : rule.type === 'scroll_depth' ? scroll >= Number(rule.percent) : rule.type === 'inactivity' ? Math.min(idle, seconds) >= Number(rule.seconds)
-      : isGesture(String(rule.type)) ? gesture === String(rule.id) : answers[String(rule.id)] ?? false;
+      : isGesture(String(rule.type)) ? gesture === String(rule.id)
+        : rule.type === 'ad_blocking' ? (adBlocking === 'detected' || adBlocking === 'not_detected') && adBlocking === rule.value : answers[String(rule.id)] ?? false;
   const rows = plan ? [...audienceRules(plan), ...openingRules(plan)] : [];
   const automaticValue = (type: string) => ['time_on_page', 'scroll_depth', 'inactivity'].includes(type);
   const audience = plan ? audienceMatches(plan.audience, read) : false;
@@ -42,7 +44,8 @@ export default function SampleVisit({ value, vocabulary, onClose }: { value: Dis
   const automaticAllowed = plan?.opening.mode === 'click' || pacing;
   const passes = page && limits && completion && automaticAllowed && goal && audience === true && opening === true;
   const timed = rows.filter(rule => automaticValue(rule.type));
-  const facts = rows.filter(rule => !automaticValue(rule.type) && !isGesture(rule.type));
+  const facts = rows.filter(rule => rule.type !== 'ad_blocking' && !automaticValue(rule.type) && !isGesture(rule.type));
+  const hasAdBlocking = rows.some(rule => rule.type === 'ad_blocking');
   const gestures = rows.filter(rule => isGesture(rule.type));
   const minimum = plan?.opening.mode === 'automatic' ? plan.opening.minimum_seconds ?? 0 : 0;
   const showTime = minimum > 0 || rows.some(rule => ['time_on_page', 'inactivity'].includes(rule.type));
@@ -92,9 +95,17 @@ export default function SampleVisit({ value, vocabulary, onClose }: { value: Dis
             </Button>)}</div>
           </div>}
         </section>}
-        {facts.length > 0 && <section aria-labelledby="wconvert-sample-visitor">
+        {(facts.length > 0 || hasAdBlocking) && <section aria-labelledby="wconvert-sample-visitor">
           <h3 id="wconvert-sample-visitor">{__('Visitor details', 'wconvert')}</h3>
           <p className="wconvert-sample-help">{__('For this pretend visitor, choose whether each condition is true.', 'wconvert')}</p>
+          {hasAdBlocking && <label>{__('Ad-block status', 'wconvert')}
+            <select value={adBlocking} onChange={event => change(setAdBlocking, event.target.value as typeof adBlocking)}>
+              <option value="detected">{__('Detected', 'wconvert')}</option>
+              <option value="not_detected">{__('Not detected', 'wconvert')}</option>
+              <option value="unknown">{__('Unknown', 'wconvert')}</option>
+              <option value="pending">{__('Checking', 'wconvert')}</option>
+            </select>
+          </label>}
           <div className="wconvert-sample-facts">{facts.map(rule => <label key={String(rule.id)}>
             <span>{phraseOf(rule as Rule, types).text}</span><select value={String(read(rule))} onChange={event => change(setAnswers, { ...answers, [String(rule.id)]: event.target.value === 'blocked' ? 'blocked' : event.target.value === 'true' })}>
               <option value="false">{__('Does not match', 'wconvert')}</option><option value="true">{__('Matches', 'wconvert')}</option><option value="blocked">{__('Consent not given', 'wconvert')}</option>

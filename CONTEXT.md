@@ -250,7 +250,7 @@ whoever knows an email rewrite the phone beside it. And it never touches lifecyc
 state at all: not the subscription status, not an opt-out, not on a re-subscribe.
 
 > **Accepted extension, not yet implemented:**
-> [ADR 0109](docs/adr/0109-integrations-share-setup-and-map-extra-answers-per-campaign.md)
+> [ADR 0110](docs/adr/0110-integrations-share-setup-and-map-extra-answers-per-campaign.md)
 > adds a per-Destination choice to update eligible mapped **non-identity** values
 > on adapters with a verified safe write path. Keep existing details is the
 > default. The existing prohibition on identifier replacement, merging and
@@ -757,6 +757,14 @@ semantics. See [ADR 0104](docs/adr/0104-display-workspace-uses-bounded-groups-an
 
 *Whether* a visitor is eligible to see an [[Optin]] — device, referrer, cart
 state, time of day.
+
+Pro can also check for signs of ad blocking with a short, document-local
+cosmetic-interference probe. The check reports detected, not detected or
+inconclusive; pending and inconclusive match neither authored status. It does
+not identify an extension, store a visitor profile or prove that WConvert's
+own loader and requests were delivered. A Campaign whose paid module is absent
+is suspended as for other authored unavailable Conditions. See
+[ADR 0109](docs/adr/0109-ad-block-observation-is-a-bounded-condition.md).
 
 Audience is Everyone or up to five alternative groups. A group requires ALL or
 ANY of up to eight Conditions/account leaves; the groups combine with OR.
@@ -1291,7 +1299,7 @@ different question answers through one route. Where several Destinations share
 credentials, those live on a [[Connection]] underneath them.
 
 > **Implemented foundation:**
-> [ADR 0109](docs/adr/0109-integrations-share-setup-and-map-extra-answers-per-campaign.md)
+> [ADR 0110](docs/adr/0110-integrations-share-setup-and-map-extra-answers-per-campaign.md)
 > extends Destination ids with optional extra-answer
 > mappings in the Campaign configuration, scoped by Destination and accepted
 > submission. Accounts, targets and existing-contact policy stay shared; basic
@@ -1386,7 +1394,7 @@ separately, not their same-period difference as a per-Lead pending or failure
 count ([ADR 0089](docs/adr/0089-analytics-starts-with-impact-and-keeps-history-inspectable.md)). Named-route and capture links help investigate those facts
 without creating a delivery ledger ([ADR 0071](docs/adr/0071-reports-capture-history-and-recovery-form-a-connected-admin-flow.md)).
 
-The history extension in ADR 0109 records explicit provider outcomes
+The history extension in ADR 0110 records explicit provider outcomes
 against recent Action Scheduler attempts. Scheduler completion alone does not mean
 the push landed. Missing/expired or inconclusive evidence is Unknown; no permanent
 per-Lead outcome record or inbox/subscription confirmation is promised. This is

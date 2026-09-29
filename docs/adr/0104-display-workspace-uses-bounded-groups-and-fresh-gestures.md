@@ -1,5 +1,7 @@
 # Display workspace uses bounded groups and fresh gestures
 
+> **Amended by [ADR 0109](0109-ad-block-observation-is-a-bounded-condition.md):** Pro adds an optional bounded ad-block audience Condition. A pending or inconclusive measurement matches neither authored status, while an absent module still suspends the Campaign. The loader caps below are historical; ADR 0109 records current numbers.
+
 Accepted 2026-09-23. Implements the approved [Option A plan](../plans/display-workspace/README.md), reviewed against the Goal setup and progressive capture changes in ADRs 0102–0103.
 
 ## Authoring and storage

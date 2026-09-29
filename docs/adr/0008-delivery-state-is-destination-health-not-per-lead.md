@@ -5,7 +5,7 @@ here, explicitly declining to spend a third table on our behalf. The obvious
 design is a `wconvert_lead_deliveries` table at the per-(Lead × Destination)
 grain — the grain the queue already uses. We did not build it.
 
-> **Extended by [ADR 0109](0109-integrations-share-setup-and-map-extra-answers-per-campaign.md),
+> **Extended by [ADR 0110](0110-integrations-share-setup-and-map-extra-answers-per-campaign.md),
 > accepted but not yet implemented:** recent per-submission/Destination attempts
 > will expose explicit WConvert outcomes through Action Scheduler logs. This
 > introduces neither a permanent delivery table nor a lifetime sent/failed fact.
@@ -144,7 +144,7 @@ refuse.*
   during a real outage it fills with redundant entries while health already tells
   the story.
 
-  > **Planned refinement under ADR 0109:** keep record rejection separate from
+  > **Planned refinement under ADR 0110:** keep record rejection separate from
   > Destination problems, but separate retry advice from health classification.
   > Invalid credentials or settings require repair and can affect Destination
   > health without being automatically retried like a temporary outage. The

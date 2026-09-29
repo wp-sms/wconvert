@@ -34,6 +34,12 @@ export interface ParamControlProps {
 
 export function ParamControl({ id, param, value, onChange }: ParamControlProps) {
   switch (param.control) {
+    case 'enum':
+      return <select id={id} value={typeof value === 'string' ? value : ''}
+        onChange={event => onChange(event.target.value || undefined)}>
+        <option value="">{__('Choose…', 'wconvert')}</option>
+        {param.options.map(option => <option key={option.value} value={option.value}>{option.label}</option>)}
+      </select>;
     case 'boolean':
       return (
         <select id={id} value={typeof value === 'boolean' ? String(value) : ''}

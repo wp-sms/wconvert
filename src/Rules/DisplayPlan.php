@@ -156,6 +156,7 @@ final class DisplayPlan
                         'percent' => is_numeric($value) && (float) (int) $value === (float) $value && $value >= 1 && $value <= 100,
                         'amount' => is_numeric($value) && $value >= 0 && is_finite((float) $value),
                         'boolean' => is_bool($value),
+                        'enum' => is_string($value) && in_array($value, $param['options'] ?? [], true),
                         'device_set', 'referrer_set', 'role_set', 'text_set' => is_array($value) && array_is_list($value)
                             && count(array_filter($value, static fn ($v) => is_string($v) && trim($v) !== '')) === count($value)
                             && (!isset($param['options']) || array_diff($value, $param['options']) === []),
@@ -164,6 +165,12 @@ final class DisplayPlan
                         default => is_string($value) && trim($value) !== '',
                     };
                     if (!$valid) $issues[] = sprintf(__('%1$s: complete the %2$s value.', 'wconvert'), RuleLabels::types()[$rule['type']] ?? $rule['type'], $name);
+                }
+            }
+            if (($group['match'] ?? 'any') === 'all') {
+                $adStatuses = array_column(array_filter($group['rules'], static fn ($rule) => $rule['type'] === 'ad_blocking'), 'value');
+                if (in_array('detected', $adStatuses, true) && in_array('not_detected', $adStatuses, true)) {
+                    $issues[] = __('Ad blocking cannot be both detected and not detected. Use ANY or change the values.', 'wconvert');
                 }
             }
             if (($group['match'] ?? 'any') === 'all' && ($devices === [] || (in_array(true, $signedIn, true) && in_array(false, $signedIn, true)))) $issues[] = __('These audience requirements contradict each other. Use ANY or change the values.', 'wconvert');

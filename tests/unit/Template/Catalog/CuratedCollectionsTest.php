@@ -114,9 +114,9 @@ final class CuratedCollectionsTest extends TestCase
 
     public function testAConflictingReleaseDoesNotReplaceFilesOrIndex(): void
     {
-        $contents = file_get_contents(dirname(__DIR__, 4) . '/tools/template-catalog/collections.json');
-        $this->assertNotFalse($contents);
-        $collections = json_decode($contents, true, 512, JSON_THROW_ON_ERROR);
+        $source = file_get_contents(dirname(__DIR__, 4) . '/tools/template-catalog/collections.json');
+        if ($source === false) $this->fail('The collection manifest could not be read.');
+        $collections = json_decode($source, true, 512, JSON_THROW_ON_ERROR);
         $versions = array_column($collections, 'version', 'id');
         $path = $this->directory . '/publisher-collection-' . $versions['publisher-collection'] . '.json';
         file_put_contents($path, 'previous release');

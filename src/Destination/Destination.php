@@ -12,7 +12,7 @@ defined('ABSPATH') || exit;
  * inside the remote system* — the Mailchimp audience, the WSMS tags. That is
  * what collapses two concepts into one: two Optins feeding one audience
  * reference one Destination. Optional extra-answer maps live in Campaign
- * configuration and accepted submissions (ADR 0109).
+ * configuration and accepted submissions (ADR 0110).
  *
  * **It carries no delivery state and no health.** Those live in their own
  * non-autoloaded option, because two jobs completing at once lose an increment

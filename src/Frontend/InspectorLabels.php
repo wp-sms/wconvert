@@ -187,6 +187,12 @@ final class InspectorLabels
                 'unknown' => __('Not evaluated', 'wconvert'),
                 'unsupported' => __('No module on this site evaluates this rule', 'wconvert'),
             ],
+            'ad_blocking' => [
+                'pending' => __('Checking ad-block status…', 'wconvert'),
+                'detected' => __('Ad blocking detected by this check', 'wconvert'),
+                'not_detected' => __('Ad blocking not detected by this check', 'wconvert'),
+                'unknown' => __('Ad-block status could not be determined', 'wconvert'),
+            ],
 
             'display' => [
                 'group' => __('Audience group', 'wconvert'),
@@ -230,16 +236,28 @@ final class InspectorLabels
              * They are the observations a merchant has no other way to make.
              */
             'arrival' => [
+                'entered' => __('The WConvert loader started executing.', 'wconvert'),
+                'completed' => __('The WConvert loader completed its startup.', 'wconvert'),
+                'waiting' => __('Waiting briefly for the WConvert loader to start…', 'wconvert'),
+                'unobserved' => __('Loader execution has not been observed yet. Check delayed scripts or blocking.', 'wconvert'),
+                'recheck' => __('Recheck loader', 'wconvert'),
+                'check' => __('Check analytics connection', 'wconvert'),
+                'checking' => __('Checking analytics connection…', 'wconvert'),
+                'connected' => __('The analytics endpoint responded. This does not prove earlier events arrived.', 'wconvert'),
+                'rate_limited' => __('The analytics endpoint is rate limiting requests.', 'wconvert'),
+                'failed' => __('The request failed. A blocker, connection problem, or site policy may be responsible.', 'wconvert'),
+                'http_error' => __('The analytics endpoint returned HTTP %s.', 'wconvert'),
+                'unavailable' => __('This page has no analytics endpoint to check.', 'wconvert'),
                 'aggregated' => __(
-                    'The loader’s own script tag is not on this page, so something has combined it into a bundle. WConvert copes with that.',
+                    'The loader’s own script tag was not found. An optimizer may have combined it, or the script may not have been delivered.',
                     'wconvert'
                 ),
                 'defer' => __(
-                    'Something removed the loader’s “defer”. WConvert copes with that, but a script optimiser is rewriting its tags.',
+                    'The loader tag has no “defer” attribute. A script optimizer may have changed it.',
                     'wconvert'
                 ),
                 'order' => __(
-                    'The loader is above the data it reads, which is what “force JavaScript in head” does. WConvert copes with that.',
+                    'The loader tag appears before its data. Startup may wait until the document is ready.',
                     'wconvert'
                 ),
             ],
