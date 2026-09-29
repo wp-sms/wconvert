@@ -1,0 +1,121 @@
+{
+  "id": "offer-receipt",
+  "name": "Offer receipt",
+  "display_type": "popup",
+  "tier": "free",
+  "tokens": {
+    "bg": "#fffcf6",
+    "fg": "#38342e",
+    "muted": "#655e52",
+    "accent": "#38342e",
+    "accent-fg": "#ffffff",
+    "border": "#ccd4d5",
+    "input-bg": "#ffffff",
+    "heading-size": "2rem",
+    "heading-weight": "600",
+    "tracking": "-0.035em",
+    "text-size": "1rem",
+    "leading": "1.5",
+    "radius": "0.125rem",
+    "pad": "0",
+    "gap": "1rem",
+    "width": "25rem",
+    "shadow": "0 20px 56px -20px rgba(28,42,31,.3)"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "information",
+        "name": "Information",
+        "kind": "content",
+        "content": {
+          "type": "panel",
+          "children": [
+            {
+              "type": "eyebrow",
+              "id": "n1",
+              "text": "For your first order",
+              "role": "eyebrow"
+            },
+            {
+              "type": "heading",
+              "id": "n2",
+              "text": "10% off",
+              "role": "headline",
+              "tokens": {
+                "heading-size": "3.75rem",
+                "heading-font": "Georgia, serif",
+                "heading-weight": "400"
+              }
+            },
+            {
+              "type": "text",
+              "id": "n3",
+              "text": "A little towards something you will keep.",
+              "role": "body"
+            },
+            {
+              "type": "divider",
+              "id": "n4"
+            },
+            {
+              "type": "panel",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "n5",
+                  "text": "Your checkout code",
+                  "role": "fine_print",
+                  "size": "s",
+                  "tokens": {
+                    "text-size": "1.167rem"
+                  }
+                },
+                {
+                  "type": "code",
+                  "id": "n6",
+                  "text": "WELCOME10",
+                  "role": "code_value",
+                  "copy": true
+                }
+              ],
+              "tokens": {
+                "pad": "1rem",
+                "bg": "#f0ede6",
+                "radius": "0",
+                "gap": "0.5rem"
+              }
+            },
+            {
+              "type": "text",
+              "id": "n7",
+              "text": "First order only. One use per customer. Cannot be combined with other offers.",
+              "role": "fine_print",
+              "size": "s",
+              "tokens": {
+                "text-size": "1.167rem"
+              }
+            },
+            {
+              "type": "button",
+              "id": "n8",
+              "label": "Find your first piece",
+              "role": "cta_label",
+              "action": "link"
+            }
+          ],
+          "tokens": {
+            "pad": "2rem",
+            "gap": "1.125rem",
+            "align": "center"
+          },
+          "narrow": {
+            "pad": "1.25rem"
+          }
+        }
+      }
+    ],
+    "submissions": []
+  }
+}

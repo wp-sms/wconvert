@@ -59,7 +59,10 @@
               "name": "email",
               "label": "Email address",
               "placeholder": "you@example.com",
-              "required": true
+              "required": true,
+              "tokens": {
+                "border": "#ab8903"
+              }
             },
             {
               "type": "button",

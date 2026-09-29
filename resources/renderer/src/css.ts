@@ -366,7 +366,7 @@ export const SHADOW_CSS = [
    * tracking stops being an eyebrow.
    */
   `.wc-eyebrow{margin:0;font-size:.75em;font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--wc-muted,#6b7280)}`,
-  `.wc-badge{align-self:start;font-size:.75em;font-weight:600;line-height:1.4;padding-block:.125rem;padding-inline:.5rem;border-radius:calc(var(--wc-radius,.5rem)/2);background:var(--wc-accent,#2563eb);color:var(--wc-accent-fg,#fff)}`,
+  `.wc-badge{align-self:start;font-size:calc(var(--wc-text-size,1rem)*.75);font-weight:600;line-height:1.4;padding-block:.125rem;padding-inline:.5rem;border-radius:calc(var(--wc-radius,.5rem)/2);background:var(--wc-accent,#2563eb);color:var(--wc-accent-fg,#fff)}`,
   /*
    * ==========================================================================
    * THE CORNER FLASH — THE ONE PLACEMENT NO TOKEN REACHES, AT ANY SCOPE.
@@ -384,6 +384,8 @@ export const SHADOW_CSS = [
    * Logical properties, so a `fa_IR` site flashes the corner that side of the
    * page actually has with no second spelling (ADR 0009).
    */
+  // Rows centre their content vertically; stacked badges keep start alignment.
+  `.wc-row>.wc-badge:not(.wc-badge-corner){align-self:center}`,
   `.wc-badge-corner{position:absolute;inset-block-start:var(--wc-pad,1.5rem);inset-inline-end:var(--wc-pad,1.5rem)}`,
   // `1px` and not a token: a rule the merchant can make 8px thick is a rule
   // that stops being a rule. Its COLOUR is the design's border colour, which is
@@ -519,7 +521,7 @@ export const SHADOW_CSS = [
    * `grid` cell or a `split` pane needs neither: neither parent is a flex
    * container, so the shorthand was already inert there.
    */
-  `.wc-field{display:flex;flex-direction:column;gap:.25rem;text-align:start}`,
+  `.wc-field{display:flex;flex-direction:column;gap:.25rem;text-align:start;position:relative}`,
   `.wc-product{display:grid;grid-template-columns:4.5rem minmax(0,1fr);gap:.75rem;padding:.75rem;border:1px solid var(--wc-border,#e5e7eb);border-radius:var(--wc-radius,.5rem)}`,
   `.wc-product>img{inline-size:4.5rem;block-size:4.5rem;object-fit:cover}`,
   `.wc-row>.wc-field{flex:1 1 12rem}`,
@@ -542,7 +544,7 @@ export const SHADOW_CSS = [
    */
   `.wc-row{justify-content:var(--wc-align,start)}`,
   `.wc-label{font-size:.8125em;font-weight:500;color:var(--wc-muted,#6b7280)}`,
-  `.wc-field>select{appearance:auto}`,
+  `select.wc-input{appearance:none;padding-inline-end:2rem}.wc-field:has(select):after{content:"▾"/"";position:absolute;inset-inline-end:1rem;bottom:.75rem;pointer-events:none}`,
   /*
    * ==========================================================================
    * A compact field-and-button row can use its placeholder as the visible cue.
@@ -598,7 +600,7 @@ export const SHADOW_CSS = [
    * inline padding stays generous for the same reason it always was: a label
    * that says what happens ("Send my code") is longer than "Submit".
    */
-  `.wc-button{display:inline-block;font:inherit;font-weight:700;text-align:center;text-decoration:none;cursor:pointer;border:0;border-radius:var(--wc-radius,.5rem);background:var(--wc-accent,#2563eb);color:var(--wc-accent-fg,#fff);padding-block:.8125rem;padding-inline:1.25rem;transition:opacity var(--wc-motion,200ms) ease}`,
+  `.wc-button{display:inline-block;font:inherit;font-family:var(--wc-font,system-ui,sans-serif);font-size:var(--wc-text-size,1rem);font-weight:700;text-align:center;text-decoration:none;cursor:pointer;border:0;border-radius:var(--wc-radius,.5rem);background:var(--wc-accent,#2563eb);color:var(--wc-accent-fg,#fff);padding-block:.8125rem;padding-inline:1.25rem;transition:opacity var(--wc-motion,200ms) ease}`,
   /*
    * ==========================================================================
    * THE ONLY MOTION INSIDE THE BOUNDARY, AND IT IS ON THE CONTROL THAT MATTERS.

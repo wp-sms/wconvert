@@ -1,0 +1,1535 @@
+{
+  "schema": 1,
+  "designs": [
+    {
+      "id": "agenda-card",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "473a191cd5360559b9a25f884dd48e8af9432c7317e1a78aa4ec2da75eed3609",
+          "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        }
+      ]
+    },
+    {
+      "id": "appointment-note",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "d4b599a4cf55e94fe5a5212486ab6d094b9947f8e2b09a7f35b1f164f626ca32",
+          "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        },
+        {
+          "version": 2,
+          "date": "2026-09-29",
+          "revision": "32c46973d6a8c819c84948ab11261fee1126c28db0b2a9ac3570d6de1980e50b",
+          "note": "Improve field boundary contrast, including the phone library wrapper where used; preserve field and submission IDs."
+        }
+      ]
+    },
+    {
+      "id": "benefit-grid",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "b622b94f3d80a1349dc66bde6994b27a5728402bea0e85b38997126853da33af",
+          "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        },
+        {
+          "version": 2,
+          "date": "2026-09-29",
+          "revision": "3a9f34d92b6f9af21deb68d30ee032336012941cba2e1179e5dc9c0468769552",
+          "note": "Replace inconsistently wrapping benefit icons with a quiet text panel; align the form and improve field contrast."
+        }
+      ]
+    },
+    {
+      "id": "bold-ask",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "6ed669149a40e2ca0d37ddee800a48eeed067e785338c12849318036d8c565a2",
+          "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        }
+      ]
+    },
+    {
+      "id": "callback-notes",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "496baf5d65685c97a8de3b24740fafddc9d27c0e717aa80f30a23a9a0a31cca4",
+          "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        },
+        {
+          "version": 2,
+          "date": "2026-09-29",
+          "revision": "93a6e708a4ed963c3eb60150415da95ae350189ceffad039248e977b2f47423a",
+          "note": "Improve field boundary contrast, including the phone library wrapper where used; preserve field and submission IDs."
+        }
+      ]
+    },
+    {
+      "id": "centred-card",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "871954fd99735784154e3942134eb4492915a6bf2a137a9d687f5d4a89c0de73",
+          "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        },
+        {
+          "version": 2,
+          "date": "2026-09-29",
+          "revision": "315638656d95fd124dc4968ff8f6c80caf8e5c2b6f297ed6f36c5f54bd1cd08a",
+          "note": "Improve field boundary contrast, including the phone library wrapper where used; preserve field and submission IDs."
+        }
+      ]
+    },
+    {
+      "id": "code-reveal",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "70f75547b9925033a31607cfb5299cb1b38d0f36fdcf3f5fa736b65d91e86207",
+          "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        },
+        {
+          "version": 2,
+          "date": "2026-09-29",
+          "revision": "f1960b4932a42b513dc555265e0e311424ab007a6d9042b22e8688238dd7a4ec",
+          "note": "Improve field boundary contrast, including the phone library wrapper where used; preserve field and submission IDs."
+        }
+      ]
+    },
+    {
+      "id": "cream-coupon",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "9c8b728cf55283008940dfa06cdf5fc69d4a33fa036a4df2a43dd6982ef55f16",
+          "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        }
+      ]
+    },
+    {
+      "id": "deadline-panel",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "6d0d3f52053427d44874339b88af7cc1bc27ab63ff5dfd3261c880c18f272d90",
+          "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        }
+      ]
+    },
+    {
+      "id": "edition-pass",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "69d617b5b09e5e92892d4c5915076813e940147f731be349bb235ece019f189e",
+          "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        },
+        {
+          "version": 2,
+          "date": "2026-09-29",
+          "revision": "3df0979d792fe511e383caf894eb2ef06cf62d3b3cc9c83e700a53a8a529d8ca",
+          "note": "Improve field boundary contrast, including the phone library wrapper where used; preserve field and submission IDs."
+        }
+      ]
+    },
+    {
+      "id": "fieldwork",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "aaf14352ed7d360c30d9af1a19f191c16ab707e3cb78ba2bbf9235fda0225bbb",
+          "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        },
+        {
+          "version": 2,
+          "date": "2026-09-29",
+          "revision": "6ddea91fda70519fb7e8d7f19114dbc7f4d5ab8d9b8fcf3824a077968518d301",
+          "note": "Improve field boundary contrast, including the phone library wrapper where used; preserve field and submission IDs."
+        }
+      ]
+    },
+    {
+      "id": "flash-offer",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "0373da65f0c0ac79cef9d2e27a2f03255450dfd8141e270e14e47e73ebac1d47",
+          "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        },
+        {
+          "version": 2,
+          "date": "2026-09-29",
+          "revision": "92b6525716ae31cb0b7ec7effe7cab6b4a390d5a743c16f454dcb0d2d3d9b927",
+          "note": "Improve supporting text contrast across the authored gradient."
+        }
+      ]
+    },
+    {
+      "id": "ink-split",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "26481e1e9330e2249b6c66f21e509550cb7798ef2106cac9f26b8165a4ecd9c2",
+          "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        },
+        {
+          "version": 2,
+          "date": "2026-09-29",
+          "revision": "11165f8e8947130ae08fc0fa9fb16245103e3ec7032070ce3bffbaab24ca1b67",
+          "note": "Improve field boundary contrast, including the phone library wrapper where used; preserve field and submission IDs."
+        }
+      ]
+    },
+    {
+      "id": "inline-bar",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "821b55692a515ee89f68fd8e9a1cf069788d5e04bb5ba76e0a64f22f9755be61",
+          "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        },
+        {
+          "version": 2,
+          "date": "2026-09-29",
+          "revision": "959e1a04011613f1774edbd39a787eb70421d9d5edc6db4318399cec8cb32c32",
+          "note": "Improve field boundary contrast, including the phone library wrapper where used; preserve field and submission IDs."
+        }
+      ]
+    },
+    {
+      "id": "inline-benefits",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "d24191de32e42d6eeaf9101c85a079c0030cf45c5bc7b2902dfe52f0e2c615f5",
+          "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        }
+      ]
+    },
+    {
+      "id": "inline-choice",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "6f9d74582e54c101b70e0e06cd4922413ac5c12ecaf73e3d183cbf00daffa546",
+          "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        },
+        {
+          "version": 2,
+          "date": "2026-09-29",
+          "revision": "1cedd28c8c758f3f545595c87d6449e9f5d87ea9feadaee6aa1efee90f529e14",
+          "note": "Improve field boundary contrast, including the phone library wrapper where used; preserve field and submission IDs."
+        }
+      ]
+    },
+    {
+      "id": "inline-cta",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "e1e61b35d080a34f08d7aa22f4197487c3b26cf7c32850cf37a86e9b8d4d45e6",
+          "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        }
+      ]
+    },
+    {
+      "id": "inline-phone",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "3b9c2f428d7815e52250f8100445dab07df3db019696425cd307f1316f05242c",
+          "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        },
+        {
+          "version": 2,
+          "date": "2026-09-29",
+          "revision": "08899dd7fc54ed7e465eed4174d91b8eb2f702a7da905fcee4c53f320d1bc336",
+          "note": "Improve field boundary contrast, including the phone library wrapper where used; preserve field and submission IDs."
+        }
+      ]
+    },
+    {
+      "id": "inline-quiet",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "eb644ea5f490b05d52f44523806e58a377f66e1446730bf5079aaee0b8a22c7a",
+          "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        },
+        {
+          "version": 2,
+          "date": "2026-09-29",
+          "revision": "f3b86850d2b591c0f1cc41333fb8c95048f19a36b4252fe56b5126aa4fc6dc90",
+          "note": "Improve field boundary contrast, including the phone library wrapper where used; preserve field and submission IDs."
+        }
+      ]
+    },
+    {
+      "id": "inline-rule",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "e9dca707f4650f27aaf25a262a7b2766e8904d4f44a766b1a59d34511fb28117",
+          "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        }
+      ]
+    },
+    {
+      "id": "inline-split",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "db5f044edd39152e5ece1a59d596dbaaf403550b31bd90696a782fe954ab156d",
+          "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        },
+        {
+          "version": 2,
+          "date": "2026-09-29",
+          "revision": "ac371aa2587102e0c7b6c360ae9ecda0ce24c192bffc3337c9863c773940d20f",
+          "note": "A shallow guide illustration, clear form column and request-specific acknowledgement."
+        }
+      ]
+    },
+    {
+      "id": "inline-tinted",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "aed4c0de5d6e3c0145048170f1016b29e4c76d3bc0ef61400304b056dcc17b59",
+          "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        },
+        {
+          "version": 2,
+          "date": "2026-09-29",
+          "revision": "f1020781bc140804e5e601eb4c332f4cdd1fca7dc5c224c523b8329f2b604a2c",
+          "note": "Improve field boundary contrast, including the phone library wrapper where used; preserve field and submission IDs."
+        }
+      ]
+    },
+    {
+      "id": "journey-email-only",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "4b625c0807fd89d82d68174eb17d108038977d6f6fbfd25396cb3b31568472d3",
+          "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        },
+        {
+          "version": 2,
+          "date": "2026-09-29",
+          "revision": "7e588b43063e2be75f2d8c99d03021dd9299d8b9b229ade04c11cb713666f009",
+          "note": "Improve field boundary contrast, including the phone library wrapper where used; preserve field and submission IDs."
+        }
+      ]
+    },
+    {
+      "id": "journey-email-then-sms",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "7b661f409ea1643d42ad77e94ea6fea3df8bd562bd96f61d8c8cb698d7a09da8",
+          "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        },
+        {
+          "version": 2,
+          "date": "2026-09-29",
+          "revision": "3481242ceeb697d4481d1088cbad00f4d0d20041e768f2847b777335e18b9be0",
+          "note": "Improve field boundary contrast, including the phone library wrapper where used; preserve field and submission IDs."
+        }
+      ]
+    },
+    {
+      "id": "journey-enquiry",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "9a3b8cfd691753859c8f7dd3153a49cad86a5c7f853630032118f011e09598eb",
+          "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        },
+        {
+          "version": 2,
+          "date": "2026-09-29",
+          "revision": "166098f2f176d2986b120cd0c703a1d4ec1fecd8196508f0cae5151070c7c0c2",
+          "note": "Improve field boundary contrast, including the phone library wrapper where used; preserve field and submission IDs."
+        }
+      ]
+    },
+    {
+      "id": "journey-offer-first",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "33dcc1d6380be19cbb2416ea728f00ca9b53713b6c827aaac23073ebc8df8d5c",
+          "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        },
+        {
+          "version": 2,
+          "date": "2026-09-28",
+          "revision": "ba1a72787d396b251f55d33aa84b15434f37fa9df56b6c02664a9f5459b75f5d",
+          "note": "Refine the invitation with editorial typography, shorter copy and content-width actions; retain all existing field IDs."
+        },
+        {
+          "version": 3,
+          "date": "2026-09-29",
+          "revision": "7c1e285b6e12d57b065148894b48ad0e780fc09f89e08c26a2c1fa39694f836a",
+          "note": "Improve field boundary contrast, including the phone library wrapper where used; preserve field and submission IDs."
+        }
+      ]
+    },
+    {
+      "id": "launch-checklist",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "f40322c9abd43f47c48dbbe9b88a0dbf8e4a797577a01d4ac06052b323843698",
+          "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        },
+        {
+          "version": 2,
+          "date": "2026-09-29",
+          "revision": "b739e6bea292dbd482277858fc682177ad4e433de401916674b8945cebc7380c",
+          "note": "Improve field boundary contrast, including the phone library wrapper where used; preserve field and submission IDs."
+        }
+      ]
+    },
+    {
+      "id": "ledger-card",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "e0d22c497fd14a3784f71c677e880739ad5741f6787734f5b7bbc67872f37ed5",
+          "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        },
+        {
+          "version": 2,
+          "date": "2026-09-29",
+          "revision": "1afea31894df500000041913de114677f35d5283755a0190c22ddd58e75c6ab1",
+          "note": "Remove decorative benefit icons, use a consistent editorial list and labelled full-width form, and strengthen field contrast."
+        }
+      ]
+    },
+    {
+      "id": "makers-index",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "a585282822140ae9ebcfbc61208865744eeced2b2b39d95b8d15c7a6baf24a87",
+          "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        },
+        {
+          "version": 2,
+          "date": "2026-09-29",
+          "revision": "7ec412f87c291a64cb9853d7528b796ebd50d7c30193365c47ae197aedf5f5bf",
+          "note": "The product panel is balanced on desktop; mobile loses the old decorative minimum. The acknowledgement removes repeated product decoration."
+        }
+      ]
+    },
+    {
+      "id": "material-pair",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "9e8140e04774d687dbb1f3e35d4836deb874f51e09324e82ba30288cdf108a30",
+          "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        }
+      ]
+    },
+    {
+      "id": "name-and-email",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "2bef933314e554147e8afecf218b2fe11d862264d04ad0b5705d3eb963355197",
+          "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        },
+        {
+          "version": 2,
+          "date": "2026-09-29",
+          "revision": "abeabcd33d07ed2fb8bd08462f9eb00d2bdc8da05306da8c139596d86c4544a5",
+          "note": "Use quieter warm colours, accessible field outlines, compact typography and request-specific copy with an optional name."
+        }
+      ]
+    },
+    {
+      "id": "number-invitation",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "a1552f1d2a9d670b664aca32d332674c29c581be60f7092ed417fb782f4ca1dc",
+          "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        },
+        {
+          "version": 2,
+          "date": "2026-09-29",
+          "revision": "498b3d22529a0ca81906df7d8c1a0e3fc2117d12fccbaafe992bf4f2ca40dd92",
+          "note": "Improve field boundary contrast, including the phone library wrapper where used; preserve field and submission IDs."
+        }
+      ]
+    },
+    {
+      "id": "offer-panel",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "b1c4a4880a87d40e55c742316efcb8b6427801912d7d52a2be1efe6efe3772e4",
+          "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        }
+      ]
+    },
+    {
+      "id": "photo-offer",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "c13609d1eb832f5fc45bd1607a1ae22a4fe599cc7cfa8f9a1f8a102d4f303970",
+          "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        },
+        {
+          "version": 2,
+          "date": "2026-09-29",
+          "revision": "43ef24e35698180326965993eae9ff8fa98ade7862f0a1feacb537c580fa3904",
+          "note": "Original product artwork replaces the abstract image; unverified return-policy claims are removed."
+        }
+      ]
+    },
+    {
+      "id": "photo-wash",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "3890bf23f10baaccf869241d94774528a0669c9754bedeeb3ff5633b1a3feaf5",
+          "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        }
+      ]
+    },
+    {
+      "id": "portrait-frame",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "9bca2cabf36de5e14a9645098f7bff026906abb14dafa1a789e301b53c982522",
+          "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        },
+        {
+          "version": 2,
+          "date": "2026-09-29",
+          "revision": "21e5180d13d93c5ac0da67d4347244db08354f0dc0885e18533ec7721b4934ce",
+          "note": "Improve field boundary contrast, including the phone library wrapper where used; preserve field and submission IDs."
+        }
+      ]
+    },
+    {
+      "id": "preference-card",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "d12b05aede05fff383c3a9ae362d903d878ad5557e1ab98c982caad2678ad8b9",
+          "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        },
+        {
+          "version": 2,
+          "date": "2026-09-29",
+          "revision": "4e5c5b19a44226d652ca987f50d285ea5ae9ec9a4d4de92836103c0151259a97",
+          "note": "Improve field boundary contrast, including the phone library wrapper where used; preserve field and submission IDs."
+        }
+      ]
+    },
+    {
+      "id": "project-notebook",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "018da28c4433ac6034ca1b359724697e0f05258d5f37f2b85cde9710879cdab2",
+          "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        },
+        {
+          "version": 2,
+          "date": "2026-09-29",
+          "revision": "62399527e40af44de0a14f89b6296ca4456a7024664e4b1502e37bfa780292f2",
+          "note": "Improve field boundary contrast, including the phone library wrapper where used; preserve field and submission IDs."
+        }
+      ]
+    },
+    {
+      "id": "punched-ticket",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "e738a479f07e63b9326ded84c99044e350b6deaa07ff55ba46176ce91821d24f",
+          "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        },
+        {
+          "version": 2,
+          "date": "2026-09-29",
+          "revision": "8da94f43e5553eb9ebee86eb229dbce4cbdc6dce22714e4e13ee6248ff0c54ef",
+          "note": "Improve field boundary contrast, including the phone library wrapper where used; preserve field and submission IDs."
+        }
+      ]
+    },
+    {
+      "id": "quieter-frequency",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "36b9a64b9aa8e20350d4cff9a5234720fc97117cab99a4d3057c4022c5f4bd1e",
+          "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        },
+        {
+          "version": 2,
+          "date": "2026-09-29",
+          "revision": "f4fc57290e92b527b8605508203c057a1ccbf0df12843c5c6a6610bf74821f83",
+          "note": "Improve supporting text contrast across the authored gradient."
+        }
+      ]
+    },
+    {
+      "id": "reader-review",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "7508c827ae5eb35ba1ae93e938cdf307916d01254994b2ba96e8eb7ec2e23e04",
+          "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        },
+        {
+          "version": 2,
+          "date": "2026-09-29",
+          "revision": "b4d8d78d165a7c5895fbcb01e9b5b54b2d3a89b5bc91669487c691b59631f447",
+          "note": "The default shows a real content promise. Optional reader proof stays hidden until verified attribution is supplied."
+        }
+      ]
+    },
+    {
+      "id": "reading-desk",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "8d53f18445aa9df715663819e3ce8b1e104701823166ad46aae707b9cb39e0d2",
+          "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        },
+        {
+          "version": 2,
+          "date": "2026-09-29",
+          "revision": "a3cbd57c993fa950c1144fbe2d4fae9ed5e3459c3ba17b5ffcdec87019e0717c",
+          "note": "Improve field boundary contrast, including the phone library wrapper where used; preserve field and submission IDs."
+        }
+      ]
+    },
+    {
+      "id": "reading-slip",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "88609a5cccdbff265023649b52cf2e67080caafcac5b6cedb113898d77a2455a",
+          "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        }
+      ]
+    },
+    {
+      "id": "resource-index",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "eb9ac66e20c83d49c6f1bfd7865d88acfaac8ea32dfc466f373d3e15b829b108",
+          "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        },
+        {
+          "version": 2,
+          "date": "2026-09-29",
+          "revision": "1e01b3691e377813821ff4ffd8ebdffda9fefa849e1d308e4aefae9cf4cdbb8f",
+          "note": "Numbered topics form a consistent compact list; the form and resource request remain clear."
+        }
+      ]
+    },
+    {
+      "id": "service-docket",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "544949e88af23fe79b15bbdd389d02868786e43f3026c73e7ef0c8cfbc162fbc",
+          "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        },
+        {
+          "version": 2,
+          "date": "2026-09-29",
+          "revision": "67eefb9e623ace74297170ae052ecd352eae4c387859af65dcf888e9548037c0",
+          "note": "A concise introduction and compact mobile form preserve optional name and service selection."
+        }
+      ]
+    },
+    {
+      "id": "service-ledger",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "6f3ce73c85cd82ede75c61abec8a6f8c580a26d822600c7b56292d99cd68f6eb",
+          "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        },
+        {
+          "version": 2,
+          "date": "2026-09-29",
+          "revision": "aa2ee5d36fbdf8d7229df9e43211c0cb5a1f1122948a62c96fa66b3c8e44329a",
+          "note": "Short service descriptions, tighter mobile spacing and a content-width action support comparison."
+        }
+      ]
+    },
+    {
+      "id": "split-hero",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "adf0a3d10c57754da86b11b75d2326f50fd6c89cd0a5dc8be6951e887b6ecf03",
+          "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        },
+        {
+          "version": 2,
+          "date": "2026-09-29",
+          "revision": "dfc2d14320c6a12e2873db72c3fd72e9b2507f6835249ca46232aae4ea364ba7",
+          "note": "Improve field boundary contrast, including the phone library wrapper where used; preserve field and submission IDs."
+        }
+      ]
+    },
+    {
+      "id": "stacked-signup",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "4a9a8eaf95b48d06eb88863b7fe0afe22afec8e4b3e94031c04a2d0fac02843b",
+          "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        },
+        {
+          "version": 2,
+          "date": "2026-09-29",
+          "revision": "54933e0db55a1e582d5cd6c8e945d2a85535165ef8bbb09f6a1d7302f8d121c8",
+          "note": "Improve field boundary contrast, including the phone library wrapper where used; preserve field and submission IDs."
+        }
+      ]
+    },
+    {
+      "id": "studio-window",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "38b5e3cb85e08d6ccabe853a6d0e61200b43d65e0b9644650a6bd1148f311daa",
+          "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        },
+        {
+          "version": 2,
+          "date": "2026-09-29",
+          "revision": "47d997b1306bdb4b4a0d83bce498564e60bbc36d21b09383c19c97b624890012",
+          "note": "Improve field boundary contrast, including the phone library wrapper where used; preserve field and submission IDs."
+        }
+      ]
+    },
+    {
+      "id": "summer-archive",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "4d0444218372ce5156151d08771cb3d388681f0b292a9531b1cfd2029316a3c6",
+          "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        }
+      ]
+    },
+    {
+      "id": "sunday-marginalia",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "0338a1e16bace72ae425bf216b85860bcc6f62cc3e3bb481b9172f083d5d20c5",
+          "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        },
+        {
+          "version": 2,
+          "date": "2026-09-29",
+          "revision": "1a55602e77025084b146e5f02a8bd29e6c170751055b6d36bdd051d8c8045ba4",
+          "note": "Improve field boundary contrast, including the phone library wrapper where used; preserve field and submission IDs."
+        }
+      ]
+    },
+    {
+      "id": "useful-guide",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "a0987b1e4f0a41e7620fa4b0d7afdc83bae7b8243a8a4e8b7bc1735a82051665",
+          "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        },
+        {
+          "version": 2,
+          "date": "2026-09-29",
+          "revision": "2d709ce0861914d6545f93f76484307b7117bf77c01e0109c977d14a4565c612",
+          "note": "Improve field boundary contrast, including the phone library wrapper where used; preserve field and submission IDs."
+        }
+      ]
+    },
+    {
+      "id": "wide-banner",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "b9fd93968a6160a37917240dbc5624d4b2b30138de4a2049adb550416485d99d",
+          "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        },
+        {
+          "version": 2,
+          "date": "2026-09-29",
+          "revision": "8729c61281b8bd94360f90a4db41e34c56bfd67d991c9fef487af056cdc70742",
+          "note": "Improve field boundary contrast, including the phone library wrapper where used; preserve field and submission IDs."
+        }
+      ]
+    },
+    {
+      "id": "bar-announcement",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "c8c701f224cf282a5d2ff09511cac31010b8ec087f762d0461efd0fe70ee2d33",
+          "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        }
+      ]
+    },
+    {
+      "id": "bar-code",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "3ec85b0ea3558abc4c8ad03d8db5d6fb74821432c7da08c7e0d30cdcfb646eb3",
+          "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        }
+      ]
+    },
+    {
+      "id": "bar-countdown",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "b44259fe7506c09203fa9782fb6dd26236de25611f46265360335015f5306109",
+          "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        }
+      ]
+    },
+    {
+      "id": "bar-email-capture",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "3290218ca8a0d12f6aaaad52a0b98c9c1e4a79df40e0376e9d84db26c023ee3c",
+          "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        },
+        {
+          "version": 2,
+          "date": "2026-09-28",
+          "revision": "0b07fd35497954bd86a686a2c18cd31c86033bb77b2d71c5295a60fea9ddd641",
+          "note": "Remove the gift icon from a general email-signup bar; keep the form and acknowledgement."
+        },
+        {
+          "version": 3,
+          "date": "2026-09-28",
+          "revision": "1984f6f61023022f77c37f9ef25f7189915cc85927f4dc3cd58c095400214fdc",
+          "note": "Restore a readable headline scale on signup and acknowledgement; keep button text subordinate."
+        },
+        {
+          "version": 4,
+          "date": "2026-09-29",
+          "revision": "746cfb4abee80a9f59e343a8b175005bbc3d9dd816e966d03d4d1005944eaa71",
+          "note": "Improve field boundary contrast, including the phone library wrapper where used; preserve field and submission IDs."
+        }
+      ]
+    },
+    {
+      "id": "fullscreen-editorial",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "8bb19d21f75ce930acd1d7419ecd726a93aa80665f1bf6db439b7789f451e079",
+          "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        },
+        {
+          "version": 2,
+          "date": "2026-09-29",
+          "revision": "84cd33050fdc7f63f8f7807095cf5a8b0925dbb712916352420017c65b680e93",
+          "note": "Quieter mobile typography and padding keep the signup readable within the fullscreen surface."
+        },
+        {
+          "version": 3,
+          "date": "2026-09-29",
+          "revision": "ad50f061772c84bec3516975eb1f27c1f2878265766a584a3ba9e7b3f40c4bbe",
+          "note": "Quieter mobile typography and padding keep the signup readable within the fullscreen surface."
+        }
+      ]
+    },
+    {
+      "id": "fullscreen-poster",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "1755ca7a753d75e8a096376cc6dae1be7cb688efe6348b39fef6e49d8f00fd13",
+          "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        }
+      ]
+    },
+    {
+      "id": "fullscreen-split",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "c0259d754d500271fc4fa111488d823bf858cab5fa9e1dba175f8f98bb52f5b8",
+          "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        },
+        {
+          "version": 2,
+          "date": "2026-09-29",
+          "revision": "a8ad485b4eaef0019a8c8c2da092e29ed895b3c1f3e2157ec9ca7d0736c5665c",
+          "note": "Shorter mobile panels explain the guide request without excessive heading scale."
+        },
+        {
+          "version": 3,
+          "date": "2026-09-29",
+          "revision": "1961477f1e22436df56bde5007371d80d74547cf0a93bd53ab5c47442b1aeeea",
+          "note": "Shorter mobile panels explain the guide request without excessive heading scale."
+        }
+      ]
+    },
+    {
+      "id": "inline-cart-nudge",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "d54c23b73d638dca59780d16423fd1316c13b17fd41abff3222571ad2522ae43",
+          "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        },
+        {
+          "version": 2,
+          "date": "2026-09-29",
+          "revision": "f0efcaacba9f935846a2187e76524ea778aad7ca6aa4ab5a12f4c44c9964d1ba",
+          "note": "Remove the unrelated delivery icon and use a responsive message/action split with clear spacing."
+        }
+      ]
+    },
+    {
+      "id": "inline-code-strip",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "479ba02c3cac968de71c641266e753d93d571730c9eaefb97395019cf521d2ac",
+          "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        },
+        {
+          "version": 2,
+          "date": "2026-09-29",
+          "revision": "dff7e6fa643aae5267d68cf8db2e6af772d7290111387f6bfb42235c59aafbf0",
+          "note": "Improve field boundary contrast, including the phone library wrapper where used; preserve field and submission IDs."
+        }
+      ]
+    },
+    {
+      "id": "popup-editorial",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "4ef91c68b2bb5c5f20e1a8feb1638043178f8e23527b9a2b71b6ca861a4fbcd1",
+          "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        },
+        {
+          "version": 2,
+          "date": "2026-09-29",
+          "revision": "915daf0c7b84528b467bb9b8a7804236fb3d87be00e0e4b38449563202dfe17b",
+          "note": "Improve field boundary contrast, including the phone library wrapper where used; preserve field and submission IDs."
+        }
+      ]
+    },
+    {
+      "id": "popup-flash",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "5014f59ccf23eec14279375cd3febcd46f40e079437c09218d02b6484e6de0ce",
+          "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        }
+      ]
+    },
+    {
+      "id": "popup-two-column",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "8cec459f5bc2cbe95e9400e2a95611bc6edb6474934f011aea88b79daab86c2d",
+          "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        },
+        {
+          "version": 2,
+          "date": "2026-09-29",
+          "revision": "f32a16a33be2f06d1370046fb438036e878037173d18c029bb61d661e118c81b",
+          "note": "Replace abstract placeholder with original product artwork, balance split panels, refine mobile hierarchy and strengthen field boundaries."
+        }
+      ]
+    },
+    {
+      "id": "slide-in-benefits",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "c84bc5737e8420b89229b5432c8581af508fd90eb8770494ff54c65232c9e9c4",
+          "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        },
+        {
+          "version": 2,
+          "date": "2026-09-29",
+          "revision": "7ff2dcac7c434466e059b1e3ec6cc6d6d8ae13c7aa48e7f778d83b7450f6c143",
+          "note": "Remove unrelated benefit icons, use a compact text panel and strengthen field outlines and secondary copy."
+        }
+      ]
+    },
+    {
+      "id": "slide-in-code",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "201fd2e63fc20114ae570e3b18f4dce0bf1860c259b7b040f42f0bafe7a45e77",
+          "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        },
+        {
+          "version": 2,
+          "date": "2026-09-29",
+          "revision": "d72d51b834506ec323dc64ba7f44bb52b3c89459e30089865468b67e672e8779",
+          "note": "Improve field boundary contrast, including the phone library wrapper where used; preserve field and submission IDs."
+        }
+      ]
+    },
+    {
+      "id": "slide-in-nudge",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "905b6b4e32b39ddea7e59e2d19596d9b74ea5afcd064ba1993aa4fa1856ca13e",
+          "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        },
+        {
+          "version": 2,
+          "date": "2026-09-29",
+          "revision": "169ec8b91bfbe1067bbb872fa24f7834588a3f0dca7ccfba2c5fda856795d2e1",
+          "note": "Compact invitation with a single content-width action and no unrelated icon."
+        }
+      ]
+    },
+    {
+      "id": "slide-in-photo",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "a4f9f92344455f62b5b630d583fb088d72c3a24b62767076b1bc68f5aae420f9",
+          "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        },
+        {
+          "version": 2,
+          "date": "2026-09-29",
+          "revision": "237c87219463e97172f351626e8e7b5e0fd870dd6bca16bf3d83e852c51724da",
+          "note": "A short note illustration replaces the unrelated picture; the form and acknowledgement remain compact."
+        }
+      ]
+    },
+    {
+      "id": "gift-edit",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "b24c0bda86e51683d6907324b3a4fa7cc1a843d3ae5ea246e4c5f7cf63046dd1",
+          "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        }
+      ]
+    },
+    {
+      "id": "journey-content-guide",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "868db199284c39bb5dc66c113f05943ccf73b31bd2122523f14307991137c48c",
+          "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        },
+        {
+          "version": 2,
+          "date": "2026-09-29",
+          "revision": "4721e7afdfaaa272872cbb11eb3423dc57e7036fa3a32d996b26d2562d23882e",
+          "note": "Improve field boundary contrast, including the phone library wrapper where used; preserve field and submission IDs."
+        }
+      ]
+    },
+    {
+      "id": "journey-product-finder",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "680ce8e3a27bc99bc44ade8b7bcf6f36f142826eb5733d6d47752c41da437607",
+          "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        }
+      ]
+    },
+    {
+      "id": "journey-service-enquiry",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "497f607e2a97aad60bb7b8516d9c4af96e25852243a4db079771156742b48cb1",
+          "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        },
+        {
+          "version": 2,
+          "date": "2026-09-29",
+          "revision": "3cfdf3a173283243a2f5493bd42bf9d0c35128bf9bc8a16dedfdba03c8b578c2",
+          "note": "Improve field boundary contrast, including the phone library wrapper where used; preserve field and submission IDs."
+        }
+      ]
+    },
+    {
+      "id": "kit-workbench",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "ca5fa092397b48742e54dc03249ba60d5c8ae7af2dce2565bf6c4a92bbb13fcd",
+          "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        }
+      ]
+    },
+    {
+      "id": "project-route",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "a5011cbe391a2a80bccabac4a48f7ace1ac19d7190abbde2eacb7771611d0824",
+          "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        }
+      ]
+    },
+    {
+      "id": "reading-path",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "aac7636fcb6d68dc3b520f0e5a9bda051b16773f6d2751759282cb03557e0a81",
+          "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        }
+      ]
+    },
+    {
+      "id": "service-directory",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "afcebdb0e12f955bdb97c0f6788bd4c9cf5af8ec9e41db8fb978b14059aa0d16",
+          "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        }
+      ]
+    },
+    {
+      "id": "space-planner",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "47e9b779611274afedb5013e9f120050e630847f603491eb03253f9e661b9ee3",
+          "note": "Maintenance baseline; prior design work remains in Git and campaign review evidence."
+        }
+      ]
+    },
+    {
+      "id": "slide-in-question",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "3c9c4f6c55b488fb1f0bf42f98863e11604a3be3fc2e8f4e581d516011a65057",
+          "note": "Add a compact corner enquiry with an optional topic choice and email; no decorative media."
+        },
+        {
+          "version": 2,
+          "date": "2026-09-29",
+          "revision": "ac3e9dcf33e7f7aa89722f8d2851b3deb1138af72544751f45f1381b1147fd6c",
+          "note": "Improve field boundary contrast, including the phone library wrapper where used; preserve field and submission IDs."
+        }
+      ]
+    },
+    {
+      "id": "product-shelf",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "a19ad7a3cf870e7e77dacb88761e9191a5ec8f3ba87c5a7d77911f7f68ab0ea6",
+          "note": "Initial panoramic product artwork above a compact editorial and form split."
+        },
+        {
+          "version": 2,
+          "date": "2026-09-28",
+          "revision": "c1868b009b6e4b5d352c83e0fa050ab5de1f4605ff22891c3bd8ac03afb6d5a2",
+          "note": "Compress the original SVG and remove the inset image corners after phone review."
+        },
+        {
+          "version": 3,
+          "date": "2026-09-29",
+          "revision": "91506a2bc5ee9ad9e75f42b8b59df1ef089c77ba3b098408206f98fc4b9d59c3",
+          "note": "Improve field boundary contrast, including the phone library wrapper where used; preserve field and submission IDs."
+        }
+      ]
+    },
+    {
+      "id": "request-folio",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "9b13862f2bb62174343f1e07e682ed3c323881cb433277a05b1150fc993255e2",
+          "note": "Initial framed two-step enquiry with an optional choice and separate reply address."
+        },
+        {
+          "version": 2,
+          "date": "2026-09-28",
+          "revision": "090c63ebc95ae650841a7d4db06544adadbd9101ab1034941e73f94a734f3794",
+          "note": "Keep Back and the shorter Send request action together on a narrow phone."
+        },
+        {
+          "version": 3,
+          "date": "2026-09-29",
+          "revision": "e8238b565bb7d820d679004f0c5715d57ec4a6ea9cbc9e022d236db674da7c1c",
+          "note": "Improve field boundary contrast, including the phone library wrapper where used; preserve field and submission IDs."
+        }
+      ]
+    },
+    {
+      "id": "session-card",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "de9be893860728fa5ee505eb608fccb32b12b342a0fd32b73dfedfe8efbd73d3",
+          "note": "Initial illustrated corner invitation to practical event information."
+        },
+        {
+          "version": 2,
+          "date": "2026-09-28",
+          "revision": "99bb2a3065d70fa194a54881e2bfdb4461d70bd3168d241afa43081c0c587a99",
+          "note": "Use an original notebook illustration and a distinct sans-serif palette for writing-session information."
+        }
+      ]
+    },
+    {
+      "id": "split-notice",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "ecd5740d2cc2bf119d0f91f47064e16e401a274509a6bd3d8fb6ba4772a8a0d6",
+          "note": "Initial two-level utility message beside a compact link."
+        }
+      ]
+    },
+    {
+      "id": "offer-receipt",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "c25bf11694e8dc55bbe0e43e344355c7108f786cc4573dd19df67cd5d4a30581",
+          "note": "Initial distinct composition with practical campaign setup."
+        }
+      ]
+    },
+    {
+      "id": "reading-cover",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "c38b94f9544281128bab6631ea028351ed122c74e839db6c2bbac825b5195a2d",
+          "note": "Initial distinct composition with practical campaign setup."
+        },
+        {
+          "version": 2,
+          "date": "2026-09-28",
+          "revision": "11af393b4a58adfeafc92695b50310be6e1c34f2e91eab25e91dd1a690f65ae2",
+          "note": "Keep acknowledgement truthful when the optional resource link is not configured."
+        },
+        {
+          "version": 3,
+          "date": "2026-09-28",
+          "revision": "92d0af40add6739913fe25ef2c273eed34211609b3d5b0085450b3ecfd8f8e89",
+          "note": "Reserve clear space above the cover for the real popup close control."
+        },
+        {
+          "version": 4,
+          "date": "2026-09-29",
+          "revision": "8519ffa6851464a5fbf891f0fcb9730dcb9886319153eb498ddfc0b59e7889bb",
+          "note": "Improve field boundary contrast, including the phone library wrapper where used; preserve field and submission IDs."
+        }
+      ]
+    },
+    {
+      "id": "service-summary",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "f26d6a3781a82a2efecd177f826a75a7edb4dae5a61c5fab36937330343772a0",
+          "note": "Initial distinct composition with practical campaign setup."
+        },
+        {
+          "version": 2,
+          "date": "2026-09-29",
+          "revision": "8e1f080830b40e698640566dc31d3ba2d0a11cf4ed7ee9e40cd3caca0ebddfb4",
+          "note": "Improve field boundary contrast, including the phone library wrapper where used; preserve field and submission IDs."
+        }
+      ]
+    },
+    {
+      "id": "collection-poster",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "81ed1c37728072680175d6e1fdf5815b3f8a5c69f88c82a5163643736b16c974",
+          "note": "Initial distinct composition with practical campaign setup."
+        },
+        {
+          "version": 2,
+          "date": "2026-09-28",
+          "revision": "e8c73d0be6cfe494b46ad0ac5d779121a5041cb872393d742de93fb1e2a50a6d",
+          "note": "Remove a redundant top label to give the phone close control clear space."
+        }
+      ]
+    },
+    {
+      "id": "margin-note",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "728ab2dd7573ef4dd18ed860d7b249683ed949fdd13a11dbf6ab2370816a285d",
+          "note": "Initial distinct composition with practical campaign setup."
+        },
+        {
+          "version": 2,
+          "date": "2026-09-28",
+          "revision": "4ee3c86d047ad101cf3fc4624026f2d9c94742e0ae30446e449b1c2865d6ed25",
+          "note": "Retune source gutter to fit the actual slide-in width."
+        }
+      ]
+    },
+    {
+      "id": "sample-envelope",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "51d040df89dc4bd25fd6c46a9df90289195d3cf6bba556f3e14cf9903fa2527c",
+          "note": "Initial distinct composition with practical campaign setup."
+        },
+        {
+          "version": 2,
+          "date": "2026-09-28",
+          "revision": "2076c6daf95f036dd1e9adf5254a8fc50351e8cd87cefc6cf5405775b4bb7587",
+          "note": "Lighten the final swatch so the live close control stays visible over artwork."
+        },
+        {
+          "version": 3,
+          "date": "2026-09-29",
+          "revision": "6a62a9e35523f5b80b06b4fd7e75c93e85cacceef3ab9314e2bda7bfdb65fd54",
+          "note": "Improve field boundary contrast, including the phone library wrapper where used; preserve field and submission IDs."
+        }
+      ]
+    },
+    {
+      "id": "availability-note",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "4b1ad4748eb37d8fe0df6ff394cdc33483c8f66287c45f7e4b12fde876db628d",
+          "note": "Initial distinct composition with practical campaign setup."
+        }
+      ]
+    },
+    {
+      "id": "inline-signpost",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-09-28",
+          "revision": "5fcea252a090f9aa947008c35e4ce1ef950df64665ad5a17eeaa7599eec02442",
+          "note": "Initial distinct composition with practical campaign setup."
+        }
+      ]
+    }
+  ]
+}

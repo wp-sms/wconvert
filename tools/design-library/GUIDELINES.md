@@ -26,8 +26,8 @@ the **headline** — not the body, and never only the button.
 mechanism, and nobody wants the mechanism.
 
 Enforced structurally elsewhere: an Optin has exactly **one** converting act,
-so a second button is refused at registration. This is the same rule one level
-up — one ask, not two things a visitor must choose between.
+so navigation and optional signup buttons must not introduce unrelated asks.
+This is the same rule one level up — one ask, not two things a visitor must choose between.
 
 ### 1.2 The reward is specific, or it is not a reward
 
@@ -183,8 +183,8 @@ Role has nowhere to carry those choices; review the actual Keep/Sample candidate
 
 Give every shipped leaf a stable `n1`…`n9999` id, unique in its tree, and keep
 the id when moving the leaf. Slot Roles may repeat; node ids may not. This is
-how translation follows content rather than a changing array position. Do not
-author tree `v` or derived facets, and do not rely on PHP's new-node fallback
+how translation follows content rather than a changing array position. Author
+tree `v: 2`, but never derived facets, and do not rely on PHP's new-node fallback
 to renumber a library file on every edit.
 
 ---
@@ -226,9 +226,12 @@ the renderer now (`700` at `.8125rem` of block padding) so no design has to
 remember it.
 
 **A field's ground is `--wc-bg`, so on a dark design only the ring shows it.**
-Pick a `border` clearly lighter than the ground or the input is invisible — a
-bar asking for an address with nothing that looks like a box to type in. Aim
-for 2:1 against the ground; it is a boundary, not text, so AA does not apply.
+Pick a `border` that clearly distinguishes the input from its surroundings.
+Where the outline identifies the field, require at least **3:1** against the
+adjacent surface. A fill that already contrasts with its surroundings can identify the field; otherwise the outline must contrast with both adjacent surfaces, including the input fill when inset. Include the phone library wrapper in this check. Check the
+focused state too. This is separate from text contrast (normally 4.5:1);
+passing label and placeholder checks does not prove that a pale field outline
+is usable. See [WCAG non-text contrast](https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast.html).
 
 **Write both a field label and a useful example.** Field-only rows keep visible
 labels. In a compact row with a direct button, direct fields with a non-empty
@@ -240,8 +243,23 @@ is not a reason to leave the design's wording unfinished. Examples disappear
 while typing; include the country code in a phone example. Required fields
 receive their asterisk from the renderer, so do not author a second one.
 
-**A three-up label is two or three words.** Three benefits across a 32rem panel
-is ~9rem each; anything longer wraps to two lines and the icon wraps with it.
+**Review the filled campaign, not just the sample design.** A truck beside an
+essay archive is a failed review even if the layout audit passes. An icon must
+explain the adjacent content or a real state; remove decoration that merely
+adds a row. Inspect optional copy when absent: no orphan icon, empty heading,
+empty panel or leftover divider. Apply this to the acknowledgement too.
+
+**Benefit groups share one layout.** Use consistent text panels or stacked
+icon-and-text items when phrases can wrap. A wrapping row inside each grid cell
+can strand some icons above their labels and leave others beside them. Check
+unequal phrase lengths on desktop and 320px, in both directions. Do not shorten
+useful campaign wording merely to preserve a decorative icon.
+
+**CTA width follows the job.** A full-width submit works in a compact form; an
+inline information card usually needs a content-width link button in a row.
+Check the button against its actual label and surrounding content.
+
+Reference review: [Depicter popup, slide-in and notification-bar patterns](../../docs/reviews/template-editorial-refinement-2026-09-28.md).
 
 **A `split` is two sides, not two floating boxes.** The panes are equal height
 and each centres its own contents against the other; a pane holding nothing but

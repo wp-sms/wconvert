@@ -1,0 +1,82 @@
+{
+  "id": "split-notice",
+  "name": "Useful detail bar",
+  "display_type": "floating_bar",
+  "tier": "basic",
+  "tokens": {
+    "bg": "#f8f2e5",
+    "fg": "#39342b",
+    "muted": "#625a4d",
+    "accent": "#39342b",
+    "border": "#c5cbc1",
+    "accent-fg": "#ffffff",
+    "input-bg": "#ffffff",
+    "heading-font": "system-ui, sans-serif",
+    "heading-size": "1.125rem",
+    "heading-weight": "650",
+    "tracking": "-0.015em",
+    "text-size": "1rem",
+    "leading": "1.5",
+    "radius": "0",
+    "pad": "0.75rem 1.5rem",
+    "gap": "1rem",
+    "width": "100%",
+    "shadow": "0 8px 24px -16px rgba(57,52,43,.4)",
+    "align": "center"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "information",
+        "name": "Information",
+        "kind": "content",
+        "content": {
+          "type": "row",
+          "children": [
+            {
+              "type": "stack",
+              "children": [
+                {
+                  "type": "heading",
+                  "id": "n1",
+                  "text": "Not sure it will fit?",
+                  "role": "headline"
+                },
+                {
+                  "type": "text",
+                  "id": "n2",
+                  "text": "Check dimensions and access before ordering.",
+                  "role": "body",
+                  "tokens": {
+                    "text-size": "0.875rem"
+                  }
+                }
+              ],
+              "tokens": {
+                "gap": "0.125rem"
+              }
+            },
+            {
+              "type": "button",
+              "id": "n3",
+              "label": "See the measuring guide",
+              "action": "link",
+              "role": "cta_label",
+              "tokens": {
+                "text-size": "0.875rem"
+              }
+            }
+          ],
+          "tokens": {
+            "gap": "1.5rem"
+          },
+          "narrow": {
+            "gap": "0.75rem"
+          }
+        }
+      }
+    ],
+    "submissions": []
+  }
+}

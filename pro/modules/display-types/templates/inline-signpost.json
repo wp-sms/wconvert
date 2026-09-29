@@ -1,0 +1,77 @@
+{
+  "id": "inline-signpost",
+  "name": "Inline signpost",
+  "display_type": "floating_bar",
+  "tier": "basic",
+  "tokens": {
+    "bg": "#f7f9f6",
+    "fg": "#2e3c33",
+    "muted": "#536758",
+    "accent": "#244c42",
+    "accent-fg": "#ffffff",
+    "border": "#ccd4d5",
+    "input-bg": "#ffffff",
+    "heading-size": "2rem",
+    "heading-weight": "600",
+    "tracking": "-0.035em",
+    "text-size": "1rem",
+    "leading": "1.5",
+    "radius": "0",
+    "pad": "0.75rem 1.5rem",
+    "gap": "1rem",
+    "width": "70rem",
+    "shadow": "0 4px 16px -12px rgba(20,40,30,.3)"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "information",
+        "name": "Information",
+        "kind": "content",
+        "content": {
+          "type": "row",
+          "children": [
+            {
+              "type": "eyebrow",
+              "id": "n1",
+              "text": "Service update",
+              "role": "eyebrow"
+            },
+            {
+              "type": "heading",
+              "id": "n2",
+              "text": "Planning a visit?",
+              "role": "headline",
+              "tokens": {
+                "heading-size": "1.125rem",
+                "heading-weight": "600"
+              }
+            },
+            {
+              "type": "button",
+              "id": "n3",
+              "label": "Check current opening hours",
+              "role": "cta_label",
+              "action": "link",
+              "tokens": {
+                "accent": "transparent",
+                "accent-fg": "#244c42",
+                "text-size": "0.9375rem"
+              }
+            }
+          ],
+          "tokens": {
+            "gap": "1.5rem",
+            "align": "center"
+          },
+          "narrow": {
+            "gap": "0.5rem",
+            "align": "start"
+          }
+        }
+      }
+    ],
+    "submissions": []
+  }
+}

@@ -5,6 +5,7 @@
 defined('ABSPATH') || exit;
 
 return [
+    'business_types' => ['stores'],
     'id' => 'cart-straight-away',
     'name' => __('Inline cart reminder', 'wconvert'),
     'goal' => 'recover_cart',

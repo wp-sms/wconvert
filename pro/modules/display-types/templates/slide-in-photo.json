@@ -4,25 +4,24 @@
   "display_type": "slide_in",
   "tier": "basic",
   "tokens": {
-    "bg": "#fffbf5",
-    "fg": "#1c1917",
-    "muted": "#78716c",
-    "accent": "#b45309",
+    "bg": "#f4f0e9",
+    "fg": "#343f40",
+    "muted": "#343f40",
+    "accent": "#35535a",
     "accent-fg": "#ffffff",
-    "border": "#e7e5e4",
-    "heading-size": "1.3125rem",
-    "heading-weight": "700",
-    "tracking": "-0.02em",
+    "border": "#cec8bd",
+    "input-bg": "#ffffff",
+    "heading-font": "Georgia, serif",
+    "heading-weight": "400",
+    "heading-size": "1.625rem",
     "text-size": "1rem",
+    "tracking": "-0.035em",
     "leading": "1.5",
+    "pad": "1.25rem",
+    "gap": ".875rem",
     "radius": "0.75rem",
-    "pad": "1rem",
-    "gap": "0.875rem",
     "width": "25rem",
-    "align": "start",
-    "shadow": "0 18px 50px -12px rgba(15, 23, 42, 0.35)",
-    "motion": "300ms",
-    "input-bg": "#ffffff"
+    "shadow": "0 24px 64px -20px rgba(20,30,25,.3)"
   },
   "tree": {
     "steps": [
@@ -37,8 +36,8 @@
             {
               "type": "image",
               "id": "n1",
-              "src": "data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%203%201.5'%3E%3Cdefs%3E%3ClinearGradient%20id='g'%20x1='0'%20y1='0'%20x2='1'%20y2='1'%3E%3Cstop%20offset='0'%20stop-color='%237f1d1d'/%3E%3Cstop%20offset='.5'%20stop-color='%23c2410c'/%3E%3Cstop%20offset='1'%20stop-color='%23f59e0b'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width='3'%20height='4'%20fill='url%28%23g%29'/%3E%3Ccircle%20cx='2.1'%20cy='1.0'%20r='0.7'%20fill='%23fde68a'%20opacity='.55'/%3E%3Ccircle%20cx='0.7'%20cy='2.9'%20r='0.95'%20fill='%23fb923c'%20opacity='.6'/%3E%3C/svg%3E",
-              "alt": "Image placeholder",
+              "src": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20320%20110%22%3E%3Crect%20width%3D%22320%22%20height%3D%22110%22%20rx%3D%2210%22%20fill%3D%22%23e4e7df%22%2F%3E%3Cpath%20d%3D%22M85%2038h150v54H85z%22%20fill%3D%22%23c9baa2%22%2F%3E%3Cpath%20d%3D%22M85%2038l75%2043%2075-43%22%20fill%3D%22%23e4d6bf%22%2F%3E%3Crect%20x%3D%22116%22%20y%3D%2214%22%20width%3D%2288%22%20height%3D%2253%22%20rx%3D%223%22%20fill%3D%22%23fffdf5%22%2F%3E%3Cpath%20d%3D%22M132%2030h54m-54%2013h40m-40%2012h47%22%20stroke%3D%22%236a7773%22%20stroke-width%3D%223%22%2F%3E%3C%2Fsvg%3E",
+              "alt": "Original illustration of a short note and envelope",
               "fit": "cover"
             }
           ],
@@ -73,7 +72,10 @@
                   "name": "email",
                   "label": "Email address",
                   "placeholder": "you@example.com",
-                  "required": true
+                  "required": true,
+                  "tokens": {
+                    "border": "#91836b"
+                  }
                 },
                 {
                   "type": "button",
@@ -88,7 +90,7 @@
                   "id": "n7",
                   "role": "consent_text",
                   "hidden": true,
-                  "text": "Email me offers and news. %s",
+                  "text": "Email me the weekly bakery note. %s",
                   "link": {
                     "label": "Privacy Policy"
                   },

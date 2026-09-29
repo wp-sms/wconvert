@@ -1,0 +1,216 @@
+{
+  "id": "preference-card",
+  "name": "Preference card",
+  "display_type": "inline",
+  "tier": "free",
+  "tokens": {
+    "bg": "#fcfdff",
+    "fg": "#243650",
+    "muted": "#43546e",
+    "accent": "#243f6b",
+    "accent-fg": "#ffffff",
+    "border": "#b9c7dc",
+    "input-bg": "#ffffff",
+    "heading-font": "system-ui, sans-serif",
+    "heading-weight": "700",
+    "heading-size": "2rem",
+    "tracking": "-0.03em",
+    "text-size": "1rem",
+    "leading": "1.5",
+    "pad": "0",
+    "gap": "1rem",
+    "radius": "0.75rem",
+    "width": "46rem",
+    "shadow": "none"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "details",
+        "name": "Your details",
+        "kind": "input",
+        "content": {
+          "type": "split",
+          "ratio": "0.5",
+          "basis": "16rem",
+          "tokens": {
+            "gap": "0"
+          },
+          "start": [
+            {
+              "type": "panel",
+              "tokens": {
+                "pad": "2rem",
+                "gap": "1rem",
+                "bg": "#e8edf5"
+              },
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "id": "n1",
+                  "role": "eyebrow",
+                  "text": "Read what interests you"
+                },
+                {
+                  "type": "heading",
+                  "id": "n2",
+                  "role": "headline",
+                  "text": "Your next\ngood read."
+                },
+                {
+                  "type": "text",
+                  "id": "n3",
+                  "role": "body",
+                  "text": "Tell us which subject you prefer for a weekly reading list."
+                },
+                {
+                  "type": "divider",
+                  "id": "n4"
+                },
+                {
+                  "type": "text",
+                  "id": "n5",
+                  "role": "fine_print",
+                  "text": "One optional preference. One weekly email.",
+                  "size": "s",
+                  "tokens": {
+                    "text-size": "1.167rem"
+                  }
+                }
+              ],
+              "narrow": {
+                "pad": "1.25rem"
+              }
+            }
+          ],
+          "end": [
+            {
+              "type": "panel",
+              "tokens": {
+                "pad": "2rem",
+                "gap": "1rem"
+              },
+              "children": [
+                {
+                  "type": "field",
+                  "id": "n6",
+                  "name": "interest",
+                  "label": "Favourite subject (optional)",
+                  "placeholder": "Choose an option",
+                  "required": false,
+                  "options": [
+                    {
+                      "value": "books",
+                      "label": "Books and writing"
+                    },
+                    {
+                      "value": "culture",
+                      "label": "Arts and culture"
+                    },
+                    {
+                      "value": "ideas",
+                      "label": "Science and ideas"
+                    }
+                  ],
+                  "tokens": {
+                    "border": "#7490ba"
+                  }
+                },
+                {
+                  "type": "field",
+                  "id": "n7",
+                  "name": "email",
+                  "label": "Email address",
+                  "placeholder": "you@example.com",
+                  "required": true,
+                  "tokens": {
+                    "border": "#7490ba"
+                  }
+                },
+                {
+                  "type": "consent",
+                  "id": "n8",
+                  "role": "consent_text",
+                  "text": "Use my details for this request.",
+                  "hidden": true,
+                  "tokens": {
+                    "text-size": "1.125rem"
+                  }
+                },
+                {
+                  "type": "button",
+                  "id": "n9",
+                  "role": "cta_label",
+                  "label": "Request my reading list",
+                  "action": "submit",
+                  "submission": "primary"
+                },
+                {
+                  "type": "text",
+                  "id": "n10",
+                  "role": "fine_print",
+                  "text": "You can unsubscribe at any time.",
+                  "size": "s",
+                  "tokens": {
+                    "text-size": "1.167rem"
+                  }
+                }
+              ],
+              "narrow": {
+                "pad": "1.25rem"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "received",
+        "name": "Request received",
+        "kind": "acknowledgement",
+        "content": {
+          "type": "panel",
+          "tokens": {
+            "pad": "2rem",
+            "gap": "1rem"
+          },
+          "children": [
+            {
+              "type": "icon",
+              "id": "n90",
+              "name": "check"
+            },
+            {
+              "type": "heading",
+              "id": "n91",
+              "role": "success_headline",
+              "text": "Request received"
+            },
+            {
+              "type": "text",
+              "id": "n92",
+              "role": "success_body",
+              "text": "Thank you. Your request has been received."
+            }
+          ],
+          "narrow": {
+            "pad": "1.25rem"
+          }
+        }
+      }
+    ],
+    "submissions": [
+      {
+        "id": "primary",
+        "required": true,
+        "fields": [
+          "n6",
+          "n7"
+        ],
+        "consents": [
+          "n8"
+        ]
+      }
+    ]
+  }
+}

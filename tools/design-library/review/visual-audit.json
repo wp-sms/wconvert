@@ -1,0 +1,1003 @@
+{
+  "schema": 1,
+  "date": "2026-09-29",
+  "scope": "All 91 source designs, all authored screens/default results at 320/768px; automated 320/390/768/1440px, RTL and long-copy checks. Eleven outstanding UI recommendations resolved, six consolidation candidates reviewed (four grouped variants, two retained distinct). Internal triage only; not a conversion-lift claim or customer migration.",
+  "records": [
+    {
+      "id": "bold-ask",
+      "family": "Simple invitation",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "A short invitation with one clear action remains a useful neutral starting point.",
+      "action": "Retain in the library. Recheck all dependent campaigns when editing.",
+      "compare_to": [],
+      "source_revision": "6ed669149a40e2ca0d37ddee800a48eeed067e785338c12849318036d8c565a2"
+    },
+    {
+      "id": "centred-card",
+      "family": "Simple invitation",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "A short invitation with one clear action remains a useful neutral starting point.",
+      "action": "Retain in the library. Recheck all dependent campaigns when editing.",
+      "compare_to": [],
+      "source_revision": "315638656d95fd124dc4968ff8f6c80caf8e5c2b6f297ed6f36c5f54bd1cd08a"
+    },
+    {
+      "id": "offer-panel",
+      "family": "Simple invitation",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "A short invitation with one clear action remains a useful neutral starting point.",
+      "action": "Retain in the library. Recheck all dependent campaigns when editing.",
+      "compare_to": [],
+      "source_revision": "b1c4a4880a87d40e55c742316efcb8b6427801912d7d52a2be1efe6efe3772e4"
+    },
+    {
+      "id": "reading-slip",
+      "family": "Simple invitation",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "A short invitation with one clear action remains a useful neutral starting point.",
+      "action": "Retain in the library. Recheck all dependent campaigns when editing.",
+      "compare_to": [],
+      "source_revision": "88609a5cccdbff265023649b52cf2e67080caafcac5b6cedb113898d77a2455a"
+    },
+    {
+      "id": "slide-in-question",
+      "family": "Simple invitation",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "A short invitation with one clear action remains a useful neutral starting point.",
+      "action": "Retain in the library. Recheck all dependent campaigns when editing.",
+      "compare_to": [],
+      "source_revision": "ac3e9dcf33e7f7aa89722f8d2851b3deb1138af72544751f45f1381b1147fd6c"
+    },
+    {
+      "id": "stacked-signup",
+      "family": "Simple invitation",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "A short invitation with one clear action remains a useful neutral starting point.",
+      "action": "Retain in the library. Recheck all dependent campaigns when editing.",
+      "compare_to": [],
+      "source_revision": "54933e0db55a1e582d5cd6c8e945d2a85535165ef8bbb09f6a1d7302f8d121c8"
+    },
+    {
+      "id": "inline-bar",
+      "family": "Compact row",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "The field/action or message/action row has a practical place in a small strip. Preserve deliberate phone wrapping.",
+      "action": "Retain in the library. Recheck all dependent campaigns when editing.",
+      "compare_to": [],
+      "source_revision": "959e1a04011613f1774edbd39a787eb70421d9d5edc6db4318399cec8cb32c32"
+    },
+    {
+      "id": "inline-cta",
+      "family": "Compact row",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "The field/action or message/action row has a practical place in a small strip. Preserve deliberate phone wrapping.",
+      "action": "Retain in the library. Recheck all dependent campaigns when editing.",
+      "compare_to": [],
+      "source_revision": "e1e61b35d080a34f08d7aa22f4197487c3b26cf7c32850cf37a86e9b8d4d45e6"
+    },
+    {
+      "id": "wide-banner",
+      "family": "Compact row",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "The field/action or message/action row has a practical place in a small strip. Preserve deliberate phone wrapping.",
+      "action": "Retain in the library. Recheck all dependent campaigns when editing.",
+      "compare_to": [],
+      "source_revision": "8729c61281b8bd94360f90a4db41e34c56bfd67d991c9fef487af056cdc70742"
+    },
+    {
+      "id": "bar-announcement",
+      "family": "Compact row",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "The field/action or message/action row has a practical place in a small strip. Preserve deliberate phone wrapping.",
+      "action": "Retain in the library. Recheck all dependent campaigns when editing.",
+      "compare_to": [],
+      "source_revision": "c8c701f224cf282a5d2ff09511cac31010b8ec087f762d0461efd0fe70ee2d33"
+    },
+    {
+      "id": "bar-email-capture",
+      "family": "Compact row",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "The field/action or message/action row has a practical place in a small strip. Preserve deliberate phone wrapping.",
+      "action": "Retain in the library. Recheck all dependent campaigns when editing.",
+      "compare_to": [],
+      "source_revision": "746cfb4abee80a9f59e343a8b175005bbc3d9dd816e966d03d4d1005944eaa71"
+    },
+    {
+      "id": "inline-signpost",
+      "family": "Compact row",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "The field/action or message/action row has a practical place in a small strip. Preserve deliberate phone wrapping.",
+      "action": "Retain in the library. Recheck all dependent campaigns when editing.",
+      "compare_to": [],
+      "source_revision": "5fcea252a090f9aa947008c35e4ce1ef950df64665ad5a17eeaa7599eec02442"
+    },
+    {
+      "id": "split-notice",
+      "family": "Compact row",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "The field/action or message/action row has a practical place in a small strip. Preserve deliberate phone wrapping.",
+      "action": "Retain in the library. Recheck all dependent campaigns when editing.",
+      "compare_to": [],
+      "source_revision": "ecd5740d2cc2bf119d0f91f47064e16e401a274509a6bd3d8fb6ba4772a8a0d6"
+    },
+    {
+      "id": "code-reveal",
+      "family": "Offer reveal",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "The code panel and copy action explain the offer without relying on a delivery promise. Keep offer terms with the code.",
+      "action": "Retain in the library. Recheck all dependent campaigns when editing.",
+      "compare_to": [],
+      "source_revision": "f1960b4932a42b513dc555265e0e311424ab007a6d9042b22e8688238dd7a4ec"
+    },
+    {
+      "id": "cream-coupon",
+      "family": "Offer reveal",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "The code panel and copy action explain the offer without relying on a delivery promise. Keep offer terms with the code.",
+      "action": "Retain in the library. Recheck all dependent campaigns when editing.",
+      "compare_to": [],
+      "source_revision": "9c8b728cf55283008940dfa06cdf5fc69d4a33fa036a4df2a43dd6982ef55f16"
+    },
+    {
+      "id": "offer-receipt",
+      "family": "Offer reveal",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "The code panel and copy action explain the offer without relying on a delivery promise. Keep offer terms with the code.",
+      "action": "Retain in the library. Recheck all dependent campaigns when editing.",
+      "compare_to": [],
+      "source_revision": "c25bf11694e8dc55bbe0e43e344355c7108f786cc4573dd19df67cd5d4a30581"
+    },
+    {
+      "id": "punched-ticket",
+      "family": "Offer reveal",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "The code panel and copy action explain the offer without relying on a delivery promise. Keep offer terms with the code.",
+      "action": "Retain in the library. Recheck all dependent campaigns when editing.",
+      "compare_to": [],
+      "source_revision": "8da94f43e5553eb9ebee86eb229dbce4cbdc6dce22714e4e13ee6248ff0c54ef"
+    },
+    {
+      "id": "bar-code",
+      "family": "Offer reveal",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "The code panel and copy action explain the offer without relying on a delivery promise. Keep offer terms with the code.",
+      "action": "Retain in the library. Recheck all dependent campaigns when editing.",
+      "compare_to": [],
+      "source_revision": "3ec85b0ea3558abc4c8ad03d8db5d6fb74821432c7da08c7e0d30cdcfb646eb3"
+    },
+    {
+      "id": "inline-code-strip",
+      "family": "Offer reveal",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "The code panel and copy action explain the offer without relying on a delivery promise. Keep offer terms with the code.",
+      "action": "Retain in the library. Recheck all dependent campaigns when editing.",
+      "compare_to": [],
+      "source_revision": "dff7e6fa643aae5267d68cf8db2e6af772d7290111387f6bfb42235c59aafbf0"
+    },
+    {
+      "id": "slide-in-code",
+      "family": "Offer reveal",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "The code panel and copy action explain the offer without relying on a delivery promise. Keep offer terms with the code.",
+      "action": "Retain in the library. Recheck all dependent campaigns when editing.",
+      "compare_to": [],
+      "source_revision": "d72d51b834506ec323dc64ba7f44bb52b3c89459e30089865468b67e672e8779"
+    },
+    {
+      "id": "callback-notes",
+      "family": "Purposeful split",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "The message and form occupy distinct panes. Keep the form readable when the panes stack.",
+      "action": "Retain in the library. Recheck all dependent campaigns when editing.",
+      "compare_to": [],
+      "source_revision": "93a6e708a4ed963c3eb60150415da95ae350189ceffad039248e977b2f47423a"
+    },
+    {
+      "id": "fieldwork",
+      "family": "Purposeful split",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "The message and form occupy distinct panes. Keep the form readable when the panes stack.",
+      "action": "Retain in the library. Recheck all dependent campaigns when editing.",
+      "compare_to": [],
+      "source_revision": "6ddea91fda70519fb7e8d7f19114dbc7f4d5ab8d9b8fcf3824a077968518d301"
+    },
+    {
+      "id": "ink-split",
+      "family": "Purposeful split",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "The message and form occupy distinct panes. Keep the form readable when the panes stack.",
+      "action": "Retain in the library. Recheck all dependent campaigns when editing.",
+      "compare_to": [],
+      "source_revision": "11165f8e8947130ae08fc0fa9fb16245103e3ec7032070ce3bffbaab24ca1b67"
+    },
+    {
+      "id": "launch-checklist",
+      "family": "Purposeful split",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "The message and form occupy distinct panes. Keep the form readable when the panes stack.",
+      "action": "Retain in the library. Recheck all dependent campaigns when editing.",
+      "compare_to": [],
+      "source_revision": "b739e6bea292dbd482277858fc682177ad4e433de401916674b8945cebc7380c"
+    },
+    {
+      "id": "portrait-frame",
+      "family": "Purposeful split",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "The message and form occupy distinct panes. Keep the form readable when the panes stack.",
+      "action": "Retain in the library. Recheck all dependent campaigns when editing.",
+      "compare_to": [],
+      "source_revision": "21e5180d13d93c5ac0da67d4347244db08354f0dc0885e18533ec7721b4934ce"
+    },
+    {
+      "id": "preference-card",
+      "family": "Purposeful split",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "The message and form occupy distinct panes. Keep the form readable when the panes stack.",
+      "action": "Retain in the library. Recheck all dependent campaigns when editing.",
+      "compare_to": [],
+      "source_revision": "4e5c5b19a44226d652ca987f50d285ea5ae9ec9a4d4de92836103c0151259a97"
+    },
+    {
+      "id": "project-notebook",
+      "family": "Purposeful split",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "The message and form occupy distinct panes. Keep the form readable when the panes stack.",
+      "action": "Retain in the library. Recheck all dependent campaigns when editing.",
+      "compare_to": [],
+      "source_revision": "62399527e40af44de0a14f89b6296ca4456a7024664e4b1502e37bfa780292f2"
+    },
+    {
+      "id": "reading-desk",
+      "family": "Purposeful split",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "The message and form occupy distinct panes. Keep the form readable when the panes stack.",
+      "action": "Retain in the library. Recheck all dependent campaigns when editing.",
+      "compare_to": [],
+      "source_revision": "a3cbd57c993fa950c1144fbe2d4fae9ed5e3459c3ba17b5ffcdec87019e0717c"
+    },
+    {
+      "id": "split-hero",
+      "family": "Purposeful split",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "The message and form occupy distinct panes. Keep the form readable when the panes stack.",
+      "action": "Retain in the library. Recheck all dependent campaigns when editing.",
+      "compare_to": [],
+      "source_revision": "dfc2d14320c6a12e2873db72c3fd72e9b2507f6835249ca46232aae4ea364ba7"
+    },
+    {
+      "id": "studio-window",
+      "family": "Purposeful split",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "The message and form occupy distinct panes. Keep the form readable when the panes stack.",
+      "action": "Retain in the library. Recheck all dependent campaigns when editing.",
+      "compare_to": [],
+      "source_revision": "47d997b1306bdb4b4a0d83bce498564e60bbc36d21b09383c19c97b624890012"
+    },
+    {
+      "id": "popup-editorial",
+      "family": "Purposeful split",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "The message and form occupy distinct panes. Keep the form readable when the panes stack.",
+      "action": "Retain in the library. Recheck all dependent campaigns when editing.",
+      "compare_to": [],
+      "source_revision": "915daf0c7b84528b467bb9b8a7804236fb3d87be00e0e4b38449563202dfe17b"
+    },
+    {
+      "id": "edition-pass",
+      "family": "Editorial composition",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "The typographic hierarchy, excerpt or cover gives this design a recognisable reading structure.",
+      "action": "Retain in the library. Recheck all dependent campaigns when editing.",
+      "compare_to": [],
+      "source_revision": "3df0979d792fe511e383caf894eb2ef06cf62d3b3cc9c83e700a53a8a529d8ca"
+    },
+    {
+      "id": "quieter-frequency",
+      "family": "Editorial composition",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "The typographic hierarchy, excerpt or cover gives this design a recognisable reading structure.",
+      "action": "Retain in the library. Recheck all dependent campaigns when editing.",
+      "compare_to": [],
+      "source_revision": "f4fc57290e92b527b8605508203c057a1ccbf0df12843c5c6a6610bf74821f83"
+    },
+    {
+      "id": "reading-cover",
+      "family": "Editorial composition",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "The typographic hierarchy, excerpt or cover gives this design a recognisable reading structure.",
+      "action": "Retain in the library. Recheck all dependent campaigns when editing.",
+      "compare_to": [],
+      "source_revision": "8519ffa6851464a5fbf891f0fcb9730dcb9886319153eb498ddfc0b59e7889bb"
+    },
+    {
+      "id": "sunday-marginalia",
+      "family": "Editorial composition",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "The typographic hierarchy, excerpt or cover gives this design a recognisable reading structure.",
+      "action": "Retain in the library. Recheck all dependent campaigns when editing.",
+      "compare_to": [],
+      "source_revision": "1a55602e77025084b146e5f02a8bd29e6c170751055b6d36bdd051d8c8045ba4"
+    },
+    {
+      "id": "useful-guide",
+      "family": "Editorial composition",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "The typographic hierarchy, excerpt or cover gives this design a recognisable reading structure.",
+      "action": "Retain in the library. Recheck all dependent campaigns when editing.",
+      "compare_to": [],
+      "source_revision": "2d709ce0861914d6545f93f76484307b7117bf77c01e0109c977d14a4565c612"
+    },
+    {
+      "id": "margin-note",
+      "family": "Editorial composition",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "The typographic hierarchy, excerpt or cover gives this design a recognisable reading structure.",
+      "action": "Retain in the library. Recheck all dependent campaigns when editing.",
+      "compare_to": [],
+      "source_revision": "4ee3c86d047ad101cf3fc4624026f2d9c94742e0ae30446e449b1c2865d6ed25"
+    },
+    {
+      "id": "collection-poster",
+      "family": "Image and caption",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "The illustration explains the subject, with a clearly separated action or request area.",
+      "action": "Retain in the library. Recheck all dependent campaigns when editing.",
+      "compare_to": [],
+      "source_revision": "e8c73d0be6cfe494b46ad0ac5d779121a5041cb872393d742de93fb1e2a50a6d"
+    },
+    {
+      "id": "product-shelf",
+      "family": "Image and caption",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "The illustration explains the subject, with a clearly separated action or request area.",
+      "action": "Retain in the library. Recheck all dependent campaigns when editing.",
+      "compare_to": [],
+      "source_revision": "91506a2bc5ee9ad9e75f42b8b59df1ef089c77ba3b098408206f98fc4b9d59c3"
+    },
+    {
+      "id": "sample-envelope",
+      "family": "Image and caption",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "The illustration explains the subject, with a clearly separated action or request area.",
+      "action": "Retain in the library. Recheck all dependent campaigns when editing.",
+      "compare_to": [],
+      "source_revision": "6a62a9e35523f5b80b06b4fd7e75c93e85cacceef3ab9314e2bda7bfdb65fd54"
+    },
+    {
+      "id": "session-card",
+      "family": "Image and caption",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "The illustration explains the subject, with a clearly separated action or request area.",
+      "action": "Retain in the library. Recheck all dependent campaigns when editing.",
+      "compare_to": [],
+      "source_revision": "99bb2a3065d70fa194a54881e2bfdb4461d70bd3168d241afa43081c0c587a99"
+    },
+    {
+      "id": "agenda-card",
+      "family": "Structured information",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "Labelled information groups help the visitor decide before following the single action.",
+      "action": "Retain in the library. Recheck all dependent campaigns when editing.",
+      "compare_to": [],
+      "source_revision": "473a191cd5360559b9a25f884dd48e8af9432c7317e1a78aa4ec2da75eed3609"
+    },
+    {
+      "id": "appointment-note",
+      "family": "Structured information",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "Labelled information groups help the visitor decide before following the single action.",
+      "action": "Retain in the library. Recheck all dependent campaigns when editing.",
+      "compare_to": [],
+      "source_revision": "32c46973d6a8c819c84948ab11261fee1126c28db0b2a9ac3570d6de1980e50b"
+    },
+    {
+      "id": "inline-benefits",
+      "family": "Structured information",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "Labelled information groups help the visitor decide before following the single action.",
+      "action": "Retain in the library. Recheck all dependent campaigns when editing.",
+      "compare_to": [],
+      "source_revision": "d24191de32e42d6eeaf9101c85a079c0030cf45c5bc7b2902dfe52f0e2c615f5"
+    },
+    {
+      "id": "material-pair",
+      "family": "Structured information",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "Labelled information groups help the visitor decide before following the single action.",
+      "action": "Retain in the library. Recheck all dependent campaigns when editing.",
+      "compare_to": [],
+      "source_revision": "9e8140e04774d687dbb1f3e35d4836deb874f51e09324e82ba30288cdf108a30"
+    },
+    {
+      "id": "availability-note",
+      "family": "Structured information",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "Labelled information groups help the visitor decide before following the single action.",
+      "action": "Retain in the library. Recheck all dependent campaigns when editing.",
+      "compare_to": [],
+      "source_revision": "4b1ad4748eb37d8fe0df6ff394cdc33483c8f66287c45f7e4b12fde876db628d"
+    },
+    {
+      "id": "service-summary",
+      "family": "Structured information",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "Labelled information groups help the visitor decide before following the single action.",
+      "action": "Retain in the library. Recheck all dependent campaigns when editing.",
+      "compare_to": [],
+      "source_revision": "8e1f080830b40e698640566dc31d3ba2d0a11cf4ed7ee9e40cd3caca0ebddfb4"
+    },
+    {
+      "id": "inline-choice",
+      "family": "Practical enquiry",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "Visible fields and a request acknowledgement suit a small enquiry; contact details do not imply booking.",
+      "action": "Retain in the library. Recheck all dependent campaigns when editing.",
+      "compare_to": [],
+      "source_revision": "1cedd28c8c758f3f545595c87d6449e9f5d87ea9feadaee6aa1efee90f529e14"
+    },
+    {
+      "id": "inline-phone",
+      "family": "Practical enquiry",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "Visible fields and a request acknowledgement suit a small enquiry; contact details do not imply booking.",
+      "action": "Retain in the library. Recheck all dependent campaigns when editing.",
+      "compare_to": [],
+      "source_revision": "08899dd7fc54ed7e465eed4174d91b8eb2f702a7da905fcee4c53f320d1bc336"
+    },
+    {
+      "id": "deadline-panel",
+      "family": "Announcement",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "A genuine scheduled event or offer justifies this focused announcement. Merchant terms and timing remain required.",
+      "action": "Retain in the library. Recheck all dependent campaigns when editing.",
+      "compare_to": [],
+      "source_revision": "6d0d3f52053427d44874339b88af7cc1bc27ab63ff5dfd3261c880c18f272d90"
+    },
+    {
+      "id": "flash-offer",
+      "family": "Announcement",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "A genuine scheduled event or offer justifies this focused announcement. Merchant terms and timing remain required.",
+      "action": "Retain in the library. Recheck all dependent campaigns when editing.",
+      "compare_to": [],
+      "source_revision": "92b6525716ae31cb0b7ec7effe7cab6b4a390d5a743c16f454dcb0d2d3d9b927"
+    },
+    {
+      "id": "summer-archive",
+      "family": "Announcement",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "A genuine scheduled event or offer justifies this focused announcement. Merchant terms and timing remain required.",
+      "action": "Retain in the library. Recheck all dependent campaigns when editing.",
+      "compare_to": [],
+      "source_revision": "4d0444218372ce5156151d08771cb3d388681f0b292a9531b1cfd2029316a3c6"
+    },
+    {
+      "id": "bar-countdown",
+      "family": "Announcement",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "A genuine scheduled event or offer justifies this focused announcement. Merchant terms and timing remain required.",
+      "action": "Retain in the library. Recheck all dependent campaigns when editing.",
+      "compare_to": [],
+      "source_revision": "b44259fe7506c09203fa9782fb6dd26236de25611f46265360335015f5306109"
+    },
+    {
+      "id": "fullscreen-poster",
+      "family": "Announcement",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "A genuine scheduled event or offer justifies this focused announcement. Merchant terms and timing remain required.",
+      "action": "Retain in the library. Recheck all dependent campaigns when editing.",
+      "compare_to": [],
+      "source_revision": "1755ca7a753d75e8a096376cc6dae1be7cb688efe6348b39fef6e49d8f00fd13"
+    },
+    {
+      "id": "journey-email-then-sms",
+      "family": "Explicit journey",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "The screens serve different jobs. Keep these steps separate from visual style counts and preserve Back/Skip behaviour.",
+      "action": "Retain in the library. Recheck all dependent campaigns when editing.",
+      "compare_to": [],
+      "source_revision": "3481242ceeb697d4481d1088cbad00f4d0d20041e768f2847b777335e18b9be0"
+    },
+    {
+      "id": "journey-enquiry",
+      "family": "Explicit journey",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "The screens serve different jobs. Keep these steps separate from visual style counts and preserve Back/Skip behaviour.",
+      "action": "Retain in the library. Recheck all dependent campaigns when editing.",
+      "compare_to": [],
+      "source_revision": "166098f2f176d2986b120cd0c703a1d4ec1fecd8196508f0cae5151070c7c0c2"
+    },
+    {
+      "id": "journey-offer-first",
+      "family": "Explicit journey",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "The screens serve different jobs. Keep these steps separate from visual style counts and preserve Back/Skip behaviour.",
+      "action": "Retain in the library. Recheck all dependent campaigns when editing.",
+      "compare_to": [],
+      "source_revision": "7c1e285b6e12d57b065148894b48ad0e780fc09f89e08c26a2c1fa39694f836a"
+    },
+    {
+      "id": "request-folio",
+      "family": "Explicit journey",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "The screens serve different jobs. Keep these steps separate from visual style counts and preserve Back/Skip behaviour.",
+      "action": "Retain in the library. Recheck all dependent campaigns when editing.",
+      "compare_to": [],
+      "source_revision": "e8238b565bb7d820d679004f0c5715d57ec4a6ea9cbc9e022d236db674da7c1c"
+    },
+    {
+      "id": "journey-service-enquiry",
+      "family": "Explicit journey",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "The screens serve different jobs. Keep these steps separate from visual style counts and preserve Back/Skip behaviour.",
+      "action": "Retain in the library. Recheck all dependent campaigns when editing.",
+      "compare_to": [],
+      "source_revision": "3cfdf3a173283243a2f5493bd42bf9d0c35128bf9bc8a16dedfdba03c8b578c2"
+    },
+    {
+      "id": "gift-edit",
+      "family": "Decision support",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "The question arrangement serves a different decision path; result links and every branch still need campaign-level review.",
+      "action": "Retain in the library. Recheck all dependent campaigns when editing.",
+      "compare_to": [],
+      "source_revision": "b24c0bda86e51683d6907324b3a4fa7cc1a843d3ae5ea246e4c5f7cf63046dd1"
+    },
+    {
+      "id": "journey-content-guide",
+      "family": "Decision support",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "The question arrangement serves a different decision path; result links and every branch still need campaign-level review.",
+      "action": "Retain in the library. Recheck all dependent campaigns when editing.",
+      "compare_to": [],
+      "source_revision": "4721e7afdfaaa272872cbb11eb3423dc57e7036fa3a32d996b26d2562d23882e"
+    },
+    {
+      "id": "journey-product-finder",
+      "family": "Decision support",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "The question arrangement serves a different decision path; result links and every branch still need campaign-level review.",
+      "action": "Retain in the library. Recheck all dependent campaigns when editing.",
+      "compare_to": [],
+      "source_revision": "680ce8e3a27bc99bc44ade8b7bcf6f36f142826eb5733d6d47752c41da437607"
+    },
+    {
+      "id": "kit-workbench",
+      "family": "Decision support",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "The question arrangement serves a different decision path; result links and every branch still need campaign-level review.",
+      "action": "Retain in the library. Recheck all dependent campaigns when editing.",
+      "compare_to": [],
+      "source_revision": "ca5fa092397b48742e54dc03249ba60d5c8ae7af2dce2565bf6c4a92bbb13fcd"
+    },
+    {
+      "id": "project-route",
+      "family": "Decision support",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "The question arrangement serves a different decision path; result links and every branch still need campaign-level review.",
+      "action": "Retain in the library. Recheck all dependent campaigns when editing.",
+      "compare_to": [],
+      "source_revision": "a5011cbe391a2a80bccabac4a48f7ace1ac19d7190abbde2eacb7771611d0824"
+    },
+    {
+      "id": "reading-path",
+      "family": "Decision support",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "The question arrangement serves a different decision path; result links and every branch still need campaign-level review.",
+      "action": "Retain in the library. Recheck all dependent campaigns when editing.",
+      "compare_to": [],
+      "source_revision": "aac7636fcb6d68dc3b520f0e5a9bda051b16773f6d2751759282cb03557e0a81"
+    },
+    {
+      "id": "service-directory",
+      "family": "Decision support",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "The question arrangement serves a different decision path; result links and every branch still need campaign-level review.",
+      "action": "Retain in the library. Recheck all dependent campaigns when editing.",
+      "compare_to": [],
+      "source_revision": "afcebdb0e12f955bdb97c0f6788bd4c9cf5af8ec9e41db8fb978b14059aa0d16"
+    },
+    {
+      "id": "space-planner",
+      "family": "Decision support",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "The question arrangement serves a different decision path; result links and every branch still need campaign-level review.",
+      "action": "Retain in the library. Recheck all dependent campaigns when editing.",
+      "compare_to": [],
+      "source_revision": "47e9b779611274afedb5013e9f120050e630847f603491eb03253f9e661b9ee3"
+    },
+    {
+      "id": "inline-tinted",
+      "family": "In-page newsletter",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "The contained form is useful within an article; the distinct panel arrangement is more than a colour change.",
+      "action": "Retain in the library. Recheck all dependent campaigns when editing.",
+      "compare_to": [],
+      "source_revision": "f1020781bc140804e5e601eb4c332f4cdd1fca7dc5c224c523b8329f2b604a2c"
+    },
+    {
+      "id": "inline-rule",
+      "family": "In-page newsletter",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "The contained form is useful within an article; the distinct panel arrangement is more than a colour change.",
+      "action": "Retain in the library. Recheck all dependent campaigns when editing.",
+      "compare_to": [],
+      "source_revision": "e9dca707f4650f27aaf25a262a7b2766e8904d4f44a766b1a59d34511fb28117"
+    },
+    {
+      "id": "photo-wash",
+      "family": "Image-backed invitation",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "A background image treatment is useful if words remain legible after the merchant replaces the image. The shipped gradient is only a fallback.",
+      "action": "Retain in the library. Recheck all dependent campaigns when editing.",
+      "compare_to": [],
+      "source_revision": "3890bf23f10baaccf869241d94774528a0669c9754bedeeb3ff5633b1a3feaf5"
+    },
+    {
+      "id": "benefit-grid",
+      "family": "Benefit grid",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "Replace inconsistently wrapping benefit icons with a quiet text panel; align the form and improve field contrast. All authored screens and dependent setups rechecked; see template-six-refinements-2026-09-29 review.",
+      "action": "Retain the refined composition. Recheck dependent setups on future edits.",
+      "compare_to": [
+        "inline-benefits"
+      ],
+      "source_revision": "3a9f34d92b6f9af21deb68d30ee032336012941cba2e1179e5dc9c0468769552"
+    },
+    {
+      "id": "ledger-card",
+      "family": "Editorial benefits",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "Remove decorative benefit icons, use a consistent editorial list and labelled full-width form, and strengthen field contrast. All authored screens and dependent setups rechecked; see template-six-refinements-2026-09-29 review.",
+      "action": "Retain the refined composition. Recheck dependent setups on future edits.",
+      "compare_to": [
+        "benefit-grid"
+      ],
+      "source_revision": "1afea31894df500000041913de114677f35d5283755a0190c22ddd58e75c6ab1"
+    },
+    {
+      "id": "slide-in-benefits",
+      "family": "Corner benefits",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "Remove unrelated benefit icons, use a compact text panel and strengthen field outlines and secondary copy. All authored screens and dependent setups rechecked; see template-six-refinements-2026-09-29 review.",
+      "action": "Retain the refined composition. Recheck dependent setups on future edits.",
+      "compare_to": [
+        "benefit-grid",
+        "slide-in-question"
+      ],
+      "source_revision": "7ff2dcac7c434466e059b1e3ec6cc6d6d8ae13c7aa48e7f778d83b7450f6c143"
+    },
+    {
+      "id": "slide-in-nudge",
+      "family": "Corner invitation",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "Compact invitation with a single content-width action and no unrelated icon.",
+      "action": "Retain this composition. All authored screens rechecked in template-library-cleanup-2026-09-29; recheck dependent setups after edits.",
+      "compare_to": [
+        "margin-note"
+      ],
+      "source_revision": "169ec8b91bfbe1067bbb872fa24f7834588a3f0dca7ccfba2c5fda856795d2e1"
+    },
+    {
+      "id": "inline-cart-nudge",
+      "family": "Cart help",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "Remove the unrelated delivery icon and use a responsive message/action split with clear spacing. All authored screens and dependent setups rechecked; see template-six-refinements-2026-09-29 review.",
+      "action": "Retain the refined composition. Recheck dependent setups on future edits.",
+      "compare_to": [
+        "inline-cta"
+      ],
+      "source_revision": "f0efcaacba9f935846a2187e76524ea778aad7ca6aa4ab5a12f4c44c9964d1ba"
+    },
+    {
+      "id": "inline-split",
+      "family": "Resource split",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "A shallow guide illustration, clear form column and request-specific acknowledgement.",
+      "action": "Retain this composition. All authored screens rechecked in template-library-cleanup-2026-09-29; recheck dependent setups after edits.",
+      "compare_to": [
+        "reading-cover",
+        "useful-guide"
+      ],
+      "source_revision": "ac371aa2587102e0c7b6c360ae9ecda0ce24c192bffc3337c9863c773940d20f"
+    },
+    {
+      "id": "slide-in-photo",
+      "family": "Image-led corner form",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "A short note illustration replaces the unrelated picture; the form and acknowledgement remain compact.",
+      "action": "Retain this composition. All authored screens rechecked in template-library-cleanup-2026-09-29; recheck dependent setups after edits.",
+      "compare_to": [
+        "session-card",
+        "sample-envelope"
+      ],
+      "source_revision": "237c87219463e97172f351626e8e7b5e0fd870dd6bca16bf3d83e852c51724da"
+    },
+    {
+      "id": "fullscreen-editorial",
+      "family": "Fullscreen editorial",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "Quieter mobile typography and padding keep the signup readable within the fullscreen surface.",
+      "action": "Retain this composition. All authored screens rechecked in template-library-cleanup-2026-09-29; recheck dependent setups after edits.",
+      "compare_to": [
+        "quieter-frequency"
+      ],
+      "source_revision": "ad50f061772c84bec3516975eb1f27c1f2878265766a584a3ba9e7b3f40c4bbe"
+    },
+    {
+      "id": "fullscreen-split",
+      "family": "Fullscreen guide",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "Shorter mobile panels explain the guide request without excessive heading scale.",
+      "action": "Retain this composition. All authored screens rechecked in template-library-cleanup-2026-09-29; recheck dependent setups after edits.",
+      "compare_to": [
+        "reading-cover",
+        "ink-split"
+      ],
+      "source_revision": "1961477f1e22436df56bde5007371d80d74547cf0a93bd53ab5c47442b1aeeea"
+    },
+    {
+      "id": "reader-review",
+      "family": "Reader proof",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "The default shows a real content promise. Optional reader proof stays hidden until verified attribution is supplied.",
+      "action": "Retain this composition. All authored screens rechecked in template-library-cleanup-2026-09-29; recheck dependent setups after edits.",
+      "compare_to": [
+        "sunday-marginalia"
+      ],
+      "source_revision": "b4d8d78d165a7c5895fbcb01e9b5b54b2d3a89b5bc91669487c691b59631f447"
+    },
+    {
+      "id": "makers-index",
+      "family": "Maker product enquiry",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "The product panel is balanced on desktop; mobile loses the old decorative minimum. The acknowledgement removes repeated product decoration.",
+      "action": "Retain this composition. All authored screens rechecked in template-library-cleanup-2026-09-29; recheck dependent setups after edits.",
+      "compare_to": [
+        "product-shelf",
+        "sample-envelope"
+      ],
+      "source_revision": "7ec412f87c291a64cb9853d7528b796ebd50d7c30193365c47ae197aedf5f5bf"
+    },
+    {
+      "id": "resource-index",
+      "family": "Resource checklist",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "Numbered topics form a consistent compact list; the form and resource request remain clear.",
+      "action": "Retain this composition. All authored screens rechecked in template-library-cleanup-2026-09-29; recheck dependent setups after edits.",
+      "compare_to": [
+        "service-summary"
+      ],
+      "source_revision": "1e01b3691e377813821ff4ffd8ebdffda9fefa849e1d308e4aefae9cf4cdbb8f"
+    },
+    {
+      "id": "service-ledger",
+      "family": "Service comparison",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "Short service descriptions, tighter mobile spacing and a content-width action support comparison.",
+      "action": "Retain this composition. All authored screens rechecked in template-library-cleanup-2026-09-29; recheck dependent setups after edits.",
+      "compare_to": [
+        "material-pair"
+      ],
+      "source_revision": "aa2ee5d36fbdf8d7229df9e43211c0cb5a1f1122948a62c96fa66b3c8e44329a"
+    },
+    {
+      "id": "service-docket",
+      "family": "Service enquiry",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "A concise introduction and compact mobile form preserve optional name and service selection.",
+      "action": "Retain this composition. All authored screens rechecked in template-library-cleanup-2026-09-29; recheck dependent setups after edits.",
+      "compare_to": [
+        "request-folio",
+        "service-summary"
+      ],
+      "source_revision": "67eefb9e623ace74297170ae052ecd352eae4c387859af65dcf888e9548037c0"
+    },
+    {
+      "id": "photo-offer",
+      "family": "Collection invitation",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "Original product artwork replaces the abstract image; unverified return-policy claims are removed.",
+      "action": "Retain this composition. All authored screens rechecked in template-library-cleanup-2026-09-29; recheck dependent setups after edits.",
+      "compare_to": [
+        "collection-poster"
+      ],
+      "source_revision": "43ef24e35698180326965993eae9ff8fa98ade7862f0a1feacb537c580fa3904"
+    },
+    {
+      "id": "popup-flash",
+      "family": "Consolidation candidate",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "A sale-card visual variant with the same one-screen offer and shop action. No registered campaign depends on it.",
+      "action": "Grouped for internal authoring. Prefer the canonical design for new briefs; retain this source and its saved snapshots. Do not automatically move fields or campaign copy.",
+      "compare_to": [
+        "flash-offer"
+      ],
+      "source_revision": "5014f59ccf23eec14279375cd3febcd46f40e079437c09218d02b6484e6de0ce",
+      "variant_of": "flash-offer",
+      "canonical_revision": "92b6525716ae31cb0b7ec7effe7cab6b4a390d5a743c16f454dcb0d2d3d9b927"
+    },
+    {
+      "id": "popup-two-column",
+      "family": "Consolidation candidate",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "Keep the inset artwork and optional-name offer form distinct from the email-only split hero.",
+      "action": "Retain as a separate choice when a merchant needs an optional first name. No automatic migration.",
+      "compare_to": [
+        "split-hero"
+      ],
+      "source_revision": "f32a16a33be2f06d1370046fb438036e878037173d18c029bb61d661e118c81b"
+    },
+    {
+      "id": "inline-quiet",
+      "family": "Consolidation candidate",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "An editorial inline signup variant, with the same email capture and acknowledgement. No registered campaign depends on it.",
+      "action": "Grouped for internal authoring. Prefer the canonical design for new briefs; retain this source and its saved snapshots. Do not automatically move fields or campaign copy.",
+      "compare_to": [
+        "inline-rule"
+      ],
+      "source_revision": "f3b86850d2b591c0f1cc41333fb8c95048f19a36b4252fe56b5126aa4fc6dc90",
+      "variant_of": "inline-rule",
+      "canonical_revision": "e9dca707f4650f27aaf25a262a7b2766e8904d4f44a766b1a59d34511fb28117"
+    },
+    {
+      "id": "number-invitation",
+      "family": "Consolidation candidate",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "A number-led split signup variant. Its extra body and acknowledgement roles remain editable; no registered campaign depends on it.",
+      "action": "Grouped for internal authoring. Prefer the canonical design for new briefs; retain this source and its saved snapshots. Do not automatically move fields or campaign copy.",
+      "compare_to": [
+        "launch-checklist"
+      ],
+      "source_revision": "498b3d22529a0ca81906df7d8c1a0e3fc2117d12fccbaafe992bf4f2ca40dd92",
+      "variant_of": "launch-checklist",
+      "canonical_revision": "b739e6bea292dbd482277858fc682177ad4e433de401916674b8945cebc7380c"
+    },
+    {
+      "id": "journey-email-only",
+      "family": "Consolidation candidate",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "A simple email signup variant with no additional journey step. Its registered Playbook keeps its own field and submission identifiers.",
+      "action": "Grouped for internal authoring. Prefer the canonical design for new briefs; retain this source and its saved snapshots. Do not automatically move fields or campaign copy.",
+      "compare_to": [
+        "centred-card"
+      ],
+      "source_revision": "7e588b43063e2be75f2d8c99d03021dd9299d8b9b229ade04c11cb713666f009",
+      "variant_of": "centred-card",
+      "canonical_revision": "315638656d95fd124dc4968ff8f6c80caf8e5c2b6f297ed6f36c5f54bd1cd08a"
+    },
+    {
+      "id": "name-and-email",
+      "family": "Consolidation candidate",
+      "decision": "keep",
+      "priority": 3,
+      "reason": "The optional-name form supports three registered guide and consultation setups; an email-only replacement would lose that capability.",
+      "action": "Retain this compact form separately. Preserve field IDs and review the three dependent setups after edits.",
+      "compare_to": [
+        "centred-card"
+      ],
+      "source_revision": "abeabcd33d07ed2fb8bd08462f9eb00d2bdc8da05306da8c139596d86c4544a5"
+    }
+  ],
+  "references": [
+    {
+      "id": "depicter-image-signup",
+      "name": "Depicter: Horizontal Signup Form with Image",
+      "url": "https://depicter.com/template/horizontal-signup-form-with-image/10587/",
+      "reviewed": "Live desktop preview on 28 September; page availability rechecked on 29 September.",
+      "lesson": "Balance a short form against imagery that explains the offer.",
+      "application": "A useful object or excerpt should earn its space; keep visible field labels.",
+      "shape": "split"
+    },
+    {
+      "id": "depicter-slide-ins",
+      "name": "Depicter: Minimal Slide-in / Simple Abandonment",
+      "url": "https://depicter.com/templates/#/slide-ins",
+      "reviewed": "Gallery thumbnails on 28 September; detail previews stalled.",
+      "lesson": "One small contextual request, a short action and obvious dismissal.",
+      "application": "Keep corner cards compact and relevant to the page. No unrelated gift or lightning icon.",
+      "shape": "corner"
+    },
+    {
+      "id": "depicter-notification",
+      "name": "Depicter: Early Cyber Week Notification Bar",
+      "url": "https://depicter.com/template/early-cyber-week-notification-bar/11002/",
+      "reviewed": "Live desktop preview on 28 September; page availability rechecked on 29 September.",
+      "lesson": "A shallow row separates message, offer and action.",
+      "application": "Reuse a good compact bar; do not invent urgency or claim a palette swap is a new design.",
+      "shape": "bar"
+    }
+  ],
+  "renderer_revision": "c69fd3e282540d893750c0bd43bdfb7cbedf9d3aa9e26423709968f988dc8940"
+}

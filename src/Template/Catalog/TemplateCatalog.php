@@ -11,6 +11,8 @@ final class TemplateCatalog
 {
     public const CACHE_OPTION = 'wconvert_template_catalog_cache';
     public const SOURCE_OPTION = 'wconvert_template_catalog_url';
+    /** Fifty focused packs of up to twelve setups can cover a 500-campaign library. */
+    public const MAX_PACKS = 50;
 
     public function __construct(
         private readonly OptionStore $options,
@@ -51,7 +53,7 @@ final class TemplateCatalog
         PackValidator::check($source !== '', __('A catalog service has not been configured on this site yet.', 'wconvert'));
         $json = $this->transport->get($source);
         $index = json_decode($json, true, 12);
-        PackValidator::check(is_array($index) && ($index['schema'] ?? null) === 1 && is_array($index['packs'] ?? null) && array_is_list($index['packs']) && count($index['packs']) <= 20, __('The catalog format is unsupported. Your local library has not changed.', 'wconvert'));
+        PackValidator::check(is_array($index) && ($index['schema'] ?? null) === 1 && is_array($index['packs'] ?? null) && array_is_list($index['packs']) && count($index['packs']) <= self::MAX_PACKS, __('The catalog format is unsupported. Your local library has not changed.', 'wconvert'));
         $seen = [];
         foreach ($index['packs'] as $entry) {
             PackValidator::check(is_array($entry) && PackValidator::identifier($entry['id'] ?? null) && !isset($seen[$entry['id']]) && PackValidator::version($entry['version'] ?? null), __('The catalog contains invalid pack information.', 'wconvert'));

@@ -5,22 +5,22 @@
   "tier": "basic",
   "tokens": {
     "bg": "#ffffff",
-    "fg": "#052e16",
-    "muted": "#6b7280",
-    "accent": "#15803d",
+    "fg": "#173b2b",
+    "muted": "#53655a",
+    "accent": "#246443",
     "accent-fg": "#ffffff",
-    "border": "#dcfce7",
+    "border": "#778d7e",
     "heading-size": "1.875rem",
     "heading-weight": "700",
     "tracking": "-0.025em",
     "text-size": "1rem",
     "leading": "1.5",
     "radius": "0.75rem",
-    "pad": "1.25rem",
-    "gap": "1rem",
-    "width": "46rem",
+    "pad": "0",
+    "gap": "0",
+    "width": "48rem",
     "align": "start",
-    "shadow": "0 32px 80px -16px rgba(15, 23, 42, 0.5)",
+    "shadow": "0 18px 50px -12px rgba(23, 59, 43, 0.25)",
     "motion": "200ms",
     "backdrop": "rgba(5, 46, 22, 0.6)"
   },
@@ -32,30 +32,48 @@
         "kind": "input",
         "content": {
           "type": "split",
+          "basis": "16rem",
           "ratio": 0.5,
           "start": [
             {
-              "type": "stack",
+              "type": "media",
+              "tokens": {
+                "bg": "#e9eee3",
+                "pad": "1.5rem",
+                "gap": "1rem",
+                "radius": "0"
+              },
+              "narrow": {
+                "pad": "1rem 1.25rem"
+              },
               "children": [
                 {
                   "type": "image",
                   "id": "n1",
-                  "src": "data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%203%201.5'%3E%3Cdefs%3E%3ClinearGradient%20id='g'%20x1='0'%20y1='0'%20x2='1'%20y2='1'%3E%3Cstop%20offset='0'%20stop-color='%2314532d'/%3E%3Cstop%20offset='.55'%20stop-color='%2315803d'/%3E%3Cstop%20offset='1'%20stop-color='%2386efac'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width='3'%20height='4'%20fill='url%28%23g%29'/%3E%3Ccircle%20cx='0.85'%20cy='1.1'%20r='0.6'%20fill='%23dcfce7'%20opacity='.55'/%3E%3Ccircle%20cx='2.2'%20cy='2.8'%20r='0.9'%20fill='%234ade80'%20opacity='.5'/%3E%3C/svg%3E",
-                  "alt": "Image placeholder",
-                  "fit": "cover"
+                  "src": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20320%20190%22%3E%3Cellipse%20cx%3D%22160%22%20cy%3D%22166%22%20rx%3D%22105%22%20ry%3D%2210%22%20fill%3D%22%23d3dbcc%22%2F%3E%3Cpath%20d%3D%22M81%2061h111l13%20100H69z%22%20fill%3D%22%23d7b68e%22%2F%3E%3Cpath%20d%3D%22M107%2064V44a29%2029%200%200%201%2058%200v20%22%20fill%3D%22none%22%20stroke%3D%22%2399764f%22%20stroke-width%3D%229%22%2F%3E%3Cpath%20d%3D%22M81%2080h111M83%2091h109%22%20stroke%3D%22%23bea07b%22%20stroke-width%3D%222%22%2F%3E%3Crect%20x%3D%22211%22%20y%3D%2271%22%20width%3D%2237%22%20height%3D%2289%22%20rx%3D%2211%22%20fill%3D%22%23527760%22%2F%3E%3Crect%20x%3D%22219%22%20y%3D%2256%22%20width%3D%2221%22%20height%3D%2221%22%20rx%3D%224%22%20fill%3D%22%23294b36%22%2F%3E%3Cpath%20d%3D%22M219%2091h21v46h-21z%22%20fill%3D%22%23dfe7d8%22%2F%3E%3C%2Fsvg%3E",
+                  "alt": "Illustration of a reusable tote and bottle",
+                  "fit": "contain"
                 },
                 {
                   "type": "text",
                   "id": "n2",
                   "role": "body",
-                  "text": "Thoughtfully chosen. Made for everyday use."
+                  "text": "Everyday pieces, thoughtfully chosen."
                 }
               ]
             }
           ],
           "end": [
             {
-              "type": "stack",
+              "type": "panel",
+              "tokens": {
+                "pad": "1.75rem",
+                "gap": "1rem",
+                "radius": "0"
+              },
+              "narrow": {
+                "pad": "1.25rem"
+              },
               "children": [
                 {
                   "type": "eyebrow",
@@ -70,13 +88,16 @@
                   "type": "heading",
                   "id": "n4",
                   "role": "headline",
-                  "text": "Ten percent off your first order"
+                  "text": "A little welcome.\n10% off your first order.",
+                  "narrow": {
+                    "heading-size": "1.625rem"
+                  }
                 },
                 {
                   "type": "text",
                   "id": "n5",
                   "role": "body",
-                  "text": "Leave your email to request the offer. Your first name is optional."
+                  "text": "Request the welcome offer by email."
                 },
                 {
                   "type": "field",
@@ -84,7 +105,10 @@
                   "name": "name",
                   "label": "First name (optional)",
                   "placeholder": "Your name",
-                  "required": false
+                  "required": false,
+                  "tokens": {
+                    "radius": "0.375rem"
+                  }
                 },
                 {
                   "type": "field",
@@ -92,7 +116,10 @@
                   "name": "email",
                   "label": "Email address",
                   "placeholder": "you@example.com",
-                  "required": true
+                  "required": true,
+                  "tokens": {
+                    "radius": "0.375rem"
+                  }
                 },
                 {
                   "type": "button",
@@ -100,14 +127,17 @@
                   "role": "cta_label",
                   "label": "Request my offer",
                   "action": "submit",
-                  "submission": "primary"
+                  "submission": "primary",
+                  "tokens": {
+                    "radius": "0.375rem"
+                  }
                 },
                 {
                   "type": "consent",
                   "id": "n9",
                   "role": "consent_text",
                   "hidden": true,
-                  "text": "Email me offers and news. %s",
+                  "text": "We use your details for this offer request. %s",
                   "link": {
                     "label": "Privacy Policy"
                   },
@@ -119,7 +149,7 @@
                   "type": "text",
                   "id": "n10",
                   "role": "fine_print",
-                  "text": "No spam, and you can unsubscribe at any time.",
+                  "text": "For your first order. Offer terms apply.",
                   "size": "s",
                   "tokens": {
                     "text-size": "1.167rem"
@@ -127,8 +157,7 @@
                 }
               ]
             }
-          ],
-          "basis": "16rem"
+          ]
         }
       },
       {
@@ -136,7 +165,7 @@
         "name": "Received",
         "kind": "acknowledgement",
         "content": {
-          "type": "stack",
+          "type": "panel",
           "children": [
             {
               "type": "icon",
@@ -155,7 +184,16 @@
               "role": "success_body",
               "text": "Thank you for requesting the welcome offer."
             }
-          ]
+          ],
+          "tokens": {
+            "pad": "2rem",
+            "gap": "1rem",
+            "bg": "#e9eee3",
+            "radius": "0"
+          },
+          "narrow": {
+            "pad": "1.5rem"
+          }
         }
       }
     ],

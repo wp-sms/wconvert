@@ -13,6 +13,135 @@ npm install --no-save playwright       # not a repo dependency; see below
 Output goes to `tools/design-library/out/`, which is gitignored. Nothing here
 ships: `/tools` is in `.distignore`.
 
+## Internal creation and review studio: 108 campaigns
+
+Run `npm run templates:pilot`, then open `out/pilot.html` through the local site
+(or serve `out/` over HTTP). Add `?batch=visual-variety` to show the eight latest compositions, or `?batch=new-directions` for the initial four. `out/proof.html` pairs every
+screen at desktop and phone widths for visual review.
+`npm run test:template-studio` tests discovery, duplicate detection, brief validation
+and all prepared campaigns. Composer dependencies are required for the PHP exporter.
+
+The studio contains **108 campaign setups using 59 designs**, drawn from a complete
+inventory of **91 designs**. The first twelve received user approval of the design
+direction. The next twelve add four new Free designs and reuse existing designs,
+including deliberate reuse between two different enquiry workflows. Ten Playbooks
+are new; cart return and standalone SMS already had useful registered starts.
+The coverage batch reused existing designs for 24 setups for distinct practical needs.
+The decision-support batch adds six anonymous finders, two comparison designs and sixteen
+intentional design reuses. Every result variant is included in the layout audit
+and paired proofs; the proof screen picker allows focused inspection.
+The contextual-help batch adds eight bars, eight slide-ins, six popups and two
+inline checklists, including one compact enquiry design and deliberate reuse.
+The first four new directions add two popups, an illustrated slide-in and a compact bar.
+The visual-variety batch adds eight further compositions: four popups, three slide-ins
+and one quiet announcement bar, including two short enquiries and a resource request.
+Shared designs now have one card with a use-case choice in both studio and customer creation.
+There are now 133 registered Playbooks across Free and Pro modules. All seven Goals,
+all five Display Types and three audiences are represented. These are editorial
+candidates, not measured conversion winners or automatically approved releases.
+
+The studio provides explicit type labels, audience/type/goal/batch/search filters,
+a coverage table, real renderer previews, individual screens and result variants,
+mobile widths, RTL, local form demonstrations, nearest-design comparison, layout
+checks and exportable review notes. Campaign tier includes the Goal requirement:
+a Free design serving cart recovery is correctly labelled Pro. Counts distinguish
+campaign setups from unique referenced designs.
+
+Coupon codes cleared by Prefill use `YOUR CODE`; countdowns display a static sample
+so their occupied space is reviewed. Both are labelled as preview placeholders and
+never become campaign configuration. Submitting a preview creates no Lead and does
+not contact a Destination. Measurement images load eagerly so an offscreen lazy
+image cannot stall either audit.
+
+The studio uses the shipping `lite-phone-input` adapter, with GB as its labelled
+sample site country. Country selection and canonical phone values survive screen
+and width changes. Use **Simulate failure on next submission** to exercise retry;
+accepted fields are locked when revisited. Unconfigured result links and shop
+handoffs show setup notices. Apply the [practical review gate](pilot/PRACTICAL-REVIEW.md)
+to every campaign before publication, including every branch and acknowledgement.
+
+The [maintenance workflow](MAINTENANCE.md) explains design dependencies, version
+notes, retirement/replacement metadata and the boundary around saved customer
+campaigns. The studio exposes affected setups and advisory editorial prompts.
+
+### Visual audit and reference board
+
+`npm run templates:pilot` also builds `out/roadmap.html`. It presents the
+29 September review of all 91 source designs: all retain recommendations, with
+four related variants grouped into 87 review groups. The eleven remaining UI
+recommendations and six consolidation candidates are resolved in the
+[full-library cleanup report](../../docs/reviews/template-library-cleanup-2026-09-29.md).
+Expand variants or filter by type or decision, compare
+actual renders, inspect every authored screen, and switch to prepared campaign
+copy. Dependencies include registered setups outside the curated collection.
+
+The Next batch view pairs six original composition sketches and two deliberate
+reuses with existing designs. These eight briefs are planned, not shipped or
+added to the 108/59 library counts. The Inspiration view links the earlier
+Depicter references and states exactly what was reviewed.
+
+`review/visual-audit.json` holds advisory decisions bound to source and renderer
+revisions. Changes show “Needs a fresh review”; new designs receive no automatic
+decision. These records neither approve campaigns nor retire shipping designs.
+See [the review report](../../docs/reviews/template-visual-audit-2026-09-29.md).
+
+### Adding the next reviewed batch
+
+1. Choose an uncovered visitor need from the [library plan](../../docs/plans/template-library-system-2026-09-28.md).
+   Record the batch, audience, composition family, meaningful difference and publication
+   requirements in `pilot/collection.json`. Campaign IDs must reference registered
+   Playbooks. Each expansion brief must name existing comparison designs, state
+   new-design or reuse-design, and explain the decision. The build rejects missing
+   comparisons, unknown batches and unsupported audiences. The Goal and format come from those Playbooks rather than a second list.
+2. Author or reuse a design with `.claude/skills/design-a-template/SKILL.md` and
+   the generated vocabulary. Author the complete campaign using
+   `.claude/skills/design-a-playbook/SKILL.md`. Supply translated copy, display-rule
+   suggestions, honest acknowledgement and setup notes. Changing only colour or
+   industry wording does not justify counting another distinct design.
+3. Run `composer verify:templates`, `composer verify:source`,
+   `npm run test:template-studio` and `npm run templates:pilot`.
+   The inventory discovers every Free and Pro module and fails on invalid JSON,
+   duplicate design IDs and missing campaign references.
+4. Compare the nearest designs in the studio. `out/inventory.json` records style
+   and structure fingerprints plus the five nearest structures. IDs and copy are
+   ignored consistently; references, field types, requiredness and journey paths
+   remain meaningful. Colour variants share a structure fingerprint. Similarity
+   uses structural features, not screenshot/AI comparison: a reviewer decides
+   whether the difference is useful. It does not automatically reject reuse.
+5. Inspect every screen and result on desktop and phone, keyboard behaviour,
+   contrast, long copy and RTL. Run the built-in layout checks. Those checks cover
+   overflow, control height (including link buttons), input text size, badge row
+   alignment and compact-bar headline/button hierarchy; they do not certify
+   accessibility or good composition. Rebuild after the final edit and inspect
+   the final output again. Record typography, spacing, balance and line-break
+   review for all screens, including acknowledgements and result variants.
+   Then verify creation in WordPress and the actual configured destination journey.
+6. Record the reviewer, decision, notes and three evidence stages, then export the
+   review JSON. Import with `npm run templates:review -- /path/to/export.json`;
+   commit the shared records and evidence together. Campaign, renderer or evidence
+   changes invalidate the shared approval. Run `npm run templates:gate -- BATCH_ID`
+   locally. See [the shared-review workflow](review/README.md). Editorial review is
+   separate from release approval. Publish through the normal branch/PR process.
+
+Original artwork and provenance live in `pilot/assets/`. These SVG illustrations
+are embedded in the bundled JSON, with no remote asset dependency. This does not
+add asset support to downloadable catalog packs.
+
+A [real WordPress demo](demo/README.md) exercises publication, saved leads, retry
+handling, sample products/coupons, useful resource pages and a local mail outbox.
+It uses MySQL, not a mocked capture endpoint. The shipping Goal-first screen now
+filters by business as well as format, collection and search. The bounded catalog
+accepts 50 packs, retaining the existing 12-design and 256 KiB limits.
+
+The [shared editorial queue](review/README.md) now stores revision-bound decisions
+and evidence in Git. The studio shows review-state filters for 108 actual setups.
+The completed decision-support briefs are archived under `pilot/batches/`; the
+next-batch queue holds six new composition candidates and two deliberate reuses,
+following the full-inventory visual audit. `npm run templates:gate` checks the
+current evidence locally without CI. Automated generation, hosted multi-user
+review, screenshot similarity, conversion measurement, paid asset distribution
+and broad 300–500 campaign rollout remain future work. The current 108 are reviewed editorial candidates, not measured winners.
+
 ## A sibling of `tools/design-system`, not a step inside it
 
 Same machinery, different subject. That one mirrors the **wp-admin screens**;
@@ -44,6 +173,9 @@ a second copy of both.
 | `gallery` | Inlines every entry into `out/gallery.html` — the whole library, one page |
 | `review` | Builds `out/flagships.html` for Fieldwork, Sunday marginalia and Callback notes; needs `renderer` |
 | `library-review` | Builds `out/library-review.html` for every Free and Pro design, both screens, four widths and automated browser measurements; needs `renderer` |
+| `pilot` | Builds `out/pilot.html`, `pilot.json` and `inventory.json` from registered campaigns and all module designs; needs `renderer` and Composer dependencies |
+| `roadmap` | Builds `out/roadmap.html` with revision-aware visual triage, comparisons, reference principles and the next-batch sketches; needs `pilot` and `renderer` |
+| `proof` | Builds `out/proof.html`, pairing all screens at desktop/320px widths; needs `pilot` and `renderer` |
 | `starting-points` | Builds `out/starting-points.html` from the twelve flagship Playbooks through the shipping PHP Prefill, with setup notes and the same size checks; needs `renderer` and Composer dependencies |
 
 For a complete library review, run `./tools/design-library/build.sh renderer library-review`
@@ -52,10 +184,14 @@ draws each design at its available container width before scaling its preview.
 Choose one design to inspect it at a larger size. **Check all sizes** measures
 320, 390, 768 and 1440px in both directions, with sample and longer copy plus
 consent. It checks horizontal overflow, 44px controls, 16px input text and solid
-text/placeholder contrast. Gradients, composition and vertical scrolling still
+text/placeholder contrast and field boundaries, including phone wrappers.
+Gradients, composition and vertical scrolling still
 need visual review. The measurement details are available as JSON on the page.
 
-`review/library-decisions.json` records each improvement, retirement and addition.
+`review/visual-audit.json` supplies the current, revision-bound recommendations.
+`review/library-decisions.json` is the historical September 11 record, not the
+authority for current review labels. Related variants expire when their source
+or canonical source changes; grouping does not retire designs or migrate campaigns.
 Set `WCONVERT_REVIEW_BASELINE` to a JSON array of earlier entries while building
 to enable the Before view. Without that optional file, the current library and
 all checks still work. See `docs/reviews/template-library-curation-2026-09-11.md`

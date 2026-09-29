@@ -1,0 +1,122 @@
+{
+  "id": "collection-poster",
+  "name": "Collection poster",
+  "display_type": "popup",
+  "tier": "free",
+  "tokens": {
+    "bg": "#e4dbc9",
+    "fg": "#342e27",
+    "muted": "#5d5245",
+    "accent": "#344637",
+    "accent-fg": "#ffffff",
+    "border": "#ccd4d5",
+    "input-bg": "#ffffff",
+    "heading-size": "2rem",
+    "heading-weight": "600",
+    "tracking": "-0.035em",
+    "text-size": "1rem",
+    "leading": "1.5",
+    "radius": "0",
+    "pad": "0",
+    "gap": "1rem",
+    "width": "38rem",
+    "shadow": "0 20px 56px -20px rgba(28,42,31,.3)"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "information",
+        "name": "Information",
+        "kind": "content",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "panel",
+              "children": [
+                {
+                  "type": "row",
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "id": "n1",
+                      "text": "The lighting edit",
+                      "role": "eyebrow"
+                    }
+                  ]
+                },
+                {
+                  "type": "heading",
+                  "id": "n3",
+                  "text": "A softer kind of evening.",
+                  "role": "headline",
+                  "tokens": {
+                    "heading-font": "Georgia, serif",
+                    "heading-size": "2.75rem",
+                    "heading-weight": "400"
+                  }
+                }
+              ],
+              "tokens": {
+                "pad": "2rem 2rem 0",
+                "gap": "1rem"
+              },
+              "narrow": {
+                "pad": "1.25rem 1.25rem 0",
+                "heading-size": "2rem"
+              }
+            },
+            {
+              "type": "image",
+              "id": "n4",
+              "src": "data:image/svg+xml,%3Csvg xmlns='http%3A//www.w3.org/2000/svg' viewBox='0 0 600 250'%3E%3Crect width='600' height='250' fill='%23e4dbc9'/%3E%3Cellipse cx='295' cy='216' rx='205' ry='15' fill='%23cbbfa9'/%3E%3Cpath d='M150 185L181 83H278L308 185Z' fill='%23a45135'/%3E%3Cpath d='M213 185V221M244 185V221' stroke='%23633c2d' stroke-width='9'/%3E%3Cpath d='M348 64H406L424 181H330Z' fill='%23f9f3e5'/%3E%3Cpath d='M377 181V218M349 218H405' stroke='%23615b46' stroke-width='7'/%3E%3Ccircle cx='454' cy='181' r='32' fill='%236d7964'/%3E%3C/svg%3E",
+              "alt": "Illustrated terracotta and cream table lamps beside a green decorative sphere",
+              "fit": "contain",
+              "tokens": {
+                "radius": "0"
+              }
+            },
+            {
+              "type": "panel",
+              "children": [
+                {
+                  "type": "text",
+                  "id": "n5",
+                  "text": "Table lamps for reading corners and quiet rooms.",
+                  "role": "body"
+                },
+                {
+                  "type": "row",
+                  "children": [
+                    {
+                      "type": "button",
+                      "id": "n6",
+                      "label": "Explore the lighting edit",
+                      "role": "cta_label",
+                      "action": "link"
+                    }
+                  ],
+                  "tokens": {
+                    "align": "end"
+                  }
+                }
+              ],
+              "tokens": {
+                "pad": "1.5rem 2rem 2rem",
+                "gap": "1rem"
+              },
+              "narrow": {
+                "pad": "1.25rem"
+              }
+            }
+          ],
+          "tokens": {
+            "gap": "0"
+          }
+        }
+      }
+    ],
+    "submissions": []
+  }
+}

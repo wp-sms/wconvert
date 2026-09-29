@@ -28,7 +28,8 @@ export function enhancePhones(root: HTMLElement, shadow: ShadowRoot, defaultCoun
         strict: false,
         allowDropdown: input.dataset.pd !== '0',
         dropdownContainer: portal,
-        placeholder: input.placeholder || 'auto',
+        // International example placeholders must follow the selected country.
+        placeholder: /^\+[\d\s()-]+$/.test(input.placeholder) ? 'auto' : input.placeholder || 'auto',
         inputAttributes: { autocomplete: 'tel', inputmode: 'tel' },
       });
       const visible = phone.getInput() as HTMLInputElement & { __p?: (value: string, country?: string) => void; __r?: () => void };

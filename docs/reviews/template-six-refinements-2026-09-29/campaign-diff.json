@@ -1,0 +1,306 @@
+[
+  {
+    "id": "studio-welcome",
+    "keys": [
+      "nearest",
+      "revision"
+    ],
+    "comparison_only": true
+  },
+  {
+    "id": "delivery-announcement",
+    "keys": [
+      "nearest",
+      "revision"
+    ],
+    "comparison_only": true
+  },
+  {
+    "id": "photography-enquiry",
+    "keys": [
+      "nearest",
+      "revision"
+    ],
+    "comparison_only": true
+  },
+  {
+    "id": "consultation-corner",
+    "keys": [
+      "nearest",
+      "revision"
+    ],
+    "comparison_only": true
+  },
+  {
+    "id": "cart-straight-away",
+    "keys": [
+      "nearest",
+      "revision"
+    ],
+    "comparison_only": true
+  },
+  {
+    "id": "cart-delivery-help",
+    "keys": [
+      "config",
+      "tree",
+      "tokens",
+      "nearest",
+      "fingerprint",
+      "revision"
+    ],
+    "comparison_only": false
+  },
+  {
+    "id": "drop-alerts",
+    "keys": [
+      "nearest",
+      "revision"
+    ],
+    "comparison_only": true
+  },
+  {
+    "id": "seasonal-service-link",
+    "keys": [
+      "nearest",
+      "revision"
+    ],
+    "comparison_only": true
+  },
+  {
+    "id": "event-registration-link",
+    "keys": [
+      "nearest",
+      "revision"
+    ],
+    "comparison_only": true
+  },
+  {
+    "id": "restyling-notes",
+    "keys": [
+      "config",
+      "tree",
+      "tokens",
+      "nearest",
+      "fingerprint",
+      "revision"
+    ],
+    "comparison_only": false
+  },
+  {
+    "id": "gift-planning-guide",
+    "keys": [
+      "config",
+      "tree",
+      "tokens",
+      "nearest",
+      "fingerprint",
+      "revision"
+    ],
+    "comparison_only": false
+  },
+  {
+    "id": "product-advice-request",
+    "keys": [
+      "nearest",
+      "revision"
+    ],
+    "comparison_only": true
+  },
+  {
+    "id": "agency-project-enquiry",
+    "keys": [
+      "nearest",
+      "revision"
+    ],
+    "comparison_only": true
+  },
+  {
+    "id": "fitness-introduction",
+    "keys": [
+      "nearest",
+      "revision"
+    ],
+    "comparison_only": true
+  },
+  {
+    "id": "accounting-consultation",
+    "keys": [
+      "nearest",
+      "revision"
+    ],
+    "comparison_only": true
+  },
+  {
+    "id": "service-text-updates",
+    "keys": [
+      "nearest",
+      "revision"
+    ],
+    "comparison_only": true
+  },
+  {
+    "id": "editorial-weekly",
+    "keys": [
+      "config",
+      "tree",
+      "tokens",
+      "nearest",
+      "fingerprint",
+      "revision"
+    ],
+    "comparison_only": false
+  },
+  {
+    "id": "writing-checklist",
+    "keys": [
+      "nearest",
+      "revision"
+    ],
+    "comparison_only": true
+  },
+  {
+    "id": "sample-request",
+    "keys": [
+      "nearest",
+      "revision"
+    ],
+    "comparison_only": true
+  },
+  {
+    "id": "personalisation-enquiry",
+    "keys": [
+      "nearest",
+      "revision"
+    ],
+    "comparison_only": true
+  },
+  {
+    "id": "fit-checklist",
+    "keys": [
+      "nearest",
+      "revision"
+    ],
+    "comparison_only": true
+  },
+  {
+    "id": "local-pickup-details",
+    "keys": [
+      "nearest",
+      "revision"
+    ],
+    "comparison_only": true
+  },
+  {
+    "id": "basket-product-help",
+    "keys": [
+      "nearest",
+      "revision"
+    ],
+    "comparison_only": true
+  },
+  {
+    "id": "return-policy-guide",
+    "keys": [
+      "nearest",
+      "revision"
+    ],
+    "comparison_only": true
+  },
+  {
+    "id": "service-area-check",
+    "keys": [
+      "nearest",
+      "revision"
+    ],
+    "comparison_only": true
+  },
+  {
+    "id": "reader-question",
+    "keys": [
+      "nearest",
+      "revision"
+    ],
+    "comparison_only": true
+  },
+  {
+    "id": "series-start",
+    "keys": [
+      "nearest",
+      "revision"
+    ],
+    "comparison_only": true
+  },
+  {
+    "id": "gift-wrap-details",
+    "keys": [
+      "nearest",
+      "revision"
+    ],
+    "comparison_only": true
+  },
+  {
+    "id": "dispatch-schedule",
+    "keys": [
+      "nearest",
+      "revision"
+    ],
+    "comparison_only": true
+  },
+  {
+    "id": "showroom-information",
+    "keys": [
+      "nearest",
+      "revision"
+    ],
+    "comparison_only": true
+  },
+  {
+    "id": "holiday-service-hours",
+    "keys": [
+      "nearest",
+      "revision"
+    ],
+    "comparison_only": true
+  },
+  {
+    "id": "remote-consultation-details",
+    "keys": [
+      "nearest",
+      "revision"
+    ],
+    "comparison_only": true
+  },
+  {
+    "id": "contributor-guidelines",
+    "keys": [
+      "nearest",
+      "revision"
+    ],
+    "comparison_only": true
+  },
+  {
+    "id": "writing-session-details",
+    "keys": [
+      "nearest",
+      "revision"
+    ],
+    "comparison_only": true
+  },
+  {
+    "id": "rereading-essay",
+    "keys": [
+      "nearest",
+      "revision"
+    ],
+    "comparison_only": true
+  },
+  {
+    "id": "upholstery-samples",
+    "keys": [
+      "nearest",
+      "revision"
+    ],
+    "comparison_only": true
+  }
+]

@@ -1068,6 +1068,11 @@ A ready-to-run bundle serving one [[Goal]] — a [[Template]], copy, a
 [[Display Type]], display rules and destination hints, packaged with notes on why
 it works. One Goal has many Playbooks.
 
+Optional `business_types` metadata labels examples for stores, service businesses,
+and publishers/creators. Goal-first discovery combines this filter with search,
+format and collection. These labels do not restrict Goal or Template eligibility;
+untagged third-party setups remain available under All businesses.
+
 A Playbook is **data, not code**: a registry entry, so third parties can add them
 and the library can update independently of a plugin release. It carries **no
 markup** — copy is plain text, and the one case needing a link inside a sentence

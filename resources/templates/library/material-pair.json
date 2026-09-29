@@ -1,0 +1,146 @@
+{
+  "id": "material-pair",
+  "name": "Material pair",
+  "display_type": "inline",
+  "tier": "free",
+  "tokens": {
+    "bg": "#fffcf7",
+    "fg": "#332e28",
+    "muted": "#62564d",
+    "accent": "#704a38",
+    "accent-fg": "#ffffff",
+    "border": "#d9cfc3",
+    "input-bg": "#ffffff",
+    "heading-font": "Georgia, serif",
+    "heading-weight": "400",
+    "heading-size": "2rem",
+    "text-size": "1rem",
+    "tracking": "-0.025em",
+    "leading": "1.5",
+    "pad": "1.75rem",
+    "gap": "1rem",
+    "radius": "0.75rem",
+    "width": "100%",
+    "shadow": "none"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "offer",
+        "name": "Material comparison",
+        "kind": "content",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "eyebrow",
+              "id": "n1",
+              "text": "Materials, made clear",
+              "role": "eyebrow"
+            },
+            {
+              "type": "heading",
+              "id": "n2",
+              "text": "Choose the feel\nthat works for you.",
+              "role": "headline"
+            },
+            {
+              "type": "text",
+              "id": "n3",
+              "text": "Two finishes. A few practical differences.",
+              "role": "body"
+            },
+            {
+              "type": "grid",
+              "children": [
+                {
+                  "type": "panel",
+                  "children": [
+                    {
+                      "type": "heading",
+                      "id": "n4",
+                      "text": "Glazed ceramic",
+                      "role": "headline",
+                      "size": "s"
+                    },
+                    {
+                      "type": "text",
+                      "id": "n5",
+                      "text": "A smooth finish with a little weight.",
+                      "role": "body"
+                    },
+                    {
+                      "type": "divider",
+                      "id": "n6"
+                    },
+                    {
+                      "type": "text",
+                      "id": "n7",
+                      "text": "Wipe clean. Protect from knocks and frost.",
+                      "role": "body"
+                    }
+                  ],
+                  "tokens": {
+                    "bg": "#e9eee5",
+                    "pad": "1.25rem"
+                  }
+                },
+                {
+                  "type": "panel",
+                  "children": [
+                    {
+                      "type": "heading",
+                      "id": "n8",
+                      "text": "Natural wood",
+                      "role": "headline",
+                      "size": "s"
+                    },
+                    {
+                      "type": "text",
+                      "id": "n9",
+                      "text": "A warm surface with a visible grain.",
+                      "role": "body"
+                    },
+                    {
+                      "type": "divider",
+                      "id": "n10"
+                    },
+                    {
+                      "type": "text",
+                      "id": "n11",
+                      "text": "Keep dry. Follow the maker’s care guidance.",
+                      "role": "body"
+                    }
+                  ],
+                  "tokens": {
+                    "bg": "#f2e5d6",
+                    "pad": "1.25rem"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "button",
+              "id": "n12",
+              "label": "Compare materials and care",
+              "action": "link",
+              "role": "cta_label"
+            },
+            {
+              "type": "text",
+              "id": "n13",
+              "text": "Check the specifications for the exact item.",
+              "role": "fine_print",
+              "size": "s",
+              "tokens": {
+                "text-size": "1.167rem"
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "submissions": []
+  }
+}

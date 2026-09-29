@@ -34,7 +34,7 @@ final class PackPlaybooks
         $seen = [];
         foreach ($entries as $entry) {
             PackValidator::check(is_array($entry), __('This pack contains an invalid campaign setup.', 'wconvert'));
-            PackValidator::keys($entry, ['id', 'name', 'goal', 'template_id', 'copy', 'rules', 'targeting', 'destination_hint', 'notes']);
+            PackValidator::keys($entry, ['id', 'name', 'goal', 'template_id', 'copy', 'rules', 'targeting', 'destination_hint', 'notes', 'business_types']);
             PackValidator::check(PackValidator::identifier($entry['id'] ?? null) && !isset($seen[$entry['id']]), __('This pack repeats or misnames a campaign setup.', 'wconvert'));
             $seen[$entry['id']] = true;
             PackValidator::words($entry['name'] ?? null, 120);

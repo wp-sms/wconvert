@@ -5,8 +5,8 @@
   "tier": "free",
   "tokens": {
     "bg": "#4c1d95",
-    "fg": "#f5f3ff",
-    "muted": "#c4b5fd",
+    "fg": "#ffffff",
+    "muted": "#ffffff",
     "accent": "#fbbf24",
     "accent-fg": "#422006",
     "border": "#6d28d9",
@@ -18,7 +18,7 @@
     "gap": "1rem",
     "width": "28rem",
     "align": "start",
-    "bg-image": "linear-gradient(135deg, #4c1d95 0%, #7c3aed 55%, #c026d3 100%)",
+    "bg-image": "linear-gradient(135deg, #4c1d95 0%, #6d28d9 55%, #a21caf 100%)",
     "shadow": "0 32px 80px -16px rgba(15, 23, 42, 0.5)",
     "backdrop": "rgba(30, 10, 60, 0.7)",
     "text-size": "1rem"

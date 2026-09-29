@@ -1,0 +1,93 @@
+{
+  "date": "2026-09-29",
+  "designs": [
+    {
+      "id": "benefit-grid",
+      "revision": "3a9f34d92b6f9af21deb68d30ee032336012941cba2e1179e5dc9c0468769552"
+    },
+    {
+      "id": "ledger-card",
+      "revision": "1afea31894df500000041913de114677f35d5283755a0190c22ddd58e75c6ab1"
+    },
+    {
+      "id": "name-and-email",
+      "revision": "abeabcd33d07ed2fb8bd08462f9eb00d2bdc8da05306da8c139596d86c4544a5"
+    },
+    {
+      "id": "inline-cart-nudge",
+      "revision": "f0efcaacba9f935846a2187e76524ea778aad7ca6aa4ab5a12f4c44c9964d1ba"
+    },
+    {
+      "id": "popup-two-column",
+      "revision": "f32a16a33be2f06d1370046fb438036e878037173d18c029bb61d661e118c81b"
+    },
+    {
+      "id": "slide-in-benefits",
+      "revision": "7ff2dcac7c434466e059b1e3ec6cc6d6d8ae13c7aa48e7f778d83b7450f6c143"
+    }
+  ],
+  "checks": {
+    "source_cases": 176,
+    "dependent_cases": 176,
+    "baseline_cases_with_findings": 80,
+    "revised_cases_with_findings": 0,
+    "native_campaigns": 108,
+    "editorial_approvals": "108/108",
+    "php_tests": 2328,
+    "php_assertions": 13867,
+    "javascript_tests": 3387,
+    "studio_tests": 17,
+    "ci": "skipped at user request",
+    "external_delivery": "skipped at user request"
+  },
+  "evidence": {
+    "baseline-layout.json": "3aa847b3fa1071acd673f68e2fcdbce6422fb1882ce69c66636d32e3639c3e84",
+    "benefit-grid-320-rtl.png": "363d0b945eca7a75c257f601358fe65ae630c825df36b7e641025e138f712c63",
+    "benefit-grid-320.png": "c78e788385bcfc9cafbaa824400d94d9feebf8bc0c71c092fb4a4c205fc13d18",
+    "benefit-grid-768.png": "84c4e18a230029860a437dda5b59132d59cdb944d80de70c297cc11266f0b9e3",
+    "benefit-grid-detail.png": "a9f11ac62f2b4f24e7d93edb007caddb85ddf43aa7983f605613420d61280627",
+    "campaign-diff.json": "c56d9819ce8a2de0ad3537f841d73d80e7099ff526ba20facd31d7a9580c4a92",
+    "capture-rects.json": "3e7bbcd1eae440406361c6250bdc697dfe45636a359c47b8d05cf747bf71da81",
+    "cart-delivery-help-320-rtl.png": "d4ba485eff9dce166d8549ffb10dbe73917619f65ca3c45d72b2379d1b221009",
+    "cart-delivery-help-768.png": "89e9c731b68411a3aca37494c9ef97fcdc9f20dd7fd4ba07d4139f934672394c",
+    "checklist-download-320-rtl.png": "c22b71d0873c145a0ed4de1a307620463697114e61d1f41ccbb9b7eb793969ce",
+    "checklist-download-768.png": "b1b5c8073a6d81cf61aebc2534eea6d98776b057c2ade0f80d4e7f17fe490a7a",
+    "consultation-invitation-320-rtl.png": "d4e973ee86d0521c1361751b67f55725138da3e8f00302647a2f809269684e9d",
+    "consultation-invitation-768.png": "86d3751480219e104a3b6d96c0d3b0cfad891c6917279c45b2321f28b0ceece3",
+    "dependent-layout.json": "0221b99c17705cbdc9cd1799b950c566f8e8222786d4313304269fcc443b22a8",
+    "dependents-320.png": "5cdc6ed9f7f743469e1593836acff0b3a616f669aca52155659b47e8f8718943",
+    "editorial-weekly-320-rtl.png": "ac274b6dd397394829a92685246f3f7c61c3d8207fa5089c8a7f87fb7456fed9",
+    "editorial-weekly-768.png": "c90105d72d8d5f7e435f752f92989000b0f956dfb14b2ee79c76660b677542ae",
+    "gift-planning-guide-320-rtl.png": "da578cd58a1660185c6d067ddce207a3c4b82b1cfd2bf49eedb1c201215f9233",
+    "gift-planning-guide-768.png": "c1e6294de201f0427e078269c8ce57b8275ea0c863fa666dc48f3bd7b4add6e8",
+    "guide-long-copy.png": "a9d0bed302ff5ba9f9d4d09c50d18293fc8bf941ca4b0db65225d19685c6e990",
+    "inline-cart-nudge-320-rtl.png": "df38b3a843fbd2977087ae45609821da8ff90c9b885900ca8de0208aab263453",
+    "inline-cart-nudge-320.png": "02b2c1c6e50e3f8b23935f5893ab3f2f8169d81f91ef5990c0a9d1ce76578cd2",
+    "inline-cart-nudge-768.png": "1b233caa2655067d8f22ac26b14abdde42868d78d6bce7ec1f9f9b149ce24d56",
+    "inline-cart-nudge-detail.png": "a6cf7ca3f57413af873cc9111bf110ea9b5b0360e572c8d2cc169a415b784330",
+    "ledger-card-320-rtl.png": "550f37e9d6620e8aa6ec1ba12cb39221dd77963e7cef723a7384587d1099392d",
+    "ledger-card-320.png": "7c236e5f24232d679da92542e5ab6ef4ee6ae62681117a38b9e92003ca27ca34",
+    "ledger-card-768.png": "faf270f8d3184c7138aa6d27d131cf3787550399118059d27985a41534f973c2",
+    "ledger-card-detail.png": "d8bdfd948d3e3ff1501df01e8cef45c2479136725f3ae0e4d713bd9b74fc10ab",
+    "live-corner-consent-validation.png": "6d55dd4ca2a89baae679bca4a6d21c76cd3eeafa039d4bcd14fc128d34013e09",
+    "live-corner-result.png": "83ec7e9537442a8a6960ef789038114ca4b71431bd032cc5be99136ae0aab911",
+    "live-two-column-result.png": "cf64765d9d792e8d0df553ef55607c5056eba423cc5f82c504444f5c40776e26",
+    "name-and-email-320-rtl.png": "e5fc3ff0a4d853a06285f8dc06be30ec767f15f40342290e9b215cc9434dec23",
+    "name-and-email-320.png": "7aa38118249d96080c179e90f6e098004ff92272e308733a869cc854ef033122",
+    "name-and-email-768.png": "15f21ce64c607c6f66af8f93b97aa44229a66043ee5c99fb3866f23630b3cce6",
+    "name-and-email-detail.png": "77304e483babb0083e1cf5e78191be10145be29bf0f98dd371fca3955837bb77",
+    "native-checks.json": "79329dd946eda7b3bd7887b956f27c2fe43f81300013175963297690d30c1292",
+    "popup-two-column-320-rtl.png": "0884c5536d8b9130ac45441f98de3cb74a12131d8a45b001807de6b224d192af",
+    "popup-two-column-320.png": "9fc59a1e3bc5a227867c75527173587055c22b50edb13678bbfaca9caf972d19",
+    "popup-two-column-768.png": "f7fb5a73881719a60d101de75502d48a99f40ffda55ddbad6891075fbb021dca",
+    "popup-two-column-detail.png": "3aecd6f27cd0114bc221c4db21e89e61d2c18f79fcc2c96d23cd0474cf7a0c68",
+    "restyling-notes-320-rtl.png": "bcf7349ccc2444d2e7c885c75be6095aee9a87538a4bf9a8fed4f0f425fd3301",
+    "restyling-notes-768.png": "66df9ee94f43f238f56fc15bb35faa307384ace58a3be19e8eaf680ae6d84c8e",
+    "six-updated-designs.jpg": "9a7d9c574046ebcd18d4dba0a3fa7bfbca9871097edf87ca86165655e01aa839",
+    "slide-in-benefits-320-rtl.png": "1327f2bf3c8073d8f59fe2a5455f5eacda6de755b4731719219f6caf4ba56ba1",
+    "slide-in-benefits-320.png": "5a63de52ddb94ea2c2897d7e427d32c933901b4ae63b68761110079a4ea3c87c",
+    "slide-in-benefits-768.png": "e12bd57606f86c3b5b1e9b33b1139b94f5365bdd7f333be2c1b14492700ff008",
+    "slide-in-benefits-detail.png": "bf85b9e335996b8eb26fae94fdb25f68fe2f25a45895e5419ef862b61b421327",
+    "source-layout.json": "c1ee5754d2c6127563c669ee0474694ff830ddbe5cc139105cbec8f8f344e6ac"
+  }
+}

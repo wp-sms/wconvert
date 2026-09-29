@@ -57,6 +57,28 @@ final class TemplateCatalogTest extends TestCase
         ]]], JSON_THROW_ON_ERROR);
     }
 
+    public function testCatalogCanGrowToFiftyPacksButRejectsAnOversizedIndex(): void
+    {
+        $this->serve($this->pack());
+        $index = json_decode($this->http->responses['https://catalog.example/index.json'], true);
+        $example = $index['packs'][0];
+        $index['packs'] = [];
+        for ($i = 0; $i < TemplateCatalog::MAX_PACKS; $i++) {
+            $index['packs'][] = array_merge($example, ['id' => 'collection-' . $i]);
+        }
+        $this->http->responses['https://catalog.example/index.json'] = json_encode($index, JSON_THROW_ON_ERROR);
+        self::assertCount(50, $this->catalog->refresh()['packs']);
+        $index['packs'][] = array_merge($example, ['id' => 'one-too-many']);
+        $this->http->responses['https://catalog.example/index.json'] = json_encode($index, JSON_THROW_ON_ERROR);
+        try {
+            $this->catalog->refresh();
+            self::fail('Oversized index was accepted');
+        } catch (\RuntimeException $error) {
+            self::assertStringContainsString('unsupported', $error->getMessage());
+        }
+        self::assertCount(50, $this->catalog->status()['packs'], 'A rejected refresh must preserve the working catalog');
+    }
+
     public function testBrowsePreviewInstallOfflineAndUpdateKeepTheOriginalBaseline(): void
     {
         $this->serve($this->pack());
@@ -135,7 +157,8 @@ final class TemplateCatalogTest extends TestCase
         file_put_contents($this->directory . '/bad.json', '<?php throw new Exception("executed");');
         $library = TemplateLibrary::from(TemplateVocabulary::fromManifest(), new \WConvert\Template\BundledTemplates(WCONVERT_DIR), $this->installed);
         $this->assertNotNull($library->find('reading-slip'));
-        $this->assertCount(41, $library->all());
+        $bundled = TemplateLibrary::from(TemplateVocabulary::fromManifest(), new \WConvert\Template\BundledTemplates(WCONVERT_DIR));
+        $this->assertSame(array_keys($bundled->all()), array_keys($library->all()));
     }
 
     public function testSameReleaseIsIdempotentAndCannotOverwriteItsBaseline(): void

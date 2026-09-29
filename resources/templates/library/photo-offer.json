@@ -33,8 +33,8 @@
             {
               "type": "image",
               "id": "n1",
-              "src": "data:image/svg+xml,%3Csvg%20xmlns='http://www.w3.org/2000/svg'%20viewBox='0%200%203%201.5'%3E%3Cdefs%3E%3ClinearGradient%20id='g'%20x1='0'%20y1='0'%20x2='1'%20y2='1'%3E%3Cstop%20offset='0'%20stop-color='%237f1d1d'/%3E%3Cstop%20offset='.5'%20stop-color='%23c2410c'/%3E%3Cstop%20offset='1'%20stop-color='%23f59e0b'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect%20width='3'%20height='4'%20fill='url%28%23g%29'/%3E%3Ccircle%20cx='2.1'%20cy='1.0'%20r='0.7'%20fill='%23fde68a'%20opacity='.55'/%3E%3Ccircle%20cx='0.7'%20cy='2.9'%20r='0.95'%20fill='%23fb923c'%20opacity='.6'/%3E%3C/svg%3E",
-              "alt": "Image placeholder",
+              "src": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20320%20140%22%3E%3Crect%20width%3D%22320%22%20height%3D%22140%22%20rx%3D%2210%22%20fill%3D%22%23d9dacd%22%2F%3E%3Cellipse%20cx%3D%22164%22%20cy%3D%22119%22%20rx%3D%22110%22%20ry%3D%228%22%20fill%3D%22%23bec5b5%22%2F%3E%3Cpath%20d%3D%22M58%2055h76l-8%2055H66z%22%20fill%3D%22%238b745d%22%2F%3E%3Cpath%20d%3D%22M73%2055V39c0-25%2046-25%2046%200v16%22%20fill%3D%22none%22%20stroke%3D%22%238b745d%22%20stroke-width%3D%227%22%2F%3E%3Cpath%20d%3D%22M177%2041h54v14c0%2010-8%2015-10%2027l-2%2030h-31l-2-30c-2-12-9-17-9-27z%22%20fill%3D%22%23627364%22%2F%3E%3Cpath%20d%3D%22M251%2075h21v30h-21z%22%20fill%3D%22%23f2e8d6%22%2F%3E%3C%2Fsvg%3E",
+              "alt": "Original illustration of a basket, ceramic vase and small cup",
               "fit": "cover"
             },
             {
@@ -60,7 +60,7 @@
               "type": "text",
               "id": "n5",
               "role": "fine_print",
-              "text": "Free returns within thirty days.",
+              "text": "See product details, delivery and returns in the shop.",
               "size": "s",
               "tokens": {
                 "text-size": "1.167rem"

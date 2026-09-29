@@ -1,0 +1,209 @@
+{
+  "id": "project-notebook",
+  "name": "Project notebook",
+  "display_type": "popup",
+  "tier": "free",
+  "tokens": {
+    "bg": "#fffaf0",
+    "fg": "#3a301e",
+    "muted": "#3a301e",
+    "accent": "#3a301e",
+    "accent-fg": "#ffffff",
+    "border": "#cec8bd",
+    "input-bg": "#ffffff",
+    "heading-font": "Georgia, serif",
+    "heading-weight": "400",
+    "heading-size": "2.25rem",
+    "text-size": "1rem",
+    "tracking": "-0.035em",
+    "leading": "1.5",
+    "pad": "0",
+    "gap": "1rem",
+    "radius": "0.75rem",
+    "width": "44rem",
+    "shadow": "0 24px 64px -20px rgba(20,30,25,.3)"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "details",
+        "name": "Your details",
+        "kind": "input",
+        "content": {
+          "type": "split",
+          "basis": "16rem",
+          "ratio": "0.35",
+          "tokens": {
+            "gap": "0"
+          },
+          "start": [
+            {
+              "type": "panel",
+              "tokens": {
+                "bg": "#e8b757",
+                "fg": "#3a301e",
+                "muted": "#3a301e",
+                "pad": "2rem",
+                "gap": "1.25rem"
+              },
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "id": "n1",
+                  "role": "eyebrow",
+                  "text": "The project notebook"
+                },
+                {
+                  "type": "heading",
+                  "id": "n2",
+                  "role": "headline",
+                  "text": "07",
+                  "size": "3xl",
+                  "tokens": {
+                    "heading-size": "1.75rem"
+                  }
+                },
+                {
+                  "type": "text",
+                  "id": "n3",
+                  "role": "body",
+                  "text": "Decisions before\nyou renovate."
+                },
+                {
+                  "type": "divider",
+                  "id": "n4"
+                },
+                {
+                  "type": "text",
+                  "id": "n5",
+                  "role": "fine_print",
+                  "text": "A practical planning checklist",
+                  "size": "s",
+                  "tokens": {
+                    "text-size": "1.167rem"
+                  }
+                }
+              ],
+              "narrow": {
+                "pad": "1.25rem"
+              }
+            }
+          ],
+          "end": [
+            {
+              "type": "panel",
+              "tokens": {
+                "pad": "2rem",
+                "gap": "1rem"
+              },
+              "children": [
+                {
+                  "type": "heading",
+                  "id": "n6",
+                  "role": "headline",
+                  "text": "Start with\na clearer plan."
+                },
+                {
+                  "type": "text",
+                  "id": "n7",
+                  "role": "body",
+                  "text": "Request a seven-point checklist for planning a home renovation, from priorities to the first conversation."
+                },
+                {
+                  "type": "field",
+                  "id": "n8",
+                  "name": "email",
+                  "label": "Email address",
+                  "placeholder": "you@example.com",
+                  "required": true,
+                  "tokens": {
+                    "border": "#988b74"
+                  }
+                },
+                {
+                  "type": "consent",
+                  "id": "n9",
+                  "role": "consent_text",
+                  "hidden": true,
+                  "text": "Send me the renovation checklist I requested.",
+                  "tokens": {
+                    "text-size": "1.125rem"
+                  }
+                },
+                {
+                  "type": "button",
+                  "id": "n10",
+                  "role": "cta_label",
+                  "label": "Request the checklist",
+                  "action": "submit",
+                  "submission": "primary"
+                },
+                {
+                  "type": "text",
+                  "id": "n11",
+                  "role": "fine_print",
+                  "text": "One resource request. No automatic marketing signup.",
+                  "size": "s",
+                  "tokens": {
+                    "text-size": "1.167rem"
+                  }
+                }
+              ],
+              "narrow": {
+                "pad": "1.25rem"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "received",
+        "name": "Request received",
+        "kind": "acknowledgement",
+        "content": {
+          "type": "panel",
+          "tokens": {
+            "pad": "2rem",
+            "gap": "1rem"
+          },
+          "children": [
+            {
+              "type": "eyebrow",
+              "id": "n12",
+              "role": "eyebrow",
+              "text": "Thank you"
+            },
+            {
+              "type": "heading",
+              "id": "n13",
+              "role": "success_headline",
+              "text": "Checklist request received."
+            },
+            {
+              "type": "text",
+              "id": "n14",
+              "role": "success_body",
+              "text": "Thank you for requesting the seven-point renovation checklist."
+            }
+          ],
+          "narrow": {
+            "pad": "1.25rem"
+          }
+        }
+      }
+    ],
+    "submissions": [
+      {
+        "id": "primary",
+        "required": true,
+        "fields": [
+          "n8"
+        ],
+        "consents": [
+          "n9"
+        ]
+      }
+    ]
+  }
+}

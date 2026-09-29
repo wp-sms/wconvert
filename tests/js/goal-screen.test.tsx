@@ -453,7 +453,7 @@ it('recovers when collection and format filters have no setup in common', async 
   await userEvent.click(screen.getByRole('button', { name: 'Inline form' }));
   await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Collection' }), 'bundled');
   expect(screen.getByText('No campaign setups match')).toBeVisible();
-  expect(screen.getByText('Try another search, format or collection.')).toBeVisible();
+  expect(screen.getByText('Try another search, business, format or collection.')).toBeVisible();
   await userEvent.click(screen.getByRole('button', { name: 'Clear filters' }));
   expect(screen.getAllByRole('button', { name: 'Use this setup' })).toHaveLength(2);
   expect(screen.getByRole('button', { name: 'All formats' })).toHaveAttribute('aria-pressed', 'true');
@@ -471,16 +471,16 @@ it('combines search with collection and format filters, and removes each indepen
   await pickGoal();
   await userEvent.type(screen.getByRole('searchbox', { name: 'Search campaign setups' }), '  WELCOME  ');
   await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Collection' }), 'store');
-  expect(screen.getByText('1 of 3 campaign setups')).toBeVisible();
+  expect(screen.getByText(/1 of 3 campaign setups/)).toBeVisible();
   expect(screen.getByRole('button', { name: 'Popup' })).toBeDisabled();
   await userEvent.click(screen.getByRole('button', { name: 'Inline form' }));
   expect(screen.getByRole('button', { name: 'Inline form' })).toHaveAttribute('aria-pressed', 'true');
   expect(screen.getByText('Inline welcome')).toBeVisible();
   await userEvent.click(screen.getByRole('button', { name: 'Remove filter: Inline form' }));
   await userEvent.click(screen.getByRole('button', { name: 'Remove filter: Store collection' }));
-  expect(screen.getByText('2 of 3 campaign setups')).toBeVisible();
+  expect(screen.getByText(/2 of 3 campaign setups/)).toBeVisible();
   await userEvent.click(screen.getByRole('button', { name: 'Clear filters' }));
-  expect(screen.getByText('3 of 3 campaign setups')).toBeVisible();
+  expect(screen.getByText(/3 of 3 campaign setups/)).toBeVisible();
   expect(screen.getByRole('searchbox')).toHaveValue('');
   expect(goals.listPlaybooks).toHaveBeenCalledTimes(1);
   expect(goals.prefill).not.toHaveBeenCalled();
@@ -519,4 +519,45 @@ it('installs a pack from creation, then returns to its starting points without c
   await screen.findByRole('button', { name: 'Use this setup' });
   expect(optins.createOptin).not.toHaveBeenCalled();
   expect(goals.prefill).not.toHaveBeenCalled();
+});
+it('combines business and format filters without writing a draft', async () => {
+  goals.listPlaybooks.mockResolvedValue([
+    { ...PLAYBOOK, business_types: [{ id: 'stores', label: 'Stores' }] },
+    { ...PLAYBOOK, id: 'service', name: 'Service newsletter', business_types: [{ id: 'services', label: 'Service businesses' }], setup: { ...PLAYBOOK.setup, display_type: 'inline' } },
+  ]);
+  render(<GoalScreen onCreated={vi.fn()} />);
+  await userEvent.click((await screen.findAllByRole('button', { name: 'Choose' }))[0]);
+  await userEvent.selectOptions(await screen.findByRole('combobox', { name: 'Business' }), 'services');
+  expect(screen.getAllByRole('button', { name: 'Use this setup' })).toHaveLength(1);
+  expect(screen.getByText('Service newsletter')).toBeVisible();
+  expect(screen.getByRole('button', { name: 'Popup' })).toBeDisabled();
+  await userEvent.click(screen.getByRole('button', { name: 'Inline form' }));
+  expect(screen.getByText('Service newsletter')).toBeVisible();
+  await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Collection' }), 'bundled');
+  expect(screen.getAllByRole('button', { name: 'Use this setup' })).toHaveLength(1);
+  await userEvent.click(screen.getByRole('button', { name: 'Clear filters' }));
+  expect(screen.getAllByRole('button', { name: 'Use this setup' })).toHaveLength(2);
+  expect(optins.createOptin).not.toHaveBeenCalled();
+});
+
+
+it('groups shared designs, keeps matching use cases reachable and creates only the chosen setup', async () => {
+  const repair = { ...PLAYBOOK, id: 'repair', name: 'Repair request', notes: 'Discuss a repair', business_types: [{ id: 'services', label: 'Service businesses' }] };
+  goals.listPlaybooks.mockResolvedValue([PLAYBOOK, repair]);
+  render(<GoalScreen onCreated={vi.fn()} />); await pickGoal();
+  expect(screen.getAllByRole('button', { name: 'Use this setup' })).toHaveLength(1);
+  await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Use case for Welcome discount' }), repair.id);
+  expect(screen.getByText('Repair request', { selector: '.wconvert-gallery__card span' })).toBeVisible();
+  await userEvent.click(screen.getByRole('button', { name: 'Setup details for Repair request' }));
+  expect(screen.getByRole('dialog', { name: 'Repair request' })).toHaveTextContent('Discuss a repair');
+  await userEvent.keyboard('{Escape}');
+  expect(goals.prefill).not.toHaveBeenCalled();
+  await userEvent.type(screen.getByRole('searchbox'), 'Welcome');
+  expect(screen.getByText('Welcome discount', { selector: '.wconvert-gallery__card span' })).toBeVisible();
+  expect(screen.queryByRole('combobox', { name: /Use case for/ })).not.toBeInTheDocument();
+  await userEvent.clear(screen.getByRole('searchbox'));
+  expect(screen.getByText('Repair request', { selector: '.wconvert-gallery__card span' })).toBeVisible();
+  await customize();
+  await waitFor(() => expect(goals.prefill).toHaveBeenCalledWith(GOALS[0].id, repair.id));
+  expect(optins.createOptin).toHaveBeenCalledOnce();
 });

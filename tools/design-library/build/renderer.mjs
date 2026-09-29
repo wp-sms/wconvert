@@ -43,7 +43,13 @@ const entry = resolve(OUT, 'renderer-entry.ts');
 writeFileSync(
   entry,
   [
-    `export { render, SHADOW_CSS } from '${resolve(PLUGIN, 'resources/renderer/src/mount')}';`,
+    `export { prepareControls, readFields, restoreFields, disposePreview, validQuestions } from '${resolve(PLUGIN, 'tools/design-library/preview/controls')}';`,
+    `export { render } from '${resolve(PLUGIN, 'resources/renderer/src/mount')}';`,
+    `import { mountedStyles } from '${resolve(PLUGIN, 'resources/renderer/src/css')}';`,
+    `import { registerPremiumJourneyRenderer } from '${resolve(PLUGIN, 'pro/modules/journeys/loader/render')}';`,
+    `registerPremiumJourneyRenderer();`,
+    `export const SHADOW_CSS = mountedStyles();`,
+    `export { chooseResult, journeyTrace } from '${resolve(PLUGIN, 'resources/loader/src/journey-rules')}';`,
     `export { decorateFullscreen } from '${resolve(PLUGIN, 'pro/modules/display-types/loader/surface')}';`,
     /*
      * The themes ride along so the Bench switches between the SHIPPING presets

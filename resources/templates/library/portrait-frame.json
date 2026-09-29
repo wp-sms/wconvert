@@ -1,0 +1,167 @@
+{
+  "id": "portrait-frame",
+  "name": "Portrait frame",
+  "display_type": "popup",
+  "tier": "free",
+  "tokens": {
+    "bg": "#f6eee6",
+    "fg": "#49382d",
+    "muted": "#49382d",
+    "accent": "#74503c",
+    "accent-fg": "#ffffff",
+    "border": "#cec8bd",
+    "input-bg": "#ffffff",
+    "heading-font": "Georgia, serif",
+    "heading-weight": "400",
+    "heading-size": "2.25rem",
+    "text-size": "1rem",
+    "tracking": "-0.035em",
+    "leading": "1.5",
+    "pad": "0",
+    "gap": "1rem",
+    "radius": "0.75rem",
+    "width": "27rem",
+    "shadow": "0 24px 64px -20px rgba(20,30,25,.3)"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "details",
+        "name": "Your details",
+        "kind": "input",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "image",
+              "id": "n1",
+              "src": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20640%20340%22%3E%3Crect%20width%3D%22640%22%20height%3D%22340%22%20fill%3D%22%23dfcec1%22%2F%3E%3Crect%20x%3D%2237%22%20y%3D%2235%22%20width%3D%22566%22%20height%3D%22270%22%20rx%3D%22120%22%20fill%3D%22%23ba967d%22%2F%3E%3Cpath%20d%3D%22M175%20305V167a145%20145%200%200%201%20290%200v138%22%20fill%3D%22%23f1e8de%22%2F%3E%3Ccircle%20cx%3D%22320%22%20cy%3D%22148%22%20r%3D%2254%22%20fill%3D%22%23946956%22%2F%3E%3Cpath%20d%3D%22M229%20305v-59a91%2091%200%200%201%20182%200v59%22%20fill%3D%22%2351443d%22%2F%3E%3Cpath%20d%3D%22M0%20307h640v33H0z%22%20fill%3D%22%239b7a63%22%2F%3E%3C%2Fsvg%3E",
+              "alt": "Original abstract portrait illustration in a warm architectural frame",
+              "fit": "cover"
+            },
+            {
+              "type": "panel",
+              "tokens": {
+                "pad": "1.75rem",
+                "gap": "1rem"
+              },
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "id": "n2",
+                  "role": "eyebrow",
+                  "text": "A portrait, with personality"
+                },
+                {
+                  "type": "heading",
+                  "id": "n3",
+                  "role": "headline",
+                  "text": "Let’s plan\nyour portrait."
+                },
+                {
+                  "type": "text",
+                  "id": "n4",
+                  "role": "body",
+                  "text": "Leave an email to discuss a portrait session, availability and the approach that feels right for you."
+                },
+                {
+                  "type": "field",
+                  "id": "n5",
+                  "name": "email",
+                  "label": "Email address",
+                  "placeholder": "you@example.com",
+                  "required": true,
+                  "tokens": {
+                    "border": "#91836b"
+                  }
+                },
+                {
+                  "type": "consent",
+                  "id": "n6",
+                  "role": "consent_text",
+                  "hidden": true,
+                  "text": "Contact me about my portrait enquiry.",
+                  "tokens": {
+                    "text-size": "1.125rem"
+                  }
+                },
+                {
+                  "type": "button",
+                  "id": "n7",
+                  "role": "cta_label",
+                  "label": "Enquire about a session",
+                  "action": "submit",
+                  "submission": "primary"
+                },
+                {
+                  "type": "text",
+                  "id": "n8",
+                  "role": "fine_print",
+                  "text": "An enquiry only. Your session is confirmed separately.",
+                  "size": "s",
+                  "tokens": {
+                    "text-size": "1.167rem"
+                  }
+                }
+              ],
+              "narrow": {
+                "pad": "1.25rem"
+              }
+            }
+          ],
+          "tokens": {
+            "gap": "0"
+          }
+        }
+      },
+      {
+        "id": "received",
+        "name": "Request received",
+        "kind": "acknowledgement",
+        "content": {
+          "type": "panel",
+          "tokens": {
+            "pad": "2rem",
+            "gap": "1rem"
+          },
+          "children": [
+            {
+              "type": "eyebrow",
+              "id": "n9",
+              "role": "eyebrow",
+              "text": "Thank you"
+            },
+            {
+              "type": "heading",
+              "id": "n10",
+              "role": "success_headline",
+              "text": "A good place to start."
+            },
+            {
+              "type": "text",
+              "id": "n11",
+              "role": "success_body",
+              "text": "Your portrait enquiry has been received. No appointment has been booked."
+            }
+          ],
+          "narrow": {
+            "pad": "1.25rem"
+          }
+        }
+      }
+    ],
+    "submissions": [
+      {
+        "id": "primary",
+        "required": true,
+        "fields": [
+          "n5"
+        ],
+        "consents": [
+          "n6"
+        ]
+      }
+    ]
+  }
+}

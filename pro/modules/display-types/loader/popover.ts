@@ -92,6 +92,8 @@ import { A_DESIGNS_OWN_WIDTH } from '@renderer/css';
  */
 const POPOVER_ARMOUR: Readonly<Record<string, string>> = {
   position: 'fixed',
+  // Clear the browser's inset:0 before pinning only the chosen logical edges.
+  inset: 'auto',
   margin: '0',
   padding: '0',
   border: '0',

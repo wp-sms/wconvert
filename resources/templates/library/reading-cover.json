@@ -1,0 +1,195 @@
+{
+  "id": "reading-cover",
+  "name": "Reading cover",
+  "display_type": "popup",
+  "tier": "free",
+  "tokens": {
+    "bg": "#f8f7f2",
+    "fg": "#202b31",
+    "muted": "#53626b",
+    "accent": "#264f51",
+    "accent-fg": "#ffffff",
+    "border": "#ccd4d5",
+    "input-bg": "#ffffff",
+    "heading-size": "2rem",
+    "heading-weight": "600",
+    "tracking": "-0.035em",
+    "text-size": "1rem",
+    "leading": "1.5",
+    "radius": "0.5rem",
+    "pad": "2rem 1.5rem 1.5rem",
+    "gap": "1rem",
+    "width": "42rem",
+    "shadow": "0 20px 56px -20px rgba(28,42,31,.3)"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "details",
+        "name": "Your details",
+        "kind": "input",
+        "content": {
+          "type": "split",
+          "ratio": "0.5",
+          "basis": "12rem",
+          "start": [
+            {
+              "type": "panel",
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "id": "n1",
+                  "text": "A practical guide",
+                  "role": "eyebrow"
+                },
+                {
+                  "type": "heading",
+                  "id": "n2",
+                  "text": "Read.\nNotice.\nRemember.",
+                  "role": "headline",
+                  "tokens": {
+                    "heading-size": "2.5rem",
+                    "heading-font": "Georgia, serif",
+                    "heading-weight": "400"
+                  }
+                },
+                {
+                  "type": "divider",
+                  "id": "n3"
+                },
+                {
+                  "type": "text",
+                  "id": "n4",
+                  "text": "Five ways to get more from a book.",
+                  "role": "body"
+                }
+              ],
+              "tokens": {
+                "pad": "1.5rem",
+                "bg": "#254d50",
+                "fg": "#ffffff",
+                "muted": "#d7e6e2",
+                "border": "#789c98",
+                "radius": "0.125rem",
+                "gap": "1.25rem"
+              },
+              "narrow": {
+                "pad": "1.25rem",
+                "heading-size": "2rem"
+              }
+            }
+          ],
+          "end": [
+            {
+              "type": "stack",
+              "children": [
+                {
+                  "type": "heading",
+                  "id": "n5",
+                  "text": "Keep more of what you read.",
+                  "role": "headline",
+                  "tokens": {
+                    "heading-size": "1.5rem"
+                  }
+                },
+                {
+                  "type": "text",
+                  "id": "n6",
+                  "text": "A short guide to choosing a question, taking notes and returning to useful ideas.",
+                  "role": "body"
+                },
+                {
+                  "type": "field",
+                  "id": "n7",
+                  "name": "email",
+                  "label": "Email address",
+                  "placeholder": "you@example.com",
+                  "required": true,
+                  "tokens": {
+                    "border": "#798e91"
+                  }
+                },
+                {
+                  "type": "button",
+                  "id": "n8",
+                  "label": "Request the guide",
+                  "role": "cta_label",
+                  "action": "submit",
+                  "submission": "primary"
+                },
+                {
+                  "type": "text",
+                  "id": "n9",
+                  "text": "One guide email. No newsletter signup.",
+                  "role": "fine_print",
+                  "size": "s",
+                  "tokens": {
+                    "text-size": "1.167rem"
+                  }
+                }
+              ],
+              "tokens": {
+                "gap": "1rem"
+              }
+            }
+          ],
+          "tokens": {
+            "gap": "1.5rem"
+          }
+        }
+      },
+      {
+        "id": "received",
+        "name": "Request received",
+        "kind": "acknowledgement",
+        "content": {
+          "type": "panel",
+          "children": [
+            {
+              "type": "icon",
+              "id": "n90",
+              "name": "check"
+            },
+            {
+              "type": "heading",
+              "id": "n91",
+              "text": "Request received",
+              "role": "success_headline"
+            },
+            {
+              "type": "text",
+              "id": "n92",
+              "text": "Thank you. Your request for the reading guide is received.",
+              "role": "success_body"
+            },
+            {
+              "type": "followup",
+              "id": "n93",
+              "label": "Open the reading guide",
+              "role": "success_action",
+              "hidden": true
+            }
+          ],
+          "tokens": {
+            "pad": "2rem",
+            "gap": "1rem"
+          },
+          "narrow": {
+            "pad": "1.25rem"
+          }
+        }
+      }
+    ],
+    "submissions": [
+      {
+        "id": "primary",
+        "required": true,
+        "fields": [
+          "n7"
+        ],
+        "consents": []
+      }
+    ]
+  }
+}
