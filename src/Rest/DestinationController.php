@@ -274,7 +274,7 @@ final class DestinationController implements RestController
         try {
             $type->testConnection($connection->credentials);
             $this->connections->recordCheck($connection->id, true);
-            return new WP_REST_Response(['outcome' => 'success', 'message' => __('Account is reachable.', 'wconvert')]);
+            return new WP_REST_Response(['outcome' => 'success', 'message' => __('Account and audience access checked.', 'wconvert')]);
         } catch (\Throwable $failure) {
             $this->connections->recordCheck($connection->id, false);
             return new WP_REST_Response(['outcome' => 'failed', 'message' => __('Account check failed. Check the key and provider access.', 'wconvert')]);

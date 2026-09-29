@@ -34,7 +34,7 @@ export function SubmissionSettings({ template, primaryChannel, config, destinati
         });
       }} /> {d.label}</label>
         {bound.includes(d.id) && template && types.find((type) => type.id === d.type)?.supports_mapping &&
-          <ExtraAnswerMapping destinationId={d.id} submissionId={secondary.id} template={template} value={mappings[secondary.id]?.[d.id] ?? {}} onChange={(map) => onChange({ integration_mappings: { ...mappings, [secondary.id]: { ...mappings[secondary.id], [d.id]: map } } })} />}
+          <ExtraAnswerMapping destination={d} submissionId={secondary.id} template={template} value={mappings[secondary.id]?.[d.id] ?? {}} onChange={(map) => onChange({ integration_mappings: { ...mappings, [secondary.id]: { ...mappings[secondary.id], [d.id]: map } } })} />}
       </div>)}
     </>}
     {setup && onSaved && <DestinationSetupDialog types={types.filter(type => type.requirements?.audience_channels?.includes(channel))} connections={connections} returnFocusTo={trigger} onClose={() => setSetup(false)} onSaved={onSaved} />}

@@ -33,6 +33,8 @@ final class BrevoDestinationType implements DestinationType
     {
         [$status] = $this->request($credentials, 'GET', '/account');
         if ($status !== 200) throw new \RuntimeException('Brevo rejected the account check.');
+        [$listsStatus] = $this->request($credentials, 'GET', '/contacts/lists?limit=1&offset=0');
+        if ($listsStatus !== 200) throw new \RuntimeException('Brevo lists could not be read.');
     }
 
     /** @param array<string, mixed> $credentials */

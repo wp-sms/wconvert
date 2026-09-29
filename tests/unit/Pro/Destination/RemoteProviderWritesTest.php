@@ -100,6 +100,29 @@ namespace WConvert\Tests\Unit\Pro\Destination {
             self::assertCount(1, $this->calls);
         }
 
+        public function testAccountCheckRequiresAccessToAudienceMetadata(): void
+        {
+            $this->reply([[200, []], [403, []]]);
+            try {
+                (new MailchimpDestinationType())->testConnection(['api_key' => 'secret-us1']);
+                self::fail('An account without audience access must not pass the check.');
+            } catch (\RuntimeException $failure) {
+                self::assertStringContainsString('audiences', $failure->getMessage());
+            }
+            self::assertCount(2, $this->calls);
+            self::assertStringContainsString('/lists?count=1', $this->calls[1][0]);
+
+            $this->reply([[200, []], [403, []]]);
+            try {
+                (new BrevoDestinationType())->testConnection(['api_key' => 'secret']);
+                self::fail('An account without list access must not pass the check.');
+            } catch (\RuntimeException $failure) {
+                self::assertStringContainsString('lists', $failure->getMessage());
+            }
+            self::assertCount(2, $this->calls);
+            self::assertStringContainsString('/contacts/lists?limit=1', $this->calls[1][0]);
+        }
+
         public function testEnquiryCreatesContactsWithoutMarketingSignup(): void
         {
             $subject = PushSubject::test(['email' => 'a@example.com'], ['SERVICE' => 'Repairs'], 'request');

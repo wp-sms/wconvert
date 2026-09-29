@@ -731,7 +731,7 @@ function Configured({
         }
       />
       <RegionBody>
-        <Button size="sm" variant="outline" onClick={async () => {
+        <Button variant="outline" onClick={async () => {
           try { const result = await readRecentAttempts(destination.id); setRecent(result.attempts); setRecentError(null); }
           catch (cause) { setRecentError(messageOf(cause)); }
         }}>{__('Recent sends', 'wconvert')}</Button>

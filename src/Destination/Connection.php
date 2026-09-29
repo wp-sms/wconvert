@@ -31,9 +31,6 @@ defined('ABSPATH') || exit;
  */
 final class Connection
 {
-    /** What a merchant sees instead of a stored secret. */
-    private const MASK = '••••••••';
-
     /**
      * @param string $type The {@see DestinationType} id these credentials belong to.
      * @param array<string, mixed> $credentials
@@ -75,24 +72,24 @@ final class Connection
     }
 
     /**
-     * The Connection as REST may return it: every credential replaced by a
-     * mask, and the KEYS kept so the admin can render the fields it has.
+     * The Connection as REST may return it: only configured flags, with keys
+     * kept so the admin can render the fields it has.
      *
      * A field is reported as filled or empty and never as its value. That is
      * the whole of the protection described in the class docblock, and it is
      * here rather than in the controller so a second caller cannot forget it.
      *
-     * @return array{id: string, type: string, label: string, credentials: array<string, string>}
+     * @return array{id: string, type: string, label: string, credentials: array<string, bool>}
      */
     public function masked(): array
     {
-        $masked = [];
+        $configured = [];
 
         foreach ($this->credentials as $field => $value) {
-            $masked[(string) $field] = ($value === null || $value === '') ? '' : self::MASK;
+            $configured[(string) $field] = $value !== null && $value !== '';
         }
 
-        return ['id' => $this->id, 'type' => $this->type, 'label' => $this->label, 'credentials' => $masked,
+        return ['id' => $this->id, 'type' => $this->type, 'label' => $this->label, 'credentials' => $configured,
             'checked_at' => $this->checkedAt, 'check_outcome' => $this->checkOutcome];
     }
 }

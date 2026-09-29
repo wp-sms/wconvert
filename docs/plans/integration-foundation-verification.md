@@ -5,14 +5,24 @@ also identifies release gates that cannot be proven by local mocks.
 
 ## Evidence collected on the implementation branch
 
-- PHPUnit: full local suite passed, including accepted mapping, boundary,
-  provider write, existing-contact policy and enquiry-purpose tests.
-- Vitest, type checking, ESLint, PHPStan and source contract passed. The
+- PHPUnit: 2,341 tests and 13,937 assertions passed, including accepted mapping,
+  boundary, provider write, metadata-access account checks, existing-contact
+  policy and enquiry-purpose tests.
+- Vitest: 3,389 tests passed in 181 files, including two integration UI
+  interaction tests. Type checking, ESLint, PHPStan and source contract passed. The
   production asset build and Free/Pro basic, pro and elite staged package
   contracts passed; the destinations module ships only in the elite artifact.
 - WordPress Playground boot verified both adapter registrations and account,
   selected-schema and recent-history REST route registration. It did not make
   live provider calls.
+- The UI guideline pass replaced ad hoc mapping controls with shared inputs,
+  native labeled selectors and a full-row disclosure, added the automatic-field
+  summary and pre-send target/policy review, and put account removal behind the
+  plugin's shared destructive confirmation. The disposable WordPress visual
+  suite passed 20 Settings/dialog cases across desktop/mobile, LTR/RTL and
+  full/empty/loading/failed states. Its fixture does not exercise remote
+  accounts or the campaign mapping panel; those specific visual states remain
+  open below.
 - The legacy `bin/verify-destinations.php` fixture still assumes the old
   LeadCapture dispatch event rather than the current progressive
   JourneyCapture path; its 18 failures are not evidence of working or broken
@@ -21,6 +31,28 @@ also identifies release gates that cannot be proven by local mocks.
   provider test accounts are available in this workspace. Do not treat the
   mocked provider responses as release acceptance for confirmation emails,
   existing-contact behavior or provider automations.
+
+## Open acceptance gaps found in the coverage audit
+
+These are requirements of the plan, not post-release polish. The draft PR must
+remain open until they are either implemented and verified or an explicit plan
+change narrows the release.
+
+- Provider list/field discovery still reads multiple pages into a fixed cap;
+  there is no 50-item load-more/search UI. Incompatible field types are omitted
+  rather than explained in the selector.
+- Draft mapping structure is checked on publish, but not on draft save. The
+  draft sample endpoint checks selected targets and sample lengths, but it is
+  not tied to the selected campaign/submission to verify source eligibility.
+  Provider-specific maximum lengths are not enforced before sending.
+- Action Scheduler markers have outcome and attempt, but no allowlisted reason
+  code or next retry action ID. Backoff has no jitter or validated Retry-After
+  support. The recent list has no retained-Lead link or overdue queue advice.
+- The 320/360px, RTL, keyboard and long-label browser review of the new mapping
+  and account controls still needs a configured provider fixture. The general
+  Settings visual cases above do not establish those states.
+- Live provider accounts and a MySQL-backed WordPress setup are still needed
+  for the provider behavior, scheduler-version and interrupted-handoff checks.
 
 ## Contract and behavior checks
 

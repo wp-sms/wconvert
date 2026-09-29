@@ -30,8 +30,28 @@ Mailchimp or Brevo test-account credentials are available in this workspace, so
 confirmation emails, existing-contact writes and provider automations still need
 live end-to-end validation before release. Metadata uses request-local
 memoization and five-minute transients, with an explicit refresh control;
-load-more controls and automatic background health polling are deferred. Recent history is a
+load-more controls remain an open release gate; automatic background health polling
+is deferred. Recent history is a
 bounded Destination view, not a permanent per-Lead delivery ledger.
+
+### Coverage audit against the acceptance gates
+
+The implementation is a working foundation, but **the release plan is not fully
+covered yet**. Keep the PR in draft until the open gates below are implemented
+and verified. In particular, a mocked provider response or a successful account
+ping is not proof of a real signup.
+
+| Gate | Current evidence | Remaining work |
+| --- | --- | --- |
+| Shared accounts, target setup and automatic contact fields | Account CRUD, selected-account schema, route validation, both Pro adapters and campaign summary are present. Account checks now read a small audience/list page as well as authenticating. | Test two real accounts and distinct targets; verify replacement and actual provider permissions. |
+| Campaign mappings and accepted snapshots | Campaign config, publish validation, server preview, accepted Lead snapshots, MailPoet mapping and route-identity guard are present. Variant creation copies stable Template IDs, so mappings stay keyed to the copied submissions; copying a question creates a new ID and does not copy its mapping. | Validate mapping structure on draft save as well as publish, provider target lengths/types and the exact draft sample source against the selected campaign. Add focused duplication/Undo checks. |
+| Metadata discovery | Selected Connection/target discovery and five-minute caching are present. | Replace fixed provider page caps with 50-item pages and load-more/search. Show incompatible target fields with a reason, rather than omitting them. Preserve missing selections visibly. |
+| Recent attempts and recovery | Action Scheduler outcome markers and destination-scoped recent attempts distinguish accepted, retry, attention, skipped and unknown. Recovery checks saved route identity. | Add allowlisted reason codes, retry action ID and validated provider delay/jitter; link retained Leads where permitted; expose overdue queue diagnostics; verify actual scheduler versions and interrupted handoff. |
+| UI and privacy | Shared forms, native field selectors, account removal confirmation, compact automatic-field summary and explicit sample effects are present. | Real-browser review of mapping and account states at 320/360px and RTL, keyboard/focus, long labels, and screenshots. Check Data Map and privacy copy against a configured real provider. |
+| Remote provider behavior | Mocked create/existing/update/enquiry tests pass. | Live Mailchimp/Brevo create, duplicate, suppression, confirmation, required-field, race and automation checks with test accounts. Record versions and evidence. |
+
+The optional webhook remains a separate follow-up, as agreed. It is not a
+missing acceptance gate for this release.
 
 ## 1. What we are building
 
@@ -576,9 +596,9 @@ These are bounded engineering checks, not requests to reopen agreed product scop
    transactional submission/handoff path, including retries after interrupted writes.
 5. Verify MailPoet/WSMS safe update support before exposing that option there.
 
-No implementation, provider credential test or delivery verification is claimed by
-this plan. The documentation commit records accepted direction and implementation
-recommendations; runtime code is unchanged.
+Implementation evidence and remaining gates are tracked above and in the
+[verification matrix](integration-foundation-verification.md). Neither document
+claims live-provider acceptance before provider test accounts are exercised.
 
 ## Navigation
 

@@ -93,7 +93,7 @@ export function DestinationSettingsForm({
       {error !== null && <RegionError message={error} />}
       {metadataError !== null && <RegionError message={metadataError} />}
       {loadingSchema && <p>{__('Loading audiences…', 'wconvert')}</p>}
-      {type.needs_connection && connection !== null && <Button type="button" size="sm" variant="outline" disabled={loadingSchema} onClick={() => setRefreshSchema((old) => old + 1)}>{__('Refresh audiences', 'wconvert')}</Button>}
+      {type.needs_connection && connection !== null && <div><Button type="button" variant="outline" disabled={loadingSchema} onClick={() => setRefreshSchema((old) => old + 1)}>{__('Refresh audiences', 'wconvert')}</Button></div>}
       {destination && <DestinationUsageNotice usage={destination.usage} />}
       {settingsProblems(type.requirements, fromDraft(schema, draft), schema).map((problem) =>
         <p key={problem} className="m-0 text-note text-warning">{problem}</p>)}

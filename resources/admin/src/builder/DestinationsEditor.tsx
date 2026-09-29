@@ -118,10 +118,10 @@ export function DestinationsEditor({
             ? sprintf(__('%d selected', 'wconvert'), bound.length)
             : __('No destinations selected', 'wconvert')} />
         <Toolbar>
-            <Button variant="outline" size="sm" disabled={available.status === 'loading'} onClick={onRefresh}>
+            <Button variant="outline" disabled={available.status === 'loading'} onClick={onRefresh}>
               <RefreshCw aria-hidden="true" />{__('Refresh', 'wconvert')}
             </Button>
-            <Button size="sm" disabled={available.status !== 'ready'} onClick={(event) => {
+            <Button disabled={available.status !== 'ready'} onClick={(event) => {
               returnFocus.current = event.currentTarget;
               setNotice(null);
               setSetup('add');
@@ -145,6 +145,15 @@ export function DestinationsEditor({
                 {available.data.map((destination) => {
                   const said = targetSaid(destination.target);
                   const compatibility = template ? compatibilityProblems(destination, capturedFields(template)) : [];
+                  const automaticNames: Record<string, string> = { email: __('email', 'wconvert'), name: __('name', 'wconvert'), phone: __('phone', 'wconvert') };
+                  const automatic = template ? capturedFields(template)
+                    .filter((field) => ['email', 'name', 'phone'].includes(field.name) && destination.requirements?.fields.includes(field.name))
+                    .map((field) => automaticNames[field.name]) : [];
+                  const automaticText = automatic.length === 2
+                    ? sprintf(__('%1$s and %2$s', 'wconvert'), automatic[0], automatic[1])
+                    : automatic.length === 3
+                      ? sprintf(__('%1$s, %2$s and %3$s', 'wconvert'), automatic[0], automatic[1], automatic[2])
+                      : automatic[0] ?? '';
                   const control = `wconvert-bind-${destination.id}`;
                   const type = types.find((candidate) => candidate.id === destination.type);
                   const missingConnection = type?.needs_connection === true
@@ -164,6 +173,10 @@ export function DestinationsEditor({
                           {type !== undefined && <Description as="span" id={`${control}-provider`}>{type.label}</Description>}
                           {said !== null && <Description as="span" id={`${control}-target`}>{said}</Description>}
                         </div>
+                        {bound.includes(destination.id) && automatic.length > 0 &&
+                          <Description className="mt-1 [overflow-wrap:anywhere]">{destination.target
+                            ? sprintf(__('Sending %1$s automatically to %2$s.', 'wconvert'), automaticText, destination.target)
+                            : sprintf(__('Sending %s automatically.', 'wconvert'), automaticText)}</Description>}
                         {compatibility.length > 0 && <ul id={`${control}-compatibility`} className="mb-0 mt-2 ps-4 text-note text-warning">
                           {compatibility.map((problem) => <li key={problem}>{problem}</li>)}
                         </ul>}
@@ -178,7 +191,7 @@ export function DestinationsEditor({
                           </Description>
                         )}
                         {bound.includes(destination.id) && template && onMappingChange && type?.supports_mapping &&
-                          <ExtraAnswerMapping destinationId={destination.id} submissionId={template.tree.submissions[0]?.id ?? ''} template={template} value={mappings[destination.id] ?? {}} onChange={(map) => onMappingChange(destination.id, map)} />}
+                          <ExtraAnswerMapping destination={destination} submissionId={template.tree.submissions[0]?.id ?? ''} template={template} value={mappings[destination.id] ?? {}} onChange={(map) => onMappingChange(destination.id, map)} />}
                       </div>
                       {type !== undefined && <Button variant="outline" size="sm" aria-label={sprintf(__('Settings for %s', 'wconvert'), destination.label)}
                         onClick={(event) => {

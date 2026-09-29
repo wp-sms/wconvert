@@ -144,12 +144,12 @@ export interface Destination {
   mapping_issues?: readonly string[];
 }
 
-/** Credentials come back masked and never as values (#4). */
+/** Reads carry configured flags only, never secret values or saveable masks. */
 export interface Connection {
   id: string;
   type: string;
   label: string;
-  credentials: Record<string, string>;
+  credentials: Record<string, boolean>;
   checked_at?: string | null;
   check_outcome?: 'success' | 'failed' | null;
 }

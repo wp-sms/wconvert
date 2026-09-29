@@ -42,6 +42,8 @@ final class MailchimpDestinationType implements DestinationType
     {
         [$status] = $this->request($credentials, 'GET', '/ping');
         if ($status !== 200) throw new \RuntimeException('Mailchimp rejected the account check.');
+        [$listsStatus] = $this->request($credentials, 'GET', '/lists?count=1&offset=0&fields=lists.id,total_items');
+        if ($listsStatus !== 200) throw new \RuntimeException('Mailchimp audiences could not be read.');
     }
 
     /** @param array<string, mixed> $credentials */
