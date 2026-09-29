@@ -106,7 +106,7 @@ describe('binding an optin to a destination', () => {
     const route = destination({ id: 'local', label: 'Local delivery' });
     editor(ready([route]), ['local'], [type({ id: 'mailpoet', label: 'Local delivery' })], { template });
     expect(screen.getByText('This destination cannot send extra answers. They remain saved in WConvert.')).toBeVisible();
-    expect(screen.queryByText('Send extra answers')).not.toBeInTheDocument();
+    expect(screen.queryByText('Field mapping')).not.toBeInTheDocument();
   });
 
   it('makes a required unfinished handoff explicit without selecting a destination', () => {

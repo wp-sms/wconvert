@@ -192,7 +192,7 @@ export function DestinationsEditor({
                           </Description>
                         )}
                         {bound.includes(destination.id) && template && onMappingChange && type?.supports_mapping &&
-                          <ExtraAnswerMapping destination={destination} submissionId={template.tree.submissions[0]?.id ?? ''} template={template} value={mappings[destination.id] ?? {}} onChange={(map) => onMappingChange(destination.id, map)} />}
+                          <ExtraAnswerMapping providerLabel={type.label} destination={destination} submissionId={template.tree.submissions[0]?.id ?? ''} template={template} value={mappings[destination.id] ?? {}} onChange={(map) => onMappingChange(destination.id, map)} />}
                         {bound.includes(destination.id) && template && type && !type.supports_mapping && hasExtraAnswers(template, template.tree.submissions[0]?.id ?? '') &&
                           <Description className="mt-2">{__('This destination cannot send extra answers. They remain saved in WConvert.', 'wconvert')}</Description>}
                       </div>

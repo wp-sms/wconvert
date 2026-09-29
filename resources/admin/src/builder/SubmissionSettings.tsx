@@ -34,7 +34,7 @@ export function SubmissionSettings({ template, primaryChannel, config, destinati
         });
       }} /> {d.label}</label>
         {bound.includes(d.id) && template && types.find((type) => type.id === d.type)?.supports_mapping &&
-          <ExtraAnswerMapping destination={d} submissionId={secondary.id} template={template} value={mappings[secondary.id]?.[d.id] ?? {}} onChange={(map) => onChange({ integration_mappings: { ...mappings, [secondary.id]: { ...mappings[secondary.id], [d.id]: map } } })} />}
+          <ExtraAnswerMapping providerLabel={types.find((type) => type.id === d.type)?.label} destination={d} submissionId={secondary.id} template={template} value={mappings[secondary.id]?.[d.id] ?? {}} onChange={(map) => onChange({ integration_mappings: { ...mappings, [secondary.id]: { ...mappings[secondary.id], [d.id]: map } } })} />}
         {bound.includes(d.id) && template && types.some((type) => type.id === d.type && !type.supports_mapping) && hasExtraAnswers(template, secondary.id) &&
           <p className="m-0 text-note text-muted-foreground">{__('This destination cannot send extra answers. They remain saved in WConvert.', 'wconvert')}</p>}
       </div>)}

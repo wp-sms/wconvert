@@ -19,10 +19,22 @@ feature is introduced. Outbound webhook is the next separately scoped candidate.
 
 ## Extra answers belong to the campaign that captures them
 
-The merchant optionally opens **Send extra answers** and pairs a campaign field
+The merchant optionally opens **Field mapping** and pairs a campaign field
 or question with an existing provider field. Store that mapping in the campaign
 configuration, scoped to its Destination and accepted submission. It follows
-draft, Undo and Publish behavior. There is no Destination custom-field map with
+draft, Undo and Publish behavior. The control pairs each campaign answer with a
+provider-labelled field column and an explicit **Keep in WConvert only** choice.
+Unavailable targets and duplicate selections are explained beside the affected
+row; removed campaign answers can have their stale mappings removed. Empty
+metadata and failed discovery have distinct refresh/retry paths.
+
+**Preview and test mapping** is a separate optional disclosure. A test reviews
+sample values, target and existing-contact behavior before offering a real send.
+The reviewed sample is the send payload; mapping, audience/account, field refresh
+or sample changes invalidate that review. Basic contact defaults remain outside
+this optional mapping control. No preview claims remote delivery verification.
+
+There is no Destination custom-field map with
 campaign overrides, and no global question catalog or expression language.
 
 This amends [ADR 0074](0074-destinations-declare-requirements-and-show-shared-usage.md)'s
