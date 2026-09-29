@@ -44,6 +44,7 @@ import type { LoaderModule } from '@loader/types';
  * exists only to be checked, which is the cross-cutting list ADR 0015 refuses.
  */
 const MODULE_DIRECTORIES: Readonly<Record<string, readonly LoaderModule[]>> = {
+  'spam-filters': [],
   'display-types': DISPLAY_TYPE_MODULES,
   'inline-placement': INLINE_PLACEMENT_MODULES,
   'content-lock': CONTENT_LOCK_MODULES,

@@ -173,6 +173,7 @@ require_populated_dir "$TREE" src '*.php' "this artifact ships no PHP" || true
 # function 0004 exists to prevent, arriving through a missing file".
 require_file public/loader/loader.js "the shipped loader is built, never committed — run the build" || true
 if [ "$slug" = "wconvert" ]; then
+    require_file public/protection/protection.js "protected forms need the isolated verification bundle" || true
     require_file public/phone/phone.js "phone campaigns need the built optional input bundle" || true
 fi
 
@@ -363,6 +364,7 @@ if [ "$tier" = "free" ]; then
     # The sources behind the two shipped bundles, plus the renderer both of
     # them import (vite.config.admin.mjs aliases @renderer at it).
     require_populated_dir "$TREE" resources/loader/src '*.ts' "public/loader/loader.js is built from it" || true
+    require_populated_dir "$TREE" resources/protection/src '*.ts' "verification bundle source ships with Free" || true
     require_populated_dir "$TREE" resources/phone/src '*.ts' "public/phone/phone.js is built from it" || true
     require_populated_dir "$TREE" resources/admin/src '*.tsx' "public/admin/main-*.js is built from it" || true
     require_populated_dir "$TREE" resources/renderer/src '*.ts' "both bundles import it" || true

@@ -115,7 +115,7 @@ final class UninstallTest extends TestCase
         $options = self::everyOptionInTheSource();
         $contents = self::contents();
 
-        $this->assertCount(13, $options, 'every new option needs an uninstall entry');
+        $this->assertCount(14, $options, 'every new option needs an uninstall entry');
 
         foreach ($options as $option) {
             $this->assertStringContainsString(

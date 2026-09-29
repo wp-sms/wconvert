@@ -1,0 +1,5 @@
+{
+  "slug": "spam-filters",
+  "name": "Advanced spam filters",
+  "description": "Site-wide email and domain filters with explicit exceptions."
+}

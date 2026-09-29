@@ -28,6 +28,7 @@ final class DataMap
         private readonly RetentionPeriod $retention,
         private readonly DestinationStore $destinations,
         private readonly DestinationRegistry $types,
+        private readonly ?\WConvert\Protection\Settings $protection = null,
     ) {
     }
 
@@ -37,6 +38,8 @@ final class DataMap
      *   destinations: list<array{id: string, label: string, type: string, type_label: string, fields: list<string>|null}>,
      *   browser: array{key: string, local_storage_expiry_days: null, cookie_fallback: bool, cookie_fallback_days: int, contains_contact_details: bool, contains_visitor_identifier: bool, stores_ab_assignment: bool, reopen_session: string|null, content_unlock: string|null, cart_recovery: array{key: string, expires_with_cart_session: bool, contains_item_count: bool, contains_cart_total: bool, contains_contact_details: bool}|null},
      *   beacon_rate_limit_seconds: int,
+     *   protection_provider: string,
+     *   resource_send_limit_seconds: int,
      *   capture_rate_limit_seconds: int
      * }
      */
@@ -48,6 +51,8 @@ final class DataMap
             'browser' => $this->browserStorage(),
             'beacon_rate_limit_seconds' => RateLimit::WINDOW,
             'capture_rate_limit_seconds' => CaptureRateLimit::WINDOW,
+            'protection_provider' => $this->protection?->read()['provider'] ?? 'none',
+            'resource_send_limit_seconds' => \WConvert\Protection\ResourceSendGuard::WINDOW,
         ];
     }
 

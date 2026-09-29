@@ -49,6 +49,8 @@ final class DataMapTest extends TestCase
             ],
             'beacon_rate_limit_seconds' => 60,
             'capture_rate_limit_seconds' => 600,
+            'protection_provider' => 'none',
+            'resource_send_limit_seconds' => 600,
         ], $map->summary());
     }
 

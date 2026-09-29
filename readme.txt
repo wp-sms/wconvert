@@ -213,3 +213,36 @@ This first version supports free popup/inline designs with placeholders, and
 accepts no downloaded executable code, fonts or media. No production service
 endpoint is configured by default. A deployed service must publish its own terms
 and privacy notice before it is offered as a default catalog.
+
+
+== Optional bot verification services ==
+
+Hidden-field checks and submission limits are built in. In Settings → Spam
+protection, administrators may enable one verification service using their own
+account and keys: Cloudflare Turnstile Managed, Google reCAPTCHA v2 checkbox,
+or hCaptcha. All three integrations are available in Free. No service is
+selected by default. Provider charges and quotas are separate from WConvert.
+
+The selected service loads when a form needs verification or an administrator
+runs Test saved setup. Its script receives browser/network information,
+including the visitor's IP address. WConvert sends the verification token and
+required credentials from the server to that service; it does not forward the
+form's email, phone or other captured answers. The server also checks the
+provider response before accepting a protected form. Visitors can retry failed
+verification without losing their entered fields. Administrators should review
+the selected service's terms and their site's privacy notice before enabling it.
+
+* Cloudflare Turnstile: https://www.cloudflare.com/products/turnstile/
+  Terms: https://www.cloudflare.com/website-terms/
+  Privacy: https://www.cloudflare.com/turnstile-privacy-policy/
+* Google reCAPTCHA: https://www.google.com/recaptcha/about/
+  Terms: https://policies.google.com/terms
+  Privacy: https://policies.google.com/privacy
+* hCaptcha: https://www.hcaptcha.com/
+  Terms: https://www.hcaptcha.com/terms
+  Privacy: https://www.hcaptcha.com/privacy
+
+Queued resource emails are limited to one successful send per recipient and
+resource within ten minutes. Separate submissions remain separate leads.
+WConvert Pro adds merchant-authored exact email/domain filters and email
+exceptions; it does not unlock the basic verification integrations.

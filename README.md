@@ -16,6 +16,24 @@ Read [`CONTEXT.md`](CONTEXT.md) before using any domain term.
 
 Planned follow-ups and deferred work: [Product todo list](docs/TODO.md).
 
+## Spam protection
+
+Settings → Spam protection offers optional Cloudflare Turnstile Managed,
+Google reCAPTCHA v2 checkbox, or hCaptcha with merchant-owned keys in Free.
+Baseline hidden-field checks and request limits work without a provider.
+Every queued resource email also uses a ten-minute recipient/resource guard;
+this can suppress recent bulk re-pushes while preserving separate Leads.
+Pro adds exact email/domain blocklists and email exceptions on every paid rung.
+
+No external verification service is enabled by default. Saving keys is not a
+connection test: use **Test saved setup** on the configured hostname before
+relying on it. Verification errors preserve the form for retry. Secrets never
+appear in API read responses. No table or column is added.
+
+See the [setup guide](docs/guides/spam-protection.md),
+[implementation and deferred work](docs/plans/spam-protection.md), and
+[architecture decision](docs/adr/0110-spam-protection-precedes-capture.md).
+
 ## Multi-screen capture
 
 Free includes editable linear journeys: offer screens, questions, a final Submit,

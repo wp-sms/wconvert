@@ -58,6 +58,7 @@ final class PushWorker
         private readonly DeliveryFailures $failures,
         private readonly Queue $queue,
         private readonly DeliveryCount $deliveries,
+        private readonly ?\WConvert\Protection\ResourceSendGuard $sendGuard = null,
     ) {
     }
 
@@ -111,7 +112,7 @@ final class PushWorker
         if ($snapshot === null) { return; }
         $subject = PushSubject::of($snapshot);
         $credentials = $this->connections->credentialsFor($destination);
-        $result = $type->push($subject, new PushContext(
+        $send = fn (): PushResult => $type->push($subject, new PushContext(
             // One name, by primary key. An Optin is never hard-deleted, so
             // this is null only where something removed a row nothing should
             // remove — and an empty `source_ref` would then assert provenance
@@ -121,6 +122,9 @@ final class PushWorker
             $destination->settings,
             $credentials
         ));
+
+        $result = $destination->type === 'lead_magnet_email' && $this->sendGuard !== null
+            ? $this->sendGuard->send($subject->values['email'] ?? '', (string) ($destination->settings['file_url'] ?? ''), $send) : $send();
 
         $this->record($job, $lead->optinId, $destination->type, $result, $subject->values, $credentials);
     }

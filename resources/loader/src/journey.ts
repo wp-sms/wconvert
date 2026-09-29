@@ -1,15 +1,16 @@
+import { request, type Reply } from './journey-request';
+import { protectionField, verify } from './protection';
 import { journeyLabel } from './journey-labels';
 import { journeyNotice } from '@renderer/journey-notice';
 import type { Mounted } from '@renderer/mount';
 import type { TemplateNode } from '@renderer/types';
 import type { PayloadEntry } from './types';
-import { captureEndpoint, beaconEndpoint } from './payload';
+import { beaconEndpoint } from './payload';
 import { createBeacon, type BeaconKind } from './beacon';
 import { clear, pending, refuse } from './capture';
 
 type Input = HTMLInputElement | HTMLSelectElement;
 type PhoneControl = HTMLInputElement & { __p?: (value: string) => void; __r?: () => void };
-interface Reply { id?: string; grant?: string; message?: string; data?: { field?: string }; }
 interface Options { onCaptured(): void; onDismiss?(): void; onRefused?(kind: 'correctable' | 'unconfirmed'): void; }
 
 /** One mounted page owns unsaved answers and the expiring request capability. */
@@ -52,6 +53,7 @@ export function bindJourney(mounted: Mounted, entry: PayloadEntry, options: Opti
   function bind() {
     const root = mounted.root;
     if (!root) return;
+    const website = protectionField(root);
     root.setAttribute('aria-label', tree!.steps[step].name);
     const index = step;
     let observer: IntersectionObserver | undefined;
@@ -132,9 +134,10 @@ export function bindJourney(mounted: Mounted, entry: PayloadEntry, options: Opti
       busy = true; clear(root); const release = pending(root);
       void (async () => {
         try {
-          const base = { optin_id: entry.id, contract: entry.capture_contract };
+          const base = { optin_id: entry.id, contract: entry.capture_contract, website: website() };
           if (!grant) {
-            const start = await request({ ...base, phase: 'start' });
+            let start = await request({ ...base, phase: 'start' });
+            if (start.challenge) start = await request({ ...base, phase: 'start', verification_token: await verify(start.challenge) });
             if (typeof start.grant !== 'string' || start.grant.trim() === '') throw {};
             grant = start.grant;
           }
@@ -162,18 +165,4 @@ export function bindJourney(mounted: Mounted, entry: PayloadEntry, options: Opti
     });
   }
   bind();
-}
-
-async function request(body: Record<string, unknown>): Promise<Reply> {
-  const endpoint = captureEndpoint();
-  if (!endpoint) throw {};
-  const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), 15000);
-  try {
-    const response = await fetch(endpoint, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body), signal: controller.signal });
-    const reply: unknown = await response.json();
-    if (!reply || typeof reply !== 'object' || Array.isArray(reply)) throw {};
-    if (!response.ok) throw reply;
-    return reply as Reply;
-  } finally { clearTimeout(timeout); }
 }

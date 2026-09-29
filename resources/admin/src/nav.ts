@@ -23,7 +23,7 @@ import type { LeadQuery } from './leads/api';
  * other side of it: a bookmark, a reload and an unknown hash are behaviour.
  */
 export type SectionId = 'optins' | 'analytics' | 'leads' | 'settings';
-export type SettingsGroup = 'experience' | 'connections' | 'data';
+export type SettingsGroup = 'experience' | 'connections' | 'data' | 'protection';
 
 export interface Section {
   id: SectionId;
@@ -188,7 +188,7 @@ export function routeFrom(hash: string): AdminRoute {
     },
     destinationId: value('destination'),
     settingsGroup: hash.replace(/^#/, '').split('?')[0] === 'destinations' || value('group') === 'connections'
-      ? 'connections' : value('group') === 'data' ? 'data' : 'experience',
+      ? 'connections' : value('group') === 'protection' ? 'protection' : value('group') === 'data' ? 'data' : 'experience',
     leadsView: value('view') === 'issues' ? 'issues' : 'submissions',
   };
 }

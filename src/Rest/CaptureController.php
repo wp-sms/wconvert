@@ -51,6 +51,7 @@ final class CaptureController implements RestController
         private readonly TemplateVocabulary $vocabulary,
         private readonly CaptureRateLimit $rateLimit,
         private readonly ?\WConvert\Goal\GoalRegistry $goals = null,
+        private readonly ?\WConvert\Protection\Protection $protection = null,
     ) {
     }
 
@@ -113,6 +114,7 @@ final class CaptureController implements RestController
         $address = (string) wp_unslash($_SERVER['REMOTE_ADDR'] ?? '');
 
         if (!$this->rateLimit->allows($address, $optin->id, time())) {
+            $this->protection?->diagnostics->record('rate_limit');
             return new WP_Error(
                 'wconvert_capture_rate_limited',
                 __('Too many submissions were received. Please wait a few minutes and try again.', 'wconvert'),
@@ -139,10 +141,16 @@ final class CaptureController implements RestController
             || \WConvert\Template\CaptureContract::issue($config, $goal, $policy) !== null) {
             return new WP_Error('wconvert_capture_changed', __('This form changed. Refresh the page to review it. Details already received remain saved.', 'wconvert'), ['status' => 409]);
         }
+        $refusal = $this->protection?->honeypot($body);
+        if ($refusal !== null) { return $refusal; }
+        $protectedContract = $this->protection?->settings->contract($contract) ?? $contract;
         if (($body['phase'] ?? null) === 'start') {
-            return new WP_REST_Response(['grant' => $this->grants->issue($optin->id, $contract, time())], 200);
+            $challenge = $this->protection?->start($body);
+            if ($challenge instanceof WP_Error) { return $challenge; }
+            if (is_array($challenge)) { return new WP_REST_Response($challenge, 200); }
+            return new WP_REST_Response(['grant' => $this->grants->issue($optin->id, $protectedContract, time())], 200);
         }
-        $grant = $this->grants->verify(is_string($body['grant'] ?? null) ? $body['grant'] : '', $optin->id, $contract, time());
+        $grant = $this->grants->verify(is_string($body['grant'] ?? null) ? $body['grant'] : '', $optin->id, $protectedContract, time());
         if ($grant === null) {
             return new WP_Error('wconvert_capture_expired', __('This form session has expired. Details already received remain saved. Refresh to start a new request.', 'wconvert'), ['status' => 409]);
         }
@@ -155,6 +163,8 @@ final class CaptureController implements RestController
         $questionAnswers = \WConvert\Lead\QuestionCapture::validate($template['tree'], $body['question_answers'] ?? [], $id);
         if ($questionAnswers instanceof Refusal) { return self::refuse($questionAnswers); }
         $result = new \WConvert\Lead\Submission($result->email, $result->phone, $result->fields, $questionAnswers);
+        $refusal = $this->protection?->submission($result, $optin->id);
+        if ($refusal !== null) { return $refusal; }
         try {
             $accepted = $this->capture->accept($optin->id, $contract, $grant, $template['tree'], $id, $result, $settings[$id]);
         } catch (\WConvert\Lead\CaptureConflict) {
