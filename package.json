@@ -5,7 +5,8 @@
   "type": "module",
   "scripts": {
     "dev": "vite build -c vite.config.admin.mjs --watch",
-    "build": "npm run build:admin && npm run build:admin:pro && npm run build:block && npm run build:loader && npm run build:loader:pro && npm run build:phone && npm run build:inspector && npm run build:inspector:pro",
+    "build": "npm run build:admin && npm run build:admin:pro && npm run build:block && npm run build:loader && npm run build:loader:pro && npm run build:phone && npm run build:protection && npm run build:inspector && npm run build:inspector:pro",
+    "build:protection": "vite build -c vite.config.protection.mjs",
     "build:phone": "vite build -c vite.config.phone.mjs",
     "build:admin": "vite build -c vite.config.admin.mjs",
     "build:admin:pro": "vite build -c vite.config.admin-pro.mjs",
@@ -35,6 +36,7 @@
     "test:visual:fullscreen": "playwright test -c tools/visual-tests/fullscreen.config.mjs",
     "test:visual:inline": "playwright test -c tools/visual-tests/inline.config.mjs",
     "test:visual:content-lock": "playwright test -c tools/visual-tests/content-lock.config.mjs",
+    "test:visual:events": "playwright test -c tools/visual-tests/events.config.mjs",
     "test:visual:reopen": "playwright test -c tools/visual-tests/reopen.config.mjs",
     "templates:pilot": "bash tools/design-library/build.sh renderer pilot proof roadmap",
     "test:template-studio": "node --test tools/design-library/build/*.test.mjs",

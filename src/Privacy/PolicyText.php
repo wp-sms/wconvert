@@ -94,7 +94,11 @@ final class PolicyText
                 __('To slow repeated form submissions, WConvert temporarily keeps a separate site-specific one-way hash of the IP address for each campaign for %s. The IP address itself is not saved.', 'wconvert'),
                 $this->shortDuration($summary['capture_rate_limit_seconds'])
             ) . '</p>',
-            '<p>' . __('WConvert does not use form submissions for automated decision-making or to build visitor profiles.', 'wconvert') . '</p>',
+            '<p>' . __('To limit repeated resource emails, WConvert keeps a site-specific one-way code derived from the recipient email and resource for a ten-minute sending window. Expired codes are cleaned up on the site’s scheduled maintenance runs. Protection activity is stored as approximate totals without form values for up to 24 hours.', 'wconvert') . '</p>',
+            ...($summary['protection_provider'] !== 'none' ? [
+                '<p>' . sprintf(/* translators: %s: configured bot verification provider. */ __('This site uses %s to verify form submissions. The provider receives browser and network information during verification. WConvert sends the verification token to that service, without the contact fields entered in the form.', 'wconvert'), esc_html($summary['protection_provider'])) . '</p>',
+            ] : []),
+            '<p>' . __('Form protection checks may refuse a submission. WConvert does not build visitor profiles from form submissions.', 'wconvert') . '</p>',
             '<h3>' . __('Who receives your information', 'wconvert') . '</h3>',
             $this->destinationDisclosure($summary['destinations']),
             '<p>' . __('Site administrators can also export form submissions to a CSV file. Connected services, exported files, email logs and backups keep separate copies and may follow different retention periods.', 'wconvert') . '</p>',

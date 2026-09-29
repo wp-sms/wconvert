@@ -70,6 +70,8 @@ import { CampaignSkeleton } from './CampaignSkeleton';
 import { StatusBadge } from './StatusBadge';
 import './campaigns.css';
 
+import { CampaignId } from './CampaignId';
+
 const Design = lazy(() => import('./CampaignDesign'));
 const Details = lazy(() => import('./CampaignDetails'));
 const PAGE_SIZE = 12;
@@ -691,6 +693,7 @@ export function OptinList({
               <Suspense fallback={<RowsSkeleton rows={4} />}>
                 <Details key={selected.id} id={selected.id} />
               </Suspense>
+              <CampaignId key={selected.id} value={selected.id} variant={selected.parent_id !== null} />
               <div className="flex flex-wrap gap-2">
                 <Button
                   disabled={busy.size > 0}

@@ -3,6 +3,7 @@ import type { Mounted } from '@renderer/mount';
 import { mount } from '@renderer/mount';
 import { bindJourney } from './journey';
 import { isOverlay } from './decide';
+import { campaignLifecycle, notifyCampaign } from './events';
 
 /**
  * The presenter: the join between deciding WHETHER to show an Optin and
@@ -52,6 +53,7 @@ export function createTemplatePresenter(bind: typeof captureInto): Presenter { r
     const anchor = isOverlay(entry) ? null : anchorFor(entry.anchor ?? entry.id);
 
     const mounted = mount({
+      ...campaignLifecycle(entry),
       displayType: entry.display_type,
       template,
       anchor,
@@ -108,7 +110,7 @@ export const templatePresenter: Presenter = createTemplatePresenter(captureInto)
  * renders can submit.
  */
 export function captureInto(mounted: Mounted, entry: PayloadEntry, controls: OptinControls): void {
-  bindJourney(mounted, entry, { onCaptured: () => controls.convert(), onDismiss: () => controls.dismiss() });
+  bindJourney(mounted, entry, { onLeadAccepted: () => notifyCampaign(entry, 'capture'), onCaptured: () => controls.convert(), onDismiss: () => controls.dismiss() });
 }
 
 function anchorFor(id: string): Element | null {

@@ -75,6 +75,7 @@ $wconvertOptions = [
     // Destination\ConnectionStore::OPTION — carries credentials, which is the
     // one option here it would be actively wrong to leave behind.
     'wconvert_connections',
+    'wconvert_protection',
     // Destination\HealthStore::OPTION
     'wconvert_destination_health',
     // Destination\DeliveryFailures::OPTION
@@ -152,9 +153,9 @@ foreach ($wconvertTables as $wconvertTable) {
  */
 
 // Owned, non-autoloaded capture receipts and anonymous flow labels.
-$wconvertDynamicOptions = $wpdb->get_col("SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE 'wconvert\_capture\_%' OR option_name LIKE 'wconvert\_flow\_%'");
+$wconvertDynamicOptions = $wpdb->get_col("SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE 'wconvert\_capture\_%' OR option_name LIKE 'wconvert\_flow\_%' OR option_name LIKE 'wconvert\_mail\_%'");
 foreach ($wconvertDynamicOptions as $wconvertOption) {
-    if (preg_match('/^wconvert_(capture_[a-f0-9]{64}|flow_[A-Z0-9]{26}_[a-f0-9]{64})$/D', $wconvertOption)) delete_option($wconvertOption);
+    if (preg_match('/^wconvert_((?:capture|mail)_[a-f0-9]{64}|flow_[A-Z0-9]{26}_[a-f0-9]{64})$/D', $wconvertOption)) delete_option($wconvertOption);
 }
 delete_option('wconvert_submission_checkpoint');
 wp_clear_scheduled_hook('wconvert_recover_submissions');

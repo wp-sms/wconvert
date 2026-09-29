@@ -634,6 +634,9 @@ export const SHADOW_CSS = [
   // the way out, and it must not be able to make the reason its form was
   // refused invisible. So the colour is a literal and not a token.
   `.wc-error{margin:0;color:#991b1b;background:#fef2f2;border-radius:.25rem;padding:.375rem .5rem;font-size:.875em;font-weight:600;text-align:start}`,
+  // Form-wide refusals sit outside the template's stack and need their own gap.
+  // Keep their focus visible without the template accent overlapping the CTA.
+  `.wc-root>.wc-error{margin-block-start:.75rem;outline-color:currentColor;outline-offset:0}`,
   // Follows the ring above. `border-color` styled a border this no longer
   // draws, so the invalid state was silently invisible the moment the field
   // changed shape — which is the one state that must not be.

@@ -1,5 +1,7 @@
 # Explicit journey graph and legacy migration
 
+*Byte limits amended by [ADR 0111](0111-spam-protection-precedes-capture.md): Free / Basic / Pro / Elite now cap at 14,592 / 25,088 / 26,624 / 26,880 bytes gzip-9 after pre-capture verification and campaign events. Other asset limits are unchanged.*
+
 > **Budget amended by [ADR 0109](0109-ad-block-observation-is-a-bounded-condition.md):** The current loader caps are 14,336 / 24,832 / 26,368 / 26,624 bytes gzip for Free / Basic / Pro / Elite. The earlier measured limits below describe this ADR's feature cost at that time.
 
 Accepted 2026-09-25. Supersedes the routing and size assumptions in

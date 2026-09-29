@@ -1752,3 +1752,7 @@ if (!function_exists('as_has_scheduled_action')) {
     /** @param array<mixed> $args */
     function as_has_scheduled_action(string $hook, array $args = [], string $group = ''): bool { return false; }
 }
+
+if (!function_exists('rest_url')) {
+    function rest_url(string $path = ''): string { return 'https://example.test/wp-json/' . ltrim($path, '/'); }
+}

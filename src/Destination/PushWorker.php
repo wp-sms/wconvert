@@ -60,6 +60,7 @@ final class PushWorker
         private readonly DeliveryFailures $failures,
         private readonly Queue $queue,
         private readonly DeliveryCount $deliveries,
+        private readonly ?\WConvert\Protection\ResourceSendGuard $sendGuard = null,
     ) {
     }
 
@@ -123,16 +124,15 @@ final class PushWorker
         $credentials = $this->connections->credentialsFor($destination);
         try {
             $mappingIssue = $this->mappingIssue($type, $destination, $subject, $credentials);
-            $result = $mappingIssue ?? $type->push($subject, new PushContext(
-            // One name, by primary key. An Optin is never hard-deleted, so
-            // this is null only where something removed a row nothing should
-            // remove — and an empty `source_ref` would then assert provenance
-            // that is not there, which is worse than leaving the column unset
-            // (ADR 0023).
-            $this->optins->nameOf($lead->optinId),
-            $destination->settings,
-            $credentials
+            $send = fn (): PushResult => $type->push($subject, new PushContext(
+                // Preserve the campaign's name as provider-side provenance.
+                $this->optins->nameOf($lead->optinId),
+                $destination->settings,
+                $credentials
             ));
+            $result = $mappingIssue ?? ($destination->type === 'lead_magnet_email' && $this->sendGuard !== null
+                ? $this->sendGuard->send($subject->values['email'] ?? '', (string) ($destination->settings['file_url'] ?? ''), $send)
+                : $send());
         } catch (\Throwable $failure) {
             $result = PushResult::retryable(__('The destination stopped unexpectedly. The result may be uncertain.', 'wconvert'));
         }

@@ -32,6 +32,8 @@ export interface PrivacyDataMap {
   };
   beacon_rate_limit_seconds: number;
   capture_rate_limit_seconds: number;
+  protection_provider?: string;
+  resource_send_limit_seconds?: number;
 }
 
 export interface PrivacyGuidance {

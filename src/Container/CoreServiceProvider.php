@@ -140,10 +140,16 @@ final class CoreServiceProvider implements ServiceProvider
         MilestoneController::class,
         DestinationController::class,
         PrivacyController::class,
+        \WConvert\Rest\ProtectionController::class,
     ];
 
     public function register(ServiceContainer $container): void
     {
+        $container->register(\WConvert\Protection\Settings::class, static fn (ServiceContainer $c) => new \WConvert\Protection\Settings($c->resolve(OptionStore::class)));
+        $container->register(\WConvert\Protection\Diagnostics::class, static fn (ServiceContainer $c) => new \WConvert\Protection\Diagnostics($c->resolve(TransientStore::class)));
+        $container->register(\WConvert\Protection\Protection::class, static fn (ServiceContainer $c) => new \WConvert\Protection\Protection($c->resolve(\WConvert\Protection\Settings::class), $c->resolve(\WConvert\Protection\Diagnostics::class), new \WConvert\Protection\Verifier()));
+        $container->register(\WConvert\Rest\ProtectionController::class, static fn (ServiceContainer $c) => new \WConvert\Rest\ProtectionController($c->resolve(\WConvert\Protection\Settings::class), $c->resolve(\WConvert\Protection\Diagnostics::class)));
+
         $container->register(ProPresence::class, static fn (): ProPresence => new WpProPresence());
         // Beside it rather than folded into it: a missing tier is buyable
         // from us and a missing plugin is not, and collapsing the two shows a
@@ -478,7 +484,8 @@ final class CoreServiceProvider implements ServiceProvider
                 new \WConvert\Lead\CaptureGrant(wp_salt('auth')),
                 $c->resolve(TemplateVocabulary::class),
                 $c->resolve(CaptureRateLimit::class),
-                $c->resolve(GoalRegistry::class)
+                $c->resolve(GoalRegistry::class),
+                $c->resolve(\WConvert\Protection\Protection::class)
             )
         );
 
@@ -564,7 +571,8 @@ final class CoreServiceProvider implements ServiceProvider
                 $c->resolve(HealthStore::class),
                 $c->resolve(DeliveryFailures::class),
                 $c->resolve(Queue::class),
-                $c->resolve(DeliveryCount::class)
+                $c->resolve(DeliveryCount::class),
+                new \WConvert\Protection\ResourceSendGuard($c->resolve(Connection::class), $c->resolve(\WConvert\Protection\Diagnostics::class))
             )
         );
 
@@ -691,6 +699,7 @@ final class CoreServiceProvider implements ServiceProvider
 
     public function boot(ServiceContainer $container): void
     {
+        add_action(\WConvert\Destination\SubmissionDispatcher::RECOVER, [new \WConvert\Protection\ResourceSendGuard($container->resolve(Connection::class), $container->resolve(\WConvert\Protection\Diagnostics::class)), 'prune']);
         // A plugin updated by overwriting its directory never fires an
         // activation hook, so the schema has to be able to catch up somewhere
         // other than activation.

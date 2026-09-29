@@ -56,9 +56,9 @@ final class ArtifactContractTest extends TestCase
           "premium": {
             "slug": "wconvert-pro",
             "tiers": [
-              { "slug": "basic", "name": "Pro", "modules": ["display-types", "journeys"] },
-              { "slug": "pro", "name": "Pro", "modules": ["display-types", "journeys", "premium-triggers"] },
-              { "slug": "elite", "name": "Pro", "modules": ["display-types", "journeys", "premium-triggers", "cart-recovery"] }
+              { "slug": "basic", "name": "Pro", "modules": ["display-types", "journeys", "spam-filters"] },
+              { "slug": "pro", "name": "Pro", "modules": ["display-types", "journeys", "spam-filters", "premium-triggers"] },
+              { "slug": "elite", "name": "Pro", "modules": ["display-types", "journeys", "spam-filters", "premium-triggers", "cart-recovery"] }
             ]
           }
         }
@@ -143,6 +143,7 @@ final class ArtifactContractTest extends TestCase
             'vendor/autoload.php' => "<?php\n// composer\n",
             'vendor/composer/autoload_psr4.php' => "<?php\nreturn array('WConvert\\\\' => array('/src'));\n",
             'public/loader/loader.js' => "console.log('loader');\n",
+            'public/protection/protection.js' => "console.log('protection');\n",
             'public/phone/phone.js' => "console.log('phone');\n",
             // Pro replaces this one on the same hook it replaces the loader
             // (ADR 0048), so a ZIP missing it on EITHER tier is a real
@@ -157,6 +158,7 @@ final class ArtifactContractTest extends TestCase
             // that has to be caught instead.
             'public/blocks/inline-optin.js' => "console.log('block');\n",
             'resources/loader/src/main.ts' => "export const boot = () => {};\n",
+            'resources/protection/src/challenge.ts' => "export const verify = () => {};\n",
             'resources/phone/src/main.ts' => "export const enhance = () => {};\n",
             'resources/phone/countries.json' => "[{\"code\":\"US\",\"name\":\"United States\"}]\n",
             'resources/admin/src/main.tsx' => "export const App = () => null;\n",
@@ -205,6 +207,7 @@ final class ArtifactContractTest extends TestCase
             // nothing that could be too high. The tests that assert the
             // per-tier rules build lower rungs explicitly.
             'modules/display-types/module.json' => "{\"slug\":\"display-types\"}\n",
+            'modules/spam-filters/module.json' => "{\"slug\":\"spam-filters\"}\n",
             'modules/journeys/module.json' => "{\"slug\":\"journeys\"}\n",
             'modules/content-lock/module.json' => "{\"slug\":\"content-lock\"}\n",
             'modules/inline-placement/module.json' => "{\"slug\":\"inline-placement\"}\n",
@@ -232,7 +235,7 @@ final class ArtifactContractTest extends TestCase
     {
         $withheld = [];
 
-        foreach (['display-types', 'journeys', 'premium-triggers', 'ab-testing', 'cart-recovery', 'destinations'] as $slug) {
+        foreach (['display-types', 'journeys', 'spam-filters', 'premium-triggers', 'ab-testing', 'cart-recovery', 'destinations'] as $slug) {
             if (!in_array($slug, $modules, true)) {
                 $withheld["modules/{$slug}/module.json"] = null;
             }
@@ -432,9 +435,9 @@ final class ArtifactContractTest extends TestCase
     public function testPassesOnEachRungCutToItsOwnModules(): void
     {
         foreach ([
-            'basic' => ['display-types', 'journeys'],
-            'pro' => ['display-types', 'journeys', 'premium-triggers', 'ab-testing'],
-            'elite' => ['display-types', 'journeys', 'premium-triggers', 'ab-testing', 'cart-recovery', 'destinations'],
+            'basic' => ['display-types', 'journeys', 'spam-filters'],
+            'pro' => ['display-types', 'journeys', 'spam-filters', 'premium-triggers', 'ab-testing'],
+            'elite' => ['display-types', 'journeys', 'spam-filters', 'premium-triggers', 'ab-testing', 'cart-recovery', 'destinations'],
         ] as $rung => $modules) {
             $result = $this->verify($this->stagedProAt($modules));
 
@@ -468,7 +471,7 @@ final class ArtifactContractTest extends TestCase
      */
     public function testFailsWhenABasicZipCarriesAHigherRungsModule(): void
     {
-        $tree = $this->stagedProAt(['display-types', 'journeys', 'premium-triggers', 'ab-testing']);
+        $tree = $this->stagedProAt(['display-types', 'journeys', 'spam-filters', 'premium-triggers', 'ab-testing']);
 
         // Inferred as `pro`, correctly. What makes it wrong is the design
         // library: `pro` ships `display-types` too, so the tree is internally
@@ -506,7 +509,7 @@ final class ArtifactContractTest extends TestCase
     /** And a rung's own rules in its own bundle are exactly what belongs there. */
     public function testARungsBundleMayCarryItsOwnRules(): void
     {
-        $result = $this->verify($this->stagedProAt(['display-types', 'journeys', 'premium-triggers', 'ab-testing'], [
+        $result = $this->verify($this->stagedProAt(['display-types', 'journeys', 'spam-filters', 'premium-triggers', 'ab-testing'], [
             'public/loader/loader.js' => "var rules={exit_intent:1};\n",
         ]));
 

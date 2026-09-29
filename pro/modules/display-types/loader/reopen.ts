@@ -1,3 +1,4 @@
+import { campaignLifecycle } from '@loader/events';
 import { PAYLOAD_ELEMENT_ID } from '@loader/payload';
 import type { OptinControls, PayloadEntry } from '@loader/types';
 import { mount } from '@renderer/mount';
@@ -58,6 +59,7 @@ export function showReopen(entry: Recoverable, controls: OptinControls, recovery
     else hide();
   };
   const mounted = (entry.display_type === 'slide_in' ? mountPopover : mount)({
+    ...campaignLifecycle(entry),
     displayType: entry.display_type, placement: entry.placement, template: entry.template, endsAt: entry.ends_at,
     onDismiss: () => { expanded = false; if (completed) { removed = true; hide(); } else { recovery?.minimized(); once('dismiss'); remind(); if (returnFocus) button.focus(); } },
     onConvert: convert,

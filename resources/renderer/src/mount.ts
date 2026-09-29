@@ -103,6 +103,9 @@ export interface MountOptions {
   readonly anchor?: Element | null;
   /** A DELIBERATE close by the visitor — the button, Esc, or the backdrop. */
   readonly onDismiss?: () => void;
+  /** Actual overlay transitions, not screen changes or inline mounting. */
+  readonly onOpened?: () => void;
+  readonly onClosed?: () => void;
   /**
    * The converting act, where the container can see it: a click-metered
    * Optin's CTA. A submit-metered one converts when the capture succeeds,
@@ -410,9 +413,13 @@ export function mountModal(options: MountOptions, surface: ModalSurface = {}): M
   });
 
   let dismissible = true;
+  let opened = false;
   const label = () => dialog.setAttribute('aria-label', parts.root.querySelector('h1,h2')?.textContent || 'Campaign');
 
-  dialog.addEventListener('close', () => {
+  const closed = () => {
+    // Native close events are queued. A stale event must not hide a reopened dialog.
+    if (!opened || dialog.open) return;
+    opened = false;
     dialog.style.setProperty('display', 'none', 'important');
     // Every route out of a dialog ends here — Esc, the backdrop, the close
     // button and `close()` itself — which is why the tick is stopped on the
@@ -420,12 +427,14 @@ export function mountModal(options: MountOptions, surface: ModalSurface = {}): M
     // after it closes, so nothing else would ever end the interval.
     parts.stop();
     surface.closed?.();
+    options.onClosed?.();
 
     if (dismissible) {
       parts.root.dispatchEvent(new Event('wconvert:dismissed'));
       options.onDismiss?.();
     }
-  });
+  };
+  dialog.addEventListener('close', closed);
 
   return {
     mounted: true,
@@ -434,6 +443,8 @@ export function mountModal(options: MountOptions, surface: ModalSurface = {}): M
     },
     steps: options.template.tree.steps.length,
     show() {
+      if (dialog.open) return;
+      closed();
       dismissible = true;
       parts.resume();
       surface.prepare?.(parts.root);
@@ -450,6 +461,8 @@ export function mountModal(options: MountOptions, surface: ModalSurface = {}): M
         dialog.remove();
         throw error;
       }
+      opened = true;
+      options.onOpened?.();
     },
     showStep(step) {
       const root = parts.step(step);
@@ -466,7 +479,7 @@ export function mountModal(options: MountOptions, surface: ModalSurface = {}): M
       dismissible = false;
       parts.stop();
       dialog.close();
-      surface.closed?.();
+      closed();
     },
   };
 }
