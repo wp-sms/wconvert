@@ -29,7 +29,10 @@ final class Protection
         if ($settings['provider'] === 'none') { return null; }
         if (!is_string($body['verification_token'] ?? null) || $body['verification_token'] === '') {
             return ['challenge' => ['url' => rest_url('wconvert/v1/protection/challenge'), 'asset' => WCONVERT_URL . 'public/protection/protection.js',
-                'title' => __('Verify your submission', 'wconvert'), 'cancel' => __('Cancel verification', 'wconvert')]];
+                'title' => __('Verify your submission', 'wconvert'), 'cancel' => __('Cancel verification', 'wconvert'),
+                'cancelled' => __('Verification cancelled. Your details are still here. Submit again when you are ready.', 'wconvert'),
+                'failed' => __('Verification could not finish. Your details are still here. Please try again.', 'wconvert'),
+                'loading' => __('Loading verification…', 'wconvert')]];
         }
         $error = $this->verifier->verify($settings, $body['verification_token'], (string) wp_parse_url(home_url('/'), PHP_URL_HOST));
         $this->diagnostics->record($error === null ? 'verified' : ($error->get_error_code() === 'wconvert_verification_unavailable' ? 'provider_unavailable' : 'challenge_failed'));

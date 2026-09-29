@@ -159,7 +159,7 @@ export function bindJourney(mounted: Mounted, entry: PayloadEntry, options: Opti
             if (target && target.screen !== step) show(target.screen);
           }
           if (mounted.root) refuse(mounted.root, reply?.message || journeyLabel(1), field ?? null);
-          options.onRefused?.(field ? 'correctable' : 'unconfirmed');
+          options.onRefused?.(field || reply?.code?.startsWith('wconvert_verification_') ? 'correctable' : 'unconfirmed');
         }
       })();
     });

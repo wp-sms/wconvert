@@ -40,6 +40,7 @@ final class Settings
     {
         $saved = $this->read();
         return [
+            'site_hostname' => (string) wp_parse_url(home_url('/'), PHP_URL_HOST),
             'provider' => $saved['provider'], 'site_key' => $saved['site_key'], 'has_secret' => $saved['secret'] !== '',
             'rules_available' => (bool) apply_filters('wconvert_protection_rules_available', false),
             'rules_configured' => $saved['rules'] !== [],

@@ -6,7 +6,7 @@ export function protectionField(root: HTMLElement): () => string {
   return () => input.value;
 }
 
-export interface Challenge { url: string; asset: string; title: string; cancel: string; }
+export interface Challenge { url: string; asset: string; title: string; cancel: string; cancelled: string; failed: string; loading: string; }
 /** Native module loading deduplicates parallel requests; failures can be retried. */
 export async function verify(challenge: Challenge): Promise<string> {
   let timer: ReturnType<typeof setTimeout>;
@@ -16,5 +16,5 @@ export async function verify(challenge: Challenge): Promise<string> {
       new Promise<never>((_, reject) => { timer = setTimeout(() => reject({}), 15000); }),
     ]);
     return module.verify(challenge);
-  } finally { clearTimeout(timer!); }
+  } catch { throw { code: 'wconvert_verification_failed', message: challenge.failed }; } finally { clearTimeout(timer!); }
 }

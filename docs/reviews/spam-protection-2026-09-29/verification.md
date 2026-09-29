@@ -54,3 +54,50 @@ requires the merchant's saved-setup test on the registered hostname.
 - [hCaptcha verification](https://docs.hcaptcha.com/#verify-the-user-response-server-side):
   the configured sitekey is sent for verification; the informational hostname
   can be `not-provided` under load and is not an authentication check.
+
+## Validation and polish follow-up
+
+A separate disposable WordPress/MySQL site on port 9438 preserved the user-facing
+9437 demo's settings. Built assets were exercised through the in-app Chromium
+browser at 1280×720 and 390×844.
+
+- Representative email-then-SMS journeys accepted protected captures in popup,
+  inline, fullscreen, floating-bar and slide-in containers. This covers the
+  shared containers and capture flow, not every library design/vendor combination.
+- Desktop Escape and mobile Cancel preserved email and consent, displayed the
+  specific cancellation message and focused it. Mobile keyboard-only retry
+  advanced to the optional SMS screen.
+- A real published content-lock shortcode exposed a classification bug: browser
+  cancellation had been treated as an uncertain capture and revealed content.
+  The corrected Free/Pro classification keeps verification refusals correctable.
+  A fresh browser run confirmed cancellation kept the bonus hidden and retry
+  revealed it only after server acceptance.
+- Admin saved-setup verification passed; focus returned to the test button.
+  Editing the site key removed the old success message and disabled testing
+  until saved. The page displayed the configured hostname and a blank secret.
+- The controlled flows used a clearly labelled simulated widget and simulated
+  Siteverify responses; no recipient mail or destination was configured. No
+  browser console errors were reported in the completed flow checks.
+
+The optional dialog now uses a compact Turnstile size, bounded provider frame
+sizes, loading text, theme-resistant styling, and clear cancellation/failure
+messages. Settings distinguish Testing from Saving and avoid stale success.
+
+Separately, live HTTP requests through the actual PHP Verifier (with all test
+HTTP interception removed) accepted hCaptcha's documented public test token
+and rejected an invalid token. Turnstile's public dummy response returned
+`example.com` and no capture action, and was correctly rejected by the strict
+binding checks. No production bypass was added. The public Turnstile browser
+script loaded but did not complete its widget in this test environment; no live
+end-to-end CAPTCHA pass is claimed. Google production verification and actual
+vendor challenge usability remain merchant-key checks on the registered host.
+
+Final local checks: 2,345 PHP tests / 14,002 assertions; 3,442 JavaScript tests;
+TypeScript, ESLint, PHPStan, source contract, full build, four release artifact
+contracts and loader/phone budgets. The new journey regressions exercise both
+Free and Pro in inline and popup containers: cancelled input/focus, correctable
+classification, retry, one verification for the accepted email/SMS journey, and
+one capture callback. Final gzip-9 loader sizes: 14,479 / 24,983 / 26,557 / 26,808
+bytes for Free / Basic / Pro / Elite, within the existing limits.
+
+![Mobile cancellation retains values and focuses the retry message](polish-cancel-mobile.png)

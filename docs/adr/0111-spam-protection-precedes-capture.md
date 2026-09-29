@@ -50,6 +50,15 @@ bundle is loaded on demand, with bounded baseline loader costs
 documented below. Closing verification preserves the original form. The document has
 no-store headers and same-origin framing restrictions; secrets never enter it.
 
+The host uses a compact Turnstile frame and allows only three bounded sizes
+from the trusted frame; hCaptcha can expand when its challenge opens. Loading,
+cancellation and failure have distinct feedback. Cancellation preserves values
+and focuses the form refusal; setup testing restores focus to its test button.
+Verification refusals carry a recognizable code in both browser and server
+paths. Free and Pro journeys classify these as correctable, including provider
+outages, so content locks do not mistake a cancelled challenge for an uncertain
+capture and reveal content. This amends ADR 0102.
+
 ## Free and Pro
 
 Free supplies the honeypot, request limit, provider adapters, protected grants,

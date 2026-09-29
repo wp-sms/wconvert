@@ -242,6 +242,8 @@ export function refuse(root: HTMLElement, message: string, field: string | null)
   (container ?? root).appendChild(error);
 
   if (input === null) {
+    error.tabIndex = -1;
+    error.focus();
     return;
   }
 

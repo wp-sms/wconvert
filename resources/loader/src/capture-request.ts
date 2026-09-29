@@ -1,7 +1,7 @@
 import { captureEndpoint } from './payload';
 import { verify, type Challenge } from './protection';
 
-export interface Reply { id?: string; grant?: string; challenge?: Challenge; message?: string; data?: { field?: string }; }
+export interface Reply { code?: string; id?: string; grant?: string; challenge?: Challenge; message?: string; data?: { field?: string }; }
 
 /** The same bounded capture request is used by Free and paid journeys. */
 export async function requestCapture(body: Record<string, unknown>): Promise<Reply> {

@@ -254,7 +254,7 @@ export function bindJourney(mounted: Mounted, entry: PayloadEntry, options: Opti
           }
           if (mounted.root) refuse(mounted.root, reply?.message || journeyLabel(1), field ?? null);
           if (field && nodes.get(field)?.node.type === 'question') mounted.root?.querySelector<HTMLElement>(`[data-question-id="${field}"]`)?.focus();
-          options.onRefused?.(field ? 'correctable' : 'unconfirmed');
+          options.onRefused?.(field || reply?.code?.startsWith('wconvert_verification_') ? 'correctable' : 'unconfirmed');
         }
       })();
     });

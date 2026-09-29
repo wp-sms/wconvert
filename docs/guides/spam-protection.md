@@ -57,3 +57,12 @@ Provider plans and charges are independent of WConvert. Official documentation:
 [Turnstile](https://developers.cloudflare.com/turnstile/),
 [reCAPTCHA v2](https://developers.google.com/recaptcha/docs/display),
 [hCaptcha](https://docs.hcaptcha.com/).
+
+## Retrying verification
+
+Cancelling or failing verification preserves the form values and consent choice.
+Submit again to retry. Content locks remain locked until capture is accepted.
+The setup screen displays the hostname to register, distinguishes testing from
+saving, and clears a previous test result when keys are edited. Save changes
+before testing again. A successful setup test checks the saved configuration;
+also submit a published form on your registered hostname.
