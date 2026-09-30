@@ -4,16 +4,19 @@ import { activeAnswers, chooseResult, journeyTrace, type Answers } from '../../.
 import { graphTrace } from '../../../loader/src/journey-graph';
 import type { QuestionNode, TemplateTree } from '@renderer/types';
 import { submissionScreen, walkNodes } from './structure/journey';
+import { journeyTraceEdges } from './structure/journeyTraceEdges';
 
 type IdentifiedQuestion = QuestionNode & { id: string };
 
 /** A route explanation backed by the same evaluator used by visitors. No capture occurs here. */
-export function JourneySample({ tree, onTrace, onSelect, onClose }: {
+export function JourneySample({ tree, onTrace, onSelect, onClose, onShowPath }: {
+  onShowPath?(screens: readonly number[], edges: readonly string[]): void;
   tree: TemplateTree; onTrace(indices: readonly number[]): void; onSelect(index: number): void; onClose(): void;
 }) {
-  const [answers, setAnswers] = useState<Answers>(() => Object.fromEntries(tree.steps.flatMap(screen => walkNodes(screen.content))
+  const initialAnswers = () => Object.fromEntries(tree.steps.flatMap(screen => walkNodes(screen.content))
     .filter((node): node is IdentifiedQuestion => node.type === 'question' && 'id' in node && typeof node.id === 'string' && node.answer_type !== 'text')
-    .map(question => [question.id, question.answer_type === 'multi' ? [question.options?.[0]?.value].filter((value): value is string => !!value) : question.options?.[0]?.value ?? ''])));
+    .map(question => [question.id, question.answer_type === 'multi' ? [question.options?.[0]?.value].filter((value): value is string => !!value) : question.options?.[0]?.value ?? '']));
+  const [answers, setAnswers] = useState<Answers>(initialAnswers);
   const [skippedSignups, setSkippedSignups] = useState<readonly string[]>([]);
   const path = useMemo(() => tree.graph ? graphTrace(tree.steps, tree.graph, answers) : journeyTrace(tree.steps, answers), [tree.steps, tree.graph, answers]);
   useEffect(() => onTrace(path.indices), [onTrace, path]);
@@ -50,8 +53,10 @@ export function JourneySample({ tree, onTrace, onSelect, onClose }: {
   };
   return <aside className="wconvert-journey-sample" aria-label={__('Sample visitor', 'wconvert')}>
     <div className="wconvert-journey-sample__header"><div><h3>{__('Try a visitor’s answers', 'wconvert')}</h3><p>{__('Change sample answers to see which screens appear. Nothing is saved or sent.', 'wconvert')}</p></div>
-      <button type="button" onClick={onClose}>{__('Close', 'wconvert')}</button></div>
+      {!onShowPath && <button type="button" onClick={onClose}>{__('Close', 'wconvert')}</button>}</div>
     <div className="wconvert-journey-sample__body">
+      <p>{__('Sample starts with the first answer to each choice question, including later questions. Signups assume Submit unless you choose No thanks. These are hypothetical choices, not a completed visitor test.', 'wconvert')}</p>
+      <button type="button" onClick={() => { setAnswers(initialAnswers()); setSkippedSignups([]); }}>{__('Reset sample answers', 'wconvert')}</button>
       {questions.map(question => <fieldset key={question.id}><legend>{question.label}</legend>
         {question.answer_type === 'text' ? <input type="text" value={typeof answers[question.id] === 'string' ? answers[question.id] as string : ''}
           onChange={event => setAnswer(question.id, event.target.value)} />
@@ -65,7 +70,7 @@ export function JourneySample({ tree, onTrace, onSelect, onClose }: {
             }} />{option.label}</label>)}
         {question.required !== true && <button type="button" onClick={() => setAnswer(question.id, undefined)}>{__('Leave unanswered', 'wconvert')}</button>}
       </fieldset>)}
-      <h4>{__('This visitor’s path', 'wconvert')}</h4>
+      <h4>{__('Predicted path', 'wconvert')}</h4>
       <ol>{path.indices.map((index, order) => {
         const screen = tree.steps[index];
         const submission = tree.submissions.find(sub => submissionScreen(tree, sub.id) === index);
@@ -96,6 +101,7 @@ export function JourneySample({ tree, onTrace, onSelect, onClose }: {
             decision.priority === screen.paths.length - 1 ? __('Everyone else', 'wconvert') : String((decision.priority ?? 0) + 1))}</p>];
       })}
       {selectedResult && <p className="wconvert-journey-sample__result">{sprintf(__('Result shown: %s', 'wconvert'), selectedResult.heading)}</p>}
+      {onShowPath && <button type="button" onClick={() => onShowPath(path.indices, journeyTraceEdges(tree, path.decisions))}>{__('Show sample path on the map', 'wconvert')}</button>}
       <div className="wconvert-journey-sample__outcome"><strong>{sprintf(_n('%d simulated submission', '%d simulated submissions', submitted.length, 'wconvert'), submitted.length)}</strong>
         <p>{submitted.length === 0 ? __('This path does not submit contact details. A result can still be shown without a Lead.', 'wconvert')
           : submitted.length === 1 ? __('One saved request contains answers from the questions this visitor saw before submitting.', 'wconvert')

@@ -1,6 +1,7 @@
 import { changeTestGuide, type JourneyChange } from './structure/changeTestGuide';
 import { followupGroups } from './structure/followupGroups';
 import { journeyTestProgress } from './structure/journeyTestProgress';
+import { journeyTraceEdges } from './structure/journeyTraceEdges';
 import { answerReview } from '@renderer/answer-review';
 import { journeyNotice } from '@renderer/journey-notice';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
@@ -315,7 +316,7 @@ export function JourneyTest({ template, onEdit, onShowPath, deliveryMode = 'none
         {(['selected', 'empty', 'error'] as const).map(value => <label key={value}><input type="radio" name="product-state" checked={productState === value} onChange={() => setProductState(value)} />{value === 'selected' ? __('Available', 'wconvert') : value === 'empty' ? __('None available', 'wconvert') : __('Loading error', 'wconvert')}</label>)}
         <p>{__('This test does not fetch your catalog. Retry simulates a successful response; check actual prices and stock on your website.', 'wconvert')}</p>
       </fieldset>}
-      {onShowPath && <button type="button" onClick={() => onShowPath(visited, routeSteps.map(item => item.id))}>{__('Show this path on the map', 'wconvert')}</button>}
+      {onShowPath && <button type="button" onClick={() => onShowPath(visited, journeyTraceEdges(tree, progress.decisions))}>{__('Show this path on the map', 'wconvert')}</button>}
       <button type="button" onClick={() => { setAnswers({}); setCaptureValues({}); phoneCountries.current = {}; setAccepted([]); setSnapshots({}); setAcceptedQuestions([]); setSkipped([]); setDelivery({});
         failNextRef.current = false; setFailNext(false); failDeliveryNextRef.current = false; setFailDeliveryNext(false); setProductState('selected'); setFeedback(''); setStep(entry); setVisited([entry]); }}>{__('Reset test', 'wconvert')}</button>
       <p>{__('Preview never saves answers, creates Leads, or counts conversions.', 'wconvert')}</p>

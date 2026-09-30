@@ -33,3 +33,16 @@ it('shows graph routes in visitor order even when stored screens are unordered',
   expect(onTrace).toHaveBeenLastCalledWith([2, 4, 1, 0, 3]);
   expect(screen.getByRole('group', { name: 'Indoor light?' })).toBeInTheDocument();
 });
+
+it('discloses seeded sample choices and resets them without treating them as a visitor test', async () => {
+  const user = userEvent.setup();
+  const tree = { v: 3, steps: graphFixture.steps, graph: graphFixture.graph, submissions: [] } as unknown as TemplateTree;
+  render(<JourneySample tree={tree} onTrace={vi.fn()} onSelect={vi.fn()} onClose={vi.fn()} />);
+  expect(screen.getByText(/Sample starts with the first answer/)).toBeInTheDocument();
+  const interests = screen.getByRole('group', { name: 'What interests you?' });
+  await user.click(within(interests).getByRole('checkbox', { name: 'Indoors' }));
+  expect(within(interests).getByRole('checkbox', { name: 'Indoors' })).toBeChecked();
+  await user.click(screen.getByRole('button', { name: 'Reset sample answers' }));
+  expect(within(interests).getByRole('checkbox', { name: 'Indoors' })).not.toBeChecked();
+  expect(screen.getByText(/Predicted path/)).toBeInTheDocument();
+});

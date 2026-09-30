@@ -597,6 +597,29 @@ must not imply that mutually exclusive paths are sequential visitor steps.
 
 ## 22. Journey map hierarchy
 
+- Keep all cards and connections readable during selection and testing. Emphasize
+  relevant connections with stroke weight and selected cards with an outline;
+  never fade an entire card's text to imply that it is unrelated.
+- Below 80% zoom, show a larger-type summary within unchanged card geometry,
+  including on the selected card. Select a summary to inspect locally. Overview
+  is for orientation; use Show selected screen for detailed reading.
+- Keep zoom, its percentage, Fit journey, Show selected screen, View options and
+  Edit connections together in one wrapping toolbar. Grouping, previews, Tidy up
+  and keyboard-accessible pan actions belong in View options.
+- A follow-up group starts with its source, count, “ask every match” explanation
+  and named continuation. Show questions discloses the members; Edit individual
+  connections expands the graph. These are distinct actions.
+- A branching card summarizes the answer-path count and fallback. The editable
+  connections carry full condition labels without line clamping; the inspector
+  retains exact rules and priority.
+- Expose journey issues through one count/list and affected card/group markers.
+  Reuse the publication validators and their repair addresses. Repair opens the
+  exact existing control and offers Back to issues; an empty list does not prove
+  that all visitor cases have been tested.
+- Preview & test separates Appearance, Visitor journey and Sample answers.
+  Samples disclose seeded choices and describe a predicted path. Walkthroughs
+  highlight only reached transitions. Reset remains available, tree edits clear
+  stale map traces, and neither mode creates Leads or sends destination requests.
 - Keep the ordinary sequence horizontal. Place a proven optional detour below
   its entry, with top/bottom ports and the shared continuation on the main row.
   Vertical proximity must not imply that mutually exclusive paths both run.

@@ -1,9 +1,9 @@
 import { memo, useCallback, useEffect, useMemo, useRef, useState, type RefObject } from 'react';
 import { Background, Handle, MarkerType, Panel, Position, ReactFlow, useReactFlow, useStore, useNodesInitialized, useUpdateNodeInternals, type Connection, type Edge, type Node, type NodeProps } from '@xyflow/react';
 import { branchRegions, layoutMap } from './structure/mapLayout';
-import { ArrowRight, Check, CircleHelp, FileText, Flag, Send, Eye, Focus, Layers, Maximize2, Minus, Plus, Settings2 } from 'lucide-react';
+import { Check, CircleHelp, FileText, Flag, Send, Eye, Focus, Minus, Plus, Settings2 } from 'lucide-react';
 import { SmartEdgeProvider } from '@tisoap/react-flow-smart-edge';
-import { __, sprintf } from '@wordpress/i18n';
+import { __, _n, sprintf } from '@wordpress/i18n';
 import type { TemplateTree } from '@renderer/types';
 import { unreachableScreenIds, walkNodes } from './structure/journey';
 import { conditionText } from './structure/conditionText';
@@ -16,9 +16,13 @@ import { mapRoutingOptions } from './structure/mapRouting';
 import { cameraTargets, mapMinZoom } from './structure/mapCamera';
 import { relatedMapElements } from './structure/mapSelection';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuCheckboxItem } from '../components/ui/dropdown-menu';
+import { JourneyIssueMarker } from './JourneyIssueMarker';
+import type { JourneyReadinessIssue } from './structure/journeyReadiness';
 import '@xyflow/react/dist/style.css';
 
-interface CardData { incomingPorts: string[]; detourTarget?: string; detourEntry: boolean; editingConnections: boolean; groupedTargets: ReadonlyMap<string, string>; tree: TemplateTree; index: number; rtl: boolean; unreachable: boolean; muted: boolean; preview: boolean; compactEnding: boolean; destinationSummary?: string; select(index: number): void; selectPath(index: number, priority: number | 'hidden'): void; goToDestinations?(): void; previewScreen?(index: number): void; add?(index: number, edgeId?: string): void }
+const noIssues: readonly JourneyReadinessIssue[] = [];
+
+interface CardData { issues: readonly JourneyReadinessIssue[]; onIssue?(issue: JourneyReadinessIssue): void; incomingPorts: string[]; detourTarget?: string; detourEntry: boolean; editingConnections: boolean; groupedTargets: ReadonlyMap<string, string>; tree: TemplateTree; index: number; rtl: boolean; unreachable: boolean; muted: boolean; preview: boolean; compactEnding: boolean; destinationSummary?: string; select(index: number): void; selectPath(index: number, priority: number | 'hidden'): void; goToDestinations?(): void; previewScreen?(index: number): void; add?(index: number, edgeId?: string): void }
 
 export function routesFor(tree: TemplateTree, index: number) {
   const screen = tree.steps[index];
@@ -35,8 +39,8 @@ export function hiddenFor(tree: TemplateTree, index: number): string | undefined
 }
 
 const ScreenCard = memo(function ScreenCard({ id, data, selected }: NodeProps) {
-  const { incomingPorts, detourTarget, detourEntry, editingConnections, tree, index, rtl, groupedTargets, unreachable, muted, preview, compactEnding, destinationSummary, select, selectPath, goToDestinations, previewScreen } = data as unknown as CardData;
-  const overview = useStore(state => state.transform[2] < .65);
+  const { incomingPorts, detourTarget, detourEntry, editingConnections, tree, index, rtl, groupedTargets, issues, onIssue, unreachable, muted, preview, compactEnding, destinationSummary, select, selectPath, goToDestinations, previewScreen } = data as unknown as CardData;
+  const overview = useStore(state => state.transform[2] < .8);
   const screen = tree.steps[index];
   const content = walkNodes(screen.content);
   const question = content.find(node => node.type === 'question');
@@ -53,6 +57,9 @@ const ScreenCard = memo(function ScreenCard({ id, data, selected }: NodeProps) {
   useEffect(() => { updateInternals(id); }, [id, handles, updateInternals]);
   const targetName = (target: string) => groupedTargets.has(target) ? __('Relevant follow-ups', 'wconvert') : tree.steps.find(item => item.id === target)?.name ?? __('Next screen', 'wconvert');
   const branching = paths.some(path => 'kind' in path ? path.kind === 'answer' : !!path.when);
+  const answerCount = paths.filter(path => 'kind' in path ? path.kind === 'answer' : !!path.when).length;
+  const hasFallback = paths.some(path => 'kind' in path ? path.kind === 'default' : !path.when);
+  const pathSummary = `${sprintf(_n('%d answer path', '%d answer paths', answerCount, 'wconvert'), answerCount)} · ${hasFallback ? __('Everyone else', 'wconvert') : __('No fallback', 'wconvert')}`;
   const missingContinuation = !!tree.graph && !paths.some(path => 'kind' in path && path.kind === 'default');
   const canDraw = tree.graph ? screen.kind !== 'acknowledgement' && (missingContinuation
     ? screen.kind !== 'result' || branching : graphChoiceSources(tree, screen.id).length > 0)
@@ -62,12 +69,12 @@ const ScreenCard = memo(function ScreenCard({ id, data, selected }: NodeProps) {
   const kind = screen.kind === 'acknowledgement' ? __('Ending', 'wconvert') : screen.kind === 'result' ? __('Result', 'wconvert')
     : question ? __('Question', 'wconvert') : savesDetails ? __('Collect details', 'wconvert') : __('Message', 'wconvert');
   const KindIcon = screen.kind === 'acknowledgement' ? Check : screen.kind === 'result' ? Flag : question ? CircleHelp : savesDetails ? Send : FileText;
-  return <div dir={rtl ? 'rtl' : 'ltr'} className={`wconvert-flow-node${selected ? ' is-selected' : ''}${unreachable ? ' is-unreachable' : ''}${muted ? ' is-muted' : ''}${compactEnding && screen.kind === 'acknowledgement' ? ' is-compact-ending' : ''}${overview && !selected ? ' is-overview' : ''}`}>
-    {overview && !selected && <button type="button" className="wconvert-flow-node__overview" aria-label={sprintf(__('Open %s', 'wconvert'), screen.name)} onClick={() => select(index)}>
+  return <div dir={rtl ? 'rtl' : 'ltr'} className={`wconvert-flow-node${selected ? ' is-selected' : ''}${unreachable ? ' is-unreachable' : ''}${muted ? ' is-muted' : ''}${compactEnding && screen.kind === 'acknowledgement' ? ' is-compact-ending' : ''}${overview ? ' is-overview' : ''}`}>
+    {overview && <button type="button" className="wconvert-flow-node__overview" aria-label={sprintf(__('Open %s', 'wconvert'), screen.name)} onClick={() => select(index)}>
       <small>{kind}{screen.id === (tree.graph?.entry ?? tree.steps[0].id) ? ` · ${__('First screen', 'wconvert')}` : ''}{incoming > 1 ? ` · ${__('Paths rejoin', 'wconvert')}` : ''}</small><strong><bdi>{screen.name}</bdi></strong>
       {screen.when && <span>{sprintf(__('Show if %s', 'wconvert'), conditionText(tree, screen.when))}</span>}
-      {branching && <span>{sprintf(__('%d answer paths · first match wins', 'wconvert'), paths.length - 1)}</span>}
-      {savesDetails && <span>{__('Details saved here', 'wconvert')}</span>}
+      {branching && <span>{__('Choose one path', 'wconvert')} · {pathSummary}</span>}
+      {savesDetails && <span>{capture?.required === false ? __('Optional signup', 'wconvert') : __('Details saved here', 'wconvert')}</span>}
       {screen.kind === 'result' && <span>{sprintf(__('%d possible results', 'wconvert'), screen.results?.length ?? 0)}</span>}
       {screen.kind === 'acknowledgement' && <span>{__('Journey complete', 'wconvert')}</span>}
     </button>}
@@ -79,7 +86,7 @@ const ScreenCard = memo(function ScreenCard({ id, data, selected }: NodeProps) {
     {detourTarget && <Handle id="detour-out" type="source" position={Position.Bottom} isConnectable={false} />}
     <button type="button" className="wconvert-flow-node__main" onClick={() => select(index)}>
       <div className="wconvert-flow-node__heading"><span className="wconvert-flow-node__type-icon" aria-hidden="true"><KindIcon /></span><div><small>{kind}{screen.id === (tree.graph?.entry ?? tree.steps[0].id) ? ` · ${__('First screen', 'wconvert')}` : incoming > 1 ? ` · ${__('Paths rejoin', 'wconvert')}` : ''}</small><strong><bdi>{screen.name}</bdi></strong></div></div>
-      {question && 'label' in question ? <span><bdi>{String(question.label)}</bdi></span> : heading && 'text' in heading && heading.text !== screen.name ? <span><bdi>{String(heading.text)}</bdi></span> : null}
+      {question && 'label' in question && question.label !== screen.name ? <span><bdi>{String(question.label)}</bdi></span> : heading && 'text' in heading && heading.text !== screen.name ? <span><bdi>{String(heading.text)}</bdi></span> : null}
       {screen.when && <em>{sprintf(__('Show if %s', 'wconvert'), conditionText(tree, screen.when))}</em>}
       {unreachable && <em>{__('Unreachable — connect an incoming path', 'wconvert')}</em>}
       {screen.kind === 'result' && <span>{sprintf(__('%d possible results · first match wins', 'wconvert'), screen.results?.length ?? 0)}</span>}
@@ -96,13 +103,10 @@ const ScreenCard = memo(function ScreenCard({ id, data, selected }: NodeProps) {
     </div>}
     {branching && <div className="wconvert-flow-node__paths">
       <small>{paths.length > 2 ? __('First matching path wins', 'wconvert') : detourTarget ? __('Conditional follow-up', 'wconvert') : __('Choose one path', 'wconvert')}</small>
-      {paths.map((path, priority) => <div key={'id' in path && typeof path.id === 'string' ? path.id : `${path.to}-${priority}`} className="wconvert-flow-node__path">
-        <button type="button" className="nodrag" onClick={() => selectPath(index, priority)}>
-          {('kind' in path ? path.kind === 'default' : !path.when) ? __('Everyone else', 'wconvert') : `${paths.length > 2 ? `${priority + 1}. ` : ''}${path.when ? conditionText(tree, path.when) : ''}`}
-          <span> {rtl ? '←' : '→'} <bdi>{targetName(path.to)}</bdi></span>
-        </button>
-        {(groupedTargets.get(path.to) ?? path.to) !== detourTarget && <Handle id={`route-${priority}`} type="source" position={rtl ? Position.Left : Position.Right} isConnectable={false} />}
-      </div>)}
+      <button type="button" className="nodrag" onClick={() => selectPath(index, 0)}>{pathSummary}</button>
+      {paths.map((path, priority) => (groupedTargets.get(path.to) ?? path.to) !== detourTarget && <Handle
+        key={'id' in path ? String(path.id) : `${path.to}-${priority}`} id={`route-${priority}`} type="source" position={rtl ? Position.Left : Position.Right} isConnectable={false}
+        style={{ top: `${((priority + 1) / (paths.length + 1)) * 100}%` }} />)}
     </div>}
     {!branching && paths.length === 1 && <div className="wconvert-flow-node__continue">
       <button type="button" className="nodrag" onClick={() => selectPath(index, 0)}>
@@ -118,6 +122,7 @@ const ScreenCard = memo(function ScreenCard({ id, data, selected }: NodeProps) {
       }
     </div>}
     {screen.kind === 'acknowledgement' && <div className="wconvert-flow-node__ending"><Check aria-hidden="true" />{__('Journey complete', 'wconvert')}</div>}
+    <JourneyIssueMarker issues={issues} onIssue={onIssue} />
     {canDraw && editingConnections && <Handle id="new" type="source" position={Position.Bottom} className="wconvert-flow-node__new-connection"
       title={missingContinuation ? __('Drag to connect the next screen', 'wconvert') : __('Drag to add an answer path', 'wconvert')}
       style={detourTarget ? { left: '25%' } : undefined} isConnectable={selected}><span aria-hidden="true">+</span></Handle>}
@@ -162,11 +167,12 @@ export function FocusCamera({ mapRoot, selectedId, nextId, contextIds, firstId, 
   }, [mapRoot, getViewport, setViewport]);
   const width = useStore(state => state.width);
   const height = useStore(state => state.height);
+  const zoomPercent = useStore(state => Math.round(state.transform[2] * 100));
   const nodesReady = useNodesInitialized();
   const viewPadding = useCallback(() => {
     const tools = mapRoot.current?.querySelector('.wconvert-journey-map__controls')?.getBoundingClientRect();
     const canvas = mapRoot.current?.querySelector('.react-flow')?.getBoundingClientRect();
-    return { top: '24px' as const, left: '24px' as const, right: '56px' as const, bottom: `${Math.ceil(tools && canvas ? canvas.bottom - tools.top + 12 : 84)}px` as const };
+    return { top: '24px' as const, left: '24px' as const, right: '24px' as const, bottom: `${Math.ceil(tools && canvas ? canvas.bottom - tools.top + 12 : 84)}px` as const };
   }, [mapRoot]);
   useEffect(() => {
     if (!nodesReady) return;
@@ -190,18 +196,13 @@ export function FocusCamera({ mapRoot, selectedId, nextId, contextIds, firstId, 
     void setViewport({ ...viewport, x: viewport.x + direction * (rtl ? -1 : 1) * width * .65 }, { duration: 180 });
   };
   return <>
-    <Panel position="top-right" className="wconvert-journey-map__zoom wconvert-journey-map__control-group">
-      <button type="button" aria-label={__('Zoom in', 'wconvert')} title={__('Zoom in', 'wconvert')} onClick={() => void zoomIn()}><Plus aria-hidden="true" /></button>
-      <button type="button" aria-label={__('Zoom out', 'wconvert')} title={__('Zoom out', 'wconvert')} onClick={() => void zoomOut()}><Minus aria-hidden="true" /></button>
-      <button type="button" disabled={!selection} aria-label={__('Show selected screen', 'wconvert')} title={__('Show selected screen', 'wconvert')} onClick={focusSelection}><Focus aria-hidden="true" /></button>
-    </Panel>
     <Panel position="bottom-left" className="wconvert-journey-map__controls">
       <div className="wconvert-journey-map__tools wconvert-journey-map__control-group" role="group" aria-label={__('Map view', 'wconvert')}>
-        {onEditConnections && <button type="button" aria-pressed={editingConnections} onClick={onEditConnections}>{editingConnections ? __('Done connecting', 'wconvert') : __('Edit connections', 'wconvert')}</button>}
-        {grouping && <button type="button" className="wconvert-journey-map__desktop-tool" onClick={grouping.toggle}><Layers aria-hidden="true" />{grouping.active ? __('Expand follow-ups', 'wconvert') : __('Group follow-ups', 'wconvert')}</button>}
-        <button type="button" className="wconvert-journey-map__desktop-tool" onClick={goToStart}><ArrowRight className="wconvert-journey-map__direction" aria-hidden="true" />{__('Start', 'wconvert')}</button>
-
-        <button type="button" className="wconvert-journey-map__desktop-tool" onClick={onTidy}><Maximize2 aria-hidden="true" />{__('Tidy up', 'wconvert')}</button>
+        <button type="button" aria-label={__('Zoom out', 'wconvert')} title={__('Zoom out', 'wconvert')} onClick={() => void zoomOut()}><Minus aria-hidden="true" /></button>
+        <span className="wconvert-journey-map__percentage" aria-label={__('Canvas zoom', 'wconvert')}>{zoomPercent}%</span>
+        <button type="button" aria-label={__('Zoom in', 'wconvert')} title={__('Zoom in', 'wconvert')} onClick={() => void zoomIn()}><Plus aria-hidden="true" /></button>
+        <button type="button" onClick={fitJourney}><Focus aria-hidden="true" />{__('Fit journey', 'wconvert')}</button>
+        <button type="button" disabled={!selection} aria-label={__('Show selected screen', 'wconvert')} title={__('Show selected screen', 'wconvert')} onClick={focusSelection}><Focus aria-hidden="true" /></button>
         <DropdownMenu><DropdownMenuTrigger asChild><button type="button" className="wconvert-journey-map__view-options"><Settings2 aria-hidden="true" />{__('View options', 'wconvert')}</button></DropdownMenuTrigger>
           <DropdownMenuContent align="start">
             <DropdownMenuItem onSelect={goToStart}>{__('Go to first screen', 'wconvert')}</DropdownMenuItem>
@@ -213,7 +214,7 @@ export function FocusCamera({ mapRoot, selectedId, nextId, contextIds, firstId, 
             <DropdownMenuItem onSelect={() => pan(-1)}>{__('Pan to later screens', 'wconvert')}</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-        <button type="button" onClick={fitJourney}><Focus aria-hidden="true" />{__('Fit journey', 'wconvert')}</button>
+        {onEditConnections && <button type="button" aria-pressed={editingConnections} onClick={onEditConnections}>{editingConnections ? __('Done connecting', 'wconvert') : __('Edit connections', 'wconvert')}</button>}
       </div>
     </Panel>
 
@@ -222,7 +223,8 @@ export function FocusCamera({ mapRoot, selectedId, nextId, contextIds, firstId, 
 }
 
 /** The canvas is an overview; the same routes are editable through selects in the inspector. */
-export function JourneyMap({ tree, selected, focusedPath = null, onSelect, onSelectPath, onConnect, onReconnect, samplePath = null, sampleEdges = null, destinationSummary, onGoToDestinations, onPreview, onAdd }: {
+export function JourneyMap({ tree, selected, focusedPath = null, onSelect, onSelectPath, onConnect, onReconnect, samplePath = null, sampleEdges = null, traceKind = 'sample', issues = noIssues, onIssue, destinationSummary, onGoToDestinations, onPreview, onAdd }: {
+  traceKind?: 'sample' | 'visited'; issues?: readonly JourneyReadinessIssue[]; onIssue?(issue: JourneyReadinessIssue): void;
   tree: TemplateTree; selected: number | null; onSelect(index: number): void; onSelectPath(index: number, priority: number | 'hidden'): void;
   onConnect(source: string, target: string): void; samplePath?: readonly number[] | null; sampleEdges?: readonly string[] | null; focusedPath?: number | 'hidden' | null;
   onReconnect?(edgeId: string, target: string): void;
@@ -285,6 +287,8 @@ export function JourneyMap({ tree, selected, focusedPath = null, onSelect, onSel
   }, [tree.steps]);
   const focusExpandedScreen = useCallback(() => {
     if (!pendingFocus.current) return;
+    // A deferred reveal must not close a menu the merchant has just opened.
+    if (document.activeElement?.closest('.wconvert-journey-map__controls, [role="menu"]')) { pendingFocus.current = null; return; }
     const card = mapRoot.current?.querySelector<HTMLElement>(`[data-id="${pendingFocus.current}"] .wconvert-flow-node__main`);
     if (card && getComputedStyle(card).visibility !== 'hidden') {
       card.focus({ preventScroll: true });
@@ -324,14 +328,14 @@ export function JourneyMap({ tree, selected, focusedPath = null, onSelect, onSel
       .map((path, priority) => ({ id: 'id' in path && typeof path.id === 'string' ? path.id : `${step.id}-${priority}`, source: step.id, target: path.to, data: { sourceIndex: index, priority },
         sourceHandle: `route-${priority}`, targetHandle: 'in', type: 'journey', reconnectable: tree.graph ? 'target' : false,
         label: paths.length > 1 || path.when ? ('kind' in path ? path.kind === 'default' : !path.when) ? __('Everyone else', 'wconvert') : `${paths.length > 2 ? `${priority + 1}. ` : ''}${path.when ? conditionText(tree, path.when) : ''}` : undefined,
-        markerEnd: { type: MarkerType.ArrowClosed, color: '#719987', width: 15, height: 15 },
-        style: { stroke: '#719987', strokeWidth: 2 } }));
+        markerEnd: { type: MarkerType.ArrowClosed, color: '#536f60', width: 15, height: 15 },
+        style: { stroke: '#536f60', strokeWidth: 2 } }));
     const hidden = hiddenFor(tree, index);
     if (hidden && !paths.some(path => path.to === hidden)) routes.push({
       id: tree.graph?.edges.find(edge => edge.from === step.id && edge.kind === 'hidden')?.id ?? `${step.id}-hidden`,
       source: step.id, target: hidden, data: { sourceIndex: index, priority: 'hidden' }, sourceHandle: 'hidden', targetHandle: 'in', type: 'journey', reconnectable: 'target',
-      label: __('Hidden', 'wconvert'), markerEnd: { type: MarkerType.ArrowClosed, color: '#9aa8a0', width: 15, height: 15 },
-      style: { stroke: '#9aa8a0', strokeWidth: 1.5, strokeDasharray: '5 4' },
+      label: __('Hidden', 'wconvert'), markerEnd: { type: MarkerType.ArrowClosed, color: '#65776c', width: 15, height: 15 },
+      style: { stroke: '#65776c', strokeWidth: 1.5, strokeDasharray: '5 4' },
     });
     return routes;
   }), [tree]);
@@ -349,12 +353,17 @@ export function JourneyMap({ tree, selected, focusedPath = null, onSelect, onSel
     (edge.data?.priority === focusedPath || focusedPath === 'hidden' && edge.target === hiddenFor(tree, selected!)));
   const related = useMemo(() => relatedMapElements(rawEdges, selectedId, selectedEdge?.id), [rawEdges, selectedId, selectedEdge?.id]);
   const highlighting = highlightRelated && selected !== null && samplePath === null;
+  const issuesByScreen = useMemo(() => {
+    const byScreen = new Map<string, JourneyReadinessIssue[]>();
+    for (const issue of issues) byScreen.set(issue.repair.screenId, [...(byScreen.get(issue.repair.screenId) ?? []), issue]);
+    return byScreen;
+  }, [issues]);
   const cardData = useMemo(() => tree.steps.map((_, index) => ({ incomingPorts: incomingPorts.get(tree.steps[index].id) ?? [], detourTarget: detours.get(tree.steps[index].id), detourEntry: [...detours.values()].includes(tree.steps[index].id), editingConnections, tree, index, rtl, unreachable: disconnected.has(tree.steps[index].id),
       muted: samplePath !== null ? !samplePath.includes(index) : highlighting && !related.screens.has(tree.steps[index].id),
-      groupedTargets: groupedScreens, previewScreen: onPreview, add: onAdd, preview, compactEnding: groups.length > 0, destinationSummary, goToDestinations: onGoToDestinations, select: onSelect, selectPath: onSelectPath })),
-    [incomingPorts, detours, editingConnections, tree, disconnected, onSelect, onSelectPath, rtl, samplePath, highlighting, related, preview, groups.length, groupedScreens, destinationSummary, onGoToDestinations, onPreview, onAdd]);
-  const groupData = useMemo(() => new Map(groups.map(group => [group.id, { incomingPorts: incomingPorts.get(group.id) ?? [], detourEntry: [...detours.values()].includes(group.id), detourTarget: detours.get(group.id), tree, group, rtl, unreachable: disconnected.has(tree.steps[group.screens[0]].id), selected: samplePath === null ? selected : null, muted: highlighting && !group.screens.some(index => related.screens.has(tree.steps[index].id)), samplePath, select: onSelect, expand }])),
-    [incomingPorts, detours, groups, tree, disconnected, rtl, selected, samplePath, highlighting, related, onSelect, expand]);
+      issues: issuesByScreen.get(tree.steps[index].id) ?? noIssues, onIssue, groupedTargets: groupedScreens, previewScreen: onPreview, add: onAdd, preview, compactEnding: groups.length > 0, destinationSummary, goToDestinations: onGoToDestinations, select: onSelect, selectPath: onSelectPath })),
+    [issuesByScreen, onIssue, incomingPorts, detours, editingConnections, tree, disconnected, onSelect, onSelectPath, rtl, samplePath, highlighting, related, preview, groups.length, groupedScreens, destinationSummary, onGoToDestinations, onPreview, onAdd]);
+  const groupData = useMemo(() => new Map(groups.map(group => [group.id, { incomingPorts: incomingPorts.get(group.id) ?? [], detourEntry: [...detours.values()].includes(group.id), detourTarget: detours.get(group.id), tree, group, rtl, traceKind, issues: group.screens.flatMap(index => issuesByScreen.get(tree.steps[index].id) ?? []), onIssue, unreachable: disconnected.has(tree.steps[group.screens[0]].id), selected: samplePath === null ? selected : null, muted: highlighting && !group.screens.some(index => related.screens.has(tree.steps[index].id)), samplePath, select: onSelect, expand }])),
+    [traceKind, issuesByScreen, onIssue, incomingPorts, detours, groups, tree, disconnected, rtl, selected, samplePath, highlighting, related, onSelect, expand]);
   const nodes = useMemo<Node[]>(() => view.map(({ id, index, group }) => ({ id, type: group ? 'followups' : 'screen',
     position: positions[id] ?? { x: index * 340, y: 60 }, measured: measurements[id],
     selected: !group && index === selected && samplePath === null, data: group ? groupData.get(id)! : cardData[index] })), [view, positions, measurements, selected, samplePath, groupData, cardData]);
@@ -367,7 +376,9 @@ export function JourneyMap({ tree, selected, focusedPath = null, onSelect, onSel
     return [{ ...edge, source, target, selected: edge.id === selectedEdge?.id,
       data: { ...edge.data, corridorOffset: (ports.indexOf(edge.id) - (ports.length - 1) / 2) * 24, boxes: routingBoxes, sourceName: tree.steps.find(step => step.id === edge.source)?.name, edit: () => onSelectPath(Number(edge.data?.sourceIndex), edge.data?.priority as number | 'hidden'), targetName: tree.steps.find(step => step.id === edge.target)?.name,
         insert: onAdd && tree.graph ? (edgeId: string) => onAdd(Number(edge.data?.sourceIndex), edgeId) : undefined },
-      style: { ...edge.style, opacity: samplePath !== null && sampleEdges !== null ? sampleEdges.includes(edge.id) || tree.graph?.edges.some(hidden => hidden.kind === 'hidden' && hidden.from === edge.source && hidden.to === edge.target && sampleEdges.includes(hidden.id)) ? 1 : .15 : highlighting && !related.paths.has(edge.id) ? .2 : 1 },
+      style: { ...edge.style, strokeWidth: samplePath !== null && sampleEdges !== null
+        ? sampleEdges.includes(edge.id) || tree.graph?.edges.some(hidden => hidden.kind === 'hidden' && hidden.from === edge.source && hidden.to === edge.target && sampleEdges.includes(hidden.id)) ? 3.5 : 1.5
+        : highlighting && related.paths.has(edge.id) ? 3 : 1.5 },
       ariaLabel: sprintf(edge.data?.priority === 'hidden' ? __('When hidden: %1$s to %2$s', 'wconvert') : __('%1$s to %2$s', 'wconvert'), tree.steps.find(step => step.id === edge.source)?.name ?? edge.source, tree.steps.find(step => step.id === edge.target)?.name ?? edge.target),
       sourceHandle: detours.get(source) === target ? 'detour-out' : source !== edge.source ? 'out' : edge.sourceHandle,
       targetHandle: detours.get(source) === target ? 'detour-in' : ports.length > 1 ? `in:${edge.id}` : 'in',
@@ -386,12 +397,12 @@ export function JourneyMap({ tree, selected, focusedPath = null, onSelect, onSel
   };
   return <div ref={mapRoot} className="wconvert-journey-map" aria-label={__('Journey map', 'wconvert')}>
     <div className="wconvert-journey-node-tools" aria-label={__('Selected screen actions', 'wconvert')}>
-      {selected !== null && samplePath === null ? <>
+      {editingConnections ? <span>{__('Connect with + or use Next screen settings. Moving a card changes only its layout.', 'wconvert')}</span> : selected !== null && samplePath === null ? <>
         <strong>{selectedEdge ? `${tree.steps[selected].name} → ${tree.steps.find(screen => screen.id === selectedEdge.target)?.name}` : tree.steps[selected].name}</strong>
         <button type="button" onClick={() => onSelect(selected)}>{__('Edit screen', 'wconvert')}</button>
         {onPreview && <button type="button" onClick={() => onPreview(selected)}>{__('Preview screen', 'wconvert')}</button>}
         {onAdd && tree.steps[selected].kind !== 'acknowledgement' && <button type="button" onClick={() => onAdd(selected, selectedEdge?.id)}>{selectedEdge ? __('Add screen on this path', 'wconvert') : __('Add screen', 'wconvert')}</button>}
-      </> : <span>{__('Select a screen to edit or preview it.', 'wconvert')}</span>}
+      </> : <span>{samplePath !== null ? traceKind === 'visited' ? __('Visited in this test. Future screens are not predicted.', 'wconvert') : __('Predicted for your sample answers.', 'wconvert') : __('Select a screen to edit or preview it.', 'wconvert')}</span>}
     </div>
     <SmartEdgeProvider nodes={nodes} options={mapRoutingOptions}>
     <ReactFlow nodes={nodes} edges={edges} nodeTypes={nodeTypes} edgeTypes={edgeTypes}
@@ -426,9 +437,6 @@ export function JourneyMap({ tree, selected, focusedPath = null, onSelect, onSel
         revision={revision} selection={selected !== null && samplePath === null ? { highlighted: highlightRelated, toggle: () => setHighlightRelated(value => !value) } : undefined} onNodesReady={focusExpandedScreen} preview={preview} onPreview={() => setPreview(value => !value)} onTidy={() => setTidyRevision(value => value + 1)} />
     </ReactFlow>
     </SmartEdgeProvider>
-    <p className="wconvert-journey-map__hint">{editingConnections ? __('Drag from + to add a path, or drag a line’s arrow to change its destination. Choose Done connecting when finished.', 'wconvert') : disconnected.size ? __('Unreachable screens stay in your draft. Connect their incoming paths or remove screens you no longer need.', 'wconvert') : groups.length ? __('Every matching follow-up is shown. Expand screens to edit their connections.', 'wconvert') : tree.graph
-      ? __('Select a screen to edit. Moving a box changes only the layout. Use Edit connections for custom routing.', 'wconvert')
-      : rtl ? __('Follow arrows from right to left. Scroll to move through the map; select a screen to edit it.', 'wconvert')
-        : __('Follow arrows from left to right. Scroll to move through the map; select a screen to edit it.', 'wconvert')}</p>
+
   </div>;
 }

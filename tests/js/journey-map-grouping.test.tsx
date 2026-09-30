@@ -40,6 +40,7 @@ it('labels disconnected follow-ups in both grouped and expanded maps and keeps t
   render(<JourneyMap tree={changed} selected={null} onSelect={select} onSelectPath={() => {}} onConnect={() => {}} />);
   expect(screen.getByText('Unreachable — connect an incoming path to show these screens.')).toBeInTheDocument();
   expect(screen.queryByText('Ask every match, one at a time. Skip the rest.')).not.toBeInTheDocument();
+  await user.click(screen.getByText('Show 3 questions'));
   await user.click(screen.getByRole('button', { name: /Garden details$/ }));
   expect(select).toHaveBeenCalledWith(tree.steps.findIndex(item => item.id === 'garden'));
   await user.click(screen.getByRole('button', { name: 'Edit individual connections' }));
@@ -60,7 +61,9 @@ it.each(['ltr', 'rtl'])('keeps card content and path arrows aligned with the %s 
     expect(cards.length).toBeGreaterThan(0);
     cards.forEach(card => expect(card).toHaveAttribute('dir', direction));
     const arrow = direction === 'rtl' ? '←' : '→';
-    expect(screen.getByRole('button', { name: `Everyone else ${arrow} Your business interests` })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: '1 answer path · Everyone else' })).toBeInTheDocument();
+    const edges = JSON.parse(screen.getByTestId('map-edges').textContent!) as Edge[];
+    expect(edges.some(edge => edge.label === 'Everyone else' && edge.target === changed.steps.find(step => step.name === 'Your business interests')?.id)).toBe(true);
     expect(screen.getByRole('button', { name: `When hidden ${arrow} Send one combined enquiry` })).toBeInTheDocument();
     const firstX = canvas.nodes.find(node => node.id === 'scope')!.position.x;
     const endingX = canvas.nodes.find(node => node.id === 'received')!.position.x;
@@ -76,6 +79,7 @@ it('summarizes independent follow-ups and expands to the exact original nodes an
   expect(screen.getAllByTestId('map-node')).toHaveLength(4);
   expect(canvas.nodes.map(node => node.id)).toEqual(['interests', 'followups:garden', 'contact', 'received']);
   expect(screen.getByText('Ask every match, one at a time. Skip the rest.')).toBeInTheDocument();
+  await user.click(screen.getByText('Show 3 questions'));
   await user.click(screen.getByRole('button', { name: /Indoor details$/ }));
   expect(select).toHaveBeenCalledWith(tree.steps.findIndex(step => step.id === 'indoors'));
   const edges = JSON.parse(screen.getByTestId('map-edges').textContent!) as Edge[];
@@ -87,12 +91,14 @@ it('summarizes independent follow-ups and expands to the exact original nodes an
   expect(screen.queryByText('Ask every match, one at a time. Skip the rest.')).not.toBeInTheDocument();
   await waitFor(() => expect(screen.getByRole('button', { name: /Question Garden details/ })).toHaveFocus());
   expect(connect).not.toHaveBeenCalled();
-  await user.click(screen.getByRole('button', { name: 'Group follow-ups' }));
+  await user.click(screen.getByRole('button', { name: 'View options' }));
+  await user.click(screen.getByRole('menuitem', { name: 'Group follow-ups' }));
   expect(screen.getAllByTestId('map-node')).toHaveLength(4);
 });
 
-it('explains shown and skipped group members when trying sample answers', () => {
+it('explains shown and skipped group members when trying sample answers', async () => {
   render(<JourneyMap tree={tree} selected={null} samplePath={[2, 5, 0, 3]} onSelect={() => {}} onSelectPath={() => {}} onConnect={() => {}} />);
+  await userEvent.click(screen.getByText('Show 3 questions'));
   expect(screen.getAllByText('Shown for these answers')).toHaveLength(1);
   expect(screen.getAllByText('Skipped for these answers')).toHaveLength(2);
 });
@@ -107,7 +113,8 @@ it('keeps members grouped until connections are explicitly inspected', async () 
   expect(canvas.nodes.some(node => node.id === 'followups:garden')).toBe(true);
   await user.click(screen.getByRole('button', { name: 'Edit individual connections' }));
   expect(canvas.nodes.some(node => node.id === 'garden')).toBe(true);
-  await user.click(screen.getByRole('button', { name: 'Group follow-ups' }));
+  await user.click(screen.getByRole('button', { name: 'View options' }));
+  await user.click(screen.getByRole('menuitem', { name: 'Group follow-ups' }));
   expect(canvas.nodes.some(node => node.id === 'followups:garden')).toBe(true);
   rerender(<JourneyMap {...props} selected={garden} />);
   expect(canvas.nodes.some(node => node.id === 'followups:garden')).toBe(true);
@@ -119,7 +126,8 @@ it('spaces tall parallel cards by measured size without resetting a manually arr
   const user = userEvent.setup();
   const branched = branchedFixture as unknown as TemplateTree;
   render(<JourneyMap tree={branched} selected={null} onSelect={() => {}} onSelectPath={() => {}} onConnect={() => {}} />);
-  await user.click(screen.getByRole('button', { name: 'Expand follow-ups' }));
+  await user.click(screen.getByRole('button', { name: 'View options' }));
+  await user.click(screen.getByRole('menuitem', { name: 'Expand follow-ups' }));
   expect(canvas.nodes).toHaveLength(13);
   act(() => canvas.change(canvas.nodes.map(node => ({ id: node.id, type: 'dimensions', dimensions: { width: 252, height: 500 } }))));
   const overlaps = () => canvas.nodes.flatMap((a, i) => canvas.nodes.slice(i + 1).filter(b =>
@@ -130,7 +138,8 @@ it('spaces tall parallel cards by measured size without resetting a manually arr
   const arranged = canvas.nodes.map(node => ({ id: node.id, position: node.position }));
   act(() => canvas.change([{ id: 'business_office', type: 'dimensions', dimensions: { width: 252, height: 620 } }]));
   expect(canvas.nodes.map(node => ({ id: node.id, position: node.position }))).toEqual(arranged);
-  await user.click(screen.getByRole('button', { name: 'Tidy up' }));
+  await user.click(screen.getByRole('button', { name: 'View options' }));
+  await user.click(screen.getByRole('menuitem', { name: 'Tidy up' }));
   expect(overlaps()).toEqual([]);
   expect(canvas.nodes.find(node => node.id === 'home_garden')!.position).not.toEqual({ x: 42, y: 73 });
 });
@@ -179,9 +188,9 @@ it('opens normal and hidden paths without the enclosing card overriding the acti
 it('keeps a shared visible/hidden connection highlighted when inspecting the hidden continuation', async () => {
   render(<JourneyMap tree={tree} selected={tree.steps.findIndex(step => step.id === 'garden')} focusedPath="hidden" onSelect={() => {}} onSelectPath={() => {}} onConnect={() => {}} />);
   const edges = JSON.parse(screen.getByTestId('map-edges').textContent!) as Edge[];
-  expect(edges.find(edge => edge.id === 'garden_next')?.style?.opacity).toBe(1);
-  expect(edges.find(edge => edge.id === 'indoor_next')?.style?.opacity).toBe(1);
-  expect(edges.find(edge => edge.id === 'start')?.style?.opacity).toBe(0.2);
+  expect(edges.find(edge => edge.id === 'garden_next')?.style?.strokeWidth).toBe(3);
+  expect(edges.find(edge => edge.id === 'indoor_next')?.style?.strokeWidth).toBe(3);
+  expect(edges.find(edge => edge.id === 'start')?.style?.strokeWidth).toBe(1.5);
 });
 
 
@@ -195,7 +204,8 @@ it('keeps the last inspected screen in view after its settings close', async () 
   rerender(<JourneyMap {...props} selected={null} />);
   // Closing the inspector may leave the viewport unchanged, or refit after its width grows.
   // Tidy up requests a fresh fit and must retain the last screen, not jump to entry.
-  await userEvent.setup().click(screen.getByRole('button', { name: 'Tidy up' }));
+  await userEvent.setup().click(screen.getByRole('button', { name: 'View options' }));
+  await userEvent.setup().click(screen.getByRole('menuitem', { name: 'Tidy up' }));
   await waitFor(() => expect(canvas.fitView).toHaveBeenLastCalledWith(expect.objectContaining({ nodes: expect.arrayContaining([{ id: 'contact' }]) })));
 });
 
@@ -211,7 +221,7 @@ it('lets merchants turn relationship highlighting off without moving cards or ed
   expect(canvas.nodes.every(node => !node.data.muted)).toBe(true);
   expect(canvas.nodes.map(node => node.position)).toEqual(positions);
   const edges = JSON.parse(screen.getByTestId('map-edges').textContent!) as Edge[];
-  expect(edges.every(edge => edge.style?.opacity === 1)).toBe(true);
+  expect(edges.every(edge => edge.style?.opacity === undefined && edge.style?.strokeWidth === 1.5)).toBe(true);
 });
 
 it.each(['ltr', 'rtl'])('pans to later screens in %s without zooming or changing layout', async direction => {
@@ -232,10 +242,10 @@ it('highlights a tested hidden continuation when it shares the visible default l
   render(<JourneyMap tree={tree} selected={null} samplePath={[2, 4, 0]} sampleEdges={['start', 'garden_hidden', 'indoor_hidden', 'balcony_next']} onSelect={() => {}} onSelectPath={() => {}} onConnect={() => {}} />);
   await userEvent.click(screen.getByRole('button', { name: 'Edit individual connections' }));
   const edges = JSON.parse(screen.getByTestId('map-edges').textContent!) as Edge[];
-  expect(edges.find(edge => edge.id === 'garden_next')?.style?.opacity).toBe(1);
-  expect(edges.find(edge => edge.id === 'indoor_next')?.style?.opacity).toBe(1);
-  expect(edges.find(edge => edge.id === 'balcony_next')?.style?.opacity).toBe(1);
-  expect(edges.find(edge => edge.id === 'submitted')?.style?.opacity).toBe(.15);
+  expect(edges.find(edge => edge.id === 'garden_next')?.style?.strokeWidth).toBe(3.5);
+  expect(edges.find(edge => edge.id === 'indoor_next')?.style?.strokeWidth).toBe(3.5);
+  expect(edges.find(edge => edge.id === 'balcony_next')?.style?.strokeWidth).toBe(3.5);
+  expect(edges.find(edge => edge.id === 'submitted')?.style?.strokeWidth).toBe(1.5);
 });
 
 
@@ -267,4 +277,15 @@ it('gives each path into a shared screen its own named target port and approach 
   expect(new Set(edges.map(edge=>edge.targetHandle)).size).toBe(edges.length);
   expect(new Set(edges.map(edge=>edge.data?.corridorOffset)).size).toBe(edges.length);
   expect(canvas.nodes.find(node=>node.id==='contact')?.data.incomingPorts).toEqual(expect.arrayContaining(edges.map(edge=>edge.id)));
+});
+
+it('opens the exact issue inside a collapsed follow-up group without expanding its connections', async () => {
+  const { journeyIssues } = await import('../../resources/admin/src/builder/structure/journeyIssues');
+  const changed = { ...tree, steps: tree.steps.map(step => step.id === 'garden' ? { ...step, name: '' } : step) };
+  const issues = journeyIssues(changed);
+  const onIssue = vi.fn();
+  render(<JourneyMap tree={changed} issues={issues} onIssue={onIssue} selected={null} onSelect={() => {}} onSelectPath={() => {}} onConnect={() => {}} />);
+  await userEvent.click(screen.getByRole('button', { name: /1 issue: Give screen/ }));
+  expect(onIssue).toHaveBeenCalledWith(expect.objectContaining({ repair: { screenId: 'garden', section: 'content', focus: 'screen-name' } }));
+  expect(canvas.nodes.some(node => node.id === 'followups:garden')).toBe(true);
 });
