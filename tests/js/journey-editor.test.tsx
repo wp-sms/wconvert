@@ -1092,3 +1092,49 @@ it('restores the pending answer review after editing a referenced branch', async
   await waitFor(() => expect(resumed).toHaveFocus());
   expect(draft()).toEqual(repaired);
 });
+
+
+it('opens an incomplete continuation from journey issues and returns to the current issue list', async () => {
+  const user = userEvent.setup();
+  const original = structuredClone(graphFixture) as unknown as TemplateTree;
+  const tree = { ...original, graph: { ...original.graph!, edges: original.graph!.edges.filter(edge => !(edge.from === 'interests' && edge.kind === 'default')) } };
+  function Editor() {
+    const [step, setStep] = useState(0);
+    return <JourneyEditor embedded tree={tree} step={step} onChange={() => {}} onSelect={setStep} />;
+  }
+  render(<Editor />);
+  await user.click(screen.getByRole('button', { name: /Review journey issues/ }));
+  const issues = screen.getByRole('dialog', { name: 'Journey issues' });
+  await user.click(within(issues).getByRole('button', { name: /Choose where visitors continue after/ }));
+  await waitFor(() => expect(screen.getByRole('button', { name: /^Next screen/ })).toHaveAttribute('aria-pressed', 'true'));
+  expect(screen.queryByRole('dialog', { name: 'Journey issues' })).not.toBeInTheDocument();
+  await user.click(screen.getByRole('button', { name: 'Back to issues' }));
+  expect(screen.getByRole('dialog', { name: 'Journey issues' })).toBeInTheDocument();
+});
+
+it('offers sample answers in Preview & test and clears its predicted path when the draft changes', async () => {
+  const user = userEvent.setup();
+  const tree = structuredClone(graphFixture) as unknown as TemplateTree;
+  const props = { embedded: true, editorCanvas: <div>Canvas</div>, tree, step: 2, onChange: vi.fn(), onSelect: vi.fn(), testRequest: 1 };
+  const view = render(<JourneyEditor {...props} />);
+  const dialog = await screen.findByRole('dialog', { name: 'Preview & test' });
+  await user.click(within(dialog).getByRole('button', { name: 'Sample answers' }));
+  expect(within(dialog).getByText(/hypothetical choices/)).toBeInTheDocument();
+  await user.click(within(dialog).getByRole('button', { name: 'Show sample path on the map' }));
+  expect(screen.getByText('Showing the route for your sample answers')).toBeInTheDocument();
+  expect(props.onChange).not.toHaveBeenCalled();
+  view.rerender(<JourneyEditor {...props} tree={{ ...tree, steps: tree.steps.map((step, at) => at === 2 ? { ...step, name: 'Changed interests' } : step) }} />);
+  expect(screen.queryByRole('button', { name: 'Clear test path' })).not.toBeInTheDocument();
+});
+
+it('moves keyboard focus inside the preview when reopening Sample answers', async () => {
+  const user = userEvent.setup();
+  render(<JourneyEditor embedded tree={source.tree as TemplateTree} step={0} onChange={() => {}} onSelect={() => {}} />);
+  await user.click(screen.getByRole('button', { name: 'Test journey' }));
+  await user.click(screen.getByRole('button', { name: 'Sample answers' }));
+  await user.click(within(screen.getByRole('dialog', { name: 'Test journey' })).getByRole('button', { name: 'Close' }));
+  await user.click(screen.getByRole('button', { name: 'Test journey' }));
+  const dialog = screen.getByRole('dialog', { name: 'Test journey' });
+  expect(within(dialog).getByRole('button', { name: 'Sample answers' })).toHaveAttribute('aria-pressed', 'true');
+  await waitFor(() => expect(dialog.contains(document.activeElement)).toBe(true));
+});
