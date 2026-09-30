@@ -866,8 +866,8 @@ describe('inspecting before applying a design', () => {
     expect(screen.queryByRole('searchbox')).toBeNull();
     expect(screen.getByRole('heading', { name: 'Centred card' })).toHaveFocus();
     expect(screen.getByText('Preview with sample content')).toBeInTheDocument();
-    await userEvent.click(screen.getByRole('button', { name: 'Mobile' }));
-    await userEvent.click(screen.getByRole('button', { name: 'Success screen' }));
+    await userEvent.click(screen.getByRole('radio', { name: 'Mobile' }));
+    await userEvent.click(screen.getByRole('radio', { name: 'Received' }));
     expect(onChoose).not.toHaveBeenCalled();
 
     await userEvent.click(screen.getByRole('button', { name: 'Back to designs' }));
@@ -933,4 +933,23 @@ describe('the note about a Goal every design refuses', () => {
     expect(shown()).toEqual(['Column phone']);
     expect(screen.getByRole('button', { name: 'Preview design' })).toBeEnabled();
   });
+});
+
+it('compares two editor designs and reviews one without applying or losing the library search', async () => {
+  const onChoose=vi.fn();
+  render(<TemplatePicker index={{templates:ENTRIES,labels:LABELS,facets:FACETS}} trees={TREES} displayType="popup" chosen={undefined} fit={ANY} busy={false} onChoose={onChoose} onNear={vi.fn()} />);
+  await userEvent.click(screen.getByRole('button',{name:'Compare design: Centred card'}));
+  await userEvent.click(screen.getByRole('button',{name:'Compare design: Stacked signup'}));
+  await userEvent.click(screen.getByRole('button',{name:'Compare designs (2/2)'}));
+  expect(screen.getByRole('heading',{name:'Compare designs'})).toHaveFocus();
+  expect(screen.getAllByRole('group',{name:'Preview size'})).toHaveLength(2);
+  await userEvent.click(screen.getByRole('button',{name:'Review design: Centred card'}));
+  expect(screen.getByText('Preview with sample content')).toBeVisible();
+  expect(onChoose).not.toHaveBeenCalled();
+  await userEvent.click(screen.getByRole('button',{name:'Back to designs'}));
+  expect(screen.getByRole('heading',{name:'Compare designs'})).toBeVisible();
+  await userEvent.click(screen.getByRole('button',{name:'Back to designs'}));
+  expect(screen.getByRole('searchbox',{name:'Search designs'})).toBeVisible();
+  await waitFor(()=>expect(screen.getByRole('button',{name:'Compare designs (2/2)'})).toHaveFocus());
+  expect(onChoose).not.toHaveBeenCalled();
 });

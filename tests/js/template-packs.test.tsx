@@ -28,6 +28,7 @@ it('only contacts the service after an explicit check, then previews, installs a
   await user.click(screen.getByRole('button', { name: 'Install pack' }));
   await screen.findByText('Installed'); expect(api.installPack).toHaveBeenCalledWith('reading', 'reviewed-digest');
   expect(onInspect).not.toHaveBeenCalled();
+  await user.click(screen.getByRole('button', { name: 'Preview Reading slip' }));
   await user.click(screen.getByRole('button', { name: 'Continue with this design' }));
   await waitFor(() => expect(onInspect).toHaveBeenCalledWith('pack-hash-reading-slip'));
 });
@@ -53,6 +54,7 @@ it('does not offer a popup design for an inline draft', async () => {
   api.catalogStatus.mockResolvedValue(installed); api.previewPack.mockResolvedValue({ ...preview, templates: [{ ...preview.templates[0], display_type: 'popup' }] });
   const user = userEvent.setup(); render(<TemplatePacks displayType="inline" onInstalled={vi.fn()} onInspect={vi.fn()} />);
   await user.click(await screen.findByRole('button', { name: 'Explore designs in Reading pack' }));
+  await user.click(await screen.findByRole('button', { name: 'Preview Reading slip' }));
   await screen.findByText('Open a draft in Popup format to use this design. Your current draft is Inline form.');
   expect(screen.queryByRole('button', { name: 'Continue with this design' })).not.toBeInTheDocument();
 });
@@ -96,7 +98,7 @@ it('separates local packs from available packs and offers updates independently'
   expect(api.previewPack).toHaveBeenCalledWith('reading', false);
 });
 
-it('starts with a matching design, explains other formats and resets the screen when switching', async () => {
+it('starts with matching design cards, explains other formats and resets the screen when switching', async () => {
   api.catalogStatus.mockResolvedValue(installed);
   api.previewPack.mockResolvedValue({ ...preview, templates: [
     { ...preview.templates[0], id: 'popup', name: 'Popup design', display_type: 'popup' },
@@ -105,11 +107,13 @@ it('starts with a matching design, explains other formats and resets the screen 
   const user = userEvent.setup();
   render(<TemplatePacks displayType="inline" onInstalled={vi.fn()} onInspect={vi.fn()} />);
   await user.click(await screen.findByRole('button', { name: 'Explore designs in Reading pack' }));
-  expect(await screen.findByRole('button', { name: /Inline design/ })).toHaveAttribute('aria-pressed', 'true');
-  await user.click(screen.getByRole('button', { name: 'Success' }));
-  expect(screen.getByTestId('preview')).toHaveAttribute('data-step', '1');
-  await user.click(screen.getByRole('button', { name: /Popup design/ }));
-  expect(screen.getByTestId('preview')).toHaveAttribute('data-step', '0');
+  await user.click(await screen.findByRole('button', { name: 'Preview Inline design' }));
+  await user.click(screen.getByRole('radio', { name: 'Screen 2' }));
+  expect(document.querySelector('.wconvert-pack-detail__inspection [data-testid=preview]')).toHaveAttribute('data-step', '1');
+  await user.click(screen.getByRole('button', { name: 'Back to designs' }));
+  await user.click(screen.getByRole('radio', { name: 'All formats' }));
+  await user.click(screen.getByRole('button', { name: 'Preview Popup design' }));
+  expect(document.querySelector('.wconvert-pack-detail__inspection [data-testid=preview]')).toHaveAttribute('data-step', '0');
   expect(screen.queryByRole('group', { name: 'Preview screen' })).not.toBeInTheDocument();
   expect(screen.queryByRole('button', { name: 'Continue with this design' })).not.toBeInTheDocument();
   expect(screen.getByText(/Open a draft in Popup format/)).toBeInTheDocument();
@@ -122,9 +126,9 @@ it('keeps the selected design after installation and clearly continues to conten
   const user = userEvent.setup();
   render(<TemplatePacks displayType="inline" onInstalled={vi.fn()} onInspect={onInspect} />);
   await user.click(await screen.findByRole('button', { name: 'Preview Reading pack' }));
-  await user.click(await screen.findByRole('button', { name: /Second design/ }));
+  await user.click(await screen.findByRole('button', { name: 'Preview Second design' }));
   await user.click(screen.getByRole('button', { name: 'Install pack' }));
-  expect(await screen.findByRole('button', { name: /Second design/ })).toHaveAttribute('aria-pressed', 'true');
+  expect(await screen.findByRole('heading', { name: 'Second design' })).toBeVisible();
   await user.click(await screen.findByRole('button', { name: 'Continue with this design' }));
   await waitFor(() => expect(onInspect).toHaveBeenCalledWith('second'));
 });
@@ -149,14 +153,15 @@ it('returns focus and the original scroll position even if the list moves while 
 });
 
 
-it('lets the compact design selector choose another format without applying it', async () => {
+it('lets the shared format filter reveal another format without applying it', async () => {
   api.catalogStatus.mockResolvedValue(installed);
   api.previewPack.mockResolvedValue({ ...preview, templates: [preview.templates[0], { ...preview.templates[0], id: 'popup', name: 'Popup design', display_type: 'popup' }] });
   const onInspect = vi.fn();
   const user = userEvent.setup();
   render(<TemplatePacks displayType="inline" onInstalled={vi.fn()} onInspect={onInspect} />);
   await user.click(await screen.findByRole('button', { name: 'Explore designs in Reading pack' }));
-  await user.selectOptions(await screen.findByRole('combobox', { name: 'Design in this pack' }), '1');
+  await user.click(await screen.findByRole('radio', { name: 'Popup' }));
+  await user.click(screen.getByRole('button', { name: 'Preview Popup design' }));
   expect(screen.getByRole('heading', { name: 'Popup design' })).toBeInTheDocument();
   expect(screen.queryByRole('button', { name: 'Continue with this design' })).not.toBeInTheDocument();
   expect(onInspect).not.toHaveBeenCalled();
@@ -182,5 +187,23 @@ it('explains a goal mismatch before installation while allowing the designs to b
   await userEvent.click(await screen.findByRole('button', { name: 'Preview Reading pack' }));
   await screen.findByText('This pack has no campaign setups for your selected goal. Install it to use its designs in the editor.');
   expect(screen.getByRole('button', { name: 'Install pack' })).toBeEnabled();
+  expect(api.installPack).not.toHaveBeenCalled();
+});
+
+it('keeps pack search and availability on return from a design preview',async()=>{
+  api.catalogStatus.mockResolvedValue({...installed,packs:[...installed.packs,{...listed.packs[0],id:'other',name:'Other pack'}]});
+  const user=userEvent.setup();
+  render(<TemplatePacks displayType="inline" onInstalled={vi.fn()} onInspect={vi.fn()} />);
+  await user.type(await screen.findByRole('searchbox',{name:'Search template packs'}),'reading');
+  await user.click(screen.getByRole('radio',{name:'Installed'}));
+  const trigger=screen.getByRole('button',{name:'Explore designs in Reading pack'});
+  await user.click(trigger);
+  await user.click(await screen.findByRole('button',{name:'Preview Reading slip'}));
+  await user.click(screen.getByRole('button',{name:'Back to designs'}));
+  await waitFor(()=>expect(screen.getByRole('button',{name:'Preview Reading slip'})).toHaveFocus());
+  await user.click(screen.getByRole('button',{name:'All packs'}));
+  expect(screen.getByRole('searchbox',{name:'Search template packs'})).toHaveValue('reading');
+  expect(screen.getByRole('radio',{name:'Installed'})).toBeChecked();
+  await waitFor(()=>expect(screen.getByRole('button',{name:'Explore designs in Reading pack'})).toHaveFocus());
   expect(api.installPack).not.toHaveBeenCalled();
 });

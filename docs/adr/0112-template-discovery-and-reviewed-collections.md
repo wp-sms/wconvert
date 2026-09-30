@@ -27,7 +27,14 @@ reload and inspect again. Draft creation and publication remain the existing
 Optin paths. This introduces neither a second builder nor campaign scheduling.
 
 Changing layout retains the existing Goal, content-transfer review, source
-baseline, hard refusal rules and undoable draft application. Canonical stars and
+baseline, hard refusal rules and undoable draft application. Editor comparison
+compares sample layouts in the same dialog, then opens the existing exact
+content-transfer review; comparison itself applies nothing. Creation, pack
+inspection and editor replacement share search anatomy, native device/screen
+choices and a fitted shipping-renderer preview frame. Screen labels use the
+actual tree names, and result variants remain inspectable. Pack contents use
+the existing lazy actual design cards, format/search filters and 24-card pages,
+with explicit inspection before continuing to editor review. Canonical stars and
 pagination are shared; collections, occasions and setup choices do not replace
 campaign content through this flow. Show all designs remains available.
 
@@ -98,3 +105,8 @@ The [plan audit](../reviews/picker-plan-audit-2026-09-30.md) distinguishes this
 local delivery from the incomplete wider API, retention, simulator, merchant-study
 and expansion programme. The prototype is a design reference, not proof that
 every planned remote or release scenario has shipped.
+
+The [shared-surface review](../reviews/picker-shared-surfaces-2026-09-30.md)
+records the subsequent pack/editor alignment and guideline-based preference
+regions, verified on `wconvert.local`. This supersedes the earlier audit’s
+creation-only comparison limitation; it does not complete the wider API programme.

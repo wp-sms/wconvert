@@ -33,6 +33,8 @@ export interface GalleryProps {
   readonly saved?: ReadonlySet<string>;
   readonly saving?: boolean;
   readonly onSave?: (entry: TemplateIndexEntry) => void;
+  readonly compared?: readonly string[];
+  readonly onCompare?: (id:string)=>void;
   readonly onRetry?: (id: string) => void;
 }
 
@@ -191,7 +193,7 @@ export function Gallery({
   onNear,
   onPreview,
   failed,
-  onRetry, saved, saving, onSave,
+  onRetry, saved, saving, onSave, compared, onCompare,
 }: GalleryProps) {
   return (
     <ul className="wconvert-gallery" data-preview-first={onPreview !== undefined || undefined}>
@@ -241,7 +243,8 @@ export function Gallery({
               screens. `StartingPoints` states the rule and already draws it
               this way.
             */
-            marks={<div className="flex items-center gap-2">
+            marks={<div className="flex flex-wrap items-center gap-2">
+              {onCompare && <Button variant="outline" aria-pressed={compared?.includes(entry.id)??false} disabled={busy} aria-label={sprintf(__('Compare design: %s','wconvert'),entry.name)} onClick={()=>onCompare(entry.id)}>{__('Compare','wconvert')}</Button>}
               {onSave && <Button variant="ghost" size="icon" className="wconvert-picker__save" disabled={saving} aria-pressed={saved?.has(entry.design_key ?? `registered:${entry.id}`) ?? false} aria-label={sprintf(__('Save design: %s', 'wconvert'), entry.name)} onClick={() => onSave(entry)}><Star size={17} fill={saved?.has(entry.design_key ?? `registered:${entry.id}`) ? 'currentColor' : 'none'} /></Button>}
               {locked ? (
                 <Badge variant="secondary">

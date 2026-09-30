@@ -172,19 +172,19 @@ describe('inspecting a design before replacing the draft', () => {
     expect(screen.getByText('Email address')).toBeVisible();
     expect(within(drawn()).getByRole('textbox', { name: 'Email address' })).toBeInTheDocument();
 
-    await user.click(screen.getByRole('button', { name: 'Success screen' }));
+    await user.click(screen.getByRole('radio', { name: 'Received' }));
     expect(within(drawn()).queryByRole('textbox')).not.toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Success screen' })).toHaveAttribute('aria-pressed', 'true');
-    await user.click(screen.getByRole('button', { name: 'Mobile' }));
-    expect(container.querySelector('.wconvert-design-detail__preview')).toHaveStyle({ inlineSize: '22rem' });
-    expect(screen.getByRole('button', { name: 'Success screen' })).toHaveAttribute('aria-pressed', 'true');
+    expect(screen.getByRole('radio', { name: 'Received' })).toBeChecked();
+    await user.click(screen.getByRole('radio', { name: 'Mobile' }));
+    expect(container.querySelector('.wconvert-preview-frame__paper')).toHaveStyle({ inlineSize: '320px' });
+    expect(screen.getByRole('radio', { name: 'Received' })).toBeChecked();
     expect(onChoose).not.toHaveBeenCalled();
   });
 
   it('keeps sample controls inside an inert subtree and describes what Apply changes', async () => {
     const user = userEvent.setup();
     const { onChoose, container } = detail();
-    const preview = container.querySelector('.wconvert-design-detail__preview');
+    const preview = container.querySelector('.wconvert-preview-frame__paper');
     expect(preview).toHaveAttribute('inert');
     expect(preview).toHaveAttribute('aria-hidden', 'true');
     const apply = screen.getByRole('button', { name: 'Use this design' });
@@ -214,8 +214,8 @@ describe('inspecting a design before replacing the draft', () => {
     expect(apply).toHaveAccessibleDescription(/other arm of this test converts on a click/);
     await userEvent.click(apply);
     expect(onChoose).not.toHaveBeenCalled();
-    await userEvent.click(screen.getByRole('button', { name: 'Success screen' }));
-    expect(screen.getByRole('button', { name: 'Success screen' })).toHaveAttribute('aria-pressed', 'true');
+    await userEvent.click(screen.getByRole('radio', { name: 'Received' }));
+    expect(screen.getByRole('radio', { name: 'Received' })).toBeChecked();
   });
 
   it('announces the changed counting behavior beside Apply without refusing an allowed switch', async () => {
@@ -271,13 +271,13 @@ describe('fitting the preview without changing its layout width', () => {
     // jsdom does not perform layout. Supply native dimensions, independent of
     // the visual transform, as the browser's layout measurements would be.
     vi.spyOn(HTMLElement.prototype, 'offsetWidth', 'get').mockImplementation(function (this: HTMLElement) {
-      return this.classList.contains('wconvert-design-detail__preview') ? Number.parseFloat(this.style.inlineSize) * 16 : 0;
+      return this.classList.contains('wconvert-preview-frame__paper') ? Number.parseFloat(this.style.inlineSize) * (this.style.inlineSize.endsWith('rem') ? 16 : 1) : 0;
     });
     vi.spyOn(HTMLElement.prototype, 'offsetHeight', 'get').mockImplementation(function (this: HTMLElement) {
-      return this.classList.contains('wconvert-design-detail__preview') ? pageHeight : 0;
+      return this.classList.contains('wconvert-preview-frame__paper') ? pageHeight : 0;
     });
     vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockImplementation(function (this: HTMLElement) {
-      return this.classList.contains('wconvert-design-detail__stage') ? stageWidth : 0;
+      return this.classList.contains('wconvert-preview-frame') ? stageWidth : 0;
     });
     vi.stubGlobal('ResizeObserver', class {
       constructor(callback: () => void) { resized = callback; }
@@ -293,8 +293,8 @@ describe('fitting the preview without changing its layout width', () => {
 
   it('fits the native desktop width into the padded stage and reserves the full scaled height', () => {
     const { container, unmount } = detail();
-    const stage = container.querySelector('.wconvert-design-detail__stage') as HTMLElement;
-    const preview = container.querySelector('.wconvert-design-detail__preview') as HTMLElement;
+    const stage = container.querySelector('.wconvert-preview-frame') as HTMLElement;
+    const preview = container.querySelector('.wconvert-preview-frame__paper') as HTMLElement;
     stage.style.paddingInlineStart = '32px';
     stage.style.paddingInlineEnd = '32px';
     stage.style.blockSize = '100px';
@@ -303,8 +303,7 @@ describe('fitting the preview without changing its layout width', () => {
     expect(preview.style.maxInlineSize).toBe('');
     // The 450px tall picture must scroll; fitting its height to the 100px
     // stage would make every detail too small to inspect.
-    expect(container.querySelector('.wconvert-design-detail__measure')).toHaveStyle({ inlineSize: '208px', blockSize: '450px' });
-    expect(screen.getByLabelText('Preview scale')).toHaveTextContent('Fit · 50%');
+    expect(container.querySelector('.wconvert-preview-frame__measure')).toHaveStyle({ inlineSize: '208px', blockSize: '450px' });
     unmount();
     expect(disconnect).toHaveBeenCalled();
   });
@@ -314,12 +313,12 @@ describe('fitting the preview without changing its layout width', () => {
     pageHeight = 480;
     stageWidth = 800;
     act(() => resized());
-    expect(container.querySelector('.wconvert-design-detail__preview')).toHaveStyle({ inlineSize: '26rem', transform: 'scale(1)' });
-    expect(container.querySelector('.wconvert-design-detail__measure')).toHaveStyle({ inlineSize: '416px', blockSize: '480px' });
+    expect(container.querySelector('.wconvert-preview-frame__paper')).toHaveStyle({ inlineSize: '26rem', transform: 'scale(1)' });
+    expect(container.querySelector('.wconvert-preview-frame__measure')).toHaveStyle({ inlineSize: '416px', blockSize: '480px' });
     expect(screen.queryByLabelText('Preview scale')).not.toBeInTheDocument();
-    await userEvent.click(screen.getByRole('button', { name: 'Mobile' }));
-    expect(container.querySelector('.wconvert-design-detail__preview')).toHaveStyle({ inlineSize: '22rem', transform: 'scale(1)' });
-    expect(container.querySelector('.wconvert-design-detail__measure')).toHaveStyle({ inlineSize: '352px', blockSize: '480px' });
+    await userEvent.click(screen.getByRole('radio', { name: 'Mobile' }));
+    expect(container.querySelector('.wconvert-preview-frame__paper')).toHaveStyle({ inlineSize: '320px', transform: 'scale(1)' });
+    expect(container.querySelector('.wconvert-preview-frame__measure')).toHaveStyle({ inlineSize: '320px', blockSize: '480px' });
   });
 
   it('gives full-width designs a stated desktop reference area without changing their tokens', async () => {
@@ -327,10 +326,10 @@ describe('fitting the preview without changing its layout width', () => {
     const before = JSON.stringify(template);
     stageWidth = 512;
     const { container } = detail(template);
-    expect(container.querySelector('.wconvert-design-detail__preview')).toHaveStyle({ inlineSize: '64rem', transform: 'scale(0.5)' });
+    expect(container.querySelector('.wconvert-preview-frame__paper')).toHaveStyle({ inlineSize: '64rem', transform: 'scale(0.5)' });
     expect(screen.getByText('Full-width layout in a sample desktop area')).toBeVisible();
-    await userEvent.click(screen.getByRole('button', { name: 'Mobile' }));
-    expect(container.querySelector('.wconvert-design-detail__preview')).toHaveStyle({ inlineSize: '22rem', transform: 'scale(1)' });
+    await userEvent.click(screen.getByRole('radio', { name: 'Mobile' }));
+    expect(container.querySelector('.wconvert-preview-frame__paper')).toHaveStyle({ inlineSize: '320px', transform: 'scale(1)' });
     expect(screen.queryByText('Full-width layout in a sample desktop area')).not.toBeInTheDocument();
     expect(JSON.stringify(template)).toBe(before);
   });

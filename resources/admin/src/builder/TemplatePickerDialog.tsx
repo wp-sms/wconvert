@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Button } from '../components/ui/button';
+import { OptionStrip } from '../shell/OptionStrip';
 import { TemplatePacks } from '../templates/TemplatePacks';
 import { __ } from '@wordpress/i18n';
 import { displayTypeOptions } from '../displayTypes';
@@ -32,7 +32,7 @@ export function TemplatePickerDialog({ open, onOpenChange, onClosed, onCatalogIn
         }}>
         <DialogHeader className="wconvert-picker__header flex-row flex-wrap items-center justify-between gap-x-6 gap-y-3 text-start">
           <div className="wconvert-picker__identity">
-            <DialogTitle>{__('Browse designs', 'wconvert')}</DialogTitle>
+            <DialogTitle>{packs ? __('Template packs','wconvert') : __('Browse designs', 'wconvert')}</DialogTitle>
             <label className="flex items-center gap-2 text-note">
               {__('Format', 'wconvert')}
               <select className="wconvert-picker__select" value={displayType}
@@ -41,11 +41,10 @@ export function TemplatePickerDialog({ open, onOpenChange, onClosed, onCatalogIn
               </select>
             </label>
           </div>
-          <DialogDescription className="sr-only">{__('Preview every screen before applying a design.', 'wconvert')}</DialogDescription>
-          {onCatalogInstalled && <div className="wconvert-segmented inline-flex" role="group" aria-label={__('Library source', 'wconvert')}>
-            <Button variant="ghost" aria-pressed={!packs} onClick={() => setPacks(false)}>{__('Your designs', 'wconvert')}</Button>
-            <Button variant="ghost" aria-pressed={packs} onClick={() => setPacks(true)}>{__('Template packs', 'wconvert')}</Button>
-          </div>}
+          <DialogDescription>{packs ? __('Add approved designs to your library, then preview before applying.','wconvert') : __('Choose a layout and review your content before replacing this draft’s design.','wconvert')}</DialogDescription>
+          {onCatalogInstalled && <OptionStrip label={__('Library source','wconvert')} value={packs ? 'packs' : 'designs'} disabled={picker.busy}
+            options={[{value:'designs',label:__('Your designs','wconvert')},{value:'packs',label:__('Template packs','wconvert')}]}
+            onChange={value=>setPacks(value==='packs')} />}
         </DialogHeader>
         <div className="wconvert-picker__scroll">
           {packs && onCatalogInstalled && <TemplatePacks displayType={displayType} onInstalled={onCatalogInstalled}

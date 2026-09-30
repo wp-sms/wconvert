@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
-import { ArrowLeft, Check, LayoutTemplate, Search, Sparkles, Star, X } from 'lucide-react';
-import { Input } from '../components/ui/input';
+import { ArrowLeft, Check, LayoutTemplate, Sparkles, Star, X } from 'lucide-react';
+import { PickerSearch } from '../discovery/PickerSearch';
 import { Badge } from '../components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '../components/ui/dialog';
 import { TemplatePacks } from '../templates/TemplatePacks';
@@ -350,12 +350,7 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins }: GoalScree
     {picker.error && <div className="wconvert-picker__notice" role="alert">{picker.error} <Button variant="link" onClick={() => { void picker.reload(); }}>{__('Reload preferences', 'wconvert')}</Button></div>}
     <div className="wconvert-picker__controls">
       <div className="wconvert-picker__search-row">
-        <label className="wconvert-picker__search">
-          <Search size={17} aria-hidden="true" />
-          <span className="sr-only">{__('Search campaign setups', 'wconvert')}</span>
-          <Input type="search" className="ps-9" value={query} disabled={starting !== null}
-            placeholder={__('Search campaign setups', 'wconvert')} onChange={(event) => { setQuery(event.target.value); setPage(0); }} />
-        </label>
+        <PickerSearch label={__('Search campaign setups', 'wconvert')} value={query} disabled={starting !== null} onChange={value => {setQuery(value);setPage(0);}} />
         <Button variant="outline" disabled={starting !== null || !picker.data} aria-pressed={savedOnly} onClick={() => { setSavedOnly(!savedOnly); setPage(0); }}>{sprintf(__('Saved %s', 'wconvert'), String(picker.data?.preferences.saved.length ?? 0))}</Button>
         <Button variant="outline" disabled={starting !== null} onClick={() => { libraryPosition.current = { scroll: window.scrollY, trigger: document.activeElement as HTMLElement | null, page, allCollections }; setSettings(true); void picker.reload(); }}>{__('My occasions & preferences', 'wconvert')}</Button>
       </div>
@@ -425,7 +420,7 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins }: GoalScree
         (choseCollection.current ? collectionPicker.current : packTrigger.current)?.focus();
       }}>
         <DialogHeader className="wconvert-picker__header"><DialogTitle>{__('Template packs', 'wconvert')}</DialogTitle>
-          <DialogDescription className="sr-only">{__('Install collections of designs and campaign setups.', 'wconvert')}</DialogDescription>
+          <DialogDescription>{__('Preview a pack, add it to your library, then choose a setup for your goal.', 'wconvert')}</DialogDescription>
         </DialogHeader>
         <TemplatePacks displayType="" goal={goal.id}
           onInstalled={async () => { setPlaybooksRetry((value) => value + 1); }}
@@ -447,7 +442,7 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins }: GoalScree
         {!inspected && !comparing && editorialCollection && <>
           <DialogHeader><DialogTitle ref={modalTitle} tabIndex={-1}>{editorialCollection.name}</DialogTitle><DialogDescription>{__('Choose a useful campaign stage or an alternative setup. Nothing is scheduled automatically.', 'wconvert')}</DialogDescription></DialogHeader>
           {collectionDetails}
-          <div className="wconvert-picker__controls"><label className="wconvert-picker__search"><Search size={17} aria-hidden="true" /><span className="sr-only">{__('Search collection setups', 'wconvert')}</span><Input type="search" className="ps-9" value={query} onChange={event => { setQuery(event.target.value); setPage(0); }} placeholder={__('Search this collection', 'wconvert')} /></label>
+          <div className="wconvert-picker__controls"><PickerSearch label={__('Search collection setups','wconvert')} value={query} placeholder={__('Search this collection','wconvert')} onChange={value=>{setQuery(value);setPage(0);}} />
             <OptionStrip label={__('Collection format', 'wconvert')} value={formatId}
               options={[{value:'all',label:__('All formats','wconvert')}, ...formatOptions].filter(({value}) => value === 'all' || value === formatId || matchingCollection.some(entry => editorialCollection.items.some(item => item.setup_id === entry.id) && startingPointDisplayType(entry) === value))}
               onChange={value => { setFormatId(value); setPage(0); }} />

@@ -1,13 +1,13 @@
 import { contentLockDesignCompatible } from '../inlinePlacement';
 import { useEffect, useId, useRef, useState } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
-import { ArrowLeft, Monitor, Smartphone } from 'lucide-react';
+import { ArrowLeft } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 import { Skeleton } from '../components/ui/skeleton';
 import { displayTypeLabel } from '../displayTypes';
-import { Preview } from './Preview';
-import { A_DESIGNS_OWN_WIDTH } from '@renderer/css';
+import { PreviewControls } from '../discovery/PreviewControls';
+import { PreviewFrame } from '../discovery/PreviewFrame';
 import { actChangeOf, refusalFor, type Fit } from './Gallery';
 import type { PreparedTemplate, TemplateIndexEntry, TemplateLabelsWithFacets } from '../templates/api';
 import type { Template } from '@renderer/types';
@@ -33,9 +33,6 @@ export interface TemplateDesignDetailProps {
   readonly loadError?: boolean;
   readonly onRetry?: () => void;
 }
-
-/** Percentage widths need a stable desktop containing block before visual scaling. */
-const DESKTOP_CONTENT_WIDTH = '64rem';
 
 /** Inspect the exact normalized candidate before replacing the working draft. */
 export function TemplateDesignDetail({
@@ -72,47 +69,18 @@ export function TemplateDesignDetail({
     && prepared?.prepare === onPrepare ? prepared : null;
   const template = prepares ? candidate?.value : sample;
   const preparationError = candidate?.error;
-  const [device, setDevice] = useState<'desktop' | 'mobile'>('desktop');
+  const [device, setDevice] = useState<'desktop' | 'mobile'>(() => window.innerWidth < 640 ? 'mobile' : 'desktop');
   const [step, setStep] = useState(0);
   const heading = useRef<HTMLHeadingElement>(null);
-  const stage = useRef<HTMLDivElement>(null);
-  const page = useRef<HTMLDivElement>(null);
-  const [size, setSize] = useState<{ width: number; height: number; availableWidth: number } | null>(null);
+  const [resultId, setResultId] = useState('');
   const id = useId();
   useEffect(() => { heading.current?.focus(); }, [entry.id]);
   const refused = refusalFor(entry, fit);
   const changed = refused === null && !current ? actChangeOf(entry, fit) : null;
   const shown = Math.min(step, Math.max(0, (template?.tree.steps.length ?? 1) - 1));
   const relativeWidth = template?.tokens.width?.includes('%') === true;
-  const measure = device === 'mobile' ? '22rem' : relativeWidth
-    ? DESKTOP_CONTENT_WIDTH : template?.tokens.width ?? A_DESIGNS_OWN_WIDTH;
-  useEffect(() => {
-    const paper = page.current;
-    const area = stage.current;
-    if (paper === null || area === null) return;
-    const read = () => {
-      // offset dimensions stay at the requested size even while transform fits
-      // it visually. Reading the transformed rectangle would create a loop.
-      if (paper.offsetWidth <= 0 || area.clientWidth <= 0) return;
-      const style = getComputedStyle(area);
-      const padding = (Number.parseFloat(style.paddingInlineStart) || 0)
-        + (Number.parseFloat(style.paddingInlineEnd) || 0);
-      const next = {
-        width: paper.offsetWidth,
-        height: paper.offsetHeight,
-        availableWidth: Math.max(1, area.clientWidth - padding),
-      };
-      setSize((current) => current !== null && current.width === next.width
-        && current.height === next.height && current.availableWidth === next.availableWidth ? current : next);
-    };
-    read();
-    if (typeof ResizeObserver === 'undefined') return;
-    const observer = new ResizeObserver(read);
-    observer.observe(area);
-    observer.observe(paper);
-    return () => observer.disconnect();
-  }, [template, measure, shown]);
-  const scale = size === null ? 1 : Math.min(1, size.availableWidth / size.width);
+  const resultScreen = template?.tree.steps[shown];
+  const result = resultScreen?.results?.find(value => value.id === resultId) ?? resultScreen?.results?.[0];
   const unavailable = entry.availability !== 'ready';
   const isCurrent = current && !(prepares && mode === 'sample');
   const incompatibleLock = contentLock && template !== undefined && !contentLockDesignCompatible(entry.display_type, template);
@@ -159,7 +127,7 @@ export function TemplateDesignDetail({
   return (
     <section className="wconvert-design-detail" aria-labelledby={`${id}-title`}>
       <div className="wconvert-design-detail__header">
-        <Button variant="ghost" size="sm" disabled={busy} onClick={onBack}>
+        <Button variant="ghost" disabled={busy} onClick={onBack}>
           <ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />
           {__('Back to designs', 'wconvert')}
         </Button>
@@ -188,42 +156,19 @@ export function TemplateDesignDetail({
       )}
 
       <div className="wconvert-design-detail__controls">
-        <div role="group" aria-label={__('Preview size', 'wconvert')} className="wconvert-segmented">
-          <Button variant="ghost" size="sm" aria-pressed={device === 'desktop'} onClick={() => setDevice('desktop')}>
-            <Monitor aria-hidden="true" />{__('Desktop', 'wconvert')}
-          </Button>
-          <Button variant="ghost" size="sm" aria-pressed={device === 'mobile'} onClick={() => setDevice('mobile')}>
-            <Smartphone aria-hidden="true" />{__('Mobile', 'wconvert')}
-          </Button>
-        </div>
-        {template !== undefined && template.tree.steps.length > 1 && (
-          <div role="group" aria-label={__('Preview screen', 'wconvert')} className="wconvert-segmented">
-            {template.tree.steps.map((_, index) => (
-              <Button key={index} variant="ghost" size="sm" aria-pressed={shown === index} onClick={() => setStep(index)}>
-                {index === 0 ? entry.facets.act === 'submit' ? __('Form', 'wconvert') : __('Main screen', 'wconvert') : index === 1 ? __('Success screen', 'wconvert') : sprintf(__('Screen %d', 'wconvert'), index + 1)}
-              </Button>
-            ))}
-          </div>
-        )}
+        <PreviewControls mobile={device === 'mobile'} onMobile={mobile => setDevice(mobile ? 'mobile' : 'desktop')}
+          template={template} step={shown} onStep={value => { setStep(value); setResultId(''); }} />
+        {resultScreen?.results && resultScreen.results.length > 0 && <label className="text-note">{__('Result to inspect','wconvert')}<select className="wconvert-picker__select" value={result?.id} onChange={event => setResultId(event.target.value)}>{resultScreen.results.map(value => <option key={value.id} value={value.id}>{value.heading || value.id}</option>)}</select></label>}
         <span className="text-note text-muted-foreground">
           <span>{prepares && mode === 'keep'
             ? __('Preview with your content', 'wconvert') : __('Preview with sample content', 'wconvert')}</span>
           {relativeWidth && device === 'desktop' && <span className="block">{__('Full-width layout in a sample desktop area', 'wconvert')}</span>}
-          {scale < 1 && <span className="block" aria-label={__('Preview scale', 'wconvert')}>{sprintf(__('Fit · %d%%', 'wconvert'), Math.round(scale * 100))}</span>}
         </span>
       </div>
 
       <div className="wconvert-design-detail__layout">
-        <div ref={stage} className="wconvert-design-detail__stage" data-device={device}>
-          {template !== undefined ? (
-            <div className="wconvert-design-detail__measure"
-              style={{ inlineSize: size === null ? measure : size.width * scale, blockSize: size === null ? undefined : size.height * scale }}>
-              <div ref={page} className="wconvert-design-detail__preview" data-step={shown} inert aria-hidden="true"
-                style={{ inlineSize: measure, transform: `scale(${scale})` }}>
-                <Preview template={template} step={shown} displayType={entry.display_type} />
-              </div>
-            </div>
-          ) : loadError || preparationError !== undefined ? (
+        <PreviewFrame template={template} displayType={entry.display_type} mobile={device === 'mobile'} step={shown} result={result}>
+          {loadError || preparationError !== undefined ? (
             <div className="wconvert-design-detail__error">
               <p id={`${id}-load`} role="alert">{preparationError ?? __('This design preview could not be loaded.', 'wconvert')}</p>
               {(preparationError !== undefined || onRetry !== undefined) && (
@@ -238,7 +183,7 @@ export function TemplateDesignDetail({
               <Skeleton aria-hidden="true" className="h-64 w-full" />
             </div>
           )}
-        </div>
+        </PreviewFrame>
 
         <div className="wconvert-design-detail__facts">
           <dl>
