@@ -7,9 +7,17 @@ real email/SMS delivery is part of this local implementation.
 
 Goal-first creation browses a metadata-only Playbook index. Cards are grouped by
 canonical design identity **after** applying Goal, business, format, search,
-source pack and Saved filters. A selector chooses among matching use cases;
+source pack, availability and Saved filters. Recommended order and Name A–Z are available. Card and inspector selectors choose among matching use cases;
 copy changes are not counted as different designs. Lists paginate at 24 cards.
 Visible cards lazily request at most 24 actual Prefill compositions per request.
+
+Collections, inspection and comparison share one dialog. Back restores the
+collection stage, scroll and the chosen design's detail control; closing returns
+to the library control. Native radio strips provide one-of-N screen, device, format and stage choices
+with browser-owned arrow navigation. Phone inspections start at phone width.
+Two selected designs can be inspected side by side before
+continuing to one exact setup. Comparison creates no campaign. The optional
+helper refines business and format, keeping the explicitly selected Goal.
 
 Setup inspection shows the shipping renderer at desktop/phone widths, every
 screen and result, practical requirements and the existing local journey test.
@@ -31,7 +39,10 @@ Counts reflect available matching setups and distinct canonical designs.
 Featuring applies filters, site-date windows, explicit market choices and user
 preferences before ranking. Empty matches are omitted; an empty stage falls back
 to a populated stage. Manual arrows/scrolling expose up to five featured entries,
-with all relevant collections available separately. There is no auto-rotation.
+with all relevant collections available separately. There is no auto-rotation. Arrows appear only for overflow and disable at the
+ends. The user can hide the entire featured shelf while retaining Browse
+collections, and restore it in preferences. Preferred business groups affect
+collection order rather than removing other matching collections.
 
 The server supplies the site day, timezone and clock reference. The browser
 updates the site day as time passes, including while offline, without another
@@ -39,7 +50,7 @@ catalog request. Shared event ends are exclusive; site occasion ends are
 inclusive. Collection expiry removes recommendations, not drafts or saved
 campaigns. Open inspection does not jump away at midnight.
 
-Saved design identities, hidden collections, event opt-outs and market
+Saved design identities, hidden collections, event opt-outs, preferred businesses, shelf visibility and market
 preferences are authenticated user meta, scoped to the current blog. A favorite
 survives installed pack version changes through `pack:<pack-id>:<logical-id>`;
 immutable template IDs still include the package digest for source baselines.
@@ -82,3 +93,8 @@ this change does not approve the whole 108-setup library.
 See [implementation and validation](../reviews/template-picker-implementation-2026-09-30.md).
 This amends ADRs 0082, 0083 and 0085. Existing Optin snapshots and metrics remain
 independent of template updates and editorial collection membership.
+
+The [plan audit](../reviews/picker-plan-audit-2026-09-30.md) distinguishes this
+local delivery from the incomplete wider API, retention, simulator, merchant-study
+and expansion programme. The prototype is a design reference, not proof that
+every planned remote or release scenario has shipped.

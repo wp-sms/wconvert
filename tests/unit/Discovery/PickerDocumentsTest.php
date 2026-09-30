@@ -14,6 +14,19 @@ final class PickerDocumentsTest extends TestCase
         $this->assertSame(['pack:store:card', 'registered:card'], PickerDocuments::validatePreferences($input)['saved']);
     }
 
+    public function testHidingTheShelfIsAnExplicitBooleanAndKeepsOtherPreferences(): void
+    {
+        $input = PickerDocuments::preferences();
+        $input['show_featured'] = false;
+        $input['markets'] = ['GB'];
+        $validated = PickerDocuments::validatePreferences($input);
+        $this->assertFalse($validated['show_featured']);
+        $this->assertSame(['GB'], $validated['markets']);
+        $input['show_featured'] = 'false';
+        $this->expectException(\InvalidArgumentException::class);
+        PickerDocuments::validatePreferences($input);
+    }
+
     public function testBoundedListsRejectUnboundedWrites(): void
     {
         $input = PickerDocuments::preferences(); $input['saved'] = array_fill(0, 201, 'registered:card');

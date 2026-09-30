@@ -1,4 +1,4 @@
-import { useRef } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
 import { ArrowLeft, ArrowRight, X } from 'lucide-react';
 import { Button } from '../components/ui/button';
@@ -10,16 +10,33 @@ export function CollectionShelf({ matches, all = false, disabled, onOpen, onAll,
   onOpen: (collection: Collection) => void; onAll: () => void; onHide: (id: string) => void;
 }) {
   const shelf = useRef<HTMLDivElement>(null);
+  const shelfId = useId();
+  const [position, setPosition] = useState({ overflow: false, start: true, end: true });
+  useEffect(() => {
+    const node = shelf.current;
+    if (!node || all) return;
+    const measure = () => {
+      const max = node.scrollWidth - node.clientWidth;
+      const at = Math.abs(node.scrollLeft);
+      const next = { overflow: max > 2, start: at <= 2, end: at >= max - 2 };
+      setPosition(previous => previous.overflow === next.overflow && previous.start === next.start && previous.end === next.end ? previous : next);
+    };
+    const frame = requestAnimationFrame(measure);
+    const observer = typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(measure);
+    observer?.observe(node);
+    node.addEventListener('scroll', measure, { passive: true });
+    return () => { cancelAnimationFrame(frame); observer?.disconnect(); node.removeEventListener('scroll', measure); };
+  }, [all, matches.length]);
   if (!matches.length) return null;
   const scroll = (direction: number) => shelf.current?.scrollBy({ left: direction * shelf.current.clientWidth * .75 * (getComputedStyle(shelf.current).direction === 'rtl' ? -1 : 1), behavior: 'smooth' });
   return <section className="wconvert-collections" aria-label={__('Featured collections', 'wconvert')}>
     <div className="wconvert-collections__heading"><h3>{all ? __('Browse collections', 'wconvert') : __('A useful place to start', 'wconvert')}</h3>
-      {!all && <div className="flex items-center gap-2"><Button variant="ghost" size="sm" disabled={disabled} onClick={onAll}>{__('View all', 'wconvert')}</Button>
-        {matches.length > 1 && <><Button variant="outline" size="icon" disabled={disabled} aria-label={__('Previous collections', 'wconvert')} onClick={() => scroll(-1)}><ArrowLeft className="rtl:-scale-x-100" /></Button>
-          <Button variant="outline" size="icon" disabled={disabled} aria-label={__('Next collections', 'wconvert')} onClick={() => scroll(1)}><ArrowRight className="rtl:-scale-x-100" /></Button></>}
+      {!all && <div className="flex items-center gap-2"><Button variant="ghost" disabled={disabled} onClick={onAll}>{__('View all', 'wconvert')}</Button>
+        {position.overflow && <><Button variant="outline" size="icon" disabled={disabled || position.start} aria-controls={shelfId} aria-label={__('Previous collections', 'wconvert')} onClick={() => scroll(-1)}><ArrowLeft className="rtl:-scale-x-100" /></Button>
+          <Button variant="outline" size="icon" disabled={disabled || position.end} aria-controls={shelfId} aria-label={__('Next collections', 'wconvert')} onClick={() => scroll(1)}><ArrowRight className="rtl:-scale-x-100" /></Button></>}
       </div>}
     </div>
-    <div ref={shelf} className={all ? 'wconvert-collections__grid' : 'wconvert-collections__shelf'}>
+    <div ref={shelf} id={shelfId} tabIndex={all ? undefined : 0} role="group" aria-label={__('Collection cards', 'wconvert')} className={all ? 'wconvert-collections__grid' : 'wconvert-collections__shelf'}>
       {(all ? matches : matches.slice(0, 5)).map(({ collection, setups, designs }) => <article key={collection.id} className={`wconvert-collection wconvert-collection--${collection.cover}`}>
         <button type="button" className="wconvert-collection__open" disabled={disabled} onClick={() => onOpen(collection)}>
           <span className="wconvert-collection__art" aria-hidden="true"><span /><span /><span /></span>

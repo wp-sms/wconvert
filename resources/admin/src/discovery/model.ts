@@ -44,5 +44,7 @@ export function matchingCollections(data: PickerData, entries: readonly Playbook
     const ids = new Set(collection.items.map(item => item.setup_id));
     const setups = entries.filter(entry => ready.has(entry.id) && ids.has(entry.id));
     return { collection, setups, designs: new Set(setups.map(designKey)).size };
-  }).sort((a, b) => b.collection.priority - a.collection.priority || a.collection.id.localeCompare(b.collection.id));
+  }).sort((a, b) => Number(b.collection.business_types.some(id => data.preferences.businesses.includes(id)))
+    - Number(a.collection.business_types.some(id => data.preferences.businesses.includes(id)))
+    || b.collection.priority - a.collection.priority || a.collection.id.localeCompare(b.collection.id));
 }

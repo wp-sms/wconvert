@@ -1,7 +1,7 @@
 import apiFetch from '@wordpress/api-fetch';
 
 export interface PickerPreferences {
-  schema: 1; revision: number; saved: string[]; hidden: string[]; events: string[]; businesses: string[]; markets: string[];
+  schema: 1; revision: number; saved: string[]; hidden: string[]; events: string[]; businesses: string[]; markets: string[]; show_featured?: boolean;
 }
 export interface Occasion { id: string; name: string; start: string; end: string }
 export interface Occasions { schema: 1; revision: number; items: Occasion[] }

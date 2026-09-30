@@ -6600,13 +6600,15 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
 /* Discovery: one compact recommendation shelf above the real design library. */
 .wconvert-creation .wconvert-picker__search-row:first-child > :is(button, label > input),
 .wconvert-picker .wconvert-picker__search-row > :is(button, label > input) { min-block-size: 3rem; block-size: 3rem; }
-.wconvert-picker__search { min-inline-size: 12rem; }
+/* Discovery's primary search and adjacent actions share the heading scope. */
+.wconvert-picker__search { min-inline-size: 12rem; --control-height: 3rem; }
+.wconvert-picker__search input { block-size: var(--control-height); min-block-size: var(--control-height); box-sizing: border-box; }
 .wconvert-collections, .wconvert-collection-detail, .wconvert-picker__notice { margin: 1.25rem 1.5rem; }
 .wconvert-collections__heading { display: flex; justify-content: space-between; flex-wrap: wrap; align-items: center; gap: .75rem; margin-block-end: .75rem; }
 .wconvert-collections__heading h3 { margin: 0; font-size: var(--text-heading); font-weight: 600; }
 .wconvert-collections__shelf { display: flex; gap: 1rem; overflow-x: auto; scroll-snap-type: x proximity; padding: .25rem .125rem .75rem; }
 .wconvert-collections__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr)); gap: 1rem; }
-.wconvert-collection { position: relative; flex: 0 0 calc((100% - 2rem) / 2.25); min-inline-size: 17rem; border: 1px solid var(--border); border-radius: .75rem; overflow: hidden; scroll-snap-align: start; background: var(--card); }
+.wconvert-collection { position: relative; flex: 0 0 calc((100% - 2rem) / 2.25); min-inline-size: 17rem; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; scroll-snap-align: start; background: var(--card); }
 .wconvert-collection__open { display: flex; flex-direction: column; inline-size: 100%; block-size: 100%; text-align: start; cursor: pointer; border: 0; padding: 0; background: transparent; color: var(--foreground); }
 .wconvert-collection__art { position: relative; display: block; inline-size: 100%; block-size: 7.5rem; overflow: hidden; background: #264b43; }
 .wconvert-collection__art > span { position: absolute; display: block; background: #f3e6bd; border-radius: .375rem; inline-size: 35%; block-size: 72%; inset-block-start: 28%; inset-inline-start: 16%; transform: rotate(-12deg); }
@@ -6626,7 +6628,7 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
 .wconvert-collection__count { color: var(--muted-foreground); }
 .wconvert-collection__hide { position: absolute; inset-inline-end: .5rem; inset-block-start: .5rem; display: grid; place-items: center; inline-size: 2rem; block-size: 2rem; border: 1px solid #bfcfc7; border-radius: 50%; background: #fff; color: #24443c; cursor: pointer; }
 .wconvert-collection__open:focus-visible { outline: 3px solid var(--ring); outline-offset: -3px; }
-.wconvert-picker__notice { border: 1px solid var(--border); background: var(--muted); border-radius: .5rem; padding: 1rem; font-size: var(--text-note); }
+.wconvert-picker__notice { border: 1px solid var(--border); background: var(--surface); border-radius: var(--radius); padding: 1rem; font-size: var(--text-note); }
 .wconvert-picker__pagination { display: flex; align-items: center; justify-content: center; gap: 1rem; margin-block-start: 1.5rem; }
 .wconvert-picker-settings { display: flex; flex-direction: column; gap: 1.75rem; padding: 1.5rem; }
 .wconvert-picker-settings h2, .wconvert-picker-settings h3 { margin-block: .75rem; }
@@ -6638,9 +6640,9 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
 .wconvert-occasion-form { display: flex; flex-wrap: wrap; gap: 1rem; align-items: end; inline-size: 100%; }
 .wconvert-occasion-form > label { flex: 1; min-inline-size: 10rem; }
 .wconvert-setup-preview { min-inline-size: 0; }
-.wconvert-setup-preview__stage { display: flex; justify-content: center; overflow: hidden; margin-block: 1rem; padding-block: 1.5rem; background: #eef2ed; border-radius: .75rem; }
+.wconvert-setup-preview__stage { display: flex; justify-content: center; overflow: hidden; margin-block: 1rem; padding-block: 1.5rem; background: var(--surface); border-radius: var(--radius); }
 .wconvert-setup-preview__fit { flex: none; padding-inline: 1.5rem; }
-.wconvert-setup-detail { padding: 1.5rem; }
+.wconvert-setup-detail { padding: 1.5rem; max-inline-size: min(72rem, calc(100vw - 2rem)); }
 @media (max-width: 639px) {
   .wconvert-collection { flex-basis: 86%; min-inline-size: 0; }
   .wconvert-collections, .wconvert-collection-detail, .wconvert-picker__notice { margin-inline: 1rem; }
@@ -6648,12 +6650,23 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
   .wconvert-picker-settings, .wconvert-setup-detail { padding: 1rem; }
   .wconvert-picker__secondary > label { flex-basis: 100%; justify-content: space-between; }
 }
-.wconvert-creation .wconvert-picker__search-row:first-child .wconvert-picker__search input,
-.wconvert-picker .wconvert-picker__search-row .wconvert-picker__search input { block-size: 3rem; min-block-size: 3rem; box-sizing: border-box; }
-
-/* WordPress's ID-scoped native-control reset reads this same height token. */
-.wconvert-picker__search { --control-height: 3rem; }
 .wconvert-setup-preview__stage:has(.wconvert-journey-test) { display: block; overflow: auto; padding: 1rem; }
 
 .wconvert-picker__save, .wconvert-collections__heading button[data-size=icon], .wconvert-collection__hide { min-inline-size: 2.75rem; min-block-size: 2.75rem; }
-#wconvert-admin .wconvert-picker-settings input { min-block-size: 2.75rem; font-size: var(--text-heading); }
+#wconvert-admin .wconvert-picker-settings input:not([type=checkbox]) { min-block-size: 2.75rem; font-size: var(--text-heading); }
+
+.wconvert-setup-detail .wconvert-collection-detail { margin: 0; }
+.wconvert-setup-detail .wconvert-picker__controls { padding-inline: 0; }
+#wconvert-admin .wconvert-picker-settings input[type=checkbox] { inline-size: 1.125rem; block-size: 1.125rem; min-block-size: 0; margin: 0; }
+
+.wconvert-setup-preview__fit .wconvert-preview { display: flex; justify-content: center; }
+
+
+/* Native one-of-N controls reuse the shared input edge, surface and type roles. */
+.wconvert-option-strip { display: flex; flex-wrap: wrap; gap: .5rem; }
+.wconvert-option-strip > label { display: inline-flex; align-items: center; gap: .5rem; cursor: pointer; min-block-size: var(--control-height, 2.25rem); padding: .375rem .75rem; border: 1px solid var(--input); border-radius: var(--radius); background: var(--card); color: var(--foreground); font-size: var(--text-body); }
+.wconvert-option-strip > label:has(input:checked) { background: var(--accent); border-color: var(--primary); }
+.wconvert-option-strip > label:has(input:focus-visible) { outline: 2px solid var(--ring); outline-offset: 2px; }
+.wconvert-option-strip > label:has(input:disabled) { opacity: .5; cursor: default; }
+.wconvert-option-strip input[type=radio] { appearance: auto; inline-size: 1rem; block-size: 1rem; min-block-size: 0; margin: 0; background: var(--card); accent-color: var(--primary); }
+.wconvert-picker-settings label:has(input[type=checkbox]) { flex-direction: row; align-items: center; }

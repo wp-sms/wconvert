@@ -1,0 +1,146 @@
+PASS Anonymous users cannot read picker planning data
+PASS New administrator has independent favorites
+PASS Favorite persists through the authenticated WordPress route
+PASS Favorite survives the next server read
+PASS Stale preference writer receives a conflict
+PASS Concurrent writer cannot enter an active lease
+PASS Oversized preferences are rejected without changing the saved document
+PASS Site occasions save calendar dates and discard campaign commands
+PASS Shared site occasions reject a stale window
+PASS Impossible occasion dates do not overwrite the previous document
+PASS Favorites remain private to their user
+PASS Collection setup exists: edition-early-access
+PASS Discovery is metadata only: edition-early-access
+PASS Actual prepared screens available: edition-early-access
+PASS Draft matches the inspected design: edition-early-access
+PASS Prepared journey contract is valid: edition-early-access
+PASS Declared fields accept a practical example: edition-early-access
+PASS Invalid identifier is refused before saving: edition-early-access
+PASS Unchecked displayed consent is refused: edition-early-access
+PASS Changed prepared design is refused: edition-early-access
+PASS Collection setup exists: sale-deadline
+PASS Discovery is metadata only: sale-deadline
+PASS Actual prepared screens available: sale-deadline
+PASS Draft matches the inspected design: sale-deadline
+PASS Prepared journey contract is valid: sale-deadline
+PASS Changed prepared design is refused: sale-deadline
+PASS Collection setup exists: first-order-receipt
+PASS Discovery is metadata only: first-order-receipt
+PASS Actual prepared screens available: first-order-receipt
+PASS Draft matches the inspected design: first-order-receipt
+PASS Prepared journey contract is valid: first-order-receipt
+PASS Changed prepared design is refused: first-order-receipt
+PASS Collection setup exists: lighting-collection
+PASS Discovery is metadata only: lighting-collection
+PASS Actual prepared screens available: lighting-collection
+PASS Draft matches the inspected design: lighting-collection
+PASS Prepared journey contract is valid: lighting-collection
+PASS Changed prepared design is refused: lighting-collection
+PASS Collection setup exists: homeware-care-notes
+PASS Discovery is metadata only: homeware-care-notes
+PASS Actual prepared screens available: homeware-care-notes
+PASS Draft matches the inspected design: homeware-care-notes
+PASS Prepared journey contract is valid: homeware-care-notes
+PASS Declared fields accept a practical example: homeware-care-notes
+PASS Invalid identifier is refused before saving: homeware-care-notes
+PASS Unchecked displayed consent is refused: homeware-care-notes
+PASS Changed prepared design is refused: homeware-care-notes
+PASS Collection setup exists: restock-announcements
+PASS Discovery is metadata only: restock-announcements
+PASS Actual prepared screens available: restock-announcements
+PASS Draft matches the inspected design: restock-announcements
+PASS Prepared journey contract is valid: restock-announcements
+PASS Declared fields accept a practical example: restock-announcements
+PASS Invalid identifier is refused before saving: restock-announcements
+PASS Unchecked displayed consent is refused: restock-announcements
+PASS Changed prepared design is refused: restock-announcements
+PASS Collection setup exists: home-repair-quote
+PASS Discovery is metadata only: home-repair-quote
+PASS Actual prepared screens available: home-repair-quote
+PASS Draft matches the inspected design: home-repair-quote
+PASS Prepared journey contract is valid: home-repair-quote
+PASS Declared fields accept a practical example: home-repair-quote
+PASS Invalid identifier is refused before saving: home-repair-quote
+PASS Unknown service choice is refused: home-repair-quote
+PASS Changed prepared design is refused: home-repair-quote
+PASS Collection setup exists: cleaning-quote
+PASS Discovery is metadata only: cleaning-quote
+PASS Actual prepared screens available: cleaning-quote
+PASS Draft matches the inspected design: cleaning-quote
+PASS Prepared journey contract is valid: cleaning-quote
+PASS Declared fields accept a practical example: cleaning-quote
+PASS Invalid identifier is refused before saving: cleaning-quote
+PASS Unknown service choice is refused: cleaning-quote
+PASS Changed prepared design is refused: cleaning-quote
+PASS Collection setup exists: repair-assessment
+PASS Discovery is metadata only: repair-assessment
+PASS Actual prepared screens available: repair-assessment
+PASS Draft matches the inspected design: repair-assessment
+PASS Prepared journey contract is valid: repair-assessment
+PASS Declared fields accept a practical example: repair-assessment
+PASS Invalid identifier is refused before saving: repair-assessment
+PASS Unknown service choice is refused: repair-assessment
+PASS Changed prepared design is refused: repair-assessment
+PASS Collection setup exists: renovation-callback
+PASS Discovery is metadata only: renovation-callback
+PASS Actual prepared screens available: renovation-callback
+PASS Draft matches the inspected design: renovation-callback
+PASS Prepared journey contract is valid: renovation-callback
+PASS Declared fields accept a practical example: renovation-callback
+PASS Invalid identifier is refused before saving: renovation-callback
+PASS Unknown service choice is refused: renovation-callback
+PASS Changed prepared design is refused: renovation-callback
+PASS Collection setup exists: repair-advice-request
+PASS Discovery is metadata only: repair-advice-request
+PASS Actual prepared screens available: repair-advice-request
+PASS Draft matches the inspected design: repair-advice-request
+PASS Prepared journey contract is valid: repair-advice-request
+PASS Declared fields accept a practical example: repair-advice-request
+PASS Invalid identifier is refused before saving: repair-advice-request
+PASS Unknown service choice is refused: repair-advice-request
+PASS Changed prepared design is refused: repair-advice-request
+PASS Collection setup exists: website-review-enquiry
+PASS Discovery is metadata only: website-review-enquiry
+PASS Actual prepared screens available: website-review-enquiry
+PASS Draft matches the inspected design: website-review-enquiry
+PASS Prepared journey contract is valid: website-review-enquiry
+PASS Declared fields accept a practical example: website-review-enquiry
+PASS Invalid identifier is refused before saving: website-review-enquiry
+PASS Changed prepared design is refused: website-review-enquiry
+PASS Collection setup exists: sunday-reading
+PASS Discovery is metadata only: sunday-reading
+PASS Actual prepared screens available: sunday-reading
+PASS Draft matches the inspected design: sunday-reading
+PASS Prepared journey contract is valid: sunday-reading
+PASS Declared fields accept a practical example: sunday-reading
+PASS Invalid identifier is refused before saving: sunday-reading
+PASS Unchecked displayed consent is refused: sunday-reading
+PASS Changed prepared design is refused: sunday-reading
+PASS Collection setup exists: editorial-weekly
+PASS Discovery is metadata only: editorial-weekly
+PASS Actual prepared screens available: editorial-weekly
+PASS Draft matches the inspected design: editorial-weekly
+PASS Prepared journey contract is valid: editorial-weekly
+PASS Declared fields accept a practical example: editorial-weekly
+PASS Invalid identifier is refused before saving: editorial-weekly
+PASS Unchecked displayed consent is refused: editorial-weekly
+PASS Changed prepared design is refused: editorial-weekly
+PASS Collection setup exists: writing-checklist
+PASS Discovery is metadata only: writing-checklist
+PASS Actual prepared screens available: writing-checklist
+PASS Draft matches the inspected design: writing-checklist
+PASS Prepared journey contract is valid: writing-checklist
+PASS Declared fields accept a practical example: writing-checklist
+PASS Invalid identifier is refused before saving: writing-checklist
+PASS Changed prepared design is refused: writing-checklist
+PASS Collection setup exists: reading-notes-guide
+PASS Discovery is metadata only: reading-notes-guide
+PASS Actual prepared screens available: reading-notes-guide
+PASS Draft matches the inspected design: reading-notes-guide
+PASS Prepared journey contract is valid: reading-notes-guide
+PASS Declared fields accept a practical example: reading-notes-guide
+PASS Invalid identifier is refused before saving: reading-notes-guide
+PASS Changed prepared design is refused: reading-notes-guide
+PASS Preview batches are bounded at 24
+PASS Discovery, favorite saves and occasion edits never create or publish a campaign
+WordPress 7.1.2 / PHP 8.5.10

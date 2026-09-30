@@ -15,14 +15,15 @@ final class PickerDocuments
     /** @return array<string, mixed> */
     public static function preferences(): array
     {
-        return ['schema' => 1, 'revision' => 0, 'saved' => [], 'hidden' => [], 'events' => [], 'businesses' => [], 'markets' => []];
+        return ['schema' => 1, 'revision' => 0, 'saved' => [], 'hidden' => [], 'events' => [], 'businesses' => [], 'markets' => [], 'show_featured' => true];
     }
 
     /** @param array<string, mixed> $input
      * @return array<string, mixed> */
     public static function validatePreferences(array $input): array
     {
-        $output = [];
+        if (array_key_exists('show_featured', $input) && !is_bool($input['show_featured'])) throw new InvalidArgumentException(__('Invalid featured collection preference.', 'wconvert'));
+        $output = ['show_featured' => $input['show_featured'] ?? true];
         foreach (['saved' => 200, 'hidden' => 100, 'events' => 100, 'businesses' => 3, 'markets' => 20] as $key => $bound) {
             $values = $input[$key] ?? null;
             if (!is_array($values) || !array_is_list($values) || count($values) > $bound) throw new InvalidArgumentException(sprintf(__('Invalid preference list: %s', 'wconvert'), $key));

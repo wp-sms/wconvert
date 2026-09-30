@@ -70,3 +70,8 @@ site occasions, Saved design names and authoritative site time. Manage-options
 permission is required. Preference/occasion PUT routes require the last document
 revision; a conflict returns 409. Favorites and preferences stay in WordPress,
 not the catalog API. These routes neither expose Leads nor edit Optins.
+
+The local preference document also accepts `show_featured` as a strict boolean.
+Hiding the shelf does not disable Browse collections or opt out of an event.
+`businesses` ranks matching collections first without excluding other businesses.
+Both preferences remain scoped to the authenticated WordPress user and blog.

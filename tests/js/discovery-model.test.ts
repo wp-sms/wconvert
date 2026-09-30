@@ -43,3 +43,9 @@ it('uses the site calendar across midnight and daylight-saving changes', async (
   expect(siteDay(Date.parse('2026-03-08T04:59:59Z'), 'America/New_York', -18000)).toBe('2026-03-07');
   expect(siteDay(Date.parse('2026-03-08T05:00:00Z'), 'America/New_York', -18000)).toBe('2026-03-08');
 });
+
+it('recommends preferred businesses first without removing other matching collections', () => {
+  const service = { ...collection, id: 'services', business_types: ['services'], priority: 0 };
+  const matches = matchingCollections({ ...data, collections: [collection, service], preferences: { ...data.preferences, businesses: ['services'] } }, [setup('before')], true);
+  expect(matches.map(value => value.collection.id)).toEqual(['services', 'bf']);
+});
