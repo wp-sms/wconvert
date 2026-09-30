@@ -25,9 +25,16 @@ performed the dense-map, RTL, zoom, and final code checks.
   contain six and ten questions; no supported scale or route-limit change is implied.
 - After accessibility fixes: **81 editor/group tests passed**. This overlaps the
   broad suite and should not be added to its count.
+- After the GitHub runner block, local `npm run check:loader` passed every loader
+  and phone size budget. `composer test` passed on PHP 8.5.8: **2,360 tests /
+  14,125 assertions**. These local results do not replace the blocked CI matrix.
 - Final typecheck, touched-code ESLint, Free/Pro admin builds, source contract and
   whitespace checks passed. Existing Vite large-chunk advisories remain.
-- Pull-request CI is the authoritative final merged-tree check; consult its status.
+- [PR #196](https://github.com/wp-sms/wconvert/pull/196) is open.
+  [CI run 36673635060](https://github.com/wp-sms/wconvert/actions/runs/36673635060)
+  could not start any jobs: GitHub reported failed account payments or a spending
+  limit. Dependent PHP/frontend jobs were skipped. This is not passing CI; resolve
+  the GitHub account issue and rerun before merge.
 
 ## Browser evidence
 
