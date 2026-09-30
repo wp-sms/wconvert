@@ -7,7 +7,7 @@ real email/SMS delivery is part of this local implementation.
 
 Goal-first creation browses a metadata-only Playbook index. Cards are grouped by
 canonical design identity **after** applying Goal, business, format, search,
-source pack, availability and Saved filters. Recommended order and Name A–Z are available. Card and inspector selectors choose among matching use cases;
+source pack, availability and Saved filters. Recommended order and Name A–Z are available. Cards show matching use-case counts; inspection chooses among those use cases;
 copy changes are not counted as different designs. Lists paginate at 24 cards.
 Visible cards lazily request at most 24 actual Prefill compositions per request.
 
@@ -49,10 +49,16 @@ campaign content through this flow. Show all designs remains available.
 
 The editor library has a constrained flex chain: only the gallery body scrolls,
 with selection and pagination outside that viewport. Pack pagination likewise
-stays outside its scrolling design list. Collection and setup detail dialogs
-scroll as one document, rather than a two-row grid attempting to contain a
-variable number of sections. These boundaries keep page controls and inspector
-actions reachable in short windows. See the [controls and scroll repair review](../reviews/picker-controls-repair-2026-09-30.md).
+stays outside its scrolling design list. The September 30 modal refinement
+replaces the interim whole-dialog scroll with shared `PickerDialogContent`,
+`PickerDialogHeader`, `PickerDialogBody` and `PickerDialogFooter` components.
+Collection, setup inspection, pack inspection and editor replacement scroll
+content independently of their header and action footer. Existing focus and
+collection scroll restoration use the body boundary. Ordinary cards retain
+one size, including a sole result; no card has a use-case or screen dropdown.
+Small use-case sets use native radio choices inside inspection, alongside
+all-screen preview controls and progressively disclosed setup guidance.
+These boundaries keep page controls and inspector actions reachable in short windows. See the [shared modal review](../reviews/picker-modal-unification-2026-09-30.md). See the [controls and scroll repair review](../reviews/picker-controls-repair-2026-09-30.md).
 
 ## Collections, dates and ownership
 

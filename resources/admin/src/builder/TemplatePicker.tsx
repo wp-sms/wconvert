@@ -238,6 +238,7 @@ export function TemplatePicker({
           currentDisplayType={currentDisplayType} hasCurrentDesign={hasCurrentDesign} contentLock={contentLock}
           labels={index.labels} current={inspected.id === chosen} active={active} fit={fit} goalLabel={goalLabel} busy={busy}
           loadError={failed?.has(inspected.id)} onRetry={onRetry ? () => onRetry(inspected.id) : undefined}
+          backLabel={fromComparison.current ? __('Back to comparison', 'wconvert') : undefined}
           onChoose={onChoose} onPrepare={onPrepare} onBack={() => {
             setInspectedId(null);
             if(fromComparison.current) { setComparing(true); return; }

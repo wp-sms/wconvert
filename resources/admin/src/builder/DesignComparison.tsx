@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import { Button } from '../components/ui/button';
+import { PickerDialogBody, PickerDialogFooter } from '../discovery/PickerDialog';
 import { ComparisonGrid } from '../discovery/ComparisonGrid';
 import { PreviewControls } from '../discovery/PreviewControls';
 import { PreviewFrame } from '../discovery/PreviewFrame';
@@ -16,10 +17,15 @@ export function DesignComparison({ entries, trees, onBack, onInspect, failed, on
   const heading = useRef<HTMLHeadingElement>(null);
   useEffect(()=>{heading.current?.focus();},[]);
   return <section className="wconvert-design-comparison">
-    <h3 ref={heading} tabIndex={-1} className="m-0 text-heading font-semibold">{__('Compare designs','wconvert')}</h3>
-    <p className="text-note text-muted-foreground">{__('Compare sample layouts here. Review your content before applying a design to this draft.','wconvert')}</p>
+    <PickerDialogBody>
+      <h3 ref={heading} tabIndex={-1} className="m-0 text-heading font-semibold">{__('Compare designs','wconvert')}</h3>
+      <p className="text-note text-muted-foreground">{__('Compare sample layouts here. Review your content before applying a design to this draft.','wconvert')}</p>
+      <ComparisonGrid>{entries.map(entry=><DesignColumn key={entry.id} entry={entry} template={trees.get(entry.id)} failed={failed?.has(entry.id)} onRetry={onRetry} onInspect={onInspect} />)}</ComparisonGrid>
+    </PickerDialogBody>
+    <PickerDialogFooter>
     <Button className="wconvert-picker__back" variant="outline" onClick={onBack}><ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />{__('Back to designs','wconvert')}</Button>
-    <ComparisonGrid>{entries.map(entry=><DesignColumn key={entry.id} entry={entry} template={trees.get(entry.id)} failed={failed?.has(entry.id)} onRetry={onRetry} onInspect={onInspect} />)}</ComparisonGrid>
+    <span className="text-note text-muted-foreground">{__('Review one design before applying it to this draft.', 'wconvert')}</span>
+    </PickerDialogFooter>
   </section>;
 }
 function DesignColumn({entry,template,onInspect,failed,onRetry}:{entry:TemplateIndexEntry;template?:Template;onInspect:(id:string)=>void;failed?:boolean;onRetry?:(id:string)=>void;}) {

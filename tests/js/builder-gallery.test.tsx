@@ -946,7 +946,7 @@ it('compares two editor designs and reviews one without applying or losing the l
   await userEvent.click(screen.getByRole('button',{name:'Review design: Centred card'}));
   expect(screen.getByText('Preview with sample content')).toBeVisible();
   expect(onChoose).not.toHaveBeenCalled();
-  await userEvent.click(screen.getByRole('button',{name:'Back to designs'}));
+  await userEvent.click(screen.getByRole('button',{name:'Back to comparison'}));
   expect(screen.getByRole('heading',{name:'Compare designs'})).toBeVisible();
   await userEvent.click(screen.getByRole('button',{name:'Back to designs'}));
   expect(screen.getByRole('searchbox',{name:'Search designs'})).toBeVisible();

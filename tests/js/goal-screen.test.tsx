@@ -212,6 +212,8 @@ describe('a goal then a draft', () => {
     expect(screen.queryByRole('term')).not.toBeInTheDocument();
     const details = screen.getByRole('button', { name: 'Setup details for Welcome discount' });
     await userEvent.click(details);
+    expect(screen.getByText(PLAYBOOK.notes)).not.toBeVisible();
+    await userEvent.click(screen.getByText('Visitor journey', { selector: 'summary' }));
     expect(screen.getByText(PLAYBOOK.notes)).toBeVisible();
     expect(screen.getByRole('dialog', { name: 'Welcome discount' })).toBeVisible();
     expect(screen.getByText('Before publishing:')).toBeVisible();
@@ -551,7 +553,10 @@ it('groups shared designs, keeps matching use cases reachable and creates only t
   goals.listPlaybooks.mockResolvedValue([PLAYBOOK, repair]);
   render(<GoalScreen onCreated={vi.fn()} />); await pickGoal();
   expect(screen.getAllByRole('button', { name: 'Use this setup' })).toHaveLength(1);
-  await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Use case for Welcome discount' }), repair.id);
+  expect(screen.queryByRole('combobox', { name: /Use case for/ })).not.toBeInTheDocument();
+  await userEvent.click(screen.getByRole('button', { name: 'Setup details for Welcome discount' }));
+  await userEvent.click(screen.getByRole('radio', { name: 'Repair request' }));
+  await userEvent.click(screen.getByRole('button', { name: 'Back to setups' }));
   expect(screen.getByText('Repair request', { selector: '.wconvert-gallery__card span' })).toBeVisible();
   await userEvent.click(screen.getByRole('button', { name: 'Setup details for Repair request' }));
   expect(screen.getByRole('dialog', { name: 'Repair request' })).toHaveTextContent('Discuss a repair');
@@ -615,7 +620,7 @@ it('changes the use case inside inspection and creates the exact chosen snapshot
   render(<GoalScreen onCreated={vi.fn()} />); await pickGoal();
   await userEvent.click(await screen.findByRole('button', { name: 'Setup details for Welcome discount' }));
   await userEvent.click(screen.getByRole('radio', { name: 'Mobile' }));
-  await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Use case' }), 'guide');
+  await userEvent.click(screen.getByRole('radio', { name: 'Practical guide' }));
   expect(screen.getByRole('heading', { name: 'Practical guide' })).toBeVisible();
   expect(screen.getByText('Have the guide URL ready')).toBeVisible();
   expect(screen.getByRole('radio', { name: 'Mobile' })).toBeChecked();

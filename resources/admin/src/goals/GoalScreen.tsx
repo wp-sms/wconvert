@@ -6,7 +6,8 @@ import { ComparisonTray } from '../discovery/ComparisonTray';
 import { PickerPagination } from '../discovery/PickerPagination';
 import { PickerSearch } from '../discovery/PickerSearch';
 import { Badge } from '../components/ui/badge';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '../components/ui/dialog';
+import { Dialog, DialogTitle, DialogDescription } from '../components/ui/dialog';
+import { PickerDialogContent, PickerDialogHeader, PickerDialogBody, PickerDialogFooter } from '../discovery/PickerDialog';
 import { TemplatePacks } from '../templates/TemplatePacks';
 import { Button } from '../components/ui/button';
 import { ChoiceGrid, ChoiceSkeleton } from '../shell/ChoiceGrid';
@@ -253,7 +254,6 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins }: GoalScree
   const sortedGroups = [...groups];
   if (sort === 'name') sortedGroups.sort((a, b) => a[1][0].name.localeCompare(b[1][0].name));
   const pagedGroups = sortedGroups.slice(shownPage * 24, (shownPage + 1) * 24);
-  const singleStartingPoint = groups.size === 1;
   const inspectedPreview = inspected && previews.previews.get(inspected.id);
   const inspectedEntry = inspected && (inspectedPreview?.revision === inspected.revision ? inspectedPreview ?? inspected : inspected);
   const inspectedChoices = inspected ? (comparing ? allEntries : entries).filter(entry => designKey(entry) === designKey(inspected) && startingPointDisplayType(entry) === startingPointDisplayType(inspected)) : [];
@@ -276,12 +276,12 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins }: GoalScree
       </EmptyState> : entries.length === 0 ? <EmptyState icon={Sparkles} title={__('No campaign setups match', 'wconvert')}
         action={<Button variant="outline" disabled={starting !== null} onClick={clearFilters}>{__('Show all campaign setups', 'wconvert')}</Button>}>
         {savedOnly ? __('No saved designs match this goal and your filters. Saved designs are shared with the editor’s design picker; manage unavailable designs in My occasions & preferences.', 'wconvert') : __('Try another search, business, format or collection.', 'wconvert')}
-      </EmptyState> : <RegionBody>
+      </EmptyState> : <RegionBody className={editorialCollection ? 'px-0' : undefined}>
         {vocabulary.status === 'failed' && <div className="mb-4 flex flex-wrap items-center gap-2 text-note">
           <span>{__('Setup details could not be loaded. You can still choose a campaign setup and review its rules in the editor.', 'wconvert')}</span>
           <Button variant="outline" onClick={() => setRulesRetry((value) => value + 1)}>{__('Retry setup details', 'wconvert')}</Button>
         </div>}
-        <ul className={`wconvert-gallery${singleStartingPoint ? ' wconvert-gallery--single-start' : ''}`}>{pagedGroups.map(([designId, variants]) => {
+        <ul className="wconvert-gallery">{pagedGroups.map(([designId, variants]) => {
           const selected = variants.find((entry) => entry.id === useCases[designId]) ?? variants[0];
           const prepared = previews.previews.get(selected.id);
           const playbook = prepared?.revision === selected.revision ? prepared ?? selected : selected;
@@ -289,18 +289,10 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins }: GoalScree
           key={designId} id={playbook.id} name={playbook.name} template={playbook.template}
           displayType={startingPointDisplayType(playbook)}
           onNear={previews.onNear} loadError={previews.failed.has(playbook.id)} onRetry={() => previews.retry(playbook.id)}
-          featured={singleStartingPoint}
           reason={playbook.availability === 'locked' ? sprintf(__('Available with %s', 'wconvert'), tierProductName(undefined)) : playbook.availability === 'unavailable' ? __('This setup needs a design that is not installed.', 'wconvert') : undefined}
           absent={playbook.template === undefined && (!playbook.revision || (playbook.availability !== undefined && playbook.availability !== 'ready')) ? <p>{__('This design is not available on this site.', 'wconvert')}</p> : undefined}
           action={(describedBy) => <div className="flex w-full flex-col items-start gap-2">
-            {variants.length > 1 && <label className="flex w-full flex-col gap-1 text-note">
-              {sprintf(__('Use case · %s setups share this design', 'wconvert'), String(variants.length))}
-              <select className="wconvert-picker__select max-w-full" value={playbook.id} disabled={starting !== null}
-                aria-label={sprintf(__('Use case for %s', 'wconvert'), variants[0].name)}
-                onChange={(event) => { const id = event.target.value; setUseCases((current) => ({ ...current, [designId]: id })); }}>
-                {variants.map((entry) => <option key={entry.id} value={entry.id}>{entry.name}</option>)}
-              </select>
-            </label>}
+            {variants.length > 1 && <p className="m-0 text-note text-muted-foreground">{sprintf(_n('%s use case', '%s use cases', variants.length, 'wconvert'), String(variants.length))}</p>}
             <div className="flex flex-wrap items-center gap-2">
               <Button variant="ghost" size="icon" className="wconvert-picker__save" disabled={picker.saving || !picker.data} aria-pressed={picker.data?.preferences.saved.includes(designKey(playbook)) ?? false} aria-label={sprintf(__('Save design: %s', 'wconvert'), playbook.name)} onClick={() => picker.toggleSaved(designKey(playbook))}><Star size={17} fill={picker.data?.preferences.saved.includes(designKey(playbook)) ? 'currentColor' : 'none'} /></Button>
               <Badge variant="secondary">{displayTypeLabel(startingPointDisplayType(playbook))}</Badge>
@@ -315,22 +307,19 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins }: GoalScree
                   setCompareIds(current => current.some(id => variants.some(entry => entry.id === id)) ? current.filter(id => !variants.some(entry => entry.id === id)) : [...current, playbook.id]);
                 }} />
               <Button aria-describedby={describedBy} disabled={starting !== null} aria-disabled={playbook.availability !== undefined && playbook.availability !== 'ready'}
-                className={singleStartingPoint ? 'h-auto min-h-9 max-w-full whitespace-normal text-start' : undefined}
                 onClick={() => { void start(playbook.id); }}>{starting === playbook.id ? __('Creating draft…', 'wconvert') : __('Use this setup', 'wconvert')}</Button>
-              <Button ref={node => { if (detailGroup.current === designId) detailTrigger.current = node; }} variant="ghost" disabled={starting !== null}
+              <Button ref={node => { if (detailGroup.current === designId) detailTrigger.current = node; }} variant="outline" disabled={starting !== null}
                 aria-label={sprintf(__('Setup details for %s', 'wconvert'), playbook.name)}
                 onClick={(event) => { detailGroup.current = designId; detailTrigger.current = event.currentTarget; if (!editorialCollection) modalOrigin.current = event.currentTarget; collectionScroll.current = modalContent.current?.scrollTop ?? 0; previews.onNear(playbook.id); setInspected(playbook); requestAnimationFrame(() => { if (modalContent.current) modalContent.current.scrollTop = 0; modalTitle.current?.focus({ preventScroll: true }); }); }}>
-                {__('Setup details', 'wconvert')}
+                {__('Preview & details', 'wconvert')}
               </Button>
             </div>
           </div>} />; })}</ul>
-        <PickerPagination page={shownPage} pages={pageCount} disabled={starting !== null} onChange={setPage} />
+        {!editorialCollection && <PickerPagination page={shownPage} pages={pageCount} disabled={starting !== null} onChange={setPage} />}
       </RegionBody>;
   const collectionDetails = editorialCollection ? <section className="wconvert-collection-detail">
-      <Button className="wconvert-picker__back" variant="outline" onClick={backToLibrary}><ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />{libraryPosition.current.allCollections ? __('All collections', 'wconvert') : __('Back to library', 'wconvert')}</Button>
       <p>{editorialCollection.description}</p>
-      <p className="text-note text-muted-foreground">{__('Choose one useful setup. These are alternatives or campaign stages; you do not need to use them all.', 'wconvert')}</p>
-      {editorialCollection.event && <><p>{sprintf(__('Event starts %s. Campaign dates are set separately.', 'wconvert'), editorialCollection.event.start)}</p><Button variant="ghost" disabled={picker.saving} onClick={() => { if (picker.data && editorialCollection.event) void picker.preferences({ ...picker.data.preferences, events: [...picker.data.preferences.events, editorialCollection.event.family] }); backToLibrary(); }}>{__('I don’t run this event', 'wconvert')}</Button></>}
+      {editorialCollection.event && <div className="wconvert-collection-detail__event"><p>{sprintf(__('Event starts %s', 'wconvert'), editorialCollection.event.start)}</p><Button variant="ghost" disabled={picker.saving} onClick={() => { if (picker.data && editorialCollection.event) void picker.preferences({ ...picker.data.preferences, events: [...picker.data.preferences.events, editorialCollection.event.family] }); backToLibrary(); }}>{__('I don’t run this event', 'wconvert')}</Button></div>}
       {editorialCollection.items.some(item => item.stage !== 'any') && <OptionStrip label={__('Campaign stage', 'wconvert')} value={effectiveStage}
         options={[
           ['any', __('All stages', 'wconvert')], ['before', __('Before', 'wconvert')], ['during', __('During', 'wconvert')], ['after', __('After', 'wconvert')],
@@ -416,17 +405,17 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins }: GoalScree
     {!editorialCollection && (picker.data && (allCollections || (!query.trim() && !savedOnly && picker.data.preferences.show_featured !== false))) && <CollectionShelf matches={allCollections ? relevant : featured} all={allCollections} disabled={starting !== null || picker.saving} onOpen={openCollection} onAll={() => setAllCollections(true)} onHide={id => { if (picker.data) void picker.preferences({ ...picker.data.preferences, hidden: [...picker.data.preferences.hidden, id] }); }} />}
     {!allCollections && !editorialCollection && !query.trim() && !savedOnly && featured.length > 0 && picker.data?.preferences.show_featured !== false && <Button className="mx-6" variant="ghost" disabled={picker.saving} onClick={() => { if (picker.data) void picker.preferences({ ...picker.data.preferences, show_featured: false }); }}>{__('Hide featured collections', 'wconvert')}</Button>}
     <Dialog open={packsOpen} onOpenChange={setPacksOpen}>
-      <DialogContent className="wconvert-picker gap-0 overflow-hidden p-0 sm:max-w-[80rem]" onCloseAutoFocus={(event) => {
+      <PickerDialogContent onCloseAutoFocus={(event) => {
         event.preventDefault();
         (choseCollection.current ? collectionPicker.current : packTrigger.current)?.focus();
       }}>
-        <DialogHeader className="wconvert-picker__header"><DialogTitle>{__('Template packs', 'wconvert')}</DialogTitle>
+        <PickerDialogHeader><DialogTitle>{__('Template packs', 'wconvert')}</DialogTitle>
           <DialogDescription>{__('Preview a pack, add it to your library, then choose a setup for your goal.', 'wconvert')}</DialogDescription>
-        </DialogHeader>
+        </PickerDialogHeader>
         <TemplatePacks displayType="" goal={goal.id}
           onInstalled={async () => { setPlaybooksRetry((value) => value + 1); }}
           onChooseStartingPoints={(id) => { choseCollection.current = true; setCollectionId(id); setFormatId('all'); setBusinessId('all'); setQuery(''); setPacksOpen(false); }} />
-      </DialogContent>
+      </PickerDialogContent>
     </Dialog>
     {error !== null && <><RegionError message={error} /><Button variant="outline" disabled={starting !== null} onClick={() => { setInspected(null); previews.reset(); setPlaybooksRetry(value => value + 1); setError(null); }}>{__('Reload campaign setups', 'wconvert')}</Button></>}
     {createUnconfirmed && <RegionBody><p className="m-0 text-note">
@@ -437,48 +426,61 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins }: GoalScree
     {!editorialCollection && !allCollections && <>{setupGallery}{comparisonControls}</>}
     {allCollections && !editorialCollection && relevant.length === 0 && <EmptyState icon={Sparkles} title={__('No collections match', 'wconvert')} action={<Button variant="outline" onClick={clearFilters}>{__('Clear filters', 'wconvert')}</Button>}>{__('Try another business, search or format, or return to the full library.', 'wconvert')}</EmptyState>}
     <Dialog open={inspected !== null || editorialCollection !== null || comparing} onOpenChange={(open) => { if (!open) { setInspected(null); setComparing(false); if (editorialCollection) backToLibrary(); } }}>
-      <DialogContent ref={modalContent} className="wconvert-picker wconvert-setup-detail max-h-[85dvh] overflow-y-auto sm:max-w-[72rem]" onOpenAutoFocus={event => { event.preventDefault(); modalTitle.current?.focus({ preventScroll: true }); }} onCloseAutoFocus={(event) => {
+      <PickerDialogContent className="wconvert-setup-detail" onOpenAutoFocus={event => { event.preventDefault(); modalTitle.current?.focus({ preventScroll: true }); }} onCloseAutoFocus={(event) => {
         event.preventDefault(); (modalOrigin.current?.isConnected ? modalOrigin.current : collectionPicker.current)?.focus({ preventScroll: true });
       }}>
-        {!inspected && !comparing && editorialCollection && <>
-          <DialogHeader><DialogTitle ref={modalTitle} tabIndex={-1}>{editorialCollection.name}</DialogTitle><DialogDescription>{__('Choose a useful campaign stage or an alternative setup. Nothing is scheduled automatically.', 'wconvert')}</DialogDescription></DialogHeader>
-          {collectionDetails}
-          <div className="wconvert-picker__controls wconvert-toolbar"><div className="wconvert-picker__search-row"><PickerSearch label={__('Search collection setups','wconvert')} value={query} placeholder={__('Search this collection','wconvert')} onChange={value=>{setQuery(value);setPage(0);}} /></div>
-            <OptionStrip label={__('Collection format', 'wconvert')} value={formatId}
-              options={[{value:'all',label:__('All formats','wconvert')}, ...formatOptions].filter(({value}) => value === 'all' || value === formatId || matchingCollection.some(entry => editorialCollection.items.some(item => item.setup_id === entry.id) && startingPointDisplayType(entry) === value))}
-              onChange={value => { setFormatId(value); setPage(0); }} />
-          </div>
-          <p role="status" className="text-note">{sprintf(_n('%s matching setup', '%s matching setups', entries.length, 'wconvert'), String(entries.length)) + ' · ' + sprintf(_n('%s design', '%s designs', designCount, 'wconvert'), String(designCount))}</p>
-          {setupGallery}
-          {comparisonControls}
-        </>}
-        {!inspected && comparing && <>
-          <DialogHeader><DialogTitle ref={modalTitle} tabIndex={-1}>{__('Compare two designs', 'wconvert')}</DialogTitle><DialogDescription>{__('Inspect every screen and requirement. Review one setup before creating a draft; comparison saves nothing.', 'wconvert')}</DialogDescription></DialogHeader>
-          <SetupComparison entries={comparisonEntries} failed={previews.failed} onRetry={previews.retry} onInspect={entry => { setInspected(entry); requestAnimationFrame(() => { if (modalContent.current) modalContent.current.scrollTop = 0; modalTitle.current?.focus({ preventScroll: true }); }); }} />
-          <Button className="wconvert-picker__back" variant="outline" onClick={() => { setComparing(false); requestAnimationFrame(() => { if (modalContent.current) modalContent.current.scrollTop = collectionScroll.current; modalTitle.current?.focus({ preventScroll: true }); }); }}><ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />{editorialCollection ? __('Back to collection', 'wconvert') : __('Back to library', 'wconvert')}</Button>
-        </>}
-        {inspected && <>
-          <DialogHeader>
-            <DialogTitle ref={modalTitle} tabIndex={-1}>{inspected.name}</DialogTitle>
-            <DialogDescription>{__('Review this setup. You can change it in the editor.', 'wconvert')}</DialogDescription>
-          </DialogHeader>
-          {inspectedChoices.length > 1 && <label className="flex flex-col gap-2 text-note">{__('Use case', 'wconvert')}<select className="wconvert-picker__select" value={inspected.id} disabled={starting !== null} onChange={event => {
-            const next = inspectedChoices.find(entry => entry.id === event.target.value);
-            if (next) { setUseCases(value => ({ ...value, [`${designKey(next)}:${startingPointDisplayType(next)}`]: next.id })); previews.onNear(next.id); setInspected(next); }
-          }}>{inspectedChoices.map(entry => <option key={entry.id} value={entry.id}>{entry.name}</option>)}</select></label>}
-          {inspectedEntry && <SetupPreview key={`${designKey(inspected)}:${startingPointDisplayType(inspected)}`} entry={inspectedEntry} />}
-          {error && <><p role="alert">{error}</p><Button variant="outline" disabled={starting !== null} onClick={() => { setInspected(null); previews.reset(); setPlaybooksRetry(value => value + 1); setError(null); }}>{__('Reload campaign setups', 'wconvert')}</Button></>}
-          {previews.failed.has(inspected.id) && <Button variant="outline" onClick={() => previews.retry(inspected.id)}>{__('Retry preview', 'wconvert')}</Button>}
-          {inspected.requirements && <section><strong>{__('Have ready', 'wconvert')}</strong><ul className="list-disc ps-5">{inspected.requirements.map(item => <li key={item}>{item}</li>)}</ul></section>}
-          <StartingPointFacts playbook={inspectedEntry ?? inspected} goal={goal} vocabulary={vocabulary.status === 'ready' ? vocabulary.data : null} />
-          {inspected.notes && !(inspected.template && inspected.template.tree.steps.length > 1) && <p className="m-0 text-note text-muted-foreground">{inspected.notes}</p>}
-          {inspected.availability && inspected.availability !== 'ready' && <p id="setup-refusal">{inspected.availability === 'locked' ? sprintf(__('Available with %s', 'wconvert'), tierProductName(undefined)) : __('This setup needs a design that is not installed.', 'wconvert')}</p>}
-          <div className="wconvert-setup-detail__actions wconvert-toolbar">
-            <Button aria-describedby={inspected.availability && inspected.availability !== 'ready' ? 'setup-refusal' : undefined} aria-disabled={inspected.availability !== undefined && inspected.availability !== 'ready'} disabled={starting !== null || (inspected.availability === 'ready' && inspected.revision !== undefined && !inspectedEntry?.template)} onClick={() => { void start(inspected.id); }}>{__('Use this setup', 'wconvert')}</Button>
-            <Button className="wconvert-picker__back" variant="outline" onClick={() => { setInspected(null); requestAnimationFrame(() => { if (modalContent.current) modalContent.current.scrollTop = collectionScroll.current; (detailTrigger.current?.isConnected ? detailTrigger.current : modalTitle.current)?.focus({ preventScroll: true }); }); }}><ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />{comparing ? __('Back to comparison', 'wconvert') : editorialCollection ? __('Back to collection', 'wconvert') : __('Back to setups', 'wconvert')}</Button>
-          </div>
-        </>}
-      </DialogContent>
+        <PickerDialogHeader>
+          <DialogTitle ref={modalTitle} tabIndex={-1}>{inspected?.name ?? (comparing ? __('Compare two designs', 'wconvert') : editorialCollection?.name)}</DialogTitle>
+          <DialogDescription>{inspected ? __('Review every screen and the setup before creating a draft.', 'wconvert') : comparing ? __('Compare sample designs, then review one setup. Nothing is applied here.', 'wconvert') : __('Choose one useful setup or campaign stage. Campaign dates are set in the editor.', 'wconvert')}</DialogDescription>
+        </PickerDialogHeader>
+        <PickerDialogBody ref={modalContent}>
+          {!inspected && !comparing && editorialCollection && <>
+            {collectionDetails}
+            <div className="wconvert-picker__controls wconvert-toolbar"><div className="wconvert-picker__search-row"><PickerSearch label={__('Search collection setups','wconvert')} value={query} placeholder={__('Search this collection','wconvert')} onChange={value=>{setQuery(value);setPage(0);}} /></div>
+              <OptionStrip label={__('Collection format', 'wconvert')} value={formatId}
+                options={[{value:'all',label:__('All formats','wconvert')}, ...formatOptions].filter(({value}) => value === 'all' || value === formatId || matchingCollection.some(entry => editorialCollection.items.some(item => item.setup_id === entry.id) && startingPointDisplayType(entry) === value))}
+                onChange={value => { setFormatId(value); setPage(0); }} />
+            </div>
+            <p role="status" className="text-note">{sprintf(_n('%s matching setup', '%s matching setups', entries.length, 'wconvert'), String(entries.length)) + ' · ' + sprintf(_n('%s design', '%s designs', designCount, 'wconvert'), String(designCount))}</p>
+            {setupGallery}
+          </>}
+          {!inspected && comparing && <SetupComparison entries={comparisonEntries} failed={previews.failed} onRetry={previews.retry} onInspect={entry => { setInspected(entry); requestAnimationFrame(() => { if (modalContent.current) modalContent.current.scrollTop = 0; modalTitle.current?.focus({ preventScroll: true }); }); }} />}
+          {inspected && <div className="wconvert-setup-inspector">
+            <div>
+              {inspectedEntry && <SetupPreview key={`${designKey(inspected)}:${startingPointDisplayType(inspected)}`} entry={inspectedEntry} />}
+              {previews.failed.has(inspected.id) && <Button variant="outline" onClick={() => previews.retry(inspected.id)}>{__('Retry preview', 'wconvert')}</Button>}
+            </div>
+            <aside className="wconvert-setup-inspector__facts" aria-label={__('Campaign setup details', 'wconvert')}>
+              <Badge variant="outline">{displayTypeLabel(startingPointDisplayType(inspected))}</Badge>
+              {inspectedChoices.length > 1 && <section className="wconvert-setup-inspector__cases">
+                <h3>{__('Choose a use case', 'wconvert')}</h3>
+                <p className="text-note text-muted-foreground">{__('These setups share a layout. Choose the wording and suggested settings you need.', 'wconvert')}</p>
+                <OptionStrip label={__('Use case', 'wconvert')} value={inspected.id} disabled={starting !== null}
+                  options={inspectedChoices.map(entry => ({ value: entry.id, label: entry.name }))}
+                  onChange={id => { const next = inspectedChoices.find(entry => entry.id === id); if (next) { setUseCases(value => ({ ...value, [`${designKey(next)}:${startingPointDisplayType(next)}`]: next.id })); previews.onNear(next.id); setInspected(next); } }} />
+              </section>}
+              {inspected.requirements && inspected.requirements.length > 0 && <section><h3>{__('Have ready', 'wconvert')}</h3><ul className="list-disc ps-5 text-note">{inspected.requirements.map(item => <li key={item}>{item}</li>)}</ul></section>}
+              <StartingPointFacts compact playbook={inspectedEntry ?? inspected} goal={goal} vocabulary={vocabulary.status === 'ready' ? vocabulary.data : null} />
+              {inspected.notes && !(inspectedEntry?.template && inspectedEntry.template.tree.steps.length > 1) && <p className="m-0 text-note text-muted-foreground">{inspected.notes}</p>}
+              {inspected.availability && inspected.availability !== 'ready' && <p id="setup-refusal">{inspected.availability === 'locked' ? sprintf(__('Available with %s', 'wconvert'), tierProductName(undefined)) : __('This setup needs a design that is not installed.', 'wconvert')}</p>}
+            </aside>
+          </div>}
+        </PickerDialogBody>
+        {!inspected && !comparing && editorialCollection && entries.length > 0 && <PickerPagination page={shownPage} pages={pageCount} disabled={starting !== null} onChange={setPage} />}
+        {!inspected && !comparing && comparisonControls}
+        <PickerDialogFooter>
+          {inspected && error && <div className="wconvert-picker__footer-error" role="alert"><p>{error}</p><Button variant="outline" disabled={starting !== null} onClick={() => { setInspected(null); previews.reset(); setPlaybooksRetry(value => value + 1); setError(null); }}>{__('Reload campaign setups', 'wconvert')}</Button></div>}
+          <Button className="wconvert-picker__back" variant="outline" disabled={starting !== null} onClick={() => {
+            if (inspected) { setInspected(null); requestAnimationFrame(() => { if (modalContent.current) modalContent.current.scrollTop = collectionScroll.current; (detailTrigger.current?.isConnected ? detailTrigger.current : modalTitle.current)?.focus({ preventScroll: true }); }); }
+            else if (comparing) { setComparing(false); requestAnimationFrame(() => { if (modalContent.current) modalContent.current.scrollTop = collectionScroll.current; modalTitle.current?.focus({ preventScroll: true }); }); }
+            else backToLibrary();
+          }}><ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />{inspected ? (comparing ? __('Back to comparison', 'wconvert') : editorialCollection ? __('Back to collection', 'wconvert') : __('Back to setups', 'wconvert')) : comparing ? (editorialCollection ? __('Back to collection', 'wconvert') : __('Back to library', 'wconvert')) : libraryPosition.current.allCollections ? __('All collections', 'wconvert') : __('Back to library', 'wconvert')}</Button>
+          {inspected ? <>
+            <span className="text-note text-muted-foreground">{__('Creates an unpublished draft.', 'wconvert')}</span>
+            <Button aria-describedby={inspected.availability && inspected.availability !== 'ready' ? 'setup-refusal' : undefined} aria-disabled={inspected.availability !== undefined && inspected.availability !== 'ready'} disabled={starting !== null || (inspected.availability === 'ready' && inspected.revision !== undefined && !inspectedEntry?.template)} onClick={() => { void start(inspected.id); }}>{starting === inspected.id ? __('Creating draft…', 'wconvert') : __('Use this setup', 'wconvert')}</Button>
+          </> : <span className="text-note text-muted-foreground">{__('Preview a setup to review its screens and requirements.', 'wconvert')}</span>}
+        </PickerDialogFooter>
+      </PickerDialogContent>
     </Dialog>
     <RegionFooter className="flex flex-wrap items-center justify-between gap-3">
       <Button variant="ghost" disabled={starting !== null} onClick={() => {

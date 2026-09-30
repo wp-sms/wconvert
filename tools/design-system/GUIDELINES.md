@@ -196,6 +196,15 @@ admin layers and overrides retained vendored animation classes. Focus, keyboard
 behavior and dismissal semantics remain unchanged. Verify computed styles in the
 browser, since a class-name test cannot establish the final cascade.
 
+Template discovery dialogs share `PickerDialogContent` / `PickerDialogHeader`
+with a single scroll body and a separate action footer. Back and Use/Install
+stay reachable in short and phone windows. Pack and collection pagination stays
+outside the scroll body. Use-case choices and screen exploration belong to
+inspection, never dropdowns on result cards. A single result keeps the ordinary
+card size. Long placement, measurement and journey guidance uses labeled
+progressive disclosure beside the preview. Dialog headers align to the start
+on every viewport; close controls have a 32px target (44px for coarse pointers).
+
 ## 10. Tables
 
 `shell/DataTable` is what list screens render — semantic roles, a `data-label`

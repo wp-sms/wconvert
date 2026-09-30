@@ -4,6 +4,7 @@ import { ArrowLeft, ArrowRight, Download } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 import { TemplateCard } from '../builder/TemplateCard';
+import { PickerDialogBody, PickerDialogFooter } from '../discovery/PickerDialog';
 import { PreviewControls } from '../discovery/PreviewControls';
 import { PreviewFrame } from '../discovery/PreviewFrame';
 import { PickerSearch } from '../discovery/PickerSearch';
@@ -54,7 +55,6 @@ export function TemplatePackDetail({ pack, displayType, installedVersion, busy, 
 
   return <section className="wconvert-pack-detail" aria-label={pack.name} aria-busy={busy}>
     <header className="wconvert-pack-detail__header">
-      <div className="wconvert-pack-detail__back"><Button className="wconvert-picker__back" variant="outline" disabled={busy} onClick={onBack}><ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />{__('All packs', 'wconvert')}</Button></div>
       <div className="wconvert-pack-detail__identity">
         <h2 ref={heading} tabIndex={-1}>{pack.name}</h2>
         <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
@@ -64,56 +64,64 @@ export function TemplatePackDetail({ pack, displayType, installedVersion, busy, 
         </div>
       </div>
     </header>
-    {template ? <div className="wconvert-pack-detail__inspection">
-      <div className="wconvert-pack-detail__toolbar wconvert-toolbar">
-        <Button className="wconvert-picker__back" variant="outline" disabled={busy} onClick={backToDesigns}><ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />{__('Back to designs','wconvert')}</Button>
-        <h3 className="m-0 text-heading font-semibold">{template.name}</h3><Badge variant="outline">{__('Sample content','wconvert')}</Badge>
-        <PreviewControls mobile={mobile} onMobile={setMobile} template={template} step={safeStep} disabled={busy} onStep={value => {setStep(value);setResultId('');}} />
-        {screen?.results && screen.results.length > 0 && <label className="text-note">{__('Result to inspect','wconvert')}<select className="wconvert-picker__select" value={result?.id} onChange={event=>setResultId(event.target.value)}>{screen.results.map(item=><option key={item.id} value={item.id}>{item.heading || item.id}</option>)}</select></label>}
-      </div>
-      <PreviewFrame template={template} displayType={template.display_type} mobile={mobile} step={safeStep} result={result} />
-    </div> : null}
-    <div ref={list} className="wconvert-pack-detail__browse" hidden={template !== undefined}>
-      <div className="wconvert-picker__controls wconvert-toolbar">
-        <div className="wconvert-picker__search-row"><PickerSearch label={__('Search designs in this pack','wconvert')} value={query} onChange={value=>{setQuery(value);setPage(0);}} disabled={busy} /></div>
-        <OptionStrip label={__('Format','wconvert')} value={format} disabled={busy} onChange={value=>{setFormat(value);setPage(0);}}
-          options={[{value:'all',label:__('All formats','wconvert')},...formats.map(value=>({value,label:displayTypeLabel(value)}))]} />
-        <p role="status" className="m-0 text-note text-muted-foreground">{sprintf(_n('%d matching design','%d matching designs',shown.length,'wconvert'),shown.length)}</p>
-      </div>
-      {shown.length ? <ul className="wconvert-gallery">{shown.slice(currentPage*24,(currentPage+1)*24).map(({entry,index})=><TemplateCard key={entry.id} id={`pack-${entry.id}`} name={entry.name} template={entry} displayType={entry.display_type}
-        marks={<Badge variant="outline">{displayTypeLabel(entry.display_type)}</Badge>}
-        action={describedBy=><Button variant="outline" disabled={busy} aria-describedby={describedBy} aria-label={sprintf(__('Preview %s','wconvert'),entry.name)} onClick={()=>{returnFocus.current=document.activeElement instanceof HTMLElement?document.activeElement:null;listPosition.current=list.current?.scrollTop??0;setDesign(index);setStep(0);setResultId('');requestAnimationFrame(()=>heading.current?.focus());}}>{__('Preview all screens','wconvert')}</Button>} />)}</ul>
-        : <div className="wconvert-packs__empty"><h3>{__('No designs match','wconvert')}</h3><p>{__('Try another format or a shorter search.','wconvert')}</p><Button variant="outline" onClick={()=>{setFormat('all');setQuery('');setPage(0);}}>{__('Show all designs','wconvert')}</Button></div>}
-    </div>
-    {!template && shown.length > 0 && <PickerPagination page={currentPage} pages={pages} disabled={busy} onChange={setPage} />}
-    <footer className="wconvert-pack-detail__footer">
-      {error && <div role="alert" className="wconvert-pack-error">{error}</div>}
-      {starts.length > 0 && <details className="wconvert-pack-detail__starts">
-        <summary>{sprintf(_n('%d campaign setup included', '%d campaign setups included', starts.length, 'wconvert'), starts.length)}</summary>
-        <ul>{starts.map((entry) => <li key={entry.id}><strong>{entry.name}</strong><span> · {entry.goal_label}</span></li>)}</ul>
-        <p>{__('Includes wording and suggested display settings. Choose a campaign setup when creating a new Campaign.', 'wconvert')}</p>
-      </details>}
-      {installed && creating ? <div className="wconvert-pack-detail__next">
-        <p className="text-sm text-muted-foreground">{relevantStarts.length > 0
-          ? __('Choose a campaign setup next to review its wording and suggested settings.', 'wconvert')
-          : __('This pack has no campaign setups for your selected goal. Its designs remain available in the editor.', 'wconvert')}</p>
-        {relevantStarts.length > 0 && <Button disabled={busy} onClick={() => onChooseStartingPoints(pack.id)}>{__('Choose a campaign setup', 'wconvert')}<ArrowRight aria-hidden="true" className="rtl:-scale-x-100" /></Button>}
-      </div> : <div className="wconvert-pack-detail__next">
-        <div>
-          {!(installed && compatible) && <p className="font-medium">{installed ? template ? __('This design uses a different format', 'wconvert') : __('Choose a design to inspect', 'wconvert') : installedVersion ? __('Update this pack', 'wconvert') : __('Add this pack to your library', 'wconvert')}</p>}
-          <p className="text-sm text-muted-foreground">{installed ? template === undefined ? __('Preview a design to review every screen before applying it.', 'wconvert') : compatible
-            ? __('Next, choose your content and review the design before applying.', 'wconvert')
-            : sprintf(__('Open a draft in %1$s format to use this design. Your current draft is %2$s.', 'wconvert'), displayTypeLabel(template?.display_type ?? displayType), displayTypeLabel(displayType))
-            : creating && relevantStarts.length === 0 ? __('This pack has no campaign setups for your selected goal. Install it to use its designs in the editor.', 'wconvert')
-              : !creating && matching === 0 ? sprintf(__('This pack has no %s designs. Install it to use in other draft formats.', 'wconvert'), displayTypeLabel(displayType))
-              : sprintf(_n('Adds %d design. Existing drafts stay unchanged.', 'Adds all %d designs. Existing drafts stay unchanged.', count, 'wconvert'), count)}</p>
+    <PickerDialogBody ref={list} className="wconvert-pack-detail__document">
+      {template ? <div className="wconvert-pack-detail__inspection">
+        <div className="wconvert-pack-detail__toolbar wconvert-toolbar">
+          <h3 className="m-0 text-heading font-semibold">{template.name}</h3><Badge variant="outline">{__('Sample content','wconvert')}</Badge>
+          <PreviewControls mobile={mobile} onMobile={setMobile} template={template} step={safeStep} disabled={busy} onStep={value => {setStep(value);setResultId('');}} />
+          {screen?.results && screen.results.length > 0 && <label className="text-note">{__('Result to inspect','wconvert')}<select className="wconvert-picker__select" value={result?.id} onChange={event=>setResultId(event.target.value)}>{screen.results.map(item=><option key={item.id} value={item.id}>{item.heading || item.id}</option>)}</select></label>}
         </div>
+        <PreviewFrame template={template} displayType={template.display_type} mobile={mobile} step={safeStep} result={result} fitHeight />
+      </div> : null}
+      <div className="wconvert-pack-detail__browse" hidden={template !== undefined}>
+        <div className="wconvert-picker__controls wconvert-toolbar">
+          <div className="wconvert-picker__search-row"><PickerSearch label={__('Search designs in this pack','wconvert')} value={query} onChange={value=>{setQuery(value);setPage(0);}} disabled={busy} /></div>
+          <OptionStrip label={__('Format','wconvert')} value={format} disabled={busy} onChange={value=>{setFormat(value);setPage(0);}}
+            options={[{value:'all',label:__('All formats','wconvert')},...formats.map(value=>({value,label:displayTypeLabel(value)}))]} />
+          <p role="status" className="m-0 text-note text-muted-foreground">{sprintf(_n('%d matching design','%d matching designs',shown.length,'wconvert'),shown.length)}</p>
+        </div>
+        {shown.length ? <ul className="wconvert-gallery">{shown.slice(currentPage*24,(currentPage+1)*24).map(({entry,index})=><TemplateCard key={entry.id} id={`pack-${entry.id}`} name={entry.name} template={entry} displayType={entry.display_type}
+          marks={<Badge variant="outline">{displayTypeLabel(entry.display_type)}</Badge>}
+          action={describedBy=><Button variant="outline" disabled={busy} aria-describedby={describedBy} aria-label={sprintf(__('Preview %s','wconvert'),entry.name)} onClick={()=>{returnFocus.current=document.activeElement instanceof HTMLElement?document.activeElement:null;listPosition.current=list.current?.scrollTop??0;setDesign(index);setStep(0);setResultId('');requestAnimationFrame(()=>{if (list.current) list.current.scrollTop=0;heading.current?.focus({preventScroll:true});});}}>{__('Preview all screens','wconvert')}</Button>} />)}</ul>
+          : <div className="wconvert-packs__empty"><h3>{__('No designs match','wconvert')}</h3><p>{__('Try another format or a shorter search.','wconvert')}</p><Button variant="outline" onClick={()=>{setFormat('all');setQuery('');setPage(0);}}>{__('Show all designs','wconvert')}</Button></div>}
+      </div>
+      <div className="wconvert-pack-detail__information">
+        {starts.length > 0 && <details className="wconvert-pack-detail__starts">
+          <summary>{sprintf(_n('%d campaign setup included', '%d campaign setups included', starts.length, 'wconvert'), starts.length)}</summary>
+          <ul>{starts.map((entry) => <li key={entry.id}><strong>{entry.name}</strong><span> · {entry.goal_label}</span></li>)}</ul>
+          <p>{__('Includes wording and suggested display settings. Choose a campaign setup when creating a new Campaign.', 'wconvert')}</p>
+        </details>}
+        {installed && creating ? <div className="wconvert-pack-detail__next">
+          <p className="text-sm text-muted-foreground">{relevantStarts.length > 0
+            ? __('Choose a campaign setup next to review its wording and suggested settings.', 'wconvert')
+            : __('This pack has no campaign setups for your selected goal. Its designs remain available in the editor.', 'wconvert')}</p>
+
+        </div> : <div className="wconvert-pack-detail__next">
+          <div>
+            {!(installed && compatible) && <p className="font-medium">{installed ? template ? __('This design uses a different format', 'wconvert') : __('Choose a design to inspect', 'wconvert') : installedVersion ? __('Update this pack', 'wconvert') : __('Add this pack to your library', 'wconvert')}</p>}
+            <p className="text-sm text-muted-foreground">{installed ? template === undefined ? __('Preview a design to review every screen before applying it.', 'wconvert') : compatible
+              ? __('Next, choose your content and review the design before applying.', 'wconvert')
+              : sprintf(__('Open a draft in %1$s format to use this design. Your current draft is %2$s.', 'wconvert'), displayTypeLabel(template?.display_type ?? displayType), displayTypeLabel(displayType))
+              : creating && relevantStarts.length === 0 ? __('This pack has no campaign setups for your selected goal. Install it to use its designs in the editor.', 'wconvert')
+                : !creating && matching === 0 ? sprintf(__('This pack has no %s designs. Install it to use in other draft formats.', 'wconvert'), displayTypeLabel(displayType))
+                : sprintf(_n('Adds %d design. Existing drafts stay unchanged.', 'Adds all %d designs. Existing drafts stay unchanged.', count, 'wconvert'), count)}</p>
+          </div>
+        </div>}
+        {!installed && <p className="wconvert-pack-detail__connection">{__('Installation downloads this pack from your catalog service.', 'wconvert')}</p>}
+        {installedVersion && !installed && <p className="wconvert-pack-detail__connection">{sprintf(__('Version %s is installed. Existing drafts keep their original design.', 'wconvert'), installedVersion)}</p>}
+      </div>
+    </PickerDialogBody>
+    {!template && shown.length > 0 && <PickerPagination page={currentPage} pages={pages} disabled={busy} onChange={setPage} />}
+
+    <PickerDialogFooter>
+      {error && <div role="alert" className="wconvert-pack-error">{error}</div>}
+      <Button className="wconvert-picker__back" variant="outline" disabled={busy} onClick={template ? backToDesigns : onBack}><ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />{template ? __('Back to designs', 'wconvert') : __('All packs', 'wconvert')}</Button>
+      <span className="text-note text-muted-foreground">{__('Existing drafts stay unchanged.', 'wconvert')}</span>
+      {installed && creating ? relevantStarts.length > 0 && <Button disabled={busy} onClick={() => onChooseStartingPoints(pack.id)}>{__('Choose a campaign setup', 'wconvert')}<ArrowRight aria-hidden="true" className="rtl:-scale-x-100" /></Button> : <>
         {installed ? compatible && <Button disabled={busy} onClick={() => onContinue(template!.id)}>
           {busy ? __('Preparing…', 'wconvert') : __('Continue with this design', 'wconvert')}<ArrowRight aria-hidden="true" className="rtl:-scale-x-100" />
         </Button> : <Button disabled={busy} onClick={onInstall}><Download aria-hidden="true" />{installing ? __('Installing…', 'wconvert') : installedVersion ? __('Install update', 'wconvert') : __('Install pack', 'wconvert')}</Button>}
-      </div>}
-      {!installed && <p className="wconvert-pack-detail__connection">{__('Installation downloads this pack from your catalog service.', 'wconvert')}</p>}
-      {installedVersion && !installed && <p className="wconvert-pack-detail__connection">{sprintf(__('Version %s is installed. Existing drafts keep their original design.', 'wconvert'), installedVersion)}</p>}
-    </footer>
+      </>}
+    </PickerDialogFooter>
   </section>;
 }

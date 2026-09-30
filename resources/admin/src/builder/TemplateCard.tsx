@@ -84,8 +84,6 @@ export interface TemplateCardProps {
   readonly template?: Template;
   /** Drawn as the one in use, and said as `aria-current` rather than by colour. */
   readonly current?: boolean;
-  /** One starting point can use the full region, with its setup beside the preview. */
-  readonly featured?: boolean;
   /**
    * Why this design cannot be used, in the merchant's words.
    *
@@ -143,7 +141,6 @@ export function TemplateCard({
   name,
   template,
   current = false,
-  featured = false,
   reason = null,
   notes,
   marks,
@@ -225,7 +222,7 @@ export function TemplateCard({
       */
       aria-current={current ? 'true' : undefined}
       data-refused={reason !== null ? 'true' : undefined}
-      className={`wconvert-gallery__card${current ? ' is-chosen' : ''}${featured ? ' wconvert-gallery__card--featured' : ''}`}
+      className={`wconvert-gallery__card${current ? ' is-chosen' : ''}`}
       style={!near && held.current !== null ? { minBlockSize: held.current } : undefined}
     >
       {/*
@@ -264,11 +261,9 @@ export function TemplateCard({
         truncated a name as short as "Stacked signup". A gallery is read by
         comparing designs, and cards that are not the same shape compare badly.
       */}
-      <div className={featured
-        ? 'wconvert-gallery__body flex min-w-0 flex-col items-start gap-4 p-5'
-        : 'flex flex-col items-start gap-2 border-t border-border px-3 py-2.5'}>
+      <div className="flex flex-col items-start gap-2 border-t border-border px-3 py-2.5">
         <div className="flex w-full flex-wrap items-center justify-between gap-x-2 gap-y-1">
-          <span id={nameId} className={featured ? 'text-heading font-semibold text-foreground' : 'font-medium text-foreground'}>
+          <span id={nameId} className="font-medium text-foreground">
             {name}
           </span>
           {marks}
