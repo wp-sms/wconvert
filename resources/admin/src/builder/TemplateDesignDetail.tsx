@@ -126,8 +126,8 @@ export function TemplateDesignDetail({
 
   return (
     <section className="wconvert-design-detail" aria-labelledby={`${id}-title`}>
-      <div className="wconvert-design-detail__header">
-        <Button variant="ghost" disabled={busy} onClick={onBack}>
+      <div className="wconvert-design-detail__header wconvert-toolbar">
+        <Button className="wconvert-picker__back" variant="outline" disabled={busy} onClick={onBack}>
           <ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />
           {__('Back to designs', 'wconvert')}
         </Button>
@@ -155,7 +155,7 @@ export function TemplateDesignDetail({
         </fieldset>
       )}
 
-      <div className="wconvert-design-detail__controls">
+      <div className="wconvert-design-detail__controls wconvert-toolbar">
         <PreviewControls mobile={device === 'mobile'} onMobile={mobile => setDevice(mobile ? 'mobile' : 'desktop')}
           template={template} step={shown} onStep={value => { setStep(value); setResultId(''); }} />
         {resultScreen?.results && resultScreen.results.length > 0 && <label className="text-note">{__('Result to inspect','wconvert')}<select className="wconvert-picker__select" value={result?.id} onChange={event => setResultId(event.target.value)}>{resultScreen.results.map(value => <option key={value.id} value={value.id}>{value.heading || value.id}</option>)}</select></label>}

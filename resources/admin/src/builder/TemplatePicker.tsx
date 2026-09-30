@@ -2,6 +2,8 @@ import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react'
 import { __, sprintf } from '@wordpress/i18n';
 import { LayoutTemplate, SlidersHorizontal, X } from 'lucide-react';
 import { Button } from '../components/ui/button';
+import { PickerPagination } from '../discovery/PickerPagination';
+import { ComparisonTray } from '../discovery/ComparisonTray';
 import { PickerSearch } from '../discovery/PickerSearch';
 import { OptionStrip } from '../shell/OptionStrip';
 import { PickerSettings } from '../discovery/PickerSettings';
@@ -10,6 +12,7 @@ import { Gallery, type Fit } from './Gallery';
 import { DesignComparison } from './DesignComparison';
 import { TemplateDesignDetail, type PrepareDesign } from './TemplateDesignDetail';
 import { facetOptions, narrow, toggled, type Chosen } from './facets';
+import { displayTypeOptions } from '../displayTypes';
 import { nameOf, type TemplateIndex } from '../templates/api';
 import type { Template } from '@renderer/types';
 import { usePicker } from '../discovery/usePicker';
@@ -29,6 +32,7 @@ export interface TemplatePickerProps {
   readonly trees: ReadonlyMap<string, Template>;
   readonly displayType: string;
   readonly currentDisplayType?: string;
+  readonly onFormatChange?: (format: string) => void;
   readonly chosen: string | undefined;
   readonly hasCurrentDesign?: boolean;
   readonly contentLock?: boolean;
@@ -46,7 +50,7 @@ export interface TemplatePickerProps {
 
 /** Browse by what the design does, inspect it, then apply it to the draft. */
 export function TemplatePicker({
-  index, trees, displayType, currentDisplayType, chosen, fit, goalLabel, busy, onChoose, onPrepare, onNear, failed, onRetry, active = true, initialInspectedId, hasCurrentDesign = true, contentLock = false,
+  index, trees, displayType, currentDisplayType, onFormatChange, chosen, fit, goalLabel, busy, onChoose, onPrepare, onNear, failed, onRetry, active = true, initialInspectedId, hasCurrentDesign = true, contentLock = false,
 }: TemplatePickerProps) {
   const [chosenFacets, setChosenFacets] = useState<Chosen>({});
   const [query, setQuery] = useState('');
@@ -124,9 +128,10 @@ export function TemplatePicker({
       {settings && <PickerSettings picker={picker} onBack={() => { setSettings(false); requestAnimationFrame(() => returnFocus.current?.focus({ preventScroll: true })); }} />}
       {/* Keep this view mounted so Back restores the filters and the scroll position. */}
       <div className="wconvert-design-browser__browse" hidden={inspected !== undefined || comparing || settings}>
-        <div className="wconvert-picker__controls">
+        <div className="wconvert-picker__controls wconvert-toolbar">
           <div className="wconvert-picker__search-row">
-            <PickerSearch label={__('Search designs','wconvert')} value={query} disabled={busy} onChange={value=>{setQuery(value);setPage(0);}} />
+            <PickerSearch label={__('Search designs','wconvert')} value={query} disabled={busy} onChange={value=>{setQuery(value);setPage(0);}} placeholder={__('Search a need, e.g. a guide or quote…','wconvert')} />
+            {onFormatChange && <label className="wconvert-picker__format text-note">{__('Format','wconvert')}<select className="wconvert-picker__select" value={displayType} onChange={event=>{setPage(0);setCompared([]);setComparing(false);onFormatChange(event.target.value);}}>{displayTypeOptions().map(({value,label})=><option key={value} value={value}>{label}</option>)}</select></label>}
             {fit.outcome && <select className="wconvert-picker__select" aria-label={__('Design fit', 'wconvert')}
               value={goalFitOnly ? 'goal' : 'all'} onChange={(event) => setGoalFitOnly(event.target.value === 'goal')}>
               <option value="goal">{goalLabel
@@ -175,7 +180,6 @@ export function TemplatePicker({
             )}
           </div>
           <div className="wconvert-picker__results">
-            <Button variant="outline" disabled={busy || comparedEntries.length !== 2} onClick={()=>{returnFocus.current=document.activeElement instanceof HTMLElement?document.activeElement:null;setComparing(true);}}>{sprintf(__('Compare designs (%s/2)','wconvert'),String(comparedEntries.length))}</Button>
             <label className="flex items-center gap-2 text-note">{__('Sort','wconvert')}<select className="wconvert-picker__select" value={sort} onChange={event=>{setSort(event.target.value);setPage(0);}}><option value="recommended">{__('Recommended','wconvert')}</option><option value="name">{__('Name A–Z','wconvert')}</option></select></label>
             <span role="status" aria-live="polite" aria-atomic="true">
               {sprintf(
@@ -223,8 +227,10 @@ export function TemplatePicker({
                 fromComparison.current=false; setInspectedId(id);
               }} />
           )}
-          {pages > 1 && <nav className="wconvert-picker__pagination" aria-label={__('Design pages', 'wconvert')}><Button variant="outline" disabled={busy || currentPage === 0} onClick={() => setPage(currentPage - 1)}>{__('Previous', 'wconvert')}</Button><span>{sprintf(__('Page %1$s of %2$s', 'wconvert'), String(currentPage + 1), String(pages))}</span><Button variant="outline" disabled={busy || currentPage === pages - 1} onClick={() => setPage(currentPage + 1)}>{__('Next', 'wconvert')}</Button></nav>}
+
         </div>
+        <ComparisonTray names={comparedEntries.map(entry=>entry.name)} disabled={busy} onClear={()=>setCompared([])} onCompare={()=>{returnFocus.current=document.activeElement instanceof HTMLElement?document.activeElement:null;setComparing(true);}} />
+        {shown.length > 0 && <PickerPagination page={currentPage} pages={pages} disabled={busy} onChange={setPage} />}
       </div>
       {!settings && comparing && inspected === undefined && <DesignComparison entries={comparedEntries} trees={trees} failed={failed} onRetry={onRetry} onBack={()=>{setComparing(false);requestAnimationFrame(()=>returnFocus.current?.focus({preventScroll:true}));}} onInspect={id=>{fromComparison.current=true;onNear(id);setInspectedId(id);}} />}
       {!settings && inspected !== undefined && (

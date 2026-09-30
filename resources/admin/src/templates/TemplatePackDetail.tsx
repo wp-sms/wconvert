@@ -7,6 +7,7 @@ import { TemplateCard } from '../builder/TemplateCard';
 import { PreviewControls } from '../discovery/PreviewControls';
 import { PreviewFrame } from '../discovery/PreviewFrame';
 import { PickerSearch } from '../discovery/PickerSearch';
+import { PickerPagination } from '../discovery/PickerPagination';
 import { OptionStrip } from '../shell/OptionStrip';
 import { matchesSearch } from '../discovery/search';
 import { displayTypeLabel } from '../displayTypes';
@@ -53,7 +54,7 @@ export function TemplatePackDetail({ pack, displayType, installedVersion, busy, 
 
   return <section className="wconvert-pack-detail" aria-label={pack.name} aria-busy={busy}>
     <header className="wconvert-pack-detail__header">
-      <div className="wconvert-pack-detail__back"><Button variant="ghost" disabled={busy} onClick={onBack}><ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />{__('All packs', 'wconvert')}</Button></div>
+      <div className="wconvert-pack-detail__back"><Button className="wconvert-picker__back" variant="outline" disabled={busy} onClick={onBack}><ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />{__('All packs', 'wconvert')}</Button></div>
       <div className="wconvert-pack-detail__identity">
         <h2 ref={heading} tabIndex={-1}>{pack.name}</h2>
         <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
@@ -64,8 +65,8 @@ export function TemplatePackDetail({ pack, displayType, installedVersion, busy, 
       </div>
     </header>
     {template ? <div className="wconvert-pack-detail__inspection">
-      <div className="wconvert-pack-detail__toolbar">
-        <Button variant="ghost" disabled={busy} onClick={backToDesigns}><ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />{__('Back to designs','wconvert')}</Button>
+      <div className="wconvert-pack-detail__toolbar wconvert-toolbar">
+        <Button className="wconvert-picker__back" variant="outline" disabled={busy} onClick={backToDesigns}><ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />{__('Back to designs','wconvert')}</Button>
         <h3 className="m-0 text-heading font-semibold">{template.name}</h3><Badge variant="outline">{__('Sample content','wconvert')}</Badge>
         <PreviewControls mobile={mobile} onMobile={setMobile} template={template} step={safeStep} disabled={busy} onStep={value => {setStep(value);setResultId('');}} />
         {screen?.results && screen.results.length > 0 && <label className="text-note">{__('Result to inspect','wconvert')}<select className="wconvert-picker__select" value={result?.id} onChange={event=>setResultId(event.target.value)}>{screen.results.map(item=><option key={item.id} value={item.id}>{item.heading || item.id}</option>)}</select></label>}
@@ -73,7 +74,7 @@ export function TemplatePackDetail({ pack, displayType, installedVersion, busy, 
       <PreviewFrame template={template} displayType={template.display_type} mobile={mobile} step={safeStep} result={result} />
     </div> : null}
     <div ref={list} className="wconvert-pack-detail__browse" hidden={template !== undefined}>
-      <div className="wconvert-picker__controls">
+      <div className="wconvert-picker__controls wconvert-toolbar">
         <div className="wconvert-picker__search-row"><PickerSearch label={__('Search designs in this pack','wconvert')} value={query} onChange={value=>{setQuery(value);setPage(0);}} disabled={busy} /></div>
         <OptionStrip label={__('Format','wconvert')} value={format} disabled={busy} onChange={value=>{setFormat(value);setPage(0);}}
           options={[{value:'all',label:__('All formats','wconvert')},...formats.map(value=>({value,label:displayTypeLabel(value)}))]} />
@@ -83,8 +84,8 @@ export function TemplatePackDetail({ pack, displayType, installedVersion, busy, 
         marks={<Badge variant="outline">{displayTypeLabel(entry.display_type)}</Badge>}
         action={describedBy=><Button variant="outline" disabled={busy} aria-describedby={describedBy} aria-label={sprintf(__('Preview %s','wconvert'),entry.name)} onClick={()=>{returnFocus.current=document.activeElement instanceof HTMLElement?document.activeElement:null;listPosition.current=list.current?.scrollTop??0;setDesign(index);setStep(0);setResultId('');requestAnimationFrame(()=>heading.current?.focus());}}>{__('Preview all screens','wconvert')}</Button>} />)}</ul>
         : <div className="wconvert-packs__empty"><h3>{__('No designs match','wconvert')}</h3><p>{__('Try another format or a shorter search.','wconvert')}</p><Button variant="outline" onClick={()=>{setFormat('all');setQuery('');setPage(0);}}>{__('Show all designs','wconvert')}</Button></div>}
-      {pages > 1 && <nav className="wconvert-picker__pagination" aria-label={__('Design pages','wconvert')}><Button variant="outline" disabled={busy || currentPage===0} onClick={()=>setPage(currentPage-1)}>{__('Previous','wconvert')}</Button><span>{sprintf(__('Page %1$s of %2$s','wconvert'),String(currentPage+1),String(pages))}</span><Button variant="outline" disabled={busy || currentPage===pages-1} onClick={()=>setPage(currentPage+1)}>{__('Next','wconvert')}</Button></nav>}
     </div>
+    {!template && shown.length > 0 && <PickerPagination page={currentPage} pages={pages} disabled={busy} onChange={setPage} />}
     <footer className="wconvert-pack-detail__footer">
       {error && <div role="alert" className="wconvert-pack-error">{error}</div>}
       {starts.length > 0 && <details className="wconvert-pack-detail__starts">

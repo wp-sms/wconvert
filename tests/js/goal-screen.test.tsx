@@ -648,8 +648,8 @@ it('compares two distinct designs, reviews one in the same dialog and returns wi
   const other = { ...PLAYBOOK, id: 'guide', name: 'Practical guide', template_id: 'other-card' };
   goals.listPlaybooks.mockResolvedValue([PLAYBOOK, other]);
   render(<GoalScreen onCreated={vi.fn()} />); await pickGoal();
-  await userEvent.click(await screen.findByRole('button', { name: 'Compare design: Welcome discount' }));
-  await userEvent.click(screen.getByRole('button', { name: 'Compare design: Practical guide' }));
+  await userEvent.click(await screen.findByRole('checkbox', { name: 'Compare design: Welcome discount' }));
+  await userEvent.click(screen.getByRole('checkbox', { name: 'Compare design: Practical guide' }));
   await userEvent.click(screen.getByRole('button', { name: 'Compare designs (2/2)' }));
   expect(screen.getAllByRole('dialog')).toHaveLength(1);
   expect(screen.getAllByRole('region', { name: 'Design preview' })).toHaveLength(2);
@@ -657,6 +657,18 @@ it('compares two distinct designs, reviews one in the same dialog and returns wi
   expect(screen.getByRole('heading', { name: 'Practical guide' })).toBeVisible();
   await userEvent.click(screen.getByRole('button', { name: 'Back to comparison' }));
   expect(screen.getByRole('heading', { name: 'Compare two designs' })).toBeVisible();
+  expect(optins.createOptin).not.toHaveBeenCalled();
+});
+
+it('keeps comparison recoverable when a search hides every selected design', async () => {
+  render(<GoalScreen onCreated={vi.fn()} />); await pickGoal();
+  await userEvent.click(await screen.findByRole('checkbox', { name: 'Compare design: Welcome discount' }));
+  await userEvent.type(screen.getByRole('searchbox', { name: 'Search campaign setups' }), 'no matching setup');
+  expect(screen.getByText('No campaign setups match')).toBeVisible();
+  expect(screen.getByRole('complementary', { name: 'Designs selected for comparison' })).toBeVisible();
+  await userEvent.click(screen.getByRole('button', { name: 'Clear comparison' }));
+  await userEvent.clear(screen.getByRole('searchbox', { name: 'Search campaign setups' }));
+  expect(screen.getByRole('checkbox', { name: 'Compare design: Welcome discount' })).not.toBeChecked();
   expect(optins.createOptin).not.toHaveBeenCalled();
 });
 

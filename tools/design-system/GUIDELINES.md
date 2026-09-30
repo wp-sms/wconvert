@@ -155,6 +155,15 @@ tab stop and the set announced as a set, all from the browser. Radix's
 `ToggleGroup` buys behaviour the browser already gives, at bundle bytes this
 admin prints on every build.
 
+Template picker option strips use button-like chips: visually clip the native
+input, remove WordPress pseudo dots, and put selected and focus treatments on
+the label. Do not draw both a chip selection and a radio circle. Device and
+screen groups have an explicit gap; a long screen list uses a labeled select.
+Picker toolbars use the same 32px height for search, selects and buttons, with
+44px minimum targets for coarse pointers. Compare uses one shared checkbox
+treatment and a tray naming the selection. Pagination stays outside a scrolling
+gallery body, so it remains reachable without scrolling through every card.
+
 ## 8. The admin speaks only when it changes what you do next
 
 Before designing a message, ask: **if the merchant did not read this, what would

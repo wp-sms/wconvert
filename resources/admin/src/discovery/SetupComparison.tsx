@@ -14,7 +14,7 @@ export function SetupComparison({ entries, onInspect, failed, onRetry }: {
   return <ComparisonGrid>{entries.map(entry => <section key={entry.id} >
     <h3 className="m-0 text-heading font-semibold">{entry.name}</h3>
     <p className="text-note">{displayTypeLabel(startingPointDisplayType(entry))}</p>
-    <SetupPreview entry={entry} />
+    <SetupPreview entry={entry} comparison />
     {failed.has(entry.id) && <Button variant="outline" onClick={() => onRetry(entry.id)}>{__('Retry preview', 'wconvert')}</Button>}
     {entry.requirements && <ul className="list-disc ps-5 text-note">{entry.requirements.map(item => <li key={item}>{item}</li>)}</ul>}
     <Button variant="outline" aria-label={sprintf(__('Review setup: %s', 'wconvert'), entry.name)} onClick={() => onInspect(entry)}>{__('Review this setup', 'wconvert')}</Button>

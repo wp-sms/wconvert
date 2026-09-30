@@ -19,6 +19,15 @@ Two selected designs can be inspected side by side before
 continuing to one exact setup. Comparison creates no campaign. The optional
 helper refines business and format, keeping the explicitly selected Goal.
 
+Picker radio strips render as compact selection chips with a solid selected
+state; their native inputs are visually clipped, and WordPress pseudo dots
+are suppressed. Search, selects and toolbar buttons share the 32px fine-pointer
+height (44px minimum for coarse pointers). One native Compare checkbox and one
+selection tray are shared between creation and the editor. The tray names the
+selection, allows clearing, and enables comparison only at two designs.
+Comparison uses open columns with equally sized, fully fitted preview frames;
+large journeys use a named Screen select instead of an overflowing chip row.
+
 Setup inspection shows the shipping renderer at desktop/phone widths, every
 screen and result, practical requirements and the existing local journey test.
 A source revision and a prepared snapshot revision accompany creation. Changes
@@ -37,6 +46,13 @@ the existing lazy actual design cards, format/search filters and 24-card pages,
 with explicit inspection before continuing to editor review. Canonical stars and
 pagination are shared; collections, occasions and setup choices do not replace
 campaign content through this flow. Show all designs remains available.
+
+The editor library has a constrained flex chain: only the gallery body scrolls,
+with selection and pagination outside that viewport. Pack pagination likewise
+stays outside its scrolling design list. Collection and setup detail dialogs
+scroll as one document, rather than a two-row grid attempting to contain a
+variable number of sections. These boundaries keep page controls and inspector
+actions reachable in short windows. See the [controls and scroll repair review](../reviews/picker-controls-repair-2026-09-30.md).
 
 ## Collections, dates and ownership
 

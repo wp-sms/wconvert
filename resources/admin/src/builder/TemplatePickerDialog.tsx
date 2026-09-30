@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { OptionStrip } from '../shell/OptionStrip';
 import { TemplatePacks } from '../templates/TemplatePacks';
 import { __ } from '@wordpress/i18n';
-import { displayTypeOptions } from '../displayTypes';
 import {
   Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle,
 } from '../components/ui/dialog';
@@ -33,13 +32,7 @@ export function TemplatePickerDialog({ open, onOpenChange, onClosed, onCatalogIn
         <DialogHeader className="wconvert-picker__header flex-row flex-wrap items-center justify-between gap-x-6 gap-y-3 text-start">
           <div className="wconvert-picker__identity">
             <DialogTitle>{packs ? __('Template packs','wconvert') : __('Browse designs', 'wconvert')}</DialogTitle>
-            <label className="flex items-center gap-2 text-note">
-              {__('Format', 'wconvert')}
-              <select className="wconvert-picker__select" value={displayType}
-                onChange={(event) => { setSelectedFormat(event.target.value); setInspectId(undefined); }}>
-                {displayTypeOptions().map(({ value, label }) => <option key={value} value={value}>{label}</option>)}
-              </select>
-            </label>
+
           </div>
           <DialogDescription>{packs ? __('Add approved designs to your library, then preview before applying.','wconvert') : __('Choose a layout and review your content before replacing this draft’s design.','wconvert')}</DialogDescription>
           {onCatalogInstalled && <OptionStrip label={__('Library source','wconvert')} value={packs ? 'packs' : 'designs'} disabled={picker.busy}
@@ -49,8 +42,8 @@ export function TemplatePickerDialog({ open, onOpenChange, onClosed, onCatalogIn
         <div className="wconvert-picker__scroll">
           {packs && onCatalogInstalled && <TemplatePacks displayType={displayType} onInstalled={onCatalogInstalled}
             onInspect={(id) => { picker.onNear(id); setInspectId(id); setPacks(false); }} />}
-          <div hidden={packs}>
-            <TemplatePicker {...picker} displayType={displayType} currentDisplayType={picker.displayType}
+          <div className="wconvert-picker__library" hidden={packs}>
+            <TemplatePicker {...picker} displayType={displayType} onFormatChange={value => { setSelectedFormat(value); setInspectId(undefined); }} currentDisplayType={picker.displayType}
               onChoose={(id, prepared) => { picker.onChoose(id, prepared); setSelectedFormat(null); setInspectId(undefined); }}
               initialInspectedId={inspectId} active={open && !packs} />
           </div>

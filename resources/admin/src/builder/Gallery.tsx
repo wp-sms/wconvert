@@ -5,6 +5,8 @@ import { Button } from '../components/ui/button';
 import { Skeleton } from '../components/ui/skeleton';
 import { useShownAfterDelay } from '../shell/skeletonDelay';
 import { renderingFor, tierName } from '../goals/availability';
+import { displayTypeLabel } from '../displayTypes';
+import { CompareSelection } from '../discovery/CompareSelection';
 import { TemplateCard } from './TemplateCard';
 import { nameOf, type TemplateIndexEntry, type TemplateLabelsWithFacets } from '../templates/api';
 import type { ConvertingAct } from './structure/catalogue';
@@ -244,7 +246,8 @@ export function Gallery({
               this way.
             */
             marks={<div className="flex flex-wrap items-center gap-2">
-              {onCompare && <Button variant="outline" aria-pressed={compared?.includes(entry.id)??false} disabled={busy} aria-label={sprintf(__('Compare design: %s','wconvert'),entry.name)} onClick={()=>onCompare(entry.id)}>{__('Compare','wconvert')}</Button>}
+              <Badge variant="outline">{displayTypeLabel(entry.display_type)}</Badge>
+              {onCompare && !locked && <CompareSelection name={entry.name} checked={compared?.includes(entry.id) ?? false} disabled={busy || ((compared?.length ?? 0) >= 2 && !compared?.includes(entry.id))} onChange={()=>onCompare(entry.id)} />}
               {onSave && <Button variant="ghost" size="icon" className="wconvert-picker__save" disabled={saving} aria-pressed={saved?.has(entry.design_key ?? `registered:${entry.id}`) ?? false} aria-label={sprintf(__('Save design: %s', 'wconvert'), entry.name)} onClick={() => onSave(entry)}><Star size={17} fill={saved?.has(entry.design_key ?? `registered:${entry.id}`) ? 'currentColor' : 'none'} /></Button>}
               {locked ? (
                 <Badge variant="secondary">

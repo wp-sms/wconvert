@@ -1,5 +1,6 @@
 import { useId, useRef, useEffect, useState } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
+import { ArrowLeft } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Region, RegionHeader, RegionBody, PageError } from '../shell/Region';
@@ -13,9 +14,9 @@ export function PickerSettings({ picker, onBack, onPlan }: {
   const title = useRef<HTMLHeadingElement>(null); const id = useId();
   useEffect(() => { title.current?.focus({preventScroll:true}); }, []);
   const data = picker.data;
-  if (!data) return <div className="p-6"><p>{__('Preferences could not be loaded. The library is still available.', 'wconvert')}</p><Button onClick={() => { void picker.reload(); }}>{__('Reload preferences', 'wconvert')}</Button><Button variant="ghost" onClick={onBack}>{__('Back to library', 'wconvert')}</Button></div>;
+  if (!data) return <div className="p-6"><p>{__('Preferences could not be loaded. The library is still available.', 'wconvert')}</p><Button onClick={() => { void picker.reload(); }}>{__('Reload preferences', 'wconvert')}</Button><Button className="wconvert-picker__back" variant="outline" onClick={onBack}><ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />{__('Back to library', 'wconvert')}</Button></div>;
   return <section className="wconvert-picker-settings">
-    <header className="wconvert-picker-settings__header"><Button variant="ghost" onClick={onBack}>{__('Back to library', 'wconvert')}</Button><h2 ref={title} tabIndex={-1}>{__('Your preferences & occasions', 'wconvert')}</h2><p>{__('Stars and recommendations are personal to your WordPress account on this site. Occasion dates are shared with this site’s campaign managers.', 'wconvert')}</p></header>
+    <header className="wconvert-picker-settings__header"><Button className="wconvert-picker__back" variant="outline" onClick={onBack}><ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />{__('Back to library', 'wconvert')}</Button><h2 ref={title} tabIndex={-1}>{__('Your preferences & occasions', 'wconvert')}</h2><p>{__('Stars and recommendations are personal to your WordPress account on this site. Occasion dates are shared with this site’s campaign managers.', 'wconvert')}</p></header>
     {picker.error && <div><PageError message={picker.error} /><Button variant="outline" disabled={picker.saving} onClick={() => {void picker.reload();}}>{__('Reload preferences','wconvert')}</Button></div>}
     <span role="status" className="sr-only">{picker.saving ? __('Saving changes…','wconvert') : ''}</span>
     <Region><RegionHeader level={3} title={__('Personal recommendations', 'wconvert')} description={__('Only your WordPress account on this site uses these choices.','wconvert')} /><RegionBody className="wconvert-picker-settings__body">
