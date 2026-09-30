@@ -6596,3 +6596,64 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
   padding: 0.5rem;
   color: var(--muted-foreground);
 }
+
+/* Discovery: one compact recommendation shelf above the real design library. */
+.wconvert-creation .wconvert-picker__search-row:first-child > :is(button, label > input),
+.wconvert-picker .wconvert-picker__search-row > :is(button, label > input) { min-block-size: 3rem; block-size: 3rem; }
+.wconvert-picker__search { min-inline-size: 12rem; }
+.wconvert-collections, .wconvert-collection-detail, .wconvert-picker__notice { margin: 1.25rem 1.5rem; }
+.wconvert-collections__heading { display: flex; justify-content: space-between; flex-wrap: wrap; align-items: center; gap: .75rem; margin-block-end: .75rem; }
+.wconvert-collections__heading h3 { margin: 0; font-size: var(--text-heading); font-weight: 600; }
+.wconvert-collections__shelf { display: flex; gap: 1rem; overflow-x: auto; scroll-snap-type: x proximity; padding: .25rem .125rem .75rem; }
+.wconvert-collections__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr)); gap: 1rem; }
+.wconvert-collection { position: relative; flex: 0 0 calc((100% - 2rem) / 2.25); min-inline-size: 17rem; border: 1px solid var(--border); border-radius: .75rem; overflow: hidden; scroll-snap-align: start; background: var(--card); }
+.wconvert-collection__open { display: flex; flex-direction: column; inline-size: 100%; block-size: 100%; text-align: start; cursor: pointer; border: 0; padding: 0; background: transparent; color: var(--foreground); }
+.wconvert-collection__art { position: relative; display: block; inline-size: 100%; block-size: 7.5rem; overflow: hidden; background: #264b43; }
+.wconvert-collection__art > span { position: absolute; display: block; background: #f3e6bd; border-radius: .375rem; inline-size: 35%; block-size: 72%; inset-block-start: 28%; inset-inline-start: 16%; transform: rotate(-12deg); }
+.wconvert-collection__art > span:nth-child(2) { inset-inline-start: 40%; inset-block-start: 14%; background: #c9d6b6; transform: rotate(12deg); }
+.wconvert-collection__art > span:nth-child(3) { inline-size: 22%; block-size: .375rem; inset-inline-start: 45%; inset-block-start: 39%; background: #264b43; transform: rotate(12deg); box-shadow: .2rem 1rem 0 #264b43; }
+.wconvert-collection--launch .wconvert-collection__art { background: #c7d7c8; }
+.wconvert-collection--launch .wconvert-collection__art > span { background: #fffaf0; }
+.wconvert-collection--services .wconvert-collection__art { background: #d9e6f4; }
+.wconvert-collection--services .wconvert-collection__art > span { background: #fff; transform: none; inset-block-start: 22%; }
+.wconvert-collection--services .wconvert-collection__art > span:nth-child(2) { background: #7291b2; transform: none; inset-block-start: 40%; }
+.wconvert-collection--reading .wconvert-collection__art { background: #ece5d8; }
+.wconvert-collection--reading .wconvert-collection__art > span { background: #fffcf5; transform: rotate(-5deg); }
+.wconvert-collection--reading .wconvert-collection__art > span:nth-child(2) { background: #c5b592; transform: rotate(5deg); }
+.wconvert-collection__copy { display: flex; flex-direction: column; gap: .5rem; padding: 1rem 1.125rem; }
+.wconvert-collection__copy strong { font-size: var(--text-heading); line-height: 1.4; }
+.wconvert-collection__copy > span { font-size: var(--text-note); line-height: 1.55; }
+.wconvert-collection__count { color: var(--muted-foreground); }
+.wconvert-collection__hide { position: absolute; inset-inline-end: .5rem; inset-block-start: .5rem; display: grid; place-items: center; inline-size: 2rem; block-size: 2rem; border: 1px solid #bfcfc7; border-radius: 50%; background: #fff; color: #24443c; cursor: pointer; }
+.wconvert-collection__open:focus-visible { outline: 3px solid var(--ring); outline-offset: -3px; }
+.wconvert-picker__notice { border: 1px solid var(--border); background: var(--muted); border-radius: .5rem; padding: 1rem; font-size: var(--text-note); }
+.wconvert-picker__pagination { display: flex; align-items: center; justify-content: center; gap: 1rem; margin-block-start: 1.5rem; }
+.wconvert-picker-settings { display: flex; flex-direction: column; gap: 1.75rem; padding: 1.5rem; }
+.wconvert-picker-settings h2, .wconvert-picker-settings h3 { margin-block: .75rem; }
+.wconvert-picker-settings label { display: flex; flex-direction: column; gap: .5rem; font-size: var(--text-note); }
+.wconvert-picker-settings section { display: flex; flex-direction: column; align-items: start; gap: .75rem; }
+.wconvert-occasion-list { inline-size: 100%; margin: 0; padding: 0; list-style: none; }
+.wconvert-occasion-list li { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; padding-block: .75rem; border-block-end: 1px solid var(--border); }
+.wconvert-occasion-list li > div { flex: 1; min-inline-size: 12rem; display: flex; flex-direction: column; gap: .25rem; }
+.wconvert-occasion-form { display: flex; flex-wrap: wrap; gap: 1rem; align-items: end; inline-size: 100%; }
+.wconvert-occasion-form > label { flex: 1; min-inline-size: 10rem; }
+.wconvert-setup-preview { min-inline-size: 0; }
+.wconvert-setup-preview__stage { display: flex; justify-content: center; overflow: hidden; margin-block: 1rem; padding-block: 1.5rem; background: #eef2ed; border-radius: .75rem; }
+.wconvert-setup-preview__fit { flex: none; padding-inline: 1.5rem; }
+.wconvert-setup-detail { padding: 1.5rem; }
+@media (max-width: 639px) {
+  .wconvert-collection { flex-basis: 86%; min-inline-size: 0; }
+  .wconvert-collections, .wconvert-collection-detail, .wconvert-picker__notice { margin-inline: 1rem; }
+  .wconvert-picker__search { flex-basis: 100%; }
+  .wconvert-picker-settings, .wconvert-setup-detail { padding: 1rem; }
+  .wconvert-picker__secondary > label { flex-basis: 100%; justify-content: space-between; }
+}
+.wconvert-creation .wconvert-picker__search-row:first-child .wconvert-picker__search input,
+.wconvert-picker .wconvert-picker__search-row .wconvert-picker__search input { block-size: 3rem; min-block-size: 3rem; box-sizing: border-box; }
+
+/* WordPress's ID-scoped native-control reset reads this same height token. */
+.wconvert-picker__search { --control-height: 3rem; }
+.wconvert-setup-preview__stage:has(.wconvert-journey-test) { display: block; overflow: auto; padding: 1rem; }
+
+.wconvert-picker__save, .wconvert-collections__heading button[data-size=icon], .wconvert-collection__hide { min-inline-size: 2.75rem; min-block-size: 2.75rem; }
+#wconvert-admin .wconvert-picker-settings input { min-block-size: 2.75rem; font-size: var(--text-heading); }

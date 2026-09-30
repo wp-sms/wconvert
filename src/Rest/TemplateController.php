@@ -259,6 +259,7 @@ final class TemplateController implements RestController
     {
         $card = [
             'id' => $entry['id'],
+            'design_key' => $entry['design_key'] ?? 'registered:' . $entry['id'],
             'name' => $entry['name'],
             'display_type' => $entry['display_type'],
             'tier' => $entry['tier'],

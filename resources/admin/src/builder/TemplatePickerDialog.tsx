@@ -23,7 +23,7 @@ export function TemplatePickerDialog({ open, onOpenChange, onClosed, onCatalogIn
   const displayType = selectedFormat ?? picker.displayType;
   return (
     <Dialog open={open} onOpenChange={(next) => {
-      if (!next) { setSelectedFormat(null); setInspectId(undefined); }
+      if (!next) { setSelectedFormat(null); setInspectId(undefined); setPacks(false); }
       onOpenChange(next);
     }}>
       <DialogContent className="wconvert-picker gap-0 overflow-hidden p-0 sm:max-w-[80rem]"
@@ -48,11 +48,13 @@ export function TemplatePickerDialog({ open, onOpenChange, onClosed, onCatalogIn
           </div>}
         </DialogHeader>
         <div className="wconvert-picker__scroll">
-          {packs && onCatalogInstalled ? <TemplatePacks displayType={displayType} onInstalled={onCatalogInstalled}
-            onInspect={(id) => { picker.onNear(id); setInspectId(id); setPacks(false); }} /> :
-            <TemplatePicker key={`${displayType}:${inspectId ?? ''}`} {...picker} displayType={displayType} currentDisplayType={picker.displayType}
+          {packs && onCatalogInstalled && <TemplatePacks displayType={displayType} onInstalled={onCatalogInstalled}
+            onInspect={(id) => { picker.onNear(id); setInspectId(id); setPacks(false); }} />}
+          <div hidden={packs}>
+            <TemplatePicker {...picker} displayType={displayType} currentDisplayType={picker.displayType}
               onChoose={(id, prepared) => { picker.onChoose(id, prepared); setSelectedFormat(null); setInspectId(undefined); }}
-              initialInspectedId={inspectId} active={open} />}
+              initialInspectedId={inspectId} active={open && !packs} />
+          </div>
         </div>
       </DialogContent>
     </Dialog>

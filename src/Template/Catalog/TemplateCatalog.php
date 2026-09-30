@@ -53,6 +53,8 @@ final class TemplateCatalog
         PackValidator::check($source !== '', __('A catalog service has not been configured on this site yet.', 'wconvert'));
         $json = $this->transport->get($source);
         $index = json_decode($json, true, 12);
+        $discovery = is_array($index) && ($index['schema'] ?? null) === 2;
+        if ($discovery) $index = DiscoveryRelease::read($index, $source, $this->transport);
         PackValidator::check(is_array($index) && ($index['schema'] ?? null) === 1 && is_array($index['packs'] ?? null) && array_is_list($index['packs']) && count($index['packs']) <= self::MAX_PACKS, __('The catalog format is unsupported. Your local library has not changed.', 'wconvert'));
         $seen = [];
         foreach ($index['packs'] as $entry) {
@@ -67,7 +69,7 @@ final class TemplateCatalog
             $target = parse_url($entry['url']);
             PackValidator::check(is_array($origin) && is_array($target) && !isset($target['user']) && !isset($target['pass']) && !isset($target['fragment']) && ($origin['scheme'] ?? '') === ($target['scheme'] ?? '') && ($origin['host'] ?? '') === ($target['host'] ?? '') && ($origin['port'] ?? null) === ($target['port'] ?? null), __('A pack address does not belong to this catalog service.', 'wconvert'));
         }
-        $this->options->set(self::CACHE_OPTION, ['source' => $source, 'checked_at' => gmdate('c'), 'packs' => $index['packs']]);
+        $this->options->set(self::CACHE_OPTION, ['source' => $source, 'checked_at' => gmdate('c'), 'packs' => $index['packs'], 'collections' => $discovery ? $index['collections'] : [], 'release' => $discovery ? $index['release'] : null]);
         return $this->status();
     }
 
@@ -111,6 +113,31 @@ final class TemplateCatalog
                 'template_id' => InstalledPacks::designId($pack, $entry['template_id'])];
         }
         return ['id' => $pack['id'], 'name' => $pack['name'], 'version' => $pack['version'], 'digest' => $pack['digest'], 'templates' => $templates, 'starting_points' => $starts];
+    }
+
+    /** Only exact installed pack releases can supply featured setup references.
+     * @return list<array<string, mixed>>
+     */
+    public function collections(): array
+    {
+        $cache = $this->options->get(self::CACHE_OPTION, []);
+        if (!is_array($cache) || ($cache['source'] ?? '') !== $this->source()) return [];
+        $packs = $this->installed->packs(); $collections = [];
+        foreach ($cache['collections'] ?? [] as $collection) {
+            $items = [];
+            foreach ($collection['items'] as $item) {
+                foreach ($packs as $pack) {
+                    if ($pack['id'] !== $item['pack_id'] || $pack['digest'] !== $item['pack_digest']) continue;
+                    foreach ($pack['playbooks'] ?? [] as $setup) if ($setup['id'] === $item['setup_id']) $items[] = ['setup_id' => InstalledPacks::designId($pack, $setup['id']), 'stage' => $item['stage']];
+                    break;
+                }
+            }
+            if (!$items) continue;
+            $collection['items'] = $items;
+            $collection['id'] = 'catalog-' . $collection['id'];
+            $collections[] = $collection;
+        }
+        return $collections;
     }
 
     private function download(string $id): string

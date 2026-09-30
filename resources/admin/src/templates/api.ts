@@ -69,6 +69,7 @@ export interface TemplateFacets {
  * `TemplateLibrary::read()`'s whitelist, this interface, and `exportEntry()`.
  */
 export interface TemplateIndexEntry {
+  design_key?: string;
   id: string;
   name: string;
   display_type: string;

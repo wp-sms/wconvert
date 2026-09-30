@@ -204,6 +204,33 @@ final class TemplateCatalogTest extends TestCase
         $this->expectException(RuntimeException::class);
         $this->catalog->refresh();
     }
+
+    public function testPartialDiscoveryRefreshKeepsTheEntirePreviousCache(): void
+    {
+        $this->serve($this->pack());
+        $this->catalog->refresh();
+        $before = $this->options->get(TemplateCatalog::CACHE_OPTION);
+        $release = str_repeat('a', 64);
+        $page = json_encode(['schema' => 2, 'release' => $release, 'packs' => [], 'collections' => []], JSON_THROW_ON_ERROR);
+        $this->http->responses['https://catalog.example/page.json'] = $page;
+        $this->http->responses['https://catalog.example/index.json'] = json_encode(['schema' => 2, 'release' => $release, 'pages' => [
+            ['url' => 'https://catalog.example/page.json', 'sha256' => hash('sha256', $page)],
+            ['url' => 'https://catalog.example/offline.json', 'sha256' => str_repeat('b', 64)],
+        ]], JSON_THROW_ON_ERROR);
+        try { $this->catalog->refresh(); $this->fail('Partial refresh was accepted'); }
+        catch (RuntimeException $error) { $this->assertSame('Offline', $error->getMessage()); }
+        $this->assertSame($before, $this->options->get(TemplateCatalog::CACHE_OPTION));
+    }
+
+    public function testLegacyIndexCannotBypassCollectionValidation(): void
+    {
+        $this->serve($this->pack());
+        $index = json_decode($this->http->responses['https://catalog.example/index.json'], true);
+        $index['collections'] = [['id' => '<script>', 'items' => 'invalid']];
+        $this->http->responses['https://catalog.example/index.json'] = json_encode($index, JSON_THROW_ON_ERROR);
+        $this->catalog->refresh();
+        $this->assertSame([], $this->catalog->collections());
+    }
 }
 
 final class FakeCatalogTransport implements CatalogTransport

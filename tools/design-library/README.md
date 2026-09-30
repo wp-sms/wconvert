@@ -19,7 +19,7 @@ Run `npm run templates:pilot`, then open `out/pilot.html` through the local site
 (or serve `out/` over HTTP). Add `?batch=visual-variety` to show the eight latest compositions, or `?batch=new-directions` for the initial four. `out/proof.html` pairs every
 screen at desktop and phone widths for visual review.
 `npm run test:template-studio` tests discovery, duplicate detection, brief validation
-and all prepared campaigns. Composer dependencies are required for the PHP exporter.
+and all prepared campaigns. The read-only PHP exporter loads repository classes directly, so review also works before Composer is installed in a release stage.
 
 The studio contains **108 campaign setups using 59 designs**, drawn from a complete
 inventory of **91 designs**. The first twelve received user approval of the design
@@ -334,3 +334,31 @@ link**. On the success screen, Fieldwork’s copy button is live. The resource e
 opens a local placeholder. The HTTP WordPress preview may lack clipboard access;
 it then shows the configured manual-copy message. Set your own resource URL in the
 editor’s Resource link block. No extra conversion is recorded by either action.
+
+## Reviewed featured collections and production picker
+
+The customer picker is now the real plugin UI, described in
+[ADR 0112](../../docs/adr/0112-template-discovery-and-reviewed-collections.md).
+The internal studio remains repository tooling and contains public authored
+setups/collections, not customer accounts or campaign/Lead records.
+
+```bash
+npm run templates:collections          # candidates, coverage, studio and audits
+npm run templates:collections:publish  # requires current setup + collection reviews
+npm run templates:collections:check    # rebuild and check exact shipped revisions
+```
+
+Open `out/collection-studio.html` for site date, Goal, business, format, plan,
+market and direction scenarios; `out/collection-audit.html` measures all selected
+prepared screens. `collections/source.json` pins source hashes; shared reviews
+pin current renderer/prepared revisions and evidence. Editing a dependency,
+collection or evidence requires review again before publication. Runtime seeds
+and translated labels are generated under `resources/collections`, with `/tools`
+excluded from every release artifact.
+
+The initial five collections use 16 freshly reviewed setups. The remaining 92
+pilot setup approvals are stale after previous renderer changes; the scoped
+collection check does not certify the entire library. Existing advisory design
+reviews also do not replace campaign approval. See the
+[implementation review](../../docs/reviews/template-picker-implementation-2026-09-30.md)
+and [API contract](../../docs/template-discovery-api.md) for limits and pending work.

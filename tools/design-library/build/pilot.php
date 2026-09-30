@@ -23,7 +23,13 @@ function esc_html(string $text): string { return htmlspecialchars($text, ENT_QUO
 function esc_html__(string $text, string $domain = ''): string { return esc_html($text); }
 function _doing_it_wrong(string $function, string $message, string $version): void { throw new RuntimeException($function . ': ' . $message); }
 $root = getenv('WCONVERT_PLUGIN') ?: dirname(__DIR__, 3);
-require $root . '/vendor/autoload.php';
+// This read-only exporter uses repository classes only. A clean release build
+// stages Composer dependencies later, so review must not depend on vendor/.
+spl_autoload_register(static function (string $class) use ($root): void {
+    if (!str_starts_with($class, 'WConvert\\')) return;
+    $file = $root . '/src/' . str_replace('\\', '/', substr($class, strlen('WConvert\\'))) . '.php';
+    if (is_file($file)) require $file;
+});
 $vocabulary = TemplateVocabulary::fromManifest($root);
 $source = new class($root) implements TemplateSource {
     public function __construct(private readonly string $root) {}

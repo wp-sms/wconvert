@@ -17,9 +17,11 @@ import { ruleTypes } from './support/rule-types';
  * (CONTEXT.md, Display Type). **"Start from scratch" skips the Playbook, never
  * the Goal.** Browsing reads only. Customize creates a draft and opens the editor directly.
  */
-const goals = vi.hoisted(() => ({ listGoals: vi.fn(), listPlaybooks: vi.fn(), prefill: vi.fn() }));
+const goals = vi.hoisted(() => ({ listGoals: vi.fn(), listPlaybooks: vi.fn(), prefill: vi.fn(), previewPlaybooks: vi.fn() }));
 const catalog = vi.hoisted(() => ({ catalogStatus: vi.fn(), previewPack: vi.fn(), installPack: vi.fn(), refreshCatalog: vi.fn() }));
 vi.mock('../../resources/admin/src/templates/catalog', () => catalog);
+const picker = vi.hoisted(() => ({ pickerData: vi.fn(), savePreferences: vi.fn(), saveOccasions: vi.fn() }));
+vi.mock('../../resources/admin/src/discovery/api', () => picker);
 const optins = vi.hoisted(() => ({ createOptin: vi.fn() }));
 const rules = vi.hoisted(() => ({ getRules: vi.fn() }));
 
@@ -126,6 +128,9 @@ const DRAFT = {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  picker.pickerData.mockResolvedValue({ schema: 1, today: '2026-11-06', timezone: 'Asia/Muscat', collections: [], preferences: { schema: 1, revision: 0, saved: [], hidden: [], events: [], businesses: [], markets: [] }, occasions: { schema: 1, revision: 0, items: [] } });
+  picker.savePreferences.mockImplementation(value => Promise.resolve({ ...value, revision: value.revision + 1 }));
+  goals.previewPlaybooks.mockResolvedValue({ entries: [] });
   document.getElementById(DOCUMENT_STYLE_ID)?.remove();
   goals.listGoals.mockResolvedValue(GOALS);
   goals.listPlaybooks.mockResolvedValue([PLAYBOOK]);
@@ -560,4 +565,46 @@ it('groups shared designs, keeps matching use cases reachable and creates only t
   await customize();
   await waitFor(() => expect(goals.prefill).toHaveBeenCalledWith(GOALS[0].id, repair.id));
   expect(optins.createOptin).toHaveBeenCalledOnce();
+});
+
+it('requests only visible prepared previews and creates the exact reviewed revision', async () => {
+  const metadata = { ...PLAYBOOK, revision: 'reviewed-revision', design_key: 'registered:card', template: undefined, availability: 'ready' };
+  goals.listPlaybooks.mockResolvedValue([metadata]);
+  goals.previewPlaybooks.mockResolvedValue({ entries: [{ ...metadata, template: PLAYBOOK.template }] });
+  render(<GoalScreen onCreated={vi.fn()} />); await pickGoal();
+  await waitFor(() => expect(goals.previewPlaybooks).toHaveBeenCalledWith(GOALS[0].id, [PLAYBOOK.id]));
+  await customize();
+  expect(goals.prefill).toHaveBeenCalledWith(GOALS[0].id, PLAYBOOK.id, 'reviewed-revision', undefined);
+});
+
+it('paginates 500 metadata entries without requesting all their prepared trees', async () => {
+  const metadata = Array.from({ length: 500 }, (_, at) => ({ ...PLAYBOOK, id: `start-${at}`, name: `Start ${at}`, template_id: `card-${at}`, design_key: `registered:card-${at}`, revision: `revision-${at}`, template: undefined }));
+  goals.listPlaybooks.mockResolvedValue(metadata);
+  goals.previewPlaybooks.mockImplementation((_goal, ids: string[]) => Promise.resolve({ entries: metadata.filter(entry => ids.includes(entry.id)).map(entry => ({ ...entry, template: PLAYBOOK.template })) }));
+  render(<GoalScreen onCreated={vi.fn()} />); await pickGoal();
+  await screen.findByText('Page 1 of 21');
+  expect(screen.getAllByRole('button', { name: 'Use this setup' })).toHaveLength(24);
+  await waitFor(() => expect(goals.previewPlaybooks).toHaveBeenCalled());
+  expect(goals.previewPlaybooks.mock.calls.flatMap(call => call[1])).toHaveLength(24);
+  expect(goals.previewPlaybooks.mock.calls.every(call => call[1].length <= 24)).toBe(true);
+});
+
+it('saves canonical designs through authenticated preferences and filters without writing a campaign', async () => {
+  render(<GoalScreen onCreated={vi.fn()} />); await pickGoal();
+  await userEvent.click(await screen.findByRole('button', { name: 'Save design: Welcome discount' }));
+  await waitFor(() => expect(picker.savePreferences).toHaveBeenCalledWith(expect.objectContaining({ saved: ['registered:centred-card'], revision: 0 })));
+  await userEvent.click(await screen.findByRole('button', { name: 'Saved 1' }));
+  expect(screen.getByText('Welcome discount')).toBeVisible();
+  expect(optins.createOptin).not.toHaveBeenCalled();
+});
+
+it('keeps collection membership exact when two use cases share a design', async () => {
+  const second = { ...PLAYBOOK, id: 'unrelated-copy', name: 'Unrelated copy' };
+  goals.listPlaybooks.mockResolvedValue([PLAYBOOK, second]);
+  const data = await picker.pickerData();
+  picker.pickerData.mockResolvedValue({ ...data, collections: [{ id: 'useful', revision: 'r', name: 'Useful collection', description: 'Useful starts', business_types: [], markets: [], priority: 1, cover: 'reading', items: [{ setup_id: PLAYBOOK.id, stage: 'any' }] }] });
+  render(<GoalScreen onCreated={vi.fn()} />); await pickGoal();
+  await userEvent.click(await screen.findByRole('button', { name: /Useful collection Useful starts/ }));
+  expect(screen.queryByRole('combobox', { name: /Use case for/ })).not.toBeInTheDocument();
+  await customize(); expect(goals.prefill).toHaveBeenCalledWith(GOALS[0].id, PLAYBOOK.id);
 });

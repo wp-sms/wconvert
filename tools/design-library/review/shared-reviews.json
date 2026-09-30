@@ -32301,6 +32301,945 @@
         }
       },
       "record_id": "d9a21798497343ef9adc655236325bb2186968be1687d62f1095be0566ef010e"
+    },
+    {
+      "id": "edition-early-access",
+      "revision": "a90f23e52e2368a40d449319c96200d97faad91504b4bdc4c7e7df673b161d44",
+      "base_id": "e0b1509b4784affbe394853894df5cf3e1ecbda3d747069863ea89d2e6f69ff0",
+      "decision": "approved",
+      "reviewer": "Codex local review",
+      "note": "Scoped all-screen render, practical form contract and native WordPress preparation checks. Merchant setup requirements remain explicit; no provider delivery or conversion claim.",
+      "at": "2026-09-30T07:59:22.829Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+              "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+              "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+              "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+            }
+          ]
+        }
+      },
+      "record_id": "22daa53ac36e94cb4a9ef498e221107710e436537e4f5f99555916493d150a80"
+    },
+    {
+      "id": "home-repair-quote",
+      "revision": "bea79b9ffbfb9941532074a3c0deb3f240ca4b1daf5b45faa5ae2984d0370daf",
+      "base_id": "5e5da05cf7d2d6064d50d53c17dfa4071077f259146ead0b22b96c0264221398",
+      "decision": "approved",
+      "reviewer": "Codex local review",
+      "note": "Scoped all-screen render, practical form contract and native WordPress preparation checks. Merchant setup requirements remain explicit; no provider delivery or conversion claim.",
+      "at": "2026-09-30T07:59:22.830Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+              "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+              "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+              "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+            }
+          ]
+        }
+      },
+      "record_id": "1b7f60ce0101cc12e2a0bbc1be6ac5904e03a52e47bf87ff4c6a0bc9c5ca9566"
+    },
+    {
+      "id": "sunday-reading",
+      "revision": "877171a568d79a84025d331d3bba4db8eb07d40658f4f32337e0353dd6891692",
+      "base_id": "4c7aedbe79e4f0060ce7560de7bf623ae19c7223422753609e70eec256fd42e7",
+      "decision": "approved",
+      "reviewer": "Codex local review",
+      "note": "Scoped all-screen render, practical form contract and native WordPress preparation checks. Merchant setup requirements remain explicit; no provider delivery or conversion claim.",
+      "at": "2026-09-30T07:59:22.830Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+              "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+              "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+              "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+            }
+          ]
+        }
+      },
+      "record_id": "23ed5e32680e4362c87f1b9ac0e0770b5a5f3aa422e21a9b335ea64e28c8dfae"
+    },
+    {
+      "id": "sale-deadline",
+      "revision": "ea82e6e669746074fd8ceaed2d1f5087a67c407e08ba0180d15583f970c2a9c6",
+      "base_id": "690f487ae50020544f5f57f75047aa48e8b7a9201289633d922e3b7b5d75dfc3",
+      "decision": "approved",
+      "reviewer": "Codex local review",
+      "note": "Scoped all-screen render, practical form contract and native WordPress preparation checks. Merchant setup requirements remain explicit; no provider delivery or conversion claim.",
+      "at": "2026-09-30T07:59:22.830Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+              "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+              "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+              "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+            }
+          ]
+        }
+      },
+      "record_id": "390ac176a8b4c4bcd8fff6f1c0cdb88c9c159025cb0271b06ce475aa76e52758"
+    },
+    {
+      "id": "restock-announcements",
+      "revision": "4a6b9ef7522b46ea769a120fe33a2275674bf0ea17d84a3494af6b98c502cc54",
+      "base_id": "477c5fc0f94e96deaca1fd2f34879a99b296fe4f9bec75f9a154333fc16ca95f",
+      "decision": "approved",
+      "reviewer": "Codex local review",
+      "note": "Scoped all-screen render, practical form contract and native WordPress preparation checks. Merchant setup requirements remain explicit; no provider delivery or conversion claim.",
+      "at": "2026-09-30T07:59:22.830Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+              "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+              "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+              "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+            }
+          ]
+        }
+      },
+      "record_id": "15cc8fe307444692fb5ac9cd30e79bc6aaab59bc4b9ebff017538e6518f15015"
+    },
+    {
+      "id": "cleaning-quote",
+      "revision": "c71fec437a81eccd0ce8073efff6eafc626546d2f90945ec80368582fdaa0201",
+      "base_id": "f19fcf277034b11818fc7e7fe19854d410c7bd0fac33b9f9b79c059a8e703ac8",
+      "decision": "approved",
+      "reviewer": "Codex local review",
+      "note": "Scoped all-screen render, practical form contract and native WordPress preparation checks. Merchant setup requirements remain explicit; no provider delivery or conversion claim.",
+      "at": "2026-09-30T07:59:22.830Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+              "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+              "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+              "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+            }
+          ]
+        }
+      },
+      "record_id": "41c6421d4ca51cbcec31b051aabecd9d187a9f3e4fd8ce222b0c5701b384cc07"
+    },
+    {
+      "id": "renovation-callback",
+      "revision": "c722fe81250c6fa63dfede3957097928cdf740c1723196ec4888b9cbc7537b23",
+      "base_id": "b662ff4eb6e1ef183cd534911cad050337d94b5df9a5db54b125a2d9a245a387",
+      "decision": "approved",
+      "reviewer": "Codex local review",
+      "note": "Scoped all-screen render, practical form contract and native WordPress preparation checks. Merchant setup requirements remain explicit; no provider delivery or conversion claim.",
+      "at": "2026-09-30T07:59:22.830Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+              "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+              "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+              "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+            }
+          ]
+        }
+      },
+      "record_id": "c0e4c93db955cae44d9dd9c8dfbc5d668a8a30f6a50cf72d6b60dccbd4919878"
+    },
+    {
+      "id": "editorial-weekly",
+      "revision": "7e10753f48dcb2141407256471f22d816a35754c818a0602039548f48f5c2041",
+      "base_id": "89a72f3f9331c26113b2708a4862b4295cac7ff3d2939e95e2ec508b1a8466f4",
+      "decision": "approved",
+      "reviewer": "Codex local review",
+      "note": "Scoped all-screen render, practical form contract and native WordPress preparation checks. Merchant setup requirements remain explicit; no provider delivery or conversion claim.",
+      "at": "2026-09-30T07:59:22.830Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+              "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+              "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+              "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+            }
+          ]
+        }
+      },
+      "record_id": "24239d7a0d8d12b2287dc67fa601907c2a1260cee4c7560478b8b9937ff477e3"
+    },
+    {
+      "id": "writing-checklist",
+      "revision": "e13394037332409c3aa574ba4591c05a53d6f254fc2ceb9c987be9678d7a7d30",
+      "base_id": "3f4ffc4d6c867e49c87d484bdf444e101ede3bfce8405191c008d6dee510763d",
+      "decision": "approved",
+      "reviewer": "Codex local review",
+      "note": "Scoped all-screen render, practical form contract and native WordPress preparation checks. Merchant setup requirements remain explicit; no provider delivery or conversion claim.",
+      "at": "2026-09-30T07:59:22.830Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+              "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+              "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+              "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+            }
+          ]
+        }
+      },
+      "record_id": "a6f68e45956493e638d47fc75de189d83e0fb16e88bc41cc9ef8a551722b5a40"
+    },
+    {
+      "id": "repair-assessment",
+      "revision": "dfbfc199b552f5f3e814a5ad326e44799f8b8e232c7735bb81d486b6ffd4ceb6",
+      "base_id": "84b8a817e1069d02fda5a80d67b55a94578de78378b1e659c8c61e8ed0e7acd6",
+      "decision": "approved",
+      "reviewer": "Codex local review",
+      "note": "Scoped all-screen render, practical form contract and native WordPress preparation checks. Merchant setup requirements remain explicit; no provider delivery or conversion claim.",
+      "at": "2026-09-30T07:59:22.830Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+              "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+              "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+              "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+            }
+          ]
+        }
+      },
+      "record_id": "4b559ef659b6f69ce201ad8280c499c17b58a594b1ddc31bd55a7f19574bff9d"
+    },
+    {
+      "id": "homeware-care-notes",
+      "revision": "98a8e045107948038873ebddeb3eb10577831f0763d19b9289647bb6b8f0eb90",
+      "base_id": "d33b8bae8d4f6b65ab6f32ed804ddb009a593f821943ed2c983ad76ca21007bc",
+      "decision": "approved",
+      "reviewer": "Codex local review",
+      "note": "Scoped all-screen render, practical form contract and native WordPress preparation checks. Merchant setup requirements remain explicit; no provider delivery or conversion claim.",
+      "at": "2026-09-30T07:59:22.830Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+              "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+              "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+              "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+            }
+          ]
+        }
+      },
+      "record_id": "a5647f24608b093a30d4c08b27aa842bc13699b70bb28ccd0179eb6878147c1c"
+    },
+    {
+      "id": "repair-advice-request",
+      "revision": "c872b5e128c48dad5bc2be149690ab2e334b0916f78b07bba4b666845da30321",
+      "base_id": "f05e486c999f6eac56d258b8cdc0a33b902fb2fe45a64f1de6003e817028475d",
+      "decision": "approved",
+      "reviewer": "Codex local review",
+      "note": "Scoped all-screen render, practical form contract and native WordPress preparation checks. Merchant setup requirements remain explicit; no provider delivery or conversion claim.",
+      "at": "2026-09-30T07:59:22.830Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+              "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+              "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+              "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+            }
+          ]
+        }
+      },
+      "record_id": "2268f6d6dfb6dd3f177d807a3d390bfb4240405bf85860c7317cb648bc38769b"
+    },
+    {
+      "id": "first-order-receipt",
+      "revision": "ad5ed0358c8080459944b1cd2180d5b6d14f5b19ddd6e3fdf6e734e1a938bb3a",
+      "base_id": "bcc6cde2c482280d5ba951ce28d16c5a6f562c7891243e7b8fe056e682131995",
+      "decision": "approved",
+      "reviewer": "Codex local review",
+      "note": "Scoped all-screen render, practical form contract and native WordPress preparation checks. Merchant setup requirements remain explicit; no provider delivery or conversion claim.",
+      "at": "2026-09-30T07:59:22.830Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+              "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+              "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+              "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+            }
+          ]
+        }
+      },
+      "record_id": "729f7cb712522878082819249a2f566170241dc4d99372c86fd4c97f328cbc1c"
+    },
+    {
+      "id": "reading-notes-guide",
+      "revision": "2c5b21ae015f8b6802dcc091071befde2379352d44cb5d96aa6f43dfea0bf7ee",
+      "base_id": "712fc072cdef4657ac585219c5eb43aa44bf59322b31a3001449230698540402",
+      "decision": "approved",
+      "reviewer": "Codex local review",
+      "note": "Scoped all-screen render, practical form contract and native WordPress preparation checks. Merchant setup requirements remain explicit; no provider delivery or conversion claim.",
+      "at": "2026-09-30T07:59:22.830Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+              "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+              "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+              "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+            }
+          ]
+        }
+      },
+      "record_id": "c625758e45a02f723e5c0a7975403217a72dfc63a3f76a3428c3a45aa1c18196"
+    },
+    {
+      "id": "website-review-enquiry",
+      "revision": "21bb63d719c0d8c18c67f7995637a83ee0f7e2eef9788a663a7bde45a1e90106",
+      "base_id": "fe706e07309e119787c87581ff211f05c50d40863f26784649d769eec4a9c2dc",
+      "decision": "approved",
+      "reviewer": "Codex local review",
+      "note": "Scoped all-screen render, practical form contract and native WordPress preparation checks. Merchant setup requirements remain explicit; no provider delivery or conversion claim.",
+      "at": "2026-09-30T07:59:22.830Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+              "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+              "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+              "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+            }
+          ]
+        }
+      },
+      "record_id": "00d02ddd223da23e222359324cab434fc85bd318d1c47b55188ab65b7f904c89"
+    },
+    {
+      "id": "lighting-collection",
+      "revision": "d8e4c6400f91d310e6a9e72c852ad5b0366d8e851381a9f8074a553699b2d13a",
+      "base_id": "beee41b69a2e6f13289efdbfb3ec67406d0b1ec92a309ca1ce881ba157d382b2",
+      "decision": "approved",
+      "reviewer": "Codex local review",
+      "note": "Scoped all-screen render, practical form contract and native WordPress preparation checks. Merchant setup requirements remain explicit; no provider delivery or conversion claim.",
+      "at": "2026-09-30T07:59:22.830Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+              "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+              "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+              "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+            }
+          ]
+        }
+      },
+      "record_id": "b66791ae822491093542ebc1ff416a2ad23877262dcfd854ead19919ab883d23"
+    },
+    {
+      "id": "collection-sale-planning",
+      "revision": "5e44f7184b59520478aa62ad189af2f171145bc18c8db143479f944c5177b3d2",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex local review",
+      "note": "Actual shared evaluator inspected for site dates, audiences, plan, format and stage fallback. References are current reviewed starting points; no automatic campaign scheduling.",
+      "at": "2026-09-30T08:02:14.027Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/picker-collections-context-2026-09-30.md",
+              "sha256": "4b5c6d6063e0c651396497078f4674d27148a20c3b15685c732d1ef78dae6ef1"
+            },
+            {
+              "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+              "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+            },
+            {
+              "path": "docs/reviews/picker-wordpress-2026-09-30.txt",
+              "sha256": "5a30d07adb649cf9d49bc80659764b04eed2f799822efb21e97954708cbdf01d"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/picker-collections-context-2026-09-30.md",
+              "sha256": "4b5c6d6063e0c651396497078f4674d27148a20c3b15685c732d1ef78dae6ef1"
+            },
+            {
+              "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+              "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+            },
+            {
+              "path": "docs/reviews/picker-wordpress-2026-09-30.txt",
+              "sha256": "5a30d07adb649cf9d49bc80659764b04eed2f799822efb21e97954708cbdf01d"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/picker-collections-context-2026-09-30.md",
+              "sha256": "4b5c6d6063e0c651396497078f4674d27148a20c3b15685c732d1ef78dae6ef1"
+            },
+            {
+              "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+              "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+            },
+            {
+              "path": "docs/reviews/picker-wordpress-2026-09-30.txt",
+              "sha256": "5a30d07adb649cf9d49bc80659764b04eed2f799822efb21e97954708cbdf01d"
+            }
+          ]
+        }
+      },
+      "record_id": "2ddd50d7ca2650d00065909ece18ef15b794f0e6e5f50bdb768ffd8424ae5f65"
+    },
+    {
+      "id": "collection-launch-a-collection",
+      "revision": "4fcfe5cd9a29383f0152deed64d486d562da5b832fa5f1f675d337325cb31b19",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex local review",
+      "note": "Actual shared evaluator inspected for site dates, audiences, plan, format and stage fallback. References are current reviewed starting points; no automatic campaign scheduling.",
+      "at": "2026-09-30T08:02:14.028Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/picker-collections-context-2026-09-30.md",
+              "sha256": "4b5c6d6063e0c651396497078f4674d27148a20c3b15685c732d1ef78dae6ef1"
+            },
+            {
+              "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+              "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+            },
+            {
+              "path": "docs/reviews/picker-wordpress-2026-09-30.txt",
+              "sha256": "5a30d07adb649cf9d49bc80659764b04eed2f799822efb21e97954708cbdf01d"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/picker-collections-context-2026-09-30.md",
+              "sha256": "4b5c6d6063e0c651396497078f4674d27148a20c3b15685c732d1ef78dae6ef1"
+            },
+            {
+              "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+              "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+            },
+            {
+              "path": "docs/reviews/picker-wordpress-2026-09-30.txt",
+              "sha256": "5a30d07adb649cf9d49bc80659764b04eed2f799822efb21e97954708cbdf01d"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/picker-collections-context-2026-09-30.md",
+              "sha256": "4b5c6d6063e0c651396497078f4674d27148a20c3b15685c732d1ef78dae6ef1"
+            },
+            {
+              "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+              "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+            },
+            {
+              "path": "docs/reviews/picker-wordpress-2026-09-30.txt",
+              "sha256": "5a30d07adb649cf9d49bc80659764b04eed2f799822efb21e97954708cbdf01d"
+            }
+          ]
+        }
+      },
+      "record_id": "5079e5cd23cb0a6dfd4e1ec24af0ac66e5d1cbd0cece9650442fcff007555a72"
+    },
+    {
+      "id": "collection-service-enquiries",
+      "revision": "54b5b208d3cf313b5d91dcef0112fe58b39c4ee85495da93e854d635256827a0",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex local review",
+      "note": "Actual shared evaluator inspected for site dates, audiences, plan, format and stage fallback. References are current reviewed starting points; no automatic campaign scheduling.",
+      "at": "2026-09-30T08:02:14.028Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/picker-collections-context-2026-09-30.md",
+              "sha256": "4b5c6d6063e0c651396497078f4674d27148a20c3b15685c732d1ef78dae6ef1"
+            },
+            {
+              "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+              "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+            },
+            {
+              "path": "docs/reviews/picker-wordpress-2026-09-30.txt",
+              "sha256": "5a30d07adb649cf9d49bc80659764b04eed2f799822efb21e97954708cbdf01d"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/picker-collections-context-2026-09-30.md",
+              "sha256": "4b5c6d6063e0c651396497078f4674d27148a20c3b15685c732d1ef78dae6ef1"
+            },
+            {
+              "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+              "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+            },
+            {
+              "path": "docs/reviews/picker-wordpress-2026-09-30.txt",
+              "sha256": "5a30d07adb649cf9d49bc80659764b04eed2f799822efb21e97954708cbdf01d"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/picker-collections-context-2026-09-30.md",
+              "sha256": "4b5c6d6063e0c651396497078f4674d27148a20c3b15685c732d1ef78dae6ef1"
+            },
+            {
+              "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+              "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+            },
+            {
+              "path": "docs/reviews/picker-wordpress-2026-09-30.txt",
+              "sha256": "5a30d07adb649cf9d49bc80659764b04eed2f799822efb21e97954708cbdf01d"
+            }
+          ]
+        }
+      },
+      "record_id": "1b463c398f354adbdfdfd46eb22e187a6d9191779b333305b54a0c12285e986a"
+    },
+    {
+      "id": "collection-reader-relationships",
+      "revision": "cd8c92310fd7f556a820a771bbb4c743737e9faacea0e1d0b84eb1c2d143e976",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex local review",
+      "note": "Actual shared evaluator inspected for site dates, audiences, plan, format and stage fallback. References are current reviewed starting points; no automatic campaign scheduling.",
+      "at": "2026-09-30T08:02:14.028Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/picker-collections-context-2026-09-30.md",
+              "sha256": "4b5c6d6063e0c651396497078f4674d27148a20c3b15685c732d1ef78dae6ef1"
+            },
+            {
+              "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+              "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+            },
+            {
+              "path": "docs/reviews/picker-wordpress-2026-09-30.txt",
+              "sha256": "5a30d07adb649cf9d49bc80659764b04eed2f799822efb21e97954708cbdf01d"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/picker-collections-context-2026-09-30.md",
+              "sha256": "4b5c6d6063e0c651396497078f4674d27148a20c3b15685c732d1ef78dae6ef1"
+            },
+            {
+              "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+              "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+            },
+            {
+              "path": "docs/reviews/picker-wordpress-2026-09-30.txt",
+              "sha256": "5a30d07adb649cf9d49bc80659764b04eed2f799822efb21e97954708cbdf01d"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/picker-collections-context-2026-09-30.md",
+              "sha256": "4b5c6d6063e0c651396497078f4674d27148a20c3b15685c732d1ef78dae6ef1"
+            },
+            {
+              "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+              "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+            },
+            {
+              "path": "docs/reviews/picker-wordpress-2026-09-30.txt",
+              "sha256": "5a30d07adb649cf9d49bc80659764b04eed2f799822efb21e97954708cbdf01d"
+            }
+          ]
+        }
+      },
+      "record_id": "4b588badea27010d633f85b4497591a37c29bfa741fbb2ced2fee1d45fd2fb5f"
+    },
+    {
+      "id": "collection-black-friday-2026",
+      "revision": "993ecd834da1ff7770ad9537986fc2a7d786b05c5a635bff0779b6119bdc7b9c",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex local review",
+      "note": "Actual shared evaluator inspected for site dates, audiences, plan, format and stage fallback. References are current reviewed starting points; no automatic campaign scheduling.",
+      "at": "2026-09-30T08:02:14.028Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/picker-collections-context-2026-09-30.md",
+              "sha256": "4b5c6d6063e0c651396497078f4674d27148a20c3b15685c732d1ef78dae6ef1"
+            },
+            {
+              "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+              "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+            },
+            {
+              "path": "docs/reviews/picker-wordpress-2026-09-30.txt",
+              "sha256": "5a30d07adb649cf9d49bc80659764b04eed2f799822efb21e97954708cbdf01d"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/picker-collections-context-2026-09-30.md",
+              "sha256": "4b5c6d6063e0c651396497078f4674d27148a20c3b15685c732d1ef78dae6ef1"
+            },
+            {
+              "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+              "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+            },
+            {
+              "path": "docs/reviews/picker-wordpress-2026-09-30.txt",
+              "sha256": "5a30d07adb649cf9d49bc80659764b04eed2f799822efb21e97954708cbdf01d"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/picker-collections-context-2026-09-30.md",
+              "sha256": "4b5c6d6063e0c651396497078f4674d27148a20c3b15685c732d1ef78dae6ef1"
+            },
+            {
+              "path": "docs/reviews/picker-collection-setups-2026-09-30.md",
+              "sha256": "0f5f586c47dbefcd0b4cacb141bb63741c6634935bf9d0b20514c6bb0bd33afb"
+            },
+            {
+              "path": "docs/reviews/picker-wordpress-2026-09-30.txt",
+              "sha256": "5a30d07adb649cf9d49bc80659764b04eed2f799822efb21e97954708cbdf01d"
+            }
+          ]
+        }
+      },
+      "record_id": "07d166ccb1140eaf905d5a923e1c962b5e570e8880f04d866ea73acf0a5c054f"
     }
   ]
 }

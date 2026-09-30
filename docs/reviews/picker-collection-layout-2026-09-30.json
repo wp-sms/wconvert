@@ -1,0 +1,134 @@
+{
+  "summary": "480 rendered cases across 16 designs. 0 cases need attention (horizontal overflow, controls under 44px, input text under 16px or low solid-colour text/field-outline contrast).",
+  "failures": [],
+  "setups": [
+    {
+      "id": "edition-early-access",
+      "cases": 32,
+      "minControl": 48,
+      "minInput": 16,
+      "minTextContrast": 4.607518093747377,
+      "minFieldContrast": 3.256721478350498
+    },
+    {
+      "id": "home-repair-quote",
+      "cases": 32,
+      "minControl": 48,
+      "minInput": 16,
+      "minTextContrast": 4.607518093747377,
+      "minFieldContrast": 3.2112829184947382
+    },
+    {
+      "id": "sunday-reading",
+      "cases": 32,
+      "minControl": 48,
+      "minInput": 16,
+      "minTextContrast": 4.607518093747377,
+      "minFieldContrast": 3.214375736109719
+    },
+    {
+      "id": "sale-deadline",
+      "cases": 16,
+      "minControl": 44.2,
+      "minInput": null,
+      "minTextContrast": 9.159428089519743,
+      "minFieldContrast": null
+    },
+    {
+      "id": "restock-announcements",
+      "cases": 32,
+      "minControl": 48,
+      "minInput": 16,
+      "minTextContrast": 4.607518093747377,
+      "minFieldContrast": 3.256721478350498
+    },
+    {
+      "id": "cleaning-quote",
+      "cases": 32,
+      "minControl": 48,
+      "minInput": 16,
+      "minTextContrast": 4.607518093747377,
+      "minFieldContrast": 3.2112829184947382
+    },
+    {
+      "id": "renovation-callback",
+      "cases": 32,
+      "minControl": 44.4,
+      "minInput": 16,
+      "minTextContrast": 4.607518093747377,
+      "minFieldContrast": 3.2035331451433335
+    },
+    {
+      "id": "editorial-weekly",
+      "cases": 32,
+      "minControl": 48,
+      "minInput": 16,
+      "minTextContrast": 4.607518093747377,
+      "minFieldContrast": 3.894124287664326
+    },
+    {
+      "id": "writing-checklist",
+      "cases": 32,
+      "minControl": 48.8,
+      "minInput": 16,
+      "minTextContrast": 4.607518093747377,
+      "minFieldContrast": 3.2018207149162854
+    },
+    {
+      "id": "repair-assessment",
+      "cases": 32,
+      "minControl": 48,
+      "minInput": 16,
+      "minTextContrast": 4.607518093747377,
+      "minFieldContrast": 3.2112829184947382
+    },
+    {
+      "id": "homeware-care-notes",
+      "cases": 32,
+      "minControl": 48,
+      "minInput": 16,
+      "minTextContrast": 4.607518093747377,
+      "minFieldContrast": 3.2144402406138286
+    },
+    {
+      "id": "repair-advice-request",
+      "cases": 48,
+      "minControl": 48,
+      "minInput": 16,
+      "minTextContrast": 4.607518093747377,
+      "minFieldContrast": 3.2257677693772955
+    },
+    {
+      "id": "first-order-receipt",
+      "cases": 16,
+      "minControl": 50,
+      "minInput": null,
+      "minTextContrast": 5.482274440703167,
+      "minFieldContrast": null
+    },
+    {
+      "id": "reading-notes-guide",
+      "cases": 32,
+      "minControl": 48,
+      "minInput": 16,
+      "minTextContrast": 4.607518093747377,
+      "minFieldContrast": 3.2141809307028164
+    },
+    {
+      "id": "website-review-enquiry",
+      "cases": 32,
+      "minControl": 48,
+      "minInput": 16,
+      "minTextContrast": 4.607518093747377,
+      "minFieldContrast": 3.2112887790857307
+    },
+    {
+      "id": "lighting-collection",
+      "cases": 16,
+      "minControl": 50,
+      "minInput": null,
+      "minTextContrast": 5.537797911349085,
+      "minFieldContrast": null
+    }
+  ]
+}

@@ -1,0 +1,47 @@
+{
+  "id": "black-friday-2026",
+  "name": "Prepare for Black Friday",
+  "description": "Start with early access, a clear offer or a final-day announcement. Review the offer and your own dates.",
+  "cover": "sale",
+  "business_types": [
+    "stores"
+  ],
+  "markets": [],
+  "priority": 80,
+  "items": [
+    {
+      "setup_id": "edition-early-access",
+      "stage": "before",
+      "setup_hash": "3b10d1a61d82491b5abdb62097d73cbb7e5a1398f93012e4f78bcd8ee149066c",
+      "design_hash": "c4e4ed1439f99c77c63d0d308a3b152408ebee7534c625c4f8f1ac6f8319e816"
+    },
+    {
+      "setup_id": "first-order-receipt",
+      "stage": "during",
+      "setup_hash": "77e8c6ae5f529c8584ad943cc30f0d8fb627cfe93cdf0bdad4a8b9cd86abf4b7",
+      "design_hash": "365d32e09de079a841d1ccf34a8981cacaaa8db6ec9dc7e8c0f4a26555ad6e4c"
+    },
+    {
+      "setup_id": "sale-deadline",
+      "stage": "during",
+      "setup_hash": "836d01c7bd7d6c014ed1d6632ba82f1f87fe5fd946c3eab5d420c1b49cc71ff2",
+      "design_hash": "3f6311cacaf1bb5d689c3636f799b07db0cff0709fd2f6696d7282cefb55f83a"
+    },
+    {
+      "setup_id": "homeware-care-notes",
+      "stage": "after",
+      "setup_hash": "2740811423c8e26bcdaa89a443f7961067dfe4b5bfa6ff0bda67c7a09e375ec9",
+      "design_hash": "afc196ff2ce7c2fc61a0463db746baefd41581fce8c0327b59e1dd7861d274b3"
+    }
+  ],
+  "event": {
+    "family": "black-friday",
+    "start": "2026-11-27",
+    "end_exclusive": "2026-12-01",
+    "feature_start": "2026-10-16",
+    "feature_end_exclusive": "2026-12-01"
+  },
+  "dependencies_current": true,
+  "revision": "993ecd834da1ff7770ad9537986fc2a7d786b05c5a635bff0779b6119bdc7b9c",
+  "status": "published"
+}

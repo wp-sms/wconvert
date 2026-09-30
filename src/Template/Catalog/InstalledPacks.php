@@ -57,6 +57,7 @@ final class InstalledPacks implements TemplateSource
             foreach ($pack['templates'] as $template) {
                 // The digest keeps every original baseline addressable, including
                 // two simultaneous installations of the same release identifier.
+                $template['design_key'] = 'pack:' . $pack['id'] . ':' . $template['id'];
                 $template['id'] = self::designId($pack, $template['id']);
                 $template['catalog_current'] = $current;
                 $entries[] = $template;

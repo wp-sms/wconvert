@@ -1,0 +1,34 @@
+{
+  "id": "launch-a-collection",
+  "name": "Introduce a collection",
+  "description": "Build interest, announce what is new and help shoppers explore.",
+  "cover": "launch",
+  "business_types": [
+    "stores"
+  ],
+  "markets": [],
+  "priority": 50,
+  "items": [
+    {
+      "setup_id": "edition-early-access",
+      "stage": "before",
+      "setup_hash": "3b10d1a61d82491b5abdb62097d73cbb7e5a1398f93012e4f78bcd8ee149066c",
+      "design_hash": "c4e4ed1439f99c77c63d0d308a3b152408ebee7534c625c4f8f1ac6f8319e816"
+    },
+    {
+      "setup_id": "restock-announcements",
+      "stage": "during",
+      "setup_hash": "366a7ed80b852a2097c87c1015b37551ae7c530b78b308a27030eea3499cfe97",
+      "design_hash": "c4e4ed1439f99c77c63d0d308a3b152408ebee7534c625c4f8f1ac6f8319e816"
+    },
+    {
+      "setup_id": "lighting-collection",
+      "stage": "during",
+      "setup_hash": "20b289c64d0703faf97357fdfb308a09460ea4323223c5001830ca0fb36003d3",
+      "design_hash": "df0fee41bb9575857ad29c17831d4a702502b5d33b8d68da30121a0e69ea426f"
+    }
+  ],
+  "dependencies_current": true,
+  "revision": "4fcfe5cd9a29383f0152deed64d486d562da5b832fa5f1f675d337325cb31b19",
+  "status": "published"
+}

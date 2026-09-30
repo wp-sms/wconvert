@@ -8,9 +8,8 @@ import { nodesOf } from '../builder/structure/tree';
 import type { RuleVocabulary } from '../builder/api';
 import type { GoalEntry, PlaybookEntry } from './api';
 
-export function startingPointDisplayType(playbook: PlaybookEntry): string {
-  return playbook.setup?.display_type ?? playbook.display_type;
-}
+import { startingPointDisplayType } from '../discovery/model';
+export { startingPointDisplayType } from '../discovery/model';
 
 /** Only the differences needed to choose; the full setup is available on demand. */
 export function StartingPointSummary({ playbook, vocabulary }: {

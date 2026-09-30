@@ -421,7 +421,7 @@ final class TemplateLibrary
             'facets' => TemplateFacets::of($normalized['tree'], $vocabulary->fields(), $normalized['tokens']),
             'tree' => $normalized['tree'],
             'tokens' => $normalized['tokens'],
-        ] + (isset($decoded['catalog_current']) ? ['catalog_current' => $decoded['catalog_current'] === true] : []);
+        ] + (isset($decoded['design_key']) ? ['design_key' => $decoded['design_key']] : []) + (isset($decoded['catalog_current']) ? ['catalog_current' => $decoded['catalog_current'] === true] : []);
     }
 
     /**

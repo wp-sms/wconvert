@@ -24,7 +24,8 @@ reporting copy. The server checks the final edited tree. Incomplete pairings can
 save as drafts. Show all designs remains available, and Templates acquire no Goal
 tags. Existing unrelated structural, binding and A/B compatibility checks remain.
 **Presentation amended by [ADR 0087](0087-choices-first-details-on-demand.md):**
-the Goal is a compact footer control, with metric detail on demand. Full setup
+the Goal is a compact footer control, with metric detail on demand.
+**Discovery amended by [ADR 0112](0112-template-discovery-and-reviewed-collections.md):** Goal-first setup browsing adds grouped use cases and reviewed collections. Changing layout retains Goal fit, content transfer and Show all designs; event and collection changes never rewrite saved campaigns. Full setup
 facts are optional; All designs is a toolbar choice. Publication checks are unchanged.
 
 ## Evidence, not implied business results

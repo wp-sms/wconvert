@@ -25,6 +25,7 @@ use WConvert\Rest\GoalController;
 use WConvert\Rest\LeadController;
 use WConvert\Rest\OptinController;
 use WConvert\Rest\PlaybookController;
+use WConvert\Rest\PickerController;
 use WConvert\Rest\RestController;
 use WConvert\Rest\Routes;
 use WConvert\Rest\RuleController;
@@ -97,6 +98,7 @@ final class NothingTranslatesAtBootTest extends TestCase
         ThemeController::class => '/theme',
         GoalController::class => '/goals',
         PlaybookController::class => '/playbooks',
+        PickerController::class => '/picker',
         CaptureController::class => '/capture',
         BeaconController::class => '/beacon',
         LeadController::class => '/leads',

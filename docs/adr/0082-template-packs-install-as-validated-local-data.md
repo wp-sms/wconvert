@@ -34,7 +34,7 @@ entitlement and media installation remain subsequent slices; unsupported packs e
 
 An operator configures `wconvert_template_catalog_url` as a WordPress option.
 There is no default production endpoint or background contact. The optional
-service's index and packs are JSON schema 1. Each pack declares its version,
+service's packs remain JSON schema 1. **Amended by [ADR 0112](0112-template-discovery-and-reviewed-collections.md):** the index also accepts schema 2 immutable discovery manifests with bounded digest-pinned pages and reviewed collections. Normal browsing still reads local data; refresh remains explicit. Each pack declares its version,
 minimum plugin version, tree version and capabilities. Required capabilities are
 derived from the actual nodes and must be declared. `requires.tree` is mandatory
 for the pack; individual bundled-style trees may omit `v`, in which case this
@@ -79,7 +79,7 @@ or evaluated. The archive is capped at 128 files and is not autoloaded. No table
 or column is introduced. The catalog index uses a non-autoloaded WordPress option;
 a failed refresh retains the previous index.
 
-Template IDs contain a content digest and source ID. New installs use the
+Template IDs contain a content digest and source ID. **Amended by [ADR 0112](0112-template-discovery-and-reviewed-collections.md):** a separate canonical design key stays stable across pack versions for grouping and blog-scoped personal favorites; it does not replace immutable baseline IDs. New installs use the
 highest installed version; earlier versions stay resolvable for content transfer
 and source-baseline comparisons, but are omitted from the picker index. Updating
 a pack never walks or rewrites Optins. Same bytes are idempotent; normal attempts

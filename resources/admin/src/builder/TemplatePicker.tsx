@@ -9,6 +9,8 @@ import { TemplateDesignDetail, type PrepareDesign } from './TemplateDesignDetail
 import { facetOptions, narrow, toggled, type Chosen } from './facets';
 import { nameOf, type TemplateIndex } from '../templates/api';
 import type { Template } from '@renderer/types';
+import { usePicker } from '../discovery/usePicker';
+import { designKey } from '../discovery/model';
 import { fitsOutcome } from '../goals/outcome';
 
 /** Reviewed starting points; extension designs retain their index order after these. */
@@ -45,12 +47,17 @@ export function TemplatePicker({
 }: TemplatePickerProps) {
   const [chosenFacets, setChosenFacets] = useState<Chosen>({});
   const [query, setQuery] = useState('');
+  const [page, setPage] = useState(0);
+  useEffect(() => { setInspectedId(initialInspectedId ?? null); }, [initialInspectedId, displayType]);
   const [availableOnly, setAvailableOnly] = useState(false);
   const [goalFitOnly, setGoalFitOnly] = useState(true);
   const [moreOpen, setMoreOpen] = useState(false);
   const [inspectedId, setInspectedId] = useState<string | null>(initialInspectedId ?? null);
   const returnFocus = useRef<HTMLElement | null>(null);
   const filterId = useId();
+  const picker = usePicker();
+  const [savedOnly, setSavedOnly] = useState(false);
+  const saved = useMemo(() => new Set(picker.data?.preferences.saved ?? []), [picker.data?.preferences.saved]);
 
   const forType = useMemo(
     () => {
@@ -66,26 +73,31 @@ export function TemplatePicker({
   );
   const available = useMemo(
     () => forType.filter((entry) => (!availableOnly || entry.availability === 'ready')
-      && (!goalFitOnly || !fit.outcome || fitsOutcome(fit.outcome, entry.facets))),
-    [forType, availableOnly, goalFitOnly, fit.outcome],
+      && (!goalFitOnly || !fit.outcome || fitsOutcome(fit.outcome, entry.facets))
+      && (!savedOnly || saved.has(designKey(entry)))),
+    [forType, availableOnly, goalFitOnly, fit.outcome, savedOnly, saved],
   );
   const shown = useMemo(
     () => narrow(available, displayType, chosenFacets, query, index.labels),
     [available, displayType, chosenFacets, query, index.labels],
   );
+  const pages = Math.max(1, Math.ceil(shown.length / 24));
+  const currentPage = Math.min(page, pages - 1);
+  const visible = shown.slice(currentPage * 24, (currentPage + 1) * 24);
   const inspected = forType.find((entry) => entry.id === inspectedId);
   const hasLocked = forType.some((entry) => entry.availability !== 'ready');
-  const hasFilters = query !== '' || availableOnly || Object.values(chosenFacets).some((v) => v.length > 0);
+  const hasFilters = query !== '' || savedOnly || availableOnly || Object.values(chosenFacets).some((v) => v.length > 0);
   const secondaryFacets = Object.entries(index.facets).filter(([key]) =>
     !['captures', 'has_image', 'act'].includes(key),
   );
   const selectedAct = chosenFacets.act?.[0] ?? '';
 
   const clear = () => {
+    setPage(0);
     setChosenFacets({});
     setQuery('');
     setAvailableOnly(false);
-    setGoalFitOnly(false);
+    setGoalFitOnly(false); setSavedOnly(false);
   };
   const toggle = (facet: string, value: string) =>
     setChosenFacets((current) => toggled(current, facet, value));
@@ -111,7 +123,7 @@ export function TemplatePicker({
               <span className="sr-only">{__('Search designs', 'wconvert')}</span>
               <Input type="search" className="ps-9" value={query}
                 placeholder={__('Search designs', 'wconvert')}
-                onChange={(event) => setQuery(event.target.value)} />
+                onChange={(event) => { setQuery(event.target.value); setPage(0); }} />
             </label>
             {fit.outcome && <select className="wconvert-picker__select" aria-label={__('Design fit', 'wconvert')}
               value={goalFitOnly ? 'goal' : 'all'} onChange={(event) => setGoalFitOnly(event.target.value === 'goal')}>
@@ -120,6 +132,7 @@ export function TemplatePicker({
                 : __('For this goal', 'wconvert')}</option>
               <option value="all">{__('All designs', 'wconvert')}</option>
             </select>}
+            <Button variant="outline" aria-pressed={savedOnly} disabled={!picker.data} onClick={() => setSavedOnly(!savedOnly)}>{sprintf(__('Saved %s', 'wconvert'), String(saved.size))}</Button>
             <Button variant="outline" size="sm" className="wconvert-picker__more"
               aria-expanded={moreOpen} aria-controls={filterId} onClick={() => setMoreOpen(!moreOpen)}>
               <SlidersHorizontal size={15} aria-hidden="true" />
@@ -199,6 +212,7 @@ export function TemplatePicker({
             ) : null}
           </div>
         </div>
+        {picker.error && <p role="alert" className="wconvert-picker__notice">{picker.error} <Button variant="link" size="sm" onClick={() => { void picker.reload(); }}>{__('Reload preferences', 'wconvert')}</Button></p>}
         <div className="wconvert-picker__body">
           {shown.length === 0 ? (
             <EmptyState icon={LayoutTemplate} title={__('No designs match', 'wconvert')}
@@ -206,7 +220,8 @@ export function TemplatePicker({
               {__('Try fewer fields, another search, or clear your filters.', 'wconvert')}
             </EmptyState>
           ) : (
-            <Gallery entries={shown} trees={trees} labels={index.labels} chosen={chosen} fit={fit}
+            <Gallery entries={visible} trees={trees} labels={index.labels} chosen={chosen} fit={fit}
+              saved={saved} saving={picker.saving || !picker.data} onSave={entry => picker.toggleSaved(designKey(entry))}
               busy={busy} onChoose={onChoose} onNear={onNear} failed={failed} onRetry={onRetry}
               onPreview={(id) => {
                 returnFocus.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
@@ -214,6 +229,7 @@ export function TemplatePicker({
                 setInspectedId(id);
               }} />
           )}
+          {pages > 1 && <nav className="wconvert-picker__pagination" aria-label={__('Design pages', 'wconvert')}><Button variant="outline" disabled={busy || currentPage === 0} onClick={() => setPage(currentPage - 1)}>{__('Previous', 'wconvert')}</Button><span>{sprintf(__('Page %1$s of %2$s', 'wconvert'), String(currentPage + 1), String(pages))}</span><Button variant="outline" disabled={busy || currentPage === pages - 1} onClick={() => setPage(currentPage + 1)}>{__('Next', 'wconvert')}</Button></nav>}
         </div>
       </div>
       {inspected !== undefined && (

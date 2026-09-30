@@ -1,0 +1,209 @@
+{
+  "schema": 1,
+  "collections": [
+    {
+      "id": "sale-planning",
+      "name": "Plan a useful sale",
+      "description": "Invitations, offer announcements and thoughtful follow-up. Choose the parts your store needs.",
+      "cover": "sale",
+      "business_types": [
+        "stores"
+      ],
+      "markets": [],
+      "priority": 50,
+      "items": [
+        {
+          "setup_id": "edition-early-access",
+          "stage": "before",
+          "setup_hash": "3b10d1a61d82491b5abdb62097d73cbb7e5a1398f93012e4f78bcd8ee149066c",
+          "design_hash": "c4e4ed1439f99c77c63d0d308a3b152408ebee7534c625c4f8f1ac6f8319e816"
+        },
+        {
+          "setup_id": "sale-deadline",
+          "stage": "during",
+          "setup_hash": "836d01c7bd7d6c014ed1d6632ba82f1f87fe5fd946c3eab5d420c1b49cc71ff2",
+          "design_hash": "3f6311cacaf1bb5d689c3636f799b07db0cff0709fd2f6696d7282cefb55f83a"
+        },
+        {
+          "setup_id": "first-order-receipt",
+          "stage": "during",
+          "setup_hash": "77e8c6ae5f529c8584ad943cc30f0d8fb627cfe93cdf0bdad4a8b9cd86abf4b7",
+          "design_hash": "365d32e09de079a841d1ccf34a8981cacaaa8db6ec9dc7e8c0f4a26555ad6e4c"
+        },
+        {
+          "setup_id": "lighting-collection",
+          "stage": "during",
+          "setup_hash": "20b289c64d0703faf97357fdfb308a09460ea4323223c5001830ca0fb36003d3",
+          "design_hash": "df0fee41bb9575857ad29c17831d4a702502b5d33b8d68da30121a0e69ea426f"
+        },
+        {
+          "setup_id": "homeware-care-notes",
+          "stage": "after",
+          "setup_hash": "2740811423c8e26bcdaa89a443f7961067dfe4b5bfa6ff0bda67c7a09e375ec9",
+          "design_hash": "afc196ff2ce7c2fc61a0463db746baefd41581fce8c0327b59e1dd7861d274b3"
+        }
+      ]
+    },
+    {
+      "id": "launch-a-collection",
+      "name": "Introduce a collection",
+      "description": "Build interest, announce what is new and help shoppers explore.",
+      "cover": "launch",
+      "business_types": [
+        "stores"
+      ],
+      "markets": [],
+      "priority": 50,
+      "items": [
+        {
+          "setup_id": "edition-early-access",
+          "stage": "before",
+          "setup_hash": "3b10d1a61d82491b5abdb62097d73cbb7e5a1398f93012e4f78bcd8ee149066c",
+          "design_hash": "c4e4ed1439f99c77c63d0d308a3b152408ebee7534c625c4f8f1ac6f8319e816"
+        },
+        {
+          "setup_id": "restock-announcements",
+          "stage": "during",
+          "setup_hash": "366a7ed80b852a2097c87c1015b37551ae7c530b78b308a27030eea3499cfe97",
+          "design_hash": "c4e4ed1439f99c77c63d0d308a3b152408ebee7534c625c4f8f1ac6f8319e816"
+        },
+        {
+          "setup_id": "lighting-collection",
+          "stage": "during",
+          "setup_hash": "20b289c64d0703faf97357fdfb308a09460ea4323223c5001830ca0fb36003d3",
+          "design_hash": "df0fee41bb9575857ad29c17831d4a702502b5d33b8d68da30121a0e69ea426f"
+        }
+      ]
+    },
+    {
+      "id": "service-enquiries",
+      "name": "Make the next enquiry easier",
+      "description": "Quote requests, callbacks and project discussions. A request is not a confirmed booking.",
+      "cover": "services",
+      "business_types": [
+        "services"
+      ],
+      "markets": [],
+      "priority": 50,
+      "items": [
+        {
+          "setup_id": "home-repair-quote",
+          "stage": "any",
+          "setup_hash": "af5ff16467219382e410c767125b521a08b7cd92c8ab1e09790ded2a2943bf68",
+          "design_hash": "b17b2f87da1bb83dcb7e962b3f25a18d678c58114d061800ab0d42467a09ba0b"
+        },
+        {
+          "setup_id": "cleaning-quote",
+          "stage": "any",
+          "setup_hash": "ad845c89d067517fdb04cf2e140e5a05abca1857d0ab3ebb963afef698a869c8",
+          "design_hash": "b17b2f87da1bb83dcb7e962b3f25a18d678c58114d061800ab0d42467a09ba0b"
+        },
+        {
+          "setup_id": "repair-assessment",
+          "stage": "any",
+          "setup_hash": "17c1874973994026ab6b6673d07e9cf3b2db87d3ef57282cf05205f290ad35ba",
+          "design_hash": "b17b2f87da1bb83dcb7e962b3f25a18d678c58114d061800ab0d42467a09ba0b"
+        },
+        {
+          "setup_id": "renovation-callback",
+          "stage": "any",
+          "setup_hash": "1b4e5fb1ac93cec66b8065bb2dcb018b328b10fa1f383bc71e9b462638bfdef1",
+          "design_hash": "90a558d4a4dfb553347098d9e072fefb2e7f662a5273e51e00882bd11d3b797d"
+        },
+        {
+          "setup_id": "repair-advice-request",
+          "stage": "any",
+          "setup_hash": "f885ddca5099f66427860f18a847a06fcad85a9c28ef079612ffd9b2a3929b24",
+          "design_hash": "52591afdd2aca28637ba8a7f4ca1e0ddb52da120016a424e6c941f8f6c4813b3"
+        },
+        {
+          "setup_id": "website-review-enquiry",
+          "stage": "any",
+          "setup_hash": "b65733d43ef871496fff159f74bec634a3a8832a8b69aead79b0a253f6aa8fec",
+          "design_hash": "86ad14ff4c9b9321e42013f26d5dc80970b6a70029265a3ca4b0f7bbdd093297"
+        }
+      ]
+    },
+    {
+      "id": "reader-relationships",
+      "name": "Give readers a reason to return",
+      "description": "Useful newsletters and resources, with a clear promise and an easy next step.",
+      "cover": "reading",
+      "business_types": [
+        "publishers"
+      ],
+      "markets": [],
+      "priority": 50,
+      "items": [
+        {
+          "setup_id": "sunday-reading",
+          "stage": "any",
+          "setup_hash": "1532c2b1bb396f043f63fd7ae876e2144e4322a083a1722108664dafa08f2855",
+          "design_hash": "599cfa2535bc85f5f269af84d778e51032a150f4ac6354404093d9bcf3371bd8"
+        },
+        {
+          "setup_id": "editorial-weekly",
+          "stage": "any",
+          "setup_hash": "8ad0617495222d15b08247a3ba12c15a5bcce29ecdf13786eaad20260051da9c",
+          "design_hash": "a28e7cb7dedb503265de8ac7bfa5f272270fa909f9e948b62934cbdd96f7a0b4"
+        },
+        {
+          "setup_id": "writing-checklist",
+          "stage": "any",
+          "setup_hash": "e0ea02fba3a7a1e3c71c00186faaf9b0274f6ac6e57d0eb6461d422e8876c160",
+          "design_hash": "e444ff48261428a2b5c4cd130c574bc30ce04d06227f59805cc291461b18e4c7"
+        },
+        {
+          "setup_id": "reading-notes-guide",
+          "stage": "any",
+          "setup_hash": "a5afa7d85a8923cd3647d7335ee069a0bb27c8cf1249c11f730f41a5764ace3c",
+          "design_hash": "87588e459b3fa61f355d30e355f8ad196790569f052634f6a5d2466368d8e83d"
+        }
+      ]
+    },
+    {
+      "id": "black-friday-2026",
+      "name": "Prepare for Black Friday",
+      "description": "Start with early access, a clear offer or a final-day announcement. Review the offer and your own dates.",
+      "cover": "sale",
+      "business_types": [
+        "stores"
+      ],
+      "markets": [],
+      "priority": 80,
+      "items": [
+        {
+          "setup_id": "edition-early-access",
+          "stage": "before",
+          "setup_hash": "3b10d1a61d82491b5abdb62097d73cbb7e5a1398f93012e4f78bcd8ee149066c",
+          "design_hash": "c4e4ed1439f99c77c63d0d308a3b152408ebee7534c625c4f8f1ac6f8319e816"
+        },
+        {
+          "setup_id": "first-order-receipt",
+          "stage": "during",
+          "setup_hash": "77e8c6ae5f529c8584ad943cc30f0d8fb627cfe93cdf0bdad4a8b9cd86abf4b7",
+          "design_hash": "365d32e09de079a841d1ccf34a8981cacaaa8db6ec9dc7e8c0f4a26555ad6e4c"
+        },
+        {
+          "setup_id": "sale-deadline",
+          "stage": "during",
+          "setup_hash": "836d01c7bd7d6c014ed1d6632ba82f1f87fe5fd946c3eab5d420c1b49cc71ff2",
+          "design_hash": "3f6311cacaf1bb5d689c3636f799b07db0cff0709fd2f6696d7282cefb55f83a"
+        },
+        {
+          "setup_id": "homeware-care-notes",
+          "stage": "after",
+          "setup_hash": "2740811423c8e26bcdaa89a443f7961067dfe4b5bfa6ff0bda67c7a09e375ec9",
+          "design_hash": "afc196ff2ce7c2fc61a0463db746baefd41581fce8c0327b59e1dd7861d274b3"
+        }
+      ],
+      "event": {
+        "family": "black-friday",
+        "start": "2026-11-27",
+        "end_exclusive": "2026-12-01",
+        "feature_start": "2026-10-16",
+        "feature_end_exclusive": "2026-12-01"
+      }
+    }
+  ]
+}

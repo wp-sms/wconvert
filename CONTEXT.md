@@ -1047,6 +1047,29 @@ validated Playbooks: their wording and rules enter the existing Prefill path;
 installing one creates no Optin. See [ADR 0082](docs/adr/0082-template-packs-install-as-validated-local-data.md)
 and [ADR 0083](docs/adr/0083-installed-packs-supply-campaign-starting-points.md).
 
+### Collection
+
+A reviewed discovery list of [[Playbook]]s, shown as campaign setups. It is not a
+[[Template pack]]: one setup can appear in several Collections without another
+installation or another design. Matching setup and canonical design counts are
+shown separately. Optional before/during/after stages and event date windows
+help merchants plan; they never schedule or publish an [[Optin]]. The internal
+repository studio prepares public authored collections, not customer data.
+See [ADR 0112](docs/adr/0112-template-discovery-and-reviewed-collections.md).
+
+### Site occasion
+
+A merchant-owned name and inclusive date range stored in a site option for
+planning, such as an anniversary sale. It suggests browsing ideas without
+creating targeting rules, discounts or campaign schedules.
+
+### Picker preferences
+
+Saved canonical design identities, hidden Collections, event participation and
+market choices, held in user meta scoped to the current site. They are personal
+library preferences; Site occasions are shared by site administrators. Favorites
+survive a pack version update while exact source baselines retain immutable IDs.
+
 ### Starting point
 
 Shown as **Display rule sets** in the UI, distinct from full Campaign setups
