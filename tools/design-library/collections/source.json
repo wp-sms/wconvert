@@ -72,6 +72,12 @@
           "stage": "during",
           "setup_hash": "20b289c64d0703faf97357fdfb308a09460ea4323223c5001830ca0fb36003d3",
           "design_hash": "df0fee41bb9575857ad29c17831d4a702502b5d33b8d68da30121a0e69ea426f"
+        },
+        {
+          "setup_id": "specification-sheet",
+          "stage": "during",
+          "setup_hash": "a32b83c41ef7a80468a00b793a89d12a2e66d84da19efb89bb3894a03139c434",
+          "design_hash": "8b73b1bb00708720b098b5e5304504ac9bf2da17e0ffbd3525ba2d56f897ec97"
         }
       ]
     },
@@ -158,6 +164,12 @@
           "stage": "any",
           "setup_hash": "a5afa7d85a8923cd3647d7335ee069a0bb27c8cf1249c11f730f41a5764ace3c",
           "design_hash": "87588e459b3fa61f355d30e355f8ad196790569f052634f6a5d2466368d8e83d"
+        },
+        {
+          "setup_id": "excerpt-window",
+          "stage": "any",
+          "setup_hash": "9eca59ce0b204de74a4df7829b792ce488c8f3fe6816e2f8c1551511955f2abf",
+          "design_hash": "7a004dba0eb7a0521bd87db23f694cd2af3a2de43b9f1b2a74ddb26bce022b7e"
         }
       ]
     },

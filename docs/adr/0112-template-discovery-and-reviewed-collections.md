@@ -174,11 +174,11 @@ real delivery or merge is included.
 
 ## Initial publication and verification
 
-Five collections reference 16 freshly re-reviewed setups. Black Friday is a
+Five collections initially referenced 16 freshly re-reviewed setups; the 1 October round-2 review expands this to 18. Black Friday is a
 set of adaptable preparation ideas with a feature window beginning 16 October,
 not a claim that a complete branded seasonal pack or conversion study exists.
 The other 92 pilot setup approvals remain stale after prior renderer changes;
-this change does not approve the whole 108-setup library.
+the current 110-setup library is not collectively approved.
 
 See [implementation and validation](../reviews/template-picker-implementation-2026-09-30.md).
 This amends ADRs 0082, 0083 and 0085. Existing Optin snapshots and metrics remain
@@ -217,3 +217,26 @@ Named WordPress timezones can suggest a country using the timezone database. Sug
 Custom occasions now select an available stage in reviewed evergreen planning collections. The inclusive occasion end remains distinct from campaign scheduling. HTTP sites use a shared getRandomValues-based authoring ID helper. The journey tester excludes genuinely hidden consent from submitted answers; it neither invents consent nor accepts unresolved references.
 
 Raster pack installation is implemented in ADR 0082. The local publisher exports reviewed source raster bytes only with recorded redistribution rights. Public HTML previews contain inert rendered design screens, including result variants, and no importable template tree. Free and Pro use the same generation path and desktop/mobile/RTL controls. Catalog cards offer the same public preview URL for website and plugin use. Hosting and premium entitlement are still deferred; no default remote endpoint is introduced.
+
+
+## 2026-10-01 — stable approvals and first illustrated release
+
+Campaign approval identity includes prepared content, setup and renderer bytes,
+excluding only derived nearest-neighbour results, similarity fingerprint and the
+previous revision property. New neighbours no longer invalidate unchanged work.
+Copy, structure, requirements, configuration, renderer or evidence changes still
+do. Fifteen current approvals were renewed after exact old-algorithm, renderer,
+content and evidence verification; 92 stale approvals remain stale.
+
+Specification sheet and Excerpt window now have native WordPress campaign and
+all-screen desktop/phone/RTL evidence. They join the launch and reader collections.
+Homeware care retains its compact bundled SVG and adds an independently reviewed,
+hash-bound raster export. All five curated collections have current approvals.
+The local downloadable subset is now 16 setups / 13 designs / four Free packs /
+two complete collections, with one original raster image. Existing campaigns are
+unchanged. This supersedes the earlier 13/10/3 release counts, not the remaining
+hosted licence/API/website deployment work.
+
+See [round-2 practical review](../reviews/template-practical-round2-2026-10-01.md),
+[approval identity evidence](../reviews/template-stable-approvals-2026-10-01.md)
+and [artwork export](../reviews/homeware-artwork-export-2026-10-01.md).

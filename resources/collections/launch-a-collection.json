@@ -26,9 +26,15 @@
       "stage": "during",
       "setup_hash": "20b289c64d0703faf97357fdfb308a09460ea4323223c5001830ca0fb36003d3",
       "design_hash": "df0fee41bb9575857ad29c17831d4a702502b5d33b8d68da30121a0e69ea426f"
+    },
+    {
+      "setup_id": "specification-sheet",
+      "stage": "during",
+      "setup_hash": "a32b83c41ef7a80468a00b793a89d12a2e66d84da19efb89bb3894a03139c434",
+      "design_hash": "8b73b1bb00708720b098b5e5304504ac9bf2da17e0ffbd3525ba2d56f897ec97"
     }
   ],
   "dependencies_current": true,
-  "revision": "4fcfe5cd9a29383f0152deed64d486d562da5b832fa5f1f675d337325cb31b19",
+  "revision": "92bf00d2242672159aa189367ce5ce0921fc784f362e6ff7dc6ea87b24eb845f",
   "status": "published"
 }

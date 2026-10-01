@@ -13,7 +13,7 @@ npm install --no-save playwright       # not a repo dependency; see below
 Output goes to `tools/design-library/out/`, which is gitignored. Nothing here
 ships: `/tools` is in `.distignore`.
 
-## Internal creation and review studio: 108 campaigns
+## Internal creation and review studio: 110 campaigns
 
 Run `npm run templates:pilot`, then open `out/pilot.html` through the local site
 (or serve `out/` over HTTP). Add `?batch=visual-variety` to show the eight latest compositions, or `?batch=new-directions` for the initial four. `out/proof.html` pairs every
@@ -21,8 +21,8 @@ screen at desktop and phone widths for visual review.
 `npm run test:template-studio` tests discovery, duplicate detection, brief validation
 and all prepared campaigns. The read-only PHP exporter loads repository classes directly, so review also works before Composer is installed in a release stage.
 
-The studio contains **108 campaign setups using 59 designs**, drawn from a complete
-inventory of **91 designs**. The first twelve received user approval of the design
+The studio contains **110 campaign setups using 61 designs**, drawn from a complete
+inventory of **93 designs**. The first twelve received user approval of the design
 direction. The next twelve add four new Free designs and reuse existing designs,
 including deliberate reuse between two different enquiry workflows. Ten Playbooks
 are new; cart return and standalone SMS already had useful registered starts.
@@ -77,7 +77,7 @@ copy. Dependencies include registered setups outside the curated collection.
 
 The Next batch view pairs six original composition sketches and two deliberate
 reuses with existing designs. These eight briefs are planned, not shipped or
-added to the 108/59 library counts. The Inspiration view links the earlier
+added to the 110/61 library counts. The Inspiration view links the earlier
 Depicter references and states exactly what was reviewed.
 
 `review/visual-audit.json` holds advisory decisions bound to source and renderer
@@ -134,13 +134,13 @@ filters by business as well as format, collection and search. The bounded catalo
 accepts 50 packs, retaining the existing 12-design and 256 KiB limits.
 
 The [shared editorial queue](review/README.md) now stores revision-bound decisions
-and evidence in Git. The studio shows review-state filters for 108 actual setups.
+and evidence in Git. The studio shows review-state filters for 110 actual setups.
 The completed decision-support briefs are archived under `pilot/batches/`; the
 next-batch queue holds six new composition candidates and two deliberate reuses,
 following the full-inventory visual audit. `npm run templates:gate` checks the
 current evidence locally without CI. Automated generation, hosted multi-user
 review, screenshot similarity, conversion measurement, paid asset distribution
-and broad 300–500 campaign rollout remain future work. The current 108 are reviewed editorial candidates, not measured winners.
+and broad 300–500 campaign rollout remain future work. The current 110 are reviewed editorial candidates, not measured winners.
 
 ## A sibling of `tools/design-system`, not a step inside it
 
@@ -362,3 +362,15 @@ collection check does not certify the entire library. Existing advisory design
 reviews also do not replace campaign approval. See the
 [implementation review](../../docs/reviews/template-picker-implementation-2026-09-30.md)
 and [API contract](../../docs/template-discovery-api.md) for limits and pending work.
+
+
+### 1 October follow-through
+
+Specification sheet and Excerpt window are approved campaign starts after native
+WordPress, desktop/phone and RTL checks. Five curated collections now reference
+18 current approved setups; 92 other pilot reviews remain stale. The local release
+contains 16 setups / 13 designs / four Free packs / two complete collections.
+Homeware care includes the first real illustrated download; see
+[publishing](publishing/README.md) for hash-bound artwork derivatives and the
+native update/offline rehearsal. Adding a similarity neighbour no longer expires
+an unchanged campaign approval. Content, setup, renderer and evidence changes do.

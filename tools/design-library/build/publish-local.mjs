@@ -7,6 +7,7 @@ import { fileURLToPath } from 'node:url';
 import { buildCollections, checkRuntimeCollections } from './collections.mjs';
 import { reviewQueue } from './reviews.mjs';
 import { publicPreview } from './public-preview.mjs';
+import { artworkExports } from './artwork.mjs';
 import { buildRelease, publishRelease, sha256 } from './publisher.mjs';
 
 const root = resolve(fileURLToPath(new URL('../../..', import.meta.url)));
@@ -34,7 +35,7 @@ for (const id of selected) {
 }
 const php = (input) => execFileSync('php', [resolve(root, 'tools/design-library/build/export-packs.php')], { input: JSON.stringify(input), encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
 const renderer = readFileSync(resolve(root, 'tools/design-library/out/renderer.iife.js'), 'utf8');
-const packs = JSON.parse(php(plan)).map(pack => {
+const packs = JSON.parse(php({ ...plan, raster_sources: artworkExports(root, plan.artwork_exports) })).map(pack => {
   const media = pack.media.map(item => ({ ...item, bytes: Buffer.from(item.base64, 'base64') }));
   return { ...pack, media, preview: publicPreview(JSON.parse(pack.json), renderer, media) };
 });

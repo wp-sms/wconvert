@@ -50,12 +50,13 @@ foreach ($definition['setups'] as $id) {
     $templates[$template['id']] = $template; $setups[] = $setup;
     $paid = $paid || $template['tier'] !== 'free' || \WConvert\Goal\Goal::from($setup['goal'])->tier() !== Tier::Free;
 }
-    // Source artwork is reviewed inside the design revision. Export raster bytes
-    // to immutable objects and keep only inert bindings in the downloadable tree.
+    // The bundled source can remain a compact vector. An explicit, independently
+    // reviewed derivative is bound to its exact source URI and raster bytes.
     foreach ($templates as &$template) {
         $walk = function (array &$node) use (&$walk, &$assets, &$bindings, &$media, $template, $input): void {
             if (($node['type'] ?? '') === 'image' && ($node['src'] ?? '') !== '') {
-                if (!preg_match('#^data:(image/(?:png|jpeg|webp));base64,([A-Za-z0-9+/=]+)$#D', $node['src'], $match)) throw new RuntimeException('Artwork must be reviewed PNG, JPEG or WebP source bytes. SVG conversion needs a new review.');
+                $raster = $input['raster_sources'][hash('sha256', $node['src'])] ?? $node['src'];
+                if (!preg_match('#^data:(image/(?:png|jpeg|webp));base64,([A-Za-z0-9+/=]+)$#D', $raster, $match)) throw new RuntimeException('Artwork must be reviewed PNG, JPEG or WebP source bytes. SVG conversion needs a new review.');
                 $bytes = base64_decode($match[2], true);
                 if ($bytes === false) throw new RuntimeException('Invalid artwork encoding');
                 $info = getimagesizefromstring($bytes); $hash = hash('sha256', $bytes); $id = 'image-' . substr($hash, 0, 24);

@@ -6,6 +6,7 @@ import { createHash } from 'node:crypto';
 import { readDesigns, analyseDesigns } from './inventory.mjs';
 import { validateBriefs, coverage } from './briefs.mjs';
 import { reviewQueue } from './reviews.mjs';
+import { campaignRevision } from './revision.mjs';
 import { maintenanceReport, editorialFindings } from './maintenance.mjs';
 import { validateBacklog } from './backlog.mjs';
 
@@ -24,7 +25,7 @@ for (const entry of entries) {
   if (!design || !entry.visitor_need || !entry.difference || !entry.requirements.length || !entry.suggested_setup?.length || !entry.measure) throw new Error(`Incomplete brief: ${entry.id}`);
   entry.nearest = design.nearest;
   entry.fingerprint = design.fingerprint;
-  entry.revision = createHash('sha256').update(rendererRevision).update(JSON.stringify(entry)).digest('hex');
+  entry.revision = campaignRevision(entry, rendererRevision);
 }
 const sharedReviews = JSON.parse(readFileSync(resolve(root, 'tools/design-library/review/shared-reviews.json'), 'utf8'));
 const queue = reviewQueue(sharedReviews, entries, root);

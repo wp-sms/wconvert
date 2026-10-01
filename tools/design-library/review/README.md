@@ -27,7 +27,7 @@ multi-user service. Browser edits are drafts until imported and committed.
 6. Commit the evidence and shared review records together. Rebuild the studio on
    another checkout to see the decisions.
 
-Campaign and renderer revisions bind decisions to the reviewed output. Evidence
+Campaign content and renderer revisions bind decisions to the reviewed output. Derived similarity neighbours and fingerprints are excluded, so expanding the library does not invalidate an unchanged campaign. Evidence
 content is hashed too: a changed or missing file invalidates the approval. Import
 validates the complete export before atomically replacing the store, keeps prior
 records, rejects stale exports and conflicts, and is idempotent for an identical
@@ -48,7 +48,7 @@ conversion improvement, physical-device verification or release approval.
 External email/SMS delivery is skipped at the user's request for this work.
 
 `pilot/next-batch.json` is empty after the contextual-help batch. The collection
-contains 96 actual setups, with separate campaign and design counts. Add planned
+contains 110 actual setups, with separate campaign and design counts. Add planned
 briefs only after choosing distinct visitor needs; the validator rejects IDs
 already in the collection.
 

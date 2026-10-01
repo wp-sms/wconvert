@@ -31,11 +31,11 @@ setup membership and selected editorial collections. Each collection member must
 exist in the release. An existing pack ID/version cannot acquire different bytes
 or change access scope; bump that pack's version when changing its contents.
 
-The initial compatible release has **13 setups, 10 designs, 3 Free packs and 2
-collections**. Three already-reviewed setups are explicitly deferred: the sale
-bar contains a site-specific link; lighting and care notes contain embedded SVG.
-They remain in the bundled library. Do not blank them to force catalog acceptance.
-The existing media-free pack format still refuses those values.
+The current compatible release has **16 setups, 13 designs, 4 Free packs and 2
+collections**. Stores and publishers are version 1.1.0; services remains 1.0.0.
+The new Homeware care pack (1.0.0) includes one original 1920 × 500 illustration.
+The sale bar's site-specific link and lighting's unconverted SVG remain explicitly
+deferred. They stay in the bundled library; incomplete collections are not exported.
 
 ## Files and updates
 
@@ -100,12 +100,11 @@ Stable local files survive later updates. It owns only its dedicated directory,
 not merchant uploads. It does not add Media Library attachment rows or a DB table.
 The download callback must itself bound the response while reading it.
 
-**This installer is not yet connected to pack downloads or previews.** Pack schema
-1 still requires `assets: []`. A reviewed pack-format extension must bind image
-references, include rights/provenance checks, and commit the pack only after media
-installation succeeds. SVG needs safe conversion or a deliberately reviewed
-sanitizer. Existing installed copies and campaign image URLs must remain available;
-reference-aware cleanup is still pending.
+Schema 2 connects verified assets to preview and installation through explicit
+image-node bindings. Schema 1 remains image-free. The complete verified image set
+must exist before a pack is installed. SVG is not accepted by the download reader;
+use the explicitly reviewed derivative workflow below. Existing campaign image
+URLs remain available; reference-aware cleanup is still pending.
 
 `build/download-service.mjs` is a host-neutral authorization boundary, exercised
 with test-only licence responses. An internal resource map selects the object;
@@ -117,10 +116,9 @@ put in a URL or response. No fake authorizer or permissive default is deployed.
 
 The real host must supply the licence-manager adapter, bounded storage reads,
 request authentication, rate limiting and cache-safe HTTP handling. Whether that
-host is the existing backend or a Worker remains open. The website's public
-Free/Pro previews, plugin online-preview integration, media-format wiring and
-actual licence/site/staging/multisite behaviour are **not implemented by this
-local publisher**. Installed Pro presence remains a capability check, not server
+host is the existing backend or a Worker remains open. Public Free/Pro preview generation, plugin preview links and Free raster media
+installation are implemented locally. Website deployment and actual
+licence/site/staging/multisite acceptance still need the real infrastructure. Installed Pro presence remains a capability check, not server
 proof of a paid licence.
 
 The real licence-manager integration was explicitly deferred by the user on
@@ -128,9 +126,9 @@ The real licence-manager integration was explicitly deferred by the user on
 
 ### Raster images and public previews
 
-The exporter supports approved PNG/JPEG/WebP data-URI artwork in trusted source designs. Record `image_rights` in the publishing plan, keyed by SHA-256: `{ "redistribution": true, "source": "Original artwork or licence reference", "reviewedBy": "Reviewer", "access": "free" }`. Export splits out the bytes, clears tree URLs and creates schema-2 bindings. SVG is not silently converted: convert/review the source first. Rights records are internal source files and do not appear in customer manifests.
+The exporter supports approved PNG/JPEG/WebP data-URI artwork in trusted source designs. Record `image_rights` in the publishing plan, keyed by SHA-256: `{ "redistribution": true, "source": "Original artwork or licence reference", "reviewedBy": "Reviewer", "access": "free" }`. Export splits out the bytes, clears tree URLs and creates schema-2 bindings. SVG is not silently converted: keep the compact bundled source, export its raster once and review that exact derivative. `artwork_exports` maps the SHA-256 of the original image source URI to `{path, sha256, mime, evidence: {path, sha256}}`. The raster path must stay within `pilot/assets`; changed source, raster or evidence requires renewed review. Rights records are still required for the resulting raster. This avoids embedding large PNG bytes in bundled campaign payloads. Rights records are internal source files and do not appear in customer manifests.
 
-Storage deduplicates `/assets/free/<hash>.<extension>` in the public area and `/assets/premium/<hash>.<extension>` in the private area. Premium images remain refused by the plugin while its entitlement adapter is deferred. The current sample release still has no image-bearing selection; the separate native media rehearsal exercises acquisition/install/offline integrity with real raster bytes.
+Storage deduplicates `/assets/free/<hash>.<extension>` in the public area and `/assets/premium/<hash>.<extension>` in the private area. Premium images remain refused by the plugin while its entitlement adapter is deferred. The Homeware care pack exercises real artwork acquisition and offline use. `bin/verify-template-release.php` also simulates a next version in isolated temporary storage: unchanged artwork is reused, the original design remains addressable, and both versions retain verified local images. This rehearsal changes no site settings or campaigns.
 
 Each selected pack also generates a content-addressed public `/previews/<hash>.html` showcase (maximum 2 MiB). It contains inert rendered screens, including result variants, rather than editable trees or the Pro renderer. Website and plugin can link to the same page. Changing previews need not copy unchanged pack JSON. Original artwork may be visible in rendered previews; only use redistributable preview-safe material. This is not DRM.
 

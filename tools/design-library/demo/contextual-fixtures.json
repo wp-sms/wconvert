@@ -119,5 +119,13 @@
       "Exceptional closures": "Confirm holiday and exceptional opening arrangements before travelling.",
       "Visits": "Arrange a visit with the team first. A page view does not reserve an appointment."
     }
+  ],
+  "specification-sheet": [
+    "Compare the sample tables",
+    {
+      "Small table": "Footprint: 35 × 35 cm. Suggested beside an armchair. Wipe clean. Fictional sample: painted wood, illustrative price £60, not available to purchase.",
+      "Wide table": "Footprint: 50 × 40 cm. Suggested beside a two-seat sofa. Wipe clean. Fictional sample: painted wood, illustrative price £85, not available to purchase.",
+      "Before choosing": "Measure the available floor space and check access. These examples demonstrate the campaign link; they are not real product offers."
+    }
   ]
 }

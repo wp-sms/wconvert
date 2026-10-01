@@ -26,6 +26,12 @@ function demo_capture(array $body): WP_REST_Response {
 }
 $campaigns = get_option('wconvert_demo_campaigns', []);
 $briefs = json_decode(file_get_contents(WP_CONTENT_DIR . '/plugins/wconvert/tools/design-library/pilot/collection.json'), true, 512, JSON_THROW_ON_ERROR)['entries'];
+$selected = array_values(array_filter(explode(',', (string) getenv('WCONVERT_DEMO_IDS'))));
+if ($selected !== []) {
+    demo_assert(array_diff($selected, array_column($briefs, 'id')) === [], 'Unknown review campaign');
+    $briefs = array_values(array_filter($briefs, static fn (array $brief): bool => in_array($brief['id'], $selected, true)));
+    $campaigns = array_intersect_key($campaigns, array_flip($selected));
+}
 foreach ($briefs as $brief) demo_assert(isset($campaigns[$brief['id']]), 'Demo not seeded: ' . $brief['id']);
 foreach ($campaigns as $key => $entry) {
     try {
