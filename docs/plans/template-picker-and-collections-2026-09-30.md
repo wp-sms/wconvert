@@ -170,7 +170,22 @@ Preserve safe HTTPS transport, origin restrictions, bounded bytes, timeouts, dig
 
 Current packs prohibit remote media and require empty asset lists. Supporting artwork therefore needs a reviewed asset extension before those designs are remotely distributable. Distinguish gallery thumbnails from assets embedded into campaigns. Validate mime/size/digest and licence, reject executable content, retain referenced campaign assets, and use a neutral image fallback. Do not bypass these limits by injecting external URLs into old pack fields.
 
-## Hosted delivery extension — agreed direction, not implemented
+## Hosted delivery extension — implementation status
+
+Local foundation implemented on 1 October: a repeatable schema-2 publisher,
+review-bound source export, native WordPress release verifier, isolated raster
+asset installer and host-neutral authorization boundary. The runnable workflow
+is documented in [Local release publishing](../../tools/design-library/publishing/README.md).
+The first local release contains 13 setups / 10 designs / 3 Free packs / 2
+collections. Three reviewed setups are explicitly deferred by the delivery plan;
+none of their artwork or links was silently removed. See
+[verification and limitations](../reviews/template-local-release-2026-10-01.md).
+
+The editor's layout-replacement settings now omit site occasion management.
+Curated custom-occasion stage suggestions remain pending. Media installation and
+licence authorization have tested foundations but are **not wired to live pack
+downloads**. Public website demos, the media pack extension, real licence-manager
+integration, retention/cleanup and cloud staging still need implementation.
 
 This section incorporates the October 1 discussion about public previews, images,
 Free/Pro access and frequent updates. Existing protocol restrictions remain in
@@ -200,7 +215,7 @@ invalidates dependent preview evidence and may require regeneration across desig
 
 | Component | Responsibility | Current state |
 | --- | --- | --- |
-| Existing plugin repository | Design/setup/collection sources, asset references and rights records, review evidence, publisher code and Git history | Exists; publisher/media extension pending |
+| Existing plugin repository | Design/setup/collection sources, asset references and rights records, review evidence, publisher code and Git history | Exists; local publisher works, media pack wiring pending |
 | Local asset workspace | Originals and generated media for development, backed up independently when outside Git | Can be used before cloud setup; not a production delivery service |
 | Public object storage, preferably R2 | Public catalog releases, Free downloads and appropriately sized preview/demo assets | Not provisioned |
 | Private object storage, preferably R2 | Premium downloadable packs/assets and separately controlled original artwork | Not provisioned; originals are never customer download targets |
@@ -295,14 +310,14 @@ backup restoration. Replacing the catalog never rewrites saved campaigns.
 
 | Work package | Can proceed locally? | Acceptance evidence |
 | --- | --- | --- |
-| Close remaining picker gaps | Yes | Hide occasion management during layout replacement; better curated occasion-stage ideas; actual WordPress checks |
+| Close remaining picker gaps | Yes | Occasion management hidden and checked in WordPress; curated occasion-stage ideas still pending |
 | Re-review and expand templates | Yes | Fresh all-screen/journey/WordPress evidence, asset provenance and honest setup/design counts |
 | Define media, preview and authorization contracts | Yes | Versioned fixtures; published/installed revision agreement; no change to current validator without implementation |
-| Build publisher with local-directory storage adapter | Yes | Deterministic release output; unchanged-file reuse; stale/missing-reference refusal; manifest-last and failed-upload simulations |
-| Build media importer and licence adapter | Yes | Local files and fake licence responses cover success, expiry, outage, wrong plan/site, partial download, tampering and retry |
+| Build publisher with local-directory storage adapter | Yes | Implemented for schema 2 + media-free packs: deterministic output, object reuse, current review checks, manifest-last, interrupted-publication and conflict tests |
+| Build media importer and licence adapter | Yes | Foundations tested with local files/fake licence decisions; live transport, media references, provenance and pack commit wiring pending |
 | Website catalog/preview integration | Yes, locally | Same approved catalog/revisions, Free/Pro parity, all-screen demos, no real submissions |
 | Scale/accessibility/studio checks | Yes | Recorded 500-setup timings, keyboard/native zoom/screen-reader checks and dependency/locale/timezone/failure simulations |
-| Real licence-manager integration | Requires its API/spec and authorized test credentials | Actual validity, activation, revocation and staging/multisite behaviour; simulated checks alone are insufficient |
+| Real licence-manager integration (deferred by user on 1 October) | Requires its API/spec and authorized test credentials | Actual validity, activation, revocation and staging/multisite behaviour; simulated checks alone are insufficient |
 | Cloud deployment and delivery rehearsal | Requires storage/API configuration, domain and credentials | Private-access enforcement, caching, authorization, image integrity, interrupted release and rollback checks |
 | Public launch | Requires the previous hosted checks and release approval | Reviewed release, accountable owner and recovery procedure |
 

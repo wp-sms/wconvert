@@ -1,0 +1,60 @@
+{
+  "schema": 1,
+  "packs": [
+    {
+      "id": "stores-starts",
+      "name": "Stores starting points",
+      "description": "Reviewed campaign starting points for stores.",
+      "version": "1.0.0",
+      "setups": [
+        "edition-early-access",
+        "first-order-receipt",
+        "restock-announcements"
+      ]
+    },
+    {
+      "id": "services-starts",
+      "name": "Services starting points",
+      "description": "Reviewed campaign starting points for services.",
+      "version": "1.0.0",
+      "setups": [
+        "cleaning-quote",
+        "home-repair-quote",
+        "renovation-callback",
+        "repair-advice-request",
+        "repair-assessment",
+        "website-review-enquiry"
+      ]
+    },
+    {
+      "id": "publishers-starts",
+      "name": "Publishers starting points",
+      "description": "Reviewed campaign starting points for publishers.",
+      "version": "1.0.0",
+      "setups": [
+        "editorial-weekly",
+        "reading-notes-guide",
+        "sunday-reading",
+        "writing-checklist"
+      ]
+    }
+  ],
+  "collections": [
+    "service-enquiries",
+    "reader-relationships"
+  ],
+  "deferred": [
+    {
+      "setup": "sale-deadline",
+      "reason": "Needs the reviewed media or site-link extension; preserve the approved source."
+    },
+    {
+      "setup": "lighting-collection",
+      "reason": "Needs the reviewed media or site-link extension; preserve the approved source."
+    },
+    {
+      "setup": "homeware-care-notes",
+      "reason": "Needs the reviewed media or site-link extension; preserve the approved source."
+    }
+  ]
+}

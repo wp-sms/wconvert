@@ -27,6 +27,23 @@ final class PackPlaybooksTest extends TestCase
             'playbooks' => [require WCONVERT_DIR . 'resources/playbooks/welcome-discount.php']];
     }
 
+    public function testScopedScreenCopyIsValidatedAndPreserved(): void
+    {
+        $pack = $this->pack();
+        $setup = require WCONVERT_DIR . 'resources/playbooks/repair-advice-request.php';
+        $json = file_get_contents(WCONVERT_DIR . 'resources/templates/library/' . $setup['template_id'] . '.json');
+        self::assertIsString($json);
+        $pack['templates'] = [json_decode($json, true)];
+        $pack['playbooks'] = [$setup];
+        $pack['requires']['capabilities'] = PackValidator::CAPABILITIES;
+        $validated = PackValidator::shipping()->decode(json_encode($pack, JSON_THROW_ON_ERROR));
+        $this->assertSame($setup['copy'], $validated['playbooks'][0]['copy']);
+        $scope = array_key_first($setup['copy']['screens']);
+        $pack['playbooks'][0]['copy']['screens'][$scope]['headline'] = '<script>bad</script>';
+        $this->expectException(RuntimeException::class);
+        PackValidator::shipping()->decode(json_encode($pack, JSON_THROW_ON_ERROR));
+    }
+
     public function testPackConsumersReuseOneReadAndARepairOrInstallRefreshesIt(): void
     {
         $directory = sys_get_temp_dir() . '/wconvert-pack-cache-' . bin2hex(random_bytes(8));

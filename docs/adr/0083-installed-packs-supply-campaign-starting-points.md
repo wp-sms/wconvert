@@ -35,7 +35,11 @@ installation. Registration uses the existing Playbook refusal rules without
 emitting author warnings for remote validation failures.
 
 Copy follows the actual Slot Role bindings, including repeated paragraphs,
-policy-link labels and choice options. Extra or unsupported properties, markup,
+policy-link labels and choice options. The 1 October publisher check corrected
+screen-scoped copy validation: use the existing SlotRoles scope mapping, then
+validate each screen's own roles and values. Valid multi-screen setups no longer
+trigger an undefined `screens` binding; unsafe scoped wording remains refused.
+See [ADR 0112](0112-template-discovery-and-reviewed-collections.md). Extra or unsupported properties, markup,
 URLs and merchant-owned coupon codes are refused. The bound tree passes the
 same placeholder-only node checks as a downloaded design.
 

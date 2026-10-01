@@ -119,13 +119,26 @@ pack references validate before replacing the local cache. Normal discovery
 uses local installed/cached data; refresh remains explicit. Schema 1 catalogs
 cannot inject collections. See the [protocol](../template-discovery-api.md).
 
-Hosting, a schema 2 publisher, paid-download entitlement, licensed media import
-and historical archive cleanup remain separate integrations. The existing
+The schema 2 local-directory publisher now builds from the same shared review
+store, reconstructs source/renderer revisions and validates with the shipping
+reader. It uses immutable content-addressed pack files, bounded pages, explicit
+current-release comparison, an exclusive local lock and a manifest-last commit.
+Changed bytes require a new pack version; unchanged objects are reused. The
+old schema-1 builder remains a frozen compatibility fixture, not a second active
+editorial publishing workflow.
+
+Hosting, live paid-download entitlement, licensed media pack wiring and
+historical archive cleanup remain separate integrations. `VerifiedAssets`
+provides tested bounded PNG/JPEG/WebP staging and reuse, but schema-1 packs still
+require empty assets. The host-neutral download service requires an injected
+real licence decision before premium bytes can be read; no test authorizer is
+registered in the plugin or exposed over HTTP. See the
+[local publishing workflow](../../tools/design-library/publishing/README.md). The existing
 128-file archive limit refuses further installs safely; no baseline is deleted.
 
-### Planned hosted extension — 1 October 2026
+### Hosted extension boundaries — 1 October 2026
 
-The [implementation plan](../plans/template-picker-and-collections-2026-09-30.md#hosted-delivery-extension--agreed-direction-not-implemented)
+The [implementation plan](../plans/template-picker-and-collections-2026-09-30.md#hosted-delivery-extension--implementation-status)
 now specifies the following future boundaries. These do not describe shipped
 media or licensing support and do not relax the current reader/pack validators.
 
@@ -157,7 +170,7 @@ Local-directory publisher fixtures, importer development, fake licence responses
 preview generation and template review do not require cloud provisioning. Actual
 authorization, private delivery and release/rollback acceptance require the real
 licence API and staging infrastructure before public launch. No deployment, CI,
-real delivery or merge is included in this documentation update.
+real delivery or merge is included.
 
 ## Initial publication and verification
 
@@ -187,3 +200,12 @@ country-name selection and visible failure recovery. Collection introductions
 appear once in the header; stage and search controls share a row where space
 allows. Single-format collections omit redundant format filters. One-page
 results retain their page count without disabled navigation buttons.
+
+
+The [local release verification](../reviews/template-local-release-2026-10-01.md)
+records native WordPress acceptance of 13 setups / 10 designs in three Free packs
+and two collections. This is a compatible subset, not another set of newly
+created templates. Three reviewed bundled setups retain their artwork/links and
+are explicitly deferred for the media/site-link extension. Layout replacement
+now labels settings “My preferences” and omits shared occasion management;
+creation retains that management surface.

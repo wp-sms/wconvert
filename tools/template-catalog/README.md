@@ -1,6 +1,11 @@
-# Curated template collections
+# Schema-1 catalog compatibility fixture
 
-Build the local catalog from the existing reviewed designs:
+For new releases use the [review-bound schema-2 publisher](../design-library/publishing/README.md).
+This older builder and its fixed membership remain for reader regression tests
+and existing local examples. Do not extend its source-fingerprint-only approval
+list as a parallel editorial workflow.
+
+Rebuild the compatibility fixture:
 
 ```sh
 php tools/template-catalog/build.php

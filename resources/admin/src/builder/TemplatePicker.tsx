@@ -125,7 +125,7 @@ export function TemplatePicker({
 
   return (
     <div className="wconvert-design-browser">
-      {settings && <PickerSettings picker={picker} onBack={() => { setSettings(false); requestAnimationFrame(() => returnFocus.current?.focus({ preventScroll: true })); }} />}
+      {settings && <PickerSettings context="replacement" picker={picker} onBack={() => { setSettings(false); requestAnimationFrame(() => returnFocus.current?.focus({ preventScroll: true })); }} />}
       {/* Keep this view mounted so Back restores the filters and the scroll position. */}
       <div className="wconvert-design-browser__browse" hidden={inspected !== undefined || comparing || settings}>
         <div className="wconvert-picker__controls wconvert-toolbar">
@@ -140,7 +140,7 @@ export function TemplatePicker({
               <option value="all">{__('All designs', 'wconvert')}</option>
             </select>}
             <Button variant="outline" aria-pressed={savedOnly} disabled={!picker.data} onClick={() => setSavedOnly(!savedOnly)}>{sprintf(__('Saved %s', 'wconvert'), String(saved.size))}</Button>
-            <Button variant="outline" disabled={busy || !picker.data} onClick={()=>{returnFocus.current=document.activeElement instanceof HTMLElement?document.activeElement:null;setSettings(true);}}>{__('My occasions & preferences','wconvert')}</Button>
+            <Button variant="outline" disabled={busy || !picker.data} onClick={()=>{returnFocus.current=document.activeElement instanceof HTMLElement?document.activeElement:null;setSettings(true);}}>{__('My preferences','wconvert')}</Button>
             <Button variant="outline" className="wconvert-picker__more"
               aria-expanded={moreOpen} aria-controls={filterId} onClick={() => setMoreOpen(!moreOpen)}>
               <SlidersHorizontal size={15} aria-hidden="true" />

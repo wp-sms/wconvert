@@ -8,8 +8,8 @@ import { Input } from '../components/ui/input';
 import { Region, RegionHeader, RegionBody, PageError } from '../shell/Region';
 import type { usePicker } from './usePicker';
 
-export function PickerSettings({ picker, onBack, onPlan }: {
-  picker: ReturnType<typeof usePicker>; onBack: () => void; onPlan?: (id: string) => void;
+export function PickerSettings({ picker, onBack, onPlan, context = 'creation' }: {
+  picker: ReturnType<typeof usePicker>; onBack: () => void; onPlan?: (id: string) => void; context?: 'creation' | 'replacement';
 }) {
   const [name, setName] = useState(''); const [start, setStart] = useState(''); const [end, setEnd] = useState(''); const [editing, setEditing] = useState<string | null>(null);
   const [countries, setCountries] = useState<Country[]>([]);
@@ -28,7 +28,7 @@ export function PickerSettings({ picker, onBack, onPlan }: {
   const data = picker.data;
   if (!data) return <div className="p-6"><p>{__('Preferences could not be loaded. The library is still available.', 'wconvert')}</p><Button onClick={() => { void picker.reload(); }}>{__('Reload preferences', 'wconvert')}</Button><Button className="wconvert-picker__back" variant="outline" onClick={onBack}><ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />{__('Back to library', 'wconvert')}</Button></div>;
   return <section className="wconvert-picker-settings">
-    <header className="wconvert-picker-settings__header"><Button className="wconvert-picker__back" variant="outline" onClick={onBack}><ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />{__('Back to library', 'wconvert')}</Button><h2 ref={title} tabIndex={-1}>{__('Your preferences & occasions', 'wconvert')}</h2><p>{__('Stars and recommendations are personal to your WordPress account on this site. Occasion dates are shared with this site’s campaign managers.', 'wconvert')}</p></header>
+    <header className="wconvert-picker-settings__header"><Button className="wconvert-picker__back" variant="outline" onClick={onBack}><ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />{__('Back to library', 'wconvert')}</Button><h2 ref={title} tabIndex={-1}>{context === 'creation' ? __('Your preferences & occasions', 'wconvert') : __('Your preferences', 'wconvert')}</h2><p>{context === 'creation' ? __('Stars and recommendations are personal to your WordPress account on this site. Occasion dates are shared with this site’s campaign managers.', 'wconvert') : __('Stars and recommendations are personal to your WordPress account on this site.', 'wconvert')}</p></header>
     {picker.error && <div><PageError message={picker.error} /><Button variant="outline" disabled={picker.saving} onClick={() => {void picker.reload();}}>{__('Reload preferences','wconvert')}</Button></div>}
     <span role="status" className="sr-only">{picker.saving ? __('Saving changes…','wconvert') : ''}</span>
     <Region><RegionHeader level={3} title={__('Personal recommendations', 'wconvert')} description={__('Only your WordPress account on this site uses these choices.','wconvert')} /><RegionBody className="wconvert-picker-settings__body">
@@ -53,7 +53,7 @@ export function PickerSettings({ picker, onBack, onPlan }: {
       const entry = data.saved_designs?.find(value => value.key === key);
       return <li key={key}><div><strong>{entry?.name ?? __('Saved design', 'wconvert')}</strong>{entry?.retired && <span>{__('Not in the current library', 'wconvert')}</span>}</div><Button variant="ghost" disabled={picker.saving} onClick={() => picker.toggleSaved(key)}>{__('Remove saved design', 'wconvert')}</Button></li>;
     })}</ul></RegionBody></Region>}
-    <Region><RegionHeader level={3} title={__('Site occasions', 'wconvert')} description={__('Shared with this site’s campaign managers.','wconvert')} /><RegionBody className="wconvert-picker-settings__body"><p>{sprintf(__('For example, an anniversary sale or a new service launch. Dates use %s. Saving or changing them never schedules a campaign.', 'wconvert'), data.timezone || 'UTC')}</p>
+    {context === 'creation' && <Region><RegionHeader level={3} title={__('Site occasions', 'wconvert')} description={__('Shared with this site’s campaign managers.','wconvert')} /><RegionBody className="wconvert-picker-settings__body"><p>{sprintf(__('For example, an anniversary sale or a new service launch. Dates use %s. Saving or changing them never schedules a campaign.', 'wconvert'), data.timezone || 'UTC')}</p>
       {data.occasions.items.length === 0 && <p className="text-note text-muted-foreground">{__('No occasions yet. Add a launch or sale to find useful campaign ideas.','wconvert')}</p>}
       <ul className="wconvert-occasion-list">{data.occasions.items.map(item => <li key={item.id}><div><strong>{item.name}</strong><span>{item.start} – {item.end}</span></div>
         {onPlan && <Button variant="outline" onClick={() => onPlan(item.id)}>{__('Find ideas', 'wconvert')}</Button>}
@@ -71,6 +71,6 @@ export function PickerSettings({ picker, onBack, onPlan }: {
         <Button type="submit" disabled={picker.saving || (!editing && data.occasions.items.length >= 50)}>{editing ? __('Save occasion changes', 'wconvert') : __('Add occasion', 'wconvert')}</Button>
         {editing && <Button type="button" variant="ghost" onClick={() => { setEditing(null); setName(''); setStart(''); setEnd(''); }}>{__('Cancel editing', 'wconvert')}</Button>}
       </form>
-    </RegionBody></Region>
+    </RegionBody></Region>}
   </section>;
 }

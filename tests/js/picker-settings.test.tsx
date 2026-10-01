@@ -47,3 +47,14 @@ it('selects countries by name and preserves the saved values when a write fails'
   expect(screen.queryByRole('button', { name: 'Remove United States' })).not.toBeInTheDocument();
   expect(countryApi).toHaveBeenCalledExactlyOnceWith({ path: '/wconvert/v1/optins/phone-country' });
 });
+
+it('keeps layout replacement preferences personal without occasion management', async () => {
+  const picker = state();
+  render(<PickerSettings context="replacement" picker={picker as ReturnType<typeof usePicker>} onBack={vi.fn()} />);
+  expect(screen.getByRole('heading', { name: 'Your preferences' })).toBeVisible();
+  expect(screen.getByRole('heading', { name: 'Personal recommendations' })).toBeVisible();
+  expect(screen.queryByRole('heading', { name: 'Site occasions' })).not.toBeInTheDocument();
+  expect(screen.queryByLabelText('Occasion name')).not.toBeInTheDocument();
+  expect(screen.queryByText(/Occasion dates are shared/)).not.toBeInTheDocument();
+  await waitFor(() => expect(countryApi).toHaveBeenCalledOnce());
+});

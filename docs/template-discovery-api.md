@@ -5,12 +5,13 @@ existing explicit refresh/install endpoints. There is no default hosted service,
 background request, new paid entitlement or remote executable content.
 
 Planning update, 1 October 2026: the
-[hosted delivery extension](plans/template-picker-and-collections-2026-09-30.md#hosted-delivery-extension--agreed-direction-not-implemented)
+[hosted delivery extension](plans/template-picker-and-collections-2026-09-30.md#hosted-delivery-extension--implementation-status)
 specifies public Free/Pro preview parity, private premium downloads through the
 existing licence manager, verified local media import and reuse of unchanged
 immutable files. R2 is recommended; no R2 bucket or Worker is provisioned. A
-Worker is optional if the existing backend can provide the download API. Local
-publisher/importer fixtures can proceed before cloud setup. The protocol below
+Worker is optional if the existing backend can provide the download API. A local-directory
+publisher now exists; isolated image and authorization foundations are tested
+without cloud setup. They are not yet connected to live media/premium downloads. The protocol below
 is the implemented reader, not that future extension: assets, credentials,
 external demo URLs and cross-origin signed download fields are not implicitly
 accepted. Those require an explicitly versioned and tested contract.
@@ -70,8 +71,9 @@ packs, starts campaigns or publishes. Offline use relies on installed data.
 
 Schema 1 catalogs continue through their existing path but do not accept remote
 collections. Publisher tooling must emit pages first, then the manifest last,
-retain immutable bytes, and validate with this reader before deployment. A
-publisher and host are future work. Confirm the service's endpoint, supported
+retain immutable bytes, and validate with this reader before deployment. The [local publisher](../tools/design-library/publishing/README.md) now emits
+this format from current shared reviews and verifies it with this reader. A
+hosted publishing adapter remains future work. Confirm the service's endpoint, supported
 languages, entitlement and approved media contract before expanding this format.
 
 ## Local customer state
