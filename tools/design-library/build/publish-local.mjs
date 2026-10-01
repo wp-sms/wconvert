@@ -6,6 +6,7 @@ import { parseArgs } from 'node:util';
 import { fileURLToPath } from 'node:url';
 import { buildCollections, checkRuntimeCollections } from './collections.mjs';
 import { reviewQueue } from './reviews.mjs';
+import { publicPreview } from './public-preview.mjs';
 import { buildRelease, publishRelease, sha256 } from './publisher.mjs';
 
 const root = resolve(fileURLToPath(new URL('../../..', import.meta.url)));
@@ -31,8 +32,12 @@ if (new Set(selected).size !== selected.length) throw new Error('A setup is assi
 for (const id of selected) {
   if (!source.collections.some(collection => collection.items.some(item => item.setup_id === id)) || queue.find(row => row.id === id)?.state !== 'approved') throw new Error(`Missing current approval: ${id}`);
 }
-const php = (input) => execFileSync('php', [resolve(root, 'tools/design-library/build/export-packs.php')], { input: JSON.stringify(input), encoding: 'utf8', maxBuffer: 16 * 1024 * 1024 });
-const packs = JSON.parse(php(plan));
+const php = (input) => execFileSync('php', [resolve(root, 'tools/design-library/build/export-packs.php')], { input: JSON.stringify(input), encoding: 'utf8', maxBuffer: 64 * 1024 * 1024 });
+const renderer = readFileSync(resolve(root, 'tools/design-library/out/renderer.iife.js'), 'utf8');
+const packs = JSON.parse(php(plan)).map(pack => {
+  const media = pack.media.map(item => ({ ...item, bytes: Buffer.from(item.base64, 'base64') }));
+  return { ...pack, media, preview: publicPreview(JSON.parse(pack.json), renderer, media) };
+});
 const references = new Map();
 for (const { json } of packs) { const pack = JSON.parse(json); for (const setup of pack.playbooks) references.set(setup.id, { pack_id: pack.id, pack_digest: sha256(json), setup_id: setup.id }); }
 const collections = plan.collections.map(id => {
@@ -46,10 +51,10 @@ const collections = plan.collections.map(id => {
   }) };
 });
 const release = buildRelease({ origin: values.origin, packs, collections });
-const responses = Object.fromEntries(release.objects.map(object => [`${new URL(values.origin).origin}/${object.scope === 'private' ? object.key.replace('packs/', 'downloads/') : object.key}`, object.bytes.toString()]));
+const responses = Object.fromEntries(release.objects.map(object => [`${new URL(values.origin).origin}/${object.scope === 'private' ? object.key.replace('packs/', 'downloads/') : object.key}`, object.bytes.toString(object.key.startsWith('assets/') ? 'base64' : 'utf8')]));
 responses[`${new URL(values.origin).origin}/manifest.json`] = release.manifest;
 const empty = mkdtempSync(join(tmpdir(), 'wconvert-release-validation-'));
-try { process.stdout.write(php({ mode: 'validate', packs, responses, source: `${new URL(values.origin).origin}/manifest.json`, empty_directory: empty })); }
+try { process.stdout.write(php({ mode: 'validate', packs: packs.map(({ json, access }) => ({ json, access })), responses, source: `${new URL(values.origin).origin}/manifest.json`, empty_directory: empty })); }
 finally { rmSync(empty, { recursive: true, force: true }); }
 const result = publishRelease(directory, release, values.expected === 'none' ? null : values.expected);
 console.log(JSON.stringify({ ...result, directory, packs: packs.length, setups: selected.length, collections: collections.length, deferred: plan.deferred, hosted: false }, null, 2));

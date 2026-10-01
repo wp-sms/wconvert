@@ -127,7 +127,7 @@ Changed bytes require a new pack version; unchanged objects are reused. The
 old schema-1 builder remains a frozen compatibility fixture, not a second active
 editorial publishing workflow.
 
-Hosting, live paid-download entitlement, licensed media pack wiring and
+Hosting, live paid-download entitlement and
 historical archive cleanup remain separate integrations. `VerifiedAssets`
 provides tested bounded PNG/JPEG/WebP staging and reuse, but schema-1 packs still
 require empty assets. The host-neutral download service requires an injected
@@ -206,6 +206,14 @@ The [local release verification](../reviews/template-local-release-2026-10-01.md
 records native WordPress acceptance of 13 setups / 10 designs in three Free packs
 and two collections. This is a compatible subset, not another set of newly
 created templates. Three reviewed bundled setups retain their artwork/links and
-are explicitly deferred for the media/site-link extension. Layout replacement
+remain deferred for reviewed source-artwork conversion or the site-link extension. Layout replacement
 now labels settings “My preferences” and omits shared occasion management;
 creation retains that management surface.
+
+## 2026-10-01 — local follow-through
+
+Named WordPress timezones can suggest a country using the timezone database. Suggestions never choose a market automatically or identify visitors. The user confirms or dismisses; explicit markets take precedence. UTC/fixed offsets/unknown zones have no inferred country. Dismissal is personal and scoped to the suggested timezone.
+
+Custom occasions now select an available stage in reviewed evergreen planning collections. The inclusive occasion end remains distinct from campaign scheduling. HTTP sites use a shared getRandomValues-based authoring ID helper. The journey tester excludes genuinely hidden consent from submitted answers; it neither invents consent nor accepts unresolved references.
+
+Raster pack installation is implemented in ADR 0082. The local publisher exports reviewed source raster bytes only with recorded redistribution rights. Public HTML previews contain inert rendered design screens, including result variants, and no importable template tree. Free and Pro use the same generation path and desktop/mobile/RTL controls. Catalog cards offer the same public preview URL for website and plugin use. Hosting and premium entitlement are still deferred; no default remote endpoint is introduced.

@@ -28,7 +28,7 @@ fingerprints pin the review; the build validates packages and preserves existing
 release files. Old installed samples remain usable. Goal-first creation and
 Playbook copy/rules remain bundled. Downloaded Playbooks now join the existing creation flow under
 [ADR 0083](0083-installed-packs-supply-campaign-starting-points.md). Paid fetch
-entitlement and media installation remain subsequent slices; unsupported packs explain their limitation.
+entitlement remains a subsequent slice. Schema-2 verified raster installation is implemented by the 2026-10-01 amendment below; unsupported packs explain their limitation.
 
 ## Download and validation
 
@@ -57,7 +57,7 @@ is a fixed catalog label, without the WordPress default site URL.
 Before any rendering or registration, reject unsupported schema/capabilities,
 unknown node keys/types/roles/tokens, invalid value types, duplicate block IDs,
 invalid conversion shape, media URLs/data URIs, markup and unsafe style syntax.
-The first format requires an empty assets list and empty picture/action URLs.
+Schema 1 requires an empty assets list and empty picture/action URLs. Schema 2 permits the bounded raster manifest and inert bindings described below; authored tree URLs remain empty.
 Style functions are restricted to colour, gradient and sizing expressions.
 Limits: 12 designs/pack, 200 nodes/design, depth 12, 2 screens, bounded text and
 styles, and the existing compressed per-design budget. This stricter import
@@ -98,3 +98,9 @@ Deleting WConvert also removes both catalog options and its owned flat archive
 files. Deactivation keeps them. Cleanup never follows a directory symlink or
 removes unrelated uploads; the recovery regression runs against disposable files
 and fake WordPress/database functions.
+
+## 2026-10-01 — verified raster pack installation
+
+Schema 2 adds `pack-images:1`, a hash/size/MIME/dimension/access manifest and separate `{template_id,node_id,asset_id}` bindings. Only normalized image leaves can bind. Free designs cannot reference premium assets. No remote/data URL is accepted in a downloadable tree. The client derives Free image paths from its configured catalog origin, stages and verifies the complete set, and commits the marker before registering the immutable pack. Runtime hydration uses verified local URLs; the archived JSON and digest are unchanged. Missing/corrupt images fail closed and can be repaired by explicit preview. Old media URLs are retained for existing campaigns; there is no automatic garbage collection. Premium image downloads remain closed pending the licence adapter.
+
+The image budget is 16 files, 5 MiB per file and 20 MiB per pack, PNG/JPEG/WebP only, up to 4096px per dimension. Installed set markers are bounded to 128; this is not an unlimited cache. Native verification uses `bin/verify-template-media.php`.

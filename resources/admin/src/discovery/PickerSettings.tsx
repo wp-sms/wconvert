@@ -1,3 +1,4 @@
+import { newAuthoringId } from '../authoringId';
 import { useRef, useEffect, useState } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import apiFetch from '@wordpress/api-fetch';
@@ -26,6 +27,9 @@ export function PickerSettings({ picker, onBack, onPlan, context = 'creation' }:
   const title = useRef<HTMLHeadingElement>(null);
   useEffect(() => { title.current?.focus({preventScroll:true}); }, []);
   const data = picker.data;
+  const suggestion = data?.country_suggestion;
+  const suggestedCountry = suggestion && !data?.preferences.markets.length && data?.preferences.country_suggestion_dismissed !== suggestion.timezone
+    ? countries.find(country => country.code.toUpperCase() === suggestion.code) : undefined;
   if (!data) return <div className="p-6"><p>{__('Preferences could not be loaded. The library is still available.', 'wconvert')}</p><Button onClick={() => { void picker.reload(); }}>{__('Reload preferences', 'wconvert')}</Button><Button className="wconvert-picker__back" variant="outline" onClick={onBack}><ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />{__('Back to library', 'wconvert')}</Button></div>;
   return <section className="wconvert-picker-settings">
     <header className="wconvert-picker-settings__header"><Button className="wconvert-picker__back" variant="outline" onClick={onBack}><ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />{__('Back to library', 'wconvert')}</Button><h2 ref={title} tabIndex={-1}>{context === 'creation' ? __('Your preferences & occasions', 'wconvert') : __('Your preferences', 'wconvert')}</h2><p>{context === 'creation' ? __('Stars and recommendations are personal to your WordPress account on this site. Occasion dates are shared with this site’s campaign managers.', 'wconvert') : __('Stars and recommendations are personal to your WordPress account on this site.', 'wconvert')}</p></header>
@@ -36,6 +40,14 @@ export function PickerSettings({ picker, onBack, onPlan, context = 'creation' }:
       <p className="text-note">{__('You can always browse collections, even with the featured shelf hidden.', 'wconvert')}</p>
       <fieldset><legend>{__('Businesses to recommend first', 'wconvert')}</legend><div className="flex flex-wrap gap-4">{[['stores', __('Stores', 'wconvert')], ['services', __('Services', 'wconvert')], ['publishers', __('Publishers', 'wconvert')]].map(([id, label]) => <label key={id} className="wconvert-picker-settings__check"><input type="checkbox" disabled={picker.saving} checked={data.preferences.businesses.includes(id)} onChange={event => { void picker.preferences({ ...data.preferences, businesses: event.target.checked ? [...data.preferences.businesses, id] : data.preferences.businesses.filter(value => value !== id) }); }} />{label}</label>)}</div></fieldset>
       <p className="text-note">{__('This orders matching collections first; it does not remove other businesses from the library.', 'wconvert')}</p>
+      {suggestedCountry && suggestion && <div className="rounded-md border p-4 space-y-3">
+        <p className="m-0">{sprintf(__('Suggested country: %s', 'wconvert'), suggestedCountry.name)}</p>
+        <p className="m-0 text-note text-muted-foreground">{sprintf(__('Based on your WordPress timezone (%s). Choose the countries your business serves.', 'wconvert'), suggestion.timezone)}</p>
+        <div className="flex flex-wrap gap-2">
+          <Button variant="outline" disabled={picker.saving} onClick={() => { void picker.preferences({ ...data.preferences, markets: [suggestion.code] }); }}>{sprintf(__('Add %s', 'wconvert'), suggestedCountry.name)}</Button>
+          <Button variant="ghost" disabled={picker.saving} onClick={() => { void picker.preferences({ ...data.preferences, country_suggestion_dismissed: suggestion.timezone }); }}>{__('Dismiss country suggestion', 'wconvert')}</Button>
+        </div>
+      </div>}
       <div className="wconvert-picker-settings__markets">
         <CountryPicker label={__('Countries you serve', 'wconvert')} value="" countries={countries.filter(country => !data.preferences.markets.includes(country.code.toUpperCase()))}
           disabled={picker.saving || countries.length === 0} onChange={code => { void picker.preferences({ ...data.preferences, markets: [...data.preferences.markets, code.toUpperCase()] }); }} />
@@ -47,7 +59,7 @@ export function PickerSettings({ picker, onBack, onPlan, context = 'creation' }:
       </div>
       {data.preferences.hidden.length > 0 && <Button variant="outline" disabled={picker.saving} onClick={() => { void picker.preferences({ ...data.preferences, hidden: [] }); }}>{__('Restore hidden collections', 'wconvert')}</Button>}
       {data.preferences.events.length > 0 && <Button variant="outline" disabled={picker.saving} onClick={() => { void picker.preferences({ ...data.preferences, events: [] }); }}>{__('Restore seasonal recommendations', 'wconvert')}</Button>}
-      <p className="text-note text-muted-foreground">{__('Regional occasions appear only for selected markets. Shared occasions need no country selection. Nothing is inferred from your location.', 'wconvert')}</p>
+      <p className="text-note text-muted-foreground">{__('Regional occasions use the countries you select. A timezone suggestion is not visitor location detection. Shared occasions need no country selection.', 'wconvert')}</p>
     </RegionBody></Region>
     {data.preferences.saved.length > 0 && <Region><RegionHeader level={3} title={__('Saved designs', 'wconvert')} /><RegionBody className="wconvert-picker-settings__body"><p>{__('A saved design may belong to another goal or format. Retired entries stay here until you remove them.', 'wconvert')}</p><ul className="wconvert-occasion-list">{data.preferences.saved.map(key => {
       const entry = data.saved_designs?.find(value => value.key === key);
@@ -63,11 +75,13 @@ export function PickerSettings({ picker, onBack, onPlan, context = 'creation' }:
       <h4 className="m-0 text-heading font-semibold">{editing ? __('Edit occasion','wconvert') : __('Add an occasion','wconvert')}</h4>
       <form className="wconvert-occasion-form" onSubmit={event => {
         event.preventDefault();
-        const item = { id: editing ?? `occasion-${crypto.randomUUID()}`, name: name.trim(), start, end };
+        const fields = new FormData(event.currentTarget);
+        const item = { id: editing ?? `occasion-${newAuthoringId()}`, name: String(fields.get('name') ?? '').trim(), start: String(fields.get('start') ?? ''), end: String(fields.get('end') ?? '') };
+        setStart(item.start); setEnd(item.end);
         void picker.occasions(editing ? data.occasions.items.map(value => value.id === editing ? item : value) : [...data.occasions.items, item]).then(saved => { if (saved) { setEditing(null); setName(''); setStart(''); setEnd(''); } });
-      }}><label>{__('Occasion name', 'wconvert')}<Input required maxLength={120} value={name} placeholder={__('Anniversary sale', 'wconvert')} onChange={event => setName(event.target.value)} /></label>
-        <label>{__('Start date', 'wconvert')}<Input required type="date" value={start} onChange={event => setStart(event.target.value)} /></label>
-        <label>{__('End date (included)', 'wconvert')}<Input required type="date" min={start || undefined} value={end} onChange={event => setEnd(event.target.value)} /></label>
+      }}><label>{__('Occasion name', 'wconvert')}<Input name="name" required maxLength={120} value={name} placeholder={__('Anniversary sale', 'wconvert')} onChange={event => setName(event.target.value)} /></label>
+        <label>{__('Start date', 'wconvert')}<Input name="start" required type="date" value={start} onChange={event => setStart(event.target.value)} /></label>
+        <label>{__('End date (included)', 'wconvert')}<Input name="end" required type="date" min={start || undefined} value={end} onChange={event => setEnd(event.target.value)} /></label>
         <Button type="submit" disabled={picker.saving || (!editing && data.occasions.items.length >= 50)}>{editing ? __('Save occasion changes', 'wconvert') : __('Add occasion', 'wconvert')}</Button>
         {editing && <Button type="button" variant="ghost" onClick={() => { setEditing(null); setName(''); setStart(''); setEnd(''); }}>{__('Cancel editing', 'wconvert')}</Button>}
       </form>

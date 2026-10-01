@@ -15,7 +15,7 @@ export function buildRelease({ origin, packs, collections }) {
   origin = url.origin;
   check(packs.length > 0 && packs.length <= 50 && collections.length <= 100, 'Release exceeds catalog limits');
   const objects = [], ids = new Set(), setups = new Map();
-  const rows = [...packs].sort((a, b) => JSON.parse(a.json).id.localeCompare(JSON.parse(b.json).id)).map(({ json, access }) => {
+  const rows = [...packs].sort((a, b) => JSON.parse(a.json).id.localeCompare(JSON.parse(b.json).id)).map(({ json, access, media = [], preview }) => {
     const pack = JSON.parse(json), bytes = Buffer.from(json), hash = sha256(bytes);
     check(identifier(pack.id) && !ids.has(pack.id) && bytes.length <= 262144, 'Invalid, repeated or oversized pack');
     check(['free', 'premium'].includes(access), 'Invalid pack access');
@@ -23,7 +23,24 @@ export function buildRelease({ origin, packs, collections }) {
     ids.add(pack.id); setups.set(pack.id, { hash, ids: new Set(pack.playbooks?.map(entry => entry.id) ?? []) });
     const scope = access === 'free' ? 'public' : 'private', key = `packs/${hash}.json`;
     objects.push({ scope, key, bytes, sha256: hash });
-    return { id: pack.id, name: pack.name, description: pack.description, version: pack.version, sha256: hash,
+    const supplied = new Map(media.map(item => [item.id, item]));
+    check(supplied.size === media.length && media.length === (pack.assets ?? []).length, 'Image bytes must match the complete pack manifest');
+    for (const asset of pack.assets ?? []) {
+      const item = supplied.get(asset.id), extension = { 'image/png': 'png', 'image/jpeg': 'jpg', 'image/webp': 'webp' }[asset.mime];
+      check(item && Buffer.isBuffer(item.bytes) && item.bytes.length === asset.bytes && sha256(item.bytes) === asset.sha256 && extension, 'Image bytes do not match the approved manifest');
+      check(item.rights?.redistribution === true && typeof item.rights.source === 'string' && item.rights.source.trim() && typeof item.rights.reviewedBy === 'string' && item.rights.reviewedBy.trim(), 'Image redistribution needs a recorded source and reviewer');
+      check(['free', 'premium'].includes(asset.access) && (access !== 'free' || asset.access === 'free'), 'Invalid image access scope');
+      const image = { scope: asset.access === 'free' ? 'public' : 'private', key: `assets/${asset.access}/${asset.sha256}.${extension}`, bytes: item.bytes, sha256: asset.sha256 };
+      if (!objects.some(object => object.scope === image.scope && object.key === image.key)) objects.push(image);
+    }
+    let previewUrl;
+    if (preview !== undefined) {
+      check(typeof preview === 'string' && Buffer.byteLength(preview) <= 2097152, 'Public preview exceeds its budget');
+      const previewBytes = Buffer.from(preview), previewHash = sha256(previewBytes), previewKey = `previews/${previewHash}.html`;
+      objects.push({ scope: 'public', key: previewKey, bytes: previewBytes, sha256: previewHash });
+      previewUrl = `${origin}/${previewKey}`;
+    }
+    return { ...(previewUrl ? { preview_url: previewUrl, access } : {}), id: pack.id, name: pack.name, description: pack.description, version: pack.version, sha256: hash,
       url: `${origin}/${scope === 'public' ? key : `downloads/${hash}.json`}` };
   });
   const collectionIds = new Set();
@@ -64,7 +81,7 @@ export function publishRelease(directory, release, expectedRelease, { beforeWrit
   const lock = join(root, '.publish.lock'); let handle;
   try { handle = openSync(lock, 'wx', 0o600); } catch { throw new Error('Another publication is active; inspect the lock before retrying'); }
   const pathFor = (scope, key) => {
-    check(['public', 'private'].includes(scope) && /^(packs\/[a-f0-9]{64}\.json|releases\/[a-f0-9]{64}\/(page-[0-9]+|manifest)\.json)$/.test(key), 'Invalid object key');
+    check(['public', 'private'].includes(scope) && /^(packs\/[a-f0-9]{64}\.json|releases\/[a-f0-9]{64}\/(page-[0-9]+|manifest)\.json|previews\/[a-f0-9]{64}\.html|assets\/(free|premium)\/[a-f0-9]{64}\.(png|jpg|webp))$/.test(key), 'Invalid object key');
     const path = join(root, scope, key);
     for (let parent = dirname(path); parent !== root; parent = dirname(parent)) {
       if (existsSync(parent)) check(!lstatSync(parent).isSymbolicLink(), 'Storage cannot contain symlinks');

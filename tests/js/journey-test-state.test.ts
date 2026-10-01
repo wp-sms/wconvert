@@ -58,3 +58,11 @@ it('refuses missing required contact details, consent, answers, or the wrong sav
   expect(testCaptureSnapshot(consent, at, 'enquiry', { n1: ['balcony'] }, { n5: 'visitor@example.test', n100: false })).toBeNull();
   expect(testCaptureSnapshot(consent, at, 'enquiry', { n1: ['balcony'] }, { n5: 'visitor@example.test', n100: true })).not.toBeNull();
 });
+
+it('does not require or record a hidden consent while still rejecting missing consent references', () => {
+  const at = tree.steps.findIndex(screen => screen.id === 'contact');
+  const hidden: TemplateTree = { ...tree, submissions: tree.submissions.map(submission => ({ ...submission, consents: ['n100'] })),
+    steps: tree.steps.map((screen, index) => index === at ? { ...screen, content: { type: 'stack', children: [screen.content, { type: 'consent', id: 'n100', text: 'I agree', hidden: true }] } } : screen) };
+  expect(testCaptureSnapshot(hidden, at, 'enquiry', { n1: ['balcony'] }, { n5: 'visitor@example.test', n100: true })?.values).toEqual({ n5: 'visitor@example.test' });
+  expect(testCaptureSnapshot({ ...hidden, steps: tree.steps }, at, 'enquiry', { n1: ['balcony'] }, { n5: 'visitor@example.test' })).toBeNull();
+});

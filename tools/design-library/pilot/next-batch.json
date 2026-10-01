@@ -1,34 +1,9 @@
 {
   "schema": 1,
   "id": "useful-differences",
-  "name": "Six new composition candidates and two deliberate reuses",
+  "name": "Four new composition candidates and two deliberate reuses",
   "target_setups": 116,
   "entries": [
-    {
-      "id": "specification-sheet",
-      "name": "Compare two useful options",
-      "audience": "stores",
-      "goal": "promote_offer",
-      "display_type": "popup",
-      "visitor_need": "Compare the dimensions and care requirements of two shortlisted products before opening their details.",
-      "difference": "A labelled comparison matrix with one shared heading row and three horizontal specification bands, followed by one destination action.",
-      "design_intent": "new_design",
-      "status": "planned",
-      "compare_campaigns": [
-        "material-comparison",
-        "lighting-collection"
-      ],
-      "acceptance": [
-        "Real product specifications and a comparison destination; no invented best-seller claim.",
-        "Repeat option names in each stacked phone band so values never lose their label.",
-        "Compare the filled first screen with both named existing designs; reject a palette-only or copy-only difference.",
-        "Inspect every screen and result at 320/390/768/1440px, RTL, longer text and missing optional artwork.",
-        "Walk choose, customise, configure, preview and local publication in real WordPress. Check dismissal, validation, failure/retry and real destination links. No CI or external delivery."
-      ],
-      "concept": "matrix",
-      "reference": "depicter-image-signup",
-      "example": "Compare small side tables"
-    },
     {
       "id": "callback-slip",
       "name": "Ask for a callback",
@@ -53,31 +28,6 @@
       "concept": "callback",
       "reference": "depicter-slide-ins",
       "example": "Discuss a repair by phone"
-    },
-    {
-      "id": "excerpt-window",
-      "name": "Try a page before requesting the guide",
-      "audience": "publishers",
-      "goal": "deliver_lead_magnet",
-      "display_type": "inline",
-      "visitor_need": "Read a useful sample of a workbook before deciding whether to request the complete resource.",
-      "difference": "A readable sample page with a narrow annotation margin, paired with a small request column. The sample is real editable text, not cover art.",
-      "design_intent": "new_design",
-      "status": "planned",
-      "compare_campaigns": [
-        "writing-checklist",
-        "reading-notes-guide"
-      ],
-      "acceptance": [
-        "Supply an actual useful sample and an accessible complete resource.",
-        "The excerpt remains readable without artwork; the acknowledgement does not claim email delivery.",
-        "Compare the filled first screen with both named existing designs; reject a palette-only or copy-only difference.",
-        "Inspect every screen and result at 320/390/768/1440px, RTL, longer text and missing optional artwork.",
-        "Walk choose, customise, configure, preview and local publication in real WordPress. Check dismissal, validation, failure/retry and real destination links. No CI or external delivery."
-      ],
-      "concept": "excerpt",
-      "reference": "depicter-image-signup",
-      "example": "Preview a reading workbook"
     },
     {
       "id": "event-calendar",

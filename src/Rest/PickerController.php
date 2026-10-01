@@ -31,6 +31,7 @@ final class PickerController implements RestController
     {
         return new WP_REST_Response([
             'schema' => 1, 'today' => wp_date('Y-m-d'), 'timezone' => wp_timezone_string(),
+            'country_suggestion' => \WConvert\Discovery\CountrySuggestion::fromTimezone(wp_timezone_string()),
             'server_time' => microtime(true), 'timezone_offset' => (int) wp_date('Z'),
             'collections' => $this->collections->all(),
             'preferences' => $this->readPreferences(),

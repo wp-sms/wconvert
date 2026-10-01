@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import { mkdtempSync, readFileSync, rmSync, statSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { buildRelease, publishRelease } from './publisher.mjs';
+import { buildRelease, publishRelease, sha256, jsonBytes } from './publisher.mjs';
 const pack = (id, access = 'free', version = '1.0.0') => ({ access, json: JSON.stringify({ schema: 1, id, name: id, description: 'A reviewed example', version, templates: [], playbooks: [] }) });
 const directory = t => { const path = mkdtempSync(join(tmpdir(), 'wconvert-publisher-')); t.after(() => rmSync(path, { recursive: true, force: true })); return path; };
 test('publishes complete immutable releases, separates premium bytes and reuses unchanged objects', t => {
@@ -59,4 +59,29 @@ test('changed pack bytes require a new version while unchanged packs are reused'
   const changed = buildRelease({ ...base, packs: [edited, pack('store')] });
   const result = publishRelease(root, changed, first.id);
   assert.equal(result.reused, 1);
+});
+
+test('media objects are verified, reused and isolated by access, with redistribution evidence', () => {
+  const bytes = Buffer.from('image bytes for object-store testing');
+  const asset = { id: 'cover', sha256: sha256(bytes), mime: 'image/png', bytes: bytes.length, width: 1, height: 1, access: 'free' };
+  const pack = { schema: 2, id: 'images', name: 'Images', description: 'Images', version: '1.0.0', assets: [asset], templates: [{ tier: 'free' }] };
+  const input = { origin: 'https://templates.example', collections: [], packs: [{ json: jsonBytes(pack), access: 'free', media: [{ id: 'cover', bytes, rights: { redistribution: true, source: 'Original illustration', reviewedBy: 'Test reviewer' } }] }] };
+  const release = buildRelease(input);
+  assert.equal(release.objects.filter(object => object.key.startsWith('assets/')).length, 1);
+  assert.equal(release.objects.find(object => object.key.startsWith('assets/')).scope, 'public');
+  assert.throws(() => buildRelease({ ...input, packs: [{ ...input.packs[0], media: [] }] }), /complete pack manifest/);
+  assert.throws(() => buildRelease({ ...input, packs: [{ ...input.packs[0], media: [{ ...input.packs[0].media[0], rights: {} }] }] }), /redistribution/);
+});
+
+test('public preview revisions can change without copying unchanged packs', t => {
+  const root = directory(t), base = { origin: 'https://templates.example', collections: [] };
+  const entry = { ...pack('reading', 'premium'), preview: '<!doctype html><p>Public Pro preview</p>' };
+  const first = buildRelease({ ...base, packs: [entry] }); publishRelease(root, first, null);
+  const preview = first.objects.find(object => object.key.startsWith('previews/'));
+  assert.equal(preview.scope, 'public');
+  assert.equal(first.objects.find(object => object.key.startsWith('packs/')).scope, 'private');
+  const next = buildRelease({ ...base, packs: [{ ...entry, preview: '<!doctype html><p>Updated preview</p>' }] });
+  const result = publishRelease(root, next, first.id);
+  assert.ok(result.reused >= 1);
+  assert.equal(first.objects.find(object => object.key.startsWith('packs/')).key, next.objects.find(object => object.key.startsWith('packs/')).key);
 });

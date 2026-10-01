@@ -1,0 +1,206 @@
+{
+  "id": "excerpt-window",
+  "name": "Excerpt window",
+  "display_type": "inline",
+  "tier": "free",
+  "tokens": {
+    "bg": "#ffffff",
+    "fg": "#433425",
+    "muted": "#665441",
+    "accent": "#59462e",
+    "accent-fg": "#ffffff",
+    "border": "#8f806e",
+    "input-bg": "#ffffff",
+    "heading-size": "1.875rem",
+    "text-size": "1rem",
+    "leading": "1.5",
+    "pad": "1.5rem",
+    "gap": "1.25rem",
+    "radius": "0.75rem",
+    "width": "56rem",
+    "shadow": "none",
+    "heading-font": "Georgia, 'Times New Roman', serif"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "s1",
+        "name": "Read a sample",
+        "kind": "input",
+        "content": {
+          "type": "split",
+          "ratio": "0.65",
+          "basis": "16rem",
+          "start": [
+            {
+              "type": "panel",
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "id": "n3",
+                  "role": "eyebrow",
+                  "text": "Try one exercise"
+                },
+                {
+                  "type": "heading",
+                  "id": "n4",
+                  "role": "headline",
+                  "text": "Make the next step smaller.",
+                  "tokens": {
+                    "heading-size": "2rem",
+                    "heading-weight": "400"
+                  }
+                },
+                {
+                  "type": "text",
+                  "id": "n5",
+                  "role": "body",
+                  "text": "Write down one task you have been putting off. Now describe its first two minutes."
+                },
+                {
+                  "type": "divider",
+                  "id": "n6"
+                },
+                {
+                  "type": "text",
+                  "id": "n7",
+                  "role": "body",
+                  "text": "\u201cSort the whole room\u201d becomes \u201cclear one shelf\u201d. A small starting point makes the next action easier to see."
+                },
+                {
+                  "type": "text",
+                  "id": "n8",
+                  "role": "fine_print",
+                  "text": "An exercise from the Small Starts workbook.",
+                  "size": "s",
+                  "tokens": {
+                    "text-size": "1.167rem"
+                  }
+                }
+              ],
+              "tokens": {
+                "bg": "#f5ede0",
+                "fg": "#433425",
+                "muted": "#665441",
+                "pad": "1.75rem",
+                "gap": "1.25rem",
+                "radius": "0.375rem"
+              }
+            }
+          ],
+          "end": [
+            {
+              "type": "stack",
+              "tokens": {
+                "gap": "1rem"
+              },
+              "children": [
+                {
+                  "type": "heading",
+                  "id": "n9",
+                  "role": "headline",
+                  "text": "Keep going with the workbook.",
+                  "tokens": {
+                    "heading-size": "1.5rem"
+                  }
+                },
+                {
+                  "type": "text",
+                  "id": "n10",
+                  "role": "body",
+                  "text": "Six short exercises for turning a difficult project into a doable next step."
+                },
+                {
+                  "type": "field",
+                  "id": "n1",
+                  "name": "email",
+                  "label": "Email address",
+                  "placeholder": "you@example.com",
+                  "required": true
+                },
+                {
+                  "type": "consent",
+                  "id": "n2",
+                  "role": "consent_text",
+                  "text": "Send me the requested workbook.",
+                  "hidden": true
+                },
+                {
+                  "type": "button",
+                  "id": "n11",
+                  "role": "cta_label",
+                  "label": "Request the workbook",
+                  "action": "submit",
+                  "submission": "primary"
+                },
+                {
+                  "type": "text",
+                  "id": "n12",
+                  "role": "fine_print",
+                  "text": "One resource email. No newsletter signup.",
+                  "size": "s",
+                  "tokens": {
+                    "text-size": "1.167rem"
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      },
+      {
+        "id": "s2",
+        "name": "Request received",
+        "kind": "acknowledgement",
+        "content": {
+          "type": "panel",
+          "children": [
+            {
+              "type": "eyebrow",
+              "id": "n13",
+              "role": "eyebrow",
+              "text": "Small Starts"
+            },
+            {
+              "type": "heading",
+              "id": "n14",
+              "role": "success_headline",
+              "text": "Your request is received."
+            },
+            {
+              "type": "text",
+              "id": "n15",
+              "role": "success_body",
+              "text": "Thank you for requesting the workbook. Keep your first small step nearby."
+            },
+            {
+              "type": "followup",
+              "id": "n16",
+              "role": "success_action",
+              "label": "Open the workbook",
+              "hidden": true
+            }
+          ],
+          "tokens": {
+            "bg": "#f5ede0",
+            "pad": "1.75rem",
+            "gap": "1rem"
+          }
+        }
+      }
+    ],
+    "submissions": [
+      {
+        "id": "primary",
+        "required": true,
+        "fields": [
+          "n1"
+        ],
+        "consents": [
+          "n2"
+        ]
+      }
+    ]
+  }
+}

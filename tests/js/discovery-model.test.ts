@@ -49,3 +49,13 @@ it('recommends preferred businesses first without removing other matching collec
   const matches = matchingCollections({ ...data, collections: [collection, service], preferences: { ...data.preferences, businesses: ['services'] } }, [setup('before')], true);
   expect(matches.map(value => value.collection.id)).toEqual(['services', 'bf']);
 });
+
+it('uses custom occasion dates inclusively and falls back only to a reviewed nonempty stage', () => {
+  const occasion = { id: 'anniversary', name: 'Our anniversary', start: '2026-10-10', end: '2026-10-12' };
+  const guide = { ...collection, items: [...collection.items, { setup_id: 'followup', stage: 'after' as const }] };
+  const entries = [setup('before'), setup('bar'), setup('followup')];
+  expect(preferredStage(guide, '2026-10-09', entries, occasion)).toBe('before');
+  expect(preferredStage(guide, '2026-10-12', entries, occasion)).toBe('during');
+  expect(preferredStage(guide, '2026-10-13', entries, occasion)).toBe('after');
+  expect(preferredStage(guide, '2026-10-13', [setup('before')], occasion)).toBe('before');
+});

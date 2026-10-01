@@ -23,7 +23,14 @@ export function testCaptureSnapshot(tree: TemplateTree, step: number, submission
   let identifier = false;
   const owned = [...submission.fields, ...submission.consents];
   if (new Set(owned).size !== owned.length) return null;
+  const allNodes = prefix.indices.flatMap(index => walkNodes(tree.steps[index].content));
+  const captured: string[] = [];
   for (const id of owned) {
+    const declared = allNodes.filter(node => 'id' in node && node.id === id);
+    // Hidden consent remains part of editable structure but makes no visitor ask.
+    if (submission.consents.includes(id) && declared.length === 1 && declared[0].type === 'consent'
+      && !visibleNodes.includes(declared[0])) continue;
+    captured.push(id);
     const matching = visibleNodes.filter(node => 'id' in node && node.id === id);
     if (matching.length !== 1) return null;
     const node = matching[0], value = values[id];
@@ -39,7 +46,7 @@ export function testCaptureSnapshot(tree: TemplateTree, step: number, submission
   if (!identifier || visibleNodes.some(node => node.type === 'question' && 'required' in node && node.required && 'id' in node && typeof node.id === 'string'
     && !prefix.answers[node.id]?.length)) return null;
   const ownedValues: Record<string, string | boolean> = {};
-  for (const id of [...submission.fields, ...submission.consents]) if (values[id] !== undefined) ownedValues[id] = values[id];
+  for (const id of captured) if (values[id] !== undefined) ownedValues[id] = values[id];
   return { screens: prefix.indices.map(index => tree.steps[index].id), questionIds: prefix.questionIds,
     answers: prefix.answers, values: ownedValues };
 }

@@ -88,3 +88,11 @@ The local preference document also accepts `show_featured` as a strict boolean.
 Hiding the shelf does not disable Browse collections or opt out of an event.
 `businesses` ranks matching collections first without excluding other businesses.
 Both preferences remain scoped to the authenticated WordPress user and blog.
+
+### Implemented local extensions (2026-10-01)
+
+A catalog row may supply `preview_url` on the catalog's own origin and `access: free|premium`. The plugin opens the generated public showcase without downloading/installing the editable pack. Showcase HTML renders every design screen/result variant, disables form actions, and supports desktop/mobile/RTL. Both tiers share the same preview generation path.
+
+Pack schema 2 adds capability `pack-images:1`, `assets`, and `image_bindings`. Example binding: `{ "template_id": "reading-slip", "node_id": "n99", "asset_id": "cover" }`. The asset descriptor contains `id`, `sha256`, `bytes`, `mime`, `width`, `height`, `access`. It never contains an arbitrary download URL. The client derives `/assets/free/<sha256>.<png|jpg|webp>` from the configured origin, verifies the complete required set, and substitutes stable local URLs only at read time. Stored JSON remains byte-identical to the inspected digest. Premium media downloads are refused until the licence adapter is connected. Existing schema-1 empty-asset packs remain compatible.
+
+Picker responses may contain `country_suggestion: {code, timezone}` or null. Preferences include `country_suggestion_dismissed`, the named timezone the user dismissed. A timezone is only a suggestion for countries served; it is not visitor geolocation. No IP lookup, automatic market write or fixed-offset guess is used.

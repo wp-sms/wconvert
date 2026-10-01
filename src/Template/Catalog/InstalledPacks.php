@@ -17,7 +17,7 @@ final class InstalledPacks implements TemplateSource
     /** @var list<array<string, mixed>>|null */
     private ?array $cachedPacks = null;
 
-    public function __construct(private readonly string $directory, private readonly PackValidator $validator)
+    public function __construct(private readonly string $directory, private readonly PackValidator $validator, private readonly ?VerifiedAssets $assets = null)
     {
     }
 
@@ -36,7 +36,7 @@ final class InstalledPacks implements TemplateSource
             try {
                 $pack = $this->validator->decode($json);
                 $pack['digest'] = hash('sha256', $json);
-                $packs[] = $pack;
+                $packs[] = $this->withImages($pack);
             } catch (\RuntimeException $error) {
                 // A corrupt local file must not take the bundled library down.
                 continue;
@@ -91,11 +91,32 @@ final class InstalledPacks implements TemplateSource
         return 'pack-' . substr($pack['digest'], 0, 24) . '-' . $id;
     }
 
+    /** Resolve only verified local images; normal library reads never fetch.
+     * @param array<string, mixed> $pack
+     * @return array<string, mixed> */
+    public function withImages(array $pack): array
+    {
+        if ($pack['assets'] === []) return $pack;
+        PackValidator::check($this->assets !== null, __('Image installation is unavailable.', 'wconvert'));
+        return PackImages::hydrate($pack, $this->assets->resolve($pack['digest'], $pack['assets']));
+    }
+
+    /** Preview downloads cache images, but do not register any designs.
+     * @param array<string, mixed> $pack
+     * @param callable(array<string, mixed>): string $download */
+    public function prepareImages(array $pack, callable $download): void
+    {
+        if ($pack['assets'] === []) return;
+        PackValidator::check($this->assets !== null, __('Image installation is unavailable.', 'wconvert'));
+        $this->assets->install($pack['digest'], $pack['assets'], $download);
+    }
+
     /** @return array<string, mixed> */
     public function install(string $json): array
     {
         $pack = $this->validator->decode($json);
         $pack['digest'] = hash('sha256', $json);
+        $pack = $this->withImages($pack);
         // Writes are rare and may race another request. Refresh before every
         // version decision so an older request-local snapshot cannot replace
         // a newer release another request just installed.

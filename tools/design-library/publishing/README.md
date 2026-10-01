@@ -125,3 +125,13 @@ proof of a paid licence.
 
 The real licence-manager integration was explicitly deferred by the user on
 1 October. Keep its production adapter unconfigured until that work resumes.
+
+### Raster images and public previews
+
+The exporter supports approved PNG/JPEG/WebP data-URI artwork in trusted source designs. Record `image_rights` in the publishing plan, keyed by SHA-256: `{ "redistribution": true, "source": "Original artwork or licence reference", "reviewedBy": "Reviewer", "access": "free" }`. Export splits out the bytes, clears tree URLs and creates schema-2 bindings. SVG is not silently converted: convert/review the source first. Rights records are internal source files and do not appear in customer manifests.
+
+Storage deduplicates `/assets/free/<hash>.<extension>` in the public area and `/assets/premium/<hash>.<extension>` in the private area. Premium images remain refused by the plugin while its entitlement adapter is deferred. The current sample release still has no image-bearing selection; the separate native media rehearsal exercises acquisition/install/offline integrity with real raster bytes.
+
+Each selected pack also generates a content-addressed public `/previews/<hash>.html` showcase (maximum 2 MiB). It contains inert rendered screens, including result variants, rather than editable trees or the Pro renderer. Website and plugin can link to the same page. Changing previews need not copy unchanged pack JSON. Original artwork may be visible in rendered previews; only use redistributable preview-safe material. This is not DRM.
+
+The exporter validates through the shipping pack/catalog reader before publication. R2/Worker provisioning and the real licence manager remain separate deployment tasks. Local publishing never configures a production endpoint.

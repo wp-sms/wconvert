@@ -58,3 +58,19 @@ it('keeps layout replacement preferences personal without occasion management', 
   expect(screen.queryByText(/Occasion dates are shared/)).not.toBeInTheDocument();
   await waitFor(() => expect(countryApi).toHaveBeenCalledOnce());
 });
+
+it('offers a timezone hint without saving and requires explicit confirmation or dismissal', async () => {
+  const picker = state();
+  const data = { ...picker.data, country_suggestion: { code: 'GB', timezone: 'Europe/London' } };
+  const view = render(<PickerSettings picker={{ ...picker, data } as ReturnType<typeof usePicker>} onBack={vi.fn()} />);
+  const add = await screen.findByRole('button', { name: 'Add United Kingdom' });
+  expect(picker.preferences).not.toHaveBeenCalled();
+  await userEvent.click(add);
+  expect(picker.preferences).toHaveBeenCalledWith(expect.objectContaining({ markets: ['GB'] }));
+  await userEvent.click(screen.getByRole('button', { name: 'Dismiss country suggestion' }));
+  expect(picker.preferences).toHaveBeenLastCalledWith(expect.objectContaining({ country_suggestion_dismissed: 'Europe/London', markets: [] }));
+  view.rerender(<PickerSettings picker={{ ...picker, data: { ...data, preferences: { ...data.preferences, country_suggestion_dismissed: 'Europe/London' } } } as ReturnType<typeof usePicker>} onBack={vi.fn()} />);
+  expect(screen.queryByRole('button', { name: 'Add United Kingdom' })).not.toBeInTheDocument();
+  view.rerender(<PickerSettings picker={{ ...picker, data: { ...data, preferences: { ...data.preferences, markets: ['US'] } } } as ReturnType<typeof usePicker>} onBack={vi.fn()} />);
+  expect(screen.queryByRole('button', { name: 'Add United Kingdom' })).not.toBeInTheDocument();
+});

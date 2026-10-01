@@ -128,7 +128,7 @@ final class TemplateCatalogTest extends TestCase
     public function testUnknownUnsafeOrOversizedContentNeverEntersTheLibrary(): void
     {
         $changes = [
-            ['schema', 2], ['assets', [['url' => 'https://tracker.example/pixel.png']]],
+            ['schema', 3], ['assets', [['url' => 'https://tracker.example/pixel.png']]],
             ['requires.capabilities', ['execute-php']], ['requires.capabilities', []], ['requires.tree', null], ['requires.plugin', '999.0.0'],
             ['templates.0.tree.steps.0.type', 'script'], ['templates.0.tree.steps.0.id', 'n1'], ['templates.0.tokens.bg', 'red; } body {display:none'],
             ['templates.0.tokens.bg-image', 'url(https://tracker.example/pixel)'],

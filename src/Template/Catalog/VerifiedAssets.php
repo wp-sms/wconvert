@@ -3,7 +3,7 @@ namespace WConvert\Template\Catalog;
 
 defined('ABSPATH') || exit;
 
-/** Media installation foundation. Not connected to schema-1 pack downloads.
+/** Verified, content-addressed local images for pack previews and installation.
  * The future transport must bound each response before returning its bytes.
  * Server entitlement is checked before this class; it is not a licence verifier.
  */
@@ -67,6 +67,32 @@ final class VerifiedAssets
             }
             return $urls;
         } finally { flock($lock, LOCK_UN); fclose($lock); }
+    }
+
+    /** Read-only resolution. Never fetches or changes an installed package.
+     * @param list<array<string, mixed>> $assets
+     * @return array<string, string> */
+    public function resolve(string $digest, array $assets): array
+    {
+        self::validate($assets);
+        PackValidator::check(preg_match('/^[a-f0-9]{64}$/D', $digest) === 1, __('Invalid media package identity.', 'wconvert'));
+        $marker = $this->directory . '/sets/' . $digest . '.json';
+        PackValidator::check(!is_link($this->directory) && !is_link(dirname($marker)) && !is_link($marker)
+            && is_file($marker) && file_get_contents($marker) === json_encode(['schema' => 1, 'assets' => $assets], JSON_THROW_ON_ERROR), __('Required pack images are missing. Preview the pack again to repair them.', 'wconvert'));
+        $urls = [];
+        foreach ($assets as $asset) {
+            $key = self::key($asset); $path = $this->directory . '/' . $key;
+            PackValidator::check(!is_link(dirname($path)) && !is_link($path) && is_file($path) && filesize($path) === $asset['bytes']
+                && self::matches((string) file_get_contents($path), $asset), __('Required pack images are damaged. Preview the pack again to repair them.', 'wconvert'));
+            $urls[$asset['id']] = rtrim($this->baseUrl, '/') . '/' . $key;
+        }
+        return $urls;
+    }
+
+    /** @param array<string, mixed> $asset */
+    public static function key(array $asset): string
+    {
+        return $asset['access'] . '/' . $asset['sha256'] . '.' . self::TYPES[$asset['mime']];
     }
 
     /** @param list<array<string, mixed>> $assets */

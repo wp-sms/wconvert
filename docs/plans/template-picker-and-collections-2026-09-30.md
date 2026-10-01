@@ -430,3 +430,11 @@ Decisions needed before remote deployment, with recommended defaults:
 - **Release ownership:** assign editorial and technical reviewers before publication. Prototype owner labels are examples, not staff assignments.
 
 R2 and Worker absence does not block the local work packages above or continued template review. The core local picker already exists; proceed with its remaining workflow/acceptance gaps and the local publisher/media extension. Cloud credentials and the real licence-manager contract block hosted integration and release acceptance, not authoring, local fixtures or importer development.
+
+## 2026-10-01 local progress
+
+Implemented named-WordPress-timezone country suggestions with explicit confirmation/dismissal and no offset guessing; custom-occasion planning through reviewed evergreen collections with available stage selection; schema-2 verified raster pack installation and immutable local hydration; public Free/Pro showcase export with all design screens/device/RTL controls and catalog links; two original review candidates (specification-sheet and excerpt-window). Native checks also fixed hidden-consent handling in the journey tester and authoring IDs on plain HTTP sites.
+
+The two new designs remain review candidates and are not in the hosted release selection. The local release rehearsal still uses 13 approved setups / 10 designs / 3 Free packs / 2 collections. Wider library review, further distinct batches, artwork-rights/source conversion for the deferred selections, actual R2/Worker deployment, website integration and the existing licence-manager adapter remain outstanding. The user explicitly deferred licence integration, CI and real message delivery. None is claimed complete by the local publishing rehearsal.
+
+Evidence: `docs/reviews/template-local-progress-2026-10-01.md` and the final validation report. Existing collection approvals renewed only where new nearest-neighbour metadata changed; unrelated stale reviews remain stale.

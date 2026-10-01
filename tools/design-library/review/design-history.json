@@ -1530,6 +1530,42 @@
           "note": "Initial distinct composition with practical campaign setup."
         }
       ]
+    },
+    {
+      "id": "specification-sheet",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-01",
+          "revision": "41d0de29c3689e1abe89df1b32afb4101f905438ca89b64d4c00f7ef91cb529e",
+          "note": "Add a labelled specification matrix with repeated option names for stacked screens."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-01",
+          "revision": "19641025fa6181f5ec3453667ec8a97c20a8243be4e7ec6d54670dc0c0a8c0c2",
+          "note": "Raise fine print to approximately 14 pixels after phone review."
+        }
+      ]
+    },
+    {
+      "id": "excerpt-window",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-01",
+          "revision": "287e515546866b44e5cba5d4a1e6a2305e323193f7e3e51ba8a49504b27d9d60",
+          "note": "Pair a readable workbook exercise with a compact request form and matching acknowledgement."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-01",
+          "revision": "d6df99b6f3bce220a3da03f394d7f399b7cea52fbd90b83eca8bf44ad85138c8",
+          "note": "Raise sample attribution and resource-email guidance to approximately 14 pixels."
+        }
+      ]
     }
   ]
 }

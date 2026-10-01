@@ -2986,6 +2986,58 @@
         ],
         "reason": "A single text-first signpost with a source label, compact heading and quiet text action; no two-line explanatory block or filled button."
       }
+    },
+    {
+      "id": "specification-sheet",
+      "audience": "stores",
+      "family": "Compare two useful options",
+      "visitor_need": "Compare the dimensions and care requirements of two shortlisted products before opening their details.",
+      "difference": "Three labelled specification bands compare two sizes, followed by one destination action.",
+      "requirements": [
+        "Real product specifications and a comparison destination; no invented best-seller claim.",
+        "Repeat option names in each stacked phone band so values never lose their label."
+      ],
+      "status": "review",
+      "source": "Original WConvert design, implementing the useful-differences brief.",
+      "suggested_setup": [
+        "Use accurate sample content, a real destination and relevant page targeting."
+      ],
+      "measure": "Clicks through to the product comparison destination; not purchases.",
+      "batch": "useful-differences",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "material-pair",
+          "collection-poster"
+        ],
+        "reason": "Three labelled specification bands compare two sizes, followed by one destination action."
+      }
+    },
+    {
+      "id": "excerpt-window",
+      "audience": "publishers",
+      "family": "Try a page before requesting the guide",
+      "visitor_need": "Read a useful sample of a workbook before deciding whether to request the complete resource.",
+      "difference": "A readable workbook exercise on a paper panel, paired with a compact request column. The sample is real editable text, not cover art.",
+      "requirements": [
+        "Supply an actual useful sample and an accessible complete resource.",
+        "The excerpt remains readable without artwork; the acknowledgement does not claim email delivery."
+      ],
+      "status": "review",
+      "source": "Original WConvert design, implementing the useful-differences brief.",
+      "suggested_setup": [
+        "Use accurate sample content, a real destination and relevant page targeting."
+      ],
+      "measure": "Lead magnet emails accepted for sending; a request acknowledgement alone is not delivery.",
+      "batch": "useful-differences",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "useful-guide",
+          "reading-cover"
+        ],
+        "reason": "A readable workbook exercise on a paper panel, paired with a compact request column. The sample is real editable text, not cover art."
+      }
     }
   ],
   "batches": [
@@ -3016,6 +3068,10 @@
     {
       "id": "visual-variety",
       "name": "Eight distinct practical designs"
+    },
+    {
+      "id": "useful-differences",
+      "name": "Two useful design differences"
     }
   ]
 }

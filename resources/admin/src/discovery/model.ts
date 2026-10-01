@@ -1,6 +1,6 @@
 import type { PlaybookEntry } from '../goals/api';
 export const startingPointDisplayType = (entry: PlaybookEntry) => entry.setup?.display_type ?? entry.display_type;
-import type { Collection, PickerData } from './api';
+import type { Collection, Occasion, PickerData } from './api';
 
 /** Site calendar, including IANA daylight-saving rules and WP fixed offsets. */
 export function siteDay(epoch: number, timezone: string, offset: number): string {
@@ -24,9 +24,10 @@ export function groupSetups(entries: readonly PlaybookEntry[]): Map<string, Play
   }
   return groups;
 }
-export function preferredStage(collection: Collection, today: string, matches: readonly PlaybookEntry[]) {
+export function preferredStage(collection: Collection, today: string, matches: readonly PlaybookEntry[], occasion?: Occasion) {
   const available = new Set(matches.map(entry => entry.id));
-  const preferred = !collection.event || today < collection.event.start ? 'before'
+  const preferred = occasion ? (today < occasion.start ? 'before' : today <= occasion.end ? 'during' : 'after')
+    : !collection.event || today < collection.event.start ? 'before'
     : today < collection.event.end_exclusive ? 'during' : 'after';
   const stages = [preferred, 'before', 'during', 'after', 'any'] as const;
   return stages.find(stage => collection.items.some(item => item.stage === stage && available.has(item.setup_id))) ?? 'any';

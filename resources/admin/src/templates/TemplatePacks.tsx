@@ -142,6 +142,7 @@ function PackGroup({ title, installed: isInstalledGroup, packs, busy, onInspect 
       const installed = pack.installed_version !== null;
       return <li key={pack.id} className="wconvert-pack-card">
         <div className="wconvert-pack-card__heading"><Layers size={20} aria-hidden="true" /><h4>{pack.name}</h4>
+          {pack.access === 'premium' && <Badge variant="secondary">{__('Pro', 'wconvert')}</Badge>}
           {pack.state === 'update' && <Badge variant="warning">{__('Update available', 'wconvert')}</Badge>}</div>
         <p className="wconvert-pack-card__description">{pack.description}</p>
         <div className="wconvert-pack-card__footer"><span className="wconvert-pack-card__version">
@@ -149,6 +150,7 @@ function PackGroup({ title, installed: isInstalledGroup, packs, busy, onInspect 
           <Button data-pack-id={pack.id} variant="outline" disabled={busy} aria-label={sprintf(installed ? __('Explore designs in %s', 'wconvert') : __('Preview %s', 'wconvert'), pack.name)}
             onClick={() => onInspect(pack, installed)}>{installed ? __('Explore designs', 'wconvert') : __('Preview pack', 'wconvert')}<ArrowRight aria-hidden="true" className="rtl:-scale-x-100" /></Button>
         </div>
+        {pack.preview_url && <Button asChild variant="link"><a href={pack.preview_url} target="_blank" rel="noopener noreferrer">{__('View public previews', 'wconvert')}{' ↗'}</a></Button>}
         {pack.state === 'update' && <div className="wconvert-pack-card__update"><span>{sprintf(__('Version %s is available', 'wconvert'), pack.version)}</span>
           <Button variant="ghost" disabled={busy} aria-label={sprintf(__('Preview update for %s', 'wconvert'), pack.name)} onClick={() => onInspect(pack, false)}>{__('Preview update', 'wconvert')}</Button></div>}
       </li>;

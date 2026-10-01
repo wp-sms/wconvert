@@ -207,3 +207,14 @@ it('keeps pack search and availability on return from a design preview',async()=
   await waitFor(()=>expect(screen.getByRole('button',{name:'Explore designs in Reading pack'})).toHaveFocus());
   expect(api.installPack).not.toHaveBeenCalled();
 });
+
+it('offers the same public preview entry for a premium pack without downloading or installing it', async () => {
+  api.catalogStatus.mockResolvedValue({ ...listed, packs: [{ ...listed.packs[0], access: 'premium', preview_url: 'https://catalog.example/previews/revision.html' }] });
+  render(<TemplatePacks displayType="inline" onInstalled={vi.fn()} />);
+  const link = await screen.findByRole('link', { name: 'View public previews ↗' });
+  expect(link).toHaveAttribute('href', 'https://catalog.example/previews/revision.html');
+  expect(link).toHaveAttribute('rel', 'noopener noreferrer');
+  expect(screen.getByText('Pro')).toBeVisible();
+  expect(api.previewPack).not.toHaveBeenCalled();
+  expect(api.installPack).not.toHaveBeenCalled();
+});

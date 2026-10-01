@@ -206,6 +206,7 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins }: GoalScree
     </Region>;
   }
 
+  const selectedOccasion = picker.data?.occasions.items.find(item => item.id === occasion);
   const allEntries = playbooks.status === 'ready' ? playbooks.data : [];
   const collections = new Map(allEntries.flatMap((entry) => entry.collection ? [[entry.collection.id, entry.collection.name] as const] : []));
   const businesses = new Map(allEntries.flatMap((entry) => (entry.business_types ?? []).map(({ id, label }) => [id, label] as const)));
@@ -221,7 +222,7 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins }: GoalScree
   const filtered = matchingCollection.filter((entry) => formatId === 'all' || startingPointDisplayType(entry) === formatId);
   const collectionEligible = filtered.filter(entry => !entry.availability || entry.availability === 'ready');
   const effectiveStage = editorialCollection && stage !== 'any' && !editorialCollection.items.some(item => item.stage === stage && collectionEligible.some(entry => entry.id === item.setup_id))
-    ? preferredStage(editorialCollection, picker.data?.today ?? '', collectionEligible) : stage;
+    ? preferredStage(editorialCollection, picker.data?.today ?? '', collectionEligible, selectedOccasion) : stage;
   const collectionItems = editorialCollection?.items.filter(item => effectiveStage === 'any' || item.stage === effectiveStage);
   const entries = collectionItems ? collectionEligible.filter(entry => collectionItems.some(item => item.setup_id === entry.id)) : filtered;
   const relevant = picker.data ? matchingCollections(picker.data, filtered, false) : [];
@@ -230,7 +231,7 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins }: GoalScree
     libraryPosition.current = { scroll: window.scrollY, trigger: document.activeElement as HTMLElement | null, page, allCollections };
     modalOrigin.current = document.activeElement as HTMLElement | null;
     setEditorialCollection(collection); setAllCollections(false); setPage(0);
-    setStage(preferredStage(collection, picker.data?.today ?? '', collectionEligible));
+    setStage(preferredStage(collection, picker.data?.today ?? '', collectionEligible, selectedOccasion));
   };
   const backToLibrary = () => {
     setEditorialCollection(null); setAllCollections(libraryPosition.current.allCollections); setPage(libraryPosition.current.page); setSettings(false);
@@ -266,7 +267,6 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins }: GoalScree
     comparisonEntries.forEach(entry => previews.onNear(entry.id)); setComparing(true);
     requestAnimationFrame(() => { if (modalContent.current) modalContent.current.scrollTop = 0; modalTitle.current?.focus({ preventScroll: true }); });
   }} />;
-  const selectedOccasion = picker.data?.occasions.items.find(item => item.id === occasion);
   const setupGallery = playbooks.status === 'failed' ? <>
       <RegionErrorState message={playbooks.message} hint={__('Try loading the campaign setups again, or start with a blank draft.', 'wconvert')} />
       <RegionBody><Button variant="outline" onClick={() => setPlaybooksRetry((value) => value + 1)}>{__('Retry loading campaign setups', 'wconvert')}</Button></RegionBody>
@@ -310,7 +310,8 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins }: GoalScree
         {!editorialCollection && <PickerPagination page={shownPage} pages={pageCount} disabled={starting !== null} onChange={setPage} />}
       </RegionBody>;
   const collectionDetails = editorialCollection ? <section className="wconvert-collection-detail">
-      {editorialCollection.event && <div className="wconvert-collection-detail__event"><p>{sprintf(__('Event starts %s', 'wconvert'), editorialCollection.event.start)}</p><Button variant="ghost" disabled={picker.saving} onClick={() => { if (picker.data && editorialCollection.event) void picker.preferences({ ...picker.data.preferences, events: [...picker.data.preferences.events, editorialCollection.event.family] }); backToLibrary(); }}>{__('I don’t run this event', 'wconvert')}</Button></div>}
+      {selectedOccasion && <p className="text-note">{sprintf(__('Ideas for %1$s · %2$s – %3$s. Set campaign dates separately in the editor.', 'wconvert'), selectedOccasion.name, selectedOccasion.start, selectedOccasion.end)}</p>}
+      {editorialCollection.event && !selectedOccasion && <div className="wconvert-collection-detail__event"><p>{sprintf(__('Event starts %s', 'wconvert'), editorialCollection.event.start)}</p><Button variant="ghost" disabled={picker.saving} onClick={() => { if (picker.data && editorialCollection.event) void picker.preferences({ ...picker.data.preferences, events: [...picker.data.preferences.events, editorialCollection.event.family] }); backToLibrary(); }}>{__('I don’t run this event', 'wconvert')}</Button></div>}
       {editorialCollection.items.some(item => item.stage !== 'any') && <OptionStrip label={__('Campaign stage', 'wconvert')} value={effectiveStage}
         options={[
           ['any', __('All stages', 'wconvert')], ['before', __('Before', 'wconvert')], ['during', __('During', 'wconvert')], ['after', __('After', 'wconvert')],
@@ -322,7 +323,7 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins }: GoalScree
       {picker.data && editorialCollection.event && picker.data.today >= editorialCollection.event.end_exclusive && <p className="text-note">{__('This event has ended. These setups remain reusable; review new campaign dates and offer terms in the editor.', 'wconvert')}</p>}
     </section> : null;
   if (settings) return <Region className="wconvert-creation">
-    <PickerSettings picker={picker} onBack={backToLibrary} onPlan={id => { setOccasion(id); setSettings(false); }} />
+    <PickerSettings picker={picker} onBack={backToLibrary} onPlan={id => { setOccasion(id); setSettings(false); setAllCollections(false); setEditorialCollection(null); setPage(0); }} />
   </Region>;
   return <Region className="wconvert-creation">
     <Step at={2} />
@@ -391,9 +392,17 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins }: GoalScree
       ].filter(([format]) => availableFormats.has(format)).map(([format, label]) => <Button key={format} variant="outline" disabled={starting !== null} onClick={() => { setFormatId(format); setPage(0); setHelper(false); }}>{label}</Button>)}</div>
       <p>{sprintf(__('Your goal stays “%s”. Use “Choose a different goal” below if visitors should do something else.', 'wconvert'), goal.label)}</p>
     </section>}
-    {selectedOccasion && <section className="wconvert-picker__notice"><strong>{selectedOccasion.name}</strong><p>{selectedOccasion.start} – {selectedOccasion.end} · {picker.data?.timezone}</p><p>{__('These are planning ideas for your selected goal. Choose a setup, then set your campaign’s real dates in the editor. These occasion dates are not applied automatically.', 'wconvert')}</p><Button variant="ghost" onClick={() => setOccasion(null)}>{__('Clear occasion', 'wconvert')}</Button></section>}
-    {!editorialCollection && (picker.data && (allCollections || (!query.trim() && !savedOnly && picker.data.preferences.show_featured !== false))) && <CollectionShelf matches={allCollections ? relevant : featured} all={allCollections} disabled={starting !== null || picker.saving} onOpen={openCollection} onAll={() => setAllCollections(true)} onHide={id => { if (picker.data) void picker.preferences({ ...picker.data.preferences, hidden: [...picker.data.preferences.hidden, id] }); }} />}
-    {!allCollections && !editorialCollection && !query.trim() && !savedOnly && featured.length > 0 && picker.data?.preferences.show_featured !== false && <Button className="mx-6" variant="ghost" disabled={picker.saving} onClick={() => { if (picker.data) void picker.preferences({ ...picker.data.preferences, show_featured: false }); }}>{__('Hide featured collections', 'wconvert')}</Button>}
+    {selectedOccasion && <section aria-label={__('Occasion planning ideas', 'wconvert')}>
+      <div className="wconvert-picker__notice"><strong>{selectedOccasion.name}</strong><p>{selectedOccasion.start} – {selectedOccasion.end} · {picker.data?.timezone}</p>
+        <p>{__('Choose a planning guide that fits your occasion. Explore its Before, During and After ideas for your selected goal. Campaign dates are set separately in the editor.', 'wconvert')}</p>
+        <Button variant="outline" onClick={() => setOccasion(null)}>{__('Back to full library', 'wconvert')}</Button></div>
+      <CollectionShelf matches={relevant.filter(match => !match.collection.event)} all disabled={starting !== null} onOpen={openCollection} onAll={() => {}} onHide={() => {}} />
+      {relevant.every(match => !!match.collection.event) && <EmptyState icon={Sparkles} title={__('No reviewed occasion ideas match yet', 'wconvert')} action={<Button variant="outline" onClick={() => setOccasion(null)}>{__('Browse all setups', 'wconvert')}</Button>}>
+        {__('Try clearing your filters or explore the full library. We only suggest setups already reviewed for this goal.', 'wconvert')}
+      </EmptyState>}
+    </section>}
+    {!selectedOccasion && !editorialCollection && (picker.data && (allCollections || (!query.trim() && !savedOnly && picker.data.preferences.show_featured !== false))) && <CollectionShelf matches={allCollections ? relevant : featured} all={allCollections} disabled={starting !== null || picker.saving} onOpen={openCollection} onAll={() => setAllCollections(true)} onHide={id => { if (picker.data) void picker.preferences({ ...picker.data.preferences, hidden: [...picker.data.preferences.hidden, id] }); }} />}
+    {!selectedOccasion && !allCollections && !editorialCollection && !query.trim() && !savedOnly && featured.length > 0 && picker.data?.preferences.show_featured !== false && <Button className="mx-6" variant="ghost" disabled={picker.saving} onClick={() => { if (picker.data) void picker.preferences({ ...picker.data.preferences, show_featured: false }); }}>{__('Hide featured collections', 'wconvert')}</Button>}
     <Dialog open={packsOpen} onOpenChange={setPacksOpen}>
       <PickerDialogContent onCloseAutoFocus={(event) => {
         event.preventDefault();
@@ -410,7 +419,7 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins }: GoalScree
     {!inspected && error !== null && <><RegionError message={error} /><Button variant="outline" disabled={starting !== null} onClick={() => { previews.reset(); setPlaybooksRetry(value => value + 1); setError(null); }}>{__('Reload campaign setups', 'wconvert')}</Button></>}
     {!inspected && createUnconfirmed && <RegionBody><p className="m-0 text-note">{__('Draft creation could not be confirmed. Check your Campaigns before trying again to avoid creating a second draft.', 'wconvert')}{onCheckOptins && <Button variant="link" onClick={onCheckOptins}>{__('Check Campaigns', 'wconvert')}</Button>}</p></RegionBody>}
     {starting !== null && <RegionBody><p role="status" className="m-0 text-note">{__('Creating your draft and opening the editor…', 'wconvert')}</p></RegionBody>}
-    {!editorialCollection && !allCollections && <>{setupGallery}{comparisonControls}</>}
+    {!selectedOccasion && !editorialCollection && !allCollections && <>{setupGallery}{comparisonControls}</>}
     {allCollections && !editorialCollection && relevant.length === 0 && <EmptyState icon={Sparkles} title={__('No collections match', 'wconvert')} action={<Button variant="outline" onClick={clearFilters}>{__('Clear filters', 'wconvert')}</Button>}>{__('Try another business, search or format, or return to the full library.', 'wconvert')}</EmptyState>}
     <Dialog open={inspected !== null || editorialCollection !== null || comparing} onOpenChange={(open) => { if (!open) { setInspected(null); setComparing(false); if (editorialCollection) backToLibrary(); } }}>
       <PickerDialogContent className="wconvert-setup-detail" onOpenAutoFocus={event => { event.preventDefault(); modalTitle.current?.focus({ preventScroll: true }); }} onCloseAutoFocus={(event) => {
