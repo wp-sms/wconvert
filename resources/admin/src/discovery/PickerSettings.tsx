@@ -1,6 +1,8 @@
-import { useId, useRef, useEffect, useState } from 'react';
+import { useRef, useEffect, useState } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
-import { ArrowLeft } from 'lucide-react';
+import apiFetch from '@wordpress/api-fetch';
+import { PhoneCountryPicker as CountryPicker, type Country } from '../PhoneCountryPicker';
+import { ArrowLeft, X } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Region, RegionHeader, RegionBody, PageError } from '../shell/Region';
@@ -10,8 +12,18 @@ export function PickerSettings({ picker, onBack, onPlan }: {
   picker: ReturnType<typeof usePicker>; onBack: () => void; onPlan?: (id: string) => void;
 }) {
   const [name, setName] = useState(''); const [start, setStart] = useState(''); const [end, setEnd] = useState(''); const [editing, setEditing] = useState<string | null>(null);
-  const [markets, setMarkets] = useState(picker.data?.preferences.markets.join(', ') ?? '');
-  const title = useRef<HTMLHeadingElement>(null); const id = useId();
+  const [countries, setCountries] = useState<Country[]>([]);
+  const [countryError, setCountryError] = useState(false);
+  const [countryAttempt, setCountryAttempt] = useState(0);
+  useEffect(() => {
+    let active = true;
+    setCountryError(false);
+    void apiFetch<{ countries: Country[] }>({ path: '/wconvert/v1/optins/phone-country' }).then(result => {
+      if (active) setCountries(result.countries);
+    }).catch(() => { if (active) setCountryError(true); });
+    return () => { active = false; };
+  }, [countryAttempt]);
+  const title = useRef<HTMLHeadingElement>(null);
   useEffect(() => { title.current?.focus({preventScroll:true}); }, []);
   const data = picker.data;
   if (!data) return <div className="p-6"><p>{__('Preferences could not be loaded. The library is still available.', 'wconvert')}</p><Button onClick={() => { void picker.reload(); }}>{__('Reload preferences', 'wconvert')}</Button><Button className="wconvert-picker__back" variant="outline" onClick={onBack}><ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />{__('Back to library', 'wconvert')}</Button></div>;
@@ -24,7 +36,15 @@ export function PickerSettings({ picker, onBack, onPlan }: {
       <p className="text-note">{__('You can always browse collections, even with the featured shelf hidden.', 'wconvert')}</p>
       <fieldset><legend>{__('Businesses to recommend first', 'wconvert')}</legend><div className="flex flex-wrap gap-4">{[['stores', __('Stores', 'wconvert')], ['services', __('Services', 'wconvert')], ['publishers', __('Publishers', 'wconvert')]].map(([id, label]) => <label key={id} className="wconvert-picker-settings__check"><input type="checkbox" disabled={picker.saving} checked={data.preferences.businesses.includes(id)} onChange={event => { void picker.preferences({ ...data.preferences, businesses: event.target.checked ? [...data.preferences.businesses, id] : data.preferences.businesses.filter(value => value !== id) }); }} />{label}</label>)}</div></fieldset>
       <p className="text-note">{__('This orders matching collections first; it does not remove other businesses from the library.', 'wconvert')}</p>
-      <form className="wconvert-picker-settings__markets" onSubmit={event=>{event.preventDefault(); void picker.preferences({ ...data.preferences, markets:[...new Set(markets.split(',').map(value=>value.trim().toUpperCase()).filter(Boolean))] });}}><label htmlFor={`${id}-markets`}>{__('Countries you serve','wconvert')}<Input id={`${id}-markets`} value={markets} pattern="\s*([A-Za-z]{2}\s*(,\s*[A-Za-z]{2}\s*)*)?" placeholder="GB, US, AE" aria-describedby={`${id}-markets-help`} onChange={event=>setMarkets(event.target.value)} /></label><Button type="submit" variant="outline" disabled={picker.saving}>{__('Save markets','wconvert')}</Button></form><p id={`${id}-markets-help`} className="text-note text-muted-foreground">{__('Enter two-letter codes, for example GB for the United Kingdom, US for the United States, or AE for the UAE. Separate them with commas.','wconvert')}</p>
+      <div className="wconvert-picker-settings__markets">
+        <CountryPicker label={__('Countries you serve', 'wconvert')} value="" countries={countries.filter(country => !data.preferences.markets.includes(country.code.toUpperCase()))}
+          disabled={picker.saving || countries.length === 0} onChange={code => { void picker.preferences({ ...data.preferences, markets: [...data.preferences.markets, code.toUpperCase()] }); }} />
+        {countryError ? <p role="alert">{__('Countries could not be loaded.', 'wconvert')} <Button variant="link" onClick={() => setCountryAttempt(value => value + 1)}>{__('Retry countries', 'wconvert')}</Button></p> : countries.length === 0 && <p role="status">{__('Loading countries…', 'wconvert')}</p>}
+        <div className="wconvert-picker-settings__countries">{data.preferences.markets.map(code => {
+          const name = countries.find(country => country.code.toUpperCase() === code)?.name ?? code;
+          return <Button key={code} variant="outline" disabled={picker.saving} aria-label={sprintf(__('Remove %s', 'wconvert'), name)} onClick={() => { void picker.preferences({ ...data.preferences, markets: data.preferences.markets.filter(value => value !== code) }); }}>{name}<X aria-hidden="true" /></Button>;
+        })}</div>
+      </div>
       {data.preferences.hidden.length > 0 && <Button variant="outline" disabled={picker.saving} onClick={() => { void picker.preferences({ ...data.preferences, hidden: [] }); }}>{__('Restore hidden collections', 'wconvert')}</Button>}
       {data.preferences.events.length > 0 && <Button variant="outline" disabled={picker.saving} onClick={() => { void picker.preferences({ ...data.preferences, events: [] }); }}>{__('Restore seasonal recommendations', 'wconvert')}</Button>}
       <p className="text-note text-muted-foreground">{__('Regional occasions appear only for selected markets. Shared occasions need no country selection. Nothing is inferred from your location.', 'wconvert')}</p>

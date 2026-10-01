@@ -39,10 +39,13 @@ beforeEach(() => {
   api.prefill.mockResolvedValue(DRAFT); api.createOptin.mockResolvedValue({ id: ID }); api.getRules.mockResolvedValue(ruleTypes());
 });
 afterEach(() => { window.innerWidth = 1024; });
-async function openCreation() {
+async function openCreation(inspect = true) {
   render(<App />);
   await userEvent.click(screen.getByRole('button', { name: 'Create campaign' }));
   await userEvent.click(await screen.findByRole('button', { name: 'Choose' }, { timeout: 5000 }));
+  const preview = await screen.findByRole('button', { name: 'Setup details for Welcome' });
+  if (!inspect) return preview;
+  await userEvent.click(preview);
   return screen.findByRole('button', { name: 'Use this setup' });
 }
 async function requestReports() {
@@ -51,7 +54,7 @@ async function requestReports() {
 
 describe('creation and its owning admin page', () => {
   it('lets the creation prompt replace the redundant page-heading band', async () => {
-    await openCreation();
+    await openCreation(false);
     expect(screen.queryByText('Your on-site forms and offers, in one place.')).toBeNull();
     expect(screen.getByRole('heading', { level: 1, name: 'Campaigns' })).toHaveClass('sr-only');
     expect(screen.getByRole('heading', { name: 'Choose a campaign setup' })).toBeVisible();
@@ -64,12 +67,12 @@ describe('creation and its owning admin page', () => {
     api.prefill.mockReturnValue(new Promise(resolve => { prefill = resolve; }));
     api.createOptin.mockReturnValue(new Promise(resolve => { created = resolve; }));
     await userEvent.click(await openCreation());
-    expect(screen.getByRole('button', { name: 'All Campaigns' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'All Campaigns', hidden: true })).toBeDisabled();
     await requestReports();
     await waitFor(() => expect(window.location.hash).toBe('#optins'));
     expect(screen.queryByText('Report content')).not.toBeInTheDocument();
     await act(async () => prefill(DRAFT));
-    expect(screen.getByRole('button', { name: 'All Campaigns' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'All Campaigns', hidden: true })).toBeDisabled();
     await requestReports();
     await waitFor(() => expect(window.location.hash).toBe('#optins'));
     await act(async () => created({ id: ID }));

@@ -4,6 +4,11 @@ Status: Local picker implementation and prototype-parity audit completed on 30 S
 
 Build one clear template discovery experience inside the plugin, backed by reviewed campaign setups and an optional remote catalog. Help merchants choose something relevant, understand what they must configure, and reach a useful draft. Extend the existing template, Playbook, Prefill, catalog and review systems rather than creating a second builder.
 
+Follow-up: the [1 October flow audit](../reviews/picker-flow-audit-2026-10-01.md)
+records remaining UI corrections and actual WordPress checks across creation,
+editor comparison, detail inspection and pack discovery. It does not change the
+partial status of the wider programme above.
+
 The approved study is at `http://127.0.0.1:9442/picker-prototype.html?variant=A`. Its files under `tools/design-library/out/seasonal-ux/` are ignored, disposable review artifacts. Its 108 setups and 59 design IDs describe that snapshot, not the complete installed or future API library. Preferences, dates, offline behaviour and internal review records in the study are demonstrations.
 
 ## Product decisions

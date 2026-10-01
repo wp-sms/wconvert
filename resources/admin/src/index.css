@@ -1710,7 +1710,7 @@ body:has(#wconvert-admin) #wpbody-content {
  */
 .wconvert-gallery {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(15rem, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 19rem), 1fr));
   gap: 1rem;
   margin: 0;
   padding: 0;
@@ -1999,6 +1999,15 @@ body:has(#wconvert-admin) #wpbody-content {
 }
 
 .wconvert-gallery__preview { background: var(--surface); }
+.wconvert-gallery__caption { display: flex; flex-direction: column; gap: .75rem; padding: 1rem; border-block-start: 1px solid var(--border); }
+.wconvert-gallery__identity { display: flex; align-items: start; justify-content: space-between; gap: .5rem; }
+.wconvert-gallery__identity h3 { flex: 1; margin: 0; min-inline-size: 0; font-size: var(--text-item); font-weight: 600; line-height: 1.45; overflow-wrap: anywhere; }
+.wconvert-gallery__identity > button { flex: none; margin-block-start: -.375rem; }
+.wconvert-gallery__marks { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; color: var(--muted-foreground); font-size: var(--text-note); }
+.wconvert-gallery__caption > p { margin: 0; }
+.wconvert-gallery__actions { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: .75rem; margin-block-start: .25rem; }
+.wconvert-gallery__card[data-compared] .wconvert-gallery__caption { background: var(--accent); }
+
 .wconvert-gallery__error { display: flex; flex: 1; flex-direction: column; align-items: center; justify-content: center; gap: 0.75rem; min-block-size: 12rem; padding: 1.5rem; text-align: center; }
 .wconvert-gallery__error > p { margin: 0; }
 .wconvert-gallery[data-preview-first='true'] .wconvert-gallery__card[data-refused] .wconvert-preview { opacity: 1; }
@@ -6578,7 +6587,8 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
 .wconvert-picker-settings fieldset { min-inline-size: 0; border: 0; margin: 0; padding: 0; }
 .wconvert-picker-settings legend { font-size: var(--text-body); font-weight: 500; padding: 0; margin-block-end: .5rem; }
 .wconvert-picker-settings__markets { display: flex; flex-wrap: wrap; gap: .75rem; align-items: end; }
-.wconvert-picker-settings__markets > label { flex: 1 1 18rem; }
+.wconvert-picker-settings__markets > .wconvert-phone-country-picker { inline-size: min(100%, 24rem); }
+.wconvert-picker-settings__countries { display: flex; flex-wrap: wrap; gap: .5rem; flex-basis: 100%; }
 .wconvert-occasion-list { inline-size: 100%; margin: 0; padding: 0; list-style: none; }
 .wconvert-occasion-list li { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; padding-block: .75rem; border-block-end: 1px solid var(--border); }
 .wconvert-occasion-list li > div { flex: 1; min-inline-size: min(12rem, 100%); display: flex; flex-direction: column; gap: .25rem; overflow-wrap: anywhere; }
@@ -6591,6 +6601,9 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
 .wconvert-setup-preview__journey { margin-block: 1rem; padding: 1rem; background: var(--surface); border-radius: var(--radius); overflow: auto; }
 /* Shared fitting is used by setup inspection, editor replacement and pack previews. */
 .wconvert-preview-frame { flex: 1; display: flex; align-items: safe center; justify-content: safe center; min-inline-size: 0; min-block-size: 16rem; padding: 1.5rem; overflow: auto; background: var(--surface); }
+.wconvert-preview-frame[data-fit="width"] { align-items: start; }
+.wconvert-preview-frame:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+.wconvert-preview-frame__hint { margin: .5rem 0; color: var(--muted-foreground); font-size: var(--text-note); line-height: 1.5; }
 .wconvert-preview-frame__measure { position: relative; flex: none; }
 .wconvert-preview-frame__paper { position: absolute; inset-block-start: 0; inset-inline-start: 0; transform-origin: 0 0; }
 .wconvert-preview-frame__paper:dir(rtl) { transform-origin: 100% 0; }
@@ -6672,10 +6685,12 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
 .wconvert-picker__body { flex: 1; min-block-size: 0; min-inline-size: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-gutter: stable; padding: 1.25rem; }
 .wconvert-picker__footer { display: flex; flex: none; flex-wrap: wrap; align-items: center; gap: .75rem; padding: .875rem 1.25rem; border-block-start: 1px solid var(--border); background: var(--card); }
 .wconvert-picker__footer > span { flex: 1; }
-.wconvert-picker__body .wconvert-collection-detail { display: grid; gap: .75rem; margin: 0 0 1rem; }
+.wconvert-picker__body .wconvert-collection-detail { display: grid; gap: .75rem; margin: 0; }
+.wconvert-collection-detail__controls { display: grid; grid-template-columns: minmax(0, 1fr) minmax(16rem, 1fr); align-items: end; gap: 1rem; }
+.wconvert-collection-detail__controls > .wconvert-picker__controls { padding: 0; border: 0; }
+@media (max-width: 700px) { .wconvert-collection-detail__controls { grid-template-columns: minmax(0, 1fr); } }
 .wconvert-picker__body .wconvert-collection-detail p { margin: 0; max-inline-size: 75ch; font-size: var(--text-note); }
 .wconvert-picker__body > .wconvert-picker__controls { padding: 0 0 1rem; }
-.wconvert-picker__body .wconvert-gallery { grid-template-columns: repeat(auto-fill, minmax(min(100%, 19rem), 1fr)); }
 .wconvert-setup-inspector { display: grid; grid-template-columns: minmax(0, 1.5fr) minmax(17rem, 1fr); align-items: start; gap: 1.5rem; }
 .wconvert-setup-inspector > div, .wconvert-setup-inspector__facts { min-inline-size: 0; }
 .wconvert-setup-inspector__facts { display: grid; gap: 1rem; }
@@ -6703,6 +6718,8 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
 
 .wconvert-setup-detail .wconvert-picker__body, .wconvert-design-detail__document, .wconvert-pack-detail__document { background: var(--card); }
 .wconvert-design-detail__document { padding: 0; }
+.wconvert-design-detail__preview { min-inline-size: 0; }
+.wconvert-design-detail__preview > .wconvert-preview-frame__hint { padding-inline: 1.25rem; }
 .wconvert-design-detail__document .wconvert-design-detail__layout { align-items: start; overflow: visible; }
 .wconvert-design-detail__document .wconvert-design-detail__facts { overflow: visible; }
 .wconvert-design-detail__document .wconvert-preview-frame { flex: none; min-block-size: 0; block-size: 24rem; overflow: auto; }

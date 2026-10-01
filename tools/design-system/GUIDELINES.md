@@ -205,6 +205,18 @@ card size. Long placement, measurement and journey guidance uses labeled
 progressive disclosure beside the preview. Dialog headers align to the start
 on every viewport; close controls have a 32px target (44px for coarse pointers).
 
+Creation cards open inspection before the draft action. Shared cards place the
+name and Save together, metadata on its own row, then Preview and Compare. Do
+not scatter these controls between metadata and actions. Full inspection starts
+at width fit with vertical scrolling for tall content; offer Fit entire design
+for an overview. Comparison retains equally sized fitted stages. Errors and
+recovery actions belong in the active modal, including an uncertain creation
+result. Country choices use names and searchable selection, not code entry.
+Keep collection introductions concise: one description in the header, stage
+and search controls alongside each other when space allows, and no redundant
+format filter for a single-format collection. Keep the page count visible for
+one page, but omit Previous/Next until there is another page to visit.
+
 ## 10. Tables
 
 `shell/DataTable` is what list screens render — semantic roles, a `data-label`

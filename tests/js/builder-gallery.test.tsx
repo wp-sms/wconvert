@@ -976,6 +976,6 @@ it('shows a stable page position and recovers pagination after filtering the sec
   expect(screen.getAllByRole('button',{name:'Preview design'})).toHaveLength(6);
   await userEvent.type(screen.getByRole('searchbox',{name:'Search designs'}),'Design 29');
   expect(screen.getByText('Page 1 of 1')).toBeVisible();
-  expect(screen.getByRole('button',{name:'Previous'})).toBeDisabled();
-  expect(screen.getByRole('button',{name:'Next'})).toBeDisabled();
+  expect(screen.queryByRole('button',{name:'Previous'})).not.toBeInTheDocument();
+  expect(screen.queryByRole('button',{name:'Next'})).not.toBeInTheDocument();
 });

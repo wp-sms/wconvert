@@ -245,10 +245,12 @@ export function Gallery({
               screens. `StartingPoints` states the rule and already draws it
               this way.
             */
+            selected={compared?.includes(entry.id)}
+            selection={onCompare && !locked && <CompareSelection name={entry.name} checked={compared?.includes(entry.id) ?? false} disabled={busy || ((compared?.length ?? 0) >= 2 && !compared?.includes(entry.id))} onChange={()=>onCompare(entry.id)} />}
+            saveAction={onSave && <Button variant="ghost" size="icon" className="wconvert-picker__save" disabled={saving} aria-pressed={saved?.has(entry.design_key ?? `registered:${entry.id}`) ?? false} aria-label={sprintf(__('Save design: %s', 'wconvert'), entry.name)} onClick={() => onSave(entry)}><Star size={17} fill={saved?.has(entry.design_key ?? `registered:${entry.id}`) ? 'currentColor' : 'none'} /></Button>}
             marks={<div className="flex flex-wrap items-center gap-2">
               <Badge variant="outline">{displayTypeLabel(entry.display_type)}</Badge>
-              {onCompare && !locked && <CompareSelection name={entry.name} checked={compared?.includes(entry.id) ?? false} disabled={busy || ((compared?.length ?? 0) >= 2 && !compared?.includes(entry.id))} onChange={()=>onCompare(entry.id)} />}
-              {onSave && <Button variant="ghost" size="icon" className="wconvert-picker__save" disabled={saving} aria-pressed={saved?.has(entry.design_key ?? `registered:${entry.id}`) ?? false} aria-label={sprintf(__('Save design: %s', 'wconvert'), entry.name)} onClick={() => onSave(entry)}><Star size={17} fill={saved?.has(entry.design_key ?? `registered:${entry.id}`) ? 'currentColor' : 'none'} /></Button>}
+
               {locked ? (
                 <Badge variant="secondary">
                   <Lock aria-hidden="true" />

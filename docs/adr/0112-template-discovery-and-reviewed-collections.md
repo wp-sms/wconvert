@@ -9,6 +9,10 @@ Goal-first creation browses a metadata-only Playbook index. Cards are grouped by
 canonical design identity **after** applying Goal, business, format, search,
 source pack, availability and Saved filters. Recommended order and Name A–Z are available. Cards show matching use-case counts; inspection chooses among those use cases;
 copy changes are not counted as different designs. Lists paginate at 24 cards.
+The October 1 flow review makes inspection the sole creation-card action: Use
+this setup belongs to the detail footer. The shared card separates identity and
+Save, metadata, and the Preview/Compare action row. Source identifies included
+content or an installed pack; Collection names an editorial discovery list.
 Visible cards lazily request at most 24 actual Prefill compositions per request.
 
 Collections, inspection and comparison share one dialog. Back restores the
@@ -33,14 +37,20 @@ screen and result, practical requirements and the existing local journey test.
 A source revision and a prepared snapshot revision accompany creation. Changes
 to the source or site configuration after inspection return 409; the user can
 reload and inspect again. Draft creation and publication remain the existing
-Optin paths. This introduces neither a second builder nor campaign scheduling.
+Optin paths. A failed or unavailable preview has a recovery state in the preview
+area. An uncertain creation response keeps Check Campaigns inside the modal
+footer and prevents a second create click; a background notice is insufficient.
+This introduces neither a second builder nor campaign scheduling.
 
 Changing layout retains the existing Goal, content-transfer review, source
 baseline, hard refusal rules and undoable draft application. Editor comparison
 compares sample layouts in the same dialog, then opens the existing exact
 content-transfer review; comparison itself applies nothing. Creation, pack
 inspection and editor replacement share search anatomy, native device/screen
-choices and a fitted shipping-renderer preview frame. Screen labels use the
+choices and a shipping-renderer preview frame. Full inspection defaults to
+width fitting so tall phone forms remain readable with vertical scrolling; the
+shared Zoom control also offers Fit entire design. Comparison keeps equal-height
+fully fitted frames. Screen labels use the
 actual tree names, and result variants remain inspectable. Pack contents use
 the existing lazy actual design cards, format/search filters and 24-card pages,
 with explicit inspection before continuing to editor review. Canonical stars and
@@ -80,7 +90,9 @@ inclusive. Collection expiry removes recommendations, not drafts or saved
 campaigns. Open inspection does not jump away at midnight.
 
 Saved design identities, hidden collections, event opt-outs, preferred businesses, shelf visibility and market
-preferences are authenticated user meta, scoped to the current blog. A favorite
+preferences are authenticated user meta, scoped to the current blog. Markets
+are chosen by country name through the existing searchable country picker and
+read-only country vocabulary endpoint; this never writes the phone default. A favorite
 survives installed pack version changes through `pack:<pack-id>:<logical-id>`;
 immutable template IDs still include the package digest for source baselines.
 Removed designs remain named Saved entries that can be removed by the user.
@@ -132,3 +144,10 @@ The [shared-surface review](../reviews/picker-shared-surfaces-2026-09-30.md)
 records the subsequent pack/editor alignment and guideline-based preference
 regions, verified on `wconvert.local`. This supersedes the earlier audit’s
 creation-only comparison limitation; it does not complete the wider API programme.
+
+The [1 October flow audit](../reviews/picker-flow-audit-2026-10-01.md) records
+inspection-first creation, consistent card actions, readable preview zoom,
+country-name selection and visible failure recovery. Collection introductions
+appear once in the header; stage and search controls share a row where space
+allows. Single-format collections omit redundant format filters. One-page
+results retain their page count without disabled navigation buttons.

@@ -3,7 +3,8 @@ import { OptionStrip } from '../shell/OptionStrip';
 import type { Template } from '@renderer/types';
 
 /** Screen names describe inventory, never promise a particular visitor path. */
-export function PreviewControls({ mobile, onMobile, template, step, onStep, disabled = false, journey = false }: {
+export function PreviewControls({ mobile, onMobile, template, step, onStep, disabled = false, journey = false, fitHeight, onFitHeight }: {
+  fitHeight?: boolean; onFitHeight?: (value: boolean) => void;
   mobile: boolean; onMobile: (mobile: boolean) => void; template?: Template;
   step: number; onStep: (step: number) => void; disabled?: boolean; journey?: boolean;
 }) {
@@ -15,5 +16,6 @@ export function PreviewControls({ mobile, onMobile, template, step, onStep, disa
       value={journey ? '' : String(Math.min(step, template.tree.steps.length - 1))} disabled={disabled}
       options={template.tree.steps.map((screen,index) => ({value:String(index),label:screen.name || (index === 0 ? __('Main screen','wconvert') : __('Screen','wconvert'))}))}
       onChange={value => onStep(Number(value))} />}
+    {onFitHeight && <label className="wconvert-preview-controls__screen">{__('Zoom', 'wconvert')}<select className="wconvert-picker__select" value={fitHeight ? 'whole' : 'width'} disabled={disabled} onChange={event => onFitHeight(event.target.value === 'whole')}><option value="width">{__('Fit width', 'wconvert')}</option><option value="whole">{__('Fit entire design', 'wconvert')}</option></select></label>}
   </div>;
 }

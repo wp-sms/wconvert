@@ -40,6 +40,7 @@ export interface TemplateDesignDetailProps {
 export function TemplateDesignDetail({
   entry, template: sample, labels, current, currentDisplayType, fit, goalLabel, busy, onChoose, onPrepare, onBack, backLabel = __('Back to designs', 'wconvert'), loadError = false, onRetry, active = true, hasCurrentDesign = true, contentLock = false,
 }: TemplateDesignDetailProps) {
+  const [fitHeight, setFitHeight] = useState(false);
   const [disableLock, setDisableLock] = useState(false);
   const [mode, setMode] = useState<TemplateContentMode>(hasCurrentDesign ? 'keep' : 'sample');
   const [attempt, setAttempt] = useState(0);
@@ -155,7 +156,7 @@ export function TemplateDesignDetail({
         )}
 
         <div className="wconvert-design-detail__controls wconvert-toolbar">
-          <PreviewControls mobile={device === 'mobile'} onMobile={mobile => setDevice(mobile ? 'mobile' : 'desktop')}
+          <PreviewControls fitHeight={fitHeight} onFitHeight={setFitHeight} mobile={device === 'mobile'} onMobile={mobile => setDevice(mobile ? 'mobile' : 'desktop')}
             template={template} step={shown} onStep={value => { setStep(value); setResultId(''); }} />
           {resultScreen?.results && resultScreen.results.length > 0 && <label className="text-note">{__('Result to inspect','wconvert')}<select className="wconvert-picker__select" value={result?.id} onChange={event => setResultId(event.target.value)}>{resultScreen.results.map(value => <option key={value.id} value={value.id}>{value.heading || value.id}</option>)}</select></label>}
           <span className="text-note text-muted-foreground">
@@ -166,7 +167,7 @@ export function TemplateDesignDetail({
         </div>
 
         <div className="wconvert-design-detail__layout">
-          <PreviewFrame template={template} displayType={entry.display_type} mobile={device === 'mobile'} step={shown} result={result} fitHeight>
+          <div className="wconvert-design-detail__preview"><PreviewFrame template={template} displayType={entry.display_type} mobile={device === 'mobile'} step={shown} result={result} fitHeight={fitHeight}>
             {loadError || preparationError !== undefined ? (
               <div className="wconvert-design-detail__error">
                 <p id={`${id}-load`} role="alert">{preparationError ?? __('This design preview could not be loaded.', 'wconvert')}</p>
@@ -182,7 +183,7 @@ export function TemplateDesignDetail({
                 <Skeleton aria-hidden="true" className="h-64 w-full" />
               </div>
             )}
-          </PreviewFrame>
+          </PreviewFrame></div>
 
           <div className="wconvert-design-detail__facts">
             <dl>

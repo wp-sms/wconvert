@@ -27,6 +27,7 @@ export function TemplatePackDetail({ pack, displayType, installedVersion, busy, 
   onInstall: () => void;
   onContinue: (id: string) => void;
 }) {
+  const [fitHeight, setFitHeight] = useState(false);
   const [design, setDesign] = useState<number | null>(null);
   const [step, setStep] = useState(0);
   const [mobile, setMobile] = useState(() => window.innerWidth < 640);
@@ -68,10 +69,10 @@ export function TemplatePackDetail({ pack, displayType, installedVersion, busy, 
       {template ? <div className="wconvert-pack-detail__inspection">
         <div className="wconvert-pack-detail__toolbar wconvert-toolbar">
           <h3 className="m-0 text-heading font-semibold">{template.name}</h3><Badge variant="outline">{__('Sample content','wconvert')}</Badge>
-          <PreviewControls mobile={mobile} onMobile={setMobile} template={template} step={safeStep} disabled={busy} onStep={value => {setStep(value);setResultId('');}} />
+          <PreviewControls fitHeight={fitHeight} onFitHeight={setFitHeight} mobile={mobile} onMobile={setMobile} template={template} step={safeStep} disabled={busy} onStep={value => {setStep(value);setResultId('');}} />
           {screen?.results && screen.results.length > 0 && <label className="text-note">{__('Result to inspect','wconvert')}<select className="wconvert-picker__select" value={result?.id} onChange={event=>setResultId(event.target.value)}>{screen.results.map(item=><option key={item.id} value={item.id}>{item.heading || item.id}</option>)}</select></label>}
         </div>
-        <PreviewFrame template={template} displayType={template.display_type} mobile={mobile} step={safeStep} result={result} fitHeight />
+        <PreviewFrame template={template} displayType={template.display_type} mobile={mobile} step={safeStep} result={result} fitHeight={fitHeight} />
       </div> : null}
       <div className="wconvert-pack-detail__browse" hidden={template !== undefined}>
         <div className="wconvert-picker__controls wconvert-toolbar">
