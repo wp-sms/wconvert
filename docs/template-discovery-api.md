@@ -4,6 +4,17 @@ Implemented client boundary: `DiscoveryRelease`, `TemplateCatalog` and the
 existing explicit refresh/install endpoints. There is no default hosted service,
 background request, new paid entitlement or remote executable content.
 
+Planning update, 1 October 2026: the
+[hosted delivery extension](plans/template-picker-and-collections-2026-09-30.md#hosted-delivery-extension--agreed-direction-not-implemented)
+specifies public Free/Pro preview parity, private premium downloads through the
+existing licence manager, verified local media import and reuse of unchanged
+immutable files. R2 is recommended; no R2 bucket or Worker is provisioned. A
+Worker is optional if the existing backend can provide the download API. Local
+publisher/importer fixtures can proceed before cloud setup. The protocol below
+is the implemented reader, not that future extension: assets, credentials,
+external demo URLs and cross-origin signed download fields are not implicitly
+accepted. Those require an explicitly versioned and tested contract.
+
 ## Immutable release format
 
 Configure `wconvert_template_catalog_url` with an HTTPS manifest URL. A schema 2

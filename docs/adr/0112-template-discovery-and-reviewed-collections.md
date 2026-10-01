@@ -123,6 +123,42 @@ Hosting, a schema 2 publisher, paid-download entitlement, licensed media import
 and historical archive cleanup remain separate integrations. The existing
 128-file archive limit refuses further installs safely; no baseline is deleted.
 
+### Planned hosted extension — 1 October 2026
+
+The [implementation plan](../plans/template-picker-and-collections-2026-09-30.md#hosted-delivery-extension--agreed-direction-not-implemented)
+now specifies the following future boundaries. These do not describe shipped
+media or licensing support and do not relax the current reader/pack validators.
+
+- Keep source, collection membership, provenance and review history in the
+  repository. R2 is the recommended JSON/media store, but no R2 bucket or Worker
+  exists yet. Reuse the existing licence-manager backend if it can authorize
+  downloads; add a Worker only if a separate API layer is useful. The licence
+  manager remains authoritative, with no duplicate licence database.
+- Give public Free and Pro previews equal quality on the website and in the
+  plugin. Generate previews from the same approved revisions, with all-screen
+  and device inspection. Protect premium importable packages and original media;
+  do not claim rendered demos cannot be copied. Load online demos deliberately
+  and preserve local inspection of installed content.
+- Require an eligible valid licence for new premium downloads/updates. Expiry
+  does not disable installed designs, local media or campaigns. Keep installed
+  capability checks separate from server download authorization; no visitor-time
+  licence dependency is added. Outages do not mean a licence is invalid.
+- Stage, verify and install media locally as a complete required set. Preserve
+  existing campaign references. Retain separate public/private access boundaries
+  and asset provenance. The current empty-assets constraint stays until this
+  versioned extension is implemented and tested.
+- Publish complete release indexes and complete changed pack snapshots, reusing
+  unchanged immutable objects. Do not duplicate all images per release or depend
+  on patch chains. Current release-bound catalog pages are regenerated. Upload
+  objects and validate them before atomically publishing the entry point; protect
+  referenced versions during cleanup and rollback.
+
+Local-directory publisher fixtures, importer development, fake licence responses,
+preview generation and template review do not require cloud provisioning. Actual
+authorization, private delivery and release/rollback acceptance require the real
+licence API and staging infrastructure before public launch. No deployment, CI,
+real delivery or merge is included in this documentation update.
+
 ## Initial publication and verification
 
 Five collections reference 16 freshly re-reviewed setups. Black Friday is a

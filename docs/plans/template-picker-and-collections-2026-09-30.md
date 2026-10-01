@@ -139,7 +139,7 @@ A canonical favourite/grouping key should resemble `source_namespace:design_id`,
 
 ## API and local integration
 
-The first remote implementation should publish immutable JSON releases and image assets behind a small versioned catalog API. No remote customer database is needed for public discovery. Keep private studio records in the repository and expose only approved release output. Hosting provider and final service URL are not yet selected.
+The first remote implementation should publish immutable JSON releases and image assets behind a small versioned catalog API. No remote customer database is needed for public discovery. Keep private studio records in the repository and expose only approved release output. Planning update, 1 October 2026: Cloudflare R2 is the recommended object store. No R2 bucket, Worker, deployed publisher or production template endpoint has been provisioned. A Worker is a candidate API layer, not a replacement for R2 or an already selected requirement; first inspect the existing licence manager’s download/authorization API.
 
 Recommended path: internal review → immutable catalog release → explicit WordPress refresh → validated local index → plugin picker → exact local prepared preview → draft. The visitor-facing runtime never needs the remote catalog to display an existing campaign.
 
@@ -158,7 +158,7 @@ Use authenticated local REST endpoints under the existing namespace. Proposed re
 
 Discovery queries accept allowlisted search/facets and a bounded cursor/page size, and return grouped card summaries, matching counts, availability reasons, collection context and release revision. Reuse existing server registries to calculate compatibility; the remote API cannot declare a missing runtime feature usable.
 
-Remote content that is only listed is not necessarily installed. Distinguish **Available to add**, **Installed**, **Update available**, **Pro required** and **Needs a site dependency**. Use a clear **Add to library** step for supported uninstalled content. Installing a pack creates no campaign; continue to the exact chosen setup afterwards. Preview bytes and installed bytes must match. If they changed, request a refreshed preview rather than substituting a new revision.
+Remote content that is only listed is not necessarily installed. Distinguish **Available to add**, **Installed**, **Update available**, **Pro required** and **Needs a site dependency**. Use a clear **Add to library** step for supported uninstalled content. Installing a pack creates no campaign; continue to the exact chosen setup afterwards. The preview must be generated from the exact approved setup/design, asset and renderer revisions identified by the install candidate. Public demo HTML or screenshots are derived output, not the downloadable JSON bytes. The downloaded package must match the advertised immutable package digest. If they changed, request a refreshed preview rather than substituting a new revision.
 
 All mutating endpoints use existing management capabilities, authenticated nonces and current-user scoping where appropriate. Do not accept another user's ID for preference writes. Follow the project's controller conventions and [WordPress endpoint guidance](https://developer.wordpress.org/rest-api/extending-the-rest-api/adding-custom-endpoints/) for permissions and argument validation.
 
@@ -169,6 +169,149 @@ Keep explicit service connection/refresh in the first release, with bundled seed
 Preserve safe HTTPS transport, origin restrictions, bounded bytes, timeouts, digest checks and fail-closed validation. Paid asset/download entitlement is a separate boundary to complete before enabling remote paid installation; do not fake it from client labels. Existing installed functionality follows current possession-based capability rules.
 
 Current packs prohibit remote media and require empty asset lists. Supporting artwork therefore needs a reviewed asset extension before those designs are remotely distributable. Distinguish gallery thumbnails from assets embedded into campaigns. Validate mime/size/digest and licence, reject executable content, retain referenced campaign assets, and use a neutral image fallback. Do not bypass these limits by injecting external URLs into old pack fields.
+
+## Hosted delivery extension — agreed direction, not implemented
+
+This section incorporates the October 1 discussion about public previews, images,
+Free/Pro access and frequent updates. Existing protocol restrictions remain in
+force until a versioned extension, importer and authorization adapter are reviewed
+and implemented. Do not mark this work complete merely because local fixtures pass.
+
+### One authored library, website and plugin previews
+
+Give Free and Pro templates the same quality of public preview: clear gallery
+images, desktop/mobile and all-screen inspection, plus simulated journeys where
+useful. Keep a clear Free/Pro badge; gate premium download/installation rather
+than the ability to understand the design. Do not collect or send real leads in
+demos. The website gets shareable template pages with purpose, format, requirements,
+included artwork and an appropriate install/get-Pro action.
+
+Generate catalog entries, screenshots and isolated hosted demos from the same
+approved revisions used by the plugin. Gallery images load cheaply; rich online
+previews load on an explicit preview action under the service connection policy.
+Installed content retains local previews when offline. Public demos must not
+expose the importable premium package, credentials or original artwork files.
+Rendered HTML and displayed images remain inspectable; this is download access
+control, not a promise that visible designs cannot be copied. Do not ship Pro
+editor/runtime modules inside Free just to show an online demo. A renderer change
+invalidates dependent preview evidence and may require regeneration across designs.
+
+### Storage and responsibilities
+
+| Component | Responsibility | Current state |
+| --- | --- | --- |
+| Existing plugin repository | Design/setup/collection sources, asset references and rights records, review evidence, publisher code and Git history | Exists; publisher/media extension pending |
+| Local asset workspace | Originals and generated media for development, backed up independently when outside Git | Can be used before cloud setup; not a production delivery service |
+| Public object storage, preferably R2 | Public catalog releases, Free downloads and appropriately sized preview/demo assets | Not provisioned |
+| Private object storage, preferably R2 | Premium downloadable packs/assets and separately controlled original artwork | Not provisioned; originals are never customer download targets |
+| Existing licence manager | Licence validity, included products/plans, site activation and staging/multisite rules | Integration contract must be inspected; do not invent a second licence database |
+| Download API | Enforce licence decisions and deliver only permitted immutable files | Use existing backend if suitable; otherwise a small Worker with private R2 access |
+
+A Worker runs authorization/delivery logic; R2 stores JSON and media. Public and
+private storage have separate access boundaries, not merely obscure folder names.
+Use fingerprints to reuse identical assets within compatible access/rights scopes;
+a private premium original must not become public through a shared public path.
+Small code-authored SVG sources can stay in Git. Large originals need independent
+backup: a Git record of a storage key is not a backup of the file.
+
+Cloudflare supports [Worker bindings to R2](https://developers.cloudflare.com/r2/api/workers/workers-api-reference/).
+Direct [presigned R2 links](https://developers.cloudflare.com/r2/api/s3/presigned-urls/)
+use the S3 endpoint rather than a custom domain. Our current reader requires the
+configured origin and refuses redirects; do not silently introduce cross-origin
+signed downloads. Prefer a same-origin authorized delivery endpoint initially,
+or explicitly review a bounded transport extension before enabling another route.
+
+### Licence and customer scenarios
+
+The server authorizes every premium download, including asset requests; a client
+Pro badge or installed plugin is not proof of entitlement. The existing licence
+manager remains authoritative. A short-lived signed grant is an option only once
+issuer, scope, audience, expiry and revocation behaviour are specified. Never put
+raw licence keys in public URLs, manifests, previews or logs. Public caches must
+not accidentally serve an authorized premium response to other customers.
+
+| Scenario | Required behaviour |
+| --- | --- |
+| Free content | Public discovery/download; installed capability checks still apply |
+| Premium preview | Same inspection quality as Free, clearly labelled; no installable premium JSON exposed |
+| Valid licence and eligible site | Authorize the exact permitted pack/assets, then validate and install locally |
+| Valid licence but missing Pro/module/version/dependency | Explain the missing requirement; payment does not supply absent code |
+| Expired licence | Block new premium downloads and updates; installed templates, local assets and campaigns remain usable under existing capability rules |
+| Renewal | Restore eligible download access without rewriting campaigns |
+| Revoked licence/refund | Deny future premium downloads according to the manager’s decision; no remote deletion of installed campaigns/assets |
+| Licence service outage | Show verification unavailable with retry; do not claim the licence is invalid or bypass authorization; installed content continues working |
+| Offline site | Installed content/previews work; uncached downloads and online demos explain the connection requirement |
+| Domain move, staging, multisite | Follow the licence manager’s actual activation/site-count rules; verify them before rollout |
+| Withdrawn template or expired event | Stop new recommendations/downloads as appropriate; preserve existing campaign content and required assets |
+
+The download rule adds a paid service boundary; it does not add visitor-time
+licence checks or alter the existing principle that expiry does not disable
+installed Pro functionality. Pro deactivation is a separate missing-code scenario.
+
+### Media import and frequent releases
+
+Extend the pack format with exact asset identities, digests, validated MIME types,
+byte/dimension limits and design references. Internal records additionally carry
+provenance and redistribution rights. Distinguish demo-only artwork from included
+artwork explicitly. Start with bounded supported image formats; any SVG support
+needs deliberate sanitization. Keep arbitrary scripts, remote executable content
+and unvalidated image URLs outside the contract.
+
+Download/validate required files into a temporary staging area, then make the
+package available only after the complete required set succeeds. A failure leaves
+the prior installed version intact and allows a bounded retry. Track plugin-owned
+local assets and reuse matching verified files without deleting merchant uploads.
+Rewrite design references to stable local files. Existing campaigns retain their
+own content and old image references when a template or image is updated.
+
+Each catalog release is a complete inventory of exact references; each changed
+small pack is a complete JSON snapshot. Store/upload only new content objects and
+reuse unchanged packs/assets. Do not reconstruct templates through a chain of
+patches, or copy the entire image library into every release folder. Current
+schema 2 pages embed the release ID, so their metadata is regenerated for a new
+release even when many referenced packs remain unchanged.
+
+| Example change | Publish new | Reuse |
+| --- | --- | --- |
+| Fix a headline | Changed pack JSON, affected previews, release metadata | Unchanged images and other packs |
+| Replace one picture | New image, changed pack JSON, affected previews, release metadata | Other images and packs |
+| Change collection membership/dates | Collection/catalog release metadata and any affected cover | Unchanged template packs and images |
+| Change renderer | Affected generated previews and renewed evidence; plugin update separately if needed | Assets whose bytes and rights are unchanged |
+
+Build approved output → validate references → test locally → upload new objects
+to staging → verify through WordPress → upload approved production objects →
+verify all objects exist → publish release entry point last. Changing the active
+release must be atomic/conditional to prevent concurrent publishers overwriting
+one another. Published object bytes never change in place. Website and plugin
+previews identify their exact revision; an updated candidate requires reinspection.
+
+Preserve objects referenced by supported releases, campaign baselines or retained
+installed versions. Design safe, reference-aware cleanup on the server and in
+WordPress before broad rollout; keep the current archive cap until replacement
+is proven. Test rollback without bypassing installed downgrade protection, plus
+backup restoration. Replacing the catalog never rewrites saved campaigns.
+
+### Work that can proceed before R2 or a Worker exists
+
+| Work package | Can proceed locally? | Acceptance evidence |
+| --- | --- | --- |
+| Close remaining picker gaps | Yes | Hide occasion management during layout replacement; better curated occasion-stage ideas; actual WordPress checks |
+| Re-review and expand templates | Yes | Fresh all-screen/journey/WordPress evidence, asset provenance and honest setup/design counts |
+| Define media, preview and authorization contracts | Yes | Versioned fixtures; published/installed revision agreement; no change to current validator without implementation |
+| Build publisher with local-directory storage adapter | Yes | Deterministic release output; unchanged-file reuse; stale/missing-reference refusal; manifest-last and failed-upload simulations |
+| Build media importer and licence adapter | Yes | Local files and fake licence responses cover success, expiry, outage, wrong plan/site, partial download, tampering and retry |
+| Website catalog/preview integration | Yes, locally | Same approved catalog/revisions, Free/Pro parity, all-screen demos, no real submissions |
+| Scale/accessibility/studio checks | Yes | Recorded 500-setup timings, keyboard/native zoom/screen-reader checks and dependency/locale/timezone/failure simulations |
+| Real licence-manager integration | Requires its API/spec and authorized test credentials | Actual validity, activation, revocation and staging/multisite behaviour; simulated checks alone are insufficient |
+| Cloud deployment and delivery rehearsal | Requires storage/API configuration, domain and credentials | Private-access enforcement, caching, authorization, image integrity, interrupted release and rollback checks |
+| Public launch | Requires the previous hosted checks and release approval | Reviewed release, accountable owner and recovery procedure |
+
+Recommended next order: close local flow gaps and freeze extension fixtures;
+build the local publisher/importer and preview output; inspect/integrate the
+existing licence manager; provision storage and only the API compute actually
+needed; rehearse on staging; publish approved batches. Template review can proceed
+alongside local engineering. No cloud provisioning, spending, deployment, CI,
+real provider delivery or merge is authorized by this plan update.
 
 ## Internal collection workflow
 
@@ -265,10 +408,10 @@ Rollback restores the prior plugin discovery UI or catalog release pointer witho
 
 Decisions needed before remote deployment, with recommended defaults:
 
-- **API host and endpoint:** use the planned company template service with immutable releases; do not add a new hosted studio database initially. No endpoint was supplied, so deployment remains a later integration task.
+- **Storage and API:** R2 is recommended but not provisioned. Inspect the existing licence-manager API before choosing an additional Worker. Confirm domain, private/public storage, credentials and staging access before deployment. Local publisher/importer work needs none of these cloud resources.
 - **Refresh policy:** explicit connect/refresh first. Add opt-in automatic metadata refresh only with a separate network/privacy decision and failure policy.
 - **Markets:** merchant-selected participation/market preferences, no IP inference. Begin with shared approved events; expand only with reviewed regional coverage.
-- **Paid downloads and artwork:** reuse the company's entitlement mechanism when identified; approved reusable assets with provenance. Do not enable unsupported media or paid transport merely to meet a template count.
+- **Paid downloads and artwork:** use the existing licence manager, public Free/Pro preview parity, private premium downloads and verified local media installation as detailed above. Confirm exact licence/activation and asset redistribution contracts before live rollout.
 - **Release ownership:** assign editorial and technical reviewers before publication. Prototype owner labels are examples, not staff assignments.
 
-These unresolved deployment details do not require another design round or block slices 1–4. The recommended first implementation deliverable is slice 1 followed by a working local production picker slice 2, proven with the four curated collection themes and all three business groups.
+R2 and Worker absence does not block the local work packages above or continued template review. The core local picker already exists; proceed with its remaining workflow/acceptance gaps and the local publisher/media extension. Cloud credentials and the real licence-manager contract block hosted integration and release acceptance, not authoring, local fixtures or importer development.
