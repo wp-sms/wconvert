@@ -35,7 +35,7 @@ export function visualAuditReport(audit, designs, rendererRevision) {
 
 export function validateDirections(plan, references, designs) {
   const refs = new Set(references.map(r => r.id));
-  const concepts = new Set(['matrix', 'callback', 'excerpt', 'calendar', 'product', 'process', 'reuse']);
+  const concepts = new Set(['matrix', 'callback', 'excerpt', 'calendar', 'product', 'process', 'permission', 'scope', 'case-study', 'reuse']);
   for (const entry of plan.entries) {
     const reuse = designs.find(d => d.id === entry.reuse_template);
     if (!concepts.has(entry.concept) || !refs.has(entry.reference) || !entry.example?.trim()

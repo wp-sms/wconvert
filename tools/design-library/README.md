@@ -400,7 +400,8 @@ surface and accepts any existing batch ID. See the
 Two new setups deliberately reuse Availability note and Inline signpost for
 arrival/access information and seasonal returns-policy information. Both use
 Pro display formats. The pilot now contains **118 setups using 67 designs**;
-there are no additional designs or assets, and no planned briefs remain.
+there are no additional designs or assets. Those two briefs are complete; the
+following coverage audit defines the next proposed batch.
 
 Open `out/pilot.html?batch=practical-information`. Rebuild its scoped audit with
 `node tools/design-library/build/batch-audit.mjs practical-information`.
@@ -408,3 +409,83 @@ See [review evidence](../../docs/reviews/practical-information-2026-10-02.md)
 for visual, customer-picker, destination and dismissal checks. Hosted releases
 and featured collections are unchanged. Merchants still configure verified
 information, page targeting, destinations and any seasonal dates.
+
+### 2 October coverage audit and next proposed batch
+
+Scope: repository evidence, not conversion analytics or new customer research.
+The [dated audit snapshot](pilot/coverage-audit-2026-10-02.json) records the
+baseline commit, full counts, two cross-tabulations, every registered setup
+outside the studio and every design without a registered playbook.
+
+| Goal in the curated studio | Stores | Services | Publishers | Total |
+| --- | ---: | ---: | ---: | ---: |
+| Email signup | 11 | 2 | 5 | 18 |
+| SMS signup | 1 | 1 | 0 | 2 |
+| Enquiries | 13 | 25 | 2 | 40 |
+| Resource requests | 4 | 4 | 4 | 12 |
+| Offer/content clicks | 19 | 10 | 7 | 36 |
+| Recommendations | 4 | 2 | 2 | 8 |
+| Cart return | 2 | 0 | 0 | 2 |
+| **Total** | **54** | **44** | **20** | **118** |
+
+Formats: 46 popups, 35 inline, 18 slide-ins, 16 bars and 3 fullscreen setups.
+The studio uses 67 designs, while all 143 registered playbooks use 78 of the
+99 source designs. Another 25 registered playbooks sit outside the curated
+studio, including delayed/exit cart recovery and inline SMS signup. There are
+21 source designs without any registered playbook. These are not automatically
+missing, broken or candidates for removal.
+
+Repetition is concentrated: Appointment note supports 11 studio setups,
+Announcement bar 9, Slide-in question 8, and Choice card 6. This is acceptable
+reuse where the visitor task fits, but more generic enquiry or announcement
+variants are low priority. Review unused source designs before inventing more
+coupons, newsletter cards, split forms or fullscreens.
+
+Keep the three broad business categories, seven goals and five formats. Use
+specific campaign needs for business subtypes rather than expanding the
+picker with overlapping top-level categories. Not every matrix cell needs a
+setup: publisher cart recovery and forced fullscreen marketing would add no
+useful coverage. New business filters should wait for meaningful library depth
+and user evidence. Seasonal events are collections and scheduling guidance,
+not duplicate designs or a separate conversion goal.
+
+The fresh-review queue has **26 current approvals and 92 stale approvals**.
+Stale means the previous evidence does not verify the current revision, not
+that the setup is broken. Review those in small batches before release; this
+planning task neither reapproves them nor retires existing customer campaigns.
+
+#### Recommended batch: three new candidates and one reuse
+
+| Priority | Setup | Format / goal | Design decision and practical difference |
+| --- | --- | --- | --- |
+| 1 | See a sample before choosing texts | Popup / SMS signup | New Message sample candidate: show a clearly labelled example text, frequency expectations and phone consent together. Compare with plain signup and optional-SMS journeys. |
+| 2 | Check whether a website review fits | Inline / enquiry | New Scope sheet candidate: included work versus work agreed separately, beside a compact reply area. Reject the new design if Service summary already serves it as well. |
+| 3 | Read a sample of the weekly letter | Inline / email signup | Reuse Excerpt window. Its existing sample-plus-form structure fits; changing a workbook into a newsletter is a setup change. |
+| 4 | See how a workspace changed | Inline / content click | New Project pair candidate: labelled before/after project media, factual captions and a case-study action. Use verified assets or openly fictional illustrations. |
+
+The [next-batch briefs](pilot/next-batch.json) contain compositions, screens,
+prerequisites, comparator IDs and acceptance checks. They appear at
+`out/roadmap.html?view=next` as planning sketches beside current designs.
+These are not implemented templates. The three candidate designs target Free;
+reuse is Free too. Advanced functionality, not artificial scarcity, should
+justify paid variants later.
+
+All candidates fit the existing renderer vocabulary. No booking engine, live
+cart preview, SKU restock automation, real-time inventory, image slider or
+shipping calculator is promised. The SMS design uses the existing phone
+library; the case study uses labelled static images. The Excerpt window reuse
+first needs its raw string split ratio checked against the renderer's numeric
+ratio handling; any correction must record a design revision and re-review the
+existing workbook setup as well.
+
+Implementation order: Message sample, Scope sheet, newsletter reuse, then
+Project pair when suitable sample media is ready. Check each candidate against
+all 99 source designs before committing to a new ID. A colour, copy, format or
+decorative change alone does not earn a new design. Use the shared picker and
+studio, inspect all screens at four widths, RTL and longer copy, and exercise
+applicable validation, retry, dismissal and real WordPress destinations.
+
+If all three candidates pass, the studio would reach **122 setups / 70 designs**
+and the source inventory **102 designs**. These are ceilings, not current counts
+or a quota; consolidate or defer a candidate that fails the comparison. Hosted
+API/licensing, CI, external delivery and merge remain outside this batch.

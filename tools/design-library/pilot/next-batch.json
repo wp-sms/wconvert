@@ -1,7 +1,174 @@
 {
   "schema": 1,
-  "id": "useful-differences",
-  "name": "Two deliberate reuses for practical store and service information",
-  "target_setups": 118,
-  "entries": []
+  "id": "trust-and-fit",
+  "name": "Clear expectations, useful evidence and a readable sample",
+  "target_setups": 122,
+  "entries": [
+    {
+      "id": "sms-message-preview",
+      "name": "See a sample before choosing texts",
+      "audience": "stores",
+      "goal": "grow_sms_list",
+      "display_type": "popup",
+      "visitor_need": "Understand the subject and frequency of promotional texts before sharing a phone number.",
+      "difference": "A clearly labelled example message is the visual focal point, paired with a compact phone-and-consent area and a separate expectation line. Unlike the plain phone form or optional second channel, it explains the actual communication before asking.",
+      "design_intent": "new_design",
+      "status": "planned",
+      "compare_campaigns": [
+        "drop-alerts",
+        "journey-email-then-sms",
+        "callback-slip"
+      ],
+      "concept": "permission",
+      "reference": "depicter-image-signup",
+      "example": "Preview occasional collection texts",
+      "proposed_template": "message-sample",
+      "proposed_tier": "free",
+      "screens": [
+        "Phone and explicit marketing consent",
+        "Request received; no claim that a text was sent or subscription confirmed"
+      ],
+      "composition": [
+        "Label the sample as Example message, without fake delivery ticks or a phone operating-system imitation.",
+        "On desktop, balance the message panel against the labelled phone field and consent; on phones show the message before the form.",
+        "Keep consent before the CTA and explain that collecting a number is separate from provider subscription or sending."
+      ],
+      "setup": [
+        "Show on relevant collection pages after genuine browsing engagement; avoid checkout and respect dismissal.",
+        "Merchant provides truthful topics/frequency and configures an SMS destination or uses local collection."
+      ],
+      "acceptance": [
+        "Use the shipping phone library, country selector and phone validation. Do not add an email requirement.",
+        "Preview content must be visibly illustrative; frequency and opt-out wording must match the merchant’s configured messaging service.",
+        "Check optional/required consent through the existing privacy guidance; never preselect marketing consent.",
+        "Compare actual filled desktop and phone screens against the named campaigns and all 99 source designs. If differences are only copy, palette or decoration, reuse or revise an existing design instead.",
+        "Inspect every screen at 320/390/768/1440px, RTL, long copy and missing optional images. Require readable contrast, visible labels and usable controls.",
+        "Walk the shared customer picker, editor and publication in disposable WordPress. Check applicable validation, failure/retry, dismissal and destinations. Record revision-specific evidence; no CI or external delivery."
+      ]
+    },
+    {
+      "id": "service-fit-brief",
+      "name": "Check whether a website review fits",
+      "audience": "services",
+      "goal": "collect_enquiries",
+      "display_type": "inline",
+      "visitor_need": "Understand what a service includes and what needs a separate agreement before requesting a reply.",
+      "difference": "An included/separate-work scope sheet puts service boundaries beside a small reply area. It avoids another generic benefit list, agenda or three-step process. If Service summary can express this equally clearly without structural change, revise/reuse it instead.",
+      "design_intent": "new_design",
+      "status": "planned",
+      "compare_campaigns": [
+        "website-review-enquiry",
+        "service-options-guide",
+        "service-process-strip"
+      ],
+      "concept": "scope",
+      "reference": "depicter-image-signup",
+      "example": "A focused website review, with scope made clear",
+      "proposed_template": "scope-sheet",
+      "proposed_tier": "free",
+      "screens": [
+        "Scope and reply address",
+        "Enquiry received; scope, price and timing still to agree"
+      ],
+      "composition": [
+        "Use two clearly named areas: What we review and Agreed separately, with comparable typography and restrained separators.",
+        "A bounded reply panel contains email and one strong CTA; avoid a large full-width outlined form.",
+        "Stack scope before form on phones; do not squeeze three columns or align unequal text boxes by centring them."
+      ],
+      "setup": [
+        "Place below the actual service description and include a clear route to fuller terms.",
+        "Use Collect only or a supported destination; confirm scope and price in follow-up, not on form submission."
+      ],
+      "acceptance": [
+        "Use only supported fields; email is sufficient. No attachments, quotation calculator, diagnosis or automatic eligibility decision.",
+        "Keep example limits factual and editable, e.g. content/usability review versus implementation work agreed separately.",
+        "Compare actual filled desktop and phone screens against the named campaigns and all 99 source designs. If differences are only copy, palette or decoration, reuse or revise an existing design instead.",
+        "Inspect every screen at 320/390/768/1440px, RTL, long copy and missing optional images. Require readable contrast, visible labels and usable controls.",
+        "Walk the shared customer picker, editor and publication in disposable WordPress. Check applicable validation, failure/retry, dismissal and destinations. Record revision-specific evidence; no CI or external delivery."
+      ]
+    },
+    {
+      "id": "edition-sample-signup",
+      "name": "Read a sample of the weekly letter",
+      "audience": "publishers",
+      "goal": "grow_email_list",
+      "display_type": "inline",
+      "visitor_need": "Judge the substance and tone of a newsletter before requesting future editions.",
+      "difference": "Reuse Excerpt window: it already provides a readable sample beside a compact signup. Change the purpose, copy, consent and setup guidance, not the design count.",
+      "design_intent": "reuse_design",
+      "status": "planned",
+      "compare_campaigns": [
+        "excerpt-window",
+        "sunday-reading",
+        "editorial-weekly"
+      ],
+      "concept": "reuse",
+      "reference": "depicter-image-signup",
+      "example": "Try the writing before signing up",
+      "reuse_template": "excerpt-window",
+      "proposed_tier": "free",
+      "screens": [
+        "Newsletter sample and email signup",
+        "Request received; provider confirmation may still be needed"
+      ],
+      "composition": [
+        "Use a short original excerpt and honest attribution in the sample pane.",
+        "Name the topic and cadence next to the email field; keep consent before the CTA.",
+        "Preserve the readable sample and a compact form on phones."
+      ],
+      "setup": [
+        "Embed after a relevant article; sample content remains readable without signup.",
+        "Bind recurring-newsletter consent and a supported email destination or Collect only; do not configure resource delivery for this purpose."
+      ],
+      "acceptance": [
+        "Bind every repeated role in tree order, including both fine-print slots; replace all workbook/resource wording.",
+        "Keep the optional resource follow-up hidden unless repurposed with a real appropriate destination.",
+        "Before reuse, normalise the existing string split ratio to a supported numeric ratio and review the existing workbook setup too; record a design revision if its source changes.",
+        "Compare actual filled desktop and phone screens against the named campaigns and all 99 source designs. If differences are only copy, palette or decoration, reuse or revise an existing design instead.",
+        "Inspect every screen at 320/390/768/1440px, RTL, long copy and missing optional images. Require readable contrast, visible labels and usable controls.",
+        "Walk the shared customer picker, editor and publication in disposable WordPress. Check applicable validation, failure/retry, dismissal and destinations. Record revision-specific evidence; no CI or external delivery."
+      ]
+    },
+    {
+      "id": "workspace-change-story",
+      "name": "See how a workspace changed",
+      "audience": "services",
+      "goal": "promote_offer",
+      "display_type": "inline",
+      "visitor_need": "See the problem, changes and limits of an example project before exploring a service.",
+      "difference": "A paired before/after visual narrative with captions and a short What changed note, followed by one case-study link. Existing product comparisons describe alternatives; this shows one project over time. No image slider or gallery feature is implied.",
+      "design_intent": "new_design",
+      "status": "planned",
+      "compare_campaigns": [
+        "material-comparison",
+        "product-detail-sheet",
+        "photography-enquiry"
+      ],
+      "concept": "case-study",
+      "reference": "depicter-image-signup",
+      "example": "A clearer workspace layout",
+      "proposed_template": "project-pair",
+      "proposed_tier": "free",
+      "screens": [
+        "Project comparison and case-study link"
+      ],
+      "composition": [
+        "Use equal image proportions and explicit Before / After captions, with textual descriptions that also work without images.",
+        "Keep project context, the actual changes and one destination together; do not turn the layout into another lead form.",
+        "Stack labelled images in reading order on phones; no draggable interaction or tiny side-by-side thumbnails."
+      ],
+      "setup": [
+        "Embed beside relevant portfolio work and link to a full case study, including the project’s real scope.",
+        "Use merchant-owned/licensed project media; our sample may use clearly labelled fictional illustrations only."
+      ],
+      "acceptance": [
+        "Never present generated imagery, invented customer quotes or fabricated performance numbers as completed customer work.",
+        "Do not claim outcomes beyond the evidence; no health, income or guaranteed performance transformation.",
+        "No blank image placeholders in the finished sample; if suitable illustrative assets are not ready, defer this candidate rather than publishing a false proof.",
+        "Compare actual filled desktop and phone screens against the named campaigns and all 99 source designs. If differences are only copy, palette or decoration, reuse or revise an existing design instead.",
+        "Inspect every screen at 320/390/768/1440px, RTL, long copy and missing optional images. Require readable contrast, visible labels and usable controls.",
+        "Walk the shared customer picker, editor and publication in disposable WordPress. Check applicable validation, failure/retry, dismissal and destinations. Record revision-specific evidence; no CI or external delivery."
+      ]
+    }
+  ]
 }
