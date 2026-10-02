@@ -1564,6 +1564,12 @@
           "date": "2026-10-01",
           "revision": "d6df99b6f3bce220a3da03f394d7f399b7cea52fbd90b83eca8bf44ad85138c8",
           "note": "Raise sample attribution and resource-email guidance to approximately 14 pixels."
+        },
+        {
+          "version": 3,
+          "date": "2026-10-02",
+          "revision": "7bdb348d5309784675733de4a529540e2b96cf5d3e8d1fd2ef2fda0fa21613af",
+          "note": "Use a numeric split ratio for consistent rendering; recheck workbook and newsletter setups."
         }
       ]
     },
@@ -1696,6 +1702,48 @@
           "date": "2026-10-02",
           "revision": "ac6d643781ac49518683cfa4890d54b8073468ec27590c558a74d72d20633d10",
           "note": "Finalise responsive composition, compact actions and image-independent product facts."
+        }
+      ]
+    },
+    {
+      "id": "message-sample",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-02",
+          "revision": "55b14987dbacc80fe85c1adc0685a2fe96e05bc98bcf7e9d1e9c06726c4a2eb8",
+          "note": "Introduce an illustrative message beside explicit phone consent."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-02",
+          "revision": "ee74547daf206b6deebebeb55ff394684c632bb8112326d3120fb0535a2f511c",
+          "note": "Keep the acknowledgement focused on receipt of the request."
+        }
+      ]
+    },
+    {
+      "id": "scope-sheet",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-02",
+          "revision": "ea080ff721cc4fddd507773b1b8a514457b6ffba92e40be10b61ec7f68dac99d",
+          "note": "Separate included and separately agreed work beside a compact reply form."
+        }
+      ]
+    },
+    {
+      "id": "project-pair",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-02",
+          "revision": "cd58e2f15dafefa08882e5d252efc562d663689a1eae9ccaa1ad282f749ee11a",
+          "note": "Pair labelled fictional project diagrams and factual captions with one story link."
         }
       ]
     }

@@ -35818,6 +35818,384 @@
         }
       },
       "record_id": "791e607733bf50e32fe7133f4114bfa3ec3b71bc40e4cd88e3fc1a9e8704a5fd"
+    },
+    {
+      "id": "sms-message-preview",
+      "revision": "6330671305ee56a2d7286807da890a827ebca7cdf04fed7f09886550d6b82714",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Reviewed every screen and native WordPress behaviour. Original artwork where applicable; no external delivery or conversion-performance claim. See dated evidence.",
+      "at": "2026-10-02T14:12:15.139Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/trust-and-fit-2026-10-02.md",
+              "sha256": "6358737caa498483da58a1e33506e4810834c6e2ca0164e3b573ab76ee1e686d"
+            },
+            {
+              "path": "docs/reviews/trust-and-fit-2026-10-02-audit.json",
+              "sha256": "cfd4b6852cc4d30b99302e20ef3b2390cae60ac4f9c8c3c2101e6326f846a424"
+            },
+            {
+              "path": "docs/reviews/trust-and-fit-2026-10-02-no-artwork.json",
+              "sha256": "72ae138facb6e21962964fc3563eaa0eb6b9724fc24ac1826f365dd25cdfd5b1"
+            },
+            {
+              "path": "docs/reviews/trust-and-fit-2026-10-02-sms-desktop.png",
+              "sha256": "f93167b97985cf2892f5f9ea2a2b9b4ee6e02303bb9b61ff4f69decd1bef178a"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/trust-and-fit-2026-10-02.md",
+              "sha256": "6358737caa498483da58a1e33506e4810834c6e2ca0164e3b573ab76ee1e686d"
+            },
+            {
+              "path": "docs/reviews/trust-and-fit-2026-10-02-wordpress.json",
+              "sha256": "f1540e4573d7eaf6ff7d197937dd5d96a0e958f7dee8d06d3ccd8d66e3d4b157"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/trust-and-fit-2026-10-02.md",
+              "sha256": "6358737caa498483da58a1e33506e4810834c6e2ca0164e3b573ab76ee1e686d"
+            },
+            {
+              "path": "docs/reviews/trust-and-fit-2026-10-02-wordpress.json",
+              "sha256": "f1540e4573d7eaf6ff7d197937dd5d96a0e958f7dee8d06d3ccd8d66e3d4b157"
+            },
+            {
+              "path": "docs/reviews/trust-and-fit-2026-10-02-local-picker.png",
+              "sha256": "c83c9fde4f13b9867d7635aa4f78738ecc46407b64f273bc54637c6f90ce3b7d"
+            }
+          ]
+        }
+      },
+      "record_id": "693d124c35ae39af001dd58c065ac21b58ebd6bd62f7c8ef401760f5b247fb18"
+    },
+    {
+      "id": "service-fit-brief",
+      "revision": "83a0557648c4217cc96a312ebc33a2511a2274eee694ced2bd445f8b8bc6ef63",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Reviewed every screen and native WordPress behaviour. Original artwork where applicable; no external delivery or conversion-performance claim. See dated evidence.",
+      "at": "2026-10-02T14:12:15.140Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/trust-and-fit-2026-10-02.md",
+              "sha256": "6358737caa498483da58a1e33506e4810834c6e2ca0164e3b573ab76ee1e686d"
+            },
+            {
+              "path": "docs/reviews/trust-and-fit-2026-10-02-audit.json",
+              "sha256": "cfd4b6852cc4d30b99302e20ef3b2390cae60ac4f9c8c3c2101e6326f846a424"
+            },
+            {
+              "path": "docs/reviews/trust-and-fit-2026-10-02-no-artwork.json",
+              "sha256": "72ae138facb6e21962964fc3563eaa0eb6b9724fc24ac1826f365dd25cdfd5b1"
+            },
+            {
+              "path": "docs/reviews/trust-and-fit-2026-10-02-scope-desktop.png",
+              "sha256": "35ba4a75739deeb79c3276f332fdf5ede0eb516ee5d7bad5cc3d52b9c49d9c3e"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/trust-and-fit-2026-10-02.md",
+              "sha256": "6358737caa498483da58a1e33506e4810834c6e2ca0164e3b573ab76ee1e686d"
+            },
+            {
+              "path": "docs/reviews/trust-and-fit-2026-10-02-wordpress.json",
+              "sha256": "f1540e4573d7eaf6ff7d197937dd5d96a0e958f7dee8d06d3ccd8d66e3d4b157"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/trust-and-fit-2026-10-02.md",
+              "sha256": "6358737caa498483da58a1e33506e4810834c6e2ca0164e3b573ab76ee1e686d"
+            },
+            {
+              "path": "docs/reviews/trust-and-fit-2026-10-02-wordpress.json",
+              "sha256": "f1540e4573d7eaf6ff7d197937dd5d96a0e958f7dee8d06d3ccd8d66e3d4b157"
+            },
+            {
+              "path": "docs/reviews/trust-and-fit-2026-10-02-local-picker.png",
+              "sha256": "c83c9fde4f13b9867d7635aa4f78738ecc46407b64f273bc54637c6f90ce3b7d"
+            }
+          ]
+        }
+      },
+      "record_id": "99720402cd0bb7c58f9a5b29d7d5953460125ee59375f3ea69a32357766e5376"
+    },
+    {
+      "id": "edition-sample-signup",
+      "revision": "73a978fb6b7b5abaad9d43354338c1ba5b1c9221be98994a2edc4df470e3a1e7",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Reviewed every screen and native WordPress behaviour. Original artwork where applicable; no external delivery or conversion-performance claim. See dated evidence.",
+      "at": "2026-10-02T14:12:15.140Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/trust-and-fit-2026-10-02.md",
+              "sha256": "6358737caa498483da58a1e33506e4810834c6e2ca0164e3b573ab76ee1e686d"
+            },
+            {
+              "path": "docs/reviews/trust-and-fit-2026-10-02-audit.json",
+              "sha256": "cfd4b6852cc4d30b99302e20ef3b2390cae60ac4f9c8c3c2101e6326f846a424"
+            },
+            {
+              "path": "docs/reviews/trust-and-fit-2026-10-02-no-artwork.json",
+              "sha256": "72ae138facb6e21962964fc3563eaa0eb6b9724fc24ac1826f365dd25cdfd5b1"
+            },
+            {
+              "path": "docs/reviews/trust-and-fit-2026-10-02-newsletter-desktop.png",
+              "sha256": "cc8397564fddf0f523079363084fb249436f5bdd60cfb5336fa6b5d87e95a251"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/trust-and-fit-2026-10-02.md",
+              "sha256": "6358737caa498483da58a1e33506e4810834c6e2ca0164e3b573ab76ee1e686d"
+            },
+            {
+              "path": "docs/reviews/trust-and-fit-2026-10-02-wordpress.json",
+              "sha256": "f1540e4573d7eaf6ff7d197937dd5d96a0e958f7dee8d06d3ccd8d66e3d4b157"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/trust-and-fit-2026-10-02.md",
+              "sha256": "6358737caa498483da58a1e33506e4810834c6e2ca0164e3b573ab76ee1e686d"
+            },
+            {
+              "path": "docs/reviews/trust-and-fit-2026-10-02-wordpress.json",
+              "sha256": "f1540e4573d7eaf6ff7d197937dd5d96a0e958f7dee8d06d3ccd8d66e3d4b157"
+            },
+            {
+              "path": "docs/reviews/trust-and-fit-2026-10-02-local-picker.png",
+              "sha256": "c83c9fde4f13b9867d7635aa4f78738ecc46407b64f273bc54637c6f90ce3b7d"
+            }
+          ]
+        }
+      },
+      "record_id": "4432117b420928e4ae35627ea3a6082cc98d1489771f4bb802654ba65d4385fa"
+    },
+    {
+      "id": "workspace-change-story",
+      "revision": "9236ae816a1cfeb32f514fceccd39cba90ad33ace832d0893f49e0459cf4217c",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Reviewed every screen and native WordPress behaviour. Original artwork where applicable; no external delivery or conversion-performance claim. See dated evidence.",
+      "at": "2026-10-02T14:12:15.140Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/trust-and-fit-2026-10-02.md",
+              "sha256": "6358737caa498483da58a1e33506e4810834c6e2ca0164e3b573ab76ee1e686d"
+            },
+            {
+              "path": "docs/reviews/trust-and-fit-2026-10-02-audit.json",
+              "sha256": "cfd4b6852cc4d30b99302e20ef3b2390cae60ac4f9c8c3c2101e6326f846a424"
+            },
+            {
+              "path": "docs/reviews/trust-and-fit-2026-10-02-no-artwork.json",
+              "sha256": "72ae138facb6e21962964fc3563eaa0eb6b9724fc24ac1826f365dd25cdfd5b1"
+            },
+            {
+              "path": "docs/reviews/trust-and-fit-2026-10-02-project-desktop.png",
+              "sha256": "e5a29eab8f19cc07beb34e4c220a36c149120a6efc3048af86b144cc06a2c246"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/trust-and-fit-2026-10-02.md",
+              "sha256": "6358737caa498483da58a1e33506e4810834c6e2ca0164e3b573ab76ee1e686d"
+            },
+            {
+              "path": "docs/reviews/trust-and-fit-2026-10-02-wordpress.json",
+              "sha256": "f1540e4573d7eaf6ff7d197937dd5d96a0e958f7dee8d06d3ccd8d66e3d4b157"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/trust-and-fit-2026-10-02.md",
+              "sha256": "6358737caa498483da58a1e33506e4810834c6e2ca0164e3b573ab76ee1e686d"
+            },
+            {
+              "path": "docs/reviews/trust-and-fit-2026-10-02-wordpress.json",
+              "sha256": "f1540e4573d7eaf6ff7d197937dd5d96a0e958f7dee8d06d3ccd8d66e3d4b157"
+            },
+            {
+              "path": "docs/reviews/trust-and-fit-2026-10-02-local-picker.png",
+              "sha256": "c83c9fde4f13b9867d7635aa4f78738ecc46407b64f273bc54637c6f90ce3b7d"
+            }
+          ]
+        }
+      },
+      "record_id": "fae1039932b41f65d4801e622d666986fba21d6fb3a2ce8cf0f5f90804aecfba"
+    },
+    {
+      "id": "excerpt-window",
+      "revision": "cf63716642627f65227960fa52daa3d652a8ddcaa15ce0aa78e27c44c37a34e4",
+      "base_id": "a16713e8a559bda2815914d382f517c51512785378cacaa8ea0e07db9ca65281",
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Reviewed every screen and native WordPress behaviour. Original artwork where applicable; no external delivery or conversion-performance claim. See dated evidence.",
+      "at": "2026-10-02T14:12:15.140Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/trust-and-fit-2026-10-02.md",
+              "sha256": "6358737caa498483da58a1e33506e4810834c6e2ca0164e3b573ab76ee1e686d"
+            },
+            {
+              "path": "docs/reviews/trust-and-fit-2026-10-02-audit.json",
+              "sha256": "cfd4b6852cc4d30b99302e20ef3b2390cae60ac4f9c8c3c2101e6326f846a424"
+            },
+            {
+              "path": "docs/reviews/trust-and-fit-2026-10-02-no-artwork.json",
+              "sha256": "72ae138facb6e21962964fc3563eaa0eb6b9724fc24ac1826f365dd25cdfd5b1"
+            },
+            {
+              "path": "docs/reviews/trust-and-fit-2026-10-02-workbook-desktop.png",
+              "sha256": "1825cabf2cc725f563892673c58a29e3e4f49e3cd075811c0ecd3dd168be8166"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/trust-and-fit-2026-10-02.md",
+              "sha256": "6358737caa498483da58a1e33506e4810834c6e2ca0164e3b573ab76ee1e686d"
+            },
+            {
+              "path": "docs/reviews/trust-and-fit-2026-10-02-wordpress.json",
+              "sha256": "f1540e4573d7eaf6ff7d197937dd5d96a0e958f7dee8d06d3ccd8d66e3d4b157"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/trust-and-fit-2026-10-02.md",
+              "sha256": "6358737caa498483da58a1e33506e4810834c6e2ca0164e3b573ab76ee1e686d"
+            },
+            {
+              "path": "docs/reviews/trust-and-fit-2026-10-02-wordpress.json",
+              "sha256": "f1540e4573d7eaf6ff7d197937dd5d96a0e958f7dee8d06d3ccd8d66e3d4b157"
+            },
+            {
+              "path": "docs/reviews/trust-and-fit-2026-10-02-local-picker.png",
+              "sha256": "c83c9fde4f13b9867d7635aa4f78738ecc46407b64f273bc54637c6f90ce3b7d"
+            }
+          ]
+        }
+      },
+      "record_id": "d6238e15e7343a26dd99530f87bbd0ebbbf6cada3d9736b43f75978ab4e55dba"
+    },
+    {
+      "id": "collection-reader-relationships",
+      "revision": "9799e334c7cf1c912cb43b6ecd87bd4e9bf4cca800288034e4bd7a90d707ed54",
+      "base_id": "9275ae12c1bec000a45339b437b6e4f1b899909626688b63f3b65078fda33522",
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Refresh sole changed member: workbook split ratio. Metadata and four unchanged current setup approvals retained; checked collection proof.",
+      "at": "2026-10-02T14:14:04.487Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/trust-and-fit-2026-10-02-collection.md",
+              "sha256": "3a6ab7df957bafdad353ff5a5adbbb22a4850dcf068a1be354cfeaa243c31053"
+            },
+            {
+              "path": "docs/reviews/trust-and-fit-2026-10-02-reader-collection.png",
+              "sha256": "713fa6d0f1bf17e57ddc488512f84809a736fa0fd63db79a6e90bcd4c0d1ae35"
+            },
+            {
+              "path": "docs/reviews/trust-and-fit-2026-10-02.md",
+              "sha256": "6358737caa498483da58a1e33506e4810834c6e2ca0164e3b573ab76ee1e686d"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/trust-and-fit-2026-10-02-collection.md",
+              "sha256": "3a6ab7df957bafdad353ff5a5adbbb22a4850dcf068a1be354cfeaa243c31053"
+            },
+            {
+              "path": "docs/reviews/trust-and-fit-2026-10-02-reader-collection.png",
+              "sha256": "713fa6d0f1bf17e57ddc488512f84809a736fa0fd63db79a6e90bcd4c0d1ae35"
+            },
+            {
+              "path": "docs/reviews/trust-and-fit-2026-10-02.md",
+              "sha256": "6358737caa498483da58a1e33506e4810834c6e2ca0164e3b573ab76ee1e686d"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/trust-and-fit-2026-10-02-collection.md",
+              "sha256": "3a6ab7df957bafdad353ff5a5adbbb22a4850dcf068a1be354cfeaa243c31053"
+            },
+            {
+              "path": "docs/reviews/trust-and-fit-2026-10-02-reader-collection.png",
+              "sha256": "713fa6d0f1bf17e57ddc488512f84809a736fa0fd63db79a6e90bcd4c0d1ae35"
+            },
+            {
+              "path": "docs/reviews/trust-and-fit-2026-10-02.md",
+              "sha256": "6358737caa498483da58a1e33506e4810834c6e2ca0164e3b573ab76ee1e686d"
+            }
+          ]
+        }
+      },
+      "record_id": "f25760b86c3b54afbce0ed923dc5cadc80bdcc00e1673e970eb73e79358755cc"
     }
   ]
 }

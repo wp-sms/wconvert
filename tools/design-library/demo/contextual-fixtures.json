@@ -168,5 +168,13 @@
       "Before placing an order": "On a real shop, check the policy that applies to your purchase: eligible items, how the return period is calculated, item condition, exceptions, return costs and the method for requesting a return.",
       "Seasonal dates": "No seasonal deadline is offered in this demonstration. If a merchant offers different seasonal terms, its actual policy should state the eligible purchase dates and applicable return dates before this notice is published."
     }
+  ],
+  "workspace-change-story": [
+    "A fictional workspace layout study",
+    {
+      "The starting point": "The original WConvert diagrams illustrate a fictional room, not a client project. A central desk and separate storage units occupy the middle and edges of the room.",
+      "The alternative": "The desk moves towards the window, storage is grouped on one wall and the middle of the room is left clearer. The drawings share the same illustrative room outline.",
+      "Limits of the study": "There are no measurements, building inspections or performance results behind this illustration. A real project must check dimensions, circulation, access, lighting and requirements with the people using the space. This is not a claim that the layout is suitable for a particular property."
+    }
   ]
 }

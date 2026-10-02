@@ -1,0 +1,43 @@
+{
+    "excerpt-window": {
+        "status": "passed",
+        "checks": [
+            "published",
+            "visible acknowledgement resource link",
+            "primary: required fields, capture, retry, saved values",
+            "one local resource email with an accessible content page"
+        ]
+    },
+    "sms-message-preview": {
+        "status": "passed",
+        "checks": [
+            "published",
+            "primary: required fields, capture, retry, saved values"
+        ]
+    },
+    "service-fit-brief": {
+        "status": "passed",
+        "checks": [
+            "published",
+            "primary: required fields, capture, retry, saved values"
+        ]
+    },
+    "edition-sample-signup": {
+        "status": "passed",
+        "checks": [
+            "published",
+            "primary: required fields, capture, retry, saved values"
+        ]
+    },
+    "workspace-change-story": {
+        "status": "passed",
+        "checks": [
+            "published",
+            "real link destination"
+        ]
+    },
+    "_outbox": {
+        "messages": 100,
+        "scope": "Local wp_mail handoff only; no external inbox delivery"
+    }
+}

@@ -233,6 +233,10 @@ export function shell(template: Template, chrome: HTMLElement | null, options: M
    * own ticket; preventing the navigation is this ticket's business.
    */
   function bind(element: HTMLElement): void {
+    // Embedded campaigns grow with the page, including after a screen swap.
+    // Only overlays need the renderer's viewport cap and inner scrolling.
+    if (options.displayType === 'inline') element.style.maxBlockSize = 'none';
+
     const api = window as Window & { __wcPhone?: (root: HTMLElement) => void };
     if (api.__wcPhone) api.__wcPhone(element);
     else if (element.querySelector('input[name="phone"]')) {

@@ -30,7 +30,7 @@
         "kind": "input",
         "content": {
           "type": "split",
-          "ratio": "0.65",
+          "ratio": 0.65,
           "basis": "16rem",
           "start": [
             {

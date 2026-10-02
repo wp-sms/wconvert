@@ -13,3 +13,7 @@ The illustration depicts a terracotta pot, cream vase and green cup. It illustra
 ## Task lamp · 2 October 2026
 
 `task-lamp.svg` is original WConvert geometric sample artwork, authored for Product detail sheet and distributed under this repository’s GPL-2.0-or-later licence. It contains only shapes, no external assets, fonts, brands or scripts. The design embeds these same SVG bytes (without the trailing newline). It illustrates a fictional lamp, not a photograph or proof of a real product’s specifications. Merchants should replace the image and facts together, or hide the optional image. No raster derivative or hosted download pack is published in this batch.
+
+## Workspace diagrams · 2 October 2026
+
+`workspace-before.svg` and `workspace-after.svg` are original WConvert top-down geometric drawings, under the repository GPL-2.0-or-later licence. They show two arrangements of one fictional room, with the same perimeter, door and window. They contain only shapes, no external resources, scripts, fonts, trademarks or customer photographs. Project pair embeds those exact SVG bytes without the trailing newline. The visible copy and image alt text label the example as fictional; it is not proof of completed work, safety, accessibility or performance. Captions remain useful with images hidden. No raster derivative or hosted asset release is included.

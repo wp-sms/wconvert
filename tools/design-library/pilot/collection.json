@@ -3256,6 +3256,118 @@
         ],
         "reason": "A shallow bar suits a policy reminder across collection pages. Reuse the existing signpost instead of making another bar or duplicating the larger policy slide-in."
       }
+    },
+    {
+      "id": "sms-message-preview",
+      "audience": "stores",
+      "family": "Message sample",
+      "visitor_need": "Understand the subject and frequency of promotional texts before sharing a phone number.",
+      "difference": "A clearly labelled example message is the visual focal point, paired with a compact phone-and-consent area and a separate expectation line. Unlike the plain phone form or optional second channel, it explains the actual communication before asking.",
+      "requirements": [
+        "A truthful message example and frequency",
+        "An SMS destination and opt-out process, or Collect only"
+      ],
+      "status": "review",
+      "source": "Original WConvert trust-and-fit batch; compared against the existing library.",
+      "suggested_setup": [
+        "Show on relevant collection pages after genuine browsing engagement; avoid checkout and respect dismissal.",
+        "Merchant provides truthful topics/frequency and configures an SMS destination or uses local collection."
+      ],
+      "measure": "Accepted phone requests, not provider subscription or delivered messages.",
+      "batch": "trust-and-fit",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "stacked-signup",
+          "journey-email-then-sms",
+          "callback-slip"
+        ],
+        "reason": "A clearly labelled example message is the visual focal point, paired with a compact phone-and-consent area and a separate expectation line. Unlike the plain phone form or optional second channel, it explains the actual communication before asking."
+      }
+    },
+    {
+      "id": "service-fit-brief",
+      "audience": "services",
+      "family": "Scope sheet",
+      "visitor_need": "Understand what a service includes and what needs a separate agreement before requesting a reply.",
+      "difference": "An included/separate-work scope sheet puts service boundaries beside a small reply area. It avoids another generic benefit list, agenda or three-step process. Compared with Service summary, the paired scope panels distinguish included work from work agreed separately while keeping the reply area alongside.",
+      "requirements": [
+        "Verified service scope, exclusions and terms",
+        "A person responsible for enquiry replies"
+      ],
+      "status": "review",
+      "source": "Original WConvert trust-and-fit batch; compared against the existing library.",
+      "suggested_setup": [
+        "Place below the actual service description and include a clear route to fuller terms.",
+        "Use Collect only or a supported destination; confirm scope and price in follow-up, not on form submission."
+      ],
+      "measure": "Accepted review enquiries, not booked work or completed reviews.",
+      "batch": "trust-and-fit",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "service-summary",
+          "service-ledger",
+          "service-process-strip"
+        ],
+        "reason": "An included/separate-work scope sheet puts service boundaries beside a small reply area. It avoids another generic benefit list, agenda or three-step process. Compared with Service summary, the paired scope panels distinguish included work from work agreed separately while keeping the reply area alongside."
+      }
+    },
+    {
+      "id": "edition-sample-signup",
+      "audience": "publishers",
+      "family": "Excerpt window",
+      "visitor_need": "Judge the substance and tone of a newsletter before requesting future editions.",
+      "difference": "Reuse Excerpt window: it already provides a readable sample beside a compact signup. Change the purpose, copy, consent and setup guidance, not the design count.",
+      "requirements": [
+        "Your own newsletter sample and actual cadence",
+        "Email destination or Collect only"
+      ],
+      "status": "review",
+      "source": "Original WConvert trust-and-fit batch; compared against the existing library.",
+      "suggested_setup": [
+        "Embed after a relevant article; sample content remains readable without signup.",
+        "Bind recurring-newsletter consent and a supported email destination or Collect only; do not configure resource delivery for this purpose."
+      ],
+      "measure": "Accepted email requests, not confirmed subscriptions or delivered editions.",
+      "batch": "trust-and-fit",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "excerpt-window",
+          "reading-desk",
+          "ledger-card"
+        ],
+        "reason": "Reuse Excerpt window: it already provides a readable sample beside a compact signup. Change the purpose, copy, consent and setup guidance, not the design count."
+      }
+    },
+    {
+      "id": "workspace-change-story",
+      "audience": "services",
+      "family": "Project pair",
+      "visitor_need": "See the problem, changes and limits of an example project before exploring a service.",
+      "difference": "A paired before/after visual narrative with captions and a short What changed note, followed by one case-study link. Existing product comparisons describe alternatives; this shows one project over time. No image slider or gallery feature is implied.",
+      "requirements": [
+        "Licensed project evidence or clearly labelled fictional illustrations",
+        "A working full project-story destination"
+      ],
+      "status": "review",
+      "source": "Original WConvert trust-and-fit batch; compared against the existing library.",
+      "suggested_setup": [
+        "Embed beside relevant portfolio work and link to a full case study, including the project’s real scope.",
+        "Use merchant-owned/licensed project media; our sample may use clearly labelled fictional illustrations only."
+      ],
+      "measure": "Visits to the project story, not enquiries or evidence of project performance.",
+      "batch": "trust-and-fit",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "material-pair",
+          "product-detail-sheet",
+          "portrait-frame"
+        ],
+        "reason": "A paired before/after visual narrative with captions and a short What changed note, followed by one case-study link. Existing product comparisons describe alternatives; this shows one project over time. No image slider or gallery feature is implied."
+      }
     }
   ],
   "batches": [
@@ -3298,6 +3410,10 @@
     {
       "id": "practical-information",
       "name": "Two practical information setups"
+    },
+    {
+      "id": "trust-and-fit",
+      "name": "Clear expectations and useful evidence"
     }
   ]
 }

@@ -489,3 +489,32 @@ If all three candidates pass, the studio would reach **122 setups / 70 designs**
 and the source inventory **102 designs**. These are ceilings, not current counts
 or a quota; consolidate or defer a candidate that fails the comparison. Hosted
 API/licensing, CI, external delivery and merge remain outside this batch.
+
+### 2 October implementation: clear expectations and useful evidence
+
+The four setups in the preceding planning baseline are now implemented and
+reviewed in `out/pilot.html?batch=trust-and-fit`. Message sample, Scope sheet and
+Project pair are new Free designs; the weekly letter reuses Excerpt window.
+The studio now contains **122 setups / 70 distinct designs**, with **102 source
+designs** in the inventory. The completed briefs have been removed from the
+future-work board. Original fictional workspace diagrams ship with provenance.
+
+The Excerpt window ratio correction has a recorded design revision and fresh
+reviews for both its workbook and newsletter use cases. Its existing reader
+collection dependency, review and bundled snapshot have also been refreshed.
+Native review found and fixed an inline-container height cap: embedded designs
+now grow with the page on every screen, while popups retain their viewport cap.
+
+The [dated review](../../docs/reviews/trust-and-fit-2026-10-02.md) links the
+144-case responsive audit, artwork-hidden check, native WordPress journeys and
+screenshots. Four new setups plus the existing workbook received approval:
+**30 current setup approvals / 92 older stale approvals**. This is editorial
+approval, not hosted release approval or a conversion-performance claim.
+
+The [refresh plan](review/refresh-plan.json) records all 92 remaining IDs in
+three ordered groups: heavily reused design families, other capture/decision
+journeys, then links/announcements. Work in batches of 4–6 setups. Review a
+representative composition first, then every sibling's actual copy, screens,
+privacy and destinations before approving that sibling. Rebuild the live queue
+before each batch; this file is a dated priority list, not an approval source.
+Hosted API/licensing, CI, external delivery and merge remain deferred.
