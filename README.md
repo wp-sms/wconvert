@@ -842,7 +842,7 @@ bin/build.sh pro       # → one ZIP per tier (below)
 bin/build.sh all
 ```
 
-`bin/build.sh` stages a copy, runs `composer install --no-dev` inside it,
+`bin/build.sh` first rebuilds and checks reviewed collection revisions, then stages a copy, runs `composer install --no-dev` inside it,
 applies the tree's own `.distignore`, and then runs
 [`bin/verify-artifact-contract.sh`](bin/verify-artifact-contract.sh) **before**
 writing the ZIP — a ZIP that exists is a ZIP somebody can upload, so the

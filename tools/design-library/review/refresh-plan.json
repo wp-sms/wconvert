@@ -1,0 +1,674 @@
+{
+  "schema": 1,
+  "recorded": "2026-10-02",
+  "scope": "Review order only. No approvals are granted by this file. Rebuild the live queue before starting each batch.",
+  "batch_size": "4–6 setups; finish all screens and native WordPress checks before expanding.",
+  "pending_count": 92,
+  "groups": [
+    {
+      "id": "shared-families",
+      "name": "Most reused design families",
+      "reason": "Review a representative first, then every affected setup; shared fixes have the widest effect.",
+      "entries": [
+        {
+          "id": "bulk-gift-enquiry",
+          "design": "appointment-note",
+          "format": "popup",
+          "goal": "collect_enquiries",
+          "state": "pending"
+        },
+        {
+          "id": "care-clinic-request",
+          "design": "appointment-note",
+          "format": "popup",
+          "goal": "collect_enquiries",
+          "state": "pending"
+        },
+        {
+          "id": "course-advice-request",
+          "design": "appointment-note",
+          "format": "popup",
+          "goal": "collect_enquiries",
+          "state": "pending"
+        },
+        {
+          "id": "gift-message-enquiry",
+          "design": "appointment-note",
+          "format": "popup",
+          "goal": "collect_enquiries",
+          "state": "pending"
+        },
+        {
+          "id": "group-training-enquiry",
+          "design": "appointment-note",
+          "format": "popup",
+          "goal": "collect_enquiries",
+          "state": "pending"
+        },
+        {
+          "id": "portfolio-feedback-request",
+          "design": "appointment-note",
+          "format": "popup",
+          "goal": "collect_enquiries",
+          "state": "pending"
+        },
+        {
+          "id": "reader-format-choice",
+          "design": "appointment-note",
+          "format": "popup",
+          "goal": "grow_email_list",
+          "state": "pending"
+        },
+        {
+          "id": "remote-walkthrough-request",
+          "design": "appointment-note",
+          "format": "popup",
+          "goal": "collect_enquiries",
+          "state": "pending"
+        },
+        {
+          "id": "translation-project-enquiry",
+          "design": "appointment-note",
+          "format": "popup",
+          "goal": "collect_enquiries",
+          "state": "pending"
+        },
+        {
+          "id": "tutoring-introduction",
+          "design": "appointment-note",
+          "format": "popup",
+          "goal": "collect_enquiries",
+          "state": "pending"
+        },
+        {
+          "id": "venue-visit-request",
+          "design": "appointment-note",
+          "format": "popup",
+          "goal": "collect_enquiries",
+          "state": "pending"
+        },
+        {
+          "id": "contributor-guidelines",
+          "design": "bar-announcement",
+          "format": "floating_bar",
+          "goal": "promote_offer",
+          "state": "pending"
+        },
+        {
+          "id": "delivery-announcement",
+          "design": "bar-announcement",
+          "format": "floating_bar",
+          "goal": "promote_offer",
+          "state": "pending"
+        },
+        {
+          "id": "dispatch-schedule",
+          "design": "bar-announcement",
+          "format": "floating_bar",
+          "goal": "promote_offer",
+          "state": "pending"
+        },
+        {
+          "id": "gift-wrap-details",
+          "design": "bar-announcement",
+          "format": "floating_bar",
+          "goal": "promote_offer",
+          "state": "pending"
+        },
+        {
+          "id": "holiday-service-hours",
+          "design": "bar-announcement",
+          "format": "floating_bar",
+          "goal": "promote_offer",
+          "state": "pending"
+        },
+        {
+          "id": "local-pickup-details",
+          "design": "bar-announcement",
+          "format": "floating_bar",
+          "goal": "promote_offer",
+          "state": "pending"
+        },
+        {
+          "id": "remote-consultation-details",
+          "design": "bar-announcement",
+          "format": "floating_bar",
+          "goal": "promote_offer",
+          "state": "pending"
+        },
+        {
+          "id": "service-area-check",
+          "design": "bar-announcement",
+          "format": "floating_bar",
+          "goal": "promote_offer",
+          "state": "pending"
+        },
+        {
+          "id": "showroom-information",
+          "design": "bar-announcement",
+          "format": "floating_bar",
+          "goal": "promote_offer",
+          "state": "pending"
+        },
+        {
+          "id": "agency-project-enquiry",
+          "design": "inline-choice",
+          "format": "inline",
+          "goal": "collect_enquiries",
+          "state": "pending"
+        },
+        {
+          "id": "basket-product-help",
+          "design": "inline-choice",
+          "format": "inline",
+          "goal": "collect_enquiries",
+          "state": "pending"
+        },
+        {
+          "id": "personalisation-enquiry",
+          "design": "inline-choice",
+          "format": "inline",
+          "goal": "collect_enquiries",
+          "state": "pending"
+        },
+        {
+          "id": "product-advice-request",
+          "design": "inline-choice",
+          "format": "inline",
+          "goal": "collect_enquiries",
+          "state": "pending"
+        },
+        {
+          "id": "reader-question",
+          "design": "inline-choice",
+          "format": "inline",
+          "goal": "collect_enquiries",
+          "state": "pending"
+        },
+        {
+          "id": "sample-request",
+          "design": "inline-choice",
+          "format": "inline",
+          "goal": "collect_enquiries",
+          "state": "pending"
+        },
+        {
+          "id": "access-enquiry",
+          "design": "slide-in-question",
+          "format": "slide_in",
+          "goal": "collect_enquiries",
+          "state": "pending"
+        },
+        {
+          "id": "assembly-guidance",
+          "design": "slide-in-question",
+          "format": "slide_in",
+          "goal": "collect_enquiries",
+          "state": "pending"
+        },
+        {
+          "id": "equipment-hire-enquiry",
+          "design": "slide-in-question",
+          "format": "slide_in",
+          "goal": "collect_enquiries",
+          "state": "pending"
+        },
+        {
+          "id": "language-support-enquiry",
+          "design": "slide-in-question",
+          "format": "slide_in",
+          "goal": "collect_enquiries",
+          "state": "pending"
+        },
+        {
+          "id": "product-demo-enquiry",
+          "design": "slide-in-question",
+          "format": "slide_in",
+          "goal": "collect_enquiries",
+          "state": "pending"
+        },
+        {
+          "id": "reader-panel-interest",
+          "design": "slide-in-question",
+          "format": "slide_in",
+          "goal": "collect_enquiries",
+          "state": "pending"
+        },
+        {
+          "id": "spare-parts-advice",
+          "design": "slide-in-question",
+          "format": "slide_in",
+          "goal": "collect_enquiries",
+          "state": "pending"
+        },
+        {
+          "id": "trade-account-enquiry",
+          "design": "slide-in-question",
+          "format": "slide_in",
+          "goal": "collect_enquiries",
+          "state": "pending"
+        }
+      ]
+    },
+    {
+      "id": "capture-and-journeys",
+      "name": "Other capture and decision journeys",
+      "reason": "Check all screens, consent, required fields, recovery and truthful outcomes.",
+      "entries": [
+        {
+          "id": "local-class-news",
+          "design": "bar-email-capture",
+          "format": "floating_bar",
+          "goal": "grow_email_list",
+          "state": "pending"
+        },
+        {
+          "id": "repair-workshop-news",
+          "design": "bar-email-capture",
+          "format": "floating_bar",
+          "goal": "grow_email_list",
+          "state": "pending"
+        },
+        {
+          "id": "restyling-notes",
+          "design": "benefit-grid",
+          "format": "popup",
+          "goal": "grow_email_list",
+          "state": "pending"
+        },
+        {
+          "id": "gift-finder",
+          "design": "gift-edit",
+          "format": "popup",
+          "goal": "find_match",
+          "state": "pending"
+        },
+        {
+          "id": "launch-interest",
+          "design": "ink-split",
+          "format": "popup",
+          "goal": "grow_email_list",
+          "state": "pending"
+        },
+        {
+          "id": "fitness-introduction",
+          "design": "inline-phone",
+          "format": "inline",
+          "goal": "collect_enquiries",
+          "state": "pending"
+        },
+        {
+          "id": "sizing-guide",
+          "design": "inline-split",
+          "format": "inline",
+          "goal": "deliver_lead_magnet",
+          "state": "pending"
+        },
+        {
+          "id": "content-guide",
+          "design": "journey-content-guide",
+          "format": "popup",
+          "goal": "find_match",
+          "state": "pending"
+        },
+        {
+          "id": "headlines-optional-sms",
+          "design": "journey-email-then-sms",
+          "format": "popup",
+          "goal": "grow_email_list",
+          "state": "pending"
+        },
+        {
+          "id": "journey-email-then-sms",
+          "design": "journey-email-then-sms",
+          "format": "popup",
+          "goal": "grow_email_list",
+          "state": "pending"
+        },
+        {
+          "id": "landscaping-enquiry",
+          "design": "journey-enquiry",
+          "format": "inline",
+          "goal": "collect_enquiries",
+          "state": "pending"
+        },
+        {
+          "id": "maker-session-invitation",
+          "design": "journey-offer-first",
+          "format": "popup",
+          "goal": "grow_email_list",
+          "state": "pending"
+        },
+        {
+          "id": "product-finder",
+          "design": "journey-product-finder",
+          "format": "popup",
+          "goal": "find_match",
+          "state": "pending"
+        },
+        {
+          "id": "experience-kit-finder",
+          "design": "kit-workbench",
+          "format": "fullscreen",
+          "goal": "find_match",
+          "state": "pending"
+        },
+        {
+          "id": "gift-planning-guide",
+          "design": "name-and-email",
+          "format": "popup",
+          "goal": "deliver_lead_magnet",
+          "state": "pending"
+        },
+        {
+          "id": "accounting-consultation",
+          "design": "portrait-frame",
+          "format": "popup",
+          "goal": "collect_enquiries",
+          "state": "pending"
+        },
+        {
+          "id": "photography-enquiry",
+          "design": "portrait-frame",
+          "format": "popup",
+          "goal": "collect_enquiries",
+          "state": "pending"
+        },
+        {
+          "id": "collection-interest",
+          "design": "preference-card",
+          "format": "inline",
+          "goal": "grow_email_list",
+          "state": "pending"
+        },
+        {
+          "id": "topic-reading-list",
+          "design": "preference-card",
+          "format": "inline",
+          "goal": "grow_email_list",
+          "state": "pending"
+        },
+        {
+          "id": "project-planning-guide",
+          "design": "project-notebook",
+          "format": "popup",
+          "goal": "deliver_lead_magnet",
+          "state": "pending"
+        },
+        {
+          "id": "project-readiness-guide",
+          "design": "project-notebook",
+          "format": "popup",
+          "goal": "deliver_lead_magnet",
+          "state": "pending"
+        },
+        {
+          "id": "project-stage-finder",
+          "design": "project-route",
+          "format": "popup",
+          "goal": "find_match",
+          "state": "pending"
+        },
+        {
+          "id": "maker-notes",
+          "design": "quieter-frequency",
+          "format": "popup",
+          "goal": "grow_email_list",
+          "state": "pending"
+        },
+        {
+          "id": "maintenance-letter",
+          "design": "reading-desk",
+          "format": "inline",
+          "goal": "grow_email_list",
+          "state": "pending"
+        },
+        {
+          "id": "reading-path-finder",
+          "design": "reading-path",
+          "format": "inline",
+          "goal": "find_match",
+          "state": "pending"
+        },
+        {
+          "id": "contributor-pitch-checklist",
+          "design": "resource-index",
+          "format": "inline",
+          "goal": "deliver_lead_magnet",
+          "state": "pending"
+        },
+        {
+          "id": "pre-visit-checklist",
+          "design": "resource-index",
+          "format": "inline",
+          "goal": "deliver_lead_magnet",
+          "state": "pending"
+        },
+        {
+          "id": "product-care-guide",
+          "design": "resource-index",
+          "format": "inline",
+          "goal": "deliver_lead_magnet",
+          "state": "pending"
+        },
+        {
+          "id": "venue-hire-checklist",
+          "design": "resource-index",
+          "format": "inline",
+          "goal": "deliver_lead_magnet",
+          "state": "pending"
+        },
+        {
+          "id": "upholstery-samples",
+          "design": "sample-envelope",
+          "format": "slide_in",
+          "goal": "collect_enquiries",
+          "state": "pending"
+        },
+        {
+          "id": "service-finder",
+          "design": "service-directory",
+          "format": "inline",
+          "goal": "find_match",
+          "state": "pending"
+        },
+        {
+          "id": "wholesale-enquiry",
+          "design": "service-docket",
+          "format": "inline",
+          "goal": "collect_enquiries",
+          "state": "pending"
+        },
+        {
+          "id": "consultation-corner",
+          "design": "slide-in-photo",
+          "format": "slide_in",
+          "goal": "collect_enquiries",
+          "state": "pending"
+        },
+        {
+          "id": "space-fit-finder",
+          "design": "space-planner",
+          "format": "inline",
+          "goal": "find_match",
+          "state": "pending"
+        },
+        {
+          "id": "drop-alerts",
+          "design": "stacked-signup",
+          "format": "popup",
+          "goal": "grow_sms_list",
+          "state": "pending"
+        },
+        {
+          "id": "service-text-updates",
+          "design": "stacked-signup",
+          "format": "popup",
+          "goal": "grow_sms_list",
+          "state": "pending"
+        },
+        {
+          "id": "studio-welcome",
+          "design": "studio-window",
+          "format": "popup",
+          "goal": "grow_email_list",
+          "state": "pending"
+        },
+        {
+          "id": "fit-checklist",
+          "design": "useful-guide",
+          "format": "popup",
+          "goal": "deliver_lead_magnet",
+          "state": "pending"
+        }
+      ]
+    },
+    {
+      "id": "links-and-announcements",
+      "name": "Links and announcements",
+      "reason": "Check destinations, relevance, readability, dismissal and timing.",
+      "entries": [
+        {
+          "id": "event-registration-link",
+          "design": "agenda-card",
+          "format": "inline",
+          "goal": "promote_offer",
+          "state": "pending"
+        },
+        {
+          "id": "visiting-details",
+          "design": "availability-note",
+          "format": "slide_in",
+          "goal": "promote_offer",
+          "state": "pending"
+        },
+        {
+          "id": "fullscreen-announcement",
+          "design": "fullscreen-poster",
+          "format": "fullscreen",
+          "goal": "promote_offer",
+          "state": "pending"
+        },
+        {
+          "id": "service-open-day",
+          "design": "fullscreen-poster",
+          "format": "fullscreen",
+          "goal": "promote_offer",
+          "state": "pending"
+        },
+        {
+          "id": "membership-details",
+          "design": "inline-benefits",
+          "format": "inline",
+          "goal": "promote_offer",
+          "state": "pending"
+        },
+        {
+          "id": "cart-delivery-help",
+          "design": "inline-cart-nudge",
+          "format": "inline",
+          "goal": "recover_cart",
+          "state": "pending"
+        },
+        {
+          "id": "cart-straight-away",
+          "design": "inline-cta",
+          "format": "inline",
+          "goal": "recover_cart",
+          "state": "pending"
+        },
+        {
+          "id": "opening-hours-signpost",
+          "design": "inline-signpost",
+          "format": "floating_bar",
+          "goal": "promote_offer",
+          "state": "pending"
+        },
+        {
+          "id": "rereading-essay",
+          "design": "margin-note",
+          "format": "slide_in",
+          "goal": "promote_offer",
+          "state": "pending"
+        },
+        {
+          "id": "material-comparison",
+          "design": "material-pair",
+          "format": "inline",
+          "goal": "promote_offer",
+          "state": "pending"
+        },
+        {
+          "id": "collection-discovery",
+          "design": "offer-panel",
+          "format": "popup",
+          "goal": "promote_offer",
+          "state": "pending"
+        },
+        {
+          "id": "new-arrivals-link",
+          "design": "photo-offer",
+          "format": "popup",
+          "goal": "promote_offer",
+          "state": "pending"
+        },
+        {
+          "id": "packaging-details",
+          "design": "reading-slip",
+          "format": "inline",
+          "goal": "promote_offer",
+          "state": "pending"
+        },
+        {
+          "id": "related-essay",
+          "design": "reading-slip",
+          "format": "inline",
+          "goal": "promote_offer",
+          "state": "pending"
+        },
+        {
+          "id": "service-options-guide",
+          "design": "service-ledger",
+          "format": "inline",
+          "goal": "promote_offer",
+          "state": "pending"
+        },
+        {
+          "id": "writing-session-details",
+          "design": "session-card",
+          "format": "slide_in",
+          "goal": "promote_offer",
+          "state": "pending"
+        },
+        {
+          "id": "return-policy-guide",
+          "design": "slide-in-nudge",
+          "format": "slide_in",
+          "goal": "promote_offer",
+          "state": "pending"
+        },
+        {
+          "id": "seasonal-service-link",
+          "design": "slide-in-nudge",
+          "format": "slide_in",
+          "goal": "promote_offer",
+          "state": "pending"
+        },
+        {
+          "id": "series-start",
+          "design": "slide-in-nudge",
+          "format": "slide_in",
+          "goal": "promote_offer",
+          "state": "pending"
+        },
+        {
+          "id": "furniture-fit-guide",
+          "design": "split-notice",
+          "format": "floating_bar",
+          "goal": "promote_offer",
+          "state": "pending"
+        }
+      ]
+    }
+  ]
+}

@@ -119,5 +119,62 @@
       "Exceptional closures": "Confirm holiday and exceptional opening arrangements before travelling.",
       "Visits": "Arrange a visit with the team first. A page view does not reserve an appointment."
     }
+  ],
+  "specification-sheet": [
+    "Compare the sample tables",
+    {
+      "Small table": "Footprint: 35 × 35 cm. Suggested beside an armchair. Wipe clean. Fictional sample: painted wood, illustrative price £60, not available to purchase.",
+      "Wide table": "Footprint: 50 × 40 cm. Suggested beside a two-seat sofa. Wipe clean. Fictional sample: painted wood, illustrative price £85, not available to purchase.",
+      "Before choosing": "Measure the available floor space and check access. These examples demonstrate the campaign link; they are not real product offers."
+    }
+  ],
+  "event-calendar": [
+    "Sample chair-restoration open workshop",
+    {
+      "When": "Saturday 14 November 2026, 14:00–16:00 Europe/London (GMT on this date). This is a fictional review event, not an event accepting registrations.",
+      "Where and format": "In person at the sample restoration workshop, 12 Example Lane. Verify the real address and access details before publishing.",
+      "Registration and access": "A production event page must state the fee or free entry, registration method, accessibility contact and cancellation terms. This demo creates no booking.",
+      "Campaign schedule": "End the invitation before 14:00 Europe/London on 14 November 2026. Convert that instant to the site timezone when configuring the schedule."
+    }
+  ],
+  "product-detail-sheet": [
+    "Sample Task lamp specification",
+    {
+      "Product facts": "Illustrative Task lamp: an 18 × 18 cm base, powder-coated steel construction, and an adjustable shade. The lamp drawing is original WConvert sample artwork.",
+      "Before choosing": "Check the real product height, power supply, bulb specification, finish and safety information with the merchant. These details are not established by the illustration.",
+      "Ordering": "This is a product-information fixture. There is no stock claim, price or Add to cart action; configure an actual product destination before publication."
+    }
+  ],
+  "launch-index": [
+    "Sample morning collection",
+    {
+      "The collection": "A fictional range of cups and trays for everyday use, corresponding to the announcement bar.",
+      "Before shopping": "In a real store this page must show available products, accurate prices and delivery information. The demo accepts no orders.",
+      "Announcement timing": "Only show the announcement while the real collection is available and the description remains current."
+    }
+  ],
+  "accessible-visit-note": [
+    "Sample arrival and access information",
+    {
+      "Getting here": "Fictional review venue: 12 Example Lane. The sample drop-off point is beside the front entrance; parking is across the courtyard. These are review fixtures, not directions to a real venue.",
+      "Routes and facilities": "The fictional courtyard route is step-free. The sample first-floor exhibition is stairs-only, and no accessible toilet is represented in this fixture. A real venue must verify and publish its own measurements, surfaces, facilities and limitations.",
+      "Individual questions": "Before travelling, use the real venue’s published contact details to discuss the route and facilities you need. This demonstration has no staffed contact route and makes no booking."
+    }
+  ],
+  "returns-deadline-notice": [
+    "Sample seasonal returns policy",
+    {
+      "Current terms": "This is a policy-page fixture for a fictional shop that takes no orders. It does not establish return rights, accept return requests or offer an extended seasonal return period.",
+      "Before placing an order": "On a real shop, check the policy that applies to your purchase: eligible items, how the return period is calculated, item condition, exceptions, return costs and the method for requesting a return.",
+      "Seasonal dates": "No seasonal deadline is offered in this demonstration. If a merchant offers different seasonal terms, its actual policy should state the eligible purchase dates and applicable return dates before this notice is published."
+    }
+  ],
+  "workspace-change-story": [
+    "A fictional workspace layout study",
+    {
+      "The starting point": "The original WConvert diagrams illustrate a fictional room, not a client project. A central desk and separate storage units occupy the middle and edges of the room.",
+      "The alternative": "The desk moves towards the window, storage is grouped on one wall and the middle of the room is left clearer. The drawings share the same illustrative room outline.",
+      "Limits of the study": "There are no measurements, building inspections or performance results behind this illustration. A real project must check dimensions, circulation, access, lighting and requirements with the people using the space. This is not a claim that the layout is suitable for a particular property."
+    }
   ]
 }

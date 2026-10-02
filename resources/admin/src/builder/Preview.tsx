@@ -6,7 +6,7 @@ import { phoneSiteCountry } from '../phoneSiteCountry';
 import { A_DESIGNS_OWN_WIDTH } from '@renderer/css';
 import { SLOT_SELECTOR, keyOfElement, type SlotKey } from './slots';
 import { policyUrl, withPolicyLink } from './policy';
-import type { Template } from '@renderer/types';
+import type { ResultVariant, Template } from '@renderer/types';
 import { previewSurfaces } from '../previewSurfaces';
 
 /**
@@ -172,6 +172,8 @@ export interface PreviewProps {
   readonly step?: number;
   readonly interactive?: boolean;
   readonly onAdvance?: () => void;
+  /** A specific result to inspect. Never written back to the campaign. */
+  readonly result?: ResultVariant;
   /** The block drawn as selected, addressed the way `slots.ts` addresses one. */
   readonly selected?: SlotKey | null;
   /**
@@ -186,7 +188,7 @@ export interface PreviewProps {
   readonly onSelect?: (key: SlotKey) => void;
 }
 
-export function Preview({ template, displayType = 'inline', step = 0, selected = null, onSelect, interactive = false, onAdvance }: PreviewProps) {
+export function Preview({ template, displayType = 'inline', step = 0, selected = null, onSelect, interactive = false, onAdvance, result }: PreviewProps) {
   const anchor = useRef<HTMLDivElement>(null);
   /*
    * State rather than a ref, because the two effects below have to run again
@@ -195,6 +197,20 @@ export function Preview({ template, displayType = 'inline', step = 0, selected =
    * screen.
    */
   const [root, setRoot] = useState<HTMLElement | null>(null);
+  useEffect(() => {
+    if (!root || !result) return;
+    const heading = root.querySelector<HTMLElement>('[data-result-heading]');
+    const body = root.querySelector<HTMLElement>('[data-result-body]');
+    const link = root.querySelector<HTMLAnchorElement>('[data-result-link]');
+    if (heading) heading.textContent = result.heading;
+    if (body) body.textContent = result.body ?? '';
+    if (link) {
+      link.textContent = result.link_label ?? '';
+      link.hidden = !result.href;
+      if (result.href) link.href = result.href;
+      else link.removeAttribute('href');
+    }
+  }, [root, result]);
   /*
    * Read as a boolean so a caller passing a fresh arrow function on every
    * render does not remount the tree — `onSelect` is in the effects that BIND

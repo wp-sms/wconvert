@@ -83,6 +83,7 @@ $wconvertOptions = [
     // Template\Catalog\TemplateCatalog::{CACHE_OPTION,SOURCE_OPTION}
     'wconvert_template_catalog_cache',
     'wconvert_template_catalog_url',
+    'wconvert_picker_occasions',
 ];
 
 foreach ($wconvertOptions as $wconvertOption) {
@@ -159,3 +160,12 @@ foreach ($wconvertDynamicOptions as $wconvertOption) {
 }
 delete_option('wconvert_submission_checkpoint');
 wp_clear_scheduled_hook('wconvert_recover_submissions');
+
+// User metadata is blog-scoped because WordPress users span multisite blogs.
+delete_metadata('user', 0, 'wconvert_picker_preferences_' . get_current_blog_id(), '', true);
+
+// Short-lived picker write leases belong only to this site's options table.
+$wconvertPickerLocks = $wpdb->get_col("SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE 'wconvert\_picker\_lock\_%'");
+foreach ($wconvertPickerLocks as $wconvertPickerLock) {
+    if (preg_match('/^wconvert_picker_lock_(?:occasions|user_[0-9]+)$/D', $wconvertPickerLock)) delete_option($wconvertPickerLock);
+}

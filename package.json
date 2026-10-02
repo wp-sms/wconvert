@@ -42,7 +42,11 @@
     "test:template-studio": "node --test tools/design-library/build/*.test.mjs",
     "templates:review": "npm run templates:pilot && node tools/design-library/build/import-review.mjs",
     "templates:gate": "npm run templates:pilot && node tools/design-library/build/review-gate.mjs",
-    "templates:record": "node tools/design-library/build/record-design.mjs"
+    "templates:record": "node tools/design-library/build/record-design.mjs",
+    "templates:collections": "npm run templates:pilot && node tools/design-library/build/collections.mjs && node tools/design-library/build/collection-studio.mjs && node tools/design-library/build/collection-audit.mjs",
+    "templates:collections:publish": "node tools/design-library/build/collections.mjs --publish",
+    "templates:collections:check": "npm run templates:pilot && node tools/design-library/build/collections.mjs --check",
+    "templates:release:local": "node tools/design-library/build/publish-local.mjs"
   },
   "dependencies": {
     "@atlaskit/pragmatic-drag-and-drop": "^3.0.0",

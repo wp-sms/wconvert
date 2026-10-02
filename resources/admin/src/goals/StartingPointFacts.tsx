@@ -8,9 +8,8 @@ import { nodesOf } from '../builder/structure/tree';
 import type { RuleVocabulary } from '../builder/api';
 import type { GoalEntry, PlaybookEntry } from './api';
 
-export function startingPointDisplayType(playbook: PlaybookEntry): string {
-  return playbook.setup?.display_type ?? playbook.display_type;
-}
+import { startingPointDisplayType } from '../discovery/model';
+export { startingPointDisplayType } from '../discovery/model';
 
 /** Only the differences needed to choose; the full setup is available on demand. */
 export function StartingPointSummary({ playbook, vocabulary }: {
@@ -26,9 +25,10 @@ export function StartingPointSummary({ playbook, vocabulary }: {
 }
 
 /** Facts about the actual Prefill result, never a new Playbook taxonomy. */
-export function StartingPointFacts({ playbook, goal, vocabulary }: {
+export function StartingPointFacts({ playbook, goal, vocabulary, compact = false }: {
   playbook: PlaybookEntry;
   goal: GoalEntry;
+  compact?: boolean;
   vocabulary: RuleVocabulary | null;
 }) {
   const setup = playbook.setup;
@@ -67,12 +67,13 @@ export function StartingPointFacts({ playbook, goal, vocabulary }: {
   if (types.has('countdown')) checklist.push(__('Set the real deadline and time zone in Schedule.', 'wconvert'));
   checklist.push(__('Review pages, display rules and frequency, then test the visitor journey.', 'wconvert'));
   return <div className="flex flex-col gap-2 text-note">
-    {playbook.template && playbook.template.tree.steps.length > 1 && <section aria-label={__('Visitor journey', 'wconvert')} className="rounded-md border p-3"><strong>{__('Visitor journey', 'wconvert')}</strong><p className="m-0">{playbook.notes || __('Visitors move through the relevant screens, then complete this campaign’s action.', 'wconvert')}</p></section>}
-    <p className="m-0 text-muted-foreground">{goal.outcome.measurement}</p>
+    {playbook.template && playbook.template.tree.steps.length > 1 && <details open={!compact || undefined}><summary>{__('Visitor journey', 'wconvert')}</summary><p className="m-0">{playbook.notes || __('Visitors move through the relevant screens, then complete this campaign’s action.', 'wconvert')}</p></details>}
+    <details open={!compact || undefined}><summary>{__('Suggested placement & timing', 'wconvert')}</summary>
     <dl className="m-0 grid grid-cols-[auto_1fr] gap-x-3 gap-y-1">
       {facts.map((fact) => <div key={fact.label} className="contents"><dt className="text-muted-foreground">{fact.label}</dt><dd className="m-0">{fact.text}</dd></div>)}
-    </dl>
-    <p className="m-0 text-muted-foreground"><strong>{__('Before publishing', 'wconvert')}: </strong>{goal.outcome.requirement}</p>
+    </dl></details>
+    <details open={!compact || undefined}><summary>{__('What this measures', 'wconvert')}</summary><p className="m-0 text-muted-foreground">{goal.outcome.measurement}</p></details>
+    {(!compact || !playbook.requirements?.includes(goal.outcome.requirement)) && <p className="m-0 text-muted-foreground"><strong>{__('Before publishing', 'wconvert')}: </strong>{goal.outcome.requirement}</p>}
     {(!setup || !vocabulary) && <p className="m-0 text-muted-foreground">{__('Review the display rules in the editor.', 'wconvert')}</p>}
     <details>
       <summary className="cursor-pointer">{__('Your setup checklist', 'wconvert')}</summary>

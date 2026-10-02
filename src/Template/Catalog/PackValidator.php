@@ -22,7 +22,7 @@ final class PackValidator
 {
     public const MAX_BYTES = 262144;
     public const MAX_TEMPLATES = 12;
-    public const CAPABILITIES = ['template-tree:2', 'success-actions:1', 'enquiry-choice:1', 'campaign-starts:1', 'capture-journey:1', 'question-journey:1'];
+    public const CAPABILITIES = ['template-tree:2', 'success-actions:1', 'enquiry-choice:1', 'campaign-starts:1', 'capture-journey:1', 'question-journey:1', 'pack-images:1'];
 
     /** @param array<string, mixed> $manifest */
     public function __construct(private readonly array $manifest, private readonly TemplateVocabulary $vocabulary, private readonly Tier $installedTier = Tier::Free)
@@ -40,8 +40,8 @@ final class PackValidator
         self::check(strlen($json) <= self::MAX_BYTES, __('This pack is too large.', 'wconvert'));
         $pack = json_decode($json, true, 48);
         self::check(is_array($pack), __('This pack is not valid JSON.', 'wconvert'));
-        $this->keys($pack, ['schema', 'id', 'version', 'name', 'description', 'requires', 'assets', 'templates', 'playbooks']);
-        self::check(($pack['schema'] ?? null) === 1, __('Update required: this pack uses a newer format.', 'wconvert'));
+        $this->keys($pack, ['schema', 'id', 'version', 'name', 'description', 'requires', 'assets', 'templates', 'playbooks', 'image_bindings']);
+        self::check(in_array($pack['schema'] ?? null, [1, 2], true), __('Update required: this pack uses a newer format.', 'wconvert'));
         self::check(self::identifier($pack['id'] ?? null) && self::version($pack['version'] ?? null), __('This pack has an invalid identity.', 'wconvert'));
         $this->words($pack['name'] ?? null, 120);
         $this->words($pack['description'] ?? null, 1000);
@@ -55,9 +55,11 @@ final class PackValidator
         foreach ($capabilities as $capability) {
             self::check(is_string($capability) && in_array($capability, self::CAPABILITIES, true), __('Update required: this pack needs an unsupported capability.', 'wconvert'));
         }
-        // v1 deliberately accepts placeholders only. No media fetches, data URIs,
-        // tracking pixels, font downloads or executable files can enter a preview.
-        self::check(($pack['assets'] ?? null) === [], __('This pack requires media installation, which is not supported yet.', 'wconvert'));
+        // Schema 1 accepts placeholders; schema 2 binds verified raster objects.
+        // Authored URLs, font downloads and executable files stay prohibited.
+        self::check(is_array($pack['assets'] ?? null), __('Invalid image manifest.', 'wconvert'));
+        VerifiedAssets::validate($pack['assets']);
+        self::check($pack['schema'] === 2 || ($pack['assets'] === [] && !isset($pack['image_bindings'])), __('Images require pack schema 2.', 'wconvert'));
         $templates = $pack['templates'] ?? null;
         self::check(is_array($templates) && array_is_list($templates) && count($templates) > 0 && count($templates) <= self::MAX_TEMPLATES, __('This pack has an invalid design list.', 'wconvert'));
         $ids = [];
@@ -146,6 +148,7 @@ final class PackValidator
             }
         }
         self::check(array_diff(array_unique($requiredCapabilities), $capabilities) === [], __('This pack does not declare every capability its designs need.', 'wconvert'));
+        PackImages::validate($pack);
         return $pack;
     }
 

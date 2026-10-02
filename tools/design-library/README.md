@@ -13,16 +13,16 @@ npm install --no-save playwright       # not a repo dependency; see below
 Output goes to `tools/design-library/out/`, which is gitignored. Nothing here
 ships: `/tools` is in `.distignore`.
 
-## Internal creation and review studio: 108 campaigns
+## Internal creation and review studio: 110 campaigns
 
 Run `npm run templates:pilot`, then open `out/pilot.html` through the local site
 (or serve `out/` over HTTP). Add `?batch=visual-variety` to show the eight latest compositions, or `?batch=new-directions` for the initial four. `out/proof.html` pairs every
 screen at desktop and phone widths for visual review.
 `npm run test:template-studio` tests discovery, duplicate detection, brief validation
-and all prepared campaigns. Composer dependencies are required for the PHP exporter.
+and all prepared campaigns. The read-only PHP exporter loads repository classes directly, so review also works before Composer is installed in a release stage.
 
-The studio contains **108 campaign setups using 59 designs**, drawn from a complete
-inventory of **91 designs**. The first twelve received user approval of the design
+The studio contains **110 campaign setups using 61 designs**, drawn from a complete
+inventory of **93 designs**. The first twelve received user approval of the design
 direction. The next twelve add four new Free designs and reuse existing designs,
 including deliberate reuse between two different enquiry workflows. Ten Playbooks
 are new; cart return and standalone SMS already had useful registered starts.
@@ -77,7 +77,7 @@ copy. Dependencies include registered setups outside the curated collection.
 
 The Next batch view pairs six original composition sketches and two deliberate
 reuses with existing designs. These eight briefs are planned, not shipped or
-added to the 108/59 library counts. The Inspiration view links the earlier
+added to the 110/61 library counts. The Inspiration view links the earlier
 Depicter references and states exactly what was reviewed.
 
 `review/visual-audit.json` holds advisory decisions bound to source and renderer
@@ -134,13 +134,13 @@ filters by business as well as format, collection and search. The bounded catalo
 accepts 50 packs, retaining the existing 12-design and 256 KiB limits.
 
 The [shared editorial queue](review/README.md) now stores revision-bound decisions
-and evidence in Git. The studio shows review-state filters for 108 actual setups.
+and evidence in Git. The studio shows review-state filters for 110 actual setups.
 The completed decision-support briefs are archived under `pilot/batches/`; the
 next-batch queue holds six new composition candidates and two deliberate reuses,
 following the full-inventory visual audit. `npm run templates:gate` checks the
 current evidence locally without CI. Automated generation, hosted multi-user
 review, screenshot similarity, conversion measurement, paid asset distribution
-and broad 300–500 campaign rollout remain future work. The current 108 are reviewed editorial candidates, not measured winners.
+and broad 300–500 campaign rollout remain future work. The current 110 are reviewed editorial candidates, not measured winners.
 
 ## A sibling of `tools/design-system`, not a step inside it
 
@@ -334,3 +334,187 @@ link**. On the success screen, Fieldwork’s copy button is live. The resource e
 opens a local placeholder. The HTTP WordPress preview may lack clipboard access;
 it then shows the configured manual-copy message. Set your own resource URL in the
 editor’s Resource link block. No extra conversion is recorded by either action.
+
+## Reviewed featured collections and production picker
+
+The customer picker is now the real plugin UI, described in
+[ADR 0112](../../docs/adr/0112-template-discovery-and-reviewed-collections.md).
+The internal studio remains repository tooling and contains public authored
+setups/collections, not customer accounts or campaign/Lead records.
+
+```bash
+npm run templates:collections          # candidates, coverage, studio and audits
+npm run templates:collections:publish  # requires current setup + collection reviews
+npm run templates:collections:check    # rebuild and check exact shipped revisions
+```
+
+Open `out/collection-studio.html` for site date, Goal, business, format, plan,
+market and direction scenarios; `out/collection-audit.html` measures all selected
+prepared screens. `collections/source.json` pins source hashes; shared reviews
+pin current renderer/prepared revisions and evidence. Editing a dependency,
+collection or evidence requires review again before publication. Runtime seeds
+and translated labels are generated under `resources/collections`, with `/tools`
+excluded from every release artifact.
+
+The initial five collections use 16 freshly reviewed setups. The remaining 92
+pilot setup approvals are stale after previous renderer changes; the scoped
+collection check does not certify the entire library. Existing advisory design
+reviews also do not replace campaign approval. See the
+[implementation review](../../docs/reviews/template-picker-implementation-2026-09-30.md)
+and [API contract](../../docs/template-discovery-api.md) for limits and pending work.
+
+
+### 1 October follow-through
+
+Specification sheet and Excerpt window are approved campaign starts after native
+WordPress, desktop/phone and RTL checks. Five curated collections now reference
+18 current approved setups; 92 other pilot reviews remain stale. The local release
+contains 16 setups / 13 designs / four Free packs / two complete collections.
+Homeware care includes the first real illustrated download; see
+[publishing](publishing/README.md) for hash-bound artwork derivatives and the
+native update/offline rehearsal. Adding a similarity neighbour no longer expires
+an unchanged campaign approval. Content, setup, renderer and evidence changes do.
+
+### 2 October practical-moments batch
+
+Six new compositions add four Free designs and two Pro formats: Callback slip,
+Event calendar, Product detail sheet, Service process strip, Launch index and
+Appointment agenda. Each has its own prepared setup and practical guidance.
+This batch brought the pilot to 116 setups using 67 designs (99 designs across all source
+libraries). This batch does not change the hosted-release plan or featured
+collections. The two deliberate-reuse briefs were completed in the follow-up below.
+
+```bash
+npm run templates:pilot
+node tools/design-library/build/batch-audit.mjs practical-moments
+```
+
+Open `out/pilot.html?batch=practical-moments` to try the journeys, and
+`out/practical-moments-audit.html` for every screen, four widths, RTL, longer
+copy and **Hide optional images**. The batch audit reuses the shared review
+surface and accepts any existing batch ID. See the
+[review evidence](../../docs/reviews/practical-moments-2026-10-02.md).
+
+### 2 October practical-information follow-up
+
+Two new setups deliberately reuse Availability note and Inline signpost for
+arrival/access information and seasonal returns-policy information. Both use
+Pro display formats. The pilot now contains **118 setups using 67 designs**;
+there are no additional designs or assets. Those two briefs are complete; the
+following coverage audit defines the next proposed batch.
+
+Open `out/pilot.html?batch=practical-information`. Rebuild its scoped audit with
+`node tools/design-library/build/batch-audit.mjs practical-information`.
+See [review evidence](../../docs/reviews/practical-information-2026-10-02.md)
+for visual, customer-picker, destination and dismissal checks. Hosted releases
+and featured collections are unchanged. Merchants still configure verified
+information, page targeting, destinations and any seasonal dates.
+
+### 2 October coverage audit and next proposed batch
+
+Scope: repository evidence, not conversion analytics or new customer research.
+The [dated audit snapshot](pilot/coverage-audit-2026-10-02.json) records the
+baseline commit, full counts, two cross-tabulations, every registered setup
+outside the studio and every design without a registered playbook.
+
+| Goal in the curated studio | Stores | Services | Publishers | Total |
+| --- | ---: | ---: | ---: | ---: |
+| Email signup | 11 | 2 | 5 | 18 |
+| SMS signup | 1 | 1 | 0 | 2 |
+| Enquiries | 13 | 25 | 2 | 40 |
+| Resource requests | 4 | 4 | 4 | 12 |
+| Offer/content clicks | 19 | 10 | 7 | 36 |
+| Recommendations | 4 | 2 | 2 | 8 |
+| Cart return | 2 | 0 | 0 | 2 |
+| **Total** | **54** | **44** | **20** | **118** |
+
+Formats: 46 popups, 35 inline, 18 slide-ins, 16 bars and 3 fullscreen setups.
+The studio uses 67 designs, while all 143 registered playbooks use 78 of the
+99 source designs. Another 25 registered playbooks sit outside the curated
+studio, including delayed/exit cart recovery and inline SMS signup. There are
+21 source designs without any registered playbook. These are not automatically
+missing, broken or candidates for removal.
+
+Repetition is concentrated: Appointment note supports 11 studio setups,
+Announcement bar 9, Slide-in question 8, and Choice card 6. This is acceptable
+reuse where the visitor task fits, but more generic enquiry or announcement
+variants are low priority. Review unused source designs before inventing more
+coupons, newsletter cards, split forms or fullscreens.
+
+Keep the three broad business categories, seven goals and five formats. Use
+specific campaign needs for business subtypes rather than expanding the
+picker with overlapping top-level categories. Not every matrix cell needs a
+setup: publisher cart recovery and forced fullscreen marketing would add no
+useful coverage. New business filters should wait for meaningful library depth
+and user evidence. Seasonal events are collections and scheduling guidance,
+not duplicate designs or a separate conversion goal.
+
+The fresh-review queue has **26 current approvals and 92 stale approvals**.
+Stale means the previous evidence does not verify the current revision, not
+that the setup is broken. Review those in small batches before release; this
+planning task neither reapproves them nor retires existing customer campaigns.
+
+#### Recommended batch: three new candidates and one reuse
+
+| Priority | Setup | Format / goal | Design decision and practical difference |
+| --- | --- | --- | --- |
+| 1 | See a sample before choosing texts | Popup / SMS signup | New Message sample candidate: show a clearly labelled example text, frequency expectations and phone consent together. Compare with plain signup and optional-SMS journeys. |
+| 2 | Check whether a website review fits | Inline / enquiry | New Scope sheet candidate: included work versus work agreed separately, beside a compact reply area. Reject the new design if Service summary already serves it as well. |
+| 3 | Read a sample of the weekly letter | Inline / email signup | Reuse Excerpt window. Its existing sample-plus-form structure fits; changing a workbook into a newsletter is a setup change. |
+| 4 | See how a workspace changed | Inline / content click | New Project pair candidate: labelled before/after project media, factual captions and a case-study action. Use verified assets or openly fictional illustrations. |
+
+The [next-batch briefs](pilot/next-batch.json) contain compositions, screens,
+prerequisites, comparator IDs and acceptance checks. They appear at
+`out/roadmap.html?view=next` as planning sketches beside current designs.
+These are not implemented templates. The three candidate designs target Free;
+reuse is Free too. Advanced functionality, not artificial scarcity, should
+justify paid variants later.
+
+All candidates fit the existing renderer vocabulary. No booking engine, live
+cart preview, SKU restock automation, real-time inventory, image slider or
+shipping calculator is promised. The SMS design uses the existing phone
+library; the case study uses labelled static images. The Excerpt window reuse
+first needs its raw string split ratio checked against the renderer's numeric
+ratio handling; any correction must record a design revision and re-review the
+existing workbook setup as well.
+
+Implementation order: Message sample, Scope sheet, newsletter reuse, then
+Project pair when suitable sample media is ready. Check each candidate against
+all 99 source designs before committing to a new ID. A colour, copy, format or
+decorative change alone does not earn a new design. Use the shared picker and
+studio, inspect all screens at four widths, RTL and longer copy, and exercise
+applicable validation, retry, dismissal and real WordPress destinations.
+
+If all three candidates pass, the studio would reach **122 setups / 70 designs**
+and the source inventory **102 designs**. These are ceilings, not current counts
+or a quota; consolidate or defer a candidate that fails the comparison. Hosted
+API/licensing, CI, external delivery and merge remain outside this batch.
+
+### 2 October implementation: clear expectations and useful evidence
+
+The four setups in the preceding planning baseline are now implemented and
+reviewed in `out/pilot.html?batch=trust-and-fit`. Message sample, Scope sheet and
+Project pair are new Free designs; the weekly letter reuses Excerpt window.
+The studio now contains **122 setups / 70 distinct designs**, with **102 source
+designs** in the inventory. The completed briefs have been removed from the
+future-work board. Original fictional workspace diagrams ship with provenance.
+
+The Excerpt window ratio correction has a recorded design revision and fresh
+reviews for both its workbook and newsletter use cases. Its existing reader
+collection dependency, review and bundled snapshot have also been refreshed.
+Native review found and fixed an inline-container height cap: embedded designs
+now grow with the page on every screen, while popups retain their viewport cap.
+
+The [dated review](../../docs/reviews/trust-and-fit-2026-10-02.md) links the
+144-case responsive audit, artwork-hidden check, native WordPress journeys and
+screenshots. Four new setups plus the existing workbook received approval:
+**30 current setup approvals / 92 older stale approvals**. This is editorial
+approval, not hosted release approval or a conversion-performance claim.
+
+The [refresh plan](review/refresh-plan.json) records all 92 remaining IDs in
+three ordered groups: heavily reused design families, other capture/decision
+journeys, then links/announcements. Work in batches of 4–6 setups. Review a
+representative composition first, then every sibling's actual copy, screens,
+privacy and destinations before approving that sibling. Rebuild the live queue
+before each batch; this file is a dated priority list, not an approval source.
+Hosted API/licensing, CI, external delivery and merge remain deferred.

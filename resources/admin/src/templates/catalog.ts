@@ -2,6 +2,8 @@ import apiFetch from '@wordpress/api-fetch';
 import type { TemplateEntry } from './api';
 
 export interface CatalogPack {
+  preview_url?: string;
+  access?: 'free' | 'premium';
   id: string;
   name: string;
   description: string;

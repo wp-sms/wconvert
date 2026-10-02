@@ -1,0 +1,185 @@
+{
+  "id": "callback-slip",
+  "name": "Callback slip",
+  "display_type": "slide_in",
+  "tier": "basic",
+  "tokens": {
+    "bg": "#ffffff",
+    "fg": "#20332f",
+    "muted": "#50615b",
+    "accent": "#245546",
+    "accent-fg": "#ffffff",
+    "border": "#71847b",
+    "input-bg": "#ffffff",
+    "heading-size": "1.75rem",
+    "heading-weight": "600",
+    "text-size": "1rem",
+    "leading": "1.5",
+    "pad": "0",
+    "gap": "1rem",
+    "radius": "0.75rem",
+    "width": "25rem",
+    "shadow": "none"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "details",
+        "name": "Your request",
+        "kind": "input",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "panel",
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "id": "n1",
+                  "text": "Repair advice",
+                  "role": "eyebrow"
+                },
+                {
+                  "type": "heading",
+                  "id": "n2",
+                  "text": "Talk through a repair.",
+                  "role": "headline"
+                },
+                {
+                  "type": "text",
+                  "id": "n3",
+                  "text": "Leave a number to discuss what needs fixing.",
+                  "role": "body"
+                }
+              ],
+              "tokens": {
+                "bg": "#eff3ed",
+                "pad": "1.5rem",
+                "gap": "0.75rem",
+                "radius": "0"
+              }
+            },
+            {
+              "type": "panel",
+              "children": [
+                {
+                  "type": "field",
+                  "id": "n4",
+                  "name": "phone",
+                  "label": "Phone number",
+                  "placeholder": "+44 7700 900123",
+                  "required": true
+                },
+                {
+                  "type": "consent",
+                  "id": "n5",
+                  "text": "Call me about this repair request.",
+                  "hidden": true,
+                  "tokens": {
+                    "text-size": "1.125rem"
+                  },
+                  "role": "consent_text"
+                },
+                {
+                  "type": "button",
+                  "id": "n6",
+                  "label": "Request a call",
+                  "action": "submit",
+                  "submission": "primary",
+                  "role": "cta_label"
+                },
+                {
+                  "type": "text",
+                  "id": "n7",
+                  "text": "For this enquiry only. No marketing signup.",
+                  "size": "s",
+                  "tokens": {
+                    "text-size": "1.167rem"
+                  },
+                  "role": "fine_print"
+                }
+              ],
+              "tokens": {
+                "pad": "1.5rem",
+                "gap": "1rem",
+                "radius": "0"
+              }
+            },
+            {
+              "type": "panel",
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "id": "n8",
+                  "text": "What happens next",
+                  "role": "eyebrow"
+                },
+                {
+                  "type": "text",
+                  "id": "n9",
+                  "text": "We will discuss the repair before agreeing any work.",
+                  "role": "body"
+                }
+              ],
+              "tokens": {
+                "pad": "1rem 1.5rem",
+                "gap": "0.375rem",
+                "bg": "#eff3ed",
+                "radius": "0"
+              }
+            }
+          ],
+          "tokens": {
+            "gap": "0"
+          }
+        }
+      },
+      {
+        "id": "received",
+        "name": "Request received",
+        "kind": "acknowledgement",
+        "content": {
+          "type": "panel",
+          "children": [
+            {
+              "type": "eyebrow",
+              "id": "n90",
+              "text": "Request received",
+              "role": "eyebrow"
+            },
+            {
+              "type": "heading",
+              "id": "n91",
+              "text": "Your call request is received.",
+              "role": "success_headline"
+            },
+            {
+              "type": "text",
+              "id": "n92",
+              "text": "Thank you. The repair and a suitable time still need to be discussed.",
+              "role": "success_body"
+            }
+          ],
+          "tokens": {
+            "pad": "1.5rem",
+            "gap": "1rem",
+            "bg": "#fff"
+          }
+        }
+      }
+    ],
+    "submissions": [
+      {
+        "id": "primary",
+        "required": true,
+        "fields": [
+          "n4"
+        ],
+        "consents": [
+          "n5"
+        ]
+      }
+    ]
+  }
+}

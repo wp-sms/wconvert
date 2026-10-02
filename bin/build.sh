@@ -75,6 +75,12 @@ case "$TARGET" in
     *) usage ;;
 esac
 
+# Collection approvals are bound to the actual renderer and prepared setups.
+# Rebuild this metadata before staging; stale reviews must not ship merely
+# because yesterday's generated JSON still exists. This does not rebuild the
+# production assets or publish a collection, and introduces no CI workflow.
+(cd "$REPO_ROOT" && npm run templates:collections:check)
+
 for tool in php zip; do
     command -v "$tool" >/dev/null 2>&1 || {
         echo "required command not found: $tool" >&2

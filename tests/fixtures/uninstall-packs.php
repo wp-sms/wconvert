@@ -1,6 +1,8 @@
 <?php
 // A separate PHP process with no WordPress or database connection.
 define('WP_UNINSTALL_PLUGIN', true);
+function get_current_blog_id(): int { return 1; }
+function delete_metadata(string $type, int $id, string $key, string $value, bool $all): bool { return true; }
 function wp_clear_scheduled_hook(string $hook): void {}
 $deletedOptions = [];
 function delete_option(string $name): void { global $deletedOptions; $deletedOptions[] = $name; }

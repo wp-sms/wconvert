@@ -1,0 +1,1494 @@
+{
+  "summary": "32 rendered cases across 2 designs. 0 cases need attention (horizontal overflow, controls under 44px, input text under 16px or low solid-colour text/field-outline contrast).",
+  "failures": [],
+  "cases": [
+    {
+      "id": "accessible-visit-note",
+      "viewport": 320,
+      "rtl": false,
+      "stress": false,
+      "step": 0,
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Before your visit",
+          "ratio": 5.47924782363743,
+          "minimum": 4.5
+        },
+        {
+          "text": "Plan your arrival.",
+          "ratio": 10.250975112168717,
+          "minimum": 3
+        },
+        {
+          "text": "Getting here",
+          "ratio": 6.163865147586983,
+          "minimum": 4.5
+        },
+        {
+          "text": "Find the entrance, parking and drop-off details.",
+          "ratio": 11.531806966294907,
+          "minimum": 4.5
+        },
+        {
+          "text": "Access",
+          "ratio": 6.163865147586983,
+          "minimum": 4.5
+        },
+        {
+          "text": "Check step-free routes and facilities before your visit.",
+          "ratio": 11.531806966294907,
+          "minimum": 4.5
+        },
+        {
+          "text": "Read arrival and access details",
+          "ratio": 7.740617141627928,
+          "minimum": 4.5
+        },
+        {
+          "text": "Need more detail? Contact us before travelling.",
+          "ratio": 5.47924782363743,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 288,
+      "height": 484,
+      "overflow": [],
+      "minControl": 74,
+      "inputSize": null,
+      "minText": 12,
+      "scroll": true
+    },
+    {
+      "id": "accessible-visit-note",
+      "viewport": 320,
+      "rtl": false,
+      "stress": true,
+      "step": 0,
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Before your visit",
+          "ratio": 5.47924782363743,
+          "minimum": 4.5
+        },
+        {
+          "text": "Plan your arrival. — a little more to explore together",
+          "ratio": 10.250975112168717,
+          "minimum": 3
+        },
+        {
+          "text": "Getting here",
+          "ratio": 6.163865147586983,
+          "minimum": 4.5
+        },
+        {
+          "text": "Find the entrance, parking and drop-off details. Take a mome",
+          "ratio": 11.531806966294907,
+          "minimum": 4.5
+        },
+        {
+          "text": "Access",
+          "ratio": 6.163865147586983,
+          "minimum": 4.5
+        },
+        {
+          "text": "Check step-free routes and facilities before your visit. Tak",
+          "ratio": 11.531806966294907,
+          "minimum": 4.5
+        },
+        {
+          "text": "Read arrival and access details and explore the details",
+          "ratio": 7.740617141627928,
+          "minimum": 4.5
+        },
+        {
+          "text": "Need more detail? Contact us before travelling.",
+          "ratio": 5.47924782363743,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 288,
+      "height": 715,
+      "overflow": [],
+      "minControl": 98,
+      "inputSize": null,
+      "minText": 12,
+      "scroll": true
+    },
+    {
+      "id": "accessible-visit-note",
+      "viewport": 320,
+      "rtl": true,
+      "stress": false,
+      "step": 0,
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Before your visit",
+          "ratio": 5.47924782363743,
+          "minimum": 4.5
+        },
+        {
+          "text": "Plan your arrival.",
+          "ratio": 10.250975112168717,
+          "minimum": 3
+        },
+        {
+          "text": "Getting here",
+          "ratio": 6.163865147586983,
+          "minimum": 4.5
+        },
+        {
+          "text": "Find the entrance, parking and drop-off details.",
+          "ratio": 11.531806966294907,
+          "minimum": 4.5
+        },
+        {
+          "text": "Access",
+          "ratio": 6.163865147586983,
+          "minimum": 4.5
+        },
+        {
+          "text": "Check step-free routes and facilities before your visit.",
+          "ratio": 11.531806966294907,
+          "minimum": 4.5
+        },
+        {
+          "text": "Read arrival and access details",
+          "ratio": 7.740617141627928,
+          "minimum": 4.5
+        },
+        {
+          "text": "Need more detail? Contact us before travelling.",
+          "ratio": 5.47924782363743,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 288,
+      "height": 484,
+      "overflow": [],
+      "minControl": 74,
+      "inputSize": null,
+      "minText": 12,
+      "scroll": true
+    },
+    {
+      "id": "accessible-visit-note",
+      "viewport": 320,
+      "rtl": true,
+      "stress": true,
+      "step": 0,
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Before your visit",
+          "ratio": 5.47924782363743,
+          "minimum": 4.5
+        },
+        {
+          "text": "Plan your arrival. — a little more to explore together",
+          "ratio": 10.250975112168717,
+          "minimum": 3
+        },
+        {
+          "text": "Getting here",
+          "ratio": 6.163865147586983,
+          "minimum": 4.5
+        },
+        {
+          "text": "Find the entrance, parking and drop-off details. Take a mome",
+          "ratio": 11.531806966294907,
+          "minimum": 4.5
+        },
+        {
+          "text": "Access",
+          "ratio": 6.163865147586983,
+          "minimum": 4.5
+        },
+        {
+          "text": "Check step-free routes and facilities before your visit. Tak",
+          "ratio": 11.531806966294907,
+          "minimum": 4.5
+        },
+        {
+          "text": "Read arrival and access details and explore the details",
+          "ratio": 7.740617141627928,
+          "minimum": 4.5
+        },
+        {
+          "text": "Need more detail? Contact us before travelling.",
+          "ratio": 5.47924782363743,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 288,
+      "height": 715,
+      "overflow": [],
+      "minControl": 98,
+      "inputSize": null,
+      "minText": 12,
+      "scroll": true
+    },
+    {
+      "id": "accessible-visit-note",
+      "viewport": 390,
+      "rtl": false,
+      "stress": false,
+      "step": 0,
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Before your visit",
+          "ratio": 5.47924782363743,
+          "minimum": 4.5
+        },
+        {
+          "text": "Plan your arrival.",
+          "ratio": 10.250975112168717,
+          "minimum": 3
+        },
+        {
+          "text": "Getting here",
+          "ratio": 6.163865147586983,
+          "minimum": 4.5
+        },
+        {
+          "text": "Find the entrance, parking and drop-off details.",
+          "ratio": 11.531806966294907,
+          "minimum": 4.5
+        },
+        {
+          "text": "Access",
+          "ratio": 6.163865147586983,
+          "minimum": 4.5
+        },
+        {
+          "text": "Check step-free routes and facilities before your visit.",
+          "ratio": 11.531806966294907,
+          "minimum": 4.5
+        },
+        {
+          "text": "Read arrival and access details",
+          "ratio": 7.740617141627928,
+          "minimum": 4.5
+        },
+        {
+          "text": "Need more detail? Contact us before travelling.",
+          "ratio": 5.47924782363743,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 358,
+      "height": 439,
+      "overflow": [],
+      "minControl": 50,
+      "inputSize": null,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "accessible-visit-note",
+      "viewport": 390,
+      "rtl": false,
+      "stress": true,
+      "step": 0,
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Before your visit",
+          "ratio": 5.47924782363743,
+          "minimum": 4.5
+        },
+        {
+          "text": "Plan your arrival. — a little more to explore together",
+          "ratio": 10.250975112168717,
+          "minimum": 3
+        },
+        {
+          "text": "Getting here",
+          "ratio": 6.163865147586983,
+          "minimum": 4.5
+        },
+        {
+          "text": "Find the entrance, parking and drop-off details. Take a mome",
+          "ratio": 11.531806966294907,
+          "minimum": 4.5
+        },
+        {
+          "text": "Access",
+          "ratio": 6.163865147586983,
+          "minimum": 4.5
+        },
+        {
+          "text": "Check step-free routes and facilities before your visit. Tak",
+          "ratio": 11.531806966294907,
+          "minimum": 4.5
+        },
+        {
+          "text": "Read arrival and access details and explore the details",
+          "ratio": 7.740617141627928,
+          "minimum": 4.5
+        },
+        {
+          "text": "Need more detail? Contact us before travelling.",
+          "ratio": 5.47924782363743,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 358,
+      "height": 591,
+      "overflow": [],
+      "minControl": 74,
+      "inputSize": null,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "accessible-visit-note",
+      "viewport": 390,
+      "rtl": true,
+      "stress": false,
+      "step": 0,
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Before your visit",
+          "ratio": 5.47924782363743,
+          "minimum": 4.5
+        },
+        {
+          "text": "Plan your arrival.",
+          "ratio": 10.250975112168717,
+          "minimum": 3
+        },
+        {
+          "text": "Getting here",
+          "ratio": 6.163865147586983,
+          "minimum": 4.5
+        },
+        {
+          "text": "Find the entrance, parking and drop-off details.",
+          "ratio": 11.531806966294907,
+          "minimum": 4.5
+        },
+        {
+          "text": "Access",
+          "ratio": 6.163865147586983,
+          "minimum": 4.5
+        },
+        {
+          "text": "Check step-free routes and facilities before your visit.",
+          "ratio": 11.531806966294907,
+          "minimum": 4.5
+        },
+        {
+          "text": "Read arrival and access details",
+          "ratio": 7.740617141627928,
+          "minimum": 4.5
+        },
+        {
+          "text": "Need more detail? Contact us before travelling.",
+          "ratio": 5.47924782363743,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 358,
+      "height": 439,
+      "overflow": [],
+      "minControl": 50,
+      "inputSize": null,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "accessible-visit-note",
+      "viewport": 390,
+      "rtl": true,
+      "stress": true,
+      "step": 0,
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Before your visit",
+          "ratio": 5.47924782363743,
+          "minimum": 4.5
+        },
+        {
+          "text": "Plan your arrival. — a little more to explore together",
+          "ratio": 10.250975112168717,
+          "minimum": 3
+        },
+        {
+          "text": "Getting here",
+          "ratio": 6.163865147586983,
+          "minimum": 4.5
+        },
+        {
+          "text": "Find the entrance, parking and drop-off details. Take a mome",
+          "ratio": 11.531806966294907,
+          "minimum": 4.5
+        },
+        {
+          "text": "Access",
+          "ratio": 6.163865147586983,
+          "minimum": 4.5
+        },
+        {
+          "text": "Check step-free routes and facilities before your visit. Tak",
+          "ratio": 11.531806966294907,
+          "minimum": 4.5
+        },
+        {
+          "text": "Read arrival and access details and explore the details",
+          "ratio": 7.740617141627928,
+          "minimum": 4.5
+        },
+        {
+          "text": "Need more detail? Contact us before travelling.",
+          "ratio": 5.47924782363743,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 358,
+      "height": 591,
+      "overflow": [],
+      "minControl": 74,
+      "inputSize": null,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "accessible-visit-note",
+      "viewport": 768,
+      "rtl": false,
+      "stress": false,
+      "step": 0,
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Before your visit",
+          "ratio": 5.47924782363743,
+          "minimum": 4.5
+        },
+        {
+          "text": "Plan your arrival.",
+          "ratio": 10.250975112168717,
+          "minimum": 3
+        },
+        {
+          "text": "Getting here",
+          "ratio": 6.163865147586983,
+          "minimum": 4.5
+        },
+        {
+          "text": "Find the entrance, parking and drop-off details.",
+          "ratio": 11.531806966294907,
+          "minimum": 4.5
+        },
+        {
+          "text": "Access",
+          "ratio": 6.163865147586983,
+          "minimum": 4.5
+        },
+        {
+          "text": "Check step-free routes and facilities before your visit.",
+          "ratio": 11.531806966294907,
+          "minimum": 4.5
+        },
+        {
+          "text": "Read arrival and access details",
+          "ratio": 7.740617141627928,
+          "minimum": 4.5
+        },
+        {
+          "text": "Need more detail? Contact us before travelling.",
+          "ratio": 5.47924782363743,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 400,
+      "height": 447,
+      "overflow": [],
+      "minControl": 50,
+      "inputSize": null,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "accessible-visit-note",
+      "viewport": 768,
+      "rtl": false,
+      "stress": true,
+      "step": 0,
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Before your visit",
+          "ratio": 5.47924782363743,
+          "minimum": 4.5
+        },
+        {
+          "text": "Plan your arrival. — a little more to explore together",
+          "ratio": 10.250975112168717,
+          "minimum": 3
+        },
+        {
+          "text": "Getting here",
+          "ratio": 6.163865147586983,
+          "minimum": 4.5
+        },
+        {
+          "text": "Find the entrance, parking and drop-off details. Take a mome",
+          "ratio": 11.531806966294907,
+          "minimum": 4.5
+        },
+        {
+          "text": "Access",
+          "ratio": 6.163865147586983,
+          "minimum": 4.5
+        },
+        {
+          "text": "Check step-free routes and facilities before your visit. Tak",
+          "ratio": 11.531806966294907,
+          "minimum": 4.5
+        },
+        {
+          "text": "Read arrival and access details and explore the details",
+          "ratio": 7.740617141627928,
+          "minimum": 4.5
+        },
+        {
+          "text": "Need more detail? Contact us before travelling.",
+          "ratio": 5.47924782363743,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 400,
+      "height": 551,
+      "overflow": [],
+      "minControl": 74,
+      "inputSize": null,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "accessible-visit-note",
+      "viewport": 768,
+      "rtl": true,
+      "stress": false,
+      "step": 0,
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Before your visit",
+          "ratio": 5.47924782363743,
+          "minimum": 4.5
+        },
+        {
+          "text": "Plan your arrival.",
+          "ratio": 10.250975112168717,
+          "minimum": 3
+        },
+        {
+          "text": "Getting here",
+          "ratio": 6.163865147586983,
+          "minimum": 4.5
+        },
+        {
+          "text": "Find the entrance, parking and drop-off details.",
+          "ratio": 11.531806966294907,
+          "minimum": 4.5
+        },
+        {
+          "text": "Access",
+          "ratio": 6.163865147586983,
+          "minimum": 4.5
+        },
+        {
+          "text": "Check step-free routes and facilities before your visit.",
+          "ratio": 11.531806966294907,
+          "minimum": 4.5
+        },
+        {
+          "text": "Read arrival and access details",
+          "ratio": 7.740617141627928,
+          "minimum": 4.5
+        },
+        {
+          "text": "Need more detail? Contact us before travelling.",
+          "ratio": 5.47924782363743,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 400,
+      "height": 447,
+      "overflow": [],
+      "minControl": 50,
+      "inputSize": null,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "accessible-visit-note",
+      "viewport": 768,
+      "rtl": true,
+      "stress": true,
+      "step": 0,
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Before your visit",
+          "ratio": 5.47924782363743,
+          "minimum": 4.5
+        },
+        {
+          "text": "Plan your arrival. — a little more to explore together",
+          "ratio": 10.250975112168717,
+          "minimum": 3
+        },
+        {
+          "text": "Getting here",
+          "ratio": 6.163865147586983,
+          "minimum": 4.5
+        },
+        {
+          "text": "Find the entrance, parking and drop-off details. Take a mome",
+          "ratio": 11.531806966294907,
+          "minimum": 4.5
+        },
+        {
+          "text": "Access",
+          "ratio": 6.163865147586983,
+          "minimum": 4.5
+        },
+        {
+          "text": "Check step-free routes and facilities before your visit. Tak",
+          "ratio": 11.531806966294907,
+          "minimum": 4.5
+        },
+        {
+          "text": "Read arrival and access details and explore the details",
+          "ratio": 7.740617141627928,
+          "minimum": 4.5
+        },
+        {
+          "text": "Need more detail? Contact us before travelling.",
+          "ratio": 5.47924782363743,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 400,
+      "height": 551,
+      "overflow": [],
+      "minControl": 74,
+      "inputSize": null,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "accessible-visit-note",
+      "viewport": 1440,
+      "rtl": false,
+      "stress": false,
+      "step": 0,
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Before your visit",
+          "ratio": 5.47924782363743,
+          "minimum": 4.5
+        },
+        {
+          "text": "Plan your arrival.",
+          "ratio": 10.250975112168717,
+          "minimum": 3
+        },
+        {
+          "text": "Getting here",
+          "ratio": 6.163865147586983,
+          "minimum": 4.5
+        },
+        {
+          "text": "Find the entrance, parking and drop-off details.",
+          "ratio": 11.531806966294907,
+          "minimum": 4.5
+        },
+        {
+          "text": "Access",
+          "ratio": 6.163865147586983,
+          "minimum": 4.5
+        },
+        {
+          "text": "Check step-free routes and facilities before your visit.",
+          "ratio": 11.531806966294907,
+          "minimum": 4.5
+        },
+        {
+          "text": "Read arrival and access details",
+          "ratio": 7.740617141627928,
+          "minimum": 4.5
+        },
+        {
+          "text": "Need more detail? Contact us before travelling.",
+          "ratio": 5.47924782363743,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 400,
+      "height": 447,
+      "overflow": [],
+      "minControl": 50,
+      "inputSize": null,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "accessible-visit-note",
+      "viewport": 1440,
+      "rtl": false,
+      "stress": true,
+      "step": 0,
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Before your visit",
+          "ratio": 5.47924782363743,
+          "minimum": 4.5
+        },
+        {
+          "text": "Plan your arrival. — a little more to explore together",
+          "ratio": 10.250975112168717,
+          "minimum": 3
+        },
+        {
+          "text": "Getting here",
+          "ratio": 6.163865147586983,
+          "minimum": 4.5
+        },
+        {
+          "text": "Find the entrance, parking and drop-off details. Take a mome",
+          "ratio": 11.531806966294907,
+          "minimum": 4.5
+        },
+        {
+          "text": "Access",
+          "ratio": 6.163865147586983,
+          "minimum": 4.5
+        },
+        {
+          "text": "Check step-free routes and facilities before your visit. Tak",
+          "ratio": 11.531806966294907,
+          "minimum": 4.5
+        },
+        {
+          "text": "Read arrival and access details and explore the details",
+          "ratio": 7.740617141627928,
+          "minimum": 4.5
+        },
+        {
+          "text": "Need more detail? Contact us before travelling.",
+          "ratio": 5.47924782363743,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 400,
+      "height": 551,
+      "overflow": [],
+      "minControl": 74,
+      "inputSize": null,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "accessible-visit-note",
+      "viewport": 1440,
+      "rtl": true,
+      "stress": false,
+      "step": 0,
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Before your visit",
+          "ratio": 5.47924782363743,
+          "minimum": 4.5
+        },
+        {
+          "text": "Plan your arrival.",
+          "ratio": 10.250975112168717,
+          "minimum": 3
+        },
+        {
+          "text": "Getting here",
+          "ratio": 6.163865147586983,
+          "minimum": 4.5
+        },
+        {
+          "text": "Find the entrance, parking and drop-off details.",
+          "ratio": 11.531806966294907,
+          "minimum": 4.5
+        },
+        {
+          "text": "Access",
+          "ratio": 6.163865147586983,
+          "minimum": 4.5
+        },
+        {
+          "text": "Check step-free routes and facilities before your visit.",
+          "ratio": 11.531806966294907,
+          "minimum": 4.5
+        },
+        {
+          "text": "Read arrival and access details",
+          "ratio": 7.740617141627928,
+          "minimum": 4.5
+        },
+        {
+          "text": "Need more detail? Contact us before travelling.",
+          "ratio": 5.47924782363743,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 400,
+      "height": 447,
+      "overflow": [],
+      "minControl": 50,
+      "inputSize": null,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "accessible-visit-note",
+      "viewport": 1440,
+      "rtl": true,
+      "stress": true,
+      "step": 0,
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Before your visit",
+          "ratio": 5.47924782363743,
+          "minimum": 4.5
+        },
+        {
+          "text": "Plan your arrival. — a little more to explore together",
+          "ratio": 10.250975112168717,
+          "minimum": 3
+        },
+        {
+          "text": "Getting here",
+          "ratio": 6.163865147586983,
+          "minimum": 4.5
+        },
+        {
+          "text": "Find the entrance, parking and drop-off details. Take a mome",
+          "ratio": 11.531806966294907,
+          "minimum": 4.5
+        },
+        {
+          "text": "Access",
+          "ratio": 6.163865147586983,
+          "minimum": 4.5
+        },
+        {
+          "text": "Check step-free routes and facilities before your visit. Tak",
+          "ratio": 11.531806966294907,
+          "minimum": 4.5
+        },
+        {
+          "text": "Read arrival and access details and explore the details",
+          "ratio": 7.740617141627928,
+          "minimum": 4.5
+        },
+        {
+          "text": "Need more detail? Contact us before travelling.",
+          "ratio": 5.47924782363743,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 400,
+      "height": 551,
+      "overflow": [],
+      "minControl": 74,
+      "inputSize": null,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "returns-deadline-notice",
+      "viewport": 320,
+      "rtl": false,
+      "stress": false,
+      "step": 0,
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Seasonal shopping",
+          "ratio": 5.751502149061108,
+          "minimum": 4.5
+        },
+        {
+          "text": "Check returns before you buy.",
+          "ratio": 10.957135239272114,
+          "minimum": 4.5
+        },
+        {
+          "text": "Read returns policy",
+          "ratio": 9.06799271221206,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 320,
+      "height": 127,
+      "overflow": [],
+      "minControl": 48.5,
+      "inputSize": null,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "returns-deadline-notice",
+      "viewport": 320,
+      "rtl": false,
+      "stress": true,
+      "step": 0,
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Seasonal shopping",
+          "ratio": 5.751502149061108,
+          "minimum": 4.5
+        },
+        {
+          "text": "Check returns before you buy. — a little more to explore tog",
+          "ratio": 10.957135239272114,
+          "minimum": 4.5
+        },
+        {
+          "text": "Read returns policy and explore the details",
+          "ratio": 9.06799271221206,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 320,
+      "height": 169,
+      "overflow": [],
+      "minControl": 71,
+      "inputSize": null,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "returns-deadline-notice",
+      "viewport": 320,
+      "rtl": true,
+      "stress": false,
+      "step": 0,
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Seasonal shopping",
+          "ratio": 5.751502149061108,
+          "minimum": 4.5
+        },
+        {
+          "text": "Check returns before you buy.",
+          "ratio": 10.957135239272114,
+          "minimum": 4.5
+        },
+        {
+          "text": "Read returns policy",
+          "ratio": 9.06799271221206,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 320,
+      "height": 127,
+      "overflow": [],
+      "minControl": 48.5,
+      "inputSize": null,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "returns-deadline-notice",
+      "viewport": 320,
+      "rtl": true,
+      "stress": true,
+      "step": 0,
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Seasonal shopping",
+          "ratio": 5.751502149061108,
+          "minimum": 4.5
+        },
+        {
+          "text": "Check returns before you buy. — a little more to explore tog",
+          "ratio": 10.957135239272114,
+          "minimum": 4.5
+        },
+        {
+          "text": "Read returns policy and explore the details",
+          "ratio": 9.06799271221206,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 320,
+      "height": 169,
+      "overflow": [],
+      "minControl": 71,
+      "inputSize": null,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "returns-deadline-notice",
+      "viewport": 390,
+      "rtl": false,
+      "stress": false,
+      "step": 0,
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Seasonal shopping",
+          "ratio": 5.751502149061108,
+          "minimum": 4.5
+        },
+        {
+          "text": "Check returns before you buy.",
+          "ratio": 10.957135239272114,
+          "minimum": 4.5
+        },
+        {
+          "text": "Read returns policy",
+          "ratio": 9.06799271221206,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 390,
+      "height": 127,
+      "overflow": [],
+      "minControl": 48.5,
+      "inputSize": null,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "returns-deadline-notice",
+      "viewport": 390,
+      "rtl": false,
+      "stress": true,
+      "step": 0,
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Seasonal shopping",
+          "ratio": 5.751502149061108,
+          "minimum": 4.5
+        },
+        {
+          "text": "Check returns before you buy. — a little more to explore tog",
+          "ratio": 10.957135239272114,
+          "minimum": 4.5
+        },
+        {
+          "text": "Read returns policy and explore the details",
+          "ratio": 9.06799271221206,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 390,
+      "height": 169,
+      "overflow": [],
+      "minControl": 71,
+      "inputSize": null,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "returns-deadline-notice",
+      "viewport": 390,
+      "rtl": true,
+      "stress": false,
+      "step": 0,
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Seasonal shopping",
+          "ratio": 5.751502149061108,
+          "minimum": 4.5
+        },
+        {
+          "text": "Check returns before you buy.",
+          "ratio": 10.957135239272114,
+          "minimum": 4.5
+        },
+        {
+          "text": "Read returns policy",
+          "ratio": 9.06799271221206,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 390,
+      "height": 127,
+      "overflow": [],
+      "minControl": 48.5,
+      "inputSize": null,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "returns-deadline-notice",
+      "viewport": 390,
+      "rtl": true,
+      "stress": true,
+      "step": 0,
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Seasonal shopping",
+          "ratio": 5.751502149061108,
+          "minimum": 4.5
+        },
+        {
+          "text": "Check returns before you buy. — a little more to explore tog",
+          "ratio": 10.957135239272114,
+          "minimum": 4.5
+        },
+        {
+          "text": "Read returns policy and explore the details",
+          "ratio": 9.06799271221206,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 390,
+      "height": 169,
+      "overflow": [],
+      "minControl": 71,
+      "inputSize": null,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "returns-deadline-notice",
+      "viewport": 768,
+      "rtl": false,
+      "stress": false,
+      "step": 0,
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Seasonal shopping",
+          "ratio": 5.751502149061108,
+          "minimum": 4.5
+        },
+        {
+          "text": "Check returns before you buy.",
+          "ratio": 10.957135239272114,
+          "minimum": 4.5
+        },
+        {
+          "text": "Read returns policy",
+          "ratio": 9.06799271221206,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 768,
+      "height": 73,
+      "overflow": [],
+      "minControl": 48.5,
+      "inputSize": null,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "returns-deadline-notice",
+      "viewport": 768,
+      "rtl": false,
+      "stress": true,
+      "step": 0,
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Seasonal shopping",
+          "ratio": 5.751502149061108,
+          "minimum": 4.5
+        },
+        {
+          "text": "Check returns before you buy. — a little more to explore tog",
+          "ratio": 10.957135239272114,
+          "minimum": 4.5
+        },
+        {
+          "text": "Read returns policy and explore the details",
+          "ratio": 9.06799271221206,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 768,
+      "height": 117,
+      "overflow": [],
+      "minControl": 48.5,
+      "inputSize": null,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "returns-deadline-notice",
+      "viewport": 768,
+      "rtl": true,
+      "stress": false,
+      "step": 0,
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Seasonal shopping",
+          "ratio": 5.751502149061108,
+          "minimum": 4.5
+        },
+        {
+          "text": "Check returns before you buy.",
+          "ratio": 10.957135239272114,
+          "minimum": 4.5
+        },
+        {
+          "text": "Read returns policy",
+          "ratio": 9.06799271221206,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 768,
+      "height": 73,
+      "overflow": [],
+      "minControl": 48.5,
+      "inputSize": null,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "returns-deadline-notice",
+      "viewport": 768,
+      "rtl": true,
+      "stress": true,
+      "step": 0,
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Seasonal shopping",
+          "ratio": 5.751502149061108,
+          "minimum": 4.5
+        },
+        {
+          "text": "Check returns before you buy. — a little more to explore tog",
+          "ratio": 10.957135239272114,
+          "minimum": 4.5
+        },
+        {
+          "text": "Read returns policy and explore the details",
+          "ratio": 9.06799271221206,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 768,
+      "height": 117,
+      "overflow": [],
+      "minControl": 48.5,
+      "inputSize": null,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "returns-deadline-notice",
+      "viewport": 1440,
+      "rtl": false,
+      "stress": false,
+      "step": 0,
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Seasonal shopping",
+          "ratio": 5.751502149061108,
+          "minimum": 4.5
+        },
+        {
+          "text": "Check returns before you buy.",
+          "ratio": 10.957135239272114,
+          "minimum": 4.5
+        },
+        {
+          "text": "Read returns policy",
+          "ratio": 9.06799271221206,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 1120,
+      "height": 73,
+      "overflow": [],
+      "minControl": 48.5,
+      "inputSize": null,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "returns-deadline-notice",
+      "viewport": 1440,
+      "rtl": false,
+      "stress": true,
+      "step": 0,
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Seasonal shopping",
+          "ratio": 5.751502149061108,
+          "minimum": 4.5
+        },
+        {
+          "text": "Check returns before you buy. — a little more to explore tog",
+          "ratio": 10.957135239272114,
+          "minimum": 4.5
+        },
+        {
+          "text": "Read returns policy and explore the details",
+          "ratio": 9.06799271221206,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 1120,
+      "height": 73,
+      "overflow": [],
+      "minControl": 48.5,
+      "inputSize": null,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "returns-deadline-notice",
+      "viewport": 1440,
+      "rtl": true,
+      "stress": false,
+      "step": 0,
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Seasonal shopping",
+          "ratio": 5.751502149061108,
+          "minimum": 4.5
+        },
+        {
+          "text": "Check returns before you buy.",
+          "ratio": 10.957135239272114,
+          "minimum": 4.5
+        },
+        {
+          "text": "Read returns policy",
+          "ratio": 9.06799271221206,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 1120,
+      "height": 73,
+      "overflow": [],
+      "minControl": 48.5,
+      "inputSize": null,
+      "minText": 12,
+      "scroll": false
+    },
+    {
+      "id": "returns-deadline-notice",
+      "viewport": 1440,
+      "rtl": true,
+      "stress": true,
+      "step": 0,
+      "lowContrast": [],
+      "lowFieldContrast": [],
+      "textRatios": [
+        {
+          "text": "Seasonal shopping",
+          "ratio": 5.751502149061108,
+          "minimum": 4.5
+        },
+        {
+          "text": "Check returns before you buy. — a little more to explore tog",
+          "ratio": 10.957135239272114,
+          "minimum": 4.5
+        },
+        {
+          "text": "Read returns policy and explore the details",
+          "ratio": 9.06799271221206,
+          "minimum": 4.5
+        }
+      ],
+      "fieldRatios": [],
+      "width": 1120,
+      "height": 73,
+      "overflow": [],
+      "minControl": 48.5,
+      "inputSize": null,
+      "minText": 12,
+      "scroll": false
+    }
+  ]
+}

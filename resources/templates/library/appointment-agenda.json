@@ -1,0 +1,227 @@
+{
+  "id": "appointment-agenda",
+  "name": "Appointment agenda",
+  "display_type": "popup",
+  "tier": "free",
+  "tokens": {
+    "bg": "#ffffff",
+    "fg": "#3f304a",
+    "muted": "#64536f",
+    "accent": "#674475",
+    "accent-fg": "#ffffff",
+    "border": "#8b7696",
+    "input-bg": "#ffffff",
+    "heading-size": "1.875rem",
+    "heading-weight": "400",
+    "text-size": "1rem",
+    "leading": "1.5",
+    "pad": "1.25rem",
+    "gap": "1rem",
+    "radius": "0.75rem",
+    "width": "46rem",
+    "shadow": "none",
+    "heading-font": "Georgia, serif"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "details",
+        "name": "Your request",
+        "kind": "input",
+        "content": {
+          "type": "split",
+          "ratio": 0.5,
+          "basis": "16rem",
+          "start": [
+            {
+              "type": "panel",
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "id": "n1",
+                  "text": "Before we arrange a time",
+                  "role": "eyebrow"
+                },
+                {
+                  "type": "heading",
+                  "id": "n2",
+                  "text": "Talk through your space.",
+                  "role": "headline"
+                },
+                {
+                  "type": "text",
+                  "id": "n3",
+                  "text": "Ask about a planning consultation.",
+                  "role": "body"
+                },
+                {
+                  "type": "divider",
+                  "id": "n4"
+                },
+                {
+                  "type": "eyebrow",
+                  "id": "n5",
+                  "text": "Bring to the conversation",
+                  "role": "eyebrow"
+                },
+                {
+                  "type": "text",
+                  "id": "n6",
+                  "text": "Your room and the changes you have in mind.",
+                  "role": "body"
+                },
+                {
+                  "type": "eyebrow",
+                  "id": "n7",
+                  "text": "Agree together",
+                  "role": "eyebrow"
+                },
+                {
+                  "type": "text",
+                  "id": "n8",
+                  "text": "The format, any fee and a suitable time.",
+                  "role": "body"
+                }
+              ],
+              "tokens": {
+                "bg": "#eee8f1",
+                "fg": "#3f304a",
+                "muted": "#64536f",
+                "pad": "1.5rem",
+                "gap": "0.75rem",
+                "radius": "0.5rem"
+              },
+              "narrow": {
+                "pad": "1rem"
+              }
+            }
+          ],
+          "end": [
+            {
+              "type": "stack",
+              "children": [
+                {
+                  "type": "heading",
+                  "id": "n9",
+                  "text": "Your enquiry",
+                  "tokens": {
+                    "heading-size": "1.375rem"
+                  },
+                  "role": "headline"
+                },
+                {
+                  "type": "field",
+                  "id": "n10",
+                  "name": "interest",
+                  "label": "What would help? (optional)",
+                  "placeholder": "Choose a topic",
+                  "required": false,
+                  "options": [
+                    {
+                      "value": "layout",
+                      "label": "Planning the layout"
+                    },
+                    {
+                      "value": "colour",
+                      "label": "Choosing colours and materials"
+                    },
+                    {
+                      "value": "unsure",
+                      "label": "Help deciding where to start"
+                    }
+                  ]
+                },
+                {
+                  "type": "field",
+                  "id": "n11",
+                  "name": "email",
+                  "label": "Email address",
+                  "placeholder": "you@example.com",
+                  "required": true
+                },
+                {
+                  "type": "consent",
+                  "id": "n12",
+                  "text": "Reply to my consultation enquiry.",
+                  "hidden": true,
+                  "tokens": {
+                    "text-size": "1.125rem"
+                  },
+                  "role": "consent_text"
+                },
+                {
+                  "type": "button",
+                  "id": "n13",
+                  "label": "Ask about a consultation",
+                  "action": "submit",
+                  "submission": "primary",
+                  "role": "cta_label"
+                },
+                {
+                  "type": "text",
+                  "id": "n14",
+                  "text": "Your details are for this enquiry. A time is not reserved.",
+                  "size": "s",
+                  "tokens": {
+                    "text-size": "1.167rem"
+                  },
+                  "role": "fine_print"
+                }
+              ],
+              "tokens": {
+                "gap": "1rem"
+              }
+            }
+          ]
+        }
+      },
+      {
+        "id": "received",
+        "name": "Request received",
+        "kind": "acknowledgement",
+        "content": {
+          "type": "panel",
+          "children": [
+            {
+              "type": "eyebrow",
+              "id": "n90",
+              "text": "Request received",
+              "role": "eyebrow"
+            },
+            {
+              "type": "heading",
+              "id": "n91",
+              "text": "Consultation enquiry received",
+              "role": "success_headline"
+            },
+            {
+              "type": "text",
+              "id": "n92",
+              "text": "Thank you. The format, any fee and a suitable time still need to be agreed.",
+              "role": "success_body"
+            }
+          ],
+          "tokens": {
+            "pad": "1.5rem",
+            "gap": "1rem",
+            "bg": "#fff"
+          }
+        }
+      }
+    ],
+    "submissions": [
+      {
+        "id": "primary",
+        "required": true,
+        "fields": [
+          "n10",
+          "n11"
+        ],
+        "consents": [
+          "n12"
+        ]
+      }
+    ]
+  }
+}

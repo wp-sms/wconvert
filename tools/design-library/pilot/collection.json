@@ -2986,6 +2986,388 @@
         ],
         "reason": "A single text-first signpost with a source label, compact heading and quiet text action; no two-line explanatory block or filled button."
       }
+    },
+    {
+      "id": "specification-sheet",
+      "audience": "stores",
+      "family": "Compare two useful options",
+      "visitor_need": "Compare the dimensions and care requirements of two shortlisted products before opening their details.",
+      "difference": "Three labelled specification bands compare two sizes, followed by one destination action.",
+      "requirements": [
+        "Real product specifications and a comparison destination; no invented best-seller claim.",
+        "Repeat option names in each stacked phone band so values never lose their label."
+      ],
+      "status": "review",
+      "source": "Original WConvert design, implementing the useful-differences brief.",
+      "suggested_setup": [
+        "Use accurate sample content, a real destination and relevant page targeting."
+      ],
+      "measure": "Clicks through to the product comparison destination; not purchases.",
+      "batch": "useful-differences",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "material-pair",
+          "collection-poster"
+        ],
+        "reason": "Three labelled specification bands compare two sizes, followed by one destination action."
+      }
+    },
+    {
+      "id": "excerpt-window",
+      "audience": "publishers",
+      "family": "Try a page before requesting the guide",
+      "visitor_need": "Read a useful sample of a workbook before deciding whether to request the complete resource.",
+      "difference": "A readable workbook exercise on a paper panel, paired with a compact request column. The sample is real editable text, not cover art.",
+      "requirements": [
+        "Supply an actual useful sample and an accessible complete resource.",
+        "The excerpt remains readable without artwork; the acknowledgement does not claim email delivery."
+      ],
+      "status": "review",
+      "source": "Original WConvert design, implementing the useful-differences brief.",
+      "suggested_setup": [
+        "Use accurate sample content, a real destination and relevant page targeting."
+      ],
+      "measure": "Lead magnet emails accepted for sending; a request acknowledgement alone is not delivery.",
+      "batch": "useful-differences",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "useful-guide",
+          "reading-cover"
+        ],
+        "reason": "A readable workbook exercise on a paper panel, paired with a compact request column. The sample is real editable text, not cover art."
+      }
+    },
+    {
+      "id": "callback-slip",
+      "audience": "services",
+      "family": "Callback slip",
+      "visitor_need": "Request a call without writing a detailed enquiry or signing up for marketing.",
+      "difference": "A three-part call slip: subject, inset native phone form, then a separate next-step footer. No email field or decorative icons.",
+      "requirements": [
+        "A team member responsible for returning calls",
+        "Actual service-area and contact arrangements"
+      ],
+      "status": "review",
+      "source": "Original WConvert practical-moments batch; purpose-led composition, reviewed against existing designs.",
+      "suggested_setup": [
+        "Relevant repair pages after 20 seconds; exclude checkout and booking confirmations.",
+        "Use Collect only and review Leads or export; no marketing destination is needed."
+      ],
+      "measure": "Accepted call requests, not completed calls or booked jobs.",
+      "batch": "practical-moments",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "inline-phone",
+          "slide-in-question"
+        ],
+        "reason": "A three-part call slip: subject, inset native phone form, then a separate next-step footer. No email field or decorative icons."
+      }
+    },
+    {
+      "id": "event-calendar",
+      "audience": "services",
+      "family": "Event calendar",
+      "visitor_need": "Find the date, timezone, place and format before opening an event registration page.",
+      "difference": "A calendar tile sits beside the invitation, with paired factual event rows below; the date is content, not a countdown.",
+      "requirements": [
+        "Verified event date, timezone, venue and access information",
+        "Working registration page and a campaign end date"
+      ],
+      "status": "review",
+      "source": "Original WConvert practical-moments batch; purpose-led composition, reviewed against existing designs.",
+      "suggested_setup": [
+        "Show on relevant workshop pages after 20 seconds.",
+        "Replace every sample date and set an explicit end time; do not show an expired invitation."
+      ],
+      "measure": "Clicks to event details, not registrations or attendance.",
+      "batch": "practical-moments",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "agenda-card",
+          "session-card"
+        ],
+        "reason": "A calendar tile sits beside the invitation, with paired factual event rows below; the date is content, not a countdown."
+      }
+    },
+    {
+      "id": "product-detail-sheet",
+      "audience": "stores",
+      "family": "Product detail sheet",
+      "visitor_need": "Understand the size, material and intended use before visiting the product page.",
+      "difference": "An original small product portrait beside three labelled facts, followed by a full-width caption and action; unlike the multi-product comparison table.",
+      "requirements": [
+        "Verified product dimensions and materials",
+        "Product destination and relevant licensed or original artwork"
+      ],
+      "status": "review",
+      "source": "Original WConvert practical-moments batch; purpose-led composition, reviewed against existing designs.",
+      "suggested_setup": [
+        "Use on related category pages after 20 seconds; exclude checkout.",
+        "Replace the sample artwork and facts together, then verify the product link."
+      ],
+      "measure": "Product-detail clicks, not purchases.",
+      "batch": "practical-moments",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "specification-sheet",
+          "popup-two-column"
+        ],
+        "reason": "An original small product portrait beside three labelled facts, followed by a full-width caption and action; unlike the multi-product comparison table."
+      }
+    },
+    {
+      "id": "service-process-strip",
+      "audience": "services",
+      "family": "Service process strip",
+      "visitor_need": "Understand enquiry, assessment and agreement before giving a reply address.",
+      "difference": "A numbered process list sits beside a compact enquiry panel; stages stay in reading order above the form on phones.",
+      "requirements": [
+        "A real assessment process and a person responsible for replies",
+        "A page containing the block or shortcode"
+      ],
+      "status": "review",
+      "source": "Original WConvert practical-moments batch; purpose-led composition, reviewed against existing designs.",
+      "suggested_setup": [
+        "Embed below restoration examples on the service page.",
+        "Use Collect only and follow up on the request; confirm scope and price separately."
+      ],
+      "measure": "Accepted restoration enquiries, not quoted or completed jobs.",
+      "batch": "practical-moments",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "benefit-grid",
+          "inline-choice"
+        ],
+        "reason": "A numbered process list sits beside a compact enquiry panel; stages stay in reading order above the form on phones."
+      }
+    },
+    {
+      "id": "launch-index",
+      "audience": "stores",
+      "family": "Launch index bar",
+      "visitor_need": "Discover a new collection without interrupting the browsing session.",
+      "difference": "A compact inset collection masthead, a separate one-line descriptor and a light action on a dark strip; no oversized empty banner or countdown.",
+      "requirements": [
+        "An available collection and working destination",
+        "Appropriate start and end dates"
+      ],
+      "status": "review",
+      "source": "Original WConvert practical-moments batch; purpose-led composition, reviewed against existing designs.",
+      "suggested_setup": [
+        "Show on store browsing pages after 8 seconds; exclude checkout and order confirmations.",
+        "Check the bar beside sticky navigation and phone controls; do not cover essential page actions."
+      ],
+      "measure": "Collection visits from the bar, not purchases.",
+      "batch": "practical-moments",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "split-notice",
+          "inline-signpost"
+        ],
+        "reason": "A compact inset collection masthead, a separate one-line descriptor and a light action on a dark strip; no oversized empty banner or countdown."
+      }
+    },
+    {
+      "id": "appointment-agenda",
+      "audience": "services",
+      "family": "Appointment agenda",
+      "visitor_need": "Ask whether a consultation is suitable and know what will be discussed before arranging a time.",
+      "difference": "A preparatory agenda occupies its own rail beside a reply form; this is neither a booking calendar nor the top-and-bottom appointment note.",
+      "requirements": [
+        "A real consultation service and reply process",
+        "Confirmed terms and booking process for the subsequent conversation"
+      ],
+      "status": "review",
+      "source": "Original WConvert practical-moments batch; purpose-led composition, reviewed against existing designs.",
+      "suggested_setup": [
+        "Show on the relevant room-planning service page after 20 seconds.",
+        "Use Collect only; review the optional topic before replying. No booking is created."
+      ],
+      "measure": "Accepted consultation requests, not confirmed appointments.",
+      "batch": "practical-moments",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "appointment-note",
+          "inline-choice"
+        ],
+        "reason": "A preparatory agenda occupies its own rail beside a reply form; this is neither a booking calendar nor the top-and-bottom appointment note."
+      }
+    },
+    {
+      "id": "accessible-visit-note",
+      "audience": "services",
+      "family": "Availability note",
+      "visitor_need": "Find step-free access and arrival information before planning a visit.",
+      "difference": "Reuse Availability note for entrance and access information. This is a new practical setup, not a new design.",
+      "requirements": [
+        "Verified arrival and access information, including any limitations",
+        "A working information page with a contact route for individual questions"
+      ],
+      "status": "review",
+      "source": "Intentional reuse from the reviewed next-batch plan; no new design or artwork.",
+      "suggested_setup": [
+        "Show on relevant location or visit pages after 20 seconds; exclude the access-information page itself.",
+        "Keep the information available in normal page navigation; the slide-in is an optional signpost. Respect dismissal.",
+        "Verify routes and facilities before publishing; if information is unknown, use an enquiry instead."
+      ],
+      "measure": "Visits to arrival and access information, not venue accessibility, bookings or completed visits.",
+      "batch": "practical-information",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "availability-note",
+          "inline-choice"
+        ],
+        "reason": "The existing two-part information card fits arrival details without another layout. It links to information rather than collecting access enquiries."
+      }
+    },
+    {
+      "id": "returns-deadline-notice",
+      "audience": "stores",
+      "family": "Inline signpost",
+      "visitor_need": "Find the applicable returns policy while browsing a seasonal collection.",
+      "difference": "Reuse Inline signpost for a compact returns-policy link. New words and placement are a setup variation, not another design.",
+      "requirements": [
+        "An accurate current returns policy and working destination",
+        "Confirmed seasonal eligibility, dates and exceptions if applicable"
+      ],
+      "status": "review",
+      "source": "Intentional reuse from the reviewed next-batch plan; no new design or artwork.",
+      "suggested_setup": [
+        "Show on relevant seasonal collection or product pages after 8 seconds; exclude the policy page, basket and checkout.",
+        "Keep the policy linked in normal store navigation and allow visitors to dismiss the bar. Check it beside sticky controls on phones.",
+        "Set campaign dates only if needed for a real seasonal policy; do not invent an extended return window or deadline."
+      ],
+      "measure": "Visits to the returns policy, not returns requests or purchases.",
+      "batch": "practical-information",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "inline-signpost",
+          "slide-in-nudge"
+        ],
+        "reason": "A shallow bar suits a policy reminder across collection pages. Reuse the existing signpost instead of making another bar or duplicating the larger policy slide-in."
+      }
+    },
+    {
+      "id": "sms-message-preview",
+      "audience": "stores",
+      "family": "Message sample",
+      "visitor_need": "Understand the subject and frequency of promotional texts before sharing a phone number.",
+      "difference": "A clearly labelled example message is the visual focal point, paired with a compact phone-and-consent area and a separate expectation line. Unlike the plain phone form or optional second channel, it explains the actual communication before asking.",
+      "requirements": [
+        "A truthful message example and frequency",
+        "An SMS destination and opt-out process, or Collect only"
+      ],
+      "status": "review",
+      "source": "Original WConvert trust-and-fit batch; compared against the existing library.",
+      "suggested_setup": [
+        "Show on relevant collection pages after genuine browsing engagement; avoid checkout and respect dismissal.",
+        "Merchant provides truthful topics/frequency and configures an SMS destination or uses local collection."
+      ],
+      "measure": "Accepted phone requests, not provider subscription or delivered messages.",
+      "batch": "trust-and-fit",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "stacked-signup",
+          "journey-email-then-sms",
+          "callback-slip"
+        ],
+        "reason": "A clearly labelled example message is the visual focal point, paired with a compact phone-and-consent area and a separate expectation line. Unlike the plain phone form or optional second channel, it explains the actual communication before asking."
+      }
+    },
+    {
+      "id": "service-fit-brief",
+      "audience": "services",
+      "family": "Scope sheet",
+      "visitor_need": "Understand what a service includes and what needs a separate agreement before requesting a reply.",
+      "difference": "An included/separate-work scope sheet puts service boundaries beside a small reply area. It avoids another generic benefit list, agenda or three-step process. Compared with Service summary, the paired scope panels distinguish included work from work agreed separately while keeping the reply area alongside.",
+      "requirements": [
+        "Verified service scope, exclusions and terms",
+        "A person responsible for enquiry replies"
+      ],
+      "status": "review",
+      "source": "Original WConvert trust-and-fit batch; compared against the existing library.",
+      "suggested_setup": [
+        "Place below the actual service description and include a clear route to fuller terms.",
+        "Use Collect only or a supported destination; confirm scope and price in follow-up, not on form submission."
+      ],
+      "measure": "Accepted review enquiries, not booked work or completed reviews.",
+      "batch": "trust-and-fit",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "service-summary",
+          "service-ledger",
+          "service-process-strip"
+        ],
+        "reason": "An included/separate-work scope sheet puts service boundaries beside a small reply area. It avoids another generic benefit list, agenda or three-step process. Compared with Service summary, the paired scope panels distinguish included work from work agreed separately while keeping the reply area alongside."
+      }
+    },
+    {
+      "id": "edition-sample-signup",
+      "audience": "publishers",
+      "family": "Excerpt window",
+      "visitor_need": "Judge the substance and tone of a newsletter before requesting future editions.",
+      "difference": "Reuse Excerpt window: it already provides a readable sample beside a compact signup. Change the purpose, copy, consent and setup guidance, not the design count.",
+      "requirements": [
+        "Your own newsletter sample and actual cadence",
+        "Email destination or Collect only"
+      ],
+      "status": "review",
+      "source": "Original WConvert trust-and-fit batch; compared against the existing library.",
+      "suggested_setup": [
+        "Embed after a relevant article; sample content remains readable without signup.",
+        "Bind recurring-newsletter consent and a supported email destination or Collect only; do not configure resource delivery for this purpose."
+      ],
+      "measure": "Accepted email requests, not confirmed subscriptions or delivered editions.",
+      "batch": "trust-and-fit",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "excerpt-window",
+          "reading-desk",
+          "ledger-card"
+        ],
+        "reason": "Reuse Excerpt window: it already provides a readable sample beside a compact signup. Change the purpose, copy, consent and setup guidance, not the design count."
+      }
+    },
+    {
+      "id": "workspace-change-story",
+      "audience": "services",
+      "family": "Project pair",
+      "visitor_need": "See the problem, changes and limits of an example project before exploring a service.",
+      "difference": "A paired before/after visual narrative with captions and a short What changed note, followed by one case-study link. Existing product comparisons describe alternatives; this shows one project over time. No image slider or gallery feature is implied.",
+      "requirements": [
+        "Licensed project evidence or clearly labelled fictional illustrations",
+        "A working full project-story destination"
+      ],
+      "status": "review",
+      "source": "Original WConvert trust-and-fit batch; compared against the existing library.",
+      "suggested_setup": [
+        "Embed beside relevant portfolio work and link to a full case study, including the project’s real scope.",
+        "Use merchant-owned/licensed project media; our sample may use clearly labelled fictional illustrations only."
+      ],
+      "measure": "Visits to the project story, not enquiries or evidence of project performance.",
+      "batch": "trust-and-fit",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "material-pair",
+          "product-detail-sheet",
+          "portrait-frame"
+        ],
+        "reason": "A paired before/after visual narrative with captions and a short What changed note, followed by one case-study link. Existing product comparisons describe alternatives; this shows one project over time. No image slider or gallery feature is implied."
+      }
     }
   ],
   "batches": [
@@ -3016,6 +3398,22 @@
     {
       "id": "visual-variety",
       "name": "Eight distinct practical designs"
+    },
+    {
+      "id": "useful-differences",
+      "name": "Two useful design differences"
+    },
+    {
+      "id": "practical-moments",
+      "name": "Practical moments: six distinct compositions"
+    },
+    {
+      "id": "practical-information",
+      "name": "Two practical information setups"
+    },
+    {
+      "id": "trust-and-fit",
+      "name": "Clear expectations and useful evidence"
     }
   ]
 }

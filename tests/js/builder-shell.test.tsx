@@ -1519,8 +1519,8 @@ describe('changing templates in the draft', () => {
     const alternateCard = picker.getByText(ALTERNATE.name).closest('li') as HTMLElement;
     await userEvent.click(within(alternateCard).getByRole('button', { name: 'Preview design' }));
     expect(picker.getByRole('heading', { name: ALTERNATE.name })).toHaveFocus();
-    await userEvent.click(picker.getByRole('button', { name: 'Mobile' }));
-    await userEvent.click(picker.getByRole('button', { name: 'Success screen' }));
+    await userEvent.click(picker.getByRole('radio', { name: 'Mobile' }));
+    await userEvent.click(picker.getByRole('radio', { name: ALTERNATE.tree.steps[1].name }));
     expect(templates.prepareTemplate).toHaveBeenCalledExactlyOnceWith(ALTERNATE.id, { tree: ENTRY.tree, tokens: ENTRY.tokens }, ENTRY.id, GOAL.id);
     expect(builder.saveOptin).not.toHaveBeenCalled();
     await userEvent.click(picker.getByRole('button', { name: 'Use this design' }));

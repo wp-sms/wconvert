@@ -1,0 +1,173 @@
+{
+  "id": "project-pair",
+  "name": "Project pair",
+  "display_type": "inline",
+  "tier": "free",
+  "tokens": {
+    "bg": "#faf8f1",
+    "fg": "#303c34",
+    "muted": "#58665d",
+    "accent": "#3e5e49",
+    "accent-fg": "#ffffff",
+    "border": "#7c8c82",
+    "input-bg": "#ffffff",
+    "heading-size": "1.875rem",
+    "heading-weight": "400",
+    "text-size": "1rem",
+    "leading": "1.5",
+    "pad": "1.5rem",
+    "gap": "1rem",
+    "radius": "0.75rem",
+    "width": "58rem",
+    "shadow": "none",
+    "heading-font": "Georgia, serif"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "details",
+        "name": "Project story",
+        "kind": "content",
+        "content": {
+          "type": "stack",
+          "tokens": {
+            "gap": "1rem"
+          },
+          "children": [
+            {
+              "type": "eyebrow",
+              "id": "n1",
+              "role": "eyebrow",
+              "text": "An illustrated layout study"
+            },
+            {
+              "type": "heading",
+              "id": "n2",
+              "role": "headline",
+              "text": "Make room for the work."
+            },
+            {
+              "type": "text",
+              "id": "n3",
+              "role": "body",
+              "text": "One fictional workspace. Two ways to arrange it."
+            },
+            {
+              "type": "split",
+              "ratio": 0.5,
+              "basis": "20rem",
+              "tokens": {
+                "gap": "1.5rem"
+              },
+              "start": [
+                {
+                  "type": "stack",
+                  "tokens": {
+                    "gap": "0.75rem"
+                  },
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "id": "n4",
+                      "role": "eyebrow",
+                      "text": "Before"
+                    },
+                    {
+                      "type": "image",
+                      "id": "n5",
+                      "src": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20480%20300%22%3E%3Crect%20width%3D%22480%22%20height%3D%22300%22%20fill%3D%22%23ede9df%22%2F%3E%3Cpath%20d%3D%22M30%20270V30h420v240H135m-45%200H30%22%20fill%3D%22%23faf8f1%22%20stroke%3D%22%2357695e%22%20stroke-width%3D%226%22%2F%3E%3Cpath%20d%3D%22M135%20270a45%2045%200%200%200-45-45v45%22%20fill%3D%22none%22%20stroke%3D%22%2398a69b%22%20stroke-width%3D%222%22%2F%3E%3Cpath%20d%3D%22M215%2030h140%22%20stroke%3D%22%2395b8c8%22%20stroke-width%3D%229%22%2F%3E%3Crect%20x%3D%22175%22%20y%3D%22115%22%20width%3D%22145%22%20height%3D%2265%22%20rx%3D%224%22%20fill%3D%22%23c0956f%22%2F%3E%3Crect%20x%3D%22223%22%20y%3D%22185%22%20width%3D%2245%22%20height%3D%2240%22%20rx%3D%228%22%20fill%3D%22%23526e69%22%2F%3E%3Crect%20x%3D%22330%22%20y%3D%2247%22%20width%3D%2298%22%20height%3D%2235%22%20fill%3D%22%238b9c87%22%2F%3E%3Crect%20x%3D%2263%22%20y%3D%22155%22%20width%3D%2266%22%20height%3D%2248%22%20fill%3D%22%23d4bc97%22%2F%3E%3Crect%20x%3D%2277%22%20y%3D%22211%22%20width%3D%2256%22%20height%3D%2234%22%20fill%3D%22%23d4bc97%22%2F%3E%3Crect%20x%3D%22343%22%20y%3D%22194%22%20width%3D%2266%22%20height%3D%2248%22%20fill%3D%22%23d4bc97%22%2F%3E%3Crect%20x%3D%22220%22%20y%3D%22123%22%20width%3D%2238%22%20height%3D%2225%22%20fill%3D%22%234e5b61%22%2F%3E%3C%2Fsvg%3E",
+                      "alt": "Fictional room plan: a central desk and scattered storage interrupt the open floor area.",
+                      "fit": "contain"
+                    },
+                    {
+                      "type": "text",
+                      "id": "n6",
+                      "role": "body",
+                      "text": "A central desk and scattered storage divide the room."
+                    }
+                  ]
+                }
+              ],
+              "end": [
+                {
+                  "type": "stack",
+                  "tokens": {
+                    "gap": "0.75rem"
+                  },
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "id": "n7",
+                      "role": "eyebrow",
+                      "text": "After"
+                    },
+                    {
+                      "type": "image",
+                      "id": "n8",
+                      "src": "data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20480%20300%22%3E%3Crect%20width%3D%22480%22%20height%3D%22300%22%20fill%3D%22%23ede9df%22%2F%3E%3Cpath%20d%3D%22M30%20270V30h420v240H135m-45%200H30%22%20fill%3D%22%23faf8f1%22%20stroke%3D%22%2357695e%22%20stroke-width%3D%226%22%2F%3E%3Cpath%20d%3D%22M135%20270a45%2045%200%200%200-45-45v45%22%20fill%3D%22none%22%20stroke%3D%22%2398a69b%22%20stroke-width%3D%222%22%2F%3E%3Cpath%20d%3D%22M215%2030h140%22%20stroke%3D%22%2395b8c8%22%20stroke-width%3D%229%22%2F%3E%3Crect%20x%3D%22205%22%20y%3D%2248%22%20width%3D%22145%22%20height%3D%2265%22%20rx%3D%224%22%20fill%3D%22%23c0956f%22%2F%3E%3Crect%20x%3D%22255%22%20y%3D%22122%22%20width%3D%2245%22%20height%3D%2240%22%20rx%3D%228%22%20fill%3D%22%23526e69%22%2F%3E%3Crect%20x%3D%2248%22%20y%3D%2247%22%20width%3D%2235%22%20height%3D%22160%22%20fill%3D%22%238b9c87%22%2F%3E%3Cpath%20d%3D%22M48%2098h35m-35%2054h35%22%20stroke%3D%22%23faf8f1%22%20stroke-width%3D%223%22%2F%3E%3Crect%20x%3D%22252%22%20y%3D%2259%22%20width%3D%2238%22%20height%3D%2225%22%20fill%3D%22%234e5b61%22%2F%3E%3Ccircle%20cx%3D%22407%22%20cy%3D%2268%22%20r%3D%2216%22%20fill%3D%22%23789071%22%2F%3E%3Cpath%20d%3D%22M140%20225h222%22%20stroke%3D%22%23cad3c7%22%20stroke-width%3D%223%22%20stroke-dasharray%3D%228%208%22%2F%3E%3C%2Fsvg%3E",
+                      "alt": "Fictional room plan: the desk sits by the window and storage runs along one wall.",
+                      "fit": "contain"
+                    },
+                    {
+                      "type": "text",
+                      "id": "n9",
+                      "role": "body",
+                      "text": "A desk by the window and storage together along one wall."
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "panel",
+              "tokens": {
+                "bg": "#e6ece3",
+                "pad": "1rem",
+                "gap": "0.5rem",
+                "radius": "0.375rem"
+              },
+              "children": [
+                {
+                  "type": "eyebrow",
+                  "id": "n10",
+                  "role": "eyebrow",
+                  "text": "What changed"
+                },
+                {
+                  "type": "text",
+                  "id": "n11",
+                  "role": "body",
+                  "text": "Move the desk. Group the storage. Leave a clearer route through the room."
+                }
+              ]
+            },
+            {
+              "type": "row",
+              "children": [
+                {
+                  "type": "button",
+                  "id": "n12",
+                  "role": "cta_label",
+                  "label": "Read the layout story",
+                  "action": "link"
+                }
+              ]
+            },
+            {
+              "type": "text",
+              "id": "n13",
+              "role": "fine_print",
+              "text": "Original fictional diagrams, not photographs of a completed customer project.",
+              "size": "s",
+              "tokens": {
+                "text-size": "1.167rem"
+              }
+            }
+          ]
+        }
+      }
+    ],
+    "submissions": []
+  }
+}

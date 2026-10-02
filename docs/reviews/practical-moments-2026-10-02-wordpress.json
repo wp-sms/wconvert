@@ -1,0 +1,48 @@
+{
+    "callback-slip": {
+        "status": "passed",
+        "checks": [
+            "published",
+            "primary: required fields, capture, retry, saved values"
+        ]
+    },
+    "event-calendar": {
+        "status": "passed",
+        "checks": [
+            "published",
+            "real link destination"
+        ]
+    },
+    "product-detail-sheet": {
+        "status": "passed",
+        "checks": [
+            "published",
+            "real link destination"
+        ]
+    },
+    "service-process-strip": {
+        "status": "passed",
+        "checks": [
+            "published",
+            "primary: required fields, capture, retry, saved values"
+        ]
+    },
+    "launch-index": {
+        "status": "passed",
+        "checks": [
+            "published",
+            "real link destination"
+        ]
+    },
+    "appointment-agenda": {
+        "status": "passed",
+        "checks": [
+            "published",
+            "primary: required fields, capture, retry, saved values"
+        ]
+    },
+    "_outbox": {
+        "messages": 100,
+        "scope": "Local wp_mail handoff only; no external inbox delivery"
+    }
+}

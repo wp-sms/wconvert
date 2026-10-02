@@ -1,10 +1,12 @@
 import { __, sprintf } from '@wordpress/i18n';
-import { ExternalLink, Lock } from 'lucide-react';
+import { ExternalLink, Lock, Star } from 'lucide-react';
 import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
 import { Skeleton } from '../components/ui/skeleton';
 import { useShownAfterDelay } from '../shell/skeletonDelay';
 import { renderingFor, tierName } from '../goals/availability';
+import { displayTypeLabel } from '../displayTypes';
+import { CompareSelection } from '../discovery/CompareSelection';
 import { TemplateCard } from './TemplateCard';
 import { nameOf, type TemplateIndexEntry, type TemplateLabelsWithFacets } from '../templates/api';
 import type { ConvertingAct } from './structure/catalogue';
@@ -30,6 +32,11 @@ export interface GalleryProps {
   /** Inspect before applying; omitted by callers whose cards still choose directly. */
   readonly onPreview?: (id: string) => void;
   readonly failed?: ReadonlySet<string>;
+  readonly saved?: ReadonlySet<string>;
+  readonly saving?: boolean;
+  readonly onSave?: (entry: TemplateIndexEntry) => void;
+  readonly compared?: readonly string[];
+  readonly onCompare?: (id:string)=>void;
   readonly onRetry?: (id: string) => void;
 }
 
@@ -188,7 +195,7 @@ export function Gallery({
   onNear,
   onPreview,
   failed,
-  onRetry,
+  onRetry, saved, saving, onSave, compared, onCompare,
 }: GalleryProps) {
   return (
     <ul className="wconvert-gallery" data-preview-first={onPreview !== undefined || undefined}>
@@ -238,14 +245,19 @@ export function Gallery({
               screens. `StartingPoints` states the rule and already draws it
               this way.
             */
-            marks={
-              locked ? (
+            selected={compared?.includes(entry.id)}
+            selection={onCompare && !locked && <CompareSelection name={entry.name} checked={compared?.includes(entry.id) ?? false} disabled={busy || ((compared?.length ?? 0) >= 2 && !compared?.includes(entry.id))} onChange={()=>onCompare(entry.id)} />}
+            saveAction={onSave && <Button variant="ghost" size="icon" className="wconvert-picker__save" disabled={saving} aria-pressed={saved?.has(entry.design_key ?? `registered:${entry.id}`) ?? false} aria-label={sprintf(__('Save design: %s', 'wconvert'), entry.name)} onClick={() => onSave(entry)}><Star size={17} fill={saved?.has(entry.design_key ?? `registered:${entry.id}`) ? 'currentColor' : 'none'} /></Button>}
+            marks={<div className="flex flex-wrap items-center gap-2">
+              <Badge variant="outline">{displayTypeLabel(entry.display_type)}</Badge>
+
+              {locked ? (
                 <Badge variant="secondary">
                   <Lock aria-hidden="true" />
                   {tierName(entry.tier)}
                 </Badge>
-              ) : undefined
-            }
+              ) : undefined}
+            </div>}
             absent={
               locked ? (
                 <ul className="wconvert-facets">

@@ -155,6 +155,15 @@ tab stop and the set announced as a set, all from the browser. Radix's
 `ToggleGroup` buys behaviour the browser already gives, at bundle bytes this
 admin prints on every build.
 
+Template picker option strips use button-like chips: visually clip the native
+input, remove WordPress pseudo dots, and put selected and focus treatments on
+the label. Do not draw both a chip selection and a radio circle. Device and
+screen groups have an explicit gap; a long screen list uses a labeled select.
+Picker toolbars use the same 32px height for search, selects and buttons, with
+44px minimum targets for coarse pointers. Compare uses one shared checkbox
+treatment and a tray naming the selection. Pagination stays outside a scrolling
+gallery body, so it remains reachable without scrolling through every card.
+
 ## 8. The admin speaks only when it changes what you do next
 
 Before designing a message, ask: **if the merchant did not read this, what would
@@ -186,6 +195,27 @@ value shown beside it, an onboarding tour on a working screen.
 admin layers and overrides retained vendored animation classes. Focus, keyboard
 behavior and dismissal semantics remain unchanged. Verify computed styles in the
 browser, since a class-name test cannot establish the final cascade.
+
+Template discovery dialogs share `PickerDialogContent` / `PickerDialogHeader`
+with a single scroll body and a separate action footer. Back and Use/Install
+stay reachable in short and phone windows. Pack and collection pagination stays
+outside the scroll body. Use-case choices and screen exploration belong to
+inspection, never dropdowns on result cards. A single result keeps the ordinary
+card size. Long placement, measurement and journey guidance uses labeled
+progressive disclosure beside the preview. Dialog headers align to the start
+on every viewport; close controls have a 32px target (44px for coarse pointers).
+
+Creation cards open inspection before the draft action. Shared cards place the
+name and Save together, metadata on its own row, then Preview and Compare. Do
+not scatter these controls between metadata and actions. Full inspection starts
+at width fit with vertical scrolling for tall content; offer Fit entire design
+for an overview. Comparison retains equally sized fitted stages. Errors and
+recovery actions belong in the active modal, including an uncertain creation
+result. Country choices use names and searchable selection, not code entry.
+Keep collection introductions concise: one description in the header, stage
+and search controls alongside each other when space allows, and no redundant
+format filter for a single-format collection. Keep the page count visible for
+one page, but omit Previous/Next until there is another page to visit.
 
 ## 10. Tables
 

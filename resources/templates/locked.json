@@ -362,6 +362,30 @@
         "captures": [],
         "has_image": false
       }
+    },
+    {
+      "id": "callback-slip",
+      "name": "Callback slip",
+      "display_type": "slide_in",
+      "tier": "basic",
+      "facets": {
+        "shape": "stack",
+        "captures": [
+          "phone"
+        ],
+        "has_image": false
+      }
+    },
+    {
+      "id": "launch-index",
+      "name": "Launch index bar",
+      "display_type": "floating_bar",
+      "tier": "basic",
+      "facets": {
+        "shape": "row",
+        "captures": [],
+        "has_image": false
+      }
     }
   ]
 }

@@ -39,9 +39,14 @@ function wconvert_demo_page(string $slug, string $title, string $content): int {
     return (int) wp_insert_post(['ID' => $existing?->ID ?? 0, 'post_type' => 'page', 'post_status' => 'publish', 'post_name' => $slug, 'post_title' => $title, 'post_content' => $content]);
 }
 
-function wconvert_demo_seed(): array {
+function wconvert_demo_seed(array $only = []): array {
     $root = WP_CONTENT_DIR . '/plugins/wconvert';
     $briefs = json_decode(file_get_contents($root . '/tools/design-library/pilot/collection.json'), true)['entries'];
+    if ($only !== []) {
+        $known = array_column($briefs, 'id');
+        if (array_diff($only, $known)) throw new InvalidArgumentException('Unknown campaign in review selection');
+        $briefs = array_values(array_filter($briefs, static fn (array $brief): bool => in_array($brief['id'], $only, true)));
+    }
     $container = \WConvert\Bootstrap::container();
     \WConvert\Optin\PhoneCountry::setSiteDefault('GB');
     $privacy = wconvert_demo_page('demo-privacy', 'Demo privacy notice', '<p>This disposable review site keeps test submissions locally. Use fictional details. Email is recorded in a local outbox; nothing is sent externally.</p>');

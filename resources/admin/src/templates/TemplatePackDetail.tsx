@@ -1,12 +1,17 @@
-import { useEffect, useId, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
-import { ArrowLeft, ArrowRight, Check, Download, Monitor, Smartphone } from 'lucide-react';
+import { ArrowLeft, ArrowRight, Download } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
-import { Preview } from '../builder/Preview';
+import { TemplateCard } from '../builder/TemplateCard';
+import { PickerDialogBody, PickerDialogFooter } from '../discovery/PickerDialog';
+import { PreviewControls } from '../discovery/PreviewControls';
+import { PreviewFrame } from '../discovery/PreviewFrame';
+import { PickerSearch } from '../discovery/PickerSearch';
+import { PickerPagination } from '../discovery/PickerPagination';
+import { OptionStrip } from '../shell/OptionStrip';
+import { matchesSearch } from '../discovery/search';
 import { displayTypeLabel } from '../displayTypes';
-import { A_DESIGNS_OWN_WIDTH } from '@renderer/css';
-import type { TemplateEntry } from './api';
 import type { PackPreview } from './catalog';
 
 export function TemplatePackDetail({ pack, displayType, installedVersion, busy, installing, error, onBack, onInstall, onContinue, goal, onChooseStartingPoints }: {
@@ -22,29 +27,35 @@ export function TemplatePackDetail({ pack, displayType, installedVersion, busy, 
   onInstall: () => void;
   onContinue: (id: string) => void;
 }) {
-  const [design, setDesign] = useState(() => Math.max(0, pack.templates.findIndex((entry) => entry.display_type === displayType)));
+  const [fitHeight, setFitHeight] = useState(false);
+  const [design, setDesign] = useState<number | null>(null);
   const [step, setStep] = useState(0);
-  const [mobile, setMobile] = useState(false);
+  const [mobile, setMobile] = useState(() => window.innerWidth < 640);
+  const [resultId, setResultId] = useState('');
+  const [query, setQuery] = useState('');
+  const [format, setFormat] = useState(onChooseStartingPoints || !pack.templates.some(entry=>entry.display_type===displayType) ? 'all' : displayType);
+  const [page, setPage] = useState(0);
   const heading = useRef<HTMLHeadingElement>(null);
-  const designSelect = useId();
+  const returnFocus = useRef<HTMLElement | null>(null);
+  const list = useRef<HTMLDivElement>(null); const listPosition = useRef(0);
   useEffect(() => { heading.current?.focus(); }, []);
-  const template = pack.templates[design];
+  const template = design === null ? undefined : pack.templates[design];
   const installed = installedVersion === pack.version;
-  const compatible = template.display_type === displayType;
+  const compatible = template?.display_type === displayType;
   const count = pack.templates.length;
   const creating = onChooseStartingPoints !== undefined;
   const starts = pack.starting_points ?? [];
   const relevantStarts = starts.filter((entry) => entry.goal === goal);
   const matching = pack.templates.filter((entry) => entry.display_type === displayType).length;
-  const groups = [
-    { title: creating ? __('Included designs', 'wconvert') : sprintf(__('For your %s draft', 'wconvert'), displayTypeLabel(displayType)), matches: true },
-    { title: __('Other formats', 'wconvert'), matches: false },
-  ].map((group) => ({ ...group, entries: pack.templates.map((entry, index) => ({ entry, index }))
-    .filter(({ entry }) => (creating || entry.display_type === displayType) === group.matches) }));
+  const shown = pack.templates.map((entry,index) => ({entry,index})).filter(({entry}) => (format === 'all' || entry.display_type === format) && matchesSearch(query,[entry.name,displayTypeLabel(entry.display_type)]));
+  const pages = Math.max(1, Math.ceil(shown.length / 24)); const currentPage = Math.min(page, pages - 1);
+  const safeStep = Math.min(step, Math.max(0,(template?.tree.steps.length ?? 1) - 1));
+  const screen = template?.tree.steps[safeStep]; const result = screen?.results?.find(item => item.id === resultId) ?? screen?.results?.[0];
+  const formats = [...new Set(pack.templates.map(entry => entry.display_type))];
+  const backToDesigns = () => { setDesign(null); requestAnimationFrame(() => { if (list.current) list.current.scrollTop = listPosition.current; returnFocus.current?.focus({preventScroll:true}); }); };
 
   return <section className="wconvert-pack-detail" aria-label={pack.name} aria-busy={busy}>
     <header className="wconvert-pack-detail__header">
-      <div className="wconvert-pack-detail__back"><Button variant="ghost" size="sm" disabled={busy} onClick={onBack}><ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />{__('All packs', 'wconvert')}</Button></div>
       <div className="wconvert-pack-detail__identity">
         <h2 ref={heading} tabIndex={-1}>{pack.name}</h2>
         <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
@@ -54,111 +65,64 @@ export function TemplatePackDetail({ pack, displayType, installedVersion, busy, 
         </div>
       </div>
     </header>
-    <div className="wconvert-pack-detail__body">
-      <aside className="wconvert-pack-detail__designs" aria-label={__('Designs in this pack', 'wconvert')}>
-        {groups.map((group) => {
-          if (group.entries.length === 0) return null;
-          return <div key={group.title} className="wconvert-pack-detail__group">
-            <h3>{group.title}</h3>
-            {group.entries.map(({ entry, index }) => <button type="button" key={entry.id} className="wconvert-pack-design"
-              aria-pressed={design === index} disabled={busy} onClick={() => { setDesign(index); setStep(0); }}>
-              <span className="wconvert-pack-design__name">{entry.name}{design === index && <Check size={15} aria-hidden="true" />}</span>
-              <span className="wconvert-pack-design__meta">{displayTypeLabel(entry.display_type)}<span aria-hidden="true"> · </span>
-                {entry.tree.steps.length > 1 ? __('Form + success', 'wconvert') : __('Single screen', 'wconvert')}</span>
-            </button>)}
-          </div>;
-        })}
-      </aside>
-      <div className="wconvert-pack-detail__main">
-        <div className="wconvert-pack-detail__mobile-select">
-          <label htmlFor={designSelect}>{__('Design in this pack', 'wconvert')}</label>
-          <select id={designSelect} value={design} disabled={busy} onChange={(event) => { setDesign(Number(event.target.value)); setStep(0); }}>
-            {groups.map((group) => {
-              return group.entries.length > 0 && <optgroup key={group.title} label={group.title}>
-                {group.entries.map(({ entry, index }) => <option key={entry.id} value={index}>{entry.name} · {displayTypeLabel(entry.display_type)}</option>)}
-              </optgroup>;
-            })}
-          </select>
+    <PickerDialogBody ref={list} className="wconvert-pack-detail__document">
+      {template ? <div className="wconvert-pack-detail__inspection">
+        <div className="wconvert-pack-detail__toolbar wconvert-toolbar">
+          <h3 className="m-0 text-heading font-semibold">{template.name}</h3><Badge variant="outline">{__('Sample content','wconvert')}</Badge>
+          <PreviewControls fitHeight={fitHeight} onFitHeight={setFitHeight} mobile={mobile} onMobile={setMobile} template={template} step={safeStep} disabled={busy} onStep={value => {setStep(value);setResultId('');}} />
+          {screen?.results && screen.results.length > 0 && <label className="text-note">{__('Result to inspect','wconvert')}<select className="wconvert-picker__select" value={result?.id} onChange={event=>setResultId(event.target.value)}>{screen.results.map(item=><option key={item.id} value={item.id}>{item.heading || item.id}</option>)}</select></label>}
         </div>
-        <div className="wconvert-pack-detail__toolbar">
-          <div className="wconvert-pack-detail__preview-heading">
-            <h3>{template.name}</h3><Badge variant="outline">{__('Sample content', 'wconvert')}</Badge>
-          </div>
-          <div className="wconvert-pack-detail__controls">
-            <div className="wconvert-segmented flex" role="group" aria-label={__('Preview width', 'wconvert')}>
-              <Button variant="ghost" size="sm" aria-pressed={!mobile} onClick={() => setMobile(false)}><Monitor aria-hidden="true" />{__('Desktop', 'wconvert')}</Button>
-              <Button variant="ghost" size="sm" aria-pressed={mobile} onClick={() => setMobile(true)}><Smartphone aria-hidden="true" />{__('Mobile · 320px', 'wconvert')}</Button>
-            </div>
-            {template.tree.steps.length > 1 && <div className="wconvert-segmented flex" role="group" aria-label={__('Preview screen', 'wconvert')}>
-              {template.tree.steps.map((_, index) => <Button key={index} variant="ghost" size="sm" aria-pressed={step === index} onClick={() => setStep(index)}>
-                {index === 0 ? __('Form', 'wconvert') : __('Success', 'wconvert')}
-              </Button>)}
-            </div>}
-          </div>
+        <PreviewFrame template={template} displayType={template.display_type} mobile={mobile} step={safeStep} result={result} fitHeight={fitHeight} />
+      </div> : null}
+      <div className="wconvert-pack-detail__browse" hidden={template !== undefined}>
+        <div className="wconvert-picker__controls wconvert-toolbar">
+          <div className="wconvert-picker__search-row"><PickerSearch label={__('Search designs in this pack','wconvert')} value={query} onChange={value=>{setQuery(value);setPage(0);}} disabled={busy} /></div>
+          <OptionStrip label={__('Format','wconvert')} value={format} disabled={busy} onChange={value=>{setFormat(value);setPage(0);}}
+            options={[{value:'all',label:__('All formats','wconvert')},...formats.map(value=>({value,label:displayTypeLabel(value)}))]} />
+          <p role="status" className="m-0 text-note text-muted-foreground">{sprintf(_n('%d matching design','%d matching designs',shown.length,'wconvert'),shown.length)}</p>
         </div>
-        <PackPreviewStage key={template.id} template={template} step={step} mobile={mobile} />
+        {shown.length ? <ul className="wconvert-gallery">{shown.slice(currentPage*24,(currentPage+1)*24).map(({entry,index})=><TemplateCard key={entry.id} id={`pack-${entry.id}`} name={entry.name} template={entry} displayType={entry.display_type}
+          marks={<Badge variant="outline">{displayTypeLabel(entry.display_type)}</Badge>}
+          action={describedBy=><Button variant="outline" disabled={busy} aria-describedby={describedBy} aria-label={sprintf(__('Preview %s','wconvert'),entry.name)} onClick={()=>{returnFocus.current=document.activeElement instanceof HTMLElement?document.activeElement:null;listPosition.current=list.current?.scrollTop??0;setDesign(index);setStep(0);setResultId('');requestAnimationFrame(()=>{if (list.current) list.current.scrollTop=0;heading.current?.focus({preventScroll:true});});}}>{__('Preview all screens','wconvert')}</Button>} />)}</ul>
+          : <div className="wconvert-packs__empty"><h3>{__('No designs match','wconvert')}</h3><p>{__('Try another format or a shorter search.','wconvert')}</p><Button variant="outline" onClick={()=>{setFormat('all');setQuery('');setPage(0);}}>{__('Show all designs','wconvert')}</Button></div>}
       </div>
-    </div>
-    <footer className="wconvert-pack-detail__footer">
+      <div className="wconvert-pack-detail__information">
+        {starts.length > 0 && <details className="wconvert-pack-detail__starts">
+          <summary>{sprintf(_n('%d campaign setup included', '%d campaign setups included', starts.length, 'wconvert'), starts.length)}</summary>
+          <ul>{starts.map((entry) => <li key={entry.id}><strong>{entry.name}</strong><span> · {entry.goal_label}</span></li>)}</ul>
+          <p>{__('Includes wording and suggested display settings. Choose a campaign setup when creating a new Campaign.', 'wconvert')}</p>
+        </details>}
+        {installed && creating ? <div className="wconvert-pack-detail__next">
+          <p className="text-sm text-muted-foreground">{relevantStarts.length > 0
+            ? __('Choose a campaign setup next to review its wording and suggested settings.', 'wconvert')
+            : __('This pack has no campaign setups for your selected goal. Its designs remain available in the editor.', 'wconvert')}</p>
+
+        </div> : <div className="wconvert-pack-detail__next">
+          <div>
+            {!(installed && compatible) && <p className="font-medium">{installed ? template ? __('This design uses a different format', 'wconvert') : __('Choose a design to inspect', 'wconvert') : installedVersion ? __('Update this pack', 'wconvert') : __('Add this pack to your library', 'wconvert')}</p>}
+            <p className="text-sm text-muted-foreground">{installed ? template === undefined ? __('Preview a design to review every screen before applying it.', 'wconvert') : compatible
+              ? __('Next, choose your content and review the design before applying.', 'wconvert')
+              : sprintf(__('Open a draft in %1$s format to use this design. Your current draft is %2$s.', 'wconvert'), displayTypeLabel(template?.display_type ?? displayType), displayTypeLabel(displayType))
+              : creating && relevantStarts.length === 0 ? __('This pack has no campaign setups for your selected goal. Install it to use its designs in the editor.', 'wconvert')
+                : !creating && matching === 0 ? sprintf(__('This pack has no %s designs. Install it to use in other draft formats.', 'wconvert'), displayTypeLabel(displayType))
+                : sprintf(_n('Adds %d design. Existing drafts stay unchanged.', 'Adds all %d designs. Existing drafts stay unchanged.', count, 'wconvert'), count)}</p>
+          </div>
+        </div>}
+        {!installed && <p className="wconvert-pack-detail__connection">{__('Installation downloads this pack from your catalog service.', 'wconvert')}</p>}
+        {installedVersion && !installed && <p className="wconvert-pack-detail__connection">{sprintf(__('Version %s is installed. Existing drafts keep their original design.', 'wconvert'), installedVersion)}</p>}
+      </div>
+    </PickerDialogBody>
+    {!template && shown.length > 0 && <PickerPagination page={currentPage} pages={pages} disabled={busy} onChange={setPage} />}
+
+    <PickerDialogFooter>
       {error && <div role="alert" className="wconvert-pack-error">{error}</div>}
-      {starts.length > 0 && <details className="wconvert-pack-detail__starts">
-        <summary>{sprintf(_n('%d campaign campaign setup included', '%d campaign campaign setups included', starts.length, 'wconvert'), starts.length)}</summary>
-        <ul>{starts.map((entry) => <li key={entry.id}><strong>{entry.name}</strong><span> · {entry.goal_label}</span></li>)}</ul>
-        <p>{__('Includes wording and suggested display settings. Choose a campaign setup when creating a new Campaign.', 'wconvert')}</p>
-      </details>}
-      {installed && creating ? <div className="wconvert-pack-detail__next">
-        <p className="text-sm text-muted-foreground">{relevantStarts.length > 0
-          ? __('Choose a campaign setup next to review its wording and suggested settings.', 'wconvert')
-          : __('This pack has no campaign setups for your selected goal. Its designs remain available in the editor.', 'wconvert')}</p>
-        {relevantStarts.length > 0 && <Button disabled={busy} onClick={() => onChooseStartingPoints(pack.id)}>{__('Choose a campaign setup', 'wconvert')}<ArrowRight aria-hidden="true" className="rtl:-scale-x-100" /></Button>}
-      </div> : <div className="wconvert-pack-detail__next">
-        <div>
-          {!(installed && compatible) && <p className="font-medium">{installed ? __('This design uses a different format', 'wconvert') : installedVersion ? __('Update this collection', 'wconvert') : __('Add this collection to your library', 'wconvert')}</p>}
-          <p className="text-sm text-muted-foreground">{installed ? compatible
-            ? __('Next, choose your content and review the design before applying.', 'wconvert')
-            : sprintf(__('Open a draft in %1$s format to use this design. Your current draft is %2$s.', 'wconvert'), displayTypeLabel(template.display_type), displayTypeLabel(displayType))
-            : creating && relevantStarts.length === 0 ? __('This pack has no campaign setups for your selected goal. Install it to use its designs in the editor.', 'wconvert')
-              : !creating && matching === 0 ? sprintf(__('This pack has no %s designs. Install it to use in other draft formats.', 'wconvert'), displayTypeLabel(displayType))
-              : sprintf(_n('Adds %d design. Existing drafts stay unchanged.', 'Adds all %d designs. Existing drafts stay unchanged.', count, 'wconvert'), count)}</p>
-        </div>
-        {installed ? compatible && <Button disabled={busy} onClick={() => onContinue(template.id)}>
+      <Button className="wconvert-picker__back" variant="outline" disabled={busy} onClick={template ? backToDesigns : onBack}><ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />{template ? __('Back to designs', 'wconvert') : __('All packs', 'wconvert')}</Button>
+      <span className="text-note text-muted-foreground">{__('Existing drafts stay unchanged.', 'wconvert')}</span>
+      {installed && creating ? relevantStarts.length > 0 && <Button disabled={busy} onClick={() => onChooseStartingPoints(pack.id)}>{__('Choose a campaign setup', 'wconvert')}<ArrowRight aria-hidden="true" className="rtl:-scale-x-100" /></Button> : <>
+        {installed ? compatible && <Button disabled={busy} onClick={() => onContinue(template!.id)}>
           {busy ? __('Preparing…', 'wconvert') : __('Continue with this design', 'wconvert')}<ArrowRight aria-hidden="true" className="rtl:-scale-x-100" />
         </Button> : <Button disabled={busy} onClick={onInstall}><Download aria-hidden="true" />{installing ? __('Installing…', 'wconvert') : installedVersion ? __('Install update', 'wconvert') : __('Install pack', 'wconvert')}</Button>}
-      </div>}
-      {!installed && <p className="wconvert-pack-detail__connection">{__('Installation downloads this pack from your catalog service.', 'wconvert')}</p>}
-      {installedVersion && !installed && <p className="wconvert-pack-detail__connection">{sprintf(__('Version %s is installed. Existing drafts keep their original design.', 'wconvert'), installedVersion)}</p>}
-    </footer>
+      </>}
+    </PickerDialogFooter>
   </section>;
-}
-
-/** Keep the requested composition at its own width, then fit it visually. */
-function PackPreviewStage({ template, step, mobile }: { template: TemplateEntry; step: number; mobile: boolean }) {
-  const stage = useRef<HTMLDivElement>(null);
-  const paper = useRef<HTMLDivElement>(null);
-  const [size, setSize] = useState({ width: 0, height: 0, available: 0 });
-  const width = mobile ? '320px' : template.tokens.width?.includes('%') ? '64rem' : template.tokens.width ?? A_DESIGNS_OWN_WIDTH;
-  useEffect(() => {
-    const area = stage.current;
-    const page = paper.current;
-    if (!area || !page) return;
-    const measure = () => {
-      const styles = getComputedStyle(area);
-      const available = area.clientWidth - parseFloat(styles.paddingInlineStart || '0') - parseFloat(styles.paddingInlineEnd || '0');
-      const next = { width: page.offsetWidth, height: page.offsetHeight, available: Math.max(1, available) };
-      setSize((current) => current.width === next.width && current.height === next.height && current.available === next.available ? current : next);
-    };
-    measure();
-    if (typeof ResizeObserver === 'undefined') return;
-    const observer = new ResizeObserver(measure);
-    observer.observe(area); observer.observe(page);
-    return () => observer.disconnect();
-  }, [width, step, template]);
-  const scale = size.width > 0 ? Math.min(1, size.available / size.width) : 1;
-  return <div ref={stage} className="wconvert-pack-stage" aria-label={__('Design preview', 'wconvert')}>
-    <div className="wconvert-pack-stage__measure" style={{ width: size.width ? size.width * scale : width, height: size.height ? size.height * scale : undefined }}>
-      <div ref={paper} className="wconvert-pack-stage__paper" inert aria-hidden="true" style={{ width, transform: `scale(${scale})` }}>
-        <Preview template={template} step={step} displayType={template.display_type} />
-      </div>
-    </div>
-  </div>;
 }

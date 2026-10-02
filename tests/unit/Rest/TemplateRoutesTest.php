@@ -228,7 +228,7 @@ final class TemplateRoutesTest extends TestCase
             // Fullscreen (ADR 0098), decision-support and contextual enquiry
             // designs have no published marketing pages yet. Their cards
             // stay informational; never invent a preview URL for this test.
-            if (in_array($card['id'], ['fullscreen-editorial', 'fullscreen-split', 'fullscreen-poster', 'gift-edit', 'space-planner', 'kit-workbench', 'service-directory', 'project-route', 'reading-path', 'slide-in-question', 'session-card', 'split-notice', 'margin-note', 'sample-envelope', 'availability-note', 'inline-signpost'], true)) {
+            if (in_array($card['id'], ['fullscreen-editorial', 'fullscreen-split', 'fullscreen-poster', 'gift-edit', 'space-planner', 'kit-workbench', 'service-directory', 'project-route', 'reading-path', 'slide-in-question', 'session-card', 'split-notice', 'margin-note', 'sample-envelope', 'availability-note', 'inline-signpost', 'callback-slip', 'launch-index'], true)) {
                 $this->assertEmpty($card['preview_url'] ?? null);
             } else {
                 $this->assertNotEmpty($card['preview_url'] ?? null, $card['id'] . ' is locked with nowhere to send the merchant');

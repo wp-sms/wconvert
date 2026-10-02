@@ -1,0 +1,604 @@
+[
+  {
+    "case": "collection",
+    "viewport": 318,
+    "pageWidth": 318,
+    "zoom": 1,
+    "direction": "ltr",
+    "fields": [
+      {
+        "height": 48,
+        "font": "16px"
+      },
+      {
+        "height": 48,
+        "font": "16px"
+      }
+    ],
+    "dialogs": [
+      {
+        "width": 284,
+        "scrollWidth": 284,
+        "scrollTop": 0
+      }
+    ],
+    "controls": [
+      {
+        "type": "INPUT",
+        "color": "rgb(30, 30, 30)",
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "rgb(116, 135, 125)"
+      },
+      {
+        "type": "SELECT",
+        "color": "rgb(36, 59, 55)",
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(116, 135, 125)"
+      },
+      {
+        "type": "SELECT",
+        "color": "rgb(36, 59, 55)",
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(116, 135, 125)"
+      },
+      {
+        "type": "INPUT",
+        "color": "rgb(30, 30, 30)",
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(32, 92, 87)"
+      },
+      {
+        "type": "INPUT",
+        "color": "rgb(30, 30, 30)",
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(30, 30, 30)"
+      },
+      {
+        "type": "INPUT",
+        "color": "rgb(30, 30, 30)",
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(30, 30, 30)"
+      },
+      {
+        "type": "INPUT",
+        "color": "rgb(30, 30, 30)",
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(30, 30, 30)"
+      },
+      {
+        "type": "INPUT",
+        "color": "rgb(30, 30, 30)",
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(30, 30, 30)"
+      },
+      {
+        "type": "SELECT",
+        "color": "rgb(36, 59, 55)",
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(116, 135, 125)"
+      },
+      {
+        "type": "INPUT",
+        "color": "rgb(30, 30, 30)",
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "rgb(116, 135, 125)"
+      },
+      {
+        "type": "INPUT",
+        "color": "rgb(30, 30, 30)",
+        "background": "rgb(56, 88, 233)",
+        "border": "rgb(56, 88, 233)"
+      },
+      {
+        "type": "INPUT",
+        "color": "rgb(30, 30, 30)",
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(30, 30, 30)"
+      }
+    ],
+    "overflows": []
+  },
+  {
+    "case": "collection",
+    "viewport": 388,
+    "pageWidth": 388,
+    "zoom": 1,
+    "direction": "ltr",
+    "fields": [
+      {
+        "height": 48,
+        "font": "16px"
+      },
+      {
+        "height": 48,
+        "font": "16px"
+      }
+    ],
+    "dialogs": [
+      {
+        "width": 354,
+        "scrollWidth": 354,
+        "scrollTop": 0
+      }
+    ],
+    "controls": [
+      {
+        "type": "INPUT",
+        "color": "rgb(30, 30, 30)",
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "rgb(116, 135, 125)"
+      },
+      {
+        "type": "SELECT",
+        "color": "rgb(36, 59, 55)",
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(116, 135, 125)"
+      },
+      {
+        "type": "SELECT",
+        "color": "rgb(36, 59, 55)",
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(116, 135, 125)"
+      },
+      {
+        "type": "INPUT",
+        "color": "rgb(30, 30, 30)",
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(32, 92, 87)"
+      },
+      {
+        "type": "INPUT",
+        "color": "rgb(30, 30, 30)",
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(30, 30, 30)"
+      },
+      {
+        "type": "INPUT",
+        "color": "rgb(30, 30, 30)",
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(30, 30, 30)"
+      },
+      {
+        "type": "INPUT",
+        "color": "rgb(30, 30, 30)",
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(30, 30, 30)"
+      },
+      {
+        "type": "INPUT",
+        "color": "rgb(30, 30, 30)",
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(30, 30, 30)"
+      },
+      {
+        "type": "SELECT",
+        "color": "rgb(36, 59, 55)",
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(116, 135, 125)"
+      },
+      {
+        "type": "INPUT",
+        "color": "rgb(30, 30, 30)",
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "rgb(116, 135, 125)"
+      },
+      {
+        "type": "INPUT",
+        "color": "rgb(30, 30, 30)",
+        "background": "rgb(56, 88, 233)",
+        "border": "rgb(56, 88, 233)"
+      },
+      {
+        "type": "INPUT",
+        "color": "rgb(30, 30, 30)",
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(30, 30, 30)"
+      }
+    ],
+    "overflows": []
+  },
+  {
+    "case": "collection",
+    "viewport": 766,
+    "pageWidth": 766,
+    "zoom": 1,
+    "direction": "ltr",
+    "fields": [
+      {
+        "height": 48,
+        "font": "16px"
+      },
+      {
+        "height": 48,
+        "font": "16px"
+      }
+    ],
+    "dialogs": [
+      {
+        "width": 764,
+        "scrollWidth": 764,
+        "scrollTop": 0
+      }
+    ],
+    "controls": [
+      {
+        "type": "INPUT",
+        "color": "rgb(30, 30, 30)",
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "rgb(116, 135, 125)"
+      },
+      {
+        "type": "SELECT",
+        "color": "rgb(36, 59, 55)",
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(116, 135, 125)"
+      },
+      {
+        "type": "SELECT",
+        "color": "rgb(36, 59, 55)",
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(116, 135, 125)"
+      },
+      {
+        "type": "INPUT",
+        "color": "rgb(30, 30, 30)",
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(32, 92, 87)"
+      },
+      {
+        "type": "INPUT",
+        "color": "rgb(30, 30, 30)",
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(30, 30, 30)"
+      },
+      {
+        "type": "INPUT",
+        "color": "rgb(30, 30, 30)",
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(30, 30, 30)"
+      },
+      {
+        "type": "INPUT",
+        "color": "rgb(30, 30, 30)",
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(30, 30, 30)"
+      },
+      {
+        "type": "INPUT",
+        "color": "rgb(30, 30, 30)",
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(30, 30, 30)"
+      },
+      {
+        "type": "SELECT",
+        "color": "rgb(36, 59, 55)",
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(116, 135, 125)"
+      },
+      {
+        "type": "INPUT",
+        "color": "rgb(30, 30, 30)",
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "rgb(116, 135, 125)"
+      },
+      {
+        "type": "INPUT",
+        "color": "rgb(30, 30, 30)",
+        "background": "rgb(56, 88, 233)",
+        "border": "rgb(56, 88, 233)"
+      },
+      {
+        "type": "INPUT",
+        "color": "rgb(30, 30, 30)",
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(30, 30, 30)"
+      }
+    ],
+    "overflows": []
+  },
+  {
+    "case": "collection",
+    "viewport": 1278,
+    "pageWidth": 1278,
+    "zoom": 1,
+    "direction": "ltr",
+    "fields": [
+      {
+        "height": 48,
+        "font": "14px"
+      },
+      {
+        "height": 48,
+        "font": "14px"
+      }
+    ],
+    "dialogs": [
+      {
+        "width": 1150,
+        "scrollWidth": 1150,
+        "scrollTop": 0
+      }
+    ],
+    "controls": [
+      {
+        "type": "INPUT",
+        "color": "rgb(30, 30, 30)",
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "rgb(116, 135, 125)"
+      },
+      {
+        "type": "SELECT",
+        "color": "rgb(36, 59, 55)",
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(116, 135, 125)"
+      },
+      {
+        "type": "SELECT",
+        "color": "rgb(36, 59, 55)",
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(116, 135, 125)"
+      },
+      {
+        "type": "INPUT",
+        "color": "rgb(30, 30, 30)",
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(32, 92, 87)"
+      },
+      {
+        "type": "INPUT",
+        "color": "rgb(30, 30, 30)",
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(30, 30, 30)"
+      },
+      {
+        "type": "INPUT",
+        "color": "rgb(30, 30, 30)",
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(30, 30, 30)"
+      },
+      {
+        "type": "INPUT",
+        "color": "rgb(30, 30, 30)",
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(30, 30, 30)"
+      },
+      {
+        "type": "INPUT",
+        "color": "rgb(30, 30, 30)",
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(30, 30, 30)"
+      },
+      {
+        "type": "SELECT",
+        "color": "rgb(36, 59, 55)",
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(116, 135, 125)"
+      },
+      {
+        "type": "INPUT",
+        "color": "rgb(30, 30, 30)",
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "rgb(116, 135, 125)"
+      },
+      {
+        "type": "INPUT",
+        "color": "rgb(30, 30, 30)",
+        "background": "rgb(56, 88, 233)",
+        "border": "rgb(56, 88, 233)"
+      },
+      {
+        "type": "INPUT",
+        "color": "rgb(30, 30, 30)",
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(30, 30, 30)"
+      }
+    ],
+    "overflows": []
+  },
+  {
+    "case": "collection-rtl",
+    "viewport": 318,
+    "pageWidth": 319,
+    "zoom": 1,
+    "direction": "rtl",
+    "fields": [
+      {
+        "height": 48,
+        "font": "16px"
+      },
+      {
+        "height": 48,
+        "font": "16px"
+      }
+    ],
+    "dialogs": [
+      {
+        "width": 284,
+        "scrollWidth": 284,
+        "scrollTop": 0
+      }
+    ],
+    "controls": [
+      {
+        "type": "INPUT",
+        "color": "rgb(30, 30, 30)",
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "rgb(116, 135, 125)"
+      },
+      {
+        "type": "SELECT",
+        "color": "rgb(36, 59, 55)",
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(116, 135, 125)"
+      },
+      {
+        "type": "SELECT",
+        "color": "rgb(36, 59, 55)",
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(116, 135, 125)"
+      },
+      {
+        "type": "INPUT",
+        "color": "rgb(30, 30, 30)",
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(32, 92, 87)"
+      },
+      {
+        "type": "INPUT",
+        "color": "rgb(30, 30, 30)",
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(30, 30, 30)"
+      },
+      {
+        "type": "INPUT",
+        "color": "rgb(30, 30, 30)",
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(30, 30, 30)"
+      },
+      {
+        "type": "INPUT",
+        "color": "rgb(30, 30, 30)",
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(30, 30, 30)"
+      },
+      {
+        "type": "INPUT",
+        "color": "rgb(30, 30, 30)",
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(30, 30, 30)"
+      },
+      {
+        "type": "SELECT",
+        "color": "rgb(36, 59, 55)",
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(116, 135, 125)"
+      },
+      {
+        "type": "INPUT",
+        "color": "rgb(30, 30, 30)",
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "rgb(116, 135, 125)"
+      },
+      {
+        "type": "INPUT",
+        "color": "rgb(30, 30, 30)",
+        "background": "rgb(56, 88, 233)",
+        "border": "rgb(56, 88, 233)"
+      },
+      {
+        "type": "INPUT",
+        "color": "rgb(30, 30, 30)",
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(30, 30, 30)"
+      }
+    ],
+    "overflows": []
+  },
+  {
+    "case": "collection-rtl-css200",
+    "viewport": 318,
+    "pageWidth": 319,
+    "zoom": 2,
+    "direction": "rtl",
+    "fields": [
+      {
+        "height": 48,
+        "font": "16px"
+      },
+      {
+        "height": 48,
+        "font": "16px"
+      }
+    ],
+    "dialogs": [
+      {
+        "width": 284,
+        "scrollWidth": 284,
+        "scrollTop": 0
+      }
+    ],
+    "controls": [
+      {
+        "type": "INPUT",
+        "color": "rgb(30, 30, 30)",
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "rgb(116, 135, 125)"
+      },
+      {
+        "type": "SELECT",
+        "color": "rgb(36, 59, 55)",
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(116, 135, 125)"
+      },
+      {
+        "type": "SELECT",
+        "color": "rgb(36, 59, 55)",
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(116, 135, 125)"
+      },
+      {
+        "type": "INPUT",
+        "color": "rgb(30, 30, 30)",
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(32, 92, 87)"
+      },
+      {
+        "type": "INPUT",
+        "color": "rgb(30, 30, 30)",
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(30, 30, 30)"
+      },
+      {
+        "type": "INPUT",
+        "color": "rgb(30, 30, 30)",
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(30, 30, 30)"
+      },
+      {
+        "type": "INPUT",
+        "color": "rgb(30, 30, 30)",
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(30, 30, 30)"
+      },
+      {
+        "type": "INPUT",
+        "color": "rgb(30, 30, 30)",
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(30, 30, 30)"
+      },
+      {
+        "type": "SELECT",
+        "color": "rgb(36, 59, 55)",
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(116, 135, 125)"
+      },
+      {
+        "type": "INPUT",
+        "color": "rgb(30, 30, 30)",
+        "background": "rgba(0, 0, 0, 0)",
+        "border": "rgb(116, 135, 125)"
+      },
+      {
+        "type": "INPUT",
+        "color": "rgb(30, 30, 30)",
+        "background": "rgb(56, 88, 233)",
+        "border": "rgb(56, 88, 233)"
+      },
+      {
+        "type": "INPUT",
+        "color": "rgb(30, 30, 30)",
+        "background": "rgb(255, 255, 255)",
+        "border": "rgb(30, 30, 30)"
+      }
+    ],
+    "overflows": []
+  },
+  {
+    "case": "final-portal-radio-correction",
+    "note": "Earlier collection width/overflow cases precede the final CSS-only native radio appearance correction. This final measurement is from actual WordPress collection modal.",
+    "appearance": "auto",
+    "accent": "rgb(32, 92, 87)",
+    "width": 16,
+    "height": 16
+  }
+]

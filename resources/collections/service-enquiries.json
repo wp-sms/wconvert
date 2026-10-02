@@ -1,0 +1,52 @@
+{
+  "id": "service-enquiries",
+  "name": "Make the next enquiry easier",
+  "description": "Quote requests, callbacks and project discussions. A request is not a confirmed booking.",
+  "cover": "services",
+  "business_types": [
+    "services"
+  ],
+  "markets": [],
+  "priority": 50,
+  "items": [
+    {
+      "setup_id": "home-repair-quote",
+      "stage": "any",
+      "setup_hash": "af5ff16467219382e410c767125b521a08b7cd92c8ab1e09790ded2a2943bf68",
+      "design_hash": "b17b2f87da1bb83dcb7e962b3f25a18d678c58114d061800ab0d42467a09ba0b"
+    },
+    {
+      "setup_id": "cleaning-quote",
+      "stage": "any",
+      "setup_hash": "ad845c89d067517fdb04cf2e140e5a05abca1857d0ab3ebb963afef698a869c8",
+      "design_hash": "b17b2f87da1bb83dcb7e962b3f25a18d678c58114d061800ab0d42467a09ba0b"
+    },
+    {
+      "setup_id": "repair-assessment",
+      "stage": "any",
+      "setup_hash": "17c1874973994026ab6b6673d07e9cf3b2db87d3ef57282cf05205f290ad35ba",
+      "design_hash": "b17b2f87da1bb83dcb7e962b3f25a18d678c58114d061800ab0d42467a09ba0b"
+    },
+    {
+      "setup_id": "renovation-callback",
+      "stage": "any",
+      "setup_hash": "1b4e5fb1ac93cec66b8065bb2dcb018b328b10fa1f383bc71e9b462638bfdef1",
+      "design_hash": "90a558d4a4dfb553347098d9e072fefb2e7f662a5273e51e00882bd11d3b797d"
+    },
+    {
+      "setup_id": "repair-advice-request",
+      "stage": "any",
+      "setup_hash": "f885ddca5099f66427860f18a847a06fcad85a9c28ef079612ffd9b2a3929b24",
+      "design_hash": "52591afdd2aca28637ba8a7f4ca1e0ddb52da120016a424e6c941f8f6c4813b3"
+    },
+    {
+      "setup_id": "website-review-enquiry",
+      "stage": "any",
+      "setup_hash": "b65733d43ef871496fff159f74bec634a3a8832a8b69aead79b0a253f6aa8fec",
+      "design_hash": "86ad14ff4c9b9321e42013f26d5dc80970b6a70029265a3ca4b0f7bbdd093297"
+    }
+  ],
+  "dependencies_current": true,
+  "revision": "0778a43e011578e421a75c171d80e25d69aa36a0faebafbbcef567c441a50860",
+  "status": "published"
+}

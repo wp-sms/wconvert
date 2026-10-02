@@ -1,6 +1,11 @@
-# Curated template collections
+# Schema-1 catalog compatibility fixture
 
-Build the local catalog from the existing reviewed designs:
+For new releases use the [review-bound schema-2 publisher](../design-library/publishing/README.md).
+This older builder and its fixed membership remain for reader regression tests
+and existing local examples. Do not extend its source-fingerprint-only approval
+list as a parallel editorial workflow.
+
+Rebuild the compatibility fixture:
 
 ```sh
 php tools/template-catalog/build.php
@@ -19,8 +24,8 @@ These are ten existing Free designs, packaged unchanged. They remain bundled;
 installing a collection adds separate versioned copies, not new compositions.
 The membership is intentionally smaller than the twelve flagship Playbooks:
 cart behaviour belongs to a campaign setup, and Photo offer contains embedded
-artwork that the placeholder-only installer refuses. The 1.2.0 packs also include
-ten reviewed campaign campaign setups with wording, portable display rules and
+artwork that the placeholder-only installer refuses. The current packs also include
+ten reviewed campaign setups with wording, portable display rules and
 setup notes. Real codes, schedules, destination bindings and fulfilment remain
 the merchant's settings.
 

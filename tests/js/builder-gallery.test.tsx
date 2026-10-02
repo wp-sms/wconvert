@@ -866,8 +866,8 @@ describe('inspecting before applying a design', () => {
     expect(screen.queryByRole('searchbox')).toBeNull();
     expect(screen.getByRole('heading', { name: 'Centred card' })).toHaveFocus();
     expect(screen.getByText('Preview with sample content')).toBeInTheDocument();
-    await userEvent.click(screen.getByRole('button', { name: 'Mobile' }));
-    await userEvent.click(screen.getByRole('button', { name: 'Success screen' }));
+    await userEvent.click(screen.getByRole('radio', { name: 'Mobile' }));
+    await userEvent.click(screen.getByRole('radio', { name: 'Received' }));
     expect(onChoose).not.toHaveBeenCalled();
 
     await userEvent.click(screen.getByRole('button', { name: 'Back to designs' }));
@@ -933,4 +933,49 @@ describe('the note about a Goal every design refuses', () => {
     expect(shown()).toEqual(['Column phone']);
     expect(screen.getByRole('button', { name: 'Preview design' })).toBeEnabled();
   });
+});
+
+it('compares two editor designs and reviews one without applying or losing the library search', async () => {
+  const onChoose=vi.fn();
+  render(<TemplatePicker index={{templates:ENTRIES,labels:LABELS,facets:FACETS}} trees={TREES} displayType="popup" chosen={undefined} fit={ANY} busy={false} onChoose={onChoose} onNear={vi.fn()} />);
+  await userEvent.click(screen.getByRole('checkbox', { name: 'Compare design: Centred card'}));
+  await userEvent.click(screen.getByRole('checkbox', { name: 'Compare design: Stacked signup'}));
+  await userEvent.click(screen.getByRole('button',{name:'Compare designs (2/2)'}));
+  expect(screen.getByRole('heading',{name:'Compare designs'})).toHaveFocus();
+  expect(screen.getAllByRole('group',{name:'Preview size'})).toHaveLength(2);
+  await userEvent.click(screen.getByRole('button',{name:'Review design: Centred card'}));
+  expect(screen.getByText('Preview with sample content')).toBeVisible();
+  expect(onChoose).not.toHaveBeenCalled();
+  await userEvent.click(screen.getByRole('button',{name:'Back to comparison'}));
+  expect(screen.getByRole('heading',{name:'Compare designs'})).toBeVisible();
+  await userEvent.click(screen.getByRole('button',{name:'Back to designs'}));
+  expect(screen.getByRole('searchbox',{name:'Search designs'})).toBeVisible();
+  await waitFor(()=>expect(screen.getByRole('button',{name:'Compare designs (2/2)'})).toHaveFocus());
+  expect(onChoose).not.toHaveBeenCalled();
+});
+
+it('limits comparison to two explicit choices and makes deselection recoverable', async () => {
+  const third=card({id:'third',name:'Third design'});
+  render(<TemplatePicker index={{templates:[...ENTRIES,third],labels:LABELS,facets:FACETS}} trees={TREES} displayType="popup" chosen={undefined} fit={ANY} busy={false} onChoose={vi.fn()} onNear={vi.fn()} />);
+  await userEvent.click(screen.getByRole('checkbox',{name:'Compare design: Centred card'}));
+  await userEvent.click(screen.getByRole('checkbox',{name:'Compare design: Stacked signup'}));
+  expect(screen.getByRole('checkbox',{name:'Compare design: Third design'})).toBeDisabled();
+  expect(screen.getByRole('checkbox',{name:'Compare design: Centred card'})).toBeChecked();
+  await userEvent.click(screen.getByRole('checkbox',{name:'Compare design: Centred card'}));
+  expect(screen.getByRole('checkbox',{name:'Compare design: Third design'})).toBeEnabled();
+  await userEvent.click(screen.getByRole('button',{name:'Clear comparison'}));
+  expect(screen.getByRole('checkbox',{name:'Compare design: Stacked signup'})).not.toBeChecked();
+});
+
+it('shows a stable page position and recovers pagination after filtering the second page', async () => {
+  const entries=Array.from({length:30},(_,i)=>card({id:`page-${i}`,name:`Design ${String(i).padStart(2,'0')}`}));
+  render(<TemplatePicker index={{templates:entries,labels:LABELS,facets:FACETS}} trees={new Map()} displayType="popup" chosen={undefined} fit={ANY} busy={false} onChoose={vi.fn()} onNear={vi.fn()} />);
+  expect(screen.getByText('Page 1 of 2')).toBeVisible();
+  await userEvent.click(screen.getByRole('button',{name:'Next'}));
+  expect(screen.getByText('Page 2 of 2')).toBeVisible();
+  expect(screen.getAllByRole('button',{name:'Preview design'})).toHaveLength(6);
+  await userEvent.type(screen.getByRole('searchbox',{name:'Search designs'}),'Design 29');
+  expect(screen.getByText('Page 1 of 1')).toBeVisible();
+  expect(screen.queryByRole('button',{name:'Previous'})).not.toBeInTheDocument();
+  expect(screen.queryByRole('button',{name:'Next'})).not.toBeInTheDocument();
 });
