@@ -1566,6 +1566,132 @@
           "note": "Raise sample attribution and resource-email guidance to approximately 14 pixels."
         }
       ]
+    },
+    {
+      "id": "callback-slip",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-02",
+          "revision": "1600f5e29c4969681d9ef16c8eaa88b27248038ca7a0dbb9a17f548301141207",
+          "note": "Original practical-moments composition; initial review candidate."
+        }
+      ]
+    },
+    {
+      "id": "event-calendar",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-02",
+          "revision": "c81828f801c29009611fc129b61d8845a8aaabb2f68952cadc230db316774718",
+          "note": "Original practical-moments composition; initial review candidate."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-02",
+          "revision": "331364a7ed934deac7cef401e993912e89f5a22fd37882224ffc82850c5cb3fe",
+          "note": "Finalise responsive composition, compact actions and image-independent product facts."
+        },
+        {
+          "version": 3,
+          "date": "2026-10-02",
+          "revision": "b3fb88b77e33582fe8cf24ff280a79a3c770c1862eb7d698e226bb01031681fa",
+          "note": "Use the event title as the accessible modal name; treat the date tile as supporting text."
+        }
+      ]
+    },
+    {
+      "id": "product-detail-sheet",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-02",
+          "revision": "14bf2cd91938c508b75e929ccca1391923eb63d9ddca903ca2a2b30a3fc834f9",
+          "note": "Original practical-moments composition; initial review candidate."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-02",
+          "revision": "9e94c3bab84c75ac4f42bdc02cdb35f41409ea8e02411947c4fb3bdff36c74ce",
+          "note": "Finalise responsive composition, compact actions and image-independent product facts."
+        }
+      ]
+    },
+    {
+      "id": "service-process-strip",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-02",
+          "revision": "1e1bfbb783e84f51aaada22edc46a0a819a66995a1cd67aafc7702f42d87f301",
+          "note": "Original practical-moments composition; initial review candidate."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-02",
+          "revision": "6bdd5f1b480c8771e5c5cb6e099437af26c6e5ad67452a577f71e281b0d50452",
+          "note": "Refine phone composition and request acknowledgement after rendered review."
+        },
+        {
+          "version": 3,
+          "date": "2026-10-02",
+          "revision": "1adb9877faa647703c91b421e56b14722bc56cae72a50eab414592d015787537",
+          "note": "Finalise responsive composition, compact actions and image-independent product facts."
+        },
+        {
+          "version": 4,
+          "date": "2026-10-02",
+          "revision": "c227ace2ba1655d8a64b9aa9e6a1faa62d8801797d41292907b1797646ed0d70",
+          "note": "Keep optional consent before the action when enabled, with an explicitly labelled reply field."
+        }
+      ]
+    },
+    {
+      "id": "launch-index",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-02",
+          "revision": "960cdc7be2cd04305d13526f024134ae6e959bcd6b9d6912cd10b515b5291ddd",
+          "note": "Original practical-moments composition; initial review candidate."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-02",
+          "revision": "9cf0190f4af72701fffe3b72dfd1f51a3c80ec4368e67efdb80b9305b9755efb",
+          "note": "Reserve a contrasting dismissal area on both edges, and keep the phone announcement shallow."
+        }
+      ]
+    },
+    {
+      "id": "appointment-agenda",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-02",
+          "revision": "61c560c1dd02ffb5460b3e47a7af6195ecf5113010324a1254668f9369f35d92",
+          "note": "Original practical-moments composition; initial review candidate."
+        },
+        {
+          "version": 2,
+          "date": "2026-10-02",
+          "revision": "437cfb16650fabe0faf8b7c6acae02b5cf2da2d9a54b1af3280d8cb663c343fe",
+          "note": "Refine phone composition and request acknowledgement after rendered review."
+        },
+        {
+          "version": 3,
+          "date": "2026-10-02",
+          "revision": "ac6d643781ac49518683cfa4890d54b8073468ec27590c558a74d72d20633d10",
+          "note": "Finalise responsive composition, compact actions and image-independent product facts."
+        }
+      ]
     }
   ]
 }

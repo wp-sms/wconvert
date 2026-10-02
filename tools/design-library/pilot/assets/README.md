@@ -9,3 +9,7 @@ Both SVG illustrations were authored for WConvert on 28 September 2026. They con
 `homeware-shelf.png` is its 1920 × 500, 8-bit PNG export using resvg-js (no external resources or metadata). The bundled design retains its compact SVG to respect campaign payload budgets. The publishing plan explicitly maps the exact source URI hash to this separately reviewed PNG and its evidence hash; the publisher exports those bytes as an immutable asset. Keep the SVG as the editable source. Do not silently re-export the PNG during builds: a changed image requires a new source/design review and rights hash.
 
 The illustration depicts a terracotta pot, cream vase and green cup. It illustrates care notes, not products offered for purchase or customer endorsements. The Playbook asks merchants to replace it if it misrepresents their collection. Provenance/redistribution approval is keyed to its exact SHA-256 in `publishing/catalog.json`.
+
+## Task lamp · 2 October 2026
+
+`task-lamp.svg` is original WConvert geometric sample artwork, authored for Product detail sheet and distributed under this repository’s GPL-2.0-or-later licence. It contains only shapes, no external assets, fonts, brands or scripts. The design embeds these same SVG bytes (without the trailing newline). It illustrates a fictional lamp, not a photograph or proof of a real product’s specifications. Merchants should replace the image and facts together, or hide the optional image. No raster derivative or hosted download pack is published in this batch.

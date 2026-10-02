@@ -374,3 +374,23 @@ Homeware care includes the first real illustrated download; see
 [publishing](publishing/README.md) for hash-bound artwork derivatives and the
 native update/offline rehearsal. Adding a similarity neighbour no longer expires
 an unchanged campaign approval. Content, setup, renderer and evidence changes do.
+
+### 2 October practical-moments batch
+
+Six new compositions add four Free designs and two Pro formats: Callback slip,
+Event calendar, Product detail sheet, Service process strip, Launch index and
+Appointment agenda. Each has its own prepared setup and practical guidance.
+The pilot now contains 116 setups using 67 designs (99 designs across all source
+libraries). This batch does not change the hosted-release plan or featured
+collections. The two deliberate-reuse briefs remain planned.
+
+```bash
+npm run templates:pilot
+node tools/design-library/build/batch-audit.mjs practical-moments
+```
+
+Open `out/pilot.html?batch=practical-moments` to try the journeys, and
+`out/practical-moments-audit.html` for every screen, four widths, RTL, longer
+copy and **Hide optional images**. The batch audit reuses the shared review
+surface and accepts any existing batch ID. See the
+[review evidence](../../docs/reviews/practical-moments-2026-10-02.md).

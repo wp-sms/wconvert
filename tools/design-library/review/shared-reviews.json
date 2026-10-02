@@ -34983,6 +34983,576 @@
         }
       },
       "record_id": "5a58143f201d71f6b7bfc4ef9dd0e59061b795aa909cc7a6effc998a7ef80681"
+    },
+    {
+      "id": "callback-slip",
+      "revision": "388521410d69191388ab8da49b34e8921ae899aac72ef5ec06f6071eecf35358",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Final visual, simulated retry and native WordPress checks passed. External delivery skipped; no hosted release or merchant publication authorised by this review.",
+      "at": "2026-10-02T13:00:21.919Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02.md",
+              "sha256": "509d066c765ea4aa1649d5d00452f50eab988aee980763783ab456d5f8fc0a4c"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-measurements.json",
+              "sha256": "7cd91e4a5262571b3767ac2446270b8fdb23711a24cbc8e359bc24950e7b1394"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-without-images.json",
+              "sha256": "e0a8cb0a8c84a97f04b65d30d23d8765ea31f2bea0fe9123622dab9493afdc85"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-phone.png",
+              "sha256": "a65198d81da9bd1352dbdc49051cfd5f63884844a4766f044572aea91e335f2b"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-desktop.png",
+              "sha256": "fa3dc2bf0b19873b63092dfeb7c4ffeaa31958ddc07b360b1ca9e3dd4c37cc0e"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-rtl-stress.png",
+              "sha256": "8e665ad21285feb88078fd53270048e0b5a67d29bfc6d3dde1618863580fdc79"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02.md",
+              "sha256": "509d066c765ea4aa1649d5d00452f50eab988aee980763783ab456d5f8fc0a4c"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-callback-retry.png",
+              "sha256": "202694755cebc6af42bab2b67fa6449d8dc5b43f985ef21fd1d7150372497454"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-callback-success.png",
+              "sha256": "f9b41a06c299067ebb9ed98aff02f776a549365148da97f983af5423b3712453"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-consultation-success.png",
+              "sha256": "792221b489d79d2579ec3d7510250965a6bfeac869011f632b9451323ffce423"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-restoration-success.png",
+              "sha256": "53ceaf0e63dd66537313b035fd8cb4b17711b27e270cce04c544f39833c56c58"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02.md",
+              "sha256": "509d066c765ea4aa1649d5d00452f50eab988aee980763783ab456d5f8fc0a4c"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-wordpress.json",
+              "sha256": "912a1b2c8145c7e3c3860fbb6c8aec2402d6d1cdd4957163d6613cdeb0937c56"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-picker.png",
+              "sha256": "145bb1458037da1b106a88c9d7cd1cedf0095ebe33b970822df6a71f0606aab9"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-event.png",
+              "sha256": "215b3af9c68087abf67b1cd07659ddfd91ac01c59ea891a2b77514d524afe989"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-bar-phone.png",
+              "sha256": "727a87ca226bf89f0bb1239232f4243a2873b1821ff08c1f792c2dad0ba5f5e9"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-product-phone.png",
+              "sha256": "691c73dbe2d8d047ea8b7025df37ea2208d573256c6b1c621a38efd8e4b703c4"
+            }
+          ]
+        }
+      },
+      "record_id": "7614ee427ff0992fdd02490411327a59661bc43043551d36c043dc0d30d77560"
+    },
+    {
+      "id": "event-calendar",
+      "revision": "4b93e4f8c25d41812ea772b979a2049ea5f651a46ff5e78e8a6519f88ea2ccee",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Final visual, simulated retry and native WordPress checks passed. External delivery skipped; no hosted release or merchant publication authorised by this review.",
+      "at": "2026-10-02T13:00:21.921Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02.md",
+              "sha256": "509d066c765ea4aa1649d5d00452f50eab988aee980763783ab456d5f8fc0a4c"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-measurements.json",
+              "sha256": "7cd91e4a5262571b3767ac2446270b8fdb23711a24cbc8e359bc24950e7b1394"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-without-images.json",
+              "sha256": "e0a8cb0a8c84a97f04b65d30d23d8765ea31f2bea0fe9123622dab9493afdc85"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-phone.png",
+              "sha256": "a65198d81da9bd1352dbdc49051cfd5f63884844a4766f044572aea91e335f2b"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-desktop.png",
+              "sha256": "fa3dc2bf0b19873b63092dfeb7c4ffeaa31958ddc07b360b1ca9e3dd4c37cc0e"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-rtl-stress.png",
+              "sha256": "8e665ad21285feb88078fd53270048e0b5a67d29bfc6d3dde1618863580fdc79"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02.md",
+              "sha256": "509d066c765ea4aa1649d5d00452f50eab988aee980763783ab456d5f8fc0a4c"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-callback-retry.png",
+              "sha256": "202694755cebc6af42bab2b67fa6449d8dc5b43f985ef21fd1d7150372497454"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-callback-success.png",
+              "sha256": "f9b41a06c299067ebb9ed98aff02f776a549365148da97f983af5423b3712453"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-consultation-success.png",
+              "sha256": "792221b489d79d2579ec3d7510250965a6bfeac869011f632b9451323ffce423"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-restoration-success.png",
+              "sha256": "53ceaf0e63dd66537313b035fd8cb4b17711b27e270cce04c544f39833c56c58"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02.md",
+              "sha256": "509d066c765ea4aa1649d5d00452f50eab988aee980763783ab456d5f8fc0a4c"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-wordpress.json",
+              "sha256": "912a1b2c8145c7e3c3860fbb6c8aec2402d6d1cdd4957163d6613cdeb0937c56"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-picker.png",
+              "sha256": "145bb1458037da1b106a88c9d7cd1cedf0095ebe33b970822df6a71f0606aab9"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-event.png",
+              "sha256": "215b3af9c68087abf67b1cd07659ddfd91ac01c59ea891a2b77514d524afe989"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-bar-phone.png",
+              "sha256": "727a87ca226bf89f0bb1239232f4243a2873b1821ff08c1f792c2dad0ba5f5e9"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-product-phone.png",
+              "sha256": "691c73dbe2d8d047ea8b7025df37ea2208d573256c6b1c621a38efd8e4b703c4"
+            }
+          ]
+        }
+      },
+      "record_id": "34215e61a340f51701c636a30b263abefc5a798f495e4cd065c5ebfa97809cf9"
+    },
+    {
+      "id": "product-detail-sheet",
+      "revision": "9614432ccc73ab1711d9d31ad172a988af6c13759b22812d35a6d0021417e7bc",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Final visual, simulated retry and native WordPress checks passed. External delivery skipped; no hosted release or merchant publication authorised by this review.",
+      "at": "2026-10-02T13:00:21.921Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02.md",
+              "sha256": "509d066c765ea4aa1649d5d00452f50eab988aee980763783ab456d5f8fc0a4c"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-measurements.json",
+              "sha256": "7cd91e4a5262571b3767ac2446270b8fdb23711a24cbc8e359bc24950e7b1394"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-without-images.json",
+              "sha256": "e0a8cb0a8c84a97f04b65d30d23d8765ea31f2bea0fe9123622dab9493afdc85"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-phone.png",
+              "sha256": "a65198d81da9bd1352dbdc49051cfd5f63884844a4766f044572aea91e335f2b"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-desktop.png",
+              "sha256": "fa3dc2bf0b19873b63092dfeb7c4ffeaa31958ddc07b360b1ca9e3dd4c37cc0e"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-rtl-stress.png",
+              "sha256": "8e665ad21285feb88078fd53270048e0b5a67d29bfc6d3dde1618863580fdc79"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02.md",
+              "sha256": "509d066c765ea4aa1649d5d00452f50eab988aee980763783ab456d5f8fc0a4c"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-callback-retry.png",
+              "sha256": "202694755cebc6af42bab2b67fa6449d8dc5b43f985ef21fd1d7150372497454"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-callback-success.png",
+              "sha256": "f9b41a06c299067ebb9ed98aff02f776a549365148da97f983af5423b3712453"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-consultation-success.png",
+              "sha256": "792221b489d79d2579ec3d7510250965a6bfeac869011f632b9451323ffce423"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-restoration-success.png",
+              "sha256": "53ceaf0e63dd66537313b035fd8cb4b17711b27e270cce04c544f39833c56c58"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02.md",
+              "sha256": "509d066c765ea4aa1649d5d00452f50eab988aee980763783ab456d5f8fc0a4c"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-wordpress.json",
+              "sha256": "912a1b2c8145c7e3c3860fbb6c8aec2402d6d1cdd4957163d6613cdeb0937c56"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-picker.png",
+              "sha256": "145bb1458037da1b106a88c9d7cd1cedf0095ebe33b970822df6a71f0606aab9"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-event.png",
+              "sha256": "215b3af9c68087abf67b1cd07659ddfd91ac01c59ea891a2b77514d524afe989"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-bar-phone.png",
+              "sha256": "727a87ca226bf89f0bb1239232f4243a2873b1821ff08c1f792c2dad0ba5f5e9"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-product-phone.png",
+              "sha256": "691c73dbe2d8d047ea8b7025df37ea2208d573256c6b1c621a38efd8e4b703c4"
+            }
+          ]
+        }
+      },
+      "record_id": "85a606162185fb9bde266bcb4009c7d145be8b17f5899265787559ac579d98b5"
+    },
+    {
+      "id": "service-process-strip",
+      "revision": "fc16d8d017fabc8fd0b5d08c27643c3040d4b1727e177893684d0641f9dde25d",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Final visual, simulated retry and native WordPress checks passed. External delivery skipped; no hosted release or merchant publication authorised by this review.",
+      "at": "2026-10-02T13:00:21.921Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02.md",
+              "sha256": "509d066c765ea4aa1649d5d00452f50eab988aee980763783ab456d5f8fc0a4c"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-measurements.json",
+              "sha256": "7cd91e4a5262571b3767ac2446270b8fdb23711a24cbc8e359bc24950e7b1394"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-without-images.json",
+              "sha256": "e0a8cb0a8c84a97f04b65d30d23d8765ea31f2bea0fe9123622dab9493afdc85"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-phone.png",
+              "sha256": "a65198d81da9bd1352dbdc49051cfd5f63884844a4766f044572aea91e335f2b"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-desktop.png",
+              "sha256": "fa3dc2bf0b19873b63092dfeb7c4ffeaa31958ddc07b360b1ca9e3dd4c37cc0e"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-rtl-stress.png",
+              "sha256": "8e665ad21285feb88078fd53270048e0b5a67d29bfc6d3dde1618863580fdc79"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02.md",
+              "sha256": "509d066c765ea4aa1649d5d00452f50eab988aee980763783ab456d5f8fc0a4c"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-callback-retry.png",
+              "sha256": "202694755cebc6af42bab2b67fa6449d8dc5b43f985ef21fd1d7150372497454"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-callback-success.png",
+              "sha256": "f9b41a06c299067ebb9ed98aff02f776a549365148da97f983af5423b3712453"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-consultation-success.png",
+              "sha256": "792221b489d79d2579ec3d7510250965a6bfeac869011f632b9451323ffce423"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-restoration-success.png",
+              "sha256": "53ceaf0e63dd66537313b035fd8cb4b17711b27e270cce04c544f39833c56c58"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02.md",
+              "sha256": "509d066c765ea4aa1649d5d00452f50eab988aee980763783ab456d5f8fc0a4c"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-wordpress.json",
+              "sha256": "912a1b2c8145c7e3c3860fbb6c8aec2402d6d1cdd4957163d6613cdeb0937c56"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-picker.png",
+              "sha256": "145bb1458037da1b106a88c9d7cd1cedf0095ebe33b970822df6a71f0606aab9"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-event.png",
+              "sha256": "215b3af9c68087abf67b1cd07659ddfd91ac01c59ea891a2b77514d524afe989"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-bar-phone.png",
+              "sha256": "727a87ca226bf89f0bb1239232f4243a2873b1821ff08c1f792c2dad0ba5f5e9"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-product-phone.png",
+              "sha256": "691c73dbe2d8d047ea8b7025df37ea2208d573256c6b1c621a38efd8e4b703c4"
+            }
+          ]
+        }
+      },
+      "record_id": "75d1fb0f3ab3894ff3c7dc815c669b08d26b7778f10d6c131ee644c91c30b0ca"
+    },
+    {
+      "id": "launch-index",
+      "revision": "64d31411e7b01178be34a8078ed6cb3f4edb86b658cde94574916f13d3262787",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Final visual, simulated retry and native WordPress checks passed. External delivery skipped; no hosted release or merchant publication authorised by this review.",
+      "at": "2026-10-02T13:00:21.921Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02.md",
+              "sha256": "509d066c765ea4aa1649d5d00452f50eab988aee980763783ab456d5f8fc0a4c"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-measurements.json",
+              "sha256": "7cd91e4a5262571b3767ac2446270b8fdb23711a24cbc8e359bc24950e7b1394"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-without-images.json",
+              "sha256": "e0a8cb0a8c84a97f04b65d30d23d8765ea31f2bea0fe9123622dab9493afdc85"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-phone.png",
+              "sha256": "a65198d81da9bd1352dbdc49051cfd5f63884844a4766f044572aea91e335f2b"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-desktop.png",
+              "sha256": "fa3dc2bf0b19873b63092dfeb7c4ffeaa31958ddc07b360b1ca9e3dd4c37cc0e"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-rtl-stress.png",
+              "sha256": "8e665ad21285feb88078fd53270048e0b5a67d29bfc6d3dde1618863580fdc79"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02.md",
+              "sha256": "509d066c765ea4aa1649d5d00452f50eab988aee980763783ab456d5f8fc0a4c"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-callback-retry.png",
+              "sha256": "202694755cebc6af42bab2b67fa6449d8dc5b43f985ef21fd1d7150372497454"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-callback-success.png",
+              "sha256": "f9b41a06c299067ebb9ed98aff02f776a549365148da97f983af5423b3712453"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-consultation-success.png",
+              "sha256": "792221b489d79d2579ec3d7510250965a6bfeac869011f632b9451323ffce423"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-restoration-success.png",
+              "sha256": "53ceaf0e63dd66537313b035fd8cb4b17711b27e270cce04c544f39833c56c58"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02.md",
+              "sha256": "509d066c765ea4aa1649d5d00452f50eab988aee980763783ab456d5f8fc0a4c"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-wordpress.json",
+              "sha256": "912a1b2c8145c7e3c3860fbb6c8aec2402d6d1cdd4957163d6613cdeb0937c56"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-picker.png",
+              "sha256": "145bb1458037da1b106a88c9d7cd1cedf0095ebe33b970822df6a71f0606aab9"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-event.png",
+              "sha256": "215b3af9c68087abf67b1cd07659ddfd91ac01c59ea891a2b77514d524afe989"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-bar-phone.png",
+              "sha256": "727a87ca226bf89f0bb1239232f4243a2873b1821ff08c1f792c2dad0ba5f5e9"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-product-phone.png",
+              "sha256": "691c73dbe2d8d047ea8b7025df37ea2208d573256c6b1c621a38efd8e4b703c4"
+            }
+          ]
+        }
+      },
+      "record_id": "a3c8cf5dcf27d0db3ba8b3e7bf79735e6870350afa3a0cd3c7579c605d7e23c2"
+    },
+    {
+      "id": "appointment-agenda",
+      "revision": "a116ec9eb7d3bfa328ae12baef34a7de7973b626ca497ca0172e8819ecc024a4",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Final visual, simulated retry and native WordPress checks passed. External delivery skipped; no hosted release or merchant publication authorised by this review.",
+      "at": "2026-10-02T13:00:21.921Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02.md",
+              "sha256": "509d066c765ea4aa1649d5d00452f50eab988aee980763783ab456d5f8fc0a4c"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-measurements.json",
+              "sha256": "7cd91e4a5262571b3767ac2446270b8fdb23711a24cbc8e359bc24950e7b1394"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-without-images.json",
+              "sha256": "e0a8cb0a8c84a97f04b65d30d23d8765ea31f2bea0fe9123622dab9493afdc85"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-phone.png",
+              "sha256": "a65198d81da9bd1352dbdc49051cfd5f63884844a4766f044572aea91e335f2b"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-desktop.png",
+              "sha256": "fa3dc2bf0b19873b63092dfeb7c4ffeaa31958ddc07b360b1ca9e3dd4c37cc0e"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-rtl-stress.png",
+              "sha256": "8e665ad21285feb88078fd53270048e0b5a67d29bfc6d3dde1618863580fdc79"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02.md",
+              "sha256": "509d066c765ea4aa1649d5d00452f50eab988aee980763783ab456d5f8fc0a4c"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-callback-retry.png",
+              "sha256": "202694755cebc6af42bab2b67fa6449d8dc5b43f985ef21fd1d7150372497454"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-callback-success.png",
+              "sha256": "f9b41a06c299067ebb9ed98aff02f776a549365148da97f983af5423b3712453"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-consultation-success.png",
+              "sha256": "792221b489d79d2579ec3d7510250965a6bfeac869011f632b9451323ffce423"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-restoration-success.png",
+              "sha256": "53ceaf0e63dd66537313b035fd8cb4b17711b27e270cce04c544f39833c56c58"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02.md",
+              "sha256": "509d066c765ea4aa1649d5d00452f50eab988aee980763783ab456d5f8fc0a4c"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-wordpress.json",
+              "sha256": "912a1b2c8145c7e3c3860fbb6c8aec2402d6d1cdd4957163d6613cdeb0937c56"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-picker.png",
+              "sha256": "145bb1458037da1b106a88c9d7cd1cedf0095ebe33b970822df6a71f0606aab9"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-event.png",
+              "sha256": "215b3af9c68087abf67b1cd07659ddfd91ac01c59ea891a2b77514d524afe989"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-bar-phone.png",
+              "sha256": "727a87ca226bf89f0bb1239232f4243a2873b1821ff08c1f792c2dad0ba5f5e9"
+            },
+            {
+              "path": "docs/reviews/practical-moments-2026-10-02-product-phone.png",
+              "sha256": "691c73dbe2d8d047ea8b7025df37ea2208d573256c6b1c621a38efd8e4b703c4"
+            }
+          ]
+        }
+      },
+      "record_id": "5b9d3c4b941b02db7bf59f96af2fdea5572796f1895a95beff2f385f4dcb47a8"
     }
   ]
 }

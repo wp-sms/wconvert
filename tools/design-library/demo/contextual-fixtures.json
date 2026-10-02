@@ -127,5 +127,30 @@
       "Wide table": "Footprint: 50 × 40 cm. Suggested beside a two-seat sofa. Wipe clean. Fictional sample: painted wood, illustrative price £85, not available to purchase.",
       "Before choosing": "Measure the available floor space and check access. These examples demonstrate the campaign link; they are not real product offers."
     }
+  ],
+  "event-calendar": [
+    "Sample chair-restoration open workshop",
+    {
+      "When": "Saturday 14 November 2026, 14:00–16:00 Europe/London (GMT on this date). This is a fictional review event, not an event accepting registrations.",
+      "Where and format": "In person at the sample restoration workshop, 12 Example Lane. Verify the real address and access details before publishing.",
+      "Registration and access": "A production event page must state the fee or free entry, registration method, accessibility contact and cancellation terms. This demo creates no booking.",
+      "Campaign schedule": "End the invitation before 14:00 Europe/London on 14 November 2026. Convert that instant to the site timezone when configuring the schedule."
+    }
+  ],
+  "product-detail-sheet": [
+    "Sample Task lamp specification",
+    {
+      "Product facts": "Illustrative Task lamp: an 18 × 18 cm base, powder-coated steel construction, and an adjustable shade. The lamp drawing is original WConvert sample artwork.",
+      "Before choosing": "Check the real product height, power supply, bulb specification, finish and safety information with the merchant. These details are not established by the illustration.",
+      "Ordering": "This is a product-information fixture. There is no stock claim, price or Add to cart action; configure an actual product destination before publication."
+    }
+  ],
+  "launch-index": [
+    "Sample morning collection",
+    {
+      "The collection": "A fictional range of cups and trays for everyday use, corresponding to the announcement bar.",
+      "Before shopping": "In a real store this page must show available products, accurate prices and delivery information. The demo accepts no orders.",
+      "Announcement timing": "Only show the announcement while the real collection is available and the description remains current."
+    }
   ]
 }

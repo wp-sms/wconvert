@@ -160,10 +160,11 @@ written anywhere.
    `tree`, ever. Shipping premium trees in the free ZIP and refusing the save
    is trialware ([#7](https://github.com/navidkashani/wconvert/issues/7)).
    `bin/verify-artifact-contract.sh` enforces it.
-2. **A live page** at `https://wconvert.com/designs/<slug>/` for its
-   `preview_url`. Out-of-repo work, one per design. A free install draws a card
-   with a *"See this design"* link, and a dead link is worse than one fewer
-   card.
+2. **A live page before adding a preview link.** `preview_url` may point to
+   `https://wconvert.com/designs/<slug>/` only after that page is published.
+   Until then, omit it: the card says *Included in Pro* (ADR 0098, as extended
+   to the practical library). Never fabricate a URL or ship the paid tree in
+   Free. Website preview publication remains a separate release task.
 
 ## What cannot be imported, and why there is no mapper
 

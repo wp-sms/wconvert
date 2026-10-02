@@ -3038,6 +3038,168 @@
         ],
         "reason": "A readable workbook exercise on a paper panel, paired with a compact request column. The sample is real editable text, not cover art."
       }
+    },
+    {
+      "id": "callback-slip",
+      "audience": "services",
+      "family": "Callback slip",
+      "visitor_need": "Request a call without writing a detailed enquiry or signing up for marketing.",
+      "difference": "A three-part call slip: subject, inset native phone form, then a separate next-step footer. No email field or decorative icons.",
+      "requirements": [
+        "A team member responsible for returning calls",
+        "Actual service-area and contact arrangements"
+      ],
+      "status": "review",
+      "source": "Original WConvert practical-moments batch; purpose-led composition, reviewed against existing designs.",
+      "suggested_setup": [
+        "Relevant repair pages after 20 seconds; exclude checkout and booking confirmations.",
+        "Use Collect only and review Leads or export; no marketing destination is needed."
+      ],
+      "measure": "Accepted call requests, not completed calls or booked jobs.",
+      "batch": "practical-moments",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "inline-phone",
+          "slide-in-question"
+        ],
+        "reason": "A three-part call slip: subject, inset native phone form, then a separate next-step footer. No email field or decorative icons."
+      }
+    },
+    {
+      "id": "event-calendar",
+      "audience": "services",
+      "family": "Event calendar",
+      "visitor_need": "Find the date, timezone, place and format before opening an event registration page.",
+      "difference": "A calendar tile sits beside the invitation, with paired factual event rows below; the date is content, not a countdown.",
+      "requirements": [
+        "Verified event date, timezone, venue and access information",
+        "Working registration page and a campaign end date"
+      ],
+      "status": "review",
+      "source": "Original WConvert practical-moments batch; purpose-led composition, reviewed against existing designs.",
+      "suggested_setup": [
+        "Show on relevant workshop pages after 20 seconds.",
+        "Replace every sample date and set an explicit end time; do not show an expired invitation."
+      ],
+      "measure": "Clicks to event details, not registrations or attendance.",
+      "batch": "practical-moments",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "agenda-card",
+          "session-card"
+        ],
+        "reason": "A calendar tile sits beside the invitation, with paired factual event rows below; the date is content, not a countdown."
+      }
+    },
+    {
+      "id": "product-detail-sheet",
+      "audience": "stores",
+      "family": "Product detail sheet",
+      "visitor_need": "Understand the size, material and intended use before visiting the product page.",
+      "difference": "An original small product portrait beside three labelled facts, followed by a full-width caption and action; unlike the multi-product comparison table.",
+      "requirements": [
+        "Verified product dimensions and materials",
+        "Product destination and relevant licensed or original artwork"
+      ],
+      "status": "review",
+      "source": "Original WConvert practical-moments batch; purpose-led composition, reviewed against existing designs.",
+      "suggested_setup": [
+        "Use on related category pages after 20 seconds; exclude checkout.",
+        "Replace the sample artwork and facts together, then verify the product link."
+      ],
+      "measure": "Product-detail clicks, not purchases.",
+      "batch": "practical-moments",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "specification-sheet",
+          "popup-two-column"
+        ],
+        "reason": "An original small product portrait beside three labelled facts, followed by a full-width caption and action; unlike the multi-product comparison table."
+      }
+    },
+    {
+      "id": "service-process-strip",
+      "audience": "services",
+      "family": "Service process strip",
+      "visitor_need": "Understand enquiry, assessment and agreement before giving a reply address.",
+      "difference": "Three numbered process columns precede a separate compact reply panel; each number stays with its stage on phones.",
+      "requirements": [
+        "A real assessment process and a person responsible for replies",
+        "A page containing the block or shortcode"
+      ],
+      "status": "review",
+      "source": "Original WConvert practical-moments batch; purpose-led composition, reviewed against existing designs.",
+      "suggested_setup": [
+        "Embed below restoration examples on the service page.",
+        "Use Collect only and follow up on the request; confirm scope and price separately."
+      ],
+      "measure": "Accepted restoration enquiries, not quoted or completed jobs.",
+      "batch": "practical-moments",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "benefit-grid",
+          "inline-choice"
+        ],
+        "reason": "Three numbered process columns precede a separate compact reply panel; each number stays with its stage on phones."
+      }
+    },
+    {
+      "id": "launch-index",
+      "audience": "stores",
+      "family": "Launch index bar",
+      "visitor_need": "Discover a new collection without interrupting the browsing session.",
+      "difference": "A compact inset collection masthead, a separate one-line descriptor and a light action on a dark strip; no oversized empty banner or countdown.",
+      "requirements": [
+        "An available collection and working destination",
+        "Appropriate start and end dates"
+      ],
+      "status": "review",
+      "source": "Original WConvert practical-moments batch; purpose-led composition, reviewed against existing designs.",
+      "suggested_setup": [
+        "Show on store browsing pages after 8 seconds; exclude checkout and order confirmations.",
+        "Check the bar beside sticky navigation and phone controls; do not cover essential page actions."
+      ],
+      "measure": "Collection visits from the bar, not purchases.",
+      "batch": "practical-moments",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "split-notice",
+          "inline-signpost"
+        ],
+        "reason": "A compact inset collection masthead, a separate one-line descriptor and a light action on a dark strip; no oversized empty banner or countdown."
+      }
+    },
+    {
+      "id": "appointment-agenda",
+      "audience": "services",
+      "family": "Appointment agenda",
+      "visitor_need": "Ask whether a consultation is suitable and know what will be discussed before arranging a time.",
+      "difference": "A preparatory agenda occupies its own rail beside a reply form; this is neither a booking calendar nor the top-and-bottom appointment note.",
+      "requirements": [
+        "A real consultation service and reply process",
+        "Confirmed terms and booking process for the subsequent conversation"
+      ],
+      "status": "review",
+      "source": "Original WConvert practical-moments batch; purpose-led composition, reviewed against existing designs.",
+      "suggested_setup": [
+        "Show on the relevant room-planning service page after 20 seconds.",
+        "Use Collect only; review the optional topic before replying. No booking is created."
+      ],
+      "measure": "Accepted consultation requests, not confirmed appointments.",
+      "batch": "practical-moments",
+      "comparison": {
+        "decision": "new_design",
+        "against": [
+          "appointment-note",
+          "inline-choice"
+        ],
+        "reason": "A preparatory agenda occupies its own rail beside a reply form; this is neither a booking calendar nor the top-and-bottom appointment note."
+      }
     }
   ],
   "batches": [
@@ -3072,6 +3234,10 @@
     {
       "id": "useful-differences",
       "name": "Two useful design differences"
+    },
+    {
+      "id": "practical-moments",
+      "name": "Practical moments: six distinct compositions"
     }
   ]
 }

@@ -51,6 +51,11 @@ until public preview pages exist. This amends ADRs 0010 and 0043; do not invent
 URLs or ship premium trees into Free to compensate. Publishing these pages is
 separate website work.
 
+The practical library uses the same informational-card contract for new paid
+slide-ins and bars, including Callback slip and Launch index. No public preview
+URL is authored until the website page exists. The Free metadata and Pro tree
+remain separate; adding a design does not publish its website preview.
+
 ## Size and verification
 
 The measured largest loader is 13,344 B gzip-9, versus 12,567 B before this phase.

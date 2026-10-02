@@ -1,0 +1,188 @@
+{
+  "id": "event-calendar",
+  "name": "Event calendar",
+  "display_type": "popup",
+  "tier": "free",
+  "tokens": {
+    "bg": "#fffdf9",
+    "fg": "#3d2b23",
+    "muted": "#675147",
+    "accent": "#803b29",
+    "accent-fg": "#ffffff",
+    "border": "#957c6b",
+    "input-bg": "#ffffff",
+    "heading-size": "1.875rem",
+    "heading-weight": "400",
+    "text-size": "1rem",
+    "leading": "1.5",
+    "pad": "1.5rem",
+    "gap": "1rem",
+    "radius": "0.75rem",
+    "width": "44rem",
+    "shadow": "none",
+    "heading-font": "Georgia, serif"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "details",
+        "name": "Information",
+        "kind": "content",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "split",
+              "ratio": 0.35,
+              "basis": "12rem",
+              "start": [
+                {
+                  "type": "panel",
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "id": "n1",
+                      "text": "November 2026",
+                      "role": "eyebrow"
+                    },
+                    {
+                      "type": "text",
+                      "id": "n2",
+                      "text": "14",
+                      "tokens": {
+                        "text-size": "3.25rem",
+                        "font": "Georgia, serif",
+                        "leading": "1.1"
+                      },
+                      "role": "body"
+                    },
+                    {
+                      "type": "text",
+                      "id": "n3",
+                      "text": "Saturday",
+                      "role": "body"
+                    }
+                  ],
+                  "tokens": {
+                    "bg": "#803b29",
+                    "fg": "#ffffff",
+                    "muted": "#ffffff",
+                    "align": "center",
+                    "pad": "1.25rem",
+                    "gap": "0.25rem",
+                    "radius": "0.375rem"
+                  }
+                }
+              ],
+              "end": [
+                {
+                  "type": "stack",
+                  "children": [
+                    {
+                      "type": "eyebrow",
+                      "id": "n4",
+                      "text": "Open workshop",
+                      "role": "eyebrow"
+                    },
+                    {
+                      "type": "heading",
+                      "id": "n5",
+                      "text": "See how a chair is restored.",
+                      "role": "headline"
+                    },
+                    {
+                      "type": "text",
+                      "id": "n6",
+                      "text": "Watch the tools and techniques, then ask your questions.",
+                      "role": "body"
+                    }
+                  ],
+                  "tokens": {
+                    "gap": "0.75rem"
+                  }
+                }
+              ]
+            },
+            {
+              "type": "panel",
+              "children": [
+                {
+                  "type": "grid",
+                  "children": [
+                    {
+                      "type": "stack",
+                      "children": [
+                        {
+                          "type": "eyebrow",
+                          "id": "n7",
+                          "text": "When",
+                          "role": "eyebrow"
+                        },
+                        {
+                          "type": "text",
+                          "id": "n8",
+                          "text": "14 November 2026\n14:00–16:00 Europe/London",
+                          "role": "body"
+                        }
+                      ],
+                      "tokens": {
+                        "gap": "0.375rem"
+                      }
+                    },
+                    {
+                      "type": "stack",
+                      "children": [
+                        {
+                          "type": "eyebrow",
+                          "id": "n9",
+                          "text": "Where",
+                          "role": "eyebrow"
+                        },
+                        {
+                          "type": "text",
+                          "id": "n10",
+                          "text": "The restoration workshop\nIn person",
+                          "role": "body"
+                        }
+                      ],
+                      "tokens": {
+                        "gap": "0.375rem"
+                      }
+                    }
+                  ],
+                  "tokens": {
+                    "gap": "1rem"
+                  }
+                }
+              ],
+              "tokens": {
+                "bg": "#f6eee6",
+                "pad": "1rem",
+                "radius": "0.375rem"
+              }
+            },
+            {
+              "type": "button",
+              "id": "n11",
+              "label": "View event details",
+              "action": "link",
+              "role": "cta_label"
+            },
+            {
+              "type": "text",
+              "id": "n12",
+              "text": "Check the venue, access and registration terms before planning your visit.",
+              "size": "s",
+              "tokens": {
+                "text-size": "1.167rem"
+              },
+              "role": "fine_print"
+            }
+          ]
+        }
+      }
+    ],
+    "submissions": []
+  }
+}
