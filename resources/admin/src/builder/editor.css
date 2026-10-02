@@ -703,6 +703,18 @@ body.wconvert-fullscreen #wconvert-admin .wconvert-workspace {
   overflow: auto;
   border-inline-end: 1px solid var(--editor-rule);
 }
+/* Destination bindings and answer mappings do not change the design canvas. */
+#wconvert-admin .wconvert-workspace__secondary.wconvert-workspace__destinations {
+  display: block;
+  overflow: auto;
+  background: var(--background);
+}
+#wconvert-admin .wconvert-workspace__destinations > .wconvert-workspace__settings {
+  max-inline-size: 64rem;
+  margin-inline: auto;
+  border: 0;
+  overflow: visible;
+}
 #wconvert-admin .wconvert-workspace__preview-action { display: flex; justify-content: flex-end; margin-block-end: 16px; }
 .wconvert-preview-dialog {
   display: flex;

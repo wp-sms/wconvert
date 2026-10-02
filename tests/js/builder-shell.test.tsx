@@ -21,9 +21,8 @@ import type { TemplateEntry, TemplateIndex, TemplateIndexEntry } from '../../res
  *   that merge is unchanged. What is new beside it is **Structure**, which is
  *   the other view of the document Content already edits. Whether these editors
  *   reach the same screen is a fact about the product.
- * - **The preview is beside every tab.** It lived inside the settings panel, so
- *   editing a Trigger showed no preview at all — the exact failure the pinned
- *   column exists to end.
+ * - **Preview & test is available from every tab.** Design editing keeps its
+ *   canvas; Display rules and Destinations use dedicated settings workspaces.
  * - **This Optin's numbers are here.** *Is this change worth making?* is asked
  *   in the editor and was answerable two screens away, and the read is
  *   swallowed on failure, so an analytics outage must not cost anyone a Save.

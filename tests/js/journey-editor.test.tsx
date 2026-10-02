@@ -451,11 +451,11 @@ it('explains a sample route without changing the campaign draft', async () => {
   await user.click(screen.getByRole('button', { name: 'Manage screens' }));
   await user.click(screen.getByRole('button', { name: 'Try answers' }));
   const sample = screen.getByRole('complementary', { name: 'Sample visitor' });
-  expect(within(sample).getByText('Repair details')).toBeInTheDocument();
-  expect(within(sample).getByText('Its show condition did not match.')).toBeInTheDocument();
+  expect(within(sample).queryByText('Repair details')).not.toBeInTheDocument();
   await user.click(within(sample).getByRole('radio', { name: 'Repair' }));
-  expect(within(sample).queryByText('Its show condition did not match.')).not.toBeInTheDocument();
-  expect(within(sample).getByText('1 simulated submission')).toBeInTheDocument();
+  expect(within(sample).getByText('Repair details')).toBeInTheDocument();
+  expect(within(sample).getByText('Waiting for your choice')).toBeInTheDocument();
+  expect(within(sample).queryByText(/submission would be made/)).not.toBeInTheDocument();
   expect(draft()).toEqual(service.tree);
 });
 
@@ -1118,8 +1118,8 @@ it('offers sample answers in Preview & test and clears its predicted path when t
   const props = { embedded: true, editorCanvas: <div>Canvas</div>, tree, step: 2, onChange: vi.fn(), onSelect: vi.fn(), testRequest: 1 };
   const view = render(<JourneyEditor {...props} />);
   const dialog = await screen.findByRole('dialog', { name: 'Preview & test' });
-  await user.click(within(dialog).getByRole('button', { name: 'Sample answers' }));
-  expect(within(dialog).getByText(/hypothetical choices/)).toBeInTheDocument();
+  await user.click(within(dialog).getByRole('button', { name: 'Explore answer paths' }));
+  expect(within(dialog).getByText(/This predicts a route/)).toBeInTheDocument();
   await user.click(within(dialog).getByRole('button', { name: 'Show sample path on the map' }));
   expect(screen.getByText('Showing the route for your sample answers')).toBeInTheDocument();
   expect(props.onChange).not.toHaveBeenCalled();
@@ -1129,12 +1129,26 @@ it('offers sample answers in Preview & test and clears its predicted path when t
 
 it('moves keyboard focus inside the preview when reopening Sample answers', async () => {
   const user = userEvent.setup();
-  render(<JourneyEditor embedded tree={source.tree as TemplateTree} step={0} onChange={() => {}} onSelect={() => {}} />);
+  render(<JourneyEditor embedded tree={finder.tree as TemplateTree} step={0} onChange={() => {}} onSelect={() => {}} />);
   await user.click(screen.getByRole('button', { name: 'Test journey' }));
-  await user.click(screen.getByRole('button', { name: 'Sample answers' }));
+  await user.click(screen.getByRole('button', { name: 'Explore answer paths' }));
   await user.click(within(screen.getByRole('dialog', { name: 'Test journey' })).getByRole('button', { name: 'Close' }));
   await user.click(screen.getByRole('button', { name: 'Test journey' }));
   const dialog = screen.getByRole('dialog', { name: 'Test journey' });
-  expect(within(dialog).getByRole('button', { name: 'Sample answers' })).toHaveAttribute('aria-pressed', 'true');
+  expect(within(dialog).getByRole('button', { name: 'Explore answer paths' })).toHaveAttribute('aria-pressed', 'true');
   await waitFor(() => expect(dialog.contains(document.activeElement)).toBe(true));
+});
+
+it('keeps unsent visitor inputs across design mode switches and omits answer exploration for simple forms', async () => {
+  const user = userEvent.setup();
+  render(<JourneyEditor embedded editorCanvas={<div>Canvas</div>} tree={source.tree as TemplateTree} step={0} onChange={() => {}} onSelect={() => {}} testRequest={1} />);
+  const dialog = await screen.findByRole('dialog', { name: 'Preview & test' });
+  const root = () => [...dialog.querySelectorAll('*')].find(node => node.shadowRoot)!.shadowRoot!;
+  const email = within(root() as unknown as HTMLElement).getByRole('textbox', { name: /Email address/ });
+  await user.type(email, 'draft@example.test');
+  await user.click(within(dialog).getByRole('button', { name: 'Check the design' }));
+  expect(within(dialog).queryByRole('button', { name: 'Explore answer paths' })).not.toBeInTheDocument();
+  await user.click(within(within(dialog).getByRole('group', { name: 'What to check' })).getByRole('button', { name: 'Try as a visitor' }));
+  expect(within(root() as unknown as HTMLElement).getByRole('textbox', { name: /Email address/ })).toBe(email);
+  expect(email).toHaveValue('draft@example.test');
 });

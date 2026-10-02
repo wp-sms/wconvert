@@ -55,18 +55,18 @@ it('keeps typed details when failure is toggled, then accepts a retry without se
   render(<JourneyTest template={source as Template} onEdit={() => {}} />);
   await user.type(screen.getByLabelText('Email address'), 'visitor@example.com');
   await user.click(screen.getByLabelText('Consent'));
-  await user.click(screen.getByText('Test failure & recovery'));
+  await user.click(screen.getByText('Test a problem'));
   await user.click(screen.getByRole('checkbox', { name: 'Simulate failure on next submission' }));
   expect(screen.getByLabelText('Email address')).toHaveValue('visitor@example.com');
   await user.click(screen.getByRole('button', { name: 'Sign up' }));
-  expect(screen.getByText('Ready to submit')).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: 'Sign up' })).toBeInTheDocument();
   expect(screen.getByText(/Submission not confirmed/)).toBeInTheDocument();
   expect(screen.getByLabelText('Email address')).toHaveValue('visitor@example.com');
   await user.click(screen.getByRole('button', { name: 'Sign up' }));
   expect(screen.getByText('Accepted in test')).toBeInTheDocument();
   expect(screen.getByRole('heading', { name: 'Received' })).toBeInTheDocument();
-  await user.click(screen.getByRole('button', { name: 'Reset test' }));
-  expect(screen.getByText('Ready to submit')).toBeInTheDocument();
+  await user.click(screen.getByRole('button', { name: 'Restart this test' }));
+  expect(screen.getByRole('button', { name: 'Sign up' })).toBeInTheDocument();
   expect(screen.getByLabelText('Email address')).toHaveValue('');
 });
 
@@ -79,10 +79,11 @@ it('starts a graph test at its entry screen and resets to that entry', async () 
   expect(screen.queryByText('Why this path?')).not.toBeInTheDocument();
   expect(screen.getByText('Garden details').closest('li')).toHaveTextContent('Not reached yet');
   expect(screen.getByText('Garden details')).not.toBeVisible();
+  await user.click(screen.getByText('Other screens'));
   await user.click(screen.getByText(/^Not reached yet \(/));
   expect(screen.getByText('Garden details')).toBeVisible();
   expect(screen.queryByRole('button', { name: 'Edit condition' })).not.toBeInTheDocument();
-  await user.click(screen.getByRole('button', { name: 'Reset test' }));
+  await user.click(screen.getByRole('button', { name: 'Restart this test' }));
   expect(screen.getByText('Interests').closest('li')).toHaveAttribute('data-current', 'true');
 });
 
@@ -91,7 +92,7 @@ it('separates an accepted save from failed destination delivery and retries deli
   render(<JourneyTest template={source as Template} deliveryMode="connected" destinationSummary="MailPoet" onEdit={() => {}} />);
   await user.type(screen.getByLabelText('Email address'), 'visitor@example.com');
   await user.click(screen.getByLabelText('Consent'));
-  await user.click(screen.getByText('Test failure & recovery'));
+  await user.click(screen.getByText('Test a problem'));
   await user.click(screen.getByRole('checkbox', { name: 'Simulate delivery failure after next accepted save' }));
   await user.click(screen.getByRole('button', { name: 'Sign up' }));
   expect(screen.getByText('Accepted in test')).toBeInTheDocument();
@@ -119,7 +120,7 @@ it('retains an answer on the capture screen after a simulated save failure', asy
   await user.type(screen.getByLabelText('Optional note'), 'A sunny space');
   await user.type(screen.getByLabelText('Email address'), 'visitor@example.com');
   await user.click(screen.getByLabelText('Consent'));
-  await user.click(screen.getByText('Test failure & recovery'));
+  await user.click(screen.getByText('Test a problem'));
   await user.click(screen.getByRole('checkbox', { name: 'Simulate failure on next submission' }));
   await user.click(screen.getByRole('button', { name: 'Sign up' }));
   expect(screen.getByLabelText('Optional note')).toHaveValue('A sunny space');
@@ -154,8 +155,7 @@ it('keeps a malformed imported save on its screen instead of accepting an empty 
 it('returns only the path actually visited to the map, before and after a save', async () => {
   const user = userEvent.setup(), show = vi.fn();
   render(<JourneyTest template={source as Template} onEdit={() => {}} onShowPath={show} />);
-  await user.click(screen.getByRole('button', { name: 'Show this path on the map' }));
-  expect(show).toHaveBeenLastCalledWith([0], []);
+  expect(screen.queryByRole('button', { name: 'Show this path on the map' })).not.toBeInTheDocument();
   await user.type(screen.getByLabelText('Email address'), 'visitor@example.com');
   await user.click(screen.getByLabelText('Consent'));
   await user.click(screen.getByRole('button', { name: 'Sign up' }));
@@ -180,4 +180,24 @@ it('keeps skipped-condition repairs available inside the collapsed summary', asy
   await user.click(screen.getByText('Skipped screens (1)'));
   await user.click(screen.getByRole('button', { name: 'Edit condition' }));
   expect(edit).toHaveBeenCalledWith(1, 'condition');
+});
+
+it('resizes the existing form without losing drafts and counts each completed run once', async () => {
+  const user = userEvent.setup();
+  render(<JourneyTest template={source as Template} onEdit={() => {}} />);
+  const email = screen.getByLabelText('Email address');
+  await user.type(email, 'visitor@example.com');
+  await user.click(screen.getByRole('button', { name: 'Mobile' }));
+  expect(screen.getByLabelText('Email address')).toBe(email);
+  expect(email).toHaveValue('visitor@example.com');
+  await user.click(screen.getByLabelText('Consent'));
+  await user.click(screen.getByRole('button', { name: 'Sign up' }));
+  expect(screen.getByText('1 completed run this session')).toBeInTheDocument();
+  await user.click(screen.getByRole('button', { name: 'Previous screen' }));
+  expect(screen.getByLabelText('Email address')).toHaveAttribute('readonly');
+  await user.click(screen.getByRole('button', { name: 'Continue' }));
+  expect(screen.getByText('1 completed run this session')).toBeInTheDocument();
+  await user.click(screen.getByRole('button', { name: 'Restart this test' }));
+  expect(screen.getByText('1 completed run this session')).toBeInTheDocument();
+  expect(screen.getByLabelText('Email address')).toHaveValue('');
 });

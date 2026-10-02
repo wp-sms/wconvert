@@ -646,8 +646,9 @@ must not imply that mutually exclusive paths are sequential visitor steps.
   Reuse the publication validators and their repair addresses. Repair opens the
   exact existing control and offers Back to issues; an empty list does not prove
   that all visitor cases have been tested.
-- Preview & test separates Appearance, Visitor journey and Sample answers.
-  Samples disclose seeded choices and describe a predicted path. Walkthroughs
+- Preview & test separates Check the design, Try as a visitor and Explore answer paths.
+  Predictions begin without assumed answers and stop at each unanswered question
+  or submission choice. Diagnostics appear progressively beside the form. Walkthroughs
   highlight only reached transitions. Reset remains available, tree edits clear
   stale map traces, and neither mode creates Leads or sends destination requests.
 - Keep the ordinary sequence horizontal. Place a proven optional detour below

@@ -165,42 +165,44 @@ export function DestinationsEditor({
                     missingConnection ? `${control}-connection` : null,
                     compatibility.length ? `${control}-compatibility` : null].filter(Boolean).join(' ');
                   return (
-                    <li key={destination.id} className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-start gap-3">
-                      <input id={control} type="checkbox" className="mt-1" aria-describedby={description || undefined}
-                        checked={bound.includes(destination.id)} onChange={(event) => onChange(event.target.checked
-                          ? [...bound, destination.id] : bound.filter((id) => id !== destination.id))} />
-                      <div className="min-w-0">
-                        <label htmlFor={control} className="inline-flex items-center gap-2 text-body font-medium">{type && <ProviderMark type={type} className="size-4 shrink-0" />}{destination.label}</label>
-                        <div className="flex flex-wrap gap-x-2">
-                          {type !== undefined && <Description as="span" id={`${control}-provider`}>{type.label}</Description>}
-                          {said !== null && <Description as="span" id={`${control}-target`}>{said}</Description>}
+                    <li key={destination.id} className="min-w-0">
+                      <div className="grid grid-cols-[auto_minmax(0,1fr)_auto] items-start gap-3">
+                        <input id={control} type="checkbox" className="mt-1" aria-describedby={description || undefined}
+                          checked={bound.includes(destination.id)} onChange={(event) => onChange(event.target.checked
+                            ? [...bound, destination.id] : bound.filter((id) => id !== destination.id))} />
+                        <div className="min-w-0">
+                          <label htmlFor={control} className="inline-flex items-center gap-2 text-body font-medium">{type && <ProviderMark type={type} className="size-4 shrink-0" />}{destination.label}</label>
+                          <div className="flex flex-wrap gap-x-2">
+                            {type !== undefined && <Description as="span" id={`${control}-provider`}>{type.label}</Description>}
+                            {said !== null && <Description as="span" id={`${control}-target`}>{said}</Description>}
+                          </div>
+                          {bound.includes(destination.id) && automatic.length > 0 &&
+                            <Description className="mt-1 [overflow-wrap:anywhere]">{sprintf(__('Sending %s automatically.', 'wconvert'), automaticText)}</Description>}
+                          {compatibility.length > 0 && <ul id={`${control}-compatibility`} className="mb-0 mt-2 ps-4 text-note text-warning">
+                            {compatibility.map((problem) => <li key={problem}>{problem}</li>)}
+                          </ul>}
+                          {missingConnection && <Description as="span" id={`${control}-connection`} className="block text-warning">
+                            {__('Account connection needed. Open Settings to connect.', 'wconvert')}
+                          </Description>}
+                          {destination.availability !== 'ready' && (
+                            <Description as="span" id={`${control}-availability`} className="block text-warning">
+                              {destination.availability === 'locked'
+                                ? sprintf(__('Needs %s, so captures are kept here, not sent. Re-push from Destinations once it runs.', 'wconvert'), tierProductName(type?.tier))
+                                : sprintf(__('Needs %s on this site, so captures are kept here, not sent. Re-push from Destinations once it runs.', 'wconvert'), type?.requires_label ?? __('something this site does not have', 'wconvert'))}
+                            </Description>
+                          )}
                         </div>
-                        {bound.includes(destination.id) && automatic.length > 0 &&
-                          <Description className="mt-1 [overflow-wrap:anywhere]">{sprintf(__('Sending %s automatically.', 'wconvert'), automaticText)}</Description>}
-                        {compatibility.length > 0 && <ul id={`${control}-compatibility`} className="mb-0 mt-2 ps-4 text-note text-warning">
-                          {compatibility.map((problem) => <li key={problem}>{problem}</li>)}
-                        </ul>}
-                        {missingConnection && <Description as="span" id={`${control}-connection`} className="block text-warning">
-                          {__('Account connection needed. Open Settings to connect.', 'wconvert')}
-                        </Description>}
-                        {destination.availability !== 'ready' && (
-                          <Description as="span" id={`${control}-availability`} className="block text-warning">
-                            {destination.availability === 'locked'
-                              ? sprintf(__('Needs %s, so captures are kept here, not sent. Re-push from Destinations once it runs.', 'wconvert'), tierProductName(type?.tier))
-                              : sprintf(__('Needs %s on this site, so captures are kept here, not sent. Re-push from Destinations once it runs.', 'wconvert'), type?.requires_label ?? __('something this site does not have', 'wconvert'))}
-                          </Description>
-                        )}
-                        {bound.includes(destination.id) && template && onMappingChange && type?.supports_mapping &&
-                          <ExtraAnswerMapping providerLabel={type.label} destination={destination} submissionId={template.tree.submissions[0]?.id ?? ''} template={template} value={mappings[destination.id] ?? {}} onChange={(map) => onMappingChange(destination.id, map)} />}
-                        {bound.includes(destination.id) && template && type && !type.supports_mapping && hasExtraAnswers(template, template.tree.submissions[0]?.id ?? '') &&
-                          <UnsupportedAnswerMapping />}
+                        {type !== undefined && <Button variant="outline" size="sm" aria-label={sprintf(__('Settings for %s', 'wconvert'), destination.label)}
+                          onClick={(event) => {
+                            returnFocus.current = event.currentTarget;
+                            setNotice(null);
+                            setSetup(destination);
+                          }}><Settings2 aria-hidden="true" />{__('Settings', 'wconvert')}</Button>}
                       </div>
-                      {type !== undefined && <Button variant="outline" size="sm" aria-label={sprintf(__('Settings for %s', 'wconvert'), destination.label)}
-                        onClick={(event) => {
-                          returnFocus.current = event.currentTarget;
-                          setNotice(null);
-                          setSetup(destination);
-                        }}><Settings2 aria-hidden="true" />{__('Settings', 'wconvert')}</Button>}
+                      {bound.includes(destination.id) && template && onMappingChange && type?.supports_mapping &&
+                        <ExtraAnswerMapping providerLabel={type.label} destination={destination} submissionId={template.tree.submissions[0]?.id ?? ''} template={template} value={mappings[destination.id] ?? {}} onChange={(map) => onMappingChange(destination.id, map)} />}
+                      {bound.includes(destination.id) && template && type && !type.supports_mapping && hasExtraAnswers(template, template.tree.submissions[0]?.id ?? '') &&
+                        <UnsupportedAnswerMapping />}
                     </li>
                   );
                 })}

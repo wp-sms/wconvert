@@ -2,6 +2,7 @@ import { useId, useMemo, useState } from 'react';
 import { __ } from '@wordpress/i18n';
 import type { Template } from '@renderer/types';
 import { Preview } from './Preview';
+import { PreviewWidth } from './PreviewWidth';
 import { Button } from '../components/ui/button';
 import { DialogDescription, DialogTitle } from '../components/ui/dialog';
 
@@ -21,11 +22,8 @@ export function JourneyScreenPreview({ template, step, onEdit, onTest, embedded 
   return <>
     {!embedded && <DialogTitle>{__('Preview screen', 'wconvert')}: <bdi>{template.tree.steps[step].name}</bdi></DialogTitle>}
     {!embedded && <DialogDescription>{__('Appearance only. Test journey checks conditions. Nothing is saved or sent.', 'wconvert')}</DialogDescription>}
-    {template.tree.steps[step].review_answers && <p>{__('Test journey to preview the answer summary.', 'wconvert')}</p>}
-    <div role="group" aria-label={__('Preview width', 'wconvert')} className="wconvert-journey-pane__tabs">
-      <button type="button" aria-pressed={!mobile} onClick={() => setMobile(false)}>{__('Desktop', 'wconvert')}</button>
-      <button type="button" aria-pressed={mobile} onClick={() => setMobile(true)}>{__('Mobile', 'wconvert')}</button>
-    </div>
+    {template.tree.steps[step].review_answers && <p>{__('Try as a visitor to preview the answer summary.', 'wconvert')}</p>}
+    <div className="wconvert-preview-test__toolbar">{embedded && <span>{__('Layout preview · buttons are inactive', 'wconvert')}</span>}<PreviewWidth mobile={mobile} onChange={setMobile} /></div>
     {!!screen.results?.length && <div className="wconvert-journey-screen-preview__result">
       <label htmlFor={id}>{__('Result to preview', 'wconvert')}</label>
       <select id={id} value={result?.id ?? ''} onChange={event => setResultId(event.target.value)}>
@@ -35,6 +33,6 @@ export function JourneyScreenPreview({ template, step, onEdit, onTest, embedded 
     <div className="wconvert-journey-screen-preview__stage"><div data-mobile={mobile} className="wconvert-journey-screen-preview__screen" inert>
       <Preview template={previewTemplate} step={step} />
     </div></div>
-    {!embedded && <div className="wconvert-graph-insert__actions"><Button type="button" variant="outline" onClick={onEdit}>{__('Edit this screen', 'wconvert')}</Button><Button type="button" onClick={onTest}>{__('Test journey', 'wconvert')}</Button></div>}
+    <div className="wconvert-preview-test__screen-actions"><Button type="button" variant="outline" onClick={onEdit}>{__('Edit this screen', 'wconvert')}</Button><Button type="button" onClick={onTest}>{__('Try as a visitor', 'wconvert')}</Button></div>
   </>;
 }
