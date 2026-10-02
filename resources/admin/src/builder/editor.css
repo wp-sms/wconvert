@@ -10,8 +10,7 @@ body.wconvert-editing.wconvert-fullscreen #wconvert-admin { margin-inline-start:
 body.wconvert-journey-focus #adminmenumain,
 body.wconvert-journey-focus #wpadminbar,
 body.wconvert-journey-focus #wpfooter,
-body.wconvert-journey-focus .wconvert-workspace__header,
-body.wconvert-journey-focus .wconvert-workspace__footer { display: none !important; }
+body.wconvert-journey-focus .wconvert-workspace__header { display: none !important; }
 body.wconvert-journey-focus #wpcontent,
 body.wconvert-journey-focus #wpbody-content { margin-inline-start: 0; padding-inline-start: 0; }
 body.wconvert-editing.wconvert-journey-focus #wconvert-admin { margin-inline-start: 0; width: 100%; }
@@ -104,7 +103,8 @@ body.wconvert-fullscreen #wconvert-admin .wconvert-workspace {
   flex: none;
 }
 #wconvert-admin .wconvert-workspace__save-state {
-  font-size: var(--text-label);
+  font-size: var(--text-micro);
+  line-height: 1.2;
   color: var(--muted-foreground);
   white-space: nowrap;
 }
@@ -725,32 +725,6 @@ body.wconvert-fullscreen #wconvert-admin .wconvert-workspace {
   overflow: auto;
 }
 .wconvert-preview-dialog > .wconvert-canvas { min-height: 0; flex: 1; height: auto; }
-#wconvert-admin .wconvert-workspace__footer {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  min-height: 35px;
-  padding: 4px 18px;
-  flex: none;
-  border-top: 1px solid var(--editor-rule);
-  background: white;
-}
-#wconvert-admin .wconvert-workspace__footer > span {
-  font-size: var(--text-label);
-  color: var(--muted-foreground);
-}
-#wconvert-admin .wconvert-workspace__footer button {
-  font-size: var(--text-label);
-}
-#wconvert-admin .wconvert-workspace__footer .wconvert-workspace__goal {
-  height: auto;
-  min-height: 28px;
-  max-width: 50%;
-  padding: 2px 6px;
-  white-space: normal;
-  text-align: start;
-}
 @media (max-width: 1350px) {
   #wconvert-admin input.wconvert-workspace__name {
     width: 150px;
@@ -1449,7 +1423,6 @@ body .wconvert-rule-picker__unavailable {
   #wconvert-admin .wconvert-screen-controls { flex: 1; }
   #wconvert-admin .wconvert-screen-controls select { max-inline-size: none; }
   #wconvert-admin .wconvert-screen-controls > button { display: none; }
-  #wconvert-admin .wconvert-workspace__footer { padding-inline: 8px; }
   #wconvert-admin .wconvert-canvas__bar > span { display: none; }
   #wconvert-admin .wconvert-canvas__bar { justify-content: flex-end; }
   .wconvert-journey-dialog__header { gap: 10px; }
@@ -2062,34 +2035,19 @@ details[open]>summary>.wconvert-editor-disclosure-icon { transform: rotate(180de
 /* Compact workspace chrome leaves the journey itself room to breathe. */
 #wconvert-admin .wconvert-journey-workspace .wconvert-journey-dialog__header { padding-block: 7px; gap: 10px; }
 .wconvert-journey-dialog__header .wconvert-journey-view { align-items: center; }
-.wconvert-journey-context--settings { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 8px; padding: 4px 16px; background: var(--card); }
-.wconvert-journey-context button.wconvert-journey-context__setting { display: flex; align-items: center; gap: 8px; min-inline-size: 0; padding: 5px 8px; border-radius: 5px; text-align: start; color: var(--foreground); }
-.wconvert-journey-context__setting:hover:not(:disabled) { background: var(--secondary); }
-.wconvert-journey-context__setting:disabled { cursor: default; }
-.wconvert-journey-context__setting svg { inline-size: 14px; block-size: 14px; flex: none; color: var(--muted-foreground); }
-.wconvert-journey-context__label { flex: none; font-weight: 600; font-size: var(--text-label); }
-.wconvert-journey-context__summary { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--muted-foreground); font-size: var(--text-label); }
-.wconvert-journey-context__setting svg:last-child { margin-inline-start: auto; }
 .wconvert-journey-pane__heading { align-items: center; gap: 6px; padding: 12px 20px; }
 .wconvert-journey-pane__close { inline-size: 28px; block-size: 28px; padding: 5px; }
 .wconvert-journey-pane__close svg { display: block; inline-size: 18px; block-size: 18px; stroke-width: 1.75; }
-#wconvert-admin .wconvert-workspace__footer { min-block-size: 28px; padding-block: 0; }
 @layer utilities {
   #wconvert-admin .wconvert-journey-dialog__header .wconvert-journey-view>button { display: inline-flex; align-items: center; justify-content: center; block-size: 32px !important; padding: 0 12px !important; margin: 0; }
   #wconvert-admin .wconvert-journey-find label { block-size: 32px; box-sizing: border-box; margin: 0; }
   #wconvert-admin .wconvert-journey-find input { block-size: 30px !important; min-block-size: 0 !important; padding: 0 !important; line-height: 30px; }
   #wconvert-admin .wconvert-journey-dialog__header-actions [data-slot='button'] { block-size: 32px !important; }
-  #wconvert-admin .wconvert-workspace__footer .wconvert-workspace__goal { min-block-size: 26px; block-size: 26px !important; padding-block: 0 !important; }
-}
-@media (max-width: 800px) {
-  .wconvert-journey-context--settings { grid-template-columns: minmax(0, 1fr); gap: 0; padding: 3px 10px; }
-  .wconvert-journey-context button.wconvert-journey-context__setting { padding-block: 6px; }
 }
 @layer utilities {
   #wconvert-admin .wconvert-journey-dialog__header-actions .wconvert-segmented { block-size: 32px; padding: 2px; }
   #wconvert-admin .wconvert-journey-dialog__header-actions .wconvert-segmented button { block-size: 26px !important; min-block-size: 0; padding-block: 0 !important; }
 }
-.wconvert-journey-context__label, .wconvert-journey-context__summary { font-size: var(--text-micro); }
 
 .wconvert-journey-screen-preview__result { display: grid; gap: 6px; min-inline-size: 0; }
 .wconvert-journey-screen-preview__result label { font-weight: 600; }
@@ -2232,3 +2190,10 @@ details[open]>summary>.wconvert-editor-disclosure-icon { transform: rotate(180de
 .wconvert-journey-issues li button { inline-size: 100%; padding: 12px; text-align: start; border: 1px solid var(--border); border-radius: var(--radius); background: var(--card); color: var(--foreground); font-size: var(--text-note); overflow-wrap: anywhere; cursor: pointer; }
 .wconvert-journey-issues li button:hover { background: var(--accent); }
 .wconvert-flow-issue:focus-visible, .wconvert-journey-issues button:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+
+/* Status follows its save action; device guidance stays beside the selector. */
+#wconvert-admin .wconvert-workspace__save { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+.wconvert-device-controls { display: flex; align-items: center; gap: 4px; }
+.wconvert-flow-node__rules { display: grid; gap: 3px; padding: 10px 15px; border-block-start: 1px solid var(--border); background: var(--surface); font-size: var(--text-label); }
+.wconvert-flow-node__rules span { overflow-wrap: anywhere; color: var(--muted-foreground); }
+.wconvert-flow-node__rules button { justify-self: start; padding: 1px 0; border: 0; background: none; color: var(--primary); text-decoration: underline; cursor: pointer; }

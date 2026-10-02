@@ -20,9 +20,12 @@ import graphFixture from '../fixtures/journey-graph-enquiry.json';
 import branchGroups from '../fixtures/journey-graph-branch-groups.json';
 
 vi.mock('../../resources/admin/src/builder/Preview', () => ({ Preview: () => <div /> }));
-vi.mock('../../resources/admin/src/builder/JourneyMap', () => ({ JourneyMap: ({ onConnect, onReconnect, onSelect, onAdd }: {
+vi.mock('../../resources/admin/src/builder/JourneyMap', () => ({ JourneyMap: ({ onConnect, onReconnect, onSelect, onAdd, onGoToRules, onGoToDestinations }: {
+  onGoToRules?(): void; onGoToDestinations?(): void;
   onConnect(source: string, target: string): void; onReconnect(edge: string, target: string): void; onSelect(index: number): void; onAdd(index: number, edgeId?: string): void;
 }) => <div aria-label="Journey map">
+  {onGoToRules && <button onClick={onGoToRules}>Edit display rules</button>}
+  {onGoToDestinations && <button onClick={onGoToDestinations}>Edit destinations</button>}
   <button onClick={() => onSelect(0)}>Select first screen</button>
   <button onClick={() => onAdd(0, 'saved')}>Insert after save</button>
   <button onClick={() => onConnect('interests', 'contact')}>Draw test branch</button>

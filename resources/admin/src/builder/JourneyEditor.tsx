@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect, useId, useMemo, useRef, useState, type ReactNode } from 'react';
-import { Play, GitBranch, ShieldCheck, ArrowLeft, ArrowRight, ChevronRight, ChevronDown, SlidersHorizontal, Send, Copy, FilePlus2, Eye, ListPlus, Maximize2, Minimize2, Plus, Search, Trash2, Workflow, X } from 'lucide-react';
+import { Play, GitBranch, ShieldCheck, ArrowLeft, ArrowRight, ChevronRight, ChevronDown, Copy, FilePlus2, Eye, ListPlus, Maximize2, Minimize2, Plus, Search, Trash2, Workflow, X } from 'lucide-react';
 import { ConfirmDialog } from '../shell/ConfirmDialog';
 import { Input } from '../components/ui/input';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from '../components/ui/dropdown-menu';
@@ -502,14 +502,6 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
           </div>
         </div>
         {samplePath && !sampleOpen && <div className="wconvert-journey-context"><span>{traceKind === 'visited' ? __('Showing the path visited in your test', 'wconvert') : __('Showing the route for your sample answers', 'wconvert')}</span><button type="button" onClick={() => { setSamplePath(null); setSampleEdges(null); setSaid(__('Test path cleared. All screens and connections are shown.', 'wconvert')); }}>{__('Clear test path', 'wconvert')}</button></div>}
-        {(displaySummary || destinationSummary) && <div className="wconvert-journey-context wconvert-journey-context--settings">
-          {displaySummary && <button type="button" className="wconvert-journey-context__setting" aria-label={__('Edit display rules', 'wconvert')} title={displaySummary} disabled={!onGoToRules} onClick={() => openContext('rules')}>
-            <SlidersHorizontal aria-hidden="true" /><span className="wconvert-journey-context__label">{__('Display rules', 'wconvert')}</span><span className="wconvert-journey-context__summary">{displaySummary}</span><ChevronRight aria-hidden="true" className="rtl:rotate-180" />
-          </button>}
-          {destinationSummary && <button type="button" className="wconvert-journey-context__setting" aria-label={__('Edit destinations', 'wconvert')} title={destinationSummary} disabled={!onGoToDestinations} onClick={() => openContext('destinations')}>
-            <Send aria-hidden="true" /><span className="wconvert-journey-context__label">{__('Destinations', 'wconvert')}</span><span className="wconvert-journey-context__summary">{destinationSummary}</span><ChevronRight aria-hidden="true" className="rtl:rotate-180" />
-          </button>}
-        </div>}
         {panelOpen && <div className="wconvert-journey-mobile-tabs" role="group" aria-label={__('Mobile journey view', 'wconvert')}>
           <button type="button" aria-pressed={mobilePane === 'map'} onClick={() => setMobilePane('map')}>{view === 'flow' ? __('Map', 'wconvert') : view === 'edit' ? __('Popup', 'wconvert') : __('Screens', 'wconvert')}</button>
           <button type="button" aria-pressed={mobilePane === 'details'} onClick={() => setMobilePane('details')}>{contextPanel ? contextPanel === 'rules' ? __('Display rules', 'wconvert') : __('Destinations', 'wconvert') : sampleOpen ? __('Sample answers', 'wconvert') : __('Edit screen', 'wconvert')}</button>
@@ -525,6 +517,7 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
                 contextAddTrigger.current = document.activeElement as HTMLElement;
                 select(index); setFollowupAnswer(undefined); setInsertLocation(edgeId ? `edge:${edgeId}` : undefined); insertedScreen.current = false; setInsertIntent(undefined); setAddKind('input');
               } : undefined}
+              displaySummary={displaySummary} onGoToRules={onGoToRules ? () => openContext('rules') : undefined}
               destinationSummary={destinationSummary} onGoToDestinations={onGoToDestinations ? () => openContext('destinations') : undefined} />
           </Suspense>}
           {view === 'screens' && <aside className="wconvert-journey-rail" aria-label={__('Journey screens', 'wconvert')}>

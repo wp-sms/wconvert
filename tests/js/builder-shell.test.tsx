@@ -993,10 +993,11 @@ describe('the summary', () => {
     expect(screen.queryByText('Started from')).toBeNull();
   });
 
-  it('keeps the goal in the existing footer and its measurement in details', async () => {
+  it('keeps the goal and its measurement in header details', async () => {
     await open();
-    const goal = await screen.findByRole('button', { name: 'Goal: Grow my email list' });
-    expect(goal.closest('footer')).not.toBeNull();
+    const goal = await screen.findByRole('button', { name: 'Campaign details' });
+    expect(goal.closest('header')).not.toBeNull();
+    expect(screen.queryByRole('button', { name: 'Goal: Grow my email list' })).toBeNull();
     expect(screen.queryByText('Grow my email list · counts Email submissions')).toBeNull();
     await userEvent.click(goal);
     expect(await screen.findByRole('dialog', { name: 'Campaign details' })).toBeVisible();
