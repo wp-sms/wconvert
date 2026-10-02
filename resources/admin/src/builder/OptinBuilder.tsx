@@ -9,6 +9,7 @@ import { isResultFirst } from '../../../loader/src/journey-mode';
 import type { JourneyRepair } from './structure/journeyReadiness';
 import { contentLockDesignCompatible } from '../inlinePlacement';
 import './editor.css';
+import './preview-test.css';
 import { Activity, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { flushSync } from 'react-dom';
 import { __, _n, sprintf } from '@wordpress/i18n';
