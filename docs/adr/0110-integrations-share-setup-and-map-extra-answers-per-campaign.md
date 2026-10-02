@@ -28,8 +28,11 @@ Unavailable targets and duplicate selections are explained beside the affected
 row; removed campaign answers can have their stale mappings removed. Empty
 metadata and failed discovery have distinct refresh/retry paths. The mapping
 summary uses the shared supporting-text size (13px) with a neutral outlined count,
-keeping the destination identity above it. Unsupported mapping is a neutral inset
-note, shared by both signup flows; it is not styled as a delivery failure. The
+keeping the destination identity above it. The mapping disclosure spans the full
+destination row below its identity and Settings action, and its summary wraps
+without overlapping the count. The Destinations tab uses a centered settings
+column without a design canvas; the global Preview & test action stays available.
+Unsupported mapping is a neutral inset note, shared by both signup flows; it is not styled as a delivery failure. The
 automatic-field summary does not repeat the target already shown beside the provider.
 
 **Preview and test mapping** is a separate optional disclosure. A test reviews

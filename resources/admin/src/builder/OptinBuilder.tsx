@@ -760,7 +760,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
         setTab(value as TabId);
         setPreviewing(false);
       }}
-      className="wconvert-workspace"
+      className="wconvert-workspace gap-0"
       data-preview={previewing ? 'true' : undefined}
     >
       <header className="wconvert-workspace__header">
@@ -1025,11 +1025,10 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
             {displayEditor()}
           </div>
         </TabsContent>
-        <TabsContent value="destinations" className="wconvert-workspace__secondary">
+        <TabsContent value="destinations" className="wconvert-workspace__secondary wconvert-workspace__destinations">
           <div className="wconvert-workspace__settings">
             {destinationEditor}
           </div>
-          {!compact && previewPane}
         </TabsContent>
       </div>
       <footer className="wconvert-workspace__footer">

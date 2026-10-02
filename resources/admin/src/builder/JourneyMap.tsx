@@ -406,6 +406,7 @@ export function JourneyMap({ tree, selected, focusedPath = null, onSelect, onSel
     </div>
     <SmartEdgeProvider nodes={nodes} options={mapRoutingOptions}>
     <ReactFlow nodes={nodes} edges={edges} nodeTypes={nodeTypes} edgeTypes={edgeTypes}
+      proOptions={{ hideAttribution: true }}
       nodesFocusable={false} edgesFocusable={false} nodesConnectable={editingConnections} edgesReconnectable={editingConnections}
       ariaLabelConfig={{ 'node.a11yDescription.default': __('Use Tab to reach screen and path buttons. Press Enter to edit. Connections can also be edited in Next screen settings.', 'wconvert') }}
       minZoom={mapMinZoom} maxZoom={1.5} deleteKeyCode={null} panOnScroll={!narrow} preventScrolling={!narrow} zoomOnScroll={false} zoomOnPinch

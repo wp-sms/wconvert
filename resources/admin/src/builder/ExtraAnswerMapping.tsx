@@ -78,10 +78,10 @@ export function ExtraAnswerMapping({ destination, providerLabel, submissionId, t
   }, [open, destination.id, context, eligible.length, refresh]);
   if (eligible.length === 0 && orphaned.length === 0) return null;
   return <details className="group/mapping mt-3 min-w-0 rounded-md border border-border bg-card" onToggle={(event) => setOpen(event.currentTarget.open)}>
-    <summary className="flex min-h-(--control-height-sm) cursor-pointer list-none items-center gap-2 rounded-md px-3 py-2 text-note font-medium hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring [&::-webkit-details-marker]:hidden">
+    <summary className="flex min-h-(--control-height-sm) cursor-pointer list-none flex-wrap items-center gap-2 rounded-md px-3 py-2 text-note font-medium hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring [&::-webkit-details-marker]:hidden">
       <ChevronRight aria-hidden="true" className="size-3.5 shrink-0 text-muted-foreground rtl:rotate-180 group-open/mapping:rotate-90" />
-      <span className="min-w-0 flex-1">{__('Field mapping', 'wconvert')}</span>
-      <Badge variant={hasIssues ? "warning" : "outline"} className="text-micro font-normal">{hasIssues ? __('Needs review', 'wconvert') : sprintf(__('%1$d of %2$d mapped', 'wconvert'), selected.length, eligible.length)}</Badge>
+      <span className="min-w-0 flex-1 basis-28 [overflow-wrap:anywhere]">{__('Field mapping', 'wconvert')}</span>
+      <Badge variant={hasIssues ? "warning" : "outline"} className="ms-auto text-micro font-normal">{hasIssues ? __('Needs review', 'wconvert') : sprintf(__('%1$d of %2$d mapped', 'wconvert'), selected.length, eligible.length)}</Badge>
     </summary>
     {open && <div className="flex min-w-0 flex-col gap-4 border-t border-border p-3">
       <Description>{__('Send extra answers to existing text fields. Unmapped answers stay in WConvert only. Changes take effect when you publish.', 'wconvert')}</Description>
