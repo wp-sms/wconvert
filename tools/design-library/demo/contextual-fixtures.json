@@ -152,5 +152,21 @@
       "Before shopping": "In a real store this page must show available products, accurate prices and delivery information. The demo accepts no orders.",
       "Announcement timing": "Only show the announcement while the real collection is available and the description remains current."
     }
+  ],
+  "accessible-visit-note": [
+    "Sample arrival and access information",
+    {
+      "Getting here": "Fictional review venue: 12 Example Lane. The sample drop-off point is beside the front entrance; parking is across the courtyard. These are review fixtures, not directions to a real venue.",
+      "Routes and facilities": "The fictional courtyard route is step-free. The sample first-floor exhibition is stairs-only, and no accessible toilet is represented in this fixture. A real venue must verify and publish its own measurements, surfaces, facilities and limitations.",
+      "Individual questions": "Before travelling, use the real venue’s published contact details to discuss the route and facilities you need. This demonstration has no staffed contact route and makes no booking."
+    }
+  ],
+  "returns-deadline-notice": [
+    "Sample seasonal returns policy",
+    {
+      "Current terms": "This is a policy-page fixture for a fictional shop that takes no orders. It does not establish return rights, accept return requests or offer an extended seasonal return period.",
+      "Before placing an order": "On a real shop, check the policy that applies to your purchase: eligible items, how the return period is calculated, item condition, exceptions, return costs and the method for requesting a return.",
+      "Seasonal dates": "No seasonal deadline is offered in this demonstration. If a merchant offers different seasonal terms, its actual policy should state the eligible purchase dates and applicable return dates before this notice is published."
+    }
   ]
 }

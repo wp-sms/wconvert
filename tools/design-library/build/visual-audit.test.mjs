@@ -49,7 +49,9 @@ test('comparison and reuse directions cannot silently point at absent or incompa
   const duplicate = structuredClone(audit);
   duplicate.records.push(duplicate.records[0]);
   assert.throws(() => visualAuditReport(duplicate, designs, audit.renderer_revision));
-  const broken = structuredClone(plan);
-  broken.entries.find(e => e.design_intent === 'reuse_design').reuse_template = 'inline-signpost';
+  // Keep the refusal covered even when every planned brief has been completed.
+  const broken = { entries: [{ id: 'incompatible-reuse', concept: 'reuse',
+    reference: audit.references[0].id, example: 'Read arrival details',
+    design_intent: 'reuse_design', display_type: 'slide_in', reuse_template: 'inline-signpost' }] };
   assert.throws(() => validateDirections(broken, audit.references, designs));
 });

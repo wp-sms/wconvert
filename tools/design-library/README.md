@@ -380,9 +380,9 @@ an unchanged campaign approval. Content, setup, renderer and evidence changes do
 Six new compositions add four Free designs and two Pro formats: Callback slip,
 Event calendar, Product detail sheet, Service process strip, Launch index and
 Appointment agenda. Each has its own prepared setup and practical guidance.
-The pilot now contains 116 setups using 67 designs (99 designs across all source
+This batch brought the pilot to 116 setups using 67 designs (99 designs across all source
 libraries). This batch does not change the hosted-release plan or featured
-collections. The two deliberate-reuse briefs remain planned.
+collections. The two deliberate-reuse briefs were completed in the follow-up below.
 
 ```bash
 npm run templates:pilot
@@ -394,3 +394,17 @@ Open `out/pilot.html?batch=practical-moments` to try the journeys, and
 copy and **Hide optional images**. The batch audit reuses the shared review
 surface and accepts any existing batch ID. See the
 [review evidence](../../docs/reviews/practical-moments-2026-10-02.md).
+
+### 2 October practical-information follow-up
+
+Two new setups deliberately reuse Availability note and Inline signpost for
+arrival/access information and seasonal returns-policy information. Both use
+Pro display formats. The pilot now contains **118 setups using 67 designs**;
+there are no additional designs or assets, and no planned briefs remain.
+
+Open `out/pilot.html?batch=practical-information`. Rebuild its scoped audit with
+`node tools/design-library/build/batch-audit.mjs practical-information`.
+See [review evidence](../../docs/reviews/practical-information-2026-10-02.md)
+for visual, customer-picker, destination and dismissal checks. Hosted releases
+and featured collections are unchanged. Merchants still configure verified
+information, page targeting, destinations and any seasonal dates.

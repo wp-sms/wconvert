@@ -35628,6 +35628,196 @@
         }
       },
       "record_id": "577c642664dc989e6e0090d932fd6180b453d9de90f8567e880983345f035fa9"
+    },
+    {
+      "id": "accessible-visit-note",
+      "revision": "5240de1d9fa0774919986716f58185f5b3dfa7bc8431184b5494795b1b51cc7a",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Intentional design reuse. Four-width contrast/layout audit, phone and desktop visual review, shared customer picker, native publication, real destinations and keyboard dismissal passed. No form or external delivery.",
+      "at": "2026-10-02T13:26:49.248558+00:00",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/practical-information-2026-10-02.md",
+              "sha256": "569d045b66292daf6f4178ab497a23bc3121b0cc8fd7894865b699388899f74d"
+            },
+            {
+              "path": "docs/reviews/practical-information-2026-10-02-measurements.json",
+              "sha256": "dd32f72a384b9674f1191212804d168cef8057fc4a3c4e5aee71ef544f44dcd7"
+            },
+            {
+              "path": "docs/reviews/practical-information-2026-10-02-desktop.png",
+              "sha256": "42a6f1f7bc4cabd58d2054200b3253ce79cec32c8006203c49d392372867a0a7"
+            },
+            {
+              "path": "docs/reviews/practical-information-2026-10-02-phone.png",
+              "sha256": "d9468f078d0c07022acc34205ad8742296f95fa1f637fc4988ca4ebbb9674670"
+            },
+            {
+              "path": "docs/reviews/practical-information-2026-10-02-rtl-stress.png",
+              "sha256": "4fb2fb6981fcc20150fc32cf1d3bb2c8e1c93c0a46d6277a7e9429eb8c2f774e"
+            },
+            {
+              "path": "docs/reviews/practical-information-2026-10-02-arrival-phone.png",
+              "sha256": "e3c191ad4e302261eff9facce1c9339c2d97426779d33cc6ba820d7c29477330"
+            },
+            {
+              "path": "docs/reviews/practical-information-2026-10-02-returns-phone.png",
+              "sha256": "cc2f7879200b3d890e9b9f11555a41f87be8889f555bc41e3d8b40de7f7d0463"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/practical-information-2026-10-02.md",
+              "sha256": "569d045b66292daf6f4178ab497a23bc3121b0cc8fd7894865b699388899f74d"
+            },
+            {
+              "path": "docs/reviews/practical-information-2026-10-02-arrival-destination.png",
+              "sha256": "4547e8f0ffc209ad01631c6d6550e84b53dfaff87430bdfe6af644ba38ecc971"
+            },
+            {
+              "path": "docs/reviews/practical-information-2026-10-02-returns-destination.png",
+              "sha256": "4816f77c1d6101b8d06d2a74a3783e9ae28b9eaea7e8607773ea3beb730f628c"
+            },
+            {
+              "path": "docs/reviews/practical-information-2026-10-02-dismissed.png",
+              "sha256": "40670f0b53a54c8155b0af38b9b4ba8e44942150c443ad6b9b9a4b30fd0049f0"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/practical-information-2026-10-02.md",
+              "sha256": "569d045b66292daf6f4178ab497a23bc3121b0cc8fd7894865b699388899f74d"
+            },
+            {
+              "path": "docs/reviews/practical-information-2026-10-02-wordpress.json",
+              "sha256": "3f875371e87c23048cf157e50f9a08dc7f72b4b9851a16150f5080e637f426b2"
+            },
+            {
+              "path": "docs/reviews/practical-information-2026-10-02-arrival-picker.png",
+              "sha256": "6ee5770bdf76648f775fd37ee40dca8f2befd2faac2a5d3f23e95dc1a835d1af"
+            },
+            {
+              "path": "docs/reviews/practical-information-2026-10-02-returns-picker.png",
+              "sha256": "b3225a1208bbdf18db42633c054e6e24d9d7877f9740a4eb0596991a78172e03"
+            },
+            {
+              "path": "docs/reviews/practical-information-2026-10-02-native-arrival.png",
+              "sha256": "876c5d14bc48d54b917df7913e06d6386a9984f9e3de9cbfc83c9d9c5477a588"
+            },
+            {
+              "path": "docs/reviews/practical-information-2026-10-02-native-returns.png",
+              "sha256": "9af934d5527ca7c53b019cdc16abcf2ac5699c1d6297230810d6aa6dcb6dc06d"
+            }
+          ]
+        }
+      },
+      "record_id": "71357cce956607bd60db8379682e5d16540060452ab8e5d16da8741b7c6ff67f"
+    },
+    {
+      "id": "returns-deadline-notice",
+      "revision": "69de19ba675f7ddde7a3b2bd4c404a6649ed54e7133670ae84663ececfc39dd6",
+      "base_id": null,
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Intentional design reuse. Four-width contrast/layout audit, phone and desktop visual review, shared customer picker, native publication, real destinations and keyboard dismissal passed. No form or external delivery.",
+      "at": "2026-10-02T13:26:49.248711+00:00",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/practical-information-2026-10-02.md",
+              "sha256": "569d045b66292daf6f4178ab497a23bc3121b0cc8fd7894865b699388899f74d"
+            },
+            {
+              "path": "docs/reviews/practical-information-2026-10-02-measurements.json",
+              "sha256": "dd32f72a384b9674f1191212804d168cef8057fc4a3c4e5aee71ef544f44dcd7"
+            },
+            {
+              "path": "docs/reviews/practical-information-2026-10-02-desktop.png",
+              "sha256": "42a6f1f7bc4cabd58d2054200b3253ce79cec32c8006203c49d392372867a0a7"
+            },
+            {
+              "path": "docs/reviews/practical-information-2026-10-02-phone.png",
+              "sha256": "d9468f078d0c07022acc34205ad8742296f95fa1f637fc4988ca4ebbb9674670"
+            },
+            {
+              "path": "docs/reviews/practical-information-2026-10-02-rtl-stress.png",
+              "sha256": "4fb2fb6981fcc20150fc32cf1d3bb2c8e1c93c0a46d6277a7e9429eb8c2f774e"
+            },
+            {
+              "path": "docs/reviews/practical-information-2026-10-02-arrival-phone.png",
+              "sha256": "e3c191ad4e302261eff9facce1c9339c2d97426779d33cc6ba820d7c29477330"
+            },
+            {
+              "path": "docs/reviews/practical-information-2026-10-02-returns-phone.png",
+              "sha256": "cc2f7879200b3d890e9b9f11555a41f87be8889f555bc41e3d8b40de7f7d0463"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/practical-information-2026-10-02.md",
+              "sha256": "569d045b66292daf6f4178ab497a23bc3121b0cc8fd7894865b699388899f74d"
+            },
+            {
+              "path": "docs/reviews/practical-information-2026-10-02-arrival-destination.png",
+              "sha256": "4547e8f0ffc209ad01631c6d6550e84b53dfaff87430bdfe6af644ba38ecc971"
+            },
+            {
+              "path": "docs/reviews/practical-information-2026-10-02-returns-destination.png",
+              "sha256": "4816f77c1d6101b8d06d2a74a3783e9ae28b9eaea7e8607773ea3beb730f628c"
+            },
+            {
+              "path": "docs/reviews/practical-information-2026-10-02-dismissed.png",
+              "sha256": "40670f0b53a54c8155b0af38b9b4ba8e44942150c443ad6b9b9a4b30fd0049f0"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/practical-information-2026-10-02.md",
+              "sha256": "569d045b66292daf6f4178ab497a23bc3121b0cc8fd7894865b699388899f74d"
+            },
+            {
+              "path": "docs/reviews/practical-information-2026-10-02-wordpress.json",
+              "sha256": "3f875371e87c23048cf157e50f9a08dc7f72b4b9851a16150f5080e637f426b2"
+            },
+            {
+              "path": "docs/reviews/practical-information-2026-10-02-arrival-picker.png",
+              "sha256": "6ee5770bdf76648f775fd37ee40dca8f2befd2faac2a5d3f23e95dc1a835d1af"
+            },
+            {
+              "path": "docs/reviews/practical-information-2026-10-02-returns-picker.png",
+              "sha256": "b3225a1208bbdf18db42633c054e6e24d9d7877f9740a4eb0596991a78172e03"
+            },
+            {
+              "path": "docs/reviews/practical-information-2026-10-02-native-arrival.png",
+              "sha256": "876c5d14bc48d54b917df7913e06d6386a9984f9e3de9cbfc83c9d9c5477a588"
+            },
+            {
+              "path": "docs/reviews/practical-information-2026-10-02-native-returns.png",
+              "sha256": "9af934d5527ca7c53b019cdc16abcf2ac5699c1d6297230810d6aa6dcb6dc06d"
+            }
+          ]
+        }
+      },
+      "record_id": "791e607733bf50e32fe7133f4114bfa3ec3b71bc40e4cd88e3fc1a9e8704a5fd"
     }
   ]
 }

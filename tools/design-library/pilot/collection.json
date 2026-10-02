@@ -3200,6 +3200,62 @@
         ],
         "reason": "A preparatory agenda occupies its own rail beside a reply form; this is neither a booking calendar nor the top-and-bottom appointment note."
       }
+    },
+    {
+      "id": "accessible-visit-note",
+      "audience": "services",
+      "family": "Availability note",
+      "visitor_need": "Find step-free access and arrival information before planning a visit.",
+      "difference": "Reuse Availability note for entrance and access information. This is a new practical setup, not a new design.",
+      "requirements": [
+        "Verified arrival and access information, including any limitations",
+        "A working information page with a contact route for individual questions"
+      ],
+      "status": "review",
+      "source": "Intentional reuse from the reviewed next-batch plan; no new design or artwork.",
+      "suggested_setup": [
+        "Show on relevant location or visit pages after 20 seconds; exclude the access-information page itself.",
+        "Keep the information available in normal page navigation; the slide-in is an optional signpost. Respect dismissal.",
+        "Verify routes and facilities before publishing; if information is unknown, use an enquiry instead."
+      ],
+      "measure": "Visits to arrival and access information, not venue accessibility, bookings or completed visits.",
+      "batch": "practical-information",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "availability-note",
+          "inline-choice"
+        ],
+        "reason": "The existing two-part information card fits arrival details without another layout. It links to information rather than collecting access enquiries."
+      }
+    },
+    {
+      "id": "returns-deadline-notice",
+      "audience": "stores",
+      "family": "Inline signpost",
+      "visitor_need": "Find the applicable returns policy while browsing a seasonal collection.",
+      "difference": "Reuse Inline signpost for a compact returns-policy link. New words and placement are a setup variation, not another design.",
+      "requirements": [
+        "An accurate current returns policy and working destination",
+        "Confirmed seasonal eligibility, dates and exceptions if applicable"
+      ],
+      "status": "review",
+      "source": "Intentional reuse from the reviewed next-batch plan; no new design or artwork.",
+      "suggested_setup": [
+        "Show on relevant seasonal collection or product pages after 8 seconds; exclude the policy page, basket and checkout.",
+        "Keep the policy linked in normal store navigation and allow visitors to dismiss the bar. Check it beside sticky controls on phones.",
+        "Set campaign dates only if needed for a real seasonal policy; do not invent an extended return window or deadline."
+      ],
+      "measure": "Visits to the returns policy, not returns requests or purchases.",
+      "batch": "practical-information",
+      "comparison": {
+        "decision": "reuse_design",
+        "against": [
+          "inline-signpost",
+          "slide-in-nudge"
+        ],
+        "reason": "A shallow bar suits a policy reminder across collection pages. Reuse the existing signpost instead of making another bar or duplicating the larger policy slide-in."
+      }
     }
   ],
   "batches": [
@@ -3238,6 +3294,10 @@
     {
       "id": "practical-moments",
       "name": "Practical moments: six distinct compositions"
+    },
+    {
+      "id": "practical-information",
+      "name": "Two practical information setups"
     }
   ]
 }
