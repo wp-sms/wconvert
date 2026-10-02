@@ -32,7 +32,8 @@ exist in the release. An existing pack ID/version cannot acquire different bytes
 or change access scope; bump that pack's version when changing its contents.
 
 The current compatible release has **16 setups, 13 designs, 4 Free packs and 2
-collections**. Stores and publishers are version 1.1.0; services remains 1.0.0.
+collections**. Stores is version 1.1.0; publishers is 1.1.1 after the reviewed workbook
+layout correction; services remains 1.0.0.
 The new Homeware care pack (1.0.0) includes one original 1920 × 500 illustration.
 The sale bar's site-specific link and lighting's unconverted SVG remain explicitly
 deferred. They stay in the bundled library; incomplete collections are not exported.

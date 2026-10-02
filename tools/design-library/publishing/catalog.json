@@ -31,7 +31,7 @@
       "id": "publishers-starts",
       "name": "Publishers starting points",
       "description": "Reviewed campaign starting points for publishers.",
-      "version": "1.1.0",
+      "version": "1.1.1",
       "setups": [
         "editorial-weekly",
         "reading-notes-guide",
@@ -68,7 +68,7 @@
     "9b44ba80b11a16e7277ad3073e2f1009e463debb5ed128f0302412fba6447152": {
       "redistribution": true,
       "source": "Original WConvert homeware-shelf.svg, extracted unchanged from product-shelf; GPL-2.0-or-later. Raster export: homeware-shelf.png. See pilot/assets/README.md.",
-      "reviewedBy": "Codex — source/provenance review, 2026-10-01",
+      "reviewedBy": "Codex \u2014 source/provenance review, 2026-10-01",
       "access": "free"
     }
   },
