@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type ReactNode } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
-import { Monitor, Smartphone, MousePointer2, X } from 'lucide-react';
+import { CircleHelp, Monitor, Smartphone, MousePointer2, X } from 'lucide-react';
+import { Popover, PopoverTrigger, PopoverContent } from '../components/ui/popover';
 import { Button } from '../components/ui/button';
 import { Preview } from './Preview';
 import { resolvedPlacement } from './PlacementControl';
@@ -31,6 +32,12 @@ export function ScreenControls({
     </div>
   );
 }
+export function MobileAppearanceNote() {
+  return <Popover><PopoverTrigger asChild><Button type="button" variant="ghost" size="icon-sm" aria-label={__('About mobile editing', 'wconvert')}><CircleHelp aria-hidden="true" /></Button></PopoverTrigger>
+    <PopoverContent className="text-note" align="end">{__('Editing mobile appearance. Text and blocks are shared across sizes.', 'wconvert')}</PopoverContent>
+  </Popover>;
+}
+
 export function DeviceControls({
   width,
   onChange,
@@ -39,7 +46,7 @@ export function DeviceControls({
   onChange: (width: PreviewWidth) => void;
 }) {
   return (
-    <div className="wconvert-segmented" aria-label={__('Preview width', 'wconvert')}>
+    <div className="wconvert-device-controls"><div className="wconvert-segmented" aria-label={__('Preview width', 'wconvert')}>
       <Button
         variant="ghost"
         size="icon-sm"
@@ -60,7 +67,7 @@ export function DeviceControls({
       >
         <Smartphone aria-hidden="true" />
       </Button>
-    </div>
+    </div>{width === 'narrow' && <MobileAppearanceNote />}</div>
   );
 }
 

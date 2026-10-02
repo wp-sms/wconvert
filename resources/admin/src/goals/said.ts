@@ -9,8 +9,8 @@ import type { GoalEntry } from './api';
  * ============================================================================
  * IT LIVED IN `ReadinessDialog` AS `subject()`, AND THEN IT HAD TWO READERS.
  * ============================================================================
- * The review dialog and Campaign details say it. The editor's compact footer
- * control names the Goal and opens its full explanation (ADR 0087). Two spellings of *"Goal · counts Word"*
+ * The review dialog and Campaign details say it (ADR 0087).
+ * Two spellings of *"Goal · counts Word"*
  * would be two chances for the same Optin to be described differently on one
  * screen — the same argument that keeps the wording in PHP rather than in a
  * `match` over Goal ids here.
@@ -24,7 +24,7 @@ import type { GoalEntry } from './api';
  * reason: the raw value is the only honest thing left, and blanking it would
  * read as an Optin with no Goal at all. **Empty while the registry has not
  * answered**, because a raw id flashing into a label teaches a merchant that
- * it means *wait* rather than what it says — the compact footer uses a stable Goal label while loading.
+ * it means *wait* rather than what it says.
  */
 export function goalSaid(goal: Loadable<GoalEntry | null>, goalId: string): string {
   const entry = goal.status === 'ready' ? goal.data : null;

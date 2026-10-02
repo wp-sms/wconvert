@@ -21,7 +21,6 @@ import {
   MoreHorizontal,
   Redo2,
   SlidersHorizontal,
-  Target,
   Undo2,
   Workflow,
 } from 'lucide-react';
@@ -52,7 +51,7 @@ import { StructureView } from './StructureView';
 import { DesignSettings } from './DesignSettings';
 import { InlinePlacementSettings, inlinePlacementLabel, inlinePlacementControls, ContentLockPreview, type ContentLockPreviewState } from '../inlinePlacement';
 import { ReopenPreview, reopenControls } from '../reopenControls';
-import { EditorCanvas, ScreenControls, DeviceControls } from './EditorCanvas';
+import { EditorCanvas, ScreenControls, DeviceControls, MobileAppearanceNote } from './EditorCanvas';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../components/ui/dialog';
 import { draftHistoryLabels, type DraftSnapshot } from './structure/draftEditLabel';
 import { canRedo, canUndo, historyOf, redo, remember, undo, type History } from './structure/history';
@@ -784,18 +783,33 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
         <label className="sr-only" htmlFor="wconvert-optin-name">
           {__('Name', 'wconvert')}
         </label>
-        <input
-          id="wconvert-optin-name"
-          className="wconvert-workspace__name"
-          value={name}
-          placeholder={__('Untitled Campaign', 'wconvert')}
-          disabled={busy}
-          onChange={(event) => {
-            coalescing.current = 'name';
-            setName(event.target.value);
-            setSaved(false);
-          }}
-        />
+        <div className="wconvert-workspace__identity">
+          <input
+            id="wconvert-optin-name"
+            className="wconvert-workspace__name"
+            value={name}
+            placeholder={__('Untitled Campaign', 'wconvert')}
+            disabled={busy}
+            onChange={(event) => {
+              coalescing.current = 'name';
+              setName(event.target.value);
+              setSaved(false);
+            }}
+          />
+          <span className="wconvert-workspace__save-state" role="status">
+            {busy
+              ? publishing ? __('Publishing…', 'wconvert') : __('Saving…', 'wconvert')
+              : dirty
+                ? __('Unsaved changes', 'wconvert')
+                : unpublishedChanges
+                  ? __('Unpublished changes', 'wconvert')
+                  : saved
+                  ? __('Draft saved', 'wconvert')
+                  : publishedAt
+                    ? __('Published', 'wconvert')
+                    : __('Draft', 'wconvert')}
+          </span>
+        </div>
         <TabsList
           className="wconvert-workspace__navigation"
           aria-label={__('What you are editing', 'wconvert')}
@@ -952,6 +966,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
                     {compact ? <DropdownMenu><DropdownMenuTrigger asChild><Button variant="ghost" size="icon-sm" aria-label={__('Preview options', 'wconvert')}><MoreHorizontal aria-hidden="true" /></Button></DropdownMenuTrigger>
                       <DropdownMenuContent align="end"><DropdownMenuItem onSelect={() => setWidth('own')}>{__('Desktop preview', 'wconvert')}</DropdownMenuItem><DropdownMenuItem onSelect={() => setWidth('narrow')}>{__('Mobile preview', 'wconvert')}</DropdownMenuItem></DropdownMenuContent>
                     </DropdownMenu> : <DeviceControls width={width} onChange={setWidth} />}
+                    {compact && width === 'narrow' && !previewing && <MobileAppearanceNote />}
                     <Fullscreen />
                   </div>
                 </div>
@@ -1031,31 +1046,6 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
           </div>
         </TabsContent>
       </div>
-      <footer className="wconvert-workspace__footer">
-        <Button variant="ghost" size="sm" disabled={busy} onClick={(event) => { detailsTrigger.current = event.currentTarget; setDetails(true); }}
-          className="wconvert-workspace__goal">
-          <Target aria-hidden="true" />
-          {entryOfGoal ? sprintf(__('Goal: %s', 'wconvert'), entryOfGoal.label)
-            : goalEntry.status === 'loading' ? __('Goal', 'wconvert') : sprintf(__('Goal: %s', 'wconvert'), goal ?? '')}
-        </Button>
-        {width === 'narrow' && (tab === 'design' || tab === 'journey') && !previewing && <span>
-          {__('Editing mobile appearance. Text and blocks are shared across sizes.', 'wconvert')}
-        </span>}
-
-          <span className="wconvert-workspace__save-state" role="status">
-            {busy
-              ? publishing ? __('Publishing…', 'wconvert') : __('Saving…', 'wconvert')
-              : dirty
-                ? __('Unsaved changes', 'wconvert')
-                : unpublishedChanges
-                  ? __('Unpublished changes', 'wconvert')
-                  : saved
-                  ? __('Draft saved', 'wconvert')
-                  : publishedAt
-                    ? __('Published', 'wconvert')
-                    : __('Draft', 'wconvert')}
-          </span>
-      </footer>
       <Dialog open={details} onOpenChange={setDetails}>
         <DialogContent className="wconvert-optin-details" onCloseAutoFocus={(event) => {
           event.preventDefault();
