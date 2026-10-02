@@ -27,7 +27,7 @@ setup/measurement background is optional, while consequential warnings stay visi
 - Updated after editor review on 2026-10-02: the Goal, its measurement and
   Change/Duplicate action live in Campaign details, reached from the header’s
   ellipsis button. The redundant Goal footer is removed; save status sits beside
-  Save draft and mobile-editing guidance beside the device selector. Display rules
+  the campaign name and mobile-editing guidance beside the device selector. Display rules
   and Destinations retain their top-level tabs, with contextual shortcuts at the
   flow’s first screen and capture screens/settings instead of a summary bar.
   These shortcuts open the existing side panels without leaving the campaign.

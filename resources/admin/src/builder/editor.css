@@ -68,7 +68,6 @@ body.wconvert-fullscreen #wconvert-admin .wconvert-workspace {
   height: 32px;
   padding: 5px 8px;
   margin: 0;
-  margin-inline-end: 8px;
   border: 1px solid transparent;
   border-inline-start-color: var(--editor-rule);
   border-radius: 4px;
@@ -102,7 +101,19 @@ body.wconvert-fullscreen #wconvert-admin .wconvert-workspace {
   margin-inline-start: auto;
   flex: none;
 }
+#wconvert-admin .wconvert-workspace__identity {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  flex: 0 1 260px;
+  min-inline-size: 140px;
+  gap: 2px 6px;
+}
+#wconvert-admin .wconvert-workspace__identity input { flex: 1; min-inline-size: 80px; width: 120px; }
 #wconvert-admin .wconvert-workspace__save-state {
+  padding: 3px 6px;
+  border-radius: 4px;
+  background: var(--secondary);
   font-size: var(--text-micro);
   line-height: 1.2;
   color: var(--muted-foreground);
@@ -2191,8 +2202,7 @@ details[open]>summary>.wconvert-editor-disclosure-icon { transform: rotate(180de
 .wconvert-journey-issues li button:hover { background: var(--accent); }
 .wconvert-flow-issue:focus-visible, .wconvert-journey-issues button:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
 
-/* Status follows its save action; device guidance stays beside the selector. */
-#wconvert-admin .wconvert-workspace__save { display: flex; flex-direction: column; align-items: center; gap: 2px; }
+/* Device guidance stays beside the selector. */
 .wconvert-device-controls { display: flex; align-items: center; gap: 4px; }
 .wconvert-flow-node__rules { display: grid; gap: 3px; padding: 10px 15px; border-block-start: 1px solid var(--border); background: var(--surface); font-size: var(--text-label); }
 .wconvert-flow-node__rules span { overflow-wrap: anywhere; color: var(--muted-foreground); }

@@ -783,18 +783,33 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
         <label className="sr-only" htmlFor="wconvert-optin-name">
           {__('Name', 'wconvert')}
         </label>
-        <input
-          id="wconvert-optin-name"
-          className="wconvert-workspace__name"
-          value={name}
-          placeholder={__('Untitled Campaign', 'wconvert')}
-          disabled={busy}
-          onChange={(event) => {
-            coalescing.current = 'name';
-            setName(event.target.value);
-            setSaved(false);
-          }}
-        />
+        <div className="wconvert-workspace__identity">
+          <input
+            id="wconvert-optin-name"
+            className="wconvert-workspace__name"
+            value={name}
+            placeholder={__('Untitled Campaign', 'wconvert')}
+            disabled={busy}
+            onChange={(event) => {
+              coalescing.current = 'name';
+              setName(event.target.value);
+              setSaved(false);
+            }}
+          />
+          <span className="wconvert-workspace__save-state" role="status">
+            {busy
+              ? publishing ? __('Publishing…', 'wconvert') : __('Saving…', 'wconvert')
+              : dirty
+                ? __('Unsaved changes', 'wconvert')
+                : unpublishedChanges
+                  ? __('Unpublished changes', 'wconvert')
+                  : saved
+                  ? __('Draft saved', 'wconvert')
+                  : publishedAt
+                    ? __('Published', 'wconvert')
+                    : __('Draft', 'wconvert')}
+          </span>
+        </div>
         <TabsList
           className="wconvert-workspace__navigation"
           aria-label={__('What you are editing', 'wconvert')}
@@ -821,26 +836,11 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
             <Eye aria-hidden="true" />
             {!small && __('Preview & test', 'wconvert')}
           </Button>
-          <div className="wconvert-workspace__save">
-            <Button variant="outline" disabled={busy || !dirty} onClick={() => void save()}>
-              {busy
-                ? publishing ? __('Publishing…', 'wconvert') : __('Saving…', 'wconvert')
-                : __('Save draft', 'wconvert')}
-            </Button>
-            <span className="wconvert-workspace__save-state" role="status">
-              {busy
-                ? publishing ? __('Publishing…', 'wconvert') : __('Saving…', 'wconvert')
-                : dirty
-                  ? __('Unsaved changes', 'wconvert')
-                  : unpublishedChanges
-                    ? __('Unpublished changes', 'wconvert')
-                    : saved
-                    ? __('Draft saved', 'wconvert')
-                    : publishedAt
-                      ? __('Published', 'wconvert')
-                      : __('Draft', 'wconvert')}
-            </span>
-          </div>
+          <Button variant="outline" disabled={busy || !dirty} onClick={() => void save()}>
+            {busy
+              ? publishing ? __('Publishing…', 'wconvert') : __('Saving…', 'wconvert')
+              : __('Save draft', 'wconvert')}
+          </Button>
           <ReadinessDialog
             captureMode={config.capture_mode === 'local' ? 'local' : 'connected'}
             optinId={id}
