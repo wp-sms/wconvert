@@ -1,0 +1,13 @@
+{
+    "service-process-strip": {
+        "status": "passed",
+        "checks": [
+            "published",
+            "primary: required fields, capture, retry, saved values"
+        ]
+    },
+    "_outbox": {
+        "messages": 100,
+        "scope": "Local wp_mail handoff only; no external inbox delivery"
+    }
+}

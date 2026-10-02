@@ -1648,6 +1648,12 @@
           "date": "2026-10-02",
           "revision": "c227ace2ba1655d8a64b9aa9e6a1faa62d8801797d41292907b1797646ed0d70",
           "note": "Keep optional consent before the action when enabled, with an explicitly labelled reply field."
+        },
+        {
+          "version": 5,
+          "date": "2026-10-02",
+          "revision": "0ce00508718842f2242dc1b730ed0a87b69040c6aebbf62e64d79859e291bcaa",
+          "note": "Replace uneven process cards and oversized form with a numbered list and compact adjacent enquiry panel."
         }
       ]
     },

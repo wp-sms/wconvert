@@ -3125,7 +3125,7 @@
       "audience": "services",
       "family": "Service process strip",
       "visitor_need": "Understand enquiry, assessment and agreement before giving a reply address.",
-      "difference": "Three numbered process columns precede a separate compact reply panel; each number stays with its stage on phones.",
+      "difference": "A numbered process list sits beside a compact enquiry panel; stages stay in reading order above the form on phones.",
       "requirements": [
         "A real assessment process and a person responsible for replies",
         "A page containing the block or shortcode"
@@ -3144,7 +3144,7 @@
           "benefit-grid",
           "inline-choice"
         ],
-        "reason": "Three numbered process columns precede a separate compact reply panel; each number stays with its stage on phones."
+        "reason": "A numbered process list sits beside a compact enquiry panel; stages stay in reading order above the form on phones."
       }
     },
     {

@@ -35553,6 +35553,81 @@
         }
       },
       "record_id": "5b9d3c4b941b02db7bf59f96af2fdea5572796f1895a95beff2f385f4dcb47a8"
+    },
+    {
+      "id": "service-process-strip",
+      "revision": "84bd94ad97f5de030168184e3b5452fe79865d72963eeafe28098bb67fbc561a",
+      "base_id": "75d1fb0f3ab3894ff3c7dc815c669b08d26b7778f10d6c131ee644c91c30b0ca",
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Revised process layout and compact form visually inspected, 32 size/contrast cases passed, retry and native WordPress submission checked. External delivery skipped.",
+      "at": "2026-10-02T13:15:20.364871+00:00",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/service-process-refinement-2026-10-02.md",
+              "sha256": "f1c0ce5434cea23c65af489d8c21222db80bfcccd2099ce40284d51b17c503ba"
+            },
+            {
+              "path": "docs/reviews/service-process-refinement-desktop-2026-10-02.png",
+              "sha256": "2e7e00d17b887953bfe240b53ed353166354400b2a386dc8ba178e34039bc6bb"
+            },
+            {
+              "path": "docs/reviews/service-process-refinement-phone-2026-10-02.png",
+              "sha256": "cafcd8998e3c3228bee27a0232d67ff325e2cb84cd60a4307f32c680a746a8aa"
+            },
+            {
+              "path": "docs/reviews/service-process-refinement-small-2026-10-02.png",
+              "sha256": "5e5c8fa5483bbe4b715c57a3b460ff7286e29f7afd71c58ba1aedf8fde760f94"
+            },
+            {
+              "path": "docs/reviews/service-process-refinement-small-form-2026-10-02.png",
+              "sha256": "09aed3a401b3776b97f26b4a31ac1f8ac7e34cd992a3aae2371ec8d6337b92f4"
+            },
+            {
+              "path": "docs/reviews/service-process-refinement-confirmation-2026-10-02.png",
+              "sha256": "5a1ceec0f95da23f701024e5ca1f94d6d2411843409c840a37bd129d20558dfa"
+            },
+            {
+              "path": "docs/reviews/service-process-refinement-measurements-2026-10-02.json",
+              "sha256": "155608d7fa03d829cd02f37173ab3848ce84906079b898457f6fbb3c61368855"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/service-process-refinement-2026-10-02.md",
+              "sha256": "f1c0ce5434cea23c65af489d8c21222db80bfcccd2099ce40284d51b17c503ba"
+            },
+            {
+              "path": "docs/reviews/service-process-refinement-journey-2026-10-02.png",
+              "sha256": "663b55305ef9a6ebcc37553c462b8dff295ec5f0a35c0019079d12ea567e7973"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/service-process-refinement-2026-10-02.md",
+              "sha256": "f1c0ce5434cea23c65af489d8c21222db80bfcccd2099ce40284d51b17c503ba"
+            },
+            {
+              "path": "docs/reviews/service-process-refinement-wordpress-2026-10-02.json",
+              "sha256": "688790be20d5c80056b49b89aed5b9014beb212b1e908519e888cdfd0289fe0a"
+            },
+            {
+              "path": "docs/reviews/service-process-refinement-confirmation-2026-10-02.png",
+              "sha256": "5a1ceec0f95da23f701024e5ca1f94d6d2411843409c840a37bd129d20558dfa"
+            }
+          ]
+        }
+      },
+      "record_id": "577c642664dc989e6e0090d932fd6180b453d9de90f8567e880983345f035fa9"
     }
   ]
 }
