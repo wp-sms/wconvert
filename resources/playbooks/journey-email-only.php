@@ -21,6 +21,7 @@ return [
         ],
     ],
     'rules' => [['type' => 'time_on_page', 'seconds' => 8]],
+    // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude -- a Targeting rule list, not a get_posts() argument; no query is built from it.
     'targeting' => ['include' => [], 'exclude' => []],
     'destination_hint' => ['types' => [], 'fields' => ['email']],
 ];
