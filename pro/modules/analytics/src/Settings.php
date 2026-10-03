@@ -34,12 +34,14 @@ final class Settings
         $id = $value['measurement_id'];
         if (!is_string($id) || ($id !== '' && !preg_match('/^G-[A-Z0-9]{4,20}$/D', $id))
             || ($value['enabled'] && $value['route'] === 'gtag' && $id === '')) {
-            throw new \InvalidArgumentException(__('Enter the existing web stream Measurement ID, starting with G-.', 'wconvert'));
+            if ($value['route'] === 'gtag') throw new \InvalidArgumentException(__('Enter the existing web stream Measurement ID, starting with G-.', 'wconvert'));
+            $value['measurement_id'] = '';
         }
         $layer = $value['data_layer'];
         if (!is_string($layer) || !preg_match('/^[A-Za-z_$][A-Za-z0-9_$]{0,39}$/D', $layer)
             || in_array($layer, ['__proto__', 'prototype', 'constructor', 'window', 'document', 'location'], true)) {
-            throw new \InvalidArgumentException(__('Enter a valid data-layer name.', 'wconvert'));
+            if ($value['route'] === 'gtm') throw new \InvalidArgumentException(__('Enter a valid data-layer name.', 'wconvert'));
+            $value['data_layer'] = 'dataLayer';
         }
         $this->options->set(self::OPTION, $value + ['home' => rtrim($home, '/'), 'version' => 1]);
     }

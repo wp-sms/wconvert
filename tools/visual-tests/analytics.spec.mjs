@@ -172,6 +172,7 @@ test('admin saves Plausible without a Measurement ID and sends only an explicit 
   await page.request.get('/?wconvert_analytics_fixture=gtag');
   await login(page);
   await page.goto('/wp-admin/admin.php?page=wconvert#settings?group=integrations');
+  await page.getByLabel('Measurement ID', { exact: true }).fill('G-');
   await page.getByText('Plausible', { exact: true }).click();
   await expect(page.getByRole('radio', { name: 'WP Consent API', exact: true })).toBeChecked();
   await expect(page.getByLabel('Measurement ID', { exact: true })).toHaveCount(0);

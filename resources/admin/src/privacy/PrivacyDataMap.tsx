@@ -98,7 +98,7 @@ export function PrivacyDataMap() {
   return (
     <SettingsDisclosure title={title} summary={summary}>
       <RegionBody className="flex flex-col gap-5">
-      {data.analytics_integration?.configured && <p>{__('External analytics is enabled. WConvert sends campaign IDs, public labels and outcome types through the configured analytics provider. It sends no form details; the existing tag can add its own identifiers and page context. Collection follows the configured consent policy.', 'wconvert')}</p>}
+      {data.analytics_integration?.configured && <p>{sprintf(__('External analytics is enabled. WConvert sends campaign IDs, public labels and outcome types through %s. It sends no form details; the existing tag can add its own identifiers and page context. Collection follows the configured consent policy.', 'wconvert'), data.analytics_integration.route === 'plausible' ? 'Plausible' : 'Google Analytics')}</p>}
 
         <section aria-labelledby="wconvert-stored-data">
           <h3 id="wconvert-stored-data" className="m-0 text-body font-medium">

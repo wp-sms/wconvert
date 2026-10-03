@@ -25,7 +25,7 @@ final class SettingsTest extends TestCase
     {
         $options = new FakeOptionStore();
         $settings = new Settings($options);
-        foreach ([['secret' => 'anything'], ['enabled' => 'true'], ['enabled' => true], ['route' => 'both'], ['consent' => 'none'], ['data_layer' => '__proto__'], ['measurement_id' => 'GTM-1234']] as $invalid) {
+        foreach ([['secret' => 'anything'], ['enabled' => 'true'], ['enabled' => true], ['route' => 'both'], ['consent' => 'none'], ['route' => 'gtm', 'data_layer' => '__proto__'], ['measurement_id' => 'GTM-1234']] as $invalid) {
             try { $settings->save($invalid, 'https://example.org'); self::fail('Invalid configuration accepted'); }
             catch (\InvalidArgumentException) { self::assertSame(0, $options->writes); }
         }
@@ -34,8 +34,9 @@ final class SettingsTest extends TestCase
     public function testPlausibleUsesExistingScriptWithoutGoogleStream(): void
     {
         $settings = new Settings(new FakeOptionStore());
-        $settings->save(['enabled' => true, 'route' => 'plausible'], 'https://example.org');
+        $settings->save(['enabled' => true, 'route' => 'plausible', 'measurement_id' => 'G-', 'data_layer' => 'unfinished layer'], 'https://example.org');
         self::assertSame('plausible', $settings->read()['route']);
+        self::assertSame('dataLayer', $settings->read()['data_layer']);
         self::assertSame('', $settings->read()['measurement_id']);
         self::assertTrue($settings->active('https://example.org', 'production', false));
         self::assertFalse($settings->active('https://example.org', 'staging', false));

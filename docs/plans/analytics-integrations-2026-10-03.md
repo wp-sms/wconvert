@@ -680,7 +680,7 @@ Sources: [custom events](https://plausible.io/docs/custom-event-goals),
 [custom properties](https://plausible.io/docs/custom-props/introduction),
 [script configuration](https://plausible.io/docs/script-extensions).
 
-Plausible implementation verification: 30 focused JavaScript tests and 30 related
+Plausible implementation verification: 38 focused JavaScript tests and 31 related
 PHP tests passed, with TypeScript, ESLint and PHPStan clean. The six existing
 Google/WordPress scenarios and three new Plausible/WordPress scenarios passed;
 Plausible settings were visually checked on desktop and mobile RTL. The pinned
@@ -688,3 +688,10 @@ real WP Consent API contract check passes for both providers. Node 22 measures
 the conditional adapter at 2,055 bytes gzip, below its unchanged 4,096-byte cap;
 existing loader and combined budgets remain green. No live provider receipt or
 customer feedback is claimed by these checks.
+
+Final review also verified that incomplete, hidden Google fields cannot block
+saving Plausible, while validation remains strict for the selected route. Privacy
+disclosures name only the configured recipient. Both fixes have regression
+coverage; the WordPress provider-switch save passed again, and Free plus all
+three paid packages rebuilt successfully. No actionable Spec or Standards review
+findings remain.
