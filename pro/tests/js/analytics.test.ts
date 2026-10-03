@@ -53,6 +53,18 @@ describe('analytics isolation', () => {
     expect(createAnalytics({ ...config, consent: 'wp' }).observe('one', 'capture')).toBe('consent_withheld');
     expect(gtag).not.toHaveBeenCalled();
   });
+  it('uses statistics permission rather than an unregistered service marketing fallback', () => {
+    const gtag = vi.fn(); vi.stubGlobal('gtag', gtag);
+    vi.stubGlobal('wp_consent_type', 'optin');
+    vi.stubGlobal('wp_has_consent', (category: string) => category === 'statistics');
+    vi.stubGlobal('wp_has_service_consent', () => false);
+    const denied = vi.fn(() => false); vi.stubGlobal('wp_is_service_denied', denied);
+    const analytics = createAnalytics({ ...config, consent: 'wp' });
+    expect(analytics.observe('one', 'capture')).toBe('handed_off');
+    denied.mockReturnValue(true);
+    expect(analytics.observe('one', 'capture')).toBe('consent_withheld');
+    expect(gtag).toHaveBeenCalledOnce();
+  });
   it('does not deduplicate independent campaigns or replay withheld activity', () => {
     const gtag = vi.fn(); vi.stubGlobal('gtag', gtag);
     const analytics = createAnalytics({ ...config, campaigns: { ...config.campaigns, two: { ...config.campaigns.one, campaign: 'two' } } });

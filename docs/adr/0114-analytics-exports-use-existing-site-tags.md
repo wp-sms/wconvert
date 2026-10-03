@@ -14,6 +14,10 @@ form DOM listeners, private form values or visitor identities cross this seam.
 Content lock now supplies the same accepted-lead notification as other presenters.
 Provider-neutral observations and allowlisted campaign metadata feed an isolated
 provider adapter. Future providers can consume this seam without editing templates.
+The optional asset decorates the presentation session; only the campaign ID and
+semantic act cross from that observer into the provider adapter. When the asset
+is absent, the presenter is returned unchanged. Both registration and provider
+failures remain isolated from campaign behavior.
 
 One site route is selected: `gtag('event', ..., {send_to})` into an already configured
 stream, or a namespaced `dataLayer.push` for a merchant-configured GTM event tag.
@@ -30,7 +34,10 @@ visibility for inline forms. Existing journey/presenter deduplication remains ow
 ## Consent and configuration
 
 The default gate requires an initialized WP Consent API policy and statistics
-permission, respecting the available Google Analytics service denial checks.
+permission, respecting explicit Google Analytics service denial checks.
+Do not use `wp_has_service_consent` as an additional gate: an unregistered
+service falls back to marketing, which would block statistics-only permission.
+Use the category plus `wp_is_service_denied` when available.
 Unknown permission withholds events. An explicitly selected alternative delegates
 collection to the existing Google tag/GTM consent configuration; advanced Consent
 Mode may issue cookieless requests. WConvert never grants consent. Permission is

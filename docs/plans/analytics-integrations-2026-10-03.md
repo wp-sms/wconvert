@@ -583,3 +583,65 @@ Still requires a configured external test environment before promoting the
 integration as verified with a named CMP: real GA DebugView receipt, Tag Assistant
 with the published GTM recipe, and chosen Site Kit/CMP combinations. No Google
 property, container or merchant production settings were changed by this work.
+
+## Pre-release review and verification — 2026-10-03
+
+### Standards review
+
+Three documented campaign-details UI findings were resolved: status reads now
+have distinct loading/failure/retry states without losing edits; the two campaign
+choices use native radio chips; and the free fallback uses manifest-derived tier
+names with the shared grey lock badge. One non-blocking heuristic remains:
+diagnostic labels use a positional array rather than named fields.
+
+### Spec review
+
+No confirmed behavioral defect or scope creep was found in the review. Two
+acceptance requirements remain incomplete: real Google/GTM/Site Kit/CMP testing
+and three representative tester sessions (Site Kit merchant, GTM agency,
+multistep campaign user). Local recording tags do not satisfy either requirement.
+
+### Compatibility findings and fixes
+
+The CI Node 22 gzip check reproduced budget overruns of 33 bytes (Basic) and
+18 bytes (Pro), while Node 24 compression passed. Observation decoration now lives
+in the conditional analytics asset; the loader keeps only the guarded registration
+call. Budgets are unchanged and must pass under CI's Node 22 runtime.
+
+Testing the actual WP Consent API JavaScript revealed that
+`wp_has_service_consent('google-analytics')` falls back to marketing when the
+service is not registered. This incorrectly withheld events despite statistics
+permission. The adapter now gates on statistics plus explicit service denial.
+The repeatable `tools/visual-tests/consent-api-check.mjs` checks the pinned upstream
+revision `a6ff13c49a11f00d1f1483d091b6d7559166c6f6`: unknown, denied, granted,
+withdrawn and service-denied consent, plus no replay. It uses real consent API
+functions and cookies with a recording tag; it is not a live CMP/Google test.
+
+### Remaining external acceptance steps
+
+- Supply a dedicated test site, GA4 web stream/property and GTM container, with
+  browser access to DebugView and Tag Assistant. A WordPress environment marked
+  staging suppresses routine exports; test synthetic diagnostics there, and use
+  a dedicated non-customer site marked production for routine event acceptance.
+- Direct route: observe one impression and one accepted lead in the test property;
+  verify optional SMS does not create another lead, and verify quiz result and
+  contact capture remain separate. Test failed form submission and an excluded
+  campaign for absence of false outcomes.
+- GTM route: preview the documented trigger and parameter recipe against the
+  test stream, verify exactly one tag per event and correct destination, then
+  publish only the dedicated test container and repeat the check.
+- Configure Site Kit + WP Consent API + a chosen CMP (start with Complianz).
+  Test consent denied, statistics allowed with marketing denied, withdrawn,
+  service-specific denial, and a reload with remembered consent. Use one owner
+  for Google consent-mode configuration. Repeat GTM with the chosen CMP.
+- Run the three tester sessions and record completion, time, confusion, missing
+  guidance and support needs. Do not claim feedback has been collected yet.
+- Keep the PR draft until these acceptance gates pass. Then require green
+  `CI / Required checks`, complete review, and merge. Publish Free/Pro releases
+  through the repository release workflows only after release versions and the
+  published Free dependency satisfy their guards.
+
+Reference for the named interoperability setup:
+[Site Kit consent-mode documentation](https://sitekit.withgoogle.com/documentation/using-site-kit/consent-mode/).
+No external Google property/container or production site was modified during
+this verification pass.

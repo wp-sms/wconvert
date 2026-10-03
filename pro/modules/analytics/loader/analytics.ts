@@ -9,7 +9,6 @@ interface SiteWindow {
   gtag?: (...args: unknown[]) => void;
   wp_consent_type?: string;
   wp_has_consent?: (category: string) => boolean;
-  wp_has_service_consent?: (service: string) => boolean;
   wp_is_service_denied?: (service: string) => boolean;
 }
 const names = { impression: 'wconvert_impression', capture: 'generate_lead', convert: 'wconvert_conversion', dismiss: 'wconvert_dismiss' };
@@ -21,8 +20,9 @@ export function createAnalytics(config: AnalyticsConfig) {
     if (config.consent === 'site') return null;
     try {
       if (!['optin', 'optout'].includes(site.wp_consent_type ?? '') || typeof site.wp_has_consent !== 'function') return 'consent_unknown';
-      if (site.wp_has_consent('statistics') !== true || site.wp_is_service_denied?.('google-analytics') === true
-        || site.wp_has_service_consent?.('google-analytics') === false) return 'consent_withheld';
+      // Unregistered services fall back to marketing in wp_has_service_consent.
+      // Analytics uses statistics plus explicit service denial, never that fallback.
+      if (site.wp_has_consent('statistics') !== true || site.wp_is_service_denied?.('google-analytics') === true) return 'consent_withheld';
       return null;
     } catch { return 'consent_unknown'; }
   }

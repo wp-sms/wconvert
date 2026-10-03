@@ -7,8 +7,23 @@ function start() {
   let config: PageConfig;
   try { config = JSON.parse(element.textContent ?? ''); } catch { return; }
   const analytics = createAnalytics(config);
+  let active = true;
   let report: (id: string, kind: string, status: Status) => void = () => { /* Only explicit diagnostic pages retain observations. */ };
-  window.__wcvAct = (id, kind) => report(id, kind, analytics.observe(id, kind));
+  window.__wcvObserve = session => ({
+    ...session,
+    show(entry, controls) {
+      // The observer sees the presentation boundary; the provider gets only an ID and semantic act.
+      const id = entry.id;
+      for (const kind of Object.keys(controls) as (keyof typeof controls)[]) {
+        const act = controls[kind];
+        controls[kind] = () => {
+          try { if (active) report(id, kind, analytics.observe(id, kind)); } catch { /* Tracking cannot interrupt a campaign. */ }
+          act();
+        };
+      }
+      return session.show(entry, controls);
+    },
+  });
   const captured = (event: Event) => {
     const detail = (event as CustomEvent<{ optinId?: string }>).detail;
     if (typeof detail?.optinId === 'string') report(detail.optinId, 'capture', analytics.observe(detail.optinId, 'capture'));
@@ -35,7 +50,7 @@ function start() {
     list.prepend(item); while (list.children.length > 10) list.lastElementChild?.remove();
   };
   const close = document.createElement('button'); close.textContent = '×'; close.setAttribute('aria-label', config.labels[6]);
-  const stop = () => { host.remove(); document.removeEventListener('wconvert:capture', captured); window.__wcvAct = undefined; };
+  const stop = () => { active = false; host.remove(); document.removeEventListener('wconvert:capture', captured); window.__wcvObserve = undefined; report = () => {}; };
   close.onclick = stop;
   panel.append(heading, close, note, target, help, button, output, list); root.append(style, panel); document.body.append(host);
   window.setTimeout(stop, 10 * 60 * 1000);
