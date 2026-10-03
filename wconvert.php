@@ -1,13 +1,12 @@
 <?php
 /**
- * Plugin Name: WConvert
+ * Plugin Name: WConvert – Popups and Inline Forms for Lead Capture
  * Plugin URI: https://wconvert.io/
- * Description: Lead capture and conversion display — popups, floating bars, slide-ins and inline forms, created goal-first.
+ * Description: Lead capture with popups and inline forms, created goal-first.
  * Version: 0.1.0
  * Author: VeronaLabs
  * Author URI: https://veronalabs.com/
  * Text Domain: wconvert
- * Domain Path: /resources/languages
  * Requires at least: 6.8
  * Requires PHP: 8.1
  * License: GPL-2.0+
