@@ -23,6 +23,17 @@ export function usesJourneyElements(tree: TemplateTree): boolean {
     || walkNodes(screen.content).some(node => node.type === 'question'));
 }
 
+/**
+ * How many results show a link button with nowhere to send it yet. Pro quiz
+ * setups ship them that way on purpose — the merchant picks each destination
+ * (ADRs 0081, 0082, 0106) — so the chooser says so before one is picked rather
+ * than leaving it to Publish.
+ */
+export function resultLinksToChoose(tree: TemplateTree): number {
+  return tree.steps.reduce((count, screen) =>
+    count + (screen.results ?? []).filter(result => !!result.link_label?.trim() && !result.href?.trim()).length, 0);
+}
+
 /** The explicit acceptance boundary for one declared submission. */
 export function submissionScreen(tree: TemplateTree, id: string | undefined): number {
   if (!id) return -1;

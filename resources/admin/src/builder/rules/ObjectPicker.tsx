@@ -3,6 +3,7 @@ import { __, sprintf, _n } from '@wordpress/i18n';
 import { Popover, PopoverAnchor, PopoverContent } from '../../components/ui/popover';
 import { Button } from '../../components/ui/button';
 import { resolveObjects, searchObjects, type ObjectHit, type ObjectKind } from './objects';
+import { useObjectSearch } from './useObjectSearch';
 
 /**
  * Targeting a page by its NAME.
@@ -62,11 +63,6 @@ export interface ObjectPickerProps {
   readonly onChange: (value: string) => void;
 }
 
-/** Long enough that typing a word is one request, short enough to feel live. */
-const DEBOUNCE_MS = 250;
-type SearchResult = { kind: ObjectKind; query: string } & (
-  { status: 'ready'; hits: readonly ObjectHit[] } | { status: 'error' }
-);
 type Resolution = { kind: ObjectKind; value: string; status: 'loading' | 'ready' | 'error' };
 
 export function ObjectPicker({ id, kind, value, onChange }: ObjectPickerProps) {
@@ -76,18 +72,14 @@ export function ObjectPicker({ id, kind, value, onChange }: ObjectPickerProps) {
   const [open, setOpen] = useState(false);
   /** What the merchant is typing, or null while they are not. */
   const [query, setQuery] = useState<string | null>(null);
-  const [result, setResult] = useState<SearchResult | null>(null);
-  const [searchAttempt, setSearchAttempt] = useState(0);
   const [resolutionAttempt, setResolutionAttempt] = useState(0);
   const [resolution, setResolution] = useState<Resolution | null>(null);
-  const [active, setActive] = useState(0);
   const [selection, setSelection] = useState<{ kind: ObjectKind; hit: ObjectHit } | null>(null);
   const input = useRef<HTMLInputElement>(null);
   const expanded = open && query !== null;
-  const current = result?.kind === kind && result.query === query ? result : null;
-  const searching = expanded && current === null;
-  const searchFailed = expanded && current?.status === 'error';
-  const hits = expanded && current?.status === 'ready' ? current.hits : [];
+  const search = useObjectSearch((text, signal) => searchObjects(kind, text, signal), kind, query, open);
+  const { searching, hits, active, setActive } = search;
+  const searchFailed = search.failed;
   const chosen = selection?.kind === kind && selection.hit.id === value ? selection.hit : null;
   const currentResolution = resolution?.kind === kind && resolution.value === value ? resolution : null;
   const resolving = value !== '' && (currentResolution === null || currentResolution.status === 'loading');
@@ -126,37 +118,6 @@ export function ObjectPicker({ id, kind, value, onChange }: ObjectPickerProps) {
     return () => controller.abort();
   }, [kind, value, resolutionAttempt]);
 
-  /**
-   * Search, debounced, with the previous request cancelled.
-   *
-   * Only the current query's results can be selected, including during the
-   * debounce. Every completion checks cancellation; failed searches have their
-   * own state rather than pretending WordPress returned no matches.
-   */
-  useEffect(() => {
-    if (query === null || !open) {
-      return;
-    }
-
-    const controller = new AbortController();
-    const timer = setTimeout(() => {
-      searchObjects(kind, query, controller.signal)
-        .then((found) => {
-          if (controller.signal.aborted) return;
-          setResult({ kind, query, status: 'ready', hits: found });
-          setActive(0);
-        })
-        .catch(() => {
-          if (!controller.signal.aborted) setResult({ kind, query, status: 'error' });
-        });
-    }, DEBOUNCE_MS);
-
-    return () => {
-      clearTimeout(timer);
-      controller.abort();
-    };
-  }, [kind, open, query, searchAttempt]);
-
   const commit = (hit: ObjectHit) => {
     onChange(hit.id);
     setSelection({ kind, hit });
@@ -171,8 +132,7 @@ export function ObjectPicker({ id, kind, value, onChange }: ObjectPickerProps) {
   };
 
   const retrySearch = () => {
-    setResult(null);
-    setSearchAttempt((attempt) => attempt + 1);
+    search.retry();
     input.current?.focus();
   };
 
@@ -195,7 +155,7 @@ export function ObjectPicker({ id, kind, value, onChange }: ObjectPickerProps) {
     if ((event.key === 'ArrowDown' || event.key === 'ArrowUp') && !expanded) {
       event.preventDefault();
       setQuery('');
-      setResult(null);
+      search.reset();
       setOpen(true);
       return;
     }
@@ -269,7 +229,7 @@ export function ObjectPicker({ id, kind, value, onChange }: ObjectPickerProps) {
             value={query ?? displayed(chosen, value)}
             onChange={(event) => {
               setQuery(event.target.value);
-              setResult(null);
+              search.reset();
               setActive(0);
               setOpen(true);
             }}

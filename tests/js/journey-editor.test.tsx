@@ -696,7 +696,7 @@ it('opens the specific result and focuses its fallback link when repairing publi
   }
   render(<RepairEditor />);
   await waitFor(() => expect(screen.getByRole('textbox', { name: 'Heading' })).toHaveValue('Balcony picks'));
-  await waitFor(() => expect(screen.getByRole('textbox', { name: 'Fallback shop or guide link' })).toHaveFocus());
+  await waitFor(() => expect(screen.getByRole('combobox', { name: 'Fallback shop or guide link' })).toHaveFocus());
 });
 
 
