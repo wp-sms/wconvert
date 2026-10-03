@@ -34,7 +34,7 @@ defined('ABSPATH') || exit;
  * That is the whole discriminator, and it is why locked metadata comes through
  * the same seam rather than through a second one. `resources/templates/locked.json`
  * carries a name, a Display Type, the design's facets and a link to a live
- * preview on wconvert.com, and no tree at all — because shipping premium trees
+ * preview on wconvert.io, and no tree at all — because shipping premium trees
  * in the free ZIP and refusing the save is trialware (issue #7), and rendering
  * a real control `disabled` fires wp.org Guideline 9.
  *

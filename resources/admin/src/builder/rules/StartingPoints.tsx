@@ -5,7 +5,7 @@ import { Badge } from '../../components/ui/badge';
 import { Input } from '../../components/ui/input';
 import { Button } from '../../components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '../../components/ui/dialog';
-import { renderingFor, tierName } from '../../goals/availability';
+import { isShown, renderingFor, tierName } from '../../goals/availability';
 import { listWithAnd } from './sentence';
 import type { Frequency, RuleBundle, Targeting } from '../api';
 
@@ -40,7 +40,7 @@ export function StartingPoints({ bundles, onApply, describe }: StartingPointsPro
   if (bundles.length === 0) return null;
   const labels = sectionLabels();
   const words = search.trim().toLocaleLowerCase().split(/\s+/).filter(Boolean);
-  const shown = bundles.filter(bundle => (section === 'all' || affectedSections(bundle).includes(section))
+  const shown = bundles.filter(bundle => isShown(bundle.availability) && (section === 'all' || affectedSections(bundle).includes(section))
     && words.every(word => [bundle.label, bundle.description, sectionsIn(bundle)].join(' ').toLocaleLowerCase().includes(word)));
 
   return <Dialog open={open} onOpenChange={next => {

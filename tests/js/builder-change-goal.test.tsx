@@ -4,7 +4,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, onTestFinished, vi } from 'vitest';
 import { ruleTypes } from './support/rule-types';
 import type { TemplateEntry } from '../../resources/admin/src/templates/api';
 
@@ -350,6 +350,9 @@ describe('the goal picker', () => {
    * it to stop agreeing (ADR 0026).
    */
   it('upsells a goal this install has to buy, and never as a button', async () => {
+    // A paid install meeting a higher rung's Goal (ADR 0116).
+    window.wconvertAdmin = { exportUrl: '', installedTier: 'basic' };
+    onTestFinished(() => { delete window.wconvertAdmin; });
     open();
     await changeGoal();
 
@@ -369,6 +372,15 @@ describe('the goal picker', () => {
       'data-variant',
       'secondary',
     );
+  });
+
+  /** A free install is not sold a Goal at all — not even a card (ADR 0116). */
+  it('hides a goal a free install would have to buy', async () => {
+    open();
+    await changeGoal();
+
+    expect(screen.queryByText('Bring shoppers back to their cart')).toBeNull();
+    expect(screen.queryByText(/Available with/)).toBeNull();
   });
 
   it('hides a goal this site cannot serve at all', async () => {

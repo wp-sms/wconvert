@@ -45,6 +45,12 @@ by failing on day one: `phpstan-bootstrap.php` named Pro's plugin file, so
 Pro's constants moved to `pro/phpstan-bootstrap.php` rather than the check
 learning to look away.
 
+*Amended by [ADR 0115](0115-the-free-zip-carries-its-build-files.md): free's own
+Vite configs and the npm and Composer manifests now ship in the free ZIP so a
+reviewer can rebuild `public/`. They are still outside this check's tree — Pro's
+configs sit beside them — and are checked at the artifact instead, which fails
+the build if a shipped root Vite config names a `pro/` path.*
+
 A Pro *URL* is not a Pro path. Free links to the Pro landing page to render a
 `locked` Availability state ([ADR 0015](0015-enforcement-is-by-non-registration.md)),
 and that string has a `pro/` segment in it, so the PHP check qualifies a path by

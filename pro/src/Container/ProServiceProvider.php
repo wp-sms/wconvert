@@ -179,6 +179,17 @@ final class ProServiceProvider implements ServiceProvider
 
     public function boot(ServiceContainer $container): void
     {
+        // Question journeys exist on this install because the module that runs
+        // them shipped in this ZIP, and that registration is the whole of the
+        // entitlement (ADR 0116). The module has no PHP of its own, so its
+        // manifest on disk is the possession test — the same one
+        // `WpProPresence` reads a rung from. First, and above every guard:
+        // the publish route, the capture route, the payload and the builder
+        // all ask it.
+        if (is_file(WCONVERT_PRO_DIR . 'modules/journeys/module.json')) {
+            add_filter(\WConvert\Template\JourneySupport::FILTER, static fn (): bool => true);
+        }
+
         if (class_exists(\WConvert\Pro\Module\Analytics\Hooks::class)) {
             (new \WConvert\Pro\Module\Analytics\Hooks(
                 new \WConvert\Pro\Module\Analytics\Settings($container->resolve(\WConvert\Storage\OptionStore::class)),

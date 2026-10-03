@@ -2,7 +2,7 @@ import { useState, type ComponentProps } from 'react';
 import { CAPTURE_OUTCOME } from './support/outcomes';
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, onTestFinished, vi } from 'vitest';
 import { DestinationsEditor } from '../../resources/admin/src/builder/DestinationsEditor';
 import { LOADING, failed, ready } from '../../resources/admin/src/shell/loadable';
 import type { Loadable } from '../../resources/admin/src/shell/loadable';
@@ -231,6 +231,9 @@ describe('binding an optin to a destination', () => {
    * merchant is offered a licence we do not sell.
    */
   it('names the tier for a locked route and the plugin for an unavailable one', () => {
+    // A paid install meeting a higher rung's type (ADR 0116).
+    window.wconvertAdmin = { exportUrl: '', installedTier: 'basic' };
+    onTestFinished(() => { delete window.wconvertAdmin; });
     listed(
       [
         destination({ id: 'a', type: 'paid', label: 'Paid route', availability: 'locked' }),
@@ -247,6 +250,20 @@ describe('binding an optin to a destination', () => {
     expect(
       within(rowFor('Plugin route')).getByText(/Needs WP SMS on this site/),
     ).toBeInTheDocument();
+  });
+
+  /** Free keeps the saved route and names no product (ADR 0116). */
+  it('names no product for a locked route on a free install', () => {
+    listed(
+      [destination({ id: 'a', type: 'paid', label: 'Paid route', availability: 'locked' })],
+      [],
+      [type({ id: 'paid', label: 'Paid', tier: 'pro' })],
+    );
+
+    expect(
+      within(rowFor('Paid route')).getByText('This destination type isn’t available on this site, so captures are kept here, not sent.'),
+    ).toBeInTheDocument();
+    expect(within(rowFor('Paid route')).queryByText(/WConvert Pro/)).toBeNull();
   });
 
   it('ticks the destinations this optin is bound to', () => {
@@ -407,6 +424,9 @@ describe('setting up shared destinations without leaving the Optin draft', () =>
   });
 
   it('explains unavailable providers without offering to create a route through them', async () => {
+    // A paid install meeting a higher rung's type (ADR 0116).
+    window.wconvertAdmin = { exportUrl: '', installedTier: 'basic' };
+    onTestFinished(() => { delete window.wconvertAdmin; });
     editor(ready([]), [], [type({ id: 'paid', tier: 'pro', label: 'Paid service', availability: 'locked' }),
       type({ id: 'wsms', label: 'WP SMS', availability: 'unavailable', requires_label: 'WP SMS' })]);
     await userEvent.click(screen.getByRole('button', { name: 'Add destination' }));
@@ -414,6 +434,15 @@ describe('setting up shared destinations without leaving the Optin draft', () =>
     expect(screen.getByText('Needs WP SMS on this site.')).toBeVisible();
     expect(screen.queryByRole('button', { name: /Choose / })).not.toBeInTheDocument();
     expect(api.saveDestination).not.toHaveBeenCalled();
+  });
+
+  it('lists no provider a free install would have to buy', async () => {
+    editor(ready([]), [], [type({ id: 'paid', tier: 'pro', label: 'Paid service', availability: 'locked' }),
+      type({ id: 'wsms', label: 'WP SMS', availability: 'unavailable', requires_label: 'WP SMS' })]);
+    await userEvent.click(screen.getByRole('button', { name: 'Add destination' }));
+    expect(screen.queryByText('Paid service')).not.toBeInTheDocument();
+    expect(screen.queryByText(/Included with/)).not.toBeInTheDocument();
+    expect(screen.getByText('Needs WP SMS on this site.')).toBeVisible();
   });
 
   it('refreshes a failed read in place and removes only references proven missing', async () => {

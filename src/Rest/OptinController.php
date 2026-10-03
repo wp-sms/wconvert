@@ -598,8 +598,8 @@ final class OptinController implements RestController
         }
 
         $issue = \WConvert\Template\CaptureContract::issue($optin->config, $optin->goal, get_privacy_policy_url());
-        if (\WConvert\Template\CaptureJourney::requiresPremium($optin->config['template']['tree'] ?? []) && !$this->goals->supportsJourneys()) {
-            return new WP_Error('wconvert_journey_requires_pro', __('Questions, conditions and results require WConvert Pro before publishing.', 'wconvert'), ['status' => 400]);
+        if (\WConvert\Template\CaptureJourney::requiresPremium($optin->config['template']['tree'] ?? []) && !\WConvert\Template\JourneySupport::active()) {
+            return new WP_Error('wconvert_journey_unsupported', __('This design uses elements this site can’t display. You can keep saving this Campaign as a draft.', 'wconvert'), ['status' => 400]);
         }
         if ($issue !== null) {
             $message = match ($issue) {

@@ -16,6 +16,15 @@
 export interface AdminSettings {
   readonly phoneDefaultCountry?: string;
   readonly installedTier?: 'free' | 'basic' | 'pro' | 'elite';
+  /**
+   * Whether Pro registered question journeys on this install — its provider
+   * does so when the `journeys` module shipped — `JourneySupport::active()`, read on the server (ADR 0116).
+   *
+   * A capability, not a tier: the builder offers questions, results, screen
+   * conditions and flexible paths only when the module that runs them is on
+   * disk, and nothing on a free install mentions them at all.
+   */
+  readonly journeys?: boolean;
   /** WordPress site timezone, including fixed-offset zones. */
   readonly timezone?: string;
   /** The nonced `admin-post.php` URL for the CSV export. */
@@ -148,3 +157,10 @@ declare global {
  * reader has to survive it, so none of them gets a throw.
  */
 export const adminSettings = (): AdminSettings | undefined => window.wconvertAdmin;
+
+/**
+ * Whether this install can author question journeys. Absent reads as no — the
+ * failure a free build must take is to offer less, never to offer a control
+ * the server will refuse (ADR 0116).
+ */
+export const journeysSupported = (): boolean => adminSettings()?.journeys === true;

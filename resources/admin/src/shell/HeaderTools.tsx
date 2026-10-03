@@ -13,6 +13,9 @@ import { RowsSkeleton } from './RowsSkeleton';
 import { messageOf } from './loadable';
 import { adminSettings } from '../settings';
 
+/** Where every "Explore Pro" link on a free install goes. */
+export const EXPLORE_PRO_URL = 'https://wconvert.io/pro/';
+
 export function HeaderTools() {
   const tier = adminSettings()?.installedTier ?? 'free';
   const [notices, setNotices] = useState<{ campaigns: OptinSummary[]; sending: number } | null>(
@@ -43,7 +46,7 @@ export function HeaderTools() {
       {tier === 'free' && (
         <a
           className="wc-explore-pro"
-          href="https://wconvert.io/pro/"
+          href={EXPLORE_PRO_URL}
           target="_blank"
           rel="noreferrer"
         >

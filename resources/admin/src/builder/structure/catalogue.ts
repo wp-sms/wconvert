@@ -4,6 +4,7 @@ import { capturesTaken, nodeAt, rolesTaken, type Spot } from './tree';
 import { submissionScreen, walkNodes } from './journey';
 import { graphReaches } from './graph';
 import { MAX_PATH_QUESTIONS, questionPath } from './questionBudget';
+import { journeysSupported } from '../../settings';
 import type { TemplateNode, TemplateTree } from '@renderer/types';
 
 /**
@@ -106,11 +107,22 @@ export function additionsIn(tree: TemplateTree, at: Spot, act: ConvertingAct): A
     consulted `whyRefused` for every type, so a layout the guard refused was
     offered by the menu and then silently built nothing when pressed.
   */
-  return [...Object.keys(LEAVES), ...Object.keys(LAYOUTS)].map((type) => ({
+  return [...Object.keys(LEAVES).filter(offeredHere), ...Object.keys(LAYOUTS)].map((type) => ({
     type,
     leaf: LEAVES[type] !== undefined,
     refused: whyRefused(tree, type, at, act),
   }));
+}
+
+/**
+ * The one per-install exception to "the manifest decides": a `question` runs
+ * only where Pro registered journeys (its `journeys` module shipped), so a free install is not
+ * offered one at all — not even disabled, which would be an upsell by another
+ * name (ADR 0116). The manifest still declares it, because free's validator
+ * has to recognise one arriving in an import.
+ */
+function offeredHere(type: string): boolean {
+  return type !== 'question' || journeysSupported();
 }
 
 /**
@@ -216,7 +228,7 @@ export function nodeFor(
   act: ConvertingAct,
   capture?: string,
 ): TemplateNode | null {
-  if (whyRefused(tree, type, at, act) !== null) {
+  if (!offeredHere(type) || whyRefused(tree, type, at, act) !== null) {
     return null;
   }
 

@@ -26,6 +26,8 @@ export function ReopenPreview(props: ReopenPreviewProps) {
 export function ReopenSettings(props: ReopenProps) {
   const Control = reopenControls.component;
   return Control ? <Suspense fallback={<p>{__('Loading reopen settings…', 'wconvert')}</p>}><Control {...props} /></Suspense> : (
-    <p>{props.value ? __('This Campaign has a reopen button. Its settings are saved, but showing it requires Pro.', 'wconvert') : __('Let visitors reopen a dismissed Campaign with a small button. Included in every Pro plan.', 'wconvert')}</p>
+    // Reached only where the module that draws the button is absent, so it
+    // speaks only about a saved setting and sells nothing (ADR 0116).
+    props.value ? <p>{__('This Campaign has a reopen button saved. It isn’t shown on this site.', 'wconvert')}</p> : null
   );
 }

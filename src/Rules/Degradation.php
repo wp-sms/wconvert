@@ -10,7 +10,6 @@ final class Degradation
     public function __construct(
         private readonly RuleVocabulary $vocabulary,
         private readonly SuppliedRules $supplied,
-        private readonly ?\WConvert\Support\ProPresence $pro = null,
     ) {
     }
 
@@ -61,7 +60,7 @@ final class Degradation
     {
         if (!isset($entry['display_rules'])) return 'display_rules';
         if (\WConvert\Template\CaptureJourney::requiresPremium($entry['template']['tree'] ?? [])
-            && ($this->pro === null || !\WConvert\Support\Tier::Basic->isSuppliedBy($this->pro))) return 'journey_questions';
+            && !\WConvert\Template\JourneySupport::active()) return 'journey_questions';
         return $this->suspendedBy([...DisplayPlan::rules($entry['display_rules']), ...($entry['required_rules'] ?? [])]);
     }
 

@@ -1,4 +1,4 @@
-import { expect, it } from 'vitest';
+import { afterEach, beforeEach, expect, it } from 'vitest';
 import type { TemplateTree } from '@renderer/types';
 import { graphTrace } from '@loader/journey-graph';
 import { addGraphResultSignup, freshScreen, referencedJourney, replaceAnswer, resultAccess, graphResultAccessIssue, unreachableScreens, usedBy, walkNodes } from '../../resources/admin/src/builder/structure/journey';
@@ -9,6 +9,10 @@ import finder from '../../pro/modules/journeys/templates/journey-product-finder.
 import guide from '../../pro/modules/journeys/templates/journey-content-guide.json';
 import { additionsIn } from '../../resources/admin/src/builder/structure/catalogue';
 import { nodesOf } from '../../resources/admin/src/builder/structure/tree';
+
+// Journey authoring is offered only where Pro's `journeys` module registered it (ADR 0116).
+beforeEach(() => { window.wconvertAdmin = { exportUrl: '', journeys: true }; });
+afterEach(() => { delete window.wconvertAdmin; });
 
 const base = fixture as unknown as TemplateTree;
 

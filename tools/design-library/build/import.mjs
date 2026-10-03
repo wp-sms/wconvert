@@ -145,7 +145,7 @@ console.log('  ./tools/design-library/build.sh designs sheet gallery');
 
 if (entries.some((entry) => (entry?.tier ?? 'free') !== 'free')) {
   console.log('\nEvery Pro design also needs a stub in resources/templates/locked.json');
-  console.log('and a live page at https://wconvert.com/designs/<slug>/ for its preview_url.');
+  console.log('and a live page at https://wconvert.io/designs/<slug>/ for its preview_url.');
 }
 
 process.exit(problems.length > 0 ? 1 : 0);

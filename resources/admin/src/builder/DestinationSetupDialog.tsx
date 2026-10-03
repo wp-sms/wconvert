@@ -5,7 +5,7 @@ import { Button } from '../components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../components/ui/dialog';
 import { DestinationSettingsForm } from '../destinations/DestinationSettingsForm';
 import { saveDestination, type Connection, type Destination, type DestinationType } from '../destinations/api';
-import { renderingFor, tierProductName } from '../goals/availability';
+import { isShown, renderingFor, tierProductName } from '../goals/availability';
 import { ProviderMark } from '../destinations/ProviderMark';
 import { messageOf } from '../shell/loadable';
 
@@ -27,6 +27,7 @@ export function DestinationSetupDialog({
   const title = useRef<HTMLHeadingElement>(null);
   const description = useId();
   const type = types.find((candidate) => candidate.id === selected);
+  const offered = types.filter((candidate) => isShown(candidate.availability));
   useEffect(() => { title.current?.focus(); }, [selected]);
   const close = () => { if (!busy) onClose(); };
 
@@ -55,7 +56,7 @@ export function DestinationSetupDialog({
 
         {type === undefined ? (
           <ul className="m-0 list-none divide-y divide-border p-0" aria-label={__('Destination providers', 'wconvert')}>
-            {types.map((candidate) => {
+            {offered.map((candidate) => {
               const rendering = renderingFor(candidate.availability, 'settings_list');
               return (
                 <li key={candidate.id} className="flex flex-wrap items-center justify-between gap-3 py-3">
@@ -73,7 +74,7 @@ export function DestinationSetupDialog({
                 </li>
               );
             })}
-            {types.length === 0 && <li className="text-muted-foreground">{__('No destination providers are available on this site.', 'wconvert')}</li>}
+            {offered.length === 0 && <li className="text-muted-foreground">{__('No destination providers are available on this site.', 'wconvert')}</li>}
           </ul>
         ) : (
           <>

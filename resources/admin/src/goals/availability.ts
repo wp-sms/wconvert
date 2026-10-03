@@ -39,11 +39,12 @@ import { adminSettings } from '../settings';
  * line on has nothing to decide there.
  *
  * The `locked` arm below is the whole of it: free bundles the CARD for a premium
- * design — a name, its facets, a link to a live preview on wconvert.com — and
+ * design — a name, its facets, a link to a live preview on wconvert.io — and
  * never the design, because shipping the tree and refusing the save is
  * trialware (issue #7). The comment under `locked` about bundled copy is
  * therefore literal for templates as well: `resources/templates/locked.json` is
- * in the ZIP.
+ * in the ZIP, and a free install hides every card in it (ADR 0116) — the
+ * server leaves them out of the payload before this function is asked.
  */
 
 /**
@@ -64,24 +65,50 @@ export type Surface = 'creation_flow' | 'settings_list';
 /** What a surface actually puts on screen. */
 export type Rendering = 'offer' | 'upsell' | 'explain' | 'hide';
 
+/**
+ * Whether this install has no Pro at all — the one install that is shown no
+ * locked member anywhere (ADR 0116).
+ *
+ * Absent boot data reads as free, the reading the shell's plan badge already
+ * makes: the safe failure for a wp.org build is to hide an upsell, never to
+ * show one.
+ */
+export function isFreeInstall(): boolean {
+  return (adminSettings()?.installedTier ?? 'free') === 'free';
+}
+
 export function renderingFor(availability: Availability, surface: Surface): Rendering {
   if (availability === 'ready') {
     return 'offer';
   }
 
-  // Buyable from us, so both surfaces say so. The upsell copy is bundled,
-  // never fetched — a free wp.org plugin phoning home for advertising copy is
-  // a different conversation with the review team (ADR 0015).
+  // Buyable from us — but only a site that already runs Pro is shown so.
+  //
+  // **On a free install a locked member is hidden on every surface** (ADR
+  // 0116). wp.org's Guideline 5 reads a free plugin full of padlocks as
+  // trialware, so free's whole upsell is the header's "Explore Pro" link and
+  // one static "More with Pro" list. A Basic site still sees Elite's members
+  // as upsells: it has already bought into the ladder, and the next rung is
+  // information it can act on.
   //
   // **WHICH tier to name is a separate question**, answered by `tierName()`
   // below rather than folded in here: this function answers "what does this
   // surface DO", and there is exactly one `upsell` however many rungs the
   // ladder has (ADR 0056).
   if (availability === 'locked') {
-    return 'upsell';
+    return isFreeInstall() ? 'hide' : 'upsell';
   }
 
   return surface === 'creation_flow' ? 'hide' : 'explain';
+}
+
+/**
+ * Whether a list draws a member at all. Only a locked member on a free install
+ * is left out (ADR 0116); `unavailable` stays, because the surface that draws
+ * it decides whether to explain or hide it — {@link renderingFor} says which.
+ */
+export function isShown(availability: Availability): boolean {
+  return availability !== 'locked' || !isFreeInstall();
 }
 
 /**

@@ -213,6 +213,10 @@ final class AdminMenu
             // it back into a download.
             'exportUrl' => LeadExport::url(),
             'installedTier' => (new \WConvert\Support\WpProPresence())->installedTier()->value,
+            // Registered by Pro's journeys module, never inferred from a tier:
+            // the builder offers questions, results and paths only where the
+            // code that draws them is on disk (ADR 0116).
+            'journeys' => \WConvert\Template\JourneySupport::active(),
             // **Authoring is the settings panel plus a DEV-ONLY export**
             // (ADR 0010). Gated on `WP_DEBUG` rather than on a capability:
             // everyone who reached this screen already has `manage_options`,

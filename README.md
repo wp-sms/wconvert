@@ -237,7 +237,7 @@ times this size affordable without a virtualization library.
 
 A design declares its `tier`. Free ships free designs and, in
 `resources/templates/locked.json`, the **card** for a premium one — a name, its
-facets and a link to a live preview on wconvert.com, with no tree and no image
+facets and a link to a live preview on wconvert.io, with no tree and no image
 at all. Shipping the design and refusing the save is trialware
 ([#7](https://github.com/navidkashani/wconvert/issues/7)), so
 `bin/verify-artifact-contract.sh` check **(e)** refuses a `tier: pro` entry, or
@@ -838,7 +838,8 @@ exists from day one with nothing to do.
 ```bash
 composer install && npm install
 
-npm run build          # admin bundle, block bundle, both loaders, both inspectors
+npm run build          # build:free then build:pro — every bundle, both plugins
+npm run build:free     # free's bundles only; what the shipped package.json rebuilds
 npm run check:loader   # the loader byte budget + the premium-identifier scan
 composer verify:artifact dist/stage/wconvert   # the artifact contract, on a staged tree
 composer test          # PHPUnit
@@ -869,6 +870,22 @@ applies the tree's own `.distignore`, and then runs
 [`bin/verify-artifact-contract.sh`](bin/verify-artifact-contract.sh) **before**
 writing the ZIP — a ZIP that exists is a ZIP somebody can upload, so the
 contract has to be what decides whether one is written.
+
+**The free ZIP carries its build files.** The repository is private, so a wp.org
+reviewer's only way to reproduce `public/` is the download itself:
+`package.json`, `package-lock.json`, `tsconfig.json`, `composer.json`,
+`composer.lock`, and free's Vite configs (`vite.config.{admin,block,loader,
+inspector,phone,protection}.mjs` plus the two factories they import) all ship,
+and `npm ci && npm run build:free` then `composer install --no-dev` in the
+unzipped plugin rebuild `public/` and `vendor/` without `pro/`. Every Pro config
+is named in `.distignore`; the contract fails the build if a shipped root Vite
+config mentions a `pro/` path, so a new Pro config nobody listed stops the ZIP
+rather than leaking into it. `components.json` (shadcn's CLI) and Action
+Scheduler's contributor notes do not ship; `license.txt` does.
+
+**Translations are wp.org language packs.** There is no `Domain Path` and no
+`load_plugin_textdomain()` — WordPress loads the `wconvert` domain from
+`wp-content/languages/plugins/` just in time.
 
 ### Pro is one plugin at three tiers
 
@@ -905,8 +922,10 @@ The third of ADR 0029's three programs, and the one whose subject is a build:
   in `vendor/composer/`'s generated autoload map, which is a leak the source
   contract structurally cannot see because `vendor/` does not exist until build
   time;
-* the free artifact contains **its un-minified source tree**, which is what makes
-  `readme.txt`'s source claim true by construction;
+* the free artifact contains **its un-minified source tree and the files that
+  rebuild it** — the npm and Composer manifests and free's Vite configs, none of
+  which may name a `pro/` path — which is what makes `readme.txt`'s source and
+  build claims true by construction, plus its `license.txt`;
 * no premium design ships in the free ZIP — the trialware gate, issue #7;
 * **no artifact carries a higher tier's module**, in PHP *and* in the built
   JavaScript. WP Statistics proves this and WSMS does not: all three of its

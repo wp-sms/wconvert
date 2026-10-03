@@ -970,9 +970,10 @@ starting point; the design never acquires a Goal tag (ADR 0099).
 > [ADR 0043](docs/adr/0043-the-library-is-indexed-and-its-facets-are-derived.md)
 > and [ADR 0075](docs/adr/0075-draft-history-and-template-content-choices-stay-predictable.md).
 
-A design a free install did not get is still advertised — a card with a name,
+A design a paid install did not get is still advertised — a card with a name,
 its facets and a link to a live preview, and no tree
-([[Availability]], `locked`). **So a card is an advertisement, and an
+([[Availability]], `locked`). A free install is shown no such card
+([ADR 0116](docs/adr/0116-free-shows-nothing-it-cannot-run.md)). **So a card is an advertisement, and an
 advertisement for a design nobody can be given is a worse defect than one fewer
 design.** It is the same rule as *a paying customer is never shown an upsell*,
 one step earlier: that one is about who sees the card, this one is about whether
@@ -1045,7 +1046,8 @@ inferred the manifest enumerates it
 
 A versioned collection of downloadable designs, installed explicitly from a
 configured catalog. The format supports Free popup/inline designs and Pro
-question journeys for an installed paid tier. It supplies no renderer code,
+question journeys where Pro registered them (`JourneySupport`,
+[ADR 0116](docs/adr/0116-free-shows-nothing-it-cannot-run.md)). It supplies no renderer code,
 site-local destinations, product IDs, or links. Installed
 versions remain local and retain source baselines; updates affect the library
 for future choices, never existing Optin snapshots. Browsing and installation
@@ -1228,8 +1230,9 @@ so, rather than blocking; the premium seam is an explanation, not a wall. A
 [[Trigger]] is substituted, because an Optin with none can never fire. A
 [[Condition]] is dropped, because there is no honest substitute for one and
 inventing it fabricates targeting nobody asked for. A Playbook whose *Display
-Type* is unavailable does not degrade at all — it is shown as an upsell, since a
-floating bar reshaped into a popup is a different design badly made.
+Type* is unavailable does not degrade at all — it is shown as an upsell on a paid
+install and hidden on a free one (ADR 0116), since a floating bar reshaped into a
+popup is a different design badly made.
 
 A Playbook whose requirements are simply **absent from the site** — a
 cart-abandonment Playbook with no store — is hidden rather than degraded. You can
@@ -1541,7 +1544,9 @@ load-bearing:
 
 - **`ready`** — present and usable.
 - **`locked`** — absent because the install does not have the [[Tier]] the member
-  is declared at. Buyable from us.
+  is declared at. Buyable from us. **Hidden on a free install, upsold on a paid
+  one** ([ADR 0116](docs/adr/0116-free-shows-nothing-it-cannot-run.md)). Free's
+  only upsell is its header link and one static "More with Pro" list.
 - **`unavailable`** — absent because something the *site* would need is missing: no
   WooCommerce, no WSMS, no MailPoet. Not buyable from us.
 

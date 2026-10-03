@@ -161,7 +161,7 @@ written anywhere.
    is trialware ([#7](https://github.com/navidkashani/wconvert/issues/7)).
    `bin/verify-artifact-contract.sh` enforces it.
 2. **A live page before adding a preview link.** `preview_url` may point to
-   `https://wconvert.com/designs/<slug>/` only after that page is published.
+   `https://wconvert.io/designs/<slug>/` only after that page is published.
    Until then, omit it: the card says *Included in Pro* (ADR 0098, as extended
    to the practical library). Never fabricate a URL or ship the paid tree in
    Free. Website preview publication remains a separate release task.

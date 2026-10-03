@@ -31,11 +31,6 @@ final class GoalRegistry
         return $this->availabilityOf($goal) === Availability::Ready;
     }
 
-    public function supportsJourneys(): bool
-    {
-        return \WConvert\Support\Tier::Basic->isSuppliedBy($this->pro);
-    }
-
     /** @return list<array<string, mixed>> */
     public function toArray(): array
     {

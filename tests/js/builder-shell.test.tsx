@@ -5,7 +5,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, onTestFinished, vi } from 'vitest';
 import { ruleTypes } from './support/rule-types';
 import type { TemplateEntry, TemplateIndex, TemplateIndexEntry } from '../../resources/admin/src/templates/api';
 import { inlinePlacementControls } from '../../resources/admin/src/inlinePlacement';
@@ -1456,6 +1456,9 @@ describe('whole-draft Undo and Redo', () => {
 
 describe('changing templates in the draft', () => {
   it('browses formats without editing, then applies format and design in one undoable edit', async () => {
+    // A floating bar is a paid format; a free install is not offered it (ADR 0116).
+    window.wconvertAdmin = { exportUrl: '', installedTier: 'basic' };
+    onTestFinished(() => { delete window.wconvertAdmin; });
     builder.getOptin.mockResolvedValue(optin({ config: {
       ...optin().config,
       display_type: 'floating_bar',

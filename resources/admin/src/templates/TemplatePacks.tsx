@@ -1,3 +1,4 @@
+import { isFreeInstall } from '../goals/availability';
 import { useEffect, useRef, useState } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
 import { ArrowRight, Layers, RefreshCw } from 'lucide-react';
@@ -85,7 +86,10 @@ export function TemplatePacks({ displayType, onInstalled, onInspect, goal, onCho
         if (alive.current) onInspect?.(id);
       }); }} />;
   }
-  const shown = (status?.packs ?? []).filter(pack=>matchesSearch(query,[pack.name,pack.description]) && (source==='all' || (source==='installed' ? pack.installed_version !== null : pack.installed_version === null)));
+  // A free install cannot install a premium pack, so it is not shown one
+  // (ADR 0116) — filtered here so the counts and empty states agree.
+  const listed = (status?.packs ?? []).filter((pack) => !isFreeInstall() || pack.access !== 'premium');
+  const shown = listed.filter(pack=>matchesSearch(query,[pack.name,pack.description]) && (source==='all' || (source==='installed' ? pack.installed_version !== null : pack.installed_version === null)));
   if (sort==='name') shown.sort((a,b)=>a.name.localeCompare(b.name));
   const installed = shown.filter(pack=>pack.installed_version !== null);
   const available = shown.filter(pack=>pack.installed_version === null);
@@ -100,7 +104,7 @@ export function TemplatePacks({ displayType, onInstalled, onInspect, goal, onCho
         {work === 'checking' ? __('Checking…', 'wconvert') : __('Check for packs', 'wconvert')}</Button>}
     </header>
     <p className="text-note text-muted-foreground">{__('Packs add designs and campaign setups to your library. Preview the contents before installing.','wconvert')}</p>
-    {status && status.packs.length > 0 && <div className="wconvert-picker__controls wconvert-toolbar"><div className="wconvert-picker__search-row"><PickerSearch label={__('Search template packs','wconvert')} value={query} onChange={setQuery} disabled={busy} /><label className="flex items-center gap-2 text-note">{__('Sort','wconvert')}<select className="wconvert-picker__select" value={sort} onChange={event=>setSort(event.target.value)}><option value="recommended">{__('Recommended','wconvert')}</option><option value="name">{__('Name A–Z','wconvert')}</option></select></label></div><OptionStrip label={__('Pack availability','wconvert')} value={source} disabled={busy} onChange={setSource} options={[{value:'all',label:__('All packs','wconvert')},{value:'installed',label:__('Installed','wconvert')},{value:'available',label:__('Available to install','wconvert')}]} /><p className="m-0 text-note" role="status">{sprintf(_n('%d matching pack','%d matching packs',shown.length,'wconvert'),shown.length)}</p></div>}
+    {status && listed.length > 0 && <div className="wconvert-picker__controls wconvert-toolbar"><div className="wconvert-picker__search-row"><PickerSearch label={__('Search template packs','wconvert')} value={query} onChange={setQuery} disabled={busy} /><label className="flex items-center gap-2 text-note">{__('Sort','wconvert')}<select className="wconvert-picker__select" value={sort} onChange={event=>setSort(event.target.value)}><option value="recommended">{__('Recommended','wconvert')}</option><option value="name">{__('Name A–Z','wconvert')}</option></select></label></div><OptionStrip label={__('Pack availability','wconvert')} value={source} disabled={busy} onChange={setSource} options={[{value:'all',label:__('All packs','wconvert')},{value:'installed',label:__('Installed','wconvert')},{value:'available',label:__('Available to install','wconvert')}]} /><p className="m-0 text-note" role="status">{sprintf(_n('%d matching pack','%d matching packs',shown.length,'wconvert'),shown.length)}</p></div>}
     {error && <div role="alert" className="wconvert-pack-error">{error}</div>}
     {work === 'previewing' && <p role="status" className="text-sm">{__('Opening pack…', 'wconvert')}</p>}
     {status === null ? busy ? <div role="status" className="wconvert-packs__loading">
@@ -112,8 +116,8 @@ export function TemplatePacks({ displayType, onInstalled, onInspect, goal, onCho
         packs={installed} busy={busy} onInspect={inspect} />}
       {available.length > 0 && <PackGroup title={__('Available to install', 'wconvert')} installed={false}
         packs={available} busy={busy} onInspect={inspect} />}
-      {status.packs.length > 0 && shown.length === 0 && <div className="wconvert-packs__empty"><h3>{__('No packs match','wconvert')}</h3><p>{__('Try a shorter search or another availability filter.','wconvert')}</p><Button variant="outline" onClick={()=>{setQuery('');setSource('all');}}>{__('Show all packs','wconvert')}</Button></div>}
-      {status.packs.length === 0 && <div className="wconvert-packs__empty">
+      {listed.length > 0 && shown.length === 0 && <div className="wconvert-packs__empty"><h3>{__('No packs match','wconvert')}</h3><p>{__('Try a shorter search or another availability filter.','wconvert')}</p><Button variant="outline" onClick={()=>{setQuery('');setSource('all');}}>{__('Show all packs','wconvert')}</Button></div>}
+      {listed.length === 0 && <div className="wconvert-packs__empty">
         <Layers size={28} aria-hidden="true" />
         <h3>{status.checked_at ? __('No packs are listed yet', 'wconvert') : __('Your next collection starts here', 'wconvert')}</h3>
         <p>{status.configured ? status.checked_at ? __('Check again later for new collections.', 'wconvert')

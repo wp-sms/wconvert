@@ -72,13 +72,13 @@ final class Bootstrap
     }
 
     /**
-     * Run on `plugins_loaded` — loads the text domain, boots services and
-     * announces that free is up.
+     * Run on `plugins_loaded` — boots services and announces that free is up.
+     *
+     * No `load_plugin_textdomain()`: translations come from wp.org language
+     * packs, which WordPress loads just in time for the `wconvert` domain.
      */
     public static function setup(): void
     {
-        add_action('init', [self::class, 'loadTextdomain']);
-
         self::initializeServices();
 
         /**
@@ -199,21 +199,5 @@ final class Bootstrap
         foreach ($providers as $provider) {
             $provider->boot($container);
         }
-    }
-
-    /**
-     * Load the plugin text domain.
-     *
-     * Translations are not bundled — WordPress delivers them into
-     * wp-content/languages/plugins/ for the wconvert slug, and
-     * load_plugin_textdomain() checks that global directory first.
-     */
-    public static function loadTextdomain(): void
-    {
-        load_plugin_textdomain(
-            'wconvert',
-            false,
-            dirname(plugin_basename(WCONVERT_MAIN_FILE)) . '/resources/languages'
-        );
     }
 }

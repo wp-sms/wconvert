@@ -4,7 +4,7 @@ import { ruleHelp } from './ruleHelp';
 import { ParamField } from '../controls';
 import { fromRule, toRule } from '../presets';
 import type { Rule, RuleType } from '../api';
-import { tierProductName } from '../../goals/availability';
+import { isFreeInstall, tierProductName } from '../../goals/availability';
 
 /**
  * One client rule — a [[Trigger]] or a [[Condition]] — as a row of controls.
@@ -149,9 +149,17 @@ export function RuleRow({ rule, at, types, onChange }: RuleRowProps) {
 
         Both are persistent `<p>`s and neither has a dismiss control.
       */}
+      {/*
+        A free install names no product (ADR 0116). These notes stay sales
+        copy only where Pro is installed and a rung is what is missing.
+      */}
       {substitutedFor !== null && (
         <p className="wconvert-rule__note text-note">
-          {sprintf(
+          {isFreeInstall() ? sprintf(
+            /* translators: %s: the rule this one was substituted for, e.g. “Exit intent”. */
+            __('Standing in for “%s”, which isn’t available on this site.', 'wconvert'),
+            substitutedFor
+          ) : sprintf(
             /* translators: 1: the premium rule this one was substituted for, e.g. “Exit intent”. 2: the product that supplies it, e.g. “WConvert Pro”. */
             __('Standing in for “%1$s”, which is available with %2$s.', 'wconvert'),
             substitutedFor,
@@ -161,7 +169,7 @@ export function RuleRow({ rule, at, types, onChange }: RuleRowProps) {
       )}
       {type.availability === 'locked' && (
         <p className="wconvert-rule__note text-note">
-          {sprintf(
+          {isFreeInstall() ? __('This rule isn’t available on this site.', 'wconvert') : sprintf(
             /* translators: %s: the product that supplies the rule, e.g. “WConvert Pro”. */
             __('Needs %s to run.', 'wconvert'),
             tierProductName(type.tier)

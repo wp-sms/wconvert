@@ -8,9 +8,15 @@ use WConvert\Support\Tier;
 use WConvert\Template\Catalog\PackValidator;
 use WConvert\Template\TemplateManifest;
 use WConvert\Template\TemplateVocabulary;
+use WConvert\Tests\Unit\Support\Journeys;
 
 final class PackValidatorJourneyTest extends TestCase
 {
+    protected function tearDown(): void
+    {
+        Journeys::off();
+    }
+
     /** @return array<string, mixed> */
     private function pack(): array
     {
@@ -27,6 +33,7 @@ final class PackValidatorJourneyTest extends TestCase
 
     public function testPaidPackKeepsQuestionReferencesAndRequiresDeclaredCapability(): void
     {
+        Journeys::on();
         $pack = $this->pack();
         $decoded = $this->validator(Tier::Basic)->decode(json_encode($pack, JSON_THROW_ON_ERROR));
         self::assertSame('n3', $decoded['templates'][0]['tree']['steps'][1]['when']['clauses'][0]['question']);
@@ -40,5 +47,16 @@ final class PackValidatorJourneyTest extends TestCase
     {
         $this->expectException(RuntimeException::class);
         $this->validator(Tier::Free)->decode(json_encode($this->pack(), JSON_THROW_ON_ERROR));
+    }
+
+    /**
+     * A paid rung is not the question — the registration is (ADR 0116). A
+     * Basic install whose journeys module did not register refuses the pack,
+     * and says so without naming a product.
+     */
+    public function testAPaidInstallWithoutTheJourneysModuleRejectsAQuizPack(): void
+    {
+        $this->expectExceptionMessage('This design uses elements this site can’t display.');
+        $this->validator(Tier::Basic)->decode(json_encode($this->pack(), JSON_THROW_ON_ERROR));
     }
 }

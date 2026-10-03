@@ -2,7 +2,7 @@ import { displayPlan } from '../../../tests/js/support/display-entry';
 import { useState } from 'react';
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { expect, it } from 'vitest';
+import { expect, it, onTestFinished } from 'vitest';
 import PlacementSettings from '../../modules/inline-placement/admin/PlacementSettings';
 import { InlinePlacementSettings } from '@/inlinePlacement';
 import { PlacementGuidance } from '@/builder/PlacementGuidance';
@@ -55,10 +55,19 @@ it('preserves deliberate page targeting and warns about incompatible triggers', 
   expect(changes).not.toHaveProperty('targeting');
 });
 
-it('Free explains availability without carrying the premium controls', () => {
+it('Free explains manual placement without carrying the premium controls', () => {
   render(<InlinePlacementSettings optinId="example" published config={{}} vocabulary={vocabulary} onChange={() => undefined} />);
-  expect(screen.getByText(/Automatic placement is included in Pro/)).toBeInTheDocument();
+  expect(screen.getByText('Place this Campaign with its block or shortcode.')).toBeInTheDocument();
+  expect(screen.queryByText(/Pro/)).toBeNull();
   expect(screen.queryByRole('radio')).toBeNull();
+});
+
+/** Settings saved under Pro are explained without naming a product (ADR 0116). */
+it('Free explains retained automatic placement and content lock without selling either', () => {
+  render(<InlinePlacementSettings optinId="example" published config={{ inline_placement: { position: 'after_content' }, content_lock: { mode: 'hide' } }} vocabulary={vocabulary} onChange={() => undefined} />);
+  expect(screen.getByText('Content lock isn’t available on this site. The selected region stays readable.')).toBeInTheDocument();
+  expect(screen.getByText('Automatic placement isn’t available on this site. You can still place this Campaign manually with its block or shortcode.')).toBeInTheDocument();
+  expect(screen.queryByText(/Pro/)).toBeNull();
 });
 
 it('Free can explicitly return a previously automatic campaign to manual placement', async () => {
@@ -70,6 +79,9 @@ it('Free can explicitly return a previously automatic campaign to manual placeme
 });
 
 it('automatic publish guidance does not tell merchants to insert a shortcode', () => {
+  // A paid install; a free one falls back to manual placement (ADR 0116).
+  window.wconvertAdmin = { exportUrl: '', installedTier: 'basic' };
+  onTestFinished(() => { delete window.wconvertAdmin; });
   render(<PlacementGuidance optinId="example" displayType="inline" inlinePlacement={{ position: 'after_paragraph', paragraph: 3 }} published />);
   expect(screen.getByText('Automatically after paragraph 3')).toBeInTheDocument();
   expect(screen.queryByRole('textbox')).toBeNull();
