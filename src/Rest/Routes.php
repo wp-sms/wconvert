@@ -32,18 +32,11 @@ final class Routes
 
     /**
      * Campaign management uses one capability. Capture and beacons are public
-     * by nature. The separate canPlaceCampaign permission allows post authors
-     * to read only published picker choices, never Campaign management data.
+     * by nature.
      */
     public static function canManage(): bool
     {
         return current_user_can(self::MANAGE_CAPABILITY);
-    }
-
-    /** Read-only published Campaign choices for WordPress post/page authors. */
-    public static function canPlaceCampaign(): bool
-    {
-        return current_user_can('edit_posts') || current_user_can('edit_pages');
     }
 
     /**

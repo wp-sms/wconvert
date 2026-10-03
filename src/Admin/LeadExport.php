@@ -73,7 +73,9 @@ final class LeadExport
         try {
             $input = [];
             foreach (['optin_id', 'identifier', 'search', 'purpose', 'lead_id', 'from', 'to', 'snapshot', 'group_identifier'] as $key) {
-                if (isset($_POST[$key])) $input[$key] = is_string($_POST[$key]) ? wp_unslash($_POST[$key]) : $_POST[$key];
+                // Nonce verified by check_admin_referer() above. A non-string
+                // stays a non-string, so LeadQuery still refuses it as invalid.
+                if (isset($_POST[$key])) $input[$key] = is_string($_POST[$key]) ? sanitize_text_field(wp_unslash($_POST[$key])) : [];
             }
             $query = LeadQuery::fromInput($input);
         } catch (InvalidArgumentException $invalid) {
@@ -82,7 +84,7 @@ final class LeadExport
 
         nocache_headers();
         header('Content-Type: text/csv; charset=utf-8');
-        $questions = ($_POST['format'] ?? '') === 'questions';
+        $questions = isset($_POST['format']) && is_string($_POST['format']) && sanitize_key(wp_unslash($_POST['format'])) === 'questions';
         header('Content-Disposition: attachment; filename="' . ($questions ? 'wconvert-question-answers.csv' : self::filename()) . '"');
 
         // `php://output` is the RESPONSE, not a file, which is the whole

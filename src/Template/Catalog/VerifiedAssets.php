@@ -6,6 +6,13 @@ defined('ABSPATH') || exit;
 /** Verified, content-addressed local images for pack previews and installation.
  * The future transport must bound each response before returning its bytes.
  * Server entitlement is checked before this class; it is not a licence verifier.
+ *
+ * The writes below are PHP's own, each with a `phpcs:ignore`, because the
+ * install is a transaction WP_Filesystem cannot express: an `flock()` that
+ * keeps two installs apart, and `rename()` from a staged file in the same
+ * folder so a half-written image is never at its public URL. WP_Filesystem has
+ * no lock, and on an FTP or SSH install its move() is a copy and a delete.
+ * Folders come from wp_mkdir_p() and deletions from wp_delete_file().
  */
 final class VerifiedAssets
 {
@@ -23,14 +30,17 @@ final class VerifiedAssets
         self::validate($assets);
         $this->folder($this->directory);
         PackValidator::check(!is_link($this->directory . '/.install.lock'), __('The image store contains an unsupported link.', 'wconvert'));
-        $lock = @fopen($this->directory . '/.install.lock', 'c');
+        // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fopen -- a lock handle for flock(); see the class note.
+        $lock = fopen($this->directory . '/.install.lock', 'c');
+        // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- validation messages for an administrator, caught upstream and returned as a WP_Error that the admin renders as text; escaping here would print the entities.
         if ($lock === false) throw new \RuntimeException(__('The image store is unavailable.', 'wconvert'));
         try {
             PackValidator::check(flock($lock, LOCK_EX | LOCK_NB), __('Another image installation is in progress. Try again.', 'wconvert'));
             $this->folder($this->directory . '/sets');
             $manifest = $this->directory . '/sets/' . $packDigest . '.json';
-            $json = json_encode(['schema' => 1, 'assets' => $assets], JSON_THROW_ON_ERROR);
+            $json = (string) wp_json_encode(['schema' => 1, 'assets' => $assets], JSON_THROW_ON_ERROR);
             PackValidator::check(!is_link($manifest), __('The image store contains an unsupported link.', 'wconvert'));
+            // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- a local file inside this site, never a URL.
             if (is_file($manifest)) PackValidator::check(file_get_contents($manifest) === $json, __('This image package changed. Inspect the new revision.', 'wconvert'));
             else PackValidator::check(count(glob($this->directory . '/sets/*.json') ?: []) < 128, __('The local image archive is full.', 'wconvert'));
             $staged = []; $urls = [];
@@ -41,6 +51,7 @@ final class VerifiedAssets
                     $path = $this->directory . '/' . $key;
                     $this->folder($this->directory . '/' . $scope);
                     PackValidator::check(!is_link($path), __('The image store contains an unsupported link.', 'wconvert'));
+                    // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- a local file inside this site, never a URL.
                     $cached = is_file($path) && filesize($path) === $asset['bytes'] ? file_get_contents($path) : false;
                     if ($cached === false || !self::matches($cached, $asset)) {
                         $bytes = $download($asset);
@@ -48,6 +59,7 @@ final class VerifiedAssets
                         $temporary = tempnam($this->directory, '.image-');
                         PackValidator::check($temporary !== false, __('The image could not be staged.', 'wconvert'));
                         $staged[$temporary] = $path;
+                        // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents -- staged beside its destination; see the class note.
                         PackValidator::check(file_put_contents($temporary, $bytes) === strlen($bytes), __('The image could not be staged.', 'wconvert'));
                     }
                     $urls[$asset['id']] = rtrim($this->baseUrl, '/') . '/' . $key;
@@ -55,18 +67,25 @@ final class VerifiedAssets
                 // No package marker exists until all required bytes have passed.
                 // Promoted orphan blobs after a disk failure are safe to reuse on retry.
                 foreach ($staged as $temporary => $path) {
+                    // phpcs:ignore WordPress.WP.AlternativeFunctions.rename_rename -- atomic within one folder; see the class note.
                     PackValidator::check(rename($temporary, $path), __('The image could not be installed.', 'wconvert'));
+                    // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_chmod -- tempnam() creates 0600, and the image is served publicly.
                     chmod($path, 0644);
                 }
                 $temporary = tempnam($this->directory . '/sets', '.set-');
                 PackValidator::check($temporary !== false, __('The image package could not be staged.', 'wconvert'));
                 $staged[$temporary] = $manifest;
+                // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents, WordPress.WP.AlternativeFunctions.rename_rename -- the package marker, written last and atomically; see the class note.
                 PackValidator::check(file_put_contents($temporary, $json) === strlen($json) && rename($temporary, $manifest), __('The image package could not be installed.', 'wconvert'));
             } finally {
-                foreach ($staged as $temporary => $_) if (is_file($temporary)) unlink($temporary);
+                foreach ($staged as $temporary => $_) if (is_file($temporary)) wp_delete_file($temporary);
             }
             return $urls;
-        } finally { flock($lock, LOCK_UN); fclose($lock); }
+        } finally {
+            flock($lock, LOCK_UN);
+            // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- closes the lock handle opened above.
+            fclose($lock);
+        }
     }
 
     /** Read-only resolution. Never fetches or changes an installed package.
@@ -78,11 +97,13 @@ final class VerifiedAssets
         PackValidator::check(preg_match('/^[a-f0-9]{64}$/D', $digest) === 1, __('Invalid media package identity.', 'wconvert'));
         $marker = $this->directory . '/sets/' . $digest . '.json';
         PackValidator::check(!is_link($this->directory) && !is_link(dirname($marker)) && !is_link($marker)
-            && is_file($marker) && file_get_contents($marker) === json_encode(['schema' => 1, 'assets' => $assets], JSON_THROW_ON_ERROR), __('Required pack images are missing. Preview the pack again to repair them.', 'wconvert'));
+            // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- a local file inside this site, never a URL.
+            && is_file($marker) && file_get_contents($marker) === wp_json_encode(['schema' => 1, 'assets' => $assets], JSON_THROW_ON_ERROR), __('Required pack images are missing. Preview the pack again to repair them.', 'wconvert'));
         $urls = [];
         foreach ($assets as $asset) {
             $key = self::key($asset); $path = $this->directory . '/' . $key;
             PackValidator::check(!is_link(dirname($path)) && !is_link($path) && is_file($path) && filesize($path) === $asset['bytes']
+                // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- a local file inside this site, never a URL.
                 && self::matches((string) file_get_contents($path), $asset), __('Required pack images are damaged. Preview the pack again to repair them.', 'wconvert'));
             $urls[$asset['id']] = rtrim($this->baseUrl, '/') . '/' . $key;
         }
@@ -119,12 +140,15 @@ final class VerifiedAssets
     private static function matches(string $bytes, array $asset): bool
     {
         if (strlen($bytes) !== $asset['bytes'] || hash('sha256', $bytes) !== $asset['sha256']) return false;
-        $info = @getimagesizefromstring($bytes);
+        // Silenced because malformed bytes raise a warning as well as returning
+        // false, and these bytes are untrusted until this returns. The false
+        // is the answer, and it is checked on the next line.
+        $info = @getimagesizefromstring($bytes); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- see above.
         return $info !== false && $info['mime'] === $asset['mime'] && $info[0] === $asset['width'] && $info[1] === $asset['height'];
     }
 
     private function folder(string $path): void
     {
-        PackValidator::check(!is_link($path) && (is_dir($path) || @mkdir($path, 0755, true)), __('The image folder is unavailable.', 'wconvert'));
+        PackValidator::check(!is_link($path) && wp_mkdir_p($path), __('The image folder is unavailable.', 'wconvert'));
     }
 }

@@ -58,6 +58,9 @@ final class ActionSchedulerQueue implements Queue
             throw new QueueFailure('Submission handoff requires the Action Scheduler database store.');
         }
         global $wpdb;
+        // A one-off read of the schema itself, which no WordPress API exposes;
+        // its answer is cached in this object for the request.
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- see above.
         $rows = $wpdb->get_col($wpdb->prepare(
             'SELECT ENGINE FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME IN (%s, %s)',
             $wpdb->prefix . 'actionscheduler_actions', $wpdb->prefix . 'actionscheduler_groups'

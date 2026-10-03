@@ -150,10 +150,19 @@ final class Bootstrap
      *
      * The retention period stays in its option, so re-activating restores the
      * setting rather than silently reverting to keep-forever.
+     *
+     * Every WP-Cron event goes, because each would otherwise fire into a hook
+     * nobody is listening on: the pruner, the recovery sweep (re-scheduled on
+     * the next boot), and the import cleanup — cleared by hook rather than by
+     * arguments, because it is scheduled once per administrator. Queued
+     * Action Scheduler deliveries stay: they are a [[Lead]] on its way to a
+     * [[Destination]], and re-activating sends them.
      */
     public static function deactivate(): void
     {
         wp_clear_scheduled_hook(LeadPruner::HOOK);
+        wp_clear_scheduled_hook(\WConvert\Destination\SubmissionDispatcher::RECOVER);
+        wp_unschedule_hook(\WConvert\Rest\TemplateTransferController::CLEANUP);
     }
 
     /**

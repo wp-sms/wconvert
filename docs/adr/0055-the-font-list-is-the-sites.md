@@ -71,11 +71,10 @@ document-level `@font-face` rules the theme already printed for its own pages.
 
 **In wp-admin the faces have to be asked for.** Core prints them on the front
 end; the admin gets them only where something calls
-`wp_print_font_faces()` — core's own, since 6.4, guarded because this plugin's
-original floor was 6.2. The minimum is now 6.8 (ADR 0100); the availability
-check is retained. Where the function is absent a row falls back to the next family in its
-stack and the control still works. That call prints the **site's** faces, or
-none; it fetches nothing.
+`wp_print_font_faces()` — core's own, since 6.4. It was guarded because this
+plugin's original floor was 6.2; the minimum is now 6.8 (ADR 0100), *and the
+guard is gone — it was checking for a function every supported WordPress has.*
+That call prints the **site's** faces, or none; it fetches nothing.
 
 > Extended by [ADR 0077](0077-editor-controls-make-placement-and-formatting-explicit.md): the site-font picker adds search and a capability/version-aware route to the WordPress Font Library for installing locally hosted Google Fonts. WConvert still loads no face of its own.
 

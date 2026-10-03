@@ -51,6 +51,7 @@ final class DesignImages
         $path = $slot['path'];
         if (($path[0] ?? '') !== 'tree') return __('Design background', 'wconvert');
         $screen = $design['tree']['steps'][$path[2]]['name'] ?? __('Screen', 'wconvert');
+        /* translators: %s: the name of a screen in the design, for example "Thank you". */
         return sprintf($slot['background'] ? __('Background on “%s”', 'wconvert') : __('Image on “%s”', 'wconvert'), $screen);
     }
 

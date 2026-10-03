@@ -17,7 +17,7 @@ defined('ABSPATH') || exit;
 final class TemplateTransferController implements RestController
 {
     private const PREFIX = '/template-transfer';
-    private const CLEANUP = 'wconvert_transfer_cleanup';
+    public const CLEANUP = 'wconvert_transfer_cleanup';
 
     public function __construct(
         private readonly PackValidator $validator,
@@ -63,11 +63,12 @@ final class TemplateTransferController implements RestController
         PackValidator::check($path !== false, __('Could not create a temporary export.', 'wconvert'));
         try {
             $this->package()->write($path, $design, [self::class, 'localImage'], $omit);
+            // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- a local file inside this site, never a URL.
             $bytes = file_get_contents($path);
             PackValidator::check(is_string($bytes), __('Could not read the exported design.', 'wconvert'));
             $name = sanitize_file_name((string) ($design['name'] ?? 'design')) ?: 'design';
             return self::binary($bytes, 'application/zip', $name . '.wconvert.zip');
-        } finally { if (is_file($path)) unlink($path); }
+        } finally { if (is_file($path)) wp_delete_file($path); }
     }
 
     /**
@@ -117,13 +118,14 @@ final class TemplateTransferController implements RestController
             foreach ($document['bindings'] as $binding) if (str_starts_with($binding['asset'], 'art-') && !isset($urls[$binding['asset']])) $prepared['notes'][] = __('A built-in illustration is unavailable here. Apply will omit it.', 'wconvert');
             TransferDraft::validate($prepared['patch'], $document['design']['name'], $this->validator);
             $refusal = $this->editor->transferRefusal(array_replace($config, $prepared['patch']), $optinId);
+            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- validation messages for an administrator, caught upstream and returned as a WP_Error that the admin renders as text; escaping here would print the entities.
             if ($refusal !== null) throw new \RuntimeException($refusal->get_error_message());
             $facets = TemplateFacets::of($prepared['patch']['template']['tree'], $this->vocabulary->fields());
             if ($goal !== null && ($facets['act'] !== $goal->outcome()->action || ($goal->outcome()->captureAnyOf !== [] && array_intersect($facets['captures'], $goal->outcome()->captureAnyOf) === []))) {
                 $prepared['notes'][] = $goal->outcome()->requirement;
             }
             $links = TransferDraft::links($prepared['patch']['template']);
-            $digest = hash('sha256', json_encode([$prepared, $config, $optinId], JSON_THROW_ON_ERROR));
+            $digest = hash('sha256', (string) wp_json_encode([$prepared, $config, $optinId], JSON_THROW_ON_ERROR));
             $session['prepared'] = $prepared + ['digest' => $digest, 'config' => $config, 'optin' => $optinId, 'links' => $links];
             $usedPictures = array_column(DesignImages::slots($prepared['patch']['template']), 'url');
             $usedAssets = array_values(array_filter($document['assets'], static fn (array $asset): bool => in_array(self::marker($asset['id']), $usedPictures, true)));
@@ -143,6 +145,7 @@ final class TemplateTransferController implements RestController
             $package = $this->package(); $document = $package->read($archive); // Recheck current feature support.
             TransferDraft::validate($prepared['patch'], $document['design']['name'], $this->validator);
             $refusal = $this->editor->transferRefusal(array_replace($prepared['config'], $prepared['patch']), $prepared['optin']);
+            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- validation messages for an administrator, caught upstream and returned as a WP_Error that the admin renders as text; escaping here would print the entities.
             if ($refusal !== null) throw new \RuntimeException($refusal->get_error_message());
             $template = $prepared['patch']['template']; $slots = DesignImages::slots($template);
             $used = array_column($slots, 'url');
@@ -160,13 +163,14 @@ final class TemplateTransferController implements RestController
                         PackValidator::check($temp !== false, __('Could not stage an imported image.', 'wconvert'));
                         try {
                             $bytes = $package->image($archive, $asset);
+                            // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_file_put_contents -- a tempnam() file in the private transfer root, handed straight to media_handle_sideload(); see ImportSession for why not WP_Filesystem.
                             PackValidator::check(file_put_contents($temp, $bytes) === strlen($bytes), __('Could not stage an imported image.', 'wconvert'));
                             $extension = ['image/png' => 'png', 'image/jpeg' => 'jpg', 'image/webp' => 'webp'][$asset['mime']];
                             $attachment = media_handle_sideload(['name' => 'wconvert-' . $asset['id'] . '.' . $extension, 'tmp_name' => $temp], 0, sanitize_text_field($document['design']['name']));
                             if ($attachment instanceof WP_Error) throw new \RuntimeException($attachment->get_error_message());
                             $session['media'][$asset['id']] = $attachment;
                             $checkpoint();
-                        } finally { if (is_file($temp)) unlink($temp); }
+                        } finally { if (is_file($temp)) wp_delete_file($temp); }
                     }
                     $url = wp_get_attachment_url($attachment);
                     PackValidator::check(is_string($url), __('An imported image is unavailable.', 'wconvert'));
@@ -191,6 +195,7 @@ final class TemplateTransferController implements RestController
         return $this->sessions()->view((string) $request->get_param('id'), function (string $archive) use ($request): WP_REST_Response {
             $package = $this->package(); $document = $package->read($archive);
             foreach ($document['assets'] as $asset) if ($asset['id'] === $request->get_param('asset')) return self::binary($package->image($archive, $asset), $asset['mime']);
+            // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- validation messages for an administrator, caught upstream and returned as a WP_Error that the admin renders as text; escaping here would print the entities.
             throw new \RuntimeException(__('This preview image is unavailable.', 'wconvert'));
         });
     }
@@ -207,20 +212,40 @@ final class TemplateTransferController implements RestController
     private function sessions(): ImportSession { return new ImportSession(self::root(), self::owner()); }
     private static function owner(): string { return get_current_blog_id() . ':' . get_current_user_id(); }
 
+    /**
+     * The private folder an import lives in between requests.
+     *
+     * `get_temp_dir()` honours `WP_TEMP_DIR`, and falls back to
+     * `WP_CONTENT_DIR` when nothing else is writable — which is public, so it
+     * is on the list of roots the folder may not sit under, and an install
+     * whose only writable temp is public refuses imports rather than staging
+     * one where a browser can fetch it. `uninstall.php` removes the folder.
+     */
     private static function root(): string
     {
-        $temp = realpath(sys_get_temp_dir());
+        $temp = realpath(get_temp_dir());
         PackValidator::check(is_string($temp), __('Private temporary storage is unavailable.', 'wconvert'));
-        foreach ([ABSPATH, (string) ($_SERVER['DOCUMENT_ROOT'] ?? ''), (string) wp_upload_dir(null, false)['basedir']] as $public) {
+        $documentRoot = isset($_SERVER['DOCUMENT_ROOT']) ? sanitize_text_field(wp_unslash($_SERVER['DOCUMENT_ROOT'])) : '';
+        foreach ([ABSPATH, WP_CONTENT_DIR, $documentRoot, (string) wp_upload_dir(null, false)['basedir']] as $public) {
             if ($public === '') continue;
             $public = realpath($public);
             PackValidator::check($public === false || ($temp !== $public && !str_starts_with($temp, rtrim($public, '/') . '/')), __('Private temporary storage must be outside the public web directory.', 'wconvert'));
         }
-        $root = $temp . '/wconvert-transfer-' . substr(hash('sha256', ABSPATH . wp_salt('auth')), 0, 24);
-        PackValidator::check(!is_link($root) && (is_dir($root) || @mkdir($root, 0700)), __('Private temporary storage is unavailable.', 'wconvert'));
+        $root = $temp . '/' . self::folder();
+        // Not wp_mkdir_p(): it copies the parent's permissions, and a shared
+        // temp directory's are world-writable — so the folder would be open to
+        // every account on the host until the chmod() below. Created 0700
+        // instead, and chmod()ed again for a folder an older version made.
+        // WP_Filesystem may be FTP, which cannot reach the temp directory.
+        // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_mkdir -- see above.
+        PackValidator::check(!is_link($root) && (is_dir($root) || mkdir($root, 0700)), __('Private temporary storage is unavailable.', 'wconvert'));
+        // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_chmod -- see above.
         chmod($root, 0700);
         return $root;
     }
+
+    /** The folder's name under the temp directory, unique to this install. */
+    public static function folder(): string { return 'wconvert-transfer-' . substr(hash('sha256', ABSPATH . wp_salt('auth')), 0, 24); }
 
     /**
      * @param list<array<string, mixed>> $assets */
@@ -241,6 +266,7 @@ final class TemplateTransferController implements RestController
             if (!str_starts_with($url, rtrim($baseUrl, '/') . '/')) continue;
             $relative = rawurldecode(explode('?', substr($url, strlen(rtrim($baseUrl, '/')) + 1))[0]);
             $path = realpath($baseDir . '/' . $relative); $root = realpath($baseDir);
+            // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- a local file inside this site, never a URL.
             if ($path !== false && $root !== false && str_starts_with($path, rtrim($root, '/') . '/') && is_file($path) && is_readable($path) && filesize($path) <= VerifiedAssets::MAX_BYTES) return file_get_contents($path) ?: null;
         }
         $id = attachment_url_to_postid($url);
@@ -255,6 +281,7 @@ final class TemplateTransferController implements RestController
                 $match = array_filter($sizes, static fn (array $size): bool => ($size['file'] ?? '') === $filename);
                 $path = $match === [] ? false : dirname($path) . '/' . $filename;
             }
+            // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- a local file inside this site, never a URL.
             if (is_string($path) && is_file($path) && is_readable($path) && filesize($path) <= VerifiedAssets::MAX_BYTES) return file_get_contents($path) ?: null;
         }
         return null;
@@ -282,7 +309,10 @@ final class TemplateTransferController implements RestController
     {
         if ($served) return true;
         if ($result instanceof WP_REST_Response && str_starts_with($request->get_route(), '/' . Routes::NAMESPACE . self::PREFIX) && ($result->get_headers()['X-WConvert-Binary'] ?? '') === '1') {
-            echo $result->get_data(); // Validated image/archive bytes, never interpreted as HTML.
+            // Validated image or ZIP bytes, served with their own Content-Type
+            // and `nosniff`, so the browser never interprets them as HTML.
+            // Escaping would corrupt them; WP_REST_Server has no binary mode.
+            echo $result->get_data(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- binary bytes, see above.
             return true;
         }
         return (bool) $served;

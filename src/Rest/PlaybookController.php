@@ -119,7 +119,7 @@ final class PlaybookController implements RestController
             $entry['recommendation'] = $recommendation;
         }
         $draft = $this->prefill->fromPlaybook($playbook->id);
-        $entry['prepared_revision'] = hash('sha256', json_encode($draft, JSON_THROW_ON_ERROR));
+        $entry['prepared_revision'] = hash('sha256', (string) wp_json_encode($draft, JSON_THROW_ON_ERROR));
         $config = $draft['config'] ?? null;
         $template = $config['template'] ?? null;
 
@@ -184,7 +184,7 @@ final class PlaybookController implements RestController
         }
 
         $preparedRevision = $request->get_param('prepared_revision');
-        if (is_string($preparedRevision) && !hash_equals(hash('sha256', json_encode($draft, JSON_THROW_ON_ERROR)), $preparedRevision)) {
+        if (is_string($preparedRevision) && !hash_equals(hash('sha256', (string) wp_json_encode($draft, JSON_THROW_ON_ERROR)), $preparedRevision)) {
             return new WP_Error('wconvert_prepared_setup_changed', __('Site settings changed this setup. Reload its preview before creating a draft.', 'wconvert'), ['status' => 409]);
         }
 

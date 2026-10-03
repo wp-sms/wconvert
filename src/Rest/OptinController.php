@@ -812,6 +812,7 @@ final class OptinController implements RestController
      */
     private function normalizeConfig(array $config, ?string $pickedBefore = null): array
     {
+        // phpcs:disable WordPress.Security.EscapeOutput.ExceptionNotEscaped -- validation messages for an administrator, caught upstream and returned as a WP_Error that the admin renders as text; escaping here would print the entities.
         if (isset($config['capture_mode'])) {
             $config['capture_mode'] = $config['capture_mode'] === 'local' ? 'local' : 'connected';
         }
@@ -1001,6 +1002,7 @@ final class OptinController implements RestController
         if (array_key_exists('analytics', $config)) {
             $config['analytics'] = \WConvert\Optin\AnalyticsPreference::normalize($config['analytics']);
         }
+        // phpcs:enable WordPress.Security.EscapeOutput.ExceptionNotEscaped
         return $config;
     }
 

@@ -36,10 +36,12 @@ final class WpdbConnection implements Connection
     {
         if (!$this->transactional) {
             // Progressive capture must fail closed on non-transactional tables.
+            // phpcs:disable WordPress.DB.PreparedSQL.NotPrepared -- this IS the $wpdb->prepare() the sniff asks for, with every value bound as %s; it flags the call only because it is on a property. See the note in results().
             $rows = $this->wpdb->get_results($this->wpdb->prepare(
                 'SELECT ENGINE FROM information_schema.TABLES WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME IN (%s, %s, %s)',
                 $this->wpdb->prefix . self::TABLE_OPTIONS, $this->wpdb->prefix . self::TABLE_LEADS, $this->wpdb->prefix . self::TABLE_STATS
             ), ARRAY_A);
+            // phpcs:enable WordPress.DB.PreparedSQL.NotPrepared
             $this->assertSucceeded($rows);
             if (count($rows ?? []) !== 3 || array_filter($rows, static fn (array $row): bool => strtoupper((string) $row['ENGINE']) !== 'INNODB') !== []) {
                 throw new DatabaseException('Capture requires transactional WordPress storage.');
@@ -113,7 +115,7 @@ final class WpdbConnection implements Connection
         // one. This is its opposite — local, visible at the line, and read in
         // place by the reviewer who asks this same question next.
         /** @var list<array<string, string|null>>|null $rows */
-        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- prepare() binds every value through $wpdb->prepare() and the table as %i; the sniff cannot see it. See the note above.
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- prepare() binds every value through $wpdb->prepare() and the table as %i; the sniff cannot see it. See the note above.
         $rows = $this->wpdb->get_results($this->prepare($table, $sql, $params), ARRAY_A);
 
         $this->assertSucceeded($rows);
@@ -129,7 +131,7 @@ final class WpdbConnection implements Connection
     public function row(string $table, string $sql, ...$params): ?array
     {
         /** @var array<string, string|null>|null $row */
-        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- prepare() binds every value through $wpdb->prepare() and the table as %i; the sniff cannot see it. See the note in results().
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- prepare() binds every value through $wpdb->prepare() and the table as %i; the sniff cannot see it. See the note in results().
         $row = $this->wpdb->get_row($this->prepare($table, $sql, $params), ARRAY_A);
 
         $this->assertSucceeded($row);
@@ -169,7 +171,7 @@ final class WpdbConnection implements Connection
             throw new \LogicException('WConvert\\Database\\Connection::delete() runs DELETE statements and nothing else.');
         }
 
-        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- prepare() binds every value through $wpdb->prepare() and the table as %i; the sniff cannot see it. See the note in results().
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- prepare() binds every value through $wpdb->prepare() and the table as %i; the sniff cannot see it. See the note in results().
         $deleted = $this->wpdb->query($this->prepare($table, $sql, $params));
 
         $this->assertSucceeded($deleted);
@@ -194,7 +196,7 @@ final class WpdbConnection implements Connection
             );
         }
 
-        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- prepare() binds every value through $wpdb->prepare() and the table as %i; the sniff cannot see it. See the note in results().
+        // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- prepare() binds every value through $wpdb->prepare() and the table as %i; the sniff cannot see it. See the note in results().
         $this->assertSucceeded($this->wpdb->query($this->prepare($table, $sql, $params)));
     }
 

@@ -102,6 +102,7 @@ final class Targeting
         }
 
         if ($this->exclude !== []) {
+            // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude -- a Targeting key, not a get_posts() argument.
             $out['exclude'] = array_map(static fn (TargetingRule $r): array => $r->toArray(), $this->exclude);
         }
 

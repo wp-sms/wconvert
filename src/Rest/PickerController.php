@@ -98,6 +98,10 @@ final class PickerController implements RestController
     private function unlock(string $key, array $lease): void
     {
         global $wpdb;
+        // Compare-and-delete: only the lease this request took, never one a
+        // later request now holds. delete_option() has no condition on the
+        // value, so it cannot express that; the caches are cleared below.
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- see above.
         $wpdb->query($wpdb->prepare("DELETE FROM {$wpdb->options} WHERE option_name = %s AND option_value = %s", $key, maybe_serialize($lease)));
         wp_cache_delete($key, 'options'); wp_cache_delete('notoptions', 'options');
     }

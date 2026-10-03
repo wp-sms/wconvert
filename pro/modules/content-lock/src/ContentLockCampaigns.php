@@ -23,16 +23,25 @@ final class ContentLockCampaigns
     public function hooks(): void
     {
         add_action('enqueue_block_editor_assets', function (): void {
-            if (!Routes::canPlaceCampaign()) return;
+            if (!self::canPlaceCampaign()) return;
             wp_add_inline_script(InlineOptinBlock::HANDLE, 'window.wconvertContentLockEditor = ' . wp_json_encode($this->data()) . ';', 'before');
         });
         add_action('rest_api_init', function (): void {
             register_rest_route(Routes::NAMESPACE, '/content-lock-campaigns', [
                 'methods' => 'GET',
-                'permission_callback' => [Routes::class, 'canPlaceCampaign'],
+                'permission_callback' => [self::class, 'canPlaceCampaign'],
                 'callback' => fn (): \WP_REST_Response => new \WP_REST_Response($this->data(), 200, ['Cache-Control' => 'no-store']),
             ]);
         });
+    }
+
+    /**
+     * Post and page authors read the published choices, and only those —
+     * never Campaign management data, which stays behind Routes::canManage().
+     */
+    public static function canPlaceCampaign(): bool
+    {
+        return current_user_can('edit_posts') || current_user_can('edit_pages');
     }
 
     /** @return list<array{id: string, name: string, status: string}> */

@@ -55,6 +55,13 @@ provides**, so a second bundled copy would be a second `__()` reading an empty
 catalogue — every string rendering in English on a translated site, with nothing
 anywhere saying why.
 
+*Completed: `wp_set_script_translations()` loads the catalogue of the ENTRY
+only. A catalogue is per JavaScript file, and the builder chunks are `import()`ed
+rather than enqueued, so their strings had no catalogue loaded at all.
+`ViteHelper::chunkTranslations()` registers each chunk — never enqueued — so
+`load_script_textdomain()` can resolve its path, and merges its catalogue into
+the entry's domain with `setLocaleData` before the entry runs.*
+
 So a Vite plugin resolves each specifier to a module whose whole body reads the
 global back out. The import stays an import, the code that runs is still
 WordPress's, and no `@wordpress` source ships. Two guards sit on it, because a

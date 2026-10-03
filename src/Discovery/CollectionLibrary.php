@@ -20,6 +20,7 @@ final class CollectionLibrary
         $labelsFile = $this->directory . '/resources/collections/labels.php';
         $labels = is_file($labelsFile) ? require $labelsFile : [];
         foreach (glob($this->directory . '/resources/collections/*.json') ?: [] as $file) {
+            // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- a local file inside this site, never a URL.
             $collection = json_decode((string) file_get_contents($file), true);
             if (!is_array($collection) || ($collection['status'] ?? '') !== 'published') continue;
             $items = []; $stale = false;

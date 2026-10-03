@@ -122,6 +122,7 @@ final class PackPlaybooks
             $params = $definition['params'];
             $allowed = ['type'];
             foreach (array_keys($params) as $name) {
+                // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- validation messages for an administrator, caught upstream and returned as a WP_Error that the admin renders as text; escaping here would print the entities.
                 if (!is_string($name)) throw new \RuntimeException(__('This rule declares an invalid parameter.', 'wconvert'));
                 $allowed[] = $name;
             }

@@ -148,6 +148,7 @@ final class InspectorEnqueue
         nocache_headers();
 
         if (!defined('DONOTCACHEPAGE')) {
+            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedConstantFound -- the page caches' shared convention; it has to be this name to be read.
             define('DONOTCACHEPAGE', true);
         }
 

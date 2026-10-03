@@ -76,7 +76,7 @@ final class UninstallTest extends TestCase
                 }
 
                 preg_match_all(
-                    "/public const (?:[A-Z_]+_)?OPTION = '([a-z0-9_]+)'/",
+                    "/(?:public|private|protected) const (?:[A-Z_]+_)?OPTION = '([a-z0-9_]+)'/",
                     (string) file_get_contents($file->getPathname()),
                     $matches
                 );
@@ -115,7 +115,7 @@ final class UninstallTest extends TestCase
         $options = self::everyOptionInTheSource();
         $contents = self::contents();
 
-        $this->assertCount(14, $options, 'every new option needs an uninstall entry');
+        $this->assertCount(15, $options, 'every new option needs an uninstall entry');
 
         foreach ($options as $option) {
             $this->assertStringContainsString(
@@ -204,6 +204,58 @@ final class UninstallTest extends TestCase
             foreach (glob($archive . '/.pack-*') ?: [] as $file) unlink($file);
             rmdir($archive); unlink($uploads . '/keep.txt'); rmdir($uploads);
         }
+    }
+
+    /**
+     * The image store, the private import folder and every schedule go too —
+     * by WConvert's own file names, and never through a link or into a file
+     * somebody else put there.
+     */
+    public function testImagesImportsAndSchedulesAreRemovedAndNothingElse(): void
+    {
+        $base = sys_get_temp_dir() . '/wconvert-uninstall-' . bin2hex(random_bytes(8));
+        $uploads = $base . '/uploads';
+        $temp = $base . '/tmp';
+        $images = $uploads . '/wconvert-template-images';
+        // The folder name TemplateTransferController::folder() derives, for the fixture's ABSPATH and salt.
+        $transfer = $temp . '/wconvert-transfer-' . substr(hash('sha256', '/srv/site/salt'), 0, 24);
+        $session = $transfer . '/' . str_repeat('c', 64);
+        foreach ([$images . '/free', $images . '/premium', $images . '/sets', $session] as $folder) mkdir($folder, 0755, true);
+        $owned = [
+            $images . '/free/' . str_repeat('a', 64) . '.png',
+            $images . '/premium/' . str_repeat('b', 64) . '.webp',
+            $images . '/sets/' . str_repeat('d', 64) . '.json',
+            $images . '/.install.lock',
+            $session . '/session.json',
+            $session . '/upload.zip',
+            $session . '/lock',
+            $transfer . '/export-Ab12Cd',
+        ];
+        foreach ($owned as $file) file_put_contents($file, 'x');
+        file_put_contents($images . '/free/keep.txt', 'site owner file');
+        $log = $base . '/unscheduled.txt';
+        try {
+            $script = self::root() . '/tests/fixtures/uninstall-packs.php';
+            exec(escapeshellarg(PHP_BINARY) . ' ' . escapeshellarg($script) . ' ' . escapeshellarg($uploads) . ' ' . escapeshellarg($temp) . ' ' . escapeshellarg($log), $output, $code);
+            $this->assertSame(0, $code, implode("\n", $output));
+            foreach ($owned as $file) $this->assertFileDoesNotExist($file);
+            $this->assertDirectoryDoesNotExist($transfer, 'an emptied import folder is removed');
+            $this->assertDirectoryDoesNotExist($images . '/sets');
+            $this->assertFileExists($images . '/free/keep.txt');
+            $this->assertSame(
+                ['wconvert_prune_leads', 'wconvert_recover_submissions', 'wconvert_transfer_cleanup'],
+                explode("\n", (string) file_get_contents($log))
+            );
+        } finally {
+            exec('rm -rf ' . escapeshellarg($base));
+        }
+    }
+
+    /** Action Scheduler jobs are cancelled by WConvert's group — never by dropping a shared table. */
+    public function testQueuedJobsAreCancelledByGroup(): void
+    {
+        $this->assertStringContainsString("as_unschedule_all_actions('', [], 'wconvert')", self::contents());
+        $this->assertSame('wconvert', \WConvert\Queue\ActionSchedulerQueue::GROUP);
     }
 
     /**

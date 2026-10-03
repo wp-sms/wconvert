@@ -747,6 +747,7 @@ final class DestinationController implements RestController
                 $schema = $this->schemaFor($type, $destination->connectionId === null ? null : $this->connections->find($destination->connectionId));
                 $options = $schema[$field['setting']]['options'] ?? [];
                 if (!is_array($options) || !in_array($selected, array_column($options, 'value'), true)) {
+                    /* translators: %s: the label of a form field, for example "Email". */
                     $issues[] = sprintf(__('The selected field for %s is unavailable. Review this destination’s mapping.', 'wconvert'), $field['label']);
                 }
             } catch (\Throwable $failure) {

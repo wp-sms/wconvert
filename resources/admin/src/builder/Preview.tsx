@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
-import { __, sprintf } from '@wordpress/i18n';
+import { __, _n, sprintf } from '@wordpress/i18n';
 import { mount } from '@renderer/mount';
 import { enhancePhones } from '../../../phone/src/enhance';
 import { phoneSiteCountry } from '../phoneSiteCountry';
@@ -270,14 +270,18 @@ export function Preview({ template, displayType = 'inline', step = 0, selected =
     (window as Window & { __wcPhoneLabels?: Record<string, string> }).__wcPhoneLabels = {
       fallback: __('Include + and the country code, for example +1 202 555 0123.', 'wconvert'),
       select: __('Select country', 'wconvert'),
+      /* translators: 1: a country's name, 2: its calling code without the plus sign, for example 44. */
       trigger: __('Select country: %1$s (+%2$s)', 'wconvert'),
       closeSelector: __('Close country selector', 'wconvert'),
       close: __('Close', 'wconvert'),
       search: __('Search…', 'wconvert'),
       searchCountries: __('Search countries', 'wconvert'),
       countries: __('Countries', 'wconvert'),
-      oneResult: __('%s result', 'wconvert'),
-      manyResults: __('%s results', 'wconvert'),
+      // The same two forms LoaderEnqueue hands the phone bundle on the site.
+      /* translators: %s: the number of countries matching the search. */
+      oneResult: _n('%s result', '%s results', 1, 'wconvert'),
+      /* translators: %s: the number of countries matching the search. */
+      manyResults: _n('%s result', '%s results', 2, 'wconvert'),
       too_short: __('Enter a longer phone number.', 'wconvert'),
       too_long: __('This phone number is too long.', 'wconvert'),
       invalid_length: __('Check the phone number length.', 'wconvert'),

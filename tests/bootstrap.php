@@ -1096,6 +1096,104 @@ if (!function_exists('esc_attr')) {
     }
 }
 
+if (!function_exists('esc_url_raw')) {
+    function esc_url_raw(string $url): string
+    {
+        return $url;
+    }
+}
+
+if (!function_exists('wp_strip_all_tags')) {
+    /** WordPress's own: script and style go with their contents, then every tag, then the ends. */
+    function wp_strip_all_tags(string $text, bool $remove_breaks = false): string
+    {
+        $text = strip_tags((string) preg_replace('@<(script|style)[^>]*?>.*?</\\1>@si', '', $text));
+        if ($remove_breaks) {
+            $text = (string) preg_replace('/[\r\n\t ]+/', ' ', $text);
+        }
+
+        return trim($text);
+    }
+}
+
+if (!function_exists('sanitize_key')) {
+    function sanitize_key(string $key): string
+    {
+        return (string) preg_replace('/[^a-z0-9_\-]/', '', strtolower($key));
+    }
+}
+
+/*
+ * WordPress's inline and external script tags, in the shape 6.8 prints them:
+ * attributes through esc_attr(), a boolean attribute as its bare name, and an
+ * inline body padded with a newline either side. Newer WordPress builds the same
+ * markup with the HTML API.
+ */
+if (!function_exists('wp_sanitize_script_attributes')) {
+    /** @param array<string, string|bool> $attributes */
+    function wp_sanitize_script_attributes(array $attributes): string
+    {
+        $html = '';
+        foreach ($attributes as $name => $value) {
+            if (is_bool($value)) {
+                $html .= $value ? ' ' . $name : '';
+            } else {
+                $html .= sprintf(' %s="%s"', $name, esc_attr($value));
+            }
+        }
+
+        return $html;
+    }
+}
+
+if (!function_exists('wp_get_inline_script_tag')) {
+    /** @param array<string, string|bool> $attributes */
+    function wp_get_inline_script_tag(string $data, array $attributes = []): string
+    {
+        return sprintf("<script%s>\n%s\n</script>\n", wp_sanitize_script_attributes($attributes), trim($data, "\n\r "));
+    }
+}
+
+if (!function_exists('wp_get_script_tag')) {
+    /** @param array<string, string|bool> $attributes */
+    function wp_get_script_tag(array $attributes): string
+    {
+        return sprintf("<script%s></script>\n", wp_sanitize_script_attributes($attributes));
+    }
+}
+
+/*
+ * The filesystem helpers, performed. WordPress's are thin wrappers over the
+ * same PHP calls; these drop the filters and the permission inheritance.
+ */
+if (!function_exists('wp_delete_file')) {
+    function wp_delete_file(string $file): bool
+    {
+        return @unlink($file);
+    }
+}
+
+if (!function_exists('wp_mkdir_p')) {
+    function wp_mkdir_p(string $target): bool
+    {
+        return is_dir($target) || mkdir($target, 0755, true);
+    }
+}
+
+if (!function_exists('wp_is_writable')) {
+    function wp_is_writable(string $path): bool
+    {
+        return is_writable($path);
+    }
+}
+
+if (!function_exists('get_temp_dir')) {
+    function get_temp_dir(): string
+    {
+        return rtrim(sys_get_temp_dir(), '/') . '/';
+    }
+}
+
 if (!function_exists('esc_html__')) {
     function esc_html__(string $text, string $domain = 'default'): string
     {
@@ -1158,6 +1256,24 @@ if (!function_exists('wp_schedule_event')) {
         $GLOBALS['wconvertTestSchedule'][$hook] = $timestamp;
 
         return true;
+    }
+}
+
+if (!function_exists('wp_clear_scheduled_hook')) {
+    /** @param array<mixed> $args Ignored: the record is per hook. */
+    function wp_clear_scheduled_hook(string $hook, array $args = [], bool $wp_error = false): int
+    {
+        $had = isset($GLOBALS['wconvertTestSchedule'][$hook]);
+        unset($GLOBALS['wconvertTestSchedule'][$hook]);
+
+        return $had ? 1 : 0;
+    }
+}
+
+if (!function_exists('wp_unschedule_hook')) {
+    function wp_unschedule_hook(string $hook, bool $wp_error = false): int
+    {
+        return wp_clear_scheduled_hook($hook);
     }
 }
 

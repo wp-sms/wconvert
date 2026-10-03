@@ -78,8 +78,11 @@ final class LeadCaptureTest extends TestCase
      * throws leaves a complete Lead behind it and the visitor is told the
      * truth — that they were captured.
      */
+    #[\PHPUnit\Framework\Attributes\RunInSeparateProcess]
     public function testADownstreamFailureLeavesTheRowIntactAndTheCaptureSuccessful(): void
     {
+        // The log is the developer's channel, so it is written under WP_DEBUG.
+        define('WP_DEBUG', true);
         $db = new FakeConnection();
 
         add_action(LeadCapture::CAPTURED, static function (): void {
@@ -101,14 +104,34 @@ final class LeadCaptureTest extends TestCase
         $this->assertSame($lead->id, $rows[0]['id']);
 
         // Caught, but never swallowed. A dispatch that vanished silently is
-        // the failure mode ADR 0008 exists to end, and until Destination
-        // health arrives with #30 the site's error log is the only place
-        // WConvert has to put it.
+        // the failure mode ADR 0008 exists to end; a developer with WP_DEBUG
+        // on reads it here, redacted.
         $this->assertStringContainsString($lead->id, (string) file_get_contents($log));
         $written = (string) file_get_contents($log);
         $this->assertStringContainsString('the queue rejected [email] for [personal data]', $written);
         $this->assertStringNotContainsString('sarah@example.com', $written);
 
+        unlink($log);
+    }
+
+    /** Without WP_DEBUG the capture is just as complete, and the log stays quiet. */
+    public function testADownstreamFailureWritesNothingToTheLogWithoutDebug(): void
+    {
+        $this->assertFalse(defined('WP_DEBUG') && WP_DEBUG);
+        add_action(LeadCapture::CAPTURED, static function (): void {
+            throw new \RuntimeException('the queue rejected it');
+        });
+
+        $log = (string) tempnam(sys_get_temp_dir(), 'wconvert-');
+        $previous = (string) ini_set('error_log', $log);
+
+        try {
+            (new LeadCapture(new LeadRepository(new FakeConnection())))->record(self::OPTIN, self::submission());
+        } finally {
+            ini_set('error_log', $previous);
+        }
+
+        $this->assertSame('', (string) file_get_contents($log));
         unlink($log);
     }
 

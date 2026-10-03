@@ -71,13 +71,20 @@ final class BeaconController implements RestController
                 'methods' => 'POST',
                 'callback' => [$this, 'record'],
                 'permission_callback' => [Routes::class, 'canBeacon'],
-                // Nothing declared, and nothing to declare: every field of the
-                // body is checked by {@see Beacon} against a closed enum or a
-                // ULID pattern, which is stricter than anything
+                // Public and nonce-free on purpose — Routes::canBeacon() says
+                // why. No `type` and no `sanitize_callback`: every field of
+                // the body is checked by {@see Beacon} against a closed enum or
+                // a ULID pattern, which is stricter than anything
                 // `rest_sanitize_value_from_schema` would do to it — and a
                 // declared schema that coerces is how a value stops meaning
-                // what the client sent (ADR 0032).
-                'args' => [],
+                // what the client sent (ADR 0032). A validate_callback changes
+                // nothing it accepts, so the batch's shape is declared here.
+                'args' => [
+                    Beacon::EVENTS => [
+                        'description' => 'The batch of display events: Campaign ids and event kinds, nothing about the visitor.',
+                        'validate_callback' => static fn ($value): bool => is_array($value) && array_is_list($value),
+                    ],
+                ],
             ],
         ]);
     }
@@ -118,7 +125,13 @@ final class BeaconController implements RestController
         // load. Unescaped, an address carrying one would hash to a different
         // bucket than the same address without — which is a rate limit with a
         // hole in it rather than a display bug.
-        $address = (string) wp_unslash($_SERVER['REMOTE_ADDR'] ?? '');
+        //
+        // Sanitized, and deliberately NOT validated with FILTER_VALIDATE_IP:
+        // {@see RateLimit} refuses an empty address, so a host whose
+        // REMOTE_ADDR is not a bare IP — a port appended, an IPv6 zone, a
+        // socket name — would have every request refused. The value is only
+        // ever hashed into a bucket key; it is never printed or stored.
+        $address = sanitize_text_field(wp_unslash($_SERVER['REMOTE_ADDR'] ?? ''));
 
         // The clock is READ HERE and passed down, the same way the day is —
         // neither {@see RateLimit} nor {@see StatsRepository} owns one, so

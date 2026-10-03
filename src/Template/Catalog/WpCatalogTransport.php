@@ -33,6 +33,7 @@ final class WpCatalogTransport implements CatalogTransport, CatalogImageTranspor
             // No WordPress version, site URL, licence, campaign or lead data.
             'user-agent' => 'WConvert template catalog',
         ]);
+        // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- validation messages for an administrator, caught upstream and returned as a WP_Error that the admin renders as text; escaping here would print the entities.
         if ($response instanceof \WP_Error) throw new \RuntimeException(__('The catalog could not be reached. Installed designs are still available. Retry when the connection returns.', 'wconvert'));
         PackValidator::check(wp_remote_retrieve_response_code($response) === 200, __('The catalog could not be reached. Installed designs are still available. Retry when the connection returns.', 'wconvert'));
         $body = wp_remote_retrieve_body($response);

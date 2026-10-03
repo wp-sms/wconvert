@@ -47,13 +47,17 @@ final class LeadCapture
         // **A Destination can fail without the capture failing** (ADR 0007),
         // and the capture is already complete — so a handler that throws must
         // not turn a stored Lead into an error on the visitor's screen. It is
-        // caught here rather than left to propagate, and the failure is not
-        // swallowed: it goes to the site's error log, which is the only place
-        // WConvert has to put it until Destination health arrives with #30 and
-        // gives it a home a merchant can read (ADR 0008).
+        // caught here rather than left to propagate. The merchant-facing record
+        // of a failed delivery is Destination health (ADR 0008); this is the
+        // developer's, so it goes to the error log only under WP_DEBUG.
         try {
+            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- self::CAPTURED is 'wconvert_'-prefixed.
             do_action(self::CAPTURED, $lead);
         } catch (\Throwable $failure) {
+            if (!defined('WP_DEBUG') || !WP_DEBUG) {
+                return $lead;
+            }
+            // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- under WP_DEBUG only, with personal data redacted.
             error_log(sprintf(
                 'WConvert: a handler of %s threw for Lead %s. The Lead is stored; the dispatch is not. %s',
                 self::CAPTURED,

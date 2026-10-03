@@ -8,6 +8,7 @@ defined('ABSPATH') || exit;
 /** Fixed-depth authored display policy. Draft validation never discards a restriction. */
 final class DisplayPlan
 {
+    // phpcs:disable WordPress.Security.EscapeOutput.ExceptionNotEscaped -- validation messages for an administrator, caught upstream and returned as a WP_Error that the admin renders as text; escaping here would print the entities.
     /**
      * @return array<string, mixed> */
     public static function immediate(): array
@@ -164,6 +165,7 @@ final class DisplayPlan
                         'hours' => is_string($value) && (bool) preg_match('/^(?:[01][0-9]|2[0-3]):[0-5][0-9]-(?:[01][0-9]|2[0-3]):[0-5][0-9]$/D', $value),
                         default => is_string($value) && trim($value) !== '',
                     };
+                    /* translators: 1: a display rule's name, for example "Time on page", 2: the name of the rule's setting that is incomplete. */
                     if (!$valid) $issues[] = sprintf(__('%1$s: complete the %2$s value.', 'wconvert'), RuleLabels::types()[$rule['type']] ?? $rule['type'], $name);
                 }
             }
@@ -262,4 +264,5 @@ final class DisplayPlan
         $plan['audience']['groups'] = $survivors;
         return $plan;
     }
+    // phpcs:enable WordPress.Security.EscapeOutput.ExceptionNotEscaped
 }

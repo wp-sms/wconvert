@@ -109,7 +109,7 @@ final class PayloadTest extends TestCase
         $tag = PayloadTag::render([['id' => '01A', 'display_rules' => \WConvert\Rules\DisplayPlan::immediate(), 'display_type' => 'popup']], self::CAPTURE, self::BEACON, null, self::ZONE);
 
         $this->assertStringStartsWith('<script type="application/json" id="wconvert-payload" ', $tag);
-        $this->assertStringEndsWith('</script>', $tag);
+        $this->assertStringEndsWith("</script>\n", $tag);
         $this->assertStringContainsString('"01A"', $tag);
     }
 
@@ -260,8 +260,8 @@ final class PayloadTest extends TestCase
      * **The two route attributes are escaped for an ATTRIBUTE**, which is the
      * other half of the claim {@see \WConvert\Frontend\LoaderEnqueue} rests on
      * when it echoes this tag without escaping it again (#60). The JSON body
-     * is escaped by `JSON_HEX_TAG` below; these are not JSON and `esc_url()`
-     * is what their context needs.
+     * is escaped by `JSON_HEX_TAG` below; these are not JSON, so they are
+     * cleaned as URLs and escaped for the attribute by WordPress's tag API.
      *
      * A quote reaching either one unescaped closes the attribute and every
      * character after it is markup — the same failure as the one below, in the
