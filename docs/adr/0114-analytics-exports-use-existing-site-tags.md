@@ -41,6 +41,12 @@ data-layer name and the optional dismissal/manager switches. No table or column 
 added. Routine exports require the saved site URL and a production environment;
 managers are excluded by default, ordinary signed-in customers are not.
 
+Settings use the shared Region, loading/error states and footer. Connection and
+consent use native radio chips; uncommon switches stay under Advanced settings.
+Contextual tips and the setup guide carry supporting detail. Diagnostics open
+from a separate test dialog after changes are saved. Successful saves are
+reflected by the form state without a generic success message.
+
 Campaign configuration contains an opt-out and bounded public label. Published
 family preferences are projected separately from visitor payloads, including from
 paused parents. The projection query includes previously published paused rows for

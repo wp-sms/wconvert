@@ -6,7 +6,7 @@
 <p>WConvert sends campaign activity through the Google tag or Google Tag Manager already installed on your website. It does not install a tracker. Choose one route in Settings → Integrations. Native WConvert statistics continue independently.</p>
 <h2>Existing Google tag</h2>
 <ol><li>Find your web stream's Measurement ID in GA Admin → Data streams (starts with <code>G-</code>).</li><li>Select Existing Google tag and enter that ID. The same stream must already be configured on your website, for example by Site Kit.</li><li>Choose consent handling, enable the integration and save. Clear any additional page or CDN cache.</li><li>Test on a page containing a published campaign. Having a <code>gtag</code> function only proves a local handoff is possible; verify receipt in GA.</li></ol>
-<h2>Google Tag Manager recipe</h2>
+<h2 id="gtm">Google Tag Manager recipe</h2>
 <p>Use a test workspace and property first. WConvert pushes namespaced events into the existing data layer; it does not create or publish a GTM tag.</p>
 <ol><li>Select Google Tag Manager in WConvert. Use <code>dataLayer</code> unless your container uses another name.</li><li>Create a Custom Event trigger with regular-expression matching:
 <pre><code>^wconvert\.(impression|lead_accepted|campaign_converted|dismissed|test)$</code></pre></li>

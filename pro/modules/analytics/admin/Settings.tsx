@@ -1,70 +1,147 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useId, useRef, useState, type ReactNode } from 'react';
 import apiFetch from '@wordpress/api-fetch';
-import { __, sprintf } from '@wordpress/i18n';
+import { __, _n, sprintf } from '@wordpress/i18n';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Region, RegionBody, RegionHeader } from '@/shell/Region';
-import { messageOf } from '@/shell/loadable';
+import { Badge } from '@/components/ui/badge';
+import { Dialog, DialogClose, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { InfoTip } from '@/shell/InfoTip';
+import { Region, RegionBody, RegionError, RegionErrorState, RegionFooter, RegionHeader } from '@/shell/Region';
+import { RegionSkeleton } from '@/shell/RegionSkeleton';
+import { failed, messageOf, type Loadable } from '@/shell/loadable';
 import { useSettingsEditing, type SettingsEditing } from '@/settings-page/useSettingsEditing';
 import { path, type Response, type SettingsValue } from './api';
-const selectClass = 'block min-w-0 max-w-full w-full rounded-md border border-input bg-background px-3 py-2 text-body';
+
 export default function Settings({ onEditingStateChange }: { onEditingStateChange?: SettingsEditing }) {
-  const [response, setResponse] = useState<Response>();
+  const [loaded, setLoaded] = useState<Loadable<Response>>({ status: 'loading' });
   const [value, setValue] = useState<SettingsValue>();
-  const [error, setError] = useState(''); const [busy, setBusy] = useState(false); const [saved, setSaved] = useState(false);
-  const [reload, setReload] = useState(0); const [page, setPage] = useState('');
+  const [error, setError] = useState('');
+  const [busy, setBusy] = useState(false);
+  const [retry, setRetry] = useState(0);
+  const [page, setPage] = useState('');
+  const saveButton = useRef<HTMLButtonElement>(null);
+  const response = loaded.status === 'ready' ? loaded.data : undefined;
   const dirty = !!value && JSON.stringify(value) !== JSON.stringify(response?.settings);
   useSettingsEditing(dirty, busy, onEditingStateChange);
+
   useEffect(() => {
     let active = true;
-    apiFetch<Response>({ path }).then(next => { if (active) { setResponse(next); setValue(next.settings); setPage(next.test_url); setError(''); } })
-      .catch(reason => { if (active) setError(messageOf(reason)); });
+    setLoaded({ status: 'loading' });
+    apiFetch<Response>({ path }).then(next => {
+      if (active) { setLoaded({ status: 'ready', data: next }); setValue(next.settings); setPage(next.test_url); }
+    }).catch(reason => { if (active) setLoaded(failed(reason)); });
     return () => { active = false; };
-  }, [reload]);
-  const change = (patch: Partial<SettingsValue>) => { setValue(old => old ? { ...old, ...patch } : old); setSaved(false); };
+  }, [retry]);
+
+  const change = (patch: Partial<SettingsValue>) => setValue(old => old ? { ...old, ...patch } : old);
   const save = async () => {
+    if (!value || busy) return;
     setBusy(true); setError('');
-    try { const next = await apiFetch<Response>({ path, method: 'POST', data: value }); setResponse(next); setValue(next.settings); setSaved(true); }
-    catch (reason) { setError(messageOf(reason)); } finally { setBusy(false); }
+    try {
+      const next = await apiFetch<Response>({ path, method: 'POST', data: value });
+      setLoaded({ status: 'ready', data: next }); setValue(next.settings);
+    } catch (reason) { setError(messageOf(reason)); }
+    finally { setBusy(false); requestAnimationFrame(() => saveButton.current?.focus()); }
   };
+
+  const title = __('Google Analytics 4', 'wconvert');
+  if (loaded.status === 'failed') return <Region>
+    <RegionHeader title={title} />
+    <RegionErrorState message={loaded.message} hint={__('Load the connection settings again.', 'wconvert')}
+      action={<Button variant="outline" onClick={() => setRetry(n => n + 1)}>{__('Retry', 'wconvert')}</Button>} />
+  </Region>;
+  if (!response || !value) return <RegionSkeleton label={title} lines={4} />;
+
   let testUrl = '';
-  try { const url = new URL(page); if (response && url.origin === new URL(response.home).origin && ['http:', 'https:'].includes(url.protocol)) { url.searchParams.set('wconvert-analytics', '1'); testUrl = url.href; } } catch { /* Invalid input is kept editable. */ }
-  return <Region><RegionHeader title={__('Google Analytics 4', 'wconvert')} description={__('Measure campaign appearances and accepted outcomes using the tracking already installed on your website.', 'wconvert')} />
-    <RegionBody className="flex min-w-0 flex-col gap-5">
-      {error && <div role="alert"><p>{error}</p>{!response && <Button variant="outline" onClick={() => setReload(n => n + 1)}>{__('Retry', 'wconvert')}</Button>}</div>}
-      {!value || !response ? <p>{__('Loading analytics settings…', 'wconvert')}</p> : <>
-        {!response.asset_available && <p role="alert">{__('The analytics script is missing. Reinstall WConvert Pro to restore the integration.', 'wconvert')}</p>}
-        {response.environment !== 'production' && <p role="status">{__('Routine tracking is disabled in this environment. Use a test property in the website diagnostic panel.', 'wconvert')} ({response.environment})</p>}
-        {!response.site_matches && value.enabled && <p role="status">{__('This configuration came from another site. Review the stream and save to activate it here.', 'wconvert')}</p>}
-        <fieldset disabled={busy} className="flex min-w-0 flex-col gap-4">
-          <label className="flex gap-2 items-center"><input type="checkbox" checked={value.enabled} onChange={e => change({ enabled: e.target.checked })} />{__('Enable GA4 integration', 'wconvert')}</label>
-          <p className="text-note text-muted-foreground">{__('Applies to existing and future published campaigns that use the site setting. WConvert does not install a Google tag.', 'wconvert')} {sprintf(__('%s published designs currently opt out.', 'wconvert'), String(response.excluded))}</p>
-          <label>{__('Connection method', 'wconvert')}<select className={selectClass} value={value.route} onChange={e => change({ route: e.target.value as SettingsValue['route'] })}><option value="gtag">{__('Existing Google tag', 'wconvert')}</option><option value="gtm">{__('Google Tag Manager', 'wconvert')}</option></select></label>
-          {value.route === 'gtag' ? <label>{__('GA4 Measurement ID', 'wconvert')}<Input value={value.measurement_id} placeholder="G-XXXXXXXXXX" maxLength={22} onChange={e => change({ measurement_id: e.target.value.trim().toUpperCase() })} /><span className="text-note">{__('Use the web stream already configured by your Google tag. A property number or GTM container ID will not work.', 'wconvert')}</span></label>
-            : <p>{__('Configure the WConvert custom-event trigger and GA4 event tag in your existing container. Saving here does not publish GTM changes.', 'wconvert')}</p>}
-          <label>{__('Consent handling', 'wconvert')}<select className={selectClass} value={value.consent} onChange={e => change({ consent: e.target.value as SettingsValue['consent'] })}><option value="wp">{__('Follow an initialized WP Consent API integration', 'wconvert')}</option><option value="site">{__('Existing Google tag / GTM manages consent', 'wconvert')}</option></select></label>
-          <p className="text-note">{value.consent === 'wp' ? __('Requires an initialized consent manager exposing statistics permission. Missing or unknown permission withholds events.', 'wconvert') : __('Your existing tag configuration controls collection. WConvert cannot verify permission in this mode; advanced Google Consent Mode may send cookieless requests. WConvert never grants consent.', 'wconvert')}</p>
-          <details><summary>{__('Advanced settings', 'wconvert')}</summary><div className="flex flex-col gap-3 py-3">
-            <label className="flex gap-2"><input type="checkbox" checked={value.dismissals} onChange={e => change({ dismissals: e.target.checked })} />{__('Include deliberate dismissal events', 'wconvert')}</label>
-            <label className="flex gap-2"><input type="checkbox" checked={value.exclude_managers} onChange={e => change({ exclude_managers: e.target.checked })} />{__('Exclude logged-in campaign managers', 'wconvert')}</label>
-            {value.route === 'gtm' && <label>{__('Data-layer name', 'wconvert')}<Input value={value.data_layer} maxLength={40} onChange={e => change({ data_layer: e.target.value })} /></label>}
-          </div></details>
-          <div><Button disabled={!dirty && response.site_matches} onClick={() => void save()}>{busy ? __('Saving…', 'wconvert') : __('Save settings', 'wconvert')}</Button></div>
-        </fieldset>
-        {saved && <p role="status">{__('Settings saved. Known page caches were purged; clear any other page/CDN cache. Receipt still needs verification in Google Analytics.', 'wconvert')}</p>}
-        <details><summary>{__('Test and verify', 'wconvert')}</summary><div className="flex flex-col gap-3 py-3">
-          <p>{__('Open a page containing a campaign while logged in. The panel inspects locally; a separate button sends a real synthetic event. Enter a dedicated test stream for direct GA or use a test GTM workspace. Consent rules still apply.', 'wconvert')}</p>
-          <label>{__('Website page URL', 'wconvert')}<Input type="url" value={page} onChange={e => setPage(e.target.value)} /></label>
-          {testUrl && !dirty ? <a href={testUrl} target="_blank" rel="noreferrer">{__('Open website diagnostics', 'wconvert')}</a> : <p>{__('Save settings and enter a URL on this site to test.', 'wconvert')}</p>}
-          <p>{__('Look for wconvert_test in GA DebugView or Realtime. A successful local handoff does not prove Google received it.', 'wconvert')}</p>
-        </div></details>
-        <details><summary>{__('Events and reporting setup', 'wconvert')}</summary><div className="flex flex-col gap-3 py-3">
-          <p>{__('Events: wconvert_impression, generate_lead, wconvert_conversion, and optional wconvert_dismiss. Optional SMS does not generate a second lead. Quiz completion and contact capture are separate outcomes.', 'wconvert')}</p>
-          <p>{__('Create event-scoped custom dimensions for wcv_campaign_id and, when needed, wcv_campaign_label, wcv_optin_id, wcv_display_type, wcv_outcome and wcv_capture_role. Filter generate_lead by WConvert campaign metadata. Report availability can take 24–48 hours.', 'wconvert')}</p>
-          <p>{__('Use one route; remove only older duplicate WConvert tags. Existing generate_lead key-event settings in GA apply to these leads too.', 'wconvert')}</p>
-          <a href={response.guide_url} target="_blank" rel="noreferrer">{__('Setup guide, GTM recipe and reporting examples', 'wconvert')}</a>
-          <a href="https://developers.google.com/analytics/devguides/collection/ga4/event-parameters" target="_blank" rel="noreferrer">{__('Google: event parameters and custom dimensions', 'wconvert')}</a>
-        </div></details>
-      </>}
-    </RegionBody></Region>;
+  try {
+    const url = new URL(page);
+    if (url.origin === new URL(response.home).origin && ['http:', 'https:'].includes(url.protocol)) {
+      url.searchParams.set('wconvert-analytics', '1'); testUrl = url.href;
+    }
+  } catch { /* Keep an incomplete URL editable. */ }
+  const paused = response.environment !== 'production';
+  const needsReview = !response.site_matches && value.enabled;
+  const testBlocked = dirty || busy || !response.asset_available;
+
+  return <Region>
+    <RegionHeader title={title} description={__('Track published campaigns through your existing Google tag.', 'wconvert')} />
+    {error && <RegionError message={error} />}
+    {!response.asset_available && <RegionError message={__('Analytics script missing. Reinstall WConvert Pro to restore it.', 'wconvert')} />}
+    <RegionBody className="grid gap-5">
+      <fieldset disabled={busy} className="m-0 grid min-w-0 gap-5 border-0 p-0">
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <label className="flex items-center gap-2 font-medium"><input type="checkbox" checked={value.enabled} onChange={e => change({ enabled: e.target.checked })} />{__('Enable GA4 integration', 'wconvert')}</label>
+          {paused && <Badge variant="warning">{__('Non-production site', 'wconvert')}</Badge>}
+        </div>
+        {paused && <p className="m-0 text-note text-muted-foreground">{__('Tracking is paused here. Diagnostics remain available.', 'wconvert')}</p>}
+        {needsReview && <p className="m-0 text-note">{__('Site address changed. Review this connection and save to resume tracking.', 'wconvert')}</p>}
+
+        <Choices label={__('Connection method', 'wconvert')} value={value.route} onChange={route => change({ route })}
+          options={[['gtag', __('Google tag', 'wconvert')], ['gtm', __('Google Tag Manager', 'wconvert')]]} />
+        {value.route === 'gtag' ? <div className="grid gap-2">
+          <div className="flex items-center gap-1"><label htmlFor="analytics-stream" className="font-medium">{__('Measurement ID', 'wconvert')}</label>
+            <InfoTip label={__('About the Measurement ID', 'wconvert')}>{__('Use the G- ID of the web stream already installed on this site. WConvert does not install a Google tag.', 'wconvert')}</InfoTip>
+          </div>
+          <Input id="analytics-stream" className="max-w-sm" value={value.measurement_id} placeholder="G-XXXXXXXXXX" maxLength={22} dir="ltr" autoComplete="off" onChange={e => change({ measurement_id: e.target.value.trim().toUpperCase() })} />
+        </div> : <p className="m-0 text-note text-muted-foreground">{__('Add the WConvert event tag to your container, then publish it.', 'wconvert')} <a href={response.guide_url + '#gtm'} target="_blank" rel="noreferrer" className="underline">{__('GTM setup', 'wconvert')}</a></p>}
+
+        <div className="grid gap-2">
+          <Choices label={__('Consent handling', 'wconvert')} value={value.consent} onChange={consent => change({ consent })}
+            options={[['wp', __('WP Consent API', 'wconvert')], ['site', __('Google tag / GTM', 'wconvert')]]}
+            help={<InfoTip label={__('About consent handling', 'wconvert')}>{value.consent === 'wp'
+              ? __('Requires an initialized WP Consent API integration. Missing or denied permission withholds events; earlier events are not replayed.', 'wconvert')
+              : __('Choose this only if consent is already configured in your tag or container. WConvert cannot verify permission in this mode and never grants consent. Advanced Google Consent Mode may send cookieless requests.', 'wconvert')}</InfoTip>} />
+          <p className="m-0 text-note text-muted-foreground">{value.consent === 'wp'
+            ? __('Send only when your consent manager allows statistics.', 'wconvert')
+            : __('Your Google tag or GTM controls consent, including cookieless requests.', 'wconvert')}</p>
+        </div>
+
+        <details className="border-t border-border pt-4">
+          <summary className="cursor-pointer text-body font-medium">{__('Advanced settings', 'wconvert')}</summary>
+          <div className="grid gap-4 pt-4">
+            <label className="flex items-start gap-2"><input type="checkbox" checked={value.dismissals} onChange={e => change({ dismissals: e.target.checked })} />{__('Track dismissals', 'wconvert')}</label>
+            <label className="flex items-start gap-2"><input type="checkbox" checked={value.exclude_managers} onChange={e => change({ exclude_managers: e.target.checked })} />{__('Exclude campaign managers', 'wconvert')}</label>
+            {value.route === 'gtm' && <label className="grid gap-2">{__('Data-layer name', 'wconvert')}<Input className="max-w-sm" value={value.data_layer} maxLength={40} dir="ltr" onChange={e => change({ data_layer: e.target.value })} /></label>}
+            <p className="m-0 text-note text-muted-foreground">{__('Includes existing and future campaigns unless excluded in campaign details.', 'wconvert')}{response.excluded > 0 && <> {sprintf(_n('%s published design is excluded.', '%s published designs are excluded.', response.excluded, 'wconvert'), String(response.excluded))}</>}</p>
+          </div>
+        </details>
+      </fieldset>
+    </RegionBody>
+    <RegionFooter className="flex flex-wrap items-center justify-between gap-3">
+      <div className="flex flex-wrap items-center gap-3"><Dialog>
+        <DialogTrigger asChild><Button variant="outline" disabled={busy} aria-disabled={testBlocked || undefined} aria-describedby={dirty ? 'analytics-unsaved' : undefined}
+          onClick={event => { if (testBlocked) event.preventDefault(); }}>{__('Test setup', 'wconvert')}</Button></DialogTrigger>
+        <DialogContent>
+          <DialogHeader><DialogTitle>{__('Test analytics', 'wconvert')}</DialogTitle>
+            <DialogDescription>{__('Inspect a page with a campaign. Events stay local until you explicitly send a test.', 'wconvert')}</DialogDescription>
+          </DialogHeader>
+          <label className="grid gap-2">{__('Website page URL', 'wconvert')}<Input type="url" dir="ltr" value={page} onChange={e => setPage(e.target.value)} /></label>
+          {!testUrl && <p role="status" className="m-0 text-note">{__('Enter a URL on this website.', 'wconvert')}</p>}
+          <p className="m-0 text-note text-muted-foreground">{__('Use a test property and clear any page/CDN cache first. Verify receipt in GA DebugView.', 'wconvert')}</p>
+          <DialogFooter><DialogClose asChild><Button variant="outline">{__('Cancel', 'wconvert')}</Button></DialogClose>
+            {testUrl ? <Button asChild><a href={testUrl} target="_blank" rel="noreferrer">{__('Open diagnostics', 'wconvert')}</a></Button>
+              : <Button aria-disabled="true">{__('Open diagnostics', 'wconvert')}</Button>}
+          </DialogFooter>
+        </DialogContent>
+      </Dialog><a className="text-note underline underline-offset-2" href={response.guide_url} target="_blank" rel="noreferrer">{__('Setup guide', 'wconvert')}</a></div>
+      <div className="flex flex-wrap items-center gap-3">
+        {dirty && <span id="analytics-unsaved" className="text-note text-muted-foreground">{__('Save changes before testing.', 'wconvert')}</span>}
+        {dirty && <Button variant="ghost" disabled={busy} onClick={() => { setValue(response.settings); setError(''); }}>{__('Cancel changes', 'wconvert')}</Button>}
+        <Button ref={saveButton} disabled={busy || (!dirty && response.site_matches)} onClick={() => void save()}>{busy ? __('Saving…', 'wconvert') : __('Save settings', 'wconvert')}</Button>
+      </div>
+    </RegionFooter>
+  </Region>;
+}
+
+/** Small exclusive choices use the shared native-radio chip treatment. */
+function Choices<T extends string>({ label, value, options, help, onChange }: { label: string; help?: ReactNode; value: T; options: [T, string][]; onChange(value: T): void }) {
+  const id = useId();
+  return <div className="grid gap-2">
+    <div className="flex items-center gap-1"><span id={id} className="font-medium">{label}</span>{help}</div>
+    <div role="group" aria-labelledby={id} className="wconvert-option-strip">
+      {options.map(([key, name]) => <label key={key} className="py-2">
+        <input type="radio" name={id} value={key} checked={key === value} onChange={() => onChange(key)} />{name}
+      </label>)}
+    </div>
+  </div>;
 }
