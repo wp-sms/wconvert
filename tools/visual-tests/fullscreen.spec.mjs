@@ -120,9 +120,9 @@ test('goal-first setup filtering creates a fullscreen draft with a viewport prev
   await expect(page.getByText('Fullscreen', { exact: true }).last()).toBeVisible();
   await page.getByRole('button', { name: 'Setup details for Offer a weekly email in fullscreen', exact: true }).click();
   await page.getByRole('button', { name: 'Use this setup', exact: true }).click();
-  await expect(page.locator('.wconvert-site[data-display-type="fullscreen"]')).toBeVisible();
-  const geometry = await page.evaluate(() => {
-    const site = document.querySelector('.wconvert-site');
+  const fullscreenSite = page.getByRole('tabpanel', { name: 'Edit campaign', exact: true }).locator('.wconvert-site[data-display-type="fullscreen"]');
+  await expect(fullscreenSite).toBeVisible();
+  const geometry = await fullscreenSite.evaluate(site => {
     const shadow = window.testShadows.findLast((root) => root.host.isConnected && site.contains(root.host));
     return { page: site.getBoundingClientRect().width, surface: shadow.querySelector('.wc-root').getBoundingClientRect().width };
   });
