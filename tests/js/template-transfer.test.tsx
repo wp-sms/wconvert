@@ -77,3 +77,33 @@ it('keeps successive link edits anchored to the file and resets them when switch
   await user.click(screen.getByRole('radio', { name: 'Keep my current content' }));
   await waitFor(() => expect(transfer.prepareImport).toHaveBeenLastCalledWith('session', 'campaign', config, 'keep', {}));
 });
+
+it('asks for an explicit second download when unsupported images must be omitted', async () => {
+  const onClose = vi.fn(); const user = userEvent.setup();
+  const design = { ...fixture, name: 'Current', display_type: 'popup' };
+  vi.mocked(transfer.downloadDesign).mockRejectedValueOnce({ message: 'Some images cannot be exported.', data: { problems: { hero: 'Replace the remote hero image.' } } }).mockResolvedValueOnce(undefined);
+  render(<TemplateTransferDialog action="export" design={design} config={config} optin="campaign" onClose={onClose} onApply={vi.fn()} />);
+  const download = await screen.findByRole('button', { name: 'Download design' });
+  await waitFor(() => expect(download).toBeEnabled());
+  await user.click(download);
+  expect(await screen.findByText('Some images can’t be included')).toBeVisible();
+  expect(onClose).not.toHaveBeenCalled();
+  expect(transfer.downloadDesign).toHaveBeenCalledExactlyOnceWith(design, []);
+  await user.click(screen.getByRole('button', { name: 'Export without these images' }));
+  await waitFor(() => expect(transfer.downloadDesign).toHaveBeenLastCalledWith(design, ['hero']));
+  expect(onClose).toHaveBeenCalledOnce();
+});
+
+it('returns to file selection when a replacement file is refused instead of retrying a cancelled session', async () => {
+  const user = userEvent.setup();
+  render(<TemplateTransferDialog action="import" design={{ ...fixture, name: 'Current', display_type: 'popup' }} config={config} optin="campaign" onClose={vi.fn()} onApply={vi.fn()} />);
+  await user.upload(await screen.findByLabelText('Choose a WConvert design file'), file());
+  await screen.findByRole('button', { name: 'Change file' });
+  vi.mocked(transfer.uploadDesign).mockRejectedValueOnce({ message: 'This file is not a WConvert design.' });
+  await user.upload(screen.getByLabelText('Choose a WConvert design file'), new File(['bad'], 'other.zip', { type: 'application/zip' }));
+  expect(await screen.findByRole('alert')).toHaveTextContent('This file is not a WConvert design.');
+  expect(transfer.cancelImport).toHaveBeenCalledWith('session');
+  expect(screen.getByRole('button', { name: 'Choose file' })).toBeEnabled();
+  expect(screen.queryByRole('button', { name: 'Retry preview' })).not.toBeInTheDocument();
+  expect(screen.queryByRole('button', { name: 'Apply to draft' })).not.toBeInTheDocument();
+});

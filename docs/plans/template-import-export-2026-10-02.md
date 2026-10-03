@@ -295,3 +295,21 @@ Successful imported media intentionally remains after Undo or discarding a draft
 - WordPress nonces protect against CSRF but are not authorization or single-use transaction tokens. Session ownership, capability checks and retry state remain separate. [Nonces](https://developer.wordpress.org/apis/security/nonces/).
 - Use native attachment creation for verified local staged files rather than implementing a parallel media store. WordPress's helper returns an attachment ID or WP_Error and generates attachment metadata. [media_handle_sideload](https://developer.wordpress.org/reference/functions/media_handle_sideload/).
 - Use bounded entry streams on the project's PHP 8.1 baseline. [ZipArchive::getStream](https://www.php.net/manual/en/ziparchive.getstream.php) predates PHP 8.1; [getStreamIndex](https://www.php.net/manual/en/ziparchive.getstreamindex.php) requires PHP 8.2 or the corresponding newer extension. The plan's archive validation limits are our design choices, not guarantees supplied by these APIs.
+
+### UI refinement — 2026-10-03
+
+Import starts with a compact file chooser and drag-and-drop target. After upload,
+a desktop preview remains beside the file identity, content choices, notices and
+link review. The layout stacks on small screens; the action footer stays visible.
+Both dialogs initially fit the entire design and retain desktop/mobile, screen
+and result controls. Export now previews the current draft beside an inclusion
+summary and explicit unsupported-image omissions. Errors and in-progress actions
+have distinct messages. A refused replacement file returns to file selection
+instead of offering to retry its already-cancelled predecessor.
+
+Verified in real WordPress on PHP 8.1 at desktop and 390px phone width: choose
+file, preview, edit/review links, Apply to draft, and download the unsaved design.
+The original 83 focused UI tests passed; two additional regression cases cover
+explicit export omissions and refused replacement files (all six transfer tests
+pass). TypeScript, targeted ESLint, and Free/Pro admin builds pass. The earlier
+full-suite baseline failures remain outside this UI refinement.
