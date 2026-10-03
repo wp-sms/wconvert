@@ -13,8 +13,17 @@ npm run test:visual
 ```
 
 `test:visual` owns port 9413 and refuses to reuse an existing server. Stop a
-manual `visual:serve` process before running the suite. CI installs Chromium's
-system dependencies and uploads `tools/visual-tests/out/` for 14 days.
+manual `visual:serve` process before running the suite.
+
+Every suite boots Playground with six PHP workers, Playground's recommended pool:
+fewer queues page loads behind analytics beacons and loopback requests. Playwright
+itself still runs one test at a time per suite.
+
+In CI, one job runs `npm run build` and the suites then run in parallel, one
+matrix leg each, from that build; this suite is split across two
+`--shard`s. Each leg installs Chromium's system dependencies and uploads
+`tools/visual-tests/out/` as `admin-visual-checks-<suite>` for 14 days. To
+reproduce a shard locally: `npm run test:visual -- --shard=1/2`.
 
 ## Coverage
 
@@ -52,8 +61,8 @@ npm run visual:serve
 
 Full data is seeded through the product repositories. Empty responses retain real
 REST shapes with collections cleared. Failed reads are real WordPress REST errors.
-Loading is held by an api-fetch middleware in the browser, so the single PHP
-worker remains free. Mail is suppressed on this disposable site.
+Loading is held by an api-fetch middleware in the browser, so no PHP worker is
+tied up holding a request open. Mail is suppressed on this disposable site.
 
 Playground's SQLite translator currently leaves MySQL's `<=>` operator intact.
 The harness expands the campaign summary's one null-safe comparison into its

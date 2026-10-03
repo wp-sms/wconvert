@@ -40,9 +40,8 @@
  * returning a `WP_Error` produces the real one.
  *
  * **Loading is NOT forced here, and must not be.** Holding a response open
- * server-side means a PHP worker that never returns, and Playground runs
- * `--workers=1` because its default six all write one SQLite file and corrupt
- * it (README). One held request would deadlock the whole server rather than
+ * server-side means a PHP worker that never returns, and this harness runs
+ * Playground with `--workers=1` (README). One held request would deadlock the whole server rather than
  * render a skeleton. So the hold lives in the capture script, as a Playwright
  * route that is never fulfilled — which suspends the fetch at exactly the
  * point a slow server would, without a worker waiting on it.
