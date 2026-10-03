@@ -872,6 +872,13 @@ to the result's own link.
 
 ### Template
 
+A merchant may export one current design and import it into another campaign as
+an owned snapshot, with supported local images. File import defaults to the file's
+content, previews explicit link decisions, and applies one undoable draft change.
+It clears the registered template identity and does not create a library entry or
+transfer campaign settings. Free transport retains paid runtime limits
+([ADR 0113](docs/adr/0113-template-files-replace-only-reviewed-draft-designs.md)).
+
 The reusable structure and look of an [[Optin]], with sample content for the
 gallery that a merchant can explicitly adopt.
 

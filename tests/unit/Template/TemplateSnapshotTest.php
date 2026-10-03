@@ -76,6 +76,21 @@ final class TemplateSnapshotTest extends TestCase
         ]));
     }
 
+    public function testImportedSnapshotKeepsPicturesAndButtonAddressesWithoutALibraryBaseline(): void
+    {
+        $this->shipSecond();
+        $library = $this->library();
+        $config = $library->snapshotInto(['template_id' => 'starter']);
+        $config['template']['tree']['steps'][0]['content']['children'][1]['src'] = '/imported.png';
+        $config['template']['tree']['steps'][0]['content']['children'][3]['href'] = '/my-offer';
+        $config['template_id'] = 'second';
+        $switched = $library->snapshotInto($config, null);
+        $children = $switched['template']['tree']['steps'][0]['content']['children'];
+        self::assertSame('/imported.png', $children[1]['src']);
+        self::assertSame('/my-offer', $children[3]['href']);
+        self::assertSame('#000000', $switched['template']['tokens']['bg']);
+    }
+
     /**
      * The Optin's own copy of `starter`, with whatever the merchant then did to
      * it, switched onto `second`.

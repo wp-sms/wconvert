@@ -666,7 +666,8 @@ describe('the builder shell', () => {
     });
 
     await open();
-    await userEvent.click(await screen.findByRole('button', { name: 'Campaign details' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Campaign actions' }));
+    await userEvent.click(await screen.findByRole('menuitem', { name: 'Campaign details' }));
 
     expect((await screen.findAllByText('Email submissions')).length).toBeGreaterThan(0);
     expect(screen.getByText('1,000')).toBeInTheDocument();
@@ -695,7 +696,8 @@ describe('the builder shell', () => {
     });
 
     await open();
-    await userEvent.click(await screen.findByRole('button', { name: 'Campaign details' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Campaign actions' }));
+    await userEvent.click(await screen.findByRole('menuitem', { name: 'Campaign details' }));
 
     const headline = await screen.findByText('42');
 
@@ -727,7 +729,8 @@ describe('the builder shell', () => {
     });
 
     await open();
-    await userEvent.click(await screen.findByRole('button', { name: 'Campaign details' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Campaign actions' }));
+    await userEvent.click(await screen.findByRole('menuitem', { name: 'Campaign details' }));
 
     expect(await screen.findByText('The last 7 days')).toBeInTheDocument();
   });
@@ -742,7 +745,8 @@ describe('the builder shell', () => {
     stats.readDashboard.mockReturnValue(new Promise(() => undefined));
 
     await open();
-    await userEvent.click(await screen.findByRole('button', { name: 'Campaign details' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Campaign actions' }));
+    await userEvent.click(await screen.findByRole('menuitem', { name: 'Campaign details' }));
 
     // Past the whole-builder skeleton first, whose own "Loading…" is a
     // different state and would otherwise be what this matched.
@@ -995,11 +999,12 @@ describe('the summary', () => {
 
   it('keeps the goal and its measurement in header details', async () => {
     await open();
-    const goal = await screen.findByRole('button', { name: 'Campaign details' });
+    const goal = await screen.findByRole('button', { name: 'Campaign actions' });
     expect(goal.closest('header')).not.toBeNull();
     expect(screen.queryByRole('button', { name: 'Goal: Grow my email list' })).toBeNull();
     expect(screen.queryByText('Grow my email list · counts Email submissions')).toBeNull();
     await userEvent.click(goal);
+    await userEvent.click(await screen.findByRole('menuitem', { name: 'Campaign details' }));
     expect(await screen.findByRole('dialog', { name: 'Campaign details' })).toBeVisible();
     expect(screen.getByText('Grow my email list · counts Email submissions')).toBeVisible();
     await userEvent.keyboard('{Escape}');
@@ -1411,7 +1416,8 @@ describe('whole-draft Undo and Redo', () => {
     expect(screen.getByRole('button', { name: 'Save draft' })).toBeEnabled();
     expect(builder.saveOptin).toHaveBeenCalledTimes(1);
     expect(publishing.publishOptin).toHaveBeenCalledTimes(1);
-    await userEvent.click(screen.getByRole('button', { name: 'Campaign details' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Campaign actions' }));
+    await userEvent.click(await screen.findByRole('menuitem', { name: 'Campaign details' }));
     await userEvent.click(screen.getByText('About draft history'));
     expect(await screen.findByText(/They do not change the published version or shared destination settings/)).toBeVisible();
   });
@@ -1656,10 +1662,10 @@ it('prevents opening a second save path while a draft save is pending', async ()
   await open();
   await userEvent.type(await screen.findByLabelText('Name'), ' updated');
   await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
-  expect(screen.getByRole('button', { name: 'Campaign details' })).toBeDisabled();
+  expect(screen.getByRole('button', { name: 'Campaign actions' })).toBeDisabled();
   expect(screen.getByRole('button', { name: 'Back to Campaigns' })).toBeDisabled();
   accept(optin({ name: 'Welcome discount updated' }));
-  await waitFor(() => expect(screen.getByRole('button', { name: 'Campaign details' })).toBeEnabled());
+  await waitFor(() => expect(screen.getByRole('button', { name: 'Campaign actions' })).toBeEnabled());
 });
 
 

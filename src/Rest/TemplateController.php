@@ -212,7 +212,7 @@ final class TemplateController implements RestController
 
         $transfer = PictureTransfer::prepare(
             $this->vocabulary->normalize($request->get_param('template')),
-            is_string($source) ? $this->templates->find($source) : null,
+            is_string($source) ? $this->templates->find($source) : ['tree' => ['steps' => []], 'tokens' => []],
             ['tree' => $entry['tree'], 'tokens' => $entry['tokens']]
         );
         return new WP_REST_Response($config['template'] + ['transfer' => [

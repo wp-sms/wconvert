@@ -2207,3 +2207,12 @@ details[open]>summary>.wconvert-editor-disclosure-icon { transform: rotate(180de
 .wconvert-flow-node__rules { display: grid; gap: 3px; padding: 10px 15px; border-block-start: 1px solid var(--border); background: var(--surface); font-size: var(--text-label); }
 .wconvert-flow-node__rules span { overflow-wrap: anywhere; color: var(--muted-foreground); }
 .wconvert-flow-node__rules button { justify-self: start; padding: 1px 0; border: 0; background: none; color: var(--primary); text-decoration: underline; cursor: pointer; }
+
+/* File transfer uses the existing picker shell and one document scroll region. */
+.wconvert-transfer { display: flex; flex-direction: column; gap: 1rem; }
+.wconvert-transfer .wconvert-preview-frame { min-block-size: 20rem; flex: 0 0 28rem; }
+.wconvert-transfer__file, .wconvert-transfer__link { display: flex; flex-direction: column; gap: .5rem; }
+.wconvert-transfer__link input { inline-size: 100%; min-inline-size: 0; }
+.wconvert-transfer__review { display: flex; align-items: baseline; gap: .5rem; }
+.wconvert-transfer ul { list-style: disc; padding-inline-start: 1.25rem; }
+.wconvert-transfer li, .wconvert-transfer p { overflow-wrap: anywhere; }

@@ -58,6 +58,12 @@ is introduced.
 
 ## Choose content before applying a design
 
+**Extended by [ADR 0113](0113-template-files-replace-only-reviewed-draft-designs.md):**
+direct file imports default to **Use file content**, with **Keep my current
+content** as an alternative. Imported snapshots clear the library source ID;
+later library changes still carry their content using the existing matching rules.
+The library picker default below remains unchanged.
+
 Inspecting an installed design defaults to **Keep my content**. The alternative
 is **Use this design's sample content**. Both choices prepare the actual
 normalized candidate through the existing read-only `POST /templates/snapshot`

@@ -94,6 +94,7 @@ final class NothingTranslatesAtBootTest extends TestCase
         OptinController::class => '/optins',
         TemplateController::class => '/templates',
         \WConvert\Rest\TemplateCatalogController::class => '/template-catalog',
+        \WConvert\Rest\TemplateTransferController::class => '/template-transfer',
         RuleController::class => '/rules',
         ThemeController::class => '/theme',
         GoalController::class => '/goals',

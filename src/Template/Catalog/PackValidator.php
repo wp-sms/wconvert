@@ -25,13 +25,40 @@ final class PackValidator
     public const CAPABILITIES = ['template-tree:2', 'success-actions:1', 'enquiry-choice:1', 'campaign-starts:1', 'capture-journey:1', 'question-journey:1', 'pack-images:1'];
 
     /** @param array<string, mixed> $manifest */
-    public function __construct(private readonly array $manifest, private readonly TemplateVocabulary $vocabulary, private readonly Tier $installedTier = Tier::Free)
+    public function __construct(private readonly array $manifest, private readonly TemplateVocabulary $vocabulary, private readonly Tier $installedTier = Tier::Free, private readonly bool $portable = false)
     {
     }
 
     public static function shipping(): self
     {
         return new self(TemplateManifest::load(), TemplateVocabulary::fromManifest(), (new WpProPresence())->installedTier());
+    }
+
+    /** Merchant files share structural validation, not catalog placeholder policy.
+     * @param array<string, mixed> $design
+     * @return array<string, mixed>
+     */
+    public function portable(array $design): array
+    {
+        self::check(is_array($design['tree'] ?? null) && is_array($design['tokens'] ?? null), __('This design has an invalid tree or styles.', 'wconvert'));
+        $tier = CaptureJourney::requiresPremium($design['tree'] ?? []) || !in_array($design['display_type'] ?? '', ['popup', 'inline'], true) ? Tier::Basic : Tier::Free;
+        $entry = ['id' => 'imported', 'name' => $design['name'] ?? '', 'display_type' => $design['display_type'] ?? '',
+            'tier' => $tier->value, 'tree' => $design['tree'] ?? [], 'tokens' => $design['tokens'] ?? []];
+        $reader = new self($this->manifest, $this->vocabulary, $this->installedTier, true);
+        $pack = $reader->decode(json_encode(['schema' => 1, 'id' => 'transfer', 'version' => '1.0.0', 'name' => 'Transfer', 'description' => '',
+            'requires' => ['plugin' => WCONVERT_VERSION, 'tree' => TemplateTree::VERSION, 'capabilities' => self::CAPABILITIES],
+            'assets' => [], 'templates' => [$entry]], JSON_THROW_ON_ERROR));
+        return array_intersect_key($pack['templates'][0], array_flip(['name', 'display_type', 'tree', 'tokens']));
+    }
+
+    /** Only typed merchant action URLs are permitted, never markup or controls. */
+    public static function portableUrl(mixed $value): void
+    {
+        self::check(is_string($value) && strlen($value) <= 2048 && !preg_match('/[<>"\\\\\x00-\x20]/', $value), __('This design contains an invalid link.', 'wconvert'));
+        if (preg_match('/^([a-z][a-z0-9+.-]*):/i', $value, $match)) {
+            self::check(in_array(strtolower($match[1]), ['http', 'https', 'mailto', 'tel'], true), __('This design contains an unsupported link.', 'wconvert'));
+        }
+        self::check(!str_starts_with($value, '//'), __('Use an explicit https address for this link.', 'wconvert'));
     }
 
     /** @return array<string, mixed> */
@@ -58,6 +85,8 @@ final class PackValidator
         // Schema 1 accepts placeholders; schema 2 binds verified raster objects.
         // Authored URLs, font downloads and executable files stay prohibited.
         self::check(is_array($pack['assets'] ?? null), __('Invalid image manifest.', 'wconvert'));
+        PackValidator::check(array_is_list($pack['assets']), __('Invalid image manifest.', 'wconvert'));
+        foreach ($pack['assets'] as $asset) PackValidator::check(is_array($asset), __('Invalid image manifest.', 'wconvert'));
         VerifiedAssets::validate($pack['assets']);
         self::check($pack['schema'] === 2 || ($pack['assets'] === [] && !isset($pack['image_bindings'])), __('Images require pack schema 2.', 'wconvert'));
         $templates = $pack['templates'] ?? null;
@@ -80,9 +109,9 @@ final class PackValidator
                 self::check($tier !== Tier::Free && $this->installedTier->includes(Tier::Basic), __('This question journey needs Pro.', 'wconvert'));
                 $requiredCapabilities[] = 'question-journey:1';
             }
-            $this->keys($tree, ['v', 'steps', 'submissions']);
-            self::check(($tree['v'] ?? null) === TemplateTree::VERSION, __('Update required: this design uses a newer vocabulary.', 'wconvert'));
-            self::check(is_array($tree['steps'] ?? null) && array_is_list($tree['steps']) && count($tree['steps']) >= 1 && count($tree['steps']) <= 7, __('This design has an invalid screen list.', 'wconvert'));
+            $this->keys($tree, $this->portable ? ['v', 'steps', 'submissions', 'graph'] : ['v', 'steps', 'submissions']);
+            self::check(($tree['v'] ?? null) === TemplateTree::VERSION || ($this->portable && ($tree['v'] ?? null) === 3), __('Update required: this design uses a newer vocabulary.', 'wconvert'));
+            self::check(is_array($tree['steps'] ?? null) && array_is_list($tree['steps']) && count($tree['steps']) >= 1 && count($tree['steps']) <= ($this->portable && ($tree['v'] ?? null) === 3 ? 256 : 7), __('This design has an invalid screen list.', 'wconvert'));
             $nodeIds = [];
             $count = 0;
             foreach ($tree['steps'] as $step) {
@@ -110,7 +139,8 @@ final class PackValidator
                         $this->words($result['heading'] ?? null, 200);
                         $this->words($result['body'] ?? '', 500);
                         if (isset($result['link_label'])) $this->words($result['link_label'], 120);
-                        if (isset($result['href'])) self::check($result['href'] === '', __('Pack links and pictures must be supplied by the site owner.', 'wconvert'));
+                        if (isset($result['href']) && $this->portable) self::portableUrl($result['href']);
+                        if (isset($result['href']) && !$this->portable) self::check($result['href'] === '', __('Pack links and pictures must be supplied by the site owner.', 'wconvert'));
                         self::check(($result['product_ids'] ?? []) === [], __('Choose products from this site after installing the pack.', 'wconvert'));
                         if (isset($result['when'])) $this->condition($result['when']);
                     }
@@ -123,17 +153,40 @@ final class PackValidator
             }
             self::check(!in_array(TemplateForm::issue($template), ['identifier', 'choices'], true), __('This design needs a usable email or phone capture form.', 'wconvert'));
             $acts = ConvertingAct::offeredIn($tree);
-            self::check(count($acts) === 1 && \WConvert\Template\CaptureJourney::issue($tree) === null, __('This design does not provide one valid conversion flow.', 'wconvert'));
-            $source = new class ($template) implements TemplateSource {
-                /** @param array<string, mixed> $entry */
-                public function __construct(private readonly array $entry) {}
-                public function entries(): array { return [$this->entry]; }
-            };
-            $library = TemplateLibrary::from($this->vocabulary, $source);
-            self::check(count($library->all()) === 1, __('This design does not provide one valid conversion flow.', 'wconvert'));
-            $pack['templates'][$position] = array_values($library->all())[0];
+            $graph = $this->portable && ($tree['v'] ?? null) === 3;
+            if ($graph) {
+                self::check(is_array($tree['graph'] ?? null), __('This design has no journey connections.', 'wconvert'));
+                $this->keys($tree['graph'], ['entry', 'edges']);
+                foreach ($tree['graph']['edges'] ?? [] as $edge) {
+                    self::check(is_array($edge), __('Invalid journey connection.', 'wconvert'));
+                    $this->keys($edge, ['id', 'from', 'to', 'kind', 'when']);
+                    if (isset($edge['when'])) $this->condition($edge['when']);
+                }
+            }
+            // Draft links may be unfinished, but must not short-circuit structural checks.
+            $checking = $this->portable ? TemplateTree::rewrittenIn(['template' => ['tree' => $tree]], static function (array $node): array {
+                if (($node['type'] ?? '') === 'followup') {
+                    if (trim((string) ($node['href'] ?? '')) === '') $node['href'] = 'https://example.invalid/resource';
+                    if (trim((string) ($node['label'] ?? '')) === '') $node['label'] = 'Resource';
+                }
+                return $node;
+            })['template']['tree'] : $tree;
+            $issue = $graph ? \WConvert\Template\GraphCaptureContract::issue($checking, in_array('result', array_column($tree['steps'], 'kind'), true) ? 'find_match' : 'grow_email_list') : CaptureJourney::issue($checking);
+            self::check(count($acts) === 1 && $issue === null, __('This design does not provide one valid conversion flow.', 'wconvert'));
+            if ($this->portable) {
+                $pack['templates'][$position] = array_replace($template, $this->vocabulary->normalize($template));
+            } else {
+                $source = new class ($template) implements TemplateSource {
+                    /** @param array<string, mixed> $entry */
+                    public function __construct(private readonly array $entry) {}
+                    public function entries(): array { return [$this->entry]; }
+                };
+                $library = TemplateLibrary::from($this->vocabulary, $source);
+                self::check(count($library->all()) === 1, __('This design does not provide one valid conversion flow.', 'wconvert'));
+                $pack['templates'][$position] = array_values($library->all())[0];
+            }
             $snapshot = ['tree' => $this->vocabulary->withoutCopy($tree), 'tokens' => $template['tokens'] ?? []];
-            self::check(strlen((string) gzencode((string) json_encode($snapshot))) <= DesignBudget::PER_DESIGN, __('This design exceeds the size budget.', 'wconvert'));
+            self::check($this->portable || strlen((string) gzencode((string) json_encode($snapshot))) <= DesignBudget::PER_DESIGN, __('This design exceeds the size budget.', 'wconvert'));
         }
         if (array_key_exists('playbooks', $pack)) {
             $requiredCapabilities[] = 'campaign-starts:1';
@@ -181,16 +234,18 @@ final class PackValidator
                 $this->bag($value);
             } elseif ($key === 'link') {
                 self::check(is_array($value), __('This design has an invalid link label.', 'wconvert'));
-                $this->keys($value, ['label']);
+                $this->keys($value, $this->portable ? ['label', 'href'] : ['label']);
+                if ($this->portable && isset($value['href'])) self::portableUrl($value['href']);
                 $this->words($value['label'] ?? null, 200);
             } elseif ($key === 'options') {
                 self::check((($node['name'] ?? null) === 'interest' || $type === 'question') && is_array($value)
                     && ($type === 'question' || $value !== []) && $this->vocabulary->choiceOptions($value) === $value, __('This design has invalid choice options.', 'wconvert'));
                 foreach ($value as $option) $this->words($option['label'], 200);
             } elseif (in_array($key, ['href', 'src'], true)) {
-                self::check($value === '', __('Pack links and pictures must be supplied by the site owner.', 'wconvert'));
+                if ($this->portable && $key === 'href') self::portableUrl($value);
+                else self::check($value === '', __('Pack links and pictures must be supplied by the site owner.', 'wconvert'));
             } elseif (in_array($key, ['hidden', 'required', 'copy', 'notch'], true)) {
-                self::check(is_bool($value), __('This design has an invalid switch value.', 'wconvert'));
+                self::check(is_bool($value) || ($this->portable && $key === 'notch' && in_array($value, ['true', 'false'], true)), __('This design has an invalid switch value.', 'wconvert'));
             } elseif (isset($definition['choices'][$key])) {
                 self::check(is_string($value) || is_int($value) || is_float($value), __('This design has an invalid setting.', 'wconvert'));
                 self::check(in_array((string) $value, $definition['choices'][$key], true), __('Update required: this design uses an unknown setting.', 'wconvert'));
@@ -212,7 +267,7 @@ final class PackValidator
                 && trim($node['label']) !== '', __('This design has an invalid question.', 'wconvert'));
         }
         if ($type === 'button') self::check(isset($node['action']), __('This design has no button action.', 'wconvert'));
-        if ($type === 'consent') self::check(($node['hidden'] ?? null) === true, __('Pack consent must start hidden.', 'wconvert'));
+        if ($type === 'consent' && !$this->portable) self::check(($node['hidden'] ?? null) === true, __('Pack consent must start hidden.', 'wconvert'));
     }
 
     /** A flat, bounded condition. The journey validator checks earlier-question references. */
@@ -274,6 +329,7 @@ final class PackValidator
         return is_string($value) && preg_match('/^(0|[1-9][0-9]{0,3})\.(0|[1-9][0-9]{0,3})\.(0|[1-9][0-9]{0,3})$/D', $value) === 1;
     }
 
+    /** @phpstan-assert true $valid */
     public static function check(bool $valid, string $message): void
     {
         if (!$valid) throw new RuntimeException($message);

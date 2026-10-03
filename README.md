@@ -20,6 +20,25 @@ React to live campaign opening, closing, and first lead capture with the
 [JavaScript events API](docs/guides/javascript-events.md). Campaign details
 include a copy button for the existing campaign/variant ID.
 
+## Import and export designs
+
+In the campaign editor, open **Campaign actions → Export design** to download the
+current design, including unsaved changes, as a `.wconvert.zip`. Supported local
+PNG/JPEG/WebP images travel with it. Unavailable images need explicit omission.
+
+Use **Campaign actions → Import design**, choose the file, and review its desktop
+and mobile preview. File content is the default; **Keep my current content** fits
+current words and pictures into matching slots. Review links before applying.
+**Apply to draft** is undoable and does not save or publish the campaign. Imported
+pictures become normal Media Library items and remain there after Undo.
+
+Transport is available in Free; designs using paid formats/journeys still need
+Pro. ZIP support and private temporary storage are required on the server.
+Maximum ZIP size is 25 MiB or the host's lower limit. No campaign settings,
+connections, leads or history are exported. Fonts, remote-only pictures, SVG
+uploads and linked documents are not embedded. See the
+[contract and limits](docs/adr/0113-template-files-replace-only-reviewed-draft-designs.md).
+
 ## Spam protection
 
 Settings → Spam protection offers optional Cloudflare Turnstile Managed,

@@ -223,7 +223,8 @@ it('copies current edits to another Goal while leaving a published original unto
   const onCreated = vi.fn();
   render(<OptinBuilder id={ID} onClose={vi.fn()} onCreated={onCreated} />);
   await userEvent.type(await screen.findByRole('textbox', { name: 'Name' }), ' revised');
-  await userEvent.click(screen.getByRole('button', { name: 'Campaign details' }));
+  await userEvent.click(screen.getByRole('button', { name: 'Campaign actions' }));
+  await userEvent.click(await screen.findByRole('menuitem', { name: 'Campaign details' }));
   await userEvent.click(screen.getByRole('button', { name: 'Duplicate for another goal' }));
   await userEvent.click(within(cardFor('Promote a sale or offer')).getByRole('button', { name: 'Use this goal' }));
   expect(screen.getByText(/results start at zero/)).toBeInTheDocument();
@@ -235,7 +236,8 @@ it('copies current edits to another Goal while leaving a published original unto
 
 /** Open the picker from the band. */
 const changeGoal = async () => {
-  await userEvent.click(await screen.findByRole('button', { name: 'Campaign details' }));
+  await userEvent.click(await screen.findByRole('button', { name: 'Campaign actions' }));
+  await userEvent.click(await screen.findByRole('menuitem', { name: 'Campaign details' }));
   await userEvent.click(await screen.findByRole('button', { name: 'Change goal' }));
 };
 
@@ -246,7 +248,8 @@ const changeGoal = async () => {
 describe('the goal in Optin details', () => {
   it('says what this Optin is for, and what its number is called', async () => {
     open();
-    await userEvent.click(await screen.findByRole('button', { name: 'Campaign details' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Campaign actions' }));
+    await userEvent.click(await screen.findByRole('menuitem', { name: 'Campaign details' }));
 
     expect(await within(screen.getByRole('dialog')).findByText('Grow my email list · counts Conversions')).toBeInTheDocument();
   });
@@ -261,7 +264,8 @@ describe('the goal in Optin details', () => {
     goals.listGoals.mockReturnValue(new Promise(() => undefined));
 
     open();
-    await userEvent.click(await screen.findByRole('button', { name: 'Campaign details' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Campaign actions' }));
+    await userEvent.click(await screen.findByRole('menuitem', { name: 'Campaign details' }));
 
 
 
@@ -281,7 +285,8 @@ describe('the goal in Optin details', () => {
     goals.listGoals.mockRejectedValue(new Error('nope'));
 
     open();
-    await userEvent.click(await screen.findByRole('button', { name: 'Campaign details' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Campaign actions' }));
+    await userEvent.click(await screen.findByRole('menuitem', { name: 'Campaign details' }));
 
     expect(await within(screen.getByRole('dialog')).findByText('grow_email_list')).toBeInTheDocument();
   });
@@ -295,7 +300,8 @@ describe('the goal in Optin details', () => {
     goals.listGoals.mockResolvedValue([GOALS[0]]);
 
     open();
-    await userEvent.click(await screen.findByRole('button', { name: 'Campaign details' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Campaign actions' }));
+    await userEvent.click(await screen.findByRole('menuitem', { name: 'Campaign details' }));
 
     await within(screen.getByRole('dialog')).findByText('Grow my email list · counts Conversions');
 
