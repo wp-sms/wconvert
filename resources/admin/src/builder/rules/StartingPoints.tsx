@@ -40,7 +40,7 @@ export function StartingPoints({ bundles, onApply, describe }: StartingPointsPro
   if (bundles.length === 0) return null;
   const labels = sectionLabels();
   const words = search.trim().toLocaleLowerCase().split(/\s+/).filter(Boolean);
-  const shown = bundles.filter(bundle => (section === 'all' || affectedSections(bundle).includes(section))
+  const shown = bundles.filter(bundle => renderingFor(bundle.availability, 'settings_list') !== 'hide' && (section === 'all' || affectedSections(bundle).includes(section))
     && words.every(word => [bundle.label, bundle.description, sectionsIn(bundle)].join(' ').toLocaleLowerCase().includes(word)));
 
   return <Dialog open={open} onOpenChange={next => {

@@ -1,3 +1,4 @@
+import { renderingFor } from '../goals/availability';
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import { LayoutTemplate, SlidersHorizontal, X } from 'lucide-react';
@@ -76,7 +77,9 @@ export function TemplatePicker({
         const position = recommended.indexOf(id);
         return position < 0 ? recommended.length : position;
       };
-      return index.templates.filter((entry) => entry.display_type === displayType)
+      // Hidden members leave the counts and facets too, not only the cards
+      // (ADR 0116).
+      return index.templates.filter((entry) => entry.display_type === displayType && renderingFor(entry.availability, 'settings_list') !== 'hide')
         .sort((a, b) => rank(a.id) - rank(b.id));
     },
     [index.templates, displayType],
@@ -131,7 +134,7 @@ export function TemplatePicker({
         <div className="wconvert-picker__controls wconvert-toolbar">
           <div className="wconvert-picker__search-row">
             <PickerSearch label={__('Search designs','wconvert')} value={query} disabled={busy} onChange={value=>{setQuery(value);setPage(0);}} placeholder={__('Search a need, e.g. a guide or quote…','wconvert')} />
-            {onFormatChange && <label className="wconvert-picker__format text-note">{__('Format','wconvert')}<select className="wconvert-picker__select" value={displayType} onChange={event=>{setPage(0);setCompared([]);setComparing(false);onFormatChange(event.target.value);}}>{displayTypeOptions().map(({value,label})=><option key={value} value={value}>{label}</option>)}</select></label>}
+            {onFormatChange && <label className="wconvert-picker__format text-note">{__('Format','wconvert')}<select className="wconvert-picker__select" value={displayType} onChange={event=>{setPage(0);setCompared([]);setComparing(false);onFormatChange(event.target.value);}}>{displayTypeOptions(displayType).map(({value,label})=><option key={value} value={value}>{label}</option>)}</select></label>}
             {fit.outcome && <select className="wconvert-picker__select" aria-label={__('Design fit', 'wconvert')}
               value={goalFitOnly ? 'goal' : 'all'} onChange={(event) => setGoalFitOnly(event.target.value === 'goal')}>
               <option value="goal">{goalLabel

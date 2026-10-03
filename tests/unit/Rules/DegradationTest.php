@@ -361,4 +361,29 @@ final class DegradationTest extends TestCase
 
         $this->assertSame($entry, InstalledRules::free()->intoPayload($entry));
     }
+
+    // ========================================================================
+    // A QUESTION JOURNEY RUNS WHERE PRO'S MODULE REGISTERED IT (ADR 0116).
+    // ========================================================================
+
+    /**
+     * The registration is the question, not the rung: the same Pro install
+     * with every rule type supplied still suspends a journey until the
+     * journeys module has said it is there.
+     */
+    public function testAJourneyIsSuspendedUntilTheJourneysModuleRegisters(): void
+    {
+        $entry = \WConvert\Tests\Unit\Support\DisplayFixture::entry(['id' => '01A', 'triggers' => [['type' => 'page_load']], 'conditions' => []]);
+        $entry['template'] = ['tree' => ['v' => 2, 'steps' => [['id' => 's1', 'kind' => 'result', 'content' => ['type' => 'stack', 'children' => []]]], 'submissions' => []]];
+        $withPro = InstalledRules::withPro();
+
+        $this->assertSame('journey_questions', $withPro->suspendedIn($entry));
+
+        \WConvert\Tests\Unit\Support\Journeys::on();
+        try {
+            $this->assertNull($withPro->suspendedIn($entry));
+        } finally {
+            \WConvert\Tests\Unit\Support\Journeys::off();
+        }
+    }
 }

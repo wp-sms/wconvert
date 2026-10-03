@@ -2,11 +2,22 @@
 namespace WConvert\Tests\Unit\Template\Transfer;
 
 use PHPUnit\Framework\TestCase;
+use WConvert\Tests\Unit\Support\Journeys;
 use WConvert\Template\Transfer\DesignPackage;
 use WConvert\Template\Catalog\PackValidator;
 
 final class DesignPackageTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        Journeys::on();
+    }
+
+    protected function tearDown(): void
+    {
+        Journeys::off();
+    }
+
     public function testMerchantLinksAndVisibleConsentSurviveWhileUnsafeLinksAreRefused(): void
     {
         $design = json_decode((string) file_get_contents(WCONVERT_DIR . '/resources/templates/library/reading-slip.json'), true);

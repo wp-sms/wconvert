@@ -1,4 +1,4 @@
-import { afterEach, describe, expect, it } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import {
   renderingFor,
   tierName,
@@ -20,6 +20,16 @@ import ladder from '../../tiers.json';
 describe('what a surface does with an availability', () => {
   const SURFACES: Surface[] = ['creation_flow', 'settings_list'];
 
+  // A paid install unless a test says otherwise: a free one is shown no
+  // locked member at all (ADR 0116), asserted on its own below.
+  beforeEach(() => {
+    window.wconvertAdmin = { exportUrl: '', installedTier: 'basic' };
+  });
+
+  afterEach(() => {
+    delete window.wconvertAdmin;
+  });
+
   it.each(SURFACES)('offers a ready member on %s', (surface) => {
     expect(renderingFor('ready', surface)).toBe('offer');
   });
@@ -30,6 +40,24 @@ describe('what a surface does with an availability', () => {
    */
   it.each(SURFACES)('upsells a locked member on %s', (surface) => {
     expect(renderingFor('locked', surface)).toBe('upsell');
+  });
+
+  /**
+   * **A free install hides every locked member, on every surface** (ADR 0116).
+   * wp.org reads a free plugin full of padlocks as trialware; absent boot data
+   * reads as free, because the safe failure is to hide an upsell.
+   */
+  it.each([
+    ['an explicit free install', { exportUrl: '', installedTier: 'free' as const }],
+    ['absent boot data', undefined],
+  ])('hides a locked member on every surface for %s', (_case, settings) => {
+    window.wconvertAdmin = settings;
+
+    for (const surface of SURFACES) {
+      expect(renderingFor('locked', surface)).toBe('hide');
+    }
+    expect(renderingFor('ready', 'settings_list')).toBe('offer');
+    expect(renderingFor('unavailable', 'settings_list')).toBe('explain');
   });
 
   /**

@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, onTestFinished, vi } from 'vitest';
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
@@ -545,11 +545,14 @@ describe('an A/B test on the list', () => {
    */
   it('marks A/B testing as premium rather than offering a control that would 404', async () => {
     optins.listOptins.mockResolvedValue([OPTIN]);
+    // A paid install whose rung lacks A/B testing (ADR 0116).
     window.wconvertAdmin = {
       exportUrl: '',
+      installedTier: 'basic',
       variants: { availability: 'locked', tier: 'pro' },
       tiers: { pro: { name: 'Pro', product_name: 'WConvert Pro' } },
     };
+    onTestFinished(() => { delete window.wconvertAdmin; });
 
     render(<OptinList onEdit={() => undefined} />);
 
@@ -559,6 +562,25 @@ describe('an A/B test on the list', () => {
       await screen.findByText('A/B testing is available with WConvert Pro.'),
     ).toBeInTheDocument();
     expect(screen.queryByRole('menuitem', { name: /variant/ })).not.toBeInTheDocument();
+  });
+
+  /** A free install's menu carries no A/B item at all — not even a note (ADR 0116). */
+  it('says nothing about A/B testing on a free install', async () => {
+    optins.listOptins.mockResolvedValue([OPTIN]);
+    window.wconvertAdmin = {
+      exportUrl: '',
+      installedTier: 'free',
+      variants: { availability: 'locked', tier: 'pro' },
+    };
+    onTestFinished(() => { delete window.wconvertAdmin; });
+
+    render(<OptinList onEdit={() => undefined} />);
+
+    await openTheMenuOn(/More actions/);
+
+    expect(await screen.findByRole('menuitem', { name: 'Duplicate as draft' })).toBeInTheDocument();
+    expect(screen.queryByText(/A\/B testing/)).not.toBeInTheDocument();
+    expect(screen.queryByRole('menuitem', { name: /A\/B test|variant/ })).not.toBeInTheDocument();
   });
 
   /**

@@ -357,7 +357,7 @@ sample content** (ADR 0075), so it teaches the house style and must be truthful.
 
 **A Pro design costs two things a free one does not.** A metadata-only stub in
 `resources/templates/locked.json` — the one place a facet is *written* rather
-than derived — and a live page at `https://wconvert.com/designs/<slug>/` for
+than derived — and a live page at `https://wconvert.io/designs/<slug>/` for
 its `preview_url`, because the free install shows a card with a *"See this
 design"* link and a dead link is worse than one fewer card.
 

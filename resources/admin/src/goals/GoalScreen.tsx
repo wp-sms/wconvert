@@ -30,7 +30,7 @@ import { SetupPreview } from '../discovery/SetupPreview';
 import { SetupComparison } from '../discovery/SetupComparison';
 import type { Collection } from '../discovery/api';
 import { displayTypeLabel, displayTypeOptions } from '../displayTypes';
-import { tierProductName } from './availability';
+import { renderingFor, tierProductName } from './availability';
 import { OptionStrip } from '../shell/OptionStrip';
 import { matchesSearch } from '../discovery/search';
 
@@ -207,7 +207,9 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins }: GoalScree
   }
 
   const selectedOccasion = picker.data?.occasions.items.find(item => item.id === occasion);
-  const allEntries = playbooks.status === 'ready' ? playbooks.data : [];
+  // A setup this install could only buy is not a setup on a free install
+  // (ADR 0116); a paid one still sees the next rung's, explained.
+  const allEntries = playbooks.status === 'ready' ? playbooks.data.filter((entry) => renderingFor(entry.availability ?? 'ready', 'settings_list') !== 'hide') : [];
   const collections = new Map(allEntries.flatMap((entry) => entry.collection ? [[entry.collection.id, entry.collection.name] as const] : []));
   const businesses = new Map(allEntries.flatMap((entry) => (entry.business_types ?? []).map(({ id, label }) => [id, label] as const)));
   const availableFormats = new Set(allEntries.map(startingPointDisplayType));

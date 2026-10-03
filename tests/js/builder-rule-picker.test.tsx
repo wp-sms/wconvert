@@ -1,6 +1,6 @@
 import { cleanup, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { afterEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, describe, expect, it, onTestFinished, vi } from 'vitest';
 import { AddRule } from '../../resources/admin/src/builder/rules/AddRule';
 import { ruleTypes } from './support/rule-types';
 
@@ -45,6 +45,9 @@ describe('searchable rule picker', () => {
   });
 
   it('keeps missing dependencies and paid rules searchable as noninteractive explanations', async () => {
+    // A paid install meeting a higher rung's rules (ADR 0116).
+    window.wconvertAdmin = { exportUrl: '', installedTier: 'basic' };
+    onTestFinished(() => { delete window.wconvertAdmin; });
     const types = ruleTypes({ elite: 'unavailable', pro: 'locked' });
     render(<AddRule axis={[...types.triggers, ...types.conditions]} label="Add" onAdd={vi.fn()} />);
     await userEvent.click(screen.getByRole('button', { name: 'Add' }));
@@ -57,6 +60,16 @@ describe('searchable rule picker', () => {
     const premium = screen.getByRole('group', { name: 'With WConvert Pro' });
     expect(within(premium).getByText('click_element')).toBeInTheDocument();
     expect(within(premium).queryByRole('button')).not.toBeInTheDocument();
+  });
+
+  /** A free install is offered no paid rule, not even as an explanation (ADR 0116). */
+  it('lists no paid rule on a free install, and still explains a missing plugin', async () => {
+    const types = ruleTypes({ elite: 'unavailable', pro: 'locked' });
+    render(<AddRule axis={[...types.triggers, ...types.conditions]} label="Add" onAdd={vi.fn()} />);
+    await userEvent.click(screen.getByRole('button', { name: 'Add' }));
+    expect(screen.queryByRole('group', { name: 'With WConvert Pro' })).not.toBeInTheDocument();
+    expect(screen.queryByText('click_element')).not.toBeInTheDocument();
+    expect(screen.getByRole('group', { name: 'Needs WooCommerce' })).toBeInTheDocument();
   });
 
   it('keeps vertical keyboard navigation and the portaled content in RTL', async () => {

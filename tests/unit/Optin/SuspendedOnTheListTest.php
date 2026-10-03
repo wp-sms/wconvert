@@ -205,7 +205,8 @@ final class SuspendedOnTheListTest extends TestCase
 
         $this->assertNotNull($reason);
         $this->assertStringContainsString('Suspended', $reason);
-        $this->assertStringContainsString('WConvert Pro', $reason, 'the cause the merchant can act on');
+        $this->assertStringContainsString('Clicks a button or link', $reason, 'the rule the merchant can act on');
+        $this->assertStringNotContainsString('WConvert Pro', $reason, 'a free install names no product (ADR 0116)');
     }
 
     /**
@@ -280,16 +281,18 @@ final class SuspendedOnTheListTest extends TestCase
     }
 
     /**
-     * The same Optin on a free install with a store: the cause is the TIER,
-     * which is the one cart case we may sell against.
+     * The same Optin on a free install with a store: the cause is the install,
+     * not the site — and it is stated without selling anything (ADR 0116).
      */
-    public function testWithAStoreAndNoProTheCauseIsTheTier(): void
+    public function testWithAStoreAndNoProTheCauseIsTheInstall(): void
     {
         $id = $this->publish([['type' => 'page_load'], ['type' => 'cart_has_items']]);
 
         $reason = (string) self::suspensionOf($this->listedOn(false), $id);
 
-        $this->assertStringContainsString('WConvert Pro', $reason);
+        $this->assertStringContainsString('isn’t available on this site', $reason);
+        $this->assertStringNotContainsString('WooCommerce', $reason);
+        $this->assertStringNotContainsString('WConvert Pro', $reason);
     }
 
     /**

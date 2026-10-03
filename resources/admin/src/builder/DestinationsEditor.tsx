@@ -14,7 +14,7 @@ import {
   RegionHeader,
 } from '../shell/Region';
 import { RowsSkeleton } from '../shell/RowsSkeleton';
-import { tierProductName } from '../goals/availability';
+import { isFreeInstall, tierProductName } from '../goals/availability';
 import { outcomeHandoffIssue, type OutcomeContract } from '../goals/outcome';
 import { ProviderMark } from '../destinations/ProviderMark';
 import { targetSaid } from '../destinations/settings';
@@ -186,7 +186,9 @@ export function DestinationsEditor({
                           </Description>}
                           {destination.availability !== 'ready' && (
                             <Description as="span" id={`${control}-availability`} className="block text-warning">
-                              {destination.availability === 'locked'
+                              {destination.availability === 'locked' && isFreeInstall()
+                                ? __('This destination type isn’t available on this site, so captures are kept here, not sent.', 'wconvert')
+                                : destination.availability === 'locked'
                                 ? sprintf(__('Needs %s, so captures are kept here, not sent. Re-push from Destinations once it runs.', 'wconvert'), tierProductName(type?.tier))
                                 : sprintf(__('Needs %s on this site, so captures are kept here, not sent. Re-push from Destinations once it runs.', 'wconvert'), type?.requires_label ?? __('something this site does not have', 'wconvert'))}
                             </Description>

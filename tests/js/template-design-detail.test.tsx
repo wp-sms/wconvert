@@ -4,7 +4,7 @@ import { resolve } from 'node:path';
 import { act, render, screen, waitFor, within } from '@testing-library/react';
 import type { ComponentProps } from 'react';
 import userEvent from '@testing-library/user-event';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, onTestFinished, vi } from 'vitest';
 import type { Mounted } from '../../resources/renderer/src/mount';
 import type { Template } from '../../resources/renderer/src/types';
 import type { TemplateIndexEntry, TemplateLabelsWithFacets } from '../../resources/admin/src/templates/api';
@@ -363,10 +363,13 @@ describe('gallery inspection actions', () => {
   });
 
   it('preserves the external link for a locked design', () => {
-    render(<Gallery entries={[{ ...ENTRY, availability: 'locked', tier: 'pro', preview_url: 'https://wconvert.com/designs/example/' }]}
+    // A paid install; a free one is shown no locked design (ADR 0116).
+    window.wconvertAdmin = { exportUrl: '', installedTier: 'basic' };
+    onTestFinished(() => { delete window.wconvertAdmin; });
+    render(<Gallery entries={[{ ...ENTRY, availability: 'locked', tier: 'pro', preview_url: 'https://wconvert.io/designs/example/' }]}
       trees={new Map()} labels={LABELS} chosen={undefined} fit={FIT} busy={false}
       onChoose={vi.fn()} onNear={vi.fn()} onPreview={vi.fn()} />);
-    expect(screen.getByRole('link', { name: 'See this design' })).toHaveAttribute('href', 'https://wconvert.com/designs/example/');
+    expect(screen.getByRole('link', { name: 'See this design' })).toHaveAttribute('href', 'https://wconvert.io/designs/example/');
     expect(screen.queryByRole('button', { name: 'Preview design' })).not.toBeInTheDocument();
   });
 });

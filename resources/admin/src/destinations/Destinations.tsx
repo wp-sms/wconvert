@@ -77,7 +77,7 @@ import {
   targetSaid,
   toDraft,
 } from './settings';
-import { renderingFor, tierName, tierProductName } from '../goals/availability';
+import { isFreeInstall, renderingFor, tierName, tierProductName } from '../goals/availability';
 import { issueCount } from './issueCount';
 
 /**
@@ -697,7 +697,11 @@ function Configured({
           and a merchant is offered a licence we do not sell (ADR 0026).
         */
         description={
-          destination.availability === 'locked'
+          // A free install keeps the saved route and names no product
+          // (ADR 0116) — it only ever reaches `locked` after Pro was removed.
+          destination.availability === 'locked' && isFreeInstall()
+            ? __('This destination type isn’t available on this site, so captures are not being sent.', 'wconvert')
+            : destination.availability === 'locked'
             ? sprintf(
                 /* translators: %s: the product that supplies it, e.g. “WConvert Pro”. */
                 __('A %s feature this install does not have, so captures are not being sent.', 'wconvert'),
@@ -720,6 +724,8 @@ function Configured({
         trailing={
           failing ? (
             <Badge variant="destructive">{__('Failing', 'wconvert')}</Badge>
+          ) : destination.availability === 'locked' && isFreeInstall() ? (
+            <Badge variant="secondary">{__('Not available', 'wconvert')}</Badge>
           ) : destination.availability === 'locked' ? (
             <Badge variant="secondary">
               <Lock aria-hidden="true" />
@@ -1055,7 +1061,7 @@ function Configured({
  * requirements together, without making the merchant hunt below saved routes.
  */
 function Types({
-  types,
+  types: all,
   errors,
   busyIds,
   onAdd,
@@ -1071,6 +1077,9 @@ function Types({
   busyIds: ReadonlySet<string>;
   onAdd: (type: DestinationType) => void;
 }) {
+  // A free install lists only what it can set up (ADR 0116); `unavailable`
+  // still explains itself here, because this is a settings list.
+  const types = all.filter((type) => renderingFor(type.availability, 'settings_list') !== 'hide');
   return (
     <Region>
       {types.map((type) =>

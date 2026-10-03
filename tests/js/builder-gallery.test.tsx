@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { CAPTURE_OUTCOME } from './support/outcomes';
 import type { Template } from '../../resources/renderer/src/types';
 import type {
@@ -92,7 +92,7 @@ const card = ({
   tier: locked ? 'pro' : 'free',
   availability: locked ? 'locked' : 'ready',
   facets: { act: locked ? null : act, captures, shape, has_image, asks_consent: false },
-  ...(locked ? { preview_url: `https://wconvert.com/designs/${id}/` } : {}),
+  ...(locked ? { preview_url: `https://wconvert.io/designs/${id}/` } : {}),
 });
 
 /** The card a design is on, found by the name it prints. */
@@ -440,6 +440,11 @@ describe('a design that would break an A/B comparison', () => {
 // A PREMIUM DESIGN ON A FREE INSTALL.
 // =============================================================================
 
+// Tests below that set a paid tier leave it here; none may leak into the next.
+afterEach(() => {
+  delete window.wconvertAdmin;
+});
+
 const LOCKED = card({
   id: 'popup-two-column',
   name: 'Two-column offer',
@@ -449,7 +454,34 @@ const LOCKED = card({
   has_image: true,
 });
 
+/**
+ * **A free install is shown no locked design at all** (ADR 0116). The server
+ * already leaves them out of its payload; the gallery hides any that reach it
+ * anyway — an installed pack's paid design, say — rather than drawing a card
+ * that would read as a ready one.
+ */
+describe('a design a free install does not have', () => {
+  it('is not drawn at all, and the designs it does have are', () => {
+    grid([ENTRIES[0], LOCKED], undefined);
+
+    expect(screen.queryByText('Two-column offer')).toBeNull();
+    expect(screen.getByText('Centred card')).toBeInTheDocument();
+    expect(screen.queryByText('Pro')).toBeNull();
+    expect(screen.queryByRole('link', { name: /See this design/ })).toBeNull();
+  });
+});
+
 describe('a design this install does not have', () => {
+  // A paid install meeting a higher rung's design — the one install still
+  // shown an upsell (ADR 0116).
+  beforeEach(() => {
+    window.wconvertAdmin = { exportUrl: '', installedTier: 'basic' };
+  });
+
+  afterEach(() => {
+    delete window.wconvertAdmin;
+  });
+
   it('shows an informational card when its public preview is not published yet', () => {
     grid([{ ...LOCKED, preview_url: undefined }], undefined);
     const locked = within(cardFor('Two-column offer'));
@@ -473,7 +505,7 @@ describe('a design this install does not have', () => {
     const locked = within(cardFor('Two-column offer'));
     const link = locked.getByRole('link', { name: /See this design/ });
 
-    expect(link).toHaveAttribute('href', 'https://wconvert.com/designs/popup-two-column/');
+    expect(link).toHaveAttribute('href', 'https://wconvert.io/designs/popup-two-column/');
     expect(locked.queryByRole('button')).toBeNull();
   });
 
@@ -616,6 +648,7 @@ describe('recommended designs', () => {
   });
 
   it('keeps the recommendation order through search, field, layout, and availability filters', async () => {
+    window.wconvertAdmin = { exportUrl: '', installedTier: 'basic' };
     picker([
       card({ id: 'extension', name: 'Email extension', shape: 'split' }),
       card({ id: 'launch-checklist', name: 'Email checklist', shape: 'split', locked: true }),
@@ -765,7 +798,15 @@ describe('narrowing the library', () => {
     expect(shown()).toEqual(['Quick updates', 'Choose your channel']);
   });
 
+  /** A hidden design leaves the count as well as the grid (ADR 0116). */
+  it('counts no locked design on a free install', () => {
+    picker([ENTRIES[0], LOCKED]);
+    expect(shown()).toEqual(['Centred card']);
+    expect(screen.getByRole('status')).toHaveTextContent('1 of 1 designs');
+  });
+
   it('lets merchants show installed designs while keeping the full library recoverable', async () => {
+    window.wconvertAdmin = { exportUrl: '', installedTier: 'basic' };
     picker([ENTRIES[0], LOCKED]);
     expect(shown()).toEqual(['Centred card', 'Two-column offer']);
 

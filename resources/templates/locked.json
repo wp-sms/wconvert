@@ -46,7 +46,7 @@
       "name": "Announcement bar",
       "display_type": "floating_bar",
       "tier": "basic",
-      "preview_url": "https://wconvert.com/designs/announcement-bar/",
+      "preview_url": "https://wconvert.io/designs/announcement-bar/",
       "facets": {
         "shape": "row",
         "captures": [],
@@ -58,7 +58,7 @@
       "name": "Bar with a field",
       "display_type": "floating_bar",
       "tier": "basic",
-      "preview_url": "https://wconvert.com/designs/bar-with-a-field/",
+      "preview_url": "https://wconvert.io/designs/bar-with-a-field/",
       "facets": {
         "shape": "stack",
         "captures": [
@@ -72,7 +72,7 @@
       "name": "Deadline bar",
       "display_type": "floating_bar",
       "tier": "basic",
-      "preview_url": "https://wconvert.com/designs/deadline-bar/",
+      "preview_url": "https://wconvert.io/designs/deadline-bar/",
       "facets": {
         "shape": "row",
         "captures": [],
@@ -84,7 +84,7 @@
       "name": "Corner card with a picture",
       "display_type": "slide_in",
       "tier": "basic",
-      "preview_url": "https://wconvert.com/designs/corner-card-with-a-picture/",
+      "preview_url": "https://wconvert.io/designs/corner-card-with-a-picture/",
       "facets": {
         "shape": "split",
         "captures": [
@@ -98,7 +98,7 @@
       "name": "Two-column offer",
       "display_type": "popup",
       "tier": "basic",
-      "preview_url": "https://wconvert.com/designs/two-column-offer/",
+      "preview_url": "https://wconvert.io/designs/two-column-offer/",
       "facets": {
         "shape": "split",
         "captures": [
@@ -113,7 +113,7 @@
       "name": "Cart nudge",
       "display_type": "inline",
       "tier": "basic",
-      "preview_url": "https://wconvert.com/designs/cart-nudge/",
+      "preview_url": "https://wconvert.io/designs/cart-nudge/",
       "facets": {
         "shape": "split",
         "captures": [],
@@ -125,7 +125,7 @@
       "name": "Bar that hands over a code",
       "display_type": "floating_bar",
       "tier": "basic",
-      "preview_url": "https://wconvert.com/designs/bar-that-hands-over-a-code/",
+      "preview_url": "https://wconvert.io/designs/bar-that-hands-over-a-code/",
       "facets": {
         "shape": "stack",
         "captures": [
@@ -139,7 +139,7 @@
       "name": "Corner card with a code",
       "display_type": "slide_in",
       "tier": "basic",
-      "preview_url": "https://wconvert.com/designs/corner-card-with-a-code/",
+      "preview_url": "https://wconvert.io/designs/corner-card-with-a-code/",
       "facets": {
         "shape": "stack",
         "captures": [
@@ -153,7 +153,7 @@
       "name": "Corner nudge",
       "display_type": "slide_in",
       "tier": "basic",
-      "preview_url": "https://wconvert.com/designs/corner-nudge/",
+      "preview_url": "https://wconvert.io/designs/corner-nudge/",
       "facets": {
         "shape": "stack",
         "captures": [],
@@ -165,7 +165,7 @@
       "name": "Corner card with reasons",
       "display_type": "slide_in",
       "tier": "basic",
-      "preview_url": "https://wconvert.com/designs/corner-card-with-reasons/",
+      "preview_url": "https://wconvert.io/designs/corner-card-with-reasons/",
       "facets": {
         "shape": "stack",
         "captures": [
@@ -179,7 +179,7 @@
       "name": "Editorial split",
       "display_type": "popup",
       "tier": "basic",
-      "preview_url": "https://wconvert.com/designs/editorial-split/",
+      "preview_url": "https://wconvert.io/designs/editorial-split/",
       "facets": {
         "shape": "split",
         "captures": [
@@ -193,7 +193,7 @@
       "name": "Flash over a picture",
       "display_type": "popup",
       "tier": "basic",
-      "preview_url": "https://wconvert.com/designs/flash-over-a-picture/",
+      "preview_url": "https://wconvert.io/designs/flash-over-a-picture/",
       "facets": {
         "shape": "stack",
         "captures": [],
@@ -205,7 +205,7 @@
       "name": "Strip that hands over a code",
       "display_type": "inline",
       "tier": "basic",
-      "preview_url": "https://wconvert.com/designs/strip-that-hands-over-a-code/",
+      "preview_url": "https://wconvert.io/designs/strip-that-hands-over-a-code/",
       "facets": {
         "shape": "stack",
         "captures": [

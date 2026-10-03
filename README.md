@@ -237,7 +237,7 @@ times this size affordable without a virtualization library.
 
 A design declares its `tier`. Free ships free designs and, in
 `resources/templates/locked.json`, the **card** for a premium one — a name, its
-facets and a link to a live preview on wconvert.com, with no tree and no image
+facets and a link to a live preview on wconvert.io, with no tree and no image
 at all. Shipping the design and refusing the save is trialware
 ([#7](https://github.com/navidkashani/wconvert/issues/7)), so
 `bin/verify-artifact-contract.sh` check **(e)** refuses a `tier: pro` entry, or

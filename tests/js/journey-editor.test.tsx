@@ -32,8 +32,9 @@ vi.mock('../../resources/admin/src/builder/JourneyMap', () => ({ JourneyMap: ({ 
   <button onClick={() => onReconnect('start', 'contact')}>Reconnect test route</button>
   <button onClick={() => onReconnect('balcony_hidden', 'received')}>Bypass test save</button>
 </div> }));
-beforeEach(() => vi.stubGlobal('ResizeObserver', class { observe() {} unobserve() {} disconnect() {} }));
-afterEach(() => { cleanup(); vi.unstubAllGlobals(); });
+// Journey authoring is offered only where Pro's `journeys` module registered it (ADR 0116).
+beforeEach(() => { vi.stubGlobal('ResizeObserver', class { observe() {} unobserve() {} disconnect() {} }); window.wconvertAdmin = { exportUrl: '', journeys: true }; });
+afterEach(() => { cleanup(); vi.unstubAllGlobals(); delete window.wconvertAdmin; });
 
 it('focuses the existing workspace without remounting it and closes nested UI before exiting', async () => {
   const user = userEvent.setup();
@@ -1154,4 +1155,37 @@ it('keeps unsent visitor inputs across design mode switches and omits answer exp
   await user.click(within(within(dialog).getByRole('group', { name: 'What to check' })).getByRole('button', { name: 'Try as a visitor' }));
   expect(within(root() as unknown as HTMLElement).getByRole('textbox', { name: /Email address/ })).toBe(email);
   expect(email).toHaveValue('draft@example.test');
+});
+
+it('offers a free install linear screens only, with no question, condition or path control', async () => {
+  delete window.wconvertAdmin;
+  const user = userEvent.setup();
+  render(<Editor />);
+  await user.click(screen.getByRole('button', { name: 'Manage screens' }));
+  expect(screen.queryByRole('button', { name: 'Try answers' })).not.toBeInTheDocument();
+  expect(screen.queryByRole('button', { name: /^Next screen/ })).not.toBeInTheDocument();
+  expect(screen.queryByText('Show this screen when…')).not.toBeInTheDocument();
+  await user.click(screen.getByRole('button', { name: 'More screen options' }));
+  expect(screen.getByRole('menuitem', { name: 'Add offer screen' })).toBeInTheDocument();
+  for (const name of ['Add question screen', 'Add relevant follow-up', 'Enable flexible paths']) {
+    expect(screen.queryByRole('menuitem', { name })).not.toBeInTheDocument();
+  }
+  await user.keyboard('{Escape}');
+  await user.click(screen.getByRole('button', { name: 'Add screen' }));
+  const tree = draft();
+  expect(tree.steps).toHaveLength(3);
+  expect(tree.graph).toBeUndefined();
+  expect(tree.steps.some(item => item.paths || item.when || walkNodes(item.content).some(node => node.type === 'question'))).toBe(false);
+  expect(screen.queryByText('This design uses elements this site can’t display.')).not.toBeInTheDocument();
+});
+
+it('tells a free install it cannot display a journey draft, without naming Pro', async () => {
+  delete window.wconvertAdmin;
+  const user = userEvent.setup();
+  render(<Editor initial={finder.tree as TemplateTree} />);
+  await user.click(screen.getByRole('button', { name: 'Manage screens' }));
+  expect(screen.getByText('This design uses elements this site can’t display.')).toBeInTheDocument();
+  expect(screen.queryByText(/WConvert Pro|requires Pro|needs Pro/)).not.toBeInTheDocument();
+  await user.click(screen.getByRole('button', { name: 'More screen options' }));
+  expect(screen.queryByRole('menuitem', { name: 'Add question screen' })).not.toBeInTheDocument();
 });

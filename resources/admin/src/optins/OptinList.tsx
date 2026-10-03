@@ -37,7 +37,7 @@ import {
   DialogTitle,
 } from '../components/ui/dialog';
 import { listGoals } from '../goals/api';
-import { tierProductName } from '../goals/availability';
+import { renderingFor, tierProductName } from '../goals/availability';
 import { displayTypeLabel } from '../displayTypes';
 import { adminSettings } from '../settings';
 import { ConfirmDialog } from '../shell/ConfirmDialog';
@@ -887,7 +887,7 @@ function CampaignMenu({
                 ? __('Add another variant', 'wconvert')
                 : __('Create A/B test', 'wconvert')}
             </DropdownMenuItem>
-          ) : availability === 'locked' ? (
+          ) : renderingFor(availability, 'settings_list') === 'upsell' ? (
             <DropdownMenuLabel className="wc-menu-note">
               {sprintf(
                 __('A/B testing is available with %s.', 'wconvert'),

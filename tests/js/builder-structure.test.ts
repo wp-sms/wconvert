@@ -1,6 +1,6 @@
 import optionalSignup from '../../resources/templates/library/journey-email-then-sms.json';
 import { treeFixture } from './support/journey';
-import { describe, expect, it } from 'vitest';
+import { afterEach, describe, expect, it } from 'vitest';
 import {
   nodeAt,
   nodesOf,
@@ -323,7 +323,10 @@ describe('what the catalogue offers', () => {
    * nothing.** The assertion is against the manifest's own keys rather than a
    * list spelled here, which is the property being protected.
    */
+  afterEach(() => { delete window.wconvertAdmin; });
+
   it('offers every leaf and every layout the vocabulary declares', () => {
+    window.wconvertAdmin = { exportUrl: '', journeys: true };
     expect(additionsIn(TREE, at, 'submit').map((addition) => addition.type)).toEqual([
       'heading',
       'eyebrow',
@@ -347,6 +350,17 @@ describe('what the catalogue offers', () => {
       'panel',
       'media',
     ]);
+  });
+
+  /**
+   * A question runs only where Pro's `journeys` module registered it, so a free
+   * install is not offered one — not even disabled (ADR 0116).
+   */
+  it('offers no question where no journeys module is registered', () => {
+    const offered = additionsIn(TREE, at, 'submit').map((addition) => addition.type);
+    expect(offered).not.toContain('question');
+    expect(offered).toContain('field');
+    expect(nodeFor(TREE, 'question', at, 'submit')).toBeNull();
   });
 
   /**

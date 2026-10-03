@@ -199,7 +199,7 @@ export function Gallery({
 }: GalleryProps) {
   return (
     <ul className="wconvert-gallery" data-preview-first={onPreview !== undefined || undefined}>
-      {entries.map((entry) => {
+      {entries.filter((entry) => renderingFor(entry.availability, 'settings_list') !== 'hide').map((entry) => {
         const locked = renderingFor(entry.availability, 'settings_list') === 'upsell';
         const inUse = entry.id === chosen;
         const refused = refusalFor(entry, fit);

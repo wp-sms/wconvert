@@ -174,4 +174,39 @@ final class CaptureControllerTest extends TestCase
         self::assertStringNotContainsString('INSERT', $response->get_error_message());
         self::assertFalse($dispatched, 'Nothing downstream may receive a Lead that was not stored.');
     }
+
+    /**
+     * A journey published on an install that no longer registers journeys is
+     * refused before its contract is read — whatever rung the install is
+     * (ADR 0116). Pro's journeys module registering is what lets it through.
+     */
+    public function testAJourneyIsOnlyCapturedWhereTheJourneysModuleRegistered(): void
+    {
+        $options = new FakeOptionStore();
+        $published = new PublishedSet($options);
+        $db = new FakeConnection();
+        $optins = new OptinRepository($db, $published, RuleVocabulary::fromManifest(), new MilestoneStore($options));
+        $template = json_decode((string) file_get_contents(dirname(__DIR__, 3) . '/pro/modules/journeys/templates/journey-product-finder.json'), true);
+        $config = ['template' => $template, 'display_type' => 'popup', 'capture_mode' => 'local', 'display_rules' => \WConvert\Tests\Unit\Support\DisplayFixture::plan([['type' => 'page_load']])];
+        $optin = $optins->create('Journey test', 'find_match', $config);
+        $optins->publish($optin->id);
+        $controller = new CaptureController($published, new JourneyCapture($db, new StatsRepository($db)), $optins, new CaptureGrant('test-signing-key'),
+            TemplateVocabulary::fromManifest(dirname(__DIR__, 3)), new CaptureRateLimit(new FakeTransientStore()));
+        $request = new \WP_REST_Request('POST', '/wconvert/v1/capture');
+        $request->set_param('optin_id', $optin->id);
+        $request->set_body((string) json_encode(['fields' => [], 'contract' => 'stale']));
+
+        $refused = $controller->capture($request);
+        self::assertInstanceOf(\WP_Error::class, $refused);
+        self::assertSame('wconvert_journey_unavailable', $refused->get_error_code());
+
+        \WConvert\Tests\Unit\Support\Journeys::on();
+        try {
+            $passed = $controller->capture($request);
+            self::assertInstanceOf(\WP_Error::class, $passed);
+            self::assertSame('wconvert_capture_changed', $passed->get_error_code(), 'past the journey gate, to the contract check');
+        } finally {
+            \WConvert\Tests\Unit\Support\Journeys::off();
+        }
+    }
 }

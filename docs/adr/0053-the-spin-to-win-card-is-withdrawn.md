@@ -3,7 +3,7 @@
 `popup-spin-to-win` was one of nine treeless cards in
 [`resources/templates/locked.json`](../../resources/templates/locked.json) — a
 name, a [[Display Type]], authored facets and a link to a live preview on
-wconvert.com. [#95](https://github.com/navidkashani/wconvert/issues/95) shipped
+wconvert.io. [#95](https://github.com/navidkashani/wconvert/issues/95) shipped
 six of the nine as real designs and named three as a smaller, later job. Two of
 those three were design work and are now authored. **This one is not a design,
 and the card is removed rather than drawn.**
@@ -106,7 +106,7 @@ shown to somebody who has just handed over an email address.
 it was withdrawn and where the argument lives — because the file is bundled
 advertising, and an advertisement for a design nobody can ever be given is a
 worse defect than one fewer card. The public design page at
-`wconvert.com/designs/spin-to-win/` retires with it; a `preview_url` is the
+`wconvert.io/designs/spin-to-win/` retires with it; a `preview_url` is the
 whole substitute for a preview
 ([ADR 0043](0043-the-library-is-indexed-and-its-facets-are-derived.md)), and one
 pointing at nothing is the dead-link failure `bin/verify-templates.php` exists

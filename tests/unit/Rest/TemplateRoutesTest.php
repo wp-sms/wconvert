@@ -63,14 +63,14 @@ final class TemplateRoutesTest extends TestCase
         return null;
     }
 
-    private static function controller(bool $pro = false, bool $privacyDefaults = false): TemplateController
+    private static function controller(bool|Tier $pro = false, bool $privacyDefaults = false): TemplateController
     {
         $vocabulary = TemplateVocabulary::fromManifest(self::PLUGIN_DIR);
 
         return new TemplateController(
             TemplateLibrary::fromDirectory($vocabulary, self::PLUGIN_DIR),
             $vocabulary,
-            new FakeProPresence($pro ? Tier::Elite : Tier::Free),
+            new FakeProPresence($pro instanceof Tier ? $pro : ($pro ? Tier::Elite : Tier::Free)),
             $privacyDefaults ? new PrivacyGuidance(new FakeOptionStore()) : null
         );
     }
@@ -78,7 +78,7 @@ final class TemplateRoutesTest extends TestCase
     /**
      * @return array<string, mixed>
      */
-    private static function index(bool $pro = false): array
+    private static function index(bool|Tier $pro = false): array
     {
         /** @var array<string, mixed> $data */
         $data = self::controller($pro)->index()->get_data();
@@ -89,7 +89,7 @@ final class TemplateRoutesTest extends TestCase
     /**
      * @return list<array<string, mixed>>
      */
-    private static function cards(bool $pro = false): array
+    private static function cards(bool|Tier $pro = false): array
     {
         /** @var list<array<string, mixed>> $cards */
         $cards = self::index($pro)['templates'];
@@ -206,17 +206,28 @@ final class TemplateRoutesTest extends TestCase
 
     /**
      * ==========================================================================
-     * A FREE INSTALL SEES THE PREMIUM DESIGNS AND CANNOT RENDER ONE.
+     * A FREE INSTALL IS SENT NO PREMIUM DESIGN — NOT EVEN ITS CARD.
      * ==========================================================================
-     * Which is the point: shipping the tree and refusing the save is trialware
-     * (issue #7). What is bundled is the card — a name, its facets and a link to
-     * a live preview on wconvert.com — and never the design.
+     * Shipping the tree and refusing the save is trialware (issue #7), and a
+     * gallery of padlocks reads the same way to wp.org's reviewers (ADR 0116).
+     * `locked.json` is still bundled; a free install's payload never carries it.
      */
-    public function testAFreeInstallIsOfferedLockedCardsWithSomewhereToGo(): void
+    public function testAFreeInstallIsSentNoLockedDesign(): void
     {
-        $locked = array_values(array_filter(self::cards(), static fn (array $c): bool => $c['availability'] === 'locked'));
+        $locked = array_filter(self::cards(), static fn (array $c): bool => $c['availability'] === 'locked');
 
-        $this->assertNotSame([], $locked, 'a free install is shown no premium designs at all');
+        $this->assertSame([], $locked);
+    }
+
+    /**
+     * A paid install still sees the designs its rung lacks — a name, its facets
+     * and a link to a live preview on wconvert.io — and never the design.
+     */
+    public function testAPaidInstallIsOfferedLockedCardsWithSomewhereToGo(): void
+    {
+        $locked = array_values(array_filter(self::cards(Tier::Basic), static fn (array $c): bool => $c['availability'] === 'locked'));
+
+        $this->assertNotSame([], $locked, 'a paid install is shown no designs from the rungs above it');
 
         foreach ($locked as $card) {
             // The eight cards are the `display-types` module's, which is the

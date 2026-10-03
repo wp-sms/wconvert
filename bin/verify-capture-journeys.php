@@ -195,8 +195,8 @@ $graphOptin = $optins->create('Graph enquiry verification', 'collect_enquiries',
 journeyCheck($optins->publish($graphOptin->id) !== null, 'a graph enquiry passes the repository publication boundary');
 $graphBase = ['optin_id' => $graphOptin->id, 'contract' => CaptureContract::fingerprint($graphConfig, $graphOptin->goal, get_privacy_policy_url())];
 $graphStart = journeyRequest($graphBase + ['phase' => 'start']);
-if (!$c->resolve(\WConvert\Goal\GoalRegistry::class)->supportsJourneys()) {
-    journeyCheck(($graphStart['error'] ?? '') === 'wconvert_journey_unavailable', 'Free cannot capture a graph that requires Pro');
+if (!\WConvert\Template\JourneySupport::active()) {
+    journeyCheck(($graphStart['error'] ?? '') === 'wconvert_journey_unavailable', 'an install without the journeys module cannot capture a graph');
 } else {
     journeyCheck(isset($graphStart['grant']), 'a published graph starts a visitor capture session');
     $graphBody = $graphBase + ['grant' => $graphStart['grant'], 'submission' => 'enquiry',
