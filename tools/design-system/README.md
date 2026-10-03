@@ -44,10 +44,10 @@ two of them; the other two are properties of a *request*, and they are forced on
   a 500 synthesised in the browser would prove the error path against a shape
   WordPress never sends.
 - **loading** is forced in the **browser** (a Playwright route that is never
-  fulfilled). It has to be: Playground runs `--workers=1`, because its default
-  six all write one SQLite file and corrupt it — so a request held open in PHP
-  deadlocks the server rather than rendering a skeleton. `route.abort()` is
-  wrong for the same job: that is the *failed* branch.
+  fulfilled). It has to be: this harness boots Playground with `--workers=1`
+  (`build/capture-screens.mjs`), so a request held open in PHP deadlocks the
+  server rather than rendering a skeleton. `route.abort()` is wrong for the
+  same job: that is the *failed* branch.
 
 ## Reading the output
 

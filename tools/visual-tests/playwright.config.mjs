@@ -3,7 +3,10 @@ import { defineConfig } from '@playwright/test';
 export default defineConfig({
   testDir: '.',
   testMatch: 'admin.spec.mjs',
-  fullyParallel: false,
+  // Lets --shard split this one file by test rather than handing the whole file
+  // to the first shard. With one worker the tests still run one at a time; each
+  // sets its own state by cookie and the seed is idempotent, so order is free.
+  fullyParallel: true,
   workers: 1, // One SQLite writer; every scenario gets a fresh browser context.
   retries: 0,
   timeout: 60000,
