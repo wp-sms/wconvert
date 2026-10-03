@@ -2,6 +2,7 @@ import { useId, useRef, useState } from 'react';
 import { __ } from '@wordpress/i18n';
 import { Bold, Italic, Link2, RemoveFormatting, Unlink } from 'lucide-react';
 import { Button } from '../components/ui/button';
+import { LinkField } from './LinkField';
 import { editSentence, markSentence, readSentence, writeSentence, type SentenceValue } from './sentence';
 
 /** A small selection toolbar, backed by the renderer's existing sentence model. */
@@ -66,7 +67,7 @@ export function SentenceEditor({ value, label, bold, italic = false, link, onCha
     <p className="description">{__('Select words to format. One phrase per style; use separate phrases for styles and links.', 'wconvert')}</p>
     {notice && <p role="status">{notice}</p>}
     {editingLink && <div className="wconvert-sentence-address">
-      <label>{__('Link address', 'wconvert')}<input type="url" value={address} onChange={e => setAddress(e.target.value)} placeholder="https://" /></label>
+      <label>{__('Link address', 'wconvert')}<LinkField value={address} onChange={setAddress} /></label>
       <p className="description">{__('Leave empty to use your site’s privacy policy.', 'wconvert')}</p>
       <div><Button size="xs" onClick={() => { const range = selected ? selection : anchor; if (range) write(markSentence(sentence, { ...range, kind: 'link', href: address })); setEditingLink(false); }}>{__('Apply link', 'wconvert')}</Button><Button variant="ghost" size="xs" onClick={() => setEditingLink(false)}>{__('Cancel', 'wconvert')}</Button></div>
     </div>}

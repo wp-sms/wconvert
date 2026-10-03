@@ -1,10 +1,11 @@
-import { __ } from '@wordpress/i18n';
+import { __, _n, sprintf } from '@wordpress/i18n';
 import { displayTypeDescription } from '../displayTypes';
 import { summarise } from '../builder/rules/summaries';
 import { howOftenSummary } from '../builder/rules/sentence';
 import { targetingSummary } from '../builder/rules/targetingSummary';
 import { convertingActOf } from '../builder/structure/guards';
 import { nodesOf } from '../builder/structure/tree';
+import { resultLinksToChoose } from '../builder/structure/journey';
 import type { RuleVocabulary } from '../builder/api';
 import type { GoalEntry, PlaybookEntry } from './api';
 
@@ -66,6 +67,7 @@ export function StartingPointFacts({ playbook, goal, vocabulary, compact = false
   if (displayType === 'inline') checklist.push(__('Add its block or shortcode to the page where it should appear.', 'wconvert'));
   if (types.has('countdown')) checklist.push(__('Set the real deadline and time zone in Schedule.', 'wconvert'));
   checklist.push(__('Review pages, display rules and frequency, then test the visitor journey.', 'wconvert'));
+  const resultLinks = playbook.template ? resultLinksToChoose(playbook.template.tree) : 0;
   return <div className="flex flex-col gap-2 text-note">
     {playbook.template && playbook.template.tree.steps.length > 1 && <details open={!compact || undefined}><summary>{__('Visitor journey', 'wconvert')}</summary><p className="m-0">{playbook.notes || __('Visitors move through the relevant screens, then complete this campaign’s action.', 'wconvert')}</p></details>}
     <details open={!compact || undefined}><summary>{__('Suggested placement & timing', 'wconvert')}</summary>
@@ -74,6 +76,11 @@ export function StartingPointFacts({ playbook, goal, vocabulary, compact = false
     </dl></details>
     <details open={!compact || undefined}><summary>{__('What this measures', 'wconvert')}</summary><p className="m-0 text-muted-foreground">{goal.outcome.measurement}</p></details>
     {(!compact || !playbook.requirements?.includes(goal.outcome.requirement)) && <p className="m-0 text-muted-foreground"><strong>{__('Before publishing', 'wconvert')}: </strong>{goal.outcome.requirement}</p>}
+    {resultLinks > 0 && <p className="m-0 text-muted-foreground">{sprintf(
+      /* translators: %d: how many quiz results need a link chosen before publishing. */
+      _n('You’ll choose a link for %d result.', 'You’ll choose a link for each of the %d results.', resultLinks, 'wconvert'),
+      resultLinks,
+    )}</p>}
     {(!setup || !vocabulary) && <p className="m-0 text-muted-foreground">{__('Review the display rules in the editor.', 'wconvert')}</p>}
     <details>
       <summary className="cursor-pointer">{__('Your setup checklist', 'wconvert')}</summary>

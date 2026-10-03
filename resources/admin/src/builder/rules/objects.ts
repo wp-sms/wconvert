@@ -65,6 +65,38 @@ export function searchObjects(kind: ObjectKind, search: string, signal?: AbortSi
   );
 }
 
+/** A page, post or product a link can point at, by its permalink. */
+export interface LinkHit {
+  readonly id: string;
+  readonly title: string;
+  readonly url: string;
+  /** The post type: `page`, `post`, `product` or any other searchable one. */
+  readonly subtype: string;
+}
+
+/**
+ * Published content to link to, for `LinkField`. The same endpoint and the
+ * same two limits as {@link searchObjects}; only `url` and `subtype` are new,
+ * because a link stores the permalink rather than the id.
+ */
+export function searchLinks(search: string, signal?: AbortSignal): Promise<LinkHit[]> {
+  const query = new URLSearchParams({ search, type: 'post', per_page: String(PER_PAGE), _fields: 'id,title,url,subtype' });
+
+  return apiFetch<{ id: number | string; title: string; url: string; subtype: string }[]>({
+    path: `/wp/v2/search?${query.toString()}`,
+    signal,
+  }).then((results) =>
+    (Array.isArray(results) ? results : [])
+      .filter((result) => typeof result.url === 'string' && result.url !== '')
+      .map((result) => ({
+        id: String(result.id),
+        title: typeof result.title === 'string' && result.title !== '' ? result.title : result.url,
+        url: result.url,
+        subtype: typeof result.subtype === 'string' ? result.subtype : '',
+      })),
+  );
+}
+
 /**
  * The titles for ids already stored, so a saved rule reads as words.
  *
