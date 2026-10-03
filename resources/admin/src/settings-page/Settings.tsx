@@ -28,7 +28,7 @@ export function Settings({
 }) {
   const [search, setSearch] = useState('');
   const categories = [
-    { id: 'integrations', label: __('Analytics integrations', 'wconvert'), description: __('Google Analytics and Tag Manager', 'wconvert'), icon: Plug, terms: 'GA4 GTM analytics tracking consent' },
+    { id: 'integrations', label: __('Analytics integrations', 'wconvert'), description: __('Google Analytics, GTM and Plausible', 'wconvert'), icon: Plug, terms: 'GA4 GTM Plausible analytics tracking consent' },
     { id: 'protection', label: __('Spam protection', 'wconvert'), description: __('Bot verification and form filters', 'wconvert'), icon: Shield, terms: __('spam captcha turnstile recaptcha hcaptcha bot protection filters', 'wconvert') },
     {
       id: 'experience',

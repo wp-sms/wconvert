@@ -2,6 +2,8 @@ import { test, expect } from '@playwright/test';
 test.beforeEach(async ({ page }) => {
   await page.request.get('/?wconvert_events_reset=1');
   await page.addInitScript(() => {
+    window.acceptedCaptures = 0; document.addEventListener('wconvert:capture', () => window.acceptedCaptures++);
+    window.plausibleCalls = []; window.plausible = (...args) => window.plausibleCalls.push(args);
     window.gaCalls = []; window.gtag = (...args) => window.gaCalls.push(args); window.dataLayer = [];
     window.testShadows = [];
     const attach = Element.prototype.attachShadow;
@@ -15,6 +17,14 @@ async function submit(page, name, value) {
     const consent = root.querySelector('[name="consent"]'); if (consent) consent.checked = true;
     root.querySelector('[data-action="submit"]').click();
   }, { name, value });
+}
+async function login(page) {
+  await page.goto('/wp-login.php');
+  await expect(page.getByLabel('Username or Email Address')).toBeFocused();
+  await page.getByLabel('Username or Email Address').fill('admin');
+  await page.getByLabel('Password', { exact: true }).fill('password');
+  await page.getByRole('button', { name: 'Log In', exact: true }).click();
+  await page.waitForURL('**/wp-admin/');
 }
 const events = page => page.evaluate(() => window.gaCalls.map(call => call[1]));
 test('real WordPress loads the adapter first and sends one accepted lead across email and SMS', async ({ page }) => {
@@ -80,14 +90,9 @@ test('admin saves settings through real REST and diagnostics stay local until an
   await page.request.get('/?wconvert_analytics_fixture=gtag');
   const refused = await page.request.get('/?rest_route=/wconvert/v1/analytics-integration');
   expect([401, 403]).toContain(refused.status());
-  await page.goto('/wp-login.php');
-  await expect(page.getByLabel('Username or Email Address')).toBeFocused();
-  await page.getByLabel('Username or Email Address').fill('admin');
-  await page.getByLabel('Password', { exact: true }).fill('password');
-  await page.getByRole('button', { name: 'Log In', exact: true }).click();
-  await page.waitForURL('**/wp-admin/');
+  await login(page);
   await page.goto('/wp-admin/admin.php?page=wconvert#settings?group=integrations');
-  await expect(page.getByLabel('Enable GA4 integration')).toBeVisible();
+  await expect(page.getByLabel('Enable analytics integration')).toBeVisible();
   await page.getByLabel('Measurement ID', { exact: true }).fill('G-TEST999');
   await page.getByRole('button', { name: 'Save settings', exact: true }).click();
   await expect(page.getByRole('button', { name: 'Save settings', exact: true })).toBeDisabled();
@@ -109,7 +114,7 @@ test('admin saves settings through real REST and diagnostics stay local until an
   await page.setViewportSize({ width: 390, height: 844 });
   await page.context().addCookies([{ name: 'wconvert_ds_dir', value: 'rtl', url: page.url() }]);
   await page.reload();
-  await expect(page.getByLabel('Enable GA4 integration')).toBeVisible();
+  await expect(page.getByLabel('Enable analytics integration')).toBeVisible();
   await expect(page.locator('html')).toHaveAttribute('dir', 'rtl');
   await page.screenshot({ path: 'tools/visual-tests/out/analytics/settings-mobile-rtl.png', fullPage: true });
   expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
@@ -123,4 +128,74 @@ test('admin saves settings through real REST and diagnostics stay local until an
     [...root.querySelectorAll('button')].find(button => button.textContent === 'Send synthetic test event').click();
   });
   await expect.poll(() => events(page)).toEqual(['wconvert_test']);
+});
+
+test('Plausible exports accepted outcomes once without sending to Google', async ({ page }) => {
+  await page.goto('/?wconvert_events=sms&wconvert_analytics_fixture=plausible');
+  const names = () => page.evaluate(() => window.plausibleCalls.map(call => call[0]));
+  await expect.poll(names).toEqual(['WConvert Impression']);
+  await submit(page, 'email', 'plausible@example.test');
+  await expect.poll(names).toEqual(['WConvert Impression', 'WConvert Lead']);
+  await expect.poll(() => page.evaluate(() => window.testShadows.some(root => root.querySelector('[name="phone"]')))).toBe(true);
+  const capture = await page.locator('#wconvert-payload').getAttribute('data-capture');
+  const accepted = page.waitForResponse(r => r.url() === capture && r.request().postDataJSON()?.submission === 'sms-signup');
+  await submit(page, 'phone', '+12025551234'); expect((await accepted).status()).toBeLessThan(300);
+  expect(await names()).toEqual(['WConvert Impression', 'WConvert Lead']);
+  const calls = await page.evaluate(() => window.plausibleCalls);
+  expect(calls[0][1].interactive).toBe(false); expect(calls[1][1].interactive).toBe(true);
+  expect(JSON.stringify(calls)).not.toContain('plausible@example.test');
+  expect(JSON.stringify(calls)).not.toContain('+12025551234');
+  expect(await events(page)).toEqual([]);
+  expect(await page.evaluate(() => window.dataLayer)).toEqual([]);
+});
+
+test('Plausible consent withholds early events and respects later withdrawal', async ({ page }) => {
+  await page.goto('/?wconvert_events=quiz&wconvert_analytics_fixture=plausible-wp');
+  const names = () => page.evaluate(() => window.plausibleCalls.map(call => call[0]));
+  await expect(page.locator('dialog[open]')).toBeVisible(); expect(await names()).toEqual([]);
+  await page.evaluate(() => { window.wp_consent_type = 'optin'; window.wp_has_consent = () => true; });
+  await page.evaluate(() => {
+    const root = window.testShadows.find(root => root.querySelector('input[value="grow"]'));
+    root.querySelector('input[value="grow"]').click(); root.querySelector('[data-action="next"]').click();
+  });
+  await expect.poll(names).toEqual(['WConvert Conversion']);
+  await page.evaluate(() => {
+    window.wp_has_consent = () => false;
+    window.testShadows.find(root => root.querySelector('[data-action="next"]')).querySelector('[data-action="next"]').click();
+  });
+  await submit(page, 'email', 'withheld@example.test');
+  await expect.poll(() => page.evaluate(() => window.acceptedCaptures)).toBe(1);
+  expect(await names()).toEqual(['WConvert Conversion']);
+});
+
+test('admin saves Plausible without a Measurement ID and sends only an explicit diagnostic test', async ({ page }) => {
+  await page.request.get('/?wconvert_analytics_fixture=gtag');
+  await login(page);
+  await page.goto('/wp-admin/admin.php?page=wconvert#settings?group=integrations');
+  await page.getByText('Plausible', { exact: true }).click();
+  await expect(page.getByRole('radio', { name: 'WP Consent API', exact: true })).toBeChecked();
+  await expect(page.getByLabel('Measurement ID', { exact: true })).toHaveCount(0);
+  await page.getByText('Existing tracker', { exact: true }).click();
+  await page.getByRole('button', { name: 'Save settings', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Save settings', exact: true })).toBeDisabled();
+  await page.screenshot({ path: 'tools/visual-tests/out/analytics/plausible-settings.png', fullPage: true });
+  await page.getByRole('button', { name: 'Test setup' }).click();
+  await expect(page.getByText(/Tests go to the site configured by your Plausible script/)).toBeVisible();
+  await page.keyboard.press('Escape');
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.context().addCookies([{ name: 'wconvert_ds_dir', value: 'rtl', url: page.url() }]);
+  await page.reload();
+  await expect(page.getByRole('radio', { name: 'Plausible', exact: true })).toBeChecked();
+  await page.screenshot({ path: 'tools/visual-tests/out/analytics/plausible-mobile-rtl.png', fullPage: true });
+  expect(await page.evaluate(() => document.documentElement.scrollWidth - document.documentElement.clientWidth)).toBeLessThanOrEqual(1);
+  await page.goto('/?wconvert-analytics=1');
+  await expect(page.getByRole('complementary', { name: 'Analytics check' })).toBeVisible();
+  expect(await page.evaluate(() => window.plausibleCalls)).toEqual([]);
+  await page.evaluate(() => {
+    const root = window.testShadows.find(root => root.querySelector('input[placeholder]'));
+    if (!root.querySelector('input').hidden) throw new Error('Plausible must not request a Google stream');
+    [...root.querySelectorAll('button')].find(button => button.textContent === 'Send synthetic test event').click();
+  });
+  await expect.poll(() => page.evaluate(() => window.plausibleCalls.map(call => call[0]))).toEqual(['WConvert Test']);
+  expect(await events(page)).toEqual([]);
 });

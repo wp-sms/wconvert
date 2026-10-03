@@ -645,3 +645,46 @@ Reference for the named interoperability setup:
 [Site Kit consent-mode documentation](https://sitekit.withgoogle.com/documentation/using-site-kit/consent-mode/).
 No external Google property/container or production site was modified during
 this verification pass.
+
+## Scope extension — Plausible (requested 2026-10-03)
+
+The user authorized Plausible implementation before external GA acceptance is
+complete. This supersedes the earlier “GA4 only in the first release” boundary;
+Matomo remains excluded. Plausible is a third selectable route alongside direct
+Google tag and GTM, with one route active at a time. It uses the installed
+`window.plausible` function and does not install scripts, configure accounts,
+select a domain/endpoint, or create goals remotely.
+
+Plausible receives WConvert Impression, WConvert Lead, WConvert Conversion,
+optional WConvert Dismiss and explicit WConvert Test events. Passive activity
+uses `interactive: false`; accepted leads/conversions use `true`. Metadata remains
+allowlisted with wcv_ property names. Existing campaign exclusions, A/B family
+preferences, manager/staging/clone guards and first-acceptance semantics apply.
+No template changes or extra database storage are needed.
+
+WP Consent API remains the default, with statistics permission and explicit
+Plausible service-denial checks. The alternative explicitly delegates collection
+to the installed tracker without a WConvert consent check. Switching between
+Google and Plausible resets the form’s consent choice for review. Diagnostics
+explain that Plausible tests go to the currently configured site, without a Google
+Measurement ID. Setup guidance calls out billable events, required goal setup,
+custom-property plan availability and bounce-rate behavior.
+
+Acceptance: PHP configuration validation, adapter routing/metadata/consent tests,
+settings save/provider-switch tests, real WordPress progressive capture,
+consent withdrawal, diagnostics and desktop/mobile RTL checks. Provider receipt
+still requires a dedicated Plausible site and dashboard access, in addition to
+the outstanding Google/CMP and representative tester gates above.
+
+Sources: [custom events](https://plausible.io/docs/custom-event-goals),
+[custom properties](https://plausible.io/docs/custom-props/introduction),
+[script configuration](https://plausible.io/docs/script-extensions).
+
+Plausible implementation verification: 30 focused JavaScript tests and 30 related
+PHP tests passed, with TypeScript, ESLint and PHPStan clean. The six existing
+Google/WordPress scenarios and three new Plausible/WordPress scenarios passed;
+Plausible settings were visually checked on desktop and mobile RTL. The pinned
+real WP Consent API contract check passes for both providers. Node 22 measures
+the conditional adapter at 2,055 bytes gzip, below its unchanged 4,096-byte cap;
+existing loader and combined budgets remain green. No live provider receipt or
+customer feedback is claimed by these checks.

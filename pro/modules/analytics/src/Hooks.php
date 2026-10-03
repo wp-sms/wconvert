@@ -106,11 +106,11 @@ final class Hooks
             $config['environment'] = wp_get_environment_type();
             $config['labels'] = [__('Analytics check', 'wconvert'), __('Local inspection only. Campaign activity is not sent from this test page.', 'wconvert'),
                 __('Send synthetic test event', 'wconvert'), __('Test stream Measurement ID (G-…)', 'wconvert'),
-                __('GTM sends to the stream configured in your container. Use a test workspace/property.', 'wconvert'),
+                $settings['route'] === 'plausible' ? __('Plausible sends WConvert Test to the site configured by your installed script. Use a dedicated test site and verify receipt in Plausible.', 'wconvert') : __('GTM sends to the stream configured in your container. Use a test workspace/property.', 'wconvert'),
                 __('Handed off does not confirm receipt. Verify wconvert_test in GA DebugView or Realtime.', 'wconvert'),
-                __('Close analytics check', 'wconvert'), __('Consent delegated to the existing Google tag / GTM', 'wconvert')];
+                __('Close analytics check', 'wconvert'), $settings['route'] === 'plausible' ? __('Collection delegated to the existing Plausible setup', 'wconvert') : __('Consent delegated to the existing Google tag / GTM', 'wconvert')];
             $config['statuses'] = [
-                'handed_off' => __('Handed off; verify receipt in GA', 'wconvert'),
+                'handed_off' => __('Handed off; verify receipt in analytics', 'wconvert'),
                 'consent_unknown' => __('Consent is not initialized', 'wconvert'),
                 'consent_withheld' => __('Statistics consent withheld', 'wconvert'),
                 'tag_unavailable' => __('Existing tag, data layer or stream is unavailable', 'wconvert'),

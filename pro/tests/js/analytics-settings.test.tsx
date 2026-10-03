@@ -7,17 +7,17 @@ const saved = { settings: { enabled: false, route: 'gtag', measurement_id: '', c
 beforeEach(() => { vi.mocked(apiFetch).mockReset(); vi.mocked(apiFetch).mockResolvedValue(saved); });
 it('keeps edited settings on save failure and protects dirty navigation', async () => {
   const onEditingStateChange = vi.fn(); render(<Settings onEditingStateChange={onEditingStateChange} />);
-  fireEvent.click(await screen.findByLabelText('Enable GA4 integration'));
+  fireEvent.click(await screen.findByLabelText('Enable analytics integration'));
   fireEvent.change(screen.getByLabelText('Measurement ID', { exact: true }), { target: { value: 'g-example123' } });
   await waitFor(() => expect(onEditingStateChange).toHaveBeenLastCalledWith({ dirty: true, busy: false }));
   vi.mocked(apiFetch).mockRejectedValueOnce({ message: 'Save failed' });
   fireEvent.click(screen.getByRole('button', { name: 'Save settings' }));
   await screen.findByText('Save failed');
   expect(screen.getByLabelText('Measurement ID', { exact: true })).toHaveValue('G-EXAMPLE123');
-  expect(screen.getByLabelText('Enable GA4 integration')).toBeChecked();
+  expect(screen.getByLabelText('Enable analytics integration')).toBeChecked();
 });
 it('only offers diagnostics for same-site URLs and makes GTM setup explicit', async () => {
-  render(<Settings />); await screen.findByLabelText('Enable GA4 integration');
+  render(<Settings />); await screen.findByLabelText('Enable analytics integration');
   fireEvent.click(screen.getByRole('button', { name: 'Test setup' }));
   expect(screen.getByRole('link', { name: 'Open diagnostics' })).toHaveAttribute('href', 'https://example.org/?wconvert-analytics=1');
   fireEvent.change(screen.getByLabelText('Website page URL'), { target: { value: 'https://other.example/' } });
@@ -34,15 +34,31 @@ it('uses a failed region with retry instead of leaving loading copy beside an er
   await screen.findByText('Cannot load settings');
   expect(screen.queryByText(/Loading Google Analytics/)).not.toBeInTheDocument();
   fireEvent.click(screen.getByRole('button', { name: 'Retry' }));
-  await screen.findByLabelText('Enable GA4 integration');
+  await screen.findByLabelText('Enable analytics integration');
 });
 it('keeps diagnostics closed for unsaved changes and lets the merchant discard them', async () => {
   render(<Settings />);
-  fireEvent.click(await screen.findByLabelText('Enable GA4 integration'));
+  fireEvent.click(await screen.findByLabelText('Enable analytics integration'));
   fireEvent.click(screen.getByRole('button', { name: 'Test setup' }));
   expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
   fireEvent.click(screen.getByRole('button', { name: 'Cancel changes' }));
-  expect(screen.getByLabelText('Enable GA4 integration')).not.toBeChecked();
+  expect(screen.getByLabelText('Enable analytics integration')).not.toBeChecked();
   fireEvent.click(screen.getByRole('button', { name: 'Test setup' }));
   expect(screen.getByRole('dialog', { name: 'Test analytics' })).toBeInTheDocument();
+});
+
+it('sets up Plausible without Google fields and asks for a fresh consent choice on provider changes', async () => {
+  vi.mocked(apiFetch).mockResolvedValue({ ...saved, settings: { ...saved.settings, consent: 'site' } });
+  render(<Settings />); await screen.findByLabelText('Enable analytics integration');
+  fireEvent.click(screen.getByRole('radio', { name: 'Plausible' }));
+  expect(screen.queryByLabelText('Measurement ID', { exact: true })).not.toBeInTheDocument();
+  expect(screen.getByRole('radio', { name: 'WP Consent API' })).toBeChecked();
+  expect(screen.getByRole('radio', { name: 'Existing tracker' })).not.toBeChecked();
+  expect(screen.getByRole('link', { name: 'Plausible setup' })).toHaveAttribute('href', saved.guide_url + '#plausible');
+  vi.mocked(apiFetch).mockResolvedValueOnce({ ...saved, settings: { ...saved.settings, route: 'plausible' } });
+  fireEvent.click(screen.getByRole('button', { name: 'Save settings' }));
+  await waitFor(() => expect(screen.getByRole('button', { name: 'Save settings' })).toBeDisabled());
+  expect(apiFetch).toHaveBeenLastCalledWith(expect.objectContaining({ method: 'POST', data: expect.objectContaining({ route: 'plausible', consent: 'wp' }) }));
+  fireEvent.click(screen.getByRole('button', { name: 'Test setup' }));
+  expect(screen.getByText(/Tests go to the site configured by your Plausible script/)).toBeInTheDocument();
 });

@@ -111,7 +111,7 @@ final class PolicyText
 
         $analytics = apply_filters('wconvert_analytics_privacy', null);
         if (is_array($analytics) && !empty($analytics['configured'])) {
-            $sections[] = '<h3>' . __('External campaign analytics', 'wconvert') . '</h3><p>' . __('We use our existing Google Analytics or Google Tag Manager installation to measure campaign appearances and accepted outcomes. WConvert supplies campaign identifiers, public labels and outcome types, not your submitted contact details or answers. The existing analytics tag may attach its own identifiers and page information. Collection follows this site’s configured consent controls.', 'wconvert') . '</p>';
+            $sections[] = '<h3>' . __('External campaign analytics', 'wconvert') . '</h3><p>' . __('We use our existing analytics installation (Google Analytics, Google Tag Manager or Plausible, as configured) to measure campaign appearances and accepted outcomes. WConvert supplies campaign identifiers, public labels and outcome types, not your submitted contact details or answers. The existing analytics tag may attach its own identifiers and page information. Collection follows this site’s configured consent controls.', 'wconvert') . '</p>';
         }
         return implode("\n", $sections);
     }

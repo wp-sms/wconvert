@@ -106,3 +106,59 @@ describe('analytics isolation', () => {
     expect(custom[1]).toEqual({ event: 'wconvert.test', wconvert: { campaign_id: null, optin_id: null, campaign_label: null, display_type: null, goal: null, outcome: null, capture_role: null, schema_version: 1, ga_event: 'wconvert_test', debug_mode: true } });
   });
 });
+
+describe('Plausible handoff', () => {
+  it('maps campaign outcomes to namespaced goals with allowlisted properties and passive impressions', () => {
+    const plausible = vi.fn(); const gtag = vi.fn(); const dataLayer: unknown[] = [];
+    vi.stubGlobal('plausible', plausible); vi.stubGlobal('gtag', gtag); vi.stubGlobal('dataLayer', dataLayer);
+    const analytics = createAnalytics({ ...config, route: 'plausible', measurement_id: '', dismissals: true });
+    analytics.observe('one', 'impression'); analytics.observe('one', 'capture'); analytics.observe('one', 'convert'); analytics.observe('one', 'dismiss');
+    expect(plausible.mock.calls.map(call => [call[0], call[1].interactive])).toEqual([
+      ['WConvert Impression', false], ['WConvert Lead', true], ['WConvert Dismiss', false],
+    ]);
+    expect(plausible.mock.calls[1][1].props).toEqual({ wcv_campaign_id: 'one', wcv_optin_id: 'one',
+      wcv_campaign_label: 'Campaign one', wcv_display_type: 'popup', wcv_goal: 'collect_email',
+      wcv_outcome: 'capture', wcv_capture_role: 'primary', wcv_schema_version: 1 });
+    expect(plausible.mock.calls[0][1].props).not.toHaveProperty('wcv_capture_role');
+    expect(gtag).not.toHaveBeenCalled(); expect(dataLayer).toEqual([]);
+  });
+  it('keeps quiz completion separate from secondary contact capture', () => {
+    const plausible = vi.fn(); vi.stubGlobal('plausible', plausible);
+    const analytics = createAnalytics({ ...config, route: 'plausible', campaigns: { one: { ...config.campaigns.one, outcome: 'quiz' } } });
+    analytics.observe('one', 'convert'); analytics.observe('one', 'capture');
+    expect(plausible.mock.calls.map(call => call[0])).toEqual(['WConvert Conversion', 'WConvert Lead']);
+    expect(plausible.mock.calls[1][1].props.wcv_capture_role).toBe('secondary');
+  });
+  it('contains missing or broken scripts without creating queues or falling back to Google', () => {
+    const gtag = vi.fn(); vi.stubGlobal('gtag', gtag);
+    const analytics = createAnalytics({ ...config, route: 'plausible' });
+    expect(analytics.observe('one', 'capture')).toBe('tag_unavailable');
+    expect(window).not.toHaveProperty('plausible');
+    vi.stubGlobal('plausible', () => { throw new Error('Tracker blocked'); });
+    expect(analytics.observe('one', 'capture')).toBe('failed');
+    expect(gtag).not.toHaveBeenCalled();
+  });
+  it('checks statistics and Plausible service denial on every event without replay', () => {
+    const plausible = vi.fn(); vi.stubGlobal('plausible', plausible);
+    const permission = vi.fn(() => false); vi.stubGlobal('wp_has_consent', permission);
+    const denied = vi.fn((service: string) => service === 'google-analytics'); vi.stubGlobal('wp_is_service_denied', denied);
+    const analytics = createAnalytics({ ...config, route: 'plausible', consent: 'wp' });
+    expect(analytics.observe('one', 'capture')).toBe('consent_unknown');
+    vi.stubGlobal('wp_consent_type', 'optin');
+    expect(analytics.observe('one', 'capture')).toBe('consent_withheld');
+    permission.mockReturnValue(true);
+    expect(analytics.observe('one', 'capture')).toBe('handed_off');
+    expect(denied).toHaveBeenLastCalledWith('plausible');
+    denied.mockReturnValue(true);
+    expect(analytics.observe('one', 'capture')).toBe('consent_withheld');
+    expect(plausible).toHaveBeenCalledOnce();
+  });
+  it('keeps diagnostics local and sends an explicit passive test without campaign data', () => {
+    const plausible = vi.fn(); vi.stubGlobal('plausible', plausible);
+    const analytics = createAnalytics({ ...config, route: 'plausible', dry_run: true });
+    expect(analytics.observe('one', 'capture')).toBe('dry_run');
+    expect(plausible).not.toHaveBeenCalled();
+    expect(analytics.test('')).toBe('handed_off');
+    expect(plausible).toHaveBeenCalledExactlyOnceWith('WConvert Test', { props: { wcv_schema_version: 1 }, interactive: false });
+  });
+});

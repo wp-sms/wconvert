@@ -14,8 +14,8 @@ export const analyticsIntegration: {
 } = {};
 export function AnalyticsIntegrationSettings(props: { onEditingStateChange?: SettingsEditing }) {
   const Component = analyticsIntegration.settings;
-  return Component ? <Suspense fallback={<RegionSkeleton label={__('Google Analytics 4', 'wconvert')} lines={4} />}><Component {...props} /></Suspense>
-    : <Region><RegionHeader title={__('Google Analytics 4', 'wconvert')} trailing={<Badge variant="secondary"><Lock aria-hidden="true" />{tierName('basic')}</Badge>} /><RegionBody><p className="m-0 text-note">{sprintf(__('Send campaign events through your existing Google tag or GTM with %s.', 'wconvert'), tierProductName('basic'))}</p></RegionBody></Region>;
+  return Component ? <Suspense fallback={<RegionSkeleton label={__('Analytics integrations', 'wconvert')} lines={4} />}><Component {...props} /></Suspense>
+    : <Region><RegionHeader title={__('Analytics integrations', 'wconvert')} trailing={<Badge variant="secondary"><Lock aria-hidden="true" />{tierName('basic')}</Badge>} /><RegionBody><p className="m-0 text-note">{sprintf(__('Send campaign events through your existing Google tag, GTM or Plausible script with %s.', 'wconvert'), tierProductName('basic'))}</p></RegionBody></Region>;
 }
 export function CampaignAnalytics(props: CampaignAnalyticsProps) {
   const Component = analyticsIntegration.campaign;

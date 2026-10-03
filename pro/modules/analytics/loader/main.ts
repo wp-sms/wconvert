@@ -39,8 +39,8 @@ function start() {
   const heading = document.createElement('strong'); heading.textContent = config.labels[0];
   const note = document.createElement('p'); note.textContent = `${config.labels[1]} (${config.environment}; ${config.consent === 'site' ? config.labels[7] : 'WP Consent API'})`;
   const target = document.createElement('input'); target.placeholder = config.labels[3]; target.setAttribute('aria-label', config.labels[3]);
-  target.hidden = config.route === 'gtm';
-  const help = document.createElement('p'); help.textContent = config.route === 'gtm' ? config.labels[4] : config.labels[5];
+  target.hidden = config.route !== 'gtag';
+  const help = document.createElement('p'); help.textContent = config.route !== 'gtag' ? config.labels[4] : config.labels[5];
   const button = document.createElement('button'); button.textContent = config.labels[2];
   const output = document.createElement('p'); output.setAttribute('role', 'status');
   button.onclick = () => { output.textContent = config.statuses[analytics.test(target.value.trim().toUpperCase())]; };

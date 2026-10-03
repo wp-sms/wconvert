@@ -2,8 +2,8 @@
 <html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>WConvert analytics setup</title>
 <style>body{font:17px/1.65 system-ui;max-width:850px;margin:40px auto;padding:0 24px;color:#17202a}code{background:#f3f4f6;padding:2px 4px}table{border-collapse:collapse;width:100%}td,th{border:1px solid #ddd;padding:10px;text-align:left}a{color:#2054aa}h2{margin-top:2em}</style>
-<h1>Measure your WConvert campaigns in GA4</h1>
-<p>WConvert sends campaign activity through the Google tag or Google Tag Manager already installed on your website. It does not install a tracker. Choose one route in Settings → Integrations. Native WConvert statistics continue independently.</p>
+<h1>Measure your WConvert campaigns</h1>
+<p>WConvert sends campaign activity through Google Analytics, Google Tag Manager or Plausible already installed on your website. It does not install a tracker. Choose one route in Settings → Integrations. Native WConvert statistics continue independently.</p>
 <h2>Existing Google tag</h2>
 <ol><li>Find your web stream's Measurement ID in GA Admin → Data streams (starts with <code>G-</code>).</li><li>Select Existing Google tag and enter that ID. The same stream must already be configured on your website, for example by Site Kit.</li><li>Choose consent handling, enable the integration and save. Clear any additional page or CDN cache.</li><li>Test on a page containing a published campaign. Having a <code>gtag</code> function only proves a local handoff is possible; verify receipt in GA.</li></ol>
 <h2 id="gtm">Google Tag Manager recipe</h2>
@@ -20,10 +20,25 @@
 <tr><td>wcv_goal</td><td>wconvert.goal</td></tr><tr><td>wcv_outcome</td><td>wconvert.outcome</td></tr>
 <tr><td>wcv_capture_role</td><td>wconvert.capture_role</td></tr><tr><td>wcv_schema_version</td><td>wconvert.schema_version</td></tr></table>
 <p>WConvert resets optional values to <code>null</code> on every data-layer push. This prevents the previous lead's capture role appearing on the next impression or test event. Keep the trigger narrow. Do not fire a second generic form tag for the same WConvert accepted lead.</p>
+<h2 id="plausible">Plausible setup</h2>
+<ol><li>Install and configure your Plausible script first, for example through its WordPress plugin. The page must expose the standard <code>window.plausible</code> function. WConvert does not install, initialize or redirect that script.</li>
+<li>Choose Plausible in Settings → Analytics integrations. No Google Measurement ID or API key is needed. Select consent handling, enable the integration and save. Switching between Google and Plausible resets the form's consent choice to WP Consent API for review.</li>
+<li>In Plausible's site settings, create custom event goals using the exact names below. Choose the goals you need for reporting. Custom events count toward Plausible usage, including impressions and synthetic tests. Campaign/property breakdowns require Plausible's custom-properties feature, currently on its Business plan.</li>
+<li>Clear page caches and verify with a dedicated test site. Inspect event requests and the Plausible dashboard. The script's configured site and endpoint own routing, including any proxy or self-hosted setup; WConvert does not override them. Use a compatible tracker with custom event/property support.</li></ol>
+<table><tr><th>Plausible event</th><th>Meaning</th></tr>
+<tr><td>WConvert Impression</td><td>Campaign becomes visible; passive, so it does not turn a bounce into an engaged visit.</td></tr>
+<tr><td>WConvert Lead</td><td>First accepted contact capture. Optional follow-up signups do not add another lead event.</td></tr>
+<tr><td>WConvert Conversion</td><td>Click conversion or quiz completion; separate from secondary contact capture.</td></tr>
+<tr><td>WConvert Dismiss</td><td>Deliberate dismissal when enabled; passive.</td></tr>
+<tr><td>WConvert Test</td><td>Explicit synthetic diagnostic event; passive, without campaign identity. Keep it out of business conversion reporting.</td></tr></table>
+<p>Properties use the same <code>wcv_</code> names listed in the Google table. Null fields are omitted. Filter the appropriate event by campaign ID or public label. Compare event totals when checking accepted acts; Plausible's visitor-based goal counts need not equal WConvert's native counters. Avoid duplicate generic form tracking for WConvert leads.</p>
+<p>WP Consent API mode requires statistics permission and honors explicit service denial for <code>plausible</code>. “Existing tracker” calls your script without a WConvert consent check: choose it only if that matches your site's collection policy. WConvert does not infer consent from Plausible's availability or grant consent.</p>
+<p>Diagnostics remain local until you press Send synthetic test event. Unlike direct GA4 tests, Plausible tests cannot select another stream: they go to the site configured by your installed tracker. A successful JavaScript call is not proof of receipt; blockers, localhost filtering, missing goals and provider configuration can still affect results.</p>
+<p>References: <a href="https://plausible.io/docs/custom-event-goals">Plausible custom events</a>, <a href="https://plausible.io/docs/custom-props/introduction">custom properties and plan availability</a>, <a href="https://plausible.io/docs/script-extensions">tracker configuration</a>.</p>
 <h2>Consent and privacy</h2>
-<p>The default WP Consent API mode requires an initialized consent manager exposing the <code>statistics</code> category. Unknown or denied permission withholds events. Service-specific denial for <code>google-analytics</code> is also respected where available. Consent is checked on every event. Events withheld before consent are not replayed.</p>
+<p>The default WP Consent API mode requires an initialized consent manager exposing the <code>statistics</code> category. Unknown or denied permission withholds events. Service-specific denial for <code>google-analytics</code> or <code>plausible</code>, matching the selected provider, is also respected where available. Consent is checked on every event. Events withheld before consent are not replayed.</p>
 <p>The alternative “Existing Google tag / GTM manages consent” explicitly delegates collection to your installed tracking configuration. WConvert cannot verify consent in this mode. Advanced Google Consent Mode may send cookieless requests when storage is denied. Check your configuration against your site's requirements.</p>
-<p>WConvert sends only campaign metadata: never form answers, email addresses, phone numbers, lead IDs or destination credentials. Public labels are visible to visitors and your analytics provider; use no personal information. The existing Google tag can collect its own standard page and session information, subject to your configuration. Update your privacy notice accordingly.</p>
+<p>WConvert sends only campaign metadata: never form answers, email addresses, phone numbers, lead IDs or destination credentials. Public labels are visible to visitors and your analytics provider; use no personal information. The existing analytics script can collect its own standard page and session information, subject to your configuration. Update your privacy notice accordingly.</p>
 <h2>Event meanings</h2>
 <table><tr><th>Event</th><th>When it happens</th></tr>
 <tr><td>wconvert_impression</td><td>An overlay appears or an inline campaign enters the viewport. A reminder alone is not an impression.</td></tr>

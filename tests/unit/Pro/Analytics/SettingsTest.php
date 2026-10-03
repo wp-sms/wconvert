@@ -31,6 +31,18 @@ final class SettingsTest extends TestCase
         }
     }
 
+    public function testPlausibleUsesExistingScriptWithoutGoogleStream(): void
+    {
+        $settings = new Settings(new FakeOptionStore());
+        $settings->save(['enabled' => true, 'route' => 'plausible'], 'https://example.org');
+        self::assertSame('plausible', $settings->read()['route']);
+        self::assertSame('', $settings->read()['measurement_id']);
+        self::assertTrue($settings->active('https://example.org', 'production', false));
+        self::assertFalse($settings->active('https://example.org', 'staging', false));
+        $this->expectException(\InvalidArgumentException::class);
+        $settings->save(['route' => 'gtag'], 'https://example.org');
+    }
+
     public function testCampaignPreferencesAreClosedAndUnicodeSafe(): void
     {
         self::assertSame(['off' => false, 'label' => ''], AnalyticsPreference::normalize(null));

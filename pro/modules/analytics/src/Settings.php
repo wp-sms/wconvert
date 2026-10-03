@@ -28,7 +28,7 @@ final class Settings
         foreach (['enabled', 'dismissals', 'exclude_managers'] as $key) {
             if (!is_bool($value[$key])) throw new \InvalidArgumentException(__('Invalid analytics setting.', 'wconvert'));
         }
-        if (!in_array($value['route'], ['gtag', 'gtm'], true) || !in_array($value['consent'], ['wp', 'site'], true)) {
+        if (!in_array($value['route'], ['gtag', 'gtm', 'plausible'], true) || !in_array($value['consent'], ['wp', 'site'], true)) {
             throw new \InvalidArgumentException(__('Choose a supported route and consent policy.', 'wconvert'));
         }
         $id = $value['measurement_id'];
