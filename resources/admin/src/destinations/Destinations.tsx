@@ -77,7 +77,7 @@ import {
   targetSaid,
   toDraft,
 } from './settings';
-import { isFreeInstall, renderingFor, tierName, tierProductName } from '../goals/availability';
+import { isFreeInstall, isShown, renderingFor, tierName, tierProductName } from '../goals/availability';
 import { issueCount } from './issueCount';
 
 /**
@@ -1079,7 +1079,7 @@ function Types({
 }) {
   // A free install lists only what it can set up (ADR 0116); `unavailable`
   // still explains itself here, because this is a settings list.
-  const types = all.filter((type) => renderingFor(type.availability, 'settings_list') !== 'hide');
+  const types = all.filter((type) => isShown(type.availability));
   return (
     <Region>
       {types.map((type) =>

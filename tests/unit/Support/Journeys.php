@@ -5,7 +5,7 @@ namespace WConvert\Tests\Unit\Support;
 use WConvert\Template\JourneySupport;
 
 /**
- * Pro's journeys module registering itself, for a suite that is not booting
+ * Pro registering journeys, as its provider does when the module shipped, for a suite that is not booting
  * Pro (ADR 0116). The filter is global, so every `on()` has an `off()` in the
  * same test class's `tearDown()`.
  */

@@ -141,7 +141,10 @@ always been a shared decision function; what was missing is a shared *rendering*
 [`renderingFor()`](../../resources/admin/src/goals/availability.ts) maps
 `ready | locked | unavailable` × `creation_flow | settings_list` to
 `offer | upsell | explain | hide`, and no surface ever renders `unavailable` as
-an upsell. That half is load-bearing: a paying customer must never be shown an
+an upsell.
+*Amended by [ADR 0116](0116-free-shows-nothing-it-cannot-run.md): `locked` maps
+to `upsell` only on a paid install. On a free install it maps to `hide`, so the
+grey-and-lock badge below never appears there.* That half is load-bearing: a paying customer must never be shown an
 advertisement for Pro, and we must never offer to sell a merchant a WooCommerce
 licence we do not have (ADR 0026).
 

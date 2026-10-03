@@ -17,8 +17,8 @@ export interface AdminSettings {
   readonly phoneDefaultCountry?: string;
   readonly installedTier?: 'free' | 'basic' | 'pro' | 'elite';
   /**
-   * Whether Pro's `journeys` module registered question journeys on this
-   * install — `JourneySupport::active()`, read on the server (ADR 0116).
+   * Whether Pro registered question journeys on this install — its provider
+   * does so when the `journeys` module shipped — `JourneySupport::active()`, read on the server (ADR 0116).
    *
    * A capability, not a tier: the builder offers questions, results, screen
    * conditions and flexible paths only when the module that runs them is on

@@ -116,7 +116,7 @@ export function additionsIn(tree: TemplateTree, at: Spot, act: ConvertingAct): A
 
 /**
  * The one per-install exception to "the manifest decides": a `question` runs
- * only where Pro's `journeys` module registered it, so a free install is not
+ * only where Pro registered journeys (its `journeys` module shipped), so a free install is not
  * offered one at all — not even disabled, which would be an upsell by another
  * name (ADR 0116). The manifest still declares it, because free's validator
  * has to recognise one arriving in an import.

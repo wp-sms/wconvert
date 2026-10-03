@@ -103,6 +103,15 @@ export function renderingFor(availability: Availability, surface: Surface): Rend
 }
 
 /**
+ * Whether a list draws a member at all. Only a locked member on a free install
+ * is left out (ADR 0116); `unavailable` stays, because the surface that draws
+ * it decides whether to explain or hide it — {@link renderingFor} says which.
+ */
+export function isShown(availability: Availability): boolean {
+  return availability !== 'locked' || !isFreeInstall();
+}
+
+/**
  * ============================================================================
  * WHAT TO CALL THE TIER A LOCKED MEMBER NEEDS.
  * ============================================================================

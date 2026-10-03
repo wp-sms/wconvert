@@ -1186,6 +1186,10 @@ it('tells a free install it cannot display a journey draft, without naming Pro',
   await user.click(screen.getByRole('button', { name: 'Manage screens' }));
   expect(screen.getByText('This design uses elements this site can’t display.')).toBeInTheDocument();
   expect(screen.queryByText(/WConvert Pro|requires Pro|needs Pro/)).not.toBeInTheDocument();
+  // An imported journey is not edited further on a free install.
+  expect(screen.queryByRole('heading', { name: 'Results' })).not.toBeInTheDocument();
+  expect(screen.queryByText('When visitors see their result')).not.toBeInTheDocument();
+  expect(screen.queryByRole('textbox', { name: 'Question' })).not.toBeInTheDocument();
   await user.click(screen.getByRole('button', { name: 'More screen options' }));
   expect(screen.queryByRole('menuitem', { name: 'Add question screen' })).not.toBeInTheDocument();
 });

@@ -5,7 +5,7 @@ import { Button } from '../components/ui/button';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../components/ui/dialog';
 import { DestinationSettingsForm } from '../destinations/DestinationSettingsForm';
 import { saveDestination, type Connection, type Destination, type DestinationType } from '../destinations/api';
-import { renderingFor, tierProductName } from '../goals/availability';
+import { isShown, renderingFor, tierProductName } from '../goals/availability';
 import { ProviderMark } from '../destinations/ProviderMark';
 import { messageOf } from '../shell/loadable';
 
@@ -27,7 +27,7 @@ export function DestinationSetupDialog({
   const title = useRef<HTMLHeadingElement>(null);
   const description = useId();
   const type = types.find((candidate) => candidate.id === selected);
-  const offered = types.filter((candidate) => renderingFor(candidate.availability, 'settings_list') !== 'hide');
+  const offered = types.filter((candidate) => isShown(candidate.availability));
   useEffect(() => { title.current?.focus(); }, [selected]);
   const close = () => { if (!busy) onClose(); };
 

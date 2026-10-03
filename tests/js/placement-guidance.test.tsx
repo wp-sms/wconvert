@@ -189,3 +189,18 @@ describe('the real site-check URL', () => {
     expect(siteCheckUrl(undefined, 'inspect')).toBeNull();
   });
 });
+
+describe('automatic placement saved on an install without Pro', () => {
+  /** It describes manual placement and sells nothing (ADR 0116). */
+  it('falls back to the manual steps on a free install', () => {
+    render(<PlacementGuidance optinId={OPTIN} displayType="inline" inlinePlacement={{ position: 'before_content' }} published />);
+    expect(screen.queryByText(/Pro places this Campaign/)).toBeNull();
+    expect(screen.getByRole('textbox', { name: 'Shortcode for other editors' })).toHaveValue(inlineShortcode(OPTIN));
+  });
+
+  it('keeps the automatic explanation on a paid install', () => {
+    window.wconvertAdmin = { exportUrl: '', installedTier: 'basic' };
+    render(<PlacementGuidance optinId={OPTIN} displayType="inline" inlinePlacement={{ position: 'before_content' }} published />);
+    expect(screen.getByText(/Pro places this Campaign/)).toBeInTheDocument();
+  });
+});

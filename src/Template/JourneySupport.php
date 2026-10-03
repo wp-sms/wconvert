@@ -11,8 +11,8 @@ defined('ABSPATH') || exit;
  * ============================================================================
  * A CAPABILITY PRO REGISTERS, NEVER A TIER FREE ASKS ABOUT.
  * ============================================================================
- * Free answers "no" and nothing in free can change that. Pro's `journeys`
- * module adds to {@see self::FILTER} from its own provider, so the yes arrives
+ * Free answers "no" and nothing in free can change that. Pro's provider adds
+ * to {@see self::FILTER} when its `journeys` module shipped, so the yes arrives
  * with the code that runs a journey and is absent wherever that code is
  * (ADR 0015, ADR 0116). Free's publish refusal, capture refusal, suspension,
  * pack validator and builder all ask this one question, and none of them names

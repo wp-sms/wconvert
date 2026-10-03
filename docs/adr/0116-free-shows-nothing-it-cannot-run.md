@@ -2,9 +2,11 @@
 
 Date: 2026-10-03
 
-Amends [ADR 0015](0015-enforcement-is-by-non-registration.md),
+Amends [ADR 0012](0012-degradation-substitutes-triggers-and-drops-conditions.md),
+[ADR 0015](0015-enforcement-is-by-non-registration.md),
 [ADR 0026](0026-a-goal-the-site-cannot-serve-is-hidden.md),
-[ADR 0043](0043-the-library-is-indexed-and-its-facets-are-derived.md) and
+[ADR 0043](0043-the-library-is-indexed-and-its-facets-are-derived.md),
+[ADR 0060](0060-a-screen-is-four-situations-and-they-are-answered-the-same-way.md) and
 [ADR 0106](0106-question-journeys-extend-the-paid-loader.md).
 
 ## Context

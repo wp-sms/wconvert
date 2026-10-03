@@ -102,6 +102,9 @@ widened audience trades a missing feature for a factually false one.
   reused rather than a second rule being invented, so a locked design is an
   upsell on both surfaces and the precedence this ADR settles has nothing to
   decide.
+  *Amended by [ADR 0116](0116-free-shows-nothing-it-cannot-run.md): an upsell
+  on both surfaces **of a paid install**. On a free install `renderingFor()`
+  answers `hide` for `locked`, and the server sends it no locked design.*
 
   The **upsell metadata stays bundled**, which is the half worth restating here:
   `resources/templates/locked.json` carries a premium design's name, its facets

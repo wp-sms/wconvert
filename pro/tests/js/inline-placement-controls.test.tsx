@@ -2,7 +2,7 @@ import { displayPlan } from '../../../tests/js/support/display-entry';
 import { useState } from 'react';
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { expect, it } from 'vitest';
+import { expect, it, onTestFinished } from 'vitest';
 import PlacementSettings from '../../modules/inline-placement/admin/PlacementSettings';
 import { InlinePlacementSettings } from '@/inlinePlacement';
 import { PlacementGuidance } from '@/builder/PlacementGuidance';
@@ -79,6 +79,9 @@ it('Free can explicitly return a previously automatic campaign to manual placeme
 });
 
 it('automatic publish guidance does not tell merchants to insert a shortcode', () => {
+  // A paid install; a free one falls back to manual placement (ADR 0116).
+  window.wconvertAdmin = { exportUrl: '', installedTier: 'basic' };
+  onTestFinished(() => { delete window.wconvertAdmin; });
   render(<PlacementGuidance optinId="example" displayType="inline" inlinePlacement={{ position: 'after_paragraph', paragraph: 3 }} published />);
   expect(screen.getByText('Automatically after paragraph 3')).toBeInTheDocument();
   expect(screen.queryByRole('textbox')).toBeNull();

@@ -1046,7 +1046,8 @@ inferred the manifest enumerates it
 
 A versioned collection of downloadable designs, installed explicitly from a
 configured catalog. The format supports Free popup/inline designs and Pro
-question journeys for an installed paid tier. It supplies no renderer code,
+question journeys where Pro registered them (`JourneySupport`,
+[ADR 0116](docs/adr/0116-free-shows-nothing-it-cannot-run.md)). It supplies no renderer code,
 site-local destinations, product IDs, or links. Installed
 versions remain local and retain source baselines; updates affect the library
 for future choices, never existing Optin snapshots. Browsing and installation

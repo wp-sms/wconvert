@@ -4,7 +4,7 @@ import { Badge } from '../components/ui/badge';
 import { Button } from '../components/ui/button';
 import { Skeleton } from '../components/ui/skeleton';
 import { useShownAfterDelay } from '../shell/skeletonDelay';
-import { renderingFor, tierName } from '../goals/availability';
+import { isShown, renderingFor, tierName } from '../goals/availability';
 import { displayTypeLabel } from '../displayTypes';
 import { CompareSelection } from '../discovery/CompareSelection';
 import { TemplateCard } from './TemplateCard';
@@ -199,7 +199,7 @@ export function Gallery({
 }: GalleryProps) {
   return (
     <ul className="wconvert-gallery" data-preview-first={onPreview !== undefined || undefined}>
-      {entries.filter((entry) => renderingFor(entry.availability, 'settings_list') !== 'hide').map((entry) => {
+      {entries.filter((entry) => isShown(entry.availability)).map((entry) => {
         const locked = renderingFor(entry.availability, 'settings_list') === 'upsell';
         const inUse = entry.id === chosen;
         const refused = refusalFor(entry, fit);

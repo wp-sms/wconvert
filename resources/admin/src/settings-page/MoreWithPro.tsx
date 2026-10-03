@@ -1,6 +1,7 @@
 import { __, sprintf } from '@wordpress/i18n';
 import { ExternalLink } from 'lucide-react';
 import { tierName } from '../goals/availability';
+import { EXPLORE_PRO_URL } from '../shell/HeaderTools';
 
 /**
  * Free's one list of what Pro adds — static, bundled copy with no remote
@@ -21,7 +22,7 @@ export function MoreWithPro() {
         <li>{__('A/B testing', 'wconvert')}</li>
         <li>{__('Email marketing and analytics integrations', 'wconvert')}</li>
       </ul>
-      <a className="mt-2 inline-flex items-center gap-1 underline" href="https://wconvert.io/pro/" target="_blank" rel="noreferrer">
+      <a className="mt-2 inline-flex items-center gap-1 underline" href={EXPLORE_PRO_URL} target="_blank" rel="noreferrer">
         {sprintf(__('Explore %s', 'wconvert'), tierName('pro'))}<ExternalLink aria-hidden="true" className="size-3" />
       </a>
     </aside>

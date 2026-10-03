@@ -1,4 +1,4 @@
-import { renderingFor } from '../goals/availability';
+import { isShown } from '../goals/availability';
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import { LayoutTemplate, SlidersHorizontal, X } from 'lucide-react';
@@ -79,7 +79,7 @@ export function TemplatePicker({
       };
       // Hidden members leave the counts and facets too, not only the cards
       // (ADR 0116).
-      return index.templates.filter((entry) => entry.display_type === displayType && renderingFor(entry.availability, 'settings_list') !== 'hide')
+      return index.templates.filter((entry) => entry.display_type === displayType && isShown(entry.availability))
         .sort((a, b) => rank(a.id) - rank(b.id));
     },
     [index.templates, displayType],
