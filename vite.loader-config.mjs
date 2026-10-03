@@ -44,7 +44,7 @@ export function loaderConfig({ entry, outDir, name, fileName = 'loader.js' }) {
     resolve: {
       alias: {
         // Free's loader tree, so Pro's entry can name it readably. There is
-        // deliberately NO alias pointing into pro/: free's tree has no reason
+        // deliberately NO alias pointing into Pro's tree: free's tree has no reason
         // to reach that way, and an alias would be a second spelling of a path
         // the source contract scans for.
         '@loader': resolve(root, 'resources/loader/src'),
