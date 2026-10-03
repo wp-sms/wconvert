@@ -102,6 +102,7 @@ test('real editor loads Pro controls, simulates reopening, and saves draft setti
   await page.getByRole('button', { name: 'Log In', exact: true }).click();
   await page.waitForURL('**/wp-admin/');
   await page.goto(`/wp-admin/admin.php?page=wconvert#optins?edit=${id}`);
+  await page.getByRole('tab', { name: 'Theme & layout', exact: true }).click();
   await page.getByRole('button', { name: 'Design settings', exact: true }).click();
   const text = page.getByLabel('Button text', { exact: true });
   await expect(text).toHaveValue('Get my discount');
@@ -114,10 +115,10 @@ test('real editor loads Pro controls, simulates reopening, and saves draft setti
   await expect(page.getByRole('region', { name: 'Design canvas' }).locator('[data-wconvert-reopen]')).toBeVisible();
   await page.evaluate(() => window.testShadows.find(root => root.host.hasAttribute('data-wconvert-reopen') && root.host.isConnected).querySelector('button').click());
   await expect(page.getByRole('combobox', { name: 'Campaign screen', exact: true })).toHaveValue('0');
-  await page.getByRole('button', { name: 'Preview', exact: true }).click();
-  await page.getByRole('button', { name: 'Close preview', exact: true }).click();
+  await reopenTab.click();
+  await page.getByRole('button', { name: 'Preview & test', exact: true }).click();
+  await page.getByRole('dialog', { name: 'Preview & test', exact: true }).getByRole('button', { name: 'Back to editor', exact: true }).click();
   await expect(reopenTab).toHaveAttribute('aria-pressed', 'true');
-  await page.getByRole('button', { name: 'Edit', exact: true }).click();
   await page.getByRole('button', { name: 'Mobile preview', exact: true }).click();
   await page.getByText('Colors and mobile', { exact: true }).click();
   await page.getByRole('checkbox', { name: 'Show on mobile', exact: true }).uncheck();
@@ -137,6 +138,7 @@ test('real editor loads Pro controls, simulates reopening, and saves draft setti
   await page.getByRole('button', { name: 'Save draft', exact: true }).click();
   expect((await saved).ok()).toBe(true);
   await page.reload();
+  await page.getByRole('tab', { name: 'Theme & layout', exact: true }).click();
   await page.getByRole('button', { name: 'Design settings', exact: true }).click();
   await expect(text).toHaveValue('Save my offer');
   await reopenTab.click();

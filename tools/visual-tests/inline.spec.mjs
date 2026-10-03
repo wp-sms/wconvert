@@ -252,15 +252,19 @@ editorTest('goal-first inline setup enables automatic placement and publishes', 
   await page.goto('/wp-admin/admin.php?page=wconvert#optins');
   await page.getByRole('button', { name: 'Create campaign', exact: true }).click();
   await page.getByRole('listitem').filter({ has: page.getByRole('heading', { name: 'Grow my email list', exact: true }) }).getByRole('button', { name: 'Choose', exact: true }).click();
-  await page.getByRole('button', { name: 'Inline form', exact: true }).click();
+  const inline = page.getByRole('radio', { name: 'Inline form', exact: true });
+  await page.locator('label').filter({ has: inline }).click();
+  await expect(inline).toBeChecked();
   await expect(page.getByText('Newsletter signup after an article', { exact: true })).toBeVisible();
   await expect(page.getByText('Inline form', { exact: true }).last()).toBeVisible();
+  await page.getByRole('button', { name: 'Setup details for Newsletter signup after an article', exact: true }).click();
   await page.getByRole('button', { name: 'Use this setup', exact: true }).click();
 
   // Placement authoring belongs only to Display rules. Design must contain no
   // placement summary or route, in either the initial manual state or later
   // automatic state.
-  const design = page.getByRole('tabpanel', { name: 'Design', exact: true });
+  await page.getByRole('tab', { name: 'Theme & layout', exact: true }).click();
+  const design = page.getByRole('tabpanel', { name: 'Theme & layout', exact: true });
   await expect(design).toBeVisible();
   await expect(design.getByText('Manual', { exact: true })).toHaveCount(0);
   await expect(design.getByRole('button', { name: 'Change inline placement', exact: true })).toHaveCount(0);
@@ -322,7 +326,7 @@ editorTest('goal-first inline setup enables automatic placement and publishes', 
 
   // Return to Design: placement remains entirely absent, including after the
   // automatic state has been committed.
-  await page.getByRole('tab', { name: 'Design', exact: true }).click();
+  await page.getByRole('tab', { name: 'Theme & layout', exact: true }).click();
   await expect(design.getByText('Automatically after content', { exact: true })).toHaveCount(0);
   await expect(design.getByRole('button', { name: 'Change inline placement', exact: true })).toHaveCount(0);
   await expect(design.getByRole('radio', { name: 'Automatic', exact: true })).toHaveCount(0);
@@ -364,8 +368,8 @@ editorTest('goal-first inline setup enables automatic placement and publishes', 
   await page.getByRole('group', { name: 'Enable content lock', exact: true }).getByRole('button', { name: 'Enable content lock', exact: true }).click();
   await expect(page.getByRole('radio', { name: 'Content lock', exact: true })).toBeChecked();
   await expect(page.getByRole('radio', { name: 'Automatic', exact: true })).not.toBeChecked();
-  const previewButton = page.getByRole('button', { name: 'Preview campaign', exact: true });
-  const previewDialog = page.getByRole('dialog', { name: 'Preview campaign', exact: true });
+  const previewButton = page.getByRole('button', { name: 'Preview & test', exact: true });
+  const previewDialog = page.getByRole('dialog', { name: 'Preview & test', exact: true });
   const canvas = previewDialog.getByRole('region', { name: 'Design canvas', exact: true });
   const preview = canvas.getByLabel('Preview content lock', { exact: true });
   await expect(placementPanel.getByLabel('Preview content lock', { exact: true })).toHaveCount(0);
@@ -376,6 +380,7 @@ editorTest('goal-first inline setup enables automatic placement and publishes', 
     await expect(rulesPanel.getByRole('region', { name: 'Design canvas', exact: true })).toHaveCount(0);
     await previewButton.click();
     await expect(previewDialog).toBeVisible();
+    await previewDialog.getByRole('button', { name: 'Check the design', exact: true }).click();
     await expect(preview).toBeVisible();
     for (const direction of ['ltr', 'rtl']) {
       await page.evaluate(dir => { document.documentElement.dir = dir; }, direction);
@@ -403,6 +408,7 @@ editorTest('goal-first inline setup enables automatic placement and publishes', 
   await expect(placementPanel).not.toContainText('—');
   await previewButton.click();
   await expect(previewDialog).toBeVisible();
+  await previewDialog.getByRole('button', { name: 'Check the design', exact: true }).click();
   await preview.selectOption('locked');
   await preview.scrollIntoViewIfNeeded();
   await page.screenshot({ path: info.outputPath('content-lock-workspace.png'), fullPage: true });

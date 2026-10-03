@@ -8,6 +8,7 @@ import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ruleTypes } from './support/rule-types';
 import type { TemplateEntry, TemplateIndex, TemplateIndexEntry } from '../../resources/admin/src/templates/api';
+import { inlinePlacementControls } from '../../resources/admin/src/inlinePlacement';
 
 /**
  * The builder shell, against the four decisions #69 and #71 make about it that
@@ -615,6 +616,36 @@ describe('the builder shell', () => {
     await userEvent.click(screen.getByRole('tab', { name: 'Theme & layout' }));
     const canvas = screen.getByRole('region', { name: 'Design canvas' });
     expect(canvas).toHaveAttribute('data-width', 'narrow');
+  });
+
+  it('keeps content-lock states available in the design check opened from Display rules', async () => {
+    inlinePlacementControls.preview = ({ state }) => <p>Lock example: {state}</p>;
+    inlinePlacementControls.previewControls = ({ state, onStateChange }) => <select aria-label="Preview content lock" value={state} onChange={event => onStateChange(event.target.value as 'locked' | 'unlocked' | 'unavailable')}><option>locked</option><option>unlocked</option><option>unavailable</option></select>;
+    try {
+      builder.getOptin.mockResolvedValue(optin({ config: { ...optin().config, display_type: 'inline', content_lock: { mode: 'hide' } } }));
+      await open();
+      await userEvent.click(screen.getByRole('tab', { name: 'Display rules' }));
+      await userEvent.click(screen.getByRole('button', { name: 'Preview & test' }));
+      const preview = within(await screen.findByRole('dialog', { name: 'Preview & test' }));
+      await userEvent.click(preview.getByRole('button', { name: 'Check the design' }));
+      await userEvent.selectOptions(preview.getByRole('combobox', { name: 'Preview content lock' }), 'unavailable');
+      expect(preview.getByText('Lock example: unavailable')).toBeInTheDocument();
+      await userEvent.click(preview.getByRole('button', { name: 'Back to editor' }));
+      expect(screen.getByRole('tab', { name: 'Display rules' })).toHaveAttribute('aria-selected', 'true');
+      await userEvent.click(screen.getByRole('tab', { name: 'Edit campaign' }));
+      expect(screen.queryByRole('combobox', { name: 'Preview content lock' })).not.toBeInTheDocument();
+      await userEvent.click(screen.getByRole('tab', { name: 'Display rules' }));
+      await userEvent.click(screen.getByRole('button', { name: 'Preview & test' }));
+      const again = within(await screen.findByRole('dialog', { name: 'Preview & test' }));
+      await userEvent.click(again.getByRole('button', { name: 'Try as a visitor' }));
+      await userEvent.click(again.getByRole('button', { name: 'Edit this screen' }));
+      expect(screen.getByRole('tab', { name: 'Edit campaign' })).toHaveAttribute('aria-selected', 'true');
+      expect(screen.queryByRole('dialog', { name: 'Preview & test' })).not.toBeInTheDocument();
+      expect(screen.queryByRole('combobox', { name: 'Preview content lock' })).not.toBeInTheDocument();
+    } finally {
+      delete inlinePlacementControls.preview;
+      delete inlinePlacementControls.previewControls;
+    }
   });
 
   /**

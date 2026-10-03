@@ -121,3 +121,4 @@
 
 .wconvert-journey-test__other { margin-block-start: 1rem; padding-block-start: .75rem; border-block-start: 1px solid var(--border); }
 .wconvert-journey-test__other > summary { cursor: pointer; font-weight: 500; }
+.wconvert-preview-test__placement { flex: 1; min-block-size: 0; min-inline-size: 0; overflow: auto; }

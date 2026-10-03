@@ -170,6 +170,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
   const [tab, setTab] = useState<TabId>('journey');
   const [journeyVisited, setJourneyVisited] = useState(true);
   const previewReturnTab = useRef<TabId>('journey');
+  const [previewFromRules, setPreviewFromRules] = useState(false);
   const [journeyTestRequest, setJourneyTestRequest] = useState(0);
   useEffect(() => { if (tab === 'journey') setJourneyVisited(true); }, [tab]);
   const [journeyRepair, setJourneyRepair] = useState<(JourneyRepair & { serial: number }) | null>(null);
@@ -647,7 +648,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
     setSelection(null);
     setOpenToken(null);
   };
-  const showingLock = tab === 'rules' && config.content_lock != null && displayTypeOf(config, templates) === 'inline' && !!inlinePlacementControls.preview;
+  const showingLock = (tab === 'rules' || (tab === 'journey' && previewFromRules)) && config.content_lock != null && displayTypeOf(config, templates) === 'inline' && !!inlinePlacementControls.preview;
   const selectedResult = entry?.tree.steps[step]?.results?.find(result => result.id === editingResult);
   const canvasTemplate = entry && selectedResult && !previewing ? { ...entry, tree: { ...entry.tree, steps: entry.tree.steps.map((screen, index) => index === step ? { ...screen, results: [{ ...selectedResult, when: undefined }] } : screen) } } : entry;
   const previewPane =
@@ -837,7 +838,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
             aria-label={__('Preview & test', 'wconvert')}
             title={__('Preview & test', 'wconvert')}
             disabled={entry === null || busy}
-            onClick={() => { previewReturnTab.current = tab; setTab('journey'); setPreviewing(false); setJourneyTestRequest(value => value + 1); }}
+            onClick={() => { previewReturnTab.current = tab; setPreviewFromRules(tab === 'rules'); setTab('journey'); setPreviewing(false); setJourneyTestRequest(value => value + 1); }}
           >
             <Eye aria-hidden="true" />
             {!small && __('Preview & test', 'wconvert')}
@@ -871,7 +872,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
             privacyGuidance={privacyGuidance}
             policyUrl={adminSettings()?.policyUrl}
             onPublish={publish}
-            onPreview={() => { previewReturnTab.current = tab; setTab('journey'); setPreviewing(false); setJourneyTestRequest(value => value + 1); }}
+            onPreview={() => { previewReturnTab.current = tab; setPreviewFromRules(tab === 'rules'); setTab('journey'); setPreviewing(false); setJourneyTestRequest(value => value + 1); }}
             onEditDesign={() => { setTab('design'); setPreviewing(false); setShowLayers(true); setDrawer('layers'); layersButton.current?.focus(); }}
             onEditJourney={repair => { setTab('journey'); setPreviewing(false); if (repair) setJourneyRepair({ ...repair, serial: ++journeyRepairSerial.current }); }}
             onGoToDesign={() => { setTab('design'); setPreviewing(false); setBrowsing(true); }}
@@ -900,6 +901,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
           {!entry && <EmptyState icon={Blocks} title={__('Choose a campaign to customize', 'wconvert')} action={<Button onClick={() => setBrowsing(true)}>{__('Browse designs and formats', 'wconvert')}</Button>}>{__('Start with a ready-made design, then make it yours.', 'wconvert')}</EmptyState>}
           {entry && <JourneyEditor onUndo={history.canUndo ? history.undo : undefined} embedded labels={gallery.labels} onResultSelect={setEditingResult}
             editorCanvas={previewPane}
+            appearancePreview={showingLock ? previewPane : undefined}
             editorTools={<DeviceControls width={width} onChange={setWidth} />}
             elementSelection={selection ?? undefined}
             onClearElement={() => setSelection(null)}
@@ -909,7 +911,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
               onDesign={() => { setTab('design'); designSettings(); }} onShowLayers={() => { setTab('design'); setShowLayers(true); setDrawer('layers'); }}
               look={<ScopeStyle key={selection.path.join('.')} template={entry} labels={gallery.labels} path={selection.path} openToken={openToken} onOpenToken={setOpenToken} onSelect={chooseFromTree}
                 onChange={next => edit({ template: next })} copied={copiedLook} onCopy={setCopiedLook} width={width === 'narrow' ? 'narrow' : 'tokens'} />} /> : undefined}
-            testRequest={journeyTestRequest} onTestClose={() => setTab(previewReturnTab.current)}
+            testRequest={journeyTestRequest} onTestExit={() => setPreviewFromRules(false)} onTestClose={() => { const returnTab = previewReturnTab.current; previewReturnTab.current = 'journey'; setTab(returnTab); }}
             outcomeAction={entryOfGoal?.outcome.action} primaryChannel={entryOfGoal?.outcome.audience_channel} tree={entry.tree} tokens={entry.tokens} step={shownStep} repairRequest={journeyRepair ?? undefined}
             focusActions={<><HistoryControls history={{ ...history, canUndo: !busy && history.canUndo, canRedo: !busy && history.canRedo }} />
               <Button type="button" variant="outline" size="sm" disabled={busy || !dirty} onClick={() => void save()}>{busy ? __('Saving…', 'wconvert') : __('Save draft', 'wconvert')}</Button></>}

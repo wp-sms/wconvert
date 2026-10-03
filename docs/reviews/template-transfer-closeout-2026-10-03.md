@@ -34,7 +34,7 @@ independent standards and specification passes.
   the merge gate for a clean complete run.
 - Node 22 gzip checks pass without increasing budgets: Free 14,583 B, Basic
   25,057 B, Pro 26,581 B, Elite 26,812 B. Phone and combined ceilings pass too.
-- Native WordPress 6.8.3 / PHP 8.1 single-site and multisite checks cover denied
+- Native WordPress / PHP 8.1 single-site and multisite checks cover denied
   permissions, restricted MIME types, exhausted quota, failure on the second
   sideload, unwritable progress checkpoint, rollback, successful retry,
   idempotence, unchanged campaign persistence, and staging cancellation.
@@ -50,3 +50,19 @@ leave an unused attachment. Handling that would require the deferred orphan
 collector; this remains explicit in ADR 0113. No schema or dependency was added.
 
 Merge only after the exact PR head's **CI / Required checks** succeeds.
+
+
+## Final browser gate follow-up
+
+CI passed the complete Vitest suite, PHP/database checks, TypeScript, ESLint,
+loader/source contracts, 68 admin browser cases and seven fullscreen visitor
+cases. Its fullscreen creation check exposed a clipped-radio click target; the
+test now clicks the visible label and asserts the selected radio.
+
+Later reopen and inline checks were still using the old editor tabs and preview
+controls. They now follow Theme & layout and Preview & test. This also exposed
+an existing content-lock preview regression: the shared dialog lost Display
+rules context. The existing simulation is restored under Check the design,
+with context cleared on both normal close and edit/path navigation. The new
+regression failed before the fix, then passed alongside 654 related frontend
+tests. Canvas styling now also applies inside the portalled preview dialog.
