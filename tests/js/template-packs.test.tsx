@@ -1,5 +1,5 @@
 import { treeFixture } from './support/journey';
-import { beforeEach, expect, it, vi } from 'vitest';
+import { beforeEach, expect, it, onTestFinished, vi } from 'vitest';
 import { StrictMode } from 'react';
 import { act, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -208,7 +208,10 @@ it('keeps pack search and availability on return from a design preview',async()=
   expect(api.installPack).not.toHaveBeenCalled();
 });
 
-it('offers the same public preview entry for a premium pack without downloading or installing it', async () => {
+it('offers the same public preview entry for a premium pack on a paid install without downloading or installing it', async () => {
+  // A paid install; a free one is shown no premium pack (ADR 0116).
+  window.wconvertAdmin = { exportUrl: '', installedTier: 'basic' };
+  onTestFinished(() => { delete window.wconvertAdmin; });
   api.catalogStatus.mockResolvedValue({ ...listed, packs: [{ ...listed.packs[0], access: 'premium', preview_url: 'https://catalog.example/previews/revision.html' }] });
   render(<TemplatePacks displayType="inline" onInstalled={vi.fn()} />);
   const link = await screen.findByRole('link', { name: 'View public previews ↗' });
@@ -217,4 +220,25 @@ it('offers the same public preview entry for a premium pack without downloading 
   expect(screen.getByText('Pro')).toBeVisible();
   expect(api.previewPack).not.toHaveBeenCalled();
   expect(api.installPack).not.toHaveBeenCalled();
+});
+
+it('lists no premium pack on a free install, beside the packs it can install', async () => {
+  api.catalogStatus.mockResolvedValue({ ...listed, packs: [
+    { ...listed.packs[0], id: 'premium', name: 'Premium pack', access: 'premium', preview_url: 'https://catalog.example/previews/premium.html' },
+    listed.packs[0],
+  ] });
+  render(<TemplatePacks displayType="inline" onInstalled={vi.fn()} />);
+  expect(await screen.findByText('Reading pack')).toBeVisible();
+  expect(screen.queryByText('Premium pack')).not.toBeInTheDocument();
+  expect(screen.queryByText('Pro')).not.toBeInTheDocument();
+  expect(screen.getByText('1 pack')).toBeVisible();
+  expect(screen.getByText('1 matching pack')).toBeVisible();
+});
+
+it('counts no premium pack on a free install that is offered nothing else', async () => {
+  api.catalogStatus.mockResolvedValue({ ...listed, packs: [{ ...listed.packs[0], id: 'premium', name: 'Premium pack', access: 'premium' }] });
+  render(<TemplatePacks displayType="inline" onInstalled={vi.fn()} />);
+  await waitFor(() => expect(api.catalogStatus).toHaveBeenCalled());
+  expect(screen.queryByText('Premium pack')).not.toBeInTheDocument();
+  expect(screen.queryByText(/matching pack/)).not.toBeInTheDocument();
 });

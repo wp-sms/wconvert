@@ -123,7 +123,7 @@ final class Suspension
     public function reason(): string
     {
         if ($this->rule === 'journey_questions') {
-            return __('Suspended — this question journey needs WConvert Pro, which is not active.', 'wconvert');
+            return __('Suspended — this design uses elements this site can’t display.', 'wconvert');
         }
         // **Not an upsell, and never one**: a rule the SITE cannot serve is
         // not something we can sell (ADR 0026). Reachable as of #36, whose two
@@ -145,11 +145,13 @@ final class Suspension
             );
         }
 
-        // Nothing the SITE is missing, so the tier is what is — and this is
-        // the one cause that is buyable from us.
+        // Nothing the SITE is missing, so the install is. Stated without naming
+        // a product: a free install reaches this only after Pro was removed,
+        // and free's admin carries no upsell beyond its one header link
+        // (ADR 0116).
         return sprintf(
             /* translators: %s: the display name of the rule the Optin cannot run without. */
-            __('Suspended — the “%s” rule needs WConvert Pro, which is not active', 'wconvert'),
+            __('Suspended — the “%s” rule isn’t available on this site', 'wconvert'),
             RuleLabels::type($this->rule)
         );
     }

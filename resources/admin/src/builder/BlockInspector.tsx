@@ -1,3 +1,4 @@
+import { journeysSupported } from '../settings';
 import { useId, useState, type ReactNode } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import { ArrowLeftRight, Check, ChevronRight, Layers, Type } from 'lucide-react';
@@ -231,6 +232,9 @@ function contentBody({
   onSetEndDate?: () => void;
 }) {
   const node = nodeAt(template.tree, path) as { action?: string; submission?: string } | null;
+  if (block.type === 'question' && !journeysSupported()) {
+    return <p className="text-note text-muted-foreground">{__('This design uses elements this site can’t display.', 'wconvert')}</p>;
+  }
   if (block.type === 'question') {
     return <QuestionSettings tree={template.tree} step={Number(path[0])} onChange={tree => onChange({ ...template, tree })} onSelect={() => undefined} />;
   }

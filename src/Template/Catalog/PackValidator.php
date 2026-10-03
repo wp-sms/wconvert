@@ -12,6 +12,7 @@ use WConvert\Template\TemplateSource;
 use WConvert\Template\TemplateTree;
 use WConvert\Template\TemplateVocabulary;
 use WConvert\Template\CaptureJourney;
+use WConvert\Template\JourneySupport;
 use WConvert\Support\Tier;
 use WConvert\Support\WpProPresence;
 
@@ -106,7 +107,7 @@ final class PackValidator
             $tree = $template['tree'] ?? null;
             self::check(is_array($tree), __('This design has no tree.', 'wconvert'));
             if (CaptureJourney::requiresPremium($tree)) {
-                self::check($tier !== Tier::Free && $this->installedTier->includes(Tier::Basic), __('This question journey needs Pro.', 'wconvert'));
+                self::check($tier !== Tier::Free && JourneySupport::active(), __('This design uses elements this site can’t display.', 'wconvert'));
                 $requiredCapabilities[] = 'question-journey:1';
             }
             $this->keys($tree, $this->portable ? ['v', 'steps', 'submissions', 'graph'] : ['v', 'steps', 'submissions']);

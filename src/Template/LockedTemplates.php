@@ -20,7 +20,7 @@ defined('ABSPATH') || exit;
  *
  * So what is bundled is the card and not the design: a name, its Display Type,
  * the facets that let it sit in the same filtered grid as everything else, and
- * a link to a live preview on wconvert.com. No tree, no tokens, **and no
+ * a link to a live preview on wconvert.io. No tree, no tokens, **and no
  * thumbnail** — ADR 0010's *no static thumbnails anywhere* is untouched here,
  * because a locked card carries no image at all.
  *

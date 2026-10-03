@@ -50,7 +50,6 @@ final class CaptureController implements RestController
         private readonly \WConvert\Lead\CaptureGrant $grants,
         private readonly TemplateVocabulary $vocabulary,
         private readonly CaptureRateLimit $rateLimit,
-        private readonly ?\WConvert\Goal\GoalRegistry $goals = null,
         private readonly ?\WConvert\Protection\Protection $protection = null,
     ) {
     }
@@ -130,7 +129,7 @@ final class CaptureController implements RestController
         if ($saved === null) { return new WP_Error('wconvert_unavailable', __('This form is no longer available.', 'wconvert'), ['status' => 404]); }
         $config = $saved->publishedConfig;
         if (\WConvert\Template\CaptureJourney::requiresPremium($config['template']['tree'] ?? [])
-            && ($this->goals === null || !$this->goals->supportsJourneys())) {
+            && !\WConvert\Template\JourneySupport::active()) {
             return new WP_Error('wconvert_journey_unavailable', __('This journey is temporarily unavailable. Please try again later.', 'wconvert'), ['status' => 503]);
         }
         $goal = $saved->goal;

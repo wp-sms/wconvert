@@ -1,4 +1,5 @@
 import { __ } from '@wordpress/i18n';
+import { isFreeInstall } from './goals/availability';
 
 /**
  * User-facing facts for the closed Display Type vocabulary.
@@ -31,6 +32,18 @@ export function displayTypeDescription(type?: string): string {
   } as Record<string, string>)[type ?? ''] ?? type ?? '';
 }
 
-export function displayTypeOptions(): readonly { value: string; label: string }[] {
-  return DISPLAY_TYPES.map((value) => ({ value, label: displayTypeLabel(value) }));
+/** The formats free ships; every other one arrives with Pro's display-types module. */
+const FREE_DISPLAY_TYPES: readonly string[] = ['popup', 'inline'];
+
+/**
+ * The formats a picker offers. A free install is offered only the two it can
+ * publish — a format it could only buy is not a choice there (ADR 0116).
+ *
+ * `current` keeps a saved value selectable after Pro was removed, so a select
+ * never silently shows a format the draft does not have.
+ */
+export function displayTypeOptions(current?: string): readonly { value: string; label: string }[] {
+  return DISPLAY_TYPES
+    .filter((value) => !isFreeInstall() || FREE_DISPLAY_TYPES.includes(value) || value === current)
+    .map((value) => ({ value, label: displayTypeLabel(value) }));
 }

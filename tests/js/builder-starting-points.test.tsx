@@ -1,7 +1,7 @@
 import { displayPlan } from './support/display-entry';
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { describe, expect, it, vi } from 'vitest';
+import { describe, expect, it, onTestFinished, vi } from 'vitest';
 import { StartingPoints } from '../../resources/admin/src/builder/rules/StartingPoints';
 import { DisplayRules } from '../../resources/admin/src/builder/rules/DisplayRules';
 import { ruleBundle, ruleTypes } from './support/rule-types';
@@ -128,5 +128,27 @@ describe('finding the right starting point', () => {
         { type: 'exit_intent', id: expect.any(String) }, { type: 'scroll_up', id: expect.any(String) },
       ] },
     } });
+  });
+});
+
+describe('a display rule set this install would have to buy', () => {
+  const paid = ruleBundle({ id: 'leaving', label: 'As they leave', availability: 'locked', triggers: [{ type: 'exit_intent' }] });
+
+  /** A free install is offered no locked set, not even a badged card (ADR 0116). */
+  it('is not listed on a free install', async () => {
+    setup(paid);
+    await userEvent.click(screen.getByRole('button', { name: 'Browse display rule sets' }));
+    expect(screen.queryByText('As they leave')).not.toBeInTheDocument();
+    expect(screen.queryByText('Pro')).not.toBeInTheDocument();
+  });
+
+  it('is listed with its tier on a paid install, and cannot be taken', async () => {
+    window.wconvertAdmin = { exportUrl: '', installedTier: 'basic' };
+    onTestFinished(() => { delete window.wconvertAdmin; });
+    setup(paid);
+    await userEvent.click(screen.getByRole('button', { name: 'Browse display rule sets' }));
+    expect(screen.getByText('As they leave')).toBeInTheDocument();
+    expect(screen.getByText('Pro')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /As they leave/ })).not.toBeInTheDocument();
   });
 });

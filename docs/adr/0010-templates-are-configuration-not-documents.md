@@ -273,7 +273,7 @@ third-party ones. Under configuration they are properties of the one renderer.
   *Untouched by [ADR 0043](0043-the-library-is-indexed-and-its-facets-are-derived.md),
   and worth saying because that ADR introduces a card with no render on it. A
   **locked** card — a design free ships the advertisement for and not the design
-  — carries its facets in words and a link to a live preview on wconvert.com. It
+  — carries its facets in words and a link to a live preview on wconvert.io. It
   carries **no image at all**, so there is still nothing to produce and nothing
   to let go stale. What changed is when a real card renders: `TemplateCard`
   mounts its preview only while near the viewport, because forty on one screen

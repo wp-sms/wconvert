@@ -458,7 +458,7 @@ verdict
 #      DESIGN in the free artifact, whatever the admin then does with it.
 #   2. A `tree` anywhere in locked.json. That file exists precisely to carry
 #      the CARD and not the design — a name, its facets and a link to a live
-#      preview on wconvert.com — so a tree in it is the trialware shape
+#      preview on wconvert.io — so a tree in it is the trialware shape
 #      arriving through the file written to prevent it.
 #
 # Grepped rather than parsed, deliberately. A shell program that decoded JSON

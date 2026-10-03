@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, onTestFinished, vi } from 'vitest';
 import { act, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { destinationHref, leadsHref } from '../../resources/admin/src/nav';
@@ -242,6 +242,9 @@ describe('the destinations screen', () => {
   });
 
   it('explains an unavailable type rather than offering to sell it', async () => {
+    // A paid install meeting a higher rung's type (ADR 0116).
+    window.wconvertAdmin = { exportUrl: '', installedTier: 'basic' };
+    onTestFinished(() => { delete window.wconvertAdmin; });
     api.readDestinations.mockResolvedValue({
       types: [{ ...WSMS_READY, availability: 'unavailable' as const }, MAILCHIMP_LOCKED],
       destinations: [],
@@ -268,6 +271,40 @@ describe('the destinations screen', () => {
     // used, which is `tierProductName`'s documented last resort.
     expect(screen.getByText('Included with WConvert Pro.')).toBeInTheDocument();
     expect(screen.queryByText(/Needs null/)).not.toBeInTheDocument();
+  });
+
+  /** A free install lists only what it can set up, and explains the rest (ADR 0116). */
+  it('lists no type a free install would have to buy', async () => {
+    api.readDestinations.mockResolvedValue({
+      types: [{ ...WSMS_READY, availability: 'unavailable' as const }, MAILCHIMP_LOCKED],
+      destinations: [],
+      connections: [],
+      failures: [],
+    });
+
+    render(<Destinations />);
+
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Add a destination' })).toBeEnabled());
+    await userEvent.click(screen.getByRole('button', { name: 'Add a destination' }));
+    expect(await screen.findByText('Needs WP SMS on this site.')).toBeInTheDocument();
+    expect(screen.queryByText('Mailchimp')).not.toBeInTheDocument();
+    expect(screen.queryByText(/Included with/)).not.toBeInTheDocument();
+  });
+
+  /** A route saved under Pro keeps its card on free, and sells nothing (ADR 0116). */
+  it('names no product on a saved route whose type a free install lacks', async () => {
+    api.readDestinations.mockResolvedValue({
+      types: [MAILCHIMP_LOCKED],
+      destinations: [{ ...HEALTHY, type: 'mailchimp', label: 'Mailchimp audience', availability: 'locked' as const }],
+      connections: [],
+      failures: [],
+    });
+
+    render(<Destinations />);
+
+    expect(await screen.findByText('This destination type isn’t available on this site, so captures are not being sent.')).toBeInTheDocument();
+    expect(screen.getByText('Not available')).toBeInTheDocument();
+    expect(screen.queryByText(/WConvert Pro/)).not.toBeInTheDocument();
   });
 
   /**

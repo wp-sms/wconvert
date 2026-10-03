@@ -1,7 +1,7 @@
 import { displayPlan } from './support/display-entry';
 import { treeFixture } from './support/journey';
 import { CLICK_OUTCOME } from './support/outcomes';
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { beforeEach, describe, expect, it, onTestFinished, vi } from 'vitest';
 import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { DOCUMENT_STYLE_ID } from '@renderer/mount';
@@ -151,13 +151,25 @@ const unloadPrevented = () => {
 };
 
 describe('a goal then a draft', () => {
-  it('preserves ready, locked and unavailable Goal semantics', async () => {
+  it('preserves ready, locked and unavailable Goal semantics on a paid install', async () => {
+    // A paid install meeting a higher rung's Goal (ADR 0116).
+    window.wconvertAdmin = { exportUrl: '', installedTier: 'basic' };
+    onTestFinished(() => { delete window.wconvertAdmin; });
     render(<GoalScreen onCreated={vi.fn()} />);
     await screen.findByText('Grow my email list');
     expect(screen.getByText('Promote a sale or offer')).toBeInTheDocument();
     expect(screen.getByText(/Available with/)).toBeInTheDocument();
     expect(screen.queryByText('Bring shoppers back to their cart')).not.toBeInTheDocument();
     expect(screen.getByText('Choice 1 of 2')).toBeInTheDocument();
+  });
+
+  /** A free install is sold no Goal: the locked card is not drawn at all (ADR 0116). */
+  it('hides a locked Goal on a free install', async () => {
+    render(<GoalScreen onCreated={vi.fn()} />);
+    await screen.findByText('Grow my email list');
+    expect(screen.queryByText('Promote a sale or offer')).not.toBeInTheDocument();
+    expect(screen.queryByText(/Available with/)).not.toBeInTheDocument();
+    expect(screen.queryByText('Pro')).not.toBeInTheDocument();
   });
 
   it('keeps loading separate from an empty Goal registry and offers retry on failure', async () => {
@@ -186,6 +198,15 @@ describe('a goal then a draft', () => {
     expect(screen.getByText('Nothing goes live until you publish.')).toBeInTheDocument();
     expect(screen.getByRole('radio', { name: 'All formats' })).toBeChecked();
     expect(screen.getByText('Popup', { selector: '[data-slot="badge"]' })).toBeVisible();
+  });
+
+  it('lists no setup a free install would have to buy', async () => {
+    goals.listPlaybooks.mockResolvedValue([PLAYBOOK, { ...PLAYBOOK, id: 'paid-setup', name: 'Paid setup', template_id: 'paid-card', availability: 'locked' as const }]);
+    render(<GoalScreen onCreated={vi.fn()} />);
+    await pickGoal();
+    await screen.findByText('Welcome discount');
+    expect(screen.queryByText('Paid setup')).not.toBeInTheDocument();
+    expect(screen.queryByText(/Available with/)).not.toBeInTheDocument();
   });
 
   it('labels every setup with its format and filters the goal-scoped choices', async () => {
@@ -638,6 +659,9 @@ it('changes the use case inside inspection and creates the exact chosen snapshot
 });
 
 it('uses one collection dialog, recovers an empty filtered stage and restores its view after inspection', async () => {
+  // A floating bar is a paid format; a free install is not offered it (ADR 0116).
+  window.wconvertAdmin = { exportUrl: '', installedTier: 'basic' };
+  onTestFinished(() => { delete window.wconvertAdmin; });
   const announcement = { ...PLAYBOOK, id: 'sale-bar', name: 'Sale announcement', template_id: 'bar', setup: { ...PLAYBOOK.setup, display_type: 'floating_bar' } };
   goals.listPlaybooks.mockResolvedValue([PLAYBOOK, announcement]);
   const data = await picker.pickerData();

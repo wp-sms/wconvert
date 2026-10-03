@@ -2,6 +2,7 @@
 namespace WConvert\Tests\Unit\Template\Transfer;
 
 use PHPUnit\Framework\TestCase;
+use WConvert\Tests\Unit\Support\Journeys;
 use WConvert\Template\Transfer\TransferDraft;
 use WConvert\Template\Catalog\PackValidator;
 use WConvert\Template\TemplateManifest;
@@ -10,6 +11,16 @@ use WConvert\Template\{TemplateVocabulary, CaptureJourney, GraphCaptureContract}
 
 final class TransferDraftTest extends TestCase
 {
+    protected function setUp(): void
+    {
+        Journeys::on();
+    }
+
+    protected function tearDown(): void
+    {
+        Journeys::off();
+    }
+
     public function testKeepContentPreservesImportedCopyAndPicturesWithoutCarryingSettings(): void
     {
         $vocabulary = TemplateVocabulary::fromManifest();

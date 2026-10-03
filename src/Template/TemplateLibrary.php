@@ -125,7 +125,7 @@ final class TemplateLibrary
                 // **No `tree` is the whole discriminator.** A candidate with no
                 // tree is a design this install did not get, and the card for
                 // it is bundled metadata pointing at a live preview on
-                // wconvert.com ({@see LockedTemplates}).
+                // wconvert.io ({@see LockedTemplates}).
                 if (!is_array($candidate['tree'] ?? null)) {
                     if (!isset($locked[$id])) {
                         $locked[$id] = self::stub($id, $candidate, $vocabulary);

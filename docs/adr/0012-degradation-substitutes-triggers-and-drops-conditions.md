@@ -58,6 +58,8 @@ The substitution itself is asymmetric by rule kind:
   without one.*
 - **Display type does not degrade at all** — a Playbook whose type is premium is
   shown as an upsell card and is not selectable.
+  *Amended by [ADR 0116](0116-free-shows-nothing-it-cannot-run.md): an upsell
+  card on a paid install; on a free install it is not shown.*
   *Untouched by [#33](https://github.com/navidkashani/wconvert/issues/33), and
   said out loud rather than left to be inferred from silence. This bullet needs
   **no resolver**, which is the point of it — but it does need a surface, and

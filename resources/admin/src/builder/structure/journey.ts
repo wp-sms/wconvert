@@ -8,6 +8,21 @@ export function walkNodes(node: TemplateNode, includeHidden = true): TemplateNod
   return [node, ...[...(b.children ?? []), ...(b.start ?? []), ...(b.end ?? [])].flatMap(child => walkNodes(child, includeHidden))];
 }
 
+/**
+ * Whether a tree uses question-journey structure — the TypeScript spelling of
+ * `CaptureJourney::requiresPremium()`, and it has to agree with it: a graph, a
+ * screen condition, an answer path, a result screen or a question node.
+ *
+ * The builder asks it on an install whose Pro `journeys` module is absent, to
+ * say once that the draft holds something this site cannot display rather than
+ * offering controls the publish route would refuse (ADR 0116).
+ */
+export function usesJourneyElements(tree: TemplateTree): boolean {
+  if (tree.graph) return true;
+  return tree.steps.some(screen => !!screen.when || !!screen.paths || screen.kind === 'result'
+    || walkNodes(screen.content).some(node => node.type === 'question'));
+}
+
 /** The explicit acceptance boundary for one declared submission. */
 export function submissionScreen(tree: TemplateTree, id: string | undefined): number {
   if (!id) return -1;

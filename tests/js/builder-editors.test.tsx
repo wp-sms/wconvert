@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, onTestFinished, vi } from 'vitest';
 import { DisplayRules, type DisplayRulesValue } from '../../resources/admin/src/builder/rules/DisplayRules';
 import { ruleTypes } from './support/rule-types';
 import { displayPlan } from './support/display-entry';
@@ -98,6 +98,9 @@ describe('display workspace', () => {
     expect(within(picker).queryByText('time_on_page')).toBeNull();
   });
   it('explains missing premium capability without offering a disabled rule control', async () => {
+    // A paid install meeting a higher rung's rule (ADR 0116).
+    window.wconvertAdmin = { exportUrl: '', installedTier: 'basic' };
+    onTestFinished(() => { delete window.wconvertAdmin; });
     setup(initial, { pro: 'locked' }); await section('Opening moment');
     await userEvent.click(screen.getByRole('button', { name: 'Add a rule' }));
     const picker = screen.getByRole('dialog', { name: 'Choose a rule' });

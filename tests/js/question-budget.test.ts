@@ -1,9 +1,13 @@
-import { expect, it } from 'vitest';
+import { afterEach, beforeEach, expect, it } from 'vitest';
 import type { TemplateTree } from '@renderer/types';
 import fixture from '../fixtures/journey-graph-branch-groups.json';
 import { questionPath } from '../../resources/admin/src/builder/structure/questionBudget';
 import { additionsIn } from '../../resources/admin/src/builder/structure/catalogue';
 import { journeyReadinessIssues } from '../../resources/admin/src/builder/structure/journeyReadiness';
+
+// Journey authoring is offered only where Pro's `journeys` module registered it (ADR 0116).
+beforeEach(() => { window.wconvertAdmin = { exportUrl: '', journeys: true }; });
+afterEach(() => { delete window.wconvertAdmin; });
 const base = fixture as unknown as TemplateTree;
 const extra = (count: number): TemplateTree => ({ ...base, steps: base.steps.map(screen => screen.id === 'home_garden'
   ? { ...screen, content: { type: 'stack', children: [screen.content, ...Array.from({ length: count }, (_, i) => ({ type: 'question', id: `n${100 + i}`, label: `Extra ${i + 1}`, answer_type: 'text' as const, required: false }))] } } : screen) });

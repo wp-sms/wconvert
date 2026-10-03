@@ -95,6 +95,24 @@ final class OptinWriteTest extends TestCase
         self::assertNull($this->optins->find($draft['id'])?->publishedAt);
     }
 
+    /**
+     * Without the journeys module's registration a journey stays a draft, and
+     * the refusal names neither a product nor a tier (ADR 0116).
+     */
+    public function testAJourneyIsNotPublishedWhereNoModuleRegisteredJourneys(): void
+    {
+        \WConvert\Tests\Unit\Support\Journeys::off();
+        $fixture = json_decode((string) file_get_contents(self::PLUGIN_DIR . '/tests/fixtures/journey-graph-coffee.json'), true);
+        $draft = $this->create(Goal::FindMatch, ['template' => $fixture['template'], 'capture_mode' => 'local']);
+        self::assertIsArray($draft);
+        $request = new WP_REST_Request(); $request->set_param('id', $draft['id']);
+        $response = $this->controller->publish($request);
+        self::assertInstanceOf(WP_Error::class, $response);
+        self::assertSame('wconvert_journey_unsupported', $response->get_error_code());
+        self::assertStringNotContainsString('Pro', $response->get_error_message());
+        self::assertNull($this->optins->find($draft['id'])?->publishedAt);
+    }
+
     public function testJourneyRefusalIncludesItsRepairCategoryWithoutPublishingTheDraft(): void
     {
         $fixture = json_decode((string) file_get_contents(self::PLUGIN_DIR . '/tests/fixtures/journey-graph-coffee.json'), true);
@@ -197,9 +215,15 @@ final class OptinWriteTest extends TestCase
 
     private \WConvert\Destination\DestinationStore $destinations;
 
+    protected function tearDown(): void
+    {
+        \WConvert\Tests\Unit\Support\Journeys::off();
+    }
+
     protected function setUp(): void
     {
         $GLOBALS['wconvertTestRoutes'] = [];
+        \WConvert\Tests\Unit\Support\Journeys::on();
 
         $templates = TemplateVocabulary::fromManifest(self::PLUGIN_DIR);
         $vocabulary = RuleVocabulary::fromManifest(self::PLUGIN_DIR);

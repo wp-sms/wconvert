@@ -73,7 +73,7 @@ final class Settings
             else {
                 $rules = apply_filters('wconvert_protection_validate_rules', null, $body['rules']);
                 if ($rules instanceof WP_Error) { return $rules; }
-                if (!is_array($rules)) { return new WP_Error('wconvert_protection_rules_unavailable', __('These filters require WConvert Pro.', 'wconvert'), ['status' => 422]); }
+                if (!is_array($rules)) { return new WP_Error('wconvert_protection_rules_unavailable', __('These filters aren’t available on this site.', 'wconvert'), ['status' => 422]); }
             }
         }
         $this->options->set(self::OPTION, ['provider' => $provider, 'site_key' => $provider === 'none' ? '' : $site,

@@ -230,7 +230,8 @@ export function FocusCamera({ mapRoot, selectedId, nextId, contextIds, firstId, 
 export function JourneyMap({ tree, selected, focusedPath = null, onSelect, onSelectPath, onConnect, onReconnect, samplePath = null, sampleEdges = null, traceKind = 'sample', issues = noIssues, onIssue, displaySummary, onGoToRules, destinationSummary, onGoToDestinations, onPreview, onAdd }: {
   traceKind?: 'sample' | 'visited'; issues?: readonly JourneyReadinessIssue[]; onIssue?(issue: JourneyReadinessIssue): void;
   tree: TemplateTree; selected: number | null; onSelect(index: number): void; onSelectPath(index: number, priority: number | 'hidden'): void;
-  onConnect(source: string, target: string): void; samplePath?: readonly number[] | null; sampleEdges?: readonly string[] | null; focusedPath?: number | 'hidden' | null;
+  /** Absent where answer paths are not authorable here — no journeys module (ADR 0116). */
+  onConnect?(source: string, target: string): void; samplePath?: readonly number[] | null; sampleEdges?: readonly string[] | null; focusedPath?: number | 'hidden' | null;
   onReconnect?(edgeId: string, target: string): void;
   displaySummary?: string; onGoToRules?(): void; destinationSummary?: string; onGoToDestinations?(): void; onPreview?(index: number): void; onAdd?(index: number, edgeId?: string): void;
 }) {
@@ -416,7 +417,7 @@ export function JourneyMap({ tree, selected, focusedPath = null, onSelect, onSel
       minZoom={mapMinZoom} maxZoom={1.5} deleteKeyCode={null} panOnScroll={!narrow} preventScrolling={!narrow} zoomOnScroll={false} zoomOnPinch
       onNodeClick={(event, node) => { if (node.type === 'screen' && !(event.target instanceof Element && event.target.closest('button'))) onSelect(tree.steps.findIndex(step => step.id === node.id)); }}
       onEdgeClick={(_, edge) => { const data = edge.data as { sourceIndex?: number; priority?: number | 'hidden' } | undefined; if (data?.sourceIndex !== undefined) onSelectPath(data.sourceIndex, data.priority ?? 0); }}
-      isValidConnection={valid} onConnect={connection => { if (editingConnections && connection.source && connection.target && valid(connection)) onConnect(connection.source, connection.target); }}
+      isValidConnection={valid} onConnect={connection => { if (editingConnections && connection.source && connection.target && valid(connection)) onConnect?.(connection.source, connection.target); }}
       onReconnect={(edge, connection) => {
         if (editingConnections && tree.graph && connection.source === edge.source && valid(connection)) onReconnect?.(edge.id, connection.target);
       }}
@@ -435,7 +436,7 @@ export function JourneyMap({ tree, selected, focusedPath = null, onSelect, onSel
         }
       }}>
       <Background gap={24} size={1} color="#dce5dd" />
-      <FocusCamera editingConnections={editingConnections} onEditConnections={() => setEditingConnections(value => !value)} mapRoot={mapRoot} selectedId={visibleId(tree.steps[cameraIndex]?.id ?? tree.steps[0].id)} nextId={routesFor(tree, cameraIndex)[0]?.to ? visibleId(routesFor(tree, cameraIndex)[0].to) : undefined}
+      <FocusCamera editingConnections={editingConnections} onEditConnections={onConnect ? () => setEditingConnections(value => !value) : undefined} mapRoot={mapRoot} selectedId={visibleId(tree.steps[cameraIndex]?.id ?? tree.steps[0].id)} nextId={routesFor(tree, cameraIndex)[0]?.to ? visibleId(routesFor(tree, cameraIndex)[0].to) : undefined}
         contextIds={cameraContext} firstId={visibleId(tree.graph?.entry ?? tree.steps[0].id)}
         initialOverview={selected === null && cameraFocus === null && view.length <= (groups.length ? 4 : 3)} overviewWidth={groups.length && view.length > 3 ? 900 : 600}
         grouping={detectedGroups.length ? { active: groups.length > 0, toggle: () => { setGrouping(groups.length === 0); setExpandedGroups([]); } } : undefined}

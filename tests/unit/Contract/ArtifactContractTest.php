@@ -409,7 +409,7 @@ final class ArtifactContractTest extends TestCase
     /**
      * **The trialware shape arriving through the file written to prevent it.**
      * `locked.json` carries the CARD — a name, its facets, a link to a live
-     * preview on wconvert.com — and never the design. A tree in it is a premium
+     * preview on wconvert.io — and never the design. A tree in it is a premium
      * design in the free ZIP by another route.
      */
     public function testFailsWhenTheLockedMetadataCarriesADesign(): void

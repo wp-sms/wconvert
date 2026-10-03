@@ -41,8 +41,15 @@ it('authors optional settings with on-demand help and without visitor storage or
 
 it('Free explains retained settings and offers no premium authoring controls', () => {
   render(<EditionSettings value={{ label: 'Saved offer' }} template={template} onChange={vi.fn()} />);
-  expect(screen.getByText(/settings are saved, but showing it requires Pro/)).toBeInTheDocument();
+  expect(screen.getByText('This Campaign has a reopen button saved. It isn’t shown on this site.')).toBeInTheDocument();
+  expect(screen.queryByText(/Pro/)).toBeNull();
   expect(screen.queryByRole('checkbox')).toBeNull();
+});
+
+/** With nothing saved there is nothing to explain, and nothing to sell (ADR 0116). */
+it('Free says nothing about a reopen button that was never set up', () => {
+  const { container } = render(<EditionSettings value={undefined} template={template} onChange={vi.fn()} />);
+  expect(container).toBeEmptyDOMElement();
 });
 
 it('uses the shared canvas device choice for mobile visibility without visitor storage', () => {

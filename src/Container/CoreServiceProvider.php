@@ -211,8 +211,7 @@ final class CoreServiceProvider implements ServiceProvider
             Degradation::class,
             static fn (ServiceContainer $c): Degradation => new Degradation(
                 $c->resolve(RuleVocabulary::class),
-                $c->resolve(SuppliedRules::class),
-                $c->resolve(ProPresence::class)
+                $c->resolve(SuppliedRules::class)
             )
         );
         // The template vocabulary, read the same way and for the same reason:
@@ -496,7 +495,6 @@ final class CoreServiceProvider implements ServiceProvider
                 new \WConvert\Lead\CaptureGrant(wp_salt('auth')),
                 $c->resolve(TemplateVocabulary::class),
                 $c->resolve(CaptureRateLimit::class),
-                $c->resolve(GoalRegistry::class),
                 $c->resolve(\WConvert\Protection\Protection::class)
             )
         );

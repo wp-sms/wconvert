@@ -55,3 +55,11 @@ it('sends an empty secret to retain an existing key and clears it from the UI af
   await waitFor(() => expect(apiFetch).toHaveBeenLastCalledWith({ path: '/wconvert/v1/protection', method: 'POST', data: { provider: 'turnstile', site_key: 'new-site', secret: '' } }));
   await screen.findByText('Settings saved.');
 });
+/** Filters saved under Pro, with Pro gone: the way out is named, and nothing is sold (ADR 0116). */
+it('pauses forms over unavailable saved filters without naming a product', async () => {
+  vi.mocked(apiFetch).mockResolvedValue({ ...saved, rules_configured: true });
+  render(<SpamProtection />);
+  expect(await screen.findByText('Forms are paused: saved email filters aren’t available on this site. Remove the filters to resume.')).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: 'Remove unavailable filters' })).toBeInTheDocument();
+  expect(screen.queryByText(/WConvert Pro/)).not.toBeInTheDocument();
+});
