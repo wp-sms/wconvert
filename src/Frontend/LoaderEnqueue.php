@@ -158,14 +158,20 @@ final class LoaderEnqueue
             wp_add_inline_script(self::PHONE_HANDLE, 'window.__wcPhoneLabels=' . wp_json_encode([
                 'fallback' => __('Include + and the country code, for example +1 202 555 0123.', 'wconvert'),
                 'select' => __('Select country', 'wconvert'),
+                /* translators: 1: a country's name, 2: its calling code without the plus sign, for example 44. */
                 'trigger' => __('Select country: %1$s (+%2$s)', 'wconvert'),
                 'closeSelector' => __('Close country selector', 'wconvert'),
                 'close' => __('Close', 'wconvert'),
                 'search' => __('Search…', 'wconvert'),
                 'searchCountries' => __('Search countries', 'wconvert'),
                 'countries' => __('Countries', 'wconvert'),
-                'oneResult' => __('%s result', 'wconvert'),
-                'manyResults' => __('%s results', 'wconvert'),
+                // The phone bundle has no wp.i18n to evaluate a plural rule
+                // with, so it is handed the forms for one and for several, and
+                // picks between those two by count.
+                /* translators: %s: the number of countries matching the search. */
+                'oneResult' => _n('%s result', '%s results', 1, 'wconvert'),
+                /* translators: %s: the number of countries matching the search. */
+                'manyResults' => _n('%s result', '%s results', 2, 'wconvert'),
                 'too_short' => __('Enter a longer phone number.', 'wconvert'),
                 'too_long' => __('This phone number is too long.', 'wconvert'),
                 'invalid_length' => __('Check the phone number length.', 'wconvert'),
@@ -220,14 +226,14 @@ final class LoaderEnqueue
             // JSON_HEX_TAG, which is the escaping this context needs. Running
             // esc_html() over it would escape the quotes and produce invalid
             // JSON — a silent break, because the tag still renders and only
-            // the loader's JSON.parse fails, in the browser, at runtime. It
-            // escapes the two route URLs itself with esc_url(), where the
-            // context is an attribute and esc_url is what that needs.
+            // the loader's JSON.parse fails, in the browser, at runtime. The
+            // tag itself is wp_get_inline_script_tag()'s, which escapes every
+            // attribute, and the two route URLs go through esc_url() first.
             //
             // PHPCS sees `echo <a function call>` and can see neither of those
             // facts. {@see PayloadTag::render()} is where they are enforced,
             // and tests/unit/Frontend/PayloadTest.php is what holds them.
-            // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- PayloadTag::render() escapes for this context: JSON_HEX_TAG on the body, esc_url() on the attributes.
+            // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- PayloadTag::render() escapes for this context: JSON_HEX_TAG on the body, wp_get_inline_script_tag() on the attributes.
             echo PayloadTag::render($entries, $captureUrl, $beaconUrl, $siteAllowance, $timezone);
         }, 5);
     }

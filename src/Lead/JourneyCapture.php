@@ -111,8 +111,14 @@ final class JourneyCapture
         wp_cache_delete($grant['receipt'], 'options');
         // A queue outage cannot undo an accepted capture. The pending snapshot is recoverable.
         if (!$result['replay']) {
+            // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound -- self::ACCEPTED is 'wconvert_'-prefixed.
             try { do_action(self::ACCEPTED, $result['id'], $submissionId); }
-            catch (\Throwable) { error_log('WConvert: accepted submission is awaiting queue handoff.'); }
+            catch (\Throwable) {
+                if (defined('WP_DEBUG') && WP_DEBUG) {
+                    // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log -- under WP_DEBUG only; the recovery sweep hands the submission over later.
+                    error_log('WConvert: accepted submission is awaiting queue handoff.');
+                }
+            }
         }
         return $result;
     }

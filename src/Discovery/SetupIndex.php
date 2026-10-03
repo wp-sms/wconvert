@@ -21,7 +21,7 @@ final class SetupIndex
         $design = $this->templates->find($playbook->templateId);
         $stub = $this->templates->locked()[$playbook->templateId] ?? null;
         $entry = $playbook->toArray();
-        $revision = hash('sha256', json_encode([$entry, $design], JSON_THROW_ON_ERROR));
+        $revision = hash('sha256', (string) wp_json_encode([$entry, $design], JSON_THROW_ON_ERROR));
         unset($entry['copy']);
         $entry['revision'] = $revision;
         $entry['design_key'] = $design['design_key'] ?? 'registered:' . $playbook->templateId;

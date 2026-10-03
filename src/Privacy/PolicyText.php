@@ -62,9 +62,10 @@ final class PolicyText
             '<p>' . __('We do not add the page address, IP address or browser details to the saved form submission.', 'wconvert') . '</p>',
             '<h3>' . __('Browser storage and campaign statistics', 'wconvert') . '</h3>',
             '<p>' . sprintf(
-                /* translators: %s: the browser storage key used by WConvert. */
                 $browser['stores_ab_assignment']
+                    /* translators: %s: the browser storage key used by WConvert. */
                     ? __('Your browser remembers whether a campaign was shown, dismissed or completed, and which version was assigned during an A/B test. This avoids repeatedly showing the same campaign and keeps the assigned version consistent. The record is stored in local storage under the name %s. It remains until you clear the site data or the browser removes it.', 'wconvert')
+                    /* translators: %s: the browser storage key used by WConvert. */
                     : __('Your browser remembers whether a campaign was shown, dismissed or completed. This avoids repeatedly showing the same campaign. The record is stored in local storage under the name %s. It remains until you clear the site data or the browser removes it.', 'wconvert'),
                 '<code>' . esc_html($browser['key']) . '</code>'
             ) . '</p>',

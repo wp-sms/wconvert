@@ -33,7 +33,7 @@ final class ContentLockCampaignsTest extends TestCase
     {
         foreach ([[], ['read'], ['edit_posts'], ['edit_pages']] as $caps) {
             $GLOBALS['wconvertTestCapabilities'] = $caps;
-            self::assertSame(in_array('edit_posts', $caps, true) || in_array('edit_pages', $caps, true), \WConvert\Rest\Routes::canPlaceCampaign());
+            self::assertSame(in_array('edit_posts', $caps, true) || in_array('edit_pages', $caps, true), ContentLockCampaigns::canPlaceCampaign());
             self::assertFalse(\WConvert\Rest\Routes::canManage());
         }
         $GLOBALS['wconvertTestCapabilities'] = [];

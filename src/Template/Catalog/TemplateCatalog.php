@@ -9,6 +9,7 @@ defined('ABSPATH') || exit;
 /** Explicit admin requests fetch data; normal library reads use local copies only. */
 final class TemplateCatalog
 {
+    // phpcs:disable WordPress.Security.EscapeOutput.ExceptionNotEscaped -- validation messages for an administrator, caught upstream and returned as a WP_Error that the admin renders as text; escaping here would print the entities.
     public const CACHE_OPTION = 'wconvert_template_catalog_cache';
     public const SOURCE_OPTION = 'wconvert_template_catalog_url';
     /** Fifty focused packs of up to twelve setups can cover a 500-campaign library. */
@@ -70,8 +71,8 @@ final class TemplateCatalog
             }
             if (isset($entry['access'])) PackValidator::check(in_array($entry['access'], ['free', 'premium'], true), __('Invalid pack access.', 'wconvert'));
             // Pack requests stay on the configured service, with no redirects.
-            $origin = parse_url($source);
-            $target = parse_url($entry['url']);
+            $origin = wp_parse_url($source);
+            $target = wp_parse_url($entry['url']);
             PackValidator::check(is_array($origin) && is_array($target) && !isset($target['user']) && !isset($target['pass']) && !isset($target['fragment']) && ($origin['scheme'] ?? '') === ($target['scheme'] ?? '') && ($origin['host'] ?? '') === ($target['host'] ?? '') && ($origin['port'] ?? null) === ($target['port'] ?? null), __('A pack address does not belong to this catalog service.', 'wconvert'));
         }
         $this->options->set(self::CACHE_OPTION, ['source' => $source, 'checked_at' => gmdate('c'), 'packs' => $index['packs'], 'collections' => $discovery ? $index['collections'] : [], 'release' => $discovery ? $index['release'] : null]);
@@ -169,7 +170,7 @@ final class TemplateCatalog
     {
         // Premium delivery remains closed until the real licence adapter exists.
         foreach ($pack['assets'] as $asset) PackValidator::check($asset['access'] === 'free', __('Premium image downloads are not connected yet.', 'wconvert'));
-        $origin = parse_url($this->source());
+        $origin = wp_parse_url($this->source());
         $this->installed->prepareImages($pack, function (array $asset) use ($origin): string {
             if (!$this->transport instanceof CatalogImageTransport || !is_array($origin) || !isset($origin['scheme'], $origin['host'])) throw new \RuntimeException(__('Image installation is unavailable.', 'wconvert'));
             // No author-supplied URL: use the configured catalog origin only.
@@ -184,4 +185,5 @@ final class TemplateCatalog
         $value = $this->options->get(self::SOURCE_OPTION, '');
         return is_string($value) ? $value : '';
     }
+    // phpcs:enable WordPress.Security.EscapeOutput.ExceptionNotEscaped
 }

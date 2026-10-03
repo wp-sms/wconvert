@@ -109,7 +109,7 @@ final class PayloadTest extends TestCase
         $tag = PayloadTag::render([['id' => '01A', 'display_rules' => \WConvert\Rules\DisplayPlan::immediate(), 'display_type' => 'popup']], self::CAPTURE, self::BEACON, null, self::ZONE);
 
         $this->assertStringStartsWith('<script type="application/json" id="wconvert-payload" ', $tag);
-        $this->assertStringEndsWith('</script>', $tag);
+        $this->assertStringEndsWith("</script>\n", $tag);
         $this->assertStringContainsString('"01A"', $tag);
     }
 

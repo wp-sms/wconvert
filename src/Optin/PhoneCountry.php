@@ -16,6 +16,7 @@ final class PhoneCountry
     {
         static $countries = null;
         if ($countries === null) {
+            // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- a local file inside this site, never a URL.
             $decoded = json_decode((string) file_get_contents(WCONVERT_DIR . 'resources/phone/countries.json'), true);
             $countries = [];
             if (is_array($decoded)) {

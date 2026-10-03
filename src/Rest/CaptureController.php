@@ -8,6 +8,7 @@ use WConvert\Lead\Refusal;
 use WConvert\Lead\RefusalCode;
 use WConvert\Optin\PublishedOptin;
 use WConvert\Optin\PublishedSet;
+use WConvert\Support\Ulid;
 use WConvert\Template\TemplateVocabulary;
 use WP_Error;
 use WP_REST_Request;
@@ -62,18 +63,34 @@ final class CaptureController implements RestController
                 'methods' => 'POST',
                 'callback' => [$this, 'capture'],
                 'permission_callback' => [Routes::class, 'canCapture'],
+                // Public and nonce-free on purpose — Routes::canCapture() says
+                // why. What protects this route is below and in capture():
+                // every value is re-checked against the server's own published
+                // copy of the form.
                 'args' => [
                     'optin_id' => [
+                        'description' => 'The published Campaign this submission belongs to.',
                         'required' => true,
                         'type' => 'string',
+                        'validate_callback' => static fn ($value): bool => is_string($value) && Ulid::isOne($value),
                         'sanitize_callback' => 'sanitize_text_field',
                     ],
-                    // `fields` and `consent` are DELIBERATELY not declared
-                    // here. A declared `'type' => 'boolean'` runs
+                    // `fields` and `consent` declare NO `type` and NO
+                    // `sanitize_callback`, deliberately. A declared
+                    // `'type' => 'boolean'` runs
                     // `rest_sanitize_value_from_schema`, which coerces
                     // `"true"`, `"on"` and `"1"` into `true` — and consent read
                     // leniently is consent asserted on the visitor's behalf.
-                    // {@see CaptureForm} requires the JSON boolean itself.
+                    // A validate_callback changes nothing it accepts, so
+                    // `fields` has one; {@see CaptureForm} checks each value
+                    // and requires consent as the JSON boolean itself.
+                    'fields' => [
+                        'description' => 'The values the visitor entered, keyed by form field.',
+                        'validate_callback' => static fn ($value): bool => is_array($value),
+                    ],
+                    'consent' => [
+                        'description' => 'Whether the visitor ticked the consent box: the JSON boolean, never coerced.',
+                    ],
                 ],
             ],
         ]);
@@ -111,7 +128,8 @@ final class CaptureController implements RestController
 
         // Only the address the web server identifies as the peer. Trusting a
         // caller-supplied forwarding header would let a bot choose its bucket.
-        $address = (string) wp_unslash($_SERVER['REMOTE_ADDR'] ?? '');
+        // Validated as an address: anything else buckets as the empty string.
+        $address = (string) filter_var(wp_unslash($_SERVER['REMOTE_ADDR'] ?? ''), FILTER_VALIDATE_IP);
 
         if (!$this->rateLimit->allows($address, $optin->id, time())) {
             $this->protection?->diagnostics->record('rate_limit');

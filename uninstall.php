@@ -5,7 +5,8 @@
  * ============================================================================
  * THIS DESTROYS DATA, ON PURPOSE, WITH NO OPT-OUT SETTING.
  * ============================================================================
- * Three tables, thirteen options and the installed pack archive, every time. Uninstalling is not
+ * Three tables, every option, the installed pack and image archives, the
+ * private import folder and every scheduled job, every time. Uninstalling is not
  * deactivating: `Bootstrap::deactivate()` deliberately touches no data at all,
  * because a merchant switching the plugin off has not asked for their [[Lead]]s
  * to be destroyed (ADR 0018). Deleting the plugin is a separate act, behind
@@ -46,7 +47,7 @@ global $wpdb;
 /*
  * Every option WConvert writes.
  *
- * All thirteen are `autoload=false` (WpOptionStore hard-codes it), so none of
+ * Every one is `autoload=false` (WpOptionStore hard-codes it), so none of
  * them is in `alloptions` and each is one row of its own.
  */
 $wconvertOptions = [
@@ -84,24 +85,62 @@ $wconvertOptions = [
     'wconvert_template_catalog_cache',
     'wconvert_template_catalog_url',
     'wconvert_picker_occasions',
+    // Optin\PhoneCountry::OPTION — the phone field's default country.
+    'wconvert_phone_default_country',
 ];
 
 foreach ($wconvertOptions as $wconvertOption) {
     delete_option($wconvertOption);
 }
 
-// The installer creates a flat archive of content-addressed JSON and temporary
-// .pack-* files. Never recurse into directories or follow an archive symlink.
-$wconvertUploads = wp_upload_dir(null, false);
-$wconvertPackDirectory = $wconvertUploads['basedir'] . '/wconvert-template-packs';
-if (is_dir($wconvertPackDirectory) && !is_link($wconvertPackDirectory)) {
-    foreach (scandir($wconvertPackDirectory) ?: [] as $wconvertPackFile) {
-        if (preg_match('/^(?:[a-f0-9]{64}\.json|\.pack-[A-Za-z0-9]+)$/D', $wconvertPackFile) !== 1) continue;
-        $wconvertPackPath = $wconvertPackDirectory . '/' . $wconvertPackFile;
-        if (is_file($wconvertPackPath) || is_link($wconvertPackPath)) @unlink($wconvertPackPath);
+/*
+ * The files WConvert writes, by name and only by name.
+ *
+ * Each folder is emptied of the names WConvert gives its own files and then
+ * removed if that left it empty. Never recursive and never through a link:
+ * an unrelated file a site owner put in one of these folders is kept, and so
+ * is the folder holding it. rmdir() is PHP's because WordPress has no
+ * function for an empty folder that is not a WP_Filesystem connection, which
+ * may be FTP and cannot reach the temp directory at all.
+ */
+$wconvertRemoveOwned = static function (string $directory, string $pattern): void {
+    if (!is_dir($directory) || is_link($directory)) return;
+    foreach (scandir($directory) ?: [] as $file) {
+        if (preg_match($pattern, $file) !== 1) continue;
+        $path = $directory . '/' . $file;
+        if (is_file($path) || is_link($path)) wp_delete_file($path);
     }
-    // An unrelated file placed here by the site owner is preserved.
-    @rmdir($wconvertPackDirectory);
+    if ((scandir($directory) ?: []) === ['.', '..']) {
+        rmdir($directory); // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_rmdir -- see above.
+    }
+};
+$wconvertUploads = wp_upload_dir(null, false);
+
+// Template\Catalog\InstalledPacks — content-addressed JSON and staged .pack-* files.
+$wconvertRemoveOwned($wconvertUploads['basedir'] . '/wconvert-template-packs', '/^(?:[a-f0-9]{64}\.json|\.pack-[A-Za-z0-9]+)$/D');
+
+// Template\Catalog\VerifiedAssets — images by digest under free/ and premium/,
+// a marker per pack under sets/, and the install lock.
+$wconvertImages = $wconvertUploads['basedir'] . '/wconvert-template-images';
+if (!is_link($wconvertImages)) {
+    foreach (['free', 'premium'] as $wconvertScope) {
+        $wconvertRemoveOwned($wconvertImages . '/' . $wconvertScope, '/^[a-f0-9]{64}\.(?:png|jpg|webp)$/D');
+    }
+    $wconvertRemoveOwned($wconvertImages . '/sets', '/^(?:[a-f0-9]{64}\.json|\.set-[A-Za-z0-9]+)$/D');
+    $wconvertRemoveOwned($wconvertImages, '/^(?:\.install\.lock|\.image-[A-Za-z0-9]+)$/D');
+}
+
+// Rest\TemplateTransferController — the private import folder in the temp
+// directory, named by TemplateTransferController::folder(). One folder per
+// administrator, and tempnam() files from exports and image staging.
+$wconvertTransfer = rtrim(get_temp_dir(), '/') . '/wconvert-transfer-' . substr(hash('sha256', ABSPATH . wp_salt('auth')), 0, 24);
+if (is_dir($wconvertTransfer) && !is_link($wconvertTransfer)) {
+    foreach (scandir($wconvertTransfer) ?: [] as $wconvertSession) {
+        if (preg_match('/^[a-f0-9]{64}$/D', $wconvertSession) === 1) {
+            $wconvertRemoveOwned($wconvertTransfer . '/' . $wconvertSession, '/^(?:lock|session\.json|session\.tmp|upload\.zip|upload\.tmp)$/D');
+        }
+    }
+    $wconvertRemoveOwned($wconvertTransfer, '/^(?:export|image)-[A-Za-z0-9]+$/D');
 }
 
 /*
@@ -131,17 +170,13 @@ $wconvertTables = [
 ];
 
 foreach ($wconvertTables as $wconvertTable) {
-    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.NotPrepared -- dropping a table is not expressible any other way, and the identifier is bound as %i.
+    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.DirectDatabaseQuery.SchemaChange, WordPress.DB.PreparedSQL.NotPrepared -- dropping a table is not expressible any other way, and the identifier is bound as %i.
     $wpdb->query($wpdb->prepare('DROP TABLE IF EXISTS %i', $wpdb->prefix . $wconvertTable));
 }
 
 /*
  * WHAT IS DELIBERATELY NOT HERE.
  *
- * - **The pruner's cron event.** WordPress deactivates a plugin before it
- *   uninstalls it, so `Bootstrap::deactivate()` has already cleared it. Doing
- *   it again would need `wp_clear_scheduled_hook()` against a hook name spelled
- *   a second time, for an event that is already gone.
  * - **The beacon's rate-limit transients.** They are `wconvert_beacon_`-prefixed
  *   transients holding a hashed address for a few minutes and they expire on
  *   their own; finding them means a `LIKE` scan of the options table, which is
@@ -153,18 +188,48 @@ foreach ($wconvertTables as $wconvertTable) {
  *   tables all have (`Bootstrap::activate()`).
  */
 
-// Owned, non-autoloaded capture receipts and anonymous flow labels.
+// Owned, non-autoloaded capture receipts and anonymous flow labels. A static
+// statement with nothing to bind, so nothing to prepare; and not cached,
+// because it runs once, on the way out.
+// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- see above.
 $wconvertDynamicOptions = $wpdb->get_col("SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE 'wconvert\_capture\_%' OR option_name LIKE 'wconvert\_flow\_%' OR option_name LIKE 'wconvert\_mail\_%'");
 foreach ($wconvertDynamicOptions as $wconvertOption) {
     if (preg_match('/^wconvert_((?:capture|mail)_[a-f0-9]{64}|flow_[A-Z0-9]{26}_[a-f0-9]{64})$/D', $wconvertOption)) delete_option($wconvertOption);
 }
 delete_option('wconvert_submission_checkpoint');
-wp_clear_scheduled_hook('wconvert_recover_submissions');
+
+/*
+ * Every scheduled job.
+ *
+ * WP-Cron events by hook, whatever their arguments — the import cleanup is
+ * scheduled once per administrator, with that administrator as its argument,
+ * so clearing it by hook and no arguments would miss every one. The pruner
+ * and the recovery sweep are cleared on deactivation already, which WordPress
+ * runs first; they are named again so that a plugin deleted without being
+ * deactivated (WP-CLI's `--deactivate` is optional) leaves nothing behind.
+ */
+foreach (['wconvert_prune_leads', 'wconvert_recover_submissions', 'wconvert_transfer_cleanup'] as $wconvertHook) {
+    wp_unschedule_hook($wconvertHook);
+}
+
+// Action Scheduler jobs, by WConvert's group (Queue\ActionSchedulerQueue::GROUP)
+// and never by table: the tables are shared with every other plugin that
+// bundles it. The plugin is not loaded here, so the library is loaded from its
+// own folder when no other plugin has; it initialises itself late.
+$wconvertScheduler = __DIR__ . '/vendor/woocommerce/action-scheduler/action-scheduler.php';
+if (!class_exists('ActionScheduler', false) && is_file($wconvertScheduler)) {
+    require_once $wconvertScheduler;
+}
+if (class_exists('ActionScheduler', false) && ActionScheduler::is_initialized() && function_exists('as_unschedule_all_actions')) {
+    as_unschedule_all_actions('', [], 'wconvert');
+}
 
 // User metadata is blog-scoped because WordPress users span multisite blogs.
 delete_metadata('user', 0, 'wconvert_picker_preferences_' . get_current_blog_id(), '', true);
 
 // Short-lived picker write leases belong only to this site's options table.
+// Static, like the statement above.
+// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- see above.
 $wconvertPickerLocks = $wpdb->get_col("SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE 'wconvert\_picker\_lock\_%'");
 foreach ($wconvertPickerLocks as $wconvertPickerLock) {
     if (preg_match('/^wconvert_picker_lock_(?:occasions|user_[0-9]+)$/D', $wconvertPickerLock)) delete_option($wconvertPickerLock);

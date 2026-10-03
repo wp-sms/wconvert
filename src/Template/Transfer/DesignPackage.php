@@ -31,6 +31,7 @@ final class DesignPackage
         foreach (DesignImages::slots($design) as $key => $slot) {
             DesignImages::put($design, $slot['path'], $slot['background'] ? 'none' : '');
             if ($slot['url'] === '') continue;
+            /* translators: %s: the name of an image slot in the design, for example "Background image". */
             if (in_array($key, $omit, true)) { $notes[] = sprintf(__('Omitted: %s', 'wconvert'), DesignImages::label($design, $slot)); continue; }
             $digest = hash('sha256', $slot['url']);
             if (isset($this->art[$digest]) && $this->art[$digest] === $slot['url']) {
@@ -38,7 +39,8 @@ final class DesignPackage
                 continue;
             }
             $image = $resolve($slot['url']);
-            $info = is_string($image) ? @getimagesizefromstring($image) : false;
+            // Silenced: malformed bytes warn as well as returning false, and the false is checked below.
+            $info = is_string($image) ? @getimagesizefromstring($image) : false; // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- see above.
             if ($info === false || !isset(self::TYPES[$info['mime']]) || strlen($image) > VerifiedAssets::MAX_BYTES || max($info[0], $info[1]) > 4096) {
                 $problems[$key] = DesignImages::label($design, $slot) . ': ' . __('Image is unavailable locally or is not a supported PNG, JPEG or WebP within the size limits.', 'wconvert');
                 continue;
@@ -49,6 +51,7 @@ final class DesignPackage
             $bytes[$id] = $image;
             $bindings[] = ['slot' => $key, 'asset' => $id];
         }
+        // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- validation messages for an administrator, caught upstream and returned as a WP_Error that the admin renders as text; escaping here would print the entities.
         if ($problems !== []) throw new TransferProblems($problems);
         // Product references are site-local, even when numeric IDs coincide.
         foreach ($design['tree']['steps'] ?? [] as $i => $step) foreach ($step['results'] ?? [] as $j => $result) {
@@ -59,7 +62,7 @@ final class DesignPackage
         $document = ['format' => 'wconvert-design', 'schema' => 1, 'plugin' => WCONVERT_VERSION, 'design' => $design,
             'assets' => array_values($assets), 'bindings' => $bindings, 'notes' => array_values(array_unique($notes))];
         $this->validate($document);
-        $json = json_encode($document, JSON_THROW_ON_ERROR);
+        $json = (string) wp_json_encode($document, JSON_THROW_ON_ERROR);
         PackValidator::check(strlen($json) <= PackValidator::MAX_BYTES, __('This design document is too large.', 'wconvert'));
         $zip = self::open($path, ZipArchive::CREATE | ZipArchive::OVERWRITE);
         try {
@@ -163,7 +166,8 @@ final class DesignPackage
      * @param array<string, mixed> $asset */
     private static function verify(string $bytes, array $asset): void
     {
-        $info = @getimagesizefromstring($bytes);
+        // Silenced: malformed bytes warn as well as returning false, and the false is checked below.
+        $info = @getimagesizefromstring($bytes); // phpcs:ignore WordPress.PHP.NoSilencedErrors.Discouraged -- see above.
         PackValidator::check(strlen($bytes) === $asset['bytes'] && hash('sha256', $bytes) === $asset['sha256'] && $info !== false
             && $info['mime'] === $asset['mime'] && $info[0] === $asset['width'] && $info[1] === $asset['height'], __('An image is damaged or does not match its manifest.', 'wconvert'));
     }
@@ -173,6 +177,7 @@ final class DesignPackage
         $stream = $zip->getStream($name);
         PackValidator::check(is_resource($stream), __('The design file is incomplete.', 'wconvert'));
         try { $bytes = stream_get_contents($stream, $limit + 1); }
+        // phpcs:ignore WordPress.WP.AlternativeFunctions.file_system_operations_fclose -- closes a ZipArchive entry stream, not a file WP_Filesystem could open.
         finally { fclose($stream); }
         PackValidator::check(is_string($bytes) && strlen($bytes) <= $limit, __('An expanded file exceeds its size limit.', 'wconvert'));
         return $bytes;

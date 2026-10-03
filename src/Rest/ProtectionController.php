@@ -23,14 +23,18 @@ final class ProtectionController implements RestController
         register_rest_route(Routes::NAMESPACE, '/protection/test', [
             'methods' => 'POST', 'callback' => [$this, 'test'], 'permission_callback' => [Routes::class, 'canManage'],
         ]);
+        // Public like the capture it guards (Routes::canCapture()), and it takes
+        // no input: the page is built from the saved settings alone.
         register_rest_route(Routes::NAMESPACE, '/protection/challenge', [
-            'methods' => 'GET', 'callback' => [$this, 'challenge'], 'permission_callback' => [Routes::class, 'canCapture'],
+            'methods' => 'GET', 'callback' => [$this, 'challenge'], 'permission_callback' => [Routes::class, 'canCapture'], 'args' => [],
         ]);
         add_filter('rest_pre_serve_request', static function (bool $served, $result, WP_REST_Request $request): bool {
             if ($request->get_route() !== '/' . Routes::NAMESPACE . '/protection/challenge' || $request->get_method() !== 'GET') { return $served; }
-            // The renderer escapes every dynamic value for its HTML context.
             if (!is_string($result->get_data())) { return $served; }
-            echo $result->get_data(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
+            // A whole document, built by challenge() below, which escapes every
+            // dynamic value for its own context. Escaping it again here would
+            // print the markup as text.
+            echo $result->get_data(); // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- see above.
             return true;
         }, 10, 3);
     }
@@ -61,18 +65,28 @@ final class ProtectionController implements RestController
         return new WP_REST_Response($result ?? ['verified' => true]);
     }
 
-    /** Isolate provider challenges from shadow DOM and the parent modal's inert siblings. */
+    /**
+     * Isolate provider challenges from shadow DOM and the parent modal's inert siblings.
+     *
+     * A standalone document in an iframe, not a WordPress page: there is no
+     * `wp_head()` here for an enqueued script to print in, and the page must
+     * load nothing but the provider's widget. So the two script tags come from
+     * WordPress's own tag functions rather than the enqueue, and the version
+     * query is added by hand the way the enqueue would add it.
+     */
     public function challenge(): WP_REST_Response
     {
         $settings = $this->settings->read();
         $config = ['provider' => $settings['provider'], 'siteKey' => $settings['site_key'],
             'origin' => self::origin(home_url('/')), 'waiting' => __('Complete verification to continue.', 'wconvert'),
             'failed' => __('Verification is unavailable. Please try again.', 'wconvert')];
+        $script = add_query_arg('ver', WCONVERT_VERSION, WCONVERT_URL . 'public/protection/protection.js');
         $html = '<!doctype html><html lang="' . esc_attr(get_bloginfo('language')) . '"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="referrer" content="no-referrer"><title>'
-            . esc_html(__('Verify your submission', 'wconvert')) . '</title><style>body{margin:0;padding:16px;font:16px/1.5 system-ui;color:#17202a;background:white}#widget{margin:16px 0}a{color:#164da0}</style></head><body><p id="status" role="status">'
-            . esc_html($config['waiting']) . '</p><div id="widget"></div><script type="application/json" id="wconvert-verification-config">'
-            . wp_json_encode($config, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT)
-            . '</script><script type="module" src="' . esc_url(WCONVERT_URL . 'public/protection/protection.js') . '"></script></body></html>';
+            . esc_html__('Verify your submission', 'wconvert') . '</title><style>body{margin:0;padding:16px;font:16px/1.5 system-ui;color:#17202a;background:white}#widget{margin:16px 0}a{color:#164da0}</style></head><body><p id="status" role="status">'
+            . esc_html($config['waiting']) . '</p><div id="widget"></div>'
+            . wp_get_inline_script_tag((string) wp_json_encode($config, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT), ['type' => 'application/json', 'id' => 'wconvert-verification-config'])
+            . wp_get_script_tag(['type' => 'module', 'src' => esc_url($script)])
+            . '</body></html>';
         return new WP_REST_Response($html, 200, [
             'Content-Type' => 'text/html; charset=UTF-8', 'Cache-Control' => 'no-store, private',
             'X-Content-Type-Options' => 'nosniff', 'X-Frame-Options' => 'SAMEORIGIN',

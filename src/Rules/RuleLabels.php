@@ -189,6 +189,7 @@ final class RuleLabels
             'page_load' => __('as soon as the page loads', 'wconvert'),
             /* translators: %1$s: a number of seconds. */
             'inactivity' => __('after %1$s seconds without input', 'wconvert'),
+            /* translators: %1$s: a number of seconds. */
             'time_on_page' => __('after %1$s seconds on the page', 'wconvert'),
             /* translators: %1$s: a percentage of the page height, without the sign. */
             'scroll_depth' => __('once they scroll %1$s%% down the page', 'wconvert'),
@@ -198,6 +199,7 @@ final class RuleLabels
             'scroll_up' => __('when they scroll back up', 'wconvert'),
             /* translators: %1$s: one or more device names, already joined, e.g. “mobile or tablet”. */
             'device' => __('they are on %1$s', 'wconvert'),
+            /* translators: %1$s: an ad-block status, already translated — "detected" or "not detected". */
             'ad_blocking' => __('ad blocking is %1$s', 'wconvert'),
             /* translators: %1$s: a range of times on a 24-hour clock, e.g. “09:00-17:00”. */
             'time_of_day' => __('the time on your site is %1$s', 'wconvert'),

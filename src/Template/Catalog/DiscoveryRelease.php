@@ -78,7 +78,7 @@ final class DiscoveryRelease
 
     public static function sameOrigin(string $source, string $target): void
     {
-        $a = parse_url($source); $b = parse_url($target);
+        $a = wp_parse_url($source); $b = wp_parse_url($target);
         PackValidator::check(is_array($a) && is_array($b) && !isset($b['user']) && !isset($b['pass']) && !isset($b['fragment']) && ($a['scheme'] ?? '') === ($b['scheme'] ?? '') && ($a['host'] ?? '') === ($b['host'] ?? '') && ($a['port'] ?? null) === ($b['port'] ?? null), __('A discovery address does not belong to this catalog service.', 'wconvert'));
     }
 

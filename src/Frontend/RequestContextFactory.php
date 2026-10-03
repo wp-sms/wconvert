@@ -97,7 +97,10 @@ final class RequestContextFactory
      */
     private static function path(): string
     {
-        $uri = isset($_SERVER['REQUEST_URI']) ? (string) $_SERVER['REQUEST_URI'] : '/';
+        // esc_url_raw() rather than sanitize_text_field(), which strips
+        // percent-encoded octets and would turn a non-ASCII path into a
+        // different path.
+        $uri = isset($_SERVER['REQUEST_URI']) ? esc_url_raw(wp_unslash($_SERVER['REQUEST_URI'])) : '/';
         $path = (string) (wp_parse_url($uri, PHP_URL_PATH) ?: '/');
 
         $home = (string) (wp_parse_url(home_url(), PHP_URL_PATH) ?: '');

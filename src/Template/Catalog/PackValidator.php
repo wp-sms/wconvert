@@ -186,7 +186,7 @@ final class PackValidator
                 $pack['templates'][$position] = array_values($library->all())[0];
             }
             $snapshot = ['tree' => $this->vocabulary->withoutCopy($tree), 'tokens' => $template['tokens'] ?? []];
-            self::check($this->portable || strlen((string) gzencode((string) json_encode($snapshot))) <= DesignBudget::PER_DESIGN, __('This design exceeds the size budget.', 'wconvert'));
+            self::check($this->portable || strlen((string) gzencode((string) wp_json_encode($snapshot))) <= DesignBudget::PER_DESIGN, __('This design exceeds the size budget.', 'wconvert'));
         }
         if (array_key_exists('playbooks', $pack)) {
             $requiredCapabilities[] = 'campaign-starts:1';
@@ -332,6 +332,7 @@ final class PackValidator
     /** @phpstan-assert true $valid */
     public static function check(bool $valid, string $message): void
     {
+        // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- validation messages for an administrator, caught upstream and returned as a WP_Error that the admin renders as text; escaping here would print the entities.
         if (!$valid) throw new RuntimeException($message);
     }
 }

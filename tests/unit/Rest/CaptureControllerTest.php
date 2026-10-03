@@ -112,21 +112,38 @@ final class CaptureControllerTest extends TestCase
     /**
      * **The whole point of this file.**
      *
-     * `consent` and `fields` are deliberately undeclared. WordPress runs
-     * `rest_sanitize_value_from_schema` over any arg that names a `type`, and
-     * for `'boolean'` that coerces `"true"`, `"on"` and `"1"` into `true` —
-     * so a one-word "tidy-up" adding `'type' => 'boolean'` would leave every
-     * `CaptureFormTest` green while a submission spelling consent as a string
-     * asserted it. An optional consent checkbox captures Leads whose consent
-     * was explicitly refused, which is worse than never asking (ADR 0032).
+     * `consent` and `fields` are declared with no type and no sanitizer.
+     * WordPress runs `rest_sanitize_value_from_schema` over any arg that names
+     * a `type`, and for `'boolean'` that coerces `"true"`, `"on"` and `"1"`
+     * into `true` — so a one-word "tidy-up" adding `'type' => 'boolean'` would
+     * leave every `CaptureFormTest` green while a submission spelling consent
+     * as a string asserted it. An optional consent checkbox captures Leads
+     * whose consent was explicitly refused, which is worse than never asking
+     * (ADR 0032).
      */
-    public function testTheRouteDeclaresNoSchemaForConsentOrTheCapturedFields(): void
+    public function testTheRouteDeclaresNoCoercingSchemaForConsentOrTheCapturedFields(): void
     {
         $args = self::declaredArgs();
 
-        $this->assertArrayNotHasKey('consent', $args, 'ADR 0032: consent must reach CaptureForm uncoerced');
-        $this->assertArrayNotHasKey('fields', $args);
-        $this->assertSame(['optin_id'], array_keys($args));
+        $this->assertSame(['optin_id', 'fields', 'consent'], array_keys($args));
+        foreach (['consent', 'fields'] as $name) {
+            $this->assertArrayNotHasKey('type', $args[$name], "ADR 0032: {$name} must reach CaptureForm uncoerced");
+            $this->assertArrayNotHasKey('sanitize_callback', $args[$name], "ADR 0032: {$name} must reach CaptureForm uncoerced");
+        }
+        $this->assertArrayNotHasKey('validate_callback', $args['consent'], 'consent is for CaptureForm to judge');
+    }
+
+    /** What the public route accepts is declared where a reviewer reads it. */
+    public function testTheDeclaredArgsRefuseWhatCanNeverBeASubmission(): void
+    {
+        $args = self::declaredArgs();
+
+        $this->assertTrue($args['optin_id']['validate_callback']('01JQ0000000000000000000001'));
+        $this->assertFalse($args['optin_id']['validate_callback']('not-an-id'));
+        $this->assertFalse($args['optin_id']['validate_callback'](['01JQ0000000000000000000001']));
+        $this->assertTrue($args['fields']['validate_callback'](['email' => 'a@example.com']));
+        $this->assertTrue($args['fields']['validate_callback']([]));
+        $this->assertFalse($args['fields']['validate_callback']('email=a@example.com'));
     }
 
     public function testAnOversizedBodyIsRefusedBeforeAnyCampaignLookupOrWrite(): void

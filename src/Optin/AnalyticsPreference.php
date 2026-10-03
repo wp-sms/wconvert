@@ -6,6 +6,7 @@ defined('ABSPATH') || exit;
 /** Passive campaign configuration; external tracking is supplied by Pro. */
 final class AnalyticsPreference
 {
+    // phpcs:disable WordPress.Security.EscapeOutput.ExceptionNotEscaped -- validation messages for an administrator, caught upstream and returned as a WP_Error that the admin renders as text; escaping here would print the entities.
     /** @param mixed $value
      * @return array{off: bool, label: string} */
     public static function normalize($value): array
@@ -21,4 +22,5 @@ final class AnalyticsPreference
         }
         return ['off' => $value['off'] ?? false, 'label' => $label];
     }
+    // phpcs:enable WordPress.Security.EscapeOutput.ExceptionNotEscaped
 }

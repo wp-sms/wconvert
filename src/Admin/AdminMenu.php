@@ -156,15 +156,12 @@ final class AdminMenu
          * which needs the `@font-face` rules to be on this page. Core prints
          * them on the front end; wp-admin gets them only where something asks.
          *
-         * Core's own, since 6.4, and guarded because this plugin's floor is
-         * 6.2 — where it is absent the row falls back to the next family in the
-         * stack and the control still works. **Nothing is fetched and no face
-         * is declared here**: this prints the site's, or nothing
+         * Core's own, since 6.4, and so on every WordPress this plugin
+         * supports (6.8 and up). **Nothing is fetched and no face is declared
+         * here**: this prints the site's, or nothing
          * (`docs/adr/0055-the-font-list-is-the-sites.md`).
          */
-        if (function_exists('wp_print_font_faces')) {
-            add_action('admin_print_styles', 'wp_print_font_faces');
-        }
+        add_action('admin_print_styles', 'wp_print_font_faces');
 
         // `wp_add_inline_script()` rather than `wp_localize_script()`, and the
         // difference is not stylistic: `localize` casts every value to a

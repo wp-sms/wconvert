@@ -246,6 +246,7 @@ final class InspectorLabels
                 'connected' => __('The analytics endpoint responded. This does not prove earlier events arrived.', 'wconvert'),
                 'rate_limited' => __('The analytics endpoint is rate limiting requests.', 'wconvert'),
                 'failed' => __('The request failed. A blocker, connection problem, or site policy may be responsible.', 'wconvert'),
+                /* translators: %s: an HTTP status code, for example 404. */
                 'http_error' => __('The analytics endpoint returned HTTP %s.', 'wconvert'),
                 'unavailable' => __('This page has no analytics endpoint to check.', 'wconvert'),
                 'aggregated' => __(

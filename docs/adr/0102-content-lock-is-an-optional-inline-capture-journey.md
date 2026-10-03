@@ -56,8 +56,9 @@ handling. Readiness does not override visitor targeting, schedules or frequency.
 
 The initial choices are delivered with the block-editor assets. The authenticated
 read-only `GET /wconvert/v1/content-lock-campaigns` refreshes them without reloading
-or saving the post. `Routes::canPlaceCampaign()` requires `edit_posts` or
-`edit_pages`; it grants no Campaign-management capability. Responses contain only
+or saving the post. `ContentLockCampaigns::canPlaceCampaign()` requires `edit_posts` or
+`edit_pages` *(moved from free's `Routes`, where nothing free called it, for the
+wp.org submission)*; it grants no Campaign-management capability. Responses contain only
 published inline IDs, names and ready/disabled/unavailable status, plus a management
 link for users who already have `manage_options`. They contain no drafts, designs,
 Destination details or Leads, and use `Cache-Control: no-store`. This is an explicit

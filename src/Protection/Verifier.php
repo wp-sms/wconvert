@@ -10,7 +10,11 @@ defined('ABSPATH') || exit;
 /** Verifies a provider token on the server; never accepts a browser verdict. */
 final class Verifier
 {
+    // Server-to-server verification endpoints, called with wp_remote_post()
+    // only when the site owner has chosen that provider — never loaded into a
+    // page. readme.txt lists each under External services.
     private const ENDPOINTS = [
+        // phpcs:ignore PluginCheck.CodeAnalysis.Offloading.OffloadedContent -- see above: an API endpoint, not offloaded content.
         'turnstile' => 'https://challenges.cloudflare.com/turnstile/v0/siteverify',
         'recaptcha' => 'https://www.google.com/recaptcha/api/siteverify',
         'hcaptcha' => 'https://api.hcaptcha.com/siteverify',

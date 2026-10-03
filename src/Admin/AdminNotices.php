@@ -205,6 +205,14 @@ final class AdminNotices
      * {@see AdminMenu::renderScreen()}, and leaving both registered would
      * print the same sentence twice.
      *
+     * **Core's own notices go with the rest** — the update and maintenance
+     * nags — and that is a known trade rather than an oversight. The screen
+     * is a full-window app with no wp-admin chrome (ADR 0035) and no slot to
+     * put them in; every other screen in wp-admin still shows them. Telling
+     * core's callbacks from a plugin's would mean reading each one's source
+     * file off `$wp_filter`, which is more machinery than the notices are
+     * worth on the one screen they cannot render on.
+     *
      * It does **not** silence {@see self::warnAboutNetworkActivation()}, and
      * not because of an exception here. WConvert's screens are the ones
      * `add_menu_page()` returned a suffix for, which are per-site; the network

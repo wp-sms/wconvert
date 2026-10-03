@@ -28,6 +28,7 @@ final class JsonManifest
      */
     public static function load(string $path, string $subject): array
     {
+        // phpcs:ignore WordPress.WP.AlternativeFunctions.file_get_contents_file_get_contents -- a local file inside this site, never a URL.
         $raw = is_readable($path) ? file_get_contents($path) : false;
 
         if ($raw === false) {
