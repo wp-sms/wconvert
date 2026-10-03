@@ -995,7 +995,7 @@ function field(node: FieldNode): HTMLElement | null {
   if (name === 'phone') {
     const hint = document.createElement('small');
     hint.className = 'wc-phone-fallback';
-    hint.textContent = (window as Window & { __wcPhoneLabels?: Record<string, string> }).__wcPhoneLabels?.fallback
+    hint.textContent = (window as Window & { wconvertPhoneLabels?: Record<string, string> }).wconvertPhoneLabels?.fallback
       || 'Include + and the country code, for example +1 202 555 0123.';
     hint.id = `${input.id}-hint`;
     input.setAttribute('aria-describedby', hint.id);

@@ -267,7 +267,7 @@ export function Preview({ template, displayType = 'inline', step = 0, selected =
   );
 
   useEffect(() => {
-    (window as Window & { __wcPhoneLabels?: Record<string, string> }).__wcPhoneLabels = {
+    (window as Window & { wconvertPhoneLabels?: Record<string, string> }).wconvertPhoneLabels = {
       fallback: __('Include + and the country code, for example +1 202 555 0123.', 'wconvert'),
       select: __('Select country', 'wconvert'),
       /* translators: 1: a country's name, 2: its calling code without the plus sign, for example 44. */
@@ -287,7 +287,7 @@ export function Preview({ template, displayType = 'inline', step = 0, selected =
       invalid_length: __('Check the phone number length.', 'wconvert'),
       invalid_country: __('Choose a supported country or check the country code.', 'wconvert'),
     };
-    (window as Window & { __wcPhone?: (root: HTMLElement) => void }).__wcPhone =
+    (window as Window & { wconvertPhone?: (root: HTMLElement) => void }).wconvertPhone =
       root => { enhancePhones(root, root.getRootNode() as ShadowRoot, phoneSiteCountry()); };
     const mounted = mount({
       displayType: 'inline',

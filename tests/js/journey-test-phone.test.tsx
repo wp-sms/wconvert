@@ -6,12 +6,12 @@ import { enhancePhones } from '../../resources/phone/src/enhance';
 import type { Template, TemplateNode } from '@renderer/types';
 import source from '../../resources/templates/library/journey-email-only.json';
 
-const api = () => window as Window & { __wcPhone?: (root: HTMLElement) => void };
-afterEach(() => { cleanup(); delete api().__wcPhone; });
+const api = () => window as Window & { wconvertPhone?: (root: HTMLElement) => void };
+afterEach(() => { cleanup(); delete api().wconvertPhone; });
 
 it('retains the selected phone country and canonical number after failure, Back and accepted review', async () => {
   const user = userEvent.setup();
-  api().__wcPhone = root => { enhancePhones(root, root.getRootNode() as ShadowRoot, 'AM'); };
+  api().wconvertPhone = root => { enhancePhones(root, root.getRootNode() as ShadowRoot, 'AM'); };
   const phone = (node: TemplateNode): TemplateNode => {
     if (node.type === 'field') return { ...node, name: 'phone', label: 'Phone number' } as TemplateNode;
     if ('children' in node && node.children) return { ...node, children: node.children.map(phone) };

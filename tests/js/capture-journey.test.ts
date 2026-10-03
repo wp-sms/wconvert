@@ -90,7 +90,7 @@ it('retries an unconfirmed SMS response with the same grant and never repeats em
 });
 
 it('submits the phone enhancer’s international value instead of its visible local text', async () => {
-  vi.stubGlobal('__wcPhone', (root: HTMLElement) => {
+  vi.stubGlobal('wconvertPhone', (root: HTMLElement) => {
     const input = root.querySelector<HTMLInputElement>('input[name="phone"]') as (HTMLInputElement & { __p?: (value: string) => void }) | null;
     if (!input) return;
     input.value = '202 555 1234';

@@ -3,7 +3,7 @@ import styles from 'lite-phone-input/styles?inline';
 
 const drafts = new WeakMap<ShadowRoot, Map<string, { value: string; country: string }>>();
 const word = (key: string, fallback: string) =>
-  (window as Window & { __wcPhoneLabels?: Record<string, string> }).__wcPhoneLabels?.[key] || fallback;
+  (window as Window & { wconvertPhoneLabels?: Record<string, string> }).wconvertPhoneLabels?.[key] || fallback;
 
 /** One optional enhancement per rendered screen; the plain tel input remains the fallback. */
 export function enhancePhones(root: HTMLElement, shadow: ShadowRoot, defaultCountry?: string): (() => void) | undefined {

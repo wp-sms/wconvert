@@ -237,12 +237,12 @@ export function shell(template: Template, chrome: HTMLElement | null, options: M
     // Only overlays need the renderer's viewport cap and inner scrolling.
     if (options.displayType === 'inline') element.style.maxBlockSize = 'none';
 
-    const api = window as Window & { __wcPhone?: (root: HTMLElement) => void };
-    if (api.__wcPhone) api.__wcPhone(element);
+    const api = window as Window & { wconvertPhone?: (root: HTMLElement) => void };
+    if (api.wconvertPhone) api.wconvertPhone(element);
     else if (element.querySelector('input[name="phone"]')) {
       const ready = () => {
         const input = element.querySelector<HTMLInputElement>('input[name="phone"]');
-        if (input && !input.value && shadow.activeElement !== input) api.__wcPhone?.(element);
+        if (input && !input.value && shadow.activeElement !== input) api.wconvertPhone?.(element);
       };
       window.addEventListener('wconvert:phone-ready', ready, { once: true });
       element.addEventListener('wconvert:closed', () => window.removeEventListener('wconvert:phone-ready', ready), { once: true });

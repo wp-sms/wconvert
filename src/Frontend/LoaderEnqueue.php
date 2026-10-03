@@ -155,7 +155,7 @@ final class LoaderEnqueue
         $phoneDist = WCONVERT_DIR . 'public/phone/phone.js';
         if (is_file($phoneDist) && self::hasPhoneField($entries)) {
             wp_enqueue_script(self::PHONE_HANDLE, WCONVERT_URL . 'public/phone/phone.js', [], BuiltAsset::version($phoneDist), true);
-            wp_add_inline_script(self::PHONE_HANDLE, 'window.__wcPhoneLabels=' . wp_json_encode([
+            wp_add_inline_script(self::PHONE_HANDLE, 'window.wconvertPhoneLabels=' . wp_json_encode([
                 'fallback' => __('Include + and the country code, for example +1 202 555 0123.', 'wconvert'),
                 'select' => __('Select country', 'wconvert'),
                 /* translators: 1: a country's name, 2: its calling code without the plus sign, for example 44. */
