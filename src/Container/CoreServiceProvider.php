@@ -74,6 +74,7 @@ use WConvert\Rest\RestController;
 use WConvert\Rest\RuleController;
 use WConvert\Rest\TemplateController;
 use WConvert\Rest\TemplateCatalogController;
+use WConvert\Rest\TemplateTransferController;
 use WConvert\Template\Catalog\InstalledPacks;
 use WConvert\Template\Catalog\PackValidator;
 use WConvert\Template\Catalog\TemplateCatalog;
@@ -128,6 +129,7 @@ final class CoreServiceProvider implements ServiceProvider
         OptinController::class,
         TemplateController::class,
         TemplateCatalogController::class,
+        TemplateTransferController::class,
         RuleController::class,
         ThemeController::class,
         GoalController::class,
@@ -249,6 +251,10 @@ final class CoreServiceProvider implements ServiceProvider
         });
         $container->register(TemplateCatalog::class, static fn (ServiceContainer $c): TemplateCatalog => new TemplateCatalog(
             $c->resolve(OptionStore::class), new WpCatalogTransport(), $c->resolve(PackValidator::class), $c->resolve(InstalledPacks::class)
+        ));
+        $container->register(TemplateTransferController::class, static fn (ServiceContainer $c): TemplateTransferController => new TemplateTransferController(
+            $c->resolve(PackValidator::class), $c->resolve(TemplateVocabulary::class), $c->resolve(TemplateLibrary::class),
+            $c->resolve(OptinRepository::class), $c->resolve(OptinController::class), $c->resolve(PrivacyGuidance::class)
         ));
         $container->register(TemplateCatalogController::class, static fn (ServiceContainer $c): TemplateCatalogController => new TemplateCatalogController($c->resolve(TemplateCatalog::class)));
 
@@ -803,6 +809,7 @@ final class CoreServiceProvider implements ServiceProvider
          * does not exist at all, and the visitor posting a capture or a beacon
          * is on a page WordPress may serve through any entry point.
          */
+        TemplateTransferController::hooks();
         add_action('rest_api_init', static function () use ($container): void {
             foreach (self::REST_CONTROLLERS as $controller) {
                 $container->resolve($controller)->registerRoutes();

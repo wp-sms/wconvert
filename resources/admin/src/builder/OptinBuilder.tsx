@@ -10,7 +10,7 @@ import type { JourneyRepair } from './structure/journeyReadiness';
 import { contentLockDesignCompatible } from '../inlinePlacement';
 import './editor.css';
 import './preview-test.css';
-import { Activity, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Activity, Suspense, lazy, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { flushSync } from 'react-dom';
 import { __, _n, sprintf } from '@wordpress/i18n';
 import {
@@ -99,6 +99,8 @@ export interface OptinBuilderProps {
   readonly onCreated?: (id: string) => void;
 }
 
+const TemplateTransferDialog = lazy(() => import('./TemplateTransferDialog'));
+
 type Config = Record<string, unknown>;
 
 type TabId = 'journey' | 'design' | 'rules' | 'destinations';
@@ -168,6 +170,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
   const [tab, setTab] = useState<TabId>('journey');
   const [journeyVisited, setJourneyVisited] = useState(true);
   const previewReturnTab = useRef<TabId>('journey');
+  const [previewFromRules, setPreviewFromRules] = useState(false);
   const [journeyTestRequest, setJourneyTestRequest] = useState(0);
   useEffect(() => { if (tab === 'journey') setJourneyVisited(true); }, [tab]);
   const [journeyRepair, setJourneyRepair] = useState<(JourneyRepair & { serial: number }) | null>(null);
@@ -183,6 +186,8 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
 
   const [stats, setStats] = useState<Loadable<OptinNumbers | null>>(LOADING);
 
+  const [transfer, setTransfer] = useState<{ action: 'import' | 'export'; config: Config; name: string } | null>(null);
+  const [imported, setImported] = useState(false);
   const [past, setPast] = useState<History<DraftSnapshot> | null>(null);
 
   const [goals, setGoals] = useState<Loadable<GoalEntry[]>>(LOADING);
@@ -494,6 +499,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
         setGoal(optin.goal);
         setCanChangeGoal(optin.can_change_goal);
         setSaved(true);
+        setImported(false);
         setBaseline(JSON.stringify({ name: optin.name, config: optin.config }));
       });
   };
@@ -565,6 +571,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
       }
 
       setPast(next);
+      setImported(false);
       coalescing.current = null;
       setName(next.present.name);
       setConfig(next.present.config);
@@ -641,7 +648,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
     setSelection(null);
     setOpenToken(null);
   };
-  const showingLock = tab === 'rules' && config.content_lock != null && displayTypeOf(config, templates) === 'inline' && !!inlinePlacementControls.preview;
+  const showingLock = (tab === 'rules' || (tab === 'journey' && previewFromRules)) && config.content_lock != null && displayTypeOf(config, templates) === 'inline' && !!inlinePlacementControls.preview;
   const selectedResult = entry?.tree.steps[step]?.results?.find(result => result.id === editingResult);
   const canvasTemplate = entry && selectedResult && !previewing ? { ...entry, tree: { ...entry.tree, steps: entry.tree.steps.map((screen, index) => index === step ? { ...screen, results: [{ ...selectedResult, when: undefined }] } : screen) } } : entry;
   const previewPane =
@@ -831,7 +838,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
             aria-label={__('Preview & test', 'wconvert')}
             title={__('Preview & test', 'wconvert')}
             disabled={entry === null || busy}
-            onClick={() => { previewReturnTab.current = tab; setTab('journey'); setPreviewing(false); setJourneyTestRequest(value => value + 1); }}
+            onClick={() => { previewReturnTab.current = tab; setPreviewFromRules(tab === 'rules'); setTab('journey'); setPreviewing(false); setJourneyTestRequest(value => value + 1); }}
           >
             <Eye aria-hidden="true" />
             {!small && __('Preview & test', 'wconvert')}
@@ -865,7 +872,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
             privacyGuidance={privacyGuidance}
             policyUrl={adminSettings()?.policyUrl}
             onPublish={publish}
-            onPreview={() => { previewReturnTab.current = tab; setTab('journey'); setPreviewing(false); setJourneyTestRequest(value => value + 1); }}
+            onPreview={() => { previewReturnTab.current = tab; setPreviewFromRules(tab === 'rules'); setTab('journey'); setPreviewing(false); setJourneyTestRequest(value => value + 1); }}
             onEditDesign={() => { setTab('design'); setPreviewing(false); setShowLayers(true); setDrawer('layers'); layersButton.current?.focus(); }}
             onEditJourney={repair => { setTab('journey'); setPreviewing(false); if (repair) setJourneyRepair({ ...repair, serial: ++journeyRepairSerial.current }); }}
             onGoToDesign={() => { setTab('design'); setPreviewing(false); setBrowsing(true); }}
@@ -875,31 +882,26 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
             onGoTo={goTo}
             onGoToSchedule={goToSchedule}
           />
-          {small ? <DropdownMenu><DropdownMenuTrigger asChild><Button variant="ghost" size="icon-sm" aria-label={__('Campaign actions', 'wconvert')}><MoreHorizontal aria-hidden="true" /></Button></DropdownMenuTrigger>
+          <DropdownMenu><DropdownMenuTrigger asChild><Button ref={changeGoal} variant="ghost" size="icon-sm" disabled={busy} aria-label={__('Campaign actions', 'wconvert')}><MoreHorizontal aria-hidden="true" /></Button></DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="wconvert-campaign-actions">
-              <DropdownMenuItem disabled={busy || !history.canUndo} onSelect={history.undo}>{history.labels.undo}</DropdownMenuItem>
-              <DropdownMenuItem disabled={busy || !history.canRedo} onSelect={history.redo}>{history.labels.redo}</DropdownMenuItem>
-              <DropdownMenuItem disabled={busy} onSelect={() => { detailsTrigger.current = previewButton.current; setDetails(true); }}>{__('Campaign details', 'wconvert')}</DropdownMenuItem>
+              {small && <><DropdownMenuItem disabled={busy || !history.canUndo} onSelect={history.undo}>{history.labels.undo}</DropdownMenuItem>
+              <DropdownMenuItem disabled={busy || !history.canRedo} onSelect={history.redo}>{history.labels.redo}</DropdownMenuItem></>}
+              <DropdownMenuItem disabled={busy} onSelect={() => setTransfer({ action: 'import', config, name })}>{__('Import design', 'wconvert')}</DropdownMenuItem>
+              <DropdownMenuItem disabled={busy || !template} onSelect={() => setTransfer({ action: 'export', config, name })}>{__('Export design', 'wconvert')}</DropdownMenuItem>
+              <DropdownMenuItem disabled={busy} onSelect={() => { detailsTrigger.current = changeGoal.current; setDetails(true); }}>{__('Campaign details', 'wconvert')}</DropdownMenuItem>
             </DropdownMenuContent>
-          </DropdownMenu> : (<Button
-            variant="ghost"
-            size="icon-sm"
-            ref={changeGoal}
-            disabled={busy}
-            aria-label={__('Campaign details', 'wconvert')}
-            onClick={(event) => { detailsTrigger.current = event.currentTarget; setDetails(true); }}
-          >
-            <MoreHorizontal aria-hidden="true" />
-          </Button>)}
+          </DropdownMenu>
         </div>
       </header>
       {error !== null && <PageError message={error} />}
+      {imported && <p role="status">{__('Design imported. Review it, then save your draft.', 'wconvert')}</p>}
       <div className="wconvert-workspace__body" inert={busy}>
         <TabsContent value="journey" forceMount={journeyVisited || undefined} className="wconvert-workspace__journey">
           <Activity mode={tab === 'journey' ? 'visible' : 'hidden'}>
           {!entry && <EmptyState icon={Blocks} title={__('Choose a campaign to customize', 'wconvert')} action={<Button onClick={() => setBrowsing(true)}>{__('Browse designs and formats', 'wconvert')}</Button>}>{__('Start with a ready-made design, then make it yours.', 'wconvert')}</EmptyState>}
           {entry && <JourneyEditor onUndo={history.canUndo ? history.undo : undefined} embedded labels={gallery.labels} onResultSelect={setEditingResult}
             editorCanvas={previewPane}
+            appearancePreview={showingLock ? previewPane : undefined}
             editorTools={<DeviceControls width={width} onChange={setWidth} />}
             elementSelection={selection ?? undefined}
             onClearElement={() => setSelection(null)}
@@ -909,7 +911,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
               onDesign={() => { setTab('design'); designSettings(); }} onShowLayers={() => { setTab('design'); setShowLayers(true); setDrawer('layers'); }}
               look={<ScopeStyle key={selection.path.join('.')} template={entry} labels={gallery.labels} path={selection.path} openToken={openToken} onOpenToken={setOpenToken} onSelect={chooseFromTree}
                 onChange={next => edit({ template: next })} copied={copiedLook} onCopy={setCopiedLook} width={width === 'narrow' ? 'narrow' : 'tokens'} />} /> : undefined}
-            testRequest={journeyTestRequest} onTestClose={() => setTab(previewReturnTab.current)}
+            testRequest={journeyTestRequest} onTestExit={() => setPreviewFromRules(false)} onTestClose={() => { const returnTab = previewReturnTab.current; previewReturnTab.current = 'journey'; setTab(returnTab); }}
             outcomeAction={entryOfGoal?.outcome.action} primaryChannel={entryOfGoal?.outcome.audience_channel} tree={entry.tree} tokens={entry.tokens} step={shownStep} repairRequest={journeyRepair ?? undefined}
             focusActions={<><HistoryControls history={{ ...history, canUndo: !busy && history.canUndo, canRedo: !busy && history.canRedo }} />
               <Button type="button" variant="outline" size="sm" disabled={busy || !dirty} onClick={() => void save()}>{busy ? __('Saving…', 'wconvert') : __('Save draft', 'wconvert')}</Button></>}
@@ -1146,6 +1148,16 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
         }}
       />
 
+      {transfer && <Suspense fallback={<span role="status">{__('Loading file tools…', 'wconvert')}</span>}>
+        <TemplateTransferDialog action={transfer.action} optin={id} config={transfer.config}
+          design={{ ...(transfer.config.template as Template), name: transfer.name, display_type: displayTypeOf(transfer.config, templates) }}
+          onClose={() => { setTransfer(null); changeGoal.current?.focus(); }}
+          onApply={patch => {
+            if (config !== transfer.config) { setError(__('Your draft changed during import. Close the preview and review the file again.', 'wconvert')); return; }
+            edit(patch); setSelection(null); setStep(0); setImported(true); setTransfer(null); changeGoal.current?.focus();
+          }} />
+      </Suspense>}
+
       <TemplatePickerDialog
         open={browsing}
         onOpenChange={setBrowsing}
@@ -1295,7 +1307,7 @@ function chosenName(
   templates: readonly TemplateIndexEntry[] | undefined,
 ): string {
   if (templateId === undefined) {
-    return __('No design chosen yet.', 'wconvert');
+    return __('Custom design', 'wconvert');
   }
 
   return templates?.find((each) => each.id === templateId)?.name ?? templateId;

@@ -8,6 +8,7 @@ import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ruleTypes } from './support/rule-types';
 import type { TemplateEntry, TemplateIndex, TemplateIndexEntry } from '../../resources/admin/src/templates/api';
+import { inlinePlacementControls } from '../../resources/admin/src/inlinePlacement';
 
 /**
  * The builder shell, against the four decisions #69 and #71 make about it that
@@ -617,6 +618,36 @@ describe('the builder shell', () => {
     expect(canvas).toHaveAttribute('data-width', 'narrow');
   });
 
+  it('keeps content-lock states available in the design check opened from Display rules', async () => {
+    inlinePlacementControls.preview = ({ state }) => <p>Lock example: {state}</p>;
+    inlinePlacementControls.previewControls = ({ state, onStateChange }) => <select aria-label="Preview content lock" value={state} onChange={event => onStateChange(event.target.value as 'locked' | 'unlocked' | 'unavailable')}><option>locked</option><option>unlocked</option><option>unavailable</option></select>;
+    try {
+      builder.getOptin.mockResolvedValue(optin({ config: { ...optin().config, display_type: 'inline', content_lock: { mode: 'hide' } } }));
+      await open();
+      await userEvent.click(screen.getByRole('tab', { name: 'Display rules' }));
+      await userEvent.click(screen.getByRole('button', { name: 'Preview & test' }));
+      const preview = within(await screen.findByRole('dialog', { name: 'Preview & test' }));
+      await userEvent.click(preview.getByRole('button', { name: 'Check the design' }));
+      await userEvent.selectOptions(preview.getByRole('combobox', { name: 'Preview content lock' }), 'unavailable');
+      expect(preview.getByText('Lock example: unavailable')).toBeInTheDocument();
+      await userEvent.click(preview.getByRole('button', { name: 'Back to editor' }));
+      expect(screen.getByRole('tab', { name: 'Display rules' })).toHaveAttribute('aria-selected', 'true');
+      await userEvent.click(screen.getByRole('tab', { name: 'Edit campaign' }));
+      expect(screen.queryByRole('combobox', { name: 'Preview content lock' })).not.toBeInTheDocument();
+      await userEvent.click(screen.getByRole('tab', { name: 'Display rules' }));
+      await userEvent.click(screen.getByRole('button', { name: 'Preview & test' }));
+      const again = within(await screen.findByRole('dialog', { name: 'Preview & test' }));
+      await userEvent.click(again.getByRole('button', { name: 'Try as a visitor' }));
+      await userEvent.click(again.getByRole('button', { name: 'Edit this screen' }));
+      expect(screen.getByRole('tab', { name: 'Edit campaign' })).toHaveAttribute('aria-selected', 'true');
+      expect(screen.queryByRole('dialog', { name: 'Preview & test' })).not.toBeInTheDocument();
+      expect(screen.queryByRole('combobox', { name: 'Preview content lock' })).not.toBeInTheDocument();
+    } finally {
+      delete inlinePlacementControls.preview;
+      delete inlinePlacementControls.previewControls;
+    }
+  });
+
   /**
    * **It is a WIDTH and it was called a device.** The narrow bag is measured
    * against the design's own container (ADR 0064), so an `inline` Optin in a
@@ -666,7 +697,8 @@ describe('the builder shell', () => {
     });
 
     await open();
-    await userEvent.click(await screen.findByRole('button', { name: 'Campaign details' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Campaign actions' }));
+    await userEvent.click(await screen.findByRole('menuitem', { name: 'Campaign details' }));
 
     expect((await screen.findAllByText('Email submissions')).length).toBeGreaterThan(0);
     expect(screen.getByText('1,000')).toBeInTheDocument();
@@ -695,7 +727,8 @@ describe('the builder shell', () => {
     });
 
     await open();
-    await userEvent.click(await screen.findByRole('button', { name: 'Campaign details' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Campaign actions' }));
+    await userEvent.click(await screen.findByRole('menuitem', { name: 'Campaign details' }));
 
     const headline = await screen.findByText('42');
 
@@ -727,7 +760,8 @@ describe('the builder shell', () => {
     });
 
     await open();
-    await userEvent.click(await screen.findByRole('button', { name: 'Campaign details' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Campaign actions' }));
+    await userEvent.click(await screen.findByRole('menuitem', { name: 'Campaign details' }));
 
     expect(await screen.findByText('The last 7 days')).toBeInTheDocument();
   });
@@ -742,7 +776,8 @@ describe('the builder shell', () => {
     stats.readDashboard.mockReturnValue(new Promise(() => undefined));
 
     await open();
-    await userEvent.click(await screen.findByRole('button', { name: 'Campaign details' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Campaign actions' }));
+    await userEvent.click(await screen.findByRole('menuitem', { name: 'Campaign details' }));
 
     // Past the whole-builder skeleton first, whose own "Loading…" is a
     // different state and would otherwise be what this matched.
@@ -995,11 +1030,12 @@ describe('the summary', () => {
 
   it('keeps the goal and its measurement in header details', async () => {
     await open();
-    const goal = await screen.findByRole('button', { name: 'Campaign details' });
+    const goal = await screen.findByRole('button', { name: 'Campaign actions' });
     expect(goal.closest('header')).not.toBeNull();
     expect(screen.queryByRole('button', { name: 'Goal: Grow my email list' })).toBeNull();
     expect(screen.queryByText('Grow my email list · counts Email submissions')).toBeNull();
     await userEvent.click(goal);
+    await userEvent.click(await screen.findByRole('menuitem', { name: 'Campaign details' }));
     expect(await screen.findByRole('dialog', { name: 'Campaign details' })).toBeVisible();
     expect(screen.getByText('Grow my email list · counts Email submissions')).toBeVisible();
     await userEvent.keyboard('{Escape}');
@@ -1411,7 +1447,8 @@ describe('whole-draft Undo and Redo', () => {
     expect(screen.getByRole('button', { name: 'Save draft' })).toBeEnabled();
     expect(builder.saveOptin).toHaveBeenCalledTimes(1);
     expect(publishing.publishOptin).toHaveBeenCalledTimes(1);
-    await userEvent.click(screen.getByRole('button', { name: 'Campaign details' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Campaign actions' }));
+    await userEvent.click(await screen.findByRole('menuitem', { name: 'Campaign details' }));
     await userEvent.click(screen.getByText('About draft history'));
     expect(await screen.findByText(/They do not change the published version or shared destination settings/)).toBeVisible();
   });
@@ -1656,10 +1693,10 @@ it('prevents opening a second save path while a draft save is pending', async ()
   await open();
   await userEvent.type(await screen.findByLabelText('Name'), ' updated');
   await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
-  expect(screen.getByRole('button', { name: 'Campaign details' })).toBeDisabled();
+  expect(screen.getByRole('button', { name: 'Campaign actions' })).toBeDisabled();
   expect(screen.getByRole('button', { name: 'Back to Campaigns' })).toBeDisabled();
   accept(optin({ name: 'Welcome discount updated' }));
-  await waitFor(() => expect(screen.getByRole('button', { name: 'Campaign details' })).toBeEnabled());
+  await waitFor(() => expect(screen.getByRole('button', { name: 'Campaign actions' })).toBeEnabled());
 });
 
 

@@ -1109,6 +1109,17 @@ final class OptinController implements RestController
         return null;
     }
 
+    /** Apply the existing draft compatibility rules without saving or publishing.
+     * @param array<string, mixed> $config
+     */
+    public function transferRefusal(array $config, string $id): ?WP_Error
+    {
+        if ($this->optins->find($id) === null) return self::notFound();
+        return $this->refuseUnusableBindings($config)
+            ?? $this->refuseAnArmMeteredDifferently($config, $id)
+            ?? $this->refuseContentLock($config, $id);
+    }
+
     /**
      * ========================================================================
      * TWO ARMS OF ONE TEST CONVERT THE SAME WAY, OR THE TEST COMPARES NOTHING.

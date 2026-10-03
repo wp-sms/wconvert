@@ -57,6 +57,11 @@ is a fixed catalog label, without the WordPress default site URL.
 Before any rendering or registration, reject unsupported schema/capabilities,
 unknown node keys/types/roles/tokens, invalid value types, duplicate block IDs,
 invalid conversion shape, media URLs/data URIs, markup and unsafe style syntax.
+**Separated by [ADR 0113](0113-template-files-replace-only-reviewed-draft-designs.md):**
+merchant ZIP files use an explicit portable policy in the shared validator;
+merchant links and visible consent are accepted only there. The following catalog
+rules are unchanged.
+
 Schema 1 requires an empty assets list and empty picture/action URLs. Schema 2 permits the bounded raster manifest and inert bindings described below; authored tree URLs remain empty.
 Style functions are restricted to colour, gradient and sizing expressions.
 Limits: 12 designs/pack, 200 nodes/design, depth 12, 2 screens, bounded text and

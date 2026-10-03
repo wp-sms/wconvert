@@ -21,7 +21,7 @@
   grid-template-columns: minmax(0, 1fr);
 }
 
-#wconvert-admin .wconvert-content-lock-example {
+:is(#wconvert-admin, .wconvert-journey-test-dialog) .wconvert-content-lock-example {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   gap: 12px;
@@ -47,7 +47,7 @@
   overflow-wrap: anywhere;
 }
 
-#wconvert-admin .wconvert-content-lock-controls {
+:is(#wconvert-admin, .wconvert-journey-test-dialog) .wconvert-content-lock-controls {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -55,10 +55,10 @@
   padding: 8px 20px;
   font-size: var(--text-note);
 }
-#wconvert-admin .wconvert-content-lock-controls select {
+:is(#wconvert-admin, .wconvert-journey-test-dialog) .wconvert-content-lock-controls select {
   inline-size: auto;
   max-inline-size: 100%;
 }
-#wconvert-admin .wconvert-content-lock-controls span {
+:is(#wconvert-admin, .wconvert-journey-test-dialog) .wconvert-content-lock-controls span {
   color: var(--muted-foreground);
 }

@@ -1427,6 +1427,8 @@ if (!class_exists('WP_REST_Response')) {
             return $this->data;
         }
 
+        public function header(string $key, string $value): void { $this->headers[$key] = $value; }
+
         public function get_status(): int
         {
             return $this->status;
@@ -1549,6 +1551,9 @@ if (!class_exists('WP_REST_Request')) {
             private array $attributes = []
         ) {
         }
+
+        /** @return array<string, mixed> */
+        public function get_file_params(): array { return []; }
 
         public function get_method(): string
         {

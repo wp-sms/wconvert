@@ -112,9 +112,11 @@ is still the documented static set; Groups, Columns, synced patterns and third-p
 blocks are not promised compatible. Automatic insertion across posts stays deferred.
 The user-selected prototype was removed; plan section 19 records the decision.
 
-Content lock simulation uses the existing right-hand Campaign canvas on Display
-rules, with Locked, Unlocked and Form unavailable controls outside the scaled
-preview. At narrow editor widths it stacks below settings. It renders example
+Content lock simulation opens from Display rules through **Preview & test →
+Check the design**, with Locked, Unlocked and Form unavailable controls outside
+the scaled preview. The October 3 regression fix retains that placement context
+while the shared preview dialog is open and restores Display rules on close.
+It renders example
 content, not the linked WordPress page; its state is separate from the Campaign
 and the Design step. The form preview sends no capture or analytics requests and
 writes no unlock receipt. Setup details and a copyable enclosing shortcode remain

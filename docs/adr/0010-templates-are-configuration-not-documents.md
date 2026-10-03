@@ -338,6 +338,10 @@ third-party ones. Under configuration they are properties of the one renderer.
   an admin notice: a rejection is an AUTHORING error, and a notice the merchant
   cannot act on is one they learn to dismiss.*
 - **Authoring is the settings panel plus a dev-only export**, not hand-written JSON.
+  *Amended by [ADR 0113](0113-template-files-replace-only-reviewed-draft-designs.md):
+  a separate merchant ZIP import/export now transfers validated design snapshots
+  and supported local images through the editor. The developer authoring export
+  remains separate; imported files never register library templates.*
   That makes the vocabulary self-testing: every shipped template is provably
   expressible in the panel, so we never ship a design the user cannot adjust.
   *Built in [#29](https://github.com/navidkashani/wconvert/issues/29). The export

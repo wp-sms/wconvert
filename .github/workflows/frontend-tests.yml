@@ -93,16 +93,26 @@ jobs:
       - run: npx playwright install --with-deps chromium
       - run: npm run build:admin
       - run: npm run test:visual
+      # Report every browser contract in one run even if an earlier suite fails.
+      # Failed steps still fail this job and the Required checks gate.
       - name: Build Pro admin and visitor loaders for fullscreen contracts
+        if: ${{ !cancelled() }}
         run: npm run build:admin:pro && npm run build:loader && npm run build:loader:pro
       - run: npm run test:visual:popup
+        if: ${{ !cancelled() }}
       - run: npm run test:visual:fullscreen
+        if: ${{ !cancelled() }}
       - run: npm run test:visual:reopen
+        if: ${{ !cancelled() }}
       - run: npm run build:phone && npm run test:visual:events
+        if: ${{ !cancelled() }}
       - name: Build block and inspectors for inline contracts
+        if: ${{ !cancelled() }}
         run: npm run build:block && npm run build:inspector && npm run build:inspector:pro
       - run: npm run test:visual:inline
+        if: ${{ !cancelled() }}
       - run: npm run test:visual:content-lock
+        if: ${{ !cancelled() }}
       - uses: actions/upload-artifact@v4
         if: always()
         with:

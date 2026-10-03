@@ -352,7 +352,7 @@ final class TemplateLibrary
         // backgrounds) are compared and matched by PictureTransfer below.
         $mine = MerchantsOwn::changedIn(
             $config['template']['tree'] ?? [],
-            $pickedBefore === null ? null : ($this->find($pickedBefore)['tree'] ?? null)
+            $pickedBefore === null ? [] : ($this->find($pickedBefore)['tree'] ?? null)
         );
 
         $config['template'] = [
@@ -365,7 +365,7 @@ final class TemplateLibrary
 
         $config['template'] = PictureTransfer::prepare(
             $heldTemplate,
-            $pickedBefore === null ? null : $this->find($pickedBefore),
+            $pickedBefore === null ? ['tree' => ['steps' => []], 'tokens' => []] : $this->find($pickedBefore),
             $config['template']
         )['template'];
 
