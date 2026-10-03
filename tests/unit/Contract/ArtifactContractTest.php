@@ -174,9 +174,33 @@ final class ArtifactContractTest extends TestCase
             'tiers.json' => self::LADDER,
             'resources/templates/locked.json' => "{\"designs\":[]}\n",
             'resources/playbooks/welcome.php' => "<?php\nreturn [];\n",
+            // What rebuilds the bundles above from the sources above. The
+            // repository is private, so a reviewer's only route to
+            // reproducing public/ is the ZIP itself.
+            ...self::FREE_BUILD_FILES,
+            'license.txt' => "GNU GENERAL PUBLIC LICENSE\nVersion 2, June 1991\n",
             ...$overrides,
         ]);
     }
+
+    /**
+     * Free's build files, each as a staged free tree carries it.
+     */
+    private const FREE_BUILD_FILES = [
+        'package.json' => "{\"scripts\":{\"build:free\":\"vite build -c vite.config.admin.mjs\"}}\n",
+        'package-lock.json' => "{\"lockfileVersion\":3}\n",
+        'tsconfig.json' => "{\"compilerOptions\":{}}\n",
+        'composer.json' => "{\"name\":\"veronalabs/wconvert\"}\n",
+        'composer.lock' => "{\"packages\":[]}\n",
+        'vite.admin-config.mjs' => "export function adminConfig() {}\n",
+        'vite.loader-config.mjs' => "export function loaderConfig() {}\n",
+        'vite.config.admin.mjs' => "export default adminConfig({ entry: 'resources/admin/src/main.tsx', outDir: 'public/admin' });\n",
+        'vite.config.block.mjs' => "export default { build: { outDir: 'public/blocks' } };\n",
+        'vite.config.loader.mjs' => "export default loaderConfig({ entry: 'resources/loader/src/main.ts', outDir: 'public/loader' });\n",
+        'vite.config.inspector.mjs' => "export default loaderConfig({ entry: 'resources/loader/src/inspect/main.ts', outDir: 'public/inspector' });\n",
+        'vite.config.phone.mjs' => "export default loaderConfig({ entry: 'resources/phone/src/main.ts', outDir: 'public/phone' });\n",
+        'vite.config.protection.mjs' => "export default loaderConfig({ entry: 'resources/protection/src/challenge.ts', outDir: 'public/protection' });\n",
+    ];
 
     /**
      * @param array<string, string|null> $overrides
@@ -743,6 +767,57 @@ final class ArtifactContractTest extends TestCase
 
         $this->assertSame(1, $result['status'], $result['output']);
         $this->assertStringContainsString('resources/loader/src', $result['output']);
+    }
+
+    /**
+     * **Sources nobody can build are half a source claim.** The repository is
+     * private, so every file `npm ci && npm run build:free` and `composer
+     * install --no-dev` need has to be in the ZIP.
+     */
+    public function testFailsWhenAFreeBuildFileIsStrippedFromTheFreeTree(): void
+    {
+        foreach (array_keys(self::FREE_BUILD_FILES) as $file) {
+            $result = $this->verify($this->stagedFree([$file => null]));
+
+            $this->assertSame(1, $result['status'], "$file stripped:\n" . $result['output']);
+            $this->assertStringContainsString($file, $result['output']);
+        }
+    }
+
+    public function testFailsWhenTheShippedPackageJsonCannotBuildFreeAlone(): void
+    {
+        $result = $this->verify($this->stagedFree([
+            'package.json' => "{\"scripts\":{\"build\":\"vite build\"}}\n",
+        ]));
+
+        $this->assertSame(1, $result['status'], $result['output']);
+        $this->assertStringContainsString('build:free', $result['output']);
+    }
+
+    public function testFailsWhenTheFreeTreeShipsNoLicence(): void
+    {
+        $result = $this->verify($this->stagedFree(['license.txt' => null]));
+
+        $this->assertSame(1, $result['status'], $result['output']);
+        $this->assertStringContainsString('license.txt', $result['output']);
+    }
+
+    /**
+     * A Pro build config the .distignore forgot — `vite.config.block-pro.mjs`
+     * did, once — or a free config reaching into Pro. Either way the free ZIP
+     * names a path it does not contain, and the rebuild fails.
+     */
+    public function testFailsWhenAShippedViteConfigNamesAProPath(): void
+    {
+        foreach ([
+            'vite.config.block-pro.mjs' => "export default { build: { outDir: resolve(import.meta.dirname, 'pro/public/blocks') } };\n",
+            'vite.config.loader.mjs' => "export default loaderConfig({ entry: 'pro/resources/loader/src/elite.ts', outDir: 'public/loader' });\n",
+        ] as $file => $contents) {
+            $result = $this->verify($this->stagedFree([$file => $contents]));
+
+            $this->assertSame(1, $result['status'], "$file:\n" . $result['output']);
+            $this->assertStringContainsString($file, $result['output']);
+        }
     }
 
     public function testFailsWhenTheAdminSourceIsStrippedFromTheFreeTree(): void

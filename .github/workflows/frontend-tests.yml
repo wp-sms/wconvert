@@ -108,7 +108,7 @@ jobs:
         if: ${{ !cancelled() }}
       - name: Build block and inspectors for inline contracts
         if: ${{ !cancelled() }}
-        run: npm run build:block && npm run build:inspector && npm run build:inspector:pro
+        run: npm run build:block && npm run build:block:pro && npm run build:inspector && npm run build:inspector:pro
       - run: npm run test:visual:inline
         if: ${{ !cancelled() }}
       - run: npm run test:visual:content-lock

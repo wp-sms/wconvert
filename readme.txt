@@ -1,4 +1,4 @@
-=== WConvert – Popups, Slide-ins and Inline Forms for Lead Capture ===
+=== WConvert – Popups and Inline Forms for Lead Capture ===
 Contributors: veronalabs, mostafa.s1990, kashani
 Tags: popup, lead capture, optin form, email list, conversion
 Requires at least: 6.8
@@ -67,7 +67,7 @@ any individual visitor, and you can read the lot of them on that screen under
 
 WConvert makes no background catalog or analytics requests. An optional template
 catalog is contacted only when an administrator explicitly checks, previews or
-installs a pack; see Optional template catalog below. Every destination this free
+installs a pack; see External services below. Every destination this free
 plugin can send a lead to is already on your site — the lead-magnet email,
 MailPoet, WP SMS — which is why the email-service-provider integrations are in
 WConvert Pro rather than here. What your own mail or newsletter plugin does
@@ -83,10 +83,23 @@ included in the download, under `resources/`:
   `resources/loader/src`
 * everything in `public/admin/`, from `resources/admin/src`
 * everything in `public/blocks/`, from `resources/blocks/inline-optin/src`
+* everything in `public/phone/`, from `resources/phone/src`
+* everything in `public/protection/`, from `resources/protection/src`
 
 Directories rather than filenames, because the admin bundle is split into
 chunks whose names carry a content hash. Nothing is fetched from elsewhere at
 build time or at run time.
+
+**Building from source.** The build files ship with the plugin —
+`package.json`, `package-lock.json`, `tsconfig.json`, the `vite.*.mjs`
+configs, `composer.json` and `composer.lock`. With Node.js 22 and
+Composer, run these from the plugin's directory:
+
+`npm ci && npm run build:free`
+
+`composer install --no-dev`
+
+The first rebuilds everything under `public/`; the second rebuilds `vendor/`.
 
 **WConvert Pro**
 
@@ -137,8 +150,8 @@ to paste:
 
 `[wconvert_optin id="YOUR_OPTIN_ID"]`
 
-Popups, floating bars and slide-ins need none of this — they place themselves
-on every page they are targeted at.
+Popups need none of this — they place themselves on every page they are
+targeted at.
 
 = Does it store IP addresses or track visitors across pages? =
 
@@ -193,38 +206,35 @@ Not in this version. Activate it per site rather than across the network. A
 network activation only creates tables for the one site that was open at the
 time, and the plugin will say so in the network admin.
 
-== Changelog ==
+== External services ==
 
-= 0.1.0 =
-* First release.
+WConvert works without an account or any external service, and nothing below is
+contacted unless an administrator turns it on. There are two optional services.
 
-
-== Optional template catalog ==
-
-The bundled library works without an account or external service. If a site
+**Template catalog.** The bundled design library works offline. If a site
 operator configures a template catalog, administrators can explicitly check it,
-preview a pack and install its designs in the editor. WConvert makes no background
-catalog requests. The pack screen identifies the configured service before use.
+preview a pack and install its designs in the editor. WConvert makes no
+background catalog requests, and the pack screen identifies the configured
+service before use. No catalog is configured by default; a deployed service must
+publish its own terms and privacy notice before it is offered as a default.
 
-These requests retrieve JSON template data. WConvert does not send campaigns,
-leads or licence details; the service receives the web server IP and requested
-URL as part of normal HTTP traffic. Installed designs remain available offline.
-This first version supports free popup/inline designs with placeholders, and
-accepts no downloaded executable code, fonts or media. No production service
-endpoint is configured by default. A deployed service must publish its own terms
-and privacy notice before it is offered as a default catalog.
+A catalog request retrieves JSON template data and, for packs that include
+them, the pack's images. Each image must be a PNG, JPEG or WebP file of at most
+5 MB whose size and SHA-256 checksum match the pack's manifest; anything else is
+rejected, and accepted images are stored under `wp-content/uploads/` so
+installed designs keep working offline. No executable code or fonts are ever
+downloaded. WConvert does not send campaigns, leads or licence details; the
+service receives the web server's IP address and the requested URL as part of
+normal HTTP traffic.
 
-
-== Optional bot verification services ==
-
-Hidden-field checks and submission limits are built in. In Settings → Spam
-protection, administrators may enable one verification service using their own
-account and keys: Cloudflare Turnstile Managed, Google reCAPTCHA v2 checkbox,
-or hCaptcha. All three integrations are available in Free. No service is
-selected by default. Provider charges and quotas are separate from WConvert.
+**Bot verification.** Hidden-field checks and submission limits are built in.
+In Settings → Spam protection, administrators may enable one verification
+service using their own account and keys: Cloudflare Turnstile Managed, Google
+reCAPTCHA v2 checkbox, or hCaptcha. No service is selected by default. Provider
+charges and quotas are separate from WConvert.
 
 The selected service loads when a form needs verification or an administrator
-runs Test saved setup. Its script receives browser/network information,
+runs Test saved setup. Its script receives browser and network information,
 including the visitor's IP address. WConvert sends the verification token and
 required credentials from the server to that service; it does not forward the
 form's email, phone or other captured answers. The server also checks the
@@ -244,5 +254,52 @@ the selected service's terms and their site's privacy notice before enabling it.
 
 Queued resource emails are limited to one successful send per recipient and
 resource within ten minutes. Separate submissions remain separate leads.
-WConvert Pro adds merchant-authored exact email/domain filters and email
-exceptions; it does not unlock the basic verification integrations.
+
+== Third-party libraries ==
+
+The built JavaScript and CSS bundle these open-source libraries. Their sources
+are installed by `npm ci` from `package-lock.json`.
+
+* React and ReactDOM 19 — MIT. The admin screens bundle their own React 19
+  rather than using the copy WordPress provides, because WordPress 6.8 ships
+  React 18. It runs only on WConvert's own admin screens; the visitor-facing
+  loader and the block editor bundle use no React of their own.
+* Radix UI (`radix-ui`) — MIT
+* React Flow (`@xyflow/react`) — MIT
+* dagre (`@dagrejs/dagre`) — MIT
+* React Flow Smart Edge (`@tisoap/react-flow-smart-edge`) — MIT
+* react-colorful — MIT
+* tailwind-merge — MIT
+* clsx — MIT
+* Tailwind CSS and tw-animate-css (generated CSS) — MIT
+* lite-phone-input — MIT; its notice ships in `resources/phone/`
+* Lucide icons (`lucide-react`) — ISC
+* class-variance-authority — Apache-2.0
+* Pragmatic drag and drop (`@atlaskit/pragmatic-drag-and-drop`) — Apache-2.0
+* DM Sans font — SIL Open Font License 1.1; its licence ships in
+  `resources/admin/src/assets/fonts/`
+
+PHP:
+
+* Action Scheduler (`woocommerce/action-scheduler`), installed by Composer into
+  `vendor/` — GPL-3.0-or-later, which is compatible with this plugin's
+  GPL-2.0-or-later licence when distributed together.
+
+== Screenshots ==
+
+1. Pick a goal, and WConvert proposes a Playbook that serves it.
+2. The builder: every part of the proposed popup stays editable.
+3. The design gallery, filtered by goal and format.
+4. An inline form placed in a post with the Inline Optin block.
+5. The lead log, with CSV export.
+6. Per-Optin analytics: impressions, conversions, dismissals and a daily series.
+
+== Changelog ==
+
+= 0.1.0 =
+* First release.
+
+== Upgrade Notice ==
+
+= 0.1.0 =
+First release.

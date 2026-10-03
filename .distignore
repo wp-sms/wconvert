@@ -39,36 +39,43 @@
 # throwaway WordPress; nothing in it is loaded by the plugin, and its own
 # output directory is gitignored rather than staged.
 /tools
-# Every Vite config and every factory they share. Named one by one rather than
-# globbed, because .distignore's two forms are an anchored path and a bare
+
+# ============================================================================
+# THE BUILD FILES SHIP. ONLY PRO'S ARE HERE.
+# ============================================================================
+# wp.org asks that a reviewer can rebuild every minified file from what is in
+# the ZIP, and the repository is private, so the manifests and free's Vite
+# configs travel with the sources: `npm ci && npm run build:free` and
+# `composer install --no-dev` rebuild public/ and vendor/ from the download
+# alone. What follows is every config that builds PRO, named one by one rather
+# than globbed, because .distignore's two forms are an anchored path and a bare
 # name, and a bare `vite.*` would take anything under resources/ with it.
-/vite.admin-config.mjs
-/vite.config.admin.mjs
+#
+# bin/verify-artifact-contract.sh fails the build if a shipped root Vite config
+# mentions a `pro/` path — so a Pro config missing from this list, or a free
+# config that starts reaching into Pro, stops the ZIP rather than shipping.
 /vite.config.admin-pro.mjs
-/vite.config.block.mjs
-/vite.config.loader.mjs
+/vite.config.block-pro.mjs
 /vite.config.analytics.mjs
-/vite.config.phone.mjs
-/vite.config.protection.mjs
 /vite.config.loader-pro-basic.mjs
 /vite.config.loader-pro-pro.mjs
 /vite.config.loader-pro-elite.mjs
-/vite.config.inspector.mjs
 /vite.config.inspector-pro-basic.mjs
 /vite.config.inspector-pro-pro.mjs
 /vite.config.inspector-pro-elite.mjs
 /vite.config.pro-tier.mjs
-/vite.loader-config.mjs
-/package.json
-/package-lock.json
-/tsconfig.json
 /eslint.config.js
+# shadcn's CLI configuration — read when a component is ADDED, never by the
+# build. tiers.json stays: WConvert\Support\TierManifest reads it at runtime.
+/components.json
 
-# Composer's manifests. The staged vendor/ is installed from them with
-# --no-dev before this file is applied, so the artifact carries the
-# autoloader and Action Scheduler, and neither manifest.
-/composer.json
-/composer.lock
+# Action Scheduler's repository documentation. Composer installs the package
+# whole; these are its contributor and agent notes, not code or licence.
+# Its readme.txt, changelog.txt and license.txt stay.
+/vendor/woocommerce/action-scheduler/AGENTS.md
+/vendor/woocommerce/action-scheduler/CLAUDE.md
+/vendor/woocommerce/action-scheduler/README.md
+/vendor/woocommerce/action-scheduler/lib/cron-expression/README.md
 
 # Tests and analysis
 /tests
