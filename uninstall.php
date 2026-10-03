@@ -223,6 +223,15 @@ if (!class_exists('ActionScheduler', false) && is_file($wconvertScheduler)) {
 if (class_exists('ActionScheduler', false) && ActionScheduler::is_initialized() && function_exists('as_unschedule_all_actions')) {
     as_unschedule_all_actions('', [], 'wconvert');
 }
+// The running copy has hooked its queue runner onto `shutdown`. If that copy
+// is WConvert's own — loaded here, or chosen from among every bundled copy
+// earlier in this request — WordPress deletes the folder it autoloads from
+// before `shutdown`, and the runner fatals on a class it can no longer find.
+// Unhook it for this request. Another plugin's copy is left alone.
+if (class_exists('ActionScheduler_QueueRunner', false)
+    && str_starts_with((string) (new ReflectionClass('ActionScheduler_QueueRunner'))->getFileName(), __DIR__ . DIRECTORY_SEPARATOR)) {
+    ActionScheduler_QueueRunner::instance()->unhook_dispatch_async_request();
+}
 
 // User metadata is blog-scoped because WordPress users span multisite blogs.
 delete_metadata('user', 0, 'wconvert_picker_preferences_' . get_current_blog_id(), '', true);
