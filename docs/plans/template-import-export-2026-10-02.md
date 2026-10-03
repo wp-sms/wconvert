@@ -283,10 +283,12 @@ Verified:
   content preservation without provenance, session ownership/replacement/expiry,
   concurrent read locks, repeated link edits, cancellation and retry results.
 
-Remaining release verification: multisite quota/MIME-policy combinations,
-forced disk-full/media-service failures, and PHP process termination between
-attachment insertion and checkpoint. Their code paths are bounded and fail closed,
-but those host-level failures were not injected during this implementation.
+Follow-up verification on 3 October covered multisite quota/MIME restrictions,
+a rejected native image sideload, and an unwritable progress checkpoint, including
+rollback and successful retry. PHP process termination between attachment
+insertion and checkpoint remains an acknowledged limitation: it can leave an
+unused attachment, as described in ADR 0113. The checks simulate failed writes;
+they do not fill the host disk or certify every hosting configuration.
 Successful imported media intentionally remains after Undo or discarding a draft.
 
 ## Best-practice references checked on 3 October 2026
@@ -313,3 +315,18 @@ The original 83 focused UI tests passed; two additional regression cases cover
 explicit export omissions and refused replacement files (all six transfer tests
 pass). TypeScript, targeted ESLint, and Free/Pro admin builds pass. The earlier
 full-suite baseline failures remain outside this UI refinement.
+
+
+### Review and readiness follow-up — 2026-10-03
+
+Fixed the independent standards/spec review findings: retain graph routing in
+Keep current content, validate the complete transformed candidate at preview and
+Apply, replace cleanup deadlines when replacing a session, and use the shared
+Input component for editable links. See the [review record](../reviews/template-transfer-closeout-2026-10-03.md).
+
+The original 26 frontend failures are resolved: include the existing preview
+stylesheet in the test inventory, style the Other screens disclosure, and open
+the mobile-help popover in its test. The fullscreen visual test now follows the
+current format radio and setup-details flow, verified in real WordPress. Terser
+inlining keeps all loader tiers within their unchanged budgets under CI's Node 22.
+The [merchant guide](../guides/import-export-designs.md) covers the complete flow.

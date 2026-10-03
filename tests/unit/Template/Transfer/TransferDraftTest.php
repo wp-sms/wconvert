@@ -3,6 +3,9 @@ namespace WConvert\Tests\Unit\Template\Transfer;
 
 use PHPUnit\Framework\TestCase;
 use WConvert\Template\Transfer\TransferDraft;
+use WConvert\Template\Catalog\PackValidator;
+use WConvert\Template\TemplateManifest;
+use WConvert\Support\Tier;
 use WConvert\Template\{TemplateVocabulary, CaptureJourney, GraphCaptureContract};
 
 final class TransferDraftTest extends TestCase
@@ -53,4 +56,26 @@ final class TransferDraftTest extends TestCase
         }
         self::assertSame($tree['graph'], $prepared['graph']);
     }
+    public function testKeepContentPreservesGraphConnectionsAndQuestionReferences(): void
+    {
+        $vocabulary = TemplateVocabulary::fromManifest();
+        $tree = json_decode((string) file_get_contents(WCONVERT_DIR . '/tests/fixtures/journey-graph-enquiry.json'), true);
+        $incoming = ['name' => 'Enquiry', 'tree' => $tree, 'tokens' => [], 'display_type' => 'popup'];
+        $config = ['template' => $incoming, 'display_type' => 'popup'];
+        $prepared = TransferDraft::prepare($incoming, $config, true, null, $vocabulary)['patch']['template']['tree'];
+        self::assertSame(3, $prepared['v']);
+        self::assertSame($tree['graph'], $prepared['graph']);
+        self::assertNull(GraphCaptureContract::issue($prepared, 'collect_enquiries'));
+        TransferDraft::validate(['template' => ['tree' => $prepared, 'tokens' => []], 'display_type' => 'popup'], 'Enquiry', new PackValidator(TemplateManifest::load(), $vocabulary, Tier::Basic));
+    }
+
+    public function testCandidateValidationRejectsRoutingDamagedAfterReadingTheArchive(): void
+    {
+        $tree = json_decode((string) file_get_contents(WCONVERT_DIR . '/tests/fixtures/journey-graph-enquiry.json'), true);
+        $tree['graph']['entry'] = 'missing';
+        $validator = new PackValidator(TemplateManifest::load(), TemplateVocabulary::fromManifest(), Tier::Basic);
+        $this->expectException(\RuntimeException::class);
+        TransferDraft::validate(['template' => ['tree' => $tree, 'tokens' => []], 'display_type' => 'popup'], 'Enquiry', $validator);
+    }
+
 }

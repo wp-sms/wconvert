@@ -24,6 +24,11 @@ final class TransferDraft
             $mine = $vocabulary->normalize($config['template'] ?? []);
             $copy = SlotRoles::copyFrom($mine['tree'], $vocabulary);
             $template['tree'] = MerchantsOwn::writeInto(SlotRoles::bind($vocabulary->withoutCopy($template['tree']), $copy, $vocabulary), MerchantsOwn::changedIn($mine['tree'], $original['tree'] ?? []));
+            // Content binding predates graph journeys; routing belongs to the incoming design.
+            if (($incoming['tree']['v'] ?? null) === 3) {
+                $template['tree']['v'] = 3;
+                $template['tree']['graph'] = $incoming['tree']['graph'];
+            }
             $pictures = PictureTransfer::prepare($mine, $original ?? ['tree' => ['steps' => []], 'tokens' => []], $template);
             $template = $pictures['template'];
             if ($pictures['unplaced'] || $pictures['unverified']) $notes[] = __('Some current pictures could not be matched confidently. Review every screen.', 'wconvert');
@@ -42,6 +47,18 @@ final class TransferDraft
             $notes[] = __('Content locking is not compatible with this design and will be cleared.', 'wconvert');
         }
         return ['patch' => $patch, 'notes' => $notes];
+    }
+
+    /** Validate the transformed draft without imposing the archive's empty-image policy.
+     * @param array<string, mixed> $patch
+     */
+    public static function validate(array $patch, string $name, PackValidator $validator): void
+    {
+        $design = $patch['template'] + ['name' => $name, 'display_type' => $patch['display_type']];
+        foreach (DesignImages::slots($design) as $slot) {
+            DesignImages::put($design, $slot['path'], $slot['background'] ? 'none' : '');
+        }
+        $validator->portable($design);
     }
 
     /**

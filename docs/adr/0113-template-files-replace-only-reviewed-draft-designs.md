@@ -17,6 +17,12 @@ for explicit Keep or Change; never infer another site's domain. Mode and link
 changes require another preview. Apply is one Undo step and neither saves nor
 publishes. The normal save/publication rules remain authoritative.
 
+Content matching preserves the incoming version-3 journey graph. Validate the
+complete candidate after matching, privacy preparation and link changes, and
+again before Apply; validating only the original file does not cover these
+transformations. Existing image URLs are checked separately from the candidate's
+structural contract.
+
 Keep the receiving Goal and campaign settings. Reuse existing A/B, destination
 and content-lock refusals. Review format-dependent placement resets, privacy
 preparation, and clearing form-specific destination overrides/field mappings.
@@ -52,6 +58,9 @@ and administrator. Raster previews use authenticated, non-cacheable responses
 and revoked browser blob URLs. Shared preview locks allow concurrent images;
 mutating operations hold an exclusive lock. Cancel/expiry removes staging. A
 new upload invalidates the old session before replacing its archive.
+Replace its scheduled cleanup deadline too: WordPress deduplicates identical
+single events within ten minutes, so simply adding another event can leave the
+replacement session without an eventual cleanup.
 
 Apply revalidates support and the prepared digest, then uses WordPress sideload
 APIs for images still used by the candidate. Check upload capability, MIME policy

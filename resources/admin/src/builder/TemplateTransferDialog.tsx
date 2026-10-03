@@ -1,6 +1,7 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import { ArrowDownToLine, ArrowUpFromLine, Check, FileArchive, Image, Link, LoaderCircle, ShieldCheck, TriangleAlert } from 'lucide-react';
 import { __, sprintf } from '@wordpress/i18n';
+import { Input } from '../components/ui/input';
 import { Button } from '../components/ui/button';
 import { Dialog, DialogDescription, DialogTitle } from '../components/ui/dialog';
 import { PickerDialogContent, PickerDialogHeader, PickerDialogBody, PickerDialogFooter } from '../discovery/PickerDialog';
@@ -171,8 +172,8 @@ export default function TemplateTransferDialog({ action, design, config, optin, 
               {preview && <>
                 {notices.length > 0 && <section className="wconvert-transfer__warning"><h3><TriangleAlert aria-hidden="true" />{__('Needs review', 'wconvert')}</h3><ul>{notices.map(note => <li key={note}>{note}</li>)}</ul></section>}
                 {preview.links.length > 0 && <section className="wconvert-transfer__section"><h3><Link aria-hidden="true" />{__('Review links', 'wconvert')}<span className="wconvert-transfer__badge">{preview.links.length}</span></h3><p>{__('Keep these addresses or update them for this site.', 'wconvert')}</p>
-                  {preview.links.map((link, index) => <label className="wconvert-transfer__link" key={link.url}><span><strong>{sprintf(__('Link %s', 'wconvert'), String(index + 1))}</strong><small>{sprintf(__('Used in %s place(s)', 'wconvert'), String(link.uses))}</small></span>
-                    <input type="text" value={links[link.url] ?? link.url} disabled={busy} aria-label={sprintf(__('Link: %s', 'wconvert'), link.url)} onChange={event => { setLinks(current => ({ ...current, [link.url]: event.target.value })); setReviewed(false); }} />
+                  {preview.links.map((link, index) => <label className="wconvert-transfer__link" key={link.url} htmlFor={`${contentId}-link-${index}`}><span><strong>{sprintf(__('Link %s', 'wconvert'), String(index + 1))}</strong><small>{sprintf(__('Used in %s place(s)', 'wconvert'), String(link.uses))}</small></span>
+                    <Input id={`${contentId}-link-${index}`} type="text" value={links[link.url] ?? link.url} disabled={busy} aria-label={sprintf(__('Link: %s', 'wconvert'), link.url)} onChange={event => { setLinks(current => ({ ...current, [link.url]: event.target.value })); setReviewed(false); }} />
                   </label>)}
                   <p className="wconvert-transfer__hint">{__('Linked files are not included.', 'wconvert')}</p>
                 </section>}

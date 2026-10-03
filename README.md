@@ -22,6 +22,9 @@ include a copy button for the existing campaign/variant ID.
 
 ## Import and export designs
 
+See the [step-by-step import/export guide](docs/guides/import-export-designs.md),
+including where to find Campaign actions and how to resolve upload problems.
+
 In the campaign editor, open **Campaign actions → Export design** to download the
 current design, including unsaved changes, as a `.wconvert.zip`. Supported local
 PNG/JPEG/WebP images travel with it. Unavailable images need explicit omission.

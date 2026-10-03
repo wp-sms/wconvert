@@ -80,6 +80,9 @@ final class TemplateTransferController implements RestController
         $document = $this->package()->read($file['tmp_name']);
         if ($document['assets'] !== []) $this->mediaPermission($document['assets']);
         $id = $this->sessions()->create($file['tmp_name']);
+        // WP deduplicates identical single events within ten minutes. Replace
+        // the old deadline so a newer session always has its own cleanup.
+        wp_clear_scheduled_hook(self::CLEANUP, [self::owner()]);
         wp_schedule_single_event(time() + ImportSession::TTL + 60, self::CLEANUP, [self::owner()]);
         return ['id' => $id, 'name' => $document['design']['name'], 'images' => count($document['assets']), 'notes' => $document['notes']];
     }
@@ -112,6 +115,7 @@ final class TemplateTransferController implements RestController
             $prepared['patch']['template'] = TransferDraft::replaceLinks($prepared['patch']['template'], $replacements);
             $prepared['notes'] = array_values(array_unique([...$document['notes'], ...$prepared['notes']]));
             foreach ($document['bindings'] as $binding) if (str_starts_with($binding['asset'], 'art-') && !isset($urls[$binding['asset']])) $prepared['notes'][] = __('A built-in illustration is unavailable here. Apply will omit it.', 'wconvert');
+            TransferDraft::validate($prepared['patch'], $document['design']['name'], $this->validator);
             $refusal = $this->editor->transferRefusal(array_replace($config, $prepared['patch']), $optinId);
             if ($refusal !== null) throw new \RuntimeException($refusal->get_error_message());
             $facets = TemplateFacets::of($prepared['patch']['template']['tree'], $this->vocabulary->fields());
@@ -137,6 +141,7 @@ final class TemplateTransferController implements RestController
             PackValidator::check($request->get_param('reviewed') === true, __('Review the imported content and links before applying.', 'wconvert'));
             if (isset($session['result'])) return $session['result'];
             $package = $this->package(); $document = $package->read($archive); // Recheck current feature support.
+            TransferDraft::validate($prepared['patch'], $document['design']['name'], $this->validator);
             $refusal = $this->editor->transferRefusal(array_replace($prepared['config'], $prepared['patch']), $prepared['optin']);
             if ($refusal !== null) throw new \RuntimeException($refusal->get_error_message());
             $template = $prepared['patch']['template']; $slots = DesignImages::slots($template);

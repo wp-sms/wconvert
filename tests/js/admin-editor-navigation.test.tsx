@@ -141,12 +141,15 @@ describe('App navigation through the real lazy editor', () => {
     expect(screen.queryByRole('alertdialog')).toBeNull();
   });
 
-  it('keeps mobile editing scope visible before a block is selected', async () => {
+  it('explains mobile editing scope from the device controls before a block is selected', async () => {
     await openEditor();
     expect(screen.queryByRole('treegrid')).toBeNull();
     await userEvent.click(screen.getByRole('button', { name: 'Mobile preview' }));
+    await userEvent.click(screen.getByRole('button', { name: 'About mobile editing' }));
     expect(screen.getByText('Editing mobile appearance. Text and blocks are shared across sizes.')).toBeInTheDocument();
+    await userEvent.keyboard('{Escape}');
     await userEvent.click(screen.getByRole('button', { name: 'Desktop preview' }));
+    expect(screen.queryByRole('button', { name: 'About mobile editing' })).toBeNull();
     expect(screen.queryByText('Editing mobile appearance. Text and blocks are shared across sizes.')).toBeNull();
   });
 
