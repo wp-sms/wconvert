@@ -113,6 +113,8 @@ jobs:
         if: ${{ !cancelled() }}
       - run: npm run test:visual:content-lock
         if: ${{ !cancelled() }}
+      - run: npm run build:analytics && npm run test:visual:analytics
+        if: ${{ !cancelled() }}
       - uses: actions/upload-artifact@v4
         if: always()
         with:

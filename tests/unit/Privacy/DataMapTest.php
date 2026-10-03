@@ -32,6 +32,7 @@ final class DataMapTest extends TestCase
         );
 
         $this->assertSame([
+            'analytics_integration' => null,
             'retention_days' => null,
             'destinations' => [],
             'browser' => [

@@ -47,6 +47,7 @@
 /vite.config.admin-pro.mjs
 /vite.config.block.mjs
 /vite.config.loader.mjs
+/vite.config.analytics.mjs
 /vite.config.phone.mjs
 /vite.config.protection.mjs
 /vite.config.loader-pro-basic.mjs

@@ -10,6 +10,7 @@ export interface PrivacyDestination {
 }
 
 export interface PrivacyDataMap {
+  analytics_integration?: { configured: boolean; route: string; consent: string } | null;
   retention_days: number | null;
   destinations: PrivacyDestination[];
   browser: {

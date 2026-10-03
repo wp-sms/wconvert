@@ -998,6 +998,9 @@ final class OptinController implements RestController
             if ($lock === null) unset($config['content_lock']);
             else $config['content_lock'] = $lock;
         }
+        if (array_key_exists('analytics', $config)) {
+            $config['analytics'] = \WConvert\Optin\AnalyticsPreference::normalize($config['analytics']);
+        }
         return $config;
     }
 

@@ -1,5 +1,7 @@
 # WConvert mints no visitor identifier
 
+**Extended by [ADR 0114](0114-analytics-exports-use-existing-site-tags.md):** The optional Pro integration passes allowlisted campaign events to an existing Google tag/GTM setup. WConvert still mints no visitor identifier. The site's existing analytics provider may collect its own identifiers and page/session metadata under the site's consent configuration; native counters remain separate.
+
 **Extended by [ADR 0102](0102-content-lock-is-an-optional-inline-capture-journey.md):** Content lock stores bounded Campaign-family unlock receipts with expiry days in site-scoped localStorage. No visitor identifier or submitted value is stored; storage failure leaves the current page usable.
 
 **WConvert never generates, stores or transmits a per-visitor identifier.** No

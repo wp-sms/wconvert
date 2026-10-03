@@ -178,12 +178,20 @@ final class PublishedProjection
         // be spent by the first one.
         $rows = array_values(is_array($rows) ? $rows : iterator_to_array($rows, false));
         $arms = self::armsIn($rows);
+        $preferences = [];
+        foreach ($rows as $row) {
+            $live = json_decode((string) ($row['published_config'] ?? ''), true);
+            $preferences[(string) $row['id']] = is_array($live) ? ($live['analytics'] ?? null) : null;
+        }
         $set = [];
 
         foreach ($rows as $row) {
             $entry = self::project($row, $vocabulary, $siteZone, $arms);
 
             if ($entry !== null) {
+                $family = (string) (($row['parent_id'] ?? '') ?: $row['id']);
+                $entry['analytics'] = $preferences[$family] ?? null;
+                $entry['analytics_campaign'] = $family;
                 $set[] = $entry;
             }
         }
@@ -448,6 +456,7 @@ final class PublishedProjection
             // first without costing the second a byte on every matching page
             // view, which is the same split `targeting` already has.
             'goal' => (string) ($row['goal'] ?? ''),
+            'analytics' => $published['analytics'] ?? null,
             'targeting' => is_array($targeting) ? $targeting : [],
             // Both keys, always — including empty. The loader reads "no
             // triggers" as "never fires", which is ADR 0012's zero-trigger

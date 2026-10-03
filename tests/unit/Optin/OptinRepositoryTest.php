@@ -520,6 +520,20 @@ final class OptinRepositoryTest extends TestCase
      * fails on the pull request that reaches for one, rather than on the one
      * that forgets to update a comment.
      */
+    public function testAnalyticsFamilyPreferencesSurviveWinnerPromotionWithoutPublishingDraftChanges(): void
+    {
+        $parent = $this->anOptin(['analytics' => ['off' => true, 'label' => 'Published label']]);
+        $this->repository->publish($parent->id);
+        $winner = $this->repository->createVariant($parent->id);
+        $this->assertNotNull($winner);
+        $this->repository->publish($winner->id);
+        $this->repository->saveDraft($parent->id, null, null, array_replace($parent->config, ['analytics' => ['off' => false, 'label' => 'Draft label']]));
+        $this->repository->declareWinner($parent->id, $winner->id);
+        $promoted = $this->repository->find($winner->id);
+        $this->assertSame(['off' => false, 'label' => 'Draft label'], $promoted?->config['analytics']);
+        $this->assertSame(['off' => true, 'label' => 'Published label'], $promoted->publishedConfig['analytics']);
+    }
+
     public function testDeclaringAWinnerSoftDeletesTheLoserAndDeletesNoRow(): void
     {
         $parent = $this->anOptin();

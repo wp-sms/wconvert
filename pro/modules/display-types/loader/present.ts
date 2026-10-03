@@ -1,3 +1,4 @@
+import { observePresentation } from '../../analytics/loader/bridge';
 import { campaignLifecycle } from '@loader/events';
 import type { OptinControls, PayloadEntry, Presenter } from '@loader/types';
 import { createTemplatePresenter } from '@loader/present';
@@ -45,7 +46,7 @@ import { connectContentLock } from '../../content-lock/loader';
  * free's to draw (CONTEXT.md, Impression).
  */
 export const proPresenter: Presenter = {
-  connect: ({ entries, changed }) => connectContentLock(connectRecovery(proPresenter, entries, changed), entries, changed),
+  connect: ({ entries, changed }) => observePresentation(connectContentLock(connectRecovery(proPresenter, entries, changed), entries, changed)),
   select: selectAutomatic,
   show(entry: PayloadEntry, controls: OptinControls): void {
     if (entry.display_type !== 'floating_bar' && entry.display_type !== 'slide_in' && entry.display_type !== 'fullscreen') {

@@ -98,6 +98,8 @@ export function PrivacyDataMap() {
   return (
     <SettingsDisclosure title={title} summary={summary}>
       <RegionBody className="flex flex-col gap-5">
+      {data.analytics_integration?.configured && <p>{__('External analytics is enabled. WConvert sends campaign IDs, public labels and outcome types through the configured Google tag or GTM. It sends no form details; the existing tag can add its own identifiers and page context. Collection follows the configured consent policy.', 'wconvert')}</p>}
+
         <section aria-labelledby="wconvert-stored-data">
           <h3 id="wconvert-stored-data" className="m-0 text-body font-medium">
             {__('Saved in WConvert', 'wconvert')}

@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>WConvert analytics setup</title>
+<style>body{font:17px/1.65 system-ui;max-width:850px;margin:40px auto;padding:0 24px;color:#17202a}code{background:#f3f4f6;padding:2px 4px}table{border-collapse:collapse;width:100%}td,th{border:1px solid #ddd;padding:10px;text-align:left}a{color:#2054aa}h2{margin-top:2em}</style>
+<h1>Measure your WConvert campaigns in GA4</h1>
+<p>WConvert sends campaign activity through the Google tag or Google Tag Manager already installed on your website. It does not install a tracker. Choose one route in Settings → Integrations. Native WConvert statistics continue independently.</p>
+<h2>Existing Google tag</h2>
+<ol><li>Find your web stream's Measurement ID in GA Admin → Data streams (starts with <code>G-</code>).</li><li>Select Existing Google tag and enter that ID. The same stream must already be configured on your website, for example by Site Kit.</li><li>Choose consent handling, enable the integration and save. Clear any additional page or CDN cache.</li><li>Test on a page containing a published campaign. Having a <code>gtag</code> function only proves a local handoff is possible; verify receipt in GA.</li></ol>
+<h2>Google Tag Manager recipe</h2>
+<p>Use a test workspace and property first. WConvert pushes namespaced events into the existing data layer; it does not create or publish a GTM tag.</p>
+<ol><li>Select Google Tag Manager in WConvert. Use <code>dataLayer</code> unless your container uses another name.</li><li>Create a Custom Event trigger with regular-expression matching:
+<pre><code>^wconvert\.(impression|lead_accepted|campaign_converted|dismissed|test)$</code></pre></li>
+<li>Create Data Layer Variables (Version 2) for <code>wconvert.ga_event</code>, <code>wconvert.debug_mode</code> and each <code>wconvert.</code> field below.</li>
+<li>Create a GA4 Event tag targeting your existing Google tag/web stream. Set Event Name to the variable for <code>wconvert.ga_event</code>. Add the parameters below using the corresponding variables. Set <code>debug_mode</code> from <code>wconvert.debug_mode</code>.</li>
+<li>Attach the custom-event trigger. Review consent behavior with the consent manager and GTM consent overview. Google tags have built-in consent checks; additional consent requirements can prevent firing entirely. WConvert never sets or grants consent.</li>
+<li>Preview the container, verify one tag firing per WConvert event, inspect the destination stream, and publish the container when verified.</li></ol>
+<table><tr><th>GA4 parameter</th><th>Data Layer Variable</th></tr>
+<tr><td>wcv_campaign_id</td><td>wconvert.campaign_id</td></tr><tr><td>wcv_optin_id</td><td>wconvert.optin_id</td></tr>
+<tr><td>wcv_campaign_label</td><td>wconvert.campaign_label</td></tr><tr><td>wcv_display_type</td><td>wconvert.display_type</td></tr>
+<tr><td>wcv_goal</td><td>wconvert.goal</td></tr><tr><td>wcv_outcome</td><td>wconvert.outcome</td></tr>
+<tr><td>wcv_capture_role</td><td>wconvert.capture_role</td></tr><tr><td>wcv_schema_version</td><td>wconvert.schema_version</td></tr></table>
+<p>WConvert resets optional values to <code>null</code> on every data-layer push. This prevents the previous lead's capture role appearing on the next impression or test event. Keep the trigger narrow. Do not fire a second generic form tag for the same WConvert accepted lead.</p>
+<h2>Consent and privacy</h2>
+<p>The default WP Consent API mode requires an initialized consent manager exposing the <code>statistics</code> category. Unknown or denied permission withholds events. Service-specific denial for <code>google-analytics</code> is also respected where available. Consent is checked on every event. Events withheld before consent are not replayed.</p>
+<p>The alternative “Existing Google tag / GTM manages consent” explicitly delegates collection to your installed tracking configuration. WConvert cannot verify consent in this mode. Advanced Google Consent Mode may send cookieless requests when storage is denied. Check your configuration against your site's requirements.</p>
+<p>WConvert sends only campaign metadata: never form answers, email addresses, phone numbers, lead IDs or destination credentials. Public labels are visible to visitors and your analytics provider; use no personal information. The existing Google tag can collect its own standard page and session information, subject to your configuration. Update your privacy notice accordingly.</p>
+<h2>Event meanings</h2>
+<table><tr><th>Event</th><th>When it happens</th></tr>
+<tr><td>wconvert_impression</td><td>An overlay appears or an inline campaign enters the viewport. A reminder alone is not an impression.</td></tr>
+<tr><td>generate_lead</td><td>The browser receives the first accepted lead acknowledgement for a mounted journey. Validation errors, unconfirmed requests and later optional SMS steps do not create another lead event. Destination delivery failure does not undo the accepted lead.</td></tr>
+<tr><td>wconvert_conversion</td><td>A click-driven campaign converts or a quiz reaches its result. Capture-driven campaigns use generate_lead instead. Quiz capture carries capture_role=secondary; completion and capture are different outcomes.</td></tr>
+<tr><td>wconvert_dismiss</td><td>A deliberate dismissal, if enabled. Expiry, eligibility changes and closing after success are not dismissals.</td></tr>
+<tr><td>wconvert_test</td><td>A manager explicitly sends a synthetic diagnostic event; it contains no campaign identity. Never mark this as a key event.</td></tr></table>
+<h2>Campaign controls</h2>
+<p>In campaign details choose Use site setting or Off for this campaign, and optionally supply a public label. Save and publish to apply. Private campaign names are not exported. A/B variants share family preferences and export distinct optin IDs. Promotion preserves inherited preferences, with published and draft changes separate. Duplicate campaigns reset the custom label.</p>
+<h2>Test without counting a real lead</h2>
+<p>Open Settings → Integrations → Test and verify while logged in as a campaign manager. Choose a page with a published campaign. The diagnostic panel observes activity locally and automatically closes after ten minutes. Routine campaign events are withheld on this diagnostic page. “Send synthetic test event” is a separate, explicit action: use a dedicated test stream with the direct route, or a test GTM workspace/property. Consent still applies.</p>
+<p>“Handed off” means the existing JavaScript function or data layer accepted the call. It does not prove delivery to Google. Check Tag Assistant and GA DebugView or Realtime. A blocker, delayed tag, missing container configuration or network failure can prevent delivery. Tracking failures never prevent the campaign from working. There is no retry queue.</p>
+<p>Routine export is off on WordPress non-production environments and for logged-in campaign managers by default. Ordinary logged-in customers remain eligible. Copying settings to another site URL disables routine export until the administrator reviews and saves the settings there. A clone must also use the correct WordPress environment type.</p>
+<h2>Useful reports</h2>
+<ol><li>Register event-scoped custom dimensions for <code>wcv_campaign_id</code> and the other fields you need. Start with campaign label and outcome; add optin ID for A/B analysis. Custom reports can take 24–48 hours after registration.</li>
+<li>To see which sources bring enquiries, create an exploration with Session source / medium and WConvert campaign label, using Event count and filtering Event name to <code>generate_lead</code> and a WConvert campaign ID. Use event counts when comparing accepted acts, not unique people.</li>
+<li>For a campaign funnel, compare impressions and accepted leads for the same campaign/outcome and period. Do not add quiz completions and secondary captures into one conversion rate.</li>
+<li>For an A/B test, break the shared campaign ID down by optin ID. Once a child is promoted its new campaign ID is its own ID; the old IDs remain meaningful historically.</li>
+<li>Mark the relevant event as a key event in GA if desired. Existing generate_lead key-event settings apply to WConvert too. For a WConvert-only key event, create a derived GA event with a WConvert parameter condition and mark that derived event instead; avoid marking both when it would double-count the same business outcome.</li></ol>
+<p>GA and native WConvert totals can differ because of consent, blockers, attribution, processing time, manager exclusions and lost acknowledgements. Existing site trackers may also measure generic form interactions; these are not accepted leads.</p>
+<p>References: <a href="https://developers.google.com/analytics/devguides/collection/ga4/events">Google event setup</a>, <a href="https://developers.google.com/analytics/devguides/collection/ga4/event-parameters">custom parameters</a>, <a href="https://developers.google.com/tag-platform/tag-manager/datalayer">GTM data layer</a>, <a href="https://developers.google.com/tag-platform/security/guides/consent">consent implementation</a>.</p>
+</html>

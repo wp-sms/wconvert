@@ -191,6 +191,8 @@ final class ArtifactContractTest extends TestCase
             'modules/content-lock/static-blocks.json' => '{"top": [], "children": {}}',
             'public/loader/loader.js' => "console.log('pro loader');\n",
             'public/inspector/inspector.js' => "console.log('pro inspector');\n",
+            'public/analytics/analytics.js' => "console.log('analytics');\n",
+            'docs/analytics-integrations.html' => '<html>Analytics setup</html>',
             // Pro's admin bundle, both halves. Pro replaces free's on the same
             // rule it replaces the loader (ADR 0014 extended to the admin), so
             // a Pro ZIP without it degrades to free's screen — correctly and
@@ -207,6 +209,7 @@ final class ArtifactContractTest extends TestCase
             // nothing that could be too high. The tests that assert the
             // per-tier rules build lower rungs explicitly.
             'modules/display-types/module.json' => "{\"slug\":\"display-types\"}\n",
+            'modules/analytics/module.json' => "{\"slug\":\"analytics\"}\n",
             'modules/spam-filters/module.json' => "{\"slug\":\"spam-filters\"}\n",
             'modules/journeys/module.json' => "{\"slug\":\"journeys\"}\n",
             'modules/content-lock/module.json' => "{\"slug\":\"content-lock\"}\n",

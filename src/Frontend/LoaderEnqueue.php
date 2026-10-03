@@ -137,6 +137,8 @@ final class LoaderEnqueue
             );
         }
 
+        do_action('wconvert_frontend_entries', $entries);
+
         $dist = WCONVERT_DIR . self::DIST;
 
         // **Reported from wp-admin, not from here.** This method runs on

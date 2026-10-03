@@ -83,6 +83,17 @@ final class PublishedProjectionTest extends TestCase
         }
     }
 
+    public function testPausedParentsKeepTheirPublishedAnalyticsPreferenceOnLiveVariants(): void
+    {
+        $parent = self::row(['published_at' => null, 'published_config' => json_encode(['analytics' => ['off' => true, 'label' => 'Family']])]);
+        $child = self::row(['id' => '01JQ0000000000000000000002', 'parent_id' => $parent['id']]);
+        $set = self::build([$parent, $child]);
+        self::assertCount(1, $set);
+        self::assertSame(['off' => true, 'label' => 'Family'], $set[0]['analytics']);
+        self::assertSame($parent['id'], $set[0]['analytics_campaign']);
+        self::assertArrayNotHasKey('analytics', $set[0]['payload']);
+    }
+
     public function testAPublishedRowProjectsItsTargetingSeparablyFromItsPayload(): void
     {
         $set = self::build([self::row()]);
@@ -92,8 +103,10 @@ final class PublishedProjectionTest extends TestCase
             // Beside the payload, never inside it: PHP resolves the cart URL
             // from it at enqueue and the browser never sees it (ADR 0025).
             'goal' => 'grow_email_list',
+            'analytics' => null,
             'targeting' => ['include' => [['type' => 'post', 'value' => 12]]],
             'payload' => ['display_type' => 'popup', 'display_rules' => \WConvert\Rules\DisplayPlan::immediate()],
+            'analytics_campaign' => '01JQ0000000000000000000001',
         ]], $set);
     }
 
