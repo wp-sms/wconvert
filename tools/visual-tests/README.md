@@ -115,3 +115,16 @@ disposable WordPress with both plugins on port 9415. The fixture exercises real
 content hooks; it never edits a saved Local site. Automatic placement uses the
 existing viewport-based impression and capture paths. Normal-flow insertion can
 shift article content; mobile and real-theme checks remain important.
+
+Analytics integration smoke checks: `npm run build && npm run test:visual:analytics`.
+This uses a disposable WordPress/PHP 8.1 site, checks GA/GTM JavaScript handoff with
+recording tags, consent gating, progressive capture, quiz results, content unlock,
+REST access control, settings and dry-run diagnostics. It never sends to Google;
+DebugView receipt requires a separately configured test property.
+
+The analytics consent-contract check uses the actual WP Consent API JavaScript
+at a pinned upstream revision (requires network access). After `npm run build:analytics`,
+run `node tools/visual-tests/consent-api-check.mjs`. It tests cookie-backed consent
+changes against a recording Google tag; real Site Kit/CMP and Google receipt
+remain separate acceptance checks. Run loader budgets with Node 22, as in CI:
+`npx --package=node@22 node bin/check-loader.mjs` after building the loaders.

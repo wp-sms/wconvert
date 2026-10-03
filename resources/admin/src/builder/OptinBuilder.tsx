@@ -1,3 +1,4 @@
+import { CampaignAnalytics } from '../analyticsIntegration';
 import { useCompactEditor } from '../hooks/useCompactEditor';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem } from '../components/ui/dropdown-menu';
 import { SubmissionSettings } from './SubmissionSettings';
@@ -126,6 +127,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
   const [config, setConfig] = useState<Config | null>(null);
   const [goal, setGoal] = useState<string | null>(null);
   const [publishedAt, setPublishedAt] = useState<string | null>(null);
+  const [analyticsParent, setAnalyticsParent] = useState<string | null>(null);
   const [canChangeGoal, setCanChangeGoal] = useState(true);
   const [unpublishedChanges, setUnpublishedChanges] = useState(false);
   const [publishing, setPublishing] = useState(false);
@@ -306,6 +308,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
         setGoal(optin.goal);
         setPublishedAt(optin.published_at);
         setCanChangeGoal(optin.can_change_goal);
+        setAnalyticsParent(optin.parent_id ?? null);
         setUnpublishedChanges(optin.has_unpublished_changes);
         setSuspended(optin.suspended);
         setDeletedAt(optin.deleted_at);
@@ -498,6 +501,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
         // saying what the Optin still holds rather than what was asked for.
         setGoal(optin.goal);
         setCanChangeGoal(optin.can_change_goal);
+        setAnalyticsParent(optin.parent_id ?? null);
         setSaved(true);
         setImported(false);
         setBaseline(JSON.stringify({ name: optin.name, config: optin.config }));
@@ -1082,6 +1086,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
           </div>
           </div>
           {entryOfGoal?.outcome && <p className="text-note text-muted-foreground">{entryOfGoal.outcome.measurement}</p>}
+          <CampaignAnalytics value={config.analytics} parentId={analyticsParent} onChange={analytics => edit({ analytics })} />
           {details && id && <JourneyReport id={id} />}
           {(numbers !== null || (publishedAt !== null && stats.status === 'loading')) && (
             <div className="wconvert-details-section"><h3>{__('Performance', 'wconvert')}</h3>

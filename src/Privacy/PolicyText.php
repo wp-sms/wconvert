@@ -109,6 +109,15 @@ final class PolicyText
             '<p>' . __('Deleting a submission from WConvert does not automatically remove copies already sent to a connected service, included in an exported file or email log, or retained in a backup. Those copies are managed separately.', 'wconvert') . '</p>',
         ];
 
+        $analytics = apply_filters('wconvert_analytics_privacy', null);
+        if (is_array($analytics) && !empty($analytics['configured'])) {
+            $provider = ($analytics['route'] ?? '') === 'plausible' ? 'Plausible' : 'Google Analytics';
+            $sections[] = '<h3>' . __('External campaign analytics', 'wconvert') . '</h3><p>' . sprintf(
+                /* translators: %s: configured analytics provider name. */
+                __('We use our existing %s installation to measure campaign appearances and accepted outcomes. WConvert supplies campaign identifiers, public labels and outcome types, not your submitted contact details or answers. The existing analytics tag may attach its own identifiers and page information. Collection follows this site’s configured consent controls.', 'wconvert'),
+                $provider
+            ) . '</p>';
+        }
         return implode("\n", $sections);
     }
 

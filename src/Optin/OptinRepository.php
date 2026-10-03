@@ -522,9 +522,21 @@ final class OptinRepository
         }
 
         if ($winnerId !== $parent->id) {
+            $winner = $this->find($winnerId);
+            if ($winner === null) return false;
+            // Inherited analytics preferences become local; draft and live stay separate.
+            $draft = $winner->config;
+            $live = $winner->publishedConfig;
+            unset($draft['analytics']);
+            if (array_key_exists('analytics', $parent->config)) $draft['analytics'] = $parent->config['analytics'];
+            if ($live !== null) {
+                unset($live['analytics']);
+                if (isset($parent->publishedConfig['analytics'])) $live['analytics'] = $parent->publishedConfig['analytics'];
+            }
             $this->db->update(
                 Connection::TABLE_OPTINS,
-                ['parent_id' => null, 'name' => $parent->name],
+                ['parent_id' => null, 'name' => $parent->name, 'config' => wp_json_encode($draft),
+                    'published_config' => $live === null ? null : wp_json_encode($live)],
                 ['id' => $winnerId]
             );
         }
@@ -927,14 +939,11 @@ final class OptinRepository
         $rows = $this->db->results(
             Connection::TABLE_OPTINS,
             'SELECT ' . self::PROJECTION_COLUMNS
-                . ' FROM %i WHERE published_at IS NOT NULL AND deleted_at IS NULL ORDER BY id ASC'
+                . ' FROM %i WHERE published_config IS NOT NULL AND deleted_at IS NULL ORDER BY id ASC'
         );
 
-        // The WHERE clause and PublishedProjection's exclusion set say the same
-        // thing, and that is deliberate: the SQL keeps the rebuild from
-        // dragging every soft-deleted row through PHP, and the projection is
-        // where the rule is stated and tested. A row that slips past the query
-        // is still excluded.
+        // Include paused parents' last published preferences for live variants.
+        // The projection still excludes paused rows from the visitor set.
         // **The site's zone, read at every rebuild.** An Optin's schedule is
         // stored as the local wall time the merchant authored and resolved to
         // an absolute instant here, so changing the site timezone re-resolves

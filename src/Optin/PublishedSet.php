@@ -55,5 +55,6 @@ final class PublishedSet
             $this->options->set('wconvert_flow_' . $entry['id'] . '_' . $revision, $definition);
         }
         $this->options->set(self::OPTION, $set);
+        do_action('wconvert_published_set_changed');
     }
 }

@@ -177,6 +177,11 @@ if [ "$slug" = "wconvert" ]; then
     require_file public/phone/phone.js "phone campaigns need the built optional input bundle" || true
 fi
 
+if [ "$slug" = "wconvert-pro" ]; then
+    require_file public/analytics/analytics.js "the optional analytics adapter must be built" || true
+    require_file docs/analytics-integrations.html "the analytics setup guide is linked from settings" || true
+fi
+
 # THE ELIGIBILITY INSPECTOR, BOTH TIERS, AND PRO'S IS NOT OPTIONAL EITHER.
 # Pro dequeues free's inspector and enqueues its own for the same reason it
 # does with the loader (ADR 0014, ADR 0048) — and a Pro ZIP missing this file

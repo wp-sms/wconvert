@@ -52,6 +52,7 @@ const MODULE_DIRECTORIES: Readonly<Record<string, readonly LoaderModule[]>> = {
   'premium-triggers': PREMIUM_TRIGGER_MODULES,
   'ab-testing': AB_TESTING_MODULES,
   'cart-recovery': CART_MODULES,
+  'analytics': [], // Optional transport, no rule evaluators.
   'destinations': [], // PHP-only module; no visitor-side loader code.
 };
 

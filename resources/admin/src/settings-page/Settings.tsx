@@ -1,3 +1,4 @@
+import { AnalyticsIntegrationSettings } from '../analyticsIntegration';
 import { useEffect, useState } from 'react';
 import './settings.css';
 import { __ } from '@wordpress/i18n';
@@ -27,6 +28,7 @@ export function Settings({
 }) {
   const [search, setSearch] = useState('');
   const categories = [
+    { id: 'integrations', label: __('Analytics integrations', 'wconvert'), description: __('Google Analytics, GTM and Plausible', 'wconvert'), icon: Plug, terms: 'GA4 GTM Plausible analytics tracking consent' },
     { id: 'protection', label: __('Spam protection', 'wconvert'), description: __('Bot verification and form filters', 'wconvert'), icon: Shield, terms: __('spam captcha turnstile recaptcha hcaptcha bot protection filters', 'wconvert') },
     {
       id: 'experience',
@@ -78,6 +80,7 @@ export function Settings({
         <p className="mb-1 mt-5 border-t border-border px-3 pt-4 text-note text-muted-foreground">{__('Need a campaign’s design, timing or audience?', 'wconvert')} <a href="#optins" className="underline">{__('Open that campaign.', 'wconvert')}</a></p>
       </nav>
       <div className="min-w-0">
+        {group === 'integrations' && <AnalyticsIntegrationSettings onEditingStateChange={onEditingStateChange} />}
         {group === 'protection' && <SpamProtection onEditingStateChange={onEditingStateChange} />}
         {group === 'experience' && (
           <div className="grid gap-6"><SiteAllowance onEditingStateChange={onEditingStateChange} /><SitePhoneCountry /></div>

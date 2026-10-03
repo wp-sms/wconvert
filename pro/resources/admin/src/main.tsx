@@ -1,3 +1,4 @@
+import { analyticsIntegration } from '@/analyticsIntegration';
 import { lazy, StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { App } from '@/App';
@@ -10,6 +11,8 @@ import { inlinePlacementControls } from '@/inlinePlacement';
 import { registerPremiumJourneyRenderer } from '../../../modules/journeys/loader/render';
 
 registerPremiumJourneyRenderer();
+analyticsIntegration.settings = lazy(() => import('../../../modules/analytics/admin/Settings'));
+analyticsIntegration.campaign = lazy(() => import('../../../modules/analytics/admin/Campaign'));
 
 reopenControls.component = lazy(() => import('../../../modules/display-types/admin/ReopenSettings'));
 reopenControls.preview = lazy(() => import('../../../modules/display-types/admin/ReopenPreview'));

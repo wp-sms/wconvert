@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite build -c vite.config.admin.mjs --watch",
-    "build": "npm run build:admin && npm run build:admin:pro && npm run build:block && npm run build:loader && npm run build:loader:pro && npm run build:phone && npm run build:protection && npm run build:inspector && npm run build:inspector:pro",
+    "build": "npm run build:admin && npm run build:admin:pro && npm run build:block && npm run build:loader && npm run build:loader:pro && npm run build:phone && npm run build:protection && npm run build:inspector && npm run build:inspector:pro && npm run build:analytics",
     "build:protection": "vite build -c vite.config.protection.mjs",
     "build:phone": "vite build -c vite.config.phone.mjs",
     "build:admin": "vite build -c vite.config.admin.mjs",
@@ -21,7 +21,7 @@
     "build:inspector:pro:basic": "vite build -c vite.config.inspector-pro-basic.mjs",
     "build:inspector:pro:pro": "vite build -c vite.config.inspector-pro-pro.mjs",
     "build:inspector:pro:elite": "vite build -c vite.config.inspector-pro-elite.mjs",
-    "check:loader": "npm run build:loader && npm run build:loader:pro && npm run build:phone && node bin/check-loader.mjs && node bin/check-phone.mjs",
+    "check:loader": "npm run build:loader && npm run build:loader:pro && npm run build:phone && node bin/check-loader.mjs && node bin/check-phone.mjs && npm run build:analytics && node bin/check-analytics.mjs",
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "eslint . --max-warnings=0",
@@ -46,7 +46,9 @@
     "templates:collections": "npm run templates:pilot && node tools/design-library/build/collections.mjs && node tools/design-library/build/collection-studio.mjs && node tools/design-library/build/collection-audit.mjs",
     "templates:collections:publish": "node tools/design-library/build/collections.mjs --publish",
     "templates:collections:check": "npm run templates:pilot && node tools/design-library/build/collections.mjs --check",
-    "templates:release:local": "node tools/design-library/build/publish-local.mjs"
+    "templates:release:local": "node tools/design-library/build/publish-local.mjs",
+    "build:analytics": "vite build -c vite.config.analytics.mjs",
+    "test:visual:analytics": "playwright test -c tools/visual-tests/analytics.config.mjs"
   },
   "dependencies": {
     "@atlaskit/pragmatic-drag-and-drop": "^3.0.0",

@@ -1635,3 +1635,13 @@ When both plugins are active:
 - WConvert pushes Leads to WSMS as a Destination.
 - WSMS never calls into WConvert, and WConvert degrades cleanly to Standalone if
   WSMS is deactivated.
+
+### External analytics integration
+
+The optional paid analytics integration exports campaign observations through one
+selected existing Google tag, GTM container or Plausible script. It is separate from native WConvert statistics
+and from Lead Destinations: no provider credential, capture field, lead ID, visitor
+identity or outbound delivery queue crosses this boundary. Consent is checked per
+observation. Public campaign labels and opt-out preferences follow published family
+settings. GA4 and Plausible consume the same semantic observation seam; templates
+need no provider-specific selectors. See [ADR 0114](docs/adr/0114-analytics-exports-use-existing-site-tags.md).

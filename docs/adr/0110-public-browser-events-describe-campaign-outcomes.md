@@ -28,9 +28,11 @@ listeners matching the old family may need updating.
 ## Consequences
 
 Developers can coordinate page behavior without accessing closed shadow roots.
-No SDK, analytics bridge, network request, visitor identifier, replay queue,
+The public-event contract itself introduces no SDK, analytics bridge, network request, visitor identifier, replay queue,
 custom-code editor, or cancellation mechanism is introduced. Browser events
 are not guaranteed delivery: install listeners before activity, and do not
 treat missing capture notifications as evidence the server did not save a Lead.
 
 See the [public contract and examples](../guides/javascript-events.md).
+
+**Extended by [ADR 0114](0114-analytics-exports-use-existing-site-tags.md):** A separately enabled Pro adapter consumes accepted captures and semantic presenter callbacks. Content lock now supplies the same capture notification. Public event payloads and Free availability remain unchanged.

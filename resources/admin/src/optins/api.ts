@@ -17,7 +17,9 @@ export const readCampaignPreviews = (ids: string[]) => {
 /** Copy the saved draft through the same validated creation route as the editor. */
 export async function duplicateCampaign(id: string, name: string) {
   const saved = await apiFetch<{ goal: string; config: Record<string, unknown> }>({ path: `/wconvert/v1/optins/${id}` });
-  return createOptin(name, saved.goal, saved.config);
+  const config = { ...saved.config };
+  if (config.analytics && typeof config.analytics === 'object') config.analytics = { ...config.analytics, label: '' };
+  return createOptin(name, saved.goal, config);
 }
 
 /**
