@@ -228,7 +228,7 @@ final class LoaderEnqueue
             // JSON — a silent break, because the tag still renders and only
             // the loader's JSON.parse fails, in the browser, at runtime. The
             // tag itself is wp_get_inline_script_tag()'s, which escapes every
-            // attribute, and the two route URLs go through esc_url() first.
+            // attribute, and the two route URLs go through esc_url_raw() first.
             //
             // PHPCS sees `echo <a function call>` and can see neither of those
             // facts. {@see PayloadTag::render()} is where they are enforced,

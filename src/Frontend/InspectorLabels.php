@@ -208,6 +208,7 @@ final class InspectorLabels
                 'triggers' => __('When it fires', 'wconvert'),
                 'conditions' => __('Who sees it', 'wconvert'),
                 'include' => __('Shows on', 'wconvert'),
+                // phpcs:ignore WordPressVIPMinimum.Performance.WPQueryParams.PostNotIn_exclude -- a Targeting key, not a get_posts() argument.
                 'exclude' => __('But never on', 'wconvert'),
                 'server_only' => __('It never reached the browser, so there is nothing more to report.', 'wconvert'),
             ],

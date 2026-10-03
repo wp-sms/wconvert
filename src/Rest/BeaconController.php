@@ -124,10 +124,14 @@ final class BeaconController implements RestController
         // `wp_unslash()` because WordPress adds slashes to every superglobal on
         // load. Unescaped, an address carrying one would hash to a different
         // bucket than the same address without — which is a rate limit with a
-        // hole in it rather than a display bug. Then validated as an address,
-        // so a value that is not one buckets as the empty string rather than
-        // as whatever a misconfigured server put there.
-        $address = (string) filter_var(wp_unslash($_SERVER['REMOTE_ADDR'] ?? ''), FILTER_VALIDATE_IP);
+        // hole in it rather than a display bug.
+        //
+        // Sanitized, and deliberately NOT validated with FILTER_VALIDATE_IP:
+        // {@see RateLimit} refuses an empty address, so a host whose
+        // REMOTE_ADDR is not a bare IP — a port appended, an IPv6 zone, a
+        // socket name — would have every request refused. The value is only
+        // ever hashed into a bucket key; it is never printed or stored.
+        $address = sanitize_text_field(wp_unslash($_SERVER['REMOTE_ADDR'] ?? ''));
 
         // The clock is READ HERE and passed down, the same way the day is —
         // neither {@see RateLimit} nor {@see StatsRepository} owns one, so

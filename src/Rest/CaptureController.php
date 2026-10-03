@@ -128,8 +128,8 @@ final class CaptureController implements RestController
 
         // Only the address the web server identifies as the peer. Trusting a
         // caller-supplied forwarding header would let a bot choose its bucket.
-        // Validated as an address: anything else buckets as the empty string.
-        $address = (string) filter_var(wp_unslash($_SERVER['REMOTE_ADDR'] ?? ''), FILTER_VALIDATE_IP);
+        // Sanitized rather than validated as an IP — see BeaconController.
+        $address = sanitize_text_field(wp_unslash($_SERVER['REMOTE_ADDR'] ?? ''));
 
         if (!$this->rateLimit->allows($address, $optin->id, time())) {
             $this->protection?->diagnostics->record('rate_limit');

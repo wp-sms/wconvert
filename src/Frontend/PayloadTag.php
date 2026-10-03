@@ -137,14 +137,16 @@ final class PayloadTag
         }
 
         // WordPress writes the tag and escapes every attribute value for an
-        // attribute (`esc_attr()`). The two route URLs go through `esc_url()`
-        // first, which is the escaping a URL needs and which `esc_attr()` does
-        // not encode a second time.
+        // attribute. The route URLs are cleaned with `esc_url_raw()` — the
+        // protocol check, without HTML-encoding — because the tag escapes
+        // them once more: on WordPress 7.1, whose HTML API builds the tag,
+        // the `&#038;` that `esc_url()` leaves is encoded again into a literal
+        // the loader would post to.
         $attributes = [
             'type' => 'application/json',
             'id' => self::ELEMENT_ID,
-            self::CAPTURE_ATTRIBUTE => esc_url($captureUrl),
-            self::BEACON_ATTRIBUTE => esc_url($beaconUrl),
+            self::CAPTURE_ATTRIBUTE => esc_url_raw($captureUrl),
+            self::BEACON_ATTRIBUTE => esc_url_raw($beaconUrl),
             self::TIMEZONE_ATTRIBUTE => $timezone,
         ];
 
@@ -174,7 +176,7 @@ final class PayloadTag
             foreach ($steps as $step) {
                 foreach ($step['results'] ?? [] as $result) {
                     if (!empty($result['product_ids'])) {
-                        $attributes['data-products'] = esc_url(rest_url('wc/store/v1/products'));
+                        $attributes['data-products'] = esc_url_raw(rest_url('wc/store/v1/products'));
                         break 3;
                     }
                 }

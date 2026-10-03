@@ -1126,7 +1126,7 @@ if (!function_exists('sanitize_key')) {
 /*
  * WordPress's inline and external script tags, in the shape 6.8 prints them:
  * attributes through esc_attr(), a boolean attribute as its bare name, and an
- * inline body padded with a newline either side. WordPress 6.9 builds the same
+ * inline body padded with a newline either side. Newer WordPress builds the same
  * markup with the HTML API.
  */
 if (!function_exists('wp_sanitize_script_attributes')) {
