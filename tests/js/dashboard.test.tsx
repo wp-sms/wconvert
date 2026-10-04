@@ -575,3 +575,10 @@ describe('Goal and campaign reports', () => {
     expect(api.declareWinner).toHaveBeenCalledWith('email', 'arm');
   });
 });
+
+it('explains publication after the selected dates without implying a display problem', async () => {
+  api.readDashboard.mockResolvedValue({ ...payload(), goals: [goal([{ ...row(), ...numbers(0, 0), published_at: '2026-09-14 09:00:00' }])] });
+  render(<Dashboard query={{ optinId: 'email' }} />);
+  expect(await screen.findByText('Published after these report dates. New activity appears after each day ends.')).toBeVisible();
+  expect(screen.queryByRole('heading', { name: 'Needs attention' })).not.toBeInTheDocument();
+});

@@ -95,9 +95,9 @@ function Totals({
       </div>
       <div>
         <dt>
-          {card.action === 'submit'
+          {card.rate_label ?? (card.action === 'submit'
             ? __('Submission rate', 'wconvert')
-            : __('Click-through rate', 'wconvert')}
+            : __('Click-through rate', 'wconvert'))}
         </dt>
         <dd>{formatRate(numbers.conversion_rate)}</dd>
         <small>
@@ -155,6 +155,9 @@ export function GoalDetail({
               'wconvert',
             )}
       </p>
+      {optin?.status === 'published' && optin.published_at && optin.published_at.slice(0, 10) > payload.to && numbers.impressions === 0 && (
+        <p className="wa-notice">{__('Published after these report dates. New activity appears after each day ends.', 'wconvert')}</p>
+      )}
       {optin?.status === 'paused' && (
         <p className="wa-notice">
           {__(

@@ -1,6 +1,6 @@
 /* Report evidence, setup and definitions share one quiet reading hierarchy. */
 .wa-report { min-inline-size: 0; }
-.wconvert-analytics > .wa-report { margin-block: 24px; }
+.wconvert-analytics > .wa-report, .wconvert-analytics > .wa-report-target { margin-block: 24px; }
 .wa-report .wa-muted { font-size: var(--text-note); color: var(--muted-foreground); }
 .wa-report-details-body p { line-height: 1.65; margin-block: 0 12px; }
 .wa-report-meta { display: flex; flex-wrap: wrap; gap: 4px 16px; margin-block-end: 20px; color: var(--muted-foreground); font-size: var(--text-note); }
@@ -78,3 +78,8 @@
   .wa-report-details-body { padding-inline: 12px; }
 }
 @media (pointer: coarse) { .wa-report-details > summary { min-block-size: 44px; } }
+
+.wa-report-shortcuts { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-block: 16px 24px; }
+.wa-report-shortcuts > span { font-size: var(--text-note); margin-inline-end: 4px; }
+.wa-report-target { min-inline-size: 0; scroll-margin-block-start: 64px; }
+.wa-report-target:focus-visible { outline: 2px solid var(--ring); outline-offset: 4px; border-radius: 6px; }

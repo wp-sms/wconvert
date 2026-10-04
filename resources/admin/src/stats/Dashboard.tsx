@@ -1,3 +1,4 @@
+import { ReportNavigationProvider, ReportShortcuts } from './ReportNavigation';
 import { DeliveryAttention } from './DeliveryAttention';
 import { CommerceReport } from './extensions';
 import { Interests } from './Interests';
@@ -46,7 +47,11 @@ const periodLabel = (days: number) =>
     String(days),
   );
 
-export function Dashboard({
+export function Dashboard(props: { query?: ReportQuery; onQueryChange?: (query: ReportQuery) => void } = {}) {
+  return <ReportNavigationProvider><DashboardContent {...props} /></ReportNavigationProvider>;
+}
+
+function DashboardContent({
   query,
   onQueryChange,
 }: { query?: ReportQuery; onQueryChange?: (query: ReportQuery) => void } = {}) {
@@ -203,6 +208,7 @@ export function Dashboard({
           onCompare={(value) => change({ ...selection, compare: value })}
         />
       )}
+      {payload && <ReportShortcuts />}
       {updating && payload && (
         <p className="wa-muted" role="status">
           {__('Updating report…', 'wconvert')}
@@ -320,7 +326,7 @@ export function Dashboard({
           {payload.impact.find((i) => i.id === 'impressions')?.count === 0 && (
             <p className="wa-notice">
               {__(
-                'No appearances recorded in this period. Check when and where your published campaigns are set to appear.',
+                'No appearances in this period. Today’s activity appears tomorrow.',
                 'wconvert',
               )}
             </p>
@@ -430,8 +436,8 @@ export function Dashboard({
           </EmptyState>
         </Region>
       ) : null}
-      {payload && (overview || (optin && !selection.experiment)) && <CommerceReport period={payload} campaignNames={Object.fromEntries(payload.goals.flatMap(goal => goal.optins.map(campaign => [campaign.id, campaign.name])))} optinId={overview ? undefined : optin?.id} />}
       {payload && !overview && <Insights items={insights} query={accepted} />}
+      {payload && (overview || (optin && !selection.experiment)) && <CommerceReport period={payload} campaignNames={Object.fromEntries(payload.goals.flatMap(goal => goal.optins.map(campaign => [campaign.id, campaign.name])))} optinId={overview ? undefined : optin?.id} />}
       {payload && optin && !selection.experiment && <><JourneyReport id={optin.id} period={payload} /><Interests id={optin.id} period={payload} /></>}
       {payload && overview && payload.goals.length > 0 && <MonthlyTargets report={targets} />}
       {payload && payload.goals.length > 0 && (
