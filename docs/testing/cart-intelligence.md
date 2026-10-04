@@ -82,3 +82,13 @@ the selector and delivery now agree on simple/variable parent products, while
 cart conditions retain exact variation support. New accessory drafts resolve the
 store's checkout page into an editable exclusion. The test covers the prefill
 configuration, not an actual order-confirmation request.
+
+## Sample basket and cross-sell follow-up (PR 208)
+
+- All 11 real WordPress/WooCommerce browser checks passed, including an unsaved editor source change and explicit basket edits.
+- The authenticated preview and live cross-sell tests filter draft/private and out-of-stock products, respect configured order and remove basket items. Variation samples also include their parent and its relationships.
+- The preview accepts 40 authored cart rules plus one required goal rule, rejects 42, denies unauthenticated requests and leaves the shopper cart unchanged.
+- PHPUnit: 2517 tests, 15179 assertions passed. Vitest full suite and focused async/gesture/manifest regressions passed; pending basket reads cannot replay exit intent.
+- TypeScript, ESLint, PHPStan, template studio/collection checks and all four ZIP artifact builds passed. Node 22 visitor loader and commerce asset sizes are unchanged from the measurements above.
+- Visually inspected the sample dialog and its recommendation cards, including 320px LTR/RTL layouts. The longer dialog scrolls while keeping the result and reset action visible.
+- Both standards and spec reviews completed. Their publication-state and maximum-rule findings were fixed and checked again.
