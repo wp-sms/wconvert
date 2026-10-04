@@ -4,12 +4,8 @@ declare global { interface Window { __wcvObserve?: (session: PresentationSession
 
 /** All observation wrapping lives in the optional asset; absent/failed observers leave presentation intact. */
 export function observePresentation(session: PresentationSession): PresentationSession {
-  try {
-    const observed = window.__wcvObserve?.(session) ?? session;
-    return window.__wcvRevenue?.(observed) ?? observed;
-  } catch { return session; }
-}
-
-export function observeResultClick(id: string): void {
-  try { window.__wcvRevenueResult?.(id); } catch { /* Optional observer. */ }
+  for (const observer of [window.__wcvObserve, window.__wcvRevenue]) {
+    try { if (observer) session = observer(session); } catch { /* Optional observer. */ }
+  }
+  return session;
 }

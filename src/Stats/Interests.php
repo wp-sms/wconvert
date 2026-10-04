@@ -15,11 +15,14 @@ final class Interests
         $questions = [];
         foreach ($rows as $row) {
             $data = json_decode($row['fields'] ?? '{}', true);
+            $seen = [];
             foreach ($data['question_answers'] ?? [] as $answer) {
                 if (!is_array($answer) || !in_array($answer['type'] ?? '', ['single', 'multi'], true)
                     || !is_string($answer['id'] ?? null) || !is_string($answer['question'] ?? null)
                     || !is_array($answer['values'] ?? null) || !is_array($answer['labels'] ?? null) || $answer['labels'] === []) continue;
                 $question = hash('sha256', $answer['id'] . "\0" . $answer['question'] . "\0" . $answer['type']);
+                if (isset($seen[$question])) continue;
+                $seen[$question] = true;
                 $questions[$question] ??= ['question' => $answer['question'], 'answered' => 0, 'choices' => []];
                 $questions[$question]['answered']++;
                 foreach ($answer['labels'] as $i => $label) {

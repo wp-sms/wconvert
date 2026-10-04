@@ -1,4 +1,3 @@
-import { observeResultClick } from '../../analytics/loader/bridge';
 import { requestCapture, type Reply } from '@loader/capture-request';
 import { protectionField } from '@loader/protection';
 import { journeyLabel } from '@loader/journey-labels';
@@ -36,7 +35,10 @@ export function bindJourney(mounted: Mounted, entry: PayloadEntry, options: Opti
   const resultAt = tree.steps.findIndex(screen => screen.kind === 'result');
   const resultFirst = isResultFirst(tree);
   const beacon = createBeacon(beaconEndpoint());
-  const resultClick = () => { beacon.report(entry.id, 'result_click'); beacon.flush(); observeResultClick(entry.id); };
+  const resultClick = () => {
+    beacon.report(entry.id, 'result_click'); beacon.flush();
+    try { window.__wcvRevenueResult?.(entry.id); } catch { /* Optional observer. */ }
+  };
   const counted = new Set<string>();
   const report = (kind: BeaconKind, index = step) => {
     const screen = tree.steps[index]; const key = `${screen.id}:${kind}`;

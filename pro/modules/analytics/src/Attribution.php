@@ -19,6 +19,13 @@ final class Attribution
             && is_string($value['receipt'] ?? null) && preg_match('/^[a-f0-9]{32}$/D', $value['receipt']) === 1;
     }
 
+    /** A click request is short-lived and uniquely identified, not a visitor identifier. */
+    public static function clickToken(string $event, int $sentAt, int $now): bool
+    {
+        return preg_match('/^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/D', $event) === 1
+            && abs($now - $sentAt) <= 120;
+    }
+
     public static function consent(): bool
     {
         return function_exists('wp_has_consent') && in_array(apply_filters('wp_get_consent_type', false), ['optin', 'optout'], true)

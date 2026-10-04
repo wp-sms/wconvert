@@ -1,3 +1,4 @@
+import { DataTable, DataTableHead, DataTableBody, DataTableRow, DataTableColumn, DataTableCell } from '../shell/DataTable';
 import { __ } from '@wordpress/i18n';
 import { Button } from '../components/ui/button';
 import { Region, RegionBody, RegionHeader } from '../shell/Region';
@@ -20,12 +21,12 @@ export function Insights({ items, query }: { items: Insight[]; query: ReportQuer
       <div><p className="wa-muted">{item.name} · {__('Observed', 'wconvert')}</p><h4>{item.title}</h4><p>{item.note}</p>
         <details><summary>{__('View evidence', 'wconvert')}</summary>
           <p className="wa-muted">{item.result_label} · {item.periods.from} – {item.periods.to}</p>
-          {/* eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- Keyboard users need to scroll the labeled table region. */}
-          <div className="wa-table-scroll" role="region" aria-label={__('Insight evidence', 'wconvert')} tabIndex={0}>
-            <table className="wa-table"><thead><tr><th scope="col">{__('Period', 'wconvert')}</th><th scope="col">{__('Shown', 'wconvert')}</th><th scope="col">{__('Results', 'wconvert')}</th><th scope="col">{__('Rate', 'wconvert')}</th></tr></thead>
-              <tbody><tr><th scope="row">{__('Selected period', 'wconvert')}</th><td>{formatCount(item.facts.current.appearances)}</td><td>{formatCount(item.facts.current.results)}</td><td>{formatRate(item.facts.current.rate)}</td></tr>
-                {item.facts.previous && <tr><th scope="row">{item.periods.previous_from} – {item.periods.previous_to}</th><td>{formatCount(item.facts.previous.appearances)}</td><td>{formatCount(item.facts.previous.results)}</td><td>{formatRate(item.facts.previous.rate)}</td></tr>}
-              </tbody></table></div><p className="wa-muted">{item.limitation}</p>
+          <DataTable label={__('Insight evidence', 'wconvert')}>
+            <DataTableHead><DataTableColumn>{__('Period', 'wconvert')}</DataTableColumn><DataTableColumn numeric>{__('Shown', 'wconvert')}</DataTableColumn><DataTableColumn numeric>{__('Results', 'wconvert')}</DataTableColumn><DataTableColumn numeric>{__('Rate', 'wconvert')}</DataTableColumn></DataTableHead>
+            <DataTableBody>{[{ title: __('Selected period', 'wconvert'), facts: item.facts.current }, ...(item.facts.previous ? [{ title: `${item.periods.previous_from} – ${item.periods.previous_to}`, facts: item.facts.previous }] : [])].map(row => <DataTableRow key={row.title}>
+              <DataTableCell label={__('Period', 'wconvert')}>{row.title}</DataTableCell><DataTableCell label={__('Shown', 'wconvert')} numeric>{formatCount(row.facts.appearances)}</DataTableCell><DataTableCell label={__('Results', 'wconvert')} numeric>{formatCount(row.facts.results)}</DataTableCell><DataTableCell label={__('Rate', 'wconvert')} numeric>{formatRate(row.facts.rate)}</DataTableCell>
+            </DataTableRow>)}</DataTableBody>
+          </DataTable><p className="wa-muted">{item.limitation}</p>
           <a href={reportHref({ ...query, optinId: item.optin_id, goal: undefined, impact: undefined, experiment: undefined })}>{__('View campaign report', 'wconvert')}</a>
         </details>
       </div>

@@ -1,6 +1,6 @@
 import { afterEach, expect, it, vi } from 'vitest';
-import { startRevenue } from '../../pro/modules/analytics/loader/revenue';
-import type { PresentationSession } from '../../resources/loader/src/types';
+import { startRevenue } from '../../modules/analytics/loader/revenue';
+import type { PresentationSession } from '../../../resources/loader/src/types';
 afterEach(() => { vi.unstubAllGlobals(); delete window.__wcvRevenue; delete window.__wcvRevenueResult; });
 it('records only a consented converting click or quiz result link and preserves the action', () => {
   const send = vi.fn().mockResolvedValue({}); vi.stubGlobal('fetch', send);
@@ -27,4 +27,13 @@ it('unknown consent creates no attribution', () => {
   startRevenue({ endpoint: '/tracking', campaigns: { quiz: { campaign: 'quiz', outcome: 'quiz', label: 'Quiz', goal: 'find_match' } } });
   window.__wcvRevenueResult!('quiz');
   expect(send).toHaveBeenCalledOnce(); expect(send.mock.calls[0][1].body.get('clear')).toBe('1');
+});
+
+it('generates a one-use event on HTTP sites without randomUUID', () => {
+  const send = vi.fn().mockResolvedValue({}); vi.stubGlobal('fetch', send);
+  vi.stubGlobal('wp_consent_type', 'optin'); vi.stubGlobal('wp_has_consent', () => true);
+  vi.stubGlobal('crypto', { getRandomValues: (bytes: Uint8Array) => bytes.fill(1) });
+  startRevenue({ endpoint: '/tracking', campaigns: { quiz: { campaign: 'quiz', outcome: 'quiz', label: 'Quiz', goal: 'find_match' } } });
+  window.__wcvRevenueResult!('quiz');
+  expect(send.mock.calls[0][1].body.get('event')).toMatch(/^[a-f0-9]{8}-[a-f0-9]{4}-4[a-f0-9]{3}-[89ab][a-f0-9]{3}-[a-f0-9]{12}$/);
 });

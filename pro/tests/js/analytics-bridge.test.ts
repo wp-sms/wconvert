@@ -4,7 +4,17 @@ import type { OptinControls, PayloadEntry } from '../../../resources/loader/src/
 
 const entry = { id: 'one' } as PayloadEntry;
 const controls = (): OptinControls => ({ impression: vi.fn(), dismiss: vi.fn(), convert: vi.fn() });
-afterEach(() => { delete window.__wcvObserve; vi.unstubAllGlobals(); });
+afterEach(() => { delete window.__wcvObserve; delete window.__wcvRevenue; vi.unstubAllGlobals(); });
+
+it('keeps revenue observation and presentation working if the external observer fails', () => {
+  window.__wcvObserve = () => { throw new Error('Broken external observer'); };
+  const revenue = vi.fn(session => session);
+  window.__wcvRevenue = revenue;
+  const show = vi.fn(); const acts = controls();
+  observePresentation({ show }).show(entry, acts);
+  expect(revenue).toHaveBeenCalledOnce();
+  expect(show).toHaveBeenCalledWith(entry, acts);
+});
 
 it('keeps the presenter functional when analytics is absent or its observer fails', () => {
   const show = vi.fn();

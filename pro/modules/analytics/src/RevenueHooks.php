@@ -58,8 +58,8 @@ final class RevenueHooks
             if (preg_match('/^wconvert_order_claim_[a-f0-9]{64}$/D', $key)) delete_option($key);
         });
         add_filter('wconvert_privacy_browser_storage', function (array $rows): array {
-            if (!$this->settings()['enabled']) return $rows;
-            $rows['additional'][] = __('With statistics consent, campaign sales tracking stores a campaign reference and interaction time in the WooCommerce session. An interaction can link one checkout created within 30 minutes. A short-lived anonymous receipt prevents duplicate credit. Order attribution stays with the order under WooCommerce retention and erasure policies; no contact details or money are copied into WConvert.', 'wconvert');
+            if ($this->settings()['since'] === null) return $rows;
+            $rows['additional'][] = __('When enabled and statistics consent is granted, campaign sales tracking stores a campaign reference and interaction time in the WooCommerce session. An interaction can link one checkout created within 30 minutes. A short-lived anonymous receipt prevents duplicate credit. Order attribution stays with the order under WooCommerce retention and erasure policies; no contact details or money are copied into WConvert.', 'wconvert');
             return $rows;
         });
     }
@@ -134,11 +134,14 @@ final class RevenueHooks
         }
         $id = is_string($_POST['id'] ?? null) ? $_POST['id'] : '';
         if (!$this->active() || !Attribution::consent() || !$this->limit->allows('revenue:' . (string) ($_SERVER['REMOTE_ADDR'] ?? ''), time())) wp_send_json_error(null, 403);
-        if (!$this->remember($id, false)) wp_send_json_error(null, 422);
+        $event = is_string($_POST['event'] ?? null) ? $_POST['event'] : '';
+        $at = is_string($_POST['at'] ?? null) && ctype_digit($_POST['at']) ? (int) $_POST['at'] : 0;
+        if (!Attribution::clickToken($event, $at, time())) wp_send_json_error(null, 422);
+        if (!$this->remember($id, false, $event)) wp_send_json_error(null, 422);
         wp_send_json_success();
     }
 
-    private function remember(string $id, bool $capture): bool
+    private function remember(string $id, bool $capture, ?string $event = null): bool
     {
         try {
             if (!$this->active() || !Attribution::consent()) return false;
@@ -148,6 +151,13 @@ final class RevenueHooks
             if (!is_array($entry)) return false;
             $metadata = Metadata::forEntries([['id' => $id] + $entry['payload']], $set)[$id] ?? null;
             if ($metadata === null || (!$capture && $metadata['outcome'] === 'capture')) return false;
+            if ($event !== null) {
+                // Claim the browser event once, including concurrent/replayed requests. Its
+                // timestamp expires before cleanup, so an old exact request cannot reopen credit.
+                $claim = 'wconvert_order_claim_' . hash('sha256', 'click:' . $event);
+                if (!add_option($claim, time(), '', false)) return false;
+                wp_schedule_single_event(time() + Attribution::WINDOW, 'wconvert_attribution_claim_expired', [$claim]);
+            }
             if (!WC()->session) wc_load_cart();
             if (!WC()->session) return false;
             WC()->session->set_customer_session_cookie(true);

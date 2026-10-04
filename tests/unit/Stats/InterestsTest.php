@@ -7,7 +7,7 @@ final class InterestsTest extends TestCase
     public function testChoiceQuestionsKeepTheirWordingAndExcludeFreeText(): void
     {
         $answer = ['id' => 'q1', 'question' => 'What do you need?', 'type' => 'multi', 'values' => ['a', 'b'], 'labels' => ['A', 'B']];
-        $rows = [['fields' => json_encode(['question_answers' => [$answer, ['id' => 'q2', 'type' => 'text', 'values' => ['secret']]]], JSON_THROW_ON_ERROR)]];
+        $rows = [['fields' => json_encode(['question_answers' => [$answer, $answer, ['id' => 'q2', 'type' => 'text', 'values' => ['secret']]]], JSON_THROW_ON_ERROR)]];
         $result = Interests::summarize($rows);
         self::assertSame(1, $result['questions'][0]['answered']);
         self::assertCount(2, $result['questions'][0]['choices']);

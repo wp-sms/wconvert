@@ -22,3 +22,15 @@ it('refuses journey numbers from a different reporting period', async () => {
   expect(vi.mocked(apiFetch).mock.calls[0][0].path).toContain('complete=1');
   expect(screen.queryByText('No journey activity in this period.')).not.toBeInTheDocument();
 });
+
+it('keeps accepted activity and its dates when a new period fails', async () => {
+  vi.mocked(apiFetch).mockResolvedValueOnce({ from: '2026-09-24', to: '2026-09-30', rows: [{ scope: 'channel:email_marketing', kind: 'channel_capture', total: '17' }], definitions: {}, days: 7 });
+  const view = render(<JourneyReport id="campaign" period={{ from: '2026-09-24', to: '2026-09-30', days: 7 }} />);
+  await screen.findByText('17');
+  vi.mocked(apiFetch).mockRejectedValueOnce(new Error('offline'));
+  view.rerender(<JourneyReport id="campaign" period={{ from: '2026-09-01', to: '2026-09-30', days: 30 }} />);
+  await screen.findByRole('alert');
+  expect(screen.getByText('17')).toBeInTheDocument();
+  expect(screen.getByText('2026-09-24 – 2026-09-30')).toBeInTheDocument();
+  expect(screen.getByRole('cell', { name: '17' })).toHaveAttribute('data-label', 'Total');
+});

@@ -20,5 +20,5 @@
 <h2>Test orders and privacy</h2>
 <p>WConvert cannot identify every gateway’s test mode. An integration can mark an order with <code>_wconvert_test_order</code> to exclude it. Test on a separate store and never assume a test payment on your live store is excluded automatically.</p>
 <p>Pending attribution requires statistics consent. Withdrawal clears it; already linked orders follow WooCommerce’s retention and erasure tools. While the tracking module is installed, WooCommerce’s order erasure also removes WConvert attribution. Removing the plugin stops this integration; existing order metadata then follows the store’s own deletion process.</p>
-<p>If tracking seems inactive, check consent configuration, whether the campaign is published and available, its analytics exclusion setting, the site address, and page/CDN caches. Managers and preview pages are excluded.</p>
+<p>If tracking seems inactive, check consent configuration, whether the campaign is published and available, its analytics exclusion setting, the site address, and page/CDN caches. Click requests expire after two minutes and are accepted once; a visitor clock more than two minutes from the server can prevent click attribution. Managers and preview pages are excluded.</p>
 </html>

@@ -1,7 +1,8 @@
+import { randomUUID } from 'node:crypto';
 import { test, expect } from '@playwright/test';
 const fixture = (request, action, params = {}) => request.get('/?' + new URLSearchParams({ wconvert_revenue_fixture: action, ...params })).then(async r => { expect(r.ok(), `${action}: ${r.status()} ${(await r.text()).slice(-600)}`).toBe(true); return r.json(); });
 async function interact(request, id) {
-  const response = await request.post('/?wc-ajax=wconvert_interaction', { headers: { Origin: 'http://127.0.0.1:9442' }, form: { id } });
+  const response = await request.post('/?wc-ajax=wconvert_interaction', { headers: { Origin: 'http://127.0.0.1:9442' }, form: { id, event: randomUUID(), at: String(Math.floor(Date.now() / 1000)) } });
   expect(response.status()).toBe(200);
   expect((await response.json()).success).toBe(true);
 }
@@ -37,7 +38,7 @@ test('consent, expired interactions, unpaid orders and forged campaign IDs do no
   await context.addCookies([{ name: 'wcv_test_consent', value: 'deny', url: 'http://127.0.0.1:9442' }]);
   const denied = await page.request.post('/?wc-ajax=wconvert_interaction', { headers: { Origin: 'http://127.0.0.1:9442' }, form: { id: seed.id } }); expect(denied.status()).toBe(403);
   await context.addCookies([{ name: 'wcv_test_consent', value: 'allow', url: 'http://127.0.0.1:9442' }]);
-  const forged = await page.request.post('/?wc-ajax=wconvert_interaction', { headers: { Origin: 'http://127.0.0.1:9442' }, form: { id: '01AAAAAAAAAAAAAAAAAAAAAAAA' } }); expect(forged.status()).toBe(422);
+  const forged = await page.request.post('/?wc-ajax=wconvert_interaction', { headers: { Origin: 'http://127.0.0.1:9442' }, form: { id: '01AAAAAAAAAAAAAAAAAAAAAAAA', event: randomUUID(), at: String(Math.floor(Date.now() / 1000)) } }); expect(forged.status()).toBe(422);
 });
 test('a real accepted form capture creates attribution only after submission', async ({ page }) => {
   await fixture(page.request, 'seed');
@@ -75,4 +76,15 @@ for (const blocks of [false, true]) test(`real ${blocks ? 'Store API' : 'classic
     const id = new URL(data.redirect).pathname.match(/order-received\/(\d+)/)?.[1] ?? new URL(data.redirect).searchParams.get('order-received');
     expect((await fixture(page.request, 'credit', { order: id })).credit.arm).toBe(seed.id);
   }
+});
+
+test('the same click request cannot renew attribution or credit a second order', async ({ page }) => {
+  const seed = await fixture(page.request, 'seed');
+  const form = { id: seed.id, event: randomUUID(), at: String(Math.floor(Date.now() / 1000)) };
+  const send = data => page.request.post('/?wc-ajax=wconvert_interaction', { headers: { Origin: 'http://127.0.0.1:9442' }, form: data });
+  expect((await send(form)).status()).toBe(200);
+  expect((await fixture(page.request, 'checkout')).credit.arm).toBe(seed.id);
+  expect((await send(form)).status()).toBe(422);
+  expect((await send({ ...form, event: randomUUID(), at: String(Number(form.at) - 121) })).status()).toBe(422);
+  expect((await fixture(page.request, 'checkout')).credit).toBe('');
 });

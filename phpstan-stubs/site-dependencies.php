@@ -116,6 +116,7 @@ namespace {
         /** @return list<string> */
         function wc_get_is_paid_statuses(): array { return []; }
         function wc_load_cart(): void {}
+        function wc_get_order_status_name(string $status): string { return $status; }
     }
 
     if (!class_exists('WC_AJAX')) {
