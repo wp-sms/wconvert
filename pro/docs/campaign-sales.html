@@ -1,0 +1,24 @@
+<!doctype html>
+<html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>WConvert campaign sales</title>
+<style>body{font:17px/1.65 system-ui;max-width:800px;margin:40px auto;padding:0 24px;color:#17202a}code{background:#f3f4f6;padding:2px 4px}a{color:#2054aa}h2{margin-top:2em}</style>
+<h1>Check your campaign sales setup</h1>
+<p>Use a disposable staging store and your payment gateway’s test mode. WConvert does not place an order or charge a customer for you.</p>
+<ol>
+<li>Enable campaign sales in Analytics. Set up a consent plugin that declares its consent type through the WP Consent API.</li>
+<li>Open the store in a separate browser session, logged out of WordPress. Grant statistics consent.</li>
+<li>Submit a campaign form or click its primary offer link. A quiz needs a result link click or an accepted contact submission. Simply viewing a campaign does not qualify.</li>
+<li>Within 30 minutes, create a checkout using a test payment method. Test both classic checkout and Checkout Blocks if the store uses both.</li>
+<li>Confirm payment in WooCommerce. The order should have a <code>_wconvert_attribution</code> record. This records campaign IDs and timing, never money or contact details. Check through WooCommerce’s order APIs if your admin does not display protected metadata.</li>
+<li>Analytics uses complete days, so an order paid today appears tomorrow. Compare the linked order with its product totals after discounts. Taxes, fees and shipping are excluded.</li>
+<li>Try a product-specific refund. The original paid period should update. An amount-only refund makes the merchandise amount unavailable because its product share cannot be determined.</li>
+<li>Repeat with statistics consent denied. That checkout should have no campaign attribution. Turning off tracking stops future attribution and keeps historical order links.</li>
+</ol>
+<h2>What the report means</h2>
+<p>The last qualifying interaction saved in the WooCommerce session can credit one order created within 30 minutes. Later payment can still count. Other devices, expired interactions, blocked requests and unsupported checkout flows are unlinked. Attribution shows a connection, not proof that the campaign caused the sale.</p>
+<p>Orders are grouped by paid date and currency. Refunded orders remain in the order count; allocated merchandise refunds reduce their revenue. Unpaid, failed and cancelled orders are excluded. Order deletion or WooCommerce privacy erasure removes their attribution. The report refuses partial totals when a period exceeds its safe query limit; choose a shorter period.</p>
+<h2>Test orders and privacy</h2>
+<p>WConvert cannot identify every gateway’s test mode. An integration can mark an order with <code>_wconvert_test_order</code> to exclude it. Test on a separate store and never assume a test payment on your live store is excluded automatically.</p>
+<p>Pending attribution requires statistics consent. Withdrawal clears it; already linked orders follow WooCommerce’s retention and erasure tools. While the tracking module is installed, WooCommerce’s order erasure also removes WConvert attribution. Removing the plugin stops this integration; existing order metadata then follows the store’s own deletion process.</p>
+<p>If tracking seems inactive, check consent configuration, whether the campaign is published and available, its analytics exclusion setting, the site address, and page/CDN caches. Managers and preview pages are excluded.</p>
+</html>

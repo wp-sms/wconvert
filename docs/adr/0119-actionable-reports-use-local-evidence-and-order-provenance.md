@@ -1,0 +1,35 @@
+# Actionable reports use local evidence and order provenance
+
+The user authorized implementation of the analytics plan on 4 October 2026 and explicitly deferred all AI work. This extends [0089](0089-analytics-starts-with-impact-and-keeps-history-inspectable.md), implements [0046](0046-wconvert-stores-no-money.md), and narrows the no-WooCommerce-writes statement in [0025](0025-cart-recovery-captures-nothing.md). No table or column changes are made.
+
+## Local observations and next actions
+
+Analytics keeps compatible outcome totals first. Up to three deterministic observations explain no recorded appearances, lower exposure with a similar rate, or a material rate decline. They show actual numerators, denominators, complete calendar dates and an explicit unknown-cause limitation. Optimization requires two equal windows of at least seven days, at least 200 appearances each, 20 combined results, ten results of absolute difference, and a 20% relative rate decline. Similar rates require both a 0.2 percentage-point and 10% relative bound. These are noise gates, not statistical significance.
+
+Only currently published campaigns receive edit suggestions. Current status is not evidence of historical eligibility. Cards are scoped before the three-card display limit. The editor and its publication checks remain responsible for changes; nothing edits or publishes automatically. Current destination diagnostics appear separately with their own failure timestamps, never as a subtraction of captured and sent counts.
+
+Journey activity and retained answers use the selected report dates. Journey queries cap grouped activity at 5,000 rows and disclose truncation. Screen versions and overlapping counts stay separate; there is no inferred abandonment funnel. Answer summaries use up to 1,000 retained Leads **first captured** in the period, including later submitted additions. They use captured labels, distinguish changed wording, and omit text answers. They describe respondents, not anonymous visitors or people. Retention/erasure can change this view without changing historical counters.
+
+The shared journey component lives under reporting, so opening Analytics does not import the editor. AI, automatic optimization, dismissal histories and per-person histories are absent.
+
+## Paid campaign sales
+
+The existing paid analytics module includes an independently built optional sales asset. This capability is available wherever that module ships; Free’s generic report slot remains empty. Tracking is off initially and bound to the saved site address. Saving the setting purges supported page caches; external caches remain a setup consideration.
+
+The shipped model is **Last interaction · 30-minute window**. It uses a fixed 1,800-second window from a qualifying interaction, not inferred inactivity, a heartbeat or the lifetime of the WooCommerce cart cookie. The interaction must precede order creation; binding also checks expiry at checkout. Accepted first contact capture, primary offer/cart conversion clicks and quiz result-link clicks qualify. Appearances, result completion alone, later optional additions, dismissals and coupon copies do not. Local counters retain their original meanings.
+
+Both the server and browser require an explicitly declared WP Consent API consent type and statistics permission. Unknown or denied permission does not create optional attribution. Managers, previews, analytics diagnostics, unpublished/unavailable campaigns and campaign-level analytics exclusions are ignored. First consented qualifying interaction can initialize WooCommerce’s session; page impressions do not. The server validates the published campaign and derives its immutable arm/family reference. No browser amount is accepted.
+
+Pending provenance is stored in the existing WooCommerce session and saved immediately. The last session write is the accepted interaction; each uses a random receipt. Its eligibility expires at 30 minutes; subsequent requests remove expired or unconsented pending state, and WooCommerce’s own session expiry bounds untouched sessions. Classic and Blocks checkout hooks consume the receipt. A unique, non-autoloaded WordPress option atomically claims it, preventing concurrent order requests from crediting the same interaction twice. WP-Cron cleans those claims after 30 minutes; disabled/delayed cron can retain inert claims longer. Optional tracking failures must not interrupt capture or payment.
+
+The order receives `_wconvert_attribution`: model version, origin arm, family at the time, and interaction timestamp. It contains no copied contact details or monetary amounts. Order provenance never changes when the campaign is renamed, retired or deleted. WooCommerce privacy erasure removes the metadata while the module is installed. Plugin removal preserves order history under WooCommerce ownership, removes its setting/receipt claims, and stops the erasure integration; this limitation is documented in the setup guide.
+
+Reports use WooCommerce CRUD/query APIs, site-calendar paid dates, paid statuses (including the WooCommerce paid-status filter) and refunded orders with a paid date. They exclude unpaid, failed/cancelled and explicitly `_wconvert_test_order`-marked orders. Gateway test-mode detection is not universal; test on a staging store. Delayed payment belongs to the eventual paid period. Paid counts describe orders, not incremental sales or a purchase conversion rate.
+
+Amounts are merchandise line totals after discounts minus allocated product refunds, excluding taxes, shipping and fees. Currency totals and average order values are separate. An unallocated refund makes its currency’s total unavailable, not a guessed number or a subtotal silently excluding the order. Refunds and deletions change the original paid-period report. A query reads at most 2,000 orders, with an eight-second processing budget; exceeding either suppresses all aggregates and requests a shorter window. The time budget bounds processing, not a database server's execution timeout. No money is persisted by WConvert.
+
+The first release shows site-wide and exact-campaign sales. Its store-wide eligible-order denominator is explicitly labeled even on a campaign detail. Family/Goal revenue rollups and historical revenue CSV are future work; the existing CSV remains the core outcome report. Order IDs, links and line amounts are returned only with WooCommerce order-edit permission. Aggregate access uses the existing WConvert management permission.
+
+## Validation
+
+See [the implementation review](../reviews/actionable-analytics-2026-10-04.md) for actual checks and remaining release validation. A setup walkthrough is shipped at `pro/docs/campaign-sales.html`. Merchant interviews, gateway-specific test-mode adapters and production-store load measurements are not claimed by automated tests.

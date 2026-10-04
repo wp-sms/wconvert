@@ -23,7 +23,7 @@ it('retries a failed status read without losing the campaign preferences', async
   fireEvent.change(screen.getByLabelText('Public analytics label (optional)'), { target: { value: 'Updated offer' } });
   vi.mocked(apiFetch).mockResolvedValueOnce({ settings: { enabled: false } });
   fireEvent.click(screen.getByRole('button', { name: 'Retry' }));
-  await screen.findByText('Site integration is off. Saving this preference does not enable tracking.');
+  await screen.findByText('External analytics is off. Campaign sales has a separate site setting.');
 
   expect(screen.queryByText('Cannot read site analytics')).not.toBeInTheDocument();
   expect(screen.getByRole('radio', { name: 'Off for this campaign' })).toBeChecked();

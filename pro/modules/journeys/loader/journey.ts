@@ -1,3 +1,4 @@
+import { observeResultClick } from '../../analytics/loader/bridge';
 import { requestCapture, type Reply } from '@loader/capture-request';
 import { protectionField } from '@loader/protection';
 import { journeyLabel } from '@loader/journey-labels';
@@ -35,6 +36,7 @@ export function bindJourney(mounted: Mounted, entry: PayloadEntry, options: Opti
   const resultAt = tree.steps.findIndex(screen => screen.kind === 'result');
   const resultFirst = isResultFirst(tree);
   const beacon = createBeacon(beaconEndpoint());
+  const resultClick = () => { beacon.report(entry.id, 'result_click'); beacon.flush(); observeResultClick(entry.id); };
   const counted = new Set<string>();
   const report = (kind: BeaconKind, index = step) => {
     const screen = tree.steps[index]; const key = `${screen.id}:${kind}`;
@@ -116,7 +118,7 @@ export function bindJourney(mounted: Mounted, entry: PayloadEntry, options: Opti
         else { link.removeAttribute('href'); link.hidden = true; }
       }
       const products = root?.querySelector<HTMLElement>('[data-result-products]');
-      if (products) stopProducts = showProducts(products, result, () => { beacon.report(entry.id, 'result_click'); beacon.flush(); });
+      if (products) stopProducts = showProducts(products, result, resultClick);
       if (!completed) { completed = true; options.onCompleted?.(); }
     }
     const root = mounted.root;
@@ -181,7 +183,7 @@ export function bindJourney(mounted: Mounted, entry: PayloadEntry, options: Opti
       }
     }
     if (tree!.steps[step].kind === 'result') {
-      root.querySelector('[data-result-link]')?.addEventListener('click', () => { if (completed || !resultFirst) { beacon.report(entry.id, 'result_click'); beacon.flush(); } });
+      root.querySelector('[data-result-link]')?.addEventListener('click', () => { if (completed || !resultFirst) resultClick(); });
     }
     root.addEventListener('click', event => {
       const button = (event.target as Element).closest<HTMLButtonElement>('button[data-action]');

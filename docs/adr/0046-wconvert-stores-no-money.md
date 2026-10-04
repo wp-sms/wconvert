@@ -5,9 +5,7 @@ onto anything WConvert owns.** If revenue is ever reported, WConvert tags the
 WooCommerce order with the [[Optin]] that earned it and sums the real orders at
 read time.
 
-Nothing is built here. What is decided is the mechanism, so that a later phase
-cannot design itself into a revenue column and then need a migration to get out
-of one.
+**Implemented by [ADR 0119](0119-actionable-reports-use-local-evidence-and-order-provenance.md):** the paid analytics module now links consented interactions to checkout and reads actual orders. No WConvert money storage is introduced.
 
 ## The demand is not in the evidence
 
@@ -33,7 +31,7 @@ a second number nobody asked for on top of a first one they distrust.
 
 Order meta, summed at read.
 
-WConvert writes `_wconvert_optin_id` (and whatever else provenance needs) onto
+WConvert writes `_wconvert_attribution` (versioned arm, family and interaction time) onto
 the WooCommerce order at checkout, for an order whose session met an Optin.
 Revenue for that Optin is then a `SUM` over real orders, filtered by that meta,
 at the moment somebody looks.
@@ -82,7 +80,7 @@ found later.
   means either a fifth `kind` whose value is not a tally — breaking what every
   reader of that table assumes — or a new column on the hottest write in the
   system.
-- **Currency handling of any kind.** The moment WConvert stores an amount it
+- **Owning currency values or exchange rates.** [ADR 0119](0119-actionable-reports-use-local-evidence-and-order-provenance.md) allows read-time grouping/formatting by the order’s currency and product refund interpretation, without persisted money. The moment WConvert stores an amount it
   owns a currency, a rounding rule, a multi-currency store, refunds, partial
   refunds and tax. WooCommerce has all of that already and is the only thing on
   the site entitled to be right about it.

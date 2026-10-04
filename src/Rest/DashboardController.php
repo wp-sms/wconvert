@@ -3,8 +3,6 @@
 namespace WConvert\Rest;
 
 use WConvert\Stats\Dashboard;
-use WConvert\Stats\StatDay;
-use WConvert\Stats\StatRange;
 use WP_REST_Request;
 use WP_REST_Response;
 
@@ -51,43 +49,21 @@ final class DashboardController implements RestController
                 'methods' => 'GET',
                 'callback' => [$this, 'index'],
                 'permission_callback' => [Routes::class, 'canManage'],
-                'args' => [
-                    'complete' => ['type' => 'boolean', 'default' => false],
-                    'month' => ['type' => 'string', 'pattern' => '^[1-9][0-9]{3}-(0[1-9]|1[0-2])$'],
-                    // A window, in days, ending today. `1` is today alone,
-                    // which is what a merchant means by "Today" — a window of
-                    // one day rather than a window of none.
-                    //
-                    // The maximum is the same one {@see StatRange} enforces,
-                    // read off it rather than restated: it is the number that
-                    // keeps a scan of the counters a scan of one year, and a
-                    // second spelling here would be one to keep in step.
-                    'days' => [
-                        'type' => 'integer',
-                        'default' => StatRange::DEFAULT_DAYS,
-                        'minimum' => 1,
-                        'maximum' => StatRange::MAX_DAYS,
-                    ],
-                ],
+                'args' => ReportWindow::args(),
             ],
         ]);
     }
 
     public function index(WP_REST_Request $request): WP_REST_Response|\WP_Error
     {
+        try { $range = ReportWindow::read($request); }
+        catch (\InvalidArgumentException) {
+            return new \WP_Error('wconvert_invalid_report_month', __('Choose a current or earlier calendar month.', 'wconvert'), ['status' => 400]);
+        }
         $month = $request->get_param('month');
-        if (is_string($month) && $month !== '') {
-            try { $range = StatRange::calendarMonth($month, StatDay::today()); }
-            catch (\InvalidArgumentException) {
-                return new \WP_Error('wconvert_invalid_report_month', __('Choose a current or earlier calendar month.', 'wconvert'), ['status' => 400]);
-            }
-            return new WP_REST_Response($this->dashboard->compare($range) + ['month' => $month]);
-        }
-        if ($request->get_param('complete')) {
-            return new WP_REST_Response($this->dashboard->compare(StatRange::completeDays((int) $request->get_param('days'), StatDay::today())));
-        }
-        return new WP_REST_Response(
-            $this->dashboard->read(StatRange::lastDays((int) $request->get_param('days'), StatDay::today()))
-        );
+        $complete = $request->get_param('complete') || (is_string($month) && $month !== '');
+        $data = $complete ? $this->dashboard->compare($range) : $this->dashboard->read($range);
+        if (is_string($month) && $month !== '') $data['month'] = $month;
+        return new WP_REST_Response($data);
     }
 }

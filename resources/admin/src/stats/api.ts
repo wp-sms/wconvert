@@ -1,3 +1,4 @@
+import type { Insight } from './Insights';
 import apiFetch from '@wordpress/api-fetch';
 
 /**
@@ -92,6 +93,7 @@ export interface GoalReport extends Numbers {
 }
 
 export interface DashboardPayload {
+  insights?: Insight[];
   /** A stable calendar-month scope selected from a monthly target. */
   month?: string;
   /** The window the server read, resolved against the SITE's timezone. */

@@ -215,6 +215,8 @@ final class ArtifactContractTest extends TestCase
             'modules/content-lock/static-blocks.json' => '{"top": [], "children": {}}',
             'public/loader/loader.js' => "console.log('pro loader');\n",
             'public/inspector/inspector.js' => "console.log('pro inspector');\n",
+            'modules/analytics/public/revenue.js' => "console.log('revenue');\n",
+            'docs/campaign-sales.html' => '<html>Campaign sales setup</html>',
             'public/analytics/analytics.js' => "console.log('analytics');\n",
             'docs/analytics-integrations.html' => '<html>Analytics setup</html>',
             // Pro's admin bundle, both halves. Pro replaces free's on the same

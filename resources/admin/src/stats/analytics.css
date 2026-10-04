@@ -708,3 +708,14 @@
   .wa-header-actions > label, .wa-header-actions > button { flex:1 1 100%; inline-size:100%; }
   .wa-header-actions select { inline-size:100%; }
 }
+
+.wa-insights { display: grid; gap: 1rem; }
+.wa-insight { display: flex; align-items: start; justify-content: space-between; gap: 1rem; padding-block: 1rem; }
+.wa-insight + .wa-insight { border-block-start: 1px solid var(--border); }
+.wa-insight > div { min-width: 0; }
+.wa-insight h4 { font-size: var(--text-heading, 1rem); font-weight: 600; margin-block: .25rem; }
+.wa-insight p { margin-block: .5rem; }
+.wa-insight summary { cursor: pointer; color: var(--primary); padding-block: .5rem; }
+@media (max-width: 600px) { .wa-insight { flex-direction: column; } }
+
+.wa-table-scroll { max-width: 100%; overflow-x: auto; }

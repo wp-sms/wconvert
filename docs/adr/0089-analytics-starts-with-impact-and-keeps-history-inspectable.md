@@ -16,6 +16,8 @@ and extends the reporting/history decisions in
 [0058](0058-a-test-ends-when-the-merchant-says-so.md) and
 [0071](0071-reports-capture-history-and-recovery-form-a-connected-admin-flow.md).
 
+**Extended by [0119](0119-actionable-reports-use-local-evidence-and-order-provenance.md):** local evidence cards, selected-period journey activity, retained answer summaries and separately sourced optional paid-order reports follow impact. Click counts still do not establish purchases.
+
 ## Compatible impact counts, not a global conversion rate
 
 The overview shows captured Leads (form submissions, not unique people or

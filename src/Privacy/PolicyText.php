@@ -75,6 +75,7 @@ final class PolicyText
                 $this->cookieDuration($browser['cookie_fallback_days'])
             ) . '</p>',
             '<p>' . __('When a Campaign uses a session limit, WConvert stores appearance counts under wcv_display_session_v1 in this tab’s session storage. It holds at most 128 Campaign families, evicting the least recently shown. It contains no contact details or visitor identifier. Browsers may copy or restore tab sessions; if storage is blocked, the limit lasts only on the current page.', 'wconvert') . '</p>',
+            ...array_map(static fn (string $note): string => '<p>' . esc_html($note) . '</p>', $browser['additional'] ?? []),
             ...($browser['cart_recovery'] !== null ? [
                 '<p>' . __('Cart recovery stores the cart item count and total in a browser cookie until the WooCommerce cart session ends. The cookie does not store product or contact details. Cart targeting also checks the current WooCommerce session. Only campaign matches and public product suggestions stay in page memory for up to 30 seconds; WConvert does not save cart contents or create a visitor identifier. These requests use a separate 60-second rate-limit bucket containing a site-specific one-way IP hash.', 'wconvert') . '</p>',
             ] : []),

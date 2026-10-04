@@ -22,7 +22,7 @@ export function AnalyticsIntegrationSettings(props: { onEditingStateChange?: Set
 export function CampaignAnalytics(props: CampaignAnalyticsProps) {
   const Component = analyticsIntegration.campaign;
   if (!Component && isFreeInstall()) return null;
-  return <div className="wconvert-details-section"><h3>{__('External analytics', 'wconvert')}</h3>{Component
+  return <div className="wconvert-details-section"><h3>{__('Optional analytics', 'wconvert')}</h3>{Component
     ? <Suspense fallback={<RegionSkeleton label={__('External analytics', 'wconvert')} lines={2} />}><Component {...props} /></Suspense>
     : <><Badge variant="secondary"><Lock aria-hidden="true" />{tierName('basic')}</Badge><p>{sprintf(__('Managed analytics integrations require %s. Saved preferences remain inactive.', 'wconvert'), tierProductName('basic'))}</p></>}
     <a href={settingsHref('integrations')}>{__('Analytics integration settings', 'wconvert')}</a></div>;

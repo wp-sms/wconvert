@@ -14,6 +14,7 @@ export interface PrivacyDataMap {
   retention_days: number | null;
   destinations: PrivacyDestination[];
   browser: {
+    additional?: string[];
     key: string;
     local_storage_expiry_days: null;
     cookie_fallback: boolean;

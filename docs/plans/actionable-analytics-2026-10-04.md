@@ -2,7 +2,7 @@
 
 Date: 4 October 2026
 
-Status: Proposed implementation plan. The user approved the direction of helping all users first, adding WooCommerce sales reporting next, and requiring the merchant to approve campaign changes. This document does not authorize implementation, new database schemas, or changes to existing product contracts.
+Status: Implementation authorized by the user (“go and implement it”) and delivered through PR #213. AI remains excluded. No new table or column is introduced. [ADR 0119](../adr/0119-actionable-reports-use-local-evidence-and-order-provenance.md) records final implementation choices and boundaries; the [review](../reviews/actionable-analytics-2026-10-04.md) records verification. This plan retains the broader future direction below.
 
 WConvert should help merchants understand results, choose a useful next step, and review the outcome. Build this into the existing Analytics screen. Establish reliable local insights first and connect campaigns to actual WooCommerce orders in the next release. Recommendations use predefined rules and authored copy with actual report values. Keep explanations short on screen and make the supporting evidence easy to inspect.
 
@@ -15,7 +15,7 @@ WConvert should help merchants understand results, choose a useful next step, an
 | Experience | Extend Analytics and existing campaign editing | Recommended |
 | Core insights | Local deterministic calculations and authored recommendations, usable without GA | Recommended |
 | AI | Deferred to separate future work; no features or preparatory infrastructure in this plan | User directed |
-| Revenue | Last qualifying interaction within a defined session; actual WooCommerce orders | Recommended, not yet implemented |
+| Revenue | Last qualifying interaction within a fixed 30-minute window and WooCommerce session; actual orders | Implemented |
 | Packaging | Core results and essential diagnostics in Free; advanced optimization and revenue in Pro | Recommended; final entitlement mapping remains open |
 | Storage | Reuse counters, configuration and order metadata; no new table or column in initial scope | Proposed constraint |
 | Release sequence | Reporting foundations, actionable insights, journey insights, WooCommerce revenue | Recommended |
@@ -198,15 +198,15 @@ Email and SMS signups can overlap within one Lead. Optional signup after a quiz 
 
 Proposed internal fields: `rule_id`, `rule_version`, `report_fingerprint`, `scope`, `periods`, `facts`, `evidence_type`, `limitations`, `observed_at`, `eligible_actions` and `config_revision`. Facts have stable keys, units and source references. Eligible actions come from server-checked capabilities. Evidence categories are a closed set determined by the rule evaluator; an explanation cannot upgrade a hypothesis to an observation.
 
-Compute cards on read. Per-user dismissal can use bounded WordPress user metadata keyed by rule, scope and fingerprint, expiring after seven days or reappearing when material evidence changes. This is proposed new metadata, not an existing feature. Avoid unlimited dismissal or insight histories. A full audit/experiment ledger is deferred and requires its own storage decision.
+Compute cards on read. **Dismissal storage is deferred; the initial report remains computed and stores no insight history.** A later per-user dismissal could use bounded WordPress user metadata keyed by rule, scope and fingerprint, expiring after seven days or reappearing when material evidence changes. This is proposed new metadata, not an existing feature. Avoid unlimited dismissal or insight histories. A full audit/experiment ledger is deferred and requires its own storage decision.
 
 ## WooCommerce revenue release
 
 ### Proposed attribution model
 
-Display the model as **Last interaction · Same session**, with a short explanation. An interaction qualifies when a capture is server-accepted, a primary offer/cart-return link is clicked, or a quiz result's product/offer link is clicked. Merely showing a popup, completing an anonymous quiz, closing it or copying a coupon does not qualify in this first model. Result-link eligibility is new attribution behavior and does not change its existing headline Conversion meaning.
+Display the shipped model as **Last interaction · 30-minute window**, with a short explanation. An interaction qualifies when a capture is server-accepted, a primary offer/cart-return link is clicked, or a quiz result's product/offer link is clicked. Merely showing a popup, completing an anonymous quiz, closing it or copying a coupon does not qualify in this first model. Result-link eligibility is new attribution behavior and does not change its existing headline Conversion meaning.
 
-Define a dedicated attribution session as ending after 30 minutes of inactivity, with an absolute 24-hour cap. This is a proposed WConvert rule, not an assumption about WooCommerce cart-session lifetime. The implementation must specify permitted activity signals and expiry consistently; avoid a new sitewide heartbeat. A navigation/activity integration spike must prove this rule before release. If it cannot do so reliably, ship a clearly labeled fixed 30-minute lookback instead and update the plan/ADR rather than silently changing semantics.
+**Implementation decision:** ship the fixed 30-minute lookback described below. The earlier proposal was a session ending after 30 minutes of inactivity with an absolute 24-hour cap. This is a proposed WConvert rule, not an assumption about WooCommerce cart-session lifetime. The implementation must specify permitted activity signals and expiry consistently; avoid a new sitewide heartbeat. A navigation/activity integration spike must prove this rule before release. If it cannot do so reliably, ship a clearly labeled fixed 30-minute lookback instead and update the plan/ADR rather than silently changing semantics.
 
 The last eligible interaction before order creation receives the order's credit. Resolve concurrent interactions with server acceptance order and a stable tie-breaker. One order gets one credited arm; family rollups derive from campaign relationships without adding another credited order. Store immutable origin arm, family-at-order reference, model version and eligibility timestamps as provenance. Do not reassign old orders to a later interaction or a renamed/reparented campaign.
 

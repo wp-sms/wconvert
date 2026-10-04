@@ -201,8 +201,7 @@ the wheel for needing a code PER VISITOR.*
 
 *Asserted rather than argued as of [#36](https://github.com/navidkashani/wconvert/issues/36):
 `tests/unit/Pro/WooCommerce/NoWriteIntoWooCommerceTest.php` reads both plugin trees
-and fails on a coupon, an order, a cart mutation or a write into WooCommerce's
-session — the same posture, and the same tokenised scan, that ADR 0024's own test
+and rejects coupon creation and cart mutation. **Amended by [ADR 0119](0119-actionable-reports-use-local-evidence-and-order-provenance.md):** optional consented analytics may store a pending campaign reference in the WooCommerce session and provenance on the order. It may not alter cart contents, prices, payment, coupons or order status. The older scan covers the original trees; runtime attribution checks cover the analytics module. This is the same posture, and the same tokenised scan, that ADR 0024's own test
 takes over `wsms_engagements`. The failure either exists to catch is a line
 somebody ADDS, which no assertion about output can see.*
 

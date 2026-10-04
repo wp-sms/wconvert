@@ -7,7 +7,7 @@ use PHPUnit\Framework\TestCase;
 use WConvert\Tests\Unit\Support\PhpSource;
 
 /**
- * **No code path in either plugin tree writes into WooCommerce's data**
+ * **No code path creates orders/coupons or mutates a shopper's cart**
  * (ADR 0025).
  *
  * WConvert reads the cart and writes a cookie. That is the entire traffic
@@ -23,10 +23,8 @@ use WConvert\Tests\Unit\Support\PhpSource;
  * - **Touching the cart itself** — restoring it, re-adding an item, applying a
  *   code. An Optin is a display, and a display that edits a shopper's cart is
  *   a shopper who finds things in it they did not put there.
- * - **Writing to WooCommerce's session**, which is the same lifecycle-in-
- *   somebody-else's-schema mistake ADR 0024 named, one plugin over: housing
- *   state in another plugin's store does not make it not ours, it only hides
- *   it from review.
+ * ADR 0119 permits only campaign provenance in the existing session and order
+ * metadata. That optional tracking does not change products, payment or cart.
  *
  * A test rather than a paragraph, for the reason
  * {@see \WConvert\Tests\Unit\Destination\NoEngagementIsEverWrittenTest} is
@@ -61,7 +59,7 @@ final class NoWriteIntoWooCommerceTest extends TestCase
         'set_session',
     ];
 
-    public function testNeitherTreeWritesAnythingBackIntoWooCommerce(): void
+    public function testNeitherTreeMutatesCartOrCreatesOrdersAndCoupons(): void
     {
         $offenders = [];
 
@@ -92,7 +90,7 @@ final class NoWriteIntoWooCommerceTest extends TestCase
         $root = dirname(__DIR__, 4);
         $files = [];
 
-        foreach (['src', 'pro/src', 'bin'] as $tree) {
+        foreach (['src', 'pro/src', 'pro/modules', 'bin'] as $tree) {
             /** @var \SplFileInfo $file */
             foreach (new \RecursiveIteratorIterator(new \RecursiveDirectoryIterator($root . '/' . $tree)) as $file) {
                 if ($file->isFile() && $file->getExtension() === 'php') {

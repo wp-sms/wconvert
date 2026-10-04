@@ -4,7 +4,7 @@ import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuIte
 import { SubmissionSettings } from './SubmissionSettings';
 import { BlockInspector } from './BlockInspector';
 import { JourneyEditor } from './JourneyEditor';
-import { JourneyReport } from './JourneyReport';
+import { JourneyReport } from '../stats/JourneyReport';
 import { referencedJourney, submissionScreen, walkNodes } from './structure/journey';
 import { isResultFirst } from '../../../loader/src/journey-mode';
 import type { JourneyRepair } from './structure/journeyReadiness';

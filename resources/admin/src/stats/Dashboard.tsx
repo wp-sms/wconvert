@@ -1,3 +1,8 @@
+import { DeliveryAttention } from './DeliveryAttention';
+import { CommerceReport } from './extensions';
+import { Interests } from './Interests';
+import { Insights } from './Insights';
+import { JourneyReport } from './JourneyReport';
 import { useEffect, useState } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
 import {
@@ -109,6 +114,8 @@ export function Dashboard({
       ? (payload?.goals.filter((g) => impact.goals.includes(g.goal)) ?? [])
       : (payload?.goals ?? []);
   const previous = compare ? payload?.previous : undefined;
+  const insightIds = new Set(scopedCards.flatMap(g => g.optins.filter(o => !focusedId || (selection.experiment ? families(g).find(f => f.arms.some(a => a.id === focusedId))?.arms.some(a => a.id === o.id) : o.id === focusedId)).map(o => o.id)));
+  const insights = (payload?.insights ?? []).filter(item => (overview || insightIds.has(item.optin_id)) && (compare || item.rule_id === 'no_appearances'));
   const priorCard = previous?.goals.find((g) => g.goal === card?.goal);
   const exportReport = () => {
     if (!payload) return;
@@ -318,7 +325,8 @@ export function Dashboard({
               )}
             </p>
           )}
-          <MonthlyTargets report={targets} />
+          <DeliveryAttention />
+          <Insights items={insights} query={accepted} />
           <div className="wa-section-heading">
             <h3>{__('Results by goal', 'wconvert')}</h3>
             <span>
@@ -422,6 +430,10 @@ export function Dashboard({
           </EmptyState>
         </Region>
       ) : null}
+      {payload && (overview || (optin && !selection.experiment)) && <CommerceReport period={payload} optinId={overview ? undefined : optin?.id} />}
+      {payload && !overview && <Insights items={insights} query={accepted} />}
+      {payload && optin && !selection.experiment && <><JourneyReport id={optin.id} period={payload} /><Interests id={optin.id} period={payload} /></>}
+      {payload && overview && payload.goals.length > 0 && <MonthlyTargets report={targets} />}
       {payload && payload.goals.length > 0 && (
         <details className="wa-help">
           <summary>{__('How these numbers work', 'wconvert')}</summary>

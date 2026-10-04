@@ -157,7 +157,7 @@ and [ADR 0099](docs/adr/0099-privacy-defaults-follow-campaign-purpose.md).
 
 Analytics starts with compatible totals: captured submissions, offer clicks,
 cart return clicks and appearances. It never reports a global conversion rate,
-unique people, purchases or recovered revenue. Goal and individual Optin reports
+unique people or recovered revenue from those counters. The optional paid campaign-sales report reads actual WooCommerce paid orders and refunds separately, under a consented 30-minute last-interaction model; attribution is not causation. See [ADR 0119](docs/adr/0119-actionable-reports-use-local-evidence-and-order-provenance.md). Goal and individual Optin reports
 explain their denominators. Resource requests and accepted email sends remain
 separate. Complete-day comparisons are resolved in the site's calendar; no
 visible timezone label is needed. Campaigns also uses complete days through yesterday; editor windows still include today.
