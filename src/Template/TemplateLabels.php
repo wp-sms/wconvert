@@ -476,6 +476,7 @@ final class TemplateLabels
             'field.required' => __('Required field', 'wconvert'),
             'field.phone_country' => __('Starting country', 'wconvert'),
             'field.phone_dropdown' => __('Country dropdown', 'wconvert'),
+            'products.source' => __('Recommendation source', 'wconvert'),
             'question.answer_type' => __('Answer type', 'wconvert'),
             'question.required' => __('Required answer', 'wconvert'),
             /* translators: how many of the five stars are filled in. */
@@ -514,6 +515,8 @@ final class TemplateLabels
             'button.action.skip' => __('Skip optional signup', 'wconvert'),
             'button.action.close' => __('Close', 'wconvert'),
             'button.action.link' => __('Open link', 'wconvert'),
+            'products.source.selected' => __('Choose products', 'wconvert'),
+            'products.source.cross_sells' => __('Use WooCommerce cross-sells', 'wconvert'),
             'question.answer_type.single' => __('Choose one', 'wconvert'),
             'question.answer_type.multi' => __('Choose several', 'wconvert'),
             'question.answer_type.text' => __('Short answer', 'wconvert'),

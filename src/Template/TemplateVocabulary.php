@@ -521,6 +521,10 @@ final class TemplateVocabulary
                 continue;
             }
 
+            if ($type === 'products' && $key === 'source') {
+                $kept[$key] = $node[$key] === 'cross_sells' ? 'cross_sells' : 'selected';
+                continue;
+            }
             if ($type === 'products' && $key === 'product_ids') {
                 $kept[$key] = is_array($node[$key]) ? array_values(array_unique(array_filter(array_slice($node[$key], 0, 6), static fn ($id): bool => is_int($id) && $id > 0))) : [];
                 continue;

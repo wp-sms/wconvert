@@ -24,6 +24,10 @@ final class CommerceContext
         add_filter('wconvert_publish_issues', [$this, 'publishIssues'], 10, 2);
         add_filter('wconvert_playbook_prefill', [$this, 'prefill'], 10, 2);
         add_action('rest_api_init', function (): void {
+            register_rest_route(Routes::NAMESPACE, '/commerce/preview', [
+                'methods' => 'POST', 'permission_callback' => [Routes::class, 'canManage'],
+                'callback' => [$this, 'preview'],
+            ]);
             register_rest_route(Routes::NAMESPACE, '/commerce/objects', [
                 'methods' => 'GET', 'permission_callback' => [Routes::class, 'canManage'],
                 'callback' => [$this, 'objects'],
@@ -114,7 +118,7 @@ final class CommerceContext
             if ($rule['type'] === 'cart_amount' && ($rule['range']['currency'] !== get_woocommerce_currency() || $rule['range']['decimals'] !== wc_get_price_decimals())) $issues[] = __('The store currency changed. Review the cart amount rule.', 'wconvert');
         }
         $products = self::products($config);
-        if ($products !== null) {
+        if ($products !== null && ($products['source'] ?? 'selected') !== 'cross_sells') {
             $ids = $products['product_ids'] ?? [];
             if (!RuleValue::ids($ids) || count($ids) > 6 || count($this->existing(['type' => 'recommendation', 'ids' => $ids])) !== count($ids)) $issues[] = __('Choose up to six available catalog products for the recommendations.', 'wconvert');
         }
@@ -149,15 +153,23 @@ final class CommerceContext
     private function cart(): ?array
     {
         if (!WC()->cart) return null;
-        $items = WC()->cart->get_cart();
+        return $this->project(WC()->cart->get_cart(), (float) WC()->cart->get_total('edit'));
+    }
+
+    /** Both live and sample baskets derive product/category membership here.
+     * @param array<array<string, mixed>> $items
+     * @return array{quantity: int, total: float, amount: int, currency: string, decimals: int, products: list<int>, categories: list<int>, ancestors: list<int>}|null */
+    private function project(array $items, float $total): ?array
+    {
         if (count($items) > 250) return null;
         $currency = get_woocommerce_currency();
         $decimals = wc_get_price_decimals();
-        $result = ['quantity' => 0, 'total' => (float) WC()->cart->get_total('edit'), 'amount' => 0, 'currency' => $currency, 'decimals' => $decimals, 'products' => [], 'categories' => [], 'ancestors' => []];
+        $result = ['quantity' => 0, 'total' => $total, 'amount' => 0, 'currency' => $currency, 'decimals' => $decimals, 'products' => [], 'categories' => [], 'ancestors' => []];
         $amount = 0.0;
         foreach ($items as $line) {
             $quantity = $line['quantity'];
             if (!is_numeric($quantity) || (float) (int) $quantity !== (float) $quantity || $quantity < 0) return null;
+            if ((int) $quantity === 0) continue;
             $result['quantity'] += (int) $quantity;
             $lineTotal = $line['line_total'] ?? null;
             if (!is_numeric($lineTotal) || !is_finite((float) $lineTotal) || (float) $lineTotal < 0) return null;
@@ -209,28 +221,87 @@ final class CommerceContext
                 if (str_starts_with($rule['type'], 'cart_')) $rules[$id . ':required-' . $i] = CartRules::matches($rule, $cart);
             }
             $node = self::products($payload);
-            $cards = $node !== null && $cart !== null && $cart['quantity'] > 0 ? $this->cards($node, $cart['products']) : [];
+            $cards = $node !== null ? $this->recommendations($node, $cart)['cards'] : [];
             if ($node !== null) $rules[$id . ':products'] = $cart !== null && $cart['quantity'] > 0 && $cards !== [];
             $answer[$id] = ['rules' => $rules, 'cards' => $cards, 'known' => $cart !== null];
         }
         wp_send_json($answer);
     }
 
-    /** @param array<string, mixed> $node
-     * @param list<int> $inCart
-     * @return list<array<string, mixed>> */
-    private function cards(array $node, array $inCart): array
+    /** Selected relationships only, in basket-product order then WooCommerce's saved order.
+     * @param array<string, mixed> $node
+     * @param array<string, mixed>|null $cart
+     * @return array{cards: list<array<string, mixed>>, reason: string} */
+    private function recommendations(array $node, ?array $cart): array
     {
+        if ($cart === null) return ['cards' => [], 'reason' => 'unknown'];
+        if ($cart['quantity'] < 1) return ['cards' => [], 'reason' => 'empty'];
+        $crossSells = ($node['source'] ?? 'selected') === 'cross_sells';
+        $ids = $crossSells ? [] : array_slice($node['product_ids'] ?? [], 0, 6);
+        if ($crossSells) {
+            // Parent before variation; first occurrence wins. Bound reads and candidates.
+            foreach (array_slice($cart['products'], 0, 100) as $id) {
+                $product = wc_get_product($id);
+                if (!$product) continue;
+                foreach (array_slice($product->get_cross_sell_ids(), 0, 60) as $candidate) {
+                    if (!in_array($candidate, $ids, true)) $ids[] = $candidate;
+                    if (count($ids) === 60) break 2;
+                }
+            }
+        }
         $cards = [];
-        foreach (array_slice($node['product_ids'] ?? [], 0, 6) as $id) {
+        foreach ($ids as $id) {
             $product = wc_get_product($id);
-            if (!$product || !$product->is_type(['simple', 'variable']) || (($node['exclude_cart'] ?? true) && in_array($id, $inCart, true)) || !$product->is_visible() || !$product->is_purchasable() || !$product->is_in_stock() || get_post_field('post_password', $id) !== '') continue;
+            if (!$product || !$product->is_type(['simple', 'variable']) || (($node['exclude_cart'] ?? true) && in_array($id, $cart['products'], true)) || !$product->is_visible() || !$product->is_purchasable() || !$product->is_in_stock() || get_post_field('post_password', $id) !== '') continue;
             $cards[] = ['id' => $id, 'name' => $product->get_name(), 'url' => $product->get_permalink(), 'image' => wp_get_attachment_image_url($product->get_image_id(), 'woocommerce_thumbnail') ?: '',
                 'price' => html_entity_decode(wp_strip_all_tags($product->get_price_html()), ENT_QUOTES, 'UTF-8'),
                 'label' => $product->is_type('variable') ? __('Choose options', 'wconvert') : __('View product', 'wconvert')];
             if (count($cards) === 3) break;
         }
-        return $cards;
+        return ['cards' => $cards, 'reason' => $cards !== [] ? '' : ($ids !== [] ? 'unavailable' : ($crossSells ? 'no_relationships' : 'none_selected'))];
+    }
+
+    /** Authenticated, stateless draft simulation; never reads or mutates a Woo session. */
+    public function preview(\WP_REST_Request $request): \WP_REST_Response|\WP_Error
+    {
+        $invalid = static fn () => new \WP_Error('wconvert_invalid_sample', __('Review the sample basket and try again.', 'wconvert'), ['status' => 400]);
+        if (strlen($request->get_body()) > 32768) return $invalid();
+        $input = $request->get_json_params();
+        if (!is_array($input)) return $invalid();
+        $items = $input['items'] ?? null;
+        $rules = $input['rules'] ?? null;
+        $state = $input['state'] ?? 'known';
+        $node = $input['products'] ?? null;
+        if (!is_array($items) || !array_is_list($items) || count($items) > 20 || !is_array($rules) || !array_is_list($rules) || count($rules) > 40 || !in_array($state, ['known', 'unknown', 'blocked'], true)) return $invalid();
+        foreach (['amount', 'total'] as $key) {
+            $number = $input[$key] ?? null;
+            if ((!is_int($number) && !is_float($number)) || !is_finite((float) $number) || $number < 0 || $number > 1000000000) return $invalid();
+        }
+        if ($node !== null && (!is_array($node) || !in_array($node['source'] ?? 'selected', ['selected', 'cross_sells'], true) || !is_bool($node['exclude_cart'] ?? true)
+            || (($node['product_ids'] ?? []) !== [] && (!RuleValue::ids($node['product_ids']) || count($node['product_ids']) > 6)))) return $invalid();
+        $lines = []; $seen = [];
+        foreach ($items as $item) {
+            if (!is_array($item) || !is_int($item['id'] ?? null) || $item['id'] < 1 || in_array($item['id'], $seen, true) || !is_int($item['quantity'] ?? null) || $item['quantity'] < 1 || $item['quantity'] > 10000) return $invalid();
+            $product = wc_get_product($item['id']);
+            if (!$product || $product->get_status() !== 'publish') return $invalid();
+            $seen[] = $item['id'];
+            $variation = $product->is_type('variation');
+            $lines[] = ['product_id' => $variation ? $product->get_parent_id() : $item['id'], 'variation_id' => $variation ? $item['id'] : 0,
+                'quantity' => $item['quantity'], 'line_total' => $lines === [] ? $input['amount'] : 0];
+        }
+        $cart = $state === 'known' ? $this->project($lines, (float) $input['total']) : null;
+        $matches = [];
+        foreach ($rules as $rule) {
+            if (!is_array($rule) || !is_string($rule['id'] ?? null) || !preg_match('/^[a-zA-Z0-9_-]{1,64}$/D', $rule['id']) || array_key_exists($rule['id'], $matches)
+                || !in_array($rule['type'] ?? null, [...CartRules::TYPES, 'cart_has_items', 'cart_value_min'], true)) return $invalid();
+            if (isset($rule['ids']) && !RuleValue::ids($rule['ids'])) return $invalid();
+            $matches[$rule['id']] = CartRules::matches($rule, $cart, isset($rule['ids']) ? $this->existing($rule) : null);
+        }
+        $suggestions = $node !== null ? $this->recommendations($node, $cart) : ['cards' => [], 'reason' => ''];
+        $response = new \WP_REST_Response(['rules' => (object) $matches, 'cards' => $suggestions['cards'], 'reason' => $suggestions['reason'],
+            'eligible' => $node === null || $suggestions['cards'] !== [], 'state' => $state, 'currency' => get_woocommerce_currency(), 'decimals' => wc_get_price_decimals()]);
+        $response->header('Cache-Control', 'private, no-store');
+        return $response;
     }
 
     public function objects(\WP_REST_Request $request): \WP_REST_Response

@@ -237,8 +237,11 @@ function contentBody({
   if (block.type === 'products') {
     if (!commerceSupported()) return <p>{__('Product suggestions require WConvert Pro and WooCommerce.', 'wconvert')}</p>;
     const selected = nodeAt(template.tree, path) as ProductsNode;
-    return <div><p>{__('Choose up to six compatible accessories in priority order. Up to three available products appear. Product links count as clicks, not purchases.', 'wconvert')}</p>
-      <CommercePicker value={selected.product_ids} max={6} onChange={value => onChange({ ...template, tree: withValue(template.tree, path, 'product_ids', value) })} />
+    return <div><p>{__('Show up to three available accessories. Choose up to six products yourself, or use your store’s existing cross-sells. Product links count as clicks, not purchases.', 'wconvert')}</p>
+      <label>{__('Recommendation source', 'wconvert')}<select value={selected.source ?? 'selected'} onChange={event => onChange({ ...template, tree: withValue(withValue(template.tree, path, 'source', event.target.value), path, 'product_ids', []) })}>
+        <option value="selected">{__('Choose products', 'wconvert')}</option><option value="cross_sells">{__('Use WooCommerce cross-sells', 'wconvert')}</option>
+      </select></label>
+      {selected.source === 'cross_sells' ? <p>{__('Uses cross-sells linked to basket products in WooCommerce. No configured or available suggestions means this campaign stays hidden. Test a sample visit under Display rules.', 'wconvert')}</p> : <CommercePicker value={selected.product_ids} max={6} recommendations onChange={value => onChange({ ...template, tree: withValue(template.tree, path, 'product_ids', value) })} />}
       <label><input type="checkbox" checked={selected.exclude_cart !== false} onChange={event => onChange({ ...template, tree: withValue(template.tree, path, 'exclude_cart', event.target.checked) })} />{__('Hide products already in the cart', 'wconvert')}</label>
     </div>;
   }

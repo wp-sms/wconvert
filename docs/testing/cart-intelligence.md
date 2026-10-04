@@ -1,6 +1,6 @@
 # Cart intelligence verification
 
-Implementation: [ADR 0117](../adr/0117-cart-intelligence-uses-a-bounded-session-projection.md).
+Implementation: [ADR 0117](../adr/0117-cart-intelligence-uses-a-bounded-session-projection.md) and [ADR 0118](../adr/0118-sample-baskets-share-live-commerce-evaluation.md).
 
 The isolated real-site fixture uses WordPress 7.1.2 and WooCommerce 11.1.2. It
 mounts the working Free and Pro plugins, without installing WooCommerce into the
@@ -34,8 +34,8 @@ reconfiguration notes and capability refusal on Free.
 ## Boundaries
 
 This is selected product targeting and suggestion delivery. It has no cart write,
-shipping-progress calculation, purchase attribution, revenue report, cross-sell
-source or changed quiz fallback. Public reporting continues to count clicks.
+shipping-progress calculation, purchase attribution, revenue report or changed
+quiz fallback. Suggestions use a selected shortlist or configured WooCommerce cross-sells. Public reporting continues to count clicks.
 
 Core classic and Blocks mutation paths are exercised. Third-party carts or currency
 switchers are not declared compatible. Unknown context does not match; carts that
@@ -43,15 +43,19 @@ emit no supported signal may take until the next 30-second or focus refresh.
 The tests do not model every tax extension, subscription/bundle product, catalog
 size, page-cache vendor or assistive technology.
 
-Explicit sample-basket simulation is not implemented. Sample Visit still uses
-manual rule-matching assumptions; it does not evaluate a sample basket or its
-recommendation exclusions.
+Sample Visit now evaluates explicitly selected products/variations, quantities
+and entered merchandise amounts with the live evaluator, including recommendation
+exclusions. Non-cart conditions remain manual assumptions. It never changes a real
+cart. The fixture covers unknown/blocked/empty baskets, category ancestry, currency
+mismatch, variation-parent matching, authentication and malformed input.
+`tests/js/commerce-sample.test.tsx` verifies current-draft requests and stale-response
+rejection, including returning to previously tested inputs.
 
 Five-merchant usability recruitment from the plan has not been performed and no
 external invitations were sent. The code checks do not establish usability or
 conversion uplift. Review that research separately before broad rollout.
 
-## Final local results
+## Core implementation results (PR 207)
 
 - PHPUnit: 2516 tests, 15165 assertions passed; cart predicates rechecked after final input hardening.
 - Vitest: 3714 tests across 205 files passed (two workers).

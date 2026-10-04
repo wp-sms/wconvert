@@ -2,7 +2,7 @@
 
 Date: 4 October 2026
 
-Status: Core first-release implementation is on the feature branch. Runtime contracts are recorded in ADR 0117 and local verification in docs/testing/cart-intelligence.md. Explicit sample-basket simulation remains unfinished: the current Sample Visit requires manual matching assumptions. Merchant research has not been conducted; later increments remain planned.
+Status: Core release is merged. The ADR 0118 follow-up implements explicit sample-basket simulation and configured WooCommerce cross-sells. Merchant research, shipping progress and order attribution remain outstanding.
 
 ## Product decision
 
@@ -29,7 +29,7 @@ This is useful without automated catalog ranking or visitor profiles. Preserve W
 | Cart conditions | Nonempty cart; minimum cart total | Products, variations, categories, quantity comparisons and value ranges |
 | Cart data | `wconvert_cart` cookie with count and total | Session-scoped, minimal live reads for richer campaigns; no cart catalog copied into cookies |
 | Product results | Up to six ordered selected IDs; display up to three live available products | Reuse card behavior for recommendation campaigns and optionally exclude products already in the cart |
-| Recommendation choice | Merchant selects quiz products by outcome | Selected accessories first; configured WooCommerce cross-sells in a later increment |
+| Recommendation choice | Merchant selects quiz products by outcome | Selected accessories and configured WooCommerce cross-sells (ADR 0118) |
 | Delivery guidance | Static message and cart link | Contextual guidance first; verified shipping progress later |
 | Statistics | Appearances, conversion clicks, quiz completions and result clicks | Clear commerce labels first; optional order attribution later |
 
@@ -51,7 +51,7 @@ These are product hypotheses grounded in current capabilities and market documen
 
 ## First release scope
 
-Implementation of this scope is available on the feature branch except explicit sample-basket simulation. See [verification](../testing/cart-intelligence.md) for tested behavior and boundaries; merchant recruitment remains outstanding and later increments below are not implemented.
+The core scope is implemented; explicit sample-basket simulation is completed by the ADR 0118 follow-up. See [verification](../testing/cart-intelligence.md) for tested behavior and boundaries; merchant recruitment remains outstanding and later increments below are not implemented.
 
 Ship together:
 
@@ -60,10 +60,10 @@ Ship together:
 3. Exclusion of recommended products already in the cart.
 4. Live stock, visibility, purchasability and price handling, preserving useful product-quiz behavior.
 5. An accessory campaign starting point and contextual shopping-guidance starting point.
-6. Draft simulation, live diagnostics, publication checks and accurate click reporting. Explicit sample-basket inputs remain follow-up work; the existing manual rule assumptions are available now.
+6. Draft simulation, live diagnostics, publication checks and accurate click reporting. The ADR 0118 follow-up evaluates explicit sample baskets; non-cart conditions remain manual assumptions.
 7. Classic WooCommerce and Cart/Checkout Blocks compatibility demonstrated on real WordPress.
 
-Leave for later increments: WooCommerce cross-sell selection, direct add-to-cart buttons, dynamic shipping progress, attributed orders, and category/attribute-based quiz selection. Keep all six recommendations from the assessment in the roadmap below; this split limits the first release rather than quietly discarding them.
+The ADR 0118 follow-up implements WooCommerce cross-sell selection. Leave for later increments: direct add-to-cart buttons, dynamic shipping progress, attributed orders, and category/attribute-based quiz selection. Keep all six recommendations from the assessment in the roadmap below; this split limits the first release rather than quietly discarding them.
 
 ## Merchant setup
 
@@ -83,7 +83,7 @@ Example summary: “On these store pages, when the cart contains Espresso Machin
 
 Use the site's existing campaign permissions; do not silently broaden editing access to every WooCommerce role. Merchant preview uses explicit sample cart facts and is clearly labeled as simulated.
 
-Implementation note: the explicit sample-cart preview above is still planned. The current Sample Visit asks the merchant to assert Matches/Does not match for cart rules; it does not calculate recommendations from a simulated basket.
+Implementation note: ADR 0118 adds explicit sample-cart inputs and recommendation results using the live evaluator. Other visitor and page conditions still use manual assumptions.
 
 ### Help with a shopping question
 
@@ -205,7 +205,7 @@ External event adapters must use the existing observation seam, respect consent,
 
 ### Configured cross-sells and stronger product finders
 
-Add **Use WooCommerce cross-sells** as a second recommendation source. Read relationships configured by the merchant; do not infer accessory compatibility from names or categories. Union candidates in a documented stable order, deduplicate, exclude items in the basket, filter availability and display up to three. Bound the candidate workload and expose an explanation when no relationship is configured. Allow a merchant-selected fallback shortlist only as an explicit choice.
+Implemented by ADR 0118: **Use WooCommerce cross-sells** is a second recommendation source. Read relationships configured by the merchant; do not infer accessory compatibility from names or categories. Union candidates in a documented stable order, deduplicate, exclude items in the basket, filter availability and display up to three. Bound the candidate workload and expose an explanation when no relationship is configured. No fallback shortlist is applied in this increment; a future fallback must be an explicit choice.
 
 Validate a shop with many products before adding category/attribute-based quiz candidates. Preserve fixed results for small catalogs. Automatic scoring, purchase-history personalization and AI ranking remain outside this plan.
 

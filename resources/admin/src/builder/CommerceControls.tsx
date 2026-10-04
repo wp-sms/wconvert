@@ -1,37 +1,38 @@
 import { Input } from '../components/ui/input';
 import { Button } from '../components/ui/button';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 import apiFetch from '@wordpress/api-fetch';
 import { __, sprintf } from '@wordpress/i18n';
 
 type Hit = { id: number; name: string };
 type Results = { items: Hit[]; currency: string; decimals: number };
-export function CommercePicker({ value, onChange, categories = false, max = 20 }: { value: unknown; onChange(value: number[]): void; categories?: boolean; max?: number }) {
+export function CommercePicker({ value, onChange, categories = false, max = 20, recommendations = false, itemControls }: { value: unknown; onChange(value: number[]): void; categories?: boolean; max?: number; recommendations?: boolean; itemControls?: (id: number, name: string) => ReactNode }) {
   const ids = Array.isArray(value) ? value.filter((id): id is number => typeof id === 'number') : [];
   const [query, setQuery] = useState(''); const [hits, setHits] = useState<Hit[]>([]); const [names, setNames] = useState<Hit[]>([]); const [error, setError] = useState('');
   const key = ids.join(',');
   useEffect(() => {
     if (!key) return;
     const controller = new AbortController();
-    void apiFetch<Results>({ path: `/wconvert/v1/commerce/objects?kind=${categories ? 'category' : max === 6 ? 'recommendation' : 'product'}&ids=${key}`, signal: controller.signal })
+    void apiFetch<Results>({ path: `/wconvert/v1/commerce/objects?kind=${categories ? 'category' : recommendations ? 'recommendation' : 'product'}&ids=${key}`, signal: controller.signal })
       .then(result => setNames(result.items)).catch(() => {});
     return () => controller.abort();
-  }, [key, categories, max]);
+  }, [key, categories, recommendations]);
   useEffect(() => {
     const controller = new AbortController();
     const timer = setTimeout(() => {
       if (!query.trim()) { setHits([]); return; }
-      void apiFetch<Results>({ path: `/wconvert/v1/commerce/objects?kind=${categories ? 'category' : max === 6 ? 'recommendation' : 'product'}&search=${encodeURIComponent(query)}`, signal: controller.signal })
+      void apiFetch<Results>({ path: `/wconvert/v1/commerce/objects?kind=${categories ? 'category' : recommendations ? 'recommendation' : 'product'}&search=${encodeURIComponent(query)}`, signal: controller.signal })
         .then(result => { setHits(result.items); setError(''); })
         .catch(() => { if (!controller.signal.aborted) setError(__('Could not search the store. Try again.', 'wconvert')); });
     }, 250);
     return () => { clearTimeout(timer); controller.abort(); };
-  }, [query, categories, max]);
+  }, [query, categories, recommendations]);
   return <div className="space-y-3">
-    <label>{categories ? __('Find categories', 'wconvert') : max === 6 ? __('Find products', 'wconvert') : __('Find products or variations', 'wconvert')}<Input value={query} onChange={event => setQuery(event.target.value)} /></label>
+    <label>{categories ? __('Find categories', 'wconvert') : recommendations ? __('Find products', 'wconvert') : __('Find products or variations', 'wconvert')}<Input value={query} onChange={event => setQuery(event.target.value)} /></label>
     {error && <p role="alert">{error}</p>}
     <ol className="space-y-2">{ids.map((id, i) => <li className="flex flex-wrap items-center gap-2" key={id}>{[...names, ...hits].find(hit => hit.id === id)?.name ?? `#${id}`}
-      {max === 6 && <Button variant="outline" size="sm" type="button" disabled={i === 0} onClick={() => { const next = [...ids]; [next[i - 1], next[i]] = [next[i], next[i - 1]]; onChange(next); }}>{__('Move earlier', 'wconvert')}</Button>}
+      {itemControls?.(id, [...names, ...hits].find(hit => hit.id === id)?.name ?? `#${id}`)}
+      {recommendations && <Button variant="outline" size="sm" type="button" disabled={i === 0} onClick={() => { const next = [...ids]; [next[i - 1], next[i]] = [next[i], next[i - 1]]; onChange(next); }}>{__('Move earlier', 'wconvert')}</Button>}
       <Button variant="outline" size="sm" type="button" onClick={() => onChange(ids.filter(each => each !== id))}>{__('Remove', 'wconvert')}</Button></li>)}</ol>
     <ul className="space-y-2">{hits.filter(hit => !ids.includes(hit.id)).map(hit => <li className="flex items-center justify-between gap-2" key={hit.id}><span>{hit.name}</span> <Button aria-label={sprintf(__('Add %s', 'wconvert'), hit.name)} variant="outline" size="sm" type="button" disabled={ids.length >= max} onClick={() => onChange([...ids, hit.id])}>{__('Add', 'wconvert')}</Button></li>)}</ul>
   </div>;

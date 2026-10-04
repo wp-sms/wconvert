@@ -54,7 +54,7 @@ final class CaptureContract
         if (CommerceSupport::used($tree)) {
             if (($tree['v'] ?? null) === 3 || !CommerceSupport::active()) return 'commerce_products';
             foreach ($tree['steps'] as $screen) foreach (CaptureJourney::nodes($screen['content'] ?? []) as $node) {
-                if (($node['type'] ?? '') === 'products' && empty($node['product_ids'])) return 'commerce_products';
+                if (($node['type'] ?? '') === 'products' && ($node['source'] ?? 'selected') !== 'cross_sells' && empty($node['product_ids'])) return 'commerce_products';
             }
         }
         if (($tree['v'] ?? null) === 3) {

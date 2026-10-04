@@ -29,6 +29,7 @@ export interface GoalEntry {
   label: string;
   description: string;
   outcome: OutcomeContract;
+  cart_required?: boolean;
   audience_requirement?: string | null;
   headline_kind: string;
   headline_label: string;

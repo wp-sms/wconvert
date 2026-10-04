@@ -1,5 +1,6 @@
 import { __, sprintf } from '@wordpress/i18n';
 import { lazy, Suspense, useEffect, useState, type ReactNode } from 'react';
+import type { Template } from '@renderer/types';
 import type { ConvertingAct } from '../structure/catalogue';
 import type { DisplayPlan } from '@loader/display-rules';
 import { FlaskConical } from 'lucide-react';
@@ -18,6 +19,8 @@ const SampleVisit = lazy(() => import('./SampleVisit'));
 export type { DisplayRulesValue } from './summaries';
 export interface DisplayRulesProps {
   readonly compact?: boolean;
+  readonly template?: Template;
+  readonly cartRequired?: boolean;
   readonly vocabulary: RuleVocabulary;
   readonly value: DisplayRulesValue;
   readonly overlay: boolean;
@@ -32,7 +35,7 @@ export interface DisplayRulesProps {
 }
 
 /** One canonical draft; navigation and the summary are views of it. */
-export function DisplayRules({ vocabulary, value, overlay, act = 'submit', onChange, reveal, placement, audienceRequirement, initialSection, onSectionChange, reopenEnabled, compact = false }: DisplayRulesProps) {
+export function DisplayRules({ vocabulary, value, overlay, act = 'submit', onChange, reveal, placement, audienceRequirement, initialSection, onSectionChange, reopenEnabled, compact = false, template, cartRequired = false }: DisplayRulesProps) {
   const summaries = summarise(value, vocabulary, overlay, act);
   const [active, setActive] = useState(() => initialSection ?? summaries.find(section => section.attention)?.id ?? 'when');
   const [testing, setTesting] = useState(false);
@@ -91,7 +94,7 @@ export function DisplayRules({ vocabulary, value, overlay, act = 'submit', onCha
       </aside>
     </div>
 
-    {testing && <Suspense fallback={<p role="status">{__('Loading sample tester…', 'wconvert')}</p>}><SampleVisit value={value} vocabulary={vocabulary} onClose={() => setTesting(false)} /></Suspense>}
+    {testing && <Suspense fallback={<p role="status">{__('Loading sample tester…', 'wconvert')}</p>}><SampleVisit template={template} cartRequired={cartRequired} value={value} vocabulary={vocabulary} onClose={() => setTesting(false)} /></Suspense>}
   </div>;
 }
 

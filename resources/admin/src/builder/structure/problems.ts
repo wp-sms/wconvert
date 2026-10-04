@@ -181,7 +181,7 @@ export function problemsIn(
   return [
     ...nodesOf(template.tree).filter(node => node.type === 'products').flatMap(node => {
       const block = nodeAt(template.tree, node.path);
-      return block?.type === 'products' && !('product_ids' in block && Array.isArray(block.product_ids) && block.product_ids.length) ? [{ said: __('Choose compatible products for this recommendation block.', 'wconvert'), path: node.path, blocksPublish: true }] : [];
+      return block?.type === 'products' && !('source' in block && block.source === 'cross_sells') && !('product_ids' in block && Array.isArray(block.product_ids) && block.product_ids.length) ? [{ said: __('Choose compatible products for this recommendation block.', 'wconvert'), path: node.path, blocksPublish: true }] : [];
     }),
     ...whatCannotConvert(template),
     ...whatCapturesNothing(template),
