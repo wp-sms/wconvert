@@ -39,6 +39,7 @@ final class GoalRegistry
             'label' => $goal->label(),
             'description' => $goal->description(),
             'outcome' => $goal->outcome()->toArray(),
+            'cart_required' => $goal === Goal::RecoverCart,
             'audience_requirement' => $goal === Goal::RecoverCart
                 ? __('Required for this Goal: the visitor’s cart contains items. Every audience group must also meet this requirement.', 'wconvert') : null,
             'headline_kind' => $goal->headlineKind()->value,

@@ -44,6 +44,10 @@ The existing hashed-IP transient counters expire after 60 seconds.
 
 ## Selected product suggestions
 
+Amended by [ADR 0118](0118-sample-baskets-share-live-commerce-evaluation.md): the
+block now also accepts configured WooCommerce cross-sells, with bounded stable
+selection and the same card eligibility checks. Selected products remain the default.
+
 One products block belongs to one click-only content screen. It cannot coexist
 with a form, unrelated link button, Results screen or graph. Merchants choose at
 most six parent/simple products in priority order; up to three currently visible,
@@ -77,7 +81,8 @@ lower editions. The module is packaged with its owning cart-recovery directory.
 The [verification record](../testing/cart-intelligence.md) records actual unit,
 real-site, browser and visual checks. Merchant recruitment remains a separate,
 unperformed research task; technical checks do not establish usability or uplift.
-Explicit sample-basket simulation also remains unfinished; Sample Visit currently
-uses merchant-supplied rule assumptions rather than evaluating a sample basket.
-Shipping progress, Woo cross-sell sourcing, direct add-to-cart and order attribution
+Amended by [ADR 0118](0118-sample-baskets-share-live-commerce-evaluation.md): Sample
+Visit now evaluates explicit sample baskets using the live cart predicates and
+recommendation selection. Other visitor/page conditions remain assumptions.
+Shipping progress, direct add-to-cart and order attribution
 remain later increments, without controls or claims in this release.

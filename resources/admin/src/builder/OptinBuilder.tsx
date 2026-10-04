@@ -693,7 +693,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
     setRevealSection({ id: 'placement', focus: 'wconvert-section-placement-trigger' });
   };
 
-  const displayEditor = (compactPanel = false) => <DisplayRules compact={compactPanel}
+  const displayEditor = (compactPanel = false) => <DisplayRules compact={compactPanel} template={template} cartRequired={entryOfGoal?.cart_required}
               reopenEnabled={canPreviewReopen}
               audienceRequirement={entryOfGoal?.audience_requirement}
               initialSection={displaySection}

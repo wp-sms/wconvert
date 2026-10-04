@@ -9,9 +9,14 @@ import { audienceMatches, audienceRules, groupMatches, openingMatches, openingRu
 import { phraseOf } from './sentence';
 import type { Rule, RuleVocabulary } from '../api';
 import type { DisplayRulesValue } from './summaries';
+import type { Template, ProductsNode } from '@renderer/types';
+import { nodesOf, nodeAt } from '../structure/tree';
+import { commerceSupported } from '../../settings';
+import { SampleBasket, emptyBasket, useBasketPreview } from './SampleBasket';
 
 /** Hypothetical facts only. This module has no storage, listeners, beacons or capture imports. */
-export default function SampleVisit({ value, vocabulary, onClose }: { value: DisplayRulesValue; vocabulary: RuleVocabulary; onClose: () => void }) {
+export default function SampleVisit({ value, vocabulary, onClose, template, cartRequired = false }: { value: DisplayRulesValue; vocabulary: RuleVocabulary; onClose: () => void; template?: Template; cartRequired?: boolean }) {
+  const [basket, setBasket] = useState(emptyBasket);
   const [answers, setAnswers] = useState<Record<string, Answer>>({});
   const [adBlocking, setAdBlocking] = useState<'detected' | 'not_detected' | 'unknown' | 'pending'>('unknown');
   const [seconds, setSeconds] = useState(0);
@@ -27,24 +32,35 @@ export default function SampleVisit({ value, vocabulary, onClose }: { value: Dis
   const [gesture, setGesture] = useState<string | null>(null);
   const change = <T,>(setter: (value: T) => void, next: T) => { setGesture(null); setter(next); };
   const reset = () => {
-    setAnswers({}); setAdBlocking('unknown'); setSeconds(0); setScroll(0); setIdle(0); setGesture(null);
+    setBasket(emptyBasket()); setAnswers({}); setAdBlocking('unknown'); setSeconds(0); setScroll(0); setIdle(0); setGesture(null);
     setPage(true); setLimits(true); setPacing(true); setCompletion(true); setGoal(true);
   };
   const plan = value.display_rules;
+  const rows = plan ? [...audienceRules(plan), ...openingRules(plan)] : [];
+  const productPath = template ? nodesOf(template.tree).find(node => node.type === 'products' && !(nodeAt(template.tree, node.path) as { hidden?: boolean })?.hidden)?.path : undefined;
+  const products = productPath && template ? nodeAt(template.tree, productPath) as ProductsNode : undefined;
+  const cartRules = rows.filter(rule => rule.type.startsWith('cart_'));
+  let requiredCartId = 'sample-required-cart';
+  while (cartRules.some(rule => rule.id === requiredCartId)) requiredCartId += '-';
+  if (cartRequired) cartRules.push({ id: requiredCartId, type: 'cart_has_items' });
+  const usesBasket = cartRules.length > 0 || !!products;
+  const basketEnabled = usesBasket && commerceSupported();
+  const preview = useBasketPreview(basketEnabled, basket, cartRules, products);
+  const basketAllowed = !usesBasket || (basketEnabled && !!preview.result && preview.result.eligible && (!cartRequired || preview.result.rules[requiredCartId] === true));
   const types = [...vocabulary.targeting, ...vocabulary.conditions, ...vocabulary.triggers];
   const isGesture = (type: string) => ['exit_intent', 'scroll_up', 'click_element'].includes(type);
   const read = (rule: { readonly [key: string]: unknown }): Answer => rule.type === 'time_on_page' ? seconds >= Number(rule.seconds)
     : rule.type === 'scroll_depth' ? scroll >= Number(rule.percent) : rule.type === 'inactivity' ? Math.min(idle, seconds) >= Number(rule.seconds)
       : isGesture(String(rule.type)) ? gesture === String(rule.id)
+        : String(rule.type).startsWith('cart_') && basketEnabled ? preview.result?.state === 'blocked' ? 'blocked' : preview.result?.rules[String(rule.id)] ?? false
         : rule.type === 'ad_blocking' ? (adBlocking === 'detected' || adBlocking === 'not_detected') && adBlocking === rule.value : answers[String(rule.id)] ?? false;
-  const rows = plan ? [...audienceRules(plan), ...openingRules(plan)] : [];
   const automaticValue = (type: string) => ['time_on_page', 'scroll_depth', 'inactivity'].includes(type);
   const audience = plan ? audienceMatches(plan.audience, read) : false;
   const opening = plan ? openingMatches(plan.opening, read, seconds) : false;
   const automaticAllowed = plan?.opening.mode === 'click' || pacing;
-  const passes = page && limits && completion && automaticAllowed && goal && audience === true && opening === true;
+  const passes = basketAllowed && page && limits && completion && automaticAllowed && goal && audience === true && opening === true;
   const timed = rows.filter(rule => automaticValue(rule.type));
-  const facts = rows.filter(rule => rule.type !== 'ad_blocking' && !automaticValue(rule.type) && !isGesture(rule.type));
+  const facts = rows.filter(rule => !(basketEnabled && rule.type.startsWith('cart_')) && rule.type !== 'ad_blocking' && !automaticValue(rule.type) && !isGesture(rule.type));
   const hasAdBlocking = rows.some(rule => rule.type === 'ad_blocking');
   const gestures = rows.filter(rule => isGesture(rule.type));
   const minimum = plan?.opening.mode === 'automatic' ? plan.opening.minimum_seconds ?? 0 : 0;
@@ -52,6 +68,7 @@ export default function SampleVisit({ value, vocabulary, onClose }: { value: Dis
   const changedAssumptions = [page, limits, completion, pacing, goal].filter(allowed => !allowed).length;
   const ResultIcon = passes ? CheckCircle2 : CircleDashed;
   const reason = !plan ? __('Set up your display rules before testing a visit.', 'wconvert')
+    : !basketAllowed ? !basketEnabled ? __('Cart testing requires WConvert Pro and WooCommerce.', 'wconvert') : preview.error ? __('The sample basket could not be checked.', 'wconvert') : !preview.result ? __('Checking the sample basket…', 'wconvert') : __('This basket does not meet the campaign’s cart requirements or has no eligible recommendations.', 'wconvert')
     : !page ? __('This page is excluded from the campaign.', 'wconvert')
       : !goal ? __('A required goal condition is not met.', 'wconvert')
         : !limits ? __('The schedule or page conditions prevent opening.', 'wconvert')
@@ -72,6 +89,10 @@ export default function SampleVisit({ value, vocabulary, onClose }: { value: Dis
         <div><strong>{passes ? __('Would show', 'wconvert') : __('Would not show', 'wconvert')}</strong><p>{reason}</p></div>
       </div>
       <div className="wconvert-sample-body">
+        {basketEnabled && <><SampleBasket value={basket} onChange={next => change(setBasket, next)} result={preview.result} error={preview.error} products={products} legacyTotal={cartRules.some(rule => rule.type === 'cart_value_min')} />
+          {!!cartRules.length && <ul className="wconvert-sample-checks" aria-label={__('Cart conditions', 'wconvert')}>{cartRules.map(rule => <li key={String(rule.id)}><span>{phraseOf(rule as Rule, types).text}</span><span>{read(rule) === true ? __('Matches', 'wconvert') : read(rule) === 'blocked' ? __('Needs consent', 'wconvert') : __('Does not match', 'wconvert')}</span></li>)}</ul>}
+        </>}
+
         {(showTime || timed.length > 0 || gestures.length > 0) && <section aria-labelledby="wconvert-sample-activity">
           <h3 id="wconvert-sample-activity">{__('Visitor activity', 'wconvert')}</h3>
           {(showTime || timed.length > 0) && <>
@@ -90,7 +111,7 @@ export default function SampleVisit({ value, vocabulary, onClose }: { value: Dis
           {plan?.opening.mode === 'automatic' && plan.opening.rules.length > 1 && <p className="wconvert-sample-help">{plan.opening.match === 'all' ? __('All opening rules must match.', 'wconvert') : __('Any one opening rule can match.', 'wconvert')}</p>}
           {gestures.length > 0 && <div className="wconvert-sample-events">
             <p className="wconvert-sample-help">{__('Try an action with these values. If you change a value, try the action again.', 'wconvert')}</p>
-            <div className="wconvert-sample-event-buttons">{gestures.map(rule => <Button variant="outline" key={String(rule.id)} onClick={() => { setIdle(0); setGesture(String(rule.id)); }}>
+            <div className="wconvert-sample-event-buttons">{gestures.map(rule => <Button variant="outline" key={String(rule.id)} disabled={usesBasket && (!preview.result || preview.error)} onClick={() => { setIdle(0); setGesture(String(rule.id)); }}>
               {rule.type === 'exit_intent' ? __('Simulate exit intent', 'wconvert') : rule.type === 'scroll_up' ? __('Simulate scroll back up', 'wconvert') : `${__('Simulate click', 'wconvert')}: ${String(rule.selector ?? '')}`}
             </Button>)}</div>
           </div>}

@@ -609,6 +609,7 @@
       "content": [],
       "copy": [],
       "params": [
+        "source",
         "product_ids",
         "exclude_cart",
         "tokens",
@@ -622,7 +623,16 @@
         "accent-fg",
         "radius",
         "align"
-      ]
+      ],
+      "choices": {
+        "source": [
+          "selected",
+          "cross_sells"
+        ]
+      },
+      "defaults": {
+        "source": "selected"
+      }
     }
   },
   "identity": "id",

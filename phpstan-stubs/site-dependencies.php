@@ -81,6 +81,9 @@ namespace {
         class WC_Product {
             public function get_status(): string { return ''; }
             public function get_name(): string { return ''; }
+            public function get_parent_id(): int { return 0; }
+            /** @return list<int> */
+            public function get_cross_sell_ids(): array { return []; }
             public function get_permalink(): string { return ''; }
             public function get_price_html(): string { return ''; }
             public function get_image_id(): int { return 0; }

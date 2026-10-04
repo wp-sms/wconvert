@@ -27,7 +27,7 @@ export function outcomeDesignIssue(outcome: OutcomeContract, template: Template 
 }
 
 function hasLink(node: TemplateNode | undefined): boolean {
-  if (node?.type === 'products' && 'product_ids' in node) return Array.isArray(node.product_ids) && node.product_ids.length > 0;
+  if (node?.type === 'products' && 'product_ids' in node) return node.source === 'cross_sells' || Array.isArray(node.product_ids) && node.product_ids.length > 0;
   if (!node || ('hidden' in node && node.hidden === true)) return false;
   if (node.type === 'button' && 'action' in node && node.action === 'link') {
     return 'href' in node && typeof node.href === 'string' && node.href.trim() !== '' && node.href.trim() !== '#';

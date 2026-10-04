@@ -60,6 +60,7 @@ final class DesignPackage
         }
         $wrapped = \WConvert\Template\TemplateTree::rewrittenIn(['template' => $design], static function (array $node) use (&$notes): array {
             if (($node['type'] ?? '') === 'products') {
+                if (($node['source'] ?? 'selected') === 'cross_sells') $notes[] = __('Recommendations use cross-sells configured in WooCommerce on the receiving site.', 'wconvert');
                 if (!empty($node['product_ids'])) $notes[] = __('Choose products on the receiving site.', 'wconvert');
                 $node['product_ids'] = [];
                 unset($node['context_key']);

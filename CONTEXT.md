@@ -794,6 +794,12 @@ must hold at the instant the opening requirements are met. They are not
 allowed to rely on expired facts: an Optin whose cart emptied while its ten
 second timer ran does not show. Pro product/category/quantity/amount predicates use a prepared, expiring WooCommerce session projection and fail closed while it is unavailable. A selected-products block offers merchant-chosen catalog links as one click-only act. See [ADR 0117](docs/adr/0117-cart-intelligence-uses-a-bounded-session-projection.md).
 
+The cart-intelligence follow-up supports configured WooCommerce cross-sells and
+a stateless sample-basket preview in the existing Sample Visit dialog. The preview
+uses live catalog facts and shared cart predicates without a real cart mutation
+or analytics event. See [ADR 0118](docs/adr/0118-sample-baskets-share-live-commerce-evaluation.md).
+
+
 > **The distinction is load-bearing and fixed per rule.** A rule type is a
 > Trigger or a Condition, never both — `scroll_depth` means "when they reach
 > half way", and there is no second spelling meaning "if they already had".
