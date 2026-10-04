@@ -1,0 +1,31 @@
+import { afterEach, expect, it, vi } from 'vitest';
+import { cleanup, render, screen } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
+import apiFetch from '@wordpress/api-fetch';
+import Revenue from '../../modules/analytics/admin/Revenue';
+vi.mock('@wordpress/api-fetch', () => ({ default: vi.fn() }));
+afterEach(() => { cleanup(); vi.clearAllMocks(); });
+const period = { days: 7, from: '2026-09-24', to: '2026-09-30' };
+const report = { ...period, guide_url: '/guide', available: true, consent_ready: true, site_matches: true, settings: { enabled: true, since: '2026-09-01T00:00:00Z' }, complete: true, eligible_orders: 3, linked_orders: 1, currencies: [{ currency: 'USD', orders: 1, amount: 10, unallocated_refunds: 0 }], orders: [{ id: 42, campaign: 'offer', paid: '2026-09-25', status: 'Completed', refunded: false, amount: 10, currency: 'USD', url: '/order/42' }] };
+it('retains accepted totals, dates and campaign links after a failed period change', async () => {
+  vi.mocked(apiFetch).mockResolvedValueOnce(report);
+  const view = render(<Revenue period={period} campaignNames={{ offer: 'Autumn offer' }} />);
+  await screen.findByRole('table', { name: 'Linked product revenue by currency' });
+  vi.mocked(apiFetch).mockRejectedValueOnce(new Error('offline'));
+  view.rerender(<Revenue period={{ ...period, days: 30, from: '2026-09-01' }} campaignNames={{ offer: 'Autumn offer' }} />);
+  await screen.findByRole('alert');
+  expect(screen.getByRole('cell', { name: 'USD' })).toHaveAttribute('data-label', 'Currency');
+  await userEvent.click(screen.getByText('View linked orders'));
+  const link = screen.getByRole('link', { name: 'Autumn offer' });
+  expect(link.getAttribute('href')).toContain('days=7');
+  expect(screen.getByText(/Report: Sep 24/)).toBeInTheDocument();
+});
+it('keeps a confirmed tracking setting when the following report refresh fails', async () => {
+  vi.mocked(apiFetch).mockResolvedValueOnce(report).mockResolvedValueOnce({ settings: { ...report.settings, enabled: false } }).mockRejectedValueOnce(new Error('offline'));
+  render(<Revenue period={period} />);
+  await userEvent.click(await screen.findByRole('button', { name: 'Turn off tracking' }));
+  await screen.findByRole('alert');
+  expect(screen.getByText('Tracking is off')).toBeInTheDocument();
+  expect(screen.getByRole('button', { name: 'Turn on tracking' })).toBeEnabled();
+  expect(screen.getByRole('table', { name: 'Linked product revenue by currency' })).toBeInTheDocument();
+});

@@ -1,3 +1,4 @@
+import { reportExtensions } from '@/stats/extensions';
 import { registerProductPreview } from '@/productPreview';
 import { analyticsIntegration } from '@/analyticsIntegration';
 import { lazy, StrictMode } from 'react';
@@ -13,6 +14,7 @@ import { registerPremiumJourneyRenderer } from '../../../modules/journeys/loader
 
 registerPremiumJourneyRenderer();
 registerProductPreview();
+reportExtensions.commerce = lazy(() => import('../../../modules/analytics/admin/Revenue'));
 analyticsIntegration.settings = lazy(() => import('../../../modules/analytics/admin/Settings'));
 analyticsIntegration.campaign = lazy(() => import('../../../modules/analytics/admin/Campaign'));
 

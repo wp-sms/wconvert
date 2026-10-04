@@ -197,6 +197,16 @@ final class ProServiceProvider implements ServiceProvider
             ))->hooks();
         }
 
+        if (class_exists(\WConvert\Pro\Module\Analytics\RevenueHooks::class)) {
+            (new \WConvert\Pro\Module\Analytics\RevenueHooks(
+                $container->resolve(\WConvert\Storage\OptionStore::class),
+                $container->resolve(PublishedSet::class),
+                $container->resolve(\WConvert\Lead\LeadRepository::class),
+                $container->resolve(\WConvert\Rest\RateLimit::class),
+                $container->resolve(\WConvert\Rules\Degradation::class),
+            ))->hooks();
+        }
+
         if (class_exists(\WConvert\Pro\Module\Destinations\MailchimpDestinationType::class)) {
             $registry = $container->resolve(\WConvert\Destination\DestinationRegistry::class);
             $registry->register(new \WConvert\Pro\Module\Destinations\MailchimpDestinationType());

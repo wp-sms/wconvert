@@ -36,6 +36,7 @@ final class DataMapTest extends TestCase
             'retention_days' => null,
             'destinations' => [],
             'browser' => [
+                'additional' => [],
                 'key' => 'wcv1',
                 'display_session' => 'wcv_display_session_v1',
                 'local_storage_expiry_days' => null,

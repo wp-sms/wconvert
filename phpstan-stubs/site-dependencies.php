@@ -53,6 +53,7 @@ namespace {
         class WooCommerce
         {
             public ?WC_Cart $cart = null;
+            public ?WC_Session_Handler $session = null;
         }
     }
 
@@ -72,6 +73,50 @@ namespace {
                 return 0.0;
             }
         }
+    }
+
+    if (!class_exists('WC_Session_Handler')) {
+        class WC_Session_Handler {
+            public function set_customer_session_cookie(bool $set): void {}
+            public function set(string $key, mixed $value): void {}
+            public function get(string $key): mixed { return null; }
+            public function __unset(string $key): void {}
+            public function save_data(): void {}
+        }
+    }
+    if (!class_exists('WC_Order')) {
+        class WC_Order {
+            public function get_id(): int { return 0; }
+            public function get_meta(string $key): mixed { return null; }
+            public function update_meta_data(string $key, mixed $value): void {}
+            public function delete_meta_data(string $key): void {}
+            public function save(): int { return 0; }
+            public function get_date_paid(): ?\DateTime { return null; }
+            public function get_date_created(): ?\DateTime { return null; }
+            public function get_currency(): string { return ''; }
+            public function get_status(): string { return ''; }
+            public function get_edit_order_url(): string { return ''; }
+            /** @param string|list<string> $types
+             * @return array<int, WC_Order_Item> */
+            public function get_items(string|array $types = 'line_item'): array { return []; }
+            /** @return list<WC_Order_Refund> */
+            public function get_refunds(): array { return []; }
+        }
+        class WC_Order_Refund extends WC_Order { public function get_amount(): string { return ''; } }
+        class WC_Order_Item {
+            public function get_type(): string { return ''; }
+            public function get_total(): string { return ''; }
+            public function get_total_tax(): string { return ''; }
+        }
+    }
+    if (!function_exists('wc_get_orders')) {
+        /** @param array<string, mixed> $args
+         * @return list<WC_Order> */
+        function wc_get_orders(array $args): array { return []; }
+        /** @return list<string> */
+        function wc_get_is_paid_statuses(): array { return []; }
+        function wc_load_cart(): void {}
+        function wc_get_order_status_name(string $status): string { return $status; }
     }
 
     if (!class_exists('WC_AJAX')) {

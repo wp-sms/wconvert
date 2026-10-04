@@ -2,6 +2,8 @@
 
 Date: 2026-10-03
 
+**Extended by [0119](0119-actionable-reports-use-local-evidence-and-order-provenance.md):** campaign sales uses an independent optional asset and consented order provenance. Campaign-level analytics exclusion applies to both optional integrations; native counters remain independent.
+
 ## Decision
 
 The managed analytics integration ships in every paid tier, disabled by default.

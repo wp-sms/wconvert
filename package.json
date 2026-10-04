@@ -7,7 +7,7 @@
     "dev": "vite build -c vite.config.admin.mjs --watch",
     "build": "npm run build:free && npm run build:pro",
     "build:free": "npm run build:admin && npm run build:block && npm run build:loader && npm run build:phone && npm run build:protection && npm run build:inspector",
-    "build:pro": "npm run build:admin:pro && npm run build:block:pro && npm run build:loader:pro && npm run build:inspector:pro && npm run build:analytics && npm run build:commerce",
+    "build:pro": "npm run build:admin:pro && npm run build:block:pro && npm run build:loader:pro && npm run build:inspector:pro && npm run build:analytics && npm run build:commerce && npm run build:revenue",
     "build:protection": "vite build -c vite.config.protection.mjs",
     "build:phone": "vite build -c vite.config.phone.mjs",
     "build:admin": "vite build -c vite.config.admin.mjs",
@@ -24,7 +24,7 @@
     "build:inspector:pro:basic": "vite build -c vite.config.inspector-pro-basic.mjs",
     "build:inspector:pro:pro": "vite build -c vite.config.inspector-pro-pro.mjs",
     "build:inspector:pro:elite": "vite build -c vite.config.inspector-pro-elite.mjs",
-    "check:loader": "npm run build:loader && npm run build:loader:pro && npm run build:phone && node bin/check-loader.mjs && node bin/check-phone.mjs && npm run build:analytics && node bin/check-analytics.mjs && npm run build:commerce && node bin/check-commerce.mjs",
+    "check:loader": "npm run build:loader && npm run build:loader:pro && npm run build:phone && node bin/check-loader.mjs && node bin/check-phone.mjs && npm run build:analytics && node bin/check-analytics.mjs && npm run build:commerce && node bin/check-commerce.mjs && npm run build:revenue && node bin/check-revenue.mjs",
     "test": "vitest run",
     "test:watch": "vitest",
     "lint": "eslint . --max-warnings=0",
@@ -53,7 +53,8 @@
     "build:analytics": "vite build -c vite.config.analytics.mjs",
     "test:visual:analytics": "playwright test -c tools/visual-tests/analytics.config.mjs",
     "build:commerce": "vite build -c vite.config.commerce.mjs",
-    "test:visual:commerce": "playwright test -c tools/visual-tests/commerce.config.mjs"
+    "test:visual:commerce": "playwright test -c tools/visual-tests/commerce.config.mjs",
+    "build:revenue": "vite build -c vite.config.revenue.mjs"
   },
   "dependencies": {
     "@atlaskit/pragmatic-drag-and-drop": "^3.0.0",

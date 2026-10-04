@@ -38,7 +38,7 @@ final class DataMap
      *   analytics_integration: array{configured: bool, route: string, consent: string}|null,
      *   retention_days: int|null,
      *   destinations: list<array{id: string, label: string, type: string, type_label: string, fields: list<string>|null}>,
-     *   browser: array{key: string, local_storage_expiry_days: null, cookie_fallback: bool, cookie_fallback_days: int, contains_contact_details: bool, contains_visitor_identifier: bool, stores_ab_assignment: bool, reopen_session: string|null, content_unlock: string|null, cart_recovery: array{key: string, expires_with_cart_session: bool, contains_item_count: bool, contains_cart_total: bool, contains_contact_details: bool}|null},
+     *   browser: array{additional: list<string>, key: string, local_storage_expiry_days: null, cookie_fallback: bool, cookie_fallback_days: int, contains_contact_details: bool, contains_visitor_identifier: bool, stores_ab_assignment: bool, reopen_session: string|null, content_unlock: string|null, cart_recovery: array{key: string, expires_with_cart_session: bool, contains_item_count: bool, contains_cart_total: bool, contains_contact_details: bool}|null},
      *   beacon_rate_limit_seconds: int,
      *   protection_provider: string,
      *   resource_send_limit_seconds: int,
@@ -60,7 +60,7 @@ final class DataMap
     }
 
     /**
-     * @return array{key: string, local_storage_expiry_days: null, cookie_fallback: bool, cookie_fallback_days: int, contains_contact_details: bool, contains_visitor_identifier: bool, stores_ab_assignment: bool, reopen_session: string|null, content_unlock: string|null, cart_recovery: array{key: string, expires_with_cart_session: bool, contains_item_count: bool, contains_cart_total: bool, contains_contact_details: bool}|null}
+     * @return array{additional: list<string>, key: string, local_storage_expiry_days: null, cookie_fallback: bool, cookie_fallback_days: int, contains_contact_details: bool, contains_visitor_identifier: bool, stores_ab_assignment: bool, reopen_session: string|null, content_unlock: string|null, cart_recovery: array{key: string, expires_with_cart_session: bool, contains_item_count: bool, contains_cart_total: bool, contains_contact_details: bool}|null}
      */
     private function browserStorage(): array
     {
@@ -88,6 +88,7 @@ final class DataMap
         $cart = $filteredBrowser['cart_recovery'] ?? null;
 
         return [
+            'additional' => array_values(array_filter(is_array($filteredBrowser['additional'] ?? null) ? $filteredBrowser['additional'] : [], 'is_string')),
             'key' => 'wcv1',
             'display_session' => 'wcv_display_session_v1',
             'local_storage_expiry_days' => null,

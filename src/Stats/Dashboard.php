@@ -81,6 +81,7 @@ final class Dashboard
         $previous = $range->previous();
         $current['previous'] = self::of($previous, $this->stats->inRange($previous), $optins);
         $current['complete_days'] = true;
+        $current['insights'] = Insights::forReport($current);
         return $current;
     }
 
