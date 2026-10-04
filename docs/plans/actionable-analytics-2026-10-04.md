@@ -2,9 +2,9 @@
 
 Date: 4 October 2026
 
-Status: Proposed implementation plan. The user approved the direction of helping all users first, adding WooCommerce sales reporting next, and requiring the merchant to approve campaign changes. This document does not authorize implementation, new database schemas, a paid AI service, or changes to existing product contracts.
+Status: Proposed implementation plan. The user approved the direction of helping all users first, adding WooCommerce sales reporting next, and requiring the merchant to approve campaign changes. This document does not authorize implementation, new database schemas, or changes to existing product contracts.
 
-WConvert should help merchants understand results, choose a useful next step, and review the outcome. Build this into the existing Analytics screen. Establish reliable local insights first, add optional AI assistance over the same evidence, and connect campaigns to actual WooCommerce orders in the next release. Keep explanations short on screen and make the supporting evidence easy to inspect.
+WConvert should help merchants understand results, choose a useful next step, and review the outcome. Build this into the existing Analytics screen. Establish reliable local insights first and connect campaigns to actual WooCommerce orders in the next release. Recommendations use predefined rules and authored copy with actual report values. Keep explanations short on screen and make the supporting evidence easy to inspect.
 
 ## Decisions and recommendations
 
@@ -13,12 +13,14 @@ WConvert should help merchants understand results, choose a useful next step, an
 | Audience | All WConvert users first; WooCommerce sales next | User selected |
 | Autonomy | Recommend changes; merchant reviews and publishes | User selected |
 | Experience | Extend Analytics and existing campaign editing | Recommended |
-| Core insights | Local deterministic calculations, usable without AI or GA | Recommended |
-| AI | Optional explanation, scoped questions, and draft suggestions | User requested consideration; scope recommended here |
+| Core insights | Local deterministic calculations and authored recommendations, usable without GA | Recommended |
+| AI | Deferred to separate future work; no features or preparatory infrastructure in this plan | User directed |
 | Revenue | Last qualifying interaction within a defined session; actual WooCommerce orders | Recommended, not yet implemented |
-| Packaging | Core results and essential diagnostics in Free; advanced optimization, AI and revenue in Pro | Recommended; final entitlement mapping remains open |
+| Packaging | Core results and essential diagnostics in Free; advanced optimization and revenue in Pro | Recommended; final entitlement mapping remains open |
 | Storage | Reuse counters, configuration and order metadata; no new table or column in initial scope | Proposed constraint |
-| Release sequence | Reporting foundations, actionable insights, optional AI, WooCommerce revenue | Recommended; AI must not block local insights or commerce work |
+| Release sequence | Reporting foundations, actionable insights, journey insights, WooCommerce revenue | Recommended |
+
+AI is deferred at the user’s request. Do not add AI controls, generated summaries or copy, provider adapters, model configuration, prompts, AI storage, or AI-specific extension points as preparation. Revisit that work through a separate future plan.
 
 No automatic publication, automatic A/B winner selection, invented revenue, hidden external data transfer, or person-level tracking is introduced by this plan. This is a deliberate scope boundary, not a claim that those capabilities are technically impossible.
 
@@ -31,13 +33,13 @@ The priority questions are “What worked?”, “What needs attention?”, and 
 | Publisher | Grow an audience | Newsletter signup or resource request | Understand accepted submissions and find a relevant improvement |
 | Service business | Receive useful enquiries | Quote or consultation request | See requests and submitted interests without implying booked work |
 | Store | Connect offers to sales | Accessory link or welcome offer | Inspect attributed paid orders and reconcile their value |
-| Agency | Explain results to a client | Monthly campaign review | Export clearly scoped facts and review any AI summary before sharing |
+| Agency | Explain results to a client | Monthly campaign review | Export clearly scoped facts for client reporting |
 | Low-traffic site | Know whether to act | Eight submissions this month | See results without misleading winner badges or noisy alerts |
 | Advanced marketer | Investigate differences | Source, device, page and variation | Know which breakdowns are available and which require an external tool |
 
 These needs are product hypotheses supported by the codebase and market documentation, not completed customer interviews. ADR 0046 summarizes older review research emphasizing tracking correctness; the underlying review archive was not independently reanalyzed for this plan. Do not treat feature marketing as proof of willingness to pay.
 
-Validate with five representative merchants: publisher, service business, small store, agency and low-traffic site. Ask each to bring a real campaign, explain their last disappointing result, interpret a report, and choose a next action. Ask what they currently use to decide whether a lead is valuable. Do not lead with “Would you use AI?” Observe whether the proposed assistance solves their actual task.
+Validate with five representative merchants: publisher, service business, small store, agency and low-traffic site. Ask each to bring a real campaign, explain their last disappointing result, interpret a report, and choose a next action. Ask what they currently use to decide whether a lead is valuable. Observe whether the proposed reports and recommendations solve their actual task.
 
 ## Current implementation and gaps
 
@@ -54,7 +56,6 @@ Repository baseline inspected: `25f4ef9`. Code observations describe that baseli
 | External analytics | Optional existing GA/GTM/Plausible event routes | Keep provider-owned acquisition reporting separate from native counters |
 | Delivery health | Destination health and recent attempt evidence | Link actionable failures; never derive failed or pending Leads by subtracting totals |
 | Revenue | ADR 0046 defines order metadata and read-time amounts | Implement attribution capture, checkout binding and bounded order reports |
-| AI | No analytics AI implementation identified in inspected modules | Define provider seam, evidence contract, permissions, data controls and draft workflow |
 
 Source anchors: `src/Stats/Dashboard.php`, `src/Stats/StatsRepository.php`, `src/Stats/StatKind.php`, `src/Rest/JourneyStatsController.php`, `resources/admin/src/stats/`, `resources/admin/src/builder/JourneyReport.tsx`, `pro/modules/analytics/`, and `pro/modules/ab-testing/`.
 
@@ -77,7 +78,7 @@ The proposed distinction is evidence plus a relevant action within WordPress. Av
 
 ## Information architecture and visual design
 
-Use the existing Harbor frame, top navigation, light title area, white regions on mist, teal primary actions, shared typography and logical spacing. Follow `tools/design-system/GUIDELINES.md` and current ADRs; its older `BRIEF.md` contains superseded visual choices. Add no permanent sidebar, separate AI dashboard or new brand treatment.
+Use the existing Harbor frame, top navigation, light title area, white regions on mist, teal primary actions, shared typography and logical spacing. Follow `tools/design-system/GUIDELINES.md` and current ADRs; its older `BRIEF.md` contains superseded visual choices. Add no permanent sidebar or new brand treatment.
 
 Analytics remains the entry point. The first viewport answers what happened and offers one useful next step. Do not let insight cards displace the results that explain them.
 
@@ -115,15 +116,15 @@ Use short rows within one region rather than a grid of large, equally urgent car
 
 Preserve breadcrumbs, accepted dates and back navigation. Show outcome-specific totals, trend, scoped insights, then journey or variation detail where available. Use descriptive labels such as **Submissions**, **Offer clicks**, **Completed results**, and **Cart return clicks**. A quiz's captured submissions remain separate from its completion metric.
 
-Each insight shows a short title, one evidence sentence, an evidence category, one primary action, and **View evidence**. Evidence expands inline so the merchant can inspect dates, numerator, denominator, source and limits without leaving the report. It must be keyboard accessible and addressable from an AI answer.
+Each insight shows a short title, one evidence sentence, an evidence category, one primary action, and **View evidence**. Evidence expands inline so the merchant can inspect dates, numerator, denominator, source and limits without leaving the report. It must be keyboard accessible and linked to the exact report scope.
 
 Three evidence categories: **Observed** for arithmetic or known status, **Possible improvement** for a hypothesis, and **Limited data** for an interpretation withheld by the data gate. These are not confidence scores. Delivery health uses its actual timestamp and explicitly says it is current when displayed beside a historical report.
 
-### Review a suggestion
+### Act on a recommendation
 
-The action sequence is report → evidence → suggested change → draft review → existing publish flow. For an A/B-capable campaign, **Create variation** proposes one isolated change. Otherwise **Review draft** opens an editable proposal; ordinary reports and troubleshooting remain useful in Free.
+The action sequence is report → evidence → relevant inspector or editor → merchant edits → existing publish flow. Use predefined recommendations tied to known rules, such as “Review where this campaign appears” or “Consider testing a shorter form.” WConvert does not generate copy, draft patches or campaign changes.
 
-Show before/after text or configuration, the reason, and what needs human verification. Apply only selected changes to the draft. Preserve unsaved edits, provide Undo before save, and recheck the source revision before applying. A stale proposal says **Campaign changed. Review again.** Cancel has no campaign effect. Saving a draft never publishes it.
+For an A/B-capable campaign, **Create variation** opens the existing variation workflow and the merchant makes the chosen change. Otherwise **Edit campaign** opens the existing editor. Preserve unsaved edits, existing Undo behavior and publication checks. Recheck permissions and current campaign state when an action is used. Saving a draft never publishes it.
 
 ### Mobile and accessibility
 
@@ -147,27 +148,23 @@ Aim for titles of 3–7 words, supporting sentences under about 25 words and ver
 | First load failed | Could not load results | Try again. / Retry |
 | Refresh failed | Could not refresh | Showing the previous results. / Retry |
 | No prior denominator | No comparison available | The previous period has no recorded appearances. |
-| AI entry | Explain these results | Optional control, clearly identified as AI |
-| AI pending | Preparing explanation… | Cancel |
-| AI unavailable | AI is unavailable | Your reports are still available. / Try again |
-| Unsupported question | That data is not available | This report does not include traffic sources. |
-| Suggestion ready | Review suggestion | Changes stay in your draft until you publish. |
+| Recommendation action | Edit campaign | Changes stay in your draft until you publish. |
 | Revenue inactive | Track campaign sales | Link future orders to campaign interactions. / Set up tracking |
 | Revenue metric | Attributed revenue | Products after discounts and refunds. Excludes tax and shipping. |
 | Revenue qualification | Linked to campaign interactions | This does not measure extra sales caused by the campaign. |
 | Tracking limit | Some orders may be unlinked | Tracking can be unavailable or the purchase may happen in another session. |
 
-Avoid “Optimize now”, “AI knows why”, “Recovered revenue” for return clicks, “Lost customers” for screen arithmetic, “Confirmed subscribers” for captures, and “Winner” for the larger observed rate. Errors explain a problem and offer a relevant recovery step; preserve entered values. This follows [GOV.UK error guidance](https://design-system.service.gov.uk/components/error-message/).
+Avoid “Optimize now”, “Recovered revenue” for return clicks, “Lost customers” for screen arithmetic, “Confirmed subscribers” for captures, and “Winner” for the larger observed rate. Errors explain a problem and offer a relevant recovery step; preserve entered values. This follows [GOV.UK error guidance](https://design-system.service.gov.uk/components/error-message/).
 
 ## Measurement and insight contracts
 
 ### Shared report context
 
-Every report, insight, export and AI answer carries the same server-resolved context: campaign/family/Goal scope, exact current and previous date boundaries, complete-day flag, metric definitions, data source, evidence limitations and generation time. The site calendar resolves boundaries. Default to 30 complete days with the existing 7/30/90 choices. Preserve custom accepted ranges and the existing 366-day cap.
+Every report, insight and export carries the same server-resolved context: campaign/family/Goal scope, exact current and previous date boundaries, complete-day flag, metric definitions, data source, evidence limitations and generation time. The site calendar resolves boundaries. Default to 30 complete days with the existing 7/30/90 choices. Preserve custom accepted ranges and the existing 366-day cap.
 
-Expose an internal report fingerprint derived from this context and source facts. It identifies a calculation, not a visitor. Cancel or ignore stale requests when dates change. On a failed refresh, retain accepted dates with accepted values; never label old numbers with newly requested dates. AI output is tied to the accepted fingerprint and marked stale or removed after a successful report change.
+Expose an internal report fingerprint derived from this context and source facts. It identifies a calculation, not a visitor. Cancel or ignore stale requests when dates change. On a failed refresh, retain accepted dates with accepted values; never label old numbers with newly requested dates. Insight copy and action links stay tied to the accepted fingerprint and refresh together with the report.
 
-No global rate across incompatible outcomes. Rate = the declared result count divided by appearances for the same scope and period. A zero denominator is unavailable, not 0%. Show percentage-point changes explicitly when comparing rates: 3% to 2% is down 1 percentage point. A zero previous total gets absolute change, not infinite growth. Numbers, IDs and dates come from the server; generated prose cannot redefine them.
+No global rate across incompatible outcomes. Rate = the declared result count divided by appearances for the same scope and period. A zero denominator is unavailable, not 0%. Show percentage-point changes explicitly when comparing rates: 3% to 2% is down 1 percentage point. A zero previous total gets absolute change, not infinite growth. Numbers, IDs and dates come from the server; authored explanation templates cannot redefine them.
 
 Keep daily totals independent of retained Lead rows. Privacy deletion must not silently change historical capture counters. Interest-answer summaries are a separate view of retained submitted answers, can change after erasure/retention, and must disclose that scope.
 
@@ -195,57 +192,13 @@ Counts cannot establish that traffic quality, copy, form length or opening time 
 
 Use a screen activity report rather than a funnel graphic implying linked unique visitors. Show Shown, Completed, Skipped and Dismissed by revision and screen. Do not subtract these overlapping counts to create exact abandonment. A screen may be revisited, a branch skipped, or activity cross a day boundary. Show explanatory text near any descriptive progression ratio and withhold it where the denominator is invalid or the semantics are incompatible.
 
-Email and SMS signups can overlap within one Lead. Optional signup after a quiz does not create another quiz completion. Anonymous answers are not retained today, so an all-visitor answer distribution would need new collection scope. Start with summaries of retained submitted choices. Reuse capture-time labels, separate changed question definitions, and identify respondents rather than the site's audience. Do not send free-text Lead messages to AI in this plan.
+Email and SMS signups can overlap within one Lead. Optional signup after a quiz does not create another quiz completion. Anonymous answers are not retained today, so an all-visitor answer distribution would need new collection scope. Start with summaries of retained submitted choices. Reuse capture-time labels, separate changed question definitions, and identify respondents rather than the site's audience. Free-text Lead analysis is outside this plan.
 
 ### Evidence object
 
-Proposed internal fields: `rule_id`, `rule_version`, `report_fingerprint`, `scope`, `periods`, `facts`, `evidence_type`, `limitations`, `observed_at`, `eligible_actions` and `config_revision`. Facts have stable keys, units and source references. Eligible actions come from server-checked capabilities. Evidence categories are a closed set; the model cannot create a new one or upgrade a hypothesis to an observation.
+Proposed internal fields: `rule_id`, `rule_version`, `report_fingerprint`, `scope`, `periods`, `facts`, `evidence_type`, `limitations`, `observed_at`, `eligible_actions` and `config_revision`. Facts have stable keys, units and source references. Eligible actions come from server-checked capabilities. Evidence categories are a closed set determined by the rule evaluator; an explanation cannot upgrade a hypothesis to an observation.
 
 Compute cards on read. Per-user dismissal can use bounded WordPress user metadata keyed by rule, scope and fingerprint, expiring after seven days or reappearing when material evidence changes. This is proposed new metadata, not an existing feature. Avoid unlimited dismissal or insight histories. A full audit/experiment ledger is deferred and requires its own storage decision.
-
-## AI features and boundaries
-
-AI should help interpret and write; the local report service owns facts and arithmetic. Follow the broader principles of capability transparency and human control described in [Microsoft's agent design guidance](https://learn.microsoft.com/en-us/agents/design-guidelines/responsible-ai). These sources inform the design, not a claim of compliance or model reliability.
-
-| Feature | Input | Output | Release |
-| --- | --- | --- | --- |
-| Explain results | Selected aggregate report and eligible evidence | Brief explanation with links to facts | Optional AI first release |
-| Ask about this report | Scoped question plus allowlisted evidence | Supported answer, useful follow-up, or explicit unavailable answer | Optional AI first release, constrained topics |
-| Suggest a test | Evidence and explicitly selected campaign content | One hypothesis, one editable change, test goal | After explanation quality is verified |
-| Draft campaign copy | Merchant brief, selected current text and verified offer details | Short copy alternatives and before/after review | Shared future AI capability |
-| Draft client summary | Selected report facts | Editable summary with dates and limitations | Later; never automatically sent |
-
-Example answer: “Submissions fell from 60 to 30. Appearances also halved, while the rate stayed at 3%. Check where the campaign can appear.” Evidence links open the exact comparison. If asked why Google traffic fell, respond that the local report lacks source data and offer the existing external analytics setup/report guidance. Do not pretend an outbound GA integration reads GA reports back.
-
-### Interaction design
-
-Offer **Explain results** near the report, not as a floating assistant that covers it. Open a contextual drawer on wide screens and a full-screen dialog on narrow screens. This is temporary detail, not a new app navigation sidebar. Show the selected campaign and period at the top. Suggested questions include “What changed?”, “What should I check?” and “What can I test?”
-
-The first response has at most a short paragraph and three actions. **View evidence** and **Review suggestion** remain available without asking the model again. Announce completion once; do not read streamed tokens individually to assistive technology. A loading, timeout or quota state must not block charts, exports or local recommendations.
-
-### Data flow and configuration
-
-Use a provider-neutral server adapter shared with future WConvert AI features. Model/provider selection, billing, hosting, retention and customer account requirements remain product decisions. Do not add a second permanent AI account screen inside Analytics. Reuse a shared settings home when that feature exists.
-
-AI stays off until an authorized site administrator configures it and sees a clear description of the selected provider and transmitted data. No background request occurs just because Analytics opens. Aggregate reports use opaque campaign aliases where possible. Include campaign text only when the user explicitly asks for copy help and can review the selected content. Exclude contact identifiers, Lead IDs, free-text submissions, payment details, full URL query strings, secrets and raw browsing history.
-
-For public release, document actual provider retention/training terms, account deletion implications and cost before activation. These terms cannot be promised before a provider is selected. Native analytics continues to work when AI is disabled or its service is unavailable.
-
-### Server contract and failure handling
-
-1. Authenticate, check report access, resolve scope and enforce request/token limits server-side.
-2. Build an allowlisted evidence payload; never expose arbitrary SQL, unrestricted site browsing or Lead search as model tools.
-3. Treat campaign content and user questions as untrusted data. Instructions embedded in campaign copy cannot change permissions or tools.
-4. Request structured output with evidence keys and known action IDs. Validate shape, limits and references. Prefer server-rendered numeric fact slots; reject unsupported numerical or causal claims.
-5. An answer can propose a draft patch, but cannot apply it or publish. At review, check edit permission, schema validity, affected revision and current entitlements again.
-6. Deduplicate identical in-flight requests. Default proposed timeout: 20 seconds, with explicit retry and no silent paid retry loop. Allow cancellation; disclose that an already dispatched provider request may still incur usage.
-7. If validation fails, show the deterministic explanation or “AI could not explain this report.” Never display partial unsafe actions.
-
-No durable chat history in the initial release. A short-lived result cache, if needed, uses a non-autoloaded transient scoped by site, user/access scope, locale, report fingerprint and provider configuration; proposed TTL 15 minutes, invalidated by relevant configuration changes. Keep health logs to timings, status codes and request identifiers; omit prompts, responses and secrets by default. Authentication, capability enforcement and output validation are application code, not prompt instructions.
-
-### AI quality gate
-
-Maintain fixtures for empty reports, zero denominators, sparse counts, mixed outcomes, overlapping signups, old revisions, missing external dimensions, stale reports, refunds and hostile campaign text. All numerical claims must match supplied evidence. Zero unsupported publish actions, invented metrics, leaked identifiers or false causal claims are acceptable in the release corpus. Test qualitative usefulness with merchants separately; valid JSON alone is insufficient.
 
 ## WooCommerce revenue release
 
@@ -291,7 +244,7 @@ Without WooCommerce, omit sales setup. If the dependency disappears after enable
 
 | Scenario | Required behavior |
 | --- | --- |
-| First install, no publication | Useful creation empty state; no AI-generated performance advice |
+| First install, no publication | Useful creation empty state; no performance recommendations without activity |
 | Published but no appearances | Explain absence of observations; current inspector may help, but no claim that configuration caused historical absence |
 | Paused, scheduled or suspended campaign | Label current state, preserve history, offer only valid actions |
 | Low volume | Show actual results; suppress optimization ranking and winner claims |
@@ -305,10 +258,8 @@ Without WooCommerce, omit sales setup. If the dependency disappears after enable
 | Retention/erasure changes answers | Retained-answer summaries change; historical capture counters retain their defined meaning |
 | Consent withheld or ad blocker | Show available evidence and limits; do not silently recover identity or bypass preferences |
 | GA totals differ from local totals | Explain different collection/consent/definitions and periods; do not declare either universally correct |
-| Dates change during AI request | Cancel/ignore stale output and preserve exact report context |
-| Provider quota, timeout or outage | Native reports work; clear retry state and no unintended repeated charge |
-| Malicious instructions in campaign text | Treat as content; no expanded permissions, tools or external requests |
-| Concurrent campaign edits | Reject stale draft application and preserve both user's work and suggested text |
+| Dates change during report request | Cancel/ignore stale output and preserve exact report context |
+| Concurrent campaign edits | Preserve unsaved work and recheck current state through the existing editing flow |
 | Multiple campaign interactions | Last eligible one gets order credit; no duplicate family/arm credit |
 | Delayed payment | Preserve eligible checkout provenance; count on confirmed paid date |
 | Refund, cancellation or order deletion | Reconcile current source orders and stated report semantics |
@@ -326,9 +277,9 @@ Without WooCommerce, omit sales setup. If the dependency disappears after enable
 
 ### Reporting and UI
 
-Extend the shared server reporting layer with an evidence builder and pure rule evaluators. Keep native facts separate from optional provider adapters. Add focused components for insight rows, evidence disclosure and proposal review using existing Region, loading, error, dialog, button and InfoTip primitives. Do not build a parallel state-management framework.
+Extend the shared server reporting layer with an evidence builder and pure rule evaluators. Keep native facts separate from existing external analytics integrations. Add focused components for insight rows and evidence disclosure using existing Region, loading, error, dialog, button and InfoTip primitives. Do not build a parallel state-management framework.
 
-Align the journey endpoint with `StatRange`/site-calendar semantics and validate bounded dates and campaign access. Return exact accepted dates and revisions. Bound revision-definition reads and avoid per-screen database queries. Reuse the same facts in UI, CSV and AI payloads. Native device, page and source dimensions are absent from the core counter grain; do not manufacture them from current display rules. Keep those in existing external analytics until a separate bounded collection design is approved.
+Align the journey endpoint with `StatRange`/site-calendar semantics and validate bounded dates and campaign access. Return exact accepted dates and revisions. Bound revision-definition reads and avoid per-screen database queries. Reuse the same facts in UI and CSV. Native device, page and source dimensions are absent from the core counter grain; do not manufacture them from current display rules. Keep those in existing external analytics until a separate bounded collection design is approved.
 
 ### Proposed storage inventory
 
@@ -336,8 +287,6 @@ Align the journey endpoint with `StatRange`/site-calendar semantics and validate
 | --- | --- | --- |
 | Local insight facts | Compute from existing counters/configuration | No persisted insight ledger or raw event stream |
 | Dismiss an insight | Bounded user metadata | Seven-day expiry/fingerprint invalidation; skip persistence if it proves unnecessary |
-| AI configuration | Existing shared settings architecture or one bounded non-autoloaded option | Server-only secrets; do not place credentials in public REST responses |
-| AI cached explanation | Optional short-lived transient | 15-minute proposal; no durable transcript |
 | Pending attribution | Minimal consented browser/session state | Expiry, withdrawal and checkout consumption; exact transport requires spike |
 | Order provenance | WooCommerce order metadata | Follows order lifecycle, includes no copied order amount |
 | Revenue report cache | None initially; bounded query and pagination | A derived cache would require a separate ADR 0046 amendment and complete invalidation design |
@@ -345,7 +294,7 @@ Align the journey endpoint with `StatRange`/site-calendar semantics and validate
 
 No table/column/index change is assumed. If representative order queries cannot meet the release budget using supported queries and metadata, stop that implementation slice and prepare a concrete storage proposal comparing existing metadata, options, transients, read-time calculation and a dedicated index/table. Repository policy requires explicit sign-off for schema changes. Do not hide an unbounded ledger in an option to evade it.
 
-Native insight computation must add no visitor requests and no frontend AI code. Proposed performance acceptance: at 100 campaigns and 90 reporting days, incremental local insight work adds no more than 100ms p95 to the existing report on the documented test fixture, with no per-campaign query loop. For revenue, target under two seconds p95 on a documented representative 100,000-order fixture; use pagination and independent loading. These are proposed budgets to measure, not current performance claims.
+Native insight computation must add no visitor requests or external processing dependency. Proposed performance acceptance: at 100 campaigns and 90 reporting days, incremental local insight work adds no more than 100ms p95 to the existing report on the documented test fixture, with no per-campaign query loop. For revenue, target under two seconds p95 on a documented representative 100,000-order fixture; use pagination and independent loading. These are proposed budgets to measure, not current performance claims.
 
 ## Delivery sequence and acceptance
 
@@ -354,32 +303,30 @@ Each slice should be reviewable independently on a branch and PR. Amend relevant
 | Slice | Deliverable | Dependency | Done when |
 | --- | --- | --- | --- |
 | 1. Report contract | Shared accepted dates, metric glossary, journey range alignment, evidence schema | None | Date/denominator/revision fixtures pass and no existing headline changes meaning |
-| 2. UX prototype | Overview, campaign evidence, proposal review; populated/empty/loading/failed states | 1 | Five merchant sessions completed or clearly recorded outstanding; keyboard/mobile/RTL review complete |
+| 2. UX prototype | Overview, campaign evidence, editor/inspector handoff; populated/empty/loading/failed states | 1 | Five merchant sessions completed or clearly recorded outstanding; keyboard/mobile/RTL review complete |
 | 3. Local insights | Operational/exposure/rate rules, ranking, scoped evidence, inspector links | 1–2 | Every recommendation maps to observed facts and valid actions; sparse data stays useful |
 | 4. Journey and interests | Revision-specific screen report and retained-choice summaries | 1–3 | No exact-abandonment or whole-audience claims; deletion/retention scopes explained |
-| 5. Optional AI explanations | Provider seam, opt-in, constrained questions, validation and fallback | 3 plus provider/data/cost decision | Adversarial and factual evaluation gates pass; AI outage cannot break reports |
-| 6. AI draft suggestions | Structured proposals, before/after, revision check, Undo, existing publish flow | 5 | No mutation before approval and no publication from AI; merchant can explain each change |
-| 7. Commerce feasibility | Session/token, checkout hooks, consent, HPOS query/refund investigation | 1; can proceed independently of AI | Classic/Blocks guest flows, delayed payment and performance approach proven |
-| 8. Revenue reporting | Provenance, order reads, model/coverage/setup UI, currency/refund handling | 7 | Report reconciles against known orders across the supported matrix |
-| 9. Later optimization | New dimensions, experiment-round design, holdouts, external lead outcomes | Validated demand and separate data design | New measurement claims are supported by the collection design |
+| 5. Commerce feasibility | Session/token, checkout hooks, consent, HPOS query/refund investigation | 1; can proceed alongside local reporting work | Classic/Blocks guest flows, delayed payment and performance approach proven |
+| 6. Revenue reporting | Provenance, order reads, model/coverage/setup UI, currency/refund handling | 5 | Report reconciles against known orders across the supported matrix |
+| 7. Later optimization | New dimensions, experiment-round design, holdouts, external lead outcomes | Validated demand and separate data design | New measurement claims are supported by the collection design |
 
-Release the first complete customer increment after slices 1–3. Do not bundle it behind provider selection. Slice 4 can follow when semantics and usability are verified. Commerce remains the next major business-outcome release, even if optional AI ships incrementally alongside it. No calendar estimate until the checkout and provider spikes establish the unknowns.
+Release the first complete customer increment after slices 1–3. Slice 4 can follow when semantics and usability are verified. Commerce is the next major business-outcome release. No calendar estimate until the checkout spike establishes the unknowns.
 
-Packaging recommendation: Free retains reports, exports and essential health/measurement explanations. Pro supplies advanced test suggestions, AI adapters and commerce reporting through the existing build/module mechanism. No new price or plan is decided. Final internal tier placement must respect installed capabilities, ADR 0116 and existing license behavior; avoid locked feature clutter on Free reports.
+Packaging recommendation: Free retains reports, exports and essential health/measurement explanations. Pro supplies advanced rule-based test suggestions and commerce reporting through the existing build/module mechanism. No new price or plan is decided. Final internal tier placement must respect installed capabilities, ADR 0116 and existing license behavior; avoid locked feature clutter on Free reports.
 
 ## Verification and launch criteria
 
-For implementation, use meaningful contract and integration tests rather than snapshots of incidental wording. Unit tests cover date boundaries, zero denominators, rule arithmetic, action eligibility, evidence fingerprints and source revisions. Integration tests cover permissions, real REST failures, retained accepted data after failed refresh, progressive capture, family history and stale draft application.
+For implementation, use meaningful contract and integration tests rather than snapshots of incidental wording. Unit tests cover date boundaries, zero denominators, rule arithmetic, action eligibility, evidence fingerprints and source revisions. Integration tests cover permissions, real REST failures, retained accepted data after failed refresh, progressive capture, family history and editor/inspector action permissions.
 
 Revenue tests include classic checkout and Blocks, HPOS and legacy storage, guest and logged-in shoppers, direct and delayed payment, repeat webhooks, token replay/expiry, consent changes, multiple interactions, refunds, canceled/test orders, deleted campaigns, mixed currencies and order deletion. Verify guest interactions before cart creation without silently creating sessions for every visitor.
 
 Run the relevant existing PHP and JS tests, typecheck/lint and analytics visual suite. Run loader/artifact checks when commerce visitor code or module packaging changes. Validate in actual WordPress with Free and Pro, not only a standalone React preview. Measure query counts and latency with representative data; document hardware/runtime/fixture and p95 results.
 
-Visual review captures 1440/1024/768/390/320 widths, LTR/RTL, long translated labels, populated/empty/loading/failed/stale states, evidence expanded, AI unavailable, no WooCommerce and multiple currencies. Check keyboard traversal, zoom, screen-reader names, chart data access and contrast. Do not claim accessibility conformance solely from lint or screenshots.
+Visual review captures 1440/1024/768/390/320 widths, LTR/RTL, long translated labels, populated/empty/loading/failed/stale states, evidence expanded, no WooCommerce and multiple currencies. Check keyboard traversal, zoom, screen-reader names, chart data access and contrast. Do not claim accessibility conformance solely from lint or screenshots.
 
 Proposed usability bar: at least four of five pilot merchants identify what changed and find the relevant next action without moderator help within two minutes. Each can distinguish a submission from a purchase and attribution from extra sales. Record failures and revise the UI; this small study is usability evidence, not a market-demand estimate.
 
-Launch with the model and metric definitions documented, an AI data-flow description when applicable, and explicit supported commerce paths. Measure time to decision and useful reviewed changes during opt-in pilots. Do not introduce silent product telemetry; anonymized aggregate usage collection would require a separate user-facing data decision. An accepted recommendation or a before/after lift is not proof of causal improvement.
+Launch with the attribution model and metric definitions documented and explicit supported commerce paths. Measure time to decision and useful reviewed changes during opt-in pilots. Do not introduce silent product telemetry; anonymized aggregate usage collection would require a separate user-facing data decision. An accepted recommendation or a before/after lift is not proof of causal improvement.
 
 ## Decisions needed before their implementation slices
 
@@ -387,9 +334,6 @@ These do not block the plan or local report work. Use the recommended defaults f
 
 | Decision | Recommended default | When it must be settled |
 | --- | --- | --- |
-| AI service ownership | Shared optional server adapter for all WConvert AI features | Before provider integration |
-| AI hosting, billing and retention | Decide transparently after comparing supported providers and costs; no vendor assumed here | Before any customer data is sent |
-| AI content scope | Aggregates for explanation; selected campaign text only for explicit copy tasks | Before AI UI implementation |
 | Attribution session mechanics | Explicit 30-minute inactivity rule with 24-hour cap; verify signals first | Commerce feasibility slice |
 | Amount and refund basis | Net merchandise, no tax/shipping; unavailable if refund allocation is ambiguous | Before revenue aggregation |
 | Tracking consent integration | Purpose-specific optional attribution state using the site's consent integration | Before visitor attribution code |
@@ -397,4 +341,4 @@ These do not block the plan or local report work. Use the recommended defaults f
 | Persistent insight feedback | Bounded per-user dismissal; no full action ledger | Before adding metadata |
 | New tracking dimensions | External analytics first | Only after user evidence justifies native collection |
 
-The immediate implementation starting point is the shared report contract and a reviewable Analytics prototype. AI and revenue should reuse that foundation so every explanation and next action points back to the same understandable facts.
+The immediate implementation starting point is the shared report contract and a reviewable Analytics prototype. Rule-based recommendations and revenue reporting reuse that foundation so every explanation and next action points back to the same understandable facts.
