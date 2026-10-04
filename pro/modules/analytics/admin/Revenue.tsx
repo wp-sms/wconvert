@@ -9,7 +9,7 @@ import { reportHref } from '@/nav';
 import { useEffect, useState } from 'react';
 import apiFetch from '@wordpress/api-fetch';
 import { __, sprintf } from '@wordpress/i18n';
-import { Region, RegionHeader, RegionBody, RegionError, RegionErrorState } from '@/shell/Region';
+import { Region, RegionHeader, RegionBody, RegionFooter, RegionError, RegionErrorState } from '@/shell/Region';
 import { Button } from '@/components/ui/button';
 import type { ReportExtensionProps } from '@/stats/extensions';
 import { formatCount } from '@/stats/format';
@@ -63,15 +63,15 @@ export default function Revenue({ period, optinId, campaignNames = {} }: ReportE
     <RegionHeader title={__('Campaign sales', 'wconvert')} icon={<ShoppingBag />} description={__('Paid orders linked to your campaigns.', 'wconvert')} trailing={report && <Badge variant={enabled && !report.consent_ready ? 'warning' : 'outline'}>{status}</Badge>} />
     {error && <Failure message={error} action={<Button variant="outline" onClick={() => setRetry(n => n + 1)}>{__('Retry', 'wconvert')}</Button>} />}
     {report && <>
-      {firstSetup ? <RegionBody className="wa-sales-setup">
+      {firstSetup ? <><RegionBody className="wa-sales-setup">
         <div><h3>{__('See which campaigns lead to checkout', 'wconvert')}</h3><p className="wa-muted">{__('Link future orders to a signup or click. Earlier orders stay unlinked.', 'wconvert')}</p>
           <ol className="wa-setup-steps">
             <li><strong>{__('Set up consent', 'wconvert')}</strong><span>{report.consent_ready ? __('Consent integration detected. Visitors must still grant statistics consent.', 'wconvert') : __('Use a consent plugin that supports the WP Consent API.', 'wconvert')}</span></li>
             <li><strong>{__('Turn on tracking', 'wconvert')}</strong><span>{__('A qualifying interaction can link one checkout within 30 minutes.', 'wconvert')}</span></li>
           </ol>
         </div>
-        <div className="wa-report-actions">{trackingControl}{optinId && <Button asChild variant="outline"><a href={reportHref()}>{__('Open sales setup', 'wconvert')}</a></Button>}<a href={report.guide_url} target="_blank" rel="noreferrer">{__('Setup guide', 'wconvert')}</a></div>
-      </RegionBody> : <>
+        </RegionBody><RegionFooter><div className="wa-report-actions">{trackingControl}{optinId && <Button asChild variant="outline"><a href={reportHref()}>{__('Open sales setup', 'wconvert')}</a></Button>}<a href={report.guide_url} target="_blank" rel="noreferrer">{__('Setup guide', 'wconvert')}</a></div>
+      </RegionFooter></> : <>
         <RegionBody>
           <div className="wa-report-meta"><span>{report.from && report.to ? rangeLabel(report.from, report.to) : __('Report not loaded', 'wconvert')}</span><span>{__('By order paid date', 'wconvert')}</span>{updating && <span role="status">{__('Updating… Previous dates shown.', 'wconvert')}</span>}</div>
           {enabled && !report.consent_ready && <div className="wa-report-notice"><strong>{__('Finish consent setup to link new orders.', 'wconvert')}</strong><a href={report.guide_url} target="_blank" rel="noreferrer">{__('View setup guide', 'wconvert')}</a></div>}

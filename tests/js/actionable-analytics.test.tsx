@@ -2,8 +2,11 @@ import { afterEach, expect, it, vi } from 'vitest';
 import { cleanup, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import apiFetch from '@wordpress/api-fetch';
+import { DeliveryAttention } from '../../resources/admin/src/stats/DeliveryAttention';
+import { readDestinations, type DestinationsPayload } from '../../resources/admin/src/destinations/api';
 import { Insights, type Insight } from '../../resources/admin/src/stats/Insights';
 import { JourneyReport } from '../../resources/admin/src/stats/JourneyReport';
+vi.mock('../../resources/admin/src/destinations/api', () => ({ readDestinations: vi.fn() }));
 vi.mock('@wordpress/api-fetch', () => ({ default: vi.fn() }));
 afterEach(() => { cleanup(); vi.clearAllMocks(); });
 it('shows at most three observations with inspectable denominators and a scoped edit link', async () => {
@@ -49,4 +52,12 @@ it('groups actions by screen without combining revisions or inventing missing co
   expect(rows[1]).toHaveTextContent('Version 1'); expect(rows[1]).toHaveTextContent('80'); expect(rows[1]).toHaveTextContent('50');
   expect(rows[2]).toHaveTextContent('Version 2'); expect(rows[2]).toHaveTextContent('100');
   expect(within(rows[2]).getAllByRole('cell').slice(2).map(cell => cell.textContent)).toEqual(['—', '—', '—']);
+});
+
+it('shows the newest sending issue across independent diagnostic sources', async () => {
+  vi.mocked(readDestinations).mockResolvedValue({ destinations: [{ id: 'mail', label: 'Newsletter', availability: 'ready', health: { consecutive_failures: 2, skipped_captures: 1, last_error_at: '2026-10-01 10:00:00', last_skipped_at: '2026-10-03 10:00:00' } }], failures: [{ destination: 'mail', at: '2026-10-04 10:00:00' }] } as DestinationsPayload);
+  render(<DeliveryAttention />);
+  await userEvent.click(await screen.findByText('Affected destinations'));
+  expect(screen.getByRole('cell', { name: '2026-10-04 10:00:00' })).toBeInTheDocument();
+  expect(screen.queryByText('2026-10-01 10:00:00')).not.toBeInTheDocument();
 });

@@ -29,3 +29,13 @@ it('keeps a confirmed tracking setting when the following report refresh fails',
   expect(screen.getByRole('button', { name: 'Turn on tracking' })).toBeEnabled();
   expect(screen.getByText('Linked paid orders')).toBeInTheDocument();
 });
+
+it('keeps currencies separate and explains an unavailable refund amount', async () => {
+  vi.mocked(apiFetch).mockResolvedValueOnce({ ...report, currencies: [...report.currencies, { currency: 'EUR', orders: 2, amount: null, unallocated_refunds: 1 }] });
+  render(<Revenue period={period} />);
+  const table = await screen.findByRole('table', { name: 'Linked product revenue by currency' });
+  expect(table).toHaveTextContent('USD'); expect(table).toHaveTextContent('EUR');
+  expect(table).toHaveTextContent('A refund has no product allocation.');
+  expect(screen.getAllByRole('cell', { name: 'Unavailable' })).toHaveLength(1);
+  expect(screen.queryByText('Linked paid orders')).not.toBeInTheDocument();
+});
