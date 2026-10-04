@@ -26,7 +26,7 @@ structural contract.
 Keep the receiving Goal and campaign settings. Reuse existing A/B, destination
 and content-lock refusals. Review format-dependent placement resets, privacy
 preparation, and clearing form-specific destination overrides/field mappings.
-Drop source product selections. Remint leaf identities and rewrite internal
+Drop source product selections, including the Pro products block ([ADR 0117](0117-cart-intelligence-uses-a-bounded-session-projection.md)). Its exported IDs are empty, the import notes require reconfiguration, and importing it requires the commerce capability. Remint leaf identities and rewrite internal
 question/field/consent references. Clear `template_id`: the imported design is an
 owned snapshot, not a registry identity. A later library switch with no source
 identity carries its words, links and unambiguously matched pictures.

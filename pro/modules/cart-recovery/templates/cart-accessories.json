@@ -1,0 +1,63 @@
+{
+  "id": "cart-accessories",
+  "name": "Selected accessories",
+  "display_type": "inline",
+  "tier": "elite",
+  "tokens": {
+    "bg": "#f5f4f0",
+    "fg": "#242820",
+    "muted": "#51584c",
+    "accent": "#244c37",
+    "accent-fg": "#ffffff",
+    "border": "#d8ddd3",
+    "heading-size": "1.5rem",
+    "text-size": "1rem",
+    "leading": "1.5",
+    "radius": "0.75rem",
+    "pad": "clamp(1.25rem, 5%, 2rem)",
+    "gap": "1rem",
+    "width": "52rem",
+    "align": "start",
+    "shadow": "none"
+  },
+  "tree": {
+    "v": 2,
+    "steps": [
+      {
+        "id": "s1",
+        "name": "Suggestions",
+        "kind": "content",
+        "content": {
+          "type": "stack",
+          "children": [
+            {
+              "type": "eyebrow",
+              "id": "n1",
+              "role": "eyebrow",
+              "text": "A useful addition"
+            },
+            {
+              "type": "heading",
+              "id": "n2",
+              "role": "headline",
+              "text": "Complete your setup"
+            },
+            {
+              "type": "text",
+              "id": "n3",
+              "role": "body",
+              "text": "Take a closer look at these accessories."
+            },
+            {
+              "type": "products",
+              "id": "n4",
+              "product_ids": [],
+              "exclude_cart": true
+            }
+          ]
+        }
+      }
+    ],
+    "submissions": []
+  }
+}

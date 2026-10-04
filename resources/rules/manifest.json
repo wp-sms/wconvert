@@ -225,7 +225,10 @@
       "params": {
         "value": {
           "control": "enum",
-          "options": ["detected", "not_detected"]
+          "options": [
+            "detected",
+            "not_detected"
+          ]
         }
       },
       "presets": {},
@@ -369,6 +372,85 @@
       "params": {
         "amount": {
           "control": "amount",
+          "authored": true
+        }
+      },
+      "presets": {},
+      "consent_category": "functional",
+      "on_absence": "suspend",
+      "substitute": null
+    },
+    "cart_products": {
+      "kind": "condition",
+      "tier": "elite",
+      "requires": "woocommerce",
+      "params": {
+        "ids": {
+          "control": "product_set",
+          "authored": true
+        },
+        "operator": {
+          "control": "enum",
+          "options": [
+            "any",
+            "all",
+            "none"
+          ]
+        }
+      },
+      "presets": {},
+      "consent_category": "functional",
+      "on_absence": "suspend",
+      "substitute": null
+    },
+    "cart_categories": {
+      "kind": "condition",
+      "tier": "elite",
+      "requires": "woocommerce",
+      "params": {
+        "ids": {
+          "control": "category_set",
+          "authored": true
+        },
+        "operator": {
+          "control": "enum",
+          "options": [
+            "any",
+            "all",
+            "none"
+          ]
+        },
+        "descendants": {
+          "control": "boolean"
+        }
+      },
+      "presets": {},
+      "consent_category": "functional",
+      "on_absence": "suspend",
+      "substitute": null
+    },
+    "cart_quantity": {
+      "kind": "condition",
+      "tier": "elite",
+      "requires": "woocommerce",
+      "params": {
+        "range": {
+          "control": "quantity_range",
+          "authored": true
+        }
+      },
+      "presets": {},
+      "consent_category": "functional",
+      "on_absence": "suspend",
+      "substitute": null
+    },
+    "cart_amount": {
+      "kind": "condition",
+      "tier": "elite",
+      "requires": "woocommerce",
+      "params": {
+        "range": {
+          "control": "money_range",
           "authored": true
         }
       },

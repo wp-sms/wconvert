@@ -1746,6 +1746,18 @@
           "note": "Pair labelled fictional project diagrams and factual captions with one story link."
         }
       ]
+    },
+    {
+      "id": "cart-accessories",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-04",
+          "revision": "d8410c6ad85ecd25f9700ff33b66c48e35ccd8a9f02f2332f4dcef0b9d5bf143",
+          "note": "Add the Pro selected-accessories design, with empty store-local selections and one product-click action."
+        }
+      ]
     }
   ]
 }

@@ -114,6 +114,9 @@ export interface RenderOptions {
   readonly paths?: boolean;
 }
 
+let suppliedLeaf: ((node: TemplateNode) => HTMLElement | null) | undefined;
+export function registerLeafRenderer(render: (node: TemplateNode) => HTMLElement | null): void { suppliedLeaf = render; }
+
 let journeyQuestion: ((node: TemplateNode) => HTMLElement) | undefined;
 let journeyResult: ((screen: TemplateTree['steps'][number]) => HTMLElement) | undefined;
 
@@ -260,6 +263,8 @@ function appendNode(parent: HTMLElement, node: TemplateNode, scoped: Tokens, at:
 }
 
 function elementFor(node: TemplateNode, scoped: Tokens, at: string | null): HTMLElement | null {
+  const supplied = suppliedLeaf?.(node);
+  if (supplied) return supplied;
   switch (node.type) {
     case 'stack':
     case 'row':

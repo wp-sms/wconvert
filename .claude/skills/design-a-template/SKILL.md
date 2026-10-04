@@ -98,7 +98,7 @@ all, so it is missing from the gallery entirely.
   `tree.submissions` with stable field/consent references. At most six screens
   precede one terminal acknowledgement, with one required submission and at most
   one optional signup for the other marketing channel. Click-only designs retain
-  one content screen, one link button and no submissions.
+  one content screen and no submissions, with either one link button or one Pro `products` block (ADR 0117). Product blocks ship empty `product_ids`, require WooCommerce, and count product-link clicks.
 - **Navigation is separate.** Next/Back do not save; Submit names its submission;
   every optional screen offers Skip for that submission. Use navigation Roles
   (`next_label`, `back_label`, `skip_label`, `close_label`) so copy transfer cannot

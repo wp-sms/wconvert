@@ -60,6 +60,10 @@ final class CaptureJourney
                     if (!is_string($name) || $name === '' || isset($names[$name]) || ($node['hidden'] ?? false)) { return 'fields'; }
                     $names[$name] = true;
                 }
+                if ($type === 'products') {
+                    if (count($steps) !== 1 || $step['kind'] !== 'content' || $submissions !== [] || isset($tree['graph'])) return 'products';
+                    $buttons[] = [['action' => 'link'], $index];
+                }
                 if ($type === 'button') {
                     if ($node['hidden'] ?? false) { continue; }
                     $action = $node['action'] ?? '';

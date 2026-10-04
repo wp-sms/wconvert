@@ -1,4 +1,6 @@
-import { journeysSupported } from '../settings';
+import { CommercePicker } from './CommerceControls';
+import type { ProductsNode } from '@renderer/types';
+import { journeysSupported, commerceSupported } from '../settings';
 import { useId, useState, type ReactNode } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import { ArrowLeftRight, Check, ChevronRight, Layers, Type } from 'lucide-react';
@@ -232,6 +234,14 @@ function contentBody({
   onSetEndDate?: () => void;
 }) {
   const node = nodeAt(template.tree, path) as { action?: string; submission?: string } | null;
+  if (block.type === 'products') {
+    if (!commerceSupported()) return <p>{__('Product suggestions require WConvert Pro and WooCommerce.', 'wconvert')}</p>;
+    const selected = nodeAt(template.tree, path) as ProductsNode;
+    return <div><p>{__('Choose up to six compatible accessories in priority order. Up to three available products appear. Product links count as clicks, not purchases.', 'wconvert')}</p>
+      <CommercePicker value={selected.product_ids} max={6} onChange={value => onChange({ ...template, tree: withValue(template.tree, path, 'product_ids', value) })} />
+      <label><input type="checkbox" checked={selected.exclude_cart !== false} onChange={event => onChange({ ...template, tree: withValue(template.tree, path, 'exclude_cart', event.target.checked) })} />{__('Hide products already in the cart', 'wconvert')}</label>
+    </div>;
+  }
   if (block.type === 'question' && !journeysSupported()) {
     return <p className="text-note text-muted-foreground">{__('This design uses elements this site can’t display.', 'wconvert')}</p>;
   }

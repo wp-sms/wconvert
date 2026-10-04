@@ -36,6 +36,12 @@ final class InspectorLabels
      */
     public static function all(): array
     {
+        $commerce = [
+            'pending' => __('Checking the current basket…', 'wconvert'),
+            'ready' => __('Using a recent basket check; missing products or changed currency cannot match.', 'wconvert'),
+            'unavailable' => __('The basket could not be checked. Neither positive nor negative cart rules can match.', 'wconvert'),
+            'consent-blocked' => __('Waiting for functional consent.', 'wconvert'),
+        ];
         return [
             'title' => __('Why each popup did or did not show', 'wconvert'),
             'intro' => __(
@@ -187,6 +193,7 @@ final class InspectorLabels
                 'unknown' => __('Not evaluated', 'wconvert'),
                 'unsupported' => __('No module on this site evaluates this rule', 'wconvert'),
             ],
+            'cart_products' => $commerce, 'cart_categories' => $commerce, 'cart_quantity' => $commerce, 'cart_amount' => $commerce, 'cart_has_items' => $commerce, 'cart_value_min' => $commerce,
             'ad_blocking' => [
                 'pending' => __('Checking ad-block status…', 'wconvert'),
                 'detected' => __('Ad blocking detected by this check', 'wconvert'),

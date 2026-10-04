@@ -66,6 +66,10 @@ final class RuleLabels
             'time_of_day' => __('Time of day', 'wconvert'),
             'query_param' => __('URL parameter / UTM tag', 'wconvert'),
             'referrer' => __('Where they came from', 'wconvert'),
+            'cart_products' => __('Products in the cart', 'wconvert'),
+            'cart_categories' => __('Categories in the cart', 'wconvert'),
+            'cart_quantity' => __('Total item quantity', 'wconvert'),
+            'cart_amount' => __('Products after discounts', 'wconvert'),
             'cart_has_items' => __('Has something in their cart', 'wconvert'),
             'cart_value_min' => __('Cart is worth at least', 'wconvert'),
         ];
@@ -115,6 +119,13 @@ final class RuleLabels
             // No currency symbol and no formatting: the threshold is in the
             // store's own currency, which is exactly why a [[Playbook]] may
             // not supply one and the param is marked `authored` (ADR 0013).
+            'cart_products.ids' => __('Products or variations', 'wconvert'),
+            'cart_products.operator' => __('Cart contains', 'wconvert'),
+            'cart_categories.ids' => __('Product categories', 'wconvert'),
+            'cart_categories.operator' => __('Cart contains', 'wconvert'),
+            'cart_categories.descendants' => __('Include subcategories', 'wconvert'),
+            'cart_quantity.range' => __('Item quantity', 'wconvert'),
+            'cart_amount.range' => __('Amount excluding tax and shipping', 'wconvert'),
             'cart_value_min.amount' => __('Cart total, in your store currency', 'wconvert'),
         ];
     }
@@ -207,6 +218,10 @@ final class RuleLabels
             'query_param' => __('%1$s is %2$s', 'wconvert'),
             /* translators: %1$s: one or more traffic sources, already joined, e.g. “Search or example.com”. */
             'referrer' => __('they came from %1$s', 'wconvert'),
+            'cart_products' => __('their cart contains %2$s of products %1$s', 'wconvert'),
+            'cart_categories' => __('their cart contains %2$s of categories %1$s; include subcategories: %3$s', 'wconvert'),
+            'cart_quantity' => __('their cart item quantity is %1$s', 'wconvert'),
+            'cart_amount' => __('their discounted products total is %1$s, excluding tax and shipping', 'wconvert'),
             'cart_has_items' => __('their cart is not empty', 'wconvert'),
             /* translators: %1$s: a cart total in the store’s own currency, unformatted. */
             'cart_value_min' => __('their cart is worth at least %1$s', 'wconvert'),
@@ -263,6 +278,9 @@ final class RuleLabels
             'device_set.mobile' => __('Mobile', 'wconvert'),
             'device_set.tablet' => __('Tablet', 'wconvert'),
             'device_set.desktop' => __('Desktop', 'wconvert'),
+            'enum.any' => __('Any selected item', 'wconvert'),
+            'enum.all' => __('Every selected item', 'wconvert'),
+            'enum.none' => __('None of the selected items', 'wconvert'),
             'enum.detected' => __('Detected', 'wconvert'),
             'enum.not_detected' => __('Not detected', 'wconvert'),
             // The channel names a merchant already reads in their analytics,

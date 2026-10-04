@@ -20,6 +20,8 @@ export function groupProblems(group: RuleGroup, types: readonly RuleType[]): str
         if (param.control === 'selector') { valid = portableSelector(String(value)); }
         if (param.control === 'hours') valid = typeof value === 'string' && /^(?:[01]\d|2[0-3]):[0-5]\d-(?:[01]\d|2[0-3]):[0-5]\d$/.test(value);
       }
+      if (valid && ['product_set', 'category_set'].includes(param.control)) valid = Array.isArray(value) && value.length <= 20 && value.every(id => Number.isInteger(id) && Number(id) > 0) && new Set(value).size === value.length;
+      if (valid && ['quantity_range', 'money_range'].includes(param.control)) valid = validRange(value, param.control === 'money_range');
       if (!valid) problems.push(`${type.label}: ${param.label} — ${__('enter a valid value', 'wconvert')}`);
     }
   }
@@ -43,4 +45,15 @@ export function portableSelector(value: string): boolean {
   const compound = `(?:(?:${name}|\\*)${atom}*|${atom}+)`;
   if (value.length > 512 || !new RegExp(`^\\s*${compound}(?:\\s*(?:[>+~,]\\s*|\\s+)${compound})*\\s*$`).test(value)) return false;
   try { document.querySelector(value); return true; } catch { return false; }
+}
+
+export function validRange(value: unknown, money: boolean): boolean {
+  if (!value || typeof value !== 'object') return false;
+  const r = value as Record<string, unknown>;
+  const number = (v: unknown): v is number => typeof v === 'number' && Number.isFinite(v) && v >= 0 && v <= 1e9;
+  if (!['min', 'max', 'between'].includes(String(r.operator)) || !number(r.min)) return false;
+  if (r.operator === 'between' && (!number(r.max) || r.max < r.min)) return false;
+  const decimals = money ? Number(r.decimals) : 0;
+  if (money && (typeof r.currency !== 'string' || !/^[A-Z]{3}$/.test(r.currency) || !Number.isInteger(r.decimals) || decimals < 0 || decimals > 6)) return false;
+  return [r.min, ...(r.operator === 'between' ? [r.max as number] : [])].every(n => Math.abs(n - Number(n.toFixed(decimals))) < 1e-9);
 }

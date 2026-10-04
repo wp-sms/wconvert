@@ -39,6 +39,8 @@ reading, abandonment or a permanent person-level history.
 
 ## Runtime
 
+**Extended by [ADR 0117](0117-cart-intelligence-uses-a-bounded-session-projection.md):** rich cart facts are prepared asynchronously but evaluated synchronously; unknown or stale facts never match and completed reads never replay a gesture.
+
 The manifest names threshold, state and gesture semantics. Time and scroll-depth thresholds remain achieved after crossing. Inactivity is live visible-page elapsed time without input; hiding/returning resets it. Activity never reads input values, and pointer movement does not continually allocate new timers. Exit, scroll-back-up and click are synchronous fresh-event pulses. A gesture before the minimum time cannot be replayed when a timer or consent change later arrives.
 
 The pure matcher reports true, false or consent-blocked per leaf. An independent ANY alternative may pass without reading a withheld rule. Missing implementations suspend the entire authored Campaign, including an unavailable leaf in an OR branch; no frontend substitution or dropping widens the policy. Restoring the dependency restores eligibility without editing saved data.

@@ -240,6 +240,7 @@ final class ArtifactContractTest extends TestCase
             'modules/inline-placement/module.json' => "{\"slug\":\"inline-placement\"}\n",
             'modules/premium-triggers/module.json' => "{\"slug\":\"premium-triggers\"}\n",
             'modules/ab-testing/module.json' => "{\"slug\":\"ab-testing\"}\n",
+            'modules/cart-recovery/public/commerce.js' => "/* commerce runtime */\n",
             'modules/cart-recovery/module.json' => "{\"slug\":\"cart-recovery\"}\n",
             'modules/destinations/module.json' => "{\"slug\":\"destinations\"}\n",
             // The premium designs, inside the module that owns them. Pro IS
@@ -265,6 +266,7 @@ final class ArtifactContractTest extends TestCase
         foreach (['display-types', 'journeys', 'spam-filters', 'premium-triggers', 'ab-testing', 'cart-recovery', 'destinations'] as $slug) {
             if (!in_array($slug, $modules, true)) {
                 $withheld["modules/{$slug}/module.json"] = null;
+                if ($slug === 'cart-recovery') $withheld["modules/cart-recovery/public/commerce.js"] = null;
             }
         }
 

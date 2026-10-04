@@ -11,6 +11,9 @@ amends [ADR 0091](0091-shared-settings-and-submission-workflows-have-distinct-ho
 The factual Data Map remains read-only. [ADR 0096](0096-privacy-authoring-help-is-progressive-and-snapshotted.md)
 adds a separate preference for privacy help while authoring new Campaigns.
 
+
+**Extended by [ADR 0117](0117-cart-intelligence-uses-a-bounded-session-projection.md):** The Data Map and suggested policy text describe the rich session projection, document-memory lifetime and separate 60-second hashed-IP rate bucket alongside the legacy cart cookie.
+
 ## Facts and wording remain separate
 
 The Data Map reports only what WConvert can prove: the saved Retention Period,

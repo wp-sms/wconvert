@@ -48,6 +48,8 @@ writeFileSync(
     `import { mountedStyles } from '${resolve(PLUGIN, 'resources/renderer/src/css')}';`,
     `import { registerPremiumJourneyRenderer } from '${resolve(PLUGIN, 'pro/modules/journeys/loader/render')}';`,
     `registerPremiumJourneyRenderer();`,
+    `import { registerProductPreview } from '${resolve(PLUGIN, 'resources/admin/src/productPreview')}';`,
+    `registerProductPreview();`,
     `export const SHADOW_CSS = mountedStyles();`,
     `export { chooseResult, journeyTrace } from '${resolve(PLUGIN, 'resources/loader/src/journey-rules')}';`,
     `export { decorateFullscreen } from '${resolve(PLUGIN, 'pro/modules/display-types/loader/surface')}';`,

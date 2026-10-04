@@ -1,3 +1,4 @@
+import { registerProductPreview } from '../../resources/admin/src/productPreview';
 import { treeFixture } from './support/journey';
 import { readFileSync, readdirSync } from 'node:fs';
 import { resolve } from 'node:path';
@@ -9,6 +10,7 @@ import type { TemplateTree } from '@renderer/types';
 import { registerPremiumJourneyRenderer } from '../../pro/modules/journeys/loader/render';
 
 registerPremiumJourneyRenderer();
+registerProductPreview();
 
 /**
  * The template vocabulary, asserted against the one renderer that implements
@@ -27,6 +29,7 @@ registerPremiumJourneyRenderer();
 
 /** The least content each leaf needs before it has anything to draw. */
 const MINIMAL: Readonly<Record<string, object>> = {
+  products: { product_ids: [] },
   heading: { text: 'x' },
   text: { text: 'x' },
   eyebrow: { text: 'x' },

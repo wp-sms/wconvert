@@ -604,6 +604,25 @@
         "radius",
         "align"
       ]
+    },
+    "products": {
+      "content": [],
+      "copy": [],
+      "params": [
+        "product_ids",
+        "exclude_cart",
+        "tokens",
+        "narrow"
+      ],
+      "roles": [],
+      "style_tokens": [
+        "font",
+        "text-size",
+        "accent",
+        "accent-fg",
+        "radius",
+        "align"
+      ]
     }
   },
   "identity": "id",

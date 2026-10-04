@@ -55,6 +55,9 @@ no user id in `wconvert_milestones`, and the check is written the way
 `bin/verify-stats.php` writes the address one — plant everything a request
 carries, drive the real path, and read the stored value back looking for it.*
 
+
+**Extended by [ADR 0117](0117-cart-intelligence-uses-a-bounded-session-projection.md):** Cart intelligence keeps only campaign-match booleans and public product suggestions in document memory for up to 30 seconds. It reads the existing Woo session and adds no browser identifier or persistent cart record.
+
 ## What this overturns
 
 The [#9](https://github.com/navidkashani/wconvert/issues/9) loader prototype

@@ -23,7 +23,7 @@ final class PackValidator
 {
     public const MAX_BYTES = 262144;
     public const MAX_TEMPLATES = 12;
-    public const CAPABILITIES = ['template-tree:2', 'success-actions:1', 'enquiry-choice:1', 'campaign-starts:1', 'capture-journey:1', 'question-journey:1', 'pack-images:1'];
+    public const CAPABILITIES = ['template-tree:2', 'success-actions:1', 'enquiry-choice:1', 'campaign-starts:1', 'capture-journey:1', 'question-journey:1', 'pack-images:1', 'commerce-products:1'];
 
     /** @param array<string, mixed> $manifest */
     public function __construct(private readonly array $manifest, private readonly TemplateVocabulary $vocabulary, private readonly Tier $installedTier = Tier::Free, private readonly bool $portable = false)
@@ -43,6 +43,7 @@ final class PackValidator
     {
         self::check(is_array($design['tree'] ?? null) && is_array($design['tokens'] ?? null), __('This design has an invalid tree or styles.', 'wconvert'));
         $tier = CaptureJourney::requiresPremium($design['tree'] ?? []) || !in_array($design['display_type'] ?? '', ['popup', 'inline'], true) ? Tier::Basic : Tier::Free;
+        if (\WConvert\Template\CommerceSupport::used($design['tree'])) $tier = Tier::Elite;
         $entry = ['id' => 'imported', 'name' => $design['name'] ?? '', 'display_type' => $design['display_type'] ?? '',
             'tier' => $tier->value, 'tree' => $design['tree'] ?? [], 'tokens' => $design['tokens'] ?? []];
         $reader = new self($this->manifest, $this->vocabulary, $this->installedTier, true);
@@ -106,6 +107,7 @@ final class PackValidator
             $this->bag($template['tokens'] ?? []);
             $tree = $template['tree'] ?? null;
             self::check(is_array($tree), __('This design has no tree.', 'wconvert'));
+            if (\WConvert\Template\CommerceSupport::used($tree)) self::check($tier === Tier::Elite && \WConvert\Template\CommerceSupport::active(), __('Product suggestions require WConvert Pro and WooCommerce.', 'wconvert'));
             if (CaptureJourney::requiresPremium($tree)) {
                 self::check($tier !== Tier::Free && JourneySupport::active(), __('This design uses elements this site can’t display.', 'wconvert'));
                 $requiredCapabilities[] = 'question-journey:1';
@@ -238,6 +240,8 @@ final class PackValidator
                 $this->keys($value, $this->portable ? ['label', 'href'] : ['label']);
                 if ($this->portable && isset($value['href'])) self::portableUrl($value['href']);
                 $this->words($value['label'] ?? null, 200);
+            } elseif ($type === 'products' && $key === 'product_ids') {
+                self::check($value === [], __('Choose products from this site after installing the design.', 'wconvert'));
             } elseif ($key === 'options') {
                 self::check((($node['name'] ?? null) === 'interest' || $type === 'question') && is_array($value)
                     && ($type === 'question' || $value !== []) && $this->vocabulary->choiceOptions($value) === $value, __('This design has invalid choice options.', 'wconvert'));
@@ -245,7 +249,7 @@ final class PackValidator
             } elseif (in_array($key, ['href', 'src'], true)) {
                 if ($this->portable && $key === 'href') self::portableUrl($value);
                 else self::check($value === '', __('Pack links and pictures must be supplied by the site owner.', 'wconvert'));
-            } elseif (in_array($key, ['hidden', 'required', 'copy', 'notch'], true)) {
+            } elseif (in_array($key, ['hidden', 'required', 'copy', 'notch', 'exclude_cart'], true)) {
                 self::check(is_bool($value) || ($this->portable && $key === 'notch' && in_array($value, ['true', 'false'], true)), __('This design has an invalid switch value.', 'wconvert'));
             } elseif (isset($definition['choices'][$key])) {
                 self::check(is_string($value) || is_int($value) || is_float($value), __('This design has an invalid setting.', 'wconvert'));
@@ -258,6 +262,7 @@ final class PackValidator
                 $this->words($value, 2000);
             }
         }
+        if ($type === 'products') $requiredCapabilities[] = 'commerce-products:1';
         if ($type === 'followup' || ($type === 'code' && ($node['copy'] ?? false) === true)) $requiredCapabilities[] = 'success-actions:1';
         if ($type === 'field' && ($node['name'] ?? null) === 'interest') $requiredCapabilities[] = 'enquiry-choice:1';
         if ($type === 'field') {

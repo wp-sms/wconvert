@@ -3,7 +3,7 @@
 An Optin's display rules are split into **Targeting** (server-evaluated at
 asset-enqueue time, never sent to the browser), **Triggers** (*when* it fires —
 any one), and **Conditions** (*whether* the visitor is eligible — all must hold
-at the instant a Trigger fires). Within each axis the rules are a **flat list of
+at the instant a Trigger fires). Cart predicates can read asynchronously prepared, expiring facts while their evaluation remains synchronous; unknown never matches ([ADR 0117](0117-cart-intelligence-uses-a-bounded-session-projection.md)). Within each axis the rules are a **flat list of
 `{type, scalar}` entries with implicit AND** — no groups, no nesting, ever.
 
 *Amended by [ADR 0048](0048-the-eligibility-inspector-runs-on-the-real-page.md):
