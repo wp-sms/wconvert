@@ -114,6 +114,14 @@ test('sample basket evaluates draft rules and cross-sells without changing the r
   const result = await preview(data);
   expect(Object.values(result.rules)).toEqual([true, true, true, true, true]);
   expect(result.cards.map(card => card.id)).toEqual([f.products[2], f.products[1], f.products[3]]);
+  const unpublished = await preview({ ...data, products: { source: 'selected', product_ids: [f.draft_accessory, f.private_accessory], exclude_cart: true } });
+  expect(unpublished.cards).toEqual([]);
+  expect(unpublished.eligible).toBe(false);
+  const maximumRules = [...Array.from({ length: 40 }, (_, index) => ({ ...data.rules[0], id: `cart-${index}` })), { id: 'required', type: 'cart_has_items' }];
+  const maximum = await preview({ ...data, rules: maximumRules });
+  expect(Object.values(maximum.rules)).toEqual(Array(41).fill(true));
+  const tooMany = await page.request.post('/?rest_route=/wconvert/v1/commerce/preview', { headers: { 'X-WP-Nonce': f.nonce }, data: { ...data, rules: [...maximumRules, { id: 'extra', type: 'cart_has_items' }] } });
+  expect(tooMany.status()).toBe(400);
   const afterAdd = await preview({ ...data, items: [...data.items, { id: f.products[1], quantity: 1 }] });
   expect(afterAdd.cards.map(card => card.id)).toEqual([f.products[2], f.products[3]]);
   expect(afterAdd.rules.negative).toBe(false);

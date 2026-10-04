@@ -16,7 +16,7 @@ Cross-sells are read in basket-product order, with parent before exact variation
 then each product's saved cross-sell order. The first occurrence wins. Read at
 most 100 distinct basket product references and the first 60 relationships per
 reference; stop at 60 unique candidates. Both modes apply the same live simple/
-variable-parent, visibility, stock, purchasability and password checks, returning
+variable-parent, published status, visibility, stock, purchasability and password checks, returning
 at most three cards. No relationships or eligible candidates means no appearance.
 This ordering is WConvert's stable selection over saved relationships, not a
 claim to reproduce a theme's randomized cross-sell widget or extension filters.
@@ -37,7 +37,7 @@ Categories and ancestor membership come from the selected catalog products.
 Unknown and consent-blocked sample states remain distinct from a known empty cart.
 
 An authenticated capability-checked POST `/commerce/preview` evaluates up to 40
-cart rules and one recommendation block from a body capped at 32 KiB. It reuses
+authored cart rules plus one mandatory goal rule and one recommendation block from a body capped at 32 KiB. It reuses
 live cart projection, cart predicates and recommendation resolution. Other page,
 schedule, pacing and non-cart facts remain the dialog's explicit assumptions.
 Product results are labeled as an availability preview; the overall appearance

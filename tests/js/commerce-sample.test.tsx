@@ -1,8 +1,13 @@
-import { act, renderHook, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, renderHook, screen, waitFor } from '@testing-library/react';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import apiFetch from '@wordpress/api-fetch';
 import { emptyBasket, useBasketPreview, type BasketResult } from '../../resources/admin/src/builder/rules/SampleBasket';
 
+import SampleVisit from '../../resources/admin/src/builder/rules/SampleVisit';
+import { ruleTypes } from './support/rule-types';
+
+vi.mock('../../resources/admin/src/settings', () => ({ commerceSupported: () => true }));
+vi.mock('../../resources/admin/src/builder/CommerceControls', () => ({ CommercePicker: () => null }));
 vi.mock('@wordpress/api-fetch', () => ({ default: vi.fn() }));
 afterEach(() => vi.clearAllMocks());
 const response = (eligible: boolean): BasketResult => ({ rules: { coffee: eligible }, cards: [], reason: '', eligible, state: 'known', currency: 'USD', decimals: 2 });
@@ -40,4 +45,30 @@ describe('sample basket request lifecycle', () => {
     await waitFor(() => expect(result.current.error).toBe(true));
     expect(result.current.result).toBeUndefined();
   });
+});
+
+
+it('requires a fresh gesture after a basket edit finishes checking', async () => {
+  const resolvers: ((value: BasketResult) => void)[] = [];
+  vi.mocked(apiFetch).mockImplementation(() => new Promise(resolve => resolvers.push(resolve as (value: BasketResult) => void)));
+  render(<SampleVisit cartRequired vocabulary={ruleTypes()} onClose={vi.fn()} value={{
+    display_rules: { audience: { mode: 'everyone' }, opening: { mode: 'automatic', match: 'all', minimum_seconds: 0, rules: [{ id: 'exit', type: 'exit_intent' }] } },
+    targeting: {}, frequency: {}, schedule: {}, priority: 0,
+  }} />);
+  const gesture = screen.getByRole('button', { name: 'Simulate exit intent' });
+  expect(gesture).toBeDisabled();
+  await waitFor(() => expect(resolvers).toHaveLength(1));
+  const matches = { ...response(true), rules: { 'sample-required-cart': true } };
+  await act(async () => resolvers[0](matches));
+  expect(screen.getByRole('status')).toHaveTextContent('Would not show');
+  fireEvent.click(gesture);
+  expect(screen.getByRole('status')).toHaveTextContent('Would show');
+  fireEvent.change(screen.getByRole('spinbutton', { name: 'Merchandise amount after discounts' }), { target: { value: '100' } });
+  expect(gesture).toBeDisabled();
+  fireEvent.click(gesture);
+  await waitFor(() => expect(resolvers).toHaveLength(2));
+  await act(async () => resolvers[1](matches));
+  expect(screen.getByRole('status')).toHaveTextContent('Would not show');
+  fireEvent.click(gesture);
+  expect(screen.getByRole('status')).toHaveTextContent('Would show');
 });

@@ -252,7 +252,7 @@ final class CommerceContext
         $cards = [];
         foreach ($ids as $id) {
             $product = wc_get_product($id);
-            if (!$product || !$product->is_type(['simple', 'variable']) || (($node['exclude_cart'] ?? true) && in_array($id, $cart['products'], true)) || !$product->is_visible() || !$product->is_purchasable() || !$product->is_in_stock() || get_post_field('post_password', $id) !== '') continue;
+            if (!$product || $product->get_status() !== 'publish' || !$product->is_type(['simple', 'variable']) || (($node['exclude_cart'] ?? true) && in_array($id, $cart['products'], true)) || !$product->is_visible() || !$product->is_purchasable() || !$product->is_in_stock() || get_post_field('post_password', $id) !== '') continue;
             $cards[] = ['id' => $id, 'name' => $product->get_name(), 'url' => $product->get_permalink(), 'image' => wp_get_attachment_image_url($product->get_image_id(), 'woocommerce_thumbnail') ?: '',
                 'price' => html_entity_decode(wp_strip_all_tags($product->get_price_html()), ENT_QUOTES, 'UTF-8'),
                 'label' => $product->is_type('variable') ? __('Choose options', 'wconvert') : __('View product', 'wconvert')];
@@ -272,7 +272,7 @@ final class CommerceContext
         $rules = $input['rules'] ?? null;
         $state = $input['state'] ?? 'known';
         $node = $input['products'] ?? null;
-        if (!is_array($items) || !array_is_list($items) || count($items) > 20 || !is_array($rules) || !array_is_list($rules) || count($rules) > 40 || !in_array($state, ['known', 'unknown', 'blocked'], true)) return $invalid();
+        if (!is_array($items) || !array_is_list($items) || count($items) > 20 || !is_array($rules) || !array_is_list($rules) || count($rules) > 41 || !in_array($state, ['known', 'unknown', 'blocked'], true)) return $invalid();
         foreach (['amount', 'total'] as $key) {
             $number = $input[$key] ?? null;
             if ((!is_int($number) && !is_float($number)) || !is_finite((float) $number) || $number < 0 || $number > 1000000000) return $invalid();

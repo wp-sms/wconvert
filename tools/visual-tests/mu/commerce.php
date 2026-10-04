@@ -37,6 +37,15 @@ add_action('template_redirect', static function (): void {
         $fixture += ['cross_id' => $campaign->id, 'variable' => $parent->get_id(), 'variation' => $variation->get_id(), 'category' => $categoryId, 'child_category' => $childId, 'sold_out' => $soldOut->get_id()];
         update_option('wconvert_commerce_fixture', $fixture);
     }
+    if (!isset($fixture['draft_accessory'])) {
+        $unpublished = [];
+        foreach (['draft', 'private'] as $status) {
+            $product = new WC_Product_Simple(); $product->set_name('Unpublished accessory ' . $status); $product->set_status($status); $product->set_regular_price('10'); $unpublished[] = $product->save();
+        }
+        $coffee = wc_get_product($fixture['products'][0]); $coffee->set_cross_sell_ids([...$unpublished, ...$coffee->get_cross_sell_ids()]); $coffee->save();
+        $fixture['draft_accessory'] = $unpublished[0]; $fixture['private_accessory'] = $unpublished[1];
+        update_option('wconvert_commerce_fixture', $fixture);
+    }
     if (isset($_GET['login'])) { wp_set_current_user(1); wp_set_auth_cookie(1); }
     if (isset($_GET['checks'])) {
         $parent = new WC_Product_Variable(); $parent->set_name('Coffee filter options'); $parent->set_status('publish'); $parent->save();
