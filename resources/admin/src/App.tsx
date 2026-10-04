@@ -71,7 +71,7 @@ export function App() {
   // Its accepted route changes only after the merchant discards or saves them.
   if (route.editId !== undefined) {
     return <>
-      <OptinBuilder key={navigation.hash} id={route.editId}
+      <OptinBuilder key={navigation.hash} id={route.editId} initialTab={route.editorTab}
         backLabel={route.returnTo.startsWith('#analytics') ? __('Back to Analytics', 'wconvert')
           : route.returnTo.startsWith('#leads') ? __('Back to Leads', 'wconvert') : __('Back to Campaigns', 'wconvert')}
         onEditingStateChange={navigation.onEditingStateChange}

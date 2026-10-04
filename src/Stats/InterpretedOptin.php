@@ -37,6 +37,7 @@ final class InterpretedOptin
         public readonly bool $wasPublished = false,
         public readonly bool $published = false,
         public readonly ?string $parentId = null,
+        public readonly ?string $publishedAt = null,
     ) {
     }
 
@@ -70,6 +71,7 @@ final class InterpretedOptin
             (bool) ($row['was_published'] ?? false),
             ($row['published_at'] ?? null) !== null,
             isset($row['parent_id']) ? (string) $row['parent_id'] : null,
+            isset($row['published_at']) ? (string) $row['published_at'] : null,
         );
     }
 }

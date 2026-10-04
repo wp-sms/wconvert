@@ -72,6 +72,19 @@ enum Goal: string
         };
     }
 
+    public function rateLabel(): string
+    {
+        return match ($this) {
+            self::GrowEmailList => __('Email submission rate', 'wconvert'),
+            self::GrowSmsList => __('Phone submission rate', 'wconvert'),
+            self::CollectEnquiries => __('Enquiry rate', 'wconvert'),
+            self::FindMatch => __('Quiz completion rate', 'wconvert'),
+            self::RecoverCart => __('Cart return click rate', 'wconvert'),
+            self::PromoteOffer => __('Link click rate', 'wconvert'),
+            self::DeliverLeadMagnet => __('Resource request rate', 'wconvert'),
+        };
+    }
+
     public function tier(): Tier
     {
         return match ($this) { self::RecoverCart => Tier::Elite, self::FindMatch => Tier::Basic, default => Tier::Free };

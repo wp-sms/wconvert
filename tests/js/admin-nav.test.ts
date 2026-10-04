@@ -167,3 +167,12 @@ describe('bookmarked admin flows', () => {
     expect(routeFrom(`#analytics?days=${days}`).report.days).toBeUndefined();
   });
 });
+
+ it('deep-links to display rules and keeps the exact report return route', () => {
+  const report = reportHref({ optinId: 'campaign', days: 7, compare: false });
+  const route = routeFrom(editorHref('campaign', report, 'rules'));
+  expect(route.editorTab).toBe('rules');
+  expect(route.returnTo).toBe(report);
+  expect(routeFrom('#optins?edit=campaign&tab=unknown').editorTab).toBeUndefined();
+  expect(routeFrom('#analytics?edit=campaign&tab=rules').editorTab).toBeUndefined();
+});

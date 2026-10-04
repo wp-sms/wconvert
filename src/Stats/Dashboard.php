@@ -166,6 +166,7 @@ final class Dashboard
             'proof_level' => $goal->outcome()->proofLevel,
             'action' => $goal->outcome()->action,
             'result_label' => $goal === Goal::DeliverLeadMagnet ? __('Resource requests', 'wconvert') : $goal->headlineLabel(),
+            'rate_label' => $goal->rateLabel(),
             'undelivered_conversions' => self::undeliveredConversions($goal, $rows),
             ...self::numbers($goal, $range, $rows),
             'optins' => self::optinRows($goal, $range, $held, $byOptin),
@@ -294,6 +295,7 @@ final class Dashboard
                 'name' => $optin->name,
                 'parent_id' => $optin->parentId,
                 'status' => $optin->deleted ? 'historical' : ($optin->published ? 'published' : 'paused'),
+                'published_at' => $optin->publishedAt,
                 ...self::numbers($goal, $range, $byOptin[$id] ?? []),
             ];
         }

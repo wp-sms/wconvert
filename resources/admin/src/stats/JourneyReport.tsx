@@ -1,4 +1,5 @@
 import { DataTable, DataTableHead, DataTableBody, DataTableRow, DataTableColumn, DataTableCell } from '../shell/DataTable';
+import { ReportTarget } from './ReportNavigation';
 import { Route } from 'lucide-react';
 import { EmptyState } from '../shell/EmptyState';
 import { RegionSkeleton } from '../shell/RegionSkeleton';
@@ -44,7 +45,7 @@ export function JourneyReport({ id, period }: { id: string; period?: Pick<Dashbo
     counts[row.kind] = Number(row.total);
     screens.set(row.scope, counts);
   }
-  return <Region className="wa-report">
+  return <ReportTarget name="activity" label={__('Screen activity', 'wconvert')}><Region className="wa-report">
     <RegionHeader title={__('Signup and screen activity', 'wconvert')} level={3} icon={<Route />} description={__('See which screens were shown and which actions followed.', 'wconvert')} />
     {failed && <Failure message={__('Could not load matching journey totals. Activity below still uses its displayed dates.', 'wconvert')} action={<Button variant="outline" onClick={() => setRetry(n => n + 1)}>{__('Retry', 'wconvert')}</Button>} />}
     {days === 0 ? <EmptyState icon={Route} title={__('No complete days yet', 'wconvert')}>{__('Today’s activity will appear tomorrow.', 'wconvert')}</EmptyState> : report && <>
@@ -74,5 +75,5 @@ export function JourneyReport({ id, period }: { id: string; period?: Pick<Dashbo
         <p>{__('Versions stay separate when a screen changes. A dash means no recorded activity for that action; it is not an inferred zero.', 'wconvert')}</p>
       </ReportDisclosure>
     </>}
-  </Region>;
+  </Region></ReportTarget>;
 }

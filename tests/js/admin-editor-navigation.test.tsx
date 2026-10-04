@@ -263,3 +263,12 @@ describe('App navigation through the real lazy editor', () => {
     expect(screen.queryByRole('alertdialog')).toBeNull();
   });
 });
+
+it('opens display rules from analytics and returns to the same report', async () => {
+  window.history.replaceState({}, '', `/wp-admin/admin.php?page=wconvert${editorHref('OPTIN1', REPORT, 'rules')}`);
+  render(<App />);
+  const tab = await screen.findByRole('tab', { name: 'Display rules' });
+  expect(tab).toHaveAttribute('aria-selected', 'true');
+  await userEvent.click(screen.getByRole('button', { name: 'Back to Analytics' }));
+  await waitFor(() => expect(window.location.hash).toBe(REPORT));
+});

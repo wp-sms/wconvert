@@ -1,4 +1,5 @@
 import { DataTable, DataTableHead, DataTableBody, DataTableRow, DataTableColumn, DataTableCell } from '@/shell/DataTable';
+import { ReportTarget } from '@/stats/ReportNavigation';
 import { ShoppingBag, SlidersHorizontal } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { RegionSkeleton } from '@/shell/RegionSkeleton';
@@ -59,15 +60,15 @@ export default function Revenue({ period, optinId, campaignNames = {} }: ReportE
   const firstSetup = report && !report.settings.since;
   const status = !enabled ? __('Tracking is off', 'wconvert') : !report.consent_ready ? __('Needs consent setup', 'wconvert') : __('Tracking is on', 'wconvert');
   const trackingControl = report && !optinId ? <Button variant={firstSetup ? 'default' : 'outline'} disabled={busy} onClick={() => void change(!enabled)}>{busy ? __('Saving…', 'wconvert') : enabled ? __('Turn off tracking', 'wconvert') : __('Turn on tracking', 'wconvert')}</Button> : null;
-  return <Region className="wa-report">
+  return <ReportTarget name="sales" label={__('Sales', 'wconvert')}><Region className="wa-report">
     <RegionHeader title={__('Campaign sales', 'wconvert')} icon={<ShoppingBag />} description={__('Paid orders linked to your campaigns.', 'wconvert')} trailing={report && <Badge variant={enabled && !report.consent_ready ? 'warning' : 'outline'}>{status}</Badge>} />
     {error && <Failure message={error} action={<Button variant="outline" onClick={() => setRetry(n => n + 1)}>{__('Retry', 'wconvert')}</Button>} />}
     {report && <>
       {firstSetup ? <><RegionBody className="wa-sales-setup">
-        <div><h3>{__('See which campaigns lead to checkout', 'wconvert')}</h3><p className="wa-muted">{__('Link future orders to a signup or click. Earlier orders stay unlinked.', 'wconvert')}</p>
+        <div><h3>{__('Link campaigns to paid orders', 'wconvert')}</h3><p className="wa-muted">{__('Link future orders to a signup or click. Earlier orders stay unlinked.', 'wconvert')}</p>
           <ol className="wa-setup-steps">
             <li><strong>{__('Set up consent', 'wconvert')}</strong><span>{report.consent_ready ? __('Consent integration detected. Visitors must still grant statistics consent.', 'wconvert') : __('Use a consent plugin that supports the WP Consent API.', 'wconvert')}</span></li>
-            <li><strong>{__('Turn on tracking', 'wconvert')}</strong><span>{__('A qualifying interaction can link one checkout within 30 minutes.', 'wconvert')}</span></li>
+            <li><strong>{__('Turn on tracking', 'wconvert')}</strong><span>{__('A signup or eligible click can link one checkout within 30 minutes.', 'wconvert')}</span></li>
           </ol>
         </div>
         </RegionBody><RegionFooter><div className="wa-report-actions">{trackingControl}{optinId && <Button asChild variant="outline"><a href={reportHref()}>{__('Open sales setup', 'wconvert')}</a></Button>}<a href={report.guide_url} target="_blank" rel="noreferrer">{__('Setup guide', 'wconvert')}</a></div>
@@ -81,7 +82,8 @@ export default function Revenue({ period, optinId, campaignNames = {} }: ReportE
             : report.complete === false ? <EmptyState icon={ShoppingBag} title={__('Choose a shorter period', 'wconvert')}>{__('This report is too large to total safely. No partial totals are shown.', 'wconvert')}</EmptyState>
             : (report.linked_orders ?? 0) === 0 ? <EmptyState icon={ShoppingBag} title={__('No linked orders in this period', 'wconvert')}>{__('With tracking on and statistics consent granted, a signup or click can link a checkout within 30 minutes. Today’s paid orders appear tomorrow.', 'wconvert')}</EmptyState>
             : <SalesTotals report={report} />}
-          {report.complete && period.days > 0 && <p className="wa-muted wa-report-context">{sprintf(__('%s eligible paid orders across your store in this period.', 'wconvert'), formatCount(report.eligible_orders ?? 0))} <InfoTip label={__('About linked orders', 'wconvert')}>{__('Orders may be unlinked because consent was not granted, the interaction expired or tracking failed. A link does not prove the campaign caused the purchase.', 'wconvert')}</InfoTip></p>}
+          {report.complete && period.days > 0 && <p className="wa-muted wa-report-context">{__('Linked after a signup or eligible click within 30 minutes. A link does not prove the campaign caused the sale.', 'wconvert')}</p>}
+          {report.complete && period.days > 0 && <p className="wa-muted wa-report-store-total">{sprintf(__('%s eligible paid orders across your store in this period.', 'wconvert'), formatCount(report.eligible_orders ?? 0))} <InfoTip label={__('About linked orders', 'wconvert')}>{__('Orders may be unlinked because consent was not granted, the interaction expired or tracking failed.', 'wconvert')}</InfoTip></p>}
         </RegionBody>
         {report.complete && period.days > 0 && !!report.orders?.length && <ReportDisclosure title={__('View linked orders', 'wconvert')}>
           <p className="wa-muted">{__('Up to 50 recent linked orders. Open an order to review it in WooCommerce.', 'wconvert')}</p>
@@ -108,10 +110,10 @@ export default function Revenue({ period, optinId, campaignNames = {} }: ReportE
           <div><dt>{__('Net product revenue', 'wconvert')}</dt><dd>{__('Product totals after discounts and product refunds. Tax, shipping and fees are excluded. Currencies stay separate; an unallocated refund makes the amount unavailable.', 'wconvert')}</dd></div>
           <div><dt>{__('Paid orders only', 'wconvert')}</dt><dd>{__('Orders use their paid date. Later refunds update that original period. Unpaid, failed and cancelled orders are excluded. Unmarked gateway test payments may be included.', 'wconvert')}</dd></div>
         </dl>
-        <p className="wa-muted">{__('Sales require statistics consent. Other devices and later sessions are not linked. Attribution does not prove the campaign caused a purchase.', 'wconvert')}</p>
+        <p className="wa-muted">{__('Sales require statistics consent. Other devices and later sessions are not linked.', 'wconvert')}</p>
       </ReportDisclosure>
     </>}
-  </Region>;
+  </Region></ReportTarget>;
 }
 
 function SalesTotals({ report }: { report: Report }) {
@@ -120,7 +122,7 @@ function SalesTotals({ report }: { report: Report }) {
     const row = currencies[0];
     return <dl className="wa-report-metrics" aria-label={__('Linked sales', 'wconvert')}>
       <div><dt>{__('Net product revenue', 'wconvert')}</dt><dd>{money(row.amount, row.currency)}</dd><small>{__('After discounts and product refunds', 'wconvert')}</small>{row.unallocated_refunds > 0 && <p className="wa-muted">{__('A refund has no product allocation.', 'wconvert')}</p>}</div>
-      <div><dt>{__('Linked paid orders', 'wconvert')}</dt><dd>{formatCount(row.orders)}</dd><small>{__('From a qualifying signup or click', 'wconvert')}</small></div>
+      <div><dt>{__('Linked paid orders', 'wconvert')}</dt><dd>{formatCount(row.orders)}</dd><small>{__('After a signup or eligible click', 'wconvert')}</small></div>
       <div><dt>{__('Average order value', 'wconvert')}</dt><dd>{money(row.amount === null ? null : row.amount / row.orders, row.currency)}</dd><small>{__('Based on net product revenue', 'wconvert')}</small></div>
     </dl>;
   }

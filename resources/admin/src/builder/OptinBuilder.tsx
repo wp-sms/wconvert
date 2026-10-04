@@ -96,6 +96,7 @@ export interface OptinBuilderProps {
   readonly id: string;
   readonly onClose: () => void;
   readonly backLabel?: string;
+  readonly initialTab?: 'rules';
   readonly onEditingStateChange?: (state: EditingState) => void;
   readonly onCreated?: (id: string) => void;
 }
@@ -122,7 +123,7 @@ function typesInto(target: EventTarget | null): boolean {
   );
 }
 
-export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onCreated }: OptinBuilderProps) {
+export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStateChange, onCreated }: OptinBuilderProps) {
   const [name, setName] = useState('');
   const [config, setConfig] = useState<Config | null>(null);
   const [goal, setGoal] = useState<string | null>(null);
@@ -169,7 +170,7 @@ export function OptinBuilder({ id, onClose, backLabel, onEditingStateChange, onC
     document.body.classList.add('wconvert-editing');
     return () => document.body.classList.remove('wconvert-editing');
   }, []);
-  const [tab, setTab] = useState<TabId>('journey');
+  const [tab, setTab] = useState<TabId>(initialTab ?? 'journey');
   const [journeyVisited, setJourneyVisited] = useState(true);
   const previewReturnTab = useRef<TabId>('journey');
   const [previewFromRules, setPreviewFromRules] = useState(false);

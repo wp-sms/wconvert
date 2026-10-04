@@ -25,7 +25,11 @@ final class Insights
                 $rule = null;
                 $title = '';
                 $note = '';
-                if ($current['appearances'] === 0 && $report['days'] >= 7) {
+                // The latest publication must precede the whole window. A recent
+                // publish (including a republish) cannot prove historical eligibility.
+                $publishedAt = $row['published_at'] ?? null;
+                if ($current['appearances'] === 0 && $report['days'] >= 7
+                    && is_string($publishedAt) && $publishedAt < $report['from'] . ' 00:00:00') {
                     $rule = 'no_appearances';
                     $title = __('No appearances recorded', 'wconvert');
                     $note = __('Review when and where this campaign can appear.', 'wconvert');
@@ -37,18 +41,18 @@ final class Insights
                     if ($current['results'] < $before['results'] && $current['appearances'] < $before['appearances'] && abs($current['rate'] - $before['rate']) <= 0.002 && abs($relative) <= 0.1) {
                         $rule = 'lower_exposure';
                         $title = __('Shown less often', 'wconvert');
-                        $note = __('Results fell while the result rate stayed similar. Review your display settings and site traffic.', 'wconvert');
+                        $note = __('Fewer results, with a similar rate. Check display rules and site traffic.', 'wconvert');
                     } elseif ($relative <= -0.2) {
                         $rule = 'lower_rate';
-                        $title = __('Result rate fell', 'wconvert');
-                        $note = __('Review the comparison, then consider testing one change to your campaign.', 'wconvert');
+                        $title = sprintf(__('%s fell', 'wconvert'), $goal['rate_label']);
+                        $note = __('Review the campaign, then test one change.', 'wconvert');
                     }
                 }
                 if ($rule === null) continue;
                 $facts = ['current' => $current, 'previous' => $before];
                 $periods = ['from' => $report['from'], 'to' => $report['to'], 'previous_from' => $report['previous']['from'] ?? null, 'previous_to' => $report['previous']['to'] ?? null];
                 $cards[] = ['rule_id' => $rule, 'rule_version' => 1, 'optin_id' => $row['id'], 'goal' => $goal['goal'],
-                    'name' => $row['name'], 'result_label' => $goal['result_label'], 'title' => $title, 'note' => $note,
+                    'name' => $row['name'], 'result_label' => $goal['result_label'], 'rate_label' => $goal['rate_label'], 'title' => $title, 'note' => $note,
                     'evidence_type' => 'observed', 'facts' => $facts, 'periods' => $periods,
                     'fingerprint' => hash('sha256', (string) wp_json_encode([$rule, $row['id'], $facts, $periods])),
                     'limitation' => __('The cause is unknown. Current settings do not prove what happened during this period. Counts are activity, not unique people.', 'wconvert'),

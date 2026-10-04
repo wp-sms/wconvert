@@ -98,6 +98,7 @@ export interface ReportQuery {
 export interface AdminRoute {
   section: SectionId;
   editId?: string;
+  editorTab?: 'rules';
   returnTo: string;
   report: ReportQuery;
   leads: LeadQuery;
@@ -126,9 +127,10 @@ function returnHref(value: string | null): string {
     : hashFor('optins');
 }
 
-export const editorHref = (id: string, returnTo?: string): string =>
+export const editorHref = (id: string, returnTo?: string, tab?: 'rules'): string =>
   withQuery('optins', {
     edit: id,
+    tab,
     back: returnTo ? returnHref(returnTo) : undefined,
   });
 export const reportHref = (query: ReportQuery = {}): string =>
@@ -164,6 +166,7 @@ export function routeFrom(hash: string): AdminRoute {
   return {
     section,
     editId: section === 'optins' ? value('edit') : undefined,
+    editorTab: section === 'optins' && value('edit') && value('tab') === 'rules' ? 'rules' : undefined,
     returnTo: returnHref(params.get('back')),
     report: {
       ...(value('month') &&

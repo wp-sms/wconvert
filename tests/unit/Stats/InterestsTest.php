@@ -10,6 +10,7 @@ final class InterestsTest extends TestCase
         $rows = [['fields' => json_encode(['question_answers' => [$answer, $answer, ['id' => 'q2', 'type' => 'text', 'values' => ['secret']]]], JSON_THROW_ON_ERROR)]];
         $result = Interests::summarize($rows);
         self::assertSame(1, $result['questions'][0]['answered']);
+        self::assertTrue($result['questions'][0]['multiple']);
         self::assertCount(2, $result['questions'][0]['choices']);
         self::assertStringNotContainsString('secret', json_encode($result, JSON_THROW_ON_ERROR));
     }

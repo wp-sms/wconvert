@@ -62,6 +62,7 @@ const row = (
   id,
   name: 'Newsletter footer',
   parent_id: null,
+  published_at: null,
   status,
 });
 const goal = (optins = [row()]): GoalReport => ({
@@ -70,6 +71,7 @@ const goal = (optins = [row()]): GoalReport => ({
   label: 'Grow my email list',
   action: 'submit',
   result_label: 'Email submissions',
+  rate_label: 'Email submission rate',
   headline_label: 'Email submissions',
   undelivered_conversions: null,
   optins,
@@ -373,14 +375,14 @@ describe('Goal and campaign reports', () => {
   it('does not send click-only campaigns to the lead log', async () => {
     api.readDashboard.mockResolvedValue({
       ...payload(),
-      goals: [{ ...goal(), action: 'click' }],
+      goals: [{ ...goal(), action: 'click', rate_label: 'Link click rate' }],
     });
     render(<Dashboard query={{ optinId: 'email' }} />);
     await screen.findByRole('heading', { name: 'Newsletter footer' });
     expect(
       screen.queryByRole('link', { name: 'View captured leads' }),
     ).toBeNull();
-    expect(screen.getByText('Click-through rate')).toBeInTheDocument();
+    expect(screen.getByText('Link click rate')).toBeInTheDocument();
   });
   it('searches and filters campaign contributions', async () => {
     api.readDashboard.mockResolvedValue({
@@ -574,4 +576,11 @@ describe('Goal and campaign reports', () => {
     ).toBeInTheDocument();
     expect(api.declareWinner).toHaveBeenCalledWith('email', 'arm');
   });
+});
+
+it('explains publication after the selected dates without implying a display problem', async () => {
+  api.readDashboard.mockResolvedValue({ ...payload(), goals: [goal([{ ...row(), ...numbers(0, 0), published_at: '2026-09-14 09:00:00' }])] });
+  render(<Dashboard query={{ optinId: 'email' }} />);
+  expect(await screen.findByText('Published after these report dates. New activity appears after each day ends.')).toBeVisible();
+  expect(screen.queryByRole('heading', { name: 'Needs attention' })).not.toBeInTheDocument();
 });

@@ -7,7 +7,7 @@ defined('ABSPATH') || exit;
 final class Interests
 {
     /** @param list<array<string, string|null>> $rows
-     * @return array{answered: int, choices: list<array{label: string, count: int}>, questions: list<array{question: string, answered: int, choices: list<array{label: string, count: int}>}>} */
+     * @return array{answered: int, choices: list<array{label: string, count: int}>, questions: list<array{question: string, multiple: bool, answered: int, choices: list<array{label: string, count: int}>}>} */
     public static function summarize(array $rows): array
     {
         $choices = [];
@@ -23,7 +23,7 @@ final class Interests
                 $question = hash('sha256', $answer['id'] . "\0" . $answer['question'] . "\0" . $answer['type']);
                 if (isset($seen[$question])) continue;
                 $seen[$question] = true;
-                $questions[$question] ??= ['question' => $answer['question'], 'answered' => 0, 'choices' => []];
+                $questions[$question] ??= ['question' => $answer['question'], 'multiple' => $answer['type'] === 'multi', 'answered' => 0, 'choices' => []];
                 $questions[$question]['answered']++;
                 foreach ($answer['labels'] as $i => $label) {
                     $value = $answer['values'][$i] ?? null;

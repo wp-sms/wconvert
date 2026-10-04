@@ -11,6 +11,7 @@ it('retains accepted totals, dates and campaign links after a failed period chan
   vi.mocked(apiFetch).mockResolvedValueOnce(report);
   const view = render(<Revenue period={period} campaignNames={{ offer: 'Autumn offer' }} />);
   await screen.findByText('Linked paid orders');
+  expect(screen.getByText('Linked after a signup or eligible click within 30 minutes. A link does not prove the campaign caused the sale.')).toBeVisible();
   vi.mocked(apiFetch).mockRejectedValueOnce(new Error('offline'));
   view.rerender(<Revenue period={{ ...period, days: 30, from: '2026-09-01' }} campaignNames={{ offer: 'Autumn offer' }} />);
   await screen.findByRole('alert');
