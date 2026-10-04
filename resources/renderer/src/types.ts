@@ -479,6 +479,8 @@ export interface FollowupNode extends HideableNode {
   readonly href?: string | null;
 }
 
+export interface ProductsNode extends BaseNode { readonly type: 'products'; readonly product_ids: readonly number[]; readonly exclude_cart?: boolean; readonly context_key?: string }
+
 export interface ButtonNode extends BaseNode {
   readonly type: 'button';
   readonly label?: string;
@@ -521,6 +523,7 @@ export type LeafNode =
   | ImageNode
   | FieldNode
   | QuestionNode
+  | ProductsNode
   | ButtonNode
   | FollowupNode
   | ConsentNode;

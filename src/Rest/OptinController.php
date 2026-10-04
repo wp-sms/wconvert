@@ -571,7 +571,7 @@ final class OptinController implements RestController
             return self::notFound();
         }
 
-        $displayIssues = \WConvert\Rules\DisplayPlan::issues($optin->config['display_rules'] ?? [], $this->vocabulary);
+        $displayIssues = apply_filters('wconvert_publish_issues', \WConvert\Rules\DisplayPlan::issues($optin->config['display_rules'] ?? [], $this->vocabulary), $optin->config);
         if (($optin->config['targeting']['mode'] ?? '') === 'selected' && empty($optin->config['targeting']['include'])) {
             $displayIssues[] = __('Choose at least one included page.', 'wconvert');
         }
@@ -606,6 +606,7 @@ final class OptinController implements RestController
                 'choices' => __('Add at least one choice to the interest field before publishing. You can keep saving this Campaign as a draft.', 'wconvert'),
                 'followup' => __('Give each resource link a label and address, and place it after the form. You can keep saving this Campaign as a draft.', 'wconvert'),
                 'consent' => __('Each signup needs its required contact field and its own consent wording.', 'wconvert'),
+                'commerce_products' => __('Product recommendations need WConvert Pro and WooCommerce. Choose products in one recommendation block on a single offer screen before publishing.', 'wconvert'),
                 'products' => __('Connect WooCommerce, choose products for each matching result, and add a fallback link with a label to every result before publishing.', 'wconvert'),
                 'result_link' => __('Give each result link a label and destination before publishing.', 'wconvert'),
                 'routes' => __('In Journey, connect every screen, give continuing screens a fallback path, and remove loops. You can keep saving this Campaign as a draft.', 'wconvert'),

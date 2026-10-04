@@ -59,6 +59,8 @@ namespace {
     if (!class_exists('WC_Cart')) {
         class WC_Cart
         {
+            /** @return array<string, array<string, mixed>> */
+            public function get_cart(): array { return []; }
             public function get_cart_contents_count(): int
             {
                 return 0;
@@ -70,6 +72,34 @@ namespace {
                 return 0.0;
             }
         }
+    }
+
+    if (!class_exists('WC_AJAX')) {
+        class WC_AJAX { public static function get_endpoint(string $request = ''): string { return ''; } }
+    }
+    if (!class_exists('WC_Product')) {
+        class WC_Product {
+            public function get_status(): string { return ''; }
+            public function get_name(): string { return ''; }
+            public function get_permalink(): string { return ''; }
+            public function get_price_html(): string { return ''; }
+            public function get_image_id(): int { return 0; }
+            /** @param string|list<string> $type */
+            public function is_type(string|array $type): bool { return false; }
+            public function is_visible(): bool { return false; }
+            public function is_purchasable(): bool { return false; }
+            public function is_in_stock(): bool { return false; }
+        }
+    }
+    if (!function_exists('wc_get_product')) {
+        function wc_get_product(int $id): WC_Product|false { return false; }
+    }
+    if (!function_exists('get_woocommerce_currency')) {
+        function get_woocommerce_currency(): string { return ''; }
+        function wc_get_price_decimals(): int { return 2; }
+    }
+    if (!function_exists('wc_get_page_id')) {
+        function wc_get_page_id(string $page): int { return -1; }
     }
 
     if (!function_exists('WC')) {

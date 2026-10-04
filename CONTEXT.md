@@ -135,7 +135,7 @@ browser-local campaign state and its fallback-cookie lifetime, and the short
 anonymous-count and form-protection rate-limit windows. Pro adds only facts for
 modules this install can actually run: A/B assignment state and, with
 WooCommerce cart recovery, a session cookie containing cart count and total but
-no product or contact details.
+no product or contact details. Rich cart targeting also keeps campaign-match booleans and public product cards in document memory for up to 30 seconds, using the existing WooCommerce session. It saves no cart contents or new visitor identity; cart reads use a separate 60-second hashed-IP rate bucket.
 The same facts feed WordPress's suggested privacy-policy text; they never expose
 credentials, publish policy wording, choose a legal basis or claim to erase
 external copies. See
@@ -791,8 +791,8 @@ Audience is Everyone or up to five alternative groups. A group requires ALL or
 ANY of up to eight Conditions/account leaves; the groups combine with OR.
 Required Goal predicates are outside those alternatives. The chosen expression
 must hold at the instant the opening requirements are met. They are not
-evaluated ahead of time and held: an Optin whose cart emptied while its ten
-second timer ran does not show.
+allowed to rely on expired facts: an Optin whose cart emptied while its ten
+second timer ran does not show. Pro product/category/quantity/amount predicates use a prepared, expiring WooCommerce session projection and fail closed while it is unavailable. A selected-products block offers merchant-chosen catalog links as one click-only act. See [ADR 0117](docs/adr/0117-cart-intelligence-uses-a-bounded-session-projection.md).
 
 > **The distinction is load-bearing and fixed per rule.** A rule type is a
 > Trigger or a Condition, never both — `scroll_depth` means "when they reach

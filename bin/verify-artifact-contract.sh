@@ -178,6 +178,9 @@ if [ "$slug" = "wconvert" ]; then
 fi
 
 if [ "$slug" = "wconvert-pro" ]; then
+    if [ -d "$TREE/modules/cart-recovery" ]; then
+        require_file modules/cart-recovery/public/commerce.js "cart intelligence runtime must be built" || true
+    fi
     require_file public/analytics/analytics.js "the optional analytics adapter must be built" || true
     require_file docs/analytics-integrations.html "the analytics setup guide is linked from settings" || true
 fi

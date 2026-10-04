@@ -100,6 +100,7 @@ enum ConvertingAct: string
             return;
         }
 
+        if (($node['type'] ?? null) === 'products') $found[] = self::Click;
         if (($node['type'] ?? null) === 'button' && in_array($node['action'] ?? null, ['submit', 'link'], true)) {
             $act = ($node['action'] ?? null) === self::Click->action() ? self::Click : self::Submit;
 

@@ -18,6 +18,24 @@ final class DesignPackageTest extends TestCase
         Journeys::off();
     }
 
+    public function testProductReferencesAreClearedAndFreeCannotImportCommerceDesigns(): void
+    {
+        add_filter('wconvert_commerce', static fn (): bool => true);
+        $path = tempnam(sys_get_temp_dir(), 'wc-test-');
+        try {
+            $design = json_decode((string) file_get_contents(WCONVERT_PRO_DIR . '/modules/cart-recovery/templates/cart-accessories.json'), true);
+            $design['tree']['steps'][0]['content']['children'][3]['product_ids'] = [123, 456];
+            $validator = new PackValidator(\WConvert\Template\TemplateManifest::load(), \WConvert\Template\TemplateVocabulary::fromManifest(), \WConvert\Support\Tier::Elite);
+            $package = new DesignPackage($validator);
+            $package->write($path, $design, fn (string $url) => null);
+            $read = $package->read($path);
+            self::assertSame([], $read['design']['tree']['steps'][0]['content']['children'][3]['product_ids']);
+            self::assertContains('Choose products on the receiving site.', $read['notes']);
+            $this->expectException(\RuntimeException::class);
+            PackValidator::shipping()->portable($read['design']);
+        } finally { unlink($path); unset($GLOBALS['wconvertTestFilters']['wconvert_commerce']); }
+    }
+
     public function testMerchantLinksAndVisibleConsentSurviveWhileUnsafeLinksAreRefused(): void
     {
         $design = json_decode((string) file_get_contents(WCONVERT_DIR . '/resources/templates/library/reading-slip.json'), true);

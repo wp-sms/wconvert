@@ -177,7 +177,7 @@ The flow vocabulary is generated from the same manifest as the validator:
 
 ${JSON.stringify(manifest.flow, null, 2)}
 
-A click-only design has one content screen and no submissions. A capture design
+A click-only design has one content screen and no submissions. Its action is one link button or one Pro products block, never both. Products require WooCommerce; ship product_ids empty and let the merchant select products on this site. A capture design
 has up to six screens followed by one acknowledgement. It has one required
 submission and may have one optional signup for the other marketing channel.
 Each submission declares id, required, fields (node IDs), and consents (node IDs).

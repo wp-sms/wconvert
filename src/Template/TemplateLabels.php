@@ -111,6 +111,7 @@ final class TemplateLabels
             'code' => __('Discount code', 'wconvert'),
             'field' => __('Field', 'wconvert'),
             'question' => __('Question', 'wconvert'),
+            'products' => __('Product recommendations', 'wconvert'),
             'button' => __('Button', 'wconvert'),
             'followup' => __('Resource link', 'wconvert'),
             'consent' => __('Consent checkbox', 'wconvert'),

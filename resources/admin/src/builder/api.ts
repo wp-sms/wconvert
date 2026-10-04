@@ -63,6 +63,10 @@ export type Control =
   | 'term_id'
   | 'post_type'
   | 'path_glob'
+  | 'product_set'
+  | 'category_set'
+  | 'quantity_range'
+  | 'money_range'
   | 'amount';
 
 export interface RuleParam {

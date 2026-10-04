@@ -95,7 +95,8 @@ const FREE_BYTE_BUDGET = 14592;
 const PAID_BYTE_BUDGET = 25088;
 // ADR 0105: the complete shared phone-field seam has measured per-rung caps.
 const PRO_BYTE_BUDGET = 26624;
-const ELITE_BYTE_BUDGET = 26880;
+// ADR 0117: +128 B for the commerce bridge; the separately capped runtime loads on demand.
+const ELITE_BYTE_BUDGET = 27008;
 
 const MANIFEST = 'resources/rules/manifest.json';
 

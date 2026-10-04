@@ -253,9 +253,10 @@ export function shell(template: Template, chrome: HTMLElement | null, options: M
 
     element.addEventListener('submit', (event) => event.preventDefault());
 
-    for (const cta of element.querySelectorAll('a[data-convert]')) {
-      cta.addEventListener('click', () => options.onConvert?.());
-    }
+    element.addEventListener('click', event => {
+      // Dispatch sets target before invoking us; text nodes have no closest().
+      if ((event.target as Element).closest?.('a[data-convert]')) options.onConvert?.();
+    });
 
     // Painted on BIND rather than only on the interval, so a countdown is right
     // the frame it appears — including the one a step swap has just drawn,

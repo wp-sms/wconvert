@@ -151,6 +151,10 @@ bin/verify-source-contract.sh          # no build, runs on every pull request
 npm run check:loader                   # two loader builds, runs on every pull request
 ```
 
+Use Node 22 (`nvm use`, matching `.nvmrc`) for release and loader-size checks,
+as CI does. Node versions can bundle different gzip implementations: the same
+JavaScript can measure differently even with identical compression settings.
+
 No file in free's tree may import a `pro/` path or the `WConvert\Pro`
 namespace, in TypeScript **and** PHP
 ([ADR 0029](docs/adr/0029-the-free-contract-is-proven-at-the-source.md)). The

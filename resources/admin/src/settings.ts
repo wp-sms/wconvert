@@ -25,6 +25,7 @@ export interface AdminSettings {
    * disk, and nothing on a free install mentions them at all.
    */
   readonly journeys?: boolean;
+  readonly commerce?: boolean;
   /** WordPress site timezone, including fixed-offset zones. */
   readonly timezone?: string;
   /** The nonced `admin-post.php` URL for the CSV export. */
@@ -164,3 +165,5 @@ export const adminSettings = (): AdminSettings | undefined => window.wconvertAdm
  * the server will refuse (ADR 0116).
  */
 export const journeysSupported = (): boolean => adminSettings()?.journeys === true;
+
+export const commerceSupported = (): boolean => window.wconvertAdmin?.commerce === true;

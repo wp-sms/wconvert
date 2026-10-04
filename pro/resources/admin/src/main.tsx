@@ -1,3 +1,4 @@
+import { registerProductPreview } from '@/productPreview';
 import { analyticsIntegration } from '@/analyticsIntegration';
 import { lazy, StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
@@ -11,6 +12,7 @@ import { inlinePlacementControls } from '@/inlinePlacement';
 import { registerPremiumJourneyRenderer } from '../../../modules/journeys/loader/render';
 
 registerPremiumJourneyRenderer();
+registerProductPreview();
 analyticsIntegration.settings = lazy(() => import('../../../modules/analytics/admin/Settings'));
 analyticsIntegration.campaign = lazy(() => import('../../../modules/analytics/admin/Campaign'));
 

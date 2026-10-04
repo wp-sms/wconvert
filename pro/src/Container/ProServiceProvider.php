@@ -352,6 +352,7 @@ final class ProServiceProvider implements ServiceProvider
         if (class_exists(CartCookie::class) && $site->has(SiteDependency::WooCommerce)) {
             add_filter('wconvert_privacy_browser_storage', [CartCookie::class, 'privacy']);
             $container->resolve(CartCookie::class)->hooks();
+            (new \WConvert\Pro\Module\CartRecovery\CommerceContext($container->resolve(PublishedSet::class), $container->resolve(\WConvert\Rules\Degradation::class), $container->resolve(\WConvert\Rest\RateLimit::class)))->hooks();
         }
 
         // The same guard free's loader sits behind, and for the same reason:

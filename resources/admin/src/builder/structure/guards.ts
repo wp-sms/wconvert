@@ -63,6 +63,7 @@ export function convertingActOf(tree: TemplateTree): ConvertingAct[] {
 }
 
 function collectActs(node: TemplateNode, found: ConvertingAct[]): void {
+  if (node.type === 'products' && !found.includes('click')) found.push('click');
   if (node.type === 'button' && 'action' in node && ['submit', 'link'].includes(String(node.action))) {
     const act: ConvertingAct = (node as { action?: string }).action === 'link' ? 'click' : 'submit';
 

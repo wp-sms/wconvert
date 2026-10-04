@@ -130,6 +130,7 @@ final class PayloadTag
         // becomes markup. JSON_UNESCAPED_SLASHES and _UNICODE are there for
         // the byte budget: a URL and a non-ASCII headline are otherwise
         // escaped into two and six bytes per character.
+        $entries = apply_filters('wconvert_payload_entries', $entries);
         $json = wp_json_encode($entries, JSON_HEX_TAG | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE);
 
         if ($json === false) {
@@ -183,7 +184,7 @@ final class PayloadTag
             }
         }
 
-        return wp_get_inline_script_tag($json, $attributes);
+        return wp_get_inline_script_tag($json, apply_filters('wconvert_payload_attributes', $attributes, $entries));
     }
 
     /**

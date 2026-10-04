@@ -3,7 +3,7 @@
 A [[Goal]] declares the **counted kind**, the tier, the site dependency, the
 words, and the grouping on Analytics. It no longer declares the converting act.
 Which act an [[Optin]] converts on is read from the design it holds, and from
-nowhere else.
+nowhere else. [ADR 0117](0117-cart-intelligence-uses-a-bounded-session-projection.md) extends click designs with one selected-products block: its product links share one converting act and cannot coexist with a capture flow.
 
 *Amended for progressive capture by
 [ADR 0103](0103-progressive-capture-keeps-one-lead-per-journey.md): the design

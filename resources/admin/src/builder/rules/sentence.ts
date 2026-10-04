@@ -712,6 +712,17 @@ function hasFinished(schedule: Schedule): boolean {
  * honest thing left to say about it, and it matches the row underneath.
  */
 export function phraseOf(rule: Rule, types: readonly RuleType[]): Summary {
+  if (['cart_products', 'cart_categories'].includes(rule.type)) {
+    const count = Array.isArray(rule.ids) ? rule.ids.length : 0;
+    const items = rule.type === 'cart_products' ? sprintf(_n('%d selected product', '%d selected products', count, 'wconvert'), count) : sprintf(_n('%d selected category', '%d selected categories', count, 'wconvert'), count);
+    const phrase = rule.operator === 'none' ? __('Cart contains none of %s', 'wconvert') : rule.operator === 'all' ? __('Cart contains all of %s', 'wconvert') : __('Cart contains any of %s', 'wconvert');
+    return { text: sprintf(phrase, items) + (rule.type === 'cart_categories' && rule.descendants ? __(' (including subcategories)', 'wconvert') : ''), attention: count === 0 };
+  }
+  if (['cart_quantity', 'cart_amount'].includes(rule.type) && rule.range && typeof rule.range === 'object') {
+    const r = rule.range as Record<string, unknown>;
+    const comparison = r.operator === 'between' ? `${r.min ?? '…'}–${r.max ?? '…'}` : `${r.operator === 'max' ? __('at most', 'wconvert') : __('at least', 'wconvert')} ${r.min ?? '…'}`;
+    return { text: `${types.find(t => t.type === rule.type)?.label ?? rule.type}: ${comparison}${typeof r.currency === 'string' ? ` ${r.currency}` : ''}`, attention: typeof r.min !== 'number' };
+  }
   const read = fromRule(rule, types);
 
   if (read === null) {

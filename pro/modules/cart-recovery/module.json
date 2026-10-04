@@ -1,5 +1,6 @@
 {
   "slug": "cart-recovery",
   "name": "Cart recovery",
-  "description": "The cart cookie, the two cart Conditions that read it, and the Goal whose copy asserts what they guarantee."
+  "description": "Cart predicates and selected product suggestions using a bounded WooCommerce session projection.",
+  "bundle_marker": "data-commerce-runtime"
 }

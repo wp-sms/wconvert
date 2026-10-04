@@ -9,6 +9,9 @@ Amends [ADR 0012](0012-degradation-substitutes-triggers-and-drops-conditions.md)
 [ADR 0060](0060-a-screen-is-four-situations-and-they-are-answered-the-same-way.md) and
 [ADR 0106](0106-question-journeys-extend-the-paid-loader.md).
 
+
+**Extended by [ADR 0117](0117-cart-intelligence-uses-a-bounded-session-projection.md):** Product suggestions and commerce selectors require the supplying Pro module and WooCommerce. Free retains saved structure for repair but does not offer working controls or a commerce runtime.
+
 ## Context
 
 The free plugin goes to WordPress.org. Its review team reads Guideline 5

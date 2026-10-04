@@ -155,6 +155,8 @@ final class DisplayPlan
                     if ($valid) $valid = match ($control) {
                         'seconds' => is_numeric($value) && $value >= 1 && $value <= 3600,
                         'percent' => is_numeric($value) && (float) (int) $value === (float) $value && $value >= 1 && $value <= 100,
+                        'product_set', 'category_set' => RuleValue::ids($value),
+                        'quantity_range', 'money_range' => RuleValue::range($value, $control === 'money_range'),
                         'amount' => is_numeric($value) && $value >= 0 && is_finite((float) $value),
                         'boolean' => is_bool($value),
                         'enum' => is_string($value) && in_array($value, $param['options'] ?? [], true),

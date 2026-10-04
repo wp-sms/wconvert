@@ -13,7 +13,7 @@ publication requirement, not an alternative runtime detector or a new taxonomy.
 Email and lead-magnet Goals require email; SMS requires phone. The field must be
 visible on the submitting screen and required. Enquiries require a form collecting
 email or phone, with CaptureForm enforcing at least one identifier. Offer Goals
-require a click design with a link; cart recovery uses its runtime-injected cart URL.
+require a click design with a link (including the configured Pro product block in [ADR 0117](0117-cart-intelligence-uses-a-bounded-session-projection.md)); cart recovery uses its runtime-injected cart URL.
 Lead magnets additionally require a selected dispatchable lead-magnet email
 Destination with its required settings completed at REST publication.
 

@@ -58,7 +58,15 @@ final class DesignPackage
             if (($result['product_ids'] ?? []) !== []) $notes[] = __('Choose products on the receiving site.', 'wconvert');
             $design['tree']['steps'][$i]['results'][$j]['product_ids'] = [];
         }
-        $design = $this->validator->portable($design);
+        $wrapped = \WConvert\Template\TemplateTree::rewrittenIn(['template' => $design], static function (array $node) use (&$notes): array {
+            if (($node['type'] ?? '') === 'products') {
+                if (!empty($node['product_ids'])) $notes[] = __('Choose products on the receiving site.', 'wconvert');
+                $node['product_ids'] = [];
+                unset($node['context_key']);
+            }
+            return $node;
+        });
+        $design = $this->validator->portable($wrapped['template']);
         $document = ['format' => 'wconvert-design', 'schema' => 1, 'plugin' => WCONVERT_VERSION, 'design' => $design,
             'assets' => array_values($assets), 'bindings' => $bindings, 'notes' => array_values(array_unique($notes))];
         $this->validate($document);

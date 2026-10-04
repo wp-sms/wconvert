@@ -1,3 +1,4 @@
+import { commerceSupported } from '../../settings';
 import { __ } from '@wordpress/i18n';
 import { AUTHORED_ROLES, FIELDS, LAYOUTS, LEAVES, ROLES, childKeysOf } from '../panel';
 import { capturesTaken, nodeAt, rolesTaken, type Spot } from './tree';
@@ -122,6 +123,7 @@ export function additionsIn(tree: TemplateTree, at: Spot, act: ConvertingAct): A
  * has to recognise one arriving in an import.
  */
 function offeredHere(type: string): boolean {
+  if (type === 'products') return commerceSupported() === true;
   return type !== 'question' || journeysSupported();
 }
 
@@ -156,6 +158,9 @@ function whyRefused(
   act: ConvertingAct,
 ): string | null {
   const screen = tree.steps[Number(at.parent[0])];
+  const products = tree.steps.some(step => walkNodes(step.content).some(node => node.type === 'products'));
+  if (type === 'products' && (tree.steps.length !== 1 || tree.submissions.length > 0 || tree.graph || buttonsIn(tree) > 0 || products)) return __('Use one product recommendation block as the action of a single offer screen.', 'wconvert');
+  if (products && ['button', 'field', 'question', 'consent'].includes(type)) return __('This campaign converts on its product links.', 'wconvert');
   if (type === 'button' && act === 'click' && buttonsIn(tree) > 0) {
     return __('This design already has its converting link.', 'wconvert');
   }
@@ -263,6 +268,7 @@ export function nodeFor(
     if (captures === 'interest') node.options = [];
   }
 
+  if (type === 'products') { node.product_ids = []; node.exclude_cart = true; }
   if (type === 'question') {
     node.label = __('What matters most to you?', 'wconvert');
     node.answer_type = 'single';
