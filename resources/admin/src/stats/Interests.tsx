@@ -10,7 +10,7 @@ import { __, _n, sprintf } from '@wordpress/i18n';
 import type { DashboardPayload } from './api';
 import { Region, RegionBody, RegionHeader, RegionError, RegionErrorState } from '../shell/Region';
 import { Button } from '../components/ui/button';
-interface Answers { questions: { question: string; multiple?: boolean; answered: number; choices: { label: string; count: number }[] }[]; answered: number; choices: { label: string; count: number }[]; retained: number; truncated: boolean; from: string; to: string; }
+interface Answers { questions: { question: string; multiple: boolean; answered: number; choices: { label: string; count: number }[] }[]; answered: number; choices: { label: string; count: number }[]; retained: number; truncated: boolean; from: string; to: string; }
 export function Interests({ id, period }: { id: string; period: DashboardPayload }) {
   const [stored, setData] = useState<Answers & { campaign: string }>();
   const data = stored?.campaign === id ? stored : undefined;

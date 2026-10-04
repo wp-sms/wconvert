@@ -95,9 +95,7 @@ function Totals({
       </div>
       <div>
         <dt>
-          {card.rate_label ?? (card.action === 'submit'
-            ? __('Submission rate', 'wconvert')
-            : __('Click-through rate', 'wconvert'))}
+          {card.rate_label}
         </dt>
         <dd>{formatRate(numbers.conversion_rate)}</dd>
         <small>

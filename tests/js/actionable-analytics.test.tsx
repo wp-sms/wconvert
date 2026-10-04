@@ -13,7 +13,7 @@ vi.mock('../../resources/admin/src/destinations/api', () => ({ readDestinations:
 vi.mock('@wordpress/api-fetch', () => ({ default: vi.fn() }));
 afterEach(() => { cleanup(); vi.clearAllMocks(); });
 it('shows at most three observations with inspectable denominators and a scoped edit link', async () => {
-  const evidence: Insight = { rule_id: 'lower_rate', fingerprint: 'one', optin_id: 'campaign', goal: 'grow_email_list', name: 'Newsletter', title: 'Result rate fell', note: 'Review the comparison.', result_label: 'Email submissions', limitation: 'The cause is unknown.', action: 'edit', facts: { current: { appearances: 1000, results: 20, rate: .02 }, previous: { appearances: 1000, results: 40, rate: .04 } }, periods: { from: '2026-09-24', to: '2026-09-30', previous_from: '2026-09-17', previous_to: '2026-09-23' } };
+  const evidence: Insight = { rule_id: 'lower_rate', fingerprint: 'one', optin_id: 'campaign', goal: 'grow_email_list', name: 'Newsletter', title: 'Result rate fell', note: 'Review the comparison.', result_label: 'Email submissions', rate_label: 'Email submission rate', limitation: 'The cause is unknown.', action: 'edit', facts: { current: { appearances: 1000, results: 20, rate: .02 }, previous: { appearances: 1000, results: 40, rate: .04 } }, periods: { from: '2026-09-24', to: '2026-09-30', previous_from: '2026-09-17', previous_to: '2026-09-23' } };
   render(<Insights items={[1,2,3,4].map(n => ({ ...evidence, fingerprint: String(n) }))} query={{ days: 7 }} />);
   expect(screen.getAllByRole('article')).toHaveLength(3);
   await userEvent.click(screen.getAllByText('View evidence')[0]);

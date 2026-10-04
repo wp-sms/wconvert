@@ -18,4 +18,10 @@ Outcomes stay first. Findings precede sales on campaign reports. Compact shortcu
 
 ## Verification
 
-Pending final browser verification and two-axis review. Preliminary targeted checks passed 666 JavaScript tests and 155 PHP tests. TypeScript, ESLint, PHPStan and Free/Pro admin builds passed. No real merchant study or measured conversion improvement is claimed.
+667 targeted JavaScript tests and 155 PHP tests passed. TypeScript, ESLint, PHPStan and Free/Pro admin builds passed. In disposable WordPress with production assets and illustrative response fixtures, verified overview/campaign reports, setup, empty, loading, failure, multi-currency, consent-missing and tracking-off states. No overflow at 390px or 320px, including RTL; long setup labels wrap; no JavaScript page errors. The Display rules action selects the correct tab and returns to the same accepted 30-day campaign report. Jump controls retain the report URL and focus their target.
+
+The first navigation probe compared an implicit default-period URL against its explicit accepted-period return and reported a string mismatch. The follow-up used an explicit 30-day report and verified an exact return. This is the existing accepted-report routing contract, not a changed filter.
+
+Screenshots use illustrative fixtures, not merchant data: [sales](analytics-merchant-review-2026-10-04/sales.png), [answers](analytics-merchant-review-2026-10-04/interests.png), [mobile](analytics-merchant-review-2026-10-04/campaign-390.png), [RTL](analytics-merchant-review-2026-10-04/rtl.png), [display rules](analytics-merchant-review-2026-10-04/display-rules.png).
+
+Standards review: no blocking findings; tightened the new rate-label contract after a nonblocking suggestion. Recheck found no outstanding findings. Spec review: all six requirements satisfied, no findings. No real merchant study or measured conversion improvement is claimed. CI status is recorded on the PR; no merge is authorized.

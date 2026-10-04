@@ -54,7 +54,7 @@ export interface OptinReport extends Numbers {
   name: string;
   parent_id: string | null;
   status: 'published' | 'paused' | 'historical';
-  published_at?: string | null;
+  published_at: string | null;
 }
 
 /**
@@ -77,7 +77,7 @@ export interface GoalReport extends Numbers {
   goal: string;
   action: 'submit' | 'click';
   result_label: string;
-  rate_label?: string;
+  rate_label: string;
   /** The merchant's own words for the Goal, translated in PHP. */
   label: string;
   /** What the headline number is CALLED — two of the five convert on a click. */

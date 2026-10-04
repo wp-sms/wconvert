@@ -31,7 +31,7 @@ export function ReportTarget({ name, label, children }: { name: ReportName; labe
   const ref = useCallback((element: HTMLDivElement | null) => {
     register?.(name, element ? { label, element } : null);
   }, [register, name, label]);
-  return register ? <div id={id} ref={ref} tabIndex={-1} aria-label={label} className="wa-report-target">{children}</div> : children;
+  return register ? <div id={id} ref={ref} tabIndex={-1} role="group" aria-label={label} className="wa-report-target">{children}</div> : children;
 }
 
 export function ReportShortcuts() {
