@@ -1,9 +1,12 @@
 import { afterEach, expect, it, vi } from 'vitest';
-import { cleanup, render, screen, waitFor } from '@testing-library/react';
+import { cleanup, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import apiFetch from '@wordpress/api-fetch';
+import { DeliveryAttention } from '../../resources/admin/src/stats/DeliveryAttention';
+import { readDestinations, type DestinationsPayload } from '../../resources/admin/src/destinations/api';
 import { Insights, type Insight } from '../../resources/admin/src/stats/Insights';
 import { JourneyReport } from '../../resources/admin/src/stats/JourneyReport';
+vi.mock('../../resources/admin/src/destinations/api', () => ({ readDestinations: vi.fn() }));
 vi.mock('@wordpress/api-fetch', () => ({ default: vi.fn() }));
 afterEach(() => { cleanup(); vi.clearAllMocks(); });
 it('shows at most three observations with inspectable denominators and a scoped edit link', async () => {
@@ -11,7 +14,8 @@ it('shows at most three observations with inspectable denominators and a scoped 
   render(<Insights items={[1,2,3,4].map(n => ({ ...evidence, fingerprint: String(n) }))} query={{ days: 7 }} />);
   expect(screen.getAllByRole('article')).toHaveLength(3);
   await userEvent.click(screen.getAllByText('View evidence')[0]);
-  expect(screen.getAllByText('2%')).toHaveLength(3);
+  expect(screen.getAllByRole('table', { name: 'Insight evidence' })).toHaveLength(3);
+  expect(within(screen.getAllByRole('table', { name: 'Insight evidence' })[0]).getByText('2%')).toBeInTheDocument();
   expect(screen.getAllByRole('link', { name: 'Edit campaign' })[0].getAttribute('href')).toContain('campaign');
   expect(screen.queryByText(/apply automatically/i)).not.toBeInTheDocument();
 });
@@ -31,6 +35,29 @@ it('keeps accepted activity and its dates when a new period fails', async () => 
   view.rerender(<JourneyReport id="campaign" period={{ from: '2026-09-01', to: '2026-09-30', days: 30 }} />);
   await screen.findByRole('alert');
   expect(screen.getByText('17')).toBeInTheDocument();
-  expect(screen.getByText('2026-09-24 – 2026-09-30')).toBeInTheDocument();
-  expect(screen.getByRole('cell', { name: '17' })).toHaveAttribute('data-label', 'Total');
+  expect(screen.getByText(/Sep 24.*30, 2026/)).toBeInTheDocument();
+  expect(screen.getByRole('cell', { name: '17' })).toHaveAttribute('data-label', 'Accepted');
+});
+
+it('groups actions by screen without combining revisions or inventing missing counts', async () => {
+  vi.mocked(apiFetch).mockResolvedValue({ from: '2026-09-24', to: '2026-09-30', days: 7, definitions: { old: { intro: { name: 'Welcome', order: 0 } }, current: { intro: { name: 'Welcome', order: 0 } } }, rows: [
+    { scope: 'screen:old:intro', kind: 'screen_shown', total: '80' },
+    { scope: 'screen:old:intro', kind: 'screen_advanced', total: '50' },
+    { scope: 'screen:current:intro', kind: 'screen_shown', total: '100' },
+  ] });
+  render(<JourneyReport id="campaign" period={{ from: '2026-09-24', to: '2026-09-30', days: 7 }} />);
+  const table = await screen.findByRole('table', { name: 'Screen activity' });
+  const rows = within(table).getAllByRole('row');
+  expect(rows).toHaveLength(3);
+  expect(rows[1]).toHaveTextContent('Version 1'); expect(rows[1]).toHaveTextContent('80'); expect(rows[1]).toHaveTextContent('50');
+  expect(rows[2]).toHaveTextContent('Version 2'); expect(rows[2]).toHaveTextContent('100');
+  expect(within(rows[2]).getAllByRole('cell').slice(2).map(cell => cell.textContent)).toEqual(['—', '—', '—']);
+});
+
+it('shows the newest sending issue across independent diagnostic sources', async () => {
+  vi.mocked(readDestinations).mockResolvedValue({ destinations: [{ id: 'mail', label: 'Newsletter', availability: 'ready', health: { consecutive_failures: 2, skipped_captures: 1, last_error_at: '2026-10-01 10:00:00', last_skipped_at: '2026-10-03 10:00:00' } }], failures: [{ destination: 'mail', at: '2026-10-04 10:00:00' }] } as DestinationsPayload);
+  render(<DeliveryAttention />);
+  await userEvent.click(await screen.findByText('Affected destinations'));
+  expect(screen.getByRole('cell', { name: '2026-10-04 10:00:00' })).toBeInTheDocument();
+  expect(screen.queryByText('2026-10-01 10:00:00')).not.toBeInTheDocument();
 });
