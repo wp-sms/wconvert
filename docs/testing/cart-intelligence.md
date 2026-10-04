@@ -92,3 +92,9 @@ configuration, not an actual order-confirmation request.
 - TypeScript, ESLint, PHPStan, template studio/collection checks and all four ZIP artifact builds passed. Node 22 visitor loader and commerce asset sizes are unchanged from the measurements above.
 - Visually inspected the sample dialog and its recommendation cards, including 320px LTR/RTL layouts. The longer dialog scrolls while keeping the result and reset action visible.
 - Both standards and spec reviews completed. Their publication-state and maximum-rule findings were fixed and checked again.
+
+The first follow-up CI run exposed an existing quiz analytics test race: its
+10-second event assertion expired just before the accepted capture response
+arrived. Injecting an 11-second capture delay reproduced it. The test now waits
+for HTTP 201 before checking analytics delivery; the same delayed response passes.
+The temporary delay was removed. Product behavior and analytics assertions are unchanged.

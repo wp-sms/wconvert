@@ -70,7 +70,10 @@ test('quiz completion and contact acceptance stay separate', async ({ page }) =>
   });
   await expect.poll(() => events(page)).toEqual(['wconvert_impression', 'wconvert_conversion']);
   await page.evaluate(() => window.testShadows.find(root => root.querySelector('[data-action="next"]')).querySelector('[data-action="next"]').click());
+  const capture = await page.locator('#wconvert-payload').getAttribute('data-capture');
+  const accepted = page.waitForResponse(response => response.url() === capture && response.request().postDataJSON()?.submission === 'email-signup');
   await submit(page, 'email', 'quiz-analytics@example.test');
+  expect((await accepted).status()).toBe(201);
   await expect.poll(() => events(page)).toEqual(['wconvert_impression', 'wconvert_conversion', 'generate_lead']);
   expect(await page.evaluate(() => window.gaCalls[2][2].wcv_capture_role)).toBe('secondary');
 });
