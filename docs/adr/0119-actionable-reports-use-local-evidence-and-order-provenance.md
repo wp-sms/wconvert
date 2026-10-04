@@ -33,3 +33,7 @@ The first release shows site-wide and exact-campaign sales. Its store-wide eligi
 ## Validation
 
 See [the implementation review](../reviews/actionable-analytics-2026-10-04.md) for actual checks and remaining release validation. A setup walkthrough is shipped at `pro/docs/campaign-sales.html`. Merchant interviews, gateway-specific test-mode adapters and production-store load measurements are not claimed by automated tests.
+
+## Presentation clarity follow-up
+
+The user requested a clearer, more polished interface following Harbor. Findings now show their campaign, current evidence and next action before expandable detail. Sales separates first-time consent/tracking setup from the report, uses compact figures for one currency and the shared table for multiple currencies, and keeps order evidence, tracking controls and definitions in separate disclosures. Captured answer distributions show counts and respondent-based percentages; multi-choice overlap stays explicit. Screen activity groups actions by screen and version without inventing missing counts or an abandonment funnel. New report styles load with the shared disclosure, including when journey activity is opened directly in the editor. Fetch, attribution and calculation contracts remain unchanged.

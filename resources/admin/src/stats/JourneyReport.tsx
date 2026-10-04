@@ -1,4 +1,10 @@
 import { DataTable, DataTableHead, DataTableBody, DataTableRow, DataTableColumn, DataTableCell } from '../shell/DataTable';
+import { Route } from 'lucide-react';
+import { EmptyState } from '../shell/EmptyState';
+import { RegionSkeleton } from '../shell/RegionSkeleton';
+import { ReportDisclosure } from './ReportDisclosure';
+import { rangeLabel } from './reporting';
+import { formatCount } from './format';
 import apiFetch from '@wordpress/api-fetch';
 import { useEffect, useState } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
@@ -10,10 +16,6 @@ interface Report {
   definitions: Record<string, Record<string, { name: string; order: number }>>;
   from: string; to: string; days: number; truncated: boolean;
 }
-const labels: Record<string, string> = {
-  screen_shown: __('Shown', 'wconvert'), screen_advanced: __('Completed', 'wconvert'),
-  screen_skipped: __('Skipped', 'wconvert'), screen_dismissed: __('Dismissed', 'wconvert'),
-};
 export function JourneyReport({ id, period }: { id: string; period?: Pick<DashboardPayload, 'days' | 'month' | 'from' | 'to'> }) {
   const [stored, setReport] = useState<(Report & { campaign: string }) | null>(null);
   const report = stored?.campaign === id && period?.days !== 0 ? stored : null;
@@ -32,25 +34,45 @@ export function JourneyReport({ id, period }: { id: string; period?: Pick<Dashbo
       .catch(() => { if (!controller.signal.aborted) setFailed(true); }).finally(() => { if (!controller.signal.aborted) setUpdating(false); });
     return () => controller.abort();
   }, [id, days, month, from, to, retry]);
+  if (!report && !failed && days !== 0) return <RegionSkeleton label={__('Signup and screen activity', 'wconvert')} lines={3} />;
   const Failure = report ? RegionError : RegionErrorState;
-  return <Region>
-    <RegionHeader title={__('Signup and screen activity', 'wconvert')} level={3} description={report ? `${report.from} – ${report.to}${period ? '' : ` · ${__('Includes today', 'wconvert')}`}` : undefined} />
-    <RegionBody>
-      <p className="text-note">{__('Activity totals can overlap. They do not measure unique visitors or exact abandonment. Screen versions are reported separately.', 'wconvert')}</p>
-      {updating && report && <p role="status">{__('Updating activity. Showing the dates above.', 'wconvert')}</p>}
-      {failed && <Failure message={__('Could not load matching journey totals. Any activity below still uses its displayed dates.', 'wconvert')} action={<Button variant="outline" onClick={() => setRetry(n => n + 1)}>{__('Retry', 'wconvert')}</Button>} />}
-      {days === 0 ? <p>{__('No complete days in this period.', 'wconvert')}</p>
-        : report === null ? (failed ? null : <p role="status">{__('Loading activity…', 'wconvert')}</p>)
-        : report.rows.length === 0 ? <p>{__('No journey activity in this period.', 'wconvert')}</p> : <>
-          {report.truncated && <p>{__('Showing the first 5,000 activity rows. Choose a shorter period for a complete view.', 'wconvert')}</p>}
-          <DataTable label={__('Journey activity', 'wconvert')}>
-            <DataTableHead><DataTableColumn>{__('Channel or screen', 'wconvert')}</DataTableColumn><DataTableColumn>{__('Activity', 'wconvert')}</DataTableColumn><DataTableColumn numeric>{__('Total', 'wconvert')}</DataTableColumn></DataTableHead>
-              <DataTableBody>{report.rows.map(row => {
-                const [group, revision, screen] = row.scope.split(':');
-                const name = group === 'channel' ? (revision === 'email_marketing' ? __('Email signup', 'wconvert') : __('SMS signup', 'wconvert'))
-                  : `${report.definitions[revision]?.[screen]?.name ?? __('Screen', 'wconvert')} · ${sprintf(__('Version %d', 'wconvert'), Object.keys(report.definitions).indexOf(revision) + 1)}`;
-                return <DataTableRow key={`${row.scope}:${row.kind}`}><DataTableCell label={__('Channel or screen', 'wconvert')}>{name}</DataTableCell><DataTableCell label={__('Activity', 'wconvert')}>{labels[row.kind] ?? __('Accepted', 'wconvert')}</DataTableCell><DataTableCell label={__('Total', 'wconvert')} numeric>{Number(row.total).toLocaleString()}</DataTableCell></DataTableRow>;
-              })}</DataTableBody></DataTable></>}
-    </RegionBody>
+  const channels = report?.rows.filter(row => row.scope.startsWith('channel:')) ?? [];
+  const screens = new Map<string, Record<string, number>>();
+  for (const row of report?.rows ?? []) {
+    if (!row.scope.startsWith('screen:')) continue;
+    const counts = screens.get(row.scope) ?? {};
+    counts[row.kind] = Number(row.total);
+    screens.set(row.scope, counts);
+  }
+  return <Region className="wa-report">
+    <RegionHeader title={__('Signup and screen activity', 'wconvert')} level={3} icon={<Route />} description={__('See which screens were shown and which actions followed.', 'wconvert')} />
+    {failed && <Failure message={__('Could not load matching journey totals. Activity below still uses its displayed dates.', 'wconvert')} action={<Button variant="outline" onClick={() => setRetry(n => n + 1)}>{__('Retry', 'wconvert')}</Button>} />}
+    {days === 0 ? <EmptyState icon={Route} title={__('No complete days yet', 'wconvert')}>{__('Today’s activity will appear tomorrow.', 'wconvert')}</EmptyState> : report && <>
+      <RegionBody>
+        <div className="wa-report-meta"><span>{rangeLabel(report.from, report.to)}</span>{!period && <span>{__('Includes today', 'wconvert')}</span>}{updating && <span role="status">{__('Updating… Previous dates shown.', 'wconvert')}</span>}</div>
+        {report.rows.length === 0 ? <EmptyState icon={Route} title={__('No activity in this period', 'wconvert')}>{__('This report fills as visitors use your published campaign’s signup and question screens.', 'wconvert')}</EmptyState> : <>
+          {report.truncated && <p className="wa-report-notice">{__('Showing the first 5,000 activity rows. Choose a shorter period for a complete view.', 'wconvert')}</p>}
+          {channels.length > 0 && <DataTable label={__('Accepted signups', 'wconvert')}>
+            <DataTableHead><DataTableColumn>{__('Signup', 'wconvert')}</DataTableColumn><DataTableColumn numeric>{__('Accepted', 'wconvert')}</DataTableColumn></DataTableHead>
+            <DataTableBody>{channels.map(row => <DataTableRow key={`${row.scope}:${row.kind}`}><DataTableCell label={__('Signup', 'wconvert')}>{row.scope === 'channel:email_marketing' ? __('Email signup', 'wconvert') : __('SMS signup', 'wconvert')}</DataTableCell><DataTableCell label={__('Accepted', 'wconvert')} numeric>{formatCount(Number(row.total))}</DataTableCell></DataTableRow>)}</DataTableBody>
+          </DataTable>}
+          {screens.size > 0 && <DataTable label={__('Screen activity', 'wconvert')}>
+            <DataTableHead><DataTableColumn>{__('Screen', 'wconvert')}</DataTableColumn>{[__('Shown', 'wconvert'), __('Completed', 'wconvert'), __('Skipped', 'wconvert'), __('Dismissed', 'wconvert')].map(label => <DataTableColumn numeric key={label}>{label}</DataTableColumn>)}</DataTableHead>
+            <DataTableBody>{Array.from(screens, ([scope, counts]) => {
+              const [, revision, screen] = scope.split(':');
+              const definition = report.definitions[revision]?.[screen];
+              const version = Object.keys(report.definitions).indexOf(revision) + 1;
+              return <DataTableRow key={scope}><DataTableCell label={__('Screen', 'wconvert')}><strong>{definition?.name ?? __('Screen', 'wconvert')}</strong><small className="block wa-muted">{version > 0 ? sprintf(__('Version %d', 'wconvert'), version) : __('Earlier version', 'wconvert')}</small></DataTableCell>
+                {Object.entries({ screen_shown: __('Shown', 'wconvert'), screen_advanced: __('Completed', 'wconvert'), screen_skipped: __('Skipped', 'wconvert'), screen_dismissed: __('Dismissed', 'wconvert') }).map(([kind, label]) => <DataTableCell label={label} numeric key={kind}>{counts[kind] === undefined ? '—' : formatCount(counts[kind])}</DataTableCell>)}
+              </DataTableRow>;
+            })}</DataTableBody>
+          </DataTable>}
+        </>}
+      </RegionBody>
+      <ReportDisclosure title={__('How to read this activity', 'wconvert')}>
+        <p>{__('Counts are activity, not unique visitors. The same visitor can complete, skip or dismiss different screens, so these totals do not measure abandonment.', 'wconvert')}</p>
+        <p>{__('Versions stay separate when a screen changes. A dash means no recorded activity for that action; it is not an inferred zero.', 'wconvert')}</p>
+      </ReportDisclosure>
+    </>}
   </Region>;
 }
