@@ -37093,6 +37093,903 @@
         }
       },
       "record_id": "1887f6a071f2faf221753e639735a0278865945da31e7f9832f20f303535aaf5"
+    },
+    {
+      "id": "edition-early-access",
+      "revision": "90c8544ed0f9fc5105b300a0942ece0c51068dee533889c1166859f41e3f4530",
+      "base_id": "b4f5b4cdc5e36137e038507b01869c15060aaf2328de1b28ff7d70978e82b635",
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Retain prior visual evidence after the CI renderer compaction: all 241 screens and responsive styles are unchanged; 3714 JS tests and eight real-WooCommerce checks pass. See recorded review boundaries.",
+      "at": "2026-10-04T06:35:01.162Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+              "sha256": "4a791fcb0f58d57a060ca5afaa11f8e30e44534b20bb61e885f9363cb84e71ee"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+              "sha256": "4a791fcb0f58d57a060ca5afaa11f8e30e44534b20bb61e885f9363cb84e71ee"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+              "sha256": "4a791fcb0f58d57a060ca5afaa11f8e30e44534b20bb61e885f9363cb84e71ee"
+            }
+          ]
+        }
+      },
+      "record_id": "d90a22372a152e2d1b45f1d8308763774d78da05d67f7a9a0520fe63da98c737"
+    },
+    {
+      "id": "home-repair-quote",
+      "revision": "5e051b7652b3945a725353e1807ee671d6cb03e5ef77a2fec6030f23f20a7d9b",
+      "base_id": "52f75cd015563320ccc28779af0c05d46ef9a585c29cf987a6772aa47be51276",
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Retain prior visual evidence after the CI renderer compaction: all 241 screens and responsive styles are unchanged; 3714 JS tests and eight real-WooCommerce checks pass. See recorded review boundaries.",
+      "at": "2026-10-04T06:35:01.164Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+              "sha256": "4a791fcb0f58d57a060ca5afaa11f8e30e44534b20bb61e885f9363cb84e71ee"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+              "sha256": "4a791fcb0f58d57a060ca5afaa11f8e30e44534b20bb61e885f9363cb84e71ee"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+              "sha256": "4a791fcb0f58d57a060ca5afaa11f8e30e44534b20bb61e885f9363cb84e71ee"
+            }
+          ]
+        }
+      },
+      "record_id": "7c0378c7edd15bbc1bc69fcc53f35cb14b15ee8e4770c4629ee2e185530cc5a7"
+    },
+    {
+      "id": "sunday-reading",
+      "revision": "93bbb8f39223836d6602f5e972540753cc1a9bde6188298a56040ce230a5a5f9",
+      "base_id": "e673c194a52d87e7b182b44d28ee2b0b4259f56a01385066b6465e0f3a7650d1",
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Retain prior visual evidence after the CI renderer compaction: all 241 screens and responsive styles are unchanged; 3714 JS tests and eight real-WooCommerce checks pass. See recorded review boundaries.",
+      "at": "2026-10-04T06:35:01.164Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+              "sha256": "4a791fcb0f58d57a060ca5afaa11f8e30e44534b20bb61e885f9363cb84e71ee"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+              "sha256": "4a791fcb0f58d57a060ca5afaa11f8e30e44534b20bb61e885f9363cb84e71ee"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+              "sha256": "4a791fcb0f58d57a060ca5afaa11f8e30e44534b20bb61e885f9363cb84e71ee"
+            }
+          ]
+        }
+      },
+      "record_id": "6e75974650f3664bc56011fdbc359bef1251313e9bb9eb2dddb048bede7397f7"
+    },
+    {
+      "id": "sale-deadline",
+      "revision": "751140bd6d5c60a714ec461e320d499d21f1cc5e596e416712e188230349c2b6",
+      "base_id": "ec24430c672a3b52d82498584d7c53c668cae852de5787b4cc342ea620ae0759",
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Retain prior visual evidence after the CI renderer compaction: all 241 screens and responsive styles are unchanged; 3714 JS tests and eight real-WooCommerce checks pass. See recorded review boundaries.",
+      "at": "2026-10-04T06:35:01.164Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+              "sha256": "4a791fcb0f58d57a060ca5afaa11f8e30e44534b20bb61e885f9363cb84e71ee"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+              "sha256": "4a791fcb0f58d57a060ca5afaa11f8e30e44534b20bb61e885f9363cb84e71ee"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+              "sha256": "4a791fcb0f58d57a060ca5afaa11f8e30e44534b20bb61e885f9363cb84e71ee"
+            }
+          ]
+        }
+      },
+      "record_id": "01a3a588593683be0e0bec65dd56ecf99fb4a66bc76784ae4014684a358e809a"
+    },
+    {
+      "id": "restock-announcements",
+      "revision": "fe5b4c35aa91b25b508b7064762d133f8002e6df786c3204713bdc26b521a4a2",
+      "base_id": "9ad691ee12934683b91d6768999a6e4db34f8a529f98a2f8e3bff4d994655711",
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Retain prior visual evidence after the CI renderer compaction: all 241 screens and responsive styles are unchanged; 3714 JS tests and eight real-WooCommerce checks pass. See recorded review boundaries.",
+      "at": "2026-10-04T06:35:01.164Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+              "sha256": "4a791fcb0f58d57a060ca5afaa11f8e30e44534b20bb61e885f9363cb84e71ee"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+              "sha256": "4a791fcb0f58d57a060ca5afaa11f8e30e44534b20bb61e885f9363cb84e71ee"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+              "sha256": "4a791fcb0f58d57a060ca5afaa11f8e30e44534b20bb61e885f9363cb84e71ee"
+            }
+          ]
+        }
+      },
+      "record_id": "d99740357763430ee0520b87b348adb56a77976fe7479386870da8f247b463c1"
+    },
+    {
+      "id": "cleaning-quote",
+      "revision": "f3d4fb8c02799e55c1451509e55021d8c0c676510bb3fb02416c238d2947ca6c",
+      "base_id": "b68f53a51bbaa8ceaf73477870e8dcb32cd4c29fd714ecb43de863b5fc9cc78b",
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Retain prior visual evidence after the CI renderer compaction: all 241 screens and responsive styles are unchanged; 3714 JS tests and eight real-WooCommerce checks pass. See recorded review boundaries.",
+      "at": "2026-10-04T06:35:01.164Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+              "sha256": "4a791fcb0f58d57a060ca5afaa11f8e30e44534b20bb61e885f9363cb84e71ee"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+              "sha256": "4a791fcb0f58d57a060ca5afaa11f8e30e44534b20bb61e885f9363cb84e71ee"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+              "sha256": "4a791fcb0f58d57a060ca5afaa11f8e30e44534b20bb61e885f9363cb84e71ee"
+            }
+          ]
+        }
+      },
+      "record_id": "52adb50ad554047d01c510589c9a4fa88435c3b94dc4704de6ca6c53776fd21f"
+    },
+    {
+      "id": "renovation-callback",
+      "revision": "730bf03c19a3e812ac5c0d2d59f5adb1d5c9726a68bcc2a8fa2f6589891aead5",
+      "base_id": "36b32e3d2f5fe15b67d3372659c60d2951fa588b5cbe311d64202d20ad6571e9",
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Retain prior visual evidence after the CI renderer compaction: all 241 screens and responsive styles are unchanged; 3714 JS tests and eight real-WooCommerce checks pass. See recorded review boundaries.",
+      "at": "2026-10-04T06:35:01.164Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+              "sha256": "4a791fcb0f58d57a060ca5afaa11f8e30e44534b20bb61e885f9363cb84e71ee"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+              "sha256": "4a791fcb0f58d57a060ca5afaa11f8e30e44534b20bb61e885f9363cb84e71ee"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+              "sha256": "4a791fcb0f58d57a060ca5afaa11f8e30e44534b20bb61e885f9363cb84e71ee"
+            }
+          ]
+        }
+      },
+      "record_id": "34a0c922984f6f5dfd5a7e463aa7a96bc86b89461fae5bfceb372c78487e309d"
+    },
+    {
+      "id": "editorial-weekly",
+      "revision": "5bd6fe9817a90e0896248d772f2d6513ded32fdf5b6709f36362f7dea13fb5a3",
+      "base_id": "a7d31ddd772f4bc90ed4bade8de159ec9f47ed55ebad360f86801fdf30596b93",
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Retain prior visual evidence after the CI renderer compaction: all 241 screens and responsive styles are unchanged; 3714 JS tests and eight real-WooCommerce checks pass. See recorded review boundaries.",
+      "at": "2026-10-04T06:35:01.164Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+              "sha256": "4a791fcb0f58d57a060ca5afaa11f8e30e44534b20bb61e885f9363cb84e71ee"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+              "sha256": "4a791fcb0f58d57a060ca5afaa11f8e30e44534b20bb61e885f9363cb84e71ee"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+              "sha256": "4a791fcb0f58d57a060ca5afaa11f8e30e44534b20bb61e885f9363cb84e71ee"
+            }
+          ]
+        }
+      },
+      "record_id": "8491586ee2efb9fc96988b44d9dd60e4ea5b44da8d30d5f4b3972f0e0d5d85b4"
+    },
+    {
+      "id": "writing-checklist",
+      "revision": "64817a92089b0313e4f91df291a0f376fb283cb0a650b06fe7e25e080860ca2c",
+      "base_id": "2fd328178a432fd0e66467482f681da293b7b5740a868fa426d71dcff04706ac",
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Retain prior visual evidence after the CI renderer compaction: all 241 screens and responsive styles are unchanged; 3714 JS tests and eight real-WooCommerce checks pass. See recorded review boundaries.",
+      "at": "2026-10-04T06:35:01.164Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+              "sha256": "4a791fcb0f58d57a060ca5afaa11f8e30e44534b20bb61e885f9363cb84e71ee"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+              "sha256": "4a791fcb0f58d57a060ca5afaa11f8e30e44534b20bb61e885f9363cb84e71ee"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+              "sha256": "4a791fcb0f58d57a060ca5afaa11f8e30e44534b20bb61e885f9363cb84e71ee"
+            }
+          ]
+        }
+      },
+      "record_id": "ef366fcf1cbddbd18c747d319567eba0f29cfc6e56a067bc0e1c1a4e2753c3ae"
+    },
+    {
+      "id": "repair-assessment",
+      "revision": "0bed02ef5c88b95c4d6d7f09371a67f1f3fb13d0d18f2f809817471cb5e1130d",
+      "base_id": "140ff2058fe765b0dd3aa611dc730ac21b8928898250bf9b76886466fec925c5",
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Retain prior visual evidence after the CI renderer compaction: all 241 screens and responsive styles are unchanged; 3714 JS tests and eight real-WooCommerce checks pass. See recorded review boundaries.",
+      "at": "2026-10-04T06:35:01.164Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+              "sha256": "4a791fcb0f58d57a060ca5afaa11f8e30e44534b20bb61e885f9363cb84e71ee"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+              "sha256": "4a791fcb0f58d57a060ca5afaa11f8e30e44534b20bb61e885f9363cb84e71ee"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+              "sha256": "4a791fcb0f58d57a060ca5afaa11f8e30e44534b20bb61e885f9363cb84e71ee"
+            }
+          ]
+        }
+      },
+      "record_id": "266d34bca924714299bf6a2b9170abda33cfb3535f064a0ab3039664da853630"
+    },
+    {
+      "id": "homeware-care-notes",
+      "revision": "0d5915a32024d7649ca858c67520610ade186e458029454a029b71d2bd08233d",
+      "base_id": "50fe0f43e3da431997b7711b40f633b96462ae4127b1ed194f85d8c4e828e41b",
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Retain prior visual evidence after the CI renderer compaction: all 241 screens and responsive styles are unchanged; 3714 JS tests and eight real-WooCommerce checks pass. See recorded review boundaries.",
+      "at": "2026-10-04T06:35:01.164Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+              "sha256": "4a791fcb0f58d57a060ca5afaa11f8e30e44534b20bb61e885f9363cb84e71ee"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+              "sha256": "4a791fcb0f58d57a060ca5afaa11f8e30e44534b20bb61e885f9363cb84e71ee"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+              "sha256": "4a791fcb0f58d57a060ca5afaa11f8e30e44534b20bb61e885f9363cb84e71ee"
+            }
+          ]
+        }
+      },
+      "record_id": "308d295063a146b2e9ccd5838f9faf054c6c3b6659dceff31010577bb47cde25"
+    },
+    {
+      "id": "repair-advice-request",
+      "revision": "70c49c90ed9ee84dbebe1473ab19a779bacf276f7cf6ef2f0a5d0670d52a0cce",
+      "base_id": "1dd397f69751f62f24e4b17e707195fdff7a1a6690d464899f8381ec1d2699bd",
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Retain prior visual evidence after the CI renderer compaction: all 241 screens and responsive styles are unchanged; 3714 JS tests and eight real-WooCommerce checks pass. See recorded review boundaries.",
+      "at": "2026-10-04T06:35:01.164Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+              "sha256": "4a791fcb0f58d57a060ca5afaa11f8e30e44534b20bb61e885f9363cb84e71ee"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+              "sha256": "4a791fcb0f58d57a060ca5afaa11f8e30e44534b20bb61e885f9363cb84e71ee"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+              "sha256": "4a791fcb0f58d57a060ca5afaa11f8e30e44534b20bb61e885f9363cb84e71ee"
+            }
+          ]
+        }
+      },
+      "record_id": "b1ba560b334a6799a0714b367cc80c1253773be5d7e9b5fba7400f12faf82136"
+    },
+    {
+      "id": "first-order-receipt",
+      "revision": "365fce4fe558a1a439b94c5859e3a7b7877f644a2b1ab64f5e093175e728d253",
+      "base_id": "d922a56237c62697b3c84e59d854288c665bcb2897d44209cdcb534b97c5379b",
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Retain prior visual evidence after the CI renderer compaction: all 241 screens and responsive styles are unchanged; 3714 JS tests and eight real-WooCommerce checks pass. See recorded review boundaries.",
+      "at": "2026-10-04T06:35:01.164Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+              "sha256": "4a791fcb0f58d57a060ca5afaa11f8e30e44534b20bb61e885f9363cb84e71ee"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+              "sha256": "4a791fcb0f58d57a060ca5afaa11f8e30e44534b20bb61e885f9363cb84e71ee"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+              "sha256": "4a791fcb0f58d57a060ca5afaa11f8e30e44534b20bb61e885f9363cb84e71ee"
+            }
+          ]
+        }
+      },
+      "record_id": "feb571df5167cfd7d8eedeeee6fb395d1e454e0aea12926beb6c5f1db8a43ffe"
+    },
+    {
+      "id": "reading-notes-guide",
+      "revision": "6ecd18537b1ad2834c41e083183d66d4817b2bb8377e46e1c46e895ac9c015ee",
+      "base_id": "bdd5b0505b6bf1ef3e636e0742bf549e295f9f1a871fd9b61864550f32a779df",
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Retain prior visual evidence after the CI renderer compaction: all 241 screens and responsive styles are unchanged; 3714 JS tests and eight real-WooCommerce checks pass. See recorded review boundaries.",
+      "at": "2026-10-04T06:35:01.164Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+              "sha256": "4a791fcb0f58d57a060ca5afaa11f8e30e44534b20bb61e885f9363cb84e71ee"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+              "sha256": "4a791fcb0f58d57a060ca5afaa11f8e30e44534b20bb61e885f9363cb84e71ee"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+              "sha256": "4a791fcb0f58d57a060ca5afaa11f8e30e44534b20bb61e885f9363cb84e71ee"
+            }
+          ]
+        }
+      },
+      "record_id": "78a267aebfe760afae1503892b642fc397d28e495dcbd8b9e1d587ff61f48a54"
+    },
+    {
+      "id": "website-review-enquiry",
+      "revision": "832ccf0c57b8be4784929edbcb9f698e59877e5df6a6b51397e9bedfb8e57eb3",
+      "base_id": "f62cadbcd195b5be8810cd67d02268bb41f6fb85e4ad52a456d28d1d576bc3b4",
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Retain prior visual evidence after the CI renderer compaction: all 241 screens and responsive styles are unchanged; 3714 JS tests and eight real-WooCommerce checks pass. See recorded review boundaries.",
+      "at": "2026-10-04T06:35:01.164Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+              "sha256": "4a791fcb0f58d57a060ca5afaa11f8e30e44534b20bb61e885f9363cb84e71ee"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+              "sha256": "4a791fcb0f58d57a060ca5afaa11f8e30e44534b20bb61e885f9363cb84e71ee"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+              "sha256": "4a791fcb0f58d57a060ca5afaa11f8e30e44534b20bb61e885f9363cb84e71ee"
+            }
+          ]
+        }
+      },
+      "record_id": "1daf91ca9de7a9a52b277f1f229461901dfde646a44c53740bb56532fa741522"
+    },
+    {
+      "id": "lighting-collection",
+      "revision": "f4d4f300fc01a19570d69240b64f6bae34c072735b6debc4fec7263adec8c135",
+      "base_id": "7a114c67605741debdfdd6a7aa01b2277198abbe35f4ce6f2237fcd4cbb2f8b5",
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Retain prior visual evidence after the CI renderer compaction: all 241 screens and responsive styles are unchanged; 3714 JS tests and eight real-WooCommerce checks pass. See recorded review boundaries.",
+      "at": "2026-10-04T06:35:01.164Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+              "sha256": "4a791fcb0f58d57a060ca5afaa11f8e30e44534b20bb61e885f9363cb84e71ee"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+              "sha256": "4a791fcb0f58d57a060ca5afaa11f8e30e44534b20bb61e885f9363cb84e71ee"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+              "sha256": "4a791fcb0f58d57a060ca5afaa11f8e30e44534b20bb61e885f9363cb84e71ee"
+            }
+          ]
+        }
+      },
+      "record_id": "87465ca5847ea96960a29d8400a395352758e3ef3b1d8beb87f0b87120b9757e"
+    },
+    {
+      "id": "specification-sheet",
+      "revision": "b1ae86a0463aabac9ca81915a228af3be3224dfa05cb9f1ffd19433c9483daca",
+      "base_id": "855c40a63d66351ef2e37a984ca02a56cc235037c986100b4e3a582967db9cec",
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Retain prior visual evidence after the CI renderer compaction: all 241 screens and responsive styles are unchanged; 3714 JS tests and eight real-WooCommerce checks pass. See recorded review boundaries.",
+      "at": "2026-10-04T06:35:01.164Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+              "sha256": "4a791fcb0f58d57a060ca5afaa11f8e30e44534b20bb61e885f9363cb84e71ee"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+              "sha256": "4a791fcb0f58d57a060ca5afaa11f8e30e44534b20bb61e885f9363cb84e71ee"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+              "sha256": "4a791fcb0f58d57a060ca5afaa11f8e30e44534b20bb61e885f9363cb84e71ee"
+            }
+          ]
+        }
+      },
+      "record_id": "5e3a851c57263e63750f9fdbe1dcb06daa3cf0c38b7607d116b6d700ff6bc8aa"
+    },
+    {
+      "id": "excerpt-window",
+      "revision": "f725dbd8e895b94ddbc1d3d4778882055806d1ce3bbcee1893907dca384683bd",
+      "base_id": "239a4765cfb3c2647d99d85e2bbac95bcedea26bf85811125cb0d0b9c7228711",
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Retain prior visual evidence after the CI renderer compaction: all 241 screens and responsive styles are unchanged; 3714 JS tests and eight real-WooCommerce checks pass. See recorded review boundaries.",
+      "at": "2026-10-04T06:35:01.164Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+              "sha256": "4a791fcb0f58d57a060ca5afaa11f8e30e44534b20bb61e885f9363cb84e71ee"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+              "sha256": "4a791fcb0f58d57a060ca5afaa11f8e30e44534b20bb61e885f9363cb84e71ee"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+              "sha256": "4a791fcb0f58d57a060ca5afaa11f8e30e44534b20bb61e885f9363cb84e71ee"
+            }
+          ]
+        }
+      },
+      "record_id": "a06126fccfde3405d6ce92db4cb8954d64a4083d13ef7915be68b2bb027269a1"
+    },
+    {
+      "id": "collection-sale-planning",
+      "revision": "54ee2363233a9c87e696333e9243b99bd2d105d363cb595f7a1ce041c9a4f669",
+      "base_id": "8a942c4ab00af2226bdf83c349741c925193848afb7b93c7c3c3573f1d4053b8",
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Refresh renderer-bound references after the unchanged-output comparison and final CI follow-up tests; collection metadata and design content are unchanged.",
+      "at": "2026-10-04T06:35:29.333Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+              "sha256": "4a791fcb0f58d57a060ca5afaa11f8e30e44534b20bb61e885f9363cb84e71ee"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+              "sha256": "4a791fcb0f58d57a060ca5afaa11f8e30e44534b20bb61e885f9363cb84e71ee"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+              "sha256": "4a791fcb0f58d57a060ca5afaa11f8e30e44534b20bb61e885f9363cb84e71ee"
+            }
+          ]
+        }
+      },
+      "record_id": "8ef331013eeb09a039fd554b4dbb4d2660cc6902cf84984cf0a9fe51725c8a08"
+    },
+    {
+      "id": "collection-launch-a-collection",
+      "revision": "3ae5a1c7329fccfc2a88b23e2825b3d11bb8e10240bc549d63214d7e046cd772",
+      "base_id": "39c1c16eae02275d2b4edc0186ce1bf161122fd9e954612272c2588e0a30c873",
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Refresh renderer-bound references after the unchanged-output comparison and final CI follow-up tests; collection metadata and design content are unchanged.",
+      "at": "2026-10-04T06:35:29.333Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+              "sha256": "4a791fcb0f58d57a060ca5afaa11f8e30e44534b20bb61e885f9363cb84e71ee"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+              "sha256": "4a791fcb0f58d57a060ca5afaa11f8e30e44534b20bb61e885f9363cb84e71ee"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+              "sha256": "4a791fcb0f58d57a060ca5afaa11f8e30e44534b20bb61e885f9363cb84e71ee"
+            }
+          ]
+        }
+      },
+      "record_id": "8f24a6892e3dfedf5c8a3890a73d78645aefc343946e99d0b79864f31dbd0466"
+    },
+    {
+      "id": "collection-service-enquiries",
+      "revision": "07b04eb40dbbe5cd56ef136054d0db0d2215361ced6f82396631e132d34f9771",
+      "base_id": "ef63a1f82142a5e8670df72378e7cbe82f73f5ed4c36a710768c9fead4c27a9b",
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Refresh renderer-bound references after the unchanged-output comparison and final CI follow-up tests; collection metadata and design content are unchanged.",
+      "at": "2026-10-04T06:35:29.333Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+              "sha256": "4a791fcb0f58d57a060ca5afaa11f8e30e44534b20bb61e885f9363cb84e71ee"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+              "sha256": "4a791fcb0f58d57a060ca5afaa11f8e30e44534b20bb61e885f9363cb84e71ee"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+              "sha256": "4a791fcb0f58d57a060ca5afaa11f8e30e44534b20bb61e885f9363cb84e71ee"
+            }
+          ]
+        }
+      },
+      "record_id": "86bfe5145e707b7af7702acc1a37b7e95a47ae2b2e5789d35014e055925d478f"
+    },
+    {
+      "id": "collection-reader-relationships",
+      "revision": "684c73e106d2f4aba8a9b240feefa906f1dd40de2cc6e920b6942781463ac3d4",
+      "base_id": "5e2545c2d7d8e3bb03a7f3876c0e55a882272b51ffe515af2c829cbdf1026135",
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Refresh renderer-bound references after the unchanged-output comparison and final CI follow-up tests; collection metadata and design content are unchanged.",
+      "at": "2026-10-04T06:35:29.333Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+              "sha256": "4a791fcb0f58d57a060ca5afaa11f8e30e44534b20bb61e885f9363cb84e71ee"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+              "sha256": "4a791fcb0f58d57a060ca5afaa11f8e30e44534b20bb61e885f9363cb84e71ee"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+              "sha256": "4a791fcb0f58d57a060ca5afaa11f8e30e44534b20bb61e885f9363cb84e71ee"
+            }
+          ]
+        }
+      },
+      "record_id": "0d2bffb902f60a540c80c0fee8af7201d9a4a25c55380aed9d3f56329c044ac4"
+    },
+    {
+      "id": "collection-black-friday-2026",
+      "revision": "03afc67766c8c97c657275d46fa142dc52626445b6dbb7b9c99e4f484397e828",
+      "base_id": "1887f6a071f2faf221753e639735a0278865945da31e7f9832f20f303535aaf5",
+      "decision": "approved",
+      "reviewer": "Codex",
+      "note": "Refresh renderer-bound references after the unchanged-output comparison and final CI follow-up tests; collection metadata and design content are unchanged.",
+      "at": "2026-10-04T06:35:29.333Z",
+      "checks": {
+        "visual": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+              "sha256": "4a791fcb0f58d57a060ca5afaa11f8e30e44534b20bb61e885f9363cb84e71ee"
+            }
+          ]
+        },
+        "journey": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+              "sha256": "4a791fcb0f58d57a060ca5afaa11f8e30e44534b20bb61e885f9363cb84e71ee"
+            }
+          ]
+        },
+        "wordpress": {
+          "status": "passed",
+          "evidence": [
+            {
+              "path": "docs/reviews/commerce-renderer-2026-10-04.md",
+              "sha256": "4a791fcb0f58d57a060ca5afaa11f8e30e44534b20bb61e885f9363cb84e71ee"
+            }
+          ]
+        }
+      },
+      "record_id": "0f25ba8f46707af6afa32bff08e8b9f87246f59df2e34a7bd2ad91b8a091e1d7"
     }
   ]
 }

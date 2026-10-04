@@ -263,8 +263,6 @@ function appendNode(parent: HTMLElement, node: TemplateNode, scoped: Tokens, at:
 }
 
 function elementFor(node: TemplateNode, scoped: Tokens, at: string | null): HTMLElement | null {
-  const supplied = suppliedLeaf?.(node);
-  if (supplied) return supplied;
   switch (node.type) {
     case 'stack':
     case 'row':
@@ -304,7 +302,7 @@ function elementFor(node: TemplateNode, scoped: Tokens, at: string | null): HTML
     case 'consent':
       return consent(node as ConsentNode);
     default:
-      return null;
+      return suppliedLeaf?.(node) ?? null;
   }
 }
 

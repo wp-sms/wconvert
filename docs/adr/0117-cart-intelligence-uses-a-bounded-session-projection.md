@@ -56,6 +56,10 @@ focus remains within the refreshed block if the focused link was removed.
 
 Two starts offer selected accessories and shopping guidance. They contain no
 site-local IDs or currency thresholds. Publication requires real selections.
+Preparing the accessory draft resolves the store's checkout page ID into an
+editable exclusion, covering its order-confirmation endpoints without hardcoded
+slugs. Recommendation selections reject variations; cart conditions still allow
+exact variation IDs.
 Exports clear product IDs and note the required setup. Imports/packs require the
 commerce capability and reject embedded local product references. Losing Pro or
 WooCommerce suspends the campaign rather than dropping its requirements. Existing
@@ -73,5 +77,7 @@ lower editions. The module is packaged with its owning cart-recovery directory.
 The [verification record](../testing/cart-intelligence.md) records actual unit,
 real-site, browser and visual checks. Merchant recruitment remains a separate,
 unperformed research task; technical checks do not establish usability or uplift.
+Explicit sample-basket simulation also remains unfinished; Sample Visit currently
+uses merchant-supplied rule assumptions rather than evaluating a sample basket.
 Shipping progress, Woo cross-sell sourcing, direct add-to-cart and order attribution
 remain later increments, without controls or claims in this release.

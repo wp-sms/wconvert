@@ -22,6 +22,7 @@ final class CommerceContext
         add_filter('wconvert_payload_entries', [$this, 'annotate']);
         add_filter('wconvert_payload_attributes', [$this, 'attributes'], 10, 2);
         add_filter('wconvert_publish_issues', [$this, 'publishIssues'], 10, 2);
+        add_filter('wconvert_playbook_prefill', [$this, 'prefill'], 10, 2);
         add_action('rest_api_init', function (): void {
             register_rest_route(Routes::NAMESPACE, '/commerce/objects', [
                 'methods' => 'GET', 'permission_callback' => [Routes::class, 'canManage'],
@@ -115,9 +116,21 @@ final class CommerceContext
         $products = self::products($config);
         if ($products !== null) {
             $ids = $products['product_ids'] ?? [];
-            if (!RuleValue::ids($ids) || count($ids) > 6 || count($this->existing(['type' => 'cart_products', 'ids' => $ids])) !== count($ids)) $issues[] = __('Choose up to six available catalog products for the recommendations.', 'wconvert');
+            if (!RuleValue::ids($ids) || count($ids) > 6 || count($this->existing(['type' => 'recommendation', 'ids' => $ids])) !== count($ids)) $issues[] = __('Choose up to six available catalog products for the recommendations.', 'wconvert');
         }
         return $issues;
+    }
+
+    /** Resolve site-owned defaults only when preparing a new draft.
+     * @param array<string, mixed> $config
+     * @return array<string, mixed> */
+    public function prefill(array $config, string $playbookId): array
+    {
+        if ($playbookId !== 'recommend-accessory') return $config;
+        $checkout = wc_get_page_id('checkout');
+        // Checkout endpoints retain this queried page ID, including order-received.
+        if ($checkout > 0) $config['targeting']['exclude'][] = ['type' => 'post', 'value' => (string) $checkout];
+        return $config;
     }
 
     /** @param array<string, mixed> $rule
@@ -127,7 +140,7 @@ final class CommerceContext
         return array_values(array_filter($rule['ids'], static function (int $id) use ($rule): bool {
             if ($rule['type'] === 'cart_categories') return is_array(term_exists($id, 'product_cat'));
             $product = wc_get_product($id);
-            return $product && $product->get_status() === 'publish';
+            return $product && $product->get_status() === 'publish' && ($rule['type'] !== 'recommendation' || $product->is_type(['simple', 'variable']));
         }));
     }
 
@@ -211,7 +224,7 @@ final class CommerceContext
         $cards = [];
         foreach (array_slice($node['product_ids'] ?? [], 0, 6) as $id) {
             $product = wc_get_product($id);
-            if (!$product || $product->is_type('variation') || (($node['exclude_cart'] ?? true) && in_array($id, $inCart, true)) || !$product->is_visible() || !$product->is_purchasable() || !$product->is_in_stock() || get_post_field('post_password', $id) !== '') continue;
+            if (!$product || !$product->is_type(['simple', 'variable']) || (($node['exclude_cart'] ?? true) && in_array($id, $inCart, true)) || !$product->is_visible() || !$product->is_purchasable() || !$product->is_in_stock() || get_post_field('post_password', $id) !== '') continue;
             $cards[] = ['id' => $id, 'name' => $product->get_name(), 'url' => $product->get_permalink(), 'image' => wp_get_attachment_image_url($product->get_image_id(), 'woocommerce_thumbnail') ?: '',
                 'price' => html_entity_decode(wp_strip_all_tags($product->get_price_html()), ENT_QUOTES, 'UTF-8'),
                 'label' => $product->is_type('variable') ? __('Choose options', 'wconvert') : __('View product', 'wconvert')];
@@ -233,7 +246,7 @@ final class CommerceContext
             $posts = get_posts(['post_type' => $kind === 'recommendation' ? ['product'] : ['product', 'product_variation'], 'post_status' => 'publish', 'posts_per_page' => 20, 's' => $ids ? '' : $query, 'post__in' => $ids]);
             foreach ($posts as $post) {
                 $product = wc_get_product($post->ID);
-                if ($product) $items[] = ['id' => $post->ID, 'name' => $product->get_name()];
+                if ($product && ($kind !== 'recommendation' || $product->is_type(['simple', 'variable']))) $items[] = ['id' => $post->ID, 'name' => $product->get_name()];
             }
         }
         return new \WP_REST_Response(['items' => $items, 'currency' => get_woocommerce_currency(), 'decimals' => wc_get_price_decimals()]);

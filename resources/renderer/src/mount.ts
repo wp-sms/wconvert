@@ -254,7 +254,8 @@ export function shell(template: Template, chrome: HTMLElement | null, options: M
     element.addEventListener('submit', (event) => event.preventDefault());
 
     element.addEventListener('click', event => {
-      if (event.target instanceof Element && event.target.closest('a[data-convert]')) options.onConvert?.();
+      // Dispatch sets target before invoking us; text nodes have no closest().
+      if ((event.target as Element).closest?.('a[data-convert]')) options.onConvert?.();
     });
 
     // Painted on BIND rather than only on the interval, so a countdown is right

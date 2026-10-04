@@ -8,6 +8,16 @@ test.beforeEach(async ({ page }) => {
   });
 });
 const cards = page => page.evaluate(() => window.testShadows.flatMap(root => [...root.querySelectorAll('article strong')]).filter(node => node.isConnected).map(node => node.textContent));
+test('publication rejects recommendation variations while allowing cart variations, and the accessory start excludes checkout', async ({ request }) => {
+  const response = await request.get('/?wconvert_commerce_fixture=1&checks=1');
+  expect(response.ok()).toBe(true);
+  const result = await response.json();
+  expect(result.unsupported).toContain('Choose up to six available catalog products for the recommendations.');
+  expect(result.supported).toEqual([]);
+  expect(result.cart_rule).toEqual([]);
+  expect(result.checkout).toBeGreaterThan(0);
+  expect(result.targeting.exclude).toContainEqual({ type: 'post', value: String(result.checkout) });
+});
 for (const loggedIn of [false, true]) test(`${loggedIn ? 'logged-in' : 'guest'} session shows only live accessories and updates after classic add to cart`, async ({ page }) => {
   const errors = []; const reads = [];
   page.on('pageerror', error => errors.push(error.message));

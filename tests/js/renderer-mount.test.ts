@@ -431,6 +431,23 @@ describe('the visitor acting on a mounted Optin', () => {
     expect(onConvert).toHaveBeenCalledOnce();
   });
 
+  it('converts newly rendered product links without counting unrelated or non-element targets', () => {
+    const onConvert = vi.fn();
+    const mounted = mount({ displayType: 'popup', template: TEMPLATE, onConvert });
+    mounted.show();
+    const link = document.createElement('a');
+    link.dataset.convert = '';
+    const label = document.createElement('strong');
+    label.textContent = 'View product';
+    link.append(label);
+    mounted.root!.append(link);
+    mounted.root!.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    label.firstChild!.dispatchEvent(new MouseEvent('click', { bubbles: true }));
+    expect(onConvert).not.toHaveBeenCalled();
+    label.click();
+    expect(onConvert).toHaveBeenCalledOnce();
+  });
+
   it('swaps to the terminal step in place', () => {
     const twoStep = {
       tree: treeFixture({

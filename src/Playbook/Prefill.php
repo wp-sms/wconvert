@@ -135,6 +135,8 @@ final class Prefill
             $config['destination_hint'] = $playbook->destinationHint;
         }
 
+        // Installed modules can resolve site-owned defaults without embedding IDs in a Playbook.
+        $config = apply_filters('wconvert_playbook_prefill', $config, $playbook->id);
         return ['name' => $playbook->name, 'goal' => $playbook->goal->value, 'config' => $config];
     }
 

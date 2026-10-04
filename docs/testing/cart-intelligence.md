@@ -43,6 +43,10 @@ emit no supported signal may take until the next 30-second or focus refresh.
 The tests do not model every tax extension, subscription/bundle product, catalog
 size, page-cache vendor or assistive technology.
 
+Explicit sample-basket simulation is not implemented. Sample Visit still uses
+manual rule-matching assumptions; it does not evaluate a sample basket or its
+recommendation exclusions.
+
 Five-merchant usability recruitment from the plan has not been performed and no
 external invitations were sent. The code checks do not establish usability or
 conversion uplift. Review that research separately before broad rollout.
@@ -50,10 +54,27 @@ conversion uplift. Review that research separately before broad rollout.
 ## Final local results
 
 - PHPUnit: 2516 tests, 15165 assertions passed; cart predicates rechecked after final input hardening.
-- Vitest: 3713 tests across 205 files passed (two workers).
-- Real WordPress browser suite: all seven checks passed, including authenticated editor product search.
+- Vitest: 3714 tests across 205 files passed (two workers).
+- Real WordPress browser suite: all eight checks passed, including authenticated editor product search, recommendation-type validation and checkout prefill exclusions.
 - TypeScript, ESLint, PHPStan, source and template contracts passed.
 - Free and Basic/Pro/Elite ZIPs built and passed artifact checks.
-- Top-rung loader: 27000 bytes gzip; optional commerce asset: 2926 bytes; combined 29926 bytes. Existing Free/lower-rung limits remain unchanged.
+- Node 22 loader measurements: Free 14585, Basic 25088, Pro 26616, Elite 26999 bytes gzip; optional commerce asset 2921 bytes; combined Elite plus commerce 29920 bytes. All existing limits remain unchanged by the CI follow-up.
 - Existing library regression: all 241 screens/result variants across 122 setups have identical markup and responsive styles to the base renderer. The 18 unchanged setups in five shipped collections had their renderer-bound reviews refreshed with recorded evidence.
 - Visually inspected final desktop, 320px LTR/RTL cards and the authenticated editor's product selection panel.
+
+## CI follow-up
+
+The first GitHub run exceeded Basic/Pro caps by 3/1 bytes. Running Node 22
+locally reproduced those exact failures; running the same artifacts through the
+local Node 24 gzip implementation passed. This was compression-version variance,
+not different generated JavaScript. Compacting the renderer dispatch and delegated
+click handler passes the unchanged limits on Node 22. `.nvmrc` and README now
+document the same Node major as CI and releases. The loader contract is the
+regression test; no budget was relaxed.
+
+A real-WooCommerce regression first failed because a published variation could
+pass recommendation validation and then be discarded by the renderer. Publication,
+the selector and delivery now agree on simple/variable parent products, while
+cart conditions retain exact variation support. New accessory drafts resolve the
+store's checkout page into an editable exclusion. The test covers the prefill
+configuration, not an actual order-confirmation request.

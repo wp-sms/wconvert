@@ -2,7 +2,7 @@
 
 Date: 4 October 2026
 
-Status: First-release implementation completed on the feature branch. Runtime contracts are recorded in ADR 0117 and local verification in docs/testing/cart-intelligence.md. Merchant research has not been conducted; later increments remain planned.
+Status: Core first-release implementation is on the feature branch. Runtime contracts are recorded in ADR 0117 and local verification in docs/testing/cart-intelligence.md. Explicit sample-basket simulation remains unfinished: the current Sample Visit requires manual matching assumptions. Merchant research has not been conducted; later increments remain planned.
 
 ## Product decision
 
@@ -51,7 +51,7 @@ These are product hypotheses grounded in current capabilities and market documen
 
 ## First release scope
 
-Implementation of this scope is available on the feature branch. See [verification](../testing/cart-intelligence.md) for tested behavior and boundaries; merchant recruitment remains outstanding and later increments below are not implemented.
+Implementation of this scope is available on the feature branch except explicit sample-basket simulation. See [verification](../testing/cart-intelligence.md) for tested behavior and boundaries; merchant recruitment remains outstanding and later increments below are not implemented.
 
 Ship together:
 
@@ -60,7 +60,7 @@ Ship together:
 3. Exclusion of recommended products already in the cart.
 4. Live stock, visibility, purchasability and price handling, preserving useful product-quiz behavior.
 5. An accessory campaign starting point and contextual shopping-guidance starting point.
-6. Draft simulation, live diagnostics, publication checks and accurate click reporting.
+6. Draft simulation, live diagnostics, publication checks and accurate click reporting. Explicit sample-basket inputs remain follow-up work; the existing manual rule assumptions are available now.
 7. Classic WooCommerce and Cart/Checkout Blocks compatibility demonstrated on real WordPress.
 
 Leave for later increments: WooCommerce cross-sell selection, direct add-to-cart buttons, dynamic shipping progress, attributed orders, and category/attribute-based quiz selection. Keep all six recommendations from the assessment in the roadmap below; this split limits the first release rather than quietly discarding them.
@@ -82,6 +82,8 @@ Use the existing creation flow and editor. Do not add a separate commerce dashbo
 Example summary: “On these store pages, when the cart contains Espresso Machine A, show up to three selected accessories that are available and are not already in the cart.”
 
 Use the site's existing campaign permissions; do not silently broaden editing access to every WooCommerce role. Merchant preview uses explicit sample cart facts and is clearly labeled as simulated.
+
+Implementation note: the explicit sample-cart preview above is still planned. The current Sample Visit asks the merchant to assert Matches/Does not match for cart rules; it does not calculate recommendations from a simulated basket.
 
 ### Help with a shopping question
 
