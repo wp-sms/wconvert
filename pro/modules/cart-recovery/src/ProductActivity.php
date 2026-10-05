@@ -19,7 +19,7 @@ final class ProductActivity
         add_action('wc_ajax_wconvert_product_activity', [$this, 'serve']);
         add_filter('wconvert_product_activity_campaign', function (bool $available, string $id): bool {
             foreach ($this->published->all() as $entry) {
-                if ($entry['id'] === $id && CommerceContext::products($entry['payload']) !== null) return true;
+                if ($entry['id'] === $id && (CommerceContext::products($entry['payload']) !== null || QuizProducts::used($entry['payload']))) return true;
             }
             return $available;
         }, 10, 2);
@@ -47,7 +47,7 @@ final class ProductActivity
         foreach ($this->published->all() as $entry) {
             if ($entry['id'] !== $id) continue;
             $payload = $entry['payload'];
-            if ($this->degradation->suspendedIn($payload) !== null || CommerceContext::products($payload) === null
+            if ($this->degradation->suspendedIn($payload) !== null || (CommerceContext::products($payload) === null && !QuizProducts::used($payload))
                 || !ProductActivityToken::valid(self::field('token'), $id, CommerceContext::revision($payload), (int) $product, time(), wp_salt('nonce'))) break;
             $this->stats->increment($id, StatKind::from($kind), StatDay::today(), 'product:' . $product);
             break;

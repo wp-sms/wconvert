@@ -14,6 +14,10 @@ accepted additions now also increment a separate retained `product:<id>` scope.
 Anonymous visible-card and product-link activity share those product dimensions;
 the campaign headline and empty-scope addition count stay unchanged.
 Dashboard impact groups and CSV keep additions separate from product-link clicks.
+**Extended by [ADR 0124](0124-quiz-products-share-protected-cart-actions.md):**
+quiz results may use this protected transport. Their additions are supporting
+activity; quiz completion remains the only headline Conversion. Tokens and
+receipts additionally bind the result context.
 An old link campaign retains its Goal, action and history; the new playbook and
 design create a separate campaign. Existing publication/AB history guards apply.
 

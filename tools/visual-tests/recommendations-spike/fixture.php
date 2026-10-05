@@ -5,6 +5,8 @@ add_action('template_redirect', static function (): void {
     $fixture = get_option('wconvert_product_recommendations_fixture');
     $repository = \WConvert\Bootstrap::container()->get(\WConvert\Optin\OptinRepository::class);
     global $wpdb;
+    $quiz = get_option('wconvert_quiz_fixture');
+    if ($quiz) $fixture['campaigns']['quiz'] = $quiz['id'];
     $campaigns = [];
     foreach ($fixture['campaigns'] ?? [] as $key => $id) {
         $campaign = $repository->find($id);
@@ -12,6 +14,8 @@ add_action('template_redirect', static function (): void {
             'stats' => $wpdb->get_results($wpdb->prepare("SELECT kind, SUM(count) AS total FROM {$wpdb->prefix}wconvert_stats WHERE optin_id = %s GROUP BY kind ORDER BY kind", $id), ARRAY_A)];
     }
     wp_send_json(['runtime' => ['wordpress' => get_bloginfo('version'), 'php' => PHP_VERSION, 'woocommerce' => defined('WC_VERSION') ? WC_VERSION : null],
+        'quiz_available' => class_exists(\WConvert\Pro\Module\CartRecovery\QuizProducts::class),
+        'quiz_suspended' => $quiz ? \WConvert\Bootstrap::container()->get(\WConvert\Rules\Degradation::class)->suspendedIn(['template' => $repository->find($quiz['id'])->publishedConfig['template'], 'display_rules' => $repository->find($quiz['id'])->publishedConfig['display_rules']]) : null,
         'addition_available' => class_exists(\WConvert\Pro\Module\CartRecovery\CartAddition::class), 'campaigns' => $campaigns]);
 }, 1);
 defined('ABSPATH') || exit;

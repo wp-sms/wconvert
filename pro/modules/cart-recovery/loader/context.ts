@@ -1,3 +1,4 @@
+export { showQuizProducts } from './quiz-products';
 export { renderProductNode } from './products';
 import { readPayload } from '@loader/payload';
 import { hasConsent, onConsentChange } from '@loader/consent';

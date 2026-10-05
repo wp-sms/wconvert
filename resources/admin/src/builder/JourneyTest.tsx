@@ -36,6 +36,13 @@ function TestProducts({ count, state, onRetry }: { count: number; state: Product
   </>;
 }
 
+function TestCartAction() {
+  const [added, setAdded] = useState(false);
+  return <div><p>{__('Preview only. Your basket stays unchanged.', 'wconvert')}</p>
+    <button type="button" className="wc-button" disabled={added} onClick={() => setAdded(true)}>{added ? __('Added', 'wconvert') : __('Test add to cart', 'wconvert')}</button>
+    <p role="status">{added ? __('Sample item added. Live additions appear in Product activity.', 'wconvert') : __('Products with options open their product page.', 'wconvert')}</p></div>;
+}
+
 /** The real renderer, with in-memory answers and no capture or analytics calls. */
 export function JourneyTest({ template, onEdit, onShowPath, deliveryMode = 'none', destinationSummary, changeToCheck, onClose, active: visible = true }: {
   onClose?(): void; active?: boolean;
@@ -288,8 +295,8 @@ export function JourneyTest({ template, onEdit, onShowPath, deliveryMode = 'none
       {feedback && <p className="wconvert-journey-test__feedback" role="status">{feedback}</p>}
       <div className="wconvert-preview-test__screen-actions"><Button variant="ghost" size="sm" disabled={visited.length < 2} onClick={() => backAction.current()}><ArrowLeft aria-hidden="true" />{__('Previous screen', 'wconvert')}</Button><Button variant="ghost" size="sm" onClick={() => onEdit(step)}>{__('Edit this screen', 'wconvert')}<ArrowRight aria-hidden="true" /></Button></div>
     </section>
-    {productHost && (shownResult?.product_ids?.length || shownResult?.product_filter) && createPortal(shownResult.product_filter && productState === 'selected' ? <LiveProductMatches filter={shownResult.product_filter} /> : <TestProducts count={shownResult.product_filter ? 3 : shownResult.product_ids?.length ?? 0}
-      state={productState} onRetry={() => setProductState('selected')} />, productHost)}
+    {productHost && (shownResult?.product_ids?.length || shownResult?.product_filter) && createPortal(<>{shownResult.product_filter && productState === 'selected' ? <LiveProductMatches filter={shownResult.product_filter} /> : <TestProducts count={shownResult.product_filter ? 3 : shownResult.product_ids?.length ?? 0}
+      state={productState} onRetry={() => setProductState('selected')} />}{shownResult.product_action === 'add_to_cart' && productState === 'selected' && <TestCartAction key={shownResult.id} />}</>, productHost)}
     <aside className="wconvert-journey-test__side" aria-label={__('Your test', 'wconvert')}>
       {changeToCheck && <section className="wconvert-journey-test__change" aria-label={__('Change to check', 'wconvert')}><strong>{__('Change to check', 'wconvert')}</strong><p><strong>{changeToCheck.screenName}</strong></p><p>{changeToCheck.text}</p><details><summary>{__('Suggested checks', 'wconvert')}</summary><ul>{changeTestGuide(tree, changeToCheck.screenId).map(check => <li key={check}>{check}</li>)}</ul><p>{__('These are cases to try, not proof that a rule is reachable or wins. Earlier answers and rule priority still apply.', 'wconvert')}</p></details><small>{__('Start at the beginning and try answers that use the changed path. No answers are preselected.', 'wconvert')}</small></section>}
       <div className="wconvert-journey-test__status"><span className="wconvert-preview-test__eyebrow">{__('Your test', 'wconvert')}</span><small>{complete ? __('Finished', 'wconvert') : __('In progress', 'wconvert')}</small></div>

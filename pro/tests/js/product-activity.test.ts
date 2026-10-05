@@ -47,3 +47,13 @@ it('ignores background tabs, closed campaigns and preview cards without a server
 it('does not equate a missing observer with a visible card', () => {
   vi.stubGlobal('IntersectionObserver', undefined); mount(); expect(beacon).not.toHaveBeenCalled();
 });
+it('retains observation counts across quiz result revisits and removes old observers', () => {
+  const counts = { seen: new Set<number>(), clicked: new Set<number>() };
+  const host = document.getElementById('host')!;
+  const item = document.createElement('article'); item.innerHTML = '<a href="/filter">View product</a>'; host.append(item);
+  item.addEventListener('click', event => event.preventDefault());
+  tracker = productActivity(host, 'quiz', counts); tracker.card(item, card); show(item); item.querySelector('a')!.click();
+  expect(beacon).toHaveBeenCalledTimes(2); tracker.stop();
+  tracker = productActivity(host, 'quiz', counts); tracker.card(item, card); show(item); item.querySelector('a')!.click();
+  expect(beacon).toHaveBeenCalledTimes(2);
+});

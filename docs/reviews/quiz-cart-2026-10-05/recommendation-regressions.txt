@@ -1,0 +1,56 @@
+PASS guest: real classic product template emits signed page context and automatic candidate
+PASS guest: empty basket allows product context while old and new basket campaigns stay hidden
+PASS guest: absent, forged and signed private-product contexts cannot show recommendations
+PASS guest: another public product does not match the chosen main product
+PASS guest: main product narrows cross-sell seeds and excludes an extra already in the basket
+PASS guest: all extras already in the basket suppress the offer; unrelated basket does not satisfy main-product mode
+PASS guest: main product with every extra already present has no remaining recommendations
+PASS authenticated: real classic product template emits signed page context and automatic candidate
+PASS authenticated: empty basket allows product context while old and new basket campaigns stay hidden
+PASS authenticated: absent, forged and signed private-product contexts cannot show recommendations
+PASS authenticated: another public product does not match the chosen main product
+PASS authenticated: main product narrows cross-sell seeds and excludes an extra already in the basket
+PASS authenticated: all extras already in the basket suppress the offer; unrelated basket does not satisfy main-product mode
+PASS authenticated: main product with every extra already present has no remaining recommendations
+PASS admin: sample viewed product is separate from basket and refuses private products
+PASS admin: selected source skips sold-out, draft, private and main products before choosing available extras
+PASS admin: unavailable shortlist and missing cross-sells give distinct explanations without substitutes
+PASS admin: unknown basket and missing consent cannot show recommendations
+PASS admin: basket exclusion follows the merchant setting
+PASS admin: sample visits leave the real two-item basket unchanged
+PASS block theme: saved product template renders manual campaign anchor and page context without automatic duplicate
+21 product recommendation integration checks passed
+guest runtime: {"wordpress":"7.1.2","php":"8.3.33","woocommerce":"11.1.2"}
+PASS guest: fresh session token rejects another session, foreign origin and forgery
+PASS guest: self, private, draft and unknown products cannot mutate the basket
+PASS guest: accepted addition persists once and replay does not add or count again
+PASS guest: public beacons cannot forge addition results
+PASS guest: a second extra counts as activity but does not count the appearance twice
+PASS guest: extension-driven validation uses the product-page fallback
+PASS guest: stale revisions and unpublished campaigns cannot add products
+authenticated runtime: {"wordpress":"7.1.2","php":"8.3.33","woocommerce":"11.1.2"}
+PASS authenticated: fresh session token rejects another session, foreign origin and forgery
+PASS authenticated: self, private, draft and unknown products cannot mutate the basket
+PASS authenticated: accepted addition persists once and replay does not add or count again
+PASS authenticated: public beacons cannot forge addition results
+PASS authenticated: a second extra counts as activity but does not count the appearance twice
+PASS authenticated: extension-driven validation uses the product-page fallback
+PASS authenticated: stale revisions and unpublished campaigns cannot add products
+14 real WooCommerce addition checks passed.
+PASS served card observations appear under the right product and reporting start date
+PASS forged, foreign, oversized and server-only claims cannot change product counts
+PASS product reports require administrator permission
+PASS server acceptance counts one product addition even when the operation is replayed
+PASS product dimensions stay out of journey totals
+PASS paused campaigns reject observations but keep inspectable history
+PASS scheduled retention deletes old product dimensions while preserving campaign and screen counts
+7 product activity integration checks passed
+PASS category includes descendants in stable order; hidden, unavailable, private, draft and password products stay out
+PASS global attribute term narrows the category
+PASS multiple attributes use AND, not OR
+PASS empty intersection returns no unrelated products
+PASS incomplete, stale, mismatched, duplicate and excessive filters fail closed
+PASS admin catalog picker requires authentication
+PASS authenticated category, attribute and value pickers return bounded choices
+PASS deleting a saved term never widens recommendations
+8 grouped result-filter checks passed.

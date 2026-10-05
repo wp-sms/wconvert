@@ -41,3 +41,12 @@ it('refreshes the native cart without emitting the event that opens drawers', as
   expect(sync).toHaveBeenCalledOnce(); expect(trigger).toHaveBeenCalledWith('wc_fragment_refresh'); expect(added).not.toHaveBeenCalled();
   document.removeEventListener('wc-blocks_added_to_cart', added); window.removeEventListener('wc-blocks_store_sync_required', sync);
 });
+
+it('carries the result binding on both protection and mutation requests', async () => {
+  const fetcher = vi.fn().mockResolvedValueOnce(reply({ token: 'signed' })).mockResolvedValueOnce(reply({ state: 'added', product: 12 })); vi.stubGlobal('fetch', fetcher);
+  const { additionSession } = await import('../../modules/cart-recovery/loader/addition');
+  expect(await additionSession('campaign', { screen: 'results', result: 'brewing' }).add(12)).toBe('added');
+  for (const [, request] of fetcher.mock.calls) {
+    expect(request.body.get('screen')).toBe('results'); expect(request.body.get('result')).toBe('brewing');
+  }
+});

@@ -1,9 +1,8 @@
 import type { ProductCard } from './context';
 
 /** Per-mount observations; no visitor identifiers or browser storage. */
-export function productActivity(host: HTMLElement, id: string) {
-  const seen = new Set<number>();
-  const clicked = new Set<number>();
+export function productActivity(host: HTMLElement, id: string, counts = { seen: new Set<number>(), clicked: new Set<number>() }) {
+  const { seen, clicked } = counts;
   const cards = new Map<Element, ProductCard>();
   let closed = false;
   const endpoint = document.getElementById('wconvert-payload')?.getAttribute('data-commerce-activity');

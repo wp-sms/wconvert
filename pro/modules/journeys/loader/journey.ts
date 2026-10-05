@@ -14,7 +14,7 @@ import { graphTrace } from '@loader/journey-graph';
 import { journeyNodes } from '@loader/journey-nodes';
 import { isResultFirst } from '@loader/journey-mode';
 import { journeyCapturePrefix } from '@loader/journey-capture';
-import { showProducts } from '@loader/products';
+import { resultProducts } from './result-products';
 
 type Input = HTMLInputElement | HTMLSelectElement;
 type PhoneControl = HTMLInputElement & { __p?: (value: string) => void; __r?: () => void };
@@ -51,6 +51,7 @@ export function bindJourney(mounted: Mounted, entry: PayloadEntry, options: Opti
   let busy = false;
   const answers = new Map<string, string | boolean>();
   const questionAnswers: Answers = {};
+  const productScope = {};
   let completed = false;
   let stopProducts: (() => void) | undefined;
   const visited: number[] = [step];
@@ -120,7 +121,7 @@ export function bindJourney(mounted: Mounted, entry: PayloadEntry, options: Opti
         else { link.removeAttribute('href'); link.hidden = true; }
       }
       const products = root?.querySelector<HTMLElement>('[data-result-products]');
-      if (products) stopProducts = showProducts(products, result, resultClick);
+      if (products) stopProducts = resultProducts.show(products, result, resultClick, entry.id, tree!.steps[index].id, productScope);
       if (!completed) { completed = true; options.onCompleted?.(); }
     }
     const root = mounted.root;
@@ -150,7 +151,7 @@ export function bindJourney(mounted: Mounted, entry: PayloadEntry, options: Opti
     };
     visible();
     root.addEventListener('wconvert:shown', visible);
-    root.addEventListener('wconvert:closed', () => observer?.disconnect());
+    root.addEventListener('wconvert:closed', () => { observer?.disconnect(); stopProducts?.(); stopProducts = undefined; });
     root.addEventListener('wconvert:dismissed', () => report('screen_dismissed'));
     root.querySelector('.wc-close')?.addEventListener('click', () => report('screen_dismissed'));
     let reviewing = false;

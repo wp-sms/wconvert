@@ -3,15 +3,26 @@ import type { ProductsNode, TemplateNode } from '@renderer/types';
 import { cartCards, contextStatus, watchCart, type ProductCard } from './context';
 import { additionSession, refreshNativeCart, type AdditionState } from './addition';
 
-export function renderProductNode(raw: TemplateNode): HTMLElement | null {
+export function productState() {
+  return { outcomes: new Map<number, { card: ProductCard; state: AdditionState }>(), seen: new Set<number>(), clicked: new Set<number>(), listeners: new Set<() => void>() };
+}
+interface QuizCards {
+  cards: ProductCard[];
+  state: ReturnType<typeof productState>;
+  session?: ReturnType<typeof additionSession>;
+  click(): void;
+  stop?: () => void;
+}
+export function renderProductNode(raw: TemplateNode, quiz?: QuizCards): HTMLElement | null {
   if (raw.type !== 'products') return null;
   const node = raw as ProductsNode;
   const adding = node.action === 'add_to_cart';
-  const session = adding ? additionSession(node.context_key ?? '') : undefined;
+  const session = quiz?.session ?? (adding ? additionSession(node.context_key ?? '') : undefined);
+  const state = quiz?.state ?? productState();
   const host = document.createElement('div');
   host.style.cssText = 'display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,9rem),1fr));gap:1rem;text-align:start';
-  const activity = productActivity(host, node.context_key ?? '');
-  const outcomes = new Map<number, { card: ProductCard; state: AdditionState }>();
+  const activity = productActivity(host, node.context_key ?? '', state);
+  const { outcomes } = state;
   let pending = false; let closed = false; let converted = false;
   let labels: string[] = []; let emptyLabels: string[] = [];
   const payload = document.getElementById('wconvert-payload');
@@ -19,11 +30,11 @@ export function renderProductNode(raw: TemplateNode): HTMLElement | null {
   const text = (index: number) => labels[index] ?? ['Adding…', 'Added to your basket.', 'Not added. Open the product to try again.', 'Check your basket before trying again.', 'View basket', 'View product', 'Added'][index];
   const localUrl = (value: string) => { try { const url = new URL(value, location.href); return url.origin === location.origin && /^https?:$/.test(url.protocol) ? url.href : null; } catch { return null; } };
   const paint = (force = false) => {
-    if (pending || closed || (!force && contextStatus() === 'pending' && host.childElementCount > 0)) return;
+    if (pending || closed || (!quiz && !force && contextStatus() === 'pending' && host.childElementCount > 0)) return;
     const active = (host.getRootNode() as ShadowRoot).activeElement as HTMLElement | null;
     const focused = active && host.contains(active) ? active.dataset.product : undefined;
-    const cards = [...outcomes.values()].map(value => value.card);
-    for (const card of cartCards(node.context_key ?? '')) if (!outcomes.has(card.id)) cards.push(card);
+    const cards = quiz ? quiz.cards : [...outcomes.values()].map(value => value.card);
+    if (!quiz) for (const card of cartCards(node.context_key ?? '')) if (!outcomes.has(card.id)) cards.push(card);
     activity.reset();
     const children: HTMLElement[] = [];
     for (const card of cards.slice(0, 3)) {
@@ -50,11 +61,13 @@ export function renderProductNode(raw: TemplateNode): HTMLElement | null {
           pending = true; button.textContent = text(0); button.setAttribute('aria-disabled', 'true'); status.textContent = text(0);
           const state = await session.add(card.id, card.price_key);
           pending = false;
+          if (state !== 'busy') outcomes.set(card.id, { card, state });
+          for (const listener of quiz?.state.listeners ?? []) listener();
           if (closed || !host.isConnected) { if (state === 'added') refreshNativeCart(); return; }
           if (state === 'busy') { paint(); return; }
           outcomes.set(card.id, { card, state }); paint(true);
           if (state === 'added') {
-            if (!converted) { converted = true; host.dispatchEvent(new Event('wconvert:cart-added', { bubbles: true })); }
+            if (!quiz && !converted) { converted = true; host.dispatchEvent(new Event('wconvert:cart-added', { bubbles: true })); }
             refreshNativeCart();
           }
         });
@@ -66,9 +79,10 @@ export function renderProductNode(raw: TemplateNode): HTMLElement | null {
         }
       } else {
         const link = document.createElement('a'); link.className = 'wc-button'; link.href = url; link.textContent = card.label; link.dataset.product = String(card.id);
-        if (!adding) link.dataset.convert = '';
+        if (!quiz && !adding) link.dataset.convert = '';
         link.setAttribute('aria-label', `${card.label}: ${card.name}`); item.append(link);
       }
+      if (quiz) for (const link of item.querySelectorAll('a')) if (link.href === url) link.addEventListener('click', quiz.click);
       activity.card(item, card);
       children.push(item);
     }
@@ -80,6 +94,11 @@ export function renderProductNode(raw: TemplateNode): HTMLElement | null {
     host.replaceChildren(...children);
     if (focused) { host.tabIndex = -1; (host.querySelector<HTMLElement>(`[data-product="${focused}"]`) ?? host).focus(); }
   };
+  if (quiz) {
+    paint(); quiz.state.listeners.add(paint);
+    quiz.stop = () => { closed = true; activity.stop(); quiz.state.listeners.delete(paint); };
+    return host;
+  }
   paint();
   const stop = watchCart(() => { if (!host.isConnected) { stop(); activity.stop(); return; } paint(); });
   queueMicrotask(() => host.closest('.wc-root')?.addEventListener('wconvert:closed', () => { closed = true; stop(); activity.stop(); }, { once: true }));

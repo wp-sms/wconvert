@@ -139,3 +139,20 @@ other options on the product page. This does not add products to their cart.
 Hand-picked products remain available and keep their saved order. Imported
 category-based results require choosing category and attribute values on the new
 site. The feature is included wherever paid product-finder journeys are available.
+
+## Add products from quiz results
+
+1. Open a quiz, choose its Results screen, then a result.
+2. Open **Recommend products** and choose the products or category filters.
+3. Set **Product button → Add to cart**. Products needing options keep a link
+   to their product page. Each accepted click adds one item.
+4. Use **Preview & test** to try the sample action safely. Then check the live
+   quiz on your test store.
+
+Keep the fallback link: shoppers can still continue when products are unavailable.
+An empty basket is fine. Going Back and revisiting a result does not add again.
+If an addition cannot be confirmed, check the basket before trying elsewhere.
+
+In **Campaign details → Product activity**, review Shown, Clicked and Added.
+Completing the quiz remains the campaign result; cart additions are separate.
+These counts do not show purchases or prove that recommendations increased sales.

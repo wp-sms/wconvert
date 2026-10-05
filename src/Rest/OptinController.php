@@ -606,6 +606,7 @@ final class OptinController implements RestController
                 'choices' => __('Add at least one choice to the interest field before publishing. You can keep saving this Campaign as a draft.', 'wconvert'),
                 'followup' => __('Give each resource link a label and address, and place it after the form. You can keep saving this Campaign as a draft.', 'wconvert'),
                 'consent' => __('Each signup needs its required contact field and its own consent wording.', 'wconvert'),
+                'quiz_cart' => __('Quiz cart buttons need WConvert Pro and WooCommerce. Choose products for each result that uses them.', 'wconvert'),
                 'commerce_products' => __('Product recommendations need WConvert Pro and WooCommerce. Choose products in one recommendation block on a single offer screen before publishing.', 'wconvert'),
                 'products' => __('Connect WooCommerce, choose products for each matching result, and add a fallback link with a label to every result before publishing.', 'wconvert'),
                 'result_link' => __('Give each result link a label and destination before publishing.', 'wconvert'),

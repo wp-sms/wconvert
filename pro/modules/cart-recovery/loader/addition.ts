@@ -5,7 +5,7 @@ export type AdditionState = 'added' | 'rejected' | 'unknown' | 'busy';
 let busy = false;
 // getRandomValues works on HTTP local stores too; randomUUID requires a secure context.
 const uuid = () => '10000000-1000-4000-8000-100000000000'.replace(/[018]/g, c => (Number(c) ^ crypto.getRandomValues(new Uint8Array(1))[0] & 15 >> Number(c) / 4).toString(16));
-export function additionSession(id: string) {
+export function additionSession(id: string, context: Record<string, string> = {}) {
   const mount = uuid(); let token = ''; const completed = new Map<number, AdditionState>();
   return { async add(product: number, priceKey = ''): Promise<AdditionState> {
     if (completed.has(product)) return completed.get(product)!;
@@ -23,7 +23,7 @@ export function additionSession(id: string) {
         if (url.origin !== location.origin) throw Error('origin');
         const controller = new AbortController(); const timeout = setTimeout(() => controller.abort(), 12000);
         try {
-          const response = await fetch(url, { method: 'POST', credentials: 'same-origin', cache: 'no-store', signal: controller.signal, body: new URLSearchParams({ id, revision: entry.commerce_revision!, ...data }) });
+          const response = await fetch(url, { method: 'POST', credentials: 'same-origin', cache: 'no-store', signal: controller.signal, body: new URLSearchParams({ id, revision: entry.commerce_revision!, ...context, ...data }) });
           const result = await response.json() as Record<string, unknown>;
           if (!response.ok && (endpoint !== 'add' || result.state !== 'rejected')) throw Error('request');
           return result;

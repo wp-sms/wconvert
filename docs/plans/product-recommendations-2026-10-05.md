@@ -2,6 +2,14 @@
 
 Date: 5 October 2026
 
+Latest extension: [ADR 0124](../adr/0124-quiz-products-share-protected-cart-actions.md)
+adds quiz cart buttons and quiz product activity. The user confirmed there are no
+real users available yet and authorized us to choose and exercise realistic
+scenarios. Merchant recruitment is therefore not a development blocker. This is
+engineering and design judgment, not evidence of merchant usability or sales
+uplift. [Current checks](../testing/quiz-cart-2026-10-05.md) distinguish those claims.
+
+
 Status: Layout B and the direct-add design are approved locally. Product-page context, simple-product Add to cart, confirmed-addition reporting and product-level activity reports are implemented locally. The release candidate passed the recorded compatibility checks and is ready for staging; no public release, merchant recruitment or external messages have occurred.
 
 Current release evidence: [candidate checklist](../reviews/recommendations-rc-2026-10-05/release-checklist.md). The earlier [link-slice checklist](../reviews/recommendations-2026-10-05/release-checklist.md) remains historical evidence. The [setup guide](../guides/product-recommendations.md) covers the implemented recommendation experience.
@@ -155,9 +163,11 @@ Implementation update, 2026-10-05: slice 5 now records and reports product-card
 views, product-page link activity and confirmed additions in campaign Analytics
 and editor details. See [ADR 0122](../adr/0122-product-activity-uses-retained-anonymous-dimensions.md).
 Product scopes use existing storage with 90-day retention; current names,
-tracking start and incomplete coverage are explicit. Quiz cards and product-level
-sales remain separate future work. The prior release-candidate ZIPs predate this
-slice and must be rebuilt/revalidated before including it in a release.
+tracking start and incomplete coverage are explicit. Quiz cards now share this
+report under [ADR 0124](../adr/0124-quiz-products-share-protected-cart-actions.md).
+Candidate ZIPs have been rebuilt and checked on both recorded WooCommerce
+environments; see [verification](../testing/quiz-cart-2026-10-05.md). Product-level
+sales remain deferred, and the manual staging storefront pass remains before release.
 
 
 Keep reporting inside the existing campaign detail and Analytics. Show the campaign's main outcome first, then product activity and the existing attributed-sales section. Explain unconfigured tracking rather than displaying missing attribution as zero sales.
@@ -185,7 +195,7 @@ Implemented locally on 5 October after the user explicitly selected this develop
 
 Add an optional product source per result: selected products, or a category constrained by explicit attribute values. The chosen result remains determined by the existing question/branch rules; catalog filters only choose its cards. Start with a documented deterministic order, bounded queries and live eligibility. No automatic scoring, recommendation of exact variations or inferred compatibility.
 
-Preview representative answers and unavailable/empty matches before publication. Explain conflicting filters and show the result's meaningful fallback if no products qualify. Keep quiz completion separate from subsequent product activity; a cart addition must not become a second quiz Conversion. Direct addition inside quiz results needs its own tested action integration after Release A's adapter is stable.
+Preview representative answers and unavailable/empty matches before publication. Explain conflicting filters and show the result's meaningful fallback if no products qualify. Keep quiz completion separate from subsequent product activity; a cart addition must not become a second quiz Conversion. Direct addition inside quiz results now uses Release A's protected adapter, with result-bound operations and separate product activity; see [ADR 0124](../adr/0124-quiz-products-share-protected-cart-actions.md) and its verification record.
 
 Defer “best sellers” and recently viewed modes until merchants demonstrate a need. If later added, specify data windows, fallback behavior, storage/consent and clear labels; never call configured pairings “frequently bought together.”
 
@@ -211,7 +221,7 @@ Defer “best sellers” and recently viewed modes until merchants demonstrate a
 | 3. Release A validation | Packaging, regression, responsive/accessibility and merchant walkthrough | Slices 1–2; all release blockers resolved; no claimed uplift |
 | 4. Product-page experience | Current-product context, verified placements and preview | Release A adapter stable; works with empty basket and no duplicate placement |
 | 5. Product activity report | Bounded aggregates and per-product report | Storage/retention contract reviewed; source event instrumentation verified |
-| 6. Product-finder extension | Category/attribute result sources | Implemented locally; bounded live reads, empty/error fallback, transfer remapping and counting checks; merchant validation and release review remain |
+| 6. Product-finder extension | Category/attribute result sources, optional cart buttons and product activity | Implemented and technically checked, including installed packages; manual staging storefront pass remains. Merchant usability is unvalidated while no users are available. |
 | 7. Outcome study | Predefined controlled pilot | Sufficient traffic, valid assignment/consent and agreed measurement; report uncertainty |
 
 Release A comprises slices 0–3. Slice 4 is Release B; slice 5 is Release C; slice 6 is Release D. Product reporting can be designed alongside the product-page work, but each release remains independently reviewable. Do not bundle shipping progress, discounts, AI or off-site marketing into this sequence.

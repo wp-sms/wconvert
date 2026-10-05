@@ -18,7 +18,10 @@ Added counts server-accepted quantity-one operations, using the same replay
 receipt as the campaign addition. It is not a browser assertion, another campaign
 Conversion, a purchase, or evidence of sales uplift. Product-page links remain
 supporting activity in an addition campaign. Existing link campaigns keep their
-headline conversion contract. Quiz-result products are outside this first report.
+headline conversion contract. **Extended by [ADR 0124](0124-quiz-products-share-protected-cart-actions.md):**
+quiz-result products now share this report when commerce is active, with
+observations deduplicated across the whole quiz mount. Quiz completion remains
+the headline conversion.
 Sales and refunds remain campaign-level; no order is allocated to product rows.
 
 Names are resolved from the current catalog, not historical snapshots. Deleted

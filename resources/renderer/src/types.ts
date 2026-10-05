@@ -90,6 +90,7 @@ export interface ResultProductFilter {
   readonly attributes: readonly { readonly taxonomy: string; readonly term_id: number }[];
 }
 export interface ResultVariant {
+  readonly product_action?: 'link' | 'add_to_cart';
   readonly id: string;
   readonly heading: string;
   readonly body?: string;

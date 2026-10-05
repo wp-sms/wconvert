@@ -1,0 +1,26 @@
+{
+  "baseline": "7129f63",
+  "node": "22.23.3",
+  "artifacts": [
+    {
+      "file": "wconvert-v0.1.0.zip",
+      "bytes": 3110269,
+      "sha256": "0049b183e98b7870961dae1b2e4364f50f59fabb51aad056867423f021665601"
+    },
+    {
+      "file": "wconvert-pro-basic-v0.1.0.zip",
+      "bytes": 988151,
+      "sha256": "0f12287c20e03bbaeaa9fa5cb6c98a85e048f031cb35f44a78e4a5a5871a7909"
+    },
+    {
+      "file": "wconvert-pro-pro-v0.1.0.zip",
+      "bytes": 1013459,
+      "sha256": "2e35090a4dbebd4a0ba2e46ff93d1062bce2a1b661e89a1c955c4c83b781adf4"
+    },
+    {
+      "file": "wconvert-pro-elite-v0.1.0.zip",
+      "bytes": 1066268,
+      "sha256": "135476e207b38f7ec0e9b285264bbfddf84a8d3fd96df8bc1bd9854fef95178c"
+    }
+  ]
+}

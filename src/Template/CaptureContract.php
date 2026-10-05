@@ -66,6 +66,8 @@ final class CaptureContract
         foreach ($tree['steps'] ?? [] as $step) {
             if (($step['kind'] ?? '') !== 'result') { continue; }
             foreach ($step['results'] ?? [] as $variant) {
+                if (!in_array($variant['product_action'] ?? 'link', ['link', 'add_to_cart'], true)) return 'quiz_cart';
+                if (($variant['product_action'] ?? 'link') === 'add_to_cart' && (!CommerceSupport::active() || (empty($variant['product_ids']) && !isset($variant['product_filter'])))) return 'quiz_cart';
                 if (array_key_exists('product_filter', $variant) && (!ResultProductSource::valid($variant['product_filter'])
                     || ($checkProductReferences && !ResultProductSource::available($variant['product_filter'])))) return 'products';
                 $hasLink = trim((string) ($variant['href'] ?? '')) !== '';

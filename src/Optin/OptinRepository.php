@@ -777,7 +777,7 @@ final class OptinRepository
         // The legacy form validator intentionally accepts only version 2.
         $checkJourney = ($optin->config['template']['tree']['v'] ?? null) === 3;
         foreach ($optin->config['template']['tree']['steps'] ?? [] as $screen) foreach ($screen['results'] ?? [] as $result) {
-            if (array_key_exists('product_filter', $result)) $checkJourney = true;
+            if (array_key_exists('product_filter', $result) || array_key_exists('product_action', $result)) $checkJourney = true;
         }
         $formIssue = $checkJourney
             ? \WConvert\Template\CaptureContract::issue($optin->config, $optin->goal, get_privacy_policy_url(), true)

@@ -56,7 +56,7 @@ final class CommerceContext
     /** @param array<string, mixed> $payload */
     public static function needed(array $payload): bool
     {
-        if (self::products($payload) !== null) return true;
+        if (self::products($payload) !== null || QuizProducts::used($payload)) return true;
         foreach (DisplayPlan::rules($payload['display_rules'] ?? []) as $rule) {
             if (in_array($rule['type'], CartRules::TYPES, true)) return true;
         }
@@ -107,6 +107,7 @@ final class CommerceContext
             $id = (int) get_queried_object_id();
             $attributes['data-commerce-product'] = $id . ':' . wp_hash('wconvert-product:' . $id);
         }
+        $attributes['data-commerce-quiz'] = \WC_AJAX::get_endpoint('wconvert_quiz_products');
         $attributes['data-commerce-activity'] = \WC_AJAX::get_endpoint('wconvert_product_activity');
         $attributes['data-commerce-begin'] = \WC_AJAX::get_endpoint('wconvert_cart_begin');
         $attributes['data-commerce-add'] = \WC_AJAX::get_endpoint('wconvert_cart_add');
@@ -296,16 +297,26 @@ final class CommerceContext
         foreach ($ids as $id) {
             if ($id === $main || $id === $viewedProduct) continue;
             $product = wc_get_product($id);
-            if (!$product || $product->get_status() !== 'publish' || !$product->is_type(['simple', 'variable']) || (($node['exclude_cart'] ?? true) && in_array($id, $cart['products'], true)) || !$product->is_visible() || !$product->is_purchasable() || !$product->is_in_stock() || get_post_field('post_password', $id) !== '') continue;
-            $cards[] = ['id' => $id, 'name' => $product->get_name(), 'url' => $product->get_permalink(), 'image' => wp_get_attachment_image_url($product->get_image_id(), 'woocommerce_thumbnail') ?: '',
-                'price' => html_entity_decode(wp_strip_all_tags($product->get_price_html()), ENT_QUOTES, 'UTF-8'),
-                'price_key' => hash('sha256', $product->get_price() . '|' . get_woocommerce_currency()),
-                'can_add' => ($node['action'] ?? 'link') === 'add_to_cart' && CartAddition::supported($product),
-                'label' => ($node['action'] ?? 'link') === 'add_to_cart' && CartAddition::supported($product) ? __('Add to cart', 'wconvert') : ($product->is_type('variable') ? __('Choose options', 'wconvert') : __('View product', 'wconvert'))];
+            if (!$product || (($node['exclude_cart'] ?? true) && in_array($id, $cart['products'], true))) continue;
+            $card = self::card($product, ($node['action'] ?? 'link') === 'add_to_cart');
+            if ($card === null) continue;
+            $cards[] = $card;
             if (count($cards) === 3) break;
         }
         if (($node['action'] ?? 'link') === 'add_to_cart' && !array_filter($cards, static fn (array $card): bool => $card['can_add'])) return ['cards' => [], 'reason' => 'no_direct_add'];
         return ['cards' => $cards, 'reason' => $cards !== [] ? '' : ($ids !== [] ? 'unavailable' : ($crossSells ? 'no_relationships' : 'none_selected'))];
+    }
+
+    /** @return array<string, mixed>|null */
+    public static function card(\WC_Product $product, bool $adding): ?array
+    {
+        $id = $product->get_id();
+        if ($product->get_status() !== 'publish' || !$product->is_type(['simple', 'variable']) || !$product->is_visible() || !$product->is_purchasable() || !$product->is_in_stock() || get_post_field('post_password', $id) !== '') return null;
+        $canAdd = $adding && CartAddition::supported($product);
+        return ['id' => $id, 'name' => $product->get_name(), 'url' => $product->get_permalink(), 'image' => wp_get_attachment_image_url($product->get_image_id(), 'woocommerce_thumbnail') ?: '',
+            'price' => html_entity_decode(wp_strip_all_tags($product->get_price_html()), ENT_QUOTES, 'UTF-8'),
+            'price_key' => hash('sha256', $product->get_price() . '|' . get_woocommerce_currency()), 'can_add' => $canAdd,
+            'label' => $canAdd ? __('Add to cart', 'wconvert') : ($product->is_type('variable') ? __('Choose options', 'wconvert') : __('View product', 'wconvert'))];
     }
 
     /** Authenticated, stateless draft simulation; never reads or mutates a Woo session. */

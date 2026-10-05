@@ -1,3 +1,4 @@
+import { resultProducts } from '../../modules/journeys/loader/result-products';
 import { afterEach, expect, it, vi } from 'vitest';
 import { mount } from '@renderer/mount';
 import type { Template } from '@renderer/types';
@@ -339,4 +340,18 @@ it('lets visitors review only earlier answers on their actual graph path before 
   expect(review).toContain('Balcony size?Large');
   expect(review).not.toContain('Garden size');
   expect(journey.captured).not.toHaveBeenCalled();
+});
+
+it('keeps one product scope across quiz navigation and cleans up every result view', () => {
+  const stop = vi.fn(); const renderer = vi.spyOn(resultProducts, 'show').mockReturnValue(stop);
+  try {
+    const journey = setup(finder as Template);
+    journey.choose('garden'); journey.act('next'); journey.choose('sun'); journey.act('next');
+    const scope = renderer.mock.calls[0][5];
+    expect(renderer.mock.calls[0][3]).toBe('campaign');
+    journey.act('back'); expect(stop).toHaveBeenCalledOnce();
+    journey.act('next'); expect(renderer.mock.calls[1][5]).toBe(scope);
+    expect(journey.completed).toHaveBeenCalledOnce();
+    journey.mounted.close(); expect(stop).toHaveBeenCalledTimes(2);
+  } finally { renderer.mockRestore(); }
 });

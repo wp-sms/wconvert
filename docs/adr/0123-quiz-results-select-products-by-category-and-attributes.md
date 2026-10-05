@@ -44,3 +44,8 @@ Elite 27,109 B gzip. Raise each paid hard cap by 128 B to 25,216 / 26,784 /
 27,168 B respectively, including combined analytics/commerce checks. Free's
 14,592 B cap and runtime remain unchanged. This explicitly funds the small
 endpoint/query branch; no new request or asset is loaded on unrelated pages.
+
+**Extended by [ADR 0124](0124-quiz-products-share-protected-cart-actions.md):**
+results can opt into protected cart buttons and share product activity reporting
+when the commerce module is active. Ordinary result links retain every paid tier.
+The later ADR records the explicit budget changes for this extension.

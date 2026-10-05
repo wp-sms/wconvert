@@ -23,7 +23,7 @@ final class PackValidator
 {
     public const MAX_BYTES = 262144;
     public const MAX_TEMPLATES = 12;
-    public const CAPABILITIES = ['template-tree:2', 'success-actions:1', 'enquiry-choice:1', 'campaign-starts:1', 'capture-journey:1', 'question-journey:1', 'pack-images:1', 'commerce-products:1', 'result-product-filters:1'];
+    public const CAPABILITIES = ['template-tree:2', 'success-actions:1', 'enquiry-choice:1', 'campaign-starts:1', 'capture-journey:1', 'question-journey:1', 'pack-images:1', 'commerce-products:1', 'result-product-filters:1', 'quiz-product-actions:1'];
 
     /** @param array<string, mixed> $manifest */
     public function __construct(private readonly array $manifest, private readonly TemplateVocabulary $vocabulary, private readonly Tier $installedTier = Tier::Free, private readonly bool $portable = false)
@@ -43,7 +43,7 @@ final class PackValidator
     {
         self::check(is_array($design['tree'] ?? null) && is_array($design['tokens'] ?? null), __('This design has an invalid tree or styles.', 'wconvert'));
         $tier = CaptureJourney::requiresPremium($design['tree'] ?? []) || !in_array($design['display_type'] ?? '', ['popup', 'inline'], true) ? Tier::Basic : Tier::Free;
-        if (\WConvert\Template\CommerceSupport::used($design['tree'])) $tier = Tier::Elite;
+        if (\WConvert\Template\CommerceSupport::used($design['tree']) || \WConvert\Template\CommerceSupport::quizAdditions($design['tree'])) $tier = Tier::Elite;
         $entry = ['id' => 'imported', 'name' => $design['name'] ?? '', 'display_type' => $design['display_type'] ?? '',
             'tier' => $tier->value, 'tree' => $design['tree'] ?? [], 'tokens' => $design['tokens'] ?? []];
         $reader = new self($this->manifest, $this->vocabulary, $this->installedTier, true);
@@ -107,7 +107,7 @@ final class PackValidator
             $this->bag($template['tokens'] ?? []);
             $tree = $template['tree'] ?? null;
             self::check(is_array($tree), __('This design has no tree.', 'wconvert'));
-            if (\WConvert\Template\CommerceSupport::used($tree)) self::check($tier === Tier::Elite && \WConvert\Template\CommerceSupport::active(), __('Product suggestions require WConvert Pro and WooCommerce.', 'wconvert'));
+            if (\WConvert\Template\CommerceSupport::used($tree) || \WConvert\Template\CommerceSupport::quizAdditions($tree)) self::check($tier === Tier::Elite && \WConvert\Template\CommerceSupport::active(), __('Product suggestions require WConvert Pro and WooCommerce.', 'wconvert'));
             if (CaptureJourney::requiresPremium($tree)) {
                 self::check($tier !== Tier::Free && JourneySupport::active(), __('This design uses elements this site can’t display.', 'wconvert'));
                 $requiredCapabilities[] = 'question-journey:1';
@@ -137,7 +137,7 @@ final class PackValidator
                     self::check(is_array($step['results']) && array_is_list($step['results']) && count($step['results']) <= 6, __('This design has invalid results.', 'wconvert'));
                     foreach ($step['results'] as $result) {
                         self::check(is_array($result), __('This design has invalid results.', 'wconvert'));
-                        $this->keys($result, ['id', 'heading', 'body', 'when', 'href', 'link_label', 'product_ids', 'product_filter']);
+                        $this->keys($result, ['id', 'heading', 'body', 'when', 'href', 'link_label', 'product_ids', 'product_filter', 'product_action']);
                         self::check(CaptureJourney::identifier($result['id'] ?? null), __('This design has invalid results.', 'wconvert'));
                         $this->words($result['heading'] ?? null, 200);
                         $this->words($result['body'] ?? '', 500);
@@ -145,6 +145,10 @@ final class PackValidator
                         if (isset($result['href']) && $this->portable) self::portableUrl($result['href']);
                         if (isset($result['href']) && !$this->portable) self::check($result['href'] === '', __('Pack links and pictures must be supplied by the site owner.', 'wconvert'));
                         self::check(($result['product_ids'] ?? []) === [], __('Choose products from this site after installing the pack.', 'wconvert'));
+                        if (isset($result['product_action'])) {
+                            $requiredCapabilities[] = 'quiz-product-actions:1';
+                            self::check(in_array($result['product_action'], ['link', 'add_to_cart'], true), __('Choose a valid product action.', 'wconvert'));
+                        }
                         if (isset($result['product_filter'])) {
                             $requiredCapabilities[] = 'result-product-filters:1';
                             self::check($result['product_filter'] === ['category_id' => 0, 'attributes' => []], __('Choose category and attribute values on this site.', 'wconvert'));

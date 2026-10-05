@@ -1,0 +1,63 @@
+{
+  "before": {
+    "wordpress": "7.1.2",
+    "php": "8.3.33",
+    "woocommerce": "11.1.2"
+  },
+  "results": [
+    {
+      "name": "previous committed packages retain saved campaigns and product statistics",
+      "passed": true,
+      "runtime": {
+        "wordpress": "7.1.2",
+        "php": "8.3.33",
+        "woocommerce": "11.1.2"
+      }
+    },
+    {
+      "name": "upgrade to quiz candidate retains saved campaigns and product statistics",
+      "passed": true,
+      "runtime": {
+        "wordpress": "7.1.2",
+        "php": "8.3.33",
+        "woocommerce": "11.1.2"
+      }
+    },
+    {
+      "name": "basic suspends quizzes configured with cart buttons and retains data",
+      "passed": true,
+      "runtime": {
+        "wordpress": "7.1.2",
+        "php": "8.3.33",
+        "woocommerce": "11.1.2"
+      }
+    },
+    {
+      "name": "Elite restoration after basic re-enables quiz actions with data unchanged",
+      "passed": true,
+      "runtime": {
+        "wordpress": "7.1.2",
+        "php": "8.3.33",
+        "woocommerce": "11.1.2"
+      }
+    },
+    {
+      "name": "pro suspends quizzes configured with cart buttons and retains data",
+      "passed": true,
+      "runtime": {
+        "wordpress": "7.1.2",
+        "php": "8.3.33",
+        "woocommerce": "11.1.2"
+      }
+    },
+    {
+      "name": "Elite restoration after pro re-enables quiz actions with data unchanged",
+      "passed": true,
+      "runtime": {
+        "wordpress": "7.1.2",
+        "php": "8.3.33",
+        "woocommerce": "11.1.2"
+      }
+    }
+  ]
+}

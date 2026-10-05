@@ -44,7 +44,7 @@ export function ProductActivityReport({ id, period }: { id: string; period?: Pic
   if (!report && failure !== key) return <RegionSkeleton label={__('Product activity', 'wconvert')} lines={3} />;
   if (report && !report.available && failure !== key) return null;
   return <ReportTarget name="products" label={__('Product activity', 'wconvert')}><Region className="wa-report">
-    <RegionHeader title={__('Product activity', 'wconvert')} level={3} icon={<Package />} description={__('See which extras shoppers notice and add.', 'wconvert')} />
+    <RegionHeader title={__('Product activity', 'wconvert')} level={3} icon={<Package />} description={__('See which products shoppers notice and add.', 'wconvert')} />
     {failure === key ? <RegionErrorState message={__('Could not load product activity.', 'wconvert')} action={<Button variant="outline" onClick={() => setRetry(n => n + 1)}>{__('Retry', 'wconvert')}</Button>} /> : report && <>
       <RegionBody>
         <div className="wa-report-meta"><span>{rangeLabel(report.from, report.to)}</span>{!period && <span>{__('Includes today', 'wconvert')}</span>}</div>

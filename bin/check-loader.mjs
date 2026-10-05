@@ -88,17 +88,18 @@ const ROOT = process.argv[2] ? resolve(process.argv[2]) : REPO_ROOT;
  * bundle is enqueued only for an administrator who asked for it.
  */
 // ADR 0111: 256 B per rung for pre-capture verification after ADR 0110 events.
-const FREE_BYTE_BUDGET = 14592;
+// ADR 0124: Node 22 gzip normalization, +32 B; Free asset is byte-identical.
+const FREE_BYTE_BUDGET = 14624;
 // ADR 0103: shared journeys plus paid recovery/content access.
 // ADR 0104: user-approved 1 KiB increase for grouped display policies.
 // ADR 0108: 256 B for product recovery, then 256 B for path-scoped answer review.
-// ADR 0123: +128 B per paid rung for category-filtered result reads.
-const PAID_BYTE_BUDGET = 25216;
+// ADR 0124: +160 B Basic/Pro and +448 B Elite; measured on Node 22.
+const PAID_BYTE_BUDGET = 25376;
 // ADR 0105: the complete shared phone-field seam has measured per-rung caps.
 // ADR 0121: server-counted conversion notification adds a bounded renderer seam.
-const PRO_BYTE_BUDGET = 26784;
+const PRO_BYTE_BUDGET = 26944;
 // ADR 0117: +128 B for the commerce bridge; the separately capped runtime loads on demand.
-const ELITE_BYTE_BUDGET = 27168;
+const ELITE_BYTE_BUDGET = 27616;
 
 const MANIFEST = 'resources/rules/manifest.json';
 

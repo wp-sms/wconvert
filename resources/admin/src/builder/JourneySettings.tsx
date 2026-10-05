@@ -17,6 +17,7 @@ import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { LinkField } from './LinkField';
 import { ResultProductFilter } from './ResultProductFilter';
+import { commerceSupported } from '../settings';
 import { InfoTip } from '../shell/InfoTip';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../components/ui/dropdown-menu';
 
@@ -440,6 +441,11 @@ export function ResultSettings({ tree, step, onChange, repairRequest, onResultSe
         </select></label>
         {selected.product_filter ? <ResultProductFilter key={selected.id} value={selected.product_filter} onChange={product_filter => edit(selectedAt, { product_filter })} />
           : <ProductPicker ids={selected.product_ids ?? []} onChange={product_ids => edit(selectedAt, { product_ids })} />}
+        <label>{__('Product button', 'wconvert')}<select value={selected.product_action ?? 'link'} onChange={event => edit(selectedAt, { product_action: event.target.value as 'link' | 'add_to_cart' })}>
+          <option value="link">{__('View product', 'wconvert')}</option>
+          <option value="add_to_cart" disabled={!commerceSupported()}>{__('Add to cart', 'wconvert')}</option>
+        </select></label>
+        <p>{!commerceSupported() ? __('Cart buttons need WConvert Pro and WooCommerce.', 'wconvert') : selected.product_action === 'add_to_cart' ? __('Adds one item. Products with options open their product page.', 'wconvert') : __('Opens the product page.', 'wconvert')}</p>
       </details>
       {selectedAt < variants.length - 1 && <ConditionSettings required value={selected.when} sources={sources} onChange={when => { if (when) edit(selectedAt, { when }); }} />}
       {selectedAt < variants.length - 1 && <div className="wconvert-journey-result-actions">

@@ -885,6 +885,10 @@ explicit global attribute values (all must match). Filters choose cards after
 the existing answer rules choose the result. Missing references fail closed;
 unavailable products fall back to the result's own link. Filtered results remain
 in every paid journeys tier ([ADR 0123](docs/adr/0123-quiz-results-select-products-by-category-and-attributes.md)).
+With the commerce module active, results can offer protected quantity-one cart
+buttons for supported simple products; products needing options keep links.
+Product activity spans the quiz mount, and accepted additions never create a
+second quiz Conversion ([ADR 0124](docs/adr/0124-quiz-products-share-protected-cart-actions.md)).
 
 ### Template
 

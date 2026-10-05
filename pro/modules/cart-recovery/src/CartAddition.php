@@ -38,13 +38,23 @@ final class CartAddition
     private function campaign(string $id, string $revision): ?array
     {
         foreach ($this->published->all() as $entry) {
-            if ($entry['id'] !== $id || ($entry['goal'] ?? '') !== Goal::IncreaseBasketValue->value) continue;
+            if ($entry['id'] !== $id) continue;
             $payload = $entry['payload'];
             if ($this->degradation->suspendedIn($payload) !== null || !hash_equals(CommerceContext::revision($payload), $revision)) return null;
+            if (self::field('screen') !== '' || self::field('result') !== '') {
+                $result = QuizProducts::result($payload, self::field('screen'), self::field('result'));
+                return ($result['product_action'] ?? '') === 'add_to_cart' ? ['quiz' => $result] : null;
+            }
+            if (($entry['goal'] ?? '') !== Goal::IncreaseBasketValue->value) return null;
             $node = CommerceContext::products($payload);
             return ($node['action'] ?? '') === 'add_to_cart' ? $node : null;
         }
         return null;
+    }
+
+    private static function binding(string $revision): string
+    {
+        return $revision . ':' . self::field('screen') . ':' . self::field('result');
     }
 
     private function guard(): void
@@ -75,7 +85,7 @@ final class CartAddition
         if (!preg_match('/^[a-f0-9-]{36}$/D', $mount) || $this->campaign($id, $revision) === null) wp_send_json(['state' => 'rejected'], 409);
         WC()->session->set_customer_session_cookie(true);
         // This read creates no cart mutation or conversion; capability never enters cached HTML.
-        wp_send_json(['token' => AdditionToken::issue((string) WC()->session->get_customer_id(), $id, $revision, $mount, time(), wp_salt('nonce'))]);
+        wp_send_json(['token' => AdditionToken::issue((string) WC()->session->get_customer_id(), $id, self::binding($revision), $mount, time(), wp_salt('nonce'))]);
     }
 
     public function serve(): void
@@ -83,12 +93,12 @@ final class CartAddition
         $this->guard();
         $id = self::field('id'); $revision = self::field('revision'); $operation = self::field('operation');
         $session = (string) WC()->session->get_customer_id();
-        $token = AdditionToken::read(self::field('token'), $session, $id, $revision, time(), wp_salt('nonce'));
+        $token = AdditionToken::read(self::field('token'), $session, $id, self::binding($revision), time(), wp_salt('nonce'));
         if ($token === null || !preg_match('/^[a-f0-9-]{36}$/D', $operation)) wp_send_json(['state' => 'rejected'], 403);
         $node = $this->campaign($id, $revision);
         if ($node === null) wp_send_json(['state' => 'rejected'], 409);
         $productId = absint(self::field('product'));
-        $key = self::key( $session . '|' . $id . '|' . $token['mount'] . '|' . $operation);
+        $key = self::key( $session . '|' . $id . '|' . self::binding($revision) . '|' . $token['mount'] . '|' . $operation);
         $receipt = get_option($key);
         if (is_array($receipt)) wp_send_json(($receipt['product'] ?? 0) === $productId ? $receipt : ['state' => 'rejected'], 200);
         $lock = self::key( 'lock|' . $session);
@@ -112,8 +122,8 @@ final class CartAddition
     {
         $unknown = ['state' => 'unknown', 'product' => $productId];
         if (!$this->claim($key, $unknown, $token['expires'])) return $unknown;
-        $cards = $this->context->recommendations($node, $this->context->cart(), CommerceContext::viewedProduct(self::field('page_product')))['cards'];
-        $card = array_column($cards, null, 'id')[$productId] ?? null;
+        $cards = isset($node['quiz']) ? QuizProducts::cards($node['quiz']) : $this->context->recommendations($node, $this->context->cart(), CommerceContext::viewedProduct(self::field('page_product')))['cards'];
+        $card = $cards instanceof \WP_Error ? null : (array_column($cards, null, 'id')[$productId] ?? null);
         $product = wc_get_product($productId);
         if (!$card || !hash_equals($card['price_key'], self::field('price_key')) || empty($card['can_add']) || !$product || !self::supported($product)) {
             $result = ['state' => 'rejected', 'product' => $productId];
@@ -130,7 +140,7 @@ final class CartAddition
                 try {
                     $this->stats->increment($id, StatKind::CartAddition, StatDay::today());
                     $headline = self::key( 'headline|' . $session . '|' . $id . '|' . $token['mount']);
-                    if ($this->claim($headline, ['state' => 'counted'], $token['expires'])) $this->stats->increment($id, StatKind::Conversion, StatDay::today());
+                    if (!isset($node['quiz']) && $this->claim($headline, ['state' => 'counted'], $token['expires'])) $this->stats->increment($id, StatKind::Conversion, StatDay::today());
                     do_action('wconvert_cart_addition_accepted', $id);
                     \WConvert\Stats\ProductStats::start($id);
                     $this->stats->increment($id, StatKind::CartAddition, StatDay::today(), 'product:' . $productId);

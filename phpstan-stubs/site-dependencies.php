@@ -128,6 +128,7 @@ namespace {
     }
     if (!class_exists('WC_Product')) {
         class WC_Product {
+            public function get_id(): int { return 1; }
             public function supports(string $feature): bool { return false; }
             public function get_status(): string { return ''; }
             public function get_name(): string { return ''; }
