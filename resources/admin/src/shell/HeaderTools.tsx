@@ -42,10 +42,10 @@ export function HeaderTools() {
   };
   const count = notices ? notices.campaigns.length + notices.sending : 0;
   return (
-    <div className="wc-header-tools">
+    <div className="wconvert-header-tools">
       {tier === 'free' && (
         <a
-          className="wc-explore-pro"
+          className="wconvert-explore-pro"
           href={EXPLORE_PRO_URL}
           target="_blank"
           rel="noreferrer"
@@ -59,7 +59,7 @@ export function HeaderTools() {
             <CircleHelp aria-hidden="true" />
           </Button>
         </PopoverTrigger>
-        <PopoverContent align="end" className="wc-header-popover">
+        <PopoverContent align="end" className="wconvert-header-popover">
           <HelpLinks />
         </PopoverContent>
       </Popover>
@@ -72,14 +72,14 @@ export function HeaderTools() {
           <Button
             variant="ghost"
             size="icon-sm"
-            className="wc-notifications-trigger"
+            className="wconvert-notifications-trigger"
             aria-label={__('Notifications', 'wconvert')}
           >
             <Bell aria-hidden="true" />
-            {count > 0 && <span className="wc-notification-dot" />}
+            {count > 0 && <span className="wconvert-notification-dot" />}
           </Button>
         </PopoverTrigger>
-        <PopoverContent align="end" className="wc-header-popover wc-notifications">
+        <PopoverContent align="end" className="wconvert-header-popover wconvert-notifications">
           <h2>{__('Notifications', 'wconvert')}</h2>
           {error && <RegionError message={sprintf(__('Notifications couldn’t load: %s', 'wconvert'), error)} action={<Button variant="outline" onClick={() => void load()}>{__('Try again', 'wconvert')}</Button>} />}
           {loading && !notices ? <RowsSkeleton rows={2} /> : (
@@ -87,14 +87,14 @@ export function HeaderTools() {
               <>
                 {count === 0 && <p>{__('No known campaign or sending issues.', 'wconvert')}</p>}
                 {notices.campaigns.map((c) => (
-                  <div className="wc-notification" key={c.id}>
+                  <div className="wconvert-notification" key={c.id}>
                     <strong>{c.name}</strong>
                     <p>{c.suspended}</p>
                     <a href={editorHref(c.id)}>{__('Review campaign', 'wconvert')}</a>
                   </div>
                 ))}
                 {notices.sending > 0 && (
-                  <div className="wc-notification">
+                  <div className="wconvert-notification">
                     <strong>{__('Sending needs attention', 'wconvert')}</strong>
                     <p>
                       {sprintf(

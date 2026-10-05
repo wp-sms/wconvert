@@ -35,9 +35,9 @@ export default function CampaignDesign({ template }: { template: Template }) {
     };
   }, [template]);
   return (
-    <div className="wc-design-frame" ref={frame} inert aria-hidden="true">
+    <div className="wconvert-design-frame" ref={frame} inert aria-hidden="true">
       <div
-        className="wc-design-anchor"
+        className="wconvert-design-anchor"
         ref={anchor}
         style={{
           inlineSize: /^(?:\d*\.)?\d+(?:px|rem)$/.test(template.tokens.width ?? '')

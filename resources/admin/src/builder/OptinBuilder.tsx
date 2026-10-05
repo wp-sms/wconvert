@@ -788,7 +788,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
         >
           <ArrowLeft aria-hidden="true" />
         </Button>
-        <span className="wc-brand-mark wconvert-workspace__brand-mark" aria-hidden="true">
+        <span className="wconvert-brand-mark wconvert-workspace__brand-mark" aria-hidden="true">
           w
         </span>
         <span className="sr-only">{__('WConvert', 'wconvert')}</span>

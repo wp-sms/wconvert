@@ -52,13 +52,13 @@ export function productHealthLabel(health?: ProductHealth): string | null {
 
 export function ProductHealthDetails({ health, loading, failed, onRecheck, onReview, reviewDisabled }: { health?: ProductHealth; loading: boolean; failed: boolean; onRecheck: () => void; onReview?: () => void; reviewDisabled?: boolean }) {
   if (!loading && !failed && (!health || health.checks.length === 0)) return null;
-  return <section className="wc-product-health" aria-label={__('Product check', 'wconvert')}>
-    <div className="wc-product-health-heading">
+  return <section className="wconvert-product-health" aria-label={__('Product check', 'wconvert')}>
+    <div className="wconvert-product-health-heading">
       <h3>{__('Product check', 'wconvert')}</h3>
       <Button variant="outline" disabled={loading} onClick={onRecheck}>{__('Check again', 'wconvert')}</Button>
     </div>
     {loading ? <p role="status">{__('Checking products…', 'wconvert')}</p> : failed ? <p role="alert">{__('Products could not be checked. Try again.', 'wconvert')}</p> : health && <>
-      <p className="wc-product-health-scope">{health.basis === 'published' ? __('Published version · current catalog', 'wconvert') : __('Saved draft · current catalog', 'wconvert')}</p>
+      <p className="wconvert-product-health-scope">{health.basis === 'published' ? __('Published version · current catalog', 'wconvert') : __('Saved draft · current catalog', 'wconvert')}</p>
       <ul>{health.checks.map((check, index) => <li key={index} data-state={check.state}>
         <strong>{check.label}</strong>
         <p>{check.message}</p>
