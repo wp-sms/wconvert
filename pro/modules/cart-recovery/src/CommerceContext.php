@@ -107,6 +107,7 @@ final class CommerceContext
             $id = (int) get_queried_object_id();
             $attributes['data-commerce-product'] = $id . ':' . wp_hash('wconvert-product:' . $id);
         }
+        $attributes['data-commerce-activity'] = \WC_AJAX::get_endpoint('wconvert_product_activity');
         $attributes['data-commerce-begin'] = \WC_AJAX::get_endpoint('wconvert_cart_begin');
         $attributes['data-commerce-add'] = \WC_AJAX::get_endpoint('wconvert_cart_add');
         $attributes['data-commerce-cart'] = wc_get_cart_url();
@@ -257,6 +258,11 @@ final class CommerceContext
             $node = self::products($payload);
             $cards = $node !== null ? $this->recommendations($node, $cart, $viewedProduct)['cards'] : [];
             if ($node !== null) $rules[$id . ':products'] = $cards !== [];
+            if ($cards !== []) {
+                \WConvert\Stats\ProductStats::start($id);
+                foreach ($cards as &$card) $card['activity_token'] = ProductActivityToken::issue($id, $requested[$id], (int) $card['id'], time(), wp_salt('nonce'));
+                unset($card);
+            }
             $answer[$id] = ['rules' => $rules, 'cards' => $cards, 'known' => $cart !== null];
         }
         wp_send_json($answer);

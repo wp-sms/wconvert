@@ -92,12 +92,13 @@ const FREE_BYTE_BUDGET = 14592;
 // ADR 0103: shared journeys plus paid recovery/content access.
 // ADR 0104: user-approved 1 KiB increase for grouped display policies.
 // ADR 0108: 256 B for product recovery, then 256 B for path-scoped answer review.
-const PAID_BYTE_BUDGET = 25088;
+// ADR 0123: +128 B per paid rung for category-filtered result reads.
+const PAID_BYTE_BUDGET = 25216;
 // ADR 0105: the complete shared phone-field seam has measured per-rung caps.
 // ADR 0121: server-counted conversion notification adds a bounded renderer seam.
-const PRO_BYTE_BUDGET = 26656;
+const PRO_BYTE_BUDGET = 26784;
 // ADR 0117: +128 B for the commerce bridge; the separately capped runtime loads on demand.
-const ELITE_BYTE_BUDGET = 27040;
+const ELITE_BYTE_BUDGET = 27168;
 
 const MANIFEST = 'resources/rules/manifest.json';
 

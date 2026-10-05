@@ -2,7 +2,7 @@ export { renderProductNode } from './products';
 import { readPayload } from '@loader/payload';
 import { hasConsent, onConsentChange } from '@loader/consent';
 
-export interface ProductCard { id: number; name: string; url: string; image: string; price: string; label: string; can_add?: boolean; price_key?: string }
+export interface ProductCard { id: number; name: string; url: string; image: string; price: string; label: string; can_add?: boolean; price_key?: string; activity_token?: string }
 interface Snapshot { rules: Record<string, boolean>; cards: ProductCard[]; known: boolean }
 let snapshots: Record<string, Snapshot> = {};
 let state = 'pending';

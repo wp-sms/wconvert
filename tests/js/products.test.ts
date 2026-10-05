@@ -96,3 +96,37 @@ it('ignores a late retry response after leaving the result', async () => {
   expect(container.querySelector('a')).toBeNull();
   expect(shadow.activeElement).toBe(fallback);
 });
+
+it('reads category matches from their bounded endpoint without mixing in saved hand-picked IDs', async () => {
+  const payload = document.createElement('script'); payload.id = 'wconvert-payload';
+  payload.setAttribute('data-product-matches', `${location.origin}/wp-json/wconvert/v1/product-matches`);
+  document.body.append(payload);
+  const fetcher = vi.fn().mockResolvedValue(response([product(22), product(25), product(30), product(40)]));
+  vi.stubGlobal('fetch', fetcher);
+  const container = document.createElement('div');
+  const clicked = vi.fn();
+  const filter = { category_id: 7, attributes: [{ taxonomy: 'pa_color', term_id: 9 }] };
+  const stop = showProducts(container, { id: 'match', heading: 'Match', product_ids: [1], product_filter: filter }, clicked);
+  await vi.waitFor(() => expect(container.querySelectorAll('a')).toHaveLength(3));
+  const url = fetcher.mock.calls[0][0] as URL;
+  expect(url.pathname).toBe('/wp-json/wconvert/v1/product-matches');
+  expect(JSON.parse(url.searchParams.get('filter')!)).toEqual(filter);
+  expect(url.searchParams.has('include[]')).toBe(false);
+  expect(container.textContent).toContain('Product 22');
+  expect(container.textContent).not.toContain('Product 40');
+  container.querySelector('a')!.addEventListener('click', event => event.preventDefault());
+  container.querySelector('a')!.click();
+  expect(clicked).toHaveBeenCalledTimes(1);
+  stop();
+});
+
+it('leaves an empty category result usable through its fallback', async () => {
+  const payload = document.createElement('script'); payload.id = 'wconvert-payload';
+  payload.setAttribute('data-product-matches', `${location.origin}/wp-json/wconvert/v1/product-matches`);
+  document.body.append(payload);
+  vi.stubGlobal('fetch', vi.fn().mockResolvedValue(response([])));
+  const container = document.createElement('div');
+  const stop = showProducts(container, { id: 'match', heading: 'Match', product_filter: { category_id: 2, attributes: [] } });
+  await vi.waitFor(() => expect(container.textContent).toContain('Please use the link below'));
+  stop();
+});

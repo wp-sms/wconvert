@@ -57,6 +57,10 @@ final class DesignPackage
         foreach ($design['tree']['steps'] ?? [] as $i => $step) foreach ($step['results'] ?? [] as $j => $result) {
             if (($result['product_ids'] ?? []) !== []) $notes[] = __('Choose products on the receiving site.', 'wconvert');
             $design['tree']['steps'][$i]['results'][$j]['product_ids'] = [];
+            if (isset($result['product_filter'])) {
+                $design['tree']['steps'][$i]['results'][$j]['product_filter'] = ['category_id' => 0, 'attributes' => []];
+                $notes[] = __('Choose the category and attribute values on the receiving site.', 'wconvert');
+            }
         }
         $wrapped = \WConvert\Template\TemplateTree::rewrittenIn(['template' => $design], static function (array $node) use (&$notes): array {
             if (($node['type'] ?? '') === 'products') {

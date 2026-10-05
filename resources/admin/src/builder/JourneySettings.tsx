@@ -16,6 +16,7 @@ import { Dialog, DialogContent, DialogTitle, DialogDescription } from '../compon
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { LinkField } from './LinkField';
+import { ResultProductFilter } from './ResultProductFilter';
 import { InfoTip } from '../shell/InfoTip';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../components/ui/dropdown-menu';
 
@@ -432,7 +433,14 @@ export function ResultSettings({ tree, step, onChange, repairRequest, onResultSe
       <label>{__('Message', 'wconvert')}<textarea value={selected.body ?? ''} maxLength={500} onChange={event => edit(selectedAt, { body: event.target.value }, 'body')} /></label>
       <label>{__('Fallback shop or guide link', 'wconvert')}<LinkField ref={linkInput} value={selected.href ?? ''} onChange={href => edit(selectedAt, { href }, 'href')} /></label>
       <label>{__('Link label', 'wconvert')}<input value={selected.link_label ?? ''} maxLength={120} onChange={event => edit(selectedAt, { link_label: event.target.value }, 'link_label')} /></label>
-      <details className="wconvert-result-products" open={!!selected.product_ids?.length || screen.products_required || undefined}><summary>{__('Recommend products (optional)', 'wconvert')}</summary><ProductPicker ids={selected.product_ids ?? []} onChange={product_ids => edit(selectedAt, { product_ids })} /></details>
+      <details className="wconvert-result-products" open={!!selected.product_ids?.length || !!selected.product_filter || screen.products_required || undefined}>
+        <summary>{__('Recommend products (optional)', 'wconvert')}</summary>
+        <label>{__('Choose products by', 'wconvert')}<select value={selected.product_filter ? 'category' : 'selected'} onChange={event => edit(selectedAt, { product_filter: event.target.value === 'category' ? { category_id: 0, attributes: [] } : undefined })}>
+          <option value="selected">{__('Hand-picked products', 'wconvert')}</option><option value="category">{__('Category and attributes', 'wconvert')}</option>
+        </select></label>
+        {selected.product_filter ? <ResultProductFilter key={selected.id} value={selected.product_filter} onChange={product_filter => edit(selectedAt, { product_filter })} />
+          : <ProductPicker ids={selected.product_ids ?? []} onChange={product_ids => edit(selectedAt, { product_ids })} />}
+      </details>
       {selectedAt < variants.length - 1 && <ConditionSettings required value={selected.when} sources={sources} onChange={when => { if (when) edit(selectedAt, { when }); }} />}
       {selectedAt < variants.length - 1 && <div className="wconvert-journey-result-actions">
       {variants.length > 2 && <div className="wconvert-journey-settings__result-order">

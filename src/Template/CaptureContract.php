@@ -47,7 +47,7 @@ final class CaptureContract
     }
 
     /** @param array<string, mixed> $config */
-    public static function issue(array $config, string $goal, string $policyUrl): ?string
+    public static function issue(array $config, string $goal, string $policyUrl, bool $checkProductReferences = false): ?string
     {
         $template = self::template($config, $goal, $policyUrl);
         $tree = $template['tree'] ?? [];
@@ -66,9 +66,11 @@ final class CaptureContract
         foreach ($tree['steps'] ?? [] as $step) {
             if (($step['kind'] ?? '') !== 'result') { continue; }
             foreach ($step['results'] ?? [] as $variant) {
+                if (array_key_exists('product_filter', $variant) && (!ResultProductSource::valid($variant['product_filter'])
+                    || ($checkProductReferences && !ResultProductSource::available($variant['product_filter'])))) return 'products';
                 $hasLink = trim((string) ($variant['href'] ?? '')) !== '';
                 $hasLabel = trim((string) ($variant['link_label'] ?? '')) !== '';
-                if ($hasLink !== $hasLabel || (!empty($variant['product_ids']) && !$hasLink)) { return 'result_link'; }
+                if ($hasLink !== $hasLabel || ((!empty($variant['product_ids']) || isset($variant['product_filter'])) && !$hasLink)) { return 'result_link'; }
             }
             if (($step['products_required'] ?? false) === true) {
                 if (!class_exists('WooCommerce') || count($step['results'] ?? []) < 2) { return 'products'; }
@@ -76,7 +78,7 @@ final class CaptureContract
                     if (trim((string) ($variant['href'] ?? '')) === '' || trim((string) ($variant['link_label'] ?? '')) === '') { return 'products'; }
                 }
                 foreach (array_slice($step['results'], 0, -1) as $variant) {
-                    if (empty($variant['product_ids'])) { return 'products'; }
+                    if (empty($variant['product_ids']) && !isset($variant['product_filter'])) { return 'products'; }
                 }
             }
         }

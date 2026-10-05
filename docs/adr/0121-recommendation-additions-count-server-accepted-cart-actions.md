@@ -8,7 +8,11 @@ Accepted 2026-10-05. Implements the next slice of the [recommendations plan](../
 **Basket additions**, counts mounted campaign appearances with at least one
 accepted addition. `cart_addition` is a closed StatKind in the existing daily
 aggregate table and counts every accepted quantity-one operation. There is no
-schema migration, product dimension, Lead, contact, purchase or revenue claim.
+schema migration, Lead, contact, purchase or revenue claim.
+**Extended by [ADR 0122](0122-product-activity-uses-retained-anonymous-dimensions.md):**
+accepted additions now also increment a separate retained `product:<id>` scope.
+Anonymous visible-card and product-link activity share those product dimensions;
+the campaign headline and empty-scope addition count stay unchanged.
 Dashboard impact groups and CSV keep additions separate from product-link clicks.
 An old link campaign retains its Goal, action and history; the new playbook and
 design create a separate campaign. Existing publication/AB history guards apply.
@@ -79,7 +83,7 @@ also invalidate recommendation context through the sync bridge.
 
 The optional commerce bundle cap rises from 3276 to 4800 gzip bytes for protection,
 feedback and refresh. Shared renderer/server-counting notification raises Pro and
-Elite caps by 32 bytes (26656/27040). Free and Basic budgets do not change. Source
+Elite caps by 32 bytes (26656/27040). This change left Free and Basic budgets unchanged. [ADR 0123](0123-quiz-results-select-products-by-category-and-attributes.md) later adds 128 bytes to each paid cap for filtered quiz product reads; Free remains unchanged. Source
 and artifact boundaries still exclude commerce from unsupported editions.
 
 ## Evidence and limits

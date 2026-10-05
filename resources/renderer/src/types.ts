@@ -85,6 +85,10 @@ export interface JourneyGraph {
   readonly entry: string;
   readonly edges: readonly JourneyGraphEdge[];
 }
+export interface ResultProductFilter {
+  readonly category_id: number;
+  readonly attributes: readonly { readonly taxonomy: string; readonly term_id: number }[];
+}
 export interface ResultVariant {
   readonly id: string;
   readonly heading: string;
@@ -92,6 +96,7 @@ export interface ResultVariant {
   readonly href?: string;
   readonly link_label?: string;
   readonly product_ids?: readonly number[];
+  readonly product_filter?: ResultProductFilter;
   readonly when?: QuestionCondition;
 }
 

@@ -132,6 +132,8 @@ final class CartAddition
                     $headline = self::key( 'headline|' . $session . '|' . $id . '|' . $token['mount']);
                     if ($this->claim($headline, ['state' => 'counted'], $token['expires'])) $this->stats->increment($id, StatKind::Conversion, StatDay::today());
                     do_action('wconvert_cart_addition_accepted', $id);
+                    \WConvert\Stats\ProductStats::start($id);
+                    $this->stats->increment($id, StatKind::CartAddition, StatDay::today(), 'product:' . $productId);
                 } catch (\Throwable) { /* Reporting must not turn a successful cart action into a retry. */ }
             }
         }

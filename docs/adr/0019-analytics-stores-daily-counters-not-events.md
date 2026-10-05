@@ -123,7 +123,12 @@ be paid on every beacon for a read one admin takes on demand.*
 - **There is no hour-of-day breakdown, ever.** "Today so far" works, because the
   day's row updates live; an intra-day curve does not and cannot be added
   retroactively.
-- **Retention is keep-forever with no pruning**, which is where
+- **Amended by [ADR 0122](0122-product-activity-uses-retained-anonymous-dimensions.md):**
+  product scopes retain 90 days and are pruned in bounded batches. The original
+  row estimate excludes these catalog dimensions; campaign-scoped reads use the
+  existing primary key and bounded response limits. Empty-scope campaign counters
+  and their derived milestone dates still keep lifetime history.
+- **Campaign-counter retention is keep-forever with no pruning**, which is where
   [#11](https://github.com/navidkashani/wconvert/issues/11) put [[Lead]]s — but
   arrived at by a different route: at ~29k rows a year there is nothing to prune.
   Analytics needs no retention setting of its own.

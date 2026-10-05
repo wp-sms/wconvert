@@ -9,7 +9,7 @@ extracted official WooCommerce distribution. Optional `WCONVERT_TEST_WP` and
 not reliably select the requested runtime. `WCONVERT_TEST_CORE` and
 `WCONVERT_TEST_PRO` can point to extracted release packages. Port is 9445.
 
-Run `check-products.mjs`, then `check-additions.mjs`. Both use HTTP requests only.
+Run `check-products.mjs`, then `check-additions.mjs`, then `check-product-activity.mjs`. All use HTTP requests only. The activity check covers signed observations, report permissions, server-only additions, replay, paused history, journey isolation and scoped retention.
 For the latter, set `WCONVERT_EXPECT_WP`, `WCONVERT_EXPECT_PHP` and
 `WCONVERT_EXPECT_WOO` to assert the runtime instead of trusting a command banner.
 Prefixes such as `6.8` or `8.1` allow patch releases.
@@ -30,3 +30,8 @@ saved campaign/statistic records across rollback/re-upgrade and Basic/Elite chan
 See `docs/reviews/recommendations-rc-2026-10-05/` for the verified runtime matrix,
 logs, visual evidence and exact artifact hashes. WordPress Playground patch
 selection may differ from the requested series; trust the reported runtime.
+
+`check-result-filters.mjs` checks category/attribute quiz sources against the
+same disposable WooCommerce site. It creates separate catalog fixtures, checks
+AND matching and fallback boundaries, then deletes one test-only term to prove
+that missing filters never broaden a result. Use a fresh server for a repeat run.

@@ -1,3 +1,4 @@
+import { productActivity } from './activity';
 import type { ProductsNode, TemplateNode } from '@renderer/types';
 import { cartCards, contextStatus, watchCart, type ProductCard } from './context';
 import { additionSession, refreshNativeCart, type AdditionState } from './addition';
@@ -9,6 +10,7 @@ export function renderProductNode(raw: TemplateNode): HTMLElement | null {
   const session = adding ? additionSession(node.context_key ?? '') : undefined;
   const host = document.createElement('div');
   host.style.cssText = 'display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,9rem),1fr));gap:1rem;text-align:start';
+  const activity = productActivity(host, node.context_key ?? '');
   const outcomes = new Map<number, { card: ProductCard; state: AdditionState }>();
   let pending = false; let closed = false; let converted = false;
   let labels: string[] = []; let emptyLabels: string[] = [];
@@ -22,6 +24,7 @@ export function renderProductNode(raw: TemplateNode): HTMLElement | null {
     const focused = active && host.contains(active) ? active.dataset.product : undefined;
     const cards = [...outcomes.values()].map(value => value.card);
     for (const card of cartCards(node.context_key ?? '')) if (!outcomes.has(card.id)) cards.push(card);
+    activity.reset();
     const children: HTMLElement[] = [];
     for (const card of cards.slice(0, 3)) {
       const url = localUrl(card.url); if (!url) continue;
@@ -66,6 +69,7 @@ export function renderProductNode(raw: TemplateNode): HTMLElement | null {
         if (!adding) link.dataset.convert = '';
         link.setAttribute('aria-label', `${card.label}: ${card.name}`); item.append(link);
       }
+      activity.card(item, card);
       children.push(item);
     }
     if (!children.length) {
@@ -77,7 +81,7 @@ export function renderProductNode(raw: TemplateNode): HTMLElement | null {
     if (focused) { host.tabIndex = -1; (host.querySelector<HTMLElement>(`[data-product="${focused}"]`) ?? host).focus(); }
   };
   paint();
-  const stop = watchCart(() => { if (!host.isConnected) { stop(); return; } paint(); });
-  queueMicrotask(() => host.closest('.wc-root')?.addEventListener('wconvert:closed', () => { closed = true; stop(); }, { once: true }));
+  const stop = watchCart(() => { if (!host.isConnected) { stop(); activity.stop(); return; } paint(); });
+  queueMicrotask(() => host.closest('.wc-root')?.addEventListener('wconvert:closed', () => { closed = true; stop(); activity.stop(); }, { once: true }));
   return host;
 }

@@ -369,6 +369,7 @@ final class ProServiceProvider implements ServiceProvider
             $container->resolve(CartCookie::class)->hooks();
             $commerce = new \WConvert\Pro\Module\CartRecovery\CommerceContext($container->resolve(PublishedSet::class), $container->resolve(\WConvert\Rules\Degradation::class), $container->resolve(\WConvert\Rest\RateLimit::class));
             $commerce->hooks();
+            (new \WConvert\Pro\Module\CartRecovery\ProductActivity($container->resolve(PublishedSet::class), $container->resolve(\WConvert\Rules\Degradation::class), $container->resolve(\WConvert\Rest\RateLimit::class), $container->resolve(\WConvert\Stats\StatsRepository::class)))->hooks();
             (new \WConvert\Pro\Module\CartRecovery\CartAddition($container->resolve(PublishedSet::class), $container->resolve(\WConvert\Rules\Degradation::class), $container->resolve(\WConvert\Rest\RateLimit::class), $commerce, $container->resolve(\WConvert\Stats\StatsRepository::class)))->hooks();
         }
 

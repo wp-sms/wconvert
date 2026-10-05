@@ -1,3 +1,4 @@
+import { LiveProductMatches } from './ResultProductFilter';
 import { ArrowLeft, ArrowRight, Check, RotateCcw } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { PreviewWidth } from './PreviewWidth';
@@ -150,7 +151,7 @@ export function JourneyTest({ template, onEdit, onShowPath, deliveryMode = 'none
         if (result?.href) link.href = result.href;
         else link.removeAttribute('href');
       }
-      if (products && result?.product_ids?.length) productsHost = products;
+      if (products && (result?.product_ids?.length || result?.product_filter)) productsHost = products;
     }
     setProductHost(productsHost);
     const read = (): Answers => {
@@ -287,7 +288,7 @@ export function JourneyTest({ template, onEdit, onShowPath, deliveryMode = 'none
       {feedback && <p className="wconvert-journey-test__feedback" role="status">{feedback}</p>}
       <div className="wconvert-preview-test__screen-actions"><Button variant="ghost" size="sm" disabled={visited.length < 2} onClick={() => backAction.current()}><ArrowLeft aria-hidden="true" />{__('Previous screen', 'wconvert')}</Button><Button variant="ghost" size="sm" onClick={() => onEdit(step)}>{__('Edit this screen', 'wconvert')}<ArrowRight aria-hidden="true" /></Button></div>
     </section>
-    {productHost && !!shownResult?.product_ids?.length && createPortal(<TestProducts count={shownResult.product_ids.length}
+    {productHost && (shownResult?.product_ids?.length || shownResult?.product_filter) && createPortal(shownResult.product_filter && productState === 'selected' ? <LiveProductMatches filter={shownResult.product_filter} /> : <TestProducts count={shownResult.product_filter ? 3 : shownResult.product_ids?.length ?? 0}
       state={productState} onRetry={() => setProductState('selected')} />, productHost)}
     <aside className="wconvert-journey-test__side" aria-label={__('Your test', 'wconvert')}>
       {changeToCheck && <section className="wconvert-journey-test__change" aria-label={__('Change to check', 'wconvert')}><strong>{__('Change to check', 'wconvert')}</strong><p><strong>{changeToCheck.screenName}</strong></p><p>{changeToCheck.text}</p><details><summary>{__('Suggested checks', 'wconvert')}</summary><ul>{changeTestGuide(tree, changeToCheck.screenId).map(check => <li key={check}>{check}</li>)}</ul><p>{__('These are cases to try, not proof that a rule is reachable or wins. Earlier answers and rule priority still apply.', 'wconvert')}</p></details><small>{__('Start at the beginning and try answers that use the changed path. No answers are preselected.', 'wconvert')}</small></section>}
@@ -338,9 +339,9 @@ export function JourneyTest({ template, onEdit, onShowPath, deliveryMode = 'none
       </section>}
       {currentSubmissions.some(submission => !accepted.includes(submission.id)) && <details className="wconvert-test-diagnostics"><summary>{__('Test a problem', 'wconvert')}</summary><p>{__('Applies to the next submission only. A failed save keeps the visitor here so they can retry.', 'wconvert')}</p><label><input type="checkbox" checked={failNext} onChange={event => { failNextRef.current = event.target.checked; setFailNext(event.target.checked); }} />{__('Simulate failure on next submission', 'wconvert')}</label>
         {deliveryMode === 'connected' && <label><input type="checkbox" checked={failDeliveryNext} onChange={event => { failDeliveryNextRef.current = event.target.checked; setFailDeliveryNext(event.target.checked); }} />{__('Simulate delivery failure after next accepted save', 'wconvert')}</label>}</details>}
-      {!!shownResult?.product_ids?.length && <details><summary>{__('Test product availability', 'wconvert')}</summary><fieldset><legend>{__('Product availability (simulation)', 'wconvert')}</legend>
+      {(!!shownResult?.product_ids?.length || !!shownResult?.product_filter) && <details><summary>{__('Test product availability', 'wconvert')}</summary><fieldset><legend>{__('Product availability (simulation)', 'wconvert')}</legend>
         {(['selected', 'empty', 'error'] as const).map(value => <label key={value}><input type="radio" name="product-state" checked={productState === value} onChange={() => setProductState(value)} />{value === 'selected' ? __('Available', 'wconvert') : value === 'empty' ? __('None available', 'wconvert') : __('Loading error', 'wconvert')}</label>)}
-        <p>{__('This test does not fetch your catalog. Retry simulates a successful response; check actual prices and stock on your website.', 'wconvert')}</p>
+        <p>{shownResult.product_filter ? __('Available shows live matches. The other options simulate problems. No activity is counted.', 'wconvert') : __('This test does not fetch your catalog. Retry simulates a successful response; check actual prices and stock on your website.', 'wconvert')}</p>
       </fieldset></details>}
       {complete && <section className="wconvert-journey-test__complete"><strong>{__('This path is complete', 'wconvert')}</strong><p>{accepted.length ? __('Check the submitted details above. Other paths still need a try.', 'wconvert') : __('No contact details were submitted on this path. Other paths still need a try.', 'wconvert')}</p><Button variant="outline" size="sm" onClick={reset}><RotateCcw aria-hidden="true" />{__('Try another path', 'wconvert')}</Button></section>}
       <details><summary>{__('What does this test check?', 'wconvert')}</summary>

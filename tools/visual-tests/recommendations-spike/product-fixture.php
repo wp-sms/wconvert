@@ -35,6 +35,15 @@ add_action('template_redirect', static function (): void {
     if (isset($_GET['options_required'])) update_option('wconvert_test_options_required', $_GET['options_required'] === '1');
     if (isset($_GET['add_published'])) { if ($_GET['add_published'] === '0') $repository->unpublish($fixture['campaigns']['add']); else $repository->publish($fixture['campaigns']['add']); }
     global $wpdb;
+    if (isset($_GET['product_retention_check'])) {
+        $testId = '01JQ0000000000000000000099';
+        $stats = $container->get(\WConvert\Stats\StatsRepository::class);
+        foreach ([[\WConvert\Stats\StatKind::ProductShown, 'product:999'], [\WConvert\Stats\StatKind::ProductClick, 'product:999'], [\WConvert\Stats\StatKind::CartAddition, 'product:999'], [\WConvert\Stats\StatKind::CartAddition, ''], [\WConvert\Stats\StatKind::ScreenShown, 'screen:test']] as [$kind, $scope]) $stats->increment($testId, $kind, '2000-01-01', $scope);
+        (new \WConvert\Stats\ProductStats($container->get(\WConvert\Database\Connection::class)))->prune();
+        $remaining = $wpdb->get_results($wpdb->prepare("SELECT kind, scope FROM {$wpdb->prefix}wconvert_stats WHERE optin_id = %s ORDER BY kind", $testId), ARRAY_A);
+        $wpdb->delete($wpdb->prefix . 'wconvert_stats', ['optin_id' => $testId]);
+        wp_send_json(['retention_check' => array_map(static fn ($row) => $row['kind'] . ':' . $row['scope'], $remaining)]);
+    }
     $counts = $wpdb->get_results($wpdb->prepare("SELECT kind, SUM(count) AS total FROM {$wpdb->prefix}wconvert_stats WHERE optin_id = %s AND scope = '' GROUP BY kind", $fixture['campaigns']['add']), ARRAY_A);
     if (isset($_GET['login'])) { wp_set_current_user(1); wp_set_auth_cookie(1); }
     if (isset($_GET['theme'])) switch_theme($_GET['theme'] === 'classic' ? 'recommendations-classic' : $fixture['block_theme']);
@@ -67,3 +76,42 @@ add_action('wp_footer', static function (): void {
     woocommerce_mini_cart();
     echo '</div></aside>';
 }, 5);
+
+// Separate products: the result-filter checks never mutate the accessories fixtures.
+add_action('template_redirect', static function (): void {
+    if (!isset($_GET['wconvert_result_filter_fixture'])) return;
+    $f = get_option('wconvert_result_filter_fixture');
+    if (!$f) {
+        $cat = wp_insert_term('Result filter mugs', 'product_cat');
+        $child = wp_insert_term('Result filter travel mugs', 'product_cat', ['parent' => (int) $cat['term_id']]);
+        foreach (['finish', 'size'] as $name) {
+            $attribute = wc_create_attribute(['name' => ucfirst($name), 'slug' => 'wcf_' . $name, 'type' => 'select']);
+            register_taxonomy('pa_wcf_' . $name, ['product'], ['public' => false, 'label' => ucfirst($name)]);
+            $f['attributes'][$name] = $attribute;
+        }
+        foreach (['blue', 'red'] as $name) $f['terms'][$name] = (int) wp_insert_term($name, 'pa_wcf_finish')['term_id'];
+        foreach (['small', 'large'] as $name) $f['terms'][$name] = (int) wp_insert_term($name, 'pa_wcf_size')['term_id'];
+        $f['category'] = (int) $cat['term_id'];
+        $f['child'] = (int) $child['term_id'];
+        foreach (['blue-small', 'red-small', 'blue-large', 'sold-out', 'hidden', 'private', 'draft', 'password', 'no-price'] as $name) {
+            $product = new WC_Product_Simple();
+            $product->set_name('Filter test ' . $name);
+            $product->set_status(in_array($name, ['private', 'draft'], true) ? $name : 'publish');
+            if ($name !== 'no-price') $product->set_regular_price('15');
+            $product->set_category_ids([$name === 'blue-large' ? $f['child'] : $f['category']]);
+            $product->set_stock_status($name === 'sold-out' ? 'outofstock' : 'instock');
+            if ($name === 'hidden') $product->set_catalog_visibility('hidden');
+            $attributes = [];
+            foreach (['finish' => $name === 'red-small' ? 'red' : 'blue', 'size' => $name === 'blue-large' ? 'large' : 'small'] as $taxonomy => $term) {
+                $a = new WC_Product_Attribute(); $a->set_id($f['attributes'][$taxonomy]); $a->set_name('pa_wcf_' . $taxonomy); $a->set_options([$f['terms'][$term]]); $a->set_visible(true); $attributes[] = $a;
+            }
+            $product->set_attributes($attributes);
+            $id = $product->save();
+            if ($name === 'password') wp_update_post(['ID' => $id, 'post_password' => 'test-only']);
+            $f['products'][$name] = $id;
+        }
+        update_option('wconvert_result_filter_fixture', $f);
+    }
+    if (isset($_GET['delete_red'])) wp_delete_term($f['terms']['red'], 'pa_wcf_finish');
+    wp_send_json($f);
+}, 25);

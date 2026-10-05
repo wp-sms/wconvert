@@ -773,10 +773,14 @@ final class OptinRepository
         // Keep this at the promotion boundary as well as in REST: a CLI or
         // future bulk action must not publish a draft with no design. Saving
         // that incomplete draft remains valid and never changes the live set.
-        // Graph publication needs the same goal-aware capture boundary as REST.
+        // Graphs and filtered results need the same capture/publication boundary as REST.
         // The legacy form validator intentionally accepts only version 2.
-        $formIssue = ($optin->config['template']['tree']['v'] ?? null) === 3
-            ? \WConvert\Template\CaptureContract::issue($optin->config, $optin->goal, get_privacy_policy_url())
+        $checkJourney = ($optin->config['template']['tree']['v'] ?? null) === 3;
+        foreach ($optin->config['template']['tree']['steps'] ?? [] as $screen) foreach ($screen['results'] ?? [] as $result) {
+            if (array_key_exists('product_filter', $result)) $checkJourney = true;
+        }
+        $formIssue = $checkJourney
+            ? \WConvert\Template\CaptureContract::issue($optin->config, $optin->goal, get_privacy_policy_url(), true)
             : \WConvert\Template\TemplateForm::issue($optin->config['template'] ?? null);
         if (!$optin->hasDesign() || $formIssue !== null) {
             return null;

@@ -2,7 +2,7 @@
 
 Date: 5 October 2026
 
-Status: Layout B and the direct-add design are approved locally. Product-page context, simple-product Add to cart and confirmed-addition reporting are implemented. The release candidate passed the recorded compatibility checks and is ready for staging; no public release, merchant recruitment or external messages have occurred.
+Status: Layout B and the direct-add design are approved locally. Product-page context, simple-product Add to cart, confirmed-addition reporting and product-level activity reports are implemented locally. The release candidate passed the recorded compatibility checks and is ready for staging; no public release, merchant recruitment or external messages have occurred.
 
 Current release evidence: [candidate checklist](../reviews/recommendations-rc-2026-10-05/release-checklist.md). The earlier [link-slice checklist](../reviews/recommendations-2026-10-05/release-checklist.md) remains historical evidence. The [setup guide](../guides/product-recommendations.md) covers the implemented recommendation experience.
 
@@ -32,7 +32,7 @@ Primary business objective: improve basket value through useful additions while 
 | Context | Basket-aware recommendations require a known nonempty basket | Add a distinct current-product context that works before a basket exists |
 | Targeting | Product/category membership, quantities and merchandise amounts | Reuse existing rules; avoid another rules builder |
 | Preview | Stateless sample baskets use the live evaluator | Add clear reasons, current-product samples and simulated button states |
-| Quizzes | Conditional questions, selected result products, fallback links | Later: bounded category/attribute selection per result |
+| Quizzes | Conditional questions, hand-picked or category/attribute result products, fallback links | Implemented locally; merchant pilot and release review remain |
 | Reporting | Campaign outcomes and optional campaign-attributed paid sales | Accurate addition outcomes first; product-level activity later |
 | Placement | Manual block/shortcode; automatic post/page content insertion | Explicit WooCommerce product-page placement; existing insertion is not proof of product-template support |
 | Validation | Automated and disposable-site evidence exists | Merchant usability and production-scale validation remain outstanding |
@@ -151,6 +151,15 @@ Extend Sample Visit with an explicit viewed-product selector alongside the baske
 
 ## 7. Release C: useful product reporting
 
+Implementation update, 2026-10-05: slice 5 now records and reports product-card
+views, product-page link activity and confirmed additions in campaign Analytics
+and editor details. See [ADR 0122](../adr/0122-product-activity-uses-retained-anonymous-dimensions.md).
+Product scopes use existing storage with 90-day retention; current names,
+tracking start and incomplete coverage are explicit. Quiz cards and product-level
+sales remain separate future work. The prior release-candidate ZIPs predate this
+slice and must be rebuilt/revalidated before including it in a release.
+
+
 Keep reporting inside the existing campaign detail and Analytics. Show the campaign's main outcome first, then product activity and the existing attributed-sales section. Explain unconfigured tracking rather than displaying missing attribution as zero sales.
 
 | Metric | Definition and boundary |
@@ -172,7 +181,7 @@ Campaign A/B comparisons can compare designs with the same outcome. A no-recomme
 
 ## 8. Release D: easier product-finder maintenance
 
-Proceed when merchant research shows maintaining selected IDs is costly. Preserve all current quizzes, result order, fallback links and anonymous completion behavior.
+Implemented locally on 5 October after the user explicitly selected this development step. Merchant validation of the maintenance benefit remains part of the pilot; no uplift is claimed. Current quizzes, result order, fallback links and anonymous completion behavior are preserved. See [verification](../testing/result-product-filters-2026-10-05.md).
 
 Add an optional product source per result: selected products, or a category constrained by explicit attribute values. The chosen result remains determined by the existing question/branch rules; catalog filters only choose its cards. Start with a documented deterministic order, bounded queries and live eligibility. No automatic scoring, recommendation of exact variations or inferred compatibility.
 
@@ -182,7 +191,7 @@ Defer “best sellers” and recently viewed modes until merchants demonstrate a
 
 ## 9. Shared reliability, packaging and compatibility
 
-- **Availability:** recommendations and new cart actions remain in the existing cart commerce capability/build rung, currently Elite internally and Pro to customers. Keep existing quizzes in their present tiers. Any later quiz catalog feature requires a deliberate tier decision; do not move existing functionality upward.
+- **Availability:** recommendations and new cart actions remain in the existing cart commerce capability/build rung, currently Elite internally and Pro to customers. Keep existing quizzes in their present tiers. Category/attribute quiz selection stays in the journeys module at all paid tiers (ADR 0123); existing functionality does not move upward.
 - **Dependencies:** hide irrelevant creation controls without WooCommerce. Suspend saved campaigns whose required module is absent, preserving the authored constraints. Follow the existing license-expiry contract.
 - **Backwards compatibility:** missing new fields mean the old basket context and View product action. Existing published campaigns, historical reports and templates must render/count unchanged.
 - **Portability:** strip site-local product/category/attribute references on export where applicable, require remapping, preserve supported source/action intent, and refuse unsupported capabilities on import. Do not accidentally resolve matching numeric IDs on another store.
@@ -202,7 +211,7 @@ Defer “best sellers” and recently viewed modes until merchants demonstrate a
 | 3. Release A validation | Packaging, regression, responsive/accessibility and merchant walkthrough | Slices 1–2; all release blockers resolved; no claimed uplift |
 | 4. Product-page experience | Current-product context, verified placements and preview | Release A adapter stable; works with empty basket and no duplicate placement |
 | 5. Product activity report | Bounded aggregates and per-product report | Storage/retention contract reviewed; source event instrumentation verified |
-| 6. Product-finder extension | Category/attribute result sources | Research confirms maintenance problem; empty-result and quiz-counting contracts pass |
+| 6. Product-finder extension | Category/attribute result sources | Implemented locally; bounded live reads, empty/error fallback, transfer remapping and counting checks; merchant validation and release review remain |
 | 7. Outcome study | Predefined controlled pilot | Sufficient traffic, valid assignment/consent and agreed measurement; report uncertainty |
 
 Release A comprises slices 0–3. Slice 4 is Release B; slice 5 is Release C; slice 6 is Release D. Product reporting can be designed alongside the product-page work, but each release remains independently reviewable. Do not bundle shipping progress, discounts, AI or off-site marketing into this sequence.

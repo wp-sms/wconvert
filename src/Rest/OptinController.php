@@ -597,7 +597,7 @@ final class OptinController implements RestController
             return $placementError;
         }
 
-        $issue = \WConvert\Template\CaptureContract::issue($optin->config, $optin->goal, get_privacy_policy_url());
+        $issue = \WConvert\Template\CaptureContract::issue($optin->config, $optin->goal, get_privacy_policy_url(), true);
         if (\WConvert\Template\CaptureJourney::requiresPremium($optin->config['template']['tree'] ?? []) && !\WConvert\Template\JourneySupport::active()) {
             return new WP_Error('wconvert_journey_unsupported', __('This design uses elements this site can’t display. You can keep saving this Campaign as a draft.', 'wconvert'), ['status' => 400]);
         }

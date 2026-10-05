@@ -880,8 +880,11 @@ earlier choice answers. It still moves forward in one ordered list: there are
 no arbitrary jumps or loops. Its one Results screen selects the first matching
 variant, then a fallback. Results may precede an optional signup, so a visitor
 can finish without giving contact details. Product cards use the live public
-WooCommerce catalog for merchant-selected IDs; unavailable products fall back
-to the result's own link.
+WooCommerce catalog for merchant-selected IDs or a category with up to three
+explicit global attribute values (all must match). Filters choose cards after
+the existing answer rules choose the result. Missing references fail closed;
+unavailable products fall back to the result's own link. Filtered results remain
+in every paid journeys tier ([ADR 0123](docs/adr/0123-quiz-results-select-products-by-category-and-attributes.md)).
 
 ### Template
 
@@ -1674,3 +1677,13 @@ are separate acts. Existing link campaigns retain their history. This is the onl
 shopper-triggered cart-product write; no orders, coupons, Leads or contacts are
 created. Thirty-minute session-bound claims use existing WP options, with cron
 cleanup, and aggregate activity uses the existing Stats table.
+
+## Product activity
+
+[ADR 0122](docs/adr/0122-product-activity-uses-retained-anonymous-dimensions.md)
+adds **Shown**, **Clicked**, and **Added** by recommended product inside campaign
+reports. Views and product links count once per product per mount; additions use
+server acceptance and existing replay protection. Anonymous product dimensions
+use the existing Stats scope and retain 90 days; campaign totals retain their
+history. Tracking start and partial coverage are explicit. Current product names
+are not historical snapshots, and product activity is not product-level sales.

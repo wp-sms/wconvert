@@ -60,6 +60,27 @@ final class OptinRepositoryTest extends TestCase
         return $this->repository->create('Spring sale', 'promote_offer', $config + ['template' => OptinDesign::template(), 'display_rules' => \WConvert\Rules\DisplayPlan::immediate()]);
     }
 
+    public function testDirectPublicationCannotPromoteAnUnmappedCategoryResult(): void
+    {
+        $design = json_decode((string) file_get_contents(WCONVERT_PRO_DIR . '/modules/journeys/templates/journey-product-finder.json'), true);
+        foreach ($design['tree']['steps'] as &$screen) if (($screen['kind'] ?? '') === 'result') {
+            $screen['products_required'] = false;
+            foreach ($screen['results'] as &$result) {
+                $result['href'] = '/shop'; $result['link_label'] = 'Shop';
+            }
+            unset($result);
+        }
+        unset($screen);
+        $config = ['template' => $design, 'display_rules' => \WConvert\Rules\DisplayPlan::immediate()];
+        $optin = $this->repository->create('Category quiz', 'find_match', $config);
+        self::assertNotNull($this->repository->publish($optin->id));
+        foreach ($config['template']['tree']['steps'] as &$screen) if (($screen['kind'] ?? '') === 'result') $screen['results'][0]['product_filter'] = ['category_id' => 0, 'attributes' => []];
+        unset($screen);
+        $this->repository->saveDraft($optin->id, null, null, $config);
+        self::assertNull($this->repository->publish($optin->id));
+        self::assertArrayNotHasKey('product_filter', $this->repository->find($optin->id)->publishedConfig['template']['tree']['steps'][2]['results'][0]);
+    }
+
     public function testPublishPromotesTheDraftAndRebuildsTheSetInOneCall(): void
     {
         $optin = $this->anOptin();

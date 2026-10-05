@@ -82,8 +82,8 @@ export function captureEndpoint(): string | null {
 }
 
 /** WooCommerce's public Store Products read, emitted only for product quizzes. */
-export function productsEndpoint(): string | null {
-  return attributeAt(PRODUCTS_ATTRIBUTE);
+export function productsEndpoint(filtered = false): string | null {
+  return attributeAt(filtered ? 'data-product-matches' : PRODUCTS_ATTRIBUTE);
 }
 
 /**

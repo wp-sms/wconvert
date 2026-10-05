@@ -100,3 +100,42 @@ The real WooCommerce cart remains the place to review quantities and totals.
 
 Reports show completed days. Today's test additions appear in the standard report
 window tomorrow.
+
+## See which extras perform
+
+Open **Analytics → your campaign → Product activity**, or the editor's
+**Campaign actions → Campaign details**. The editor includes today; Analytics
+uses completed days, so today's activity appears there tomorrow.
+
+- **Shown:** the product card appeared on screen.
+- **Clicked:** its product-page link was used.
+- **Added:** WooCommerce accepted the addition.
+
+Shown and Clicked count once per product per campaign appearance. Product data
+starts when this version first serves recommendations; earlier campaign totals
+cannot supply product history. The first tracking day may be partial. Product
+activity lasts 90 days, and dates without coverage are marked. Product names are
+current; deleted products retain their IDs. More than 100 active products in a
+period requires a shorter period before a complete table is shown.
+
+These are recorded actions, not unique shoppers, purchases or sales lift.
+Campaign outcomes and attributed sales retain their existing definitions.
+
+## Choose quiz products by category
+
+In a product-finder campaign, open **Your result**, choose a result, then expand
+**Recommend products → Choose products by → Category and attributes**.
+
+1. Choose a category. Its subcategories are included.
+2. Optionally add up to three attribute filters. Each needs a different global
+   WooCommerce attribute and one value; products must match all of them.
+3. Open **Preview matches** to see current matches. Keep a useful fallback shop
+   or guide link, even when matches are available.
+4. Use **Preview & test** to try different answers and empty/error states.
+
+Up to three available products appear, oldest-added first. Reads check a bounded
+window of 12 candidates. Shoppers follow product links and choose any size or
+other options on the product page. This does not add products to their cart.
+Hand-picked products remain available and keep their saved order. Imported
+category-based results require choosing category and attribute values on the new
+site. The feature is included wherever paid product-finder journeys are available.

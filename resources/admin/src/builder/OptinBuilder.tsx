@@ -4,6 +4,7 @@ import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuIte
 import { SubmissionSettings } from './SubmissionSettings';
 import { BlockInspector } from './BlockInspector';
 import { JourneyEditor } from './JourneyEditor';
+import { ProductActivityReport } from '../stats/ProductActivityReport';
 import { JourneyReport } from '../stats/JourneyReport';
 import { referencedJourney, submissionScreen, walkNodes } from './structure/journey';
 import { isResultFirst } from '../../../loader/src/journey-mode';
@@ -1088,7 +1089,6 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
           </div>
           {entryOfGoal?.outcome && <p className="text-note text-muted-foreground">{entryOfGoal.outcome.measurement}</p>}
           <CampaignAnalytics value={config.analytics} parentId={analyticsParent} onChange={analytics => edit({ analytics })} />
-          {details && id && <JourneyReport id={id} />}
           {(numbers !== null || (publishedAt !== null && stats.status === 'loading')) && (
             <div className="wconvert-details-section"><h3>{__('Performance', 'wconvert')}</h3>
               {numbers !== null ? (
@@ -1126,6 +1126,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
             </div>
           )}
           {numbers === null && publishedAt === null && <div className="wconvert-details-section"><h3>{__('Performance', 'wconvert')}</h3><p>{__('Publish this Campaign to start collecting impressions and conversions.', 'wconvert')}</p></div>}
+          {details && id && <><ProductActivityReport id={id} /><JourneyReport id={id} /></>}
           <details className="wconvert-details-history"><summary>{__('About draft history', 'wconvert')}</summary>
           <p className="text-note text-muted-foreground">
             {__('Undo and Redo cover this session’s draft edits: name, journey, design, display rules and destination selections. They do not change the published version or shared destination settings. Saving a new goal starts a new Undo history.', 'wconvert')}

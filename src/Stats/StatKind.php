@@ -40,6 +40,8 @@ enum StatKind: string
      */
     case Conversion = 'conversion';
     case CartAddition = 'cart_addition';
+    case ProductShown = 'product_shown';
+    case ProductClick = 'product_click';
     case Capture = 'capture';
     case ResultClick = 'result_click';
 
@@ -70,6 +72,8 @@ enum StatKind: string
             self::ScreenDismissed => __('Screen dismissed', 'wconvert'),
             self::Impression => __('Impressions', 'wconvert'),
             self::Conversion => __('Conversions', 'wconvert'),
+            self::ProductShown => __('Product cards shown', 'wconvert'),
+            self::ProductClick => __('Product links clicked', 'wconvert'),
             self::CartAddition => __('Items added to basket', 'wconvert'),
             self::Capture => __('Captured submissions', 'wconvert'),
             self::ResultClick => __('Result link clicks', 'wconvert'),
@@ -92,6 +96,6 @@ enum StatKind: string
     {
         $kind = self::tryFrom($value);
 
-        return in_array($kind, [self::LeadMagnetDelivered, self::Capture, self::CartAddition], true) ? null : $kind;
+        return in_array($kind, [self::LeadMagnetDelivered, self::Capture, self::CartAddition, self::ProductShown, self::ProductClick], true) ? null : $kind;
     }
 }
