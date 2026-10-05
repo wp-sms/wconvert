@@ -32,6 +32,21 @@ final class ResultProductSourceTest extends TestCase
         }
     }
 
+    public function testCurationPreservesIntentAndRejectsInvalidRules(): void
+    {
+        $base = ['category_id' => 23, 'attributes' => []];
+        foreach (ResultProductSource::ORDERS as $order) {
+            $source = $base + ['order' => $order, 'pinned_ids' => [7, 8], 'excluded_ids' => [8, 9]];
+            self::assertSame($source, ResultProductSource::normalize($source));
+            self::assertFalse(ResultProductSource::missingPins($source, [7, 10]));
+            self::assertTrue(ResultProductSource::missingPins($source, [10]));
+        }
+        foreach ([['order' => 'random'], ['order' => null], ['pinned_ids' => [1, 1]], ['pinned_ids' => [1, 2, 3, 4]], ['excluded_ids' => range(1, 13)], ['excluded_ids' => ['1']], ['pinned_ids' => [0]], ['pinned_ids' => [2147483648]], ['excluded_ids' => null]] as $bad) {
+            self::assertFalse(ResultProductSource::valid($base + $bad));
+            self::assertSame(['category_id' => 0, 'attributes' => []], ResultProductSource::normalize($base + $bad));
+        }
+    }
+
     public function testLiveCatalogChecksBelongToPublicationNotVisitorContactCapture(): void
     {
         $design = json_decode((string) file_get_contents(WCONVERT_PRO_DIR . '/modules/journeys/templates/journey-product-finder.json'), true);
@@ -53,7 +68,7 @@ final class ResultProductSourceTest extends TestCase
     {
         $design = json_decode((string) file_get_contents(WCONVERT_PRO_DIR . '/modules/journeys/templates/journey-product-finder.json'), true);
         foreach ($design['tree']['steps'] as &$step) if (($step['kind'] ?? '') === 'result') {
-            $step['results'][0]['product_filter'] = ['category_id' => 23, 'attributes' => [['taxonomy' => 'pa_color', 'term_id' => 45]]];
+            $step['results'][0]['product_filter'] = ['category_id' => 23, 'attributes' => [['taxonomy' => 'pa_color', 'term_id' => 45]], 'order' => 'price_low', 'pinned_ids' => [123], 'excluded_ids' => [456]];
             $step['results'][0]['product_ids'] = [123];
         }
         unset($step);
@@ -69,7 +84,8 @@ final class ResultProductSourceTest extends TestCase
             $package->write($path, $normal, static fn (string $url) => null);
             $read = $package->read($path);
             $imported = array_values(array_filter($read['design']['tree']['steps'], static fn (array $step): bool => ($step['kind'] ?? '') === 'result'))[0]['results'][0];
-            self::assertSame(['category_id' => 0, 'attributes' => []], $imported['product_filter']);
+            self::assertSame(['category_id' => 0, 'attributes' => [], 'order' => 'price_low'], $imported['product_filter']);
+            self::assertContains('Choose pinned and excluded products again on the receiving site.', $read['notes']);
             self::assertSame([], $imported['product_ids']);
             self::assertContains('Choose the category and attribute values on the receiving site.', $read['notes']);
             self::assertFalse(ResultProductSource::valid($imported['product_filter']));

@@ -43,6 +43,36 @@ final class PackValidatorJourneyTest extends TestCase
         $this->validator(Tier::Basic)->decode(json_encode($pack, JSON_THROW_ON_ERROR));
     }
 
+    public function testCategoryOrderingRequiresTheNewCapability(): void
+    {
+        Journeys::on();
+        $pack = $this->pack();
+        foreach ($pack['templates'][0]['tree']['steps'] as &$step) if ($step['kind'] === 'result') {
+            $step['results'][0]['product_filter'] = ['category_id' => 0, 'attributes' => [], 'order' => 'price_high'];
+        }
+        unset($step);
+        $pack['requires']['capabilities'][] = 'result-product-filters:2';
+        $decoded = $this->validator(Tier::Basic)->decode(json_encode($pack, JSON_THROW_ON_ERROR));
+        $results = array_values(array_filter($decoded['templates'][0]['tree']['steps'], static fn (array $step): bool => $step['kind'] === 'result'));
+        self::assertSame('price_high', $results[0]['results'][0]['product_filter']['order']);
+        $pack['requires']['capabilities'][3] = 'result-product-filters:1';
+        $this->expectExceptionMessage('This pack does not declare every capability its designs need.');
+        $this->validator(Tier::Basic)->decode(json_encode($pack, JSON_THROW_ON_ERROR));
+    }
+
+    public function testPortablePacksCannotCarryProductExclusionsAcrossStores(): void
+    {
+        Journeys::on();
+        $pack = $this->pack();
+        $pack['requires']['capabilities'][] = 'result-product-filters:2';
+        foreach ($pack['templates'][0]['tree']['steps'] as &$step) if ($step['kind'] === 'result') {
+            $step['results'][0]['product_filter'] = ['category_id' => 0, 'attributes' => [], 'order' => 'newest', 'excluded_ids' => [123]];
+        }
+        unset($step);
+        $this->expectExceptionMessage('Choose category, attributes and product choices on this site.');
+        $this->validator(Tier::Basic)->decode(json_encode($pack, JSON_THROW_ON_ERROR));
+    }
+
     public function testFreeInstallerRejectsPaidQuizPack(): void
     {
         $this->expectException(RuntimeException::class);

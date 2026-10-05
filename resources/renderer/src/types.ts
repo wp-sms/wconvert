@@ -86,6 +86,9 @@ export interface JourneyGraph {
   readonly edges: readonly JourneyGraphEdge[];
 }
 export interface ResultProductFilter {
+  readonly order?: 'oldest' | 'newest' | 'price_low' | 'price_high';
+  readonly pinned_ids?: readonly number[];
+  readonly excluded_ids?: readonly number[];
   readonly category_id: number;
   readonly attributes: readonly { readonly taxonomy: string; readonly term_id: number }[];
 }

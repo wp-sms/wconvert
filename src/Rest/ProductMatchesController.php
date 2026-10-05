@@ -32,21 +32,43 @@ final class ProductMatchesController implements RestController
         if (!JourneySupport::active() || !class_exists('WooCommerce')) return new WP_Error('wconvert_products_unavailable', __('Product results need WooCommerce and an active journeys module.', 'wconvert'), ['status' => 503]);
         $source = json_decode((string) $request->get_param('filter'), true);
         if (!ResultProductSource::available($source)) return new WP_Error('wconvert_product_filter', __('Choose an existing category and attribute values.', 'wconvert'), ['status' => 400]);
-        $read = new WP_REST_Request('GET', '/wc/store/v1/products');
+        [$orderby, $order] = match ($source['order'] ?? 'oldest') {
+            'newest' => ['date', 'desc'], 'price_low' => ['price', 'asc'], 'price_high' => ['price', 'desc'],
+            default => ['id', 'asc'],
+        };
         $params = [
             'category' => (string) $source['category_id'], 'catalog_visibility' => 'visible',
-            'stock_status' => ['instock'], 'orderby' => 'id', 'order' => 'asc', 'per_page' => 12,
+            'stock_status' => ['instock'], 'orderby' => $orderby, 'order' => $order, 'per_page' => 12,
             'attributes' => array_map(static fn (array $filter): array => ['attribute' => $filter['taxonomy'], 'term_id' => [$filter['term_id']], 'operator' => 'in'], $source['attributes']),
             'attribute_relation' => 'and',
         ];
+        $excluded = $source['excluded_ids'] ?? [];
+        $pins = array_values(array_diff($source['pinned_ids'] ?? [], $excluded));
+        $selected = [];
+        if ($pins !== []) {
+            $rows = $this->query(array_replace($params, ['include' => $pins, 'per_page' => count($pins), 'orderby' => 'include']));
+            if ($rows instanceof WP_Error) return $rows;
+            $byId = array_column($rows, null, 'id');
+            foreach ($pins as $id) if (isset($byId[$id])) $selected[$id] = $byId[$id];
+        }
+        if (count($selected) < 3) {
+            $rows = $this->query($params + ['exclude' => array_values(array_unique([...$excluded, ...$pins]))]);
+            if ($rows instanceof WP_Error) return $rows;
+            foreach ($rows as $row) if (!in_array($row['id'], $excluded, true) && !in_array($row['id'], $pins, true)) $selected[$row['id']] = $row;
+        }
+        return new WP_REST_Response(array_slice(array_values($selected), 0, 3), 200, ['Cache-Control' => 'no-store']);
+    }
+
+    /** @param array<string, mixed> $params
+     * @return list<array<string, mixed>>|WP_Error */
+    private function query(array $params): array|WP_Error
+    {
+        $read = new WP_REST_Request('GET', '/wc/store/v1/products');
         foreach ($params as $key => $value) $read->set_param($key, $value);
         $response = rest_do_request($read);
-        if ($response->get_status() >= 400) return new WP_Error('wconvert_product_read', __('Products could not load. Try again.', 'wconvert'), ['status' => 503]);
-        $rows = $response->get_data();
-        if (!is_array($rows)) return new WP_Error('wconvert_product_read', __('Products could not load. Try again.', 'wconvert'), ['status' => 503]);
-        $rows = array_values(array_filter($rows, static fn ($row): bool => is_array($row) && ($row['is_purchasable'] ?? false) === true
+        if ($response->get_status() >= 400 || !is_array($response->get_data())) return new WP_Error('wconvert_product_read', __('Products could not load. Try again.', 'wconvert'), ['status' => 503]);
+        return array_values(array_filter($response->get_data(), static fn ($row): bool => is_array($row) && is_int($row['id'] ?? null) && ($row['is_purchasable'] ?? false) === true
             && ($row['is_in_stock'] ?? false) === true && ($row['is_password_protected'] ?? false) !== true));
-        return new WP_REST_Response(array_slice($rows, 0, 3), 200, ['Cache-Control' => 'no-store']);
     }
 
     /** Search up to 40 choices, plus the saved selection, so large catalogs remain usable. */

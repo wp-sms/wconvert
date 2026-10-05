@@ -129,16 +129,23 @@ In a product-finder campaign, open **Your result**, choose a result, then expand
 1. Choose a category. Its subcategories are included.
 2. Optionally add up to three attribute filters. Each needs a different global
    WooCommerce attribute and one value; products must match all of them.
-3. Open **Preview matches** to see current matches. Keep a useful fallback shop
+3. Choose **Product order**: oldest, newest or price. Existing results keep oldest first.
+4. Optionally open **Pin or exclude products**. Pin up to three products in priority
+   order, or exclude up to twelve. Pins must match every filter and be available.
+   Exclusions always win, including over pins.
+5. Open **Preview matches** to see current matches. Keep a useful fallback shop
    or guide link, even when matches are available.
-4. Use **Preview & test** to try different answers and empty/error states.
+6. Use **Preview & test** to try different answers and empty/error states.
 
-Up to three available products appear, oldest-added first. Reads check a bounded
-window of 12 candidates. Shoppers follow product links and choose any size or
-other options on the product page. This does not add products to their cart.
+Up to three available products appear, with eligible pins first. Reads check up
+to three pins and a bounded window of twelve other candidates, sorted and
+filtered before the limit. Unavailable pins are skipped and other matches fill
+their places; preview and campaign checks explain missing pins. With **View product**,
+shoppers follow links and choose any size or other options on the product page.
+For optional cart buttons, see the next section.
 Hand-picked products remain available and keep their saved order. Imported
-category-based results require choosing category and attribute values on the new
-site. The feature is included wherever paid product-finder journeys are available.
+category-based results keep their ordering but require choosing categories,
+attribute values, pins and exclusions again on the new site. The feature is included wherever paid product-finder journeys are available.
 
 ## Add products from quiz results
 

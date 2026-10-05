@@ -296,3 +296,21 @@ native cart refresh. [ADR 0121](../adr/0121-recommendation-additions-count-serve
 records the transport decision and stable success-card refinement.
 [Verification](../testing/recommendation-additions-2026-10-05.md) distinguishes
 local checks from broader compatibility and merchant validation still to do.
+
+## Category curation and next-feature backlog — 2026-10-05
+
+Implemented locally: category result ordering (oldest/newest/price), up to three
+pins and twelve exclusions, live preview and missing-pin warnings. Pins obey all
+filters and availability rules; exclusions win. See [ADR 0126](../adr/0126-category-results-support-explicit-curation.md).
+
+The next candidates are high-level `needs-triage` issues, not approved implementation tickets:
+
+| Priority | Feature | When it is worth doing |
+| --- | --- | --- |
+| Next prototype | [Size/color selection on cards #216](https://github.com/wp-sms/wconvert/issues/216) | Reduce extra steps for variable-product stores; review a prototype first. |
+| Later | [All-campaign warning overview #217](https://github.com/wp-sms/wconvert/issues/217) | Useful when merchants manage many campaigns. |
+| Conditional | [Best-seller ordering #218](https://github.com/wp-sms/wconvert/issues/218) | Requires useful order history and a defined ranking/fallback. |
+| Later design | [Product-level sales/refunds #219](https://github.com/wp-sms/wconvert/issues/219) | Requires sales evidence and agreed line-item attribution; review storage separately. |
+
+These are product judgments without real merchant validation. Existing campaign
+sales reporting and current product activity remain the reporting baseline.

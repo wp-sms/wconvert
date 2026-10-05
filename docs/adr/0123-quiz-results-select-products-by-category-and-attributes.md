@@ -5,7 +5,9 @@ Amends [0106](0106-question-journeys-extend-the-paid-loader.md) and the paid
 loader caps last amended by [0121](0121-recommendation-additions-count-server-accepted-cart-actions.md).
 
 Maintaining a list for every quiz result is repetitive as a catalog changes.
-Each result now optionally carries `product_filter: {category_id, attributes}`.
+Each result optionally carries `product_filter: {category_id, attributes}`.
+**Extended by [ADR 0126](0126-category-results-support-explicit-curation.md):**
+optional ordering, pinned IDs and excluded IDs now accompany those filters.
 The existing `product_ids` list remains the default and is retained when the
 merchant switches sources. A filter contains one category, including descendants,
 and up to three distinct global attribute taxonomies, each with one term ID.
@@ -20,8 +22,11 @@ rung, without a cart-recovery dependency. No table, column or answer archive is 
 The public `/product-matches` GET route accepts only that bounded filter,
 checks WooCommerce, the journeys capability, taxonomy membership and live term
 existence, then internally dispatches WooCommerce's public Store Products route.
-It reads at most 12 candidates, ordered by product ID ascending (oldest-added
-first), with visible catalog and in-stock constraints. Up to three purchasable,
+**Amended by [ADR 0126](0126-category-results-support-explicit-curation.md):**
+it reads up to three explicit pins plus at most twelve ordinary candidates.
+Default order remains product ID ascending; merchants can choose newest or price.
+Sorting and exclusions apply before the candidate limit. Visible catalog and
+in-stock constraints apply to pins and ordinary candidates alike. Up to three purchasable,
 unprotected products are returned, uncached. This is a bounded candidate window,
 not an exhaustive scan or ranking. Manual selections retain their original
 Store API request and priority order. Both paths validate same-origin links.
@@ -37,7 +42,10 @@ appear for longer lists. Preview matches reads the same endpoint without
 statistics. Interactive journey tests use live matches for normal availability
 and simulated empty/error states. Export strips IDs and taxonomy references,
 retains the category-source placeholder, and requires remapping. Packs declare
-`result-product-filters:1`; unsupported readers refuse that capability.
+`result-product-filters:1` for legacy placeholders; ordering requires capability
+2 under [ADR 0126](0126-category-results-support-explicit-curation.md). All
+site-local pins and exclusions are stripped with explicit remapping notes.
+Unsupported readers refuse the newer capability.
 
 Measured paid loader sizes after this change: Basic 25,132 B, Pro 26,709 B,
 Elite 27,109 B gzip. Raise each paid hard cap by 128 B to 25,216 / 26,784 /

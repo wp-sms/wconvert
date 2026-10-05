@@ -14,7 +14,11 @@ repair; selected unavailable products include their current names or deleted ID.
 All six selected IDs are checked, including reserves beyond three visible cards.
 The commerce adapter reuses storefront card eligibility and recommendation
 resolution. Ordinary paid quiz links use their existing Store API predicates;
-category filters use the same bounded twelve-candidate query as the storefront.
+category filters share the storefront query. **Extended by
+[ADR 0126](0126-category-results-support-explicit-curation.md):** curation adds
+up to three pin candidates alongside the bounded twelve ordinary candidates.
+Missing eligible pins warn even when other products match; intentionally excluded
+pins do not warn.
 No-match warnings mean that this source currently supplies no eligible cards,
 not that the entire category was exhaustively scanned.
 

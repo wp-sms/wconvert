@@ -20,6 +20,7 @@ final class ProductHealth
                 if (!ResultProductSource::available($node['product_filter'])) return Health::check('warning', __('A category or attribute is missing. Update this result’s filters.', 'wconvert'));
                 $cards = QuizProducts::cards($node);
                 if ($cards instanceof \WP_Error) return Health::check('unknown', __('Products could not be checked. Try again.', 'wconvert'));
+                if (ResultProductSource::missingPins($node['product_filter'], array_column($cards, 'id'))) return Health::check('warning', __('A pinned product is unavailable or does not match. Review this result’s pins.', 'wconvert'));
                 return Health::check($cards ? 'ok' : 'warning', $cards ? __('Matching products are available.', 'wconvert') : __('No available products match. Review this result’s filters.', 'wconvert'));
             }
             return $this->selected(array_values(array_slice($node['product_ids'] ?? [], 0, 6)));

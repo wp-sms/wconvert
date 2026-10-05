@@ -80,6 +80,7 @@ final class ProductHealth
         }
         if ($response instanceof \WP_Error || $response->get_status() >= 400 || !is_array($response->get_data())) return self::check('unknown', __('Products could not be checked. Try again.', 'wconvert'));
         $rows = array_filter($response->get_data(), static fn ($row): bool => is_array($row) && ($row['is_purchasable'] ?? false) === true && ($row['is_in_stock'] ?? false) === true && ($row['is_password_protected'] ?? false) !== true);
+        if ($filtered && ResultProductSource::missingPins($result['product_filter'], array_column($rows, 'id'))) return self::check('warning', __('A pinned product is unavailable or does not match. Review this result’s pins.', 'wconvert'));
         return $filtered ? self::check($rows ? 'ok' : 'warning', $rows ? __('Matching products are available.', 'wconvert') : __('No available products match. Review this result’s filters.', 'wconvert')) : self::selection($ids, array_column($rows, 'id'));
     }
 }

@@ -6745,15 +6745,6 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
 :is(#wconvert-admin, [data-slot="dialog-content"], [data-slot="alert-dialog-content"])
   label:has(> input:is([type="checkbox"], [type="radio"]):disabled:not(.sr-only)) { cursor: default; opacity: .6; }
 
-/* Result catalog selection stays readable in the narrow editor sidebar. */
-.wconvert-result-filter,
-.wconvert-catalog-choice { display: grid; gap: 8px; min-width: 0; }
-.wconvert-result-filter { margin-top: 12px; gap: 12px; }
-.wconvert-result-filter fieldset { border: 1px solid var(--border, #d7dfdc); border-radius: 8px; padding: 12px; display: grid; gap: 12px; min-width: 0; }
-.wconvert-result-filter legend { padding: 0 4px; font-weight: 600; }
-.wconvert-result-filter small { font-size: var(--text-meta); line-height: 1.5; }
-.wconvert-result-products select,
-.wconvert-catalog-choice input { width: 100%; min-width: 0; }
 .wconvert-product-matches { list-style: none; padding: 0; display: grid; gap: 10px; }
 .wconvert-product-matches li { display: flex; align-items: center; gap: 10px; min-width: 0; }
 .wconvert-product-matches img { object-fit: cover; border-radius: 4px; flex: none; }

@@ -160,3 +160,26 @@ add_action('template_redirect', static function (): void {
         'report_available' => apply_filters('wconvert_product_activity_campaign', false, $fixture['id']),
         'cart_items' => array_values(array_map(static fn ($item) => ['id' => $item['product_id'], 'quantity' => $item['quantity']], WC()->cart->get_cart())), 'url' => get_permalink($fixture['page'])]);
 }, 25);
+
+// A separate category exceeds the candidate window to prove query-side curation.
+add_action('template_redirect', static function (): void {
+    if (!isset($_GET['wconvert_curation_fixture'])) return;
+    $f = get_option('wconvert_curation_fixture');
+    if (!$f) {
+        $f = ['category' => (int) wp_insert_term('Curation test', 'product_cat')['term_id'], 'products' => []];
+        for ($index = 0; $index < 18; $index++) {
+            $product = new WC_Product_Simple();
+            $product->set_name('Curation item ' . $index); $product->set_status('publish');
+            $product->set_category_ids([$f['category']]);
+            $product->set_regular_price((string) (100 - $index));
+            $product->set_date_created('2025-01-' . str_pad((string) ($index + 1), 2, '0', STR_PAD_LEFT) . ' 12:00:00');
+            $f['products'][] = $product->save();
+        }
+        update_option('wconvert_curation_fixture', $f);
+    }
+    if (isset($_GET['stock'])) {
+        $product = wc_get_product($f['products'][17]);
+        $product->set_stock_status($_GET['stock'] === 'out' ? 'outofstock' : 'instock'); $product->save();
+    }
+    wp_send_json($f);
+}, 25);

@@ -1295,7 +1295,7 @@ body .wconvert-rule-picker__unavailable {
 .wconvert-journey-settings .wconvert-journey-settings__check { display: flex; align-items: center; gap: 8px; min-block-size: 24px; cursor: pointer; }
 .wconvert-journey-settings__check input[type='checkbox'],.wconvert-journey-settings__group input[type='radio'] { inline-size: 18px; block-size: 18px; min-inline-size: 18px; flex-shrink: 0; margin: 0; padding: 0; }
 .wconvert-journey-settings__products { display: grid; gap: 8px; }
-.wconvert-journey-settings__products ul,.wconvert-journey-settings__products ol { margin: 0; padding-inline-start: 22px; }
+.wconvert-journey-settings__products ul,.wconvert-journey-settings__products ol { margin: 0; padding: 0; list-style: none; }
 .wconvert-journey-settings__products li { display: flex; align-items: center; gap: 8px; padding-block: 6px; }
 .wconvert-journey-settings__products li span { flex: 1; min-inline-size: 0; overflow-wrap: anywhere; }
 .wconvert-journey-test-dialog { inline-size: min(100vw - 2rem, 980px); max-inline-size: 980px; max-block-size: min(90dvh,800px); overflow: hidden; grid-template-rows: auto auto auto minmax(0,1fr); }
@@ -2324,3 +2324,23 @@ details[open]>summary>.wconvert-editor-disclosure-icon { transform: rotate(180de
 :is(#wconvert-admin, .wconvert-sample-dialog) .wconvert-product-picker__results { max-height: 220px; overflow-y: auto; border: 1px solid var(--border); border-radius: 6px; }
 :is(#wconvert-admin, .wconvert-sample-dialog) .wconvert-product-picker__results li { display: flex; align-items: center; gap: 8px; margin: 0; padding: 8px; }
 :is(#wconvert-admin, .wconvert-sample-dialog) .wconvert-product-picker__results li + li { border-top: 1px solid var(--border); }
+
+.wconvert-journey-settings__products .wconvert-result-picker__selection { align-items: stretch; flex-direction: column; border-block-end: 1px solid var(--border); padding-block: 10px; }
+.wconvert-result-picker__actions { display: flex; flex-wrap: wrap; gap: 6px; }
+
+.wconvert-result-filter { display: grid; gap: 12px; min-inline-size: 0; }
+.wconvert-result-filter small { color: var(--muted-foreground); font-size: var(--text-note); line-height: 1.5; }
+.wconvert-result-filter fieldset { display: grid; gap: 10px; min-inline-size: 0; margin: 0; padding: 12px; border: 1px solid var(--border); border-radius: var(--radius); }
+.wconvert-result-filter legend { font-size: var(--text-note); font-weight: 600; padding-inline: 4px; }
+.wconvert-result-filter summary { cursor: pointer; font-size: var(--text-note); line-height: 1.5; padding-block: 6px; }
+.wconvert-result-filter summary:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+
+.wconvert-catalog-choice { display: grid; gap: 6px; min-inline-size: 0; }
+
+.wconvert-result-filter__body { display: grid; gap: 12px; padding-block-start: 8px; min-inline-size: 0; }
+.wconvert-result-products[open] { display: grid; gap: 12px; }
+.wconvert-result-products :is(select,input:not([type="checkbox"],[type="radio"])) { inline-size: 100%; min-inline-size: 0; }
+.wconvert-result-products > :is(label,p,.wconvert-result-filter) { margin: 0; }
+.wconvert-result-filter__body .wconvert-product-matches { margin: 0; }
+.wconvert-journey-settings__products > [data-slot='button'], .wconvert-result-filter > [data-slot='button'], .wconvert-result-filter fieldset > [data-slot='button'] { justify-self: start; }
+#wconvert-admin .wconvert-result-products select { font-size: var(--text-body); }
