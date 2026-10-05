@@ -1,6 +1,6 @@
 === WConvert – Popups and Inline Forms for Lead Capture ===
 Contributors: veronalabs, mostafa.s1990, kashani
-Tags: popup, lead capture, optin form, email list, conversion
+Tags: popup, lead capture, email list, optin form, newsletter
 Requires at least: 6.8
 Tested up to: 7.1
 Requires PHP: 8.1
@@ -8,226 +8,201 @@ Stable tag: 1.0.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-Capture leads with popups and inline forms you create goal-first, then see what each one did.
+Turn visitors into subscribers and leads with popups and inline forms. Pick a goal, start from a ready-made design, and publish.
 
 == Description ==
 
-WConvert asks what you are trying to achieve before it asks what you want to
-build. Pick a goal — grow an email list, grow an SMS list, collect enquiries,
-deliver a lead magnet, or promote a sale or offer — and it proposes the ready-made
-setups that serve it: the placement, the trigger, the copy and the fields,
-already filled in. Every one of them becomes a Campaign you can change.
+WConvert helps you collect email addresses, phone numbers and enquiries from
+your WordPress site.
 
-**What it does**
+Tell it what you want, such as more newsletter subscribers or more enquiries,
+and it gives you a ready-made popup or form. The words, fields and timing are
+already filled in. Change anything you like, then publish.
 
-* **Popups**, rendered in the browser's top layer so a theme's stacking context
-  cannot bury them, and **inline forms** placed exactly where you want them
-  with the Inline Campaign block or a shortcode.
-* **A goal-first builder.** Ready-made setups are starting points, not
-  templates you fight — every part of the design stays editable.
-* **A design library** of 68 ready-made designs for popups and inline forms.
-  Their artwork is original and drawn in the page, so no image is fetched from
-  anywhere.
-* **Design import and export.** Save a design to a file and import it on
-  another site. An imported design is checked against what that site can
-  display before it is used.
-* **A lead log** with CSV export, showing each submission with the consent
-  wording the visitor saw.
-* **Analytics** that start from what WConvert brought to your site: results by
-  goal, monthly targets, a comparison with the previous period, and for each
-  Campaign its appearances, conversions, dismissals and a daily series.
-* **A start and end date**, so a sale switches itself off. Set them in your
-  site's own time; nothing shows before the start or after the end, and neither
-  is required — a Campaign can run from a date, until a date, or between two.
-* **A limit for the whole site**, on top of each Campaign's own: stop showing a
-  visitor anything once they close or sign up to something, cap how many they
-  see in total, or put days between them. It is off until you set it, and no
-  Campaign can opt out of it.
-* **Hours of the day**, so a popup can keep to your opening hours instead of
-  greeting people at three in the morning. It is your site's own clock, and a
-  window may run past midnight.
-* **Show it only to particular roles** — customers, subscribers, or whatever
-  your site registered. Holding any one of the roles you pick is enough, and
-  membership or LMS plugins can add their own levels to the same list.
-* **Lead-magnet delivery by email**, with no third-party service required.
-* **Consent captured as part of the form**, recorded with the wording that was
-  on screen at the time.
-* **See why a popup did or did not show**, on the page itself rather than in a
-  simulator: add `?wconvert-inspect=1` to any URL on your site while signed in
-  as an administrator.
-* **MailPoet integration.** Where MailPoet is installed, a captured lead is
-  added to the lists you choose by name. Nobody who unsubscribed is ever put
-  back, and whether a new subscriber has to confirm stays MailPoet's own
-  setting.
-* **WP SMS integration.** Where WP SMS is installed, a captured lead can create
-  or fill in a contact there.
+No account to create and no outside service to connect. Your leads stay on your
+own site.
 
-**No account, no phone-home**
+= Start from a goal =
 
-WConvert has no licence key, sends no analytics anywhere, and stores no visitor
-identifier. Everything it counts is a daily counter on your own site.
+Choose what you want to achieve, and WConvert suggests setups that do it:
 
-It also records five dates about the site itself — when you first published a
-Campaign, when one was first shown, when someone first converted, whether what you
-capture is reaching a destination, and the first time you changed something a
-starting point suggested. They are how the Analytics screen can tell you which
-step is stuck instead of showing you a wall of zeroes, they say nothing about
-any individual visitor, and you can read the lot of them on that screen under
-*What WConvert has recorded about this site*. None of it leaves your site.
+* **Grow my email list.** Collect email addresses for your newsletter.
+* **Grow my SMS list.** Collect phone numbers for text messages.
+* **Collect enquiries.** Get quote requests and questions with contact details.
+* **Deliver a lead magnet.** Email a guide or checklist when someone signs up.
+* **Promote an offer or content.** Send visitors to a sale, a page or a post.
 
-WConvert makes no background catalog or analytics requests. An optional template
-catalog is contacted only when an administrator explicitly checks, previews or
-installs a pack; see External services below. Every destination this free
-plugin can send a lead to is already on your site — the lead-magnet email,
-MailPoet, WP SMS — which is why the email-service-provider integrations are in
-WConvert Pro rather than here. What your own mail or newsletter plugin does
-afterwards with a message you asked it to send is between you and however you
-have set it up.
+= Popups and inline forms =
 
-**The source is in the plugin**
+* **Popups** that open on top of the page and look right with any theme.
+* **Inline forms** inside your posts and pages. Add the Inline Campaign block,
+  or paste a shortcode if you use another editor or a page builder.
+* Every design works on phones as well as on desktop.
 
-Every piece of JavaScript this plugin ships is built from un-minified source
-included in the download, under `resources/`:
+= Make it yours =
 
-* everything in `public/loader/` and `public/inspector/`, from
-  `resources/loader/src`
-* everything in `public/admin/`, from `resources/admin/src`
-* everything in `public/blocks/`, from `resources/blocks/inline-optin/src`
-* everything in `public/phone/`, from `resources/phone/src`
-* everything in `public/protection/`, from `resources/protection/src`
+* **68 ready-made designs** to start from. Their artwork is original and drawn
+  in the page, so no image is loaded from another site.
+* **Click any part of the design to change it**: words, colours, fields and
+  buttons. Check how it looks on desktop and on a phone before you publish.
+* **Move designs between sites.** Export a design to a file and import it
+  somewhere else.
 
-Directories rather than filenames, because the admin bundle is split into
-chunks whose names carry a content hash. Everything the plugin runs ships in
-this download; the only services it can contact are optional, off by default,
-and listed under External services below.
+= Show it to the right people, at the right time =
 
-**Building from source.** The build files ship with the plugin —
-`package.json`, `package-lock.json`, `tsconfig.json`, the `vite.*.mjs`
-configs, `composer.json` and `composer.lock`. With Node.js 22 and
-Composer, run these from the plugin's directory:
+* **When it opens:** as the page loads, after some seconds, after the visitor
+  scrolls, or when they stop moving for a while.
+* **Where it shows:** every page, or only the posts, pages, categories or
+  addresses you pick.
+* **Who sees it:** everyone, logged-in visitors, guests, or particular user
+  roles such as customers or members.
+* **Phones or desktop only**, and **opening hours** so it shows only during the
+  times you choose.
+* **Start and end dates**, so a sale campaign switches itself off on time.
+* **Don't annoy anyone:** limit how often each visitor sees a campaign, and set
+  one limit for your whole site, for example "nothing more once they sign up".
+* **Find out why a popup didn't show:** add `?wconvert-inspect=1` to any page
+  address while you are logged in as an admin.
+
+= See what works =
+
+* **What WConvert brought to your site**: leads captured, clicks and times
+  shown, on one screen.
+* **Results by goal and by campaign**, with a chart of each day.
+* **Compare with the previous period** to see if you are growing.
+* **Monthly targets**, for example 100 new subscribers this month.
+
+Everything is counted on your own site. There is no tracking service and no
+visitor ID. WConvert also notes a few dates about your setup, such as when you
+first published, so it can tell you which step needs attention. You can see
+all of them on the Analytics screen.
+
+= Your leads, in one place =
+
+* **Every submission in a lead log**, with search, filters and CSV export.
+* **The consent each visitor gave** is saved with their submission, using the
+  exact words they saw on the form.
+* **Send leads to MailPoet or WP SMS** if you use them.
+* **Email a download link automatically** for lead magnets, with no extra
+  service.
+* **Privacy tools built in**: WordPress's personal-data export and erasure,
+  a retention period you choose, and suggested text for your privacy policy.
+* **Spam protection**: hidden-field checks and submission limits are built in.
+  You can also turn on Cloudflare Turnstile, Google reCAPTCHA or hCaptcha.
+
+= WConvert Pro =
+
+WConvert works fully on its own. The separate WConvert Pro plugin adds:
+
+* fullscreen popups, floating bars and slide-ins
+* automatic placement inside your posts, and content locks that show the rest
+  of a post after someone signs up
+* quizzes with questions and results, including product picks for WooCommerce
+* exit-intent, scroll-up and on-click triggers
+* more targeting: where visitors came from, page address parameters and
+  ad blockers
+* A/B testing
+* advanced spam filters
+* campaign events for Google Analytics 4, Google Tag Manager or Plausible
+* cart recovery and product recommendations for WooCommerce
+* Mailchimp and Brevo connections
+
+None of that code is in this plugin.
+
+= Source code =
+
+Every script in this plugin is built from readable source code that ships
+inside the download, in the `resources/` folder:
+
+* `public/loader/` and `public/inspector/` come from `resources/loader/src`
+* `public/admin/` comes from `resources/admin/src`
+* `public/blocks/` comes from `resources/blocks/inline-optin/src`
+* `public/phone/` comes from `resources/phone/src`
+* `public/protection/` comes from `resources/protection/src`
+
+The build files ship too (`package.json`, `package-lock.json`,
+`tsconfig.json`, the `vite.*.mjs` files, `composer.json` and `composer.lock`).
+To rebuild with Node.js 22 and Composer, run these in the plugin's folder:
 
 `npm ci && npm run build:free`
 
 `composer install --no-dev`
 
-The first rebuilds everything under `public/`; the second rebuilds `vendor/`.
-
-**WConvert Pro**
-
-A separate WConvert Pro plugin, installed alongside this one, adds:
-
-* fullscreen campaigns, floating bars and slide-ins
-* automatic inline placement before, after or within your posts, and content
-  locks that reveal the rest of a post after a signup
-* questions-and-results journeys, with WooCommerce product results
-* the exit-intent, scroll-up and clicked-element triggers
-* advanced targeting conditions, including referrer, query parameter and
-  ad-blocker detection
-* A/B testing
-* advanced spam filters
-* Campaign events sent to your existing Google Analytics 4, Google Tag Manager
-  or Plausible script
-* cart recovery and product recommendations for WooCommerce
-* Mailchimp and Brevo destinations
-
-None of that code is inside this download, and this plugin is fully usable
-without it.
+The first rebuilds `public/` and the second rebuilds `vendor/`.
 
 == Installation ==
 
-1. Upload the plugin to `/wp-content/plugins/wconvert`, or install it from
-   Plugins → Add New.
-2. Activate it.
-3. Open **WConvert** in the admin menu and pick a goal.
+1. In your WordPress admin, go to **Plugins → Add New**, search for
+   **WConvert**, and click **Install Now**, then **Activate**.
+2. Open **WConvert** in the admin menu and click **Create campaign**.
+3. Pick a goal, choose a setup, change anything you like, and publish.
 
-**Multisite is not supported in this version.** Activate WConvert on each site
-individually rather than across the network. Network activation only sets up
-the site whose dashboard was open at the time, so any site nobody has visited
-the admin of will have no database tables while its front end is live.
-
-**Deleting the plugin deletes its data.** Deactivating WConvert changes
-nothing — your leads, settings and destinations are all still there when you
-turn it back on. Using Delete in WordPress removes the plugin's three database
-tables and all of its options, including every captured lead, and that cannot
-be undone. Export your leads to CSV from **WConvert → Leads** first if you want
-to keep them.
+**Multisite:** activate WConvert on each site on its own, not across the whole
+network.
 
 == Frequently Asked Questions ==
 
-= Does it work without any other plugin? =
+= Do I need an account or another service? =
 
-Yes. Capture, the lead log, CSV export, analytics and lead-magnet delivery by
-email all work on a WordPress with nothing else installed. MailPoet and WP SMS
-are used if they are there and are never required.
+No. Everything works inside WordPress, with nothing else installed. MailPoet
+and WP SMS are used only if you already have them.
 
-= How do I put an inline form on a page? =
+= How do I put a form inside a post? =
 
-Two ways, and they do the same thing. In the block editor, add the **Inline
-Campaign** block and pick one of your published inline Campaigns by name — no
-id to copy, and nothing to type.
-
-Anywhere the block editor is not — the classic editor, a page builder, a
-widget, or a theme template via `do_shortcode()` — use the shortcode instead.
-The block shows you the exact shortcode for whichever Campaign you picked,
-ready to paste:
+In the block editor, add the **Inline Campaign** block and pick your campaign
+by name. Not using the block editor? The block shows a shortcode you can paste
+anywhere, such as a page builder, a widget or a theme file:
 
 `[wconvert_optin id="YOUR_CAMPAIGN_ID"]`
 
-Popups need none of this — they place themselves on every page they are
-targeted at.
+Popups don't need this. They show on the pages you choose by themselves.
 
-= Does it store IP addresses or track visitors across pages? =
+= How do I stop a popup from showing again and again? =
 
-No. There is no visitor identifier of any kind, and no IP geolocation. The
-analytics are daily counters per Campaign, and the five setup dates WConvert keeps
-are facts about the site rather than about anybody — you can read exactly what
-they are on the Analytics screen. A site-specific one-way hash derived from the
-network address is kept for one minute to rate-limit anonymous counting; the
-network address itself is not stored. Deleting the plugin deletes all of it.
+Each campaign has its own limits, for example once per visit or never again
+after someone signs up. Under **Settings** you can also set a limit for the
+whole site, so visitors never see too many campaigns.
 
-= Where does the data go when someone converts? =
+= Can I show a popup only on some pages? =
 
-Into a table on your own site, and optionally to a destination you configure —
-the lead-magnet email, MailPoet, or WP SMS if you have them installed. All
-three of those are on your own site — WConvert sends your leads to no service
-of ours and to no third party.
+Yes. Pick the posts, pages, categories or page addresses where it should show,
+or where it should not.
 
-= How do I remove someone's data? =
+= Will it slow down my site? =
 
-WConvert registers with WordPress's own personal-data export and erasure tools.
-An erasure request deletes the lead rows rather than anonymising them.
-WordPress addresses those requests by email. For a verified phone-only request,
-search the complete phone number in **WConvert → Leads**, export the matching
-submissions if needed, then use the exact-match deletion action. It deletes all
-WConvert submissions directly carrying that phone across every campaign. Copies
-in destinations, downloaded files, email logs and backups must be handled there.
+If no campaign is published, WConvert adds nothing to your pages. When one is,
+it loads a small script of about 15 KB, compressed. Forms with a phone field
+add a small helper for phone numbers. Nothing is loaded from other sites unless
+you turn on a bot-verification service.
 
-Under **WConvert → Settings → Data & privacy**, “Where visitor data goes” gives
-administrators a read-only explanation of this site's saved retention,
-configured destinations, browser-local state and copies outside WConvert. The
-same current facts inform WConvert's suggested text in WordPress's privacy-policy
-guide; the site owner still reviews and publishes the policy that applies.
+= Does it store IP addresses or track visitors? =
 
-Privacy guidance is on by default. It adds a short Privacy Policy notice to new
-Campaign setups and checks it in the editor before publishing. Turn it off in
-**WConvert → Settings → Data & privacy** for simpler future drafts and a simpler
-editor. Existing Campaigns do not change, and export, erasure, retention and
-WordPress privacy tools stay available.
+No. There is no visitor ID and no tracking across pages. Results are daily
+totals for each campaign. To slow down spam, a scrambled, one-way code made
+from the visitor's network address is kept for a few minutes. The address
+itself is never saved.
 
-= What happens to my data if I remove the plugin? =
+= Where do my leads go? =
 
-Deactivating changes nothing: everything is still there when you activate it
-again. Deleting the plugin removes all of it — the three database tables and
-every option, including your captured leads and your configured destinations.
-There is no setting to keep the data behind, and it cannot be recovered
-afterwards, so export your leads to CSV from **WConvert → Leads** before you
-delete if you might want them.
+Into your own WordPress database, and to MailPoet or WP SMS if you set that up.
+WConvert never sends your leads to us or to anyone else.
 
-= Does it work on multisite? =
+= How do I delete someone's data? =
 
-Not in this version. Activate it per site rather than across the network. A
-network activation only creates tables for the one site that was open at the
-time, and the plugin will say so in the network admin.
+Use WordPress's own tools under **Tools → Erase Personal Data**. They delete
+that person's submissions. For a phone number only, search it in
+**WConvert → Leads** and delete the matching submissions there. Copies in other
+services, downloaded files and backups need to be removed there too.
+
+Under **WConvert → Settings → Data & privacy** you can see where visitor data
+goes and set how long submissions are kept.
+
+= What happens if I delete the plugin? =
+
+Deactivating changes nothing, and everything is still there when you turn it
+back on. Deleting the plugin removes all of its data, including your leads, and
+this cannot be undone. Export your leads to CSV from **WConvert → Leads** first
+if you want to keep them.
 
 == External services ==
 
