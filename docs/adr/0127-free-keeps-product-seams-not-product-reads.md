@@ -1,11 +1,12 @@
 # 0127: Free keeps the product seams, not the product reads
 
 Date: 2026-10-05. Status: accepted for the free 1.0.0 wp.org submission (#96).
-Amends [0123](0123-quiz-results-select-products-by-category-and-attributes.md),
+Amends [0122](0122-product-activity-uses-retained-anonymous-dimensions.md),
+[0123](0123-quiz-results-select-products-by-category-and-attributes.md),
 [0125](0125-product-warnings-are-current-catalog-advice.md),
 [0082](0082-template-packs-install-as-validated-local-data.md) and
-[0083](0083-installed-packs-supply-campaign-starting-points.md). Applies
-[0116](0116-free-shows-nothing-it-cannot-run.md) §3 to work that landed after it.
+[0083](0083-installed-packs-supply-campaign-starting-points.md). Completes
+[0116](0116-free-shows-nothing-it-cannot-run.md) §3 for work that landed after it.
 
 The WooCommerce recommendation, quiz-cart and product-health work (#205–#220)
 put three kinds of code in free: capability probes, product reads, and
@@ -28,19 +29,23 @@ the publish, capture and import refusals, draft repair, safe export and
 retention after a downgrade ([0122](0122-product-activity-uses-retained-anonymous-dimensions.md)).
 Moving them would break the downgrade and import cases. `ProductHealth` keeps
 the `wconvert_check_products` seam and reads no catalog itself: the journeys
-module answers for quiz results, cart-recovery for recommendations and cart
-buttons. `locked.json` stays, because Pro reads free's copy for higher-rung
+module answers for quiz results only when nothing else has (priority 20),
+cart-recovery for recommendations and cart buttons (priority 10). `locked.json` stays, because Pro reads free's copy for higher-rung
 upsells.
 
-**Product UI is gated on the capability, not the tier.** The Campaigns list
-asks for product checks, and the endpoint answers with any, only when
-`journeys || commerce` is active. The privacy disclosure of product activity
-follows the same test, in `DataMap`, so the policy text and the settings screen
-cannot disagree. The product report renders no placeholder while it waits on
-such an install.
+**Product UI is gated on the capability, not the tier.** One predicate per
+side — `CommerceSupport::productModuleActive()` and `productModuleActive()` —
+asks whether journeys or commerce is active. The Campaigns list asks for
+product checks, and the endpoint reads any campaign, only then. The privacy
+disclosure of product activity, in `DataMap` so the policy text and the
+settings screen cannot disagree, also stays while a removed module's retained
+rows may exist (`ProductStats::tracked()`), and activation re-schedules their
+pruner. The product report renders no placeholder while it waits on an install
+with no product module, but still shows retained activity.
 
-**Free names no product (0116 §3).** Seven strings written after 0116 named
-"WConvert Pro" on states a free install reaches only after Pro was removed. On
+**Free names no product (0116 §3).** Eight strings written after 0116 named
+"WConvert Pro" on states a free install reaches after Pro was removed or by
+importing a design. On
 free each now reads *"This design uses elements this site can't display."*;
 paid installs keep their wording. The admin uses `unlessFree()`; PHP asks
 `WpProPresence::installedTier()`.

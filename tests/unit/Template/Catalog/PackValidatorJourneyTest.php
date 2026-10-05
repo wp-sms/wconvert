@@ -73,6 +73,21 @@ final class PackValidatorJourneyTest extends TestCase
         $this->validator(Tier::Basic)->decode(json_encode($pack, JSON_THROW_ON_ERROR));
     }
 
+    /** A product design imported on a free install names no product (ADR 0116 §3, 0127). */
+    public function testAFreeInstallRefusesAProductDesignWithoutNamingAProduct(): void
+    {
+        $template = json_decode((string) file_get_contents(WCONVERT_DIR . '/pro/modules/cart-recovery/templates/cart-accessories.json'), true, 512, JSON_THROW_ON_ERROR);
+        $template['tier'] = 'free';
+        $pack = ['schema' => 1, 'id' => 'extras', 'version' => '1.0.0', 'name' => 'Extras', 'description' => 'Product extras.',
+            'requires' => ['plugin' => '0.1.0', 'tree' => 2, 'capabilities' => ['template-tree:2', 'capture-journey:1']], 'assets' => [], 'templates' => [$template]];
+        try {
+            (new PackValidator(TemplateManifest::load(), TemplateVocabulary::fromManifest(), Tier::Free, true))->decode(json_encode($pack, JSON_THROW_ON_ERROR));
+            self::fail('A product design must not install on a free site.');
+        } catch (RuntimeException $refused) {
+            self::assertSame('This design uses elements this site can’t display.', $refused->getMessage());
+        }
+    }
+
     public function testFreeInstallerRejectsPaidQuizPack(): void
     {
         $this->expectException(RuntimeException::class);

@@ -39,7 +39,7 @@ import {
 import { listGoals } from '../goals/api';
 import { renderingFor, tierProductName } from '../goals/availability';
 import { displayTypeLabel } from '../displayTypes';
-import { adminSettings, commerceSupported, journeysSupported } from '../settings';
+import { adminSettings, productModuleActive } from '../settings';
 import { ConfirmDialog } from '../shell/ConfirmDialog';
 import { EmptyState } from '../shell/EmptyState';
 import { Region, RegionError, RegionErrorState } from '../shell/Region';
@@ -219,7 +219,7 @@ export function OptinList({
   const ids = displayed.map((c) => c.id).join(',');
   // Only a site that can put a product in a campaign is asked about products:
   // a free install has neither module and meets no product checks (ADR 0116).
-  const productChecks = journeysSupported() || commerceSupported();
+  const productChecks = productModuleActive();
   const productHealth = useProductHealth(productChecks ? ids : '', refreshKey);
   useEffect(() => {
     let active = true;

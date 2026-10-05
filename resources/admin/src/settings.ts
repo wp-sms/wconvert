@@ -171,3 +171,5 @@ export const journeysSupported = (): boolean => adminSettings()?.journeys === tr
 export const catalogConfigured = (): boolean => adminSettings()?.catalogConfigured === true;
 
 export const commerceSupported = (): boolean => window.wconvertAdmin?.commerce === true;
+/** Whether any module that puts a product in a campaign is active (ADR 0127). */
+export const productModuleActive = (): boolean => journeysSupported() || commerceSupported();

@@ -15,7 +15,7 @@ defined('ABSPATH') || exit;
 /**
  * Bounded public catalog read. No visitor data, cart writes or statistics.
  *
- * Pro's, not free's (ADR 0123, amended): only a category result reads it, and
+ * Pro's, not free's (ADR 0127): only a category result reads it, and
  * a category result exists only where this module does — free suspends the
  * Campaign instead, so no visitor of a free install could reach the route.
  */

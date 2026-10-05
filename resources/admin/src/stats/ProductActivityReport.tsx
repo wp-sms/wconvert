@@ -12,7 +12,7 @@ import { ReportDisclosure } from './ReportDisclosure';
 import { rangeLabel } from './reporting';
 import { formatCount } from './format';
 import type { DashboardPayload } from './api';
-import { commerceSupported, journeysSupported } from '../settings';
+import { productModuleActive } from '../settings';
 
 interface ProductReport {
   available: boolean; collecting: boolean; since: string | null;
@@ -45,7 +45,7 @@ export function ProductActivityReport({ id, period }: { id: string; period?: Pic
   // A site with neither product module rarely has activity — only what a
   // removed Pro left behind — so it waits quietly instead of flashing a
   // placeholder for a report that almost always stays away.
-  const quiet = !commerceSupported() && !journeysSupported();
+  const quiet = !productModuleActive();
   if (!report && failure !== key) return quiet ? null : <RegionSkeleton label={__('Product activity', 'wconvert')} lines={3} />;
   if (quiet && failure === key) return null;
   if (report && !report.available && failure !== key) return null;

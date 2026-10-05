@@ -64,7 +64,7 @@ final class ProductHealthControllerTest extends TestCase
         Journeys::off();
         $response = $this->read([self::ID]);
         self::assertInstanceOf(\WP_REST_Response::class, $response);
-        self::assertSame([['id' => self::ID, 'basis' => 'draft', 'checks' => []]], $response->get_data());
+        self::assertSame([], $response->get_data());
         self::assertSame([], $this->db->reads);
     }
 

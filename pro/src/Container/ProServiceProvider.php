@@ -191,7 +191,7 @@ final class ProServiceProvider implements ServiceProvider
         // guard: the publish route, the capture route, the payload and the
         // builder all ask it. The module's PHP is the product side of a quiz
         // result — the category route, its payload attribute and the merchant's
-        // product check — which free no longer carries (ADR 0123, amended).
+        // product check — which free no longer carries (ADR 0127).
         if (is_file(WCONVERT_PRO_DIR . 'modules/journeys/module.json')) {
             add_filter(\WConvert\Template\JourneySupport::FILTER, static fn (): bool => true);
             \WConvert\Pro\Module\Journeys\ResultProducts::hooks();

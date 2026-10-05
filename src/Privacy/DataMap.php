@@ -53,9 +53,9 @@ final class DataMap
             'retention_days' => $this->retention->days(),
             'destinations' => $this->configuredDestinations(),
             'browser' => $this->browserStorage(),
-            // Only an install that can put a product in a campaign records
-            // product activity, so only that install discloses it.
-            'product_activity_retention_days' => \WConvert\Template\CommerceSupport::active() || \WConvert\Template\JourneySupport::active() ? \WConvert\Stats\ProductStats::RETENTION_DAYS : null,
+            // Disclosed where product activity can be recorded, and where a
+            // removed module left retained rows behind (ADR 0127).
+            'product_activity_retention_days' => \WConvert\Template\CommerceSupport::productModuleActive() || \WConvert\Stats\ProductStats::tracked() ? \WConvert\Stats\ProductStats::RETENTION_DAYS : null,
             'beacon_rate_limit_seconds' => RateLimit::WINDOW,
             'capture_rate_limit_seconds' => CaptureRateLimit::WINDOW,
             'protection_provider' => $this->protection?->read()['provider'] ?? 'none',

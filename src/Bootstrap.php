@@ -143,6 +143,12 @@ final class Bootstrap
             RuleVocabulary::fromManifest(),
             new MilestoneStore($options)
         )))->install();
+
+        // Deactivation clears the product-activity pruner; retained rows still
+        // need it, whether or not a product module comes back.
+        if (\WConvert\Stats\ProductStats::tracked() && !wp_next_scheduled(\WConvert\Stats\ProductStats::HOOK)) {
+            wp_schedule_single_event(time() + DAY_IN_SECONDS, \WConvert\Stats\ProductStats::HOOK);
+        }
     }
 
     /**
@@ -155,7 +161,8 @@ final class Bootstrap
      * nobody is listening on: the pruner, the recovery sweep (re-scheduled on
      * the next boot), the import cleanup — cleared by hook rather than by
      * arguments, because it is scheduled once per administrator — and the
-     * product-activity pruner, re-scheduled on the next boot. Queued
+     * product-activity pruner, which activate() re-schedules while retained
+     * product rows may exist. Queued
      * Action Scheduler deliveries stay: they are a [[Lead]] on its way to a
      * [[Destination]], and re-activating sends them.
      */

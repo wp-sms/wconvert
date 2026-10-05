@@ -4,7 +4,7 @@ import type { DestinationType } from './api';
 /**
  * Provider artwork by destination type id. Empty here: the only providers with
  * marks are Pro's, so Pro's admin entry fills this and free's bundle carries no
- * third-party logo (ADR 0029 b).
+ * third-party logo (ADR 0127).
  */
 export const providerMarks: Record<string, string> = {};
 

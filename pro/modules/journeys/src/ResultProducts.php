@@ -9,7 +9,7 @@ defined('ABSPATH') || exit;
 /**
  * What a quiz result's product cards need beyond the journey itself: the
  * category route they read, the payload attribute that names it, and the
- * merchant's product check. Free carries none of it (ADR 0123, amended) — a
+ * merchant's product check. Free carries none of it (ADR 0127) — a
  * result with products exists only where this module does.
  */
 final class ResultProducts
@@ -18,8 +18,9 @@ final class ResultProducts
     {
         add_action('rest_api_init', static fn () => (new ProductMatchesController())->registerRoutes());
         add_filter('wconvert_payload_attributes', [self::class, 'attributes'], 10, 2);
-        // Below cart-recovery's 10, which answers for every kind when it shipped.
-        add_filter('wconvert_check_products', [self::class, 'check'], 5, 3);
+        // After cart-recovery's 10, which answers for every kind where it
+        // shipped; this reads the catalog only when nothing has answered.
+        add_filter('wconvert_check_products', [self::class, 'check'], 20, 3);
     }
 
     /** @param array<string, string> $attributes
@@ -41,7 +42,7 @@ final class ResultProducts
      * @return array{state: string, message: string}|mixed */
     public static function check(mixed $previous, array $node, string $kind): mixed
     {
-        return $kind === 'result' ? self::quiz($node) : $previous;
+        return $previous === null && $kind === 'result' ? self::quiz($node) : $previous;
     }
 
     /** @param array<string, mixed> $result

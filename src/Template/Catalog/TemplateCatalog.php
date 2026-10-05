@@ -187,13 +187,17 @@ final class TemplateCatalog
      */
     public static function configured(OptionStore $options): bool
     {
-        $value = $options->get(self::SOURCE_OPTION, '');
-        return is_string($value) && $value !== '';
+        return self::sourceIn($options) !== '';
     }
 
     private function source(): string
     {
-        $value = $this->options->get(self::SOURCE_OPTION, '');
+        return self::sourceIn($this->options);
+    }
+
+    private static function sourceIn(OptionStore $options): string
+    {
+        $value = $options->get(self::SOURCE_OPTION, '');
         return is_string($value) ? $value : '';
     }
     // phpcs:enable WordPress.Security.EscapeOutput.ExceptionNotEscaped
