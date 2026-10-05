@@ -8,7 +8,7 @@ import finder from '../../modules/journeys/templates/journey-product-finder.json
 import service from '../../modules/journeys/templates/journey-service-enquiry.json';
 import guide from '../../modules/journeys/templates/journey-content-guide.json';
 import enquiryGraph from '../../../tests/fixtures/journey-graph-enquiry.json';
-import { showProducts } from '@loader/products';
+import { showProducts } from '../../modules/journeys/loader/products';
 import { resultAccess, walkNodes } from '../../../resources/admin/src/builder/structure/journey';
 import { upgradeToGraph } from '../../../resources/admin/src/builder/structure/graph';
 import { convertingActOf } from '../../../resources/admin/src/builder/structure/guards';

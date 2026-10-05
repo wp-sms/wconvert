@@ -12,6 +12,7 @@ import { ReportDisclosure } from './ReportDisclosure';
 import { rangeLabel } from './reporting';
 import { formatCount } from './format';
 import type { DashboardPayload } from './api';
+import { commerceSupported, journeysSupported } from '../settings';
 
 interface ProductReport {
   available: boolean; collecting: boolean; since: string | null;
@@ -41,7 +42,12 @@ export function ProductActivityReport({ id, period }: { id: string; period?: Pic
       }).catch(() => { if (!controller.signal.aborted) setFailure(key); });
     return () => controller.abort();
   }, [id, key, days, month, from, to, retry]);
-  if (!report && failure !== key) return <RegionSkeleton label={__('Product activity', 'wconvert')} lines={3} />;
+  // A site with neither product module rarely has activity — only what a
+  // removed Pro left behind — so it waits quietly instead of flashing a
+  // placeholder for a report that almost always stays away.
+  const quiet = !commerceSupported() && !journeysSupported();
+  if (!report && failure !== key) return quiet ? null : <RegionSkeleton label={__('Product activity', 'wconvert')} lines={3} />;
+  if (quiet && failure === key) return null;
   if (report && !report.available && failure !== key) return null;
   return <ReportTarget name="products" label={__('Product activity', 'wconvert')}><Region className="wa-report">
     <RegionHeader title={__('Product activity', 'wconvert')} level={3} icon={<Package />} description={__('See which products shoppers notice and add.', 'wconvert')} />

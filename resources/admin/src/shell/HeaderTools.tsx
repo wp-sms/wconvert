@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
-import { Bell, CircleHelp, ExternalLink, UserRound } from 'lucide-react';
+import { Bell, CircleHelp, ExternalLink } from 'lucide-react';
 import { Popover, PopoverContent, PopoverTrigger } from '../components/ui/popover';
 import { Button } from '../components/ui/button';
 import { readDestinations } from '../destinations/api';
@@ -115,18 +115,6 @@ export function HeaderTools() {
           )}
         </PopoverContent>
       </Popover>
-      {/* Account destination is intentionally a # placeholder until login is integrated. */}
-      <Button asChild variant="ghost" size="icon-sm">
-        {/* eslint-disable-next-line jsx-a11y/anchor-is-valid */}
-        <a
-          className="wc-account-link"
-          href="#"
-          onClick={(event) => event.preventDefault()}
-          aria-label={__('Sign in to WConvert', 'wconvert')}
-        >
-          <UserRound aria-hidden="true" />
-        </a>
-      </Button>
     </div>
   );
 }

@@ -3,7 +3,8 @@ namespace WConvert\Pro\Module\CartRecovery;
 
 use WConvert\Optin\PublishedSet;
 use WConvert\Rules\Degradation;
-use WConvert\Rest\{ProductMatchesController, RateLimit};
+use WConvert\Pro\Module\Journeys\ProductMatchesController;
+use WConvert\Rest\RateLimit;
 use WConvert\Stats\ProductStats;
 
 defined('ABSPATH') || exit;

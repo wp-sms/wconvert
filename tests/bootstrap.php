@@ -971,7 +971,7 @@ defined('WCONVERT_PRO_URL') || define('WCONVERT_PRO_URL', 'https://example.test/
 // The free plugin's own version, which `src/constants.php` defines at load time
 // and which nothing in the unit suite loads that file to get. It reaches
 // `_doing_it_wrong()` as the "since" argument.
-defined('WCONVERT_VERSION') || define('WCONVERT_VERSION', '0.1.0');
+defined('WCONVERT_VERSION') || define('WCONVERT_VERSION', '1.0.0');
 
 // The plugin directory, which `src/constants.php` defines at load time and
 // which is the default argument of every `fromManifest()` and `fromDirectory()`

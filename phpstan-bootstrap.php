@@ -17,7 +17,7 @@
 
 defined('ABSPATH') || define('ABSPATH', '/');
 
-defined('WCONVERT_VERSION') || define('WCONVERT_VERSION', '0.1.0');
+defined('WCONVERT_VERSION') || define('WCONVERT_VERSION', '1.0.0');
 defined('WCONVERT_DIR') || define('WCONVERT_DIR', __DIR__ . '/');
 defined('WCONVERT_URL') || define('WCONVERT_URL', 'https://example.test/wp-content/plugins/wconvert/');
 defined('WCONVERT_MAIN_FILE') || define('WCONVERT_MAIN_FILE', __DIR__ . '/wconvert.php');

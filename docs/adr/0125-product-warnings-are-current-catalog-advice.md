@@ -2,7 +2,10 @@
 
 Accepted 2026-10-05 after approval to implement the first maintenance feature.
 
-Campaigns checks displayed rows in batches of at most twelve. The protected,
+Campaigns checks displayed rows in batches of at most twelve. **Amended by
+[ADR 0127](0127-free-keeps-product-seams-not-product-reads.md):** only on an
+install where the journeys or commerce capability is active; elsewhere the list
+shows no product checks and the endpoint returns none. The protected,
 no-store admin endpoint reads the published snapshot for a published Campaign,
 including a suspended one; otherwise it reads the saved draft. Checks do not
 write campaign state, create statistics, open a WooCommerce session, or add
@@ -13,7 +16,8 @@ sample basket. Details name the result or recommendation selection and the next
 repair; selected unavailable products include their current names or deleted ID.
 All six selected IDs are checked, including reserves beyond three visible cards.
 The commerce adapter reuses storefront card eligibility and recommendation
-resolution. Ordinary paid quiz links use their existing Store API predicates;
+resolution. Ordinary paid quiz links use their existing Store API predicates
+(answered by Pro's journeys module through `wconvert_check_products`, per 0127);
 category filters share the storefront query. **Extended by
 [ADR 0126](0126-category-results-support-explicit-curation.md):** curation adds
 up to three pin candidates alongside the bounded twelve ordinary candidates.

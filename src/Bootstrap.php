@@ -153,8 +153,9 @@ final class Bootstrap
      *
      * Every WP-Cron event goes, because each would otherwise fire into a hook
      * nobody is listening on: the pruner, the recovery sweep (re-scheduled on
-     * the next boot), and the import cleanup — cleared by hook rather than by
-     * arguments, because it is scheduled once per administrator. Queued
+     * the next boot), the import cleanup — cleared by hook rather than by
+     * arguments, because it is scheduled once per administrator — and the
+     * product-activity pruner, re-scheduled on the next boot. Queued
      * Action Scheduler deliveries stay: they are a [[Lead]] on its way to a
      * [[Destination]], and re-activating sends them.
      */
@@ -163,6 +164,7 @@ final class Bootstrap
         wp_clear_scheduled_hook(LeadPruner::HOOK);
         wp_clear_scheduled_hook(\WConvert\Destination\SubmissionDispatcher::RECOVER);
         wp_unschedule_hook(\WConvert\Rest\TemplateTransferController::CLEANUP);
+        wp_clear_scheduled_hook(\WConvert\Stats\ProductStats::HOOK);
     }
 
     /**

@@ -1,4 +1,5 @@
 import { commerceSupported } from '../../settings';
+import { unlessFree } from '../../goals/availability';
 import { __, sprintf } from '@wordpress/i18n';
 import type { QuestionCondition, QuestionNode, TemplateTree } from '@renderer/types';
 import { unreachableScreenIds, walkNodes } from './journey';
@@ -98,7 +99,7 @@ export function journeyReadinessIssues(tree: TemplateTree): JourneyReadinessIssu
         said: sprintf(__('Give result %1$d on “%2$s” a heading.', 'wconvert'), index + 1, screen.name),
         repair: { screenId: screen.id, section: 'content', resultId: result.id, focus: 'result-heading' } });
       if (result.product_action === 'add_to_cart' && (!commerceSupported() || (!result.product_ids?.length && !result.product_filter))) issues.push({
-        key: `result-cart:${screen.id}:${result.id}`, said: !commerceSupported() ? __('Quiz cart buttons need WConvert Pro and WooCommerce.', 'wconvert') : sprintf(__('Choose products for “%s” or use View product.', 'wconvert'), result.heading),
+        key: `result-cart:${screen.id}:${result.id}`, said: !commerceSupported() ? unlessFree(__('Quiz cart buttons need WConvert Pro and WooCommerce.', 'wconvert')) : sprintf(__('Choose products for “%s” or use View product.', 'wconvert'), result.heading),
         repair: { screenId: screen.id, section: 'content', resultId: result.id },
       });
       if (result.product_filter && (!result.product_filter.category_id || result.product_filter.attributes.some(item => !item.taxonomy || !item.term_id)

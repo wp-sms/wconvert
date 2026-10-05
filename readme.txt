@@ -4,8 +4,8 @@ Tags: popup, lead capture, optin form, email list, conversion
 Requires at least: 6.8
 Tested up to: 7.1
 Requires PHP: 8.1
-Stable tag: 0.1.0
-License: GPL-2.0+
+Stable tag: 1.0.0
+License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
 Capture leads with popups and inline forms you create goal-first, then see what each one did.
@@ -13,26 +13,36 @@ Capture leads with popups and inline forms you create goal-first, then see what 
 == Description ==
 
 WConvert asks what you are trying to achieve before it asks what you want to
-build. Pick a goal — grow an email list, grow an SMS list, deliver a lead
-magnet, or promote a sale or offer — and it proposes the Playbook that serves
-it: the placement, the trigger, the copy and the fields, already filled in.
+build. Pick a goal — grow an email list, grow an SMS list, collect enquiries,
+deliver a lead magnet, or promote a sale or offer — and it proposes the ready-made
+setups that serve it: the placement, the trigger, the copy and the fields,
+already filled in. Every one of them becomes a Campaign you can change.
 
 **What it does**
 
 * **Popups**, rendered in the browser's top layer so a theme's stacking context
   cannot bury them, and **inline forms** placed exactly where you want them
-  with a block or a shortcode.
-* **A goal-first builder.** Playbooks are starting points, not templates you
-  fight — every part stays editable.
-* **A lead log** with CSV export, and per-Optin analytics: impressions,
-  conversions, dismissals and a daily series.
+  with the Inline Campaign block or a shortcode.
+* **A goal-first builder.** Ready-made setups are starting points, not
+  templates you fight — every part of the design stays editable.
+* **A design library** of 68 ready-made designs for popups and inline forms.
+  Their artwork is original and drawn in the page, so no image is fetched from
+  anywhere.
+* **Design import and export.** Save a design to a file and import it on
+  another site. An imported design is checked against what that site can
+  display before it is used.
+* **A lead log** with CSV export, showing each submission with the consent
+  wording the visitor saw.
+* **Analytics** that start from what WConvert brought to your site: results by
+  goal, monthly targets, a comparison with the previous period, and for each
+  Campaign its appearances, conversions, dismissals and a daily series.
 * **A start and end date**, so a sale switches itself off. Set them in your
   site's own time; nothing shows before the start or after the end, and neither
-  is required — an Optin can run from a date, until a date, or between two.
-* **A limit for the whole site**, on top of each Optin's own: stop showing a
+  is required — a Campaign can run from a date, until a date, or between two.
+* **A limit for the whole site**, on top of each Campaign's own: stop showing a
   visitor anything once they close or sign up to something, cap how many they
   see in total, or put days between them. It is off until you set it, and no
-  Optin can opt out of it.
+  Campaign can opt out of it.
 * **Hours of the day**, so a popup can keep to your opening hours instead of
   greeting people at three in the morning. It is your site's own clock, and a
   window may run past midnight.
@@ -57,8 +67,8 @@ it: the placement, the trigger, the copy and the fields, already filled in.
 WConvert has no licence key, sends no analytics anywhere, and stores no visitor
 identifier. Everything it counts is a daily counter on your own site.
 
-It also records five dates about the site itself — when you first published an
-Optin, when one was first shown, when someone first converted, whether what you
+It also records five dates about the site itself — when you first published a
+Campaign, when one was first shown, when someone first converted, whether what you
 capture is reaching a destination, and the first time you changed something a
 starting point suggested. They are how the Analytics screen can tell you which
 step is stuck instead of showing you a wall of zeroes, they say nothing about
@@ -87,8 +97,9 @@ included in the download, under `resources/`:
 * everything in `public/protection/`, from `resources/protection/src`
 
 Directories rather than filenames, because the admin bundle is split into
-chunks whose names carry a content hash. Nothing is fetched from elsewhere at
-build time or at run time.
+chunks whose names carry a content hash. Everything the plugin runs ships in
+this download; the only services it can contact are optional, off by default,
+and listed under External services below.
 
 **Building from source.** The build files ship with the plugin —
 `package.json`, `package-lock.json`, `tsconfig.json`, the `vite.*.mjs`
@@ -103,12 +114,24 @@ The first rebuilds everything under `public/`; the second rebuilds `vendor/`.
 
 **WConvert Pro**
 
-Premium capabilities — the exit-intent, scroll-up and clicked-element triggers,
-targeting by query parameter and by cart contents, floating bars and slide-ins,
-A/B testing, the cart-recovery goal, and the email-service-provider and webhook
-integrations — are supplied by a separate WConvert Pro plugin installed
-alongside this one. None of that code is inside this download, and this plugin
-is fully usable without it.
+A separate WConvert Pro plugin, installed alongside this one, adds:
+
+* fullscreen campaigns, floating bars and slide-ins
+* automatic inline placement before, after or within your posts, and content
+  locks that reveal the rest of a post after a signup
+* questions-and-results journeys, with WooCommerce product results
+* the exit-intent, scroll-up and clicked-element triggers
+* advanced targeting conditions, including referrer, query parameter and
+  ad-blocker detection
+* A/B testing
+* advanced spam filters
+* Campaign events sent to your existing Google Analytics 4, Google Tag Manager
+  or Plausible script
+* cart recovery and product recommendations for WooCommerce
+* Mailchimp and Brevo destinations
+
+None of that code is inside this download, and this plugin is fully usable
+without it.
 
 == Installation ==
 
@@ -140,15 +163,15 @@ are used if they are there and are never required.
 = How do I put an inline form on a page? =
 
 Two ways, and they do the same thing. In the block editor, add the **Inline
-Optin** block and pick one of your published inline Optins by name — no id to
-copy, and nothing to type.
+Campaign** block and pick one of your published inline Campaigns by name — no
+id to copy, and nothing to type.
 
 Anywhere the block editor is not — the classic editor, a page builder, a
 widget, or a theme template via `do_shortcode()` — use the shortcode instead.
-The block shows you the exact shortcode for whichever Optin you picked, ready
-to paste:
+The block shows you the exact shortcode for whichever Campaign you picked,
+ready to paste:
 
-`[wconvert_optin id="YOUR_OPTIN_ID"]`
+`[wconvert_optin id="YOUR_CAMPAIGN_ID"]`
 
 Popups need none of this — they place themselves on every page they are
 targeted at.
@@ -156,7 +179,7 @@ targeted at.
 = Does it store IP addresses or track visitors across pages? =
 
 No. There is no visitor identifier of any kind, and no IP geolocation. The
-analytics are daily counters per Optin, and the five setup dates WConvert keeps
+analytics are daily counters per Campaign, and the five setup dates WConvert keeps
 are facts about the site rather than about anybody — you can read exactly what
 they are on the Analytics screen. A site-specific one-way hash derived from the
 network address is kept for one minute to rate-limit anonymous counting; the
@@ -285,21 +308,29 @@ PHP:
   `vendor/` — GPL-3.0-or-later, which is compatible with this plugin's
   GPL-2.0-or-later licence when distributed together.
 
+Template artwork: every illustration in the design library is original work
+made for WConvert, drawn as inline SVG, and licensed GPL-2.0-or-later with the
+rest of the plugin. The library contains no photographs and no third-party
+logos.
+
 == Screenshots ==
 
-1. Pick a goal, and WConvert proposes a Playbook that serves it.
-2. The builder: every part of the proposed popup stays editable.
-3. The design gallery, filtered by goal and format.
-4. An inline form placed in a post with the Inline Optin block.
-5. The lead log, with CSV export.
-6. Per-Optin analytics: impressions, conversions, dismissals and a daily series.
+1. Your campaign on your site, in your theme.
+2. Pick a goal, then a ready-made setup.
+3. Every part of the design stays editable.
+4. An inline form placed with the Inline Campaign block.
+5. Results by goal, compared with the previous period.
+6. Every submission, with the consent the visitor saw, and CSV export.
 
 == Changelog ==
 
-= 0.1.0 =
-* First release.
+= 1.0.0 =
+* First public release: popups and inline forms created goal-first, a library
+  of 68 designs, design import and export, a lead log with consent records and
+  CSV export, analytics by goal with monthly targets, and MailPoet and WP SMS
+  integrations.
 
 == Upgrade Notice ==
 
-= 0.1.0 =
-First release.
+= 1.0.0 =
+First public release.

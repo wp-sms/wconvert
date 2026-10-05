@@ -3,6 +3,7 @@ import { act, render, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { Template } from '../../resources/renderer/src/types';
 import type { Connection, Destination, DestinationType } from '../../resources/admin/src/destinations/api';
+import { providerMarks } from '../../resources/admin/src/destinations/ProviderMark';
 
 const api = vi.hoisted(() => ({
   readMappingFields: vi.fn(), previewMapping: vi.fn(), testMapping: vi.fn(),
@@ -141,7 +142,11 @@ describe('integration setup controls', () => {
     const type: DestinationType = { id: 'mailchimp', label: 'Mailchimp', icon: 'mail', tier: 'elite', requires: null,
       requires_label: null, availability: 'ready', needs_connection: true, settings_schema: {},
       connection_schema: { api_key: { type: 'password', label: 'API key' } } };
-    render(<AccountEditor types={[type]} connections={[account]} usage={{}} onChange={vi.fn().mockResolvedValue(undefined)} />);
+    // Free ships no provider artwork; Pro's admin entry fills the slot.
+    providerMarks.mailchimp = 'data:image/svg+xml,%3Csvg%2F%3E';
+    try {
+      render(<AccountEditor types={[type]} connections={[account]} usage={{}} onChange={vi.fn().mockResolvedValue(undefined)} />);
+    } finally { delete providerMarks.mailchimp; }
 
     expect(screen.getByRole('button', { name: 'Connect Mailchimp' }).querySelector('img')).toHaveAttribute('alt', '');
 

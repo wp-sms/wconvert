@@ -7,7 +7,9 @@ was silently dropped.
 
 ## The first complete slice
 
-**Your designs / Template packs** share the existing picker. Opening it reads
+**Your designs / Template packs** share the existing picker. **Amended by
+[ADR 0127](0127-free-keeps-product-seams-not-product-reads.md):** the Template
+packs tab appears only once a catalog service is configured. Opening it reads
 local state only. Checking the catalog, previewing a new pack and installing are
 explicit, authenticated administrator requests. The notice explains which
 service is contacted. Installing changes the library; the existing content-choice

@@ -39,7 +39,7 @@ import {
 import { listGoals } from '../goals/api';
 import { renderingFor, tierProductName } from '../goals/availability';
 import { displayTypeLabel } from '../displayTypes';
-import { adminSettings } from '../settings';
+import { adminSettings, commerceSupported, journeysSupported } from '../settings';
 import { ConfirmDialog } from '../shell/ConfirmDialog';
 import { EmptyState } from '../shell/EmptyState';
 import { Region, RegionError, RegionErrorState } from '../shell/Region';
@@ -217,7 +217,10 @@ export function OptinList({
   const shown = visible.slice(currentPage * PAGE_SIZE, (currentPage + 1) * PAGE_SIZE);
   const displayed = shown.flatMap((c) => (collapsed.has(c.id) ? [c] : family(c)));
   const ids = displayed.map((c) => c.id).join(',');
-  const productHealth = useProductHealth(ids, refreshKey);
+  // Only a site that can put a product in a campaign is asked about products:
+  // a free install has neither module and meets no product checks (ADR 0116).
+  const productChecks = journeysSupported() || commerceSupported();
+  const productHealth = useProductHealth(productChecks ? ids : '', refreshKey);
   useEffect(() => {
     let active = true;
     setPreviews({});
@@ -523,7 +526,7 @@ export function OptinList({
                 </div>
               </div>
             </div>
-            {ids && <div className="wc-product-health-toolbar">
+            {productChecks && ids && <div className="wc-product-health-toolbar">
               <span role="status">{productHealth.loading ? __('Checking products…', 'wconvert') : productHealth.failed ? __('Product checks unavailable.', 'wconvert') : __('Product checks for this page.', 'wconvert')}</span>
               <Button variant="ghost" disabled={productHealth.loading} onClick={productHealth.recheck}>{__('Check products again', 'wconvert')}</Button>
             </div>}

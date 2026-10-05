@@ -6,7 +6,7 @@ use WConvert\Rest\{ProductHealthController, Routes};
 use WConvert\Optin\{OptinRepository, PublishedSet};
 use WConvert\Milestone\MilestoneStore;
 use WConvert\Rules\RuleVocabulary;
-use WConvert\Tests\Unit\Support\{FakeConnection, FakeOptionStore};
+use WConvert\Tests\Unit\Support\{FakeConnection, FakeOptionStore, Journeys};
 
 final class ProductHealthControllerTest extends TestCase
 {
@@ -16,6 +16,7 @@ final class ProductHealthControllerTest extends TestCase
 
     protected function setUp(): void
     {
+        Journeys::on();
         $this->db = new FakeConnection();
         $options = new FakeOptionStore();
         $this->controller = new ProductHealthController(new OptinRepository($this->db, new PublishedSet($options), RuleVocabulary::fromManifest(dirname(__DIR__, 3)), new MilestoneStore($options)));
@@ -23,6 +24,8 @@ final class ProductHealthControllerTest extends TestCase
         $published = ['template' => ['tree' => ['steps' => [['results' => [['heading' => 'Live picks', 'product_ids' => [2]]]]]]]];
         $this->db->rows[self::ID] = ['id' => self::ID, 'name' => 'Quiz', 'goal' => 'find_match', 'config' => json_encode($draft, JSON_THROW_ON_ERROR), 'published_config' => json_encode($published, JSON_THROW_ON_ERROR), 'published_at' => '2026-10-05 10:00:00', 'deleted_at' => null, 'parent_id' => null];
     }
+
+    protected function tearDown(): void { Journeys::off(); }
 
     /** @param list<string> $ids */
     private function read(array $ids): \WP_REST_Response|\WP_Error
@@ -54,6 +57,15 @@ final class ProductHealthControllerTest extends TestCase
         $deleted = $this->read([self::ID]);
         self::assertInstanceOf(\WP_REST_Response::class, $deleted);
         self::assertSame('Campaign unavailable. Refresh the campaign list.', $deleted->get_data()[0]['checks'][0]['message']);
+    }
+
+    public function testAnInstallThatCannotHoldProductsIsNeverCheckedOrToldAboutThem(): void
+    {
+        Journeys::off();
+        $response = $this->read([self::ID]);
+        self::assertInstanceOf(\WP_REST_Response::class, $response);
+        self::assertSame([['id' => self::ID, 'basis' => 'draft', 'checks' => []]], $response->get_data());
+        self::assertSame([], $this->db->reads);
     }
 
     public function testRouteRequiresAdminCapability(): void

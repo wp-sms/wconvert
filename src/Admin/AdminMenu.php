@@ -218,6 +218,10 @@ final class AdminMenu
             // code that draws them is on disk (ADR 0116).
             'commerce' => \WConvert\Template\CommerceSupport::active(),
             'journeys' => \WConvert\Template\JourneySupport::active(),
+            // Template packs appear only once a catalog service is configured.
+            // Guarded like PhoneCountry::siteDefault(): a suite without
+            // WordPress reads the settings too.
+            'catalogConfigured' => function_exists('get_option') && \WConvert\Template\Catalog\TemplateCatalog::configured(new \WConvert\Storage\WpOptionStore()),
             // **Authoring is the settings panel plus a DEV-ONLY export**
             // (ADR 0010). Gated on `WP_DEBUG` rather than on a capability:
             // everyone who reached this screen already has `manage_options`,

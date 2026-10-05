@@ -177,11 +177,6 @@ foreach ($wconvertTables as $wconvertTable) {
 /*
  * WHAT IS DELIBERATELY NOT HERE.
  *
- * - **The beacon's rate-limit transients.** They are `wconvert_beacon_`-prefixed
- *   transients holding a hashed address for a few minutes and they expire on
- *   their own; finding them means a `LIKE` scan of the options table, which is
- *   a table scan on the biggest table on the site to delete rows that are about
- *   to delete themselves.
  * - **The other sites of a multisite network.** Multisite is out of scope for
  *   v1 and WConvert is meant to be activated per site, so this cleans the site
  *   it was asked about — the same scope its activation, its options and its
@@ -245,3 +240,15 @@ foreach ($wconvertPickerLocks as $wconvertPickerLock) {
 }
 
 wp_clear_scheduled_hook('wconvert_product_stats_prune');
+
+// Every WConvert transient: the rate-limit records (hashed addresses, minutes
+// long) and the destination field and schema caches. They would expire on
+// their own, but a deleted plugin should not leave a row behind for the next
+// visit to find. Listed from the options table, then deleted through
+// WordPress so an object cache drops its copy too. Static, like the
+// statements above.
+// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- see above.
+$wconvertTransients = $wpdb->get_col("SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE '\_transient\_wconvert\_%'");
+foreach ($wconvertTransients as $wconvertTransient) {
+    delete_transient(substr($wconvertTransient, strlen('_transient_')));
+}

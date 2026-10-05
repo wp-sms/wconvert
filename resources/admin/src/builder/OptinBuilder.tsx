@@ -86,7 +86,7 @@ import {
 import { numbersByOptin, readDashboard, type OptinNumbers } from '../stats/api';
 import { formatCount, formatRate } from '../stats/format';
 import { readDestinations, type Connection, type DestinationsPayload } from '../destinations/api';
-import { adminSettings } from '../settings';
+import { adminSettings, catalogConfigured } from '../settings';
 import { readPrivacyGuidance } from '../privacy/api';
 import { createOptin, publishOptin } from '../optins/api';
 import { editorHref } from '../nav';
@@ -1169,7 +1169,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
         open={browsing}
         onOpenChange={setBrowsing}
         onClosed={() => browse.current?.focus()}
-        onCatalogInstalled={async () => { setGallery(await listTemplates()); }}
+        onCatalogInstalled={catalogConfigured() ? async () => { setGallery(await listTemplates()); } : undefined}
         index={gallery}
         trees={trees}
         displayType={displayTypeOf(config, templates)}

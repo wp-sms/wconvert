@@ -1,3 +1,4 @@
+import { __ } from '@wordpress/i18n';
 import { adminSettings } from '../settings';
 
 /**
@@ -75,6 +76,15 @@ export type Rendering = 'offer' | 'upsell' | 'explain' | 'hide';
  */
 export function isFreeInstall(): boolean {
   return (adminSettings()?.installedTier ?? 'free') === 'free';
+}
+
+/**
+ * A requirement message that may name the paid plugin — except on a free
+ * install, which names no product anywhere it explains an absence (ADR 0116
+ * §3). It says what the builder already says of a question block there.
+ */
+export function unlessFree(paid: string): string {
+  return isFreeInstall() ? __('This design uses elements this site can’t display.', 'wconvert') : paid;
 }
 
 export function renderingFor(availability: Availability, surface: Surface): Rendering {

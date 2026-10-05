@@ -14,11 +14,17 @@ function wp_salt(string $scheme = 'auth'): string { return 'salt'; }
 function get_temp_dir(): string { global $argv; return ($argv[2] ?? sys_get_temp_dir()) . '/'; }
 $deletedOptions = [];
 function delete_option(string $name): void { global $deletedOptions; $deletedOptions[] = $name; }
+$deletedTransients = [];
+function delete_transient(string $name): void { global $deletedTransients; $deletedTransients[] = $name; }
 /** @return array{basedir: string} */
 function wp_upload_dir(?string $time = null, bool $create = true): array { global $argv; return ['basedir' => $argv[1]]; }
 $wpdb = new class {
     public string $options = 'test_options';
-    public function get_col(string $sql): array { return ['wconvert_mail_' . str_repeat('a', 64), 'wconvert_capture_' . str_repeat('b', 64), 'wconvert_mail_site_owner']; }
+    public function get_col(string $sql): array
+    {
+        if (str_contains($sql, '_transient')) return ['_transient_wconvert_beacon_' . str_repeat('e', 64), '_transient_wconvert_fields_' . str_repeat('f', 16)];
+        return ['wconvert_mail_' . str_repeat('a', 64), 'wconvert_capture_' . str_repeat('b', 64), 'wconvert_mail_site_owner'];
+    }
     public string $prefix = 'test_';
     public function prepare(string $sql, string $name): string { return $sql; }
     public function query(string $sql): void {}
@@ -29,4 +35,5 @@ foreach (['wconvert_mail_' . str_repeat('a', 64), 'wconvert_capture_' . str_repe
     if (!in_array($owned, $deletedOptions, true)) { fwrite(STDERR, "Owned option was retained\n"); exit(1); }
 }
 if (in_array('wconvert_mail_site_owner', $deletedOptions, true)) { fwrite(STDERR, "Unrelated option was deleted\n"); exit(1); }
+if ($deletedTransients !== ['wconvert_beacon_' . str_repeat('e', 64), 'wconvert_fields_' . str_repeat('f', 16)]) { fwrite(STDERR, "Transients were not deleted by name\n"); exit(1); }
 if (isset($argv[3])) file_put_contents($argv[3], implode("\n", $unscheduled));

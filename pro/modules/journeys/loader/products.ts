@@ -1,5 +1,5 @@
 import type { ResultVariant } from '@renderer/types';
-import { productsEndpoint } from './payload';
+import { productsEndpoint } from '@loader/payload';
 
 interface StoreProduct {
   id: number;

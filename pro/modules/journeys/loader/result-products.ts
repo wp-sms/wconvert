@@ -1,4 +1,4 @@
-import { showProducts } from '@loader/products';
+import { showProducts } from './products';
 import type { ResultVariant } from '@renderer/types';
 
 /** Modules may enhance result cards without moving commerce into every paid loader. */

@@ -11,6 +11,8 @@ These are JSON data. Installed entries join the existing PlaybookLibrary and
 Prefill; no second campaign builder or snapshot mechanism is introduced.
 
 Choose a goal, then Browse template packs, preview and install a collection.
+**Amended by [ADR 0127](0127-free-keeps-product-seams-not-product-reads.md):**
+that button appears only once a catalog service is configured.
 Choose a starting point returns to that goal's creation gallery filtered to the
 collection. Cards show the real Prefill composition and effective setup facts. **Amended by [ADR 0112](0112-template-discovery-and-reviewed-collections.md):** the index is metadata-only; bounded visible-card requests prepare actual previews. Canonical design grouping follows active filters, and source/prepared revisions protect creation after inspection. Reviewed discovery Collections are separate from delivery packs.
 Only Customize this starting point creates a draft; the editor continues to own

@@ -243,7 +243,7 @@ A design declares its `tier`. Free ships free designs and, in
 `resources/templates/locked.json`, the **card** for a premium one — a name, its
 facets and a link to a live preview on wconvert.io, with no tree and no image
 at all. Shipping the design and refusing the save is trialware
-([#7](https://github.com/navidkashani/wconvert/issues/7)), so
+([#7](https://github.com/wp-sms/wconvert/issues/7)), so
 `bin/verify-artifact-contract.sh` check **(e)** refuses a `tier: pro` entry, or
 a `tree` in `locked.json`, inside the free artifact — and refuses a **Pro**
 artifact that carries no premium design at all, which is the same rule read from
@@ -864,7 +864,7 @@ on its own does nothing.
 
 ```bash
 npm run build          # public/ and pro/public/ are gitignored — nothing is stale
-bin/build.sh free      # → dist/wconvert-v0.1.0.zip
+bin/build.sh free      # → dist/wconvert-v1.0.0.zip
 bin/build.sh pro       # → one ZIP per tier (below)
 bin/build.sh all
 ```
@@ -993,7 +993,7 @@ pinning its SHA pins the wrapper rather than the gate.
 got.
 
 ```bash
-bin/plugin-check.sh dist/stage/wconvert "$(cat .github/plugin-check-version)"
+bin/plugin-check.sh dist/stage/plain/wconvert "$(cat .github/plugin-check-version)"
 ```
 
 It needs Docker — `@wordpress/env` starts a real WordPress and runs wp.org's own
@@ -1001,9 +1001,14 @@ checker inside it. `.github/workflows/plugin-check-drift.yml` runs the **latest*
 against `main` weekly, compares it to the pin by finding code, and opens an
 issue on anything new.
 
-**The free plugin passes this gate**, as of
-[#60](https://github.com/navidkashani/wconvert/issues/60): zero errors, and
-eighteen warnings printed in full. The first run against a real staged tree
+**The free plugin passes this gate.** The 1.0.0 run
+([#96](https://github.com/wp-sms/wconvert/issues/96), Plugin Check 2.1.0)
+reports zero errors and three warnings, all one finding: `trademarked_term`
+says the name and the slug contain `wc`, which wp.org reserves for
+WooCommerce. That is a question for the plugin review team, not a code fix —
+ask for the `wconvert` slug explicitly when submitting. As of
+[#60](https://github.com/wp-sms/wconvert/issues/60) it was zero errors and
+eighteen warnings. The first run against a real staged tree
 reported 53 errors — escaping, i18n and `WordPress.DB.PreparedSQL` findings in
 `src/` and `resources/playbooks/`, none of them introduced by the release
 workflow. Thirty-one were fixed outright.

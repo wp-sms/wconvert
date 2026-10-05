@@ -25,6 +25,12 @@
 /.github
 /.gitignore
 /.distignore
+# Node's version pin for contributors. Plugin Check rejects hidden files in a
+# wp.org ZIP outright; readme.txt's build steps name the Node version instead.
+/.nvmrc
+# The wp.org listing assets (icon, banners, screenshots). They go to SVN's
+# /assets directory, never into the plugin's own trunk.
+/.wordpress-org
 
 # The other plugin. Free contains no path under Pro's plugin directory
 # (ADR 0029, check c); this is the line that makes that true, and
@@ -96,6 +102,10 @@
 /CONTEXT.md
 /docs
 /.claude
+# Contributor notes that sit beside shipped runtime data. Anchored, one by one:
+# a bare `README.md` would reach every vendor package's too.
+/resources/playbooks/README.md
+/resources/admin/src/assets/branding/README.md
 
 # Editor and OS litter, at any depth
 .DS_Store

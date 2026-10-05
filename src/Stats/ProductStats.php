@@ -59,6 +59,7 @@ final class ProductStats
             if (!preg_match('/^product:([1-9][0-9]*)$/D', (string) $row['scope'], $match)) continue;
             $productId = (int) $match[1];
             $name = (string) apply_filters('wconvert_product_activity_name', '', $productId);
+            /* translators: %d: a WooCommerce product ID. */
             $products[] = ['id' => $productId, 'name' => $name !== '' ? $name : sprintf(__('Unavailable product #%d', 'wconvert'), $productId),
                 'shown' => (int) $row['shown'], 'clicked' => (int) $row['clicked'], 'added' => (int) $row['added']];
         }

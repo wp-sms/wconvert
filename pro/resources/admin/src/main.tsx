@@ -11,8 +11,10 @@ import { decorateFullscreen } from '../../../modules/display-types/loader/surfac
 import { reopenControls } from '@/reopenControls';
 import { inlinePlacementControls } from '@/inlinePlacement';
 import { registerPremiumJourneyRenderer } from '../../../modules/journeys/loader/render';
+import { registerProviderMarks } from '../../../modules/destinations/admin/marks';
 
 registerPremiumJourneyRenderer();
+registerProviderMarks();
 registerProductPreview();
 reportExtensions.commerce = lazy(() => import('../../../modules/analytics/admin/Revenue'));
 analyticsIntegration.settings = lazy(() => import('../../../modules/analytics/admin/Settings'));

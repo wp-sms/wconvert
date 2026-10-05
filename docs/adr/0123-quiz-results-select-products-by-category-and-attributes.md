@@ -22,6 +22,10 @@ rung, without a cart-recovery dependency. No table, column or answer archive is 
 The public `/product-matches` GET route accepts only that bounded filter,
 checks WooCommerce, the journeys capability, taxonomy membership and live term
 existence, then internally dispatches WooCommerce's public Store Products route.
+**Amended by [ADR 0127](0127-free-keeps-product-seams-not-product-reads.md):**
+the route, its admin `/product-filters` sibling and the `data-product-matches`
+payload attribute live in Pro's journeys module (`pro/modules/journeys/src`),
+not in free; so does the loader's `products.ts`.
 **Amended by [ADR 0126](0126-category-results-support-explicit-curation.md):**
 it reads up to three explicit pins plus at most twelve ordinary candidates.
 Default order remains product ID ascending; merchants can choose newest or price.

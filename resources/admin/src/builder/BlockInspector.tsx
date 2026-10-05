@@ -1,6 +1,7 @@
 import { RecommendationSettings } from './RecommendationSettings';
 import type { ProductsNode } from '@renderer/types';
 import { journeysSupported, commerceSupported } from '../settings';
+import { unlessFree } from '../goals/availability';
 import { useId, useState, type ReactNode } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import { ArrowLeftRight, Check, ChevronRight, Layers, Package, Type } from 'lucide-react';
@@ -240,7 +241,7 @@ function contentBody({
 }) {
   const node = nodeAt(template.tree, path) as { action?: string; submission?: string } | null;
   if (block.type === 'products') {
-    if (!commerceSupported()) return <p>{__('Product suggestions require WConvert Pro and WooCommerce.', 'wconvert')}</p>;
+    if (!commerceSupported()) return <p>{unlessFree(__('Product suggestions require WConvert Pro and WooCommerce.', 'wconvert'))}</p>;
     const selected = nodeAt(template.tree, path) as ProductsNode;
     return <RecommendationSettings value={selected} onPlacement={onPlacement} onChange={patch => {
       let tree = template.tree;
