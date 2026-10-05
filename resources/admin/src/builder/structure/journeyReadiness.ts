@@ -1,3 +1,4 @@
+import { commerceSupported } from '../../settings';
 import { __, sprintf } from '@wordpress/i18n';
 import type { QuestionCondition, QuestionNode, TemplateTree } from '@renderer/types';
 import { unreachableScreenIds, walkNodes } from './journey';
@@ -96,11 +97,20 @@ export function journeyReadinessIssues(tree: TemplateTree): JourneyReadinessIssu
       if (!result.heading.trim()) issues.push({ key: `result-heading:${screen.id}:${result.id}`,
         said: sprintf(__('Give result %1$d on “%2$s” a heading.', 'wconvert'), index + 1, screen.name),
         repair: { screenId: screen.id, section: 'content', resultId: result.id, focus: 'result-heading' } });
+      if (result.product_action === 'add_to_cart' && (!commerceSupported() || (!result.product_ids?.length && !result.product_filter))) issues.push({
+        key: `result-cart:${screen.id}:${result.id}`, said: !commerceSupported() ? __('Quiz cart buttons need WConvert Pro and WooCommerce.', 'wconvert') : sprintf(__('Choose products for “%s” or use View product.', 'wconvert'), result.heading),
+        repair: { screenId: screen.id, section: 'content', resultId: result.id },
+      });
+      if (result.product_filter && (!result.product_filter.category_id || result.product_filter.attributes.some(item => !item.taxonomy || !item.term_id)
+        || new Set(result.product_filter.attributes.map(item => item.taxonomy)).size !== result.product_filter.attributes.length)) issues.push({
+        key: `result-products:${screen.id}:${result.id}`, said: sprintf(__('Complete the category and filters for “%s”.', 'wconvert'), result.heading),
+        repair: { screenId: screen.id, section: 'content', resultId: result.id },
+      });
       const hasLink = !!result.href?.trim();
       const hasLabel = !!result.link_label?.trim();
-      if (hasLink !== hasLabel || (!!result.product_ids?.length || screen.products_required) && !hasLink) {
+      if (hasLink !== hasLabel || (!!result.product_ids?.length || !!result.product_filter || screen.products_required) && !hasLink) {
         issues.push({ key: `result-link:${screen.id}:${result.id}`,
-          said: sprintf(result.product_ids?.length || screen.products_required
+          said: sprintf(result.product_ids?.length || result.product_filter || screen.products_required
             ? __('Add a fallback link and label for “%1$s” on “%2$s”, so visitors can continue if products are unavailable.', 'wconvert')
             : __('Complete the link destination and label for “%1$s” on “%2$s”.', 'wconvert'), result.heading, screen.name),
           repair: { screenId: screen.id, section: 'content', resultId: result.id, focus: 'result-link' } });

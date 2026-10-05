@@ -2,7 +2,9 @@
 
 Date: 4 October 2026
 
-Status: Core release is merged. The ADR 0118 follow-up implements explicit sample-basket simulation and configured WooCommerce cross-sells. Merchant research, shipping progress and order attribution remain outstanding.
+Status: Core release is merged. The ADR 0118 follow-up implements explicit sample-basket simulation and configured WooCommerce cross-sells. ADR 0119 separately implements optional campaign sales attribution using a consented 30-minute last-interaction window. Merchant research and shipping progress remain outstanding.
+
+Follow-up, 5 October 2026: [Product recommendations: simple setup, dependable shopping, useful results](product-recommendations-2026-10-05.md) is the proposed plan for easier setup, direct add-to-cart, product-page recommendations, product activity reporting and later quiz matching. It does not mark those features implemented. The first-release baseline table and sequence below record the original cart implementation; use the follow-up for new work.
 
 ## Product decision
 
@@ -31,7 +33,7 @@ This is useful without automated catalog ranking or visitor profiles. Preserve W
 | Product results | Up to six ordered selected IDs; display up to three live available products | Reuse card behavior for recommendation campaigns and optionally exclude products already in the cart |
 | Recommendation choice | Merchant selects quiz products by outcome | Selected accessories and configured WooCommerce cross-sells (ADR 0118) |
 | Delivery guidance | Static message and cart link | Contextual guidance first; verified shipping progress later |
-| Statistics | Appearances, conversion clicks, quiz completions and result clicks | Clear commerce labels first; optional order attribution later |
+| Statistics | Appearances, conversion clicks, quiz completions and result clicks | Clear commerce labels; optional campaign sales subsequently implemented by ADR 0119 |
 
 Source anchors: `pro/modules/cart-recovery/loader/cart.ts`, `pro/modules/cart-recovery/src/CartCookie.php`, `resources/rules/manifest.json`, `resources/loader/src/products.ts`, `resources/admin/src/builder/JourneySettings.tsx`, `src/Goal/Goal.php`.
 
@@ -45,7 +47,7 @@ The priority merchant is a WooCommerce operator with an understandable catalog a
 | Avoid pointless recommendations | Products already in the basket are omitted | No second recommendation for the memory card just added |
 | Explain a buying consideration | Help relevant to the product or basket | Delivery-access checklist for large furniture |
 | Keep recommendations accurate | Available items and useful fallbacks | Second selected accessory appears when the first sells out |
-| Understand effectiveness | Distinct, accurately named outcomes | Product clicks today; attributed orders in the later reporting phase |
+| Understand effectiveness | Distinct, accurately named outcomes | Product clicks plus optional campaign-attributed orders under ADR 0119; product-level attribution remains separate |
 
 These are product hypotheses grounded in current capabilities and market documentation. The repository's first-time merchant test remains marked as not run; do not present these as customer interview findings.
 
@@ -63,7 +65,7 @@ Ship together:
 6. Draft simulation, live diagnostics, publication checks and accurate click reporting. The ADR 0118 follow-up evaluates explicit sample baskets; non-cart conditions remain manual assumptions.
 7. Classic WooCommerce and Cart/Checkout Blocks compatibility demonstrated on real WordPress.
 
-The ADR 0118 follow-up implements WooCommerce cross-sell selection. Leave for later increments: direct add-to-cart buttons, dynamic shipping progress, attributed orders, and category/attribute-based quiz selection. Keep all six recommendations from the assessment in the roadmap below; this split limits the first release rather than quietly discarding them.
+The ADR 0118 follow-up implements WooCommerce cross-sell selection; ADR 0119 separately implements optional campaign-attributed orders and sales. Direct add-to-cart buttons, dynamic shipping progress and category/attribute-based quiz selection remain later increments. The 5 October recommendation plan sequences the recommendation improvements; shipping progress remains separate.
 
 ## Merchant setup
 
@@ -223,13 +225,11 @@ Refresh after address, coupon, quantity, shipping-method and currency changes. N
 
 ### Optional order attribution
 
-Propose a separate opt-in WooCommerce adapter following ADR 0046: record campaign provenance on real orders through WooCommerce CRUD/HPOS-compatible APIs and read actual order amounts/statuses when reporting. Do not copy revenue into WConvert counters.
+Implemented separately by [ADR 0119](../adr/0119-actionable-reports-use-local-evidence-and-order-provenance.md), with evidence in the [analytics verification record](../reviews/actionable-analytics-2026-10-04.md). This supersedes this plan's original proposed 24-hour click model.
 
-Recommended initial model: last eligible WConvert campaign click within the current WooCommerce session, capped at 24 hours; no view-through attribution. Store only bounded campaign/family/variant provenance and click time in that existing session, not contact details or a new visitor ID. This is a new behavioral storage purpose requiring explicit consent-contract review; permission for functional cart reads does not imply permission for attribution.
+The implemented model is **Last interaction · 30-minute window**, off by default and requiring explicit statistics-consent configuration. Qualifying accepted captures and campaign/quiz link interactions can supply provenance; appearances cannot. Classic and Blocks checkout bind that provenance to a real order using WooCommerce-compatible APIs. Reports read paid orders and refunds, keep currencies separate, and exclude shipping, taxes and fees from merchandise sales. WConvert does not copy money into its counters.
 
-Record provenance once at order creation for classic and Blocks checkout and count an attributed order only once when it reaches the defined paid state. Retries, payment failures and status changes must not duplicate it. Report refunds and currency groups separately and define tax/shipping inclusion. No cross-device joining or invented currency conversion.
-
-Before implementation, settle session expiry, consent revocation, multi-campaign selection, A/B family mapping, deleted/paused campaigns, order deletion/erasure, refunds, permission checks, large-store query performance and export labels. Explain that order totals follow retained WooCommerce records and may change with refunds or deletion. Label the result “Attributed orders/revenue,” never proven incremental or recovered sales. A holdout study is needed for causal lift.
+Site-wide and exact-campaign sales are implemented. Product-level sales, historical revenue CSV and family/Goal revenue rollups are not. Attributed sales remain an association, not proof of incremental lift. The 5 October follow-up must explicitly extend the qualifying interaction contract for confirmed cart additions rather than assume those new actions are already supported.
 
 ## Implementation sequence
 
@@ -246,9 +246,9 @@ Each slice should be reviewable on its own; the first release requires slices 1 
 | 7. Packaging and real-site validation | Free/Pro builds, imports, performance, classic/Blocks checks and documentation | All acceptance gates below pass; merchant walkthrough evidence recorded |
 | 8. Cross-sell source | Existing WooCommerce relationships with bounded selection | First release validated against real catalogs |
 | 9. Shipping progress | Supported core free-shipping rules and honest unknown states | Separate shipping compatibility matrix |
-| 10. Attribution | Opt-in provenance and order-based reports | Separate consent/reporting contract and performance validation |
+| 10. Attribution | Completed separately under ADR 0119: optional campaign provenance and order-based reports | See analytics verification; future cart-add interactions require an explicit extension |
 
-Direct add to cart and catalog-derived quiz candidates are optional follow-ups after merchant evidence, not prerequisites for slices 8–10. Estimate calendar time after slice 1 exposes actual WooCommerce integration work; avoid a fixed-date promise before that evidence.
+Direct add to cart and catalog-derived quiz candidates are sequenced in the proposed 5 October follow-up. Slices 8 and 10 now have implementations; shipping remains future work. Estimate new work after the follow-up's mutation/placement spike exposes actual integration constraints, rather than restarting the completed core slices.
 
 ## Code areas to review during implementation
 

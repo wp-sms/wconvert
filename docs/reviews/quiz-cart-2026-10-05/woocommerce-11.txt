@@ -1,0 +1,21 @@
+guest: {"wordpress":"7.1.2","php":"8.3.33","woocommerce":"11.1.2"}
+PASS guest: public cards work with an empty basket; variable products keep their option links
+PASS guest: only the current published result can serve cards
+PASS guest: category results use their own bounded catalog matches
+PASS guest: extension-driven products keep their product-page links instead of hiding the result
+PASS guest: cart tokens bind the session and result; forged, unavailable, option and stale-price additions are refused
+PASS guest: inventory is rechecked after a card was served
+PASS guest: replay adds once and records activity without a second quiz conversion
+PASS guest: quiz product impressions, clicks and additions share Product activity
+PASS guest: unpublished quizzes stop reads and additions
+authenticated: {"wordpress":"7.1.2","php":"8.3.33","woocommerce":"11.1.2"}
+PASS authenticated: public cards work with an empty basket; variable products keep their option links
+PASS authenticated: only the current published result can serve cards
+PASS authenticated: category results use their own bounded catalog matches
+PASS authenticated: extension-driven products keep their product-page links instead of hiding the result
+PASS authenticated: cart tokens bind the session and result; forged, unavailable, option and stale-price additions are refused
+PASS authenticated: inventory is rechecked after a card was served
+PASS authenticated: replay adds once and records activity without a second quiz conversion
+PASS authenticated: quiz product impressions, clicks and additions share Product activity
+PASS authenticated: unpublished quizzes stop reads and additions
+18 real quiz product checks passed.

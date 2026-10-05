@@ -4,6 +4,7 @@ import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuIte
 import { SubmissionSettings } from './SubmissionSettings';
 import { BlockInspector } from './BlockInspector';
 import { JourneyEditor } from './JourneyEditor';
+import { ProductActivityReport } from '../stats/ProductActivityReport';
 import { JourneyReport } from '../stats/JourneyReport';
 import { referencedJourney, submissionScreen, walkNodes } from './structure/journey';
 import { isResultFirst } from '../../../loader/src/journey-mode';
@@ -912,7 +913,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
             onClearElement={() => setSelection(null)}
             elementPanel={selection && nodeAt(entry.tree, selection.path)?.type !== 'question' ? <BlockInspector template={entry} labels={gallery.labels} path={selection.path} act={act}
               onChange={(next, coalesce) => edit({ template: next }, coalesce)} onSwap={next => edit({ template: next })}
-              endsAt={displayRules.schedule.ends_at} onSetEndDate={goToSchedule} onSelect={chooseFromTree}
+              endsAt={displayRules.schedule.ends_at} onSetEndDate={goToSchedule} onPlacement={goToInlinePlacement} onSelect={chooseFromTree}
               onDesign={() => { setTab('design'); designSettings(); }} onShowLayers={() => { setTab('design'); setShowLayers(true); setDrawer('layers'); }}
               look={<ScopeStyle key={selection.path.join('.')} template={entry} labels={gallery.labels} path={selection.path} openToken={openToken} onOpenToken={setOpenToken} onSelect={chooseFromTree}
                 onChange={next => edit({ template: next })} copied={copiedLook} onCopy={setCopiedLook} width={width === 'narrow' ? 'narrow' : 'tokens'} />} /> : undefined}
@@ -989,7 +990,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
                     onChange={(next, coalesce) => edit({ template: next }, coalesce)}
                     focus={focusRow}
                     endsAt={displayRules.schedule.ends_at}
-                    onSetEndDate={goToSchedule}
+                    onSetEndDate={goToSchedule} onPlacement={goToInlinePlacement}
                     compact={compact} drawer={drawer} onCloseDrawer={() => setDrawer(null)}
                     onDrawerFocusReturn={panel => (panel === 'layers' ? layersButton : designButton).current?.focus()}
                     showLayers={showLayers}
@@ -1088,7 +1089,6 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
           </div>
           {entryOfGoal?.outcome && <p className="text-note text-muted-foreground">{entryOfGoal.outcome.measurement}</p>}
           <CampaignAnalytics value={config.analytics} parentId={analyticsParent} onChange={analytics => edit({ analytics })} />
-          {details && id && <JourneyReport id={id} />}
           {(numbers !== null || (publishedAt !== null && stats.status === 'loading')) && (
             <div className="wconvert-details-section"><h3>{__('Performance', 'wconvert')}</h3>
               {numbers !== null ? (
@@ -1126,6 +1126,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
             </div>
           )}
           {numbers === null && publishedAt === null && <div className="wconvert-details-section"><h3>{__('Performance', 'wconvert')}</h3><p>{__('Publish this Campaign to start collecting impressions and conversions.', 'wconvert')}</p></div>}
+          {details && id && <><ProductActivityReport id={id} /><JourneyReport id={id} /></>}
           <details className="wconvert-details-history"><summary>{__('About draft history', 'wconvert')}</summary>
           <p className="text-note text-muted-foreground">
             {__('Undo and Redo cover this session’s draft edits: name, journey, design, display rules and destination selections. They do not change the published version or shared destination settings. Saving a new goal starts a new Undo history.', 'wconvert')}

@@ -459,5 +459,17 @@
       "on_absence": "suspend",
       "substitute": null
     }
+  },
+  "requirements": {
+    "products_ready": {
+      "kind": "condition",
+      "tier": "elite",
+      "requires": "woocommerce",
+      "params": {},
+      "presets": {},
+      "consent_category": "functional",
+      "on_absence": "suspend",
+      "substitute": null
+    }
   }
 }

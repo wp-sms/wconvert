@@ -42,6 +42,7 @@ export function usesPageLoadOnly(rules: readonly Rule[], vocabulary: RuleVocabul
 export function inlinePlacementLabel(value: unknown): string | null {
   if (!value || typeof value !== 'object' || !('position' in value)) return null;
   if (value.position === 'before_content') return __('Automatically before content', 'wconvert');
+  if (value.position === 'after_product_summary') return __('After the WooCommerce product summary (classic themes)', 'wconvert');
   if (value.position === 'after_content') return __('Automatically after content', 'wconvert');
   if (value.position === 'after_paragraph' && 'paragraph' in value && typeof value.paragraph === 'number'
     && Number.isInteger(value.paragraph) && value.paragraph >= 1 && value.paragraph <= 100) {

@@ -1,0 +1,17 @@
+guest runtime: {"wordpress":"7.1.2","php":"8.3.33","woocommerce":"11.1.2"}
+PASS guest: fresh session token rejects another session, foreign origin and forgery
+PASS guest: self, private, draft and unknown products cannot mutate the basket
+PASS guest: accepted addition persists once and replay does not add or count again
+PASS guest: public beacons cannot forge addition results
+PASS guest: a second extra counts as activity but does not count the appearance twice
+PASS guest: extension-driven validation uses the product-page fallback
+PASS guest: stale revisions and unpublished campaigns cannot add products
+authenticated runtime: {"wordpress":"7.1.2","php":"8.3.33","woocommerce":"11.1.2"}
+PASS authenticated: fresh session token rejects another session, foreign origin and forgery
+PASS authenticated: self, private, draft and unknown products cannot mutate the basket
+PASS authenticated: accepted addition persists once and replay does not add or count again
+PASS authenticated: public beacons cannot forge addition results
+PASS authenticated: a second extra counts as activity but does not count the appearance twice
+PASS authenticated: extension-driven validation uses the product-page fallback
+PASS authenticated: stale revisions and unpublished campaigns cannot add products
+14 real WooCommerce addition checks passed.

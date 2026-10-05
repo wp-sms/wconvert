@@ -397,6 +397,17 @@
         "captures": [],
         "has_image": false
       }
+    },
+    {
+      "id": "cart-additions",
+      "name": "Add useful extras",
+      "display_type": "inline",
+      "tier": "elite",
+      "facets": {
+        "shape": "stack",
+        "captures": [],
+        "has_image": false
+      }
     }
   ]
 }

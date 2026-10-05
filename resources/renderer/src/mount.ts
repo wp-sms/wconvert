@@ -253,6 +253,7 @@ export function shell(template: Template, chrome: HTMLElement | null, options: M
 
     element.addEventListener('submit', (event) => event.preventDefault());
 
+    element.addEventListener('wconvert:cart-added', () => options.onConvert?.());
     element.addEventListener('click', event => {
       // Dispatch sets target before invoking us; text nodes have no closest().
       if ((event.target as Element).closest?.('a[data-convert]')) options.onConvert?.();

@@ -57,6 +57,8 @@ it('requires a fresh gesture after a basket edit finishes checking', async () =>
   }} />);
   const gesture = screen.getByRole('button', { name: 'Simulate exit intent' });
   expect(gesture).toBeDisabled();
+  expect(screen.getByRole('status')).toHaveTextContent('Checking…');
+  expect(screen.getByRole('status')).not.toHaveTextContent('Would not show');
   await waitFor(() => expect(resolvers).toHaveLength(1));
   const matches = { ...response(true), rules: { 'sample-required-cart': true } };
   await act(async () => resolvers[0](matches));
@@ -65,10 +67,24 @@ it('requires a fresh gesture after a basket edit finishes checking', async () =>
   expect(screen.getByRole('status')).toHaveTextContent('Would show');
   fireEvent.change(screen.getByRole('spinbutton', { name: 'Merchandise amount after discounts' }), { target: { value: '100' } });
   expect(gesture).toBeDisabled();
+  expect(screen.getByRole('status')).toHaveTextContent('Checking…');
   fireEvent.click(gesture);
   await waitFor(() => expect(resolvers).toHaveLength(2));
   await act(async () => resolvers[1](matches));
   expect(screen.getByRole('status')).toHaveTextContent('Would not show');
   fireEvent.click(gesture);
   expect(screen.getByRole('status')).toHaveTextContent('Would show');
+});
+
+it('invalidates the sample when its viewed product changes, independently of the empty basket', async () => {
+  vi.mocked(apiFetch).mockResolvedValue(response(true));
+  const products = { type: 'products' as const, context: 'product' as const, main_product_id: 12, source: 'cross_sells' as const, product_ids: [] };
+  const { result, rerender } = renderHook(({ viewed }) => useBasketPreview(true, { ...emptyBasket(), viewed_product_id: viewed }, [], products), { initialProps: { viewed: 12 } });
+  await waitFor(() => expect(result.current.result?.eligible).toBe(true));
+  expect(vi.mocked(apiFetch).mock.calls[0][0]).toMatchObject({ data: { viewed_product_id: 12, items: [], products: { context: 'product', main_product_id: 12 } } });
+  vi.mocked(apiFetch).mockResolvedValue(response(false));
+  rerender({ viewed: 13 });
+  expect(result.current.result).toBeUndefined();
+  await waitFor(() => expect(result.current.result?.eligible).toBe(false));
+  expect(vi.mocked(apiFetch).mock.lastCall?.[0]).toMatchObject({ data: { viewed_product_id: 13 } });
 });

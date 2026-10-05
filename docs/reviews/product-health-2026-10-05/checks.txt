@@ -1,0 +1,35 @@
+PHP suite
+......                                                        2568 / 2568 (100%)
+
+Time: 00:53.963, Memory: 70.00 MB
+
+OK (2568 tests, 15774 assertions)
+
+JS suite (one timeout)
+
+ Test Files  1 failed | 215 passed (216)
+      Tests  1 failed | 3794 passed (3795)
+   Start at  17:26:58
+   Duration  61.33s (transform 7.42s, setup 13.81s, collect 55.47s, tests 318.81s, environment 93.84s, prepare 11.85s)
+
+
+Timed-out test rerun
+
+ ✓ tests/js/builder-shell.test.tsx (61 tests | 60 skipped) 1094ms
+   ✓ whole-draft Undo and Redo > walks back through destination selections, rules and name, then redoes and saves the same draft  1094ms
+
+ Test Files  1 passed (1)
+      Tests  1 passed | 60 skipped (61)
+   Start at  17:28:28
+   Duration  2.98s (transform 900ms, setup 37ms, collect 1.47s, tests 1.09s, environment 161ms, prepare 51ms)
+
+
+PHPStan
+Note: Using configuration file /Users/navidkashani/Local Sites/wconvert/app/public/wp-content/plugins/wconvert/phpstan.neon.dist.
+
+ [OK] No errors
+
+
+Source contract
+==> verify-source-contract: /Users/navidkashani/Local Sites/wconvert/app/public/wp-content/plugins/wconvert
+  ✓ source contract clean

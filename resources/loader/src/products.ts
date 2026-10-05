@@ -12,11 +12,12 @@ interface StoreProduct {
   prices?: { price?: string; currency_code?: string; currency_minor_unit?: number };
 }
 
-/** Public, same-origin Store API read; only selected IDs leave the visitor page. */
+/** Public same-origin catalog read; only merchant product choices leave the page. */
 export function showProducts(container: HTMLElement, variant: ResultVariant | undefined, onProductClick?: () => void): () => void {
   const ids = [...new Set(variant?.product_ids ?? [])].filter(id => Number.isInteger(id) && id > 0).slice(0, 6);
-  const endpoint = productsEndpoint();
-  if (!ids.length) return () => undefined;
+  const filter = variant?.product_filter;
+  const endpoint = productsEndpoint(!!filter);
+  if (!ids.length && !filter) return () => undefined;
   const controller = new AbortController();
   const status = document.createElement('p');
   status.setAttribute('role', 'status');
@@ -39,9 +40,12 @@ export function showProducts(container: HTMLElement, variant: ResultVariant | un
       if (!endpoint) { unavailable(); return; }
       const url = new URL(endpoint, document.baseURI);
       if (url.origin !== location.origin) throw Error('Different origin');
-      ids.forEach(id => url.searchParams.append('include[]', String(id)));
-      url.searchParams.set('catalog_visibility', 'visible');
-      url.searchParams.set('per_page', String(ids.length));
+      if (filter) url.searchParams.set('filter', JSON.stringify(filter));
+      else {
+        ids.forEach(id => url.searchParams.append('include[]', String(id)));
+        url.searchParams.set('catalog_visibility', 'visible');
+        url.searchParams.set('per_page', String(ids.length));
+      }
       const response = await fetch(url, { credentials: 'same-origin', cache: 'no-store', signal: controller.signal });
       if (!response.ok) throw Error('Product read failed');
       const raw: unknown = await response.json();
@@ -50,7 +54,7 @@ export function showProducts(container: HTMLElement, variant: ResultVariant | un
       for (const item of raw) {
         if (!item || typeof item !== 'object') continue;
         const p = item as StoreProduct;
-        if (!ids.includes(p.id) || typeof p.name !== 'string' || typeof p.permalink !== 'string'
+        if ((!filter && !ids.includes(p.id)) || !Number.isInteger(p.id) || p.id < 1 || typeof p.name !== 'string' || typeof p.permalink !== 'string'
           || !p.permalink.trim() || p.is_purchasable !== true || p.is_in_stock !== true || p.is_password_protected === true) continue;
         // One stale catalog link must not hide other valid recommendations.
         try {
@@ -59,7 +63,7 @@ export function showProducts(container: HTMLElement, variant: ResultVariant | un
         } catch { /* Ignore this product, retaining the result and its fallback. */ }
       }
       if (controller.signal.aborted) return;
-      const eligible = ids.map(id => byId.get(id)).filter((p): p is StoreProduct => !!p).slice(0, 3);
+      const eligible = (filter ? [...byId.values()] : ids.map(id => byId.get(id))).filter((p): p is StoreProduct => !!p).slice(0, 3);
       if (!eligible.length) { unavailable(); return; }
       const list = document.createElement('ul');
       list.className = 'wc-products-list';

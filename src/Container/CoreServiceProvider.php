@@ -126,6 +126,9 @@ final class CoreServiceProvider implements ServiceProvider
      */
     public const REST_CONTROLLERS = [
         \WConvert\Rest\JourneyStatsController::class,
+        \WConvert\Rest\ProductStatsController::class,
+        \WConvert\Rest\ProductMatchesController::class,
+        \WConvert\Rest\ProductHealthController::class,
         OptinController::class,
         TemplateController::class,
         TemplateCatalogController::class,
@@ -484,6 +487,9 @@ final class CoreServiceProvider implements ServiceProvider
             )
         );
 
+        $container->register(\WConvert\Rest\ProductMatchesController::class, static fn () => new \WConvert\Rest\ProductMatchesController());
+        $container->register(\WConvert\Rest\ProductHealthController::class, static fn (ServiceContainer $c) => new \WConvert\Rest\ProductHealthController($c->resolve(OptinRepository::class)));
+        $container->register(\WConvert\Rest\ProductStatsController::class, static fn (ServiceContainer $c) => new \WConvert\Rest\ProductStatsController(new \WConvert\Stats\ProductStats($c->resolve(Connection::class))));
         $container->register(\WConvert\Rest\JourneyStatsController::class, static fn (ServiceContainer $c) => new \WConvert\Rest\JourneyStatsController($c->resolve(Connection::class)));
 
         $container->register(
@@ -709,6 +715,7 @@ final class CoreServiceProvider implements ServiceProvider
 
     public function boot(ServiceContainer $container): void
     {
+        (new \WConvert\Stats\ProductStats($container->resolve(Connection::class)))->hooks();
         add_action(\WConvert\Destination\SubmissionDispatcher::RECOVER, [new \WConvert\Protection\ResourceSendGuard($container->resolve(Connection::class), $container->resolve(\WConvert\Protection\Diagnostics::class)), 'prune']);
         // A plugin updated by overwriting its directory never fires an
         // activation hook, so the schema has to be able to catch up somewhere

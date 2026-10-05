@@ -79,6 +79,12 @@ final class RuleCatalogueTest extends TestCase
         $this->assertSame(['targeting', 'triggers', 'conditions', 'bundles'], array_keys(self::catalogue()));
     }
 
+    public function testBlockRequirementsAreKnownButNotOfferedInTheRulePicker(): void
+    {
+        $this->assertArrayHasKey('requirements', RuleVocabulary::fromManifest(self::PLUGIN_DIR)->axes());
+        $this->assertNotContains('products_ready', array_column(self::catalogue(true)['conditions'], 'type'));
+    }
+
     /**
      * **The targeting picker covers all five prefixes**, plus the two visitor
      * predicates that live on this axis only because the client cannot read

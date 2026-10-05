@@ -1,5 +1,8 @@
 # Goals have publish contracts and stable history
 
+
+**Amended by [ADR 0121](0121-recommendation-additions-count-server-accepted-cart-actions.md):** the separate Increase basket value Goal counts server-accepted quantity-one recommendation additions. Existing product-link and cart-return outcomes retain their meaning. The guarded cart adapter is the sole permitted product mutation; supporting links do not count as additions.
+
 Accepted 2026-09-14 after the pre-release Goal, Playbook and Template UX review.
 
 ## Decision

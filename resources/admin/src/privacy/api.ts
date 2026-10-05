@@ -32,6 +32,7 @@ export interface PrivacyDataMap {
       contains_contact_details: boolean;
     };
   };
+  product_activity_retention_days?: number;
   beacon_rate_limit_seconds: number;
   capture_rate_limit_seconds: number;
   protection_provider?: string;

@@ -1758,6 +1758,18 @@
           "note": "Add the Pro selected-accessories design, with empty store-local selections and one product-click action."
         }
       ]
+    },
+    {
+      "id": "cart-additions",
+      "status": "active",
+      "history": [
+        {
+          "version": 1,
+          "date": "2026-10-05",
+          "revision": "590b4425be3f64b496649d8d9515737e5886e4cf6e6255335dd666809b97d1fe",
+          "note": "Add a separate quantity-one recommendation starting point; reviewed local desktop and 320px campaign-container feedback."
+        }
+      ]
     }
   ]
 }

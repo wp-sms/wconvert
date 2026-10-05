@@ -49,6 +49,7 @@ final class DataMapTest extends TestCase
                 'reopen_session' => null,
                 'cart_recovery' => null,
             ],
+            'product_activity_retention_days' => 90,
             'beacon_rate_limit_seconds' => 60,
             'capture_rate_limit_seconds' => 600,
             'protection_provider' => 'none',

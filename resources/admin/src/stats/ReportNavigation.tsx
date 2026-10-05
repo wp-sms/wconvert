@@ -3,9 +3,9 @@ import { __ } from '@wordpress/i18n';
 import { Button } from '../components/ui/button';
 import './report.css';
 
-type ReportName = 'attention' | 'sales' | 'activity' | 'answers';
+type ReportName = 'attention' | 'sales' | 'products' | 'activity' | 'answers';
 type Target = { label: string; element: HTMLDivElement };
-const ORDER: ReportName[] = ['attention', 'sales', 'activity', 'answers'];
+const ORDER: ReportName[] = ['attention', 'products', 'sales', 'activity', 'answers'];
 const Navigation = createContext<{
   targets: Partial<Record<ReportName, Target>>;
   register: (name: ReportName, target: Target | null) => void;

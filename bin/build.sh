@@ -326,5 +326,10 @@ build_every_tier() {
 case "$TARGET" in
     free) build_one . ;;
     pro)  build_every_tier ;;
-    all)  build_one . && build_every_tier ;;
+    # A function on the left of && ignores errexit throughout its body,
+    # including the artifact gate. Keep these as unconditional commands.
+    all)
+        build_one .
+        build_every_tier
+        ;;
 esac

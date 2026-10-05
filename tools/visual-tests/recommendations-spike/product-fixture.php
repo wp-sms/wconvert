@@ -1,0 +1,185 @@
+<?php
+/** TEST ONLY: mount in the disposable Playground. */
+defined('ABSPATH') || exit;
+add_action('init', static function (): void {
+    // Test the ordinary quiz reader and an actual Store API failure independently.
+    if (($_GET['wconvert_health_mode'] ?? '') === 'links') remove_all_filters('wconvert_check_products');
+    if (($_GET['wconvert_health_mode'] ?? '') === 'read_error') add_filter('rest_pre_dispatch', static function ($response, $server, $request) {
+        return $request->get_route() === '/wc/store/v1/products' ? new WP_Error('fixture_unavailable', 'Catalog unavailable', ['status' => 503]) : $response;
+    }, 10, 3);
+}, 100);
+add_action('template_redirect', static function (): void {
+    if (!isset($_GET['wconvert_recommendations_fixture'])) return;
+    update_option('woocommerce_coming_soon', 'no');
+    $base = get_option('wconvert_commerce_fixture');
+    if (!$base) wp_send_json_error('Initialize commerce fixture first', 400);
+    $container = \WConvert\Bootstrap::container();
+    $repository = $container->get(\WConvert\Optin\OptinRepository::class);
+    $fixture = get_option('wconvert_product_recommendations_fixture');
+    if (!$fixture) {
+        $fixture = ['block_theme' => get_stylesheet(), 'campaigns' => []];
+        foreach (['page', 'page_cross', 'cart_main', 'add'] as $mode) {
+            $template = json_decode(file_get_contents(WCONVERT_PRO_DIR . 'modules/cart-recovery/templates/cart-accessories.json'), true);
+            $node = &$template['tree']['steps'][0]['content']['children'][3];
+            $node['context'] = $mode === 'cart_main' ? 'cart' : 'product';
+            $node['main_product_id'] = $base['products'][0];
+            $node['action'] = $mode === 'add' ? 'add_to_cart' : 'link';
+            $node['source'] = in_array($mode, ['page', 'add'], true) ? 'selected' : 'cross_sells';
+            $node['product_ids'] = $base['products']; // Includes self: the runtime must exclude it.
+            unset($node);
+            $config = ['display_type' => 'inline', 'display_rules' => ['audience' => ['mode' => 'everyone'], 'opening' => ['mode' => 'immediate']], 'template' => $template,
+                'frequency' => ['stopAfterConversion' => false, 'stopAfterDismiss' => false], 'targeting' => ['include' => [['type' => 'singular', 'value' => 'product']]]];
+            if ($mode === 'page') $config['inline_placement'] = ['position' => 'after_product_summary'];
+            $campaign = $repository->create('Product accessories ' . $mode, $mode === 'add' ? 'increase_basket_value' : 'promote_offer', $config);
+            if (!$repository->publish($campaign->id)) wp_die('Product fixture publication failed');
+            $fixture['campaigns'][$mode] = $campaign->id;
+        }
+        $post = wp_insert_post(['post_type' => 'wp_template', 'post_status' => 'publish', 'post_name' => 'single-product', 'post_title' => 'Recommendation block fixture',
+            'post_content' => '<!-- wp:group {"layout":{"type":"constrained"}} --><div class="wp-block-group"><!-- wp:post-title {"level":1} /--><!-- wp:paragraph --><p>Manual campaign block in a real product template.</p><!-- /wp:paragraph --><!-- wp:wconvert/inline-optin {"optinId":"' . $fixture['campaigns']['page'] . '"} /--></div><!-- /wp:group -->']);
+        wp_set_object_terms($post, $fixture['block_theme'], 'wp_theme');
+        update_option('wconvert_product_recommendations_fixture', $fixture);
+    }
+    if (isset($_GET['options_required'])) update_option('wconvert_test_options_required', $_GET['options_required'] === '1');
+    if (isset($_GET['add_published'])) { if ($_GET['add_published'] === '0') $repository->unpublish($fixture['campaigns']['add']); else $repository->publish($fixture['campaigns']['add']); }
+    global $wpdb;
+    if (isset($_GET['product_retention_check'])) {
+        $testId = '01JQ0000000000000000000099';
+        $stats = $container->get(\WConvert\Stats\StatsRepository::class);
+        foreach ([[\WConvert\Stats\StatKind::ProductShown, 'product:999'], [\WConvert\Stats\StatKind::ProductClick, 'product:999'], [\WConvert\Stats\StatKind::CartAddition, 'product:999'], [\WConvert\Stats\StatKind::CartAddition, ''], [\WConvert\Stats\StatKind::ScreenShown, 'screen:test']] as [$kind, $scope]) $stats->increment($testId, $kind, '2000-01-01', $scope);
+        (new \WConvert\Stats\ProductStats($container->get(\WConvert\Database\Connection::class)))->prune();
+        $remaining = $wpdb->get_results($wpdb->prepare("SELECT kind, scope FROM {$wpdb->prefix}wconvert_stats WHERE optin_id = %s ORDER BY kind", $testId), ARRAY_A);
+        $wpdb->delete($wpdb->prefix . 'wconvert_stats', ['optin_id' => $testId]);
+        wp_send_json(['retention_check' => array_map(static fn ($row) => $row['kind'] . ':' . $row['scope'], $remaining)]);
+    }
+    $counts = $wpdb->get_results($wpdb->prepare("SELECT kind, SUM(count) AS total FROM {$wpdb->prefix}wconvert_stats WHERE optin_id = %s AND scope = '' GROUP BY kind", $fixture['campaigns']['add']), ARRAY_A);
+    if (isset($_GET['login'])) { wp_set_current_user(1); wp_set_auth_cookie(1); }
+    if (isset($_GET['theme'])) switch_theme($_GET['theme'] === 'classic' ? 'recommendations-classic' : $fixture['block_theme']);
+    if (isset($_GET['addition_demo'])) {
+        $add = $repository->find($fixture['campaigns']['add']);
+        $config = $add->config;
+        $config['inline_placement'] = ['position' => 'after_product_summary'];
+        $repository->saveDraft($add->id, null, null, $config);
+        $repository->publish($add->id);
+        $repository->unpublish($fixture['campaigns']['page']);
+        $templates = get_posts(['post_type' => 'wp_template', 'name' => 'single-product', 'posts_per_page' => 1]);
+        if ($templates) wp_update_post(['ID' => $templates[0]->ID, 'post_content' => '<!-- wp:group {"layout":{"type":"constrained"}} --><div class="wp-block-group"><!-- wp:woocommerce/mini-cart /--><!-- wp:post-title {"level":1} /--><!-- wp:paragraph --><p>Direct additions in a real block product template.</p><!-- /wp:paragraph --><!-- wp:wconvert/inline-optin {"optinId":"' . $add->id . '"} /--></div><!-- /wp:group -->']);
+        update_option('wconvert_rc_addition_demo', true);
+    }
+    $revisions = [];
+    foreach ($container->get(\WConvert\Optin\PublishedSet::class)->all() as $entry) $revisions[$entry['id']] = \WConvert\Pro\Module\CartRecovery\CommerceContext::revision($entry['payload']);
+    $id = $base['products'][0];
+    wp_send_json($fixture + ['runtime' => ['wordpress' => get_bloginfo('version'), 'php' => PHP_VERSION, 'woocommerce' => WC_VERSION], 'products' => $base['products'], 'variable' => $base['variable'], 'sold_out' => $base['sold_out'], 'draft' => $base['draft_accessory'], 'private' => $base['private_accessory'],
+        'counts' => array_column($counts, 'total', 'kind'), 'cart_items' => array_values(array_map(static fn (array $item): array => ['id' => $item['product_id'], 'quantity' => $item['quantity']], WC()->cart->get_cart())), 'revisions' => $revisions, 'product_url' => get_permalink($id), 'other_url' => get_permalink($base['products'][1]), 'nonce' => current_user_can('manage_options') ? wp_create_nonce('wp_rest') : '',
+        'main_token' => $id . ':' . wp_hash('wconvert-product:' . $id),
+        'private_token' => $base['private_accessory'] . ':' . wp_hash('wconvert-product:' . $base['private_accessory']),
+        'themes' => array_keys(wp_get_themes())]);
+}, 25);
+
+add_action('init', static function (): void { if (get_option('wconvert_test_options_required')) add_filter('woocommerce_add_to_cart_validation', '__return_false'); });
+add_action('wp_footer', static function (): void {
+    if (!get_option('wconvert_rc_addition_demo') || !is_singular('product') || wp_is_block_theme()) return;
+    wp_enqueue_script('wc-cart-fragments');
+    echo '<aside class="widget_shopping_cart" style="padding:24px"><h2>Classic mini-cart</h2><div class="widget_shopping_cart_content">';
+    woocommerce_mini_cart();
+    echo '</div></aside>';
+}, 5);
+
+// Separate products: the result-filter checks never mutate the accessories fixtures.
+add_action('template_redirect', static function (): void {
+    if (!isset($_GET['wconvert_result_filter_fixture'])) return;
+    $f = get_option('wconvert_result_filter_fixture');
+    if (!$f) {
+        $cat = wp_insert_term('Result filter mugs', 'product_cat');
+        $child = wp_insert_term('Result filter travel mugs', 'product_cat', ['parent' => (int) $cat['term_id']]);
+        foreach (['finish', 'size'] as $name) {
+            $attribute = wc_create_attribute(['name' => ucfirst($name), 'slug' => 'wcf_' . $name, 'type' => 'select']);
+            register_taxonomy('pa_wcf_' . $name, ['product'], ['public' => false, 'label' => ucfirst($name)]);
+            $f['attributes'][$name] = $attribute;
+        }
+        foreach (['blue', 'red'] as $name) $f['terms'][$name] = (int) wp_insert_term($name, 'pa_wcf_finish')['term_id'];
+        foreach (['small', 'large'] as $name) $f['terms'][$name] = (int) wp_insert_term($name, 'pa_wcf_size')['term_id'];
+        $f['category'] = (int) $cat['term_id'];
+        $f['child'] = (int) $child['term_id'];
+        foreach (['blue-small', 'red-small', 'blue-large', 'sold-out', 'hidden', 'private', 'draft', 'password', 'no-price'] as $name) {
+            $product = new WC_Product_Simple();
+            $product->set_name('Filter test ' . $name);
+            $product->set_status(in_array($name, ['private', 'draft'], true) ? $name : 'publish');
+            if ($name !== 'no-price') $product->set_regular_price('15');
+            $product->set_category_ids([$name === 'blue-large' ? $f['child'] : $f['category']]);
+            $product->set_stock_status($name === 'sold-out' ? 'outofstock' : 'instock');
+            if ($name === 'hidden') $product->set_catalog_visibility('hidden');
+            $attributes = [];
+            foreach (['finish' => $name === 'red-small' ? 'red' : 'blue', 'size' => $name === 'blue-large' ? 'large' : 'small'] as $taxonomy => $term) {
+                $a = new WC_Product_Attribute(); $a->set_id($f['attributes'][$taxonomy]); $a->set_name('pa_wcf_' . $taxonomy); $a->set_options([$f['terms'][$term]]); $a->set_visible(true); $attributes[] = $a;
+            }
+            $product->set_attributes($attributes);
+            $id = $product->save();
+            if ($name === 'password') wp_update_post(['ID' => $id, 'post_password' => 'test-only']);
+            $f['products'][$name] = $id;
+        }
+        update_option('wconvert_result_filter_fixture', $f);
+    }
+    if (isset($_GET['delete_red'])) wp_delete_term($f['terms']['red'], 'pa_wcf_finish');
+    wp_send_json($f);
+}, 25);
+
+// Quiz actions use the same real catalog with an empty basket and independent statistics.
+add_action('template_redirect', static function (): void {
+    if (!isset($_GET['wconvert_quiz_fixture'])) return;
+    $base = get_option('wconvert_commerce_fixture');
+    $filters = get_option('wconvert_result_filter_fixture');
+    $container = \WConvert\Bootstrap::container(); $repository = $container->get(\WConvert\Optin\OptinRepository::class);
+    $fixture = get_option('wconvert_quiz_fixture');
+    if (!$fixture) {
+        $template = json_decode(file_get_contents(WCONVERT_PRO_DIR . 'modules/journeys/templates/journey-product-finder.json'), true);
+        foreach ($template['tree']['steps'] as &$screen) if ($screen['kind'] === 'result') {
+            $screen['products_required'] = false;
+            foreach ($screen['results'] as $index => &$result) {
+                $result['href'] = '/shop/'; $result['link_label'] = 'Browse shop';
+                $result['product_ids'] = [$base['products'][1], $base['products'][2], $base['variable']];
+                $result['product_action'] = 'add_to_cart';
+                if ($index === 1) $result['product_filter'] = ['category_id' => $filters['category'], 'attributes' => [['taxonomy' => 'pa_wcf_finish', 'term_id' => $filters['terms']['blue']]]];
+                $fixture['results'][] = ['screen' => $screen['id'], 'result' => $result['id']];
+            }
+            unset($result);
+        }
+        unset($screen);
+        $campaign = $repository->create('Quiz cart test', 'find_match', ['display_type' => 'inline', 'display_rules' => ['audience' => ['mode' => 'everyone'], 'opening' => ['mode' => 'immediate']], 'template' => $template, 'frequency' => ['stopAfterConversion' => false, 'stopAfterDismiss' => false, 'maxPerSession' => 1000]]);
+        if (!$repository->publish($campaign->id)) wp_die('Quiz fixture publication failed');
+        $fixture['id'] = $campaign->id;
+        $fixture['page'] = wp_insert_post(['post_type' => 'page', 'post_status' => 'publish', 'post_title' => 'Quiz cart test', 'post_content' => '<!-- wp:wconvert/inline-optin {"optinId":"' . $campaign->id . '"} /-->']);
+        update_option('wconvert_quiz_fixture', $fixture);
+    }
+    if (isset($_GET['stock'])) { $product = wc_get_product($base['products'][1]); $product->set_stock_status($_GET['stock'] === 'out' ? 'outofstock' : 'instock'); $product->save(); }
+    if (isset($_GET['published'])) { if ($_GET['published'] === '0') $repository->unpublish($fixture['id']); else $repository->publish($fixture['id']); }
+    $payload = null;
+    foreach ($container->get(\WConvert\Optin\PublishedSet::class)->all() as $entry) if ($entry['id'] === $fixture['id']) $payload = $entry['payload'];
+    global $wpdb;
+    wp_send_json($fixture + ['revision' => $payload ? \WConvert\Pro\Module\CartRecovery\CommerceContext::revision($payload) : '',
+        'counts' => $wpdb->get_results($wpdb->prepare("SELECT kind, scope, SUM(count) AS total FROM {$wpdb->prefix}wconvert_stats WHERE optin_id = %s GROUP BY kind, scope ORDER BY kind, scope", $fixture['id']), ARRAY_A),
+        'report_available' => apply_filters('wconvert_product_activity_campaign', false, $fixture['id']),
+        'cart_items' => array_values(array_map(static fn ($item) => ['id' => $item['product_id'], 'quantity' => $item['quantity']], WC()->cart->get_cart())), 'url' => get_permalink($fixture['page'])]);
+}, 25);
+
+// A separate category exceeds the candidate window to prove query-side curation.
+add_action('template_redirect', static function (): void {
+    if (!isset($_GET['wconvert_curation_fixture'])) return;
+    $f = get_option('wconvert_curation_fixture');
+    if (!$f) {
+        $f = ['category' => (int) wp_insert_term('Curation test', 'product_cat')['term_id'], 'products' => []];
+        for ($index = 0; $index < 18; $index++) {
+            $product = new WC_Product_Simple();
+            $product->set_name('Curation item ' . $index); $product->set_status('publish');
+            $product->set_category_ids([$f['category']]);
+            $product->set_regular_price((string) (100 - $index));
+            $product->set_date_created('2025-01-' . str_pad((string) ($index + 1), 2, '0', STR_PAD_LEFT) . ' 12:00:00');
+            $f['products'][] = $product->save();
+        }
+        update_option('wconvert_curation_fixture', $f);
+    }
+    if (isset($_GET['stock'])) {
+        $product = wc_get_product($f['products'][17]);
+        $product->set_stock_status($_GET['stock'] === 'out' ? 'outofstock' : 'instock'); $product->save();
+    }
+    wp_send_json($f);
+}, 25);

@@ -100,6 +100,7 @@ export interface Frequency {
  * publish time (ADR 0005).
  */
 export interface PayloadEntry {
+  readonly server_conversion?: boolean;
   readonly capture_contract?: string;
   readonly id: string;
   readonly display_type?: string;

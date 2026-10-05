@@ -3,6 +3,7 @@ import { DeliveryAttention } from './DeliveryAttention';
 import { CommerceReport } from './extensions';
 import { Interests } from './Interests';
 import { Insights } from './Insights';
+import { ProductActivityReport } from './ProductActivityReport';
 import { JourneyReport } from './JourneyReport';
 import { useEffect, useState } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
@@ -437,6 +438,7 @@ function DashboardContent({
         </Region>
       ) : null}
       {payload && !overview && <Insights items={insights} query={accepted} />}
+      {payload && optin && !selection.experiment && <ProductActivityReport id={optin.id} period={payload} />}
       {payload && (overview || (optin && !selection.experiment)) && <CommerceReport period={payload} campaignNames={Object.fromEntries(payload.goals.flatMap(goal => goal.optins.map(campaign => [campaign.id, campaign.name])))} optinId={overview ? undefined : optin?.id} />}
       {payload && optin && !selection.experiment && <><JourneyReport id={optin.id} period={payload} /><Interests id={optin.id} period={payload} /></>}
       {payload && overview && payload.goals.length > 0 && <MonthlyTargets report={targets} />}

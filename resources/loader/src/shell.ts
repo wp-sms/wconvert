@@ -222,7 +222,7 @@ export function start(options: ShellOptions): () => void {
             record((current) => scopesOf(entry.id).reduce(withConversion, current));
             run();
           },
-        }, (entry.template?.tree.submissions.length ?? 0) > 0 && !isResultFirst(entry.template?.tree)));
+        }, entry.server_conversion === true || (entry.template?.tree.submissions.length ?? 0) > 0 && !isResultFirst(entry.template?.tree)));
         if (accepted === false) { failed = true; if (activeOverlay === entry.id) activeOverlay = undefined; }
         else overlayDone = overlayDone || isOverlay(entry);
       }

@@ -7,6 +7,18 @@ export interface CampaignPreview {
   display_type: string;
 }
 
+export interface ProductHealth {
+  id: string;
+  basis: 'published' | 'draft';
+  checks: { label: string; state: 'ok' | 'warning' | 'unknown' | 'context'; message: string }[];
+}
+
+export const readProductHealth = (ids: string[], signal?: AbortSignal) => {
+  const query = new URLSearchParams();
+  for (const id of ids) query.append('ids[]', id);
+  return apiFetch<ProductHealth[]>({ path: `/wconvert/v1/optins/product-health?${query}`, signal });
+};
+
 /** Only visible designs are fetched; the list response remains small. */
 export const readCampaignPreviews = (ids: string[]) => {
   const query = new URLSearchParams();

@@ -29,7 +29,7 @@ final class JourneyStatsController implements RestController
         try { $range = ReportWindow::read($request); }
         catch (\InvalidArgumentException) { return new \WP_Error('wconvert_report_range', __('Choose a current or earlier month.', 'wconvert'), ['status' => 400]); }
         $rows = $range->days() === 0 ? [] : $this->db->results(Connection::TABLE_STATS,
-            'SELECT scope, kind, SUM(`count`) AS total FROM %i WHERE optin_id = %s AND stat_date BETWEEN %s AND %s AND scope <> %s GROUP BY scope, kind ORDER BY scope, kind LIMIT 5001', $id, $range->from, $range->to, '');
+            'SELECT scope, kind, SUM(`count`) AS total FROM %i WHERE optin_id = %s AND stat_date BETWEEN %s AND %s AND (scope LIKE %s OR scope LIKE %s) GROUP BY scope, kind ORDER BY scope, kind LIMIT 5001', $id, $range->from, $range->to, 'screen:%', 'channel:%');
         $truncated = count($rows) > 5000;
         $rows = array_slice($rows, 0, 5000);
         $definitions = [];

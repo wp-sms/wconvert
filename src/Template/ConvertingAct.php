@@ -43,6 +43,9 @@ enum ConvertingAct: string
     /** Showing the selected result after completing the active questions. */
     case Match = 'match';
 
+    /** A server-confirmed WooCommerce addition; supporting product links do not convert. */
+    case AddToCart = 'add_to_cart';
+
     /**
      * The `action` a `button` carries to produce this act.
      *
@@ -57,7 +60,7 @@ enum ConvertingAct: string
      */
     public function action(): string
     {
-        return match ($this) { self::Submit => 'submit', self::Click => 'link', self::Match => 'next' };
+        return match ($this) { self::Submit => 'submit', self::Click => 'link', self::Match => 'next', self::AddToCart => 'add_to_cart' };
     }
 
     /**
@@ -100,7 +103,7 @@ enum ConvertingAct: string
             return;
         }
 
-        if (($node['type'] ?? null) === 'products') $found[] = self::Click;
+        if (($node['type'] ?? null) === 'products') $found[] = ($node['action'] ?? 'link') === 'add_to_cart' ? self::AddToCart : self::Click;
         if (($node['type'] ?? null) === 'button' && in_array($node['action'] ?? null, ['submit', 'link'], true)) {
             $act = ($node['action'] ?? null) === self::Click->action() ? self::Click : self::Submit;
 

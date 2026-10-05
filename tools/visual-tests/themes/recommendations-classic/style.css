@@ -1,0 +1,6 @@
+/*
+Theme Name: Recommendations classic fixture
+Description: Disposable integration theme. Never install on a merchant site.
+Version: 1.0
+*/
+body{font:16px/1.5 system-ui;margin:0;background:#faf9f5;color:#283328}main{max-width:900px;margin:40px auto;padding:24px}a{color:#126b5c}.product .summary{margin-bottom:24px}.product img{max-width:220px;height:auto}button,.button{padding:10px}

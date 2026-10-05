@@ -1,0 +1,51 @@
+// HTTP-only checks on the disposable Playground; never target a saved store.
+import assert from 'node:assert/strict';
+import { randomUUID } from 'node:crypto';
+import { request } from '@playwright/test';
+const baseURL = 'http://127.0.0.1:9445';
+const client = await request.newContext({ baseURL });
+let checks = 0;
+const pass = text => { checks++; console.log(`PASS ${text}`); };
+try {
+  await client.get('/?wconvert_commerce_fixture=1&basket=&json=1&login=1');
+  const f = await (await client.get('/?wconvert_recommendations_fixture=1&options_required=0&add_published=1')).json();
+  const id = f.campaigns.add, revision = f.revisions[id];
+  const report = async () => {
+    const response = await client.get(`/?rest_route=/wconvert/v1/optins/${id}/product-stats&days=30`, { headers: { 'X-WP-Nonce': f.nonce } });
+    assert.equal(response.status(), 200); return response.json();
+  };
+  const context = await (await client.post('/?wc-ajax=wconvert_cart_context', { form: { campaigns: JSON.stringify({ [id]: revision }), page_product: f.main_token } })).json();
+  const card = context[id].cards[0]; assert.ok(card.activity_token);
+  const before = await report();
+  const counts = (r, product = card.id) => r.rows.find(row => row.id === product) ?? { shown: 0, clicked: 0, added: 0 };
+  const baseline = counts(before);
+  const send = (patch = {}, origin = baseURL) => client.post('/?wc-ajax=wconvert_product_activity', { headers: { Origin: origin }, form: { id, product: String(card.id), kind: 'product_shown', token: card.activity_token, ...patch } });
+  assert.equal((await send()).status(), 204);
+  assert.equal((await send({ kind: 'product_click' })).status(), 204);
+  let r = await report(); assert.equal(counts(r).shown, baseline.shown + 1); assert.equal(counts(r).clicked, baseline.clicked + 1);
+  assert.equal(r.since, r.to); pass('served card observations appear under the right product and reporting start date');
+  for (const patch of [{ token: 'forged' }, { product: String(f.private) }, { id: f.campaigns.page }, { kind: 'cart_addition' }, { kind: 'conversion' }]) await send(patch);
+  assert.equal((await send({}, 'https://unrelated.example')).status(), 403);
+  assert.equal((await send({ token: 'x'.repeat(1500) })).status(), 413);
+  assert.equal((await send({ product: '-1' })).status(), 204);
+  await client.post('/?rest_route=/wconvert/v1/beacon', { data: { events: [{ optin_id: id, kind: 'product_shown', scope: `product:${card.id}` }, { optin_id: id, kind: 'product_click', scope: `product:${card.id}` }] } });
+  assert.deepEqual((await report()).rows, r.rows); pass('forged, foreign, oversized and server-only claims cannot change product counts');
+  const stranger = await request.newContext({ baseURL });
+  assert.equal((await stranger.get(`/?rest_route=/wconvert/v1/optins/${id}/product-stats`)).status(), 401); await stranger.dispose();
+  pass('product reports require administrator permission');
+  const begin = await client.post('/?wc-ajax=wconvert_cart_begin', { headers: { Origin: baseURL }, form: { id, revision, mount: randomUUID() } });
+  const { token } = await begin.json();
+  const form = { id, revision, token, operation: randomUUID(), product: String(card.id), price_key: card.price_key, page_product: f.main_token };
+  const add = () => client.post('/?wc-ajax=wconvert_cart_add', { headers: { Origin: baseURL }, form });
+  assert.equal((await (await add()).json()).state, 'added'); assert.equal((await (await add()).json()).state, 'added');
+  r = await report(); assert.equal(counts(r).added, baseline.added + 1); pass('server acceptance counts one product addition even when the operation is replayed');
+  const journey = await (await client.get(`/?rest_route=/wconvert/v1/optins/${id}/journey-stats`, { headers: { 'X-WP-Nonce': f.nonce } })).json();
+  assert.ok(journey.rows.every(row => !row.scope.startsWith('product:'))); pass('product dimensions stay out of journey totals');
+  await client.get('/?wconvert_recommendations_fixture=1&add_published=0'); await send();
+  assert.deepEqual((await report()).rows, r.rows); pass('paused campaigns reject observations but keep inspectable history');
+  await client.get('/?wconvert_recommendations_fixture=1&add_published=1');
+  const retained = await (await client.get('/?wconvert_recommendations_fixture=1&product_retention_check=1')).json();
+  assert.deepEqual(retained.retention_check, ['cart_addition:', 'screen_shown:screen:test']);
+  pass('scheduled retention deletes old product dimensions while preserving campaign and screen counts');
+  console.log(`${checks} product activity integration checks passed`);
+} finally { await client.dispose(); }

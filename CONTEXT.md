@@ -799,6 +799,13 @@ a stateless sample-basket preview in the existing Sample Visit dialog. The previ
 uses live catalog facts and shared cart predicates without a real cart mutation
 or analytics event. See [ADR 0118](docs/adr/0118-sample-baskets-share-live-commerce-evaluation.md).
 
+Recommendations can now explicitly use the viewed main product or a basket
+containing it. Product-page context allows a known empty basket; legacy blocks
+retain their nonempty-basket behavior. The sample visit distinguishes viewed
+product from basket contents. Classic WooCommerce product pages offer an explicit
+after-summary placement; block themes use a manual campaign block. Cards still
+count product-link clicks. See [ADR 0120](docs/adr/0120-recommendations-distinguish-product-pages-from-baskets.md).
+
 
 > **The distinction is load-bearing and fixed per rule.** A rule type is a
 > Trigger or a Condition, never both — `scroll_depth` means "when they reach
@@ -873,8 +880,15 @@ earlier choice answers. It still moves forward in one ordered list: there are
 no arbitrary jumps or loops. Its one Results screen selects the first matching
 variant, then a fallback. Results may precede an optional signup, so a visitor
 can finish without giving contact details. Product cards use the live public
-WooCommerce catalog for merchant-selected IDs; unavailable products fall back
-to the result's own link.
+WooCommerce catalog for merchant-selected IDs or a category with up to three
+explicit global attribute values (all must match). Filters choose cards after
+the existing answer rules choose the result. Missing references fail closed;
+unavailable products fall back to the result's own link. Filtered results remain
+in every paid journeys tier ([ADR 0123](docs/adr/0123-quiz-results-select-products-by-category-and-attributes.md)).
+With the commerce module active, results can offer protected quantity-one cart
+buttons for supported simple products; products needing options keep links.
+Product activity spans the quiz mount, and accepted additions never create a
+second quiz Conversion ([ADR 0124](docs/adr/0124-quiz-products-share-protected-cart-actions.md)).
 
 ### Template
 
@@ -1577,6 +1591,11 @@ no separate list of premium capabilities to keep in step.
 
 ### Suspended
 
+Product warnings in Campaigns are separate, advisory catalog checks. They read
+the published version (or saved draft) without changing Campaign state; missing
+products, incomplete reads and visitor-basket dependencies stay distinct. See
+[ADR 0125](docs/adr/0125-product-warnings-are-current-catalog-advice.md).
+
 An [[Optin]] that exists and is published but is **not shown**, because a rule it
 depends on is no longer available on this install — [[Pro]] was deactivated, or
 WooCommerce was.
@@ -1656,3 +1675,24 @@ identity or outbound delivery queue crosses this boundary. Consent is checked pe
 observation. Public campaign labels and opt-out preferences follow published family
 settings. GA4 and Plausible consume the same semantic observation seam; templates
 need no provider-specific selectors. See [ADR 0114](docs/adr/0114-analytics-exports-use-existing-site-tags.md).
+
+## Recommendation additions
+
+[ADR 0121](docs/adr/0121-recommendation-additions-count-server-accepted-cart-actions.md)
+adds **Increase basket value** as a commerce Goal. **Basket additions** means
+campaign appearances with at least one server-accepted quantity-one addition;
+**Items added to basket** counts each accepted operation. Product links and purchases
+are separate acts. Existing link campaigns retain their history. This is the only
+shopper-triggered cart-product write; no orders, coupons, Leads or contacts are
+created. Thirty-minute session-bound claims use existing WP options, with cron
+cleanup, and aggregate activity uses the existing Stats table.
+
+## Product activity
+
+[ADR 0122](docs/adr/0122-product-activity-uses-retained-anonymous-dimensions.md)
+adds **Shown**, **Clicked**, and **Added** by recommended product inside campaign
+reports. Views and product links count once per product per mount; additions use
+server acceptance and existing replay protection. Anonymous product dimensions
+use the existing Stats scope and retain 90 days; campaign totals retain their
+history. Tracking start and partial coverage are explicit. Current product names
+are not historical snapshots, and product activity is not product-level sales.

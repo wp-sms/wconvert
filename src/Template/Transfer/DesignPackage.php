@@ -57,12 +57,21 @@ final class DesignPackage
         foreach ($design['tree']['steps'] ?? [] as $i => $step) foreach ($step['results'] ?? [] as $j => $result) {
             if (($result['product_ids'] ?? []) !== []) $notes[] = __('Choose products on the receiving site.', 'wconvert');
             $design['tree']['steps'][$i]['results'][$j]['product_ids'] = [];
+            if (isset($result['product_filter'])) {
+                $design['tree']['steps'][$i]['results'][$j]['product_filter'] = \WConvert\Template\ResultProductSource::portable($result['product_filter']);
+                $notes[] = __('Choose the category and attribute values on the receiving site.', 'wconvert');
+                if (!empty($result['product_filter']['pinned_ids']) || !empty($result['product_filter']['excluded_ids'])) $notes[] = __('Choose pinned and excluded products again on the receiving site.', 'wconvert');
+            }
         }
         $wrapped = \WConvert\Template\TemplateTree::rewrittenIn(['template' => $design], static function (array $node) use (&$notes): array {
             if (($node['type'] ?? '') === 'products') {
                 if (($node['source'] ?? 'selected') === 'cross_sells') $notes[] = __('Recommendations use cross-sells configured in WooCommerce on the receiving site.', 'wconvert');
                 if (!empty($node['product_ids'])) $notes[] = __('Choose products on the receiving site.', 'wconvert');
                 $node['product_ids'] = [];
+                if (array_key_exists('main_product_id', $node)) {
+                    $node['main_product_id'] = 0;
+                    $notes[] = __('Choose the main product on the receiving site.', 'wconvert');
+                }
                 unset($node['context_key']);
             }
             return $node;

@@ -255,7 +255,8 @@
   --text-meta--font-weight: 600;
 
   /*
-   * 11 — the label register: a block's kind, a token's name, a check's word.
+   * 11 — the caption register: a block's kind or a token's name.
+   * Checkbox and radio option text uses the 14px body register.
    *
    * **The one the block tree was missing entirely.** `.wconvert-block__kind`
    * stated no size at all, so a row's name inherited 14px body — the same size
@@ -653,7 +654,7 @@ body:has(#wconvert-admin) #wpbody-content {
  * The `#wconvert-admin` prefix is for specificity against wp-admin's own
  * id-scoped table rules, which load after ours.
  */
-#wconvert-admin .wconvert-table {
+:is(#wconvert-admin, .wconvert-optin-details) .wconvert-table {
   inline-size: 100%;
   border-collapse: collapse;
 }
@@ -667,7 +668,7 @@ body:has(#wconvert-admin) #wpbody-content {
  * have rescued it. A header on two lines costs a few pixels of height; a header
  * that cannot break costs the merchant the whole screen.
  */
-#wconvert-admin .wconvert-table > thead > tr > th {
+:is(#wconvert-admin, .wconvert-optin-details) .wconvert-table > thead > tr > th {
   /*
    * **1rem of inline padding, matching the header, toolbar and footer strips
    * of the same card.** It was 0.75rem, which put a 4px stagger down the left
@@ -691,11 +692,11 @@ body:has(#wconvert-admin) #wpbody-content {
   text-transform: uppercase;
 }
 
-#wconvert-admin .wconvert-table > tbody > tr {
+:is(#wconvert-admin, .wconvert-optin-details) .wconvert-table > tbody > tr {
   border-block-end: 1px solid var(--border);
 }
 
-#wconvert-admin .wconvert-table > tbody > tr:last-child {
+:is(#wconvert-admin, .wconvert-optin-details) .wconvert-table > tbody > tr:last-child {
   border-block-end: 0;
 }
 
@@ -716,7 +717,7 @@ body:has(#wconvert-admin) #wpbody-content {
  * cell's `min-content` width, so a grid track sized from content shrinks to
  * fit it instead of being sized by the unbreakable string and then clipping.
  */
-#wconvert-admin .wconvert-table > tbody > tr > td {
+:is(#wconvert-admin, .wconvert-optin-details) .wconvert-table > tbody > tr > td {
   padding: 0.6875rem 1rem;
   font-size: inherit;
   text-align: start;
@@ -729,7 +730,7 @@ body:has(#wconvert-admin) #wpbody-content {
  * counts is read by comparing lengths, and proportional digits make 11 and 44
  * different widths.
  */
-#wconvert-admin .wconvert-table :is(th, td).is-numeric {
+:is(#wconvert-admin, .wconvert-optin-details) .wconvert-table :is(th, td).is-numeric {
   font-variant-numeric: tabular-nums;
   text-align: end;
 }
@@ -751,7 +752,7 @@ body:has(#wconvert-admin) #wpbody-content {
  * card — and a Tailwind `justify-end` is an `!important` declaration no media
  * query can take back.
  */
-#wconvert-admin .wconvert-table :is(th, td).wconvert-table__actions {
+:is(#wconvert-admin, .wconvert-optin-details) .wconvert-table :is(th, td).wconvert-table__actions {
   inline-size: 1%;
   text-align: end;
   white-space: nowrap;
@@ -786,7 +787,7 @@ body:has(#wconvert-admin) #wpbody-content {
   color: var(--muted-foreground);
 }
 
-#wconvert-admin .wconvert-table .wconvert-table__actions-row {
+:is(#wconvert-admin, .wconvert-optin-details) .wconvert-table .wconvert-table__actions-row {
   display: flex;
   inline-size: max-content;
   min-inline-size: 100%;
@@ -957,14 +958,14 @@ body:has(#wconvert-admin) #wpbody-content {
 
 /* Six-column reading tables need card rows before their actions are clipped. */
 @media (max-width: 900px) {
-  #wconvert-admin .wconvert-table,
-  #wconvert-admin .wconvert-table > tbody,
-  #wconvert-admin .wconvert-table > tbody > tr,
-  #wconvert-admin .wconvert-table > tbody > tr > td {
+  :is(#wconvert-admin, .wconvert-optin-details) .wconvert-table,
+  :is(#wconvert-admin, .wconvert-optin-details) .wconvert-table > tbody,
+  :is(#wconvert-admin, .wconvert-optin-details) .wconvert-table > tbody > tr,
+  :is(#wconvert-admin, .wconvert-optin-details) .wconvert-table > tbody > tr > td {
     display: block;
   }
 
-  #wconvert-admin .wconvert-table > thead {
+  :is(#wconvert-admin, .wconvert-optin-details) .wconvert-table > thead {
     position: absolute;
     inline-size: 1px;
     block-size: 1px;
@@ -973,14 +974,14 @@ body:has(#wconvert-admin) #wpbody-content {
     white-space: nowrap;
   }
 
-  #wconvert-admin .wconvert-table > tbody > tr {
+  :is(#wconvert-admin, .wconvert-optin-details) .wconvert-table > tbody > tr {
     margin-block-end: 0.75rem;
     padding: 0.75rem 0.875rem;
     border: 1px solid var(--border);
     border-radius: var(--radius);
   }
 
-  #wconvert-admin .wconvert-table > tbody > tr:last-child {
+  :is(#wconvert-admin, .wconvert-optin-details) .wconvert-table > tbody > tr:last-child {
     margin-block-end: 0;
   }
 
@@ -990,7 +991,7 @@ body:has(#wconvert-admin) #wpbody-content {
    * capped so a long translated column name cannot push the value off the
    * card.
    */
-  #wconvert-admin .wconvert-table > tbody > tr > td {
+  :is(#wconvert-admin, .wconvert-optin-details) .wconvert-table > tbody > tr > td {
     display: grid;
     grid-template-columns: minmax(0, 8rem) minmax(0, 1fr);
     gap: 0.25rem 0.75rem;
@@ -1004,7 +1005,7 @@ body:has(#wconvert-admin) #wpbody-content {
    * VALUE is still right-aligned so a column of figures lines up. Without this
    * the two moved together and "SUBMISSIONS" sat hard against its own number.
    */
-  #wconvert-admin .wconvert-table > tbody > tr > td::before {
+  :is(#wconvert-admin, .wconvert-optin-details) .wconvert-table > tbody > tr > td::before {
     content: attr(data-label);
     color: var(--muted-foreground);
     font-size: var(--text-micro);
@@ -1020,7 +1021,7 @@ body:has(#wconvert-admin) #wpbody-content {
    * nothing — which is what "OVER TIME" with no series under it was, on every
    * row of a fresh install.
    */
-  #wconvert-admin .wconvert-table > tbody > tr > td:empty {
+  :is(#wconvert-admin, .wconvert-optin-details) .wconvert-table > tbody > tr > td:empty {
     display: none;
   }
 
@@ -1039,7 +1040,7 @@ body:has(#wconvert-admin) #wpbody-content {
    * leading edge rather than wrapping them. Restoring the initial values is
    * what makes `display: block` above mean the full card width it says.
    */
-  #wconvert-admin .wconvert-table > tbody > tr > td.wconvert-table__actions {
+  :is(#wconvert-admin, .wconvert-optin-details) .wconvert-table > tbody > tr > td.wconvert-table__actions {
     display: block;
     margin-block-start: 0.5rem;
     padding-block-start: 0.625rem;
@@ -1049,11 +1050,11 @@ body:has(#wconvert-admin) #wpbody-content {
     white-space: normal;
   }
 
-  #wconvert-admin .wconvert-table > tbody > tr > td.wconvert-table__actions::before {
+  :is(#wconvert-admin, .wconvert-optin-details) .wconvert-table > tbody > tr > td.wconvert-table__actions::before {
     content: none;
   }
 
-  #wconvert-admin .wconvert-table .wconvert-table__actions-row {
+  :is(#wconvert-admin, .wconvert-optin-details) .wconvert-table .wconvert-table__actions-row {
     inline-size: auto;
     flex-wrap: wrap;
     justify-content: flex-start;
@@ -1128,35 +1129,10 @@ body:has(#wconvert-admin) #wpbody-content {
   block-size: 2.5rem;
 }
 
-/* ---------------------------------------------------------------------------
- * THE ONE CONTROL THE ADMIN STILL DRAWS NATIVELY.
- *
- * **A radio, and only a radio.** There is no vendored radio-group and the
- * retention pair on the Leads screen does not need one: two mutually exclusive
- * choices, drawn by the browser, are already keyboard-navigable, already
- * announced as a group, and already round — which is the whole affordance
- * telling a merchant that one of these excludes the other.
- *
- * These rules were written for the un-converted screens and sat under
- * SCAFFOLDING with them. A converted screen depends on them now, so they move
- * up here: deleting the scaffolding with the last conversion must not take the
- * colour off a control that is still on the page.
- *
- * **wp-admin paints these itself, so `accent-color` never reaches them.** That
- * property redirects a control the BROWSER is still drawing; WordPress replaces
- * both with a background of its own plus a pseudo-element for the dot and the
- * tick, and its admin colour scheme sets that background from
- * `--wp-admin-theme-color`. Recolouring the pseudo-element alone left a petrol
- * dot centred in a blue disc. `accent-color` still earns its line for the
- * browsers and controls WordPress does not repaint.
- * ------------------------------------------------------------------------- */
+/* Native choice controls share the typography and geometry below. Hidden
+ * inputs used by segmented/tile controls retain their existing presentation. */
 :is(#wconvert-admin, [data-slot="dialog-content"]) {
   accent-color: var(--primary);
-}
-
-#wconvert-admin :is(input[type="radio"], input[type="checkbox"]) {
-  vertical-align: middle;
-  margin-block: 0;
 }
 
 /*
@@ -1205,31 +1181,6 @@ body:has(#wconvert-admin) #wpbody-content {
   align-items: center;
   align-self: stretch;
   cursor: pointer;
-}
-
-/*
- * The radio keeps a white field with a petrol ring and a petrol dot, which is
- * the shape it already had. The checkbox fills petrol, because its tick is
- * drawn in the field's foreground and a white tick needs something behind it.
- */
-:is(#wconvert-admin, [data-slot="dialog-content"]) input[type="radio"]:checked {
-  background: var(--card);
-  border-color: var(--primary);
-}
-
-:is(#wconvert-admin, [data-slot="dialog-content"]) input[type="radio"]:checked::before {
-  background-color: var(--primary);
-}
-
-/* Portal controls inherit WP chrome too; use the same ring as the admin. */
-:is(#wconvert-admin, [data-slot="dialog-content"]) input[type="radio"]:focus-visible {
-  border-color: var(--ring);
-  box-shadow: 0 0 0 2px var(--ring);
-}
-
-#wconvert-admin input[type="checkbox"]:checked {
-  background: var(--primary);
-  border-color: var(--primary);
 }
 
 /* ---------------------------------------------------------------------------
@@ -6739,3 +6690,62 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
 .wconvert-picker__footer > :is(.wconvert-pack-error, .wconvert-picker__footer-error) { flex-basis: 100%; margin: 0; }
 .wconvert-picker__footer-error { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; font-size: var(--text-note); color: var(--destructive); }
 .wconvert-picker__footer-error p { flex: 1 1 20rem; margin: 0; }
+
+
+/* Shared visible checkbox/radio rows, including portaled settings dialogs.
+ * Native appearance avoids WP's separately scaled pseudo-element marks.
+ * 18px is the drawn control; its wrapping label is a >=32px click target.
+ * sr-only segmented inputs and Radix table checkboxes have their own targets.
+ * The 14px text size is our design choice, not a WCAG minimum font size. */
+:is(#wconvert-admin, [data-slot="dialog-content"], [data-slot="alert-dialog-content"])
+  input:is([type="checkbox"], [type="radio"]):not(.sr-only) {
+  appearance: auto;
+  -webkit-appearance: auto;
+  accent-color: var(--primary);
+  inline-size: 18px;
+  block-size: 18px;
+  width: 18px;
+  height: 18px;
+  min-inline-size: 18px;
+  min-block-size: 18px;
+  flex: 0 0 18px;
+  margin: 0;
+  padding: 0;
+  vertical-align: middle;
+  border: initial;
+  background: initial;
+  box-shadow: none;
+  cursor: pointer;
+}
+:is(#wconvert-admin, [data-slot="dialog-content"], [data-slot="alert-dialog-content"])
+  input:is([type="checkbox"], [type="radio"]):not(.sr-only)::before,
+:is(#wconvert-admin, [data-slot="dialog-content"], [data-slot="alert-dialog-content"])
+  input:is([type="checkbox"], [type="radio"]):not(.sr-only)::after { content: none; display: none; }
+:is(#wconvert-admin, [data-slot="dialog-content"], [data-slot="alert-dialog-content"])
+  input:is([type="checkbox"], [type="radio"]):not(.sr-only):focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 3px;
+  box-shadow: none;
+}
+:is(#wconvert-admin, [data-slot="dialog-content"], [data-slot="alert-dialog-content"])
+  label:has(> input:is([type="checkbox"], [type="radio"]):not(.sr-only)) {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  min-block-size: 32px;
+  padding-block: 6px;
+  font-size: var(--text-body) !important;
+  line-height: 1.5;
+  font-weight: 400;
+  letter-spacing: normal;
+  cursor: pointer;
+}
+:is(#wconvert-admin, [data-slot="dialog-content"], [data-slot="alert-dialog-content"])
+  label > input:is([type="checkbox"], [type="radio"]):not(.sr-only) { margin-block-start: 2px; }
+:is(#wconvert-admin, [data-slot="dialog-content"], [data-slot="alert-dialog-content"])
+  label:has(> input:is([type="checkbox"], [type="radio"]):disabled:not(.sr-only)) { cursor: default; opacity: .6; }
+
+.wconvert-product-matches { list-style: none; padding: 0; display: grid; gap: 10px; }
+.wconvert-product-matches li { display: flex; align-items: center; gap: 10px; min-width: 0; }
+.wconvert-product-matches img { object-fit: cover; border-radius: 4px; flex: none; }
+.wconvert-product-matches a { overflow-wrap: anywhere; }

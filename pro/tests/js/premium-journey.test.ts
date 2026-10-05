@@ -1,3 +1,4 @@
+import { resultProducts } from '../../modules/journeys/loader/result-products';
 import { afterEach, expect, it, vi } from 'vitest';
 import { mount } from '@renderer/mount';
 import type { Template } from '@renderer/types';
@@ -302,16 +303,16 @@ it('renders only selected, live, purchasable products and counts a product click
   stop();
 });
 
-it('recovers product lookup without capturing contact details or counting another result conversion', async () => {
+it.each(['selected', 'category'])('recovers %s product lookup without capturing contact details or counting another result conversion', async source => {
   const template = finder as Template;
   const tree = { ...template.tree, steps: template.tree.steps.map(screen => ({ ...screen,
-    results: screen.results?.map(result => ({ ...result, product_ids: [7], href: '/shop', link_label: 'Browse all plants' })),
+    results: screen.results?.map(result => ({ ...result, product_ids: [7], ...(source === 'category' ? { product_filter: { category_id: 2, attributes: [] } } : {}), href: '/shop', link_label: 'Browse all plants' })),
   })) };
   const fetcher = vi.fn().mockResolvedValueOnce({ ok: false })
     .mockResolvedValue({ ok: true, json: async () => [{ id: 7, name: 'Garden kit', permalink: '/garden-kit', is_purchasable: true, is_in_stock: true }] });
   vi.stubGlobal('fetch', fetcher);
   const journey = setup({ ...template, tree });
-  document.getElementById('wconvert-payload')!.setAttribute('data-products', `${location.origin}/wp-json/wc/store/v1/products`);
+  document.getElementById('wconvert-payload')!.setAttribute(source === 'category' ? 'data-product-matches' : 'data-products', `${location.origin}/wp-json/wc/store/v1/products`);
   journey.choose('garden'); journey.act('next'); journey.choose('sun'); journey.act('next');
   await vi.waitFor(() => expect(journey.root().textContent).toContain('Retry products'));
   expect(journey.root().querySelector('[data-result-link]')?.textContent).toBe('Browse all plants');
@@ -339,4 +340,18 @@ it('lets visitors review only earlier answers on their actual graph path before 
   expect(review).toContain('Balcony size?Large');
   expect(review).not.toContain('Garden size');
   expect(journey.captured).not.toHaveBeenCalled();
+});
+
+it('keeps one product scope across quiz navigation and cleans up every result view', () => {
+  const stop = vi.fn(); const renderer = vi.spyOn(resultProducts, 'show').mockReturnValue(stop);
+  try {
+    const journey = setup(finder as Template);
+    journey.choose('garden'); journey.act('next'); journey.choose('sun'); journey.act('next');
+    const scope = renderer.mock.calls[0][5];
+    expect(renderer.mock.calls[0][3]).toBe('campaign');
+    journey.act('back'); expect(stop).toHaveBeenCalledOnce();
+    journey.act('next'); expect(renderer.mock.calls[1][5]).toBe(scope);
+    expect(journey.completed).toHaveBeenCalledOnce();
+    journey.mounted.close(); expect(stop).toHaveBeenCalledTimes(2);
+  } finally { renderer.mockRestore(); }
 });

@@ -521,6 +521,8 @@ final class TemplateVocabulary
                 continue;
             }
 
+            if ($type === 'products' && $key === 'context') { $kept[$key] = $node[$key] === 'product' ? 'product' : 'cart'; continue; }
+            if ($type === 'products' && $key === 'main_product_id') { $kept[$key] = is_int($node[$key]) && $node[$key] > 0 ? $node[$key] : 0; continue; }
             if ($type === 'products' && $key === 'source') {
                 $kept[$key] = $node[$key] === 'cross_sells' ? 'cross_sells' : 'selected';
                 continue;
@@ -671,6 +673,8 @@ final class TemplateVocabulary
             if (is_string($variant['link_label'] ?? null)) { $entry['link_label'] = mb_substr($variant['link_label'], 0, 120); }
             $ids = is_array($variant['product_ids'] ?? null) ? $variant['product_ids'] : [];
             $entry['product_ids'] = array_values(array_unique(array_filter(array_slice($ids, 0, 6), static fn ($id): bool => is_int($id) && $id > 0)));
+            if (array_key_exists('product_action', $variant)) $entry['product_action'] = in_array($variant['product_action'], ['link', 'add_to_cart'], true) ? $variant['product_action'] : 'invalid';
+            if (array_key_exists('product_filter', $variant)) $entry['product_filter'] = ResultProductSource::normalize($variant['product_filter']);
             $result[] = $entry;
         }
         return $result;

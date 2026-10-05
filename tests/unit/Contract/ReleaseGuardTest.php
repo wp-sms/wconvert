@@ -37,6 +37,35 @@ use PHPUnit\Framework\TestCase;
 #[CoversNothing]
 final class ReleaseGuardTest extends TestCase
 {
+    /** Exercise the real build dispatcher without Composer, Vite or a real ZIP. */
+    public function testAllBuildStopsBeforeZipWhenArtifactGateFails(): void
+    {
+        $script = file_get_contents(self::BIN . '/build.sh');
+        self::assertIsString($script);
+        $tree = $this->tree([
+            'bin/build.sh' => $script,
+            'bin/verify-artifact-contract.sh' => "#!/usr/bin/env bash\necho 'Fixture artifact rejection' >&2\nexit 41\n",
+            '.distignore' => "/dist\n",
+            'fake-bin/npm' => "#!/usr/bin/env bash\nexit 0\n",
+            'fake-bin/zip' => "#!/usr/bin/env bash\ntouch zip-was-invoked\nexit 0\n",
+            'fake-bin/php' => <<<'SH'
+                #!/usr/bin/env bash
+                case "$1" in
+                    */plugin-identity.php) echo 'tier=free; slug=wconvert; main_file=wconvert.php' ;;
+                    -r) echo '0.1.0' ;;
+                    */tier-manifest.php) exit 0 ;;
+                    *) exit 1 ;;
+                esac
+                SH,
+        ]);
+        foreach (['npm', 'zip', 'php'] as $command) chmod($tree . '/fake-bin/' . $command, 0755);
+        $path = $tree . '/fake-bin:' . (getenv('PATH') ?: '/usr/bin:/bin');
+        $result = $this->execute('env ' . escapeshellarg('PATH=' . $path) . ' bash', [$tree . '/bin/build.sh', 'all']);
+        self::assertSame(41, $result['status'], $result['output']);
+        self::assertStringContainsString('Fixture artifact rejection', $result['output']);
+        self::assertFileDoesNotExist($tree . '/dist/stage/plain/zip-was-invoked');
+    }
+
     private const BIN = __DIR__ . '/../../../bin';
 
     private const REPO = __DIR__ . '/../../..';

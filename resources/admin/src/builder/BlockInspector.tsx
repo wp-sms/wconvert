@@ -1,9 +1,9 @@
-import { CommercePicker } from './CommerceControls';
+import { RecommendationSettings } from './RecommendationSettings';
 import type { ProductsNode } from '@renderer/types';
 import { journeysSupported, commerceSupported } from '../settings';
 import { useId, useState, type ReactNode } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
-import { ArrowLeftRight, Check, ChevronRight, Layers, Type } from 'lucide-react';
+import { ArrowLeftRight, Check, ChevronRight, Layers, Package, Type } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import {
   DropdownMenu,
@@ -41,6 +41,7 @@ export interface BlockInspectorProps {
   readonly endsAt?: string;
 
   readonly onSetEndDate?: () => void;
+  readonly onPlacement?: () => void;
 
   readonly look?: ReactNode;
   readonly onSelect?: (path: Path) => void;
@@ -59,6 +60,7 @@ export function BlockInspector({
   onSwap,
   endsAt,
   onSetEndDate,
+  onPlacement,
   look,
   onSelect,
   onDesign,
@@ -101,6 +103,7 @@ export function BlockInspector({
     onChange,
     endsAt,
     onSetEndDate,
+    onPlacement,
   });
 
   const breadcrumbs = nodesOf(template.tree).filter(
@@ -123,7 +126,7 @@ export function BlockInspector({
       </nav>
       <div className="wconvert-inspector__heading">
         <span className="wconvert-element-icon">
-          {block.leaf ? <Type aria-hidden="true" /> : <Layers aria-hidden="true" />}
+          {block.type === 'products' ? <Package aria-hidden="true" /> : block.leaf ? <Type aria-hidden="true" /> : <Layers aria-hidden="true" />}
         </span>
         <div>
           <h4 id={heading} className="wconvert-inspector__name">
@@ -223,6 +226,7 @@ function contentBody({
   onChange,
   endsAt,
   onSetEndDate,
+  onPlacement,
 }: {
   template: Template;
   labels: TemplateLabels;
@@ -232,18 +236,17 @@ function contentBody({
   onChange: (template: Template, coalesce?: string) => void;
   endsAt?: string;
   onSetEndDate?: () => void;
+  onPlacement?: () => void;
 }) {
   const node = nodeAt(template.tree, path) as { action?: string; submission?: string } | null;
   if (block.type === 'products') {
     if (!commerceSupported()) return <p>{__('Product suggestions require WConvert Pro and WooCommerce.', 'wconvert')}</p>;
     const selected = nodeAt(template.tree, path) as ProductsNode;
-    return <div><p>{__('Show up to three available accessories. Choose up to six products yourself, or use your store’s existing cross-sells. Product links count as clicks, not purchases.', 'wconvert')}</p>
-      <label>{__('Recommendation source', 'wconvert')}<select value={selected.source ?? 'selected'} onChange={event => onChange({ ...template, tree: withValue(withValue(template.tree, path, 'source', event.target.value), path, 'product_ids', []) })}>
-        <option value="selected">{__('Choose products', 'wconvert')}</option><option value="cross_sells">{__('Use WooCommerce cross-sells', 'wconvert')}</option>
-      </select></label>
-      {selected.source === 'cross_sells' ? <p>{__('Uses cross-sells linked to basket products in WooCommerce. No configured or available suggestions means this campaign stays hidden. Test a sample visit under Display rules.', 'wconvert')}</p> : <CommercePicker value={selected.product_ids} max={6} recommendations onChange={value => onChange({ ...template, tree: withValue(template.tree, path, 'product_ids', value) })} />}
-      <label><input type="checkbox" checked={selected.exclude_cart !== false} onChange={event => onChange({ ...template, tree: withValue(template.tree, path, 'exclude_cart', event.target.checked) })} />{__('Hide products already in the cart', 'wconvert')}</label>
-    </div>;
+    return <RecommendationSettings value={selected} onPlacement={onPlacement} onChange={patch => {
+      let tree = template.tree;
+      for (const [key, value] of Object.entries(patch)) tree = withValue(tree, path, key, value);
+      onChange({ ...template, tree });
+    }} />;
   }
   if (block.type === 'question' && !journeysSupported()) {
     return <p className="text-note text-muted-foreground">{__('This design uses elements this site can’t display.', 'wconvert')}</p>;

@@ -78,6 +78,7 @@ final class PolicyText
             ...array_map(static fn (string $note): string => '<p>' . esc_html($note) . '</p>', $browser['additional'] ?? []),
             ...($browser['cart_recovery'] !== null ? [
                 '<p>' . __('Cart recovery stores the cart item count and total in a browser cookie until the WooCommerce cart session ends. The cookie does not store product or contact details. Cart targeting also checks the current WooCommerce session. Only campaign matches and public product suggestions stay in page memory for up to 30 seconds; WConvert does not save cart contents or create a visitor identifier. These requests use a separate 60-second rate-limit bucket containing a site-specific one-way IP hash.', 'wconvert') . '</p>',
+                '<p>' . __('Adding a recommended product uses the existing WooCommerce session. To prevent duplicate additions, WConvert keeps temporary server records of the selected product and action status under site-specific hashed keys. These records expire after 30 minutes and are removed by scheduled cleanup. They are also removed when WConvert Pro is uninstalled.', 'wconvert') . '</p>',
             ] : []),
             ...($browser['content_unlock'] !== null ? [
                 '<p>' . __('Content locks remember a successful submission for the same Campaign in this browser for 30 days. This site-scoped local storage holds at most 64 Campaign IDs and expiry days, with no contact details or visitor identifier. If storage is blocked, access is remembered only on the current page.', 'wconvert') . '</p>',
@@ -85,6 +86,7 @@ final class PolicyText
             ...($browser['reopen_session'] !== null ? [
                 '<p>' . __('When a reopen button is enabled, WConvert uses session storage to remember the Campaign and your reminder dismissals in this browser tab. It contains no contact details or visitor identifier. It lasts for the browser page session; browsers may copy it to duplicated tabs or restore it when restoring a session. If storage is unavailable, recovery lasts only on the current page.', 'wconvert') . '</p>',
             ] : []),
+            '<p>' . sprintf(__('When product recommendations are active, WConvert also records daily counts of product cards shown, product links clicked and confirmed basket additions. These counts contain product and campaign IDs, with no visitor identifier or contact details. Product activity is kept for %d days and removed by scheduled cleanup; campaign totals are kept separately.', 'wconvert'), $summary['product_activity_retention_days']) . '</p>',
             '<p>' . __('WConvert records total campaign views, dismissals and completions by campaign and day. These totals are not linked to individual visitors.', 'wconvert') . '</p>',
             '<p>' . sprintf(
                 /* translators: %s: the short lifetime of the campaign-counting rate-limit record. */

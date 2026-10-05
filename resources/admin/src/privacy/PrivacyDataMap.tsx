@@ -152,6 +152,7 @@ export function PrivacyDataMap() {
           <Description className="mt-1">
             {__('Daily Campaign totals record views, dismissals and completions, not individual visitors.', 'wconvert')}
           </Description>
+          {data.product_activity_retention_days && <Description className="mt-2">{sprintf(__('Product recommendations record daily counts by product and campaign, without visitor IDs. Product activity is kept for %d days and removed by scheduled cleanup. Campaign totals are kept separately.', 'wconvert'), data.product_activity_retention_days)}</Description>}
           <Description className="mt-2">
             {sprintf(
               /* translators: %s: a short duration such as “one minute”. */

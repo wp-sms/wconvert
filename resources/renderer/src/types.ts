@@ -85,13 +85,22 @@ export interface JourneyGraph {
   readonly entry: string;
   readonly edges: readonly JourneyGraphEdge[];
 }
+export interface ResultProductFilter {
+  readonly order?: 'oldest' | 'newest' | 'price_low' | 'price_high';
+  readonly pinned_ids?: readonly number[];
+  readonly excluded_ids?: readonly number[];
+  readonly category_id: number;
+  readonly attributes: readonly { readonly taxonomy: string; readonly term_id: number }[];
+}
 export interface ResultVariant {
+  readonly product_action?: 'link' | 'add_to_cart';
   readonly id: string;
   readonly heading: string;
   readonly body?: string;
   readonly href?: string;
   readonly link_label?: string;
   readonly product_ids?: readonly number[];
+  readonly product_filter?: ResultProductFilter;
   readonly when?: QuestionCondition;
 }
 
@@ -479,7 +488,7 @@ export interface FollowupNode extends HideableNode {
   readonly href?: string | null;
 }
 
-export interface ProductsNode extends BaseNode { readonly type: 'products'; readonly source?: 'selected' | 'cross_sells'; readonly product_ids: readonly number[]; readonly exclude_cart?: boolean; readonly context_key?: string }
+export interface ProductsNode extends BaseNode { readonly type: 'products'; readonly action?: 'link' | 'add_to_cart'; readonly context?: 'cart' | 'product'; readonly main_product_id?: number; readonly source?: 'selected' | 'cross_sells'; readonly product_ids: readonly number[]; readonly exclude_cart?: boolean; readonly context_key?: string }
 
 export interface ButtonNode extends BaseNode {
   readonly type: 'button';

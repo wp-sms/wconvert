@@ -182,8 +182,11 @@ export function ReadinessDialog({
       setError(messageOf(cause));
       const refusal = cause as { code?: unknown; data?: { issue?: unknown } } | null;
       if (refusal?.code === 'wconvert_optin_form_incomplete' && refusal.data?.issue === 'products') {
-        const result = template?.tree.steps.find(screen => screen.kind === 'result' && screen.products_required);
-        if (result) setErrorRepair({ screenId: result.id, section: 'content', focus: 'products-required' });
+        const result = template?.tree.steps.find(screen => screen.kind === 'result' && (screen.products_required || screen.results?.some(result => result.product_filter)));
+        if (result) {
+          const filtered = result.results?.find(variant => variant.product_filter);
+          setErrorRepair({ screenId: result.id, section: 'content', ...(filtered ? { resultId: filtered.id } : { focus: 'products-required' as const }) });
+        }
       }
     } finally {
       setPublishing(false);

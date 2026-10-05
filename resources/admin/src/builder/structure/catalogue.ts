@@ -84,7 +84,7 @@ export interface Addition {
  * passed `act ?? 'submit'` — the structure editor briefly offering a
  * click-metered Optin the wrong menu. There is nothing left to wait for.
  */
-export type ConvertingAct = 'submit' | 'click' | 'match';
+export type ConvertingAct = 'submit' | 'click' | 'match' | 'add_to_cart';
 
 /**
  * Everything that may be added inside this parent, in the manifest's own order.
@@ -160,7 +160,7 @@ function whyRefused(
   const screen = tree.steps[Number(at.parent[0])];
   const products = tree.steps.some(step => walkNodes(step.content).some(node => node.type === 'products'));
   if (type === 'products' && (tree.steps.length !== 1 || tree.submissions.length > 0 || tree.graph || buttonsIn(tree) > 0 || products)) return __('Use one product recommendation block as the action of a single offer screen.', 'wconvert');
-  if (products && ['button', 'field', 'question', 'consent'].includes(type)) return __('This campaign converts on its product links.', 'wconvert');
+  if (products && ['button', 'field', 'question', 'consent'].includes(type)) return __('This campaign converts through its recommendations.', 'wconvert');
   if (type === 'button' && act === 'click' && buttonsIn(tree) > 0) {
     return __('This design already has its converting link.', 'wconvert');
   }
@@ -268,7 +268,7 @@ export function nodeFor(
     if (captures === 'interest') node.options = [];
   }
 
-  if (type === 'products') { node.product_ids = []; node.exclude_cart = true; }
+  if (type === 'products') { node.product_ids = []; node.exclude_cart = true; node.action = act === 'add_to_cart' ? 'add_to_cart' : 'link'; }
   if (type === 'question') {
     node.label = __('What matters most to you?', 'wconvert');
     node.answer_type = 'single';
@@ -397,7 +397,7 @@ export function losesWordsOnSwitch(block: { type: string; role: string | null })
  * carries, and those are two vocabularies for one distinction that PHP already
  * keeps apart.
  */
-export const actionFor = (act: ConvertingAct): string => (act === 'click' ? 'link' : act === 'match' ? 'next' : 'submit');
+export const actionFor = (act: ConvertingAct): string => (act === 'click' ? 'link' : act === 'match' ? 'next' : act === 'add_to_cart' ? 'add_to_cart' : 'submit');
 
 /** Every `action` a `button` may carry, in the order the acts are declared. */
 export const ACTIONS: readonly string[] = ['submit', 'link', 'next', 'back', 'skip', 'close'];

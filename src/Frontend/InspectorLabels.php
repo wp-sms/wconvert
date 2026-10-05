@@ -193,7 +193,7 @@ final class InspectorLabels
                 'unknown' => __('Not evaluated', 'wconvert'),
                 'unsupported' => __('No module on this site evaluates this rule', 'wconvert'),
             ],
-            'cart_products' => $commerce, 'cart_categories' => $commerce, 'cart_quantity' => $commerce, 'cart_amount' => $commerce, 'cart_has_items' => $commerce, 'cart_value_min' => $commerce,
+            'products_ready' => $commerce, 'cart_products' => $commerce, 'cart_categories' => $commerce, 'cart_quantity' => $commerce, 'cart_amount' => $commerce, 'cart_has_items' => $commerce, 'cart_value_min' => $commerce,
             'ad_blocking' => [
                 'pending' => __('Checking ad-block status…', 'wconvert'),
                 'detected' => __('Ad blocking detected by this check', 'wconvert'),

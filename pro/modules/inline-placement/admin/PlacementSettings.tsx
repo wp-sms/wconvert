@@ -7,6 +7,7 @@ import { type InlinePlacementProps } from '@/inlinePlacement';
 import type { Targeting } from '@/builder/api';
 import { ManualPlacement } from '@/builder/ManualPlacement';
 import './placement.css';
+import { commerceSupported } from '@/settings';
 import LockSettings from '../../content-lock/admin/LockSettings';
 
 export default function PlacementSettings({ optinId, published, config, vocabulary, onChange }: InlinePlacementProps) {
@@ -48,8 +49,10 @@ export default function PlacementSettings({ optinId, published, config, vocabula
       <select id={`${id}-position`} value={placement.position} onChange={(event) => onChange({ inline_placement: event.target.value === 'after_paragraph' ? { position: 'after_paragraph', paragraph: 3, fallback: 'after_content' } : { position: event.target.value } })}>
         <option value="before_content">{__('Before content', 'wconvert')}</option>
         <option value="after_content">{__('After content', 'wconvert')}</option>
+        {(commerceSupported() || placement.position === 'after_product_summary') && <option value="after_product_summary">{__('After WooCommerce product summary (classic themes)', 'wconvert')}</option>}
         <option value="after_paragraph">{__('After a paragraph', 'wconvert')}</option>
       </select>
+      {placement.position === 'after_product_summary' && <p>{__('Shows on matching product pages in classic WooCommerce themes. Include your product pages below. For block themes, use Manual and place the WConvert campaign block in the product template.', 'wconvert')}</p>}
       {placement.position === 'after_paragraph' && <>
         <label htmlFor={`${id}-paragraph`}>{__('Paragraph number', 'wconvert')}</label>
         <Input id={`${id}-paragraph`} type="number" min={1} max={100} aria-invalid={!validParagraph} value={placement.paragraph ?? ''} onChange={(event) => onChange({ inline_placement: { ...placement, paragraph: event.target.value === '' ? undefined : Number(event.target.value) } })} />

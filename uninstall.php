@@ -192,9 +192,9 @@ foreach ($wconvertTables as $wconvertTable) {
 // statement with nothing to bind, so nothing to prepare; and not cached,
 // because it runs once, on the way out.
 // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- see above.
-$wconvertDynamicOptions = $wpdb->get_col("SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE 'wconvert\_capture\_%' OR option_name LIKE 'wconvert\_flow\_%' OR option_name LIKE 'wconvert\_mail\_%'");
+$wconvertDynamicOptions = $wpdb->get_col("SELECT option_name FROM {$wpdb->options} WHERE option_name LIKE 'wconvert\_capture\_%' OR option_name LIKE 'wconvert\_flow\_%' OR option_name LIKE 'wconvert\_mail\_%' OR option_name LIKE 'wconvert\_product\_tracking\_%'");
 foreach ($wconvertDynamicOptions as $wconvertOption) {
-    if (preg_match('/^wconvert_((?:capture|mail)_[a-f0-9]{64}|flow_[A-Z0-9]{26}_[a-f0-9]{64})$/D', $wconvertOption)) delete_option($wconvertOption);
+    if (preg_match('/^wconvert_((?:capture|mail)_[a-f0-9]{64}|flow_[A-Z0-9]{26}_[a-f0-9]{64}|product_tracking_[A-Z0-9]{26})$/D', $wconvertOption)) delete_option($wconvertOption);
 }
 delete_option('wconvert_submission_checkpoint');
 
@@ -243,3 +243,5 @@ $wconvertPickerLocks = $wpdb->get_col("SELECT option_name FROM {$wpdb->options} 
 foreach ($wconvertPickerLocks as $wconvertPickerLock) {
     if (preg_match('/^wconvert_picker_lock_(?:occasions|user_[0-9]+)$/D', $wconvertPickerLock)) delete_option($wconvertPickerLock);
 }
+
+wp_clear_scheduled_hook('wconvert_product_stats_prune');

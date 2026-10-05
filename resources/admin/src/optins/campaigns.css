@@ -114,6 +114,17 @@
 #wconvert-admin .wc-family-toggle .wc-chevron-collapsed:dir(rtl) { transform:scaleX(-1); }
 #wconvert-admin .wc-campaign-pagination { flex-wrap:wrap; }
 .wc-campaign-detail [data-slot=badge] { justify-self:start; }
+.wc-product-health-toolbar, .wc-product-health-heading { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:8px; }
+.wc-product-health-toolbar { padding:0 24px 12px; color:var(--muted-foreground); font-size:var(--text-note); }
+.wc-product-health { display:grid; gap:12px; border:1px solid var(--border); border-radius:var(--radius); padding:16px; font-size:var(--text-body); }
+.wc-product-health h3 { margin:0; font-size:var(--text-heading); font-weight:600; }
+.wc-product-health-scope { color:var(--muted-foreground); margin:0; }
+.wc-product-health ul { list-style:none; padding:0; margin:0; display:grid; gap:12px; }
+.wc-product-health li { display:grid; gap:4px; border-inline-start:3px solid var(--border); padding-inline-start:10px; overflow-wrap:anywhere; }
+.wc-product-health li[data-state=warning] { border-color:var(--warning); }
+.wc-product-health p { margin:0; }
+.wc-product-health > [data-slot="button"] { justify-self:start; }
+#wconvert-admin .wc-product-health-link { display:block; margin-block-start:8px; padding:4px 0; color:var(--primary); text-decoration:underline; text-underline-offset:3px; font-size:var(--text-body); text-align:start; }
 /* The gallery keeps table semantics and names values above each compact field. */
 #wconvert-admin .wc-campaign-workspace[data-layout=gallery] .wc-campaign-table > tbody > tr > td { display:block; }
 #wconvert-admin .wc-campaign-workspace[data-layout=gallery] .wc-campaign-table > tbody > tr > td::before { content:attr(data-label); display:block; font-size:var(--text-micro); color:var(--muted-foreground); margin-block-end:0.5rem; }

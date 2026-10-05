@@ -1,5 +1,4 @@
 import { useEffect, useId, useLayoutEffect, useRef, useState } from 'react';
-import apiFetch from '@wordpress/api-fetch';
 import { ChevronDown } from 'lucide-react';
 import { __, sprintf } from '@wordpress/i18n';
 import type { QuestionClause, QuestionCondition, QuestionNode, ResultVariant, TemplateNode, TemplateTree } from '@renderer/types';
@@ -16,6 +15,9 @@ import { Dialog, DialogContent, DialogTitle, DialogDescription } from '../compon
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { LinkField } from './LinkField';
+import { ResultProductFilter } from './ResultProductFilter';
+import { ProductPicker } from './ResultProductPicker';
+import { commerceSupported } from '../settings';
 import { InfoTip } from '../shell/InfoTip';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../components/ui/dropdown-menu';
 
@@ -308,52 +310,6 @@ export function QuestionSettings({ tree, step, onChange, onSelect, onNavigate, o
   </section>;
 }
 
-interface Product { id: number; name: string; is_in_stock?: boolean; images?: { thumbnail?: string }[]; prices?: { price?: string; currency_code?: string; currency_minor_unit?: number } }
-function productPrice(product: Product): string {
-  const price = product.prices;
-  if (!price?.price || !price.currency_code || !Number.isInteger(price.currency_minor_unit)) return '';
-  const amount = Number(price.price) / Math.pow(10, price.currency_minor_unit!);
-  if (!Number.isFinite(amount)) return '';
-  try { return new Intl.NumberFormat(undefined, { style: 'currency', currency: price.currency_code }).format(amount); }
-  catch { return `${amount} ${price.currency_code}`; }
-}
-function ProductPicker({ ids, onChange }: { ids: readonly number[]; onChange(ids: number[]): void }) {
-  const [query, setQuery] = useState(''); const [found, setFound] = useState<Product[]>([]); const [selected, setSelected] = useState<Product[]>([]); const [error, setError] = useState(''); const [busy, setBusy] = useState(false);
-  const selectedKey = ids.join(',');
-  useEffect(() => {
-    if (!selectedKey) { setSelected([]); return; }
-    let current = true;
-    void apiFetch<Product[]>({ path: `/wc/store/v1/products?${selectedKey.split(',').map(id => `include%5B%5D=${id}`).join('&')}&per_page=6&catalog_visibility=visible` })
-      .then(products => { if (current) setSelected(products); })
-      .catch(() => { if (current) setSelected([]); });
-    return () => { current = false; };
-  }, [selectedKey]);
-  const productName = (id: number) => [...found, ...selected].find(product => product.id === id)?.name ?? `#${id}`;
-  const move = (index: number, direction: -1 | 1) => { const next = [...ids]; [next[index], next[index + direction]] = [next[index + direction], next[index]]; onChange(next); };
-  const search = async () => {
-    setBusy(true); setError('');
-    try {
-      const products = await apiFetch<Product[]>({ path: `/wc/store/v1/products?search=${encodeURIComponent(query)}&per_page=12&catalog_visibility=visible` });
-      setFound(products);
-    } catch { setError(__('WooCommerce products could not load. Check that WooCommerce is active, then retry.', 'wconvert')); }
-    finally { setBusy(false); }
-  };
-  return <div className="wconvert-journey-settings__products">
-    <label>{__('Find products', 'wconvert')}<input value={query} onChange={event => setQuery(event.target.value)} /></label>
-    <button type="button" onClick={() => void search()} disabled={busy || !query.trim()}>{busy ? __('Searching…', 'wconvert') : __('Search catalog', 'wconvert')}</button>
-    {error && <p role="alert">{error}</p>}
-    <p>{__('Select up to six products in priority order. Up to three currently available products appear to visitors.', 'wconvert')}</p>
-    {!!ids.length && <ol>{ids.map((id, index) => <li key={id}>{productName(id)}
-      <button type="button" disabled={index === 0} onClick={() => move(index, -1)} aria-label={`${__('Move earlier', 'wconvert')}: ${productName(id)}`}>{__('Earlier', 'wconvert')}</button>
-      <button type="button" disabled={index === ids.length - 1} onClick={() => move(index, 1)} aria-label={`${__('Move later', 'wconvert')}: ${productName(id)}`}>{__('Later', 'wconvert')}</button>
-      <button type="button" data-destructive="true" onClick={() => onChange(ids.filter(item => item !== id))}>{__('Remove', 'wconvert')}</button></li>)}</ol>}
-    {!!found.length && <ul>{found.map(product => <li key={product.id}>
-      {product.images?.[0]?.thumbnail && <img alt="" src={product.images[0].thumbnail} width="36" height="36" />}
-      <span>{product.name} {product.is_in_stock === false ? __('Out of stock', 'wconvert') : ''} {productPrice(product)}</span>
-      <button type="button" disabled={ids.includes(product.id) || ids.length >= 6 || product.is_in_stock === false} onClick={() => onChange([...ids, product.id])}>{__('Add', 'wconvert')}</button>
-    </li>)}</ul>}
-  </div>;
-}
 
 export function ResultSettings({ tree, step, onChange, repairRequest, onResultSelect }: { onResultSelect?(id: string | undefined): void; tree: TemplateTree; step: number; onChange(next: TemplateTree, coalesce?: string): void;
   repairRequest?: JourneyRepair & { readonly serial: number } }) {
@@ -432,7 +388,19 @@ export function ResultSettings({ tree, step, onChange, repairRequest, onResultSe
       <label>{__('Message', 'wconvert')}<textarea value={selected.body ?? ''} maxLength={500} onChange={event => edit(selectedAt, { body: event.target.value }, 'body')} /></label>
       <label>{__('Fallback shop or guide link', 'wconvert')}<LinkField ref={linkInput} value={selected.href ?? ''} onChange={href => edit(selectedAt, { href }, 'href')} /></label>
       <label>{__('Link label', 'wconvert')}<input value={selected.link_label ?? ''} maxLength={120} onChange={event => edit(selectedAt, { link_label: event.target.value }, 'link_label')} /></label>
-      <details className="wconvert-result-products" open={!!selected.product_ids?.length || screen.products_required || undefined}><summary>{__('Recommend products (optional)', 'wconvert')}</summary><ProductPicker ids={selected.product_ids ?? []} onChange={product_ids => edit(selectedAt, { product_ids })} /></details>
+      <details className="wconvert-result-products" open={!!selected.product_ids?.length || !!selected.product_filter || screen.products_required || undefined}>
+        <summary>{__('Recommend products (optional)', 'wconvert')}</summary>
+        <label>{__('Choose products by', 'wconvert')}<select value={selected.product_filter ? 'category' : 'selected'} onChange={event => edit(selectedAt, { product_filter: event.target.value === 'category' ? { category_id: 0, attributes: [] } : undefined })}>
+          <option value="selected">{__('Hand-picked products', 'wconvert')}</option><option value="category">{__('Category and attributes', 'wconvert')}</option>
+        </select></label>
+        {selected.product_filter ? <ResultProductFilter key={selected.id} value={selected.product_filter} onChange={product_filter => edit(selectedAt, { product_filter })} />
+          : <ProductPicker ids={selected.product_ids ?? []} onChange={product_ids => edit(selectedAt, { product_ids })} />}
+        <label>{__('Product button', 'wconvert')}<select value={selected.product_action ?? 'link'} onChange={event => edit(selectedAt, { product_action: event.target.value as 'link' | 'add_to_cart' })}>
+          <option value="link">{__('View product', 'wconvert')}</option>
+          <option value="add_to_cart" disabled={!commerceSupported()}>{__('Add to cart', 'wconvert')}</option>
+        </select></label>
+        <p>{!commerceSupported() ? __('Cart buttons need WConvert Pro and WooCommerce.', 'wconvert') : selected.product_action === 'add_to_cart' ? __('Adds one item. Products with options open their product page.', 'wconvert') : __('Opens the product page.', 'wconvert')}</p>
+      </details>
       {selectedAt < variants.length - 1 && <ConditionSettings required value={selected.when} sources={sources} onChange={when => { if (when) edit(selectedAt, { when }); }} />}
       {selectedAt < variants.length - 1 && <div className="wconvert-journey-result-actions">
       {variants.length > 2 && <div className="wconvert-journey-settings__result-order">

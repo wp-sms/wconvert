@@ -419,6 +419,10 @@ final class RuleVocabulary
                 continue;
             }
 
+            if (in_array($rule['type'], $this->axes['requirements'] ?? [], true)) {
+                continue;
+            }
+
             $narrowed = ['type' => $rule['type']];
 
             foreach (array_keys($this->paramsOf($rule['type'])) as $param) {
