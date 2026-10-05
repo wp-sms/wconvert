@@ -63,6 +63,9 @@ Campaign totals and milestone dates are never pruned. Campaign soft deletion
 keeps history; Core uninstall removes its stats table, exact tracking options
 and the cron job. Pro uninstall leaves historical aggregate rows to Core cleanup.
 Data Map and suggested policy text disclose product activity and its retention.
+**Amended by [ADR 0127](0127-free-keeps-product-seams-not-product-reads.md):**
+only where a product module is active or a campaign ever started tracking, and
+activation re-schedules the pruner that deactivation clears.
 
 ## Observation validation
 

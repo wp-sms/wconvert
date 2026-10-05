@@ -1,5 +1,5 @@
 import { afterEach, expect, it, vi } from 'vitest';
-import { showProducts } from '@loader/products';
+import { showProducts } from '../../modules/journeys/loader/products';
 
 afterEach(() => { document.body.replaceChildren(); vi.unstubAllGlobals(); });
 

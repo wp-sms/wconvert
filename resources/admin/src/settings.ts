@@ -26,6 +26,8 @@ export interface AdminSettings {
    */
   readonly journeys?: boolean;
   readonly commerce?: boolean;
+  /** A template catalog service is configured. Without one, Template packs stay hidden. */
+  readonly catalogConfigured?: boolean;
   /** WordPress site timezone, including fixed-offset zones. */
   readonly timezone?: string;
   /** The nonced `admin-post.php` URL for the CSV export. */
@@ -165,5 +167,9 @@ export const adminSettings = (): AdminSettings | undefined => window.wconvertAdm
  * the server will refuse (ADR 0116).
  */
 export const journeysSupported = (): boolean => adminSettings()?.journeys === true;
+/** Whether Template packs have a catalog to read. Absent reads as no. */
+export const catalogConfigured = (): boolean => adminSettings()?.catalogConfigured === true;
 
 export const commerceSupported = (): boolean => window.wconvertAdmin?.commerce === true;
+/** Whether any module that puts a product in a campaign is active (ADR 0127). */
+export const productModuleActive = (): boolean => journeysSupported() || commerceSupported();

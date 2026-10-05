@@ -44,6 +44,7 @@ final class Insights
                         $note = __('Fewer results, with a similar rate. Check display rules and site traffic.', 'wconvert');
                     } elseif ($relative <= -0.2) {
                         $rule = 'lower_rate';
+                        /* translators: %s: the goal's rate label, e.g. “Email submission rate”. */
                         $title = sprintf(__('%s fell', 'wconvert'), $goal['rate_label']);
                         $note = __('Review the campaign, then test one change.', 'wconvert');
                     }

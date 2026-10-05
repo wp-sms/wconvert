@@ -31,6 +31,7 @@ import { SetupComparison } from '../discovery/SetupComparison';
 import type { Collection } from '../discovery/api';
 import { displayTypeLabel, displayTypeOptions } from '../displayTypes';
 import { isShown, tierProductName } from './availability';
+import { catalogConfigured } from '../settings';
 import { OptionStrip } from '../shell/OptionStrip';
 import { matchesSearch } from '../discovery/search';
 
@@ -356,9 +357,9 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins }: GoalScree
         {allEntries.some(entry => entry.availability && entry.availability !== 'ready') && <Button variant="outline" disabled={starting !== null} aria-pressed={availableOnly} onClick={() => { setAvailableOnly(!availableOnly); setPage(0); }}>{__('Available on this site', 'wconvert')}</Button>}
         <Button variant="ghost" disabled={starting !== null} onClick={() => setAllCollections(value => !value)}>{allCollections ? __('Show library', 'wconvert') : __('Browse collections', 'wconvert')}</Button>
         <Button variant="ghost" disabled={starting !== null} aria-expanded={helper} onClick={() => setHelper(!helper)}>{__('Help me choose', 'wconvert')}</Button>
-        <Button ref={packTrigger} variant="outline" disabled={starting !== null} onClick={() => { choseCollection.current = false; setPacksOpen(true); }}>
+        {catalogConfigured() && <Button ref={packTrigger} variant="outline" disabled={starting !== null} onClick={() => { choseCollection.current = false; setPacksOpen(true); }}>
           <LayoutTemplate size={16} aria-hidden="true" />{__('Browse template packs', 'wconvert')}
-        </Button>
+        </Button>}
       </div>
       <div className="wconvert-picker__facet" role="group" aria-label={__('Format', 'wconvert')}>
         <span>{__('Format', 'wconvert')}</span>

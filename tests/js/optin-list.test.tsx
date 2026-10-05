@@ -82,7 +82,17 @@ it('copies the full campaign ID from details without publishing', async () => {
   write.mockRestore();
 });
 
+it('a free install is never asked about products (ADR 0116)', async () => {
+  render(<OptinList onEdit={vi.fn()} />);
+  expect(await screen.findByRole('button', { name: OPTIN.name })).toBeInTheDocument();
+  expect(screen.queryByText('Product checks for this page.')).not.toBeInTheDocument();
+  expect(screen.queryByRole('button', { name: 'Check products again' })).not.toBeInTheDocument();
+  expect(optins.readProductHealth).not.toHaveBeenCalled();
+});
+
 it('opens product warnings with the affected selection and an editor action', async () => {
+  window.wconvertAdmin = { exportUrl: '', journeys: true };
+  onTestFinished(() => { delete window.wconvertAdmin; });
   optins.readProductHealth.mockResolvedValue([{ id: OPTIN.id, basis: 'published', checks: [{ label: 'Brewing', state: 'warning', message: 'No available products match. Review this result’s filters.' }] }]);
   const edit = vi.fn();
   render(<OptinList onEdit={edit} />);

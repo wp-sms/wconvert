@@ -34,6 +34,10 @@ import { formatCount } from './format';
 import { families, rangeLabel, reportCSV } from './reporting';
 import { CampaignTable, Change, Experiment, GoalDetail } from './ReportDetails';
 import './analytics.css';
+import { commerceSupported } from '../settings';
+
+/** Cart goals need a store and the cart module; a site with neither is shown no zero for them (ADR 0127). */
+const CART_IMPACT = ['carts', 'additions'];
 import { InfoTip } from '../shell/InfoTip';
 import {
   MonthlyTargets,
@@ -296,7 +300,8 @@ function DashboardContent({
             </p>
           </div>
           <div className="wa-impact-grid">
-            {payload.impact.map((item, index) => (
+            {payload.impact.filter((item) => !CART_IMPACT.includes(item.id) || commerceSupported() || item.goals.length > 0
+              || item.count > 0 || (previous?.impact.find((p) => p.id === item.id)?.count ?? 0) > 0).map((item, index) => (
               <a
                 key={item.id}
                 className={`wa-impact ${index === 0 ? 'wa-impact-primary' : ''}`}

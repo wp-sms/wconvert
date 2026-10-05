@@ -6363,10 +6363,10 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
       :is(.wconvert-page-actions, .wconvert-toolbar, .wconvert-table, .wconvert-footer)
       :is([data-slot="button"], [data-slot="select-trigger"], [data-slot="input"], select, input[type="search"]),
     :is(#wconvert-admin, [data-slot="dialog-content"], [data-slot="alert-dialog-content"], [data-slot="popover-content"], [data-slot="dropdown-menu-content"])
-      :is([data-slot="button"], [data-slot="dropdown-menu-item"], [data-slot="select-trigger"], [data-slot="input"], button, input[type="search"], select, label:has(input[type="radio"]), .wc-masthead a) {
+      :is([data-slot="button"], [data-slot="dropdown-menu-item"], [data-slot="select-trigger"], [data-slot="input"], button, input[type="search"], select, label:has(input[type="radio"]), .wconvert-masthead a) {
       min-block-size: 2.75rem !important;
     }
-    #wconvert-admin :is(.wc-account-link, button, .wc-campaign-layout label) {
+    #wconvert-admin :is(button, .wconvert-campaign-layout label) {
       min-inline-size: 2.75rem !important;
     }
   }

@@ -26,6 +26,19 @@ final class ProductStats
         if (!wp_next_scheduled(self::HOOK)) wp_schedule_single_event(time() + DAY_IN_SECONDS, self::HOOK);
     }
 
+    /**
+     * Whether any campaign ever started product tracking, so retained product
+     * rows may exist even after the module that wrote them is gone. One
+     * indexed prefix lookup on the options table.
+     */
+    public static function tracked(): bool
+    {
+        global $wpdb;
+        if (!isset($wpdb)) return false;
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- a prefix probe with nothing to bind; get_option() cannot ask "any of these".
+        return $wpdb->get_var("SELECT 1 FROM {$wpdb->options} WHERE option_name LIKE 'wconvert\_product\_tracking\_%' LIMIT 1") !== null;
+    }
+
     public static function retainedFrom(string $today): string
     {
         return StatRange::lastDays(self::RETENTION_DAYS, $today)->from;
@@ -59,6 +72,7 @@ final class ProductStats
             if (!preg_match('/^product:([1-9][0-9]*)$/D', (string) $row['scope'], $match)) continue;
             $productId = (int) $match[1];
             $name = (string) apply_filters('wconvert_product_activity_name', '', $productId);
+            /* translators: %d: a WooCommerce product ID. */
             $products[] = ['id' => $productId, 'name' => $name !== '' ? $name : sprintf(__('Unavailable product #%d', 'wconvert'), $productId),
                 'shown' => (int) $row['shown'], 'clicked' => (int) $row['clicked'], 'added' => (int) $row['added']];
         }

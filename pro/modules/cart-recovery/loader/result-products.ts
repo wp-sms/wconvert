@@ -1,5 +1,5 @@
 import { resultProducts } from '../../journeys/loader/result-products';
-import { showProducts } from '@loader/products';
+import { showProducts } from '../../journeys/loader/products';
 import type { ResultVariant } from '@renderer/types';
 import type { showQuizProducts } from './quiz-products';
 

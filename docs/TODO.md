@@ -59,7 +59,7 @@ implemented and verified; retain a PR link when closing them.
 Release preparation remains deferred. These checks are not evidence that a
 current defect exists and do not authorize publishing or external test sends.
 
-- [ ] Restore GitHub CI once the account billing issue is resolved.
+- [x] Restore GitHub CI once the account billing issue is resolved (CI is green on pull requests again, e.g. #220).
 - [ ] Run focused manual accessibility and physical-phone checks on representative
   visitor/editor flows, including long copy and merchant-selected photos.
 - [ ] Verify the selected supported providers' end-to-end delivery and failure

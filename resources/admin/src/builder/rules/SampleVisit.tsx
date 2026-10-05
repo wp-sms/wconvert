@@ -12,6 +12,7 @@ import type { DisplayRulesValue } from './summaries';
 import type { Template, ProductsNode } from '@renderer/types';
 import { nodesOf, nodeAt } from '../structure/tree';
 import { commerceSupported } from '../../settings';
+import { unlessFree } from '../../goals/availability';
 import { SampleBasket, emptyBasket, useBasketPreview } from './SampleBasket';
 
 /** Hypothetical facts only. This module has no storage, listeners, beacons or capture imports. */
@@ -69,7 +70,7 @@ export default function SampleVisit({ value, vocabulary, onClose, template, cart
   const changedAssumptions = [page, limits, completion, pacing, goal].filter(allowed => !allowed).length;
   const ResultIcon = passes ? CheckCircle2 : CircleDashed;
   const reason = !plan ? __('Set up your display rules before testing a visit.', 'wconvert')
-    : !basketAllowed ? !basketEnabled ? __('Cart testing requires WConvert Pro and WooCommerce.', 'wconvert') : preview.error ? __('The sample basket could not be checked.', 'wconvert') : !preview.result ? __('Checking the sample basket…', 'wconvert') : __('This basket does not meet the campaign’s cart requirements or has no eligible recommendations.', 'wconvert')
+    : !basketAllowed ? !basketEnabled ? unlessFree(__('Cart testing requires WConvert Pro and WooCommerce.', 'wconvert')) : preview.error ? __('The sample basket could not be checked.', 'wconvert') : !preview.result ? __('Checking the sample basket…', 'wconvert') : __('This basket does not meet the campaign’s cart requirements or has no eligible recommendations.', 'wconvert')
     : !page ? __('This page is excluded from the campaign.', 'wconvert')
       : !goal ? __('A required goal condition is not met.', 'wconvert')
         : !limits ? __('The schedule or page conditions prevent opening.', 'wconvert')

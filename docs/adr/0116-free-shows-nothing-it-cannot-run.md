@@ -48,7 +48,10 @@ remote fetch.
 only reaches after Pro was removed (a suspended rule, a saved destination of a
 Pro type, saved email filters, a journey draft) says what is missing *on this
 site* rather than what to buy. The journey message is *"This design uses
-elements this site can't display."*
+elements this site can't display."* **Completed by
+[ADR 0127](0127-free-keeps-product-seams-not-product-reads.md):** product
+recommendations, quiz cart buttons, sample baskets and product checks say the
+same on a free install.
 
 **4. Question journeys are a capability Pro registers.**
 `JourneySupport::active()` reads the `wconvert_journeys` filter. Free never adds

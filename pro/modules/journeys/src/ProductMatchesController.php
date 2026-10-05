@@ -1,7 +1,9 @@
 <?php
 
-namespace WConvert\Rest;
+namespace WConvert\Pro\Module\Journeys;
 
+use WConvert\Rest\RestController;
+use WConvert\Rest\Routes;
 use WConvert\Template\JourneySupport;
 use WConvert\Template\ResultProductSource;
 use WP_Error;
@@ -10,7 +12,13 @@ use WP_REST_Response;
 
 defined('ABSPATH') || exit;
 
-/** Bounded public catalog read. No visitor data, cart writes or statistics. */
+/**
+ * Bounded public catalog read. No visitor data, cart writes or statistics.
+ *
+ * Pro's, not free's (ADR 0127): only a category result reads it, and
+ * a category result exists only where this module does — free suspends the
+ * Campaign instead, so no visitor of a free install could reach the route.
+ */
 final class ProductMatchesController implements RestController
 {
     public function registerRoutes(): void

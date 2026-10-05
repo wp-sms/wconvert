@@ -3,6 +3,7 @@ namespace WConvert\Rest;
 
 use WConvert\Optin\OptinRepository;
 use WConvert\Support\Ulid;
+use WConvert\Template\CommerceSupport;
 use WConvert\Template\ProductHealth;
 
 defined('ABSPATH') || exit;
@@ -24,6 +25,9 @@ final class ProductHealthController implements RestController
         $ids = $request->get_param('ids');
         if (!is_array($ids) || $ids === [] || count($ids) > 12) return new \WP_Error('wconvert_product_checks', __('Choose up to twelve campaigns.', 'wconvert'), ['status' => 400]);
         foreach ($ids as $id) if (!is_string($id) || !preg_match('/^' . Ulid::PATTERN . '$/D', $id)) return new \WP_Error('wconvert_product_checks', __('Invalid campaign ID.', 'wconvert'), ['status' => 400]);
+        // Neither module that puts a product in a campaign is here, so there is
+        // nothing to check and no campaign is read (ADR 0127).
+        if (!CommerceSupport::productModuleActive()) return new \WP_REST_Response([], 200, ['Cache-Control' => 'private, no-store']);
         $rows = [];
         foreach (array_unique($ids) as $id) {
             $optin = $this->optins->find($id);

@@ -180,9 +180,24 @@ final class TemplateCatalog
         });
     }
 
+    /**
+     * Whether this site has a catalog to offer at all. No catalog is configured
+     * by default, so the admin hides Template packs rather than open a screen
+     * that can only say so.
+     */
+    public static function configured(OptionStore $options): bool
+    {
+        return self::sourceIn($options) !== '';
+    }
+
     private function source(): string
     {
-        $value = $this->options->get(self::SOURCE_OPTION, '');
+        return self::sourceIn($this->options);
+    }
+
+    private static function sourceIn(OptionStore $options): string
+    {
+        $value = $options->get(self::SOURCE_OPTION, '');
         return is_string($value) ? $value : '';
     }
     // phpcs:enable WordPress.Security.EscapeOutput.ExceptionNotEscaped

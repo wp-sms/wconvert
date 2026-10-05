@@ -210,6 +210,27 @@ final class SuspendedOnTheListTest extends TestCase
     }
 
     /**
+     * **And the publish route says the same.** A product design reaching a
+     * free install — imported, or left behind by a removed Pro — is refused in
+     * the words a question block gets, never with a product to go and buy.
+     */
+    public function testAFreeInstallNamesNoProductWhenItRefusesAProductDesign(): void
+    {
+        $source = file_get_contents(WCONVERT_PRO_DIR . 'modules/cart-recovery/templates/cart-accessories.json');
+        self::assertIsString($source);
+        $design = TemplateVocabulary::fromManifest(self::PLUGIN_DIR)->normalize(json_decode($source, true));
+        $id = $this->optins->create('Extras', 'promote_offer', ['display_rules' => \WConvert\Tests\Unit\Support\DisplayFixture::plan([['type' => 'page_load']]), 'template' => $design])->id;
+        $request = new WP_REST_Request();
+        $request->set_param('id', $id);
+
+        $refused = $this->controllerOn(false, true)->publish($request);
+
+        self::assertInstanceOf(\WP_Error::class, $refused);
+        self::assertStringContainsString('can’t display', $refused->get_error_message());
+        self::assertStringNotContainsString('WConvert Pro', $refused->get_error_message(), 'a free install names no product (ADR 0116)');
+    }
+
+    /**
      * **Self-healing, with no repair step.** Nothing was stored, so the same
      * row answers differently the moment [[Pro]] is back — no republish, no
      * button to press, nothing to notice.

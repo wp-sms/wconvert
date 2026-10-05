@@ -186,13 +186,15 @@ final class ProServiceProvider implements ServiceProvider
 
         // Question journeys exist on this install because the module that runs
         // them shipped in this ZIP, and that registration is the whole of the
-        // entitlement (ADR 0116). The module has no PHP of its own, so its
-        // manifest on disk is the possession test — the same one
-        // `WpProPresence` reads a rung from. First, and above every guard:
-        // the publish route, the capture route, the payload and the builder
-        // all ask it.
+        // entitlement (ADR 0116). Its manifest on disk is the possession test —
+        // the same one `WpProPresence` reads a rung from. First, and above every
+        // guard: the publish route, the capture route, the payload and the
+        // builder all ask it. The module's PHP is the product side of a quiz
+        // result — the category route, its payload attribute and the merchant's
+        // product check — which free no longer carries (ADR 0127).
         if (is_file(WCONVERT_PRO_DIR . 'modules/journeys/module.json')) {
             add_filter(\WConvert\Template\JourneySupport::FILTER, static fn (): bool => true);
+            \WConvert\Pro\Module\Journeys\ResultProducts::hooks();
         }
 
         if (class_exists(\WConvert\Pro\Module\Analytics\Hooks::class)) {

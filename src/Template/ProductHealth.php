@@ -1,11 +1,19 @@
 <?php
 namespace WConvert\Template;
 
-use WConvert\Rest\ProductMatchesController;
+use WConvert\Support\Tier;
+use WConvert\Support\WpProPresence;
 
 defined('ABSPATH') || exit;
 
-/** Current catalog advice, never a publication gate or a visitor eligibility decision. */
+/**
+ * Current catalog advice, never a publication gate or a visitor eligibility decision.
+ *
+ * Core owns the seam and Pro's modules fill it: `wconvert_check_products`
+ * answers for each product selection, the journeys module for a quiz result and
+ * cart-recovery for recommendations and cart buttons. Nothing here reads a
+ * catalog itself.
+ */
 final class ProductHealth
 {
     /** @param array<string, mixed> $config
@@ -31,7 +39,7 @@ final class ProductHealth
                 elseif ($source['kind'] === 'result' && !JourneySupport::active()) $check = self::check('unknown', __('Product checks need the quiz feature to be active.', 'wconvert'));
                 else {
                     $check = apply_filters('wconvert_check_products', null, $source['node'], $source['kind']);
-                    if ($check === null) $check = $source['kind'] === 'result' ? $this->quiz($source['node']) : self::check('unknown', __('Activate WConvert Pro to check recommendations.', 'wconvert'));
+                    if ($check === null) $check = self::check('unknown', self::unchecked());
                     if (!is_array($check) || !in_array($check['state'] ?? null, ['ok', 'warning', 'unknown', 'context'], true) || !is_string($check['message'] ?? null)) $check = self::check('unknown', __('Products could not be checked. Try again.', 'wconvert'));
                 }
             } catch (\Throwable) {
@@ -41,6 +49,14 @@ final class ProductHealth
         }
         if (count($sources) > 8) $checks[] = ['label' => __('More selections', 'wconvert')] + self::check('unknown', __('This design has too many product selections to check. Review it in the editor.', 'wconvert'));
         return $checks;
+    }
+
+    /** No module answered. A free install names no product (ADR 0116 §3). */
+    private static function unchecked(): string
+    {
+        return (new WpProPresence())->installedTier() === Tier::Free
+            ? __('This design uses elements this site can’t display.', 'wconvert')
+            : __('Activate WConvert Pro to check recommendations.', 'wconvert');
     }
 
     /** @return array{state: string, message: string} */
@@ -56,31 +72,10 @@ final class ProductHealth
         if ($missing === []) return self::check('ok', __('Selected products are available.', 'wconvert'));
         $names = array_map(static function (int $id): string {
             $product = wc_get_product($id);
+            /* translators: %d: a WooCommerce product ID. */
             return $product ? wp_strip_all_tags($product->get_name()) : sprintf(__('Product #%d', 'wconvert'), $id);
         }, $missing);
+        /* translators: %s: product names, already joined with commas. */
         return self::check('warning', sprintf(__('Unavailable: %s. Review these products in the editor.', 'wconvert'), implode(', ', $names)));
-    }
-
-    /** @param array<string, mixed> $result
-     * @return array{state: string, message: string} */
-    private function quiz(array $result): array
-    {
-        if (($result['product_action'] ?? 'link') !== 'link') return self::check('unknown', __('Activate WConvert Pro to check cart buttons.', 'wconvert'));
-        $ids = array_values(array_slice($result['product_ids'] ?? [], 0, 6));
-        $filtered = isset($result['product_filter']);
-        if ($filtered && !ResultProductSource::available($result['product_filter'])) return self::check('warning', __('A category or attribute is missing. Update this result’s filters.', 'wconvert'));
-        if (!$filtered && $ids === []) return self::selection([], []);
-        $read = new \WP_REST_Request('GET', '/wc/store/v1/products');
-        if ($filtered) {
-            $read->set_param('filter', wp_json_encode($result['product_filter']));
-            $response = (new ProductMatchesController())->matches($read);
-        } else {
-            foreach (['include' => $ids, 'catalog_visibility' => 'visible', 'per_page' => count($ids)] as $key => $value) $read->set_param($key, $value);
-            $response = rest_do_request($read);
-        }
-        if ($response instanceof \WP_Error || $response->get_status() >= 400 || !is_array($response->get_data())) return self::check('unknown', __('Products could not be checked. Try again.', 'wconvert'));
-        $rows = array_filter($response->get_data(), static fn ($row): bool => is_array($row) && ($row['is_purchasable'] ?? false) === true && ($row['is_in_stock'] ?? false) === true && ($row['is_password_protected'] ?? false) !== true);
-        if ($filtered && ResultProductSource::missingPins($result['product_filter'], array_column($rows, 'id'))) return self::check('warning', __('A pinned product is unavailable or does not match. Review this result’s pins.', 'wconvert'));
-        return $filtered ? self::check($rows ? 'ok' : 'warning', $rows ? __('Matching products are available.', 'wconvert') : __('No available products match. Review this result’s filters.', 'wconvert')) : self::selection($ids, array_column($rows, 'id'));
     }
 }

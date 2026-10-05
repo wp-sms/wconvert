@@ -219,9 +219,13 @@ final class RuleLabels
             'query_param' => __('%1$s is %2$s', 'wconvert'),
             /* translators: %1$s: one or more traffic sources, already joined, e.g. “Search or example.com”. */
             'referrer' => __('they came from %1$s', 'wconvert'),
+            /* translators: 1: product names, already joined. 2: how many must match, e.g. “any”. */
             'cart_products' => __('their cart contains %2$s of products %1$s', 'wconvert'),
+            /* translators: 1: category names, already joined. 2: how many must match, e.g. “any”. 3: yes or no. */
             'cart_categories' => __('their cart contains %2$s of categories %1$s; include subcategories: %3$s', 'wconvert'),
+            /* translators: %1$s: a quantity range, already formatted. */
             'cart_quantity' => __('their cart item quantity is %1$s', 'wconvert'),
+            /* translators: %1$s: an amount range, already formatted. */
             'cart_amount' => __('their discounted products total is %1$s, excluding tax and shipping', 'wconvert'),
             'products_ready' => __('eligible product recommendations are available', 'wconvert'),
             'cart_has_items' => __('their cart is not empty', 'wconvert'),

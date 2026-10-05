@@ -41,16 +41,16 @@ export function Shell({
         className="wconvert-panel font-sans text-body leading-normal text-foreground"
       >
         <header className="wconvert-panel-nav">
-          <div className="wconvert-measure wc-masthead mx-auto w-full">
-            <div className="wc-brand">
+          <div className="wconvert-measure wconvert-masthead mx-auto w-full">
+            <div className="wconvert-brand">
               <BrandMark />
               <span>{__('WConvert', 'wconvert')}</span>
             </div>
             {section !== undefined && <HeaderTools />}
           </div>
           {section !== undefined && (
-            <div className="wconvert-measure wc-navigation-row mx-auto w-full">
-              <nav className="wc-section-nav" aria-label={__('WConvert sections', 'wconvert')}>
+            <div className="wconvert-measure wconvert-navigation-row mx-auto w-full">
+              <nav className="wconvert-section-nav" aria-label={__('WConvert sections', 'wconvert')}>
                 <ul>{SECTIONS.map((entry) => (
                   <li key={entry.id}>
                     <a href={hashFor(entry.id)} aria-current={section === entry.id ? 'page' : undefined}>
@@ -59,22 +59,22 @@ export function Shell({
                   </li>
                 ))}</ul>
               </nav>
-              <span className="wc-brand-plan"><PlanBadge tier={tier} /></span>
+              <span className="wconvert-brand-plan"><PlanBadge tier={tier} /></span>
             </div>
           )}
         </header>
         {banded && (
           <div className="wconvert-panel-heading">
-            <div className="wconvert-measure wc-page-heading mx-auto w-full">
+            <div className="wconvert-measure wconvert-page-heading mx-auto w-full">
               {section === undefined ? (
                 <div ref={setTarget} />
               ) : (
                 <div className="wconvert-page-actions flex flex-wrap items-center gap-x-3 gap-y-2">
-                  <div className="wc-page-copy">
-                    <h1 className="m-0 wc-page-title text-foreground">
+                  <div className="wconvert-page-copy">
+                    <h1 className="m-0 wconvert-page-title text-foreground">
                       {pageTitle ?? SECTIONS.find((entry) => entry.id === section)?.label}
                     </h1>
-                    {!hideDescription && <Description className="wc-page-description">{descriptionFor(section)}</Description>}
+                    {!hideDescription && <Description className="wconvert-page-description">{descriptionFor(section)}</Description>}
                   </div>
                   {actions}
                   <div ref={setTarget} className="contents" />

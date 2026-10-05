@@ -18,6 +18,7 @@ import { LinkField } from './LinkField';
 import { ResultProductFilter } from './ResultProductFilter';
 import { ProductPicker } from './ResultProductPicker';
 import { commerceSupported } from '../settings';
+import { unlessFree } from '../goals/availability';
 import { InfoTip } from '../shell/InfoTip';
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '../components/ui/dropdown-menu';
 
@@ -399,7 +400,7 @@ export function ResultSettings({ tree, step, onChange, repairRequest, onResultSe
           <option value="link">{__('View product', 'wconvert')}</option>
           <option value="add_to_cart" disabled={!commerceSupported()}>{__('Add to cart', 'wconvert')}</option>
         </select></label>
-        <p>{!commerceSupported() ? __('Cart buttons need WConvert Pro and WooCommerce.', 'wconvert') : selected.product_action === 'add_to_cart' ? __('Adds one item. Products with options open their product page.', 'wconvert') : __('Opens the product page.', 'wconvert')}</p>
+        <p>{!commerceSupported() ? unlessFree(__('Cart buttons need WConvert Pro and WooCommerce.', 'wconvert')) : selected.product_action === 'add_to_cart' ? __('Adds one item. Products with options open their product page.', 'wconvert') : __('Opens the product page.', 'wconvert')}</p>
       </details>
       {selectedAt < variants.length - 1 && <ConditionSettings required value={selected.when} sources={sources} onChange={when => { if (when) edit(selectedAt, { when }); }} />}
       {selectedAt < variants.length - 1 && <div className="wconvert-journey-result-actions">

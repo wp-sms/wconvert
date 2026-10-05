@@ -14,6 +14,8 @@ final class CommerceSupport
         return false;
     }
     public static function active(): bool { return (bool) apply_filters('wconvert_commerce', false); }
+    /** Whether any module that puts a product in a campaign is active: journeys or commerce (ADR 0127). */
+    public static function productModuleActive(): bool { return self::active() || JourneySupport::active(); }
     /** @param array<string, mixed> $tree */
     public static function used(array $tree): bool
     {

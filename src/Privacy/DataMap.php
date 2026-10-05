@@ -39,7 +39,7 @@ final class DataMap
      *   retention_days: int|null,
      *   destinations: list<array{id: string, label: string, type: string, type_label: string, fields: list<string>|null}>,
      *   browser: array{additional: list<string>, key: string, local_storage_expiry_days: null, cookie_fallback: bool, cookie_fallback_days: int, contains_contact_details: bool, contains_visitor_identifier: bool, stores_ab_assignment: bool, reopen_session: string|null, content_unlock: string|null, cart_recovery: array{key: string, expires_with_cart_session: bool, contains_item_count: bool, contains_cart_total: bool, contains_contact_details: bool}|null},
-     *   product_activity_retention_days: int,
+     *   product_activity_retention_days: int|null,
      *   beacon_rate_limit_seconds: int,
      *   protection_provider: string,
      *   resource_send_limit_seconds: int,
@@ -53,7 +53,9 @@ final class DataMap
             'retention_days' => $this->retention->days(),
             'destinations' => $this->configuredDestinations(),
             'browser' => $this->browserStorage(),
-            'product_activity_retention_days' => \WConvert\Stats\ProductStats::RETENTION_DAYS,
+            // Disclosed where product activity can be recorded, and where a
+            // removed module left retained rows behind (ADR 0127).
+            'product_activity_retention_days' => \WConvert\Template\CommerceSupport::productModuleActive() || \WConvert\Stats\ProductStats::tracked() ? \WConvert\Stats\ProductStats::RETENTION_DAYS : null,
             'beacon_rate_limit_seconds' => RateLimit::WINDOW,
             'capture_rate_limit_seconds' => CaptureRateLimit::WINDOW,
             'protection_provider' => $this->protection?->read()['provider'] ?? 'none',

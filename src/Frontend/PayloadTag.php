@@ -176,7 +176,6 @@ final class PayloadTag
             if (!is_array($steps)) { continue; }
             foreach ($steps as $step) {
                 foreach ($step['results'] ?? [] as $result) {
-                    if (isset($result['product_filter'])) $attributes['data-product-matches'] = esc_url_raw(rest_url('wconvert/v1/product-matches'));
                     if (!empty($result['product_ids'])) {
                         $attributes['data-products'] = esc_url_raw(rest_url('wc/store/v1/products'));
                     }

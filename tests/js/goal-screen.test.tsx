@@ -535,9 +535,19 @@ it('clears a previous search when switching goals', async () => {
   expect(await screen.findByRole('button', { name: /Setup details for/ })).toBeVisible();
 });
 
+it('offers no template packs while no catalog is configured', async () => {
+  render(<GoalScreen onCreated={vi.fn()} />);
+  await pickGoal();
+  expect(await screen.findByRole('button', { name: 'Help me choose' })).toBeInTheDocument();
+  expect(screen.queryByRole('button', { name: 'Browse template packs' })).not.toBeInTheDocument();
+  expect(catalog.catalogStatus).not.toHaveBeenCalled();
+});
+
 it('installs a pack from creation, then returns to its starting points without creating a draft', async () => {
   const pack = { id: 'store', name: 'Store collection', description: 'Store starts', version: '1.1.0', installed_version: null, state: 'available' };
   const status = { configured: true, source: 'https://example.org/catalog', checked_at: null, packs: [pack] };
+  window.wconvertAdmin = { exportUrl: '', catalogConfigured: true };
+  onTestFinished(() => { delete window.wconvertAdmin; });
   catalog.catalogStatus.mockResolvedValue(status);
   catalog.previewPack.mockResolvedValue({ id: 'store', name: pack.name, version: pack.version, digest: 'abc', templates: [{ ...PLAYBOOK.template, id: 'pack-design', name: 'Welcome design', display_type: 'popup' }], starting_points: [{ id: 'pack-start', name: 'Welcome discount', goal: GOALS[0].id, goal_label: GOALS[0].label, template_id: 'pack-design' }] });
   catalog.installPack.mockResolvedValue({ ...status, packs: [{ ...pack, installed_version: '1.1.0', state: 'installed' }] });

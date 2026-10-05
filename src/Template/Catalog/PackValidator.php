@@ -107,7 +107,7 @@ final class PackValidator
             $this->bag($template['tokens'] ?? []);
             $tree = $template['tree'] ?? null;
             self::check(is_array($tree), __('This design has no tree.', 'wconvert'));
-            if (\WConvert\Template\CommerceSupport::used($tree) || \WConvert\Template\CommerceSupport::quizAdditions($tree)) self::check($tier === Tier::Elite && \WConvert\Template\CommerceSupport::active(), __('Product suggestions require WConvert Pro and WooCommerce.', 'wconvert'));
+            if (\WConvert\Template\CommerceSupport::used($tree) || \WConvert\Template\CommerceSupport::quizAdditions($tree)) self::check($tier === Tier::Elite && \WConvert\Template\CommerceSupport::active(), $this->installedTier === Tier::Free ? __('This design uses elements this site can’t display.', 'wconvert') : __('Product suggestions require WConvert Pro and WooCommerce.', 'wconvert'));
             if (CaptureJourney::requiresPremium($tree)) {
                 self::check($tier !== Tier::Free && JourneySupport::active(), __('This design uses elements this site can’t display.', 'wconvert'));
                 $requiredCapabilities[] = 'question-journey:1';

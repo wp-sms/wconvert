@@ -879,7 +879,7 @@ describe('the page-header band', () => {
     await open();
     await screen.findByRole('button', { name: 'Save draft' });
     const header = document.querySelector('.wconvert-workspace__header');
-    const mark = header?.querySelector('.wc-brand-mark');
+    const mark = header?.querySelector('.wconvert-brand-mark');
 
     expect(mark).toHaveTextContent('w');
     expect(mark).toHaveAttribute('aria-hidden', 'true');

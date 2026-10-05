@@ -146,7 +146,7 @@ function PackGroup({ title, installed: isInstalledGroup, packs, busy, onInspect 
       const installed = pack.installed_version !== null;
       return <li key={pack.id} className="wconvert-pack-card">
         <div className="wconvert-pack-card__heading"><Layers size={20} aria-hidden="true" /><h4>{pack.name}</h4>
-          {pack.access === 'premium' && <Badge variant="secondary">{__('Pro', 'wconvert')}</Badge>}
+          {pack.access === 'premium' && !isFreeInstall() && <Badge variant="secondary">{__('Pro', 'wconvert')}</Badge>}
           {pack.state === 'update' && <Badge variant="warning">{__('Update available', 'wconvert')}</Badge>}</div>
         <p className="wconvert-pack-card__description">{pack.description}</p>
         <div className="wconvert-pack-card__footer"><span className="wconvert-pack-card__version">
