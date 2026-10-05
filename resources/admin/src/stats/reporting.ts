@@ -43,6 +43,7 @@ export function addNumbers(rows: Numbers[]): Numbers {
   return {
     headline: total('headline'),
     conversions,
+    items_added: rows.reduce((sum, row) => sum + (row.items_added ?? 0), 0),
     impressions,
     dismissals: total('dismissals'),
     conversion_rate: impressions ? conversions / impressions : null,
@@ -103,6 +104,8 @@ export function reportCSV(
       'Previous emails accepted for sending',
       'Previous from',
       'Previous to',
+      'Items added to basket',
+      'Previous items added to basket',
     ],
   ];
   for (const card of cards)
@@ -130,6 +133,8 @@ export function reportCSV(
         prior?.deliveries ?? '',
         payload.previous?.from ?? '',
         payload.previous?.to ?? '',
+        card.action === 'add_to_cart' ? optin.items_added ?? 0 : '',
+        card.action === 'add_to_cart' ? prior?.items_added ?? '' : '',
       ]);
     }
   return '\uFEFF' + rows.map((row) => row.map(csvCell).join(',')).join('\r\n');

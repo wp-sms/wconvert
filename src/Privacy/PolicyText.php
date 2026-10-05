@@ -78,6 +78,7 @@ final class PolicyText
             ...array_map(static fn (string $note): string => '<p>' . esc_html($note) . '</p>', $browser['additional'] ?? []),
             ...($browser['cart_recovery'] !== null ? [
                 '<p>' . __('Cart recovery stores the cart item count and total in a browser cookie until the WooCommerce cart session ends. The cookie does not store product or contact details. Cart targeting also checks the current WooCommerce session. Only campaign matches and public product suggestions stay in page memory for up to 30 seconds; WConvert does not save cart contents or create a visitor identifier. These requests use a separate 60-second rate-limit bucket containing a site-specific one-way IP hash.', 'wconvert') . '</p>',
+                '<p>' . __('Adding a recommended product uses the existing WooCommerce session. To prevent duplicate additions, WConvert keeps temporary server records of the selected product and action status under site-specific hashed keys. These records expire after 30 minutes and are removed by scheduled cleanup. They are also removed when WConvert Pro is uninstalled.', 'wconvert') . '</p>',
             ] : []),
             ...($browser['content_unlock'] !== null ? [
                 '<p>' . __('Content locks remember a successful submission for the same Campaign in this browser for 30 days. This site-scoped local storage holds at most 64 Campaign IDs and expiry days, with no contact details or visitor identifier. If storage is blocked, access is remembered only on the current page.', 'wconvert') . '</p>',

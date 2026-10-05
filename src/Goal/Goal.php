@@ -27,6 +27,9 @@ enum Goal: string
             self::FindMatch => new OutcomeContract('match', [],
                 __('Use a journey with a Results screen and a valid question path.', 'wconvert'),
                 __('Counts quiz results shown. Product clicks and purchases are separate.', 'wconvert'), 'quiz_completed'),
+            self::IncreaseBasketValue => new OutcomeContract('add_to_cart', [],
+                __('Use product recommendations with Add to cart before publishing.', 'wconvert'),
+                __('Counts campaign appearances with at least one WooCommerce-confirmed addition. Product clicks and purchases are separate.', 'wconvert'), 'basket_added'),
             self::RecoverCart => new OutcomeContract('click', [],
                 __('Use a design whose button links to the cart before publishing.', 'wconvert'),
                 __('Counts clicks back to the cart. Completed orders and recovered revenue are not measured.', 'wconvert'), 'on_site_action'),
@@ -43,6 +46,8 @@ enum Goal: string
     case GrowEmailList = 'grow_email_list';
 
     case GrowSmsList = 'grow_sms_list';
+
+    case IncreaseBasketValue = 'increase_basket_value';
 
     case RecoverCart = 'recover_cart';
 
@@ -66,6 +71,7 @@ enum Goal: string
             self::GrowSmsList => __('Phone submissions', 'wconvert'),
             self::CollectEnquiries => __('Enquiries captured', 'wconvert'),
             self::FindMatch => __('Quiz completions', 'wconvert'),
+            self::IncreaseBasketValue => __('Basket additions', 'wconvert'),
             self::RecoverCart => __('Cart return clicks', 'wconvert'),
             self::PromoteOffer => __('Link clicks', 'wconvert'),
             self::DeliverLeadMagnet => __('Emails accepted for sending', 'wconvert'),
@@ -79,6 +85,7 @@ enum Goal: string
             self::GrowSmsList => __('Phone submission rate', 'wconvert'),
             self::CollectEnquiries => __('Enquiry rate', 'wconvert'),
             self::FindMatch => __('Quiz completion rate', 'wconvert'),
+            self::IncreaseBasketValue => __('Basket addition rate', 'wconvert'),
             self::RecoverCart => __('Cart return click rate', 'wconvert'),
             self::PromoteOffer => __('Link click rate', 'wconvert'),
             self::DeliverLeadMagnet => __('Resource request rate', 'wconvert'),
@@ -87,12 +94,12 @@ enum Goal: string
 
     public function tier(): Tier
     {
-        return match ($this) { self::RecoverCart => Tier::Elite, self::FindMatch => Tier::Basic, default => Tier::Free };
+        return match ($this) { self::RecoverCart, self::IncreaseBasketValue => Tier::Elite, self::FindMatch => Tier::Basic, default => Tier::Free };
     }
 
     public function requires(): ?SiteDependency
     {
-        return $this === self::RecoverCart ? SiteDependency::WooCommerce : null;
+        return in_array($this, [self::RecoverCart, self::IncreaseBasketValue], true) ? SiteDependency::WooCommerce : null;
     }
 
     public function label(): string
@@ -100,6 +107,7 @@ enum Goal: string
         return match ($this) {
             self::GrowEmailList => __('Grow my email list', 'wconvert'),
             self::GrowSmsList => __('Grow my SMS list', 'wconvert'),
+            self::IncreaseBasketValue => __('Increase basket value', 'wconvert'),
             self::RecoverCart => __('Bring shoppers back to their cart', 'wconvert'),
             self::PromoteOffer => __('Promote an offer or content', 'wconvert'),
             self::DeliverLeadMagnet => __('Deliver a lead magnet', 'wconvert'),
@@ -113,6 +121,7 @@ enum Goal: string
         return match ($this) {
             self::GrowEmailList => __('Capture email addresses and count every submission.', 'wconvert'),
             self::GrowSmsList => __('Capture phone numbers and count every submission.', 'wconvert'),
+            self::IncreaseBasketValue => __('Recommend useful extras and count confirmed additions to the basket.', 'wconvert'),
             self::RecoverCart => __('Show shoppers with a full cart the way back to it, and count the clicks.', 'wconvert'),
             self::PromoteOffer => __('Send visitors to an offer or a useful page, and count the clicks through to it.', 'wconvert'),
             self::DeliverLeadMagnet => __('Email a resource link and count emails accepted for sending.', 'wconvert'),

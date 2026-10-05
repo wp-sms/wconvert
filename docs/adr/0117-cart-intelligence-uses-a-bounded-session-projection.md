@@ -1,5 +1,8 @@
 # Cart intelligence uses a bounded session projection
 
+
+**Amended by [ADR 0121](0121-recommendation-additions-count-server-accepted-cart-actions.md):** the separate Increase basket value Goal counts server-accepted quantity-one recommendation additions. Existing product-link and cart-return outcomes retain their meaning. The guarded cart adapter is the sole permitted product mutation; supporting links do not count as additions.
+
 Accepted 2026-10-04. Implements the first release of the [cart intelligence plan](../plans/cart-product-intelligence-2026-10-04.md).
 
 ## Matching and transport
@@ -48,7 +51,7 @@ Amended by [ADR 0118](0118-sample-baskets-share-live-commerce-evaluation.md): th
 block now also accepts configured WooCommerce cross-sells, with bounded stable
 selection and the same card eligibility checks. Selected products remain the default.
 
-One products block belongs to one click-only content screen. It cannot coexist
+One products block belongs to one content screen. Its original link action counts clicks; [ADR 0121](0121-recommendation-additions-count-server-accepted-cart-actions.md) adds a separate server-counted addition action. It cannot coexist
 with a form, unrelated link button, Results screen or graph. Merchants choose at
 most six parent/simple products in priority order; up to three currently visible,
 in-stock, purchasable, non-password-protected products are shown. Already-present
@@ -71,7 +74,7 @@ quiz result/fallback behavior is unchanged.
 
 ## Assets and verification
 
-The optional commerce ES module has a 3276-byte gzip cap and loads only for
+The original optional commerce ES module had a 3276-byte gzip cap (raised to 4800 by [ADR 0121](0121-recommendation-additions-count-server-accepted-cart-actions.md)) and loads only for
 relevant campaigns. The paid top-rung loader cap increases explicitly by 128 bytes,
 from 26880 to 27008, for the small import/evaluator bridge and renderer seam.
 Free and the lower rung caps are unchanged. `check-commerce.mjs` checks both the
@@ -84,5 +87,4 @@ unperformed research task; technical checks do not establish usability or uplift
 Amended by [ADR 0118](0118-sample-baskets-share-live-commerce-evaluation.md): Sample
 Visit now evaluates explicit sample baskets using the live cart predicates and
 recommendation selection. Other visitor/page conditions remain assumptions.
-Shipping progress, direct add-to-cart and order attribution
-remain later increments, without controls or claims in this release.
+Shipping progress remains later work. Direct additions are implemented by [ADR 0121](0121-recommendation-additions-count-server-accepted-cart-actions.md); order attribution is defined in ADR 0119.

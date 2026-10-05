@@ -39,6 +39,7 @@ enum StatKind: string
      * has exactly one converting act, derived from its design (ADR 0059).
      */
     case Conversion = 'conversion';
+    case CartAddition = 'cart_addition';
     case Capture = 'capture';
     case ResultClick = 'result_click';
 
@@ -69,6 +70,7 @@ enum StatKind: string
             self::ScreenDismissed => __('Screen dismissed', 'wconvert'),
             self::Impression => __('Impressions', 'wconvert'),
             self::Conversion => __('Conversions', 'wconvert'),
+            self::CartAddition => __('Items added to basket', 'wconvert'),
             self::Capture => __('Captured submissions', 'wconvert'),
             self::ResultClick => __('Result link clicks', 'wconvert'),
             self::Dismiss => __('Dismissals', 'wconvert'),
@@ -90,6 +92,6 @@ enum StatKind: string
     {
         $kind = self::tryFrom($value);
 
-        return in_array($kind, [self::LeadMagnetDelivered, self::Capture], true) ? null : $kind;
+        return in_array($kind, [self::LeadMagnetDelivered, self::Capture, self::CartAddition], true) ? null : $kind;
     }
 }

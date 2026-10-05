@@ -2,7 +2,7 @@ export { renderProductNode } from './products';
 import { readPayload } from '@loader/payload';
 import { hasConsent, onConsentChange } from '@loader/consent';
 
-export interface ProductCard { id: number; name: string; url: string; image: string; price: string; label: string }
+export interface ProductCard { id: number; name: string; url: string; image: string; price: string; label: string; can_add?: boolean; price_key?: string }
 interface Snapshot { rules: Record<string, boolean>; cards: ProductCard[]; known: boolean }
 let snapshots: Record<string, Snapshot> = {};
 let state = 'pending';
@@ -37,14 +37,17 @@ async function refresh(): Promise<void> {
     const next: Record<string, Snapshot> = {};
     for (let i = 0; i < entries.length; i += 20) {
       const campaigns = Object.fromEntries(entries.slice(i, i + 20).map(entry => [entry.id, (entry as unknown as Record<string, unknown>).commerce_revision]));
+      const body = new URLSearchParams({ campaigns: JSON.stringify(campaigns) });
+      const pageProduct = document.getElementById('wconvert-payload')?.getAttribute('data-commerce-product');
+      if (pageProduct) body.set('page_product', pageProduct);
       const response = await fetch(url, { method: 'POST', credentials: 'same-origin', cache: 'no-store', signal: requestController.signal,
-        body: new URLSearchParams({ campaigns: JSON.stringify(campaigns) }) });
+        body });
       if (!response.ok) throw Error('request');
-      const body: unknown = await response.json();
+      const result: unknown = await response.json();
       if (current !== generation) return;
-      if (!body || typeof body !== 'object' || Array.isArray(body)) throw Error('response');
-      for (const [id, value] of Object.entries(body)) {
-        if (!(id in campaigns) || !value || typeof value !== 'object' || value.known !== true || !value.rules || typeof value.rules !== 'object' || Array.isArray(value.rules) || !Object.values(value.rules).every(rule => typeof rule === 'boolean') || !Array.isArray(value.cards) || value.cards.length > 3 || !value.cards.every((card: ProductCard) => card && typeof card.id === 'number' && ['name', 'url', 'image', 'price', 'label'].every(key => typeof card[key as keyof ProductCard] === 'string'))) continue;
+      if (!result || typeof result !== 'object' || Array.isArray(result)) throw Error('response');
+      for (const [id, value] of Object.entries(result)) {
+        if (!(id in campaigns) || !value || typeof value !== 'object' || value.known !== true || !value.rules || typeof value.rules !== 'object' || Array.isArray(value.rules) || !Object.values(value.rules).every(rule => typeof rule === 'boolean') || !Array.isArray(value.cards) || value.cards.length > 3 || !value.cards.every((card: ProductCard) => card && typeof card.id === 'number' && (card.can_add !== true || typeof card.price_key === 'string') && (card.can_add === undefined || typeof card.can_add === 'boolean') && ['name', 'url', 'image', 'price', 'label'].every(key => typeof card[key as keyof ProductCard] === 'string'))) continue;
         next[id] = value as Snapshot;
       }
     }
@@ -68,6 +71,7 @@ export function watchCart(changed: () => void): () => void {
     };
     const events = ['wc-blocks_added_to_cart', 'wc-blocks_removed_from_cart', 'wc-blocks_cart_updated'];
     for (const event of events) document.addEventListener(event, invalidate);
+    window.addEventListener('wc-blocks_store_sync_required', invalidate);
     window.addEventListener('pageshow', invalidate);
     window.addEventListener('focus', invalidate);
     document.addEventListener('visibilitychange', invalidate);
@@ -89,6 +93,7 @@ export function watchCart(changed: () => void): () => void {
     release = () => {
       ++generation; controller?.abort(); clearTimeout(expiry); clearTimeout(debounce); snapshots = {}; state = 'pending';
       for (const event of events) document.removeEventListener(event, invalidate);
+      window.removeEventListener('wc-blocks_store_sync_required', invalidate);
       window.removeEventListener('pageshow', invalidate); window.removeEventListener('focus', invalidate);
       document.removeEventListener('visibilitychange', invalidate); consent(); stopStore?.(); jq?.(document.body).off(classic, invalidate); jq?.(document.body).off('adding_to_cart.wconvert', begin);
       release = undefined;

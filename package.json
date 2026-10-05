@@ -31,6 +31,7 @@
     "lint:fix": "eslint . --fix",
     "typecheck": "tsc --noEmit",
     "prototype:editor": "vite --config tools/design-system/editor-prototype/vite.config.mjs",
+    "prototype:recommendations": "vite --config tools/design-system/editor-prototype/vite.config.mjs --open '/?prototype=recommendations&variant=B'",
     "prototype:flow": "vite --config tools/design-system/editor-prototype/vite.config.mjs --open '/?prototype=flow&variant=B&scenario=garden'",
     "prototype:journeys": "vite --config tools/design-system/editor-prototype/vite.config.mjs --open '/?prototype=journeys&variant=B&scenario=garden'",
     "visual:serve": "node tools/visual-tests/server.mjs",

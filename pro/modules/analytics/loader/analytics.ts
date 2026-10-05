@@ -1,4 +1,4 @@
-export interface CampaignMetadata { campaign: string; goal: string; outcome: 'capture' | 'quiz' | 'click'; label: string; display?: string; }
+export interface CampaignMetadata { campaign: string; goal: string; outcome: 'capture' | 'quiz' | 'click' | 'addition'; label: string; display?: string; }
 export interface AnalyticsConfig {
   route: 'gtag' | 'gtm' | 'plausible'; measurement_id: string; consent: 'wp' | 'site'; dismissals: boolean;
   data_layer?: string; campaigns: Record<string, CampaignMetadata>; dry_run?: boolean;

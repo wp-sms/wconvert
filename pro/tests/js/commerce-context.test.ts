@@ -60,3 +60,14 @@ describe('session cart projection', () => {
     dispose(); expect(unsubscribe).toHaveBeenCalledOnce();
   });
 });
+
+it('sends only the server-issued product-page context alongside published campaign revisions', async () => {
+  document.getElementById('wconvert-payload')!.setAttribute('data-commerce-product', '12:server-issued-signature');
+  const fetcher = vi.fn().mockResolvedValue(response(true)); vi.stubGlobal('fetch', fetcher);
+  const context = await import('../../modules/cart-recovery/loader/context'); dispose = context.watchCart(() => {});
+  await vi.advanceTimersByTimeAsync(0);
+  const body = fetcher.mock.calls[0][1].body as URLSearchParams;
+  expect([...body.keys()]).toEqual(['campaigns', 'page_product']);
+  expect(body.get('page_product')).toBe('12:server-issued-signature');
+  expect(JSON.parse(body.get('campaigns')!)).toEqual({ campaign: 'revision' });
+});

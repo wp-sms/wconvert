@@ -179,8 +179,9 @@ export function problemsIn(
   endsAt: string | undefined,
 ): Problem[] {
   return [
-    ...nodesOf(template.tree).filter(node => node.type === 'products').flatMap(node => {
-      const block = nodeAt(template.tree, node.path);
+    ...nodesOf(template.tree).filter(node => node.type === 'products').flatMap((node): Problem[] => {
+      const block = nodeAt(template.tree, node.path) as import('@renderer/types').ProductsNode | null;
+      if (block?.type === 'products' && (block.context === 'product' || 'main_product_id' in block) && (!Number.isInteger(block.main_product_id) || !block.main_product_id || block.main_product_id < 1)) return [{ said: __('Choose the main product for these recommendations.', 'wconvert'), path: node.path, blocksPublish: true }];
       return block?.type === 'products' && !('source' in block && block.source === 'cross_sells') && !('product_ids' in block && Array.isArray(block.product_ids) && block.product_ids.length) ? [{ said: __('Choose compatible products for this recommendation block.', 'wconvert'), path: node.path, blocksPublish: true }] : [];
     }),
     ...whatCannotConvert(template),

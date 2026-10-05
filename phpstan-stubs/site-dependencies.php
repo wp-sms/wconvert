@@ -60,6 +60,9 @@ namespace {
     if (!class_exists('WC_Cart')) {
         class WC_Cart
         {
+            public function add_to_cart(int $product_id, int $quantity = 1): string|false { return false; }
+            public function calculate_totals(): void {}
+            public function set_session(): void {}
             /** @return array<string, array<string, mixed>> */
             public function get_cart(): array { return []; }
             public function get_cart_contents_count(): int
@@ -77,6 +80,7 @@ namespace {
 
     if (!class_exists('WC_Session_Handler')) {
         class WC_Session_Handler {
+            public function get_customer_id(): string { return ""; }
             public function set_customer_session_cookie(bool $set): void {}
             public function set(string $key, mixed $value): void {}
             public function get(string $key): mixed { return null; }
@@ -124,12 +128,14 @@ namespace {
     }
     if (!class_exists('WC_Product')) {
         class WC_Product {
+            public function supports(string $feature): bool { return false; }
             public function get_status(): string { return ''; }
             public function get_name(): string { return ''; }
             public function get_parent_id(): int { return 0; }
             /** @return list<int> */
             public function get_cross_sell_ids(): array { return []; }
             public function get_permalink(): string { return ''; }
+            public function get_price(string $context = 'view'): string { return ''; }
             public function get_price_html(): string { return ''; }
             public function get_image_id(): int { return 0; }
             /** @param string|list<string> $type */
@@ -139,6 +145,7 @@ namespace {
             public function is_in_stock(): bool { return false; }
         }
     }
+    if (!class_exists('WC_Product_Simple')) { class WC_Product_Simple extends WC_Product {} }
     if (!function_exists('wc_get_product')) {
         function wc_get_product(int $id): WC_Product|false { return false; }
     }

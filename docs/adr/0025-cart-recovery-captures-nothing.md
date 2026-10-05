@@ -1,5 +1,8 @@
 # Cart recovery captures nothing
 
+
+**Amended by [ADR 0121](0121-recommendation-additions-count-server-accepted-cart-actions.md):** the separate Increase basket value Goal counts server-accepted quantity-one recommendation additions. Existing product-link and cart-return outcomes retain their meaning. The guarded cart adapter is the sole permitted product mutation; supporting links do not count as additions.
+
 The v1 Goal **"Bring shoppers back to their cart"** is metered by a **click**. Its
 [[Optin]] carries no form, produces no [[Lead]], holds no [[Consent Record]], and
 pushes to no [[Destination]]. Its whole product is a message on the page and a link
@@ -126,7 +129,7 @@ unlike [ADR 0023](0023-the-wsms-push-fires-wsms-contact-events.md)'s
 
 ## The coupling: legacy cookie and prepared cart context
 
-**Amended by [ADR 0117](0117-cart-intelligence-uses-a-bounded-session-projection.md):** the count/total cookie remains for legacy campaigns. Rich product/category/quantity/amount rules use a bounded, private WooCommerce session projection prepared before synchronous evaluation. No cart contents are persisted and WConvert never mutates a cart.
+**Amended by [ADR 0117](0117-cart-intelligence-uses-a-bounded-session-projection.md):** the count/total cookie remains for legacy campaigns. Rich product/category/quantity/amount rules use a bounded, private WooCommerce session projection prepared before synchronous evaluation. The projection persists no cart contents. The explicit shopper-triggered addition exception is defined in [ADR 0121](0121-recommendation-additions-count-server-accepted-cart-actions.md).
 
 *Recorded by [#36](https://github.com/navidkashani/wconvert/issues/36), which had
 to build what this ADR only implied.*

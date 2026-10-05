@@ -479,7 +479,7 @@ export interface FollowupNode extends HideableNode {
   readonly href?: string | null;
 }
 
-export interface ProductsNode extends BaseNode { readonly type: 'products'; readonly source?: 'selected' | 'cross_sells'; readonly product_ids: readonly number[]; readonly exclude_cart?: boolean; readonly context_key?: string }
+export interface ProductsNode extends BaseNode { readonly type: 'products'; readonly action?: 'link' | 'add_to_cart'; readonly context?: 'cart' | 'product'; readonly main_product_id?: number; readonly source?: 'selected' | 'cross_sells'; readonly product_ids: readonly number[]; readonly exclude_cart?: boolean; readonly context_key?: string }
 
 export interface ButtonNode extends BaseNode {
   readonly type: 'button';

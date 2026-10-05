@@ -71,6 +71,11 @@ final class RuleCatalogue
         $described = [];
 
         foreach ($this->vocabulary->axes() as $axis => $types) {
+            // Runtime requirements are supplied by blocks, never authored in
+            // the Display rules picker.
+            if ($axis === 'requirements') {
+                continue;
+            }
             $described[$axis] = array_map(fn (string $type): array => $this->describe($type), $types);
         }
 

@@ -521,6 +521,8 @@ final class TemplateVocabulary
                 continue;
             }
 
+            if ($type === 'products' && $key === 'context') { $kept[$key] = $node[$key] === 'product' ? 'product' : 'cart'; continue; }
+            if ($type === 'products' && $key === 'main_product_id') { $kept[$key] = is_int($node[$key]) && $node[$key] > 0 ? $node[$key] : 0; continue; }
             if ($type === 'products' && $key === 'source') {
                 $kept[$key] = $node[$key] === 'cross_sells' ? 'cross_sells' : 'selected';
                 continue;

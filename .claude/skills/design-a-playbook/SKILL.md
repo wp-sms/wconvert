@@ -43,8 +43,9 @@ return [
 ];
 ```
 
-**The Goal is a closed enum of seven**: `grow_email_list`, `grow_sms_list`,
-`deliver_lead_magnet`, `promote_offer`, `recover_cart`, `collect_enquiries`, `find_match`.
+**The Goal is a closed enum of eight**: `grow_email_list`, `grow_sms_list`,
+`deliver_lead_magnet`, `promote_offer`, `recover_cart`, `collect_enquiries`, `find_match`, `increase_basket_value`.
+`increase_basket_value` uses one products block with `action: add_to_cart`, counts server-confirmed additions, and requires WooCommerce plus Elite (ADR 0121).
 `find_match` uses paid question/result journeys. Read the current Goal enum and
 generated vocabulary for capabilities; never infer subscription or sale from capture.
 The enquiry Goal is free and standalone; it counts Conversions, not replies,

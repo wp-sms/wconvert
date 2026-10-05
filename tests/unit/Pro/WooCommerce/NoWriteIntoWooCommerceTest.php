@@ -7,34 +7,9 @@ use PHPUnit\Framework\TestCase;
 use WConvert\Tests\Unit\Support\PhpSource;
 
 /**
- * **No code path creates orders/coupons or mutates a shopper's cart**
- * (ADR 0025).
- *
- * WConvert reads the cart and writes a cookie. That is the entire traffic
- * between the two, and every tempting extension of it is a write:
- *
- * - **Minting a coupon per recovery**, which WSMS's own cart module does. It
- *   is not merely unwise here, it is impossible: the payload is baked into
- *   HTML a full-page cache serves **byte-identically to every visitor**
- *   (ADR 0003, ADR 0004), so only a static shared code could ever appear — and
- *   a static code the merchant already created in WooCommerce is just words
- *   they type into the copy. Minting one would also be a `shop_coupon` post,
- *   which is ADR 0024's error in a different table.
- * - **Touching the cart itself** — restoring it, re-adding an item, applying a
- *   code. An Optin is a display, and a display that edits a shopper's cart is
- *   a shopper who finds things in it they did not put there.
- * ADR 0119 permits only campaign provenance in the existing session and order
- * metadata. That optional tracking does not change products, payment or cart.
- *
- * A test rather than a paragraph, for the reason
- * {@see \WConvert\Tests\Unit\Destination\NoEngagementIsEverWrittenTest} is
- * one: no assertion about output can see a rule that is currently being kept,
- * and the failure this guards against is a line somebody ADDS.
- *
- * Tokenised rather than grepped, because this file, ADR 0025 and the cookie
- * writer's own header all DISCUSS coupon minting at length — and a check that
- * flags the prose explaining itself earns an exception list, which is the one
- * thing it must never acquire.
+ * Orders and coupons remain external. ADR 0121 permits quantity-one cart additions
+ * and session persistence only in the protected recommendation transport.
+ * The scanner distinguishes action identifiers from executable cart method calls.
  */
 #[CoversNothing]
 final class NoWriteIntoWooCommerceTest extends TestCase
@@ -59,7 +34,7 @@ final class NoWriteIntoWooCommerceTest extends TestCase
         'set_session',
     ];
 
-    public function testNeitherTreeMutatesCartOrCreatesOrdersAndCoupons(): void
+    public function testOnlyGuardedRecommendationTransportMayAddAndSaveCart(): void
     {
         $offenders = [];
 
@@ -67,6 +42,11 @@ final class NoWriteIntoWooCommerceTest extends TestCase
             $code = PhpSource::code($file);
 
             foreach (self::WRITES as $write) {
+                // ADR 0121 permits two cart methods in exactly one guarded transport.
+                if (in_array($write, ['add_to_cart', 'set_session'], true)) {
+                    if (str_ends_with($file, '/pro/modules/cart-recovery/src/CartAddition.php')) continue;
+                    if (!preg_match('/->\s*' . $write . '\s*\(/', $code)) continue;
+                }
                 if (str_contains($code, $write)) {
                     $offenders[] = sprintf('%s names %s', $file, $write);
                 }
@@ -76,9 +56,7 @@ final class NoWriteIntoWooCommerceTest extends TestCase
         $this->assertSame(
             [],
             $offenders,
-            "WConvert reads WooCommerce and writes a cookie. A feature that genuinely needs to change\n"
-                . "a shopper's cart or mint them a code is a signal to re-read ADR 0025, not a signal to\n"
-                . "add the call.\n" . implode("\n", $offenders)
+            "WooCommerce writes must respect the narrow ADR 0121 cart-addition boundary.\n" . implode("\n", $offenders)
         );
     }
 

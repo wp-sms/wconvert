@@ -25,12 +25,19 @@ final class DesignPackageTest extends TestCase
         try {
             $design = json_decode((string) file_get_contents(WCONVERT_PRO_DIR . '/modules/cart-recovery/templates/cart-accessories.json'), true);
             $design['tree']['steps'][0]['content']['children'][3]['product_ids'] = [123, 456];
+            $design['tree']['steps'][0]['content']['children'][3]['main_product_id'] = 789;
+            $design['tree']['steps'][0]['content']['children'][3]['context'] = 'product';
             $validator = new PackValidator(\WConvert\Template\TemplateManifest::load(), \WConvert\Template\TemplateVocabulary::fromManifest(), \WConvert\Support\Tier::Elite);
             $package = new DesignPackage($validator);
             $package->write($path, $design, fn (string $url) => null);
             $read = $package->read($path);
             self::assertSame([], $read['design']['tree']['steps'][0]['content']['children'][3]['product_ids']);
             self::assertContains('Choose products on the receiving site.', $read['notes']);
+            $node = $read['design']['tree']['steps'][0]['content']['children'][3];
+            self::assertSame(0, $node['main_product_id']);
+            self::assertSame('product', $node['context']);
+            self::assertContains('Choose the main product on the receiving site.', $read['notes']);
+            self::assertSame('commerce_products', \WConvert\Template\CaptureContract::issue(['template' => $read['design']], 'promote_offer', ''));
             $this->expectException(\RuntimeException::class);
             PackValidator::shipping()->portable($read['design']);
         } finally { unlink($path); unset($GLOBALS['wconvertTestFilters']['wconvert_commerce']); }

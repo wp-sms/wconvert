@@ -8,7 +8,7 @@ import type { TemplateNode } from '@renderer/types';
 
 /** Rules and wording are declared by PHP; the admin evaluates the current draft. */
 export interface OutcomeContract {
-  action: 'submit' | 'click' | 'match';
+  action: 'submit' | 'click' | 'match' | 'add_to_cart';
   capture_any_of: readonly string[];
   requirement: string;
   measurement: string;

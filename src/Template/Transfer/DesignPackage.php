@@ -63,6 +63,10 @@ final class DesignPackage
                 if (($node['source'] ?? 'selected') === 'cross_sells') $notes[] = __('Recommendations use cross-sells configured in WooCommerce on the receiving site.', 'wconvert');
                 if (!empty($node['product_ids'])) $notes[] = __('Choose products on the receiving site.', 'wconvert');
                 $node['product_ids'] = [];
+                if (array_key_exists('main_product_id', $node)) {
+                    $node['main_product_id'] = 0;
+                    $notes[] = __('Choose the main product on the receiving site.', 'wconvert');
+                }
                 unset($node['context_key']);
             }
             return $node;

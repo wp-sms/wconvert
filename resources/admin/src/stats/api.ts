@@ -37,6 +37,7 @@ export interface Numbers {
   /** The headline number per day, with every day in the window present. */
   by_day: Record<string, number>;
   conversions: number;
+  items_added?: number;
   deliveries: number | null;
   conversion_by_day: Record<string, number>;
   impression_by_day: Record<string, number>;
@@ -75,7 +76,7 @@ export interface OptinReport extends Numbers {
  */
 export interface GoalReport extends Numbers {
   goal: string;
-  action: 'submit' | 'click';
+  action: 'submit' | 'click' | 'match' | 'add_to_cart';
   result_label: string;
   rate_label: string;
   /** The merchant's own words for the Goal, translated in PHP. */

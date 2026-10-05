@@ -255,7 +255,8 @@
   --text-meta--font-weight: 600;
 
   /*
-   * 11 — the label register: a block's kind, a token's name, a check's word.
+   * 11 — the caption register: a block's kind or a token's name.
+   * Checkbox and radio option text uses the 14px body register.
    *
    * **The one the block tree was missing entirely.** `.wconvert-block__kind`
    * stated no size at all, so a row's name inherited 14px body — the same size
@@ -1128,35 +1129,10 @@ body:has(#wconvert-admin) #wpbody-content {
   block-size: 2.5rem;
 }
 
-/* ---------------------------------------------------------------------------
- * THE ONE CONTROL THE ADMIN STILL DRAWS NATIVELY.
- *
- * **A radio, and only a radio.** There is no vendored radio-group and the
- * retention pair on the Leads screen does not need one: two mutually exclusive
- * choices, drawn by the browser, are already keyboard-navigable, already
- * announced as a group, and already round — which is the whole affordance
- * telling a merchant that one of these excludes the other.
- *
- * These rules were written for the un-converted screens and sat under
- * SCAFFOLDING with them. A converted screen depends on them now, so they move
- * up here: deleting the scaffolding with the last conversion must not take the
- * colour off a control that is still on the page.
- *
- * **wp-admin paints these itself, so `accent-color` never reaches them.** That
- * property redirects a control the BROWSER is still drawing; WordPress replaces
- * both with a background of its own plus a pseudo-element for the dot and the
- * tick, and its admin colour scheme sets that background from
- * `--wp-admin-theme-color`. Recolouring the pseudo-element alone left a petrol
- * dot centred in a blue disc. `accent-color` still earns its line for the
- * browsers and controls WordPress does not repaint.
- * ------------------------------------------------------------------------- */
+/* Native choice controls share the typography and geometry below. Hidden
+ * inputs used by segmented/tile controls retain their existing presentation. */
 :is(#wconvert-admin, [data-slot="dialog-content"]) {
   accent-color: var(--primary);
-}
-
-#wconvert-admin :is(input[type="radio"], input[type="checkbox"]) {
-  vertical-align: middle;
-  margin-block: 0;
 }
 
 /*
@@ -1205,31 +1181,6 @@ body:has(#wconvert-admin) #wpbody-content {
   align-items: center;
   align-self: stretch;
   cursor: pointer;
-}
-
-/*
- * The radio keeps a white field with a petrol ring and a petrol dot, which is
- * the shape it already had. The checkbox fills petrol, because its tick is
- * drawn in the field's foreground and a white tick needs something behind it.
- */
-:is(#wconvert-admin, [data-slot="dialog-content"]) input[type="radio"]:checked {
-  background: var(--card);
-  border-color: var(--primary);
-}
-
-:is(#wconvert-admin, [data-slot="dialog-content"]) input[type="radio"]:checked::before {
-  background-color: var(--primary);
-}
-
-/* Portal controls inherit WP chrome too; use the same ring as the admin. */
-:is(#wconvert-admin, [data-slot="dialog-content"]) input[type="radio"]:focus-visible {
-  border-color: var(--ring);
-  box-shadow: 0 0 0 2px var(--ring);
-}
-
-#wconvert-admin input[type="checkbox"]:checked {
-  background: var(--primary);
-  border-color: var(--primary);
 }
 
 /* ---------------------------------------------------------------------------
@@ -6739,3 +6690,57 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
 .wconvert-picker__footer > :is(.wconvert-pack-error, .wconvert-picker__footer-error) { flex-basis: 100%; margin: 0; }
 .wconvert-picker__footer-error { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; font-size: var(--text-note); color: var(--destructive); }
 .wconvert-picker__footer-error p { flex: 1 1 20rem; margin: 0; }
+
+
+/* Shared visible checkbox/radio rows, including portaled settings dialogs.
+ * Native appearance avoids WP's separately scaled pseudo-element marks.
+ * 18px is the drawn control; its wrapping label is a >=32px click target.
+ * sr-only segmented inputs and Radix table checkboxes have their own targets.
+ * The 14px text size is our design choice, not a WCAG minimum font size. */
+:is(#wconvert-admin, [data-slot="dialog-content"], [data-slot="alert-dialog-content"])
+  input:is([type="checkbox"], [type="radio"]):not(.sr-only) {
+  appearance: auto;
+  -webkit-appearance: auto;
+  accent-color: var(--primary);
+  inline-size: 18px;
+  block-size: 18px;
+  width: 18px;
+  height: 18px;
+  min-inline-size: 18px;
+  min-block-size: 18px;
+  flex: 0 0 18px;
+  margin: 0;
+  padding: 0;
+  vertical-align: middle;
+  border: initial;
+  background: initial;
+  box-shadow: none;
+  cursor: pointer;
+}
+:is(#wconvert-admin, [data-slot="dialog-content"], [data-slot="alert-dialog-content"])
+  input:is([type="checkbox"], [type="radio"]):not(.sr-only)::before,
+:is(#wconvert-admin, [data-slot="dialog-content"], [data-slot="alert-dialog-content"])
+  input:is([type="checkbox"], [type="radio"]):not(.sr-only)::after { content: none; display: none; }
+:is(#wconvert-admin, [data-slot="dialog-content"], [data-slot="alert-dialog-content"])
+  input:is([type="checkbox"], [type="radio"]):not(.sr-only):focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 3px;
+  box-shadow: none;
+}
+:is(#wconvert-admin, [data-slot="dialog-content"], [data-slot="alert-dialog-content"])
+  label:has(> input:is([type="checkbox"], [type="radio"]):not(.sr-only)) {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  min-block-size: 32px;
+  padding-block: 6px;
+  font-size: var(--text-body) !important;
+  line-height: 1.5;
+  font-weight: 400;
+  letter-spacing: normal;
+  cursor: pointer;
+}
+:is(#wconvert-admin, [data-slot="dialog-content"], [data-slot="alert-dialog-content"])
+  label > input:is([type="checkbox"], [type="radio"]):not(.sr-only) { margin-block-start: 2px; }
+:is(#wconvert-admin, [data-slot="dialog-content"], [data-slot="alert-dialog-content"])
+  label:has(> input:is([type="checkbox"], [type="radio"]):disabled:not(.sr-only)) { cursor: default; opacity: .6; }

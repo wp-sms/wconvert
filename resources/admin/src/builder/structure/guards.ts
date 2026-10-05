@@ -59,11 +59,11 @@ export function convertingActOf(tree: TemplateTree): ConvertingAct[] {
     collectActs(step.content, found);
   }
 
-  return (['submit', 'click'] as const).filter((act) => found.includes(act));
+  return (['submit', 'click', 'add_to_cart'] as const).filter((act) => found.includes(act));
 }
 
 function collectActs(node: TemplateNode, found: ConvertingAct[]): void {
-  if (node.type === 'products' && !found.includes('click')) found.push('click');
+  if (node.type === 'products') { const act = 'action' in node && node.action === 'add_to_cart' ? 'add_to_cart' : 'click'; if (!found.includes(act)) found.push(act); }
   if (node.type === 'button' && 'action' in node && ['submit', 'link'].includes(String(node.action))) {
     const act: ConvertingAct = (node as { action?: string }).action === 'link' ? 'click' : 'submit';
 

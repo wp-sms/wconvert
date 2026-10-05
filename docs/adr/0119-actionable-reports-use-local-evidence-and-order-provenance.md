@@ -1,5 +1,8 @@
 # Actionable reports use local evidence and order provenance
 
+
+**Amended by [ADR 0121](0121-recommendation-additions-count-server-accepted-cart-actions.md):** the separate Increase basket value Goal counts server-accepted quantity-one recommendation additions. Existing product-link and cart-return outcomes retain their meaning. The guarded cart adapter is the sole permitted product mutation; supporting links do not count as additions.
+
 The user authorized implementation of the analytics plan on 4 October 2026 and explicitly deferred all AI work. This extends [0089](0089-analytics-starts-with-impact-and-keeps-history-inspectable.md), implements [0046](0046-wconvert-stores-no-money.md), and narrows the no-WooCommerce-writes statement in [0025](0025-cart-recovery-captures-nothing.md). No table or column changes are made.
 
 ## Local observations and next actions

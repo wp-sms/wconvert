@@ -70,6 +70,7 @@ final class RuleLabels
             'cart_categories' => __('Categories in the cart', 'wconvert'),
             'cart_quantity' => __('Total item quantity', 'wconvert'),
             'cart_amount' => __('Products after discounts', 'wconvert'),
+            'products_ready' => __('Has eligible product recommendations', 'wconvert'),
             'cart_has_items' => __('Has something in their cart', 'wconvert'),
             'cart_value_min' => __('Cart is worth at least', 'wconvert'),
         ];
@@ -222,6 +223,7 @@ final class RuleLabels
             'cart_categories' => __('their cart contains %2$s of categories %1$s; include subcategories: %3$s', 'wconvert'),
             'cart_quantity' => __('their cart item quantity is %1$s', 'wconvert'),
             'cart_amount' => __('their discounted products total is %1$s, excluding tax and shipping', 'wconvert'),
+            'products_ready' => __('eligible product recommendations are available', 'wconvert'),
             'cart_has_items' => __('their cart is not empty', 'wconvert'),
             /* translators: %1$s: a cart total in the store’s own currency, unformatted. */
             'cart_value_min' => __('their cart is worth at least %1$s', 'wconvert'),

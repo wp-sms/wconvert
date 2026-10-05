@@ -13,7 +13,7 @@ export function registerProductPreview(): void {
       const image = document.createElement('div'); image.style.cssText = 'aspect-ratio:1;background:var(--wc-border,#e6e8e3);border-radius:var(--wc-radius,.5rem);display:grid;place-items:center'; image.textContent = __('Product image', 'wconvert');
       const name = document.createElement('strong'); name.textContent = node.product_ids?.[i] ? `${__('Selected product', 'wconvert')} #${node.product_ids[i]}` : __('Your accessory', 'wconvert');
       const price = document.createElement('span'); price.textContent = __('Current store price', 'wconvert');
-      const action = document.createElement('span'); action.className = 'wc-button'; action.textContent = __('View product', 'wconvert');
+      const action = document.createElement('span'); action.className = 'wc-button'; action.textContent = node.action === 'add_to_cart' ? __('Add to cart', 'wconvert') : __('View product', 'wconvert');
       card.append(image, name, price, action); host.append(card);
     }
     return host;

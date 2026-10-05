@@ -179,6 +179,11 @@ final class ProServiceProvider implements ServiceProvider
 
     public function boot(ServiceContainer $container): void
     {
+        // Existing receipts must expire even after WooCommerce or the module is disabled.
+        add_action('wconvert_cart_claim_expired', static function (string $key): void {
+            if (preg_match('/^wconvert_cart_claim_[a-f0-9]{64}$/D', $key)) delete_option($key);
+        });
+
         // Question journeys exist on this install because the module that runs
         // them shipped in this ZIP, and that registration is the whole of the
         // entitlement (ADR 0116). The module has no PHP of its own, so its
@@ -362,7 +367,9 @@ final class ProServiceProvider implements ServiceProvider
         if (class_exists(CartCookie::class) && $site->has(SiteDependency::WooCommerce)) {
             add_filter('wconvert_privacy_browser_storage', [CartCookie::class, 'privacy']);
             $container->resolve(CartCookie::class)->hooks();
-            (new \WConvert\Pro\Module\CartRecovery\CommerceContext($container->resolve(PublishedSet::class), $container->resolve(\WConvert\Rules\Degradation::class), $container->resolve(\WConvert\Rest\RateLimit::class)))->hooks();
+            $commerce = new \WConvert\Pro\Module\CartRecovery\CommerceContext($container->resolve(PublishedSet::class), $container->resolve(\WConvert\Rules\Degradation::class), $container->resolve(\WConvert\Rest\RateLimit::class));
+            $commerce->hooks();
+            (new \WConvert\Pro\Module\CartRecovery\CartAddition($container->resolve(PublishedSet::class), $container->resolve(\WConvert\Rules\Degradation::class), $container->resolve(\WConvert\Rest\RateLimit::class), $commerce, $container->resolve(\WConvert\Stats\StatsRepository::class)))->hooks();
         }
 
         // The same guard free's loader sits behind, and for the same reason:

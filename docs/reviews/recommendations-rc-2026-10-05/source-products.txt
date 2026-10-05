@@ -1,0 +1,22 @@
+PASS guest: real classic product template emits signed page context and automatic candidate
+PASS guest: empty basket allows product context while old and new basket campaigns stay hidden
+PASS guest: absent, forged and signed private-product contexts cannot show recommendations
+PASS guest: another public product does not match the chosen main product
+PASS guest: main product narrows cross-sell seeds and excludes an extra already in the basket
+PASS guest: all extras already in the basket suppress the offer; unrelated basket does not satisfy main-product mode
+PASS guest: main product with every extra already present has no remaining recommendations
+PASS authenticated: real classic product template emits signed page context and automatic candidate
+PASS authenticated: empty basket allows product context while old and new basket campaigns stay hidden
+PASS authenticated: absent, forged and signed private-product contexts cannot show recommendations
+PASS authenticated: another public product does not match the chosen main product
+PASS authenticated: main product narrows cross-sell seeds and excludes an extra already in the basket
+PASS authenticated: all extras already in the basket suppress the offer; unrelated basket does not satisfy main-product mode
+PASS authenticated: main product with every extra already present has no remaining recommendations
+PASS admin: sample viewed product is separate from basket and refuses private products
+PASS admin: selected source skips sold-out, draft, private and main products before choosing available extras
+PASS admin: unavailable shortlist and missing cross-sells give distinct explanations without substitutes
+PASS admin: unknown basket and missing consent cannot show recommendations
+PASS admin: basket exclusion follows the merchant setting
+PASS admin: sample visits leave the real two-item basket unchanged
+PASS block theme: saved product template renders manual campaign anchor and page context without automatic duplicate
+21 product recommendation integration checks passed

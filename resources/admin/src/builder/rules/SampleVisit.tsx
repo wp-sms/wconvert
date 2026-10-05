@@ -46,6 +46,7 @@ export default function SampleVisit({ value, vocabulary, onClose, template, cart
   const usesBasket = cartRules.length > 0 || !!products;
   const basketEnabled = usesBasket && commerceSupported();
   const preview = useBasketPreview(basketEnabled, basket, cartRules, products);
+  const checkingBasket = basketEnabled && !preview.result && !preview.error;
   const basketAllowed = !usesBasket || (basketEnabled && !!preview.result && preview.result.eligible && (!cartRequired || preview.result.rules[requiredCartId] === true));
   const types = [...vocabulary.targeting, ...vocabulary.conditions, ...vocabulary.triggers];
   const isGesture = (type: string) => ['exit_intent', 'scroll_up', 'click_element'].includes(type);
@@ -86,7 +87,7 @@ export default function SampleVisit({ value, vocabulary, onClose, template, cart
       </DialogHeader>
       <div className="wconvert-sample-result" data-passes={passes} role="status" aria-live="polite" aria-atomic="true">
         <ResultIcon aria-hidden="true" />
-        <div><strong>{passes ? __('Would show', 'wconvert') : __('Would not show', 'wconvert')}</strong><p>{reason}</p></div>
+        <div><strong>{checkingBasket ? __('Checking…', 'wconvert') : passes ? __('Would show', 'wconvert') : __('Would not show', 'wconvert')}</strong><p>{reason}</p></div>
       </div>
       <div className="wconvert-sample-body">
         {basketEnabled && <><SampleBasket value={basket} onChange={next => change(setBasket, next)} result={preview.result} error={preview.error} products={products} legacyTotal={cartRules.some(rule => rule.type === 'cart_value_min')} />

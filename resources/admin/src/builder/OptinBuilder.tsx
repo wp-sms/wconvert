@@ -912,7 +912,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
             onClearElement={() => setSelection(null)}
             elementPanel={selection && nodeAt(entry.tree, selection.path)?.type !== 'question' ? <BlockInspector template={entry} labels={gallery.labels} path={selection.path} act={act}
               onChange={(next, coalesce) => edit({ template: next }, coalesce)} onSwap={next => edit({ template: next })}
-              endsAt={displayRules.schedule.ends_at} onSetEndDate={goToSchedule} onSelect={chooseFromTree}
+              endsAt={displayRules.schedule.ends_at} onSetEndDate={goToSchedule} onPlacement={goToInlinePlacement} onSelect={chooseFromTree}
               onDesign={() => { setTab('design'); designSettings(); }} onShowLayers={() => { setTab('design'); setShowLayers(true); setDrawer('layers'); }}
               look={<ScopeStyle key={selection.path.join('.')} template={entry} labels={gallery.labels} path={selection.path} openToken={openToken} onOpenToken={setOpenToken} onSelect={chooseFromTree}
                 onChange={next => edit({ template: next })} copied={copiedLook} onCopy={setCopiedLook} width={width === 'narrow' ? 'narrow' : 'tokens'} />} /> : undefined}
@@ -989,7 +989,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
                     onChange={(next, coalesce) => edit({ template: next }, coalesce)}
                     focus={focusRow}
                     endsAt={displayRules.schedule.ends_at}
-                    onSetEndDate={goToSchedule}
+                    onSetEndDate={goToSchedule} onPlacement={goToInlinePlacement}
                     compact={compact} drawer={drawer} onCloseDrawer={() => setDrawer(null)}
                     onDrawerFocusReturn={panel => (panel === 'layers' ? layersButton : designButton).current?.focus()}
                     showLayers={showLayers}

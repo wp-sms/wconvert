@@ -240,6 +240,8 @@ final class PackValidator
                 $this->keys($value, $this->portable ? ['label', 'href'] : ['label']);
                 if ($this->portable && isset($value['href'])) self::portableUrl($value['href']);
                 $this->words($value['label'] ?? null, 200);
+            } elseif ($type === 'products' && $key === 'main_product_id') {
+                self::check($value === 0, __('Choose the main product from this site after installing the design.', 'wconvert'));
             } elseif ($type === 'products' && $key === 'product_ids') {
                 self::check($value === [], __('Choose products from this site after installing the design.', 'wconvert'));
             } elseif ($key === 'options') {

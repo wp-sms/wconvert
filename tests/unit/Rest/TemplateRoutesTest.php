@@ -234,12 +234,12 @@ final class TemplateRoutesTest extends TestCase
             // BOTTOM paid rung — so the upsell names the cheapest tier that
             // actually carries the design rather than the most expensive one
             // (ADR 0056). At launch every rung displays as "Pro" regardless.
-            $this->assertSame($card['id'] === 'cart-accessories' ? 'elite' : 'basic', $card['tier']);
+            $this->assertSame(in_array($card['id'], ['cart-accessories', 'cart-additions'], true) ? 'elite' : 'basic', $card['tier']);
             $this->assertArrayNotHasKey('tree', $card);
             // Fullscreen (ADR 0098), decision-support and contextual enquiry
             // designs have no published marketing pages yet. Their cards
             // stay informational; never invent a preview URL for this test.
-            if (in_array($card['id'], ['cart-accessories', 'fullscreen-editorial', 'fullscreen-split', 'fullscreen-poster', 'gift-edit', 'space-planner', 'kit-workbench', 'service-directory', 'project-route', 'reading-path', 'slide-in-question', 'session-card', 'split-notice', 'margin-note', 'sample-envelope', 'availability-note', 'inline-signpost', 'callback-slip', 'launch-index'], true)) {
+            if (in_array($card['id'], ['cart-accessories', 'cart-additions', 'fullscreen-editorial', 'fullscreen-split', 'fullscreen-poster', 'gift-edit', 'space-planner', 'kit-workbench', 'service-directory', 'project-route', 'reading-path', 'slide-in-question', 'session-card', 'split-notice', 'margin-note', 'sample-envelope', 'availability-note', 'inline-signpost', 'callback-slip', 'launch-index'], true)) {
                 $this->assertEmpty($card['preview_url'] ?? null);
             } else {
                 $this->assertNotEmpty($card['preview_url'] ?? null, $card['id'] . ' is locked with nowhere to send the merchant');

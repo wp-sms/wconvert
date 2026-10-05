@@ -57,6 +57,8 @@
 /vite.config.admin-pro.mjs
 /vite.config.block-pro.mjs
 /vite.config.analytics.mjs
+/vite.config.commerce.mjs
+/vite.config.revenue.mjs
 /vite.config.loader-pro-basic.mjs
 /vite.config.loader-pro-pro.mjs
 /vite.config.loader-pro-elite.mjs

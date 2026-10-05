@@ -39,6 +39,7 @@ final class RevenueHooks
         add_action('wconvert_frontend_entries', function (array $entries): void { $this->entries = array_values($entries); });
         add_action('wp_enqueue_scripts', [$this, 'enqueue'], 15);
         add_filter('wconvert_pro_loader_dependencies', static function (array $deps): array { if (wp_script_is(self::HANDLE, 'enqueued')) $deps[] = self::HANDLE; return $deps; });
+        add_action('wconvert_cart_addition_accepted', function (string $id): void { $this->remember($id, false, null, true); });
         add_action('wc_ajax_wconvert_interaction', [$this, 'interaction']);
         add_action('wconvert_submission_accepted', function (string $id): void {
             try {
@@ -141,7 +142,7 @@ final class RevenueHooks
         wp_send_json_success();
     }
 
-    private function remember(string $id, bool $capture, ?string $event = null): bool
+    private function remember(string $id, bool $capture, ?string $event = null, bool $addition = false): bool
     {
         try {
             if (!$this->active() || !Attribution::consent()) return false;
@@ -150,7 +151,7 @@ final class RevenueHooks
             $entry = array_column($set, null, 'id')[$id] ?? null;
             if (!is_array($entry)) return false;
             $metadata = Metadata::forEntries([['id' => $id] + $entry['payload']], $set)[$id] ?? null;
-            if ($metadata === null || (!$capture && $metadata['outcome'] === 'capture')) return false;
+            if ($metadata === null || ($metadata['outcome'] === 'addition' && !$addition) || (!$capture && $metadata['outcome'] === 'capture')) return false;
             if ($event !== null) {
                 // Claim the browser event once, including concurrent/replayed requests. Its
                 // timestamp expires before cleanup, so an old exact request cannot reopen credit.

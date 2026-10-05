@@ -473,8 +473,13 @@
       ],
       "roles": [],
       "choices": {
-        "phone_country": ["site"],
-        "phone_dropdown": ["true", "false"],
+        "phone_country": [
+          "site"
+        ],
+        "phone_dropdown": [
+          "true",
+          "false"
+        ],
         "required": [
           "true",
           "false"
@@ -496,16 +501,43 @@
       ]
     },
     "question": {
-      "content": ["label", "help", "options"],
+      "content": [
+        "label",
+        "help",
+        "options"
+      ],
       "copy": [],
-      "params": ["answer_type", "required", "tokens", "narrow"],
+      "params": [
+        "answer_type",
+        "required",
+        "tokens",
+        "narrow"
+      ],
       "roles": [],
       "choices": {
-        "answer_type": ["single", "multi", "text"],
-        "required": ["true", "false"]
+        "answer_type": [
+          "single",
+          "multi",
+          "text"
+        ],
+        "required": [
+          "true",
+          "false"
+        ]
       },
-      "defaults": {"answer_type": "single", "required": "false"},
-      "style_tokens": ["font", "text-size", "fg", "muted", "input-bg", "border", "radius"]
+      "defaults": {
+        "answer_type": "single",
+        "required": "false"
+      },
+      "style_tokens": [
+        "font",
+        "text-size",
+        "fg",
+        "muted",
+        "input-bg",
+        "border",
+        "radius"
+      ]
     },
     "button": {
       "content": [
@@ -609,7 +641,10 @@
       "content": [],
       "copy": [],
       "params": [
+        "action",
         "source",
+        "context",
+        "main_product_id",
         "product_ids",
         "exclude_cart",
         "tokens",
@@ -628,10 +663,15 @@
         "source": [
           "selected",
           "cross_sells"
+        ],
+        "action": [
+          "link",
+          "add_to_cart"
         ]
       },
       "defaults": {
-        "source": "selected"
+        "source": "selected",
+        "action": "link"
       }
     }
   },

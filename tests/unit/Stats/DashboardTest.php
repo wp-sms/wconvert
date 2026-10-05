@@ -30,6 +30,19 @@ use WConvert\Stats\StatRange;
 #[CoversClass(Dashboard::class)]
 final class DashboardTest extends TestCase
 {
+    public function testBasketActivityDoesNotInflateHeadlineOrOfferClicks(): void
+    {
+        $rows = self::counters();
+        $rows[] = ['optin_id' => self::OPTIN, 'stat_date' => '2026-08-25', 'kind' => 'cart_addition', 'count' => '140'];
+        $payload = Dashboard::of(self::range(), $rows, self::optin('increase_basket_value'));
+        $card = self::cardFor($payload, 'increase_basket_value');
+        self::assertSame(100, $card['headline']);
+        self::assertSame(140, $card['items_added']);
+        $impact = array_column($payload['impact'], null, 'id');
+        self::assertSame(0, $impact['offers']['count']);
+        self::assertSame(100, $impact['additions']['count']);
+    }
+
     private const OPTIN = '01JQ0000000000000000000001';
 
     private static function range(): StatRange
