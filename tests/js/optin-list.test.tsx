@@ -20,6 +20,7 @@ const optins = vi.hoisted(() => ({
   createVariant: vi.fn(),
   declareWinner: vi.fn(),
   readCampaignPreviews: vi.fn(),
+  readProductHealth: vi.fn(),
   duplicateCampaign: vi.fn(),
 }));
 
@@ -61,6 +62,7 @@ const OPTIN = {
 beforeEach(() => {
   vi.clearAllMocks();
   optins.readCampaignPreviews.mockResolvedValue([]);
+  optins.readProductHealth.mockImplementation(async (ids: string[]) => ids.map(id => ({ id, basis: 'draft', checks: [] })));
   stats.readDashboard.mockResolvedValue({ days: 30, from: '2026-08-16', to: '2026-09-14', goals: [], impact: [] });
   optins.listOptins.mockResolvedValue([OPTIN]);
   goals.listGoals.mockResolvedValue([
@@ -78,6 +80,18 @@ it('copies the full campaign ID from details without publishing', async () => {
   expect(await screen.findByText('ID copied.')).toHaveAttribute('role', 'status');
   expect(optins.publishOptin).not.toHaveBeenCalled();
   write.mockRestore();
+});
+
+it('opens product warnings with the affected selection and an editor action', async () => {
+  optins.readProductHealth.mockResolvedValue([{ id: OPTIN.id, basis: 'published', checks: [{ label: 'Brewing', state: 'warning', message: 'No available products match. Review this result’s filters.' }] }]);
+  const edit = vi.fn();
+  render(<OptinList onEdit={edit} />);
+  await userEvent.click(await screen.findByRole('button', { name: '1 product warning' }));
+  const dialog = screen.getByRole('dialog');
+  expect(within(dialog).getByText('Published version · current catalog')).toBeInTheDocument();
+  expect(within(dialog).getByText('Brewing')).toBeInTheDocument();
+  await userEvent.click(within(dialog).getByRole('button', { name: 'Review products' }));
+  expect(edit).toHaveBeenCalledWith(OPTIN.id);
 });
 
 it('selects the campaign ID for manual copying when clipboard permission is refused', async () => {

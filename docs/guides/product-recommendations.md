@@ -156,3 +156,23 @@ If an addition cannot be confirmed, check the basket before trying elsewhere.
 In **Campaign details → Product activity**, review Shown, Clicked and Added.
 Completing the quiz remains the campaign result; cart additions are separate.
 These counts do not show purchases or prove that recommendations increased sales.
+
+## Find product problems
+
+Open **Campaigns**. Product checks run for the campaigns on the current page.
+Click a **product warning** to see the affected selection and what to change,
+then choose **Review products** to open the editor. Checks use the published version if one exists;
+otherwise they use the saved draft. Unpublished edits do not repair a live warning.
+
+Checks cover unavailable selected products (including reserves), missing main
+products, empty category matches, missing categories or attributes, missing
+cross-sells and unsupported direct-add offers. A quiz's link-only fallback is
+allowed. Variable quiz products can still use their product links.
+
+After changing products or stock, click **Check products again**. A failed read
+says products could not be checked. Basket-dependent cross-sells need a sample
+visit in the editor. These are catalog checks, not proof that a campaign will
+appear for every visitor; display rules and basket exclusions still apply.
+
+Checks do not change products, baskets, campaigns or activity counts. They run
+when you open the list or ask to recheck, not as background monitoring.

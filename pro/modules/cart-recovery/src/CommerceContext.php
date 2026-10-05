@@ -18,6 +18,7 @@ final class CommerceContext
     public function hooks(): void
     {
         add_filter('wconvert_commerce', '__return_true');
+        add_filter('wconvert_check_products', [new ProductHealth($this), 'check'], 10, 3);
         add_action('wc_ajax_wconvert_cart_context', [$this, 'serve']);
         add_filter('wconvert_payload_entries', [$this, 'annotate']);
         add_filter('wconvert_payload_attributes', [$this, 'attributes'], 10, 2);
@@ -375,7 +376,7 @@ final class CommerceContext
     }
 
     /** Only public parent products may provide page context. */
-    private static function publicProduct(int $id): bool
+    public static function publicProduct(int $id): bool
     {
         if ($id < 1) return false;
         $product = wc_get_product($id);

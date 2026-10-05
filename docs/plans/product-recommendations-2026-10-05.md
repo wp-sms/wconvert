@@ -2,6 +2,15 @@
 
 Date: 5 October 2026
 
+Maintenance extension: [ADR 0125](../adr/0125-product-warnings-are-current-catalog-advice.md)
+adds product warnings in Campaigns and campaign details. It checks current
+availability against the published version (or saved draft), with explicit
+unknown and basket-dependent states. This is the first recommended next feature
+approved after the quiz-cart work. Product ordering and in-card variation choices
+remain proposals, not part of this slice.
+Source and admin builds are checked locally; release ZIPs must be rebuilt to
+include this extension. See [maintenance verification](../testing/product-health-2026-10-05.md).
+
 Latest extension: [ADR 0124](../adr/0124-quiz-products-share-protected-cart-actions.md)
 adds quiz cart buttons and quiz product activity. The user confirmed there are no
 real users available yet and authorized us to choose and exercise realistic

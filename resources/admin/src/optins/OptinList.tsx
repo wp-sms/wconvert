@@ -71,6 +71,7 @@ import { StatusBadge } from './StatusBadge';
 import './campaigns.css';
 
 import { CampaignId } from './CampaignId';
+import { ProductHealthDetails, productHealthLabel, useProductHealth } from './ProductHealth';
 
 const Design = lazy(() => import('./CampaignDesign'));
 const Details = lazy(() => import('./CampaignDetails'));
@@ -216,6 +217,7 @@ export function OptinList({
   const shown = visible.slice(currentPage * PAGE_SIZE, (currentPage + 1) * PAGE_SIZE);
   const displayed = shown.flatMap((c) => (collapsed.has(c.id) ? [c] : family(c)));
   const ids = displayed.map((c) => c.id).join(',');
+  const productHealth = useProductHealth(ids, refreshKey);
   useEffect(() => {
     let active = true;
     setPreviews({});
@@ -281,7 +283,7 @@ export function OptinList({
     ['all', __('All', 'wconvert')],
     ['published', __('Published', 'wconvert')],
     ['draft', __('Drafts', 'wconvert')],
-    ['suspended', __('Needs attention', 'wconvert')],
+    ['suspended', __('Suspended', 'wconvert')],
   ] as const;
   const preview = (row: OptinSummary) => (
     <div className="wc-campaign-thumbnail">
@@ -365,6 +367,9 @@ export function OptinList({
             <p className="wc-campaign-note">{__('Unpublished changes', 'wconvert')}</p>
           )}
           {status === 'suspended' && <p className="wc-campaign-note">{row.suspended}</p>}
+          {productHealthLabel(productHealth.rows[row.id]) && <button type="button" className="wc-product-health-link" aria-haspopup="dialog" onClick={e => openDetails(row, e.currentTarget)}>
+            {productHealthLabel(productHealth.rows[row.id])}
+          </button>}
         </DataTableCell>
         <DataTableCell label={__('Results', 'wconvert')} numeric className="wc-campaign-results">
           {reportReady && result ? (
@@ -518,6 +523,10 @@ export function OptinList({
                 </div>
               </div>
             </div>
+            {ids && <div className="wc-product-health-toolbar">
+              <span role="status">{productHealth.loading ? __('Checking products…', 'wconvert') : productHealth.failed ? __('Product checks unavailable.', 'wconvert') : __('Product checks for this page.', 'wconvert')}</span>
+              <Button variant="ghost" disabled={productHealth.loading} onClick={productHealth.recheck}>{__('Check products again', 'wconvert')}</Button>
+            </div>}
             {list.status === 'ready' && rows.length === 0 ? (
               <EmptyState
                 icon={Megaphone}
@@ -644,6 +653,12 @@ export function OptinList({
           </DialogHeader>
           {selected && (
             <>
+              <ProductHealthDetails health={productHealth.rows[selected.id]} loading={productHealth.loading} failed={productHealth.failed} onRecheck={productHealth.recheck} reviewDisabled={busy.size > 0} onReview={() => {
+                if (busyRef.current.size > 0) return;
+                const id = selected.id;
+                setSelected(null);
+                onEdit(id);
+              }} />
               {preview(selected)}
               <StatusBadge status={statusOf(selected)} />
               {statusOf(selected) === 'published' && selected.has_unpublished_changes && (

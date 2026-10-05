@@ -1591,6 +1591,11 @@ no separate list of premium capabilities to keep in step.
 
 ### Suspended
 
+Product warnings in Campaigns are separate, advisory catalog checks. They read
+the published version (or saved draft) without changing Campaign state; missing
+products, incomplete reads and visitor-basket dependencies stay distinct. See
+[ADR 0125](docs/adr/0125-product-warnings-are-current-catalog-advice.md).
+
 An [[Optin]] that exists and is published but is **not shown**, because a rule it
 depends on is no longer available on this install — [[Pro]] was deactivated, or
 WooCommerce was.

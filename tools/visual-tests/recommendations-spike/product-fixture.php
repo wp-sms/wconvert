@@ -1,6 +1,13 @@
 <?php
 /** TEST ONLY: mount in the disposable Playground. */
 defined('ABSPATH') || exit;
+add_action('init', static function (): void {
+    // Test the ordinary quiz reader and an actual Store API failure independently.
+    if (($_GET['wconvert_health_mode'] ?? '') === 'links') remove_all_filters('wconvert_check_products');
+    if (($_GET['wconvert_health_mode'] ?? '') === 'read_error') add_filter('rest_pre_dispatch', static function ($response, $server, $request) {
+        return $request->get_route() === '/wc/store/v1/products' ? new WP_Error('fixture_unavailable', 'Catalog unavailable', ['status' => 503]) : $response;
+    }, 10, 3);
+}, 100);
 add_action('template_redirect', static function (): void {
     if (!isset($_GET['wconvert_recommendations_fixture'])) return;
     update_option('woocommerce_coming_soon', 'no');
