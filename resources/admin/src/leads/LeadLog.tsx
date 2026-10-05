@@ -18,6 +18,7 @@ import { Toolbar, ToolbarCount } from '../shell/Toolbar';
 import { LOADING, failed, messageOf, ready, type Loadable } from '../shell/loadable';
 import { canExport, eraseIdentifier, exportLeads, readLog, type LeadGroup, type LeadLog as LeadLogPayload, type LeadPage, type LeadQuery } from './api';
 import { EventTable } from './EventTable';
+import { journeysSupported } from '../settings';
 import { RetentionSummary } from './RetentionSummary';
 import { flattened, listOptins, type OptinSummary } from '../optins/api';
 import { leadsHref } from '../nav';
@@ -108,6 +109,9 @@ export function LeadLog({ query, onQueryChange, onRefresh }: LeadLogProps) {
   };
   const data = log.status === 'ready' ? log.data : null;
   const csv = data !== null && canExport();
+  // Question answers exist only where journeys run, or where a removed module
+  // left answered submissions behind (ADR 0127).
+  const questionCsv = csv && (journeysSupported() || data.leads.some((lead) => (lead.question_answers?.length ?? 0) > 0));
   const shownGrouped = applied.query.grouped === true;
   const hasAppliedFilters = queryKeyOf(applied.query) !== '{}';
   const rows = data === null ? 0 : shownGrouped ? data.groups.length : data.leads.length;
@@ -131,7 +135,7 @@ export function LeadLog({ query, onQueryChange, onRefresh }: LeadLogProps) {
     {csv && <PageAction><Button variant="outline" onClick={() => exportLeads(applied.query)}>
       <Download aria-hidden="true" />{__('Export matching submissions', 'wconvert')}
     </Button></PageAction>}
-    {csv && <PageAction><Button variant="outline" onClick={() => exportLeads(applied.query, 'questions')}>
+    {questionCsv && <PageAction><Button variant="outline" onClick={() => exportLeads(applied.query, 'questions')}>
       <Download aria-hidden="true" />{__('Export question answers', 'wconvert')}
     </Button></PageAction>}
     <Region label={__('Submissions', 'wconvert')}>

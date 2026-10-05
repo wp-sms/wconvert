@@ -224,6 +224,19 @@ describe('impact overview', () => {
     ).toBeNull();
     expect(api.readDashboard).toHaveBeenCalledWith(null, true);
   });
+  it('shows no cart results on a site that cannot run cart campaigns (ADR 0127)', async () => {
+    render(<Dashboard />);
+    await screen.findByRole('heading', { name: 'What WConvert brought to your site' });
+    expect(screen.queryByRole('link', { name: /Cart return clicks/ })).toBeNull();
+    expect(screen.getByRole('link', { name: /Offer link clicks/ })).toBeInTheDocument();
+  });
+  it('keeps cart results where the cart module runs', async () => {
+    window.wconvertAdmin = { exportUrl: '', commerce: true };
+    try {
+      render(<Dashboard />);
+      expect(await screen.findByRole('link', { name: /Cart return clicks/ })).toBeInTheDocument();
+    } finally { delete window.wconvertAdmin; }
+  });
   it('toggles the previous period without fetching or discarding the current result', async () => {
     render(<Dashboard />);
     const toggle = await screen.findByRole('switch', {
