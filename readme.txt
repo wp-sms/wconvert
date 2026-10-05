@@ -315,12 +315,12 @@ logos.
 
 == Screenshots ==
 
-1. Your campaign on your site, in your theme.
-2. Pick a goal, then a ready-made setup.
-3. Every part of the design stays editable.
-4. An inline form placed with the Inline Campaign block.
-5. Results by goal, compared with the previous period.
-6. Every submission, with the consent the visitor saw, and CSV export.
+1. Lead capture that looks like your site: one popup, on desktop and on a phone.
+2. Start from what you want to achieve: pick a goal, then a ready-made setup.
+3. Change any word, colour or field, right beside the design.
+4. Forms right where your readers are, placed with the Inline Campaign block.
+5. See what each campaign brings in, compared with the previous period.
+6. Every lead, with the consent wording the visitor saw.
 
 == Changelog ==
 
