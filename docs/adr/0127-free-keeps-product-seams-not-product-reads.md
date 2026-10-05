@@ -59,3 +59,9 @@ never rendered on free, so carrying them was cost without use.
 by default, so the picker's Template packs tab and the goal screen's Browse
 template packs button appear only when `TemplateCatalog::configured()` is true.
 A premium pack's "Pro" badge never renders on free.
+
+**Two zeros free cannot earn are not drawn.** Analytics hides the cart-return
+and basket-addition cards where the cart module is absent and nothing was
+recorded for them; the report data, monthly targets and period comparison are
+unchanged. Leads offers the question-answer export where journeys run, or where
+the listed submissions already carry answers, so a downgraded site keeps it.
