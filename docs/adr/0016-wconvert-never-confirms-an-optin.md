@@ -18,7 +18,9 @@ columns back.
 
 **It contradicts the Destination contract.** [ADR 0007](0007-destinations-are-outbound-and-fallible.md)
 made data flow one-way at capture time: WConvert never reads [[Contact]] state
-back and never has an opinion about who is subscribed. Confirming an opt-in is
+back and never has an opinion about who is subscribed. (*Amended by
+[ADR 0128](0128-a-push-may-ask-whether-a-contact-exists.md):* a push may ask
+whether a Contact exists, never its status.) Confirming an opt-in is
 reading *and* mutating exactly that state. Owning double opt-in would not bend
 that rule, it would delete it.
 

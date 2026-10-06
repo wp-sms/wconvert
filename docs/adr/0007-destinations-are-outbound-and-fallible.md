@@ -112,3 +112,7 @@ nothing to read.
   ESPs require an audience id, and making the merchant paste one by hand is a
   support burden with no privacy benefit: reading the list of audiences reveals
   nothing about any person.
+  *Amended by [ADR 0128](0128-a-push-may-ask-whether-a-contact-exists.md):* a
+  queued push may ask whether a Contact exists, and read its provider id only,
+  where the provider cannot sequence a create and a follow-up write (Mailtrap).
+  It still never reads status, membership, suppression or field values.

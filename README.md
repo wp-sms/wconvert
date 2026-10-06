@@ -410,8 +410,9 @@ uses the merchant's own address and can enter the selected marketing list.
 
 Mailtrap has no name field of its own, so a Mailtrap Destination also chooses
 which text field the name goes to, preselected to `first_name` when the account
-has one. Every write is an upsert. In keep mode a new Contact gets its details
-before it joins the list, and an existing one only joins the list. An enquiry
+has one. Mailtrap applies a write seconds after answering, so each push looks
+the address up and writes once: a new Contact is created with its details and
+list together, and in keep mode an existing one only joins the list. An enquiry
 is a Mailtrap Contact on no list. WConvert never sends a subscription status
 or removes a list, and Mailtrap's API has no double opt-in, so a new marketing
 Contact lands subscribed.

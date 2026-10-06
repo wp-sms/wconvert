@@ -12,7 +12,7 @@ use WConvert\Support\Tier;
 
 defined('ABSPATH') || exit;
 
-/** Email Contacts upserted into Mailtrap, joining one list, never touching subscription status. */
+/** Email Contacts created in Mailtrap, joining one list, never touching subscription status. */
 final class MailtrapDestinationType implements DestinationType
 {
     public function id(): string { return 'mailtrap'; }
@@ -20,7 +20,7 @@ final class MailtrapDestinationType implements DestinationType
     public function icon(): string { return 'mail'; }
     public function tier(): Tier { return Tier::Elite; }
     public function requires(): ?\WConvert\Support\SiteDependency { return null; }
-    /** A push makes at most two writes; Mailtrap allows 200 Contacts API requests per minute. */
+    /** A push makes one lookup and at most one write; Mailtrap allows 200 Contacts API requests per minute. */
     public function throughput(): int { return 60; }
     /** @return array<string, mixed> */
     public function connectionSchema(): array { return ['api_token' => ['type' => 'password', 'label' => __('Mailtrap API token', 'wconvert')]]; }
@@ -115,38 +115,47 @@ final class MailtrapDestinationType implements DestinationType
             if (self::isTag($tag) && !in_array($tag, ['email', $nameField], true) && trim($value) !== '') $fields[$tag] = $value;
         }
         // Enquiries may be stored as Contacts but must not enter a marketing list.
-        $join = $subject->purpose === 'email_marketing' ? ['list_ids_included' => [$listId]] : [];
+        $marketing = $subject->purpose === 'email_marketing';
         try {
-            if (($context->settings['existing_contact'] ?? 'keep') === 'update') {
-                return $this->upsert($context->credentials, $email, ($fields !== [] ? ['fields' => $fields] : []) + $join)[0];
+            // Mailtrap applies a write seconds after answering and refuses a second one meanwhile, so a
+            // create-then-fix-up sequence is not possible: look the address up, then write exactly once.
+            // Only existence and the id are read — never status or lists (CONTEXT: Destination).
+            [$found, $existing] = $this->request($context->credentials, 'GET', '/contacts/' . rawurlencode($email));
+            if ($found === 404) {
+                $contact = ($fields !== [] ? ['fields' => $fields] : []) + ($marketing ? ['list_ids' => [$listId]] : []);
+                return $this->outcome(...$this->request($context->credentials, 'POST', '/contacts', ['contact' => ['email' => $email] + $contact]));
             }
-            // Keep: create bare first, so an existing Contact's details are never overwritten.
-            [$first, $isNew] = $this->upsert($context->credentials, $email, []);
-            if ($first->isFailure()) return $first;
-            // Fields before the list, so an "added to list" automation already sees the name.
-            $change = ($isNew && $fields !== [] ? ['fields' => $fields] : []) + $join;
-            return $change === [] ? $first : $this->upsert($context->credentials, $email, $change)[0];
+            if ($found !== 200) return $this->failure($found);
+            $id = $existing['data']['id'] ?? null;
+            if (!is_string($id) || !preg_match('/^[A-Za-z0-9-]{1,64}$/D', $id)) return PushResult::retryable(__('Mailtrap is temporarily unavailable.', 'wconvert'));
+            // Keep: an existing Contact's details stay as they are; a signup only adds the list.
+            $update = ($context->settings['existing_contact'] ?? 'keep') === 'update' && $fields !== [] ? ['fields' => $fields] : [];
+            $change = $update + ($marketing ? ['list_ids_included' => [$listId]] : []);
+            if ($change === []) return PushResult::success();
+            return $this->outcome(...$this->request($context->credentials, 'PATCH', '/contacts/' . $id, ['contact' => ['email' => $email] + $change]));
         } catch (\Throwable $failure) {
             return PushResult::retryable(__('Mailtrap could not be reached. The result may be uncertain.', 'wconvert'));
         }
     }
 
-    /** The one write, an upsert that says whether it created. Never `unsubscribed` or `list_ids_excluded`.
-     * @param array<string, mixed> $credentials
-     * @param array<string, mixed> $change
-     * @return array{PushResult, bool}
+    /**
+     * Of a write. Never `unsubscribed` or `list_ids_excluded` is sent, so status and membership only
+     * ever grow. A 422 naming the email means another write for the address has not landed yet.
+     *
+     * @param array<mixed> $body
      */
-    private function upsert(array $credentials, string $email, array $change): array
+    private function outcome(int $status, array $body = []): PushResult
     {
-        [$status, $body] = $this->request($credentials, 'PATCH', '/contacts/' . rawurlencode($email), ['contact' => ['email' => $email] + $change]);
-        return [$status >= 200 && $status < 300 ? PushResult::success() : $this->failure($status), ($body['action'] ?? null) === 'created'];
+        if ($status >= 200 && $status < 300) return PushResult::success();
+        return $this->failure($status === 422 && isset($body['errors']['email']) ? 409 : $status);
     }
 
     /** By status alone: Mailtrap's error bodies differ by endpoint, and none of them is shown. */
     private function failure(int $status): PushResult
     {
         if ($status === 401 || $status === 403) return PushResult::attention(__('Mailtrap access was refused. Check this account.', 'wconvert'));
-        if ($status === 429 || $status >= 500) return PushResult::retryable(__('Mailtrap is temporarily unavailable.', 'wconvert'));
+        // 409: the Contact is still being written by an earlier request.
+        if ($status === 409 || $status === 429 || $status >= 500) return PushResult::retryable(__('Mailtrap is temporarily unavailable.', 'wconvert'));
         return PushResult::terminal(__('Mailtrap rejected this contact or list.', 'wconvert'));
     }
 

@@ -176,74 +176,102 @@ namespace WConvert\Tests\Unit\Pro\Destination {
             return json_decode($this->calls[$call][1]['body'], true);
         }
 
-        public function testMailtrapNewContactGetsItsDetailsBeforeJoiningTheList(): void
+        /** Mailtrap's answer to a write for an address it already holds, as seen on a live account. */
+        private const TAKEN = [422, ['errors' => ['email' => ['has already been taken']]]];
+        private const ABSENT = [404, ['error' => 'Not Found']];
+        /** The lookup's answer for a Contact that exists. Status and lists are there too; the adapter reads only the id. */
+        private const PRESENT = [200, ['data' => ['id' => '018dd5e3-f6d2-7c00', 'status' => 'unsubscribed', 'list_ids' => [3]]]];
+
+        public function testMailtrapNewContactIsCreatedWithItsDetailsAndListInOneWrite(): void
         {
-            $this->reply([[200, ['action' => 'created']], [200, ['action' => 'updated']]]);
+            $this->reply([self::ABSENT, [201, ['data' => ['id' => 'c1']]]]);
             $result = $this->mailtrap(PushSubject::test(['email' => 'a+b@example.com', 'name' => 'Ada Lovelace'], ['company' => 'Engines']));
             self::assertSame(PushOutcome::Success, $result->outcome);
             self::assertCount(2, $this->calls);
-            self::assertSame('PATCH', $this->calls[0][1]['method']);
+            self::assertSame('GET', $this->calls[0][1]['method']);
             self::assertSame('https://mailtrap.io/api/contacts/a%2Bb%40example.com', $this->calls[0][0]);
             self::assertSame('secret', $this->calls[0][1]['headers']['Api-Token']);
-            self::assertSame(['contact' => ['email' => 'a+b@example.com']], $this->sent(0));
+            self::assertSame('POST', $this->calls[1][1]['method']);
+            self::assertSame('https://mailtrap.io/api/contacts', $this->calls[1][0]);
             self::assertSame(['contact' => ['email' => 'a+b@example.com',
-                'fields' => ['first_name' => 'Ada Lovelace', 'company' => 'Engines'], 'list_ids_included' => [7]]], $this->sent(1));
+                'fields' => ['first_name' => 'Ada Lovelace', 'company' => 'Engines'], 'list_ids' => [7]]], $this->sent(1));
         }
 
-        /** Also the losing side of a race: a second push for the same address sees `updated`. */
-        public function testMailtrapKeptContactOnlyJoinsTheList(): void
+        public function testMailtrapKeptContactOnlyJoinsTheListById(): void
         {
             $subject = PushSubject::test(['email' => 'a@example.com', 'name' => 'Ada'], ['company' => 'Engines']);
-            $this->reply([[200, ['action' => 'updated']], [200, ['action' => 'updated']]]);
+            $this->reply([self::PRESENT, [200, ['action' => 'updated']]]);
             self::assertSame(PushOutcome::Success, $this->mailtrap($subject)->outcome);
             self::assertCount(2, $this->calls);
+            self::assertSame('PATCH', $this->calls[1][1]['method']);
+            self::assertSame('https://mailtrap.io/api/contacts/018dd5e3-f6d2-7c00', $this->calls[1][0]);
             self::assertSame(['contact' => ['email' => 'a@example.com', 'list_ids_included' => [7]]], $this->sent(1));
 
             $enquiry = PushSubject::test(['email' => 'a@example.com', 'name' => 'Ada'], ['company' => 'Engines'], 'request');
-            $this->reply([[200, ['action' => 'updated']]]);
+            $this->reply([self::PRESENT]);
             self::assertSame(PushOutcome::Success, $this->mailtrap($enquiry)->outcome);
             self::assertCount(1, $this->calls);
         }
 
-        public function testMailtrapUpdateModeIsOneUpsertAndEnquiriesNeverJoinTheList(): void
+        /** Mailtrap applies a write seconds after answering, and refuses a second one to that Contact meanwhile. */
+        public function testMailtrapContactStillBeingWrittenIsRetried(): void
+        {
+            $subject = PushSubject::test(['email' => 'a@example.com', 'name' => 'Ada']);
+            $cases = [
+                [self::ABSENT, [409, ['errors' => 'Contact exists']]],
+                [self::ABSENT, self::TAKEN],  // created by another push, not yet visible to the lookup
+                [self::PRESENT, [409, ['errors' => 'Contact exists or being updated']]],
+                [self::PRESENT, self::TAKEN],
+            ];
+            foreach (['keep', 'update'] as $mode) {
+                foreach ($cases as $replies) {
+                    $this->reply($replies);
+                    self::assertTrue($this->mailtrap($subject, ['existing_contact' => $mode])->retryable, $mode);
+                    self::assertCount(2, $this->calls);
+                }
+            }
+        }
+
+        public function testMailtrapUpdateModeWritesOnceAndEnquiriesNeverJoinTheList(): void
         {
             $subject = PushSubject::test(['email' => 'a@example.com', 'name' => 'Ada'], ['company' => 'Engines']);
-            foreach (['created', 'updated'] as $action) {
-                $this->reply([[200, ['action' => $action]]]);
-                self::assertSame(PushOutcome::Success, $this->mailtrap($subject, ['existing_contact' => 'update'])->outcome);
-                self::assertCount(1, $this->calls);
-                self::assertSame(['contact' => ['email' => 'a@example.com',
-                    'fields' => ['first_name' => 'Ada', 'company' => 'Engines'], 'list_ids_included' => [7]]], $this->sent(0));
-            }
+            $this->reply([self::PRESENT, [200, ['action' => 'updated']]]);
+            self::assertSame(PushOutcome::Success, $this->mailtrap($subject, ['existing_contact' => 'update'])->outcome);
+            self::assertSame('PATCH', $this->calls[1][1]['method']);
+            self::assertSame(['contact' => ['email' => 'a@example.com',
+                'fields' => ['first_name' => 'Ada', 'company' => 'Engines'], 'list_ids_included' => [7]]], $this->sent(1));
+            $this->reply([self::ABSENT, [201, []]]);
+            self::assertSame(PushOutcome::Success, $this->mailtrap($subject, ['existing_contact' => 'update'])->outcome);
+            self::assertSame('POST', $this->calls[1][1]['method']);
 
             $enquiry = PushSubject::test(['email' => 'a@example.com', 'name' => 'Ada'], [], 'request');
-            $this->reply([[200, ['action' => 'created']]]);
+            $this->reply([self::PRESENT, [200, []]]);
             self::assertSame(PushOutcome::Success, $this->mailtrap($enquiry, ['existing_contact' => 'update'])->outcome);
-            self::assertSame(['contact' => ['email' => 'a@example.com', 'fields' => ['first_name' => 'Ada']]], $this->sent(0));
-            $this->reply([[200, ['action' => 'created']], [200, ['action' => 'updated']]]);
+            self::assertSame(['contact' => ['email' => 'a@example.com', 'fields' => ['first_name' => 'Ada']]], $this->sent(1));
+            $this->reply([self::ABSENT, [201, []]]);
             self::assertSame(PushOutcome::Success, $this->mailtrap($enquiry)->outcome);
             self::assertSame(['contact' => ['email' => 'a@example.com', 'fields' => ['first_name' => 'Ada']]], $this->sent(1));
+            // Nothing to change on an existing Contact: no write at all.
+            $this->reply([self::PRESENT]);
+            self::assertSame(PushOutcome::Success, $this->mailtrap(PushSubject::test(['email' => 'a@example.com'], [], 'request'), ['existing_contact' => 'update'])->outcome);
+            self::assertCount(1, $this->calls);
         }
 
         public function testMailtrapSendsOnlyNonEmptyValuesForValidUnreservedFields(): void
         {
             $mapped = ['company' => 'Engines', 'role' => '  ', 'email' => 'b@example.com', 'first_name' => 'Ignored',
                 '9lives' => 'x', 'has-dash' => 'x'];
-            $this->reply([[200, ['action' => 'created']], [200, ['action' => 'updated']]]);
+            $this->reply([self::ABSENT, [201, []]]);
             $this->mailtrap(PushSubject::test(['email' => 'a@example.com', 'name' => 'Ada'], $mapped));
             self::assertSame(['first_name' => 'Ada', 'company' => 'Engines'], $this->sent(1)['contact']['fields']);
 
-            $this->reply([[200, ['action' => 'created']], [200, ['action' => 'updated']]]);
+            $this->reply([self::ABSENT, [201, []]]);
             $this->mailtrap(PushSubject::test(['email' => 'a@example.com', 'name' => 'Ada'], ['first_name' => 'Kept']), ['name_field' => '']);
             self::assertSame(['first_name' => 'Kept'], $this->sent(1)['contact']['fields']);
 
-            $this->reply([[200, ['action' => 'created']]]);
+            $this->reply([self::ABSENT, [201, []]]);
             $this->mailtrap(PushSubject::test(['email' => 'a@example.com'], [], 'request'), ['name_field' => '']);
-            self::assertCount(1, $this->calls);
-
-            $this->reply([[200, ['action' => 'created']]]);
-            $this->mailtrap(PushSubject::test(['email' => 'a@example.com'], [], 'request'), ['existing_contact' => 'update']);
-            self::assertSame(['contact' => ['email' => 'a@example.com']], $this->sent(0));
+            self::assertSame(['contact' => ['email' => 'a@example.com']], $this->sent(1));
         }
 
         public function testMailtrapRefusesBadInputBeforeAnyRequest(): void
@@ -261,11 +289,14 @@ namespace WConvert\Tests\Unit\Pro\Destination {
             self::assertSame([], $this->calls);
         }
 
-        public function testMailtrapClassifiesEachWriteByStatus(): void
+        public function testMailtrapClassifiesEachRequestByStatus(): void
         {
             $subject = PushSubject::test(['email' => 'a@example.com', 'name' => 'Ada']);
-            foreach ([401 => 'attention', 403 => 'attention', 429 => 'retry', 500 => 'retry', 503 => 'retry', 422 => 'terminal', 404 => 'terminal'] as $status => $kind) {
-                foreach ([[[$status, ['errors' => 'secret detail']]], [[200, ['action' => 'created']], [$status, ['error' => 'secret detail']]]] as $replies) {
+            $kinds = [401 => 'attention', 403 => 'attention', 409 => 'retry', 429 => 'retry', 500 => 'retry', 503 => 'retry', 422 => 'terminal', 400 => 'terminal'];
+            foreach ($kinds as $status => $kind) {
+                // A 422 that names a field or list rather than the email is a rejected value.
+                $body = $status === 422 ? ['errors' => ['fields' => ['contains invalid values: secret detail']]] : ['errors' => 'secret detail'];
+                foreach ([[[$status, $body]], [self::ABSENT, [$status, $body]], [self::PRESENT, [$status, $body]]] as $replies) {
                     $this->reply($replies);
                     $result = $this->mailtrap($subject);
                     self::assertSame(PushOutcome::Failed, $result->outcome, "{$status} must fail");
@@ -275,25 +306,29 @@ namespace WConvert\Tests\Unit\Pro\Destination {
                     self::assertCount(count($replies), $this->calls);
                 }
             }
+            $this->reply([[200, ['data' => ['status' => 'subscribed']]]]);
+            self::assertTrue($this->mailtrap($subject)->retryable, 'A lookup without an id is not trusted.');
+            self::assertCount(1, $this->calls);
         }
 
         public function testMailtrapTimeoutIsUncertainAndItsReplaySendsTheSameSafeWrites(): void
         {
             $subject = PushSubject::test(['email' => 'a@example.com', 'name' => 'Ada'], ['company' => 'Engines']);
-            $this->calls = [];
-            $GLOBALS['wconvertHttpReply'] = function (string $url, array $args): array {
+            $replies = [self::ABSENT];
+            $GLOBALS['wconvertHttpReply'] = function (string $url, array $args) use (&$replies): array {
                 $this->calls[] = [$url, $args];
-                throw new \RuntimeException('cURL error 28 for a@example.com');
+                if ($replies === []) throw new \RuntimeException('cURL error 28 for a@example.com');
+                [$status, $body] = array_shift($replies);
+                return ['status' => $status, 'body' => json_encode($body)];
             };
             $result = $this->mailtrap($subject);
             self::assertTrue($result->retryable);
             self::assertSame('Mailtrap could not be reached. The result may be uncertain.', $result->reason);
-            $first = $this->sent(0);
+            self::assertSame('POST', $this->calls[1][1]['method']);
 
-            // The first PATCH landed before the timeout, so the retry sees an existing contact.
-            $this->reply([[200, ['action' => 'updated']], [200, ['action' => 'updated']]]);
+            // The create landed before the timeout, details and all, so the retry only adds the list.
+            $this->reply([self::PRESENT, [200, ['action' => 'updated']]]);
             self::assertSame(PushOutcome::Success, $this->mailtrap($subject)->outcome);
-            self::assertSame($first, $this->sent(0));
             self::assertSame(['contact' => ['email' => 'a@example.com', 'list_ids_included' => [7]]], $this->sent(1));
         }
 
@@ -388,10 +423,10 @@ namespace WConvert\Tests\Unit\Pro\Destination {
             $subject = PushSubject::test(['email' => 'a@example.com', 'name' => 'Ada'], ['company' => 'Engines']);
             $bodies = [];
             foreach (['keep', 'update'] as $mode) {
-                foreach (['created', 'updated'] as $action) {
-                    $this->reply([[200, ['action' => $action]], [200, ['action' => 'updated']]]);
+                foreach ([[self::ABSENT, [201, []]], [self::PRESENT, [200, []]]] as $replies) {
+                    $this->reply($replies);
                     $this->mailtrap($subject, ['existing_contact' => $mode]);
-                    foreach ($this->calls as $call) $bodies[] = $call[1]['body'];
+                    foreach ($this->calls as $call) $bodies[] = $call[1]['body'] ?? '';
                 }
             }
             foreach ($bodies as $body) {
