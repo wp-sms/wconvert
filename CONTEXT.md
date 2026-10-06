@@ -1405,7 +1405,10 @@ verified.
 Data flow through a Destination is **one-way at capture time**: WConvert →
 Destination. WConvert never reads [[Contact]] state back — not subscription
 status, list membership, or suppression — so it never has an opinion about who is
-subscribed, and it reads nothing at all on the capture path. Admin-time metadata
+subscribed, and it reads nothing at all on the capture path. The one exception is
+existence: a queued push may ask whether a Contact exists, and read its provider id
+only, where the provider cannot sequence a create and a follow-up write
+([ADR 0128](docs/adr/0128-a-push-may-ask-whether-a-contact-exists.md)). Admin-time metadata
 reads are permitted and expected: listing a provider's audiences or custom fields
 to populate the configuration UI, and testing a connection. Those are reads of
 the provider's *shape*, never of a person's state.

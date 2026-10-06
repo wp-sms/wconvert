@@ -31,6 +31,32 @@ also identifies release gates that cannot be proven by local mocks.
   provider test accounts are available in this workspace. Do not treat the
   mocked provider responses as release acceptance for confirmation emails,
   existing-contact behavior or provider automations.
+- Mailtrap was checked on a live account on 2026-10-06. Every run used a list it
+  created and `@example.com` Contacts, and deleted both afterwards. The account
+  had no automations. What the live account showed:
+  - The account-free paths work, and `GET /accounts` returned the token's one
+    account.
+  - A write lands 3–10 s after its answer. A second write to the same Contact
+    in that window is refused (`409`) or answered 200 and dropped, and a `PATCH`
+    by address can misfire for minutes after a create. The first design (a bare
+    `PATCH`, then the fields) lost every new Contact's name and list. A
+    `POST`-first design left existing Contacts off the list for several queue
+    retries. The shipped design looks the address up and writes once
+    ([ADR 0128](../adr/0128-a-push-may-ask-whether-a-contact-exists.md)). Live,
+    all of these landed on the first attempt: a new Contact, an existing one
+    joining the list, update mode, a second signup 10 s later, and an
+    unsubscribed Contact signing up.
+  - Keep mode leaves existing fields untouched. A list add leaves an
+    unsubscribed Contact unsubscribed.
+  - An unknown field or list answers `422` with `errors.fields` or
+    `errors.list_ids`, which is `terminal`.
+
+  Known limitations:
+  - Two pushes for a new address a few seconds apart: the second create can be
+    accepted and dropped, so its values are lost. The first push's values stand.
+  - `requirements()` is static, so the summary shows Name as automatic even when
+    "Name goes to" is cleared.
+  - `Retry-After` is not honoured, the existing shared gap.
 - On 2026-09-29 the two adapters were checked against the providers' published
   API references, including auth, contact writes, list/field metadata and
   response shapes. The review fixed Brevo `425 Too Early` classification and
@@ -132,6 +158,11 @@ MySQL-backed setup for concurrency/handoff checks that depend on MySQL semantics
   in the provider test console; production code must not read lifecycle state.
 - Brevo: distinct lists, text and incompatible attribute types, new/existing
   Contact, blacklisted fixture, identifier conflict and both write policies.
+- Mailtrap, still open: which token permission the Contacts API needs (Admin
+  account access works); a suppressed (bounced or complained) address stays
+  unsubscribed; the `422` body for the contact-limit case; and whether "Added to
+  list" automations fire for a Contact created with `list_ids`, and for API list
+  additions.
 - Prove update/preserve behavior and absence of re-subscription using provider-side
   evidence. If a provider does not expose test sandboxing, use clearly labelled
   test lists/accounts and explicit samples controlled by the tester.
@@ -168,7 +199,7 @@ documentation-only change.
 
 - Free keeps local adapters and usable mapping/test/health controls, without
   remote implementation code or WConvert-originated HTTP in its capture path.
-- Pro module registers Mailchimp and Brevo in the existing registry; catalog and
+- Pro module registers Mailchimp, Brevo and Mailtrap in the existing registry; catalog and
   tier availability agree with the shipped files. License expiry alone does not
   disable an installed integration.
 - Public projection contains neither credentials nor destination mappings;

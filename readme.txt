@@ -105,7 +105,7 @@ WConvert works fully on its own. The separate WConvert Pro plugin adds:
 * advanced spam filters
 * campaign events for Google Analytics 4, Google Tag Manager or Plausible
 * cart recovery and product recommendations for WooCommerce
-* Mailchimp and Brevo connections
+* Mailchimp, Brevo and Mailtrap connections
 
 None of that code is in this plugin.
 
