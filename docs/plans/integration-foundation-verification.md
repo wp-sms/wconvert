@@ -33,7 +33,19 @@ also identifies release gates that cannot be proven by local mocks.
   existing-contact behavior or provider automations.
 - Mailtrap (2026-10-06) is in the same state: mocked contract tests against the
   published Contacts spec, with every live gate under "Real WordPress and
-  provider checks" still open.
+  provider checks" still open. Known limitations, documented rather than fixed:
+  - Keep mode, interrupted first write: if the timeout lands after the bare
+    `PATCH` created the Contact, the retry sees `updated` and skips the fields,
+    so the new Contact can lack its name. Lost data, not changed data; ADR 0110
+    makes no exactly-once claim.
+  - In keep mode a "Contact created" automation fires before the fields arrive;
+    "Added to list" fires after them.
+  - A deleted name field or list most likely answers `422`, so each Lead fails
+    `terminal` until the live check shows the error body. Settings already flag
+    the missing saved field.
+  - `requirements()` is static, so the summary shows Name as automatic even when
+    "Name goes to" is cleared.
+  - `Retry-After` is not honoured, the existing shared gap.
 - On 2026-09-29 the two adapters were checked against the providers' published
   API references, including auth, contact writes, list/field metadata and
   response shapes. The review fixed Brevo `425 Too Early` classification and

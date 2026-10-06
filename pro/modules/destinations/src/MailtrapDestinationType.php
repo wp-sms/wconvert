@@ -39,10 +39,7 @@ final class MailtrapDestinationType implements DestinationType
         if ($listsStatus !== 200) throw new \RuntimeException('Mailtrap lists could not be read.');
     }
 
-    /**
-     * The token's one account. A token that reaches several is refused rather than guessed at,
-     * because the account-free paths would not say which one a Contact landed in.
-     *
+    /** The token's one account; several are refused, since the account-free paths would not say which one a Contact landed in.
      * @param array<string, mixed> $credentials
      */
     public function accountIdentity(array $credentials): string
@@ -53,11 +50,7 @@ final class MailtrapDestinationType implements DestinationType
         return (string) $identity;
     }
 
-    /**
-     * Mailtrap has no name field of its own, so the Destination says where the name goes —
-     * shared setup, preselected to `first_name` where the account has one (ADR 0110).
-     * Lists are not paged: an account holds at most 50.
-     */
+    /** Mailtrap has no name field, so the Destination says where it goes (ADR 0110). Lists are unpaged: at most 50. */
     public function settingsSchema(array $credentials): array
     {
         if (empty($credentials['api_token'])) return ['lists' => ['type' => 'ids', 'label' => __('List', 'wconvert')]];
@@ -67,11 +60,11 @@ final class MailtrapDestinationType implements DestinationType
         foreach ($lists as $list) {
             if (is_array($list) && isset($list['id'], $list['name'])) $options[] = ['value' => (string) $list['id'], 'label' => (string) $list['name']];
         }
-        $text = $this->textFields($credentials);
-        $name = ['type' => 'select', 'label' => __('Name goes to', 'wconvert'), 'options' => $text];
-        if (in_array('first_name', array_column($text, 'value'), true)) $name['default'] = 'first_name';
+        $textFields = $this->textFields($credentials);
+        $nameSetting = ['type' => 'select', 'label' => __('Name goes to', 'wconvert'), 'options' => $textFields];
+        if (in_array('first_name', array_column($textFields, 'value'), true)) $nameSetting['default'] = 'first_name';
         return ['lists' => ['type' => 'ids', 'label' => __('List', 'wconvert'), 'options' => $options],
-            'name_field' => $name,
+            'name_field' => $nameSetting,
             'existing_contact' => ['type' => 'select', 'label' => __('If the contact exists', 'wconvert'), 'default' => 'keep', 'options' => [
                 ['value' => 'keep', 'label' => __('Keep existing details', 'wconvert')],
                 ['value' => 'update', 'label' => __('Update mapped fields', 'wconvert')],
@@ -88,9 +81,7 @@ final class MailtrapDestinationType implements DestinationType
         return array_values(array_filter($this->textFields($credentials), static fn (array $field): bool => $field['value'] !== $name));
     }
 
-    /**
-     * Text fields only, until typed conversion exists; a value is keyed by its merge tag.
-     *
+    /** Text fields only, until typed conversion exists; a value is keyed by its merge tag.
      * @param array<string, mixed> $credentials
      * @return list<array{value: string, label: string}>
      */
@@ -118,44 +109,37 @@ final class MailtrapDestinationType implements DestinationType
         $nameField = $context->settings['name_field'] ?? '';
         $nameField = is_string($nameField) && self::isTag($nameField) ? $nameField : '';
         $fields = [];
-        // Mailtrap has no name of its own: the whole name goes to the field the merchant chose, unsplit.
+        // The whole name, unsplit.
         if ($nameField !== '' && trim($subject->values[CanonicalFields::NAME] ?? '') !== '') $fields[$nameField] = $subject->values[CanonicalFields::NAME];
         foreach ($subject->mapped as $tag => $value) {
             if (self::isTag($tag) && !in_array($tag, ['email', $nameField], true) && trim($value) !== '') $fields[$tag] = $value;
         }
         // Enquiries may be stored as Contacts but must not enter a marketing list.
-        $marketing = $subject->purpose === 'email_marketing';
+        $join = $subject->purpose === 'email_marketing' ? ['list_ids_included' => [$listId]] : [];
         try {
             if (($context->settings['existing_contact'] ?? 'keep') === 'update') {
-                $change = $fields !== [] ? ['fields' => $fields] : [];
-                if ($marketing) $change['list_ids_included'] = [$listId];
-                return $this->upsert($context->credentials, $email, $change)[0];
+                return $this->upsert($context->credentials, $email, ($fields !== [] ? ['fields' => $fields] : []) + $join)[0];
             }
-            // Keep: create bare first, so an existing contact's details are never overwritten.
-            [$created, $action] = $this->upsert($context->credentials, $email, []);
-            if ($created->isFailure()) return $created;
+            // Keep: create bare first, so an existing Contact's details are never overwritten.
+            [$first, $isNew] = $this->upsert($context->credentials, $email, []);
+            if ($first->isFailure()) return $first;
             // Fields before the list, so an "added to list" automation already sees the name.
-            $change = $action === 'created' && $fields !== [] ? ['fields' => $fields] : [];
-            if ($marketing) $change['list_ids_included'] = [$listId];
-            return $change === [] ? $created : $this->upsert($context->credentials, $email, $change)[0];
+            $change = ($isNew && $fields !== [] ? ['fields' => $fields] : []) + $join;
+            return $change === [] ? $first : $this->upsert($context->credentials, $email, $change)[0];
         } catch (\Throwable $failure) {
             return PushResult::retryable(__('Mailtrap could not be reached. The result may be uncertain.', 'wconvert'));
         }
     }
 
-    /**
-     * The one write: `PATCH /contacts/{email}` creates or updates and reports which.
-     * `unsubscribed` and `list_ids_excluded` are never sent, so status and membership only ever grow.
-     *
+    /** The one write, an upsert that says whether it created. Never `unsubscribed` or `list_ids_excluded`.
      * @param array<string, mixed> $credentials
      * @param array<string, mixed> $change
-     * @return array{PushResult, string}
+     * @return array{PushResult, bool}
      */
     private function upsert(array $credentials, string $email, array $change): array
     {
         [$status, $body] = $this->request($credentials, 'PATCH', '/contacts/' . rawurlencode($email), ['contact' => ['email' => $email] + $change]);
-        $action = $body['action'] ?? null;
-        return [$status >= 200 && $status < 300 ? PushResult::success() : $this->failure($status), is_string($action) ? $action : ''];
+        return [$status >= 200 && $status < 300 ? PushResult::success() : $this->failure($status), ($body['action'] ?? null) === 'created'];
     }
 
     /** By status alone: Mailtrap's error bodies differ by endpoint, and none of them is shown. */
@@ -172,10 +156,7 @@ final class MailtrapDestinationType implements DestinationType
         return preg_match('/^[A-Za-z][A-Za-z0-9_]{0,31}$/D', $tag) === 1;
     }
 
-    /**
-     * Account-free paths, as the published spec has had them since May 2026. Should the live
-     * check need the older `/accounts/{id}/…` form, this is the one place that changes.
-     *
+    /** Account-free paths (spec, May 2026); a fallback to `/accounts/{id}/…` would change only here.
      * @param array<string, mixed> $credentials
      * @param array<string, mixed>|null $body
      * @return array{int, array<mixed>}
