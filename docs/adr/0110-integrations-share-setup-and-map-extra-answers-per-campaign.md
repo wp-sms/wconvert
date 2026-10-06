@@ -12,6 +12,12 @@ or list and the existing-contact policy; campaigns reuse it. Shared edits show
 saved/live usage. Basic supported contact fields follow provider-owned defaults,
 so a newsletter campaign needs no manual mapping table.
 
+*Amended 2026-10-06 by the Mailtrap adapter ([onboarding contract](../integrations/adapter-onboarding.md)):*
+where a provider has no provider-owned name field, the Destination carries a
+**Name goes to** select over the account's text fields, preselected to the
+conventional field when it exists. It is still shared Destination setup, not a
+campaign mapping table, and an empty choice sends no name.
+
 The first remote adapters are Mailchimp and Brevo in Pro. Core keeps the shared
 setup, mapping, test, queue, health and recovery implementation; local WSMS,
 MailPoet and lead-magnet email remain Free. No separate paid mapping or diagnostics

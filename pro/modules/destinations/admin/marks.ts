@@ -4,4 +4,5 @@ import { providerMarks } from '@/destinations/ProviderMark';
 export function registerProviderMarks(): void {
   providerMarks.mailchimp = new URL('./mailchimp.svg', import.meta.url).href;
   providerMarks.brevo = new URL('./brevo.svg', import.meta.url).href;
+  providerMarks.mailtrap = new URL('./mailtrap.svg', import.meta.url).href;
 }

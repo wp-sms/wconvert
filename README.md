@@ -390,8 +390,8 @@ several, and able to fail without the capture failing
 ([ADR 0007](docs/adr/0007-destinations-are-outbound-and-fallible.md)). **The
 Lead log is not one**: it is the Lead store, written first and always. Free
 ships the WSMS push, MailPoet push when MailPoet is installed, and lead-magnet
-delivery email over `wp_mail()`. The Pro `destinations` module adds Mailchimp
-and Brevo email-contact adapters.
+delivery email over `wp_mail()`. The Pro `destinations` module adds Mailchimp,
+Brevo and Mailtrap email-contact adapters.
 
 For a remote provider, connect an account on the Destinations page, create a
 named Destination for one audience/list, and choose whether existing contacts
@@ -407,6 +407,14 @@ Brevo adds a new Contact to the selected list. An enquiry is saved as a
 Mailchimp transactional Contact or a Brevo Contact without list membership;
 its email address alone does not grant marketing consent. An explicit test send
 uses the merchant's own address and can enter the selected marketing list.
+
+Mailtrap has no name field of its own, so a Mailtrap Destination also chooses
+which text field the name goes to, preselected to `first_name` when the account
+has one. Every write is an upsert. In keep mode a new Contact gets its details
+before it joins the list, and an existing one only joins the list. An enquiry
+is a Mailtrap Contact on no list. WConvert never sends a subscription status
+or removes a list, and Mailtrap's API has no double opt-in, so a new marketing
+Contact lands subscribed.
 
 **Everything is queued, including the WSMS push.** Action Scheduler is a core
 dependency bundled in the free plugin — three free features want a scheduler

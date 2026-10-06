@@ -10,4 +10,6 @@ it('free carries no provider artwork until the destinations module hands it over
   expect(providerMarks.mailchimp).toMatch(/svg/);
   expect(providerMarks.brevo).toMatch(/svg/);
   expect(providerMarks.brevo).not.toBe(providerMarks.mailchimp);
+  expect(providerMarks.mailtrap).toMatch(/svg/);
+  expect(new Set([providerMarks.mailchimp, providerMarks.brevo, providerMarks.mailtrap]).size).toBe(3);
 });

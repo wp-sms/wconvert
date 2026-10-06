@@ -31,6 +31,9 @@ also identifies release gates that cannot be proven by local mocks.
   provider test accounts are available in this workspace. Do not treat the
   mocked provider responses as release acceptance for confirmation emails,
   existing-contact behavior or provider automations.
+- Mailtrap (2026-10-06) is in the same state: mocked contract tests against the
+  published Contacts spec, with every live gate under "Real WordPress and
+  provider checks" still open.
 - On 2026-09-29 the two adapters were checked against the providers' published
   API references, including auth, contact writes, list/field metadata and
   response shapes. The review fixed Brevo `425 Too Early` classification and
@@ -132,6 +135,14 @@ MySQL-backed setup for concurrency/handoff checks that depend on MySQL semantics
   in the provider test console; production code must not read lifecycle state.
 - Brevo: distinct lists, text and incompatible attribute types, new/existing
   Contact, blacklisted fixture, identifier conflict and both write policies.
+- Mailtrap: the account-free paths answer (else fall back to
+  `/accounts/{id}/…` in the adapter's `request()`); `GET /accounts` returns one
+  account for an account token; which token permission the Contacts API needs;
+  `PATCH {email}` on an existing Contact is a no-op; a `PATCH` without `fields`
+  leaves them untouched; adding a list to an unsubscribed Contact does not
+  resubscribe it; a suppressed address stays unsubscribed; the `422` bodies for
+  a deleted field or list and for the contact limit; "Added to list"
+  automations fire for API additions.
 - Prove update/preserve behavior and absence of re-subscription using provider-side
   evidence. If a provider does not expose test sandboxing, use clearly labelled
   test lists/accounts and explicit samples controlled by the tester.
@@ -168,7 +179,7 @@ documentation-only change.
 
 - Free keeps local adapters and usable mapping/test/health controls, without
   remote implementation code or WConvert-originated HTTP in its capture path.
-- Pro module registers Mailchimp and Brevo in the existing registry; catalog and
+- Pro module registers Mailchimp, Brevo and Mailtrap in the existing registry; catalog and
   tier availability agree with the shipped files. License expiry alone does not
   disable an installed integration.
 - Public projection contains neither credentials nor destination mappings;
