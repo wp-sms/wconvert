@@ -16,12 +16,11 @@ import type { Frequency, Rule, RuleParam, RuleType, RuleVocabulary, Schedule, Ta
  * ============================================================================
  * THE SENTENCE IS TOKENS IN A TRANSLATED FRAME, NEVER CONCATENATED.
  * ============================================================================
- * {@link sentenceParts} returns one lowercase phrase per question, and the
- * screen drops them into `__('Shows %1$s %2$s, %3$s, %4$s.')`. A language that
- * reorders where, who and when moves the placeholders; the phrases stay whole.
- * Each phrase carries its own preposition — *"on every page"*, *"to
- * everyone"* — because which preposition a language needs depends on the
- * phrase, not on its slot.
+ * {@link sentenceParts} returns one lowercase phrase per question, each with
+ * its own translated frame — `on %s`, `to %s` — and the screen drops the
+ * framed phrases into `__('Shows %1$s %2$s, %3$s, %4$s.')`. The phrase is the
+ * clickable token; the frame's words stay plain around it. A language that
+ * reorders where, who and when moves the placeholders; nothing is spliced.
  *
  * The chips' inline numbers are the same idea one level down: a pick's
  * template has exactly one `%s`, and the control sits where it is
@@ -201,7 +200,7 @@ function windowClause(schedule: Schedule): string | null {
  */
 export function datesSummary(schedule: Schedule): Summary {
   if (endsBeforeStart(schedule)) return { text: __('End is before start', 'wconvert'), attention: true };
-  return { text: windowClause(schedule) ?? __('Until you pause it', 'wconvert'), attention: hasFinished(schedule) };
+  return { text: windowClause(schedule) ?? __('Runs until you pause it', 'wconvert'), attention: hasFinished(schedule) };
 }
 
 /** A window that ends before it starts, which would never run. */
@@ -341,9 +340,16 @@ function hasFinished(schedule: Schedule): boolean {
 // THE SENTENCE.
 // ============================================================================
 
-/** One phrase of the summary sentence, and whether its section needs a look. */
+/**
+ * One phrase of the summary sentence, and whether its section needs a look.
+ *
+ * `frame` is the translated words around it — `on %s`, `to %s`, `It runs %s.`
+ * — which the sentence draws muted, with `text` as the clickable phrase in
+ * place of `%s`. A translator can move the `%s`; the phrase itself stays whole.
+ */
 export interface SentencePart extends Summary {
   readonly section: SectionId;
+  readonly frame: string;
 }
 
 export interface SentenceParts {
@@ -351,13 +357,84 @@ export interface SentenceParts {
   readonly who: SentencePart;
   readonly when: SentencePart;
   readonly often: SentencePart;
-  /** Absent until a date is set. Its own frame, because a finished window is a different sentence. */
-  readonly dates?: SentencePart & { readonly frame: string };
+  /** Absent until a date is set. */
+  readonly dates?: SentencePart;
+}
+
+// ----------------------------------------------------------------------------
+// WHERE, IN THE SITE'S OWN WORDS WHERE IT CAN BE SAID WITHOUT A LOOKUP.
+// ----------------------------------------------------------------------------
+
+/**
+ * Up to two page rules by name — a URL path as typed, a content type by its
+ * label — or null, which means *count them instead*. A post or term id would
+ * need a round trip to name, and the sentence cannot wait for one.
+ */
+function namesOf(rules: NonNullable<Targeting['include']>, types: readonly RuleType[], conjunction: string): string | null {
+  if (rules.length === 0 || rules.length > 2) return null;
+  const names = rules.map((rule) => {
+    const param = types.find((type) => type.type === rule.type)?.params.value;
+    if (param?.control === 'path_glob' && typeof rule.value === 'string' && rule.value.trim() !== '') return rule.value.trim();
+    if (param?.control === 'post_type') return param.options.find((option) => option.value === String(rule.value))?.label ?? null;
+    return null;
+  });
+  return names.every((name): name is string => name !== null) ? join(names, conjunction) : null;
+}
+
+/** Where it shows, as the menu's answer and as the sentence's phrase. */
+export function whereReading(pickId: string, targeting: Targeting, types: readonly RuleType[]): { answer: Summary; phrase: string } {
+  const exclude = targeting.exclude ?? [];
+  const include = targeting.include ?? [];
+  const excepted = exclude.length === 0 ? null
+    : namesOf(exclude, types, _x('and', 'joins pages a campaign is kept off', 'wconvert')) ?? sprintf(
+      /* translators: %d: a number of pages. */
+      _n('%d page', '%d pages', exclude.length, 'wconvert'), exclude.length);
+  const with_ = (answer: string, phrase: string, attention = false) => ({
+    answer: { text: excepted === null ? answer : sprintf(
+      /* translators: 1: where it shows, e.g. “Entire site”. 2: the pages it is kept off, e.g. “/checkout/*” or “2 pages”. */
+      __('%1$s, except %2$s', 'wconvert'), answer, excepted), attention },
+    phrase: excepted === null ? phrase : sprintf(
+      /* translators: 1: where it shows, e.g. “every page”. 2: the pages it is kept off, e.g. “/checkout/*” or “2 pages”. */
+      __('%1$s except %2$s', 'wconvert'), phrase, excepted),
+  });
+
+  if (pickId === 'entire') return with_(__('Entire site', 'wconvert'), __('every page', 'wconvert'));
+  if (pickId === 'blog') return with_(__('Blog posts only', 'wconvert'), __('blog posts', 'wconvert'));
+  if (include.length === 0) {
+    return { answer: { text: __('Choose at least one page', 'wconvert'), attention: true }, phrase: __('pages you haven’t chosen yet', 'wconvert') };
+  }
+  const chosen = namesOf(include, types, _x('or', 'joins pages any one of which it shows on', 'wconvert')) ?? sprintf(
+    /* translators: %d: a number of pages. */
+    _n('%d selected page', '%d selected pages', include.length, 'wconvert'), include.length);
+  return with_(chosen, chosen);
+}
+
+// ----------------------------------------------------------------------------
+// HOW OFTEN, UNDER CUSTOM.
+// ----------------------------------------------------------------------------
+
+/** Custom pacing in plain words: *"up to 2 times per visit, 3 days apart"*. */
+export function customPacing(frequency: Frequency, capital: boolean): string {
+  const parts: string[] = [];
+  if (frequency.maxPerSession !== undefined) {
+    parts.push(sprintf(capital
+      /* translators: %d: a number of times. */
+      ? _n('Up to %d time per visit', 'Up to %d times per visit', frequency.maxPerSession, 'wconvert')
+      /* translators: %d: a number of times. */
+      : _n('up to %d time per visit', 'up to %d times per visit', frequency.maxPerSession, 'wconvert'), frequency.maxPerSession));
+  }
+  if (frequency.cooldownDays !== undefined) {
+    parts.push(sprintf(
+      /* translators: %d: a number of days. */
+      _n('%d day apart', '%d days apart', frequency.cooldownDays, 'wconvert'), frequency.cooldownDays));
+  }
+  if (parts.length === 0) return capital ? __('Every page they see', 'wconvert') : __('on every page they see', 'wconvert');
+  return parts.join(_x(', ', 'separates two limits on how often a campaign shows', 'wconvert'));
 }
 
 /**
- * The summary sentence's phrases: *"on every page"*, *"to everyone"*, *"after
- * 15 seconds"*, *"once per visit"*.
+ * The summary sentence: *"Shows on [every page] to [everyone], [after 15
+ * seconds], [once per visit]."* — each bracket a phrase that opens its section.
  *
  * A matched pick reads its own phrase. Custom reads the rules themselves,
  * joined by the group's own connective. Attention is the section's — the
@@ -366,62 +443,65 @@ export interface SentenceParts {
 export function sentenceParts(
   value: DisplayRulesValue,
   vocabulary: RuleVocabulary,
-  overlay: boolean,
-  act: ConvertingAct = 'submit',
 ): SentenceParts {
-  const sections = summarise(value, vocabulary, overlay, act);
+  const sections = summarise(value, vocabulary);
   const attention = (id: SectionId) => sections.find(section => section.id === id)?.attention ?? false;
   const all = everyType(vocabulary);
-  const phrase = (id: SectionId, custom: () => string): SentencePart => {
+  /* translators: %s: where it shows, e.g. “every page”. */
+  const on = __('on %s', 'wconvert');
+  /* translators: %s: who sees it, e.g. “everyone”. */
+  const to = __('to %s', 'wconvert');
+  const bare = '%s';
+  const phrase = (id: SectionId, frame: string, custom: () => string): SentencePart => {
     const pick = derive(id, value, vocabulary);
-    return { section: id, text: pick.fragment?.(value) ?? custom(), attention: attention(id) };
+    return { section: id, frame, text: pick.fragment?.(value) ?? custom(), attention: attention(id) };
   };
   const plan = value.display_rules;
+  const unchosen = __('visitors you haven’t described yet', 'wconvert');
 
-  const who = phrase('who', () => {
+  const where: SentencePart = { section: 'where', frame: on, attention: attention('where'),
+    text: whereReading(derive('where', value, vocabulary).id, value.targeting, vocabulary.targeting).phrase };
+
+  const who = phrase('who', to, () => {
     const audience = plan?.audience;
-    if (!audience) return __('to visitors you have not chosen yet', 'wconvert');
-    if (audience.mode === 'everyone') return __('to everyone', 'wconvert');
+    if (!audience) return unchosen;
+    if (audience.mode === 'everyone') return __('everyone', 'wconvert');
     const groups = audience.groups.map(group => join(group.rules.map(rule => phraseOf(rule as Rule, all).text),
       group.match === 'all' ? _x('and', 'joins rules a visitor must all match', 'wconvert') : _x('or', 'joins rules any one of which a visitor may match', 'wconvert')));
-    return groups.some(group => group === '') ? __('to visitors you have not chosen yet', 'wconvert')
+    return groups.length === 0 || groups.some(group => group === '') ? unchosen
       /* translators: %s: what the visitor must match, e.g. “they are on mobile and signed in to this site”. */
-      : sprintf(__('to visitors if %s', 'wconvert'), groups.join(_x(', or if ', 'joins alternative groups of visitors', 'wconvert')));
+      : sprintf(__('visitors if %s', 'wconvert'), groups.join(_x(', or if ', 'joins alternative groups of visitors', 'wconvert')));
   });
 
-  const when = phrase('when', () => {
+  const when = phrase('when', bare, () => {
     const opening = plan?.opening;
-    if (!opening) return __('once you set when it opens', 'wconvert');
-    if (opening.mode === 'immediate') return __('right away', 'wconvert');
-    if (opening.rules.length === 0) return __('once you set when it opens', 'wconvert');
+    if (opening?.mode === 'immediate') return __('as soon as the page loads', 'wconvert');
+    if (!opening || opening.rules.length === 0) return __('at a moment you haven’t chosen', 'wconvert');
     return join(opening.rules.map(rule => phraseOf(rule as Rule, all).text),
       opening.mode === 'automatic' && opening.match === 'all' ? _x('and', 'joins opening rules that must all happen', 'wconvert') : _x('or', 'joins opening rules any one of which opens it', 'wconvert'));
   });
 
-  const often = phrase('how-often', () => {
-    const caps = capsOf(value.frequency);
-    return caps.length === 0 ? __('on every page they see', 'wconvert') : join(caps, andLimits());
-  });
+  const often = phrase('how-often', bare, () => customPacing(value.frequency, false));
 
   const from = readable(value.schedule.starts_at);
-  const to = readable(value.schedule.ends_at);
-  const dates = from === null && to === null ? undefined
-    : hasFinished(value.schedule) && to !== null
+  const until = readable(value.schedule.ends_at);
+  const dates: SentencePart | undefined = from === null && until === null ? undefined
+    : hasFinished(value.schedule) && until !== null
       /* translators: %s: the date and time it stopped running. */
-      ? { section: 'dates' as const, text: to, attention: true, frame: __('It stopped running on %s.', 'wconvert') }
-      : { section: 'dates' as const, attention: attention('dates'),
+      ? { section: 'dates', text: until, attention: true, frame: __('It stopped running on %s.', 'wconvert') }
+      : { section: 'dates', attention: attention('dates'),
         /* translators: %s: when it runs, e.g. “from 27 Nov to 30 Nov”. */
         frame: __('It runs %s.', 'wconvert'),
-        text: from !== null && to !== null
+        text: from !== null && until !== null
           /* translators: 1: a date and time it starts. 2: a date and time it ends. */
-          ? sprintf(__('from %1$s to %2$s', 'wconvert'), from, to)
+          ? sprintf(__('from %1$s to %2$s', 'wconvert'), from, until)
           : from !== null
             /* translators: %s: a date and time it starts. */
             ? sprintf(__('from %s', 'wconvert'), from)
             /* translators: %s: a date and time it ends. */
-            : sprintf(__('until %s', 'wconvert'), to ?? '') };
+            : sprintf(__('until %s', 'wconvert'), until ?? '') };
 
-  return { where: phrase('where', () => ''), who, when, often, ...(dates ? { dates } : {}) };
+  return { where, who, when, often, ...(dates ? { dates } : {}) };
 }
 
 // ============================================================================

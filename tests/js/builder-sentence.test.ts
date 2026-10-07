@@ -267,7 +267,7 @@ describe('how often', () => {
 
   /** A schedule with only a start has no window to have closed. */
   it('reads no dates as running until it is paused', () => {
-    expect(datesSummary({})).toEqual({ text: 'Until you pause it', attention: false });
+    expect(datesSummary({})).toEqual({ text: 'Runs until you pause it', attention: false });
   });
 
   it('is silent where there is no end date at all', () => {

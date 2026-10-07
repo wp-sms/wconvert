@@ -48,15 +48,14 @@ export function HowOften({ frequency, priority, overlay, custom, reopenEnabled, 
     _n('after it has shown %s time in total', 'after it has shown %s times in total', frequency.maxImpressions ?? 3, 'wconvert'));
 
   return <div className="wconvert-schedule-settings">
-    {custom && <div className="wconvert-schedule-fields">
+    {custom && <div className="wconvert-display-fields">
       <div><Label htmlFor="wconvert-session-max">{__('Times per visit', 'wconvert')}</Label>
-        <Input id="wconvert-session-max" type="number" min={1} max={100} value={frequency.maxPerSession ?? ''} onChange={event => setCount('maxPerSession', event.target.value)} aria-describedby="wconvert-pacing-help" />
+        <Input id="wconvert-session-max" className="w-24" type="number" min={1} max={100} value={frequency.maxPerSession ?? ''} onChange={event => setCount('maxPerSession', event.target.value)} />
       </div>
       <div><Label htmlFor="wconvert-frequency-cooldown">{__('Days between showings', 'wconvert')}</Label>
-        <Input id="wconvert-frequency-cooldown" type="number" min={1} value={frequency.cooldownDays ?? ''}
-          onChange={event => setCount('cooldownDays', event.target.value)} aria-describedby="wconvert-pacing-help" />
+        <Input id="wconvert-frequency-cooldown" className="w-24" type="number" min={1} value={frequency.cooldownDays ?? ''}
+          onChange={event => setCount('cooldownDays', event.target.value)} />
       </div>
-      <p id="wconvert-pacing-help" className="text-note text-muted-foreground">{__('Empty means no limit.', 'wconvert')}</p>
     </div>}
 
     <div className="wconvert-display-settings" role="group" aria-labelledby="wconvert-stop-heading">
@@ -78,16 +77,16 @@ export function HowOften({ frequency, priority, overlay, custom, reopenEnabled, 
     {frequency.maxPerSession !== undefined && frequency.stopAfterDismiss !== false && <p className="wconvert-display-hint">{__('Closing it stops it for good, not just for this visit.', 'wconvert')}</p>}
     {reopenEnabled && <p className="wconvert-display-hint">{__('Your reopen button skips automatic view limits, waiting periods and closing restrictions. Completion stops it; closing the reminder stops this campaign for the visit.', 'wconvert')}</p>}
 
-    <SiteLimitsNote />
     {overlay && <DisclosureCard title={__('If several popups are ready at once', 'wconvert')}
       /* translators: %d: a priority number. */
       current={priority === 0 ? __('Opens in the usual order', 'wconvert') : sprintf(__('Priority %d', 'wconvert'), priority)}>
       <label className="wconvert-display-inline-field" htmlFor="wconvert-priority">{__('Give this one priority', 'wconvert')}
-        <Input id="wconvert-priority" type="number" className="max-w-28" value={priority === 0 ? '' : priority} aria-describedby="wconvert-priority-help"
+        <Input id="wconvert-priority" className="w-24" type="number" value={priority === 0 ? '' : priority} aria-describedby="wconvert-priority-help"
           onChange={event => { const next = Number(event.target.value); onPriority(event.target.value === '' || !Number.isFinite(next) ? 0 : Math.trunc(next)); }} />
       </label>
       <p id="wconvert-priority-help" className="text-note text-muted-foreground">{__('Higher numbers open first. A popup that is already open keeps its place.', 'wconvert')}</p>
     </DisclosureCard>}
+    <SiteLimitsNote />
   </div>;
 }
 

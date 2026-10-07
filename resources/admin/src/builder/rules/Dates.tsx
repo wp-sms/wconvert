@@ -26,17 +26,15 @@ export function Dates({ schedule, onSchedule }: { readonly schedule: Schedule; r
       /* translators: %s: a timezone name, e.g. “Europe/London”. */
       ? sprintf(__('Dates use your site’s timezone: %s.', 'wconvert'), timezone)
       : __('Dates use your WordPress site’s timezone.', 'wconvert')}</Description>
-    <div className="wconvert-schedule-fields">
+    <div className="wconvert-display-fields">
       <div><Label htmlFor="wconvert-starts-at">{__('Start showing it on', 'wconvert')}</Label>
-        <Input id="wconvert-starts-at" type="datetime-local" value={(schedule.starts_at ?? '').replace(' ', 'T')}
-          onChange={event => setBoundary('starts_at', event.target.value)} aria-describedby="wconvert-starts-help" />
-        <p id="wconvert-starts-help" className="text-note text-muted-foreground">{__('Empty: start when published.', 'wconvert')}</p>
+        <Input id="wconvert-starts-at" className="w-auto" type="datetime-local" value={(schedule.starts_at ?? '').replace(' ', 'T')}
+          onChange={event => setBoundary('starts_at', event.target.value)} />
       </div>
       <div><Label htmlFor="wconvert-ends-at">{__('Stop showing it on', 'wconvert')}</Label>
-        <Input id="wconvert-ends-at" type="datetime-local" value={(schedule.ends_at ?? '').replace(' ', 'T')}
+        <Input id="wconvert-ends-at" className="w-auto" type="datetime-local" value={(schedule.ends_at ?? '').replace(' ', 'T')}
           onChange={event => setBoundary('ends_at', event.target.value)} aria-invalid={invalidWindow || undefined}
-          aria-describedby={invalidWindow ? 'wconvert-schedule-error' : 'wconvert-ends-help'} />
-        <p id="wconvert-ends-help" className="text-note text-muted-foreground">{__('Empty: run until you pause it.', 'wconvert')}</p>
+          aria-describedby={invalidWindow ? 'wconvert-schedule-error' : undefined} />
       </div>
     </div>
     {invalidWindow && <p id="wconvert-schedule-error" role="alert" className="text-note text-destructive">{__('Choose an end date and time after the start.', 'wconvert')}</p>}

@@ -31,13 +31,15 @@ stays non-blocking in Readiness, as the schedule was.
 
 ## One sentence above the grid
 
-The answers read as one sentence — *"Shows on every page to everyone, after 15
-seconds, once per visit."* — with a second, *"It runs from … to …"*, when dates
-are set. Each answer is a button that opens its question; the open one is
-current, one that needs attention is amber. The frame is one translated string,
-`Shows %1$s %2$s, %3$s, %4$s.`, and each phrase carries its own preposition, so
-a language that reorders them moves placeholders rather than splicing words.
-*Test a visit* sits beside it.
+The answers read as one sentence — *"Shows on [every page except /checkout/*]
+to [everyone], [after 15 seconds], [once per visit]."* — with a second, *"It
+runs [from … to …]."*, when dates are set. Each bracketed answer is a button
+that opens its question; the connecting words around it stay plain and muted.
+The open answer is current, one that needs attention is amber. Every frame is a
+translated string with a `%s` — `Shows %1$s %2$s, %3$s, %4$s.`, then `on %s`,
+`to %s` — so a language that reorders them moves placeholders rather than
+splicing words. Pages are named where that needs no lookup (a URL path, a
+content type) and counted otherwise. *Test a visit* sits beside it.
 
 ## Quick picks first; the rule builder behind Custom…
 

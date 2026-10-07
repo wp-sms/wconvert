@@ -52,7 +52,7 @@ const sectionOf = (id: string | undefined): SectionId | undefined =>
  * which open pick the merchant chose — the sticky rule in {@see pickFor}.
  */
 export function DisplayRules({ vocabulary, value, overlay, act = 'submit', onChange, reveal, placement, audienceRequirement, initialSection, onSectionChange, reopenEnabled, compact = false, template, cartRequired = false }: DisplayRulesProps) {
-  const summaries = summarise(value, vocabulary, overlay, act);
+  const summaries = summarise(value, vocabulary);
   const asked = questions();
   const [active, setActive] = useState<SectionId>(() => sectionOf(initialSection) ?? summaries.find(section => section.attention)?.id ?? 'where');
   const [chosen, setChosen] = useState<Partial<Record<SectionId, string>>>({});
@@ -95,9 +95,12 @@ export function DisplayRules({ vocabulary, value, overlay, act = 'submit', onCha
     if (Object.keys(patch).length > 0) write(patch);
   };
   const audienceTypes = [...vocabulary.conditions, ...vocabulary.targeting.filter(type => type.kind === 'visitor')];
-  const parts = sentenceParts(value, vocabulary, overlay, act);
-  const token = (part: SentencePart) => <button type="button" className="wconvert-display-token" key={part.section} title={asked[part.section]}
-    aria-current={active === part.section || undefined} data-attention={part.attention || undefined} onClick={() => open(part.section)}>{part.text}</button>;
+  const parts = sentenceParts(value, vocabulary);
+  // The connecting words stay plain; each answer is a phrase that opens its question.
+  const phrase = (part: SentencePart) => <Fragment key={part.section}>{interpolate(part.frame, [
+    <button type="button" className="wconvert-display-token" key={part.section} title={asked[part.section]}
+      aria-current={active === part.section || undefined} data-attention={part.attention || undefined} onClick={() => open(part.section)}>{part.text}</button>,
+  ])}</Fragment>;
   const current = summaries.find(section => section.id === active) ?? summaries[0];
   // Who and When have nothing to pick from until an older draft's rules are replaced.
   const picking = plan !== undefined || active === 'where' || active === 'how-often' || active === 'dates';
@@ -107,8 +110,8 @@ export function DisplayRules({ vocabulary, value, overlay, act = 'submit', onCha
       <p className="wconvert-display-sentence" aria-live="polite">
         {interpolate(
           /* translators: 1: where it shows, e.g. “on every page”. 2: who sees it, e.g. “to everyone”. 3: when it opens, e.g. “after 15 seconds”. 4: how often, e.g. “once per visit”. */
-          __('Shows %1$s %2$s, %3$s, %4$s.', 'wconvert'), [token(parts.where), token(parts.who), token(parts.when), token(parts.often)])}
-        {parts.dates && <> {interpolate(parts.dates.frame, [token(parts.dates)])}</>}
+          __('Shows %1$s %2$s, %3$s, %4$s.', 'wconvert'), [phrase(parts.where), phrase(parts.who), phrase(parts.when), phrase(parts.often)])}
+        {parts.dates && <> {phrase(parts.dates)}</>}
       </p>
       <Button variant="outline" onClick={() => setTesting(true)}><FlaskConical aria-hidden="true" />{__('Test a visit', 'wconvert')}</Button>
     </div>
@@ -127,8 +130,8 @@ export function DisplayRules({ vocabulary, value, overlay, act = 'submit', onCha
         <h3 id="wconvert-display-heading" tabIndex={-1}>{current.eyebrow}</h3>
         {active === 'who' && audienceRequirement && <p role="note">{audienceRequirement}</p>}
         {picking && <QuickPicks key={active} section={active} question={current.eyebrow} value={value} vocabulary={vocabulary} shown={shown}
-          onChoose={choose} onParam={n => write(shown.apply(value, n))} />}
-        {active === 'how-often' && shown.id === 'session' && <p className="wconvert-display-hint">{__('A visit ends when they close the tab.', 'wconvert')}</p>}
+          onChoose={choose} onParam={n => write(shown.apply(value, n))}
+          note={active === 'how-often' && shown.id === 'session' ? __('A visit ends when they close the tab.', 'wconvert') : null} />}
         {active === 'where' && <><Where types={vocabulary.targeting} targeting={value.targeting} showInclude={shown.id === 'selected'} onChange={targeting => (shown.open ? change : write)({ targeting })} />
           {placement && <div className="wconvert-display-placement"><h4 id="wconvert-display-placement" tabIndex={-1}>{__('Placement', 'wconvert')}</h4>{placement.controls}</div>}</>}
         {active === 'who' && plan && shown.open && <AudienceEditor value={plan.audience} types={audienceTypes} onChange={audience => update({ ...plan, audience })} />}

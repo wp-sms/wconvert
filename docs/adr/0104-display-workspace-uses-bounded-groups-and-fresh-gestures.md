@@ -60,7 +60,7 @@ Future schedule starts remain waiting and receive a wake-up. Automatic opening r
 New interruptive drafts start at one automatic appearance per tab session, stop-after-dismiss off and stop-after-conversion on. The repeat selector labels this choice as recommended.
 Both scratch and bundled creation paths are checked after frequency normalization; inline starting points keep their existing embedded behavior. These are creation defaults, never an automatic rewrite of existing Campaign settings. Absent frequency fields retain their established meanings. Every A/B arm carries its family for pacing, whether or not Reopen or content locking is enabled. Site-wide allowance fields and storage are unchanged.
 
-> _Amended by [ADR 0129](0129-display-rules-plain-questions-and-quick-picks.md): the admin calls this "Once per visit", with one note — "A visit ends when they close the tab." — rather than "tab session". The storage and its semantics are unchanged. There is no repeat selector and no "recommended" label: Once per visit is simply the pick a new draft derives._
+> _Amended by [ADR 0129](0129-display-rules-plain-questions-and-quick-picks.md): the admin calls this "Once per visit", with one note — "A visit ends when they close the tab." — rather than "tab session". The storage and its semantics are unchanged. There is no repeat selector; the Once per visit chip carries the "Recommended" badge instead._
 
 ## Diagnostics and size
 

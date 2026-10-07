@@ -116,7 +116,7 @@ export function ReadinessDialog({
   const where = destinationsSaid(bound, destinations, capturedFields(template));
   const overlay = displayType !== 'inline';
   const position = physicalPlacementLabel(displayType, placement, direction);
-  const summaries = summarise(rules, vocabulary, overlay, template ? convertingActOf(template.tree)[0] : undefined);
+  const summaries = summarise(rules, vocabulary);
   const hasDesign = template !== undefined && template.tree.steps.length > 0;
   const captures = hasDesign ? capturesTaken(template.tree) : [];
   const outcome = goal.status === 'ready' ? goal.data?.outcome : undefined;

@@ -15,7 +15,7 @@ export function OpeningEditor({ value, types, onChange }: { value: Opening; type
   };
   const offered = types.filter(type => value.mode === 'click' ? 'selector' in type.params : type.type !== 'page_load' && !('selector' in type.params));
   return <>
-    <fieldset className="wconvert-display-choices"><legend>{__('Opens', 'wconvert')}</legend>
+    <fieldset className="wconvert-display-match wconvert-display-modes"><legend>{__('Opens', 'wconvert')}</legend>
       {modes.map(([mode, label]) => <label key={mode}><input type="radio" name="display-opening" checked={value.mode === mode} onChange={() => switchMode(mode)} />{label}</label>)}
     </fieldset>
     {value.mode !== 'immediate' && <GroupEditor group={{ match: value.mode === 'automatic' ? value.match : 'any', rules: value.rules }} types={offered} offset={60} operator={value.mode === 'automatic'} onChange={group => onChange(value.mode === 'click' ? { ...value, rules: group.rules } : { ...value, match: group.match, rules: group.rules })} />}

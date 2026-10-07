@@ -1,4 +1,4 @@
-import { __, _n, sprintf } from '@wordpress/i18n';
+import { __, _n } from '@wordpress/i18n';
 import type { Audience, DisplayPlan, Opening, RuleGroup } from '@loader/display-rules';
 import { isFreeInstall, renderingFor, type Availability } from '../../goals/availability';
 import { emptyGroup, everyType, freshRule, incompletePlan } from './plan';
@@ -60,7 +60,11 @@ export interface Pick {
   readonly template: (n?: number) => string;
   /** The chip's words with the stored value filled in — the section's answer. */
   readonly label: (value: DisplayRulesValue) => string;
-  /** Its phrase in the summary sentence: lowercase, with its own preposition. Absent where the sentence reads the rules instead. */
+  /**
+   * Its phrase in the summary sentence, lowercase and without the section's
+   * preposition — the sentence frames it (`on %s`, `to %s`). Absent where the
+   * sentence reads the rules or the page lists instead.
+   */
   readonly fragment?: (value: DisplayRulesValue) => string;
   readonly matches: (value: DisplayRulesValue) => boolean;
   readonly apply: (value: DisplayRulesValue, n?: number | string) => Partial<DisplayRulesValue>;
@@ -69,6 +73,8 @@ export interface Pick {
   readonly param?: PickParam;
   /** Shows any value — Custom…, Selected pages, Between two dates. */
   readonly open?: boolean;
+  /** The pick a new interruptive draft starts on, badged as recommended (ADR 0104). */
+  readonly recommended?: boolean;
 }
 
 // ============================================================================
@@ -114,14 +120,6 @@ const fill = (template: string, value: number | string | undefined): string => h
 // WHERE DOES IT SHOW?
 // ============================================================================
 
-const pageCount = (count: number): string => sprintf(
-  /* translators: %d: a number of pages. */
-  _n('%d page', '%d pages', count, 'wconvert'), count);
-const except = (value: DisplayRulesValue, phrase: string): string => {
-  const excluded = value.targeting.exclude?.length ?? 0;
-  /* translators: 1: where it shows, e.g. “on every page”. 2: a count of pages, e.g. “2 pages”. */
-  return excluded === 0 ? phrase : sprintf(__('%1$s except %2$s', 'wconvert'), phrase, pageCount(excluded));
-};
 const isBlog = (value: DisplayRulesValue): boolean => {
   const include = value.targeting.include ?? [];
   return include.length === 1 && include[0].type === 'singular' && include[0].value === 'post';
@@ -130,19 +128,12 @@ const isBlog = (value: DisplayRulesValue): boolean => {
 function wherePicks(): readonly Pick[] {
   return [
     { id: 'entire', types: [], template: () => __('Entire site', 'wconvert'), label: () => __('Entire site', 'wconvert'),
-      fragment: value => except(value, __('on every page', 'wconvert')),
       matches: value => !(value.targeting.include?.length) && value.targeting.mode !== 'selected',
       apply: value => ({ targeting: { ...value.targeting, mode: 'entire', include: [] } }) },
     { id: 'blog', types: ['singular'], template: () => __('Blog posts only', 'wconvert'), label: () => __('Blog posts only', 'wconvert'),
-      fragment: value => except(value, __('on blog posts', 'wconvert')),
       matches: isBlog,
       apply: value => ({ targeting: { ...value.targeting, mode: 'selected', include: [{ type: 'singular', value: 'post' }] } }) },
     { id: 'selected', open: true, types: [], template: () => __('Selected pages', 'wconvert'), label: () => __('Selected pages', 'wconvert'),
-      fragment: value => {
-        const included = value.targeting.include?.length ?? 0;
-        /* translators: %d: a number of pages. */
-        return except(value, included === 0 ? __('on pages you have not chosen yet', 'wconvert') : sprintf(_n('on %d selected page', 'on %d selected pages', included, 'wconvert'), included));
-      },
       matches: () => true,
       apply: value => ({ targeting: { ...value.targeting, mode: 'selected' } }) },
   ];
@@ -160,14 +151,14 @@ function audiencePick(id: string, label: () => string, fragment: () => string, r
 
 function whoPicks(): readonly Pick[] {
   return [
-    { id: 'everyone', types: [], template: () => __('Everyone', 'wconvert'), label: () => __('Everyone', 'wconvert'), fragment: () => __('to everyone', 'wconvert'),
+    { id: 'everyone', types: [], template: () => __('Everyone', 'wconvert'), label: () => __('Everyone', 'wconvert'), fragment: () => __('everyone', 'wconvert'),
       matches: value => value.display_rules?.audience.mode === 'everyone',
       apply: value => withAudience(value, { mode: 'everyone' }) },
-    audiencePick('phones', () => __('Phones only', 'wconvert'), () => __('to visitors on phones', 'wconvert'), { type: 'device', in: ['mobile'] }, rule => sameSet(rule.in, ['mobile'])),
-    audiencePick('computers', () => __('Computers only', 'wconvert'), () => __('to visitors on computers', 'wconvert'), { type: 'device', in: ['desktop'] }, rule => sameSet(rule.in, ['desktop'])),
-    audiencePick('signed-in', () => __('Signed-in visitors', 'wconvert'), () => __('to signed-in visitors', 'wconvert'), { type: 'logged_in', value: true }, rule => rule.value === true),
-    audiencePick('signed-out', () => __('Signed-out visitors', 'wconvert'), () => __('to signed-out visitors', 'wconvert'), { type: 'logged_in', value: false }, rule => rule.value === false),
-    audiencePick('cart', () => __('Shoppers with items in their cart', 'wconvert'), () => __('to shoppers with items in their cart', 'wconvert'), { type: 'cart_has_items' }, () => true),
+    audiencePick('phones', () => __('Phones only', 'wconvert'), () => __('visitors on phones', 'wconvert'), { type: 'device', in: ['mobile'] }, rule => sameSet(rule.in, ['mobile'])),
+    audiencePick('computers', () => __('Computers only', 'wconvert'), () => __('visitors on computers', 'wconvert'), { type: 'device', in: ['desktop'] }, rule => sameSet(rule.in, ['desktop'])),
+    audiencePick('signed-in', () => __('Signed-in visitors', 'wconvert'), () => __('signed-in visitors', 'wconvert'), { type: 'logged_in', value: true }, rule => rule.value === true),
+    audiencePick('signed-out', () => __('Signed-out visitors', 'wconvert'), () => __('signed-out visitors', 'wconvert'), { type: 'logged_in', value: false }, rule => rule.value === false),
+    audiencePick('cart', () => __('Shoppers with items in their cart', 'wconvert'), () => __('shoppers with items in their cart', 'wconvert'), { type: 'cart_has_items' }, () => true),
     { id: 'custom', open: true, types: [], template: () => __('Custom…', 'wconvert'), label: () => __('Custom', 'wconvert'),
       matches: () => true,
       apply: value => value.display_rules?.audience.mode === 'groups' ? {} : withAudience(value, { mode: 'groups', groups: [emptyGroup()] }) },
@@ -209,7 +200,7 @@ function whenPicks(): readonly Pick[] {
   });
 
   return [
-    { id: 'immediate', types: ['page_load'], template: () => __('Right away', 'wconvert'), label: () => __('Right away', 'wconvert'), fragment: () => __('right away', 'wconvert'),
+    { id: 'immediate', types: ['page_load'], template: () => __('Right away', 'wconvert'), label: () => __('Right away', 'wconvert'), fragment: () => __('as soon as the page loads', 'wconvert'),
       matches: value => value.display_rules?.opening.mode === 'immediate',
       apply: value => withOpening(value, { mode: 'immediate' }) },
     numbered('after', 'time_on_page', after,
@@ -234,7 +225,7 @@ function whenPicks(): readonly Pick[] {
       template: () => __('When they click %s', 'wconvert'),
       label: value => clickRule(value)?.selector
         /* translators: %s: a CSS selector, e.g. “.offer-button”. */
-        ? fill(__('When they click %s', 'wconvert'), click.read(value)) : __('When they click a button', 'wconvert'),
+        ? fill(__('When they click %s', 'wconvert'), click.read(value)) : __('On a button click', 'wconvert'),
       fragment: value => clickRule(value)?.selector
         /* translators: %s: a CSS selector, e.g. “.offer-button”. */
         ? fill(__('when they click %s', 'wconvert'), click.read(value)) : __('when they click a button', 'wconvert'),
@@ -272,7 +263,7 @@ function howOftenPicks(): readonly Pick[] {
   const dayCount = (value: DisplayRulesValue) => pacing(value).cooldownDays ?? 7;
 
   return [
-    { id: 'session', types: [], template: () => __('Once per visit', 'wconvert'), label: () => __('Once per visit', 'wconvert'), fragment: () => __('once per visit', 'wconvert'),
+    { id: 'session', recommended: true, types: [], template: () => __('Once per visit', 'wconvert'), label: () => __('Once per visit', 'wconvert'), fragment: () => __('once per visit', 'wconvert'),
       matches: value => pacing(value).maxPerSession === 1 && pacing(value).cooldownDays === undefined,
       apply: value => paced(value, { maxPerSession: 1 }, onceEver(value)) },
     { id: 'days', types: [], param: days,

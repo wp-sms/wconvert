@@ -1178,7 +1178,7 @@ describe('the summary', () => {
     expect(fact('When does it open?')?.textContent).toBe('After 8 seconds');
     expect(fact('Who sees it?')?.textContent).toBe('Everyone');
     expect(fact('How often?')?.textContent).toBe('Every page they see');
-    expect(fact('Dates')?.textContent).toBe('Until you pause it');
+    expect(fact('Dates')?.textContent).toBe('Runs until you pause it');
   });
 
   /**

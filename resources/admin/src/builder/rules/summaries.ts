@@ -1,8 +1,7 @@
 import { __, _n, sprintf } from '@wordpress/i18n';
-import type { ConvertingAct } from '../structure/catalogue';
 import type { DisplayPlan } from '@loader/display-rules';
 import { everyType, groupSummary } from './plan';
-import { datesSummary, howOftenSummary, whereSummary, type Summary } from './sentence';
+import { customPacing, datesSummary, whereReading, type Summary } from './sentence';
 import { derive, type SectionId } from './picks';
 import type { Frequency, RuleVocabulary, Schedule, Targeting } from '../api';
 
@@ -67,10 +66,8 @@ export function questions(): Record<SectionId, string> {
 export function summarise(
   value: DisplayRulesValue,
   vocabulary: RuleVocabulary,
-  overlay: boolean,
-  act: ConvertingAct = 'submit',
 ): AxisSummaries {
-  const { display_rules: plan, targeting, frequency, schedule, priority } = value;
+  const { display_rules: plan, targeting, frequency, schedule } = value;
   /*
    * Every type on every axis, because a summary reads a rule by its DECLARED
    * params and a Targeting rule can carry a preset like any other.
@@ -94,16 +91,19 @@ export function summarise(
       /* translators: %d: a number of seconds. */
       _n('not before %d second', 'not before %d seconds', opening.minimum_seconds, 'wconvert'), opening.minimum_seconds)}`;
   }
-  const where = targeting.mode === 'selected' && !targeting.include?.length
-    ? { text: __('Choose at least one page', 'wconvert'), attention: true }
-    : whereSummary(targeting);
+  // The page lists are named rather than counted where that needs no lookup,
+  // so Where reads its own answer rather than the pick's bare label.
+  const where = whereReading(derive('where', value, vocabulary).id, targeting, vocabulary.targeting).answer;
+  const emptyGroup = audience?.mode === 'groups' && (audience.groups.length === 0 || audience.groups.some(group => group.rules.length === 0));
   return [
-    { ...answer('where', where), ...(!where.attention && targeting.exclude?.length ? { text: where.text } : {}) },
-    answer('who', { text: audience?.mode === 'everyone' ? __('Everyone', 'wconvert') : groups.map(group => `(${group.text})`).join(__(' or ', 'wconvert')) || __('Choose who sees it', 'wconvert'),
+    { id: 'where', eyebrow: asked.where, ...where },
+    answer('who', { text: audience?.mode === 'everyone' ? __('Everyone', 'wconvert')
+      : emptyGroup ? __('Add at least one rule', 'wconvert')
+        : groups.length === 1 ? groups[0].text : groups.map(group => `(${group.text})`).join(__(' or ', 'wconvert')) || __('Choose who sees it', 'wconvert'),
       attention: !audience || (audience.mode === 'groups' && (!groups.length || groups.some(group => group.attention))) }),
     answer('when', when),
-    answer('how-often', howOftenSummary(frequency, priority, overlay, act)),
-    answer('dates', datesSummary(schedule)),
+    answer('how-often', { text: customPacing(frequency, true), attention: false }),
+    { id: 'dates', eyebrow: asked.dates, ...datesSummary(schedule) },
   ];
 }
 

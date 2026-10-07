@@ -2,6 +2,7 @@ import { useEffect, useId, useState } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import { Lock } from 'lucide-react';
 import { Badge } from '../../components/ui/badge';
+import { EXPLORE_PRO_URL } from '../../shell/HeaderTools';
 import { renderingFor, tierName, tierProductName, unlessFree } from '../../goals/availability';
 import { availabilityOf, halves, picksIn, type Pick, type PickParam, type SectionId } from './picks';
 import { portableSelector } from './validation';
@@ -19,6 +20,8 @@ export interface QuickPicksProps {
   readonly onChoose: (pick: Pick) => void;
   /** The chosen pick's inline number or selector changed. */
   readonly onParam: (n: number | string) => void;
+  /** One line that belongs to the chosen pick, drawn tight under the chips. */
+  readonly note?: string | null;
 }
 
 /**
@@ -29,7 +32,7 @@ export interface QuickPicksProps {
  * arrowing onto it, leaves the value alone and says why. On a free install a
  * locked pick is not drawn at all (ADR 0116).
  */
-export function QuickPicks({ section, question, value, vocabulary, shown, onChoose, onParam }: QuickPicksProps) {
+export function QuickPicks({ section, question, value, vocabulary, shown, onChoose, onParam, note }: QuickPicksProps) {
   const [refused, setRefused] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const reasonId = useId();
@@ -46,12 +49,13 @@ export function QuickPicks({ section, question, value, vocabulary, shown, onChoo
       {picks.map(({ pick, availability, rendering }) => {
         const chosen = shown.id === pick.id;
         const offered = rendering === 'offer';
-        return <label key={pick.id} className="wconvert-quick-pick" data-open={pick.open || undefined} data-refused={offered ? undefined : true}>
+        return <label key={pick.id} className="wconvert-quick-pick" data-custom={pick.id === 'custom' || undefined} data-refused={offered ? undefined : true}>
           <input type="radio" className="sr-only" name={name} value={pick.id} checked={chosen} aria-disabled={offered ? undefined : true}
             aria-describedby={offered ? undefined : reasonId}
             onChange={() => { if (offered) { setRefused(null); onChoose(pick); } else setRefused(pick.id); }} />
           {chosen && pick.param ? <Inline template={pick.template(Number(pick.param.read(value) ?? pick.param.default))} param={pick.param} value={value} onChange={onParam} onError={setError} errorId={errorId} />
             : <span>{wordsOf(pick, shown, value)}</span>}
+          {pick.recommended && offered && <Badge variant="secondary" className="wconvert-quick-pick__recommended">{__('Recommended', 'wconvert')}</Badge>}
           {rendering === 'upsell' && <Badge variant="secondary"><Lock aria-hidden="true" />{tierName(availability.tier)}</Badge>}
           {rendering === 'explain' && <Badge variant="warning">{sprintf(
             /* translators: %s: a plugin's name, e.g. “WooCommerce”. */
@@ -60,13 +64,17 @@ export function QuickPicks({ section, question, value, vocabulary, shown, onChoo
       })}
     </div>
     {error !== null && shown.param && <p id={errorId} role="alert" className="wconvert-quick-picks__error">{error}</p>}
-    {shown.param?.kind === 'selector' && !shown.param.read(value) && <p className="wconvert-quick-picks__hint">{__('Choose the button or link they click, such as #signup or .offer-button.', 'wconvert')}</p>}
+    {shown.param?.kind === 'selector' && !shown.param.read(value) && <p className="wconvert-quick-picks__hint" data-attention="true">{__('Choose the button or link they click, such as #signup or .offer-button.', 'wconvert')}</p>}
+    {note && <p className="wconvert-quick-picks__hint">{note}</p>}
     <p id={reasonId} className="wconvert-quick-picks__reason" role="status">{refusal === undefined ? null
       : refusal.rendering === 'upsell'
-        /* translators: %s: a product name, e.g. “WConvert Pro”. */
-        ? unlessFree(sprintf(__('Part of %s', 'wconvert'), tierProductName(refusal.availability.tier)))
-        /* translators: %s: a plugin's name, e.g. “WooCommerce”. */
-        : sprintf(__('Needs %s on this site', 'wconvert'), refusal.availability.requires_label ?? __('another plugin', 'wconvert'))}</p>
+        ? <>{unlessFree(sprintf(
+          /* translators: 1: a choice, e.g. “When they try to leave”. 2: a product name, e.g. “WConvert Pro”. */
+          __('“%1$s” is part of %2$s.', 'wconvert'), refusal.pick.label(value), tierProductName(refusal.availability.tier)))}{' '}
+          <a href={EXPLORE_PRO_URL} target="_blank" rel="noreferrer">{__('Compare plans', 'wconvert')}</a></>
+        : sprintf(
+          /* translators: 1: a choice, e.g. “Shoppers with items in their cart”. 2: a plugin's name, e.g. “WooCommerce”. */
+          __('“%1$s” needs the %2$s plugin on this site.', 'wconvert'), refusal.pick.label(value), refusal.availability.requires_label ?? __('another', 'wconvert'))}</p>
   </div>;
 }
 

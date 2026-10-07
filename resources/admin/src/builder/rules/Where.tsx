@@ -61,7 +61,8 @@ export function Where({ types, targeting, onChange, showInclude }: WhereProps) {
       {showInclude && <RuleList
         list="include"
         heading={__('Show it on', 'wconvert')}
-        empty={__('Choose at least one page before publishing.', 'wconvert')}
+        empty={__('Choose at least one page', 'wconvert')}
+        attention
         types={pages}
         rules={include}
         onChange={(rules) => onChange({ ...targeting, mode: 'selected', include: rules })}
@@ -98,6 +99,8 @@ interface RuleListProps {
   readonly types: readonly RuleType[];
   readonly rules: readonly { type: string; value: unknown }[];
   readonly onChange: (rules: { type: string; value: unknown }[]) => void;
+  /** An empty list here is something to fix before publishing. */
+  readonly attention?: boolean;
 }
 
 /**
@@ -109,7 +112,7 @@ interface RuleListProps {
  * path is a glob. Which is what makes this a picker rather than a pair of
  * free-text boxes.
  */
-function RuleList({ list, heading, empty, types, rules, onChange }: RuleListProps) {
+function RuleList({ list, heading, empty, types, rules, onChange, attention = false }: RuleListProps) {
   const rows: Row[] = rules.map((rule, at) => {
     const type = types.find((each) => each.type === rule.type);
 
@@ -151,9 +154,9 @@ function RuleList({ list, heading, empty, types, rules, onChange }: RuleListProp
       input, which is `--text-micro`'s role (ADR 0037).
     */
     <div className="wconvert-rules__group">
-      <p className="wconvert-rules__label text-micro uppercase text-muted-foreground">{heading}</p>
+      <h4 className="wconvert-rules__label">{heading}</h4>
       {list === 'include' && rules.length > 1 && <p className="wconvert-display-rule-help">{__('A page only needs to match one of these rules.', 'wconvert')}</p>}
-      <RuleRows rows={rows} empty={empty} />
+      <RuleRows rows={rows} empty={empty} attention={attention} />
       {/*
         ==================================================================
         THE SAME ADD CONTROL AS THE OTHER THREE SECTIONS, AND THAT CLOSES A

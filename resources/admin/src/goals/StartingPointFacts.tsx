@@ -19,7 +19,7 @@ export function StartingPointSummary({ playbook, vocabulary }: {
 }) {
   const displayType = startingPointDisplayType(playbook);
   const timing = displayType === 'inline' ? __('Place with a block or shortcode', 'wconvert')
-    : playbook.setup && vocabulary ? summaryOf(summarise({ ...playbook.setup, targeting: playbook.setup.targeting ?? {}, frequency: playbook.setup.frequency ?? {}, schedule: {}, priority: 0 }, vocabulary, true), 'when').text : null;
+    : playbook.setup && vocabulary ? summaryOf(summarise({ ...playbook.setup, targeting: playbook.setup.targeting ?? {}, frequency: playbook.setup.frequency ?? {}, schedule: {}, priority: 0 }, vocabulary), 'when').text : null;
   return <p className="m-0 text-note text-muted-foreground">
     <span>{displayTypeDescription(displayType)}</span>{timing && <> · {timing}</>}
   </p>;
@@ -44,7 +44,7 @@ export function StartingPointFacts({ playbook, goal, vocabulary, compact = false
   ];
 
   if (setup && vocabulary) {
-    const summaries = summarise({ ...setup, targeting: setup.targeting ?? {}, frequency: setup.frequency ?? {}, schedule: {}, priority: 0 }, vocabulary, displayType !== 'inline');
+    const summaries = summarise({ ...setup, targeting: setup.targeting ?? {}, frequency: setup.frequency ?? {}, schedule: {}, priority: 0 }, vocabulary);
     const asked = questions();
     const targeting = setup.targeting ?? {};
     facts.push({ label: asked.where, text: targetingSummary(targeting, vocabulary.targeting, 'compact') });

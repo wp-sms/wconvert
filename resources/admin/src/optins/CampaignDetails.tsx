@@ -35,8 +35,6 @@ async function readContext(id: string) {
       priority: typeof config.priority === 'number' ? config.priority : 0,
     },
     vocabulary,
-    config.display_type !== 'inline',
-    act,
   );
   const bound = Array.isArray(config.destinations) ? (config.destinations as string[]) : [];
   const forwarding = destinationsSaid(bound, destinations.destinations, capturedFields(template));

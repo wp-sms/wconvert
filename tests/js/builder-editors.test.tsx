@@ -53,7 +53,7 @@ describe('the Display rules tab', () => {
     setup({ ...simple, targeting: { mode: 'selected' } });
     expect(screen.getByRole('heading', { name: 'Where does it show?' })).toBeInTheDocument();
     expect(within(menu()).getByRole('button', { name: /Where does it show/ })).toHaveTextContent('Needs attention');
-    expect(screen.getByRole('button', { name: 'on pages you have not chosen yet' })).toHaveAttribute('data-attention', 'true');
+    expect(screen.getByRole('button', { name: 'pages you haven’t chosen yet' })).toHaveAttribute('data-attention', 'true');
   });
 
   it('opens the lazy sample tester without changing the draft', async () => {
@@ -78,7 +78,7 @@ describe('Where', () => {
     expect(screen.getByText('But never on')).toBeInTheDocument();
     await userEvent.click(pick('Where does it show?', 'Selected pages'));
     expect(draft().targeting.mode).toBe('selected');
-    expect(screen.getByText('Choose at least one page before publishing.')).toBeInTheDocument();
+    expect(screen.getByText('Choose at least one page')).toHaveAttribute('data-attention', 'true');
     await section('Who sees it?'); await section('Where does it show?');
     expect(pick('Where does it show?', 'Selected pages')).toBeChecked();
     expect(screen.getByText('But never on')).toBeInTheDocument();
@@ -89,7 +89,7 @@ describe('Where', () => {
     await userEvent.click(pick('Where does it show?', 'Blog posts only'));
     expect(draft().targeting).toMatchObject({ mode: 'selected', include: [{ type: 'singular', value: 'post' }] });
     expect(screen.queryByText('Show it on')).toBeNull();
-    expect(screen.getByRole('button', { name: 'on blog posts' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'blog posts' })).toBeInTheDocument();
   });
 });
 
@@ -160,7 +160,7 @@ describe('When', () => {
 
   it('writes a click selector from inside its chip', async () => {
     setup(simple); await section('When does it open?');
-    await userEvent.click(pick('When does it open?', /When they click/));
+    await userEvent.click(pick('When does it open?', /On a button click/));
     expect(screen.getByText(/Choose the button or link they click/)).toBeInTheDocument();
     await userEvent.type(screen.getByRole('textbox', { name: 'CSS selector of the button or link' }), '.offer');
     expect(draft().display_rules!.opening).toMatchObject({ mode: 'click', rules: [{ type: 'click_element', selector: '.offer' }] });
@@ -183,8 +183,9 @@ describe('When', () => {
     await userEvent.click(leave);
     expect(changed).not.toHaveBeenCalled();
     expect(pick('When does it open?', /After 15 seconds/)).toBeChecked();
-    expect(screen.getByText('Part of WConvert Pro')).toBeInTheDocument();
-    expect(leave).toHaveAccessibleDescription('Part of WConvert Pro');
+    expect(document.querySelector('.wconvert-quick-picks__reason')).toHaveTextContent('“When they try to leave” is part of WConvert Pro. Compare plans');
+    expect(screen.getByRole('link', { name: 'Compare plans' })).toHaveAttribute('href', 'https://wconvert.io/pro/');
+    expect(leave).toHaveAccessibleDescription('“When they try to leave” is part of WConvert Pro. Compare plans');
   });
 
   it('reads a stored rule this tier cannot run as Custom, so its row explains it', async () => {
@@ -252,7 +253,7 @@ describe('Who', () => {
     expect(cart.closest('label')).toHaveTextContent('Needs WooCommerce');
     await userEvent.click(cart);
     expect(changed).not.toHaveBeenCalled();
-    expect(screen.getByText('Needs WooCommerce on this site')).toBeInTheDocument();
+    expect(screen.getByText('“Shoppers with items in their cart” needs the WooCommerce plugin on this site.')).toBeInTheDocument();
   });
 
   it('keeps the goal’s audience requirement above the picks', async () => {
@@ -273,7 +274,7 @@ describe('How often', () => {
     await userEvent.clear(days);
     await userEvent.type(days, '12');
     expect(draft().frequency.cooldownDays).toBe(12);
-    await userEvent.click(pick('How often?', 'Once per visit'));
+    await userEvent.click(pick('How often?', /^Once per visit/));
     expect(draft().frequency).toEqual({ maxPerSession: 1, maxImpressions: 9, stopAfterDismiss: false, stopAfterConversion: false });
     expect(screen.getByText('A visit ends when they close the tab.')).toBeInTheDocument();
   });
@@ -284,7 +285,7 @@ describe('How often', () => {
     await userEvent.type(screen.getByRole('spinbutton', { name: 'Times per visit' }), '1');
     expect(pick('How often?', 'Custom…')).toBeChecked();
     await section('Dates'); await section('How often?');
-    expect(pick('How often?', 'Once per visit')).toBeChecked();
+    expect(pick('How often?', /^Once per visit/)).toBeChecked();
   });
 
   it('re-derives the pick when the value changes from outside, as an undo does', async () => {

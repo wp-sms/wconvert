@@ -252,7 +252,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
   };
 
   const displayPlan = displayRules.display_rules;
-  const displayAxes = vocabulary && displayPlan ? summarise(displayRules, vocabulary, false) : null;
+  const displayAxes = vocabulary && displayPlan ? summarise(displayRules, vocabulary) : null;
   const displaySummary = displayAxes
     ? `${summaryOf(displayAxes, 'who').text} · ${summaryOf(displayAxes, 'when').text}`
     : __('Review display rules', 'wconvert');
