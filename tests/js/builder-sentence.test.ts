@@ -1,14 +1,11 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import {
+  datesSummary,
   howOftenSummary,
   phraseOf,
-  whenSummary,
   whereSummary,
-  whoSummary,
 } from '../../resources/admin/src/builder/rules/sentence';
 import { allRuleTypes, ruleTypes } from './support/rule-types';
-import type { Entry } from '../../resources/admin/src/builder/rules/axis';
-import type { Rule } from '../../resources/admin/src/builder/api';
 
 afterEach(() => vi.unstubAllGlobals());
 
@@ -31,9 +28,6 @@ afterEach(() => vi.unstubAllGlobals());
  */
 
 const types = allRuleTypes();
-
-/** Rules as the panel hands them over: paired with their flat indices. */
-const entries = (...rules: Rule[]): Entry[] => rules.map((rule, index) => [rule, index] as const);
 
 describe('where it shows', () => {
   /**
@@ -75,329 +69,6 @@ describe('where it shows', () => {
     expect(whereSummary({ logged_in: true }).text).toBe('On every page');
     expect(whereSummary({ logged_in: false }).text).toBe('On every page');
     expect(whereSummary({}).text).not.toMatch(/signed/);
-  });
-});
-
-describe('when it fires', () => {
-  /**
-   * **An Optin with no Trigger can never fire**, and the save route already
-   * refuses one. The section says so before the click (ADR 0042 rule 3) and
-   * reports itself incomplete, so the merchant's eye lands on it.
-   */
-  it('says so, and flags itself, when there is no trigger at all', () => {
-    const summary = whenSummary([], types);
-
-    expect(summary.text).toBe('Never — it has no trigger yet');
-    expect(summary.attention).toBe(true);
-  });
-
-  /**
-   * Any one Trigger fires, so the joiner is the axis's "or".
-   *
-   * The values are deliberately ones no preset fixes — 5 seconds IS
-   * `after_a_moment` and 50% IS `halfway_down`, and reading those back as
-   * their presets is the behaviour asserted further down. What is under test
-   * here is the joiner.
-   */
-  it('joins triggers with or', () => {
-    expect(whenSummary(entries({ type: 'time_on_page', seconds: 20 }), types).text).toBe(
-      'Fires time_on_page 20',
-    );
-    expect(
-      whenSummary(entries({ type: 'time_on_page', seconds: 20 }, { type: 'scroll_up' }), types).text,
-    ).toBe('Fires time_on_page 20 or scroll_up');
-  });
-
-  it('reads three or more as a list', () => {
-    expect(
-      whenSummary(
-        entries({ type: 'scroll_up' }, { type: 'time_on_page', seconds: 20 }, { type: 'scroll_depth', percent: 33 }),
-        types,
-      ).text,
-    ).toBe('Fires scroll_up, time_on_page 20 or scroll_depth 33');
-  });
-
-  // ==========================================================================
-  // "SHOWS IMMEDIATELY" SUBSUMES EVERY OTHER TRIGGER, AND THE SENTENCE SAYS SO.
-  // ==========================================================================
-  // `page_load`'s module is `holds: () => true`. Triggers are ORed, so an Optin
-  // carrying it fires the instant its Conditions hold and no other Trigger can
-  // ever be the reason it fired. The old summary read *"Fires as soon as the
-  // page loads or after 5 seconds on the page"* — true, and useless: it reads
-  // as though the five seconds decides something.
-
-  it('reads an immediate Optin as immediate, with nothing after it', () => {
-    const summary = whenSummary(entries({ type: 'page_load' }), types);
-
-    expect(summary.text).toBe('Fires page_load');
-    expect(summary.attention).toBe(false);
-  });
-
-  /**
-   * And it counts the rules along for the ride rather than listing them as
-   * though they mattered — flagged, because a merchant who set both is looking
-   * at rules they believe are doing something.
-   */
-  it('says how many other triggers never run, and flags the section', () => {
-    const one = whenSummary(entries({ type: 'page_load' }, { type: 'time_on_page', seconds: 20 }), types);
-
-    expect(one.text).toBe('Fires page_load — 1 other trigger never runs');
-    expect(one.attention).toBe(true);
-
-    const two = whenSummary(
-      entries({ type: 'time_on_page', seconds: 20 }, { type: 'page_load' }, { type: 'scroll_up' }),
-      types,
-    );
-
-    expect(two.text).toBe('Fires page_load — 2 other triggers never run');
-  });
-
-  /** Wherever it sits in the merchant's own order. */
-  it('finds it whether it was written first or last', () => {
-    expect(whenSummary(entries({ type: 'scroll_up' }, { type: 'page_load' }), types).text).toMatch(
-      /^Fires page_load/,
-    );
-  });
-
-  // ==========================================================================
-  // AND THE SAME RULE WITHIN ONE TYPE, WHICH IS THE OTHER HALF OF IT.
-  // ==========================================================================
-  // Triggers are ORed, so the earliest one fires and the rest are along for the
-  // ride. ACROSS types that is unknowable — whether `scroll_depth 50` beats
-  // `time_on_page 8` is a fact about one visitor — so two types are a real
-  // choice. Within one type it is decidable, and the screen has to say so.
-
-  /**
-   * A threshold is crossed once, lowest first. *"After 8 seconds or after 20
-   * seconds"* is *"after 8 seconds"*: by the time the 20 is true the 8 already
-   * was.
-   */
-  it('reads two thresholds of one type as the lower one', () => {
-    const summary = whenSummary(
-      entries({ type: 'time_on_page', seconds: 8 }, { type: 'time_on_page', seconds: 20 }),
-      types,
-    );
-
-    expect(summary.text).toBe('Fires time_on_page 8 — 1 other trigger never runs');
-    expect(summary.attention).toBe(true);
-  });
-
-  /** Whichever order they were written in. */
-  it('finds the lowest threshold wherever it sits', () => {
-    expect(
-      whenSummary(
-        entries({ type: 'time_on_page', seconds: 20 }, { type: 'time_on_page', seconds: 8 }),
-        types,
-      ).text,
-    ).toBe('Fires time_on_page 8 — 1 other trigger never runs');
-  });
-
-  it('does the same for a scroll threshold', () => {
-    expect(
-      whenSummary(
-        entries({ type: 'scroll_depth', percent: 80 }, { type: 'scroll_depth', percent: 33 }),
-        types,
-      ).text,
-    ).toBe('Fires scroll_depth 33 — 1 other trigger never runs');
-  });
-
-  /**
-   * **Two different types are a real choice and are left alone**, because
-   * which of them fires first is a fact about the visitor rather than about
-   * the rules.
-   */
-  it('leaves two different types alone, because their order is the visitor’s', () => {
-    const summary = whenSummary(
-      entries({ type: 'time_on_page', seconds: 20 }, { type: 'scroll_depth', percent: 33 }),
-      types,
-    );
-
-    expect(summary.text).toBe('Fires time_on_page 20 or scroll_depth 33');
-    expect(summary.attention).toBe(false);
-  });
-
-  /** A type with no params has one spelling, so a second is the same rule. */
-  it('reads two of a parameterless trigger as one', () => {
-    expect(whenSummary(entries({ type: 'scroll_up' }, { type: 'scroll_up' }), types).text).toBe(
-      'Fires scroll_up — 1 other trigger never runs',
-    );
-  });
-
-  /**
-   * **Two `click_element`s on different selectors are genuinely two
-   * triggers.** There is no threshold to compare and they are not duplicates,
-   * so nothing here may call either of them idle.
-   */
-  it('leaves two selectors alone, and folds two identical ones together', () => {
-    expect(
-      whenSummary(
-        entries({ type: 'click_element', selector: '.a' }, { type: 'click_element', selector: '.b' }),
-        types,
-      ).attention,
-    ).toBe(false);
-
-    expect(
-      whenSummary(
-        entries({ type: 'click_element', selector: '.a' }, { type: 'click_element', selector: '.a' }),
-        types,
-      ).text,
-    ).toBe('Fires click_element .a — 1 other trigger never runs');
-  });
-
-  /**
-   * A threshold with no value yet can never be the survivor — it cannot fire
-   * at all, and `phraseOf` reports that on its own row.
-   */
-  it('does not let an unfilled threshold win the comparison', () => {
-    const summary = whenSummary(
-      entries({ type: 'time_on_page' }, { type: 'time_on_page', seconds: 20 }),
-      types,
-    );
-
-    expect(summary.text).toBe('Fires time_on_page 20 — 1 other trigger never runs');
-  });
-
-  /** Three of a kind leave one, and the count says how many did not survive. */
-  it('counts every trigger that never runs', () => {
-    expect(
-      whenSummary(
-        entries(
-          { type: 'time_on_page', seconds: 30 },
-          { type: 'time_on_page', seconds: 8 },
-          { type: 'time_on_page', seconds: 20 },
-        ),
-        types,
-      ).text,
-    ).toBe('Fires time_on_page 8 — 2 other triggers never run');
-  });
-});
-
-describe('who sees it', () => {
-  /** Every Condition holds at the instant a Trigger fires, so the joiner is "and". */
-  it('joins conditions with and, and says so when there are none', () => {
-    expect(whoSummary([], types).text).toBe('Anyone who reaches it');
-    expect(
-      whoSummary(entries({ type: 'device', in: ['mobile', 'tablet'] }, { type: 'cart_has_items' }), types).text,
-    ).toBe('Only when device mobile or tablet and cart_has_items');
-  });
-
-  /**
-   * **The visitor predicate reads out here**, folded into the same join rather
-   * than trailing a second sentence — a merchant asking *who sees this* gets
-   * one answer. It is still STORED on the targeting axis, which is the one
-   * place storage and control answer to different questions ({@see Who}).
-   */
-  it('folds the visitor predicate into the same clause', () => {
-    expect(whoSummary([], types, true).text).toBe('Only when signed in');
-    expect(whoSummary([], types, false).text).toBe('Only when signed out');
-    expect(whoSummary(entries({ type: 'cart_has_items' }), types, true).text).toBe(
-      'Only when cart_has_items and signed in',
-    );
-  });
-
-  /** Undefined is "do not ask", which is not the same as false. */
-  it('says anyone where it is not asked', () => {
-    expect(whoSummary([], types, undefined).text).toBe('Anyone who reaches it');
-  });
-
-  /**
-   * **The second visitor predicate reads out beside the first**, in the same
-   * join, for the same reason: a merchant asking *who sees this* gets one
-   * answer rather than three. Both are stored on the targeting axis and drawn
-   * under WHO, which is the one place storage and control answer to different
-   * questions ({@see Who}).
-   *
-   * The roles are joined with "or", because holding ANY one of them is enough
-   * — a set read as AND would be a rule that holds for nobody.
-   */
-  it('folds the roles into the same clause, joined with or', () => {
-    expect(whoSummary([], types, undefined, ['subscriber']).text).toBe('Only when holding subscriber');
-    expect(whoSummary([], types, undefined, ['subscriber', 'plan_gold']).text).toBe(
-      'Only when holding subscriber or plan_gold',
-    );
-  });
-
-  /** Three clauses is a list, which the joiner already knows how to say. */
-  it('reads both visitor predicates and the conditions as one sentence', () => {
-    expect(
-      whoSummary(entries({ type: 'cart_has_items' }), types, true, ['subscriber']).text,
-    ).toBe('Only when cart_has_items, signed in and holding subscriber');
-  });
-
-  /**
-   * **The role's own name, which is what the merchant just ticked.**
-   *
-   * A role's display name is a fact about the INSTALL — whatever registered
-   * it, or whatever a membership adapter offers — so it reaches the builder as
-   * a param option, exactly as a custom post type's does. Printing the slug
-   * would show `plan_gold` under a control that says "Gold plan".
-   *
-   * The vocabulary that ships declares no options for this control, because
-   * there are none to declare in a file: they are resolved per install by
-   * `src/Rules/RuleCatalogue.php`. So this stands one in.
-   */
-  it('reads a role by the name this install gave it', () => {
-    const offered = types.map((type) =>
-      type.params.value?.control === 'role_set'
-        ? {
-            ...type,
-            params: {
-              value: {
-                ...type.params.value,
-                options: [
-                  { value: 'subscriber', label: 'Subscriber' },
-                  { value: 'plan_gold', label: 'Gold plan' },
-                ],
-              },
-            },
-          }
-        : type,
-    );
-
-    expect(whoSummary([], offered, undefined, ['subscriber', 'plan_gold']).text).toBe(
-      'Only when holding Subscriber or Gold plan',
-    );
-  });
-
-  /** A slug the site no longer offers still reads as itself, rather than vanishing. */
-  it('falls back to the slug where this install offers no word for it', () => {
-    expect(whoSummary([], types, undefined, ['plan_gold']).text).toBe('Only when holding plan_gold');
-  });
-
-  /** An emptied set is *any role*, and reads as nothing at all. */
-  it('says anyone where no role was chosen', () => {
-    expect(whoSummary([], types, undefined, []).text).toBe('Anyone who reaches it');
-    expect(whoSummary([], types, undefined, undefined).text).toBe('Anyone who reaches it');
-  });
-});
-
-describe('who sees it, when a kind is set twice', () => {
-  /**
-   * **Conditions are ANDed, so a second of a kind NARROWS the first.** *"On
-   * mobile or tablet"* AND *"on desktop"* holds for nobody, and every rule in
-   * it is individually fine — which is exactly why the section has to say so.
-   * One rule carrying several values is what the merchant meant (ADR 0005).
-   */
-  it('flags the section, even though each rule on its own is fine', () => {
-    const summary = whoSummary(
-      entries({ type: 'device', in: ['mobile'] }, { type: 'device', in: ['desktop'] }),
-      types,
-    );
-
-    expect(summary.attention).toBe(true);
-  });
-
-  /** Two of a kind that says WHICH thing are two real conditions. */
-  it('says nothing of the sort about two different parameters', () => {
-    expect(
-      whoSummary(
-        entries(
-          { type: 'query_param', key: 'utm_source', value: ['a'] },
-          { type: 'query_param', key: 'utm_medium', value: ['b'] },
-        ),
-        types,
-      ).attention,
-    ).toBe(false);
   });
 });
 
@@ -540,27 +211,27 @@ describe('how often', () => {
    * So an untouched Optin already stops, and a summary reading "Every time"
    * would be a lie on the commonest Optin there is.
    */
-  it('states the tab-session limit and keeps a completion-only sentence grammatical', () => {
-    expect(howOftenSummary({ maxPerSession: 1, stopAfterDismiss: false }, {}, 0, true, 'click').text)
-      .toBe('Shows automatically at most 1 time per tab session, and stops once they click the main button');
+  it('states the per-visit limit and keeps a completion-only sentence grammatical', () => {
+    expect(howOftenSummary({ maxPerSession: 1, stopAfterDismiss: false }, 0, true, 'click').text)
+      .toBe('Shows at most 1 time per visit, and stops once they click the main button');
   });
 
   it('reads an untouched allowance as stopping, not as unlimited', () => {
-    expect(howOftenSummary({}, {}, 0, true).text).toBe('Every time, until they close it or submit the form');
+    expect(howOftenSummary({}, 0, true).text).toBe('Every time, until they close it or submit the form');
   });
 
   it('describes the actual completion action and waits for a known site timezone', () => {
-    expect(howOftenSummary({}, {}, 0, true, 'click').text).toContain('click the main button');
-    expect(howOftenSummary({}, { ends_at: '2020-08-03 12:00' }, 0, true).text).not.toContain('Stopped');
+    expect(howOftenSummary({}, 0, true, 'click').text).toContain('click the main button');
+    expect(datesSummary({ ends_at: '2020-08-03 12:00' }).text).not.toContain('Stopped');
     vi.stubGlobal('wconvertAdmin', { timezone: 'Pacific/Honolulu', exportUrl: '' });
     vi.spyOn(Date, 'now').mockReturnValue(Date.parse('2026-09-10T18:00:00Z'));
-    expect(howOftenSummary({}, { ends_at: '2026-09-10 09:00' }, 0, true).attention).toBe(false);
+    expect(datesSummary({ ends_at: '2026-09-10 09:00' }).attention).toBe(false);
     vi.restoreAllMocks();
   });
 
   it('reads both switches off as genuinely every time', () => {
     expect(
-      howOftenSummary({ stopAfterDismiss: false, stopAfterConversion: false }, {}, 0, true).text,
+      howOftenSummary({ stopAfterDismiss: false, stopAfterConversion: false }, 0, true).text,
     ).toBe('Every time, with no limit');
   });
 
@@ -580,7 +251,7 @@ describe('how often', () => {
    */
   it('reads a finished window in the past tense, and asks to be looked at', () => {
     vi.stubGlobal('wconvertAdmin', { timezone: 'UTC', exportUrl: '' });
-    const done = howOftenSummary({}, { starts_at: '2020-07-01 09:00', ends_at: '2020-08-03 12:00' }, 0, true);
+    const done = datesSummary({ starts_at: '2020-07-01 09:00', ends_at: '2020-08-03 12:00' });
 
     expect(done.text).toMatch(/^Stopped running on .*2020/);
     expect(done.attention).toBe(true);
@@ -588,31 +259,35 @@ describe('how often', () => {
 
   /** And a window still ahead of the clock reads as the plan it is. */
   it('says nothing of the sort about a window that has not closed', () => {
-    const running = howOftenSummary({}, { starts_at: '2099-11-27 09:00', ends_at: '2099-11-30 23:59' }, 0, true);
+    const running = datesSummary({ starts_at: '2099-11-27 09:00', ends_at: '2099-11-30 23:59' });
 
     expect(running.text).toMatch(/^Runs .*2099.* to .*2099/);
     expect(running.attention).toBe(false);
   });
 
   /** A schedule with only a start has no window to have closed. */
+  it('reads no dates as running until it is paused', () => {
+    expect(datesSummary({})).toEqual({ text: 'Until you pause it', attention: false });
+  });
+
   it('is silent where there is no end date at all', () => {
-    expect(howOftenSummary({}, { starts_at: '2020-07-01 09:00' }, 0, true).attention).toBe(false);
+    expect(datesSummary({ starts_at: '2020-07-01 09:00' }).attention).toBe(false);
   });
 
   it('reads the counts, singular and plural', () => {
-    expect(howOftenSummary({ maxImpressions: 1 }, {}, 0, true).text).toMatch(/^Shows at most 1 time,/);
-    expect(howOftenSummary({ maxImpressions: 3 }, {}, 0, true).text).toMatch(/^Shows at most 3 times,/);
-    expect(howOftenSummary({ cooldownDays: 7 }, {}, 0, true).text).toMatch(/^Shows at most once every 7 days,/);
+    expect(howOftenSummary({ maxImpressions: 1 }, 0, true).text).toMatch(/^Shows at most 1 time,/);
+    expect(howOftenSummary({ maxImpressions: 3 }, 0, true).text).toMatch(/^Shows at most 3 times,/);
+    expect(howOftenSummary({ cooldownDays: 7 }, 0, true).text).toMatch(/^Shows at most once every 7 days,/);
   });
 
   it('reads both counts and both switches together', () => {
-    expect(howOftenSummary({ maxImpressions: 3, cooldownDays: 7 }, {}, 0, true).text).toBe(
+    expect(howOftenSummary({ maxImpressions: 3, cooldownDays: 7 }, 0, true).text).toBe(
       'Shows at most 3 times and at most once every 7 days, and stops once they close it or submit the form',
     );
   });
 
   it('reads a count with the switches off', () => {
-    expect(howOftenSummary({ maxImpressions: 3, stopAfterDismiss: false, stopAfterConversion: false }, {}, 0, true).text)
+    expect(howOftenSummary({ maxImpressions: 3, stopAfterDismiss: false, stopAfterConversion: false }, 0, true).text)
       .toBe('Shows at most 3 times');
   });
 
@@ -628,7 +303,6 @@ describe('how often', () => {
           for (const convert of [undefined, false]) {
             const text = howOftenSummary(
               { maxImpressions: max, cooldownDays: days, stopAfterDismiss: dismiss, stopAfterConversion: convert },
-              {},
               0,
               true,
             ).text;
@@ -647,9 +321,9 @@ describe('how often', () => {
    * number is real, stored and inert.
    */
   it('names the priority on an overlay and never on an inline Optin', () => {
-    expect(howOftenSummary({}, {}, 10, true).text).toMatch(/priority 10$/);
-    expect(howOftenSummary({}, {}, 10, false).text).not.toMatch(/priority/);
-    expect(howOftenSummary({}, {}, 0, true).text).not.toMatch(/priority/);
+    expect(howOftenSummary({}, 10, true).text).toMatch(/priority 10$/);
+    expect(howOftenSummary({}, 10, false).text).not.toMatch(/priority/);
+    expect(howOftenSummary({}, 0, true).text).not.toMatch(/priority/);
   });
 });
 

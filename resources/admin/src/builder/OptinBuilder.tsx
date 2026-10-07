@@ -43,7 +43,7 @@ import { CaptureModeChoice } from './CaptureModeChoice';
 import { ReadinessDialog } from './ReadinessDialog';
 import { hintIn, hintSaid } from './destinations';
 import { planFrom } from './rules/plan';
-import { summarise } from './rules/summaries';
+import { summarise, summaryOf } from './rules/summaries';
 import { DisplayRules, type DisplayRulesValue } from './rules/DisplayRules';
 import { DevExport } from './DevExport';
 import { Fullscreen } from './Fullscreen';
@@ -254,7 +254,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
   const displayPlan = displayRules.display_rules;
   const displayAxes = vocabulary && displayPlan ? summarise(displayRules, vocabulary, false) : null;
   const displaySummary = displayAxes
-    ? `${displayAxes[1].text} · ${displayAxes[2].text}`
+    ? `${summaryOf(displayAxes, 'who').text} · ${summaryOf(displayAxes, 'when').text}`
     : __('Review display rules', 'wconvert');
   const destinationNames = bound.map(id => read(destinations)?.destinations.find(item => item.id === id)?.label).filter((name): name is string => !!name);
   const destinationSummary = config?.capture_mode === 'local' ? __('Stored in WConvert', 'wconvert')

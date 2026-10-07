@@ -177,12 +177,15 @@ describe('availability', () => {
     expect(ids('who', { elite: 'unavailable' }).cart).toEqual({ availability: 'unavailable', tier: 'elite', requires_label: 'WooCommerce' });
   });
 
-  it('reads a stored rule a Free install hides as Custom, so the rule stays on screen', () => {
-    window.wconvertAdmin = { exportUrl: '', installedTier: 'free' } as typeof window.wconvertAdmin;
+  it('reads a stored rule this site cannot run as Custom, so the rule stays on screen', () => {
     const value = opening({ mode: 'automatic', match: 'any', minimum_seconds: 0, rules: [{ type: 'exit_intent' }] });
-    expect(pickFor('when', value, ruleTypes({ pro: 'locked' })).id).toBe('custom');
-    window.wconvertAdmin = { exportUrl: '', installedTier: 'basic' } as typeof window.wconvertAdmin;
-    expect(pickFor('when', value, ruleTypes({ pro: 'locked' })).id).toBe('leave');
+    for (const installedTier of ['free', 'basic'] as const) {
+      window.wconvertAdmin = { exportUrl: '', installedTier } as typeof window.wconvertAdmin;
+      expect(pickFor('when', value, ruleTypes({ pro: 'locked' })).id, installedTier).toBe('custom');
+    }
+    const cart = audience({ mode: 'groups', groups: [group({ type: 'cart_has_items' })] });
+    expect(pickFor('who', cart, ruleTypes({ elite: 'unavailable' })).id).toBe('custom');
+    expect(pickFor('who', cart, ruleTypes()).id).toBe('cart');
   });
 });
 

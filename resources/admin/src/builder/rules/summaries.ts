@@ -1,26 +1,25 @@
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import type { ConvertingAct } from '../structure/catalogue';
 import type { DisplayPlan } from '@loader/display-rules';
 import { groupSummary } from './plan';
-import { howOftenSummary, whereSummary, type Summary } from './sentence';
+import { datesSummary, howOftenSummary, whereSummary, type Summary } from './sentence';
+import { derive, type SectionId } from './picks';
 import type { Frequency, RuleVocabulary, Schedule, Targeting } from '../api';
 
 /**
- * The four questions, answered — **once, for the two screens that ask them.**
+ * The five questions, answered — **once, for every screen that asks them.**
  *
  * ============================================================================
- * THE PANEL READS THESE. SO DOES THE SUMMARY ABOVE IT.
+ * THE MENU READS THESE. SO DO READINESS AND THE CAMPAIGN DETAILS.
  * ============================================================================
- * {@see DisplayRules} draws each answer as the label of a disclosure the
- * merchant opens to edit it; {@see Readiness} draws all four as the read-only
- * state of the Optin, above every tab. Same four sentences, same order, same
- * words for the questions.
+ * {@see DisplayRules} draws each answer under its question in the side menu;
+ * {@see Readiness} and `CampaignDetails` draw all five as the read-only state
+ * of the Optin. Same five answers, same order, same words for the questions.
  *
- * Spelling that twice would be two lists of four translated eyebrows, and the
- * failure would be quiet: the panel and the summary saying *"When"* and
- * *"Timing"* about the same axis on one screen. `sentence.ts` already owns the
- * sentences; this owns the four QUESTIONS and the wiring from a stored config
- * to them.
+ * An answer is the matched [[Quick pick]]'s own words — *"After 15 seconds"*,
+ * *"Once per visit"* — so the menu reads back what the chip says. Custom reads
+ * the rules instead. A section that needs attention reads its problem rather
+ * than a pick, because Readiness quotes the text as the blocker.
  *
  * The eyebrows are `__()` at call time rather than module constants, because
  * `wp.i18n` is loaded with the page and a top-level `__()` would be evaluated
@@ -28,20 +27,12 @@ import type { Frequency, RuleVocabulary, Schedule, Targeting } from '../api';
  * thunks rather than strings.
  */
 
-/** What the four sections and the readiness panel both read out of `config`. */
+/** What the five sections and the readiness panel all read out of `config`. */
 export interface DisplayRulesValue {
   readonly display_rules?: DisplayPlan;
   readonly targeting: Targeting;
   readonly frequency: Frequency;
-  /**
-   * *When it runs*, on the same axis as the allowance.
-   *
-   * It sits inside "Schedule & frequency" rather than becoming a fifth section because it
-   * answers the same question at a coarser grain — the allowance is how often
-   * ONE VISITOR may meet it, and this is when the campaign is on at all — and
-   * because a merchant reading one row wants both facts in the same sentence:
-   * *"Runs 27 Nov to 30 Nov · every time, until they close it"*.
-   */
+  /** *When it runs* — the Dates question, a coarser grain than the allowance. */
   readonly schedule: Schedule;
   readonly priority: number;
 }
@@ -49,19 +40,29 @@ export interface DisplayRulesValue {
 /** One axis, answered, with the question it answers. */
 export interface AxisSummary extends Summary {
   /** A stable key — a control id, and never a translated string. */
-  readonly id: string;
+  readonly id: SectionId;
   /** Which question this answers — *"Where"*, *"When"*. */
   readonly eyebrow: string;
 }
 
 /**
- * Pages, Audience, When it appears, and Schedule & frequency, in screen order.
+ * Where, Who, When, How often and Dates, in screen order.
  *
- * A fixed-length tuple rather than a bare array, so a caller may take the four
- * apart positionally and a fifth axis is a type error at every call site rather
- * than a silently missing section.
+ * A fixed-length tuple, so a sixth question is a type error at every call site
+ * rather than a silently missing section. Callers look an entry up by its id.
  */
-export type AxisSummaries = readonly [AxisSummary, AxisSummary, AxisSummary, AxisSummary];
+export type AxisSummaries = readonly [AxisSummary, AxisSummary, AxisSummary, AxisSummary, AxisSummary];
+
+/** The five questions, in screen order. */
+export function questions(): Record<SectionId, string> {
+  return {
+    where: __('Where does it show?', 'wconvert'),
+    who: __('Who sees it?', 'wconvert'),
+    when: __('When does it open?', 'wconvert'),
+    'how-often': __('How often?', 'wconvert'),
+    dates: __('Dates', 'wconvert'),
+  };
+}
 
 export function summarise(
   value: DisplayRulesValue,
@@ -72,26 +73,37 @@ export function summarise(
   const { display_rules: plan, targeting, frequency, schedule, priority } = value;
   /*
    * Every type on every axis, because a summary reads a rule by its DECLARED
-   * params and a Targeting rule can carry a preset like any other. The two
-   * client axes are what decide which rules belong to When and to Who; the
-   * union is only what looks a rule's declaration up.
+   * params and a Targeting rule can carry a preset like any other.
    */
   const all = [...vocabulary.targeting, ...vocabulary.triggers, ...vocabulary.conditions];
+  const asked = questions();
+  const answer = (id: SectionId, custom: Summary): AxisSummary => {
+    const pick = derive(id, value, vocabulary);
+    return { id, eyebrow: asked[id], attention: custom.attention, text: pick.open || custom.attention ? custom.text : pick.label(value) };
+  };
 
   const audience = plan?.audience;
   const groups = audience?.mode === 'groups' ? audience.groups.map(group => groupSummary(group, all)) : [];
   const opening = plan?.opening;
   const when = !opening ? { text: __('Replace older display rules', 'wconvert'), attention: true }
-    : opening.mode === 'immediate' ? { text: __('As soon as the page is eligible', 'wconvert'), attention: false }
+    : opening.mode === 'immediate' ? { text: __('Right away', 'wconvert'), attention: false }
       : groupSummary({ match: opening.mode === 'click' ? 'any' : opening.match, rules: opening.rules }, all);
   if (opening?.mode === 'automatic' && (!Number.isFinite(opening.minimum_seconds ?? 0) || (opening.minimum_seconds ?? 0) < 0 || (opening.minimum_seconds ?? 0) > 3600)) when.attention = true;
-  if (opening?.mode === 'automatic' && opening.minimum_seconds) when.text += ` · ${opening.minimum_seconds} ` + __('seconds minimum', 'wconvert');
+  if (opening?.mode === 'automatic' && opening.minimum_seconds) when.text += ` · ${sprintf(__('not before %d seconds', 'wconvert'), opening.minimum_seconds)}`;
+  const where = targeting.mode === 'selected' && !targeting.include?.length
+    ? { text: __('Choose at least one page', 'wconvert'), attention: true }
+    : whereSummary(targeting);
   return [
-    { id: 'where', eyebrow: __('Pages', 'wconvert'), ...whereSummary(targeting),
-      ...(targeting.mode === 'selected' && !targeting.include?.length ? { text: __('Choose included pages', 'wconvert'), attention: true } : {}) },
-    { id: 'who', eyebrow: __('Audience', 'wconvert'), text: audience?.mode === 'everyone' ? __('Everyone', 'wconvert') : groups.map(group => `(${group.text})`).join(__(' OR ', 'wconvert')) || __('Choose an audience', 'wconvert'),
-      attention: !audience || (audience.mode === 'groups' && (!groups.length || groups.some(group => group.attention))) },
-    { id: 'when', eyebrow: __('Opening moment', 'wconvert'), ...when },
-    { id: 'how-often', eyebrow: __('Schedule & limits', 'wconvert'), ...howOftenSummary(frequency, schedule, priority, overlay, act) },
+    { ...answer('where', where), ...(!where.attention && targeting.exclude?.length ? { text: where.text } : {}) },
+    answer('who', { text: audience?.mode === 'everyone' ? __('Everyone', 'wconvert') : groups.map(group => `(${group.text})`).join(__(' or ', 'wconvert')) || __('Choose who sees it', 'wconvert'),
+      attention: !audience || (audience.mode === 'groups' && (!groups.length || groups.some(group => group.attention))) }),
+    answer('when', when),
+    answer('how-often', howOftenSummary(frequency, priority, overlay, act)),
+    answer('dates', datesSummary(schedule)),
   ];
+}
+
+/** One section's answer, by id rather than by position. */
+export function summaryOf(summaries: AxisSummaries, id: SectionId): AxisSummary {
+  return summaries.find(summary => summary.id === id)!;
 }

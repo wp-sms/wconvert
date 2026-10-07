@@ -4,28 +4,27 @@ import { hasScheduleEnded } from '../../lib/wallTime';
 import { __, _n, _x, sprintf } from '@wordpress/i18n';
 import { fromRule } from '../presets';
 import { readable, readableHours } from '../../lib/wallTime';
-import { visitorWith, type Entry } from './axis';
-import type { Frequency, Rule, RuleParam, RuleType, Schedule, Targeting } from '../api';
+import { derive, type SectionId } from './picks';
+import { summarise, type DisplayRulesValue } from './summaries';
+import type { Frequency, Rule, RuleParam, RuleType, RuleVocabulary, Schedule, Targeting } from '../api';
 
 /**
- * The four section summaries — pure, and the only place the rules are read as
- * prose.
+ * The five section answers and the one summary sentence — pure, and the only
+ * place the rules are read as prose.
  *
  * ============================================================================
- * THE SENTENCE IS THE DISCLOSURE'S LABEL. IT IS NOT MAD LIBS.
+ * THE SENTENCE IS TOKENS IN A TRANSLATED FRAME, NEVER CONCATENATED.
  * ============================================================================
- * The obvious shape for this screen is a literal sentence with the controls
- * embedded in it — *"Fires after ⟨15⟩ seconds"* with a number input where the
- * 15 is. **That cannot be localised.** `sprintf` returns a string and not JSX,
- * and a language that reorders subject and object cannot be served by
- * splitting one translation around React children: the translator would be
- * handed three fragments with no way to say which order they go in. This admin
- * is verified 44/44 under `fa_IR` and that is not a property to spend.
+ * {@link sentenceParts} returns one lowercase phrase per question, and the
+ * screen drops them into `__('Shows %1$s %2$s, %3$s, %4$s.')`. A language that
+ * reorders where, who and when moves the placeholders; the phrases stay whole.
+ * Each phrase carries its own preposition — *"on every page"*, *"to
+ * everyone"* — because which preposition a language needs depends on the
+ * phrase, not on its slot.
  *
- * So the collapsed row shows the sentence and expanding it reveals an ordinary
- * form. Same merchant experience, and since a `<button>` may contain phrasing
- * content but not a form control, it is also the only accessible shape for a
- * disclosure whose label reads as a sentence.
+ * The chips' inline numbers are the same idea one level down: a pick's
+ * template has exactly one `%s`, and the control sits where it is
+ * (`picks.ts`). A translator can move the `%s`; nothing else is split.
  *
  * ============================================================================
  * TWO HOMES FOR THE WORDS, AND IT IS ADR 0013'S RULE READ FROM THE OTHER END.
@@ -82,7 +81,7 @@ export interface Summary {
  * of page sets, and a visitor predicate in one would widen the Optin to the
  * whole site for anyone matching it (ADR 0005). It reads out under WHO, where
  * its control now is, because a merchant asking *who sees this* should get one
- * answer rather than half of it here ({@see whoSummary}).
+ * answer rather than half of it here.
  */
 export function whereSummary(targeting: Targeting): Summary {
   const included = targeting.include?.length ?? 0;
@@ -119,371 +118,6 @@ const countOfPages = (count: number): string =>
     _n('%d page rule', '%d page rules', count, 'wconvert'),
     count,
   );
-
-// ============================================================================
-// WHEN AND WHO — THE AXES' OWN CONNECTIVES, NEVER THE MERCHANT'S.
-// ============================================================================
-
-/**
- * *When* it fires: any one Trigger, so the joiner is **or**.
- *
- * That connective is the axis's and is not a choice on offer. There is no
- * ALL/ANY grouping anywhere on this screen, and ADR 0005's nesting ceiling is
- * permanent rather than "not in v1" — precisely because "we'll add OR later"
- * is the path by which an expression language arrives.
- *
- * **An Optin with no Trigger can never fire**, and the save route already
- * refuses one. Saying so here is ADR 0042 rule 3: the merchant learns it from
- * the section they are looking at rather than from a refusal after the click.
- */
-export function whenSummary(entries: readonly Entry[], types: readonly RuleType[]): Summary {
-  if (entries.length === 0) {
-    return { text: __('Never — it has no trigger yet', 'wconvert'), attention: true };
-  }
-
-  const idle = idleTriggers(entries, types);
-  const firing = entries.filter(([, at]) => !idle.has(at));
-  const read = firing.map(([rule]) => phraseOf(rule, types));
-  const fires = sprintf(
-    /* translators: %s: one or more trigger phrases joined by “or”, e.g. “after 15 seconds on the page”. */
-    __('Fires %s', 'wconvert'),
-    join(read.map((each) => each.text), _x('or', 'joins triggers, any one of which fires', 'wconvert')),
-  );
-
-  if (idle.size === 0) {
-    return { text: fires, attention: read.some((each) => each.attention) };
-  }
-
-  return {
-    text: sprintf(
-      /* translators: 1: what it does, e.g. “Fires as soon as the page loads”. 2: how many other triggers never run. */
-      __('%1$s — %2$s', 'wconvert'),
-      fires,
-      sprintf(
-        /* translators: %d: a number of triggers that can never fire. */
-        _n('%d other trigger never runs', '%d other triggers never run', idle.size, 'wconvert'),
-        idle.size,
-      ),
-    ),
-    attention: true,
-  };
-}
-
-/**
- * The Triggers that can never be the reason this Optin fired — by their own
- * flat index.
- *
- * ============================================================================
- * ONLY THE ONE THAT FIRES FIRST MATTERS, AND WITHIN A TYPE THAT IS DECIDABLE.
- * ============================================================================
- * Triggers are ORed, so the Optin shows the moment the earliest of them fires
- * and every other one is along for the ride. **Across types that is not
- * knowable** — whether `scroll_depth 50` beats `time_on_page 8` is a fact about
- * one visitor, so two different types are a real choice and are left alone.
- *
- * Within one type it is knowable, and there are three cases:
- *
- * - **`page_load` beats everything.** Its evaluator is `holds: () => true`, so
- *   it fires at the instant the Conditions do and nothing else ever gets to.
- * - **A THRESHOLD is crossed once, lowest first.** *"After 8 seconds"* or
- *   *"after 20 seconds"* is *"after 8 seconds"* — the 20 can never be the one,
- *   because by the time it is true the 8 already was. Read off the CONTROL
- *   rather than off a list of type names here, so it is the shared vocabulary
- *   deciding (`resources/rules/manifest.json`) and a future threshold trigger
- *   is covered the day it lands.
- * - **Everything else: an exact duplicate.** Two `exit_intent`s are one
- *   `exit_intent`; two `click_element`s on different selectors are genuinely
- *   two triggers and are left alone.
- *
- * The FIRST of a tie survives, so the merchant's own order decides and the
- * answer does not move while they are editing.
- */
-export function idleTriggers(entries: readonly Entry[], types: readonly RuleType[]): ReadonlySet<number> {
-  const idle = new Set<number>();
-  const immediate = entries.find(([rule]) => rule.type === IMMEDIATELY);
-
-  if (immediate !== undefined) {
-    for (const [, at] of entries) {
-      if (at !== immediate[1]) {
-        idle.add(at);
-      }
-    }
-
-    return idle;
-  }
-
-  for (const [type, group] of groupByType(entries)) {
-    if (group.length < 2) {
-      continue;
-    }
-
-    const declaration = types.find((each) => each.type === type);
-    const params = Object.keys(declaration?.params ?? {});
-    const threshold =
-      params.length === 1 && THRESHOLDS.has(declaration?.params[params[0]].control ?? 'text')
-        ? params[0]
-        : null;
-
-    const survivor =
-      threshold === null
-        ? // No threshold to compare, so only an exact duplicate is idle — and
-          // "exact" is over the params the type DECLARES, so a `degraded_from`
-          // marker beside one of them does not make two rules different.
-          null
-        : lowest(group, threshold);
-
-    for (const [rule, at] of group) {
-      if (survivor === null ? isDuplicateOf(rule, group, at, params) : at !== survivor) {
-        idle.add(at);
-      }
-    }
-  }
-
-  return idle;
-}
-
-/**
- * Controls whose value is a threshold the visitor crosses once, lowest first.
- *
- * Keyed on the control rather than on the rule type, because that is the
- * shared vocabulary both runtimes read — a list of type names here would be a
- * second manifest with nothing asserting the two agree (ADR 0005).
- */
-const THRESHOLDS: ReadonlySet<string> = new Set(['seconds', 'percent']);
-
-function groupByType(entries: readonly Entry[]): Map<string, Entry[]> {
-  const groups = new Map<string, Entry[]>();
-
-  for (const entry of entries) {
-    const group = groups.get(entry[0].type);
-
-    if (group === undefined) {
-      groups.set(entry[0].type, [entry]);
-    } else {
-      group.push(entry);
-    }
-  }
-
-  return groups;
-}
-
-/** The index of the lowest threshold in the group, first of a tie. */
-function lowest(group: readonly Entry[], param: string): number | null {
-  let at: number | null = null;
-  let best = Number.POSITIVE_INFINITY;
-
-  for (const [rule, index] of group) {
-    const value = Number(rule[param]);
-
-    // A rule with no value yet cannot be the survivor: it can never fire at
-    // all, which `phraseOf` reports separately on its own row.
-    if (Number.isFinite(value) && value < best) {
-      best = value;
-      at = index;
-    }
-  }
-
-  return at;
-}
-
-/** Is an earlier rule in this group identical over the params the type declares? */
-function isDuplicateOf(rule: Rule, group: readonly Entry[], at: number, params: readonly string[]): boolean {
-  return group.some(
-    ([other, index]) => index < at && params.every((param) => same(other[param], rule[param])),
-  );
-}
-
-/** Value equality, one level of array deep — the whole depth the model has. */
-function same(left: unknown, right: unknown): boolean {
-  if (Array.isArray(left) && Array.isArray(right)) {
-    return left.length === right.length && left.every((value, index) => value === right[index]);
-  }
-
-  return left === right;
-}
-
-/**
- * Can this rule type usefully appear more than once on one axis?
- *
- * ============================================================================
- * ALMOST NONE OF THEM CAN, AND THE ADD CONTROL IS WHERE THAT BELONGS.
- * ============================================================================
- * A second *Time on the page* is never what anyone wants: Triggers are ORed
- * and a threshold is crossed once, so the lower one always fires and the other
- * is dead. A second *Device* is worse — Conditions are ANDed, so
- * `device [mobile]` AND `device [desktop]` is a rule that can never hold, which
- * is exactly what a set-valued scalar exists to prevent (ADR 0005: *"the real
- * OR cases are set-valued scalars"* — one rule carrying several values, never
- * several rules).
- *
- * **So a merchant is not offered the mistake**, rather than being told about it
- * after they make it. A notice explaining a rule that should not have been
- * addable is a worse screen than one that never offered it.
- *
- * The line is between a param that says WHICH thing the rule is about and one
- * that says HOW MUCH or HOW MANY. Two `click_element`s are two different
- * selectors and two `query_param`s are two different parameters — both real.
- * Two `time_on_page`s, two `scroll_depth`s, two `device`s, two
- * `cart_value_min`s and two of anything with no params at all are one rule
- * written twice.
- *
- * Keyed on the CONTROL, so the shared vocabulary decides it and a rule type
- * added to the manifest tomorrow is classified without touching this file
- * (ADR 0005). It is asked of Targeting too, where every page rule names a
- * page and so every one of them repeats — which is what a page list is.
- */
-export const repeatable = (type: RuleType): boolean =>
-  Object.values(type.params).some((param) => IDENTIFYING.has(param.control));
-
-/** Controls that name WHICH thing, as against how much of it. */
-const IDENTIFYING: ReadonlySet<string> = new Set([
-  'text',
-  'selector',
-  'path_glob',
-  'post_id',
-  'term_id',
-  'post_type',
-]);
-
-/**
- * The second and later of any rule whose type may appear only once.
- *
- * The counterpart of {@link repeatable} for rules that are ALREADY stored —
- * saved before this screen existed, or prefilled by a [[Playbook]]. They are
- * shown with a note rather than hidden, because a rule still in `config` with
- * nothing on screen to act on is the failure the Unknown section exists to
- * prevent.
- */
-export function surplus(entries: readonly Entry[], types: readonly RuleType[]): ReadonlySet<number> {
-  const seen = new Set<string>();
-  const extra = new Set<number>();
-
-  for (const [rule, at] of entries) {
-    const declaration = types.find((each) => each.type === rule.type);
-
-    if (declaration !== undefined && repeatable(declaration)) {
-      continue;
-    }
-
-    if (seen.has(rule.type)) {
-      extra.add(at);
-    }
-
-    seen.add(rule.type);
-  }
-
-  return extra;
-}
-
-/**
- * The rule type that means "do not wait".
- *
- * Spelled once, here, and imported by the When section — the two places that
- * have to agree about which Trigger is a MODE rather than a member of the set.
- * It is the one rule type this bundle names, and it earns it: `page_load` is
- * the explicit spelling of "shows immediately" precisely so that "fires at
- * once" and "can never fire" are not the same value (CONTEXT.md, Trigger), and
- * a surface that could not tell it from the others would offer the merchant a
- * choice that decides nothing.
- */
-export const IMMEDIATELY = 'page_load';
-
-/**
- * *Who* sees it: every Condition holds at the instant a Trigger fires, so the
- * joiner is **and**.
- */
-export function whoSummary(
-  entries: readonly Entry[],
-  types: readonly RuleType[],
-  /**
-   * The visitor predicate, off the TARGETING axis — where it is stored, because
-   * the browser cannot read WordPress's HttpOnly auth cookie.
-   *
-   * It reads out here because that is the question it answers and where its
-   * control now is; `whereSummary` used to carry it as a trailing clause, which
-   * split the answer to *who sees this* across two sentences. Undefined means
-   * *do not ask*, which is not the same as false.
-   */
-  loggedIn?: boolean,
-  /**
-   * The roles this Optin wants, off the TARGETING axis for the reason
-   * {@link loggedIn} is — and more so: a membership level is a fact another
-   * plugin holds, which no browser could answer. Undefined means *any role*.
-   */
-  roles?: readonly string[],
-): Summary {
-  const signedIn =
-    loggedIn === undefined
-      ? null
-      : loggedIn
-        ? __('signed in', 'wconvert')
-        : __('signed out', 'wconvert');
-
-  // ==========================================================================
-  // THE ROLES' OWN NAMES, WHICH IS WHAT THE MERCHANT JUST TICKED.
-  // ==========================================================================
-  // A role's display name is a fact about the INSTALL — whatever registered it,
-  // or whatever a membership adapter offers — so it arrives on the vocabulary
-  // as a param option, exactly as a custom post type's does. Printing the slug
-  // instead would show the merchant `plan_gold` under a control that says
-  // "Gold plan", which is the same drift `format()` exists to prevent one axis
-  // over.
-  //
-  // The two visitor predicates are still read here as clauses rather than
-  // through `phraseOf`, because neither is a member of the rules array at all.
-  const holding =
-    roles === undefined || roles.length === 0
-      ? null
-      : sprintf(
-          /* translators: %s: one or more role names, joined, e.g. “Subscriber or Gold plan”. */
-          __('holding %s', 'wconvert'),
-          join(
-            roles.map((role) => roleName(role, types)),
-            _x('or', 'joins the roles any one of which is enough', 'wconvert'),
-          ),
-        );
-
-  if (entries.length === 0 && signedIn === null && holding === null) {
-    return { text: __('Anyone who reaches it', 'wconvert'), attention: false };
-  }
-
-  const read = entries.map(([rule]) => phraseOf(rule, types));
-  const clauses = [
-    ...read.map((each) => each.text),
-    ...(signedIn === null ? [] : [signedIn]),
-    ...(holding === null ? [] : [holding]),
-  ];
-
-  return {
-    text: sprintf(
-      /* translators: %s: one or more condition phrases joined by “and”. */
-      __('Only when %s', 'wconvert'),
-      join(clauses, _x('and', 'joins conditions, all of which must hold', 'wconvert')),
-    ),
-    // A second Condition of a kind that may only be set once NARROWS the first
-    // — *"on mobile or tablet AND on desktop"* holds for nobody — so the
-    // section is flagged even though every rule in it is individually fine.
-    attention: read.some((each) => each.attention) || surplus(entries, types).size > 0,
-  };
-}
-
-/**
- * One role's own name on this install, or its slug where nothing offers a word
- * for it.
- *
- * Found through the CONTROL rather than by naming a rule type, because this
- * bundle spells none of its own ({@link ../api}) — the SAME lookup
- * {@see DisplayRules} uses to tell the two visitor predicates apart, shared so
- * the two cannot drift the day a control is renamed. A slug the site no longer
- * offers still reads as itself, which is the honest answer for a membership
- * plugin that has been deactivated: the rule is still stored and still says
- * what it says.
- */
-function roleName(role: string, types: readonly RuleType[]): string {
-  const declared = visitorWith('role_set', types);
-
-  return declared?.params.value.options.find((option) => option.value === role)?.label ?? role;
-}
 
 // ============================================================================
 // HOW OFTEN — FOUR FIELDS, SIXTEEN COMBINATIONS, ONE SENTENCE EACH.
@@ -559,32 +193,25 @@ function windowClause(schedule: Schedule): string | null {
 
 
 /**
- * The allowance, read out.
+ * *When it runs*, as the Dates section's answer.
  *
- * **The default is not "every time".** `stopAfterDismiss` and
- * `stopAfterConversion` are both ON when absent — `frequency.ts` tests
- * `!== false` — so an untouched Optin already stops when the visitor closes it
- * or completes its action, and a summary reading "Every time" would be a lie on the
- * commonest Optin there is.
- *
- * `priority` is appended only where it decides something. `arbitrate()` sorts
- * overlays and leaves `inline` Optins alone, so on an inline design the number
- * is real, stored, and inert — and a summary that mentioned it would be
- * telling the merchant about a control that changes nothing.
+ * A window that has closed carries `attention` — see {@link windowClause}.
  */
-export function howOftenSummary(
-  frequency: Frequency,
-  schedule: Schedule,
-  priority: number,
-  overlay: boolean,
-  act: ConvertingAct = 'submit',
-): Summary {
+export function datesSummary(schedule: Schedule): Summary {
+  return { text: windowClause(schedule) ?? __('Until you pause it', 'wconvert'), attention: hasFinished(schedule) };
+}
+
+/**
+ * The limits on how often it shows, each a clause — the part of the allowance
+ * that is a number rather than a stop.
+ */
+function capsOf(frequency: Frequency): string[] {
   const caps: string[] = [];
 
   if (frequency.maxPerSession !== undefined) {
     caps.push(sprintf(
-      /* translators: %d: automatic appearances in one tab session. */
-      _n('automatically at most %d time per tab session', 'automatically at most %d times per tab session', frequency.maxPerSession, 'wconvert'),
+      /* translators: %d: automatic appearances in one visit. */
+      _n('at most %d time per visit', 'at most %d times per visit', frequency.maxPerSession, 'wconvert'),
       frequency.maxPerSession,
     ));
   }
@@ -609,6 +236,34 @@ export function howOftenSummary(
     );
   }
 
+  return caps;
+}
+
+const andLimits = () => _x('and', 'joins two limits on how often a campaign shows', 'wconvert');
+
+/**
+ * The allowance, read out.
+ *
+ * **The default is not "every time".** `stopAfterDismiss` and
+ * `stopAfterConversion` are both ON when absent — `frequency.ts` tests
+ * `!== false` — so an untouched Optin already stops when the visitor closes it
+ * or completes its action, and a summary reading "Every time" would be a lie on the
+ * commonest Optin there is.
+ *
+ * `priority` is appended only where it decides something. `arbitrate()` sorts
+ * overlays and leaves `inline` Optins alone, so on an inline design the number
+ * is real, stored, and inert — and a summary that mentioned it would be
+ * telling the merchant about a control that changes nothing.
+ *
+ * The dates are not in it. They are their own question now, {@link datesSummary}.
+ */
+export function howOftenSummary(
+  frequency: Frequency,
+  priority: number,
+  overlay: boolean,
+  act: ConvertingAct = 'submit',
+): Summary {
+  const caps = capsOf(frequency);
   const stoppers: string[] = [];
 
   // Absent means ON, which is why these read `!== false` rather than `=== true`
@@ -627,7 +282,6 @@ export function howOftenSummary(
       : (act === 'click' ? __('they click the main button', 'wconvert') : __('they submit the form', 'wconvert')));
   }
 
-  const and = _x('and', 'joins two limits on how often a campaign shows', 'wconvert');
   const or = _x('or', 'joins two things that stop a campaign showing again', 'wconvert');
 
   const text =
@@ -643,45 +297,27 @@ export function howOftenSummary(
         ? sprintf(
             /* translators: %s: one or more limits, e.g. “at most 3 times”. */
             __('Shows %s', 'wconvert'),
-            join(caps, and),
+            join(caps, andLimits()),
           )
         : sprintf(
             /* translators: 1: one or more limits, e.g. “at most 3 times”. 2: what stops it, e.g. “they close it”. */
             __('Shows %1$s, and stops once %2$s', 'wconvert'),
-            join(caps, and),
+            join(caps, andLimits()),
             join(stoppers, or),
           );
 
-  // The window goes FIRST, because it is the coarser fact: an Optin that is
-  // not running at all has nothing to say about how often it shows, and a
-  // merchant scanning the collapsed row wants to know which of their campaigns
-  // are live before they read anybody's allowance.
-  const runs = windowClause(schedule);
-  const allowance = runs === null
-    ? text
-    : sprintf(
-        /* translators: 1: when the Optin runs, e.g. “Runs from 27 Nov 2026, 09:00”. 2: the allowance, e.g. “every time, until they close it”. */
-        __('%1$s · %2$s', 'wconvert'),
-        runs,
-        text,
-      );
-
-  // A window that has closed is the one thing in this sentence a merchant has
-  // to act on — see {@link windowClause}.
-  const attention = hasFinished(schedule);
-
   if (!overlay || priority === 0) {
-    return { text: allowance, attention };
+    return { text, attention: false };
   }
 
   return {
     text: sprintf(
       /* translators: 1: the allowance, e.g. “Every time, until they close it”. 2: a priority number. */
       __('%1$s · priority %2$d', 'wconvert'),
-      allowance,
+      text,
       priority,
     ),
-    attention,
+    attention: false,
   };
 }
 
@@ -693,6 +329,88 @@ export function howOftenSummary(
  */
 function hasFinished(schedule: Schedule): boolean {
   return hasScheduleEnded(schedule.ends_at, adminSettings()?.timezone);
+}
+
+// ============================================================================
+// THE SENTENCE.
+// ============================================================================
+
+/** One phrase of the summary sentence, and whether its section needs a look. */
+export interface SentencePart extends Summary {
+  readonly section: SectionId;
+}
+
+export interface SentenceParts {
+  readonly where: SentencePart;
+  readonly who: SentencePart;
+  readonly when: SentencePart;
+  readonly often: SentencePart;
+  /** Absent until a date is set. Its own frame, because a finished window is a different sentence. */
+  readonly dates?: SentencePart & { readonly frame: string };
+}
+
+/**
+ * The summary sentence's phrases: *"on every page"*, *"to everyone"*, *"after
+ * 15 seconds"*, *"once per visit"*.
+ *
+ * A matched pick reads its own phrase. Custom reads the rules themselves,
+ * joined by the group's own connective. Attention is the section's — the
+ * sentence and the menu go amber together.
+ */
+export function sentenceParts(
+  value: DisplayRulesValue,
+  vocabulary: RuleVocabulary,
+  overlay: boolean,
+  act: ConvertingAct = 'submit',
+): SentenceParts {
+  const sections = summarise(value, vocabulary, overlay, act);
+  const attention = (id: SectionId) => sections.find(section => section.id === id)?.attention ?? false;
+  const all = [...vocabulary.targeting, ...vocabulary.triggers, ...vocabulary.conditions];
+  const phrase = (id: SectionId, custom: () => string): SentencePart => {
+    const pick = derive(id, value, vocabulary);
+    return { section: id, text: pick.fragment?.(value) ?? custom(), attention: attention(id) };
+  };
+  const plan = value.display_rules;
+
+  const who = phrase('who', () => {
+    const audience = plan?.audience;
+    if (!audience) return __('to visitors you have not chosen yet', 'wconvert');
+    if (audience.mode === 'everyone') return __('to everyone', 'wconvert');
+    const groups = audience.groups.map(group => join(group.rules.map(rule => phraseOf(rule as Rule, all).text),
+      group.match === 'all' ? _x('and', 'joins rules a visitor must all match', 'wconvert') : _x('or', 'joins rules any one of which a visitor may match', 'wconvert')));
+    return groups.some(group => group === '') ? __('to visitors you have not chosen yet', 'wconvert')
+      /* translators: %s: what the visitor must match, e.g. “they are on mobile and signed in to this site”. */
+      : sprintf(__('to visitors if %s', 'wconvert'), groups.join(_x(', or if ', 'joins alternative groups of visitors', 'wconvert')));
+  });
+
+  const when = phrase('when', () => {
+    const opening = plan?.opening;
+    if (!opening) return __('once you set when it opens', 'wconvert');
+    if (opening.mode === 'immediate') return __('right away', 'wconvert');
+    if (opening.rules.length === 0) return __('once you set when it opens', 'wconvert');
+    return join(opening.rules.map(rule => phraseOf(rule as Rule, all).text),
+      opening.mode === 'automatic' && opening.match === 'all' ? _x('and', 'joins opening rules that must all happen', 'wconvert') : _x('or', 'joins opening rules any one of which opens it', 'wconvert'));
+  });
+
+  const often = phrase('how-often', () => {
+    const caps = capsOf(value.frequency);
+    return caps.length === 0 ? __('on every page they see', 'wconvert') : join(caps, andLimits());
+  });
+
+  const from = readable(value.schedule.starts_at);
+  const to = readable(value.schedule.ends_at);
+  const dates = from === null && to === null ? undefined
+    : hasFinished(value.schedule) && to !== null
+      /* translators: %s: the date and time it stopped running. */
+      ? { section: 'dates' as const, text: to, attention: true, frame: __('It stopped running on %s.', 'wconvert') }
+      : { section: 'dates' as const, attention: attention('dates'), frame: __('It runs %s.', 'wconvert'),
+        text: from !== null && to !== null
+          /* translators: 1: a date and time it starts. 2: a date and time it ends. */
+          ? sprintf(__('from %1$s to %2$s', 'wconvert'), from, to)
+          /* translators: %s: a date and time. */
+          : from !== null ? sprintf(__('from %s', 'wconvert'), from) : sprintf(__('until %s', 'wconvert'), to ?? '') };
+
+  return { where: phrase('where', () => ''), who, when, often, ...(dates ? { dates } : {}) };
 }
 
 // ============================================================================

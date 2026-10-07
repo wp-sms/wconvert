@@ -131,10 +131,11 @@ function wherePicks(): readonly Pick[] {
       matches: isBlog,
       apply: value => ({ targeting: { ...value.targeting, mode: 'selected', include: [{ type: 'singular', value: 'post' }] } }) },
     { id: 'selected', open: true, types: [], template: () => __('Selected pages', 'wconvert'), label: () => __('Selected pages', 'wconvert'),
-      fragment: value => except(value, sprintf(
-        /* translators: %s: a count of pages, e.g. “3 pages”. */
-        __('on %s', 'wconvert'),
-        sprintf(_n('%d selected page', '%d selected pages', value.targeting.include?.length ?? 0, 'wconvert'), value.targeting.include?.length ?? 0))),
+      fragment: value => {
+        const included = value.targeting.include?.length ?? 0;
+        /* translators: %d: a number of pages. */
+        return except(value, included === 0 ? __('on pages you have not chosen yet', 'wconvert') : sprintf(_n('on %d selected page', 'on %d selected pages', included, 'wconvert'), included));
+      },
       matches: () => true,
       apply: value => ({ targeting: { ...value.targeting, mode: 'selected' } }) },
   ];
@@ -313,12 +314,18 @@ export function availabilityOf(pick: Pick, vocabulary: RuleVocabulary): PickAvai
   return least;
 }
 
-/** The pick a stored value has the shape of. Never a hidden one: that reads as the section's open pick. */
+/**
+ * The pick a stored value has the shape of.
+ *
+ * Never one this site cannot offer — hidden on Free, locked after a downgrade,
+ * or waiting on a plugin. That reads as the section's open pick instead, so the
+ * stored rule stays on screen with its own row explaining why it will not run.
+ */
 export function derive(section: SectionId, value: DisplayRulesValue, vocabulary: RuleVocabulary): Pick {
   const picks = picksIn(section);
   const open = picks.find(pick => pick.open)!;
   const found = picks.find(pick => !pick.open && pick.matches(value)) ?? open;
-  return renderingFor(availabilityOf(found, vocabulary).availability, 'settings_list') === 'hide' ? open : found;
+  return renderingFor(availabilityOf(found, vocabulary).availability, 'settings_list') === 'offer' ? found : open;
 }
 
 /**
