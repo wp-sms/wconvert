@@ -2,6 +2,16 @@ import { __ } from '@wordpress/i18n';
 import type { RuleGroup } from '@loader/display-rules';
 import type { Rule, RuleType } from '../api';
 
+/**
+ * The numbers a rule may hold — read by the section summaries through
+ * {@link groupProblems} and by the Quick picks' inline fields, so the chip and
+ * Readiness agree on what is out of range. Kept in parity with DisplayPlan.php.
+ */
+export const NUMBER_BOUNDS = {
+  seconds: { min: 1, max: 3600, whole: false },
+  percent: { min: 1, max: 100, whole: true },
+} as const;
+
 /** Publication requirements that can be answered without saving or reading a visitor. */
 export function groupProblems(group: RuleGroup, types: readonly RuleType[]): string[] {
   const problems: string[] = [];
@@ -15,8 +25,11 @@ export function groupProblems(group: RuleGroup, types: readonly RuleType[]): str
       let valid = value !== undefined && value !== null && value !== '' && (!Array.isArray(value) || value.length > 0);
       if (valid) {
         if (param.control === 'enum') valid = typeof value === 'string' && param.options.some(option => option.value === value);
-        if (['seconds', 'percent', 'amount'].includes(param.control)) valid = typeof value === 'number' && Number.isFinite(value) && value >= (param.control === 'amount' ? 0 : 1)
-          && (param.control === 'amount' || value <= (param.control === 'seconds' ? 3600 : 100)) && (param.control !== 'percent' || Number.isInteger(value));
+        if (param.control === 'seconds' || param.control === 'percent') {
+          const bounds = NUMBER_BOUNDS[param.control];
+          valid = typeof value === 'number' && Number.isFinite(value) && value >= bounds.min && value <= bounds.max && (!bounds.whole || Number.isInteger(value));
+        }
+        if (param.control === 'amount') valid = typeof value === 'number' && Number.isFinite(value) && value >= 0;
         if (param.control === 'selector') { valid = portableSelector(String(value)); }
         if (param.control === 'hours') valid = typeof value === 'string' && /^(?:[01]\d|2[0-3]):[0-5]\d-(?:[01]\d|2[0-3]):[0-5]\d$/.test(value);
       }

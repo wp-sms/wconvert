@@ -53,12 +53,15 @@ Sources: [GoalScreen](../../resources/admin/src/goals/GoalScreen.tsx),
 ## Display rules explain four decisions
 
 The sections are **Pages**, **Audience**, **When it appears**, and **Schedule &
-frequency**. Labels sit above full-width summaries, keeping long explanations
+frequency**.
+Labels sit above full-width summaries, keeping long explanations
 readable. These are presentation groups over the existing model. Page
 includes are ORed, exclusions veto, and an empty include set means everywhere.
 Logged-in status and selected roles remain separate visitor predicates. All
 Conditions must hold when any Trigger fires. A missing Trigger is not an implied
 immediate trigger, and adding a second Condition does not create an OR group.
+
+> _Amended by [ADR 0129](0129-display-rules-plain-questions-and-quick-picks.md): this originally read "Pages, Audience, When it appears, and Schedule & frequency". The sections are five questions instead — Where does it show?, Who sees it?, When does it open?, How often? and Dates. The menu shows each answer under its question, and Readiness lists five rather than four._
 
 Schedule and repeat-visit controls have separate headings. Dates name the actual
 WordPress site timezone, including a fixed offset when that is the site setting.
@@ -89,6 +92,8 @@ Sources: [DisplayRules](../../resources/admin/src/builder/rules/DisplayRules.tsx
 
 ## A rule replacement is reviewed before it applies
 
+> _Superseded by [ADR 0129](0129-display-rules-plain-questions-and-quick-picks.md): the rule panel no longer has Starting points, rule bundles or a replacement review. The Quick picks that replace them apply directly as one undoable draft edit, and each changes only its own question. The object-picker paragraph below still holds._
+
 The rule panel's Starting points are rule bundles, not creation Playbooks. The
 replacement review compares current and proposed values for the sections the
 bundle supplies. The review remains the explicit apply boundary. Under [ADR 0075](0075-draft-history-and-template-content-choices-stay-predictable.md),
@@ -110,7 +115,7 @@ Only choosing a result commits a different identifier; removing the rule remains
 an explicit rule action. Obsolete results cannot be selected while the new query is pending. Status and Retry sit
 outside the listbox's options, with keyboard focus kept on the combobox.
 
-Sources: [StartingPoints](../../resources/admin/src/builder/rules/StartingPoints.tsx),
+Sources: `StartingPoints.tsx` (deleted by [ADR 0129](0129-display-rules-plain-questions-and-quick-picks.md)),
 [ObjectPicker](../../resources/admin/src/builder/rules/ObjectPicker.tsx).
 
 ## Scope remains visible in the editor

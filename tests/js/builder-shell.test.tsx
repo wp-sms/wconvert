@@ -277,7 +277,7 @@ describe('the builder shell', () => {
     expect(within(design).queryByRole('button', { name: 'Use manual placement' })).toBeNull();
     await userEvent.click(screen.getByRole('tab', { name: 'Display rules' }));
     const rules = screen.getByRole('tabpanel', { name: 'Display rules' });
-    await userEvent.click(within(screen.getByRole('navigation', { name: 'Display setup sections' })).getByRole('button', { name: /^Pages/ }));
+    await userEvent.click(within(screen.getByRole('navigation', { name: 'Display rules' })).getByRole('button', { name: /^Where does it show\?/ }));
     expect(within(rules).getByRole('heading', { name: 'Placement' })).toBeVisible();
     await userEvent.click(within(rules).getByRole('button', { name: 'Use manual placement' }));
     await userEvent.click(screen.getByRole('tab', { name: 'Theme & layout' }));
@@ -576,13 +576,13 @@ describe('the builder shell', () => {
    * headings — and the fourth, How often, is the section that had no author
    * anywhere before the rules panel was split into four.
    */
-  it('puts where, when, who and how often on that one tab', async () => {
+  it('puts the five display questions on that one tab', async () => {
     await open();
 
     await userEvent.click(await screen.findByRole('tab', { name: 'Display rules' }));
 
-    for (const question of ['Pages', 'Audience', 'Opening moment', 'Schedule & limits']) {
-      expect(within(screen.getByRole('navigation', { name: 'Display setup sections' })).getByRole('button', { name: new RegExp(`^${question}`) })).toBeInTheDocument();
+    for (const question of ['Where does it show?', 'Who sees it?', 'When does it open?', 'How often?', 'Dates']) {
+      expect(within(screen.getByRole('navigation', { name: 'Display rules' })).getByRole('button', { name: new RegExp(`^${question.replace('?', '\\?')}`) })).toBeInTheDocument();
     }
   });
 
@@ -1024,7 +1024,7 @@ describe('the summary', () => {
     await open();
 
     expect(await screen.findByRole('button', { name: 'Review & publish' })).toBeInTheDocument();
-    expect(screen.queryByText('On every page')).toBeNull();
+    expect(screen.queryByText('Entire site')).toBeNull();
     expect(screen.queryByText('Started from')).toBeNull();
   });
 
@@ -1149,17 +1149,17 @@ describe('the summary', () => {
     await summary();
 
     expect(await within(screen.getByRole('dialog')).findByText('Draft')).toBeInTheDocument();
-    expect(screen.getByText('On every page')).toBeInTheDocument();
+    expect(screen.getByText('Entire site')).toBeInTheDocument();
     expect(screen.queryByText(/counts Submissions/)).toBeNull();
   });
 
   /**
-   * The same four sentences the Display rules tab draws as its disclosure
-   * labels, from the same `summarise()` — so the two cannot come to word one
-   * axis differently, and a merchant can read the whole answer without opening
-   * the tab.
+   * The same five answers the Display rules tab draws in its menu, from the
+   * same `summarise()` — so the two cannot come to word one question
+   * differently, and a merchant can read the whole answer without opening the
+   * tab.
    */
-  it('reads out the four rule sentences without opening the rules tab', async () => {
+  it('reads out the five display answers without opening the rules tab', async () => {
     builder.getOptin.mockResolvedValue(
       optin({
         config: {
@@ -1174,10 +1174,11 @@ describe('the summary', () => {
     await summary();
 
     expect(await screen.findByRole('dialog')).toBeInTheDocument();
-    expect(fact('Pages')?.textContent).toBe('On every page');
-    expect(fact('Opening moment')?.textContent).toContain('8');
-    expect(fact('Audience')?.textContent).toBe('Everyone');
-    expect(fact('Schedule & limits')?.textContent).toContain('until they close it');
+    expect(fact('Where does it show?')?.textContent).toBe('Entire site');
+    expect(fact('When does it open?')?.textContent).toBe('After 8 seconds');
+    expect(fact('Who sees it?')?.textContent).toBe('Everyone');
+    expect(fact('How often?')?.textContent).toBe('Every page they see');
+    expect(fact('Dates')?.textContent).toBe('Runs until you pause it');
   });
 
   /**
@@ -1410,8 +1411,8 @@ describe('whole-draft Undo and Redo', () => {
     await open();
     await userEvent.type(await screen.findByRole('textbox', { name: 'Name' }), ' revised');
     await userEvent.click(screen.getByRole('tab', { name: 'Display rules' }));
-    await userEvent.click(screen.getAllByText('Schedule & limits')[0].closest('button') as HTMLElement);
-    await userEvent.click(screen.getByRole('checkbox', { name: 'Stop after they submit the form' }));
+    await userEvent.click(within(screen.getByRole('navigation', { name: 'Display rules' })).getByRole('button', { name: /^How often\?/ }));
+    await userEvent.click(screen.getByRole('checkbox', { name: 'after they submit the form' }));
     await userEvent.click(screen.getByRole('tab', { name: 'Destinations' }));
     await userEvent.click(await screen.findByRole('checkbox', { name: /Selected contacts/ }));
     expect(screen.getByRole('checkbox', { name: /Selected contacts/ })).not.toBeChecked();
@@ -1419,8 +1420,8 @@ describe('whole-draft Undo and Redo', () => {
     expect(screen.getByRole('checkbox', { name: /Selected contacts/ })).toBeChecked();
     await userEvent.click(screen.getByRole('button', { name: /^Undo/ }));
     await userEvent.click(screen.getByRole('tab', { name: 'Display rules' }));
-    await userEvent.click(screen.getAllByText('Schedule & limits')[0].closest('button') as HTMLElement);
-    expect(screen.getByRole('checkbox', { name: 'Stop after they submit the form' })).toBeChecked();
+    await userEvent.click(within(screen.getByRole('navigation', { name: 'Display rules' })).getByRole('button', { name: /^How often\?/ }));
+    expect(screen.getByRole('checkbox', { name: 'after they submit the form' })).toBeChecked();
     await userEvent.click(screen.getByRole('button', { name: /^Undo/ }));
     expect(screen.getByRole('textbox', { name: 'Name' })).toHaveValue('Welcome discount');
     expect(screen.getByRole('button', { name: 'Save draft' })).toBeDisabled();

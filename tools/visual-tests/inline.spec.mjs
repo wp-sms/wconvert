@@ -273,9 +273,9 @@ editorTest('goal-first inline setup enables automatic placement and publishes', 
   await rulesTab.click();
   await expect(rulesTab).toHaveAttribute('aria-selected', 'true');
   const rulesPanel = page.getByRole('tabpanel', { name: 'Display rules', exact: true });
-  const pages = rulesPanel.getByRole('navigation', { name: 'Display setup sections', exact: true }).getByRole('button', { name: /Pages/ });
+  const pages = rulesPanel.getByRole('navigation', { name: 'Display rules', exact: true }).getByRole('button', { name: /^Where does it show\?/ });
   await pages.click();
-  await expect(pages).toHaveAttribute('aria-current', 'step');
+  await expect(pages).toHaveAttribute('aria-current', 'true');
   await expect(page.getByText('Loading placement settings…', { exact: true })).toBeHidden({ timeout: 30000 });
   const placementPanel = rulesPanel.getByRole('heading', { name: 'Placement', exact: true }).locator('..');
   const method = placementPanel.getByRole('group', { name: 'Placement method', exact: true });
@@ -335,7 +335,7 @@ editorTest('goal-first inline setup enables automatic placement and publishes', 
   await rulesTab.click();
   await expect(rulesTab).toHaveAttribute('aria-selected', 'true');
   await pages.click();
-  await expect(pages).toHaveAttribute('aria-current', 'step');
+  await expect(pages).toHaveAttribute('aria-current', 'true');
   await expect(placementPanel).toBeVisible();
   await expect(page.getByText('Loading placement settings…', { exact: true })).toBeHidden({ timeout: 30000 });
   await expect(page.getByRole('radio', { name: 'Automatic', exact: true })).toBeChecked();
@@ -373,7 +373,7 @@ editorTest('goal-first inline setup enables automatic placement and publishes', 
   const canvas = previewDialog.getByRole('region', { name: 'Design canvas', exact: true });
   const preview = canvas.getByLabel('Preview content lock', { exact: true });
   await expect(placementPanel.getByLabel('Preview content lock', { exact: true })).toHaveCount(0);
-  // Display setup owns the full pane at every width; its preview opens in the
+  // Display rules owns the full pane at every width; its preview opens in the
   // same dialog on desktop and at the builder floor.
   for (const width of [1440, 782]) {
     await page.setViewportSize({ width, height: 1000 });

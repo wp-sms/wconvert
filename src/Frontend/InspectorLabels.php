@@ -203,7 +203,7 @@ final class InspectorLabels
 
             'display' => [
                 'group' => __('Audience group', 'wconvert'),
-                'opening' => __('Opening moment', 'wconvert'),
+                'opening' => __('When it opens', 'wconvert'),
                 'all' => __('ALL', 'wconvert'), 'any' => __('ANY', 'wconvert'),
                 'true' => __('Matches', 'wconvert'), 'false' => __('Does not match', 'wconvert'), 'blocked' => __('Waiting for consent', 'wconvert'),
                 'immediate' => __('Immediately', 'wconvert'), 'automatic' => __('Automatic', 'wconvert'), 'click' => __('Explicit click', 'wconvert'),

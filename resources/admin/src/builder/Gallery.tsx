@@ -242,7 +242,7 @@ export function Gallery({
               **Grey and a lock, never amber** (ADR 0037). Amber is the
               reserved meaning that the SITE is holding something back, and
               spending it on a PRICE made it mean two opposite things on two
-              screens. `StartingPoints` states the rule and already draws it
+              screens. `QuickPicks` follows the same rule and draws it
               this way.
             */
             selected={compared?.includes(entry.id)}

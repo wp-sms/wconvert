@@ -74,9 +74,9 @@ final class RuleCatalogueTest extends TestCase
         self::fail(sprintf('%s declares no %s', $axis, $type));
     }
 
-    public function testItCarriesAllThreeAxesAndTheStartingPoints(): void
+    public function testItCarriesTheThreeAxesAndNothingElse(): void
     {
-        $this->assertSame(['targeting', 'triggers', 'conditions', 'bundles'], array_keys(self::catalogue()));
+        $this->assertSame(['targeting', 'triggers', 'conditions'], array_keys(self::catalogue()));
     }
 
     public function testBlockRequirementsAreKnownButNotOfferedInTheRulePicker(): void
@@ -354,12 +354,6 @@ final class RuleCatalogueTest extends TestCase
     {
         foreach ([self::catalogue(true, false), self::catalogue(false), self::catalogue(true)] as $catalogue) {
             foreach ($catalogue as $axis => $types) {
-                // The Starting points are on the same response and are not
-                // rule types; they carry the key too, but keyed by `id`.
-                if ($axis === 'bundles') {
-                    continue;
-                }
-
                 foreach ($types as $described) {
                     $this->assertArrayHasKey('requires_label', $described, $axis . '.' . $described['type']);
                 }

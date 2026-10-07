@@ -36,6 +36,8 @@ reaches the payload. Surfaces that don't route through `renderingFor` (format
 picker, starting points, rule notes, the A/B item, packs, analytics, reopen and
 inline-placement fallbacks) filter on the same `isFreeInstall()`.
 
+> _Amended by [ADR 0129](0129-display-rules-plain-questions-and-quick-picks.md): "starting points" in this list were the rule panel's rule sets, which are gone. The Display rules Quick picks route through `renderingFor` and hide a locked pick the same way._
+
 Wherever Pro is installed, `locked` is still an upsell. A Basic site sees
 Elite's members, because it has already bought into the ladder and the next
 rung is information it can act on.

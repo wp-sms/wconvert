@@ -17,3 +17,8 @@ export function allowanceSummary(allowance: Allowance): string {
 
   return limits.length ? limits.join(' · ') : __('No site-wide limits. Each Campaign uses its own display rules.', 'wconvert');
 }
+
+/** Does the site set any limit at all? The builder mentions the allowance only when it does. */
+export function hasSiteLimits(allowance: Allowance): boolean {
+  return allowance.stopAfterDismiss || allowance.stopAfterConversion || allowance.maxImpressions !== null || allowance.cooldownDays !== null;
+}

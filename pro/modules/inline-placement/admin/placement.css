@@ -1,21 +1,22 @@
-#wconvert-admin .wconvert-inline-placement .wconvert-choice-set {
-  justify-self: start;
-  max-inline-size: 100%;
-}
-
-#wconvert-admin .wconvert-inline-placement .wconvert-choice__label {
-  min-block-size: var(--control-height);
-  white-space: normal;
-  overflow-wrap: anywhere;
-}
-
-#wconvert-admin .wconvert-inline-placement__confirmation {
+/* A confirmation that names what else changes: the question, from, to. */
+#wconvert-admin .wconvert-display .wconvert-placement-confirm {
   display: grid;
-  gap: .5rem;
-  padding: .75rem;
-  background: var(--surface);
-  border-radius: var(--radius-md);
+  gap: .75rem;
+  padding: 12px;
+  border: 1px solid var(--warning);
+  border-radius: var(--radius-lg);
+  background: color-mix(in srgb, var(--warning) 6%, var(--card));
 }
+#wconvert-admin .wconvert-display .wconvert-placement-confirm__title { margin: 0; color: var(--foreground); font-size: var(--text-body); font-weight: 600; }
+#wconvert-admin .wconvert-display .wconvert-placement-confirm__title:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+#wconvert-admin .wconvert-display .wconvert-placement-confirm__changes { display: grid; gap: 6px; margin: 0; padding: 0; list-style: none; }
+#wconvert-admin .wconvert-display .wconvert-placement-confirm__changes li { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 8px; margin: 0; padding: 8px 10px; border-radius: var(--radius); background: var(--card); font-size: var(--text-note); }
+#wconvert-admin .wconvert-display .wconvert-placement-confirm__question { flex: 0 0 100%; color: var(--muted-foreground); font-weight: 500; }
+#wconvert-admin .wconvert-display .wconvert-placement-confirm__from { color: var(--muted-foreground); text-decoration: line-through; }
+#wconvert-admin .wconvert-display .wconvert-placement-confirm__to { color: var(--foreground); font-weight: 600; }
+#wconvert-admin .wconvert-display .wconvert-placement-confirm__changes svg { flex: none; inline-size: 14px; block-size: 14px; color: var(--muted-foreground); }
+#wconvert-admin .wconvert-display .wconvert-placement-confirm__actions { display: flex; flex-wrap: wrap; gap: 8px; }
+
 
 #wconvert-admin .wconvert-inline-placement {
   grid-template-columns: minmax(0, 1fr);
@@ -28,24 +29,6 @@
   min-inline-size: 0;
 }
 
-#wconvert-admin .wconvert-placement-help {
-  min-inline-size: 0;
-  font-size: var(--text-note);
-  line-height: var(--text-note--line-height);
-}
-
-#wconvert-admin .wconvert-placement-help summary {
-  cursor: pointer;
-  color: var(--foreground);
-}
-
-#wconvert-admin .wconvert-placement-help p {
-  margin-block-start: 8px;
-}
-
-#wconvert-admin .wconvert-placement-help code {
-  overflow-wrap: anywhere;
-}
 
 :is(#wconvert-admin, .wconvert-journey-test-dialog) .wconvert-content-lock-controls {
   display: flex;

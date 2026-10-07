@@ -8,6 +8,8 @@ Accepted 2026-09-23. Implements the approved [Option A plan](../plans/display-wo
 
 Display is one workspace: Pages, Audience, Opening moment, Schedule & limits, with a live summary and design preview on demand. Advanced audience alternatives are disclosed only when requested. Save, Undo, Redo and publication still belong to the existing Campaign draft.
 
+> _Amended by [ADR 0129](0129-display-rules-plain-questions-and-quick-picks.md): this originally read "Pages, Audience, Opening moment, Schedule & limits, with a live summary". It is five plain questions instead — Where does it show?, Who sees it?, When does it open?, How often? and Dates — one open at a time, with one summary sentence above them and no side summary. Alternative audiences sit behind "+ Or a different group of visitors" under Custom…._
+
 `config.display_rules` is the sole saved and published policy. Audience is explicit Everyone or up to five alternative groups; each group matches ALL or ANY of up to eight leaves. Groups combine with OR. Opening is explicit Immediate, Automatic (ALL/ANY and minimum elapsed seconds), or Click (alternative selectors). There is no recursive expression tree or second legacy runtime. Old pre-release drafts require an explicit replacement before save/publish.
 
 Group and rule IDs are assigned once on creation and preserved through edits.
@@ -23,6 +25,8 @@ Known incomplete rows may be saved for repair. Publication rejects invalid range
 
 The catalog's existing declarative recipes remain authoring input and are compiled at Prefill, where installation-specific starting suggestions are already resolved. They are never interpreted as old saved Campaign data. The chooser reports the compiled setup. Applying a rule set remains one reviewed, atomic draft edit.
 
+> _Amended by [ADR 0129](0129-display-rules-plain-questions-and-quick-picks.md): there is no rule-set chooser any more. Its common answers are client-side Quick picks, matched by the stored value's shape and applied as one draft edit with no review step; `RuleBundles.php` is deleted._
+
 The authoring controls expose explicit values: sign-in status has an unset
 choice distinct from Yes/No, quick delays and scroll choices name their numbers,
 and ALL/ANY explain whether every rule or just one must match. URL-presence
@@ -36,6 +40,8 @@ source of truth, followed by “Apply to draft.” Sets cover inactivity, tab-se
 limits, weekly spacing and alternative leaving/scroll-up gestures. Their copy
 names browser-scoped limits and touch limitations without claiming to detect
 reading, abandonment or a permanent person-level history.
+
+> _Amended by [ADR 0129](0129-display-rules-plain-questions-and-quick-picks.md): this originally described a filterable display-rule library with a before/after review. It is removed. Each question offers Quick picks instead; a pacing pick changes only the pacing keys, and no pick changes another question — the cart set is split into a Who pick and a When pick._
 
 ## Runtime
 
@@ -51,7 +57,10 @@ Future schedule starts remain waiting and receive a wake-up. Automatic opening r
 
 `frequency.maxPerSession` is a Campaign-only positive integer, 1–100. The key `wcv_display_session_v1:<capture endpoint path>` uses the existing REST endpoint to separate sites on the same origin. It stores only family IDs and appearance counts, with at most 128 families and least-recently-shown eviction. It writes only on a counted appearance when that cap exists. Denied storage falls back to the current document; copied/restored browser sessions may retain it. No database, cookie, visitor ID, form value or event history is added.
 
-New interruptive drafts start at one automatic appearance per tab session, stop-after-dismiss off and stop-after-conversion on. The repeat selector labels this choice as recommended. Both scratch and bundled creation paths are checked after frequency normalization; inline starting points keep their existing embedded behavior. These are creation defaults, never an automatic rewrite of existing Campaign settings. Absent frequency fields retain their established meanings. Every A/B arm carries its family for pacing, whether or not Reopen or content locking is enabled. Site-wide allowance fields and storage are unchanged.
+New interruptive drafts start at one automatic appearance per tab session, stop-after-dismiss off and stop-after-conversion on. The repeat selector labels this choice as recommended.
+Both scratch and bundled creation paths are checked after frequency normalization; inline starting points keep their existing embedded behavior. These are creation defaults, never an automatic rewrite of existing Campaign settings. Absent frequency fields retain their established meanings. Every A/B arm carries its family for pacing, whether or not Reopen or content locking is enabled. Site-wide allowance fields and storage are unchanged.
+
+> _Amended by [ADR 0129](0129-display-rules-plain-questions-and-quick-picks.md): the admin calls this "Once per visit", with one note — "A visit ends when they close the tab." — rather than "tab session". The storage and its semantics are unchanged. There is no repeat selector; the Once per visit chip carries the "Recommended" badge instead._
 
 ## Diagnostics and size
 

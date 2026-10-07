@@ -1,6 +1,6 @@
 import { __, _n, sprintf } from '@wordpress/i18n';
 import { displayTypeDescription } from '../displayTypes';
-import { summarise } from '../builder/rules/summaries';
+import { questions, summarise, summaryOf } from '../builder/rules/summaries';
 import { howOftenSummary } from '../builder/rules/sentence';
 import { targetingSummary } from '../builder/rules/targetingSummary';
 import { convertingActOf } from '../builder/structure/guards';
@@ -19,7 +19,7 @@ export function StartingPointSummary({ playbook, vocabulary }: {
 }) {
   const displayType = startingPointDisplayType(playbook);
   const timing = displayType === 'inline' ? __('Place with a block or shortcode', 'wconvert')
-    : playbook.setup && vocabulary ? summarise({ ...playbook.setup, targeting: playbook.setup.targeting ?? {}, frequency: playbook.setup.frequency ?? {}, schedule: {}, priority: 0 }, vocabulary, true)[2].text : null;
+    : playbook.setup && vocabulary ? summaryOf(summarise({ ...playbook.setup, targeting: playbook.setup.targeting ?? {}, frequency: playbook.setup.frequency ?? {}, schedule: {}, priority: 0 }, vocabulary), 'when').text : null;
   return <p className="m-0 text-note text-muted-foreground">
     <span>{displayTypeDescription(displayType)}</span>{timing && <> · {timing}</>}
   </p>;
@@ -44,16 +44,17 @@ export function StartingPointFacts({ playbook, goal, vocabulary, compact = false
   ];
 
   if (setup && vocabulary) {
-    const summaries = summarise({ ...setup, targeting: setup.targeting ?? {}, frequency: setup.frequency ?? {}, schedule: {}, priority: 0 }, vocabulary, displayType !== 'inline');
+    const summaries = summarise({ ...setup, targeting: setup.targeting ?? {}, frequency: setup.frequency ?? {}, schedule: {}, priority: 0 }, vocabulary);
+    const asked = questions();
     const targeting = setup.targeting ?? {};
-    facts.push({ label: __('Pages', 'wconvert'), text: targetingSummary(targeting, vocabulary.targeting, 'compact') });
-    if (setup.display_rules.audience.mode !== 'everyone') facts.push({ label: __('Audience', 'wconvert'), text: summaries[1].text });
-    facts.push({ label: __('When it appears', 'wconvert'), text: displayType === 'inline'
+    facts.push({ label: asked.where, text: targetingSummary(targeting, vocabulary.targeting, 'compact') });
+    if (setup.display_rules.audience.mode !== 'everyone') facts.push({ label: asked.who, text: summaryOf(summaries, 'who').text });
+    facts.push({ label: asked.when, text: displayType === 'inline'
       ? __('At its block or shortcode, when page and visitor rules allow it.', 'wconvert')
-      : summaries[2].text });
+      : summaryOf(summaries, 'when').text });
     if (setup.frequency && Object.keys(setup.frequency).length) {
       const act = playbook.template ? (convertingActOf(playbook.template.tree)[0] ?? 'submit') : 'submit';
-      facts.push({ label: __('Schedule & frequency', 'wconvert'), text: howOftenSummary(setup.frequency, {}, 0, displayType !== 'inline', act).text });
+      facts.push({ label: asked['how-often'], text: howOftenSummary(setup.frequency, 0, displayType !== 'inline', act).text });
     }
   }
 

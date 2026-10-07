@@ -6261,37 +6261,14 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
 
 /* Display settings stay readable inside the editor's settings column. */
 .wconvert-schedule-settings { display: flex; flex-direction: column; gap: 1.25rem; }
-#wconvert-admin .wconvert-rule-fieldset { border: 0; padding: 0; margin: 0; min-inline-size: 0; }
-#wconvert-admin .wconvert-rule-fieldset > legend { padding: 0; margin-block-end: .5rem; font-weight: 600; }
 .wconvert-schedule-fields { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr)); gap: 1rem; margin-block-start: .75rem; }
 .wconvert-schedule-fields > div { display: flex; flex-direction: column; gap: .4rem; min-inline-size: 0; }
 .wconvert-schedule-fields input { min-inline-size: 0; inline-size: 100%; }
-#wconvert-admin .wconvert-frequency-switch { display: flex; align-items: flex-start; gap: .5rem; margin: 0; }
-.wconvert-frequency-switch input { flex: none; margin-block-start: .15rem; }
 .wconvert-site-limits-note { border: 1px solid var(--border); background: var(--muted); border-radius: .5rem; padding: .875rem; font-size: var(--text-note); }
 #wconvert-admin .wconvert-site-limits-note p { margin: .4rem 0 0; }
 .wconvert-site-limits-note a { text-decoration: underline; }
 .wconvert-rule-advanced { border-block-start: 1px solid var(--border); padding-block-start: .875rem; }
 .wconvert-rule-advanced > summary { cursor: pointer; font-weight: 500; }
-
-.wconvert-rule-comparison,
-.wconvert-rule-comparison__section {
-  display: flex;
-  flex-direction: column;
-  gap: .65rem;
-}
-
-.wconvert-rule-comparison__section {
-  border-block: 1px solid var(--border);
-  padding-block: .65rem;
-  gap: .35rem;
-}
-
-.wconvert-rule-comparison {
-  overflow-wrap: anywhere;
-  max-height: min(65vh, 32rem);
-  overflow-y: auto;
-}
 
 /* Pack discovery owns one scroll area; inspection keeps its actions visible. */
 .wconvert-packs {

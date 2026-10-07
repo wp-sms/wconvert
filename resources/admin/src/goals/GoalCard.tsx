@@ -127,7 +127,7 @@ export function GoalCard({
         the SITE is holding something back — a [[Suspended]] Optin, a paused
         Destination, a rule needing a plugin — and spending it on a PRICE made
         it mean two opposite things on two screens a merchant moves between.
-        `StartingPoints` already states the rule and already draws the locked
+        `QuickPicks` follows the same rule and draws the locked
         badge this way (ADR 0037).
       */
       badge={

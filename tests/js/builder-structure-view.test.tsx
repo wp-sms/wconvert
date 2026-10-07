@@ -3,7 +3,7 @@ import { treeFixture } from './support/journey';
 import { CAPTURE_OUTCOME } from './support/outcomes';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { render, screen, within } from '@testing-library/react';
+import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ruleTypes } from './support/rule-types';
@@ -1862,9 +1862,11 @@ describe('a countdown’s inspector', () => {
       'aria-selected',
       'true',
     );
-    // Opened, not merely arrived at: the field is inside a collapsed section
-    // until something asks for it.
-    expect(screen.getByLabelText('Stop showing it on')).toBeInTheDocument();
+    // Opened, not merely arrived at: Dates opens on Between two dates, the
+    // one pick whose fields include it, with the end field focused.
+    expect(screen.getByRole('heading', { name: 'Dates' })).toBeInTheDocument();
+    expect(within(screen.getByRole('group', { name: 'Dates' })).getByRole('radio', { name: 'Between two dates' })).toBeChecked();
+    await waitFor(() => expect(screen.getByLabelText('Stop showing it on')).toHaveFocus());
   });
 
   /** And the label is honest about which of the two things it does. */

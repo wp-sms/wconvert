@@ -398,7 +398,7 @@ describe('a goal then a draft', () => {
       setup: { ...PLAYBOOK.setup, display_rules: displayPlan([{ type: 'time_on_page', seconds: 15, degraded_from: 'exit_intent' }]) } }]);
     render(<GoalScreen onCreated={vi.fn()} />); await pickGoal();
     await inspect();
-    expect(await screen.findByText(/after_a_read/)).toBeInTheDocument();
+    expect(await screen.findByText(/After 15 seconds/)).toBeInTheDocument();
     expect(screen.queryByText(/exit_intent/)).not.toBeInTheDocument();
   });
 
@@ -414,7 +414,7 @@ describe('a goal then a draft', () => {
     expect(await screen.findByText(/click the main button/)).toBeInTheDocument();
     expect(screen.queryByText(/submit the form/)).not.toBeInTheDocument();
     expect(screen.getAllByRole('term').map((term) => term.textContent)).toEqual([
-      'Counts', 'Visitor action', 'Format', 'Pages', 'Audience', 'When it appears', 'Schedule & frequency',
+      'Counts', 'Visitor action', 'Format', 'Where does it show?', 'Who sees it?', 'When does it open?', 'How often?',
     ]);
   });
 
@@ -452,7 +452,7 @@ describe('a goal then a draft', () => {
     expect(screen.getByRole('button', { name: /Setup details for/ })).toBeEnabled();
     await userEvent.click(screen.getByRole('button', { name: 'Retry setup details' }));
     await inspect();
-    expect(await screen.findByText(/time_on_page 8/)).toBeInTheDocument();
+    expect(await screen.findByText(/After 8 seconds/)).toBeInTheDocument();
   });
 
   it('makes inline placement work visible before creating the draft', async () => {

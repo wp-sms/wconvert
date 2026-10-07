@@ -16,25 +16,32 @@ export function ManualPlacement({ optinId, published }: { readonly optinId: stri
   const blockTheme = destination?.type === 'site_editor';
   const widgets = destination?.type === 'widgets';
 
-  return <div className="wconvert-manual-placement">
-    {!published && <p>{__('Publish this Campaign first so it becomes available in WordPress editors.', 'wconvert')}</p>}
-    <p>{__('Add the “Inline Campaign” block where you want the form to appear.', 'wconvert')}</p>
-    {blockTheme && <p>{__('For a shared sidebar or footer, edit the template or template part that owns that area.', 'wconvert')}</p>}
-    {widgets && <p>{__('Choose a sidebar or footer area supplied by your theme. If it uses classic widgets, add a Text widget and paste the shortcode below.', 'wconvert')}</p>}
-    {destination && <Button asChild variant="outline" size="sm">
-      <a href={destination.url} target="_blank" rel="noopener noreferrer">
-        {blockTheme ? __('Open Site Editor', 'wconvert') : __('Open Widgets', 'wconvert')}
-        <ExternalLink aria-hidden="true" />
-      </a>
-    </Button>}
-    <Shortcode optinId={optinId} />
-    <p className="text-note text-muted-foreground">
-      {__('The theme controls which site-wide areas exist. Display rules, schedule and visitor settings still decide whether this Campaign appears.', 'wconvert')}
-    </p>
+  return <div className="wconvert-placement-panel">
+    {!published && <p className="wconvert-display-hint" data-attention="true">{__('Publish this Campaign first. The block and the shortcode only find published Campaigns.', 'wconvert')}</p>}
+    <div className="wconvert-display-settings">
+      <div className="wconvert-placement-row">
+        <div className="wconvert-placement-row__text">
+          <p className="wconvert-placement-row__title">{__('Block', 'wconvert')}</p>
+          <p className="wconvert-display-hint">
+            {__('Add the “Inline Campaign” block where you want the form to appear.', 'wconvert')}
+            {blockTheme && <> {__('For a sidebar or footer, edit the template part that holds it.', 'wconvert')}</>}
+            {widgets && <> {__('For a sidebar or footer, add a Text widget to that area and paste the shortcode below.', 'wconvert')}</>}
+          </p>
+        </div>
+        {destination && <Button asChild variant="outline" size="sm">
+          <a href={destination.url} target="_blank" rel="noopener noreferrer">
+            {blockTheme ? __('Open Site Editor', 'wconvert') : __('Open Widgets', 'wconvert')}
+            <ExternalLink aria-hidden="true" />
+          </a>
+        </Button>}
+      </div>
+      <div className="wconvert-placement-row">
+        <Shortcode optinId={optinId} />
+      </div>
+    </div>
   </div>;
 }
 
-/** One selectable shortcode with an accessible clipboard fallback. */
 export function Shortcode({ optinId }: { readonly optinId: string }) {
   return <ShortcodeCopy value={inlineShortcode(optinId)} label={__('Shortcode for other editors', 'wconvert')} help={__('Use a Shortcode block, a classic Text widget, or your page builder’s shortcode element.', 'wconvert')} />;
 }
