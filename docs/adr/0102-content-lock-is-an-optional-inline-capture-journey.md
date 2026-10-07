@@ -125,6 +125,8 @@ in placement help. Advanced documentation links are omitted until real WConvert
 docs exist. Actual page gating is checked on a published page; WordPress draft
 preview contexts intentionally remain readable.
 
+> _Amended by [ADR 0129](0129-display-rules-plain-questions-and-quick-picks.md): this originally read "Setup details and a copyable enclosing shortcode remain in placement help". There is no Setup details disclosure any more: the lock's setup is a settings card (lock the rest of an article; lock one section; the classic shortcode once published) with its three facts always visible beneath it._
+
 ## Acknowledged capture, never subscriber verification
 
 Only the existing acknowledged capture callback reveals success and records one

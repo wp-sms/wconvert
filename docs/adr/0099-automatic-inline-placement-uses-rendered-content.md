@@ -30,6 +30,8 @@ Save and publish require page load as the sole automatic trigger. Manual
 placement keeps its existing trigger flexibility. Existing campaigns never opt in
 automatically, and reverting to manual never silently restores old triggers.
 
+> _Amended by [ADR 0129](0129-display-rules-plain-questions-and-quick-picks.md): this originally read "Enabling is explicit and explains replacing triggers with page load". Switching asks first **only when it would change another answer**, and the confirmation lists each change as question, from and to ("When does it open? After 15 seconds → Right away"); with nothing else to change it applies at once. The method and the position are chips in the Display rules tab's own style._
+
 Free knows the stored vocabulary and explains absent Pro controls. Pro supplies
 the lazily loaded controls, PHP insertion, and visitor selection, gated by the
 module directory in every paid tier. Deactivating Pro stops automatic insertion;

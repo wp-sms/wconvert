@@ -114,7 +114,7 @@ describe('placing an inline Campaign in theme-owned areas', () => {
 
     render(<ManualPlacement optinId={OPTIN} published />);
 
-    expect(screen.getByText(/template or template part/)).toBeInTheDocument();
+    expect(screen.getByText(/edit the template part that holds it/)).toBeInTheDocument();
     expect(screen.getByRole('link', { name: 'Open Site Editor' })).toHaveAttribute(
       'href',
       'https://example.org/wp-admin/site-editor.php',
@@ -130,7 +130,7 @@ describe('placing an inline Campaign in theme-owned areas', () => {
 
     render(<ManualPlacement optinId={OPTIN} published />);
 
-    expect(screen.getByText(/Choose a sidebar or footer area/)).toHaveTextContent('Text widget');
+    expect(screen.getByText(/For a sidebar or footer/)).toHaveTextContent('Text widget');
     expect(screen.getByRole('link', { name: 'Open Widgets' })).toHaveAttribute(
       'href',
       'https://example.org/wp-admin/widgets.php',
@@ -142,9 +142,8 @@ describe('placing an inline Campaign in theme-owned areas', () => {
 
     render(<ManualPlacement optinId={OPTIN} published={false} />);
 
-    expect(screen.getByText(/Publish this Campaign first/)).toBeInTheDocument();
+    expect(screen.getByText(/Publish this Campaign first/)).toHaveAttribute('data-attention', 'true');
     expect(screen.queryByRole('link')).toBeNull();
-    expect(screen.getByText(/theme controls which site-wide areas exist/)).toBeInTheDocument();
   });
 });
 

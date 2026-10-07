@@ -94,6 +94,27 @@ leave* set wrote a cart Condition and an exit Trigger at once; it is split.
 *Shoppers with items in their cart* is a Who pick (Elite, needs WooCommerce),
 and *When they try to leave* is a When pick.
 
+## Placement and the rule picker speak the same language
+
+Placement, under *Where does it show?* for an inline Campaign, uses the tab's
+chips for its method (Manual, Automatic, Content lock) and its position, with
+the paragraph number inline, and puts its instructions in the same settings
+card as the stop settings. Switching to automatic placement or a content lock
+asks first only when that would change another answer, and lists each change
+as question, from and to. Amends [0099](0099-automatic-inline-placement-uses-rendered-content.md)
+and [0102](0102-content-lock-is-an-optional-inline-capture-journey.md).
+
+No native disclosure hides setup facts on this tab: the content lock's *Setup
+details* and the click selector's *How to choose a button or link* are short,
+visible lines now. The two disclosure cards the approved mockup drew —
+minimum time and priority — stay, closed showing their value.
+
+The rule picker is sectioned (Content, Address, Account, Their visit, Cart,
+Time and scrolling, What they do), and every rule shows an icon and one line of
+what it looks at. A rule with presets offers them as chips beside *Custom…*.
+Rules the site cannot add keep their own muted sections, explained and never
+offered.
+
 ## What was dropped
 
 Following [ADR 0042](0042-the-admin-speaks-only-when-it-changes-what-you-do-next.md),

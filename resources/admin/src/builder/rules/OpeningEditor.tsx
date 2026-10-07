@@ -28,6 +28,6 @@ export function OpeningEditor({ value, types, onChange }: { value: Opening; type
         {__('seconds on the page', 'wconvert')}</label>
       <p className="text-note text-muted-foreground">{__('Early exit or scroll-up activity is ignored. The visitor must repeat it after this delay.', 'wconvert')}</p>
     </DisclosureCard>}
-    {value.mode === 'click' && <details className="wconvert-rule-advanced"><summary>{__('How to choose a button or link', 'wconvert')}</summary><p className="wconvert-display-disclosure-body text-note text-muted-foreground">{__('Use an ID, class, tag or attribute selector, such as #signup, .offer-button or [data-offer]. Descendants, combinators and comma-separated alternatives are supported. CSS pseudo-classes and escaped names are not supported.', 'wconvert')}</p></details>}
+    {value.mode === 'click' && <p className="wconvert-display-hint">{__('Point to the button or link with an ID, class, tag or attribute selector, such as #signup, .offer-button or [data-offer]. Pseudo-classes such as :hover are not supported.', 'wconvert')}</p>}
   </>;
 }
