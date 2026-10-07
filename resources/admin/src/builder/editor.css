@@ -1652,12 +1652,11 @@ body .wconvert-rule-picker__unavailable {
 #wconvert-admin .wconvert-display-hint { margin: 0; font-size: var(--text-note); color: var(--muted-foreground); }
 #wconvert-admin .wconvert-schedule-settings :where(p) { margin: 0; }
 
-/* Quick picks: native radios in a role=group, drawn as chips (GUIDELINES §7). */
+/* Quick picks: native radios in a role=group, drawn as chips (GUIDELINES §7).
+   The radio carries `sr-only`, which is also what exempts it from the admin's generic 18px radio rule. */
 #wconvert-admin .wconvert-quick-picks-block { display: grid; gap: .5rem; }
 #wconvert-admin .wconvert-quick-picks { display: flex; flex-wrap: wrap; gap: .5rem; }
 #wconvert-admin .wconvert-quick-pick { position: relative; display: inline-flex; flex-wrap: wrap; align-items: center; gap: 6px; min-block-size: 2.25rem; padding: 4px 12px; border: 1px solid var(--input); border-radius: var(--radius-md); background: var(--card); cursor: pointer; font-size: var(--text-body); overflow-wrap: anywhere; }
-#wconvert-admin .wconvert-quick-pick > :where(input[type='radio']) { position: absolute; inline-size: 1px; block-size: 1px; margin: 0; opacity: 0; pointer-events: none; }
-#wconvert-admin .wconvert-quick-pick > :where(input[type='radio'])::before { display: none; }
 #wconvert-admin .wconvert-quick-pick:hover { background: var(--surface); }
 #wconvert-admin .wconvert-quick-pick:has(> input:checked) { background: var(--accent); border-color: var(--primary); box-shadow: inset 0 0 0 1px var(--primary); font-weight: 500; }
 #wconvert-admin .wconvert-quick-pick:has(> input:focus-visible) { outline: 2px solid var(--ring); outline-offset: 2px; }
@@ -1665,6 +1664,9 @@ body .wconvert-rule-picker__unavailable {
 #wconvert-admin .wconvert-quick-pick[aria-disabled='true'] { cursor: not-allowed; color: var(--muted-foreground); border-style: dashed; border-color: var(--border); background: var(--surface); }
 #wconvert-admin .wconvert-quick-pick [data-slot='badge'] { flex: none; }
 #wconvert-admin .wconvert-quick-pick :where(input[type='number'], input[type='text']) { block-size: 1.75rem; min-block-size: 0; margin: 0; padding: 0 4px; border: 1px solid var(--input); border-radius: 4px; background: var(--card); font-weight: 600; }
+/* Two classes, so these outrank the admin's generic (1,1,1) control height. */
+#wconvert-admin .wconvert-quick-pick :is(.wconvert-quick-pick__number, .wconvert-quick-pick__selector),
+#wconvert-admin .wconvert-display-setting .wconvert-display-setting__number { block-size: 1.75rem; min-block-size: 0; line-height: normal; }
 #wconvert-admin .wconvert-quick-pick__number { inline-size: 4.25em; text-align: center; font-variant-numeric: tabular-nums; }
 #wconvert-admin .wconvert-quick-pick__selector { inline-size: 10em; max-inline-size: 100%; font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: var(--text-note); }
 #wconvert-admin .wconvert-quick-pick :where([aria-invalid='true']) { border-color: var(--destructive); }
@@ -1675,7 +1677,7 @@ body .wconvert-rule-picker__unavailable {
 /* The stop card: rows with one divider and a 12px inset (GUIDELINES §21). */
 #wconvert-admin .wconvert-display-settings { border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--card); }
 #wconvert-admin .wconvert-display-settings__title { margin: 0; padding: 12px 12px 4px; font-weight: 600; }
-#wconvert-admin .wconvert-display-setting { display: grid; grid-template-columns: 16px minmax(0, 1fr); gap: 10px; align-items: center; min-block-size: 2.75rem; padding: 10px 12px; cursor: pointer; }
+#wconvert-admin .wconvert-display-setting { display: grid; grid-template-columns: 18px minmax(0, 1fr); gap: 10px; align-items: center; min-block-size: 2.75rem; padding: 10px 12px; cursor: pointer; }
 #wconvert-admin .wconvert-display-setting + .wconvert-display-setting { border-block-start: 1px solid var(--border); }
 #wconvert-admin .wconvert-display-setting > :where(input[type='checkbox']) { margin: 0; }
 #wconvert-admin .wconvert-display-setting > :where(label) { cursor: pointer; }
@@ -1683,7 +1685,7 @@ body .wconvert-rule-picker__unavailable {
 
 /* A disclosure card: the whole summary row opens it; one 16px chevron turns (GUIDELINES §21). */
 #wconvert-admin .wconvert-display-disclosure-card { border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--card); }
-#wconvert-admin .wconvert-display-disclosure-card > summary { list-style: none; display: grid; grid-template-columns: minmax(0, 1fr) 16px; gap: 10px; align-items: center; min-block-size: 2.75rem; padding: 10px 12px; cursor: pointer; font-weight: 500; }
+#wconvert-admin .wconvert-display-disclosure-card > summary { list-style: none; display: grid; grid-template-columns: minmax(0, 1fr) 16px; gap: 10px; align-items: center; min-block-size: 2.75rem; padding: 10px 12px; cursor: pointer; font-weight: 500; color: var(--foreground); }
 #wconvert-admin .wconvert-display-disclosure-card > summary::-webkit-details-marker { display: none; }
 #wconvert-admin .wconvert-display-disclosure-card > summary:focus-visible { outline: 2px solid var(--ring); outline-offset: -2px; border-radius: var(--radius-lg); }
 #wconvert-admin .wconvert-display-disclosure-card > summary small { display: block; font-size: var(--text-note); font-weight: 400; color: var(--muted-foreground); }

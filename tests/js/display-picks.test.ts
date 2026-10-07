@@ -173,7 +173,14 @@ describe('availability', () => {
     expect(ids('who', { elite: 'locked' }).cart).toMatchObject({ availability: 'locked', tier: 'elite' });
   });
 
+  it('locks every paid pick on a free install, even one that also needs a plugin', () => {
+    window.wconvertAdmin = { exportUrl: '', installedTier: 'free' } as typeof window.wconvertAdmin;
+    expect(ids('who', { elite: 'unavailable' }).cart).toMatchObject({ availability: 'locked', tier: 'elite' });
+    expect(ids('when', { pro: 'locked' }).after.availability).toBe('ready');
+  });
+
   it('names WooCommerce when the cart pick cannot run on this store', () => {
+    window.wconvertAdmin = { exportUrl: '', installedTier: 'elite' } as typeof window.wconvertAdmin;
     expect(ids('who', { elite: 'unavailable' }).cart).toEqual({ availability: 'unavailable', tier: 'elite', requires_label: 'WooCommerce' });
   });
 

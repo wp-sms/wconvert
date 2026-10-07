@@ -1,6 +1,6 @@
 import { __, _n, sprintf } from '@wordpress/i18n';
 import type { Audience, DisplayPlan, Opening, RuleGroup } from '@loader/display-rules';
-import { renderingFor, type Availability } from '../../goals/availability';
+import { isFreeInstall, renderingFor, type Availability } from '../../goals/availability';
 import { emptyGroup, freshRule, incompletePlan } from './plan';
 import type { DisplayRulesValue } from './summaries';
 import type { Frequency, Rule, RuleVocabulary } from '../api';
@@ -311,15 +311,25 @@ export interface PickAvailability {
 
 const RANK: Record<Availability, number> = { ready: 0, locked: 1, unavailable: 2 };
 
-/** The least available of a pick's rule types. `unavailable` outranks `locked`. */
+/**
+ * The least available of a pick's rule types. `unavailable` outranks `locked`.
+ *
+ * Except on a free install, where a paid type is `locked` whatever else is
+ * missing: free draws nothing it cannot run (ADR 0116), so a cart pick is not
+ * offered as "Needs WooCommerce" to a site that could not run it with it.
+ */
 export function availabilityOf(pick: Pick, vocabulary: RuleVocabulary): PickAvailability {
   const all = [...vocabulary.targeting, ...vocabulary.triggers, ...vocabulary.conditions];
+  const free = isFreeInstall();
   let least: PickAvailability = { availability: 'ready', requires_label: null };
   for (const name of pick.types) {
     const type = all.find(each => each.type === name);
     const here: PickAvailability = type === undefined
       ? { availability: 'unavailable', requires_label: null }
-      : { availability: type.availability, tier: type.tier, requires_label: type.availability === 'unavailable' ? type.requires_label : null };
+      : free && type.tier !== 'free' && type.availability !== 'ready'
+        ? { availability: 'locked', tier: type.tier, requires_label: null }
+        : { availability: type.availability, tier: type.tier, requires_label: type.availability === 'unavailable' ? type.requires_label : null };
+    if (free && here.availability === 'locked') return here;
     if (RANK[here.availability] > RANK[least.availability]) least = here;
   }
   return least;

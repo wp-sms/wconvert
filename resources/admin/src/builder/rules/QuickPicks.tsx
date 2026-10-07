@@ -47,7 +47,7 @@ export function QuickPicks({ section, question, value, vocabulary, shown, onChoo
         const chosen = shown.id === pick.id;
         const offered = rendering === 'offer';
         return <label key={pick.id} className="wconvert-quick-pick" data-open={pick.open || undefined} aria-disabled={offered ? undefined : true}>
-          <input type="radio" name={name} value={pick.id} checked={chosen} aria-disabled={offered ? undefined : true}
+          <input type="radio" className="sr-only" name={name} value={pick.id} checked={chosen} aria-disabled={offered ? undefined : true}
             aria-describedby={offered ? undefined : reasonId}
             onChange={() => { if (offered) { setRefused(null); onChoose(pick); } else setRefused(pick.id); }} />
           {chosen && pick.param ? <Inline template={pick.template()} param={pick.param} value={value} onChange={onParam} onError={setError} errorId={errorId} />
