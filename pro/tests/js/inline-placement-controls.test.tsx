@@ -8,7 +8,7 @@ import { InlinePlacementSettings } from '@/inlinePlacement';
 import { PlacementGuidance } from '@/builder/PlacementGuidance';
 import type { RuleVocabulary } from '@/builder/api';
 
-const vocabulary = { triggers: [{ type: 'page_load' }, { type: 'time_on_page' }], conditions: [], targeting: [], bundles: [] } as unknown as RuleVocabulary;
+const vocabulary = { triggers: [{ type: 'page_load' }, { type: 'time_on_page' }], conditions: [], targeting: [] } as unknown as RuleVocabulary;
 
 it('groups the placement choices without repeating the section heading', () => {
   render(<PlacementSettings optinId="example" published config={{}} vocabulary={vocabulary} onChange={() => undefined} />);

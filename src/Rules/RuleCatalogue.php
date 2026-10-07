@@ -55,14 +55,10 @@ final class RuleCatalogue
     }
 
     /**
-     * Every axis, every type under each in manifest order — and the
-     * [[Starting point]]s.
+     * Every axis, every type under each in manifest order.
      *
-     * A fourth key on the same response rather than a route of its own. It is
-     * read by one screen at the same moment as the three axes, it is derived
-     * from the same vocabulary against the same install, and a second route
-     * would be a second permission check and a second round trip for a list
-     * the panel cannot render without.
+     * The Display rules [[Quick pick]]s are not here: they are client-only
+     * (`rules/picks.ts`) and read their availability off these types (ADR 0129).
      *
      * @return array<string, list<array<string, mixed>>>
      */
@@ -79,141 +75,7 @@ final class RuleCatalogue
             $described[$axis] = array_map(fn (string $type): array => $this->describe($type), $types);
         }
 
-        $described['bundles'] = $this->bundles();
-
         return $described;
-    }
-
-    /**
-     * The [[Starting point]]s, each resolved against this install.
-     *
-     * ========================================================================
-     * A BUNDLE IS AS AVAILABLE AS ITS LEAST AVAILABLE RULE.
-     * ========================================================================
-     * Offering "Rescue an abandoned cart" on a site with no store would land
-     * two rules the site cannot evaluate and [[Suspend]] the Optin on the
-     * spot. So the arithmetic runs here, over {@see self::availabilityOf()},
-     * which keeps the ADR 0026 precedence in the one place that owns it: a
-     * bundle whose rules are missing WooCommerce is `unavailable` and is never
-     * sold as Pro, even when one of its other rules is genuinely premium.
-     *
-     * The sections a bundle NAMES are exactly the keys it comes back with, so
-     * "applying replaces the axes it names" is readable off the response
-     * rather than being a list the client keeps in step.
-     *
-     * @return list<array<string, mixed>>
-     */
-    public function bundles(): array
-    {
-        $described = [];
-
-        foreach (RuleBundles::all() as $id => $bundle) {
-            $availability = $this->leastOf(RuleBundles::typesIn($bundle));
-            $partitioned = array_filter($this->vocabulary->partition($this->expand($bundle['rules'] ?? [])));
-
-            $described[] = [
-                'id' => (string) $id,
-                'label' => (string) $bundle['label'],
-                'description' => (string) $bundle['description'],
-                'availability' => $availability->value,
-                // The cause where the SITE is why, and null where the tier is
-                // — the same one-fact-or-nothing shape {@see self::missingDependencyOf()}
-                // answers with, so the card never has to recombine two
-                // coordinates of its own.
-                'requires_label' => $availability === Availability::Unavailable
-                    ? $this->missingDependencyIn(RuleBundles::typesIn($bundle))?->label()
-                    : null,
-            ] + $partitioned + array_filter([
-                'targeting' => $bundle['targeting'] ?? [],
-                'frequency' => $bundle['frequency'] ?? [],
-            ]);
-        }
-
-        return $described;
-    }
-
-    /**
-     * A bundle's rules, with every named preset replaced by what it fixes.
-     *
-     * ========================================================================
-     * THE MANIFEST STAYS THE ONE PLACE A PRESET'S VALUES ARE WRITTEN.
-     * ========================================================================
-     * A [[Starting point]] says `['type' => 'time_on_page', 'preset' =>
-     * 'after_a_read']` and this turns it into `['seconds' => 15]`. Written out
-     * in {@see RuleBundles} instead, the 15 would be a second copy that drifts
-     * the day somebody retunes the preset — silently, because both are valid
-     * rules and nothing would compare them (ADR 0005).
-     *
-     * **An unknown preset contributes nothing rather than a broken rule.** The
-     * rule keeps its type and loses the reference, so it lands as the type's
-     * general form with no params — which the builder draws and the merchant
-     * can complete. `RuleBundlesTest` fails on one, so this is the shape of a
-     * mistake that cannot ship rather than a fallback anybody relies on.
-     *
-     * @param mixed $rules
-     * @return list<array<string, mixed>>
-     */
-    private function expand($rules): array
-    {
-        $expanded = [];
-
-        foreach (is_array($rules) ? $rules : [] as $rule) {
-            if (!is_array($rule) || !is_string($rule['type'] ?? null)) {
-                continue;
-            }
-
-            $named = $rule['preset'] ?? null;
-            unset($rule['preset']);
-
-            $expanded[] = is_string($named)
-                ? $rule + ($this->vocabulary->presetsOf($rule['type'])[$named] ?? [])
-                : $rule;
-        }
-
-        return $expanded;
-    }
-
-    /**
-     * The worst Availability among these rule types.
-     *
-     * Built from the same two booleans {@see Availability::of()} takes rather
-     * than from a comparison over the three states, so `unavailable` beats
-     * `locked` here for exactly the reason it does everywhere else and not
-     * because an ordering was written out a second time (ADR 0026).
-     *
-     * @param list<string> $types
-     */
-    private function leastOf(array $types): Availability
-    {
-        $siteCanServeThemAll = true;
-        $installHasEveryTier = true;
-
-        foreach ($types as $type) {
-            $availability = $this->availabilityOf($type);
-
-            $siteCanServeThemAll = $siteCanServeThemAll && $availability !== Availability::Unavailable;
-            $installHasEveryTier = $installHasEveryTier && $availability !== Availability::Locked;
-        }
-
-        return Availability::of($siteCanServeThemAll, $installHasEveryTier);
-    }
-
-    /**
-     * The first dependency missing among these types, for a bundle to name.
-     *
-     * @param list<string> $types
-     */
-    private function missingDependencyIn(array $types): ?SiteDependency
-    {
-        foreach ($types as $type) {
-            $dependency = $this->missingDependencyOf($type);
-
-            if ($dependency !== null) {
-                return $dependency;
-            }
-        }
-
-        return null;
     }
 
     /**

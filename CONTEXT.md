@@ -1099,52 +1099,43 @@ market choices, held in user meta scoped to the current site. They are personal
 library preferences; Site occasions are shared by site administrators. Favorites
 survive a pack version update while exact source baselines retain immutable IDs.
 
-### Starting point
+### Quick pick
 
-Shown as **Display rule sets** in the UI, distinct from full Campaign setups
-(Playbooks), under [ADR 0086](docs/adr/0086-campaign-setups-explain-handoff-and-format.md).
+One common answer to a Display rules question, one click away — *Entire site*,
+*Phones only*, *After [15] seconds*, *Once per visit*, *Until you pause it* —
+beside **Custom…**, which opens the full rule editors
+([ADR 0129](docs/adr/0129-display-rules-plain-questions-and-quick-picks.md)).
+The five questions are *Where does it show?*, *Who sees it?*, *When does it
+open?*, *How often?* and *Dates*.
 
-A named set of display rules a merchant can begin from — *"Once they have read a
-while"*, *"Only on blog posts"*, *"Rescue an abandoned cart"* — offered in the
-rules panel and applied after reviewing and confirming the replacement.
+**It is matched by shape, never remembered.** Nothing stores which pick was
+chosen: each pick asks the stored value whether it has the pick's shape — one
+audience group holding one `device` rule whose set is `{mobile}`, an automatic
+opening holding only `scroll_depth`. So a value a [[Playbook]] prefilled, an
+undo and a draft edited elsewhere all show the pick they actually hold, and a
+chip with a number reads the real number. While a question is open, an open
+pick the merchant chose (Custom…, Selected pages, Between two dates) stays
+chosen even if its value comes to match a quick pick; re-opening derives it
+again.
 
-**It is not a preset, and the word is the decision.** *Preset* already means a
-per-type shortcut over one rule's general form: `time_on_page {seconds: 5}` is
-"after a few seconds", and that is what `RulePreset` and `RuleLabels::presets()`
-name. Both would be on this screen at once, since a Starting point that lands
-"after a few seconds" is a bundle whose content is a preset. Two meanings of one
-word on one screen is what this glossary exists to prevent.
+**It is not a preset.** *Preset* means a per-type shortcut over one rule's
+general form (`RulePreset`, `RuleLabels::presets()`); a pick names an answer to
+a question. No pick label repeats a rule type or preset label.
 
-A Starting point **names sections and replaces only the ones it names**. The
-rules panel is four sections — **Pages, Audience, When it appears, Schedule &
-frequency** under [ADR 0072](docs/adr/0072-setup-choices-state-their-effect-and-scope.md) — and one carrying
-Conditions leaves the merchant's [[Trigger]]s alone: an [[Optin]] with no Trigger
-can never fire and the save route refuses one, so a button that wiped them would
-break the Optin it was offered to improve. Which sections it names is readable
-off what it carries, and applying one **confirms first** so replacement scope is
-reviewable. Rule changes now participate in draft Undo, including a whole
-starting-point replacement (ADR 0075).
+**It changes one question and nothing else.** A pacing pick changes only the
+pacing keys, never the stop settings; no pick writes into another question, so
+the old cart set is two picks, one under Who and one under When.
 
-The review compares current and proposed values for the sections supplied.
-Replacing frequency does not replace campaign dates or overlay priority; those
-fields are absent from a rule bundle. Applying changes the working draft and
-does not save or publish it. [ADR 0104](docs/adr/0104-display-workspace-uses-bounded-groups-and-fresh-gestures.md) adds bounded groups and supersedes the flat
-Trigger/Condition/Targeting semantics.
+Its [[Availability]] is the least of the rule types it writes, `unavailable`
+outranking `locked`. A locked pick is drawn with a lock on a lower tier and not
+drawn on Free; a pick needing a missing plugin names it. A stored rule the site
+cannot offer reads as Custom…, so the rule stays on screen.
 
-> *That reason has a second case: changing an Optin's [[Goal]] confirms too, and
-> for exactly this — a Goal is a column rather than part of `config`, so there
-> is no history entry to walk back to
-> ([ADR 0059](docs/adr/0059-the-converting-act-belongs-to-the-design.md)).*
-
-Like a [[Playbook]] it is bundled PHP returning an array — `wp i18n make-pot`
-cannot see a string in JSON — and like a Playbook it may not name anything only
-one site has: no post ids, no CSS selectors, no cart totals in the store's own
-currency. **Unlike** a Playbook it touches no copy and no [[Template]]: applying
-one changes rules and nothing else, because there is no reading under which
-"start from this" means "replace my headline".
-
-Its [[Availability]] is the least of its rules', so a site with no store is never
-offered one that would [[Suspend]] the Optin on the spot.
+**It is client-only** (`rules/picks.ts`). The server ships no rule-set library;
+a pick writes the same `display_rules`, `targeting`, `frequency` and `schedule`
+the editors write, so the server validates it like any other edit. This entry
+replaces *Starting point*, which named the server-side rule sets (*Display rule
+sets* in the UI) that ADR 0129 removed.
 
 ### Playbook
 
@@ -1176,8 +1167,9 @@ In creation the merchant-facing term is **starting point**. Goal is the first
 choice, and the Playbook is the second; *Customize this starting point* creates a
 draft and opens the editor directly. A card's compact setup facts come from the
 same resolved Prefill result the draft receives. Browsing does not create or
-publish an Optin. This creation bundle includes design and copy, unlike the
-rule-only Starting point above (ADR 0072).
+publish an Optin. This creation bundle includes design and copy, unlike a
+[[Quick pick]], which answers one display question and touches nothing else
+(ADR 0129).
 
 The twelve flagship Playbooks are editorial recommendations, four for each of
 stores, publishers and services. They appear first within the chosen Goal and
