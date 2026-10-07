@@ -60,7 +60,7 @@ final class MailtrapDestinationType implements DestinationType
         foreach ($lists as $list) {
             if (is_array($list) && isset($list['id'], $list['name'])) $options[] = ['value' => (string) $list['id'], 'label' => (string) $list['name']];
         }
-        $textFields = $this->textFields($credentials);
+        $textFields = $this->fields($credentials);
         $nameSetting = ['type' => 'select', 'label' => __('Name goes to', 'wconvert'), 'options' => $textFields];
         if (in_array('first_name', array_column($textFields, 'value'), true)) $nameSetting['default'] = 'first_name';
         return ['lists' => ['type' => 'ids', 'label' => __('List', 'wconvert'), 'options' => $options],
@@ -73,28 +73,29 @@ final class MailtrapDestinationType implements DestinationType
 
     /** @param array<string, mixed> $credentials
      * @param array<string, mixed> $settings
-     * @return list<array{value: string, label: string}>
+     * @return list<array{value: string, label: string, type?: 'boolean'}>
      */
     public function mappingFields(array $credentials, array $settings): array
     {
         $name = $settings['name_field'] ?? '';
-        return array_values(array_filter($this->textFields($credentials), static fn (array $field): bool => $field['value'] !== $name));
+        return array_values(array_filter($this->fields($credentials, true), static fn (array $field): bool => $field['value'] !== $name));
     }
 
-    /** Text fields only, until typed conversion exists; a value is keyed by its merge tag.
+    /** Names use text; separate interests also offer boolean fields, keyed by merge tag.
      * @param array<string, mixed> $credentials
-     * @return list<array{value: string, label: string}>
+     * @return list<array{value: string, label: string, type?: 'boolean'}>
      */
-    private function textFields(array $credentials): array
+    private function fields(array $credentials, bool $includeInterests = false): array
     {
         [$status, $fields] = $this->request($credentials, 'GET', '/contacts/fields');
         if ($status !== 200) throw new \RuntimeException('Mailtrap fields could not be read.');
         $options = [];
         foreach ($fields as $field) {
-            if (!is_array($field) || ($field['data_type'] ?? '') !== 'text') continue;
+            if (!is_array($field) || !in_array($field['data_type'] ?? '', $includeInterests ? ['text', 'boolean'] : ['text'], true)) continue;
             $tag = $field['merge_tag'] ?? null;
             if (!is_string($tag) || !self::isTag($tag) || $tag === 'email') continue;
-            $options[] = ['value' => $tag, 'label' => is_string($field['name'] ?? null) ? $field['name'] : $tag];
+            $options[] = ['value' => $tag, 'label' => is_string($field['name'] ?? null) ? $field['name'] : $tag]
+                + ($field['data_type'] === 'boolean' ? ['type' => 'boolean'] : []);
         }
         return $options;
     }
@@ -112,7 +113,8 @@ final class MailtrapDestinationType implements DestinationType
         // The whole name, unsplit.
         if ($nameField !== '' && trim($subject->values[CanonicalFields::NAME] ?? '') !== '') $fields[$nameField] = $subject->values[CanonicalFields::NAME];
         foreach ($subject->mapped as $tag => $value) {
-            if (self::isTag($tag) && !in_array($tag, ['email', $nameField], true) && trim($value) !== '') $fields[$tag] = $value;
+            if (self::isTag($tag) && !in_array($tag, ['email', $nameField], true)
+                && ($value === true || (is_string($value) && trim($value) !== ''))) $fields[$tag] = $value;
         }
         // Enquiries may be stored as Contacts but must not enter a marketing list.
         $marketing = $subject->purpose === 'email_marketing';

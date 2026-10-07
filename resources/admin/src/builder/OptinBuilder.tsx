@@ -457,7 +457,10 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
         const kept = new Set(changedTemplate.tree.submissions.map(sub => sub.id));
         const sources = new Set<string>();
         changedTemplate.tree.steps.flatMap(step => walkNodes(step.content)).forEach((node) => {
-          if (node.type === 'question' && 'id' in node) sources.add(String(node.id));
+          if (node.type === 'question' && 'id' in node) {
+            sources.add(String(node.id));
+            if (node.answer_type === 'multi') node.options?.forEach((option) => sources.add(`choice:${node.id}:${option.value}`));
+          }
           if (node.type === 'field' && 'name' in node && ['interest', 'message'].includes(String(node.name))) sources.add(`field:${String(node.name)}`);
         });
         const maps = next.integration_mappings as Record<string, Record<string, Record<string, string>>>;

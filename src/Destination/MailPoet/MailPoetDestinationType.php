@@ -288,7 +288,7 @@ final class MailPoetDestinationType implements DestinationType
      *
      * @param array<string, string> $values
      * @param list<string> $lists
-     * @param array<string, string> $mapped
+     * @param array<string, string|true> $mapped
      */
     private function create(array $values, string $email, array $lists, array $mapped): string
     {
@@ -296,7 +296,7 @@ final class MailPoetDestinationType implements DestinationType
             $subscriber = $this->newSubscriber($values);
             $valid = array_column($this->subscribers->textFields(), 'id');
             foreach ($mapped as $mapping => $value) {
-                if (!in_array($mapping, $valid, true)) throw new \RuntimeException('A configured MailPoet text field is unavailable. Review this campaign’s mapping.');
+                if (!is_string($value) || !in_array($mapping, $valid, true)) throw new \RuntimeException('A configured MailPoet text field is unavailable or incompatible. Review this campaign’s mapping.');
                 $subscriber[$mapping] = $value;
             }
             return $this->subscribers->add($subscriber, $lists);

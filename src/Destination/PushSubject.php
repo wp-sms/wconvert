@@ -46,7 +46,7 @@ final class PushSubject
     private function __construct(
         public readonly array $values,
         public readonly bool $isTest,
-        /** @var array<string, string> Provider field id => accepted text. */
+        /** @var array<string, string|true> Provider field id => accepted text or selected interest. */
         public readonly array $mapped = [],
         /** The accepted submission purpose; an email address alone is not marketing consent. */
         public readonly string $purpose = 'request',
@@ -62,7 +62,15 @@ final class PushSubject
             foreach ($mapping as $source => $target) {
                 if (!is_string($target) || !preg_match('/^[A-Za-z][A-Za-z0-9_]{0,31}$/D', $target)) continue;
                 $value = null;
-                if (is_string($source) && str_starts_with($source, 'field:')) {
+                if (is_string($source) && str_starts_with($source, 'choice:')) {
+                    [, $question, $choice] = array_pad(explode(':', $source, 3), 3, '');
+                    foreach ($lead->questionAnswers as $answer) {
+                        if (($answer['id'] ?? null) !== $question || ($answer['type'] ?? '') !== 'multi') continue;
+                        // Only selected choices add interests. Skipped or deselected choices never clear them.
+                        if (in_array($choice, $answer['values'] ?? [], true)) $value = true;
+                        break;
+                    }
+                } elseif (is_string($source) && str_starts_with($source, 'field:')) {
                     $key = substr($source, 6);
                     if (in_array($key, ['interest', 'message'], true)) $value = $lead->fields[$key] ?? null;
                 } else {
@@ -73,7 +81,7 @@ final class PushSubject
                         break;
                     }
                 }
-                if (is_string($value) && trim($value) !== '') $mapped[$target] = $value;
+                if ($value === true || (is_string($value) && trim($value) !== '')) $mapped[$target] = $value;
             }
         }
         return new self(CanonicalFields::of($lead), false, $mapped,
@@ -89,7 +97,7 @@ final class PushSubject
      * a path a capture never takes.
      *
      * @param array<string, mixed> $values
-     * @param array<string, string> $mapped
+     * @param array<string, string|true> $mapped
      */
     public static function test(array $values, array $mapped = [], string $purpose = 'email_marketing'): self
     {

@@ -212,17 +212,19 @@ export interface RecentAttempt {
 export const readRecentAttempts = (id: string) =>
   apiFetch<{ attempts: RecentAttempt[] }>({ path: path(`/${id}/recent`) });
 
+export interface MappingField { value: string; label: string; type?: 'boolean'; }
+
 export const readMappingFields = (id: string, refresh = false) =>
-  apiFetch<{ fields: { value: string; label: string }[] }>({ path: `${path(`/${id}/mapping-fields`)}${refresh ? '?refresh=1' : ''}` });
+  apiFetch<{ fields: MappingField[] }>({ path: `${path(`/${id}/mapping-fields`)}${refresh ? '?refresh=1' : ''}` });
 
 export interface MappingSample {
   email: string;
   mapping: Record<string, string>;
-  sample: Record<string, string>;
+  sample: Record<string, string | boolean>;
 }
 
 export const previewMapping = (id: string, data: MappingSample) =>
-  apiFetch<{ email: string; mapped: Record<string, string> }>({ path: path(`/${id}/draft-preview`), method: 'POST', data });
+  apiFetch<{ email: string; mapped: Record<string, string | true> }>({ path: path(`/${id}/draft-preview`), method: 'POST', data });
 
 export const testMapping = (id: string, data: MappingSample) =>
   apiFetch<TestReport>({ path: path(`/${id}/draft-test`), method: 'POST', data });

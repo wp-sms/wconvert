@@ -3,24 +3,27 @@ import { __ } from '@wordpress/i18n';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { Label } from '../components/ui/label';
+import { Checkbox } from '../components/ui/checkbox';
 import { Description } from '../shell/Description';
 import { messageOf } from '../shell/loadable';
 import { previewMapping, testMapping } from '../destinations/api';
 import type { Destination, MappingSample, TestReport } from '../destinations/api';
 import { targetSaid } from '../destinations/settings';
+import type { AnswerSource } from './answerSources';
+import { answerGroups } from './answerSources';
 
 /** Reset by the parent when the destination, fields, or mapping change. */
 export function MappingTest({ destination, fields, sources, mapping }: {
   destination: Destination;
   fields: readonly { value: string; label: string }[];
-  sources: readonly { id: string; label: string }[];
+  sources: readonly AnswerSource[];
   mapping: Record<string, string>;
 }) {
   const id = useId();
   const emailInput = useRef<HTMLInputElement>(null);
   const [email, setEmail] = useState('');
-  const [sample, setSample] = useState<Record<string, string>>({});
-  const [preview, setPreview] = useState<{ draft: MappingSample; email: string; mapped: Record<string, string> } | null>(null);
+  const [sample, setSample] = useState<MappingSample['sample']>({});
+  const [preview, setPreview] = useState<{ draft: MappingSample; email: string; mapped: Record<string, string | true> } | null>(null);
   const [report, setReport] = useState<TestReport | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState<'preview' | 'send' | null>(null);
@@ -28,7 +31,7 @@ export function MappingTest({ destination, fields, sources, mapping }: {
   const previewDraft = async () => {
     if (!email.trim()) { setError(__('Enter your test email before previewing.', 'wconvert')); emailInput.current?.focus(); return; }
     if (!emailInput.current?.reportValidity()) return;
-    const draft = { email, mapping, sample };
+    const draft = { email, mapping, sample: Object.fromEntries(sources.map((source) => [source.id, sample[source.id] ?? (source.type === 'boolean' ? false : '')])) };
     invalidate();
     setBusy('preview');
     try { setPreview({ ...await previewMapping(destination.id, draft), draft }); }
@@ -47,18 +50,31 @@ export function MappingTest({ destination, fields, sources, mapping }: {
   return <details className="border-t border-border pt-3">
     <summary className="cursor-pointer text-note font-medium focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring">{__('Preview and test mapping', 'wconvert')}</summary>
     <div className="flex min-w-0 flex-col gap-3 pt-3">
-      <Description>{__('Enter sample answers to preview the mapped data. Nothing is sent until you choose Send test contact.', 'wconvert')}</Description>
+      <Description>{__('Try sample answers before sending a test contact.', 'wconvert')}</Description>
       <fieldset disabled={busy !== null} className="m-0 flex min-w-0 flex-col gap-3 border-0 p-0">
         <div className="flex flex-col gap-1.5"><Label htmlFor={`${id}-email`}>{__('Your test email', 'wconvert')}</Label>
           <Input id={`${id}-email`} ref={emailInput} type="email" autoComplete="email" value={email} onChange={(event) => { invalidate(); setEmail(event.target.value); }} />
         </div>
-        {sources.map((source, index) => <div key={source.id} className="flex min-w-0 flex-col gap-1.5"><Label htmlFor={`${id}-sample-${index}`} className="[overflow-wrap:anywhere]">{__('Sample answer:', 'wconvert')} {source.label}</Label>
-          <Input id={`${id}-sample-${index}`} type="text" maxLength={500} value={sample[source.id] ?? ''} onChange={(event) => { invalidate(); setSample({ ...sample, [source.id]: event.target.value }); }} />
-        </div>)}
-        <Description>{__('Blank sample answers are omitted; they do not clear existing values.', 'wconvert')}</Description>
+        {answerGroups(sources).map((group) => <fieldset key={group.id} className="m-0 min-w-0 space-y-2 border-0 p-0">
+          {group.choices.length > 0 && <>
+            <legend className="mb-2 text-body font-medium [overflow-wrap:anywhere]">{group.label}</legend>
+            <div className="flex flex-wrap gap-2">
+              {group.choices.map((source) => <Label key={source.id} htmlFor={`${id}-${source.id}`} className="min-h-(--control-height) cursor-pointer rounded-md border border-border px-3 py-2 leading-snug focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-ring hover:bg-accent has-[[data-state=checked]]:border-primary has-[[data-state=checked]]:bg-accent">
+                <Checkbox id={`${id}-${source.id}`} aria-label={`${__('Sample answer:', 'wconvert')} ${source.label}`} checked={sample[source.id] === true}
+                  onCheckedChange={(checked) => { invalidate(); setSample({ ...sample, [source.id]: checked === true }); }} />
+                <span className="min-w-0 [overflow-wrap:anywhere]">{source.choice?.label ?? source.label}</span>
+              </Label>)}
+            </div>
+          </>}
+          {group.answer && <div className="flex min-w-0 flex-col gap-1.5">
+            <Label htmlFor={`${id}-${group.answer.id}`} className="[overflow-wrap:anywhere]">{__('Sample answer:', 'wconvert')} {group.answer.label}</Label>
+            <Input id={`${id}-${group.answer.id}`} type="text" maxLength={500} value={String(sample[group.answer.id] ?? '')} onChange={(event) => { invalidate(); setSample({ ...sample, [group.answer!.id]: event.target.value }); }} />
+          </div>}
+        </fieldset>)}
+        <Description>{__('Blank answers and unchecked interests are omitted; they do not clear existing values.', 'wconvert')}</Description>
         <div><Button type="button" variant="outline" onClick={() => void previewDraft()}>{busy === 'preview' ? __('Preparing preview…', 'wconvert') : __('Preview data', 'wconvert')}</Button></div>
       </fieldset>
-      {preview && <div className="flex min-w-0 flex-col gap-3 rounded-md border border-border bg-muted p-3 text-note" aria-live="polite">
+      {preview && <div className="flex min-w-0 flex-col gap-3 rounded-md border border-border bg-surface p-3 text-note" aria-live="polite">
         <strong>{__('Review this test send', 'wconvert')}</strong>
         <span className="[overflow-wrap:anywhere]">{targetSaid(destination.target) ?? destination.label}</span>
         <dl className="m-0 grid min-w-0 grid-cols-[minmax(0,1fr)_minmax(0,1fr)] gap-x-3 gap-y-2 [overflow-wrap:anywhere]">
@@ -76,6 +92,6 @@ export function MappingTest({ destination, fields, sources, mapping }: {
   </details>;
 }
 
-function MappingValue({ label, text }: { label: string; text: string }) {
-  return <><dt className="text-muted-foreground">{label}</dt><dd className="m-0 whitespace-pre-wrap">{text}</dd></>;
+function MappingValue({ label, text }: { label: string; text: string | true }) {
+  return <><dt className="text-muted-foreground">{label}</dt><dd className="m-0 whitespace-pre-wrap">{text === true ? __('Yes', 'wconvert') : text}</dd></>;
 }

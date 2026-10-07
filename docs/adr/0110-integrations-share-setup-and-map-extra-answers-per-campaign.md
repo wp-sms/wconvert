@@ -60,6 +60,31 @@ skipped questions and absent answers never become provider-clearing instructions
 Extra-answer mapping does not authorize sending anonymous quiz answers or consent
 as an arbitrary custom value. Mapping metadata stays server-side.
 
+*Amended 2026-10-06: separate interests.* Multiple-choice questions can also map
+each choice to an existing boolean provider field. Mailtrap is the first adapter
+to expose this capability. A `choice:<question-id>:<stable-choice-value>` source
+sends literal `true` only when that choice is present in the accepted snapshot.
+Unselected and skipped choices are omitted, preserving earlier interests. The
+user explicitly chose this additive behavior. Existing contacts still require
+the Destination's **Update mapped fields** policy; the default Keep policy does
+not change. Whole-question text mappings continue to join the accepted labels.
+
+Field metadata marks boolean targets with `type: boolean`; omitted type means
+text. The editor offers compatible pairs, sample preview uses checked choices,
+and the worker refuses incompatible discovered types before a provider write.
+Choice labels may change without breaking a mapping; removed choice values or
+a change away from multiple choice invalidate that source. These are interest
+flags, not provider tags, lists, subscription controls or an interest-removal UI.
+
+*UI refinement, 2026-10-07:* show a multiple-choice question once, with short
+choice rows beneath it. Whole-answer text mapping stays available in an optional
+disclosure, expanded when it already has a mapping. The summary counts mapped
+fields rather than treating optional representations as incomplete setup.
+Sample choices use shared checkbox controls with clickable labels. The keep-mode
+notice opens the existing shared Destination settings dialog. Field loading uses
+the shared skeleton; a failed refresh retains the previous mappings and provides
+Retry, with testing unavailable until discovery succeeds.
+
 The detailed plan recommends freezing the effective map with the accepted
 submission and guarding against subsequent account/target/policy changes. Those
 engineering details must be verified against the existing transactional capture

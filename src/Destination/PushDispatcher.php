@@ -144,7 +144,7 @@ final class PushDispatcher
      * nothing was.
      *
      * @param array<string, mixed> $values Canonical keys; anything else is dropped.
-     * @param array<string, string> $mapped
+     * @param array<string, string|true> $mapped
      */
     public function test(string $destinationId, array $values, array $mapped = []): PushResult
     {

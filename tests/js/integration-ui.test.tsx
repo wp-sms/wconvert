@@ -26,13 +26,60 @@ const template = { tree: {
 
 describe('integration setup controls', () => {
   beforeEach(() => vi.resetAllMocks());
+  it('maps separate choices only to boolean fields and previews checked interests', async () => {
+    const interests = { tree: {
+      steps: [{ content: { type: 'question', id: 'n2', label: 'Interests', answer_type: 'multi', options: [
+        { value: 'running', label: 'Running' }, { value: 'hiking', label: 'Hiking' },
+      ] } }], submissions: [{ id: 'signup-1', fields: ['n2'] }],
+    } } as unknown as Template;
+    api.readMappingFields.mockResolvedValue({ fields: [
+      { value: 'ALL', label: 'All answers' }, { value: 'RUNNING', label: 'Likes running', type: 'boolean' },
+      { value: 'HIKING', label: 'Likes hiking', type: 'boolean' },
+    ] });
+    api.previewMapping.mockResolvedValue({ email: 'owner@example.com', mapped: { RUNNING: true } });
+    const user = userEvent.setup();
+    render(<ExtraAnswerMapping destination={destination} submissionId="signup-1" template={interests}
+      value={{ 'choice:n2:running': 'RUNNING', 'choice:n2:hiking': 'HIKING' }} onChange={vi.fn()} />);
+    await user.click(screen.getByText('Field mapping'));
+    const running = await screen.findByRole('combobox', { name: 'Interests — Running' });
+    expect(within(running).queryByRole('option', { name: 'All answers' })).not.toBeInTheDocument();
+    const wholeAnswer = screen.getByText('Send all choices as text (optional)').closest('details');
+    expect(wholeAnswer).not.toHaveAttribute('open');
+    await user.click(screen.getByText('Send all choices as text (optional)'));
+    expect(within(screen.getByRole('combobox', { name: 'All selected choices — Interests' })).queryByRole('option', { name: 'Likes running' })).not.toBeInTheDocument();
+    await user.click(screen.getByText('Preview and test mapping'));
+    await user.type(screen.getByRole('textbox', { name: 'Your test email' }), 'owner@example.com');
+    await user.click(screen.getByRole('checkbox', { name: 'Sample answer: Interests — Running' }));
+    await user.click(screen.getByRole('button', { name: 'Preview data' }));
+    expect(api.previewMapping).toHaveBeenCalledWith('route-1', {
+      email: 'owner@example.com', mapping: { 'choice:n2:running': 'RUNNING', 'choice:n2:hiking': 'HIKING' },
+      sample: { 'choice:n2:running': true, 'choice:n2:hiking': false },
+    });
+    expect(await screen.findByText('Yes')).toBeVisible();
+    expect(api.testMapping).not.toHaveBeenCalled();
+  });
+
+  it('requires repair if an interest target changes from boolean to text', async () => {
+    const interests = { tree: {
+      steps: [{ content: { type: 'question', id: 'n2', label: 'Interests', answer_type: 'multi', options: [{ value: 'running', label: 'Running' }] } }],
+      submissions: [{ id: 'signup-1', fields: ['n2'] }],
+    } } as unknown as Template;
+    api.readMappingFields.mockResolvedValue({ fields: [{ value: 'RUNNING', label: 'Running text' }] });
+    const user = userEvent.setup();
+    render(<ExtraAnswerMapping destination={destination} submissionId="signup-1" template={interests}
+      value={{ 'choice:n2:running': 'RUNNING' }} onChange={vi.fn()} />);
+    await user.click(screen.getByText('Field mapping'));
+    expect(await screen.findByRole('combobox', { name: 'Interests — Running' })).toHaveAttribute('aria-invalid', 'true');
+    expect(screen.queryByText('Preview and test mapping')).not.toBeInTheDocument();
+  });
+
   it('explains how to add a provider field when none can be mapped', async () => {
     api.readMappingFields.mockResolvedValue({ fields: [] });
     const user = userEvent.setup();
     render(<ExtraAnswerMapping destination={destination} submissionId="signup-1" template={template}
       value={{}} onChange={vi.fn()} />);
     await user.click(screen.getByText('Field mapping'));
-    expect(await screen.findByText('No compatible text fields were found. Add a text field in this service, then refresh fields.')).toBeVisible();
+    expect(await screen.findByText('Add a text field in this service, then refresh fields.')).toBeVisible();
   });
 
   it('reviews the selected target, fields and update effect before an explicit sample send', async () => {
@@ -83,6 +130,32 @@ describe('integration setup controls', () => {
     await user.click(await screen.findByRole('button', { name: 'Retry loading fields' }));
     expect(await screen.findByRole('combobox', { name: 'Service needed' })).toHaveValue('SERVICE');
     expect(api.readMappingFields).toHaveBeenLastCalledWith('route-1', true);
+  });
+
+  it('keeps loaded mappings visible after a failed refresh and requires recovery before testing', async () => {
+    const fields = [{ value: 'SERVICE', label: 'Service interest' }];
+    api.readMappingFields.mockResolvedValueOnce({ fields }).mockRejectedValueOnce(new Error('Offline')).mockResolvedValueOnce({ fields });
+    const user = userEvent.setup();
+    render(<ExtraAnswerMapping destination={destination} submissionId="signup-1" template={template} value={{ 'question-1': 'SERVICE' }} onChange={vi.fn()} />);
+    await user.click(screen.getByText('Field mapping'));
+    await screen.findByText('Preview and test mapping');
+    await user.click(screen.getByRole('button', { name: 'Refresh fields' }));
+    await screen.findByText(/Could not refresh fields/);
+    expect(screen.getByRole('combobox', { name: 'Service needed' })).toHaveValue('SERVICE');
+    expect(screen.getByRole('combobox', { name: 'Service needed' })).toBeDisabled();
+    expect(screen.queryByText('Preview and test mapping')).not.toBeInTheDocument();
+    await user.click(screen.getByRole('button', { name: 'Retry loading fields' }));
+    expect(await screen.findByText('Preview and test mapping')).toBeVisible();
+  });
+
+  it('shows choices and setup guidance before boolean fields exist', async () => {
+    api.readMappingFields.mockResolvedValue({ fields: [] });
+    const interests = { tree: { steps: [{ content: { type: 'question', id: 'n2', label: 'Interests', answer_type: 'multi', options: [{ value: 'running', label: 'Running' }] } }], submissions: [{ id: 'signup-1', fields: ['n2'] }] } } as unknown as Template;
+    const user = userEvent.setup();
+    render(<ExtraAnswerMapping destination={{ ...destination, type: 'mailtrap' }} providerLabel="Mailtrap" submissionId="signup-1" template={interests} value={{}} onChange={vi.fn()} />);
+    await user.click(screen.getByText('Field mapping'));
+    expect(await screen.findByText('Add a yes/no field for each choice in Mailtrap, then refresh fields.')).toBeVisible();
+    expect(screen.getByRole('combobox', { name: 'Interests — Running' })).toHaveValue('');
   });
 
   it('explains used fields and can remove mappings whose campaign answer was removed', async () => {
