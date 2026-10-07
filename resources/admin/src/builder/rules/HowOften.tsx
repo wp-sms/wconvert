@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { __, sprintf } from '@wordpress/i18n';
+import { __, _n, sprintf } from '@wordpress/i18n';
 import { Input } from '../../components/ui/input';
 import { Label } from '../../components/ui/label';
 import { DisclosureCard } from './DisclosureCard';
@@ -14,8 +14,6 @@ export interface HowOftenProps {
   readonly overlay: boolean;
   /** Custom… is chosen: draw the two pacing fields. */
   readonly custom: boolean;
-  /** Only once ever is chosen: its total of one is the pick, not a stop. */
-  readonly onceEver: boolean;
   readonly reopenEnabled?: boolean;
   readonly act?: ConvertingAct;
   readonly onFrequency: (frequency: Frequency) => void;
@@ -29,7 +27,7 @@ export interface HowOftenProps {
  * The pacing itself is the picks' (`picks.ts`). This only ever writes the
  * stop keys and, under Custom, the two pacing numbers.
  */
-export function HowOften({ frequency, priority, overlay, custom, onceEver, reopenEnabled, act = 'submit', onFrequency, onPriority }: HowOftenProps) {
+export function HowOften({ frequency, priority, overlay, custom, reopenEnabled, act = 'submit', onFrequency, onPriority }: HowOftenProps) {
   // The engine defaults both stops to on. Delete the key instead of storing true.
   const setSwitch = (field: 'stopAfterDismiss' | 'stopAfterConversion', on: boolean) => {
     const next = { ...frequency };
@@ -47,7 +45,7 @@ export function HowOften({ frequency, priority, overlay, custom, onceEver, reope
   const capped = frequency.maxImpressions !== undefined;
   const [before, after] = halves(
     /* translators: %s: a number of times, shown as a field. */
-    __('after it has shown %s times in total', 'wconvert'));
+    _n('after it has shown %s time in total', 'after it has shown %s times in total', frequency.maxImpressions ?? 3, 'wconvert'));
 
   return <div className="wconvert-schedule-settings">
     {custom && <div className="wconvert-schedule-fields">
@@ -72,9 +70,9 @@ export function HowOften({ frequency, priority, overlay, custom, onceEver, reope
         <span>{__('after they close it', 'wconvert')}</span>
       </label>
       <div className="wconvert-display-setting">
-        <input type="checkbox" id="wconvert-frequency-capped" checked={capped} disabled={onceEver}
+        <input type="checkbox" id="wconvert-frequency-capped" checked={capped}
           onChange={event => { const next = { ...frequency }; if (event.target.checked) next.maxImpressions = 3; else delete next.maxImpressions; onFrequency(next); }} />
-        <label htmlFor="wconvert-frequency-capped">{before}<TotalField value={frequency.maxImpressions} disabled={!capped || onceEver} onChange={count => setCount('maxImpressions', count)} />{after}</label>
+        <label htmlFor="wconvert-frequency-capped">{before}<TotalField value={frequency.maxImpressions} disabled={!capped} onChange={count => setCount('maxImpressions', count)} />{after}</label>
       </div>
     </div>
     {frequency.maxPerSession !== undefined && frequency.stopAfterDismiss !== false && <p className="wconvert-display-hint">{__('Closing it stops it for good, not just for this visit.', 'wconvert')}</p>}

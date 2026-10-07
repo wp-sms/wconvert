@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { __, sprintf } from '@wordpress/i18n';
+import { __, _n, sprintf } from '@wordpress/i18n';
 import type { Opening } from '@loader/display-rules';
 import type { RuleType } from '../api';
 import { DisclosureCard } from './DisclosureCard';
@@ -20,8 +20,9 @@ export function OpeningEditor({ value, types, onChange }: { value: Opening; type
     </fieldset>
     {value.mode !== 'immediate' && <GroupEditor group={{ match: value.mode === 'automatic' ? value.match : 'any', rules: value.rules }} types={offered} offset={60} operator={value.mode === 'automatic'} onChange={group => onChange(value.mode === 'click' ? { ...value, rules: group.rules } : { ...value, match: group.match, rules: group.rules })} />}
     {value.mode === 'automatic' && <DisclosureCard title={__('Minimum time on the page', 'wconvert')} open={!!value.minimum_seconds}
-      /* translators: %d: a number of seconds. */
-      current={value.minimum_seconds ? sprintf(__('Not before %d seconds', 'wconvert'), value.minimum_seconds) : __('None', 'wconvert')}>
+      current={value.minimum_seconds ? sprintf(
+        /* translators: %d: a number of seconds. */
+        _n('Not before %d second', 'Not before %d seconds', value.minimum_seconds, 'wconvert'), value.minimum_seconds) : __('None', 'wconvert')}>
       <label className="wconvert-display-inline-field">{__('Never open before', 'wconvert')}
         <input type="number" min={0} max={3600} value={value.minimum_seconds ?? 0} onChange={event => onChange({ ...value, minimum_seconds: Number(event.target.value) })} />
         {__('seconds on the page', 'wconvert')}</label>

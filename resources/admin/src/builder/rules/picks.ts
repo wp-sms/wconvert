@@ -1,7 +1,8 @@
 import { __, _n, sprintf } from '@wordpress/i18n';
 import type { Audience, DisplayPlan, Opening, RuleGroup } from '@loader/display-rules';
 import { isFreeInstall, renderingFor, type Availability } from '../../goals/availability';
-import { emptyGroup, freshRule, incompletePlan } from './plan';
+import { emptyGroup, everyType, freshRule, incompletePlan } from './plan';
+import { NUMBER_BOUNDS } from './validation';
 import type { DisplayRulesValue } from './summaries';
 import type { Frequency, Rule, RuleVocabulary } from '../api';
 
@@ -43,6 +44,8 @@ export interface PickParam {
   readonly min?: number;
   readonly max?: number;
   readonly default: number | string;
+  /** Only whole numbers are valid. */
+  readonly whole?: boolean;
   /** Out of range is never written: nothing downstream would flag it. */
   readonly strict?: boolean;
   /** The inline control's accessible name. */
@@ -53,8 +56,8 @@ export interface PickParam {
 
 export interface Pick {
   readonly id: string;
-  /** The chip's words, with `%s` where the inline control sits. */
-  readonly template: () => string;
+  /** The chip's words, with `%s` where the inline control sits — in the plural form `n` takes. */
+  readonly template: (n?: number) => string;
   /** The chip's words with the stored value filled in — the section's answer. */
   readonly label: (value: DisplayRulesValue) => string;
   /** Its phrase in the summary sentence: lowercase, with its own preposition. Absent where the sentence reads the rules instead. */
@@ -111,7 +114,9 @@ const fill = (template: string, value: number | string | undefined): string => h
 // WHERE DOES IT SHOW?
 // ============================================================================
 
-const pageCount = (count: number): string => sprintf(_n('%d page', '%d pages', count, 'wconvert'), count);
+const pageCount = (count: number): string => sprintf(
+  /* translators: %d: a number of pages. */
+  _n('%d page', '%d pages', count, 'wconvert'), count);
 const except = (value: DisplayRulesValue, phrase: string): string => {
   const excluded = value.targeting.exclude?.length ?? 0;
   /* translators: 1: where it shows, e.g. “on every page”. 2: a count of pages, e.g. “2 pages”. */
@@ -173,20 +178,22 @@ function whoPicks(): readonly Pick[] {
 // WHEN DOES IT OPEN?
 // ============================================================================
 
-const seconds = (label: () => string, fallback: number): Omit<PickParam, 'read'> => ({ key: 'seconds', kind: 'number', min: 1, max: 3600, default: fallback, label });
+const seconds = (label: () => string, fallback: number): Omit<PickParam, 'read'> => ({ key: 'seconds', kind: 'number', ...NUMBER_BOUNDS.seconds, default: fallback, label });
 
 function whenPicks(): readonly Pick[] {
   const readOf = (type: string, key: string) => (value: DisplayRulesValue) => automaticWith(value, [type])?.[0]?.[key] as number | undefined;
   const after = { ...seconds(() => __('Seconds before it opens', 'wconvert'), 15), read: readOf('time_on_page', 'seconds') };
-  const scroll: PickParam = { key: 'percent', kind: 'number', min: 1, max: 100, default: 50, label: () => __('Percent of the page', 'wconvert'), read: readOf('scroll_depth', 'percent') };
+  const scroll: PickParam = { key: 'percent', kind: 'number', ...NUMBER_BOUNDS.percent, default: 50, label: () => __('Percent of the page', 'wconvert'), read: readOf('scroll_depth', 'percent') };
   const pause = { ...seconds(() => __('Seconds without activity', 'wconvert'), 30), read: readOf('inactivity', 'seconds') };
   const clickRule = (value: DisplayRulesValue): Rule | undefined => {
     const opening = value.display_rules?.opening;
     return opening?.mode === 'click' && opening.rules.length === 1 && opening.rules[0].type === 'click_element' ? opening.rules[0] as Rule : undefined;
   };
   const click: PickParam = { key: 'selector', kind: 'selector', default: '', label: () => __('CSS selector of the button or link', 'wconvert'), read: value => clickRule(value)?.selector as string | undefined };
-  const numbered = (id: string, type: string, param: PickParam, template: () => string, fragment: () => string): Pick => ({
-    id, types: [type], param, template, label: value => fill(template(), param.read(value)), fragment: value => fill(fragment(), param.read(value)),
+  const count = (param: PickParam, value: DisplayRulesValue): number => Number(param.read(value) ?? param.default);
+  const numbered = (id: string, type: string, param: PickParam, template: (n: number) => string, fragment: (n: number) => string): Pick => ({
+    id, types: [type], param, template: n => template(n ?? Number(param.default)),
+    label: value => fill(template(count(param, value)), param.read(value)), fragment: value => fill(fragment(count(param, value)), param.read(value)),
     matches: value => automaticWith(value, [type]) !== undefined,
     // Editing the number keeps the rule, and its id; arriving from another pick writes a fresh one.
     apply: (value, n) => {
@@ -205,19 +212,32 @@ function whenPicks(): readonly Pick[] {
     { id: 'immediate', types: ['page_load'], template: () => __('Right away', 'wconvert'), label: () => __('Right away', 'wconvert'), fragment: () => __('right away', 'wconvert'),
       matches: value => value.display_rules?.opening.mode === 'immediate',
       apply: value => withOpening(value, { mode: 'immediate' }) },
-    /* translators: %s: a number of seconds. */
-    numbered('after', 'time_on_page', after, () => __('After %s seconds', 'wconvert'), () => __('after %s seconds', 'wconvert')),
-    /* translators: %s: a percentage of the page. */
-    numbered('scrolled', 'scroll_depth', scroll, () => __('Scrolled %s%% down', 'wconvert'), () => __('once they scroll %s%% down', 'wconvert')),
-    /* translators: %s: a number of seconds. */
-    numbered('pause', 'inactivity', pause, () => __('When they pause for %s s', 'wconvert'), () => __('when they pause for %s seconds', 'wconvert')),
+    numbered('after', 'time_on_page', after,
+      /* translators: %s: a number of seconds, shown as a field. */
+      n => _n('After %s second', 'After %s seconds', n, 'wconvert'),
+      /* translators: %s: a number of seconds. */
+      n => _n('after %s second', 'after %s seconds', n, 'wconvert')),
+    numbered('scrolled', 'scroll_depth', scroll,
+      /* translators: %s: a percentage of the page, shown as a field. Write %% for a literal percent sign. */
+      () => __('Scrolled %s%% down', 'wconvert'),
+      /* translators: %s: a percentage of the page. Write %% for a literal percent sign. */
+      () => __('once they scroll %s%% down', 'wconvert')),
+    numbered('pause', 'inactivity', pause,
+      /* translators: %s: a number of seconds, shown as a field; “s” abbreviates seconds. */
+      () => __('When they pause for %s s', 'wconvert'),
+      /* translators: %s: a number of seconds. */
+      n => _n('when they pause for %s second', 'when they pause for %s seconds', n, 'wconvert')),
     gesture('leave', ['exit_intent'], () => __('When they try to leave', 'wconvert'), () => __('when they try to leave', 'wconvert')),
     gesture('leave-or-scroll-up', ['exit_intent', 'scroll_up'], () => __('Leaving or scrolling back up', 'wconvert'), () => __('when they leave or scroll back up', 'wconvert')),
     { id: 'click', types: ['click_element'], param: click,
-      /* translators: %s: a CSS selector. */
+      /* translators: %s: a CSS selector, shown as a field. */
       template: () => __('When they click %s', 'wconvert'),
-      label: value => clickRule(value)?.selector ? fill(__('When they click %s', 'wconvert'), click.read(value)) : __('When they click a button', 'wconvert'),
-      fragment: value => clickRule(value)?.selector ? fill(__('when they click %s', 'wconvert'), click.read(value)) : __('when they click a button', 'wconvert'),
+      label: value => clickRule(value)?.selector
+        /* translators: %s: a CSS selector, e.g. “.offer-button”. */
+        ? fill(__('When they click %s', 'wconvert'), click.read(value)) : __('When they click a button', 'wconvert'),
+      fragment: value => clickRule(value)?.selector
+        /* translators: %s: a CSS selector, e.g. “.offer-button”. */
+        ? fill(__('when they click %s', 'wconvert'), click.read(value)) : __('when they click a button', 'wconvert'),
       matches: value => clickRule(value) !== undefined,
       apply: (value, n) => {
         const held = clickRule(value);
@@ -246,25 +266,29 @@ function paced(value: DisplayRulesValue, set: Partial<Frequency>, dropOnce: bool
 }
 
 function howOftenPicks(): readonly Pick[] {
-  const f = (value: DisplayRulesValue) => value.frequency;
-  const onceEver = (value: DisplayRulesValue) => f(value).maxImpressions === 1 && f(value).maxPerSession === undefined && f(value).cooldownDays === undefined;
-  const days: PickParam = { key: 'cooldownDays', kind: 'number', min: 1, max: 3650, default: 7, strict: true, label: () => __('Days between showings', 'wconvert'), read: value => f(value).cooldownDays };
-  /* translators: %s: a number of days. */
-  const daysTemplate = () => __('Once every %s days', 'wconvert');
+  const pacing = (value: DisplayRulesValue) => value.frequency;
+  const onceEver = (value: DisplayRulesValue) => pacing(value).maxImpressions === 1 && pacing(value).maxPerSession === undefined && pacing(value).cooldownDays === undefined;
+  const days: PickParam = { key: 'cooldownDays', kind: 'number', min: 1, max: 3650, whole: true, default: 7, strict: true, label: () => __('Days between showings', 'wconvert'), read: value => pacing(value).cooldownDays };
+  const dayCount = (value: DisplayRulesValue) => pacing(value).cooldownDays ?? 7;
 
   return [
     { id: 'session', types: [], template: () => __('Once per visit', 'wconvert'), label: () => __('Once per visit', 'wconvert'), fragment: () => __('once per visit', 'wconvert'),
-      matches: value => f(value).maxPerSession === 1 && f(value).cooldownDays === undefined,
+      matches: value => pacing(value).maxPerSession === 1 && pacing(value).cooldownDays === undefined,
       apply: value => paced(value, { maxPerSession: 1 }, onceEver(value)) },
-    { id: 'days', types: [], param: days, template: daysTemplate, label: value => fill(daysTemplate(), days.read(value)),
-      fragment: value => fill(__('at most once every %s days', 'wconvert'), days.read(value)),
-      matches: value => f(value).cooldownDays !== undefined && f(value).maxPerSession === undefined,
+    { id: 'days', types: [], param: days,
+      /* translators: %s: a number of days, shown as a field. */
+      template: n => _n('Once every %s day', 'Once every %s days', n ?? 7, 'wconvert'),
+      /* translators: %s: a number of days. */
+      label: value => fill(_n('Once every %s day', 'Once every %s days', dayCount(value), 'wconvert'), days.read(value)),
+      /* translators: %s: a number of days. */
+      fragment: value => fill(_n('at most once every %s day', 'at most once every %s days', dayCount(value), 'wconvert'), days.read(value)),
+      matches: value => pacing(value).cooldownDays !== undefined && pacing(value).maxPerSession === undefined,
       apply: (value, n) => paced(value, { cooldownDays: numberOr(n, 7) }, onceEver(value)) },
     { id: 'once', types: [], template: () => __('Only once ever', 'wconvert'), label: () => __('Only once ever', 'wconvert'), fragment: () => __('only once ever', 'wconvert'),
       matches: onceEver,
       apply: value => paced(value, { maxImpressions: 1 }, false) },
     { id: 'every', types: [], template: () => __('Every page they see', 'wconvert'), label: () => __('Every page they see', 'wconvert'), fragment: () => __('on every page they see', 'wconvert'),
-      matches: value => f(value).maxPerSession === undefined && f(value).cooldownDays === undefined && f(value).maxImpressions !== 1,
+      matches: value => pacing(value).maxPerSession === undefined && pacing(value).cooldownDays === undefined && pacing(value).maxImpressions !== 1,
       // Its own shape forbids a total of one, so it drops that too.
       apply: value => paced(value, {}, true) },
     { id: 'custom', open: true, types: [], template: () => __('Custom…', 'wconvert'), label: () => __('Custom', 'wconvert'),
@@ -319,7 +343,7 @@ const RANK: Record<Availability, number> = { ready: 0, locked: 1, unavailable: 2
  * offered as "Needs WooCommerce" to a site that could not run it with it.
  */
 export function availabilityOf(pick: Pick, vocabulary: RuleVocabulary): PickAvailability {
-  const all = [...vocabulary.targeting, ...vocabulary.triggers, ...vocabulary.conditions];
+  const all = everyType(vocabulary);
   const free = isFreeInstall();
   let least: PickAvailability = { availability: 'ready', requires_label: null };
   for (const name of pick.types) {

@@ -117,7 +117,7 @@ describe('When', () => {
     const field = screen.getByRole('spinbutton', { name: 'Seconds before it opens' });
     await userEvent.clear(field);
     await userEvent.type(field, '5000');
-    expect(screen.getByRole('alert')).toHaveTextContent('Enter a whole number from 1 to 3600.');
+    expect(screen.getByRole('alert')).toHaveTextContent('Enter a number from 1 to 3600.');
     expect(within(menu()).getByRole('button', { name: /When does it open/ })).toHaveTextContent('Needs attention');
   });
 

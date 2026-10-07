@@ -1,7 +1,7 @@
-import { __, sprintf } from '@wordpress/i18n';
+import { __, _n, sprintf } from '@wordpress/i18n';
 import type { ConvertingAct } from '../structure/catalogue';
 import type { DisplayPlan } from '@loader/display-rules';
-import { groupSummary } from './plan';
+import { everyType, groupSummary } from './plan';
 import { datesSummary, howOftenSummary, whereSummary, type Summary } from './sentence';
 import { derive, type SectionId } from './picks';
 import type { Frequency, RuleVocabulary, Schedule, Targeting } from '../api';
@@ -37,11 +37,11 @@ export interface DisplayRulesValue {
   readonly priority: number;
 }
 
-/** One axis, answered, with the question it answers. */
+/** One section, answered, with the question it answers. */
 export interface AxisSummary extends Summary {
   /** A stable key — a control id, and never a translated string. */
   readonly id: SectionId;
-  /** Which question this answers — *"Where"*, *"When"*. */
+  /** The question this answers — *"Where does it show?"*. */
   readonly eyebrow: string;
 }
 
@@ -75,7 +75,7 @@ export function summarise(
    * Every type on every axis, because a summary reads a rule by its DECLARED
    * params and a Targeting rule can carry a preset like any other.
    */
-  const all = [...vocabulary.targeting, ...vocabulary.triggers, ...vocabulary.conditions];
+  const all = everyType(vocabulary);
   const asked = questions();
   const answer = (id: SectionId, custom: Summary): AxisSummary => {
     const pick = derive(id, value, vocabulary);
@@ -89,7 +89,11 @@ export function summarise(
     : opening.mode === 'immediate' ? { text: __('Right away', 'wconvert'), attention: false }
       : groupSummary({ match: opening.mode === 'click' ? 'any' : opening.match, rules: opening.rules }, all);
   if (opening?.mode === 'automatic' && (!Number.isFinite(opening.minimum_seconds ?? 0) || (opening.minimum_seconds ?? 0) < 0 || (opening.minimum_seconds ?? 0) > 3600)) when.attention = true;
-  if (opening?.mode === 'automatic' && opening.minimum_seconds) when.text += ` · ${sprintf(__('not before %d seconds', 'wconvert'), opening.minimum_seconds)}`;
+  if (opening?.mode === 'automatic' && opening.minimum_seconds) {
+    when.text += ` · ${sprintf(
+      /* translators: %d: a number of seconds. */
+      _n('not before %d second', 'not before %d seconds', opening.minimum_seconds, 'wconvert'), opening.minimum_seconds)}`;
+  }
   const where = targeting.mode === 'selected' && !targeting.include?.length
     ? { text: __('Choose at least one page', 'wconvert'), attention: true }
     : whereSummary(targeting);

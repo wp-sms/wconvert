@@ -134,7 +134,7 @@ export function DisplayRules({ vocabulary, value, overlay, act = 'submit', onCha
         {active === 'who' && plan && shown.open && <AudienceEditor value={plan.audience} types={audienceTypes} onChange={audience => update({ ...plan, audience })} />}
         {active === 'when' && plan && shown.open && <OpeningEditor value={plan.opening} types={vocabulary.triggers} onChange={opening => update({ ...plan, opening })} />}
         {active === 'how-often' && <HowOften act={act} frequency={value.frequency} priority={value.priority} overlay={overlay} reopenEnabled={reopenEnabled}
-          custom={shown.open === true} onceEver={shown.id === 'once'} onFrequency={frequency => change({ frequency })} onPriority={priority => change({ priority })} />}
+          custom={shown.open === true} onFrequency={frequency => change({ frequency })} onPriority={priority => change({ priority })} />}
         {active === 'dates' && shown.open && <Dates schedule={value.schedule} onSchedule={schedule => change({ schedule })} />}
       </section>
     </div>

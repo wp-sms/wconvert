@@ -3,6 +3,7 @@ import { Description } from '../../shell/Description';
 import { Input } from '../../components/ui/input';
 import { Label } from '../../components/ui/label';
 import { adminSettings } from '../../settings';
+import { endsBeforeStart } from './sentence';
 import type { Schedule } from '../api';
 
 /**
@@ -18,7 +19,7 @@ export function Dates({ schedule, onSchedule }: { readonly schedule: Schedule; r
     onSchedule(next);
   };
   const timezone = adminSettings()?.timezone;
-  const invalidWindow = !!schedule.starts_at && !!schedule.ends_at && schedule.ends_at <= schedule.starts_at;
+  const invalidWindow = endsBeforeStart(schedule);
 
   return <div className="wconvert-display-dates">
     <Description>{timezone

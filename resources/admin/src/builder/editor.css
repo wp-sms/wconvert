@@ -1661,15 +1661,15 @@ body .wconvert-rule-picker__unavailable {
 #wconvert-admin .wconvert-quick-pick:has(> input:checked) { background: var(--accent); border-color: var(--primary); box-shadow: inset 0 0 0 1px var(--primary); font-weight: 500; }
 #wconvert-admin .wconvert-quick-pick:has(> input:focus-visible) { outline: 2px solid var(--ring); outline-offset: 2px; }
 #wconvert-admin .wconvert-quick-pick[data-open] { border-style: dashed; }
-#wconvert-admin .wconvert-quick-pick[aria-disabled='true'] { cursor: not-allowed; color: var(--muted-foreground); border-style: dashed; border-color: var(--border); background: var(--surface); }
+#wconvert-admin .wconvert-quick-pick[data-refused] { cursor: not-allowed; color: var(--muted-foreground); border-style: dashed; border-color: var(--border); background: var(--surface); }
 #wconvert-admin .wconvert-quick-pick [data-slot='badge'] { flex: none; }
-#wconvert-admin .wconvert-quick-pick :where(input[type='number'], input[type='text']) { block-size: 1.75rem; min-block-size: 0; margin: 0; padding: 0 4px; border: 1px solid var(--input); border-radius: 4px; background: var(--card); font-weight: 600; }
-/* Two classes, so these outrank the admin's generic (1,1,1) control height. */
+/* An inline field inside a chip or a stop row. Two classes, so it outranks the
+   admin's generic (1,1,1) control height rather than competing with it. */
 #wconvert-admin .wconvert-quick-pick :is(.wconvert-quick-pick__number, .wconvert-quick-pick__selector),
-#wconvert-admin .wconvert-display-setting .wconvert-display-setting__number { block-size: 1.75rem; min-block-size: 0; line-height: normal; }
+#wconvert-admin .wconvert-display-setting .wconvert-display-setting__number { block-size: 1.75rem; min-block-size: 0; margin: 0; padding: 0 4px; border: 1px solid var(--input); border-radius: 4px; background: var(--card); font-weight: 600; line-height: normal; }
 #wconvert-admin .wconvert-quick-pick__number { inline-size: 4.25em; text-align: center; font-variant-numeric: tabular-nums; }
 #wconvert-admin .wconvert-quick-pick__selector { inline-size: 10em; max-inline-size: 100%; font-family: ui-monospace, 'SF Mono', Menlo, monospace; font-size: var(--text-note); }
-#wconvert-admin .wconvert-quick-pick :where([aria-invalid='true']) { border-color: var(--destructive); }
+#wconvert-admin .wconvert-quick-pick [aria-invalid='true'] { border-color: var(--destructive); }
 #wconvert-admin .wconvert-quick-picks__reason:empty { display: none; }
 #wconvert-admin :is(.wconvert-quick-picks__reason, .wconvert-quick-picks__hint) { margin: 0; font-size: var(--text-note); color: var(--muted-foreground); }
 #wconvert-admin .wconvert-quick-picks__error { margin: 0; font-size: var(--text-note); color: var(--destructive); }
@@ -1681,7 +1681,7 @@ body .wconvert-rule-picker__unavailable {
 #wconvert-admin .wconvert-display-setting + .wconvert-display-setting { border-block-start: 1px solid var(--border); }
 #wconvert-admin .wconvert-display-setting > :where(input[type='checkbox']) { margin: 0; }
 #wconvert-admin .wconvert-display-setting > :where(label) { cursor: pointer; }
-#wconvert-admin .wconvert-display-setting__number { inline-size: 4.25em; block-size: 1.75rem; min-block-size: 0; margin-inline: 4px; padding: 0 4px; border: 1px solid var(--input); border-radius: 4px; text-align: center; font-variant-numeric: tabular-nums; font-weight: 600; }
+#wconvert-admin .wconvert-display-setting .wconvert-display-setting__number { inline-size: 4.25em; margin-inline: 4px; text-align: center; font-variant-numeric: tabular-nums; }
 
 /* A disclosure card: the whole summary row opens it; one 16px chevron turns (GUIDELINES §21). */
 #wconvert-admin .wconvert-display-disclosure-card { border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--card); }

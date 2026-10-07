@@ -54,13 +54,14 @@ Sources: [GoalScreen](../../resources/admin/src/goals/GoalScreen.tsx),
 
 The sections are **Pages**, **Audience**, **When it appears**, and **Schedule &
 frequency**.
-
-> _Amended by [ADR 0129](0129-display-rules-plain-questions-and-quick-picks.md): this originally read "Pages, Audience, When it appears, and Schedule & frequency". The sections are five questions instead — Where does it show?, Who sees it?, When does it open?, How often? and Dates._ Labels sit above full-width summaries, keeping long explanations
+Labels sit above full-width summaries, keeping long explanations
 readable. These are presentation groups over the existing model. Page
 includes are ORed, exclusions veto, and an empty include set means everywhere.
 Logged-in status and selected roles remain separate visitor predicates. All
 Conditions must hold when any Trigger fires. A missing Trigger is not an implied
 immediate trigger, and adding a second Condition does not create an OR group.
+
+> _Amended by [ADR 0129](0129-display-rules-plain-questions-and-quick-picks.md): this originally read "Pages, Audience, When it appears, and Schedule & frequency". The sections are five questions instead — Where does it show?, Who sees it?, When does it open?, How often? and Dates. The menu shows each answer under its question, and Readiness lists five rather than four._
 
 Schedule and repeat-visit controls have separate headings. Dates name the actual
 WordPress site timezone, including a fixed offset when that is the site setting.

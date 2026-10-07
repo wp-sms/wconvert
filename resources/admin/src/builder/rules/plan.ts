@@ -1,11 +1,13 @@
 import { groupProblems } from './validation';
 import type { DisplayPlan, RuleGroup } from '@loader/display-rules';
-import type { Rule, RuleType } from '../api';
+import type { Rule, RuleType, RuleVocabulary } from '../api';
 import { phraseOf } from './sentence';
 import { __ } from '@wordpress/i18n';
 
 import { newAuthoringId as newRuleId } from '../../authoringId';
 export { newRuleId };
+/** Every rule type on every axis — what reads a stored rule by its declared params. */
+export const everyType = (vocabulary: RuleVocabulary): RuleType[] => [...vocabulary.targeting, ...vocabulary.triggers, ...vocabulary.conditions];
 export const emptyGroup = (): RuleGroup => ({ id: newRuleId(), match: 'all', rules: [] });
 export const freshRule = (rule: Rule): Rule => ({ ...rule, id: newRuleId() });
 export const incompletePlan = (): DisplayPlan => ({ audience: { mode: 'everyone' }, opening: { mode: 'automatic', match: 'all', rules: [] } });

@@ -46,11 +46,11 @@ export function QuickPicks({ section, question, value, vocabulary, shown, onChoo
       {picks.map(({ pick, availability, rendering }) => {
         const chosen = shown.id === pick.id;
         const offered = rendering === 'offer';
-        return <label key={pick.id} className="wconvert-quick-pick" data-open={pick.open || undefined} aria-disabled={offered ? undefined : true}>
+        return <label key={pick.id} className="wconvert-quick-pick" data-open={pick.open || undefined} data-refused={offered ? undefined : true}>
           <input type="radio" className="sr-only" name={name} value={pick.id} checked={chosen} aria-disabled={offered ? undefined : true}
             aria-describedby={offered ? undefined : reasonId}
             onChange={() => { if (offered) { setRefused(null); onChoose(pick); } else setRefused(pick.id); }} />
-          {chosen && pick.param ? <Inline template={pick.template()} param={pick.param} value={value} onChange={onParam} onError={setError} errorId={errorId} />
+          {chosen && pick.param ? <Inline template={pick.template(Number(pick.param.read(value) ?? pick.param.default))} param={pick.param} value={value} onChange={onParam} onError={setError} errorId={errorId} />
             : <span>{wordsOf(pick, shown, value)}</span>}
           {rendering === 'upsell' && <Badge variant="secondary"><Lock aria-hidden="true" />{tierName(availability.tier)}</Badge>}
           {rendering === 'explain' && <Badge variant="warning">{sprintf(
@@ -74,8 +74,8 @@ export function QuickPicks({ section, question, value, vocabulary, shown, onChoo
 function wordsOf(pick: Pick, shown: Pick, value: DisplayRulesValue): string {
   if (pick.param === undefined) return pick.template();
   if (pick.param.kind !== 'number') return pick.label(value);
-  const carried = shown.param?.key === pick.param.key ? shown.param.read(value) : undefined;
-  return halves(pick.template()).join(String(carried ?? pick.param.default));
+  const n = (shown.param?.key === pick.param.key ? shown.param.read(value) : undefined) ?? pick.param.default;
+  return halves(pick.template(Number(n))).join(String(n));
 }
 
 /**
@@ -98,9 +98,12 @@ function Inline({ template, param, value, onChange, onError, errorId }: {
   const number = Number(draft);
   const error = param.kind === 'selector'
     ? (draft.trim() !== '' && !portableSelector(draft) ? __('Use an ID, class, tag or attribute selector, such as #signup or .offer-button.', 'wconvert') : null)
-    : draft === '' || !Number.isInteger(number) || number < (param.min ?? -Infinity) || number > (param.max ?? Infinity)
-      /* translators: 1: the lowest number allowed. 2: the highest. */
-      ? sprintf(__('Enter a whole number from %1$d to %2$d.', 'wconvert'), param.min ?? 0, param.max ?? 0) : null;
+    : draft === '' || !inRange(param, number)
+      ? sprintf(param.whole
+        /* translators: 1: the lowest number allowed. 2: the highest. */
+        ? __('Enter a whole number from %1$d to %2$d.', 'wconvert')
+        /* translators: 1: the lowest number allowed. 2: the highest. */
+        : __('Enter a number from %1$d to %2$d.', 'wconvert'), param.min ?? 0, param.max ?? 0) : null;
   useEffect(() => { onError(error); }, [error, onError]);
   useEffect(() => () => onError(null), [onError]);
 
@@ -112,8 +115,7 @@ function Inline({ template, param, value, onChange, onError, errorId }: {
         onChange={event => {
           setDraft(event.target.value);
           const next = Number(event.target.value);
-          const inRange = Number.isInteger(next) && next >= (param.min ?? -Infinity) && next <= (param.max ?? Infinity);
-          if (event.target.value !== '' && Number.isFinite(next) && (inRange || !param.strict)) onChange(next);
+          if (event.target.value !== '' && Number.isFinite(next) && (inRange(param, next) || !param.strict)) onChange(next);
         }} />
       : <input type="text" className="wconvert-quick-pick__selector" aria-label={param.label()} placeholder="#signup" value={draft} spellCheck={false}
         aria-invalid={error !== null || undefined} aria-describedby={error !== null ? errorId : undefined}
@@ -121,3 +123,7 @@ function Inline({ template, param, value, onChange, onError, errorId }: {
     <span>{after}</span>
   </>;
 }
+
+/** The same bounds the section summary and Readiness hold the stored rule to. */
+const inRange = (param: PickParam, n: number): boolean =>
+  Number.isFinite(n) && (!param.whole || Number.isInteger(n)) && n >= (param.min ?? -Infinity) && n <= (param.max ?? Infinity);

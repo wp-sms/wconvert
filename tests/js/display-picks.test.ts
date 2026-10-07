@@ -223,3 +223,11 @@ it('keeps the rule and its id while the chosen pick’s number is edited', () =>
   expect(edited.mode === 'automatic' && original.mode === 'automatic' && edited.rules[0].id === original.rules[0].id).toBe(true);
   expect(edited).toMatchObject({ rules: [{ type: 'time_on_page', seconds: 40 }] });
 });
+
+it('words a chip in the plural its number takes', () => {
+  const after = picksIn('when').find(pick => pick.id === 'after')!;
+  expect(after.template(1)).toBe('After %s second');
+  expect(after.template(15)).toBe('After %s seconds');
+  const one = { ...base(), ...after.apply(base(), 1) };
+  expect(after.label(one)).toBe('After 1 second');
+});

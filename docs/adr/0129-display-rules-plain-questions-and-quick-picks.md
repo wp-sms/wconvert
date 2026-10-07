@@ -1,7 +1,7 @@
 # 0129: Display rules: plain questions and quick picks
 
 Date: 2026-10-07. Status: accepted.
-Amends [0104](0104-display-workspace-uses-bounded-groups-and-fresh-gestures.md)'s
+Amends [0026](0026-a-goal-the-site-cannot-serve-is-hidden.md)'s precedence for Quick picks on Free, [0104](0104-display-workspace-uses-bounded-groups-and-fresh-gestures.md)'s
 workspace and rule-set library, [0072](0072-setup-choices-state-their-effect-and-scope.md)'s
 section names and replacement review, [0086](0086-campaign-setups-explain-handoff-and-format.md)'s
 *Display rule sets*, [0054](0054-every-control-has-the-shape-of-its-value.md)'s
@@ -70,6 +70,13 @@ whichever pick is chosen. A pick's availability is the least available of the
 rule types it writes, with `unavailable` outranking `locked` (ADR 0026). On a
 lower tier a locked pick is drawn with a grey lock badge and refused with a
 reason; on Free it is not drawn (ADR 0116).
+
+**On a free install a paid pick is hidden even when a plugin is also
+missing.** ADR 0026 lets `unavailable` win, which would draw *Shoppers with
+items in their cart* on Free as "Needs WooCommerce" — a pick that would then
+disappear the moment WooCommerce was installed, because it is also locked.
+So for picks, on Free only, a paid rule type reads as `locked`. ADR 0026
+carries the note; rule rows keep its precedence.
 
 ## The client owns the picks; the server ships no library
 

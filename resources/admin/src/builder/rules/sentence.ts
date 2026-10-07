@@ -5,6 +5,7 @@ import { __, _n, _x, sprintf } from '@wordpress/i18n';
 import { fromRule } from '../presets';
 import { readable, readableHours } from '../../lib/wallTime';
 import { derive, type SectionId } from './picks';
+import { everyType } from './plan';
 import { summarise, type DisplayRulesValue } from './summaries';
 import type { Frequency, Rule, RuleParam, RuleType, RuleVocabulary, Schedule, Targeting } from '../api';
 
@@ -203,7 +204,8 @@ export function datesSummary(schedule: Schedule): Summary {
   return { text: windowClause(schedule) ?? __('Until you pause it', 'wconvert'), attention: hasFinished(schedule) };
 }
 
-const endsBeforeStart = (schedule: Schedule): boolean => !!schedule.starts_at && !!schedule.ends_at && schedule.ends_at <= schedule.starts_at;
+/** A window that ends before it starts, which would never run. */
+export const endsBeforeStart = (schedule: Schedule): boolean => !!schedule.starts_at && !!schedule.ends_at && schedule.ends_at <= schedule.starts_at;
 
 /**
  * The limits on how often it shows, each a clause — the part of the allowance
@@ -369,7 +371,7 @@ export function sentenceParts(
 ): SentenceParts {
   const sections = summarise(value, vocabulary, overlay, act);
   const attention = (id: SectionId) => sections.find(section => section.id === id)?.attention ?? false;
-  const all = [...vocabulary.targeting, ...vocabulary.triggers, ...vocabulary.conditions];
+  const all = everyType(vocabulary);
   const phrase = (id: SectionId, custom: () => string): SentencePart => {
     const pick = derive(id, value, vocabulary);
     return { section: id, text: pick.fragment?.(value) ?? custom(), attention: attention(id) };
@@ -407,12 +409,17 @@ export function sentenceParts(
     : hasFinished(value.schedule) && to !== null
       /* translators: %s: the date and time it stopped running. */
       ? { section: 'dates' as const, text: to, attention: true, frame: __('It stopped running on %s.', 'wconvert') }
-      : { section: 'dates' as const, attention: attention('dates'), frame: __('It runs %s.', 'wconvert'),
+      : { section: 'dates' as const, attention: attention('dates'),
+        /* translators: %s: when it runs, e.g. “from 27 Nov to 30 Nov”. */
+        frame: __('It runs %s.', 'wconvert'),
         text: from !== null && to !== null
           /* translators: 1: a date and time it starts. 2: a date and time it ends. */
           ? sprintf(__('from %1$s to %2$s', 'wconvert'), from, to)
-          /* translators: %s: a date and time. */
-          : from !== null ? sprintf(__('from %s', 'wconvert'), from) : sprintf(__('until %s', 'wconvert'), to ?? '') };
+          : from !== null
+            /* translators: %s: a date and time it starts. */
+            ? sprintf(__('from %s', 'wconvert'), from)
+            /* translators: %s: a date and time it ends. */
+            : sprintf(__('until %s', 'wconvert'), to ?? '') };
 
   return { where: phrase('where', () => ''), who, when, often, ...(dates ? { dates } : {}) };
 }
