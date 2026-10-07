@@ -207,3 +207,12 @@ describe('the picks against the vocabulary', () => {
     }
   });
 });
+
+it('keeps the rule and its id while the chosen pick’s number is edited', () => {
+  const after = picksIn('when').find(pick => pick.id === 'after')!;
+  const first = { ...base(), ...after.apply(base(), 15) };
+  const edited = after.apply(first, 40).display_rules!.opening;
+  const original = first.display_rules!.opening;
+  expect(edited.mode === 'automatic' && original.mode === 'automatic' && edited.rules[0].id === original.rules[0].id).toBe(true);
+  expect(edited).toMatchObject({ rules: [{ type: 'time_on_page', seconds: 40 }] });
+});

@@ -182,6 +182,8 @@ not there is worse than no instruction. The generalisation is that **naming the
 control is not enough either**: the line comes with a button that switches to
 the Rules tab, opens *How often* and focuses the field.
 
+> _Amended by [ADR 0129](0129-display-rules-plain-questions-and-quick-picks.md): this originally read "opens *How often*". The button opens *Dates* instead, on Between two dates, and focuses the end field._
+
 Two things this deliberately does not do:
 
 - **The preview keeps its fake deadline.** `Preview.tsx`'s

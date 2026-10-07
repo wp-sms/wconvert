@@ -617,7 +617,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
 
   const goToSchedule = () => {
     setTab('rules');
-    setRevealSection({ id: 'how-often', focus: 'wconvert-ends-at' });
+    setRevealSection({ id: 'dates', focus: 'wconvert-ends-at' });
   };
 
   const historyLabels = useMemo(() => draftHistoryLabels(past), [past]);
@@ -695,7 +695,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
   const goToInlinePlacement = () => {
     setTab('rules');
     setPreviewing(false);
-    setRevealSection({ id: 'placement', focus: 'wconvert-section-placement-trigger' });
+    setRevealSection({ id: 'placement', focus: 'wconvert-display-placement' });
   };
 
   const displayEditor = (compactPanel = false) => <DisplayRules compact={compactPanel} template={template} cartRequired={entryOfGoal?.cart_required}

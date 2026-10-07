@@ -1042,7 +1042,7 @@ final class OptinController implements RestController
         $triggers = \WConvert\Rules\DisplayPlan::compatibilityTriggers($config['display_rules'] ?? []);
         if (count($triggers) !== 1 || ($triggers[0]['type'] ?? null) !== 'page_load') {
             return new WP_Error('wconvert_inline_trigger',
-                __('Automatic inline placement requires only the page-load trigger. Change When it appears, or use manual placement.', 'wconvert'), ['status' => 400]);
+                __('Automatic inline placement needs “When does it open?” set to Right away. Change it, or use manual placement.', 'wconvert'), ['status' => 400]);
         }
         return null;
     }

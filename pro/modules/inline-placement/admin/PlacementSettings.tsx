@@ -68,7 +68,7 @@ export default function PlacementSettings({ optinId, published, config, vocabula
       <Input id={`${id}-priority`} type="number" min={0} max={100} value={Number(config.priority ?? 0)} onChange={(event) => onChange({ priority: Math.max(0, Math.min(100, Math.trunc(Number(event.target.value) || 0))) })} />
       <p>{__('One automatic Campaign per page. Higher priority wins; manual embeds take precedence.', 'wconvert')}</p>
       <p>{__('For page builders or custom layouts, use manual placement.', 'wconvert')}</p>
-      {!compatible && <p role="alert">{__('Automatic placement requires page load as its only trigger. Update When it appears in Display rules, or choose manual placement.', 'wconvert')}</p>}
+      {!compatible && <p role="alert">{__('Automatic placement needs “When does it open?” set to Right away in Display rules. Change it, or choose manual placement.', 'wconvert')}</p>}
     </>}
   </div>;
 }

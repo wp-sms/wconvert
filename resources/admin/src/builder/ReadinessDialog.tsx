@@ -140,7 +140,7 @@ export function ReadinessDialog({
       ? [{ said: __('Content lock requires an inline submission form and manual placement.', 'wconvert'), fix: onGoToPlacement }] : []),
     ...(!overlay && inlinePlacement != null && inlinePlacementLabel(inlinePlacement) === null
       ? [{ said: __('Choose a valid inline position and a whole paragraph number from 1 to 100.', 'wconvert'), fix: onGoToPlacement }] : []),
-    ...(inlineTriggerIssue ? [{ said: __('This placement requires page load as its only trigger. Change When it appears or use manual placement.', 'wconvert'), fix: () => onGoToRules('when') }] : []),
+    ...(inlineTriggerIssue ? [{ said: __('This placement needs “When does it open?” set to Right away. Change it, or use manual placement.', 'wconvert'), fix: () => onGoToRules('when') }] : []),
     ...(!outcome ? [{ said: __('Goal requirements could not be checked. Reload before publishing.', 'wconvert'), fix: onGoToDesign }] : []),
     ...(goalIssue ? [{ said: goalIssue, fix: template && convertingActOf(template.tree)[0] === outcome?.action ? onEditDesign : onGoToDesign }] : []),
     ...(handoffIssue ? [{ said: handoffIssue, fix: onGoToDestinations }] : []),

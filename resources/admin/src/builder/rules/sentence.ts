@@ -195,11 +195,15 @@ function windowClause(schedule: Schedule): string | null {
 /**
  * *When it runs*, as the Dates section's answer.
  *
- * A window that has closed carries `attention` — see {@link windowClause}.
+ * A window that has closed carries `attention` — see {@link windowClause} —
+ * and so does one that ends before it starts, which would never run at all.
  */
 export function datesSummary(schedule: Schedule): Summary {
+  if (endsBeforeStart(schedule)) return { text: __('End is before start', 'wconvert'), attention: true };
   return { text: windowClause(schedule) ?? __('Until you pause it', 'wconvert'), attention: hasFinished(schedule) };
 }
+
+const endsBeforeStart = (schedule: Schedule): boolean => !!schedule.starts_at && !!schedule.ends_at && schedule.ends_at <= schedule.starts_at;
 
 /**
  * The limits on how often it shows, each a clause — the part of the allowance

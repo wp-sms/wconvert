@@ -29,28 +29,28 @@ afterEach(() => {
 });
 
 describe('saved site-wide limits beside an Optin draft', () => {
-  it('waits for saved values instead of briefly claiming there are no limits', async () => {
+  it('says nothing while it loads, then names the saved limits', async () => {
     const pending = deferred<SiteAllowance>();
     request.mockReturnValue(pending.promise);
-    render(<SiteLimitsNote />);
-    expect(screen.getByRole('status')).toHaveTextContent('Checking saved site-wide limits…');
+    const view = render(<SiteLimitsNote />);
+    expect(view.container).toBeEmptyDOMElement();
     expect(screen.queryByText(/No site-wide limits/)).toBeNull();
     expect(screen.queryByText(/At most/)).toBeNull();
     await act(async () => { pending.resolve(SAVED); });
     const note = screen.getByRole('complementary', { name: 'Site-wide limits' });
     expect(note).toHaveTextContent('Stop after a dismissal · Stop after a conversion · At most 3 impressions · 2 days between Campaigns');
     expect(note).toHaveTextContent('A campaign cannot override these limits.');
-    expect(screen.getByRole('link', { name: 'Manage them on the Campaigns page' })).toHaveAttribute('href', '#optins');
+    expect(screen.getByRole('link', { name: 'Manage them in Settings' })).toHaveAttribute('href', '#settings?group=experience');
     expect(screen.queryByRole('status')).toBeNull();
     expect(screen.queryByRole('checkbox')).toBeNull();
     expect(screen.queryByRole('spinbutton')).toBeNull();
   });
 
-  it('states the saved absence of site limits without inventing the Optin’s own defaults', async () => {
-    render(<SiteLimitsNote />);
-    expect(await screen.findByText('No site-wide limits. Each Campaign uses its own display rules.')).toBeInTheDocument();
-    expect(screen.queryByText(/Stop after a dismissal/)).toBeNull();
-    expect(request).toHaveBeenCalledTimes(1);
+  it('draws nothing when the site sets no limit', async () => {
+    const view = render(<SiteLimitsNote />);
+    await waitFor(() => expect(request).toHaveBeenCalledTimes(1));
+    await act(async () => {});
+    expect(view.container).toBeEmptyDOMElement();
   });
 
   it('shows a failed read distinctly and lets Retry replace it with saved values', async () => {
@@ -61,7 +61,6 @@ describe('saved site-wide limits beside an Optin draft', () => {
     expect(screen.queryByText(/No site-wide limits/)).toBeNull();
     await userEvent.click(screen.getByRole('button', { name: 'Retry checking limits' }));
     expect(screen.queryByRole('alert')).toBeNull();
-    expect(screen.getByRole('status')).toHaveTextContent('Checking saved site-wide limits…');
     expect(request).toHaveBeenCalledTimes(2);
     await act(async () => { retry.resolve(SAVED); });
     expect(screen.getByRole('complementary')).toHaveTextContent('At most 3 impressions');

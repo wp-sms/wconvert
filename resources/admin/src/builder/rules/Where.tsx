@@ -29,8 +29,8 @@ import type { Rule, RuleType, Targeting } from '../api';
  * only the server can answer `logged_in`, and a membership level is a fact
  * another plugin holds — and read whole the axis is
  * `page-set AND logged_in AND roles` (ADR 0005). What moved is the CONTROLS,
- * to the section a merchant looks in for a question about who sees the Optin.
- * {@see Who} carries the note.
+ * to the section a merchant looks in for a question about who sees the Optin
+ * — *Who sees it?*, where the quick picks and Custom… write them as rules.
  *
  * This was `TargetingEditor`, whole; what it lost is its own `<h3>`, because
  * the section above it is the heading now.
@@ -39,9 +39,11 @@ export interface WhereProps {
   readonly types: readonly RuleType[];
   readonly targeting: Targeting;
   readonly onChange: (targeting: Targeting) => void;
+  /** Selected pages is chosen: the include list is the merchant's to edit. */
+  readonly showInclude: boolean;
 }
 
-export function Where({ types, targeting, onChange }: WhereProps) {
+export function Where({ types, targeting, onChange, showInclude }: WhereProps) {
   // The five page rules, and only those. The visitor predicates are on this
   // axis only because the client cannot read WordPress's HttpOnly auth cookie,
   // and neither of them is a page set — which is why they are fields rather
@@ -56,13 +58,7 @@ export function Where({ types, targeting, onChange }: WhereProps) {
 
   return (
     <>
-      <fieldset className="wconvert-display-choices"><legend>{__('Page selection', 'wconvert')}</legend>
-        <label><input type="radio" name="display-pages" checked={targeting.mode !== 'selected' && !include.length}
-          onChange={() => onChange({ ...targeting, mode: 'entire', include: [] })} />{__('Entire site', 'wconvert')}</label>
-        <label><input type="radio" name="display-pages" checked={targeting.mode === 'selected' || !!include.length}
-          onChange={() => onChange({ ...targeting, mode: 'selected' })} />{__('Selected pages', 'wconvert')}</label>
-      </fieldset>
-      {(targeting.mode === 'selected' || include.length > 0) && <RuleList
+      {showInclude && <RuleList
         list="include"
         heading={__('Show it on', 'wconvert')}
         empty={__('Choose at least one page before publishing.', 'wconvert')}

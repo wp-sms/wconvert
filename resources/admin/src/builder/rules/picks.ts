@@ -43,6 +43,8 @@ export interface PickParam {
   readonly min?: number;
   readonly max?: number;
   readonly default: number | string;
+  /** Out of range is never written: nothing downstream would flag it. */
+  readonly strict?: boolean;
   /** The inline control's accessible name. */
   readonly label: () => string;
   /** The value this pick's shape currently holds. */
@@ -186,7 +188,12 @@ function whenPicks(): readonly Pick[] {
   const numbered = (id: string, type: string, param: PickParam, template: () => string, fragment: () => string): Pick => ({
     id, types: [type], param, template, label: value => fill(template(), param.read(value)), fragment: value => fill(fragment(), param.read(value)),
     matches: value => automaticWith(value, [type]) !== undefined,
-    apply: (value, n) => withOpening(value, automatic([{ type, [param.key]: numberOr(n, param.default as number) }])),
+    // Editing the number keeps the rule, and its id; arriving from another pick writes a fresh one.
+    apply: (value, n) => {
+      const held = automaticWith(value, [type])?.[0];
+      const next = numberOr(n, param.default as number);
+      return withOpening(value, held ? { mode: 'automatic', match: 'any', minimum_seconds: 0, rules: [{ ...held, [param.key]: next }] } : automatic([{ type, [param.key]: next }]));
+    },
   });
   const gesture = (id: string, types: readonly string[], label: () => string, fragment: () => string): Pick => ({
     id, types, template: label, label, fragment,
@@ -212,7 +219,11 @@ function whenPicks(): readonly Pick[] {
       label: value => clickRule(value)?.selector ? fill(__('When they click %s', 'wconvert'), click.read(value)) : __('When they click a button', 'wconvert'),
       fragment: value => clickRule(value)?.selector ? fill(__('when they click %s', 'wconvert'), click.read(value)) : __('when they click a button', 'wconvert'),
       matches: value => clickRule(value) !== undefined,
-      apply: (value, n) => withOpening(value, { mode: 'click', rules: [freshRule({ type: 'click_element', selector: typeof n === 'string' ? n : '' })] }) },
+      apply: (value, n) => {
+        const held = clickRule(value);
+        const selector = typeof n === 'string' ? n : '';
+        return withOpening(value, { mode: 'click', rules: [held ? { ...held, selector } : freshRule({ type: 'click_element', selector })] });
+      } },
     { id: 'custom', open: true, types: [], template: () => __('Custom…', 'wconvert'), label: () => __('Custom', 'wconvert'),
       matches: () => true, apply: () => ({}) },
   ];
@@ -237,7 +248,7 @@ function paced(value: DisplayRulesValue, set: Partial<Frequency>, dropOnce: bool
 function howOftenPicks(): readonly Pick[] {
   const f = (value: DisplayRulesValue) => value.frequency;
   const onceEver = (value: DisplayRulesValue) => f(value).maxImpressions === 1 && f(value).maxPerSession === undefined && f(value).cooldownDays === undefined;
-  const days: PickParam = { key: 'cooldownDays', kind: 'number', min: 1, max: 3650, default: 7, label: () => __('Days between showings', 'wconvert'), read: value => f(value).cooldownDays };
+  const days: PickParam = { key: 'cooldownDays', kind: 'number', min: 1, max: 3650, default: 7, strict: true, label: () => __('Days between showings', 'wconvert'), read: value => f(value).cooldownDays };
   /* translators: %s: a number of days. */
   const daysTemplate = () => __('Once every %s days', 'wconvert');
 

@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react';
 import { __ } from '@wordpress/i18n';
 import { readSiteAllowance, type SiteAllowance } from '../../optins/api';
-import { allowanceSummary } from '../../optins/allowanceSummary';
+import { allowanceSummary, hasSiteLimits } from '../../optins/allowanceSummary';
 import { Button } from '../../components/ui/button';
 import { messageOf } from '../../shell/loadable';
+import { settingsHref } from '../../nav';
 
 /** Read the saved site veto beside the draft's per-Optin allowance. */
 export function SiteLimitsNote() {
@@ -17,12 +18,13 @@ export function SiteLimitsNote() {
       .catch((cause: unknown) => { if (active) setError(messageOf(cause)); });
     return () => { active = false; };
   }, [retry]);
+  // Nothing to say while it loads, or when the site sets no limit: the note
+  // exists only for the day a site-wide cap is why a Campaign stayed quiet.
+  if (error === null && (limits === null || !hasSiteLimits(limits))) return null;
   return <aside className="wconvert-site-limits-note" aria-label={__('Site-wide limits', 'wconvert')}>
-    <strong>{__('Site-wide limits also apply', 'wconvert')}</strong>
-    {limits && <p>{allowanceSummary(limits)}</p>}
-    {!limits && !error && <p role="status">{__('Checking saved site-wide limits…', 'wconvert')}</p>}
+    {limits && <><strong>{__('Site-wide limits also apply', 'wconvert')}</strong><p>{allowanceSummary(limits)}</p></>}
     {error && <><p role="alert">{__('Could not check the site-wide limits.', 'wconvert')} {error}</p>
       <Button size="sm" variant="outline" onClick={() => setRetry((value) => value + 1)}>{__('Retry checking limits', 'wconvert')}</Button></>}
-    <p>{__('A campaign cannot override these limits.', 'wconvert')} <a href="#optins">{__('Manage them on the Campaigns page', 'wconvert')}</a></p>
+    <p>{__('A campaign cannot override these limits.', 'wconvert')} <a href={settingsHref()}>{__('Manage them in Settings', 'wconvert')}</a></p>
   </aside>;
 }

@@ -336,7 +336,7 @@ describe('publication progress and recovery', () => {
 
 describe('review actions return to the place that can resolve them', () => {
   it.each([
-    ['Pages', 'where'], ['Opening moment', 'when'], ['Audience', 'who'], ['Schedule & limits', 'how-often'],
+    ['Where does it show?', 'where'], ['When does it open?', 'when'], ['Who sees it?', 'who'], ['How often?', 'how-often'], ['Dates', 'dates'],
   ])('opens the %s rules and closes review', async (label, section) => {
     const { supplied } = await open();
     await userEvent.click(screen.getByRole('button', { name: label }));
