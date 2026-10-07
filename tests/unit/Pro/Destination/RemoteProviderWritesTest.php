@@ -213,6 +213,22 @@ namespace WConvert\Tests\Unit\Pro\Destination {
             self::assertCount(1, $this->calls);
         }
 
+        public function testMailtrapSendsSeparateInterestsAsBooleansAndOnlyUpdatesMappedSelections(): void
+        {
+            $this->reply([self::ABSENT, [201, []]]);
+            $this->mailtrap(PushSubject::test(['email' => 'a@example.com'], ['running' => true, 'hiking' => true]));
+            self::assertSame(['running' => true, 'hiking' => true], $this->sent(1)['contact']['fields']);
+
+            $this->reply([self::PRESENT, [200, []]]);
+            $this->mailtrap(PushSubject::test(['email' => 'a@example.com'], ['hiking' => true]), ['existing_contact' => 'update']);
+            self::assertSame(['hiking' => true], $this->sent(1)['contact']['fields']);
+            self::assertArrayNotHasKey('running', $this->sent(1)['contact']['fields']);
+
+            $this->reply([self::PRESENT, [200, []]]);
+            $this->mailtrap(PushSubject::test(['email' => 'a@example.com'], ['hiking' => true]));
+            self::assertArrayNotHasKey('fields', $this->sent(1)['contact']);
+        }
+
         /** Mailtrap applies a write seconds after answering, and refuses a second one to that Contact meanwhile. */
         public function testMailtrapContactStillBeingWrittenIsRetried(): void
         {
@@ -376,6 +392,7 @@ namespace WConvert\Tests\Unit\Pro\Destination {
             return [
                 ['name' => 'First name', 'data_type' => 'text', 'merge_tag' => 'first_name'],
                 ['name' => 'Company', 'data_type' => 'text', 'merge_tag' => 'company'],
+                ['name' => 'Running', 'data_type' => 'boolean', 'merge_tag' => 'running'],
                 ['name' => 'Seats', 'data_type' => 'integer', 'merge_tag' => 'seats'],
                 ['name' => 'Joined', 'data_type' => 'date', 'merge_tag' => 'joined'],
                 ['name' => 'Odd', 'data_type' => 'text', 'merge_tag' => '2fa-code'],
@@ -406,13 +423,13 @@ namespace WConvert\Tests\Unit\Pro\Destination {
             $type->settingsSchema(['api_token' => 'secret']);
         }
 
-        public function testMailtrapMappingFieldsAreTextFieldsNotTakenByEmailOrName(): void
+        public function testMailtrapMappingFieldsIncludeTypedInterestsAndExcludeEmailAndName(): void
         {
             $type = new MailtrapDestinationType();
             $this->reply([[200, $this->mailtrapFields()]]);
-            self::assertSame([['value' => 'company', 'label' => 'Company']], $type->mappingFields(['api_token' => 'secret'], ['name_field' => 'first_name']));
+            self::assertSame([['value' => 'company', 'label' => 'Company'], ['value' => 'running', 'label' => 'Running', 'type' => 'boolean']], $type->mappingFields(['api_token' => 'secret'], ['name_field' => 'first_name']));
             $this->reply([[200, $this->mailtrapFields()]]);
-            self::assertSame(['first_name', 'company'], array_column($type->mappingFields(['api_token' => 'secret'], ['name_field' => '']), 'value'));
+            self::assertSame(['first_name', 'company', 'running'], array_column($type->mappingFields(['api_token' => 'secret'], ['name_field' => '']), 'value'));
             $this->reply([[500, []]]);
             $this->expectException(\RuntimeException::class);
             $type->mappingFields(['api_token' => 'secret'], []);

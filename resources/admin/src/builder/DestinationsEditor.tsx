@@ -202,7 +202,8 @@ export function DestinationsEditor({
                           }}><Settings2 aria-hidden="true" />{__('Settings', 'wconvert')}</Button>}
                       </div>
                       {bound.includes(destination.id) && template && onMappingChange && type?.supports_mapping &&
-                        <ExtraAnswerMapping providerLabel={type.label} destination={destination} submissionId={template.tree.submissions[0]?.id ?? ''} template={template} value={mappings[destination.id] ?? {}} onChange={(map) => onMappingChange(destination.id, map)} />}
+                        <ExtraAnswerMapping providerLabel={type.label} destination={destination} submissionId={template.tree.submissions[0]?.id ?? ''} template={template} value={mappings[destination.id] ?? {}} onChange={(map) => onMappingChange(destination.id, map)}
+                          onSettings={(trigger) => { returnFocus.current = trigger; setNotice(null); setSetup(destination); }} />}
                       {bound.includes(destination.id) && template && type && !type.supports_mapping && hasExtraAnswers(template, template.tree.submissions[0]?.id ?? '') &&
                         <UnsupportedAnswerMapping />}
                     </li>

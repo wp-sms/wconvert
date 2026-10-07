@@ -117,6 +117,11 @@ final class CaptureContract
         foreach ($tree['steps'] ?? [] as $index => $step) {
             foreach (CaptureJourney::nodes($step['content'] ?? []) as $node) {
                 if (($node['type'] ?? '') === 'question' && is_string($node['id'] ?? null)) $questions[$node['id']] = $index;
+                if (($node['type'] ?? '') === 'question' && ($node['answer_type'] ?? '') === 'multi' && is_string($node['id'] ?? null)) {
+                    foreach ($node['options'] ?? [] as $option) {
+                        if (is_string($option['value'] ?? null)) $questions['choice:' . $node['id'] . ':' . $option['value']] = $index;
+                    }
+                }
                 if (($node['type'] ?? '') === 'field' && in_array($node['name'] ?? null, ['interest', 'message'], true)) $fields['field:' . $node['name']] = $index;
             }
         }

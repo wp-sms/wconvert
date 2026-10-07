@@ -430,7 +430,7 @@ final class DestinationController implements RestController
             ['email' => $email, ...$mapped], $this->connections->credentialsFor($destination));
     }
 
-    /** @return array<string, string>|WP_Error */
+    /** @return array<string, string|true>|WP_Error */
     private function draftMapped(WP_REST_Request $request): array|WP_Error
     {
         $destination = $this->destinations->find((string) $request->get_param('id'));
@@ -447,13 +447,21 @@ final class DestinationController implements RestController
         } catch (\Throwable $failure) {
             return new WP_Error('wconvert_mapping_fields_unavailable', __('Could not check this destination’s fields.', 'wconvert'), ['status' => 503]);
         }
-        $allowed = array_column($fields, 'value');
+        $allowed = array_column($fields, null, 'value');
         $mapped = [];
+        $used = [];
         foreach ($mapping as $source => $target) {
-            if (!is_string($source) || !is_string($target) || !in_array($target, $allowed, true) || isset($mapped[$target])) {
+            if (!is_string($source) || !is_string($target) || !isset($allowed[$target]) || isset($used[$target])
+                || (str_starts_with($source, 'choice:') !== (($allowed[$target]['type'] ?? 'text') === 'boolean'))) {
                 return new WP_Error('wconvert_invalid_mapping', __('Choose one available destination field for each answer.', 'wconvert'), ['status' => 400]);
             }
+            $used[$target] = true;
             $value = $sample[$source] ?? null;
+            if (str_starts_with($source, 'choice:')) {
+                if (!is_bool($value)) return new WP_Error('wconvert_invalid_sample', __('Choose whether each sample interest is selected.', 'wconvert'), ['status' => 400]);
+                if ($value) $mapped[$target] = true;
+                continue;
+            }
             if (!is_string($value) || mb_strlen($value) > 500) return new WP_Error('wconvert_invalid_sample', __('Enter a short sample for every mapped answer.', 'wconvert'), ['status' => 400]);
             if (trim($value) !== '') $mapped[$target] = trim($value);
         }
@@ -687,7 +695,7 @@ final class DestinationController implements RestController
         return $schema;
     }
 
-    /** @return list<array{value: string, label: string}> */
+    /** @return list<array{value: string, label: string, type?: 'boolean'}> */
     private function fieldsFor(\WConvert\Destination\Destination $destination, DestinationType $type, bool $refresh = false): array
     {
         return MappingFields::for($type, $destination, $this->connections->credentialsFor($destination), $refresh);

@@ -11,7 +11,7 @@ export function SubmissionSettings({ template, primaryChannel, config, destinati
   template?: Template; primaryChannel?: string | null; config: Record<string, unknown>; destinations: readonly Destination[];
   onChange(config: Record<string, unknown>): void;
 }) {
-  const [setup, setSetup] = useState(false);
+  const [setup, setSetup] = useState<Destination | true | null>(null);
   const trigger = useRef<HTMLButtonElement>(null);
   const secondary = template?.tree.submissions[1];
   if (!secondary) return null;
@@ -34,11 +34,12 @@ export function SubmissionSettings({ template, primaryChannel, config, destinati
         });
       }} /> {d.label}</label>
         {bound.includes(d.id) && template && types.find((type) => type.id === d.type)?.supports_mapping &&
-          <ExtraAnswerMapping providerLabel={types.find((type) => type.id === d.type)?.label} destination={d} submissionId={secondary.id} template={template} value={mappings[secondary.id]?.[d.id] ?? {}} onChange={(map) => onChange({ integration_mappings: { ...mappings, [secondary.id]: { ...mappings[secondary.id], [d.id]: map } } })} />}
+          <ExtraAnswerMapping providerLabel={types.find((type) => type.id === d.type)?.label} destination={d} submissionId={secondary.id} template={template} value={mappings[secondary.id]?.[d.id] ?? {}} onChange={(map) => onChange({ integration_mappings: { ...mappings, [secondary.id]: { ...mappings[secondary.id], [d.id]: map } } })}
+            onSettings={onSaved ? (button) => { trigger.current = button; setSetup(d); } : undefined} />}
         {bound.includes(d.id) && template && types.some((type) => type.id === d.type && !type.supports_mapping) && hasExtraAnswers(template, secondary.id) &&
           <UnsupportedAnswerMapping />}
       </div>)}
     </>}
-    {setup && onSaved && <DestinationSetupDialog types={types.filter(type => type.requirements?.audience_channels?.includes(channel))} connections={connections} onConnectionSaved={onConnectionSaved} returnFocusTo={trigger} onClose={() => setSetup(false)} onSaved={onSaved} />}
+    {setup && onSaved && <DestinationSetupDialog destination={setup === true ? undefined : setup} types={types.filter(type => type.requirements?.audience_channels?.includes(channel))} connections={connections} onConnectionSaved={onConnectionSaved} returnFocusTo={trigger} onClose={() => setSetup(null)} onSaved={onSaved} />}
   </fieldset>;
 }

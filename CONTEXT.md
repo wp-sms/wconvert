@@ -1399,6 +1399,11 @@ unsupported answers without claiming provider delivery. See
 [ADR 0074](docs/adr/0074-destinations-declare-requirements-and-show-shared-usage.md).
 
 The campaign map can include accepted form/quiz answers, interest and message.
+Multiple-choice answers can also map each stable choice to a separate boolean
+field when supported by the adapter (currently Mailtrap). Selected choices send
+Yes; skipped and unselected choices send nothing, preserving earlier interests.
+Adding interests to an existing Contact requires **Update mapped fields**.
+Whole-question text mappings keep their existing joined-label behavior.
 The MailPoet existing-contact limitation remains until a safe update path is
 verified.
 
