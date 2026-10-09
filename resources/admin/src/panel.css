@@ -31,6 +31,13 @@
 #wconvert-admin .wconvert-report-chart__axis { display: flex; flex-direction: column; justify-content: space-between; text-align: end; color: var(--muted-foreground); font-size: var(--text-micro); font-variant-numeric: tabular-nums; }
 #wconvert-admin .wconvert-report-chart__dates { display: flex; justify-content: space-between; gap: 1rem; font-size: var(--text-note); color: var(--muted-foreground); margin-block-start: .5rem; }
 #wconvert-admin .wconvert-route-settings { background: var(--card); }
+/* The provider tiles, for the Settings screen's Add dialog: the builder's copy
+ * in editor.css only loads with the editor chunk. */
+.wconvert-provider-tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(12rem, 100%), 1fr)); gap: 8px; margin: 0; padding: 0; list-style: none; }
+.wconvert-provider-tile { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 10px; align-items: center; inline-size: 100%; padding: 10px; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--card); color: inherit; font: inherit; text-align: start; cursor: pointer; }
+.wconvert-provider-tile:hover:not([aria-disabled='true']) { background: var(--accent); }
+.wconvert-provider-tile[aria-disabled='true'] { cursor: default; color: var(--muted-foreground); }
+.wconvert-provider-tile:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
 #wconvert-admin .wconvert-region-icon { display: grid; place-items: center; inline-size: 2.5rem; block-size: 2.5rem; flex: none; color: var(--action); background: var(--secondary); border-radius: .5rem; }
 #wconvert-admin .wconvert-region-icon svg { inline-size: 1.25rem; block-size: 1.25rem; }
 #wconvert-admin .wconvert-daily-numbers { inline-size: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }

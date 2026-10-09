@@ -1,8 +1,10 @@
 import { __, sprintf } from '@wordpress/i18n';
-import { Checkbox } from '../components/ui/checkbox';
 import { Input } from '../components/ui/input';
-import { Label } from '../components/ui/label';
+import { NativeSelect } from '../components/ui/native-select';
+import { Textarea } from '../components/ui/textarea';
+import { CheckRow } from '../shell/CheckRow';
 import { Description } from '../shell/Description';
+import { Field } from '../shell/Field';
 import type { Connection, Destination, DestinationType, SettingsField } from './api';
 
 /**
@@ -56,13 +58,14 @@ export function SettingsControl({
 }) {
   switch (field.type) {
     case 'select':
-      return <select id={id} value={value} onChange={(event) => onChange(event.target.value)}
-        className="h-(--control-height) max-w-full rounded-md border border-input bg-transparent ps-3 pe-9 text-body">
+      // A stored choice the provider no longer offers stays selected, so a
+      // save does not silently drop it — named as gone rather than by its key.
+      return <NativeSelect id={id} value={value} onChange={(event) => onChange(event.target.value)}>
         <option value="">{__('Choose an option', 'wconvert')}</option>
         {value !== '' && !field.options?.some((option) => option.value === value)
-          && <option value={value}>{sprintf(__('Unavailable field (%s)', 'wconvert'), value)}</option>}
+          && <option value={value}>{__('No longer available', 'wconvert')}</option>}
         {(field.options ?? []).map((option) => <option key={option.value} value={option.value}>{option.label}</option>)}
-      </select>;
+      </NativeSelect>;
     /**
      * A list. **Checkboxes where the server could enumerate the choices, and a
      * comma-separated text input where it could not** — the same stored
@@ -93,15 +96,7 @@ export function SettingsControl({
       return <Input id={id} type="url" value={value} onChange={(e) => onChange(e.target.value)} />;
 
     case 'multiline':
-      return (
-        <textarea
-          id={id}
-          rows={5}
-          className="w-full rounded-md border border-input bg-transparent px-3 py-2 text-body shadow-xs outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50"
-          value={value}
-          onChange={(e) => onChange(e.target.value)}
-        />
-      );
+      return <Textarea id={id} rows={5} value={value} onChange={(e) => onChange(e.target.value)} />;
 
     case 'text':
     default:
@@ -186,18 +181,15 @@ function ChoiceList({
   };
 
   return (
-    <div id={id} className="flex flex-col gap-2" role="group" aria-labelledby={`${id}-label`}>
+    <div id={id} className="flex flex-col gap-1" role="group" aria-labelledby={`${id}-label`}>
       {options.map((option) => (
-        <div key={option.value} className="flex items-center gap-2">
-          <Checkbox
-            id={`${id}-${option.value}`}
-            checked={chosen.has(option.value)}
-            onCheckedChange={(on) => toggle(option.value, on === true)}
-          />
-          <Label htmlFor={`${id}-${option.value}`} className="font-normal">
-            {option.label}
-          </Label>
-        </div>
+        <CheckRow
+          key={option.value}
+          id={`${id}-${option.value}`}
+          label={<bdi>{option.label}</bdi>}
+          checked={chosen.has(option.value)}
+          onChange={(event) => toggle(option.value, event.target.checked)}
+        />
       ))}
     </div>
   );
@@ -413,45 +405,36 @@ export function ConnectionPicker({
   value: string | null;
   onChange: (value: string | null) => void;
 }) {
+  // No control, so no label: the sentence is the whole of what there is to
+  // say, and a `<label>` naming an id that is not on the page is worse than none.
+  if (connections.length === 0) {
+    return <Description>{__('No account has been added for this destination type yet.', 'wconvert')}</Description>;
+  }
+
   return (
-    <div className="flex flex-col gap-1.5">
-      {/*
-        The words come with the control rather than from the caller, because
-        the control has two shapes — a picker and a sentence — and only one of
-        them is something a `<label for>` may point at. A label naming an id
-        that is not on the page is worse than no label.
-      */}
-      {connections.length === 0 ? (
-        // No control, so no label: the sentence is the whole of what there is
-        // to say, and a `<label>` naming nothing is worse than none.
-        <Description>
-          {__('No account has been added for this destination type yet.', 'wconvert')}
-        </Description>
-      ) : (
-        <>
-          <Label htmlFor={id}>{__('Account', 'wconvert')}</Label>
-          {/*
-            **A native `<select>`**, for the reason `stats/Dashboard.tsx`
-            writes out: the vendored Radix select is the right control inside a
-            region's toolbar beside other controls we drew, and this is one
-            field in a form of fields. `pe-9` clears the arrow the browser
-            draws, which Preflight does not strip.
-          */}
-          <select
-            id={id}
-            className="h-(--control-height) max-w-xl rounded-md border border-input bg-transparent ps-3 pe-9 text-body text-foreground"
-            value={value ?? ''}
-            onChange={(event) => onChange(event.target.value === '' ? null : event.target.value)}
-          >
-            <option value="">{__('Choose…', 'wconvert')}</option>
-            {connections.map((connection) => (
-              <option key={connection.id} value={connection.id}>
-                {connection.label}
-              </option>
-            ))}
-          </select>
-        </>
-      )}
-    </div>
+    <Field label={__('Account', 'wconvert')} htmlFor={id}>
+      <NativeSelect
+        id={id}
+        value={value ?? ''}
+        onChange={(event) => onChange(event.target.value === '' ? null : event.target.value)}
+      >
+        <option value="">{__('Choose…', 'wconvert')}</option>
+        {connections.map((connection) => (
+          <option key={connection.id} value={connection.id}>
+            {connection.label}
+          </option>
+        ))}
+      </NativeSelect>
+    </Field>
   );
+}
+
+/**
+ * A setting's label, marked where the route cannot send without it — one
+ * translatable sentence rather than a leading-space fragment glued on.
+ */
+export function settingLabel(label: string, required: boolean): string {
+  return required
+    ? sprintf(/* translators: %s: a destination setting's name, e.g. “Lists to add to”. */ __('%s (required to send)', 'wconvert'), label)
+    : label;
 }
