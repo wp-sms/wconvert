@@ -327,7 +327,7 @@
   --text-title--line-height: 1.875rem;
 
   /* Harbor adds shared reading-page roles without changing compact editor titles. */
-  --text-display: 2.75rem;
+  --text-display: 2.25rem; /* 36px since ADR 0132 (was 44px). */
   --text-display--line-height: 1.1;
   --text-brand: 1.625rem;
   --text-brand--line-height: 1;
@@ -722,8 +722,14 @@ body:has(#wconvert-admin) #wpbody-content {
  *
  * The `#wconvert-admin` prefix is for specificity against wp-admin's own
  * id-scoped table rules, which load after ours.
+ *
+ * **`.wconvert-dialog` is in the list because a dialog portals out of the
+ * admin root** (see "WHAT THE ADMIN OWNS IS NOT ALL INSIDE" below). Every
+ * `AdminDialogContent` carries the class, so a lead's history drew its table
+ * as bare centred bold `th`s until it joined; campaign Details had opted in by
+ * name. `:is()` still takes the id's specificity from the list.
  */
-:is(#wconvert-admin, .wconvert-optin-details) .wconvert-table {
+:is(#wconvert-admin, .wconvert-optin-details, .wconvert-dialog) .wconvert-table {
   inline-size: 100%;
   border-collapse: collapse;
 }
@@ -737,7 +743,7 @@ body:has(#wconvert-admin) #wpbody-content {
  * have rescued it. A header on two lines costs a few pixels of height; a header
  * that cannot break costs the merchant the whole screen.
  */
-:is(#wconvert-admin, .wconvert-optin-details) .wconvert-table > thead > tr > th {
+:is(#wconvert-admin, .wconvert-optin-details, .wconvert-dialog) .wconvert-table > thead > tr > th {
   /*
    * **1rem of inline padding, matching the header, toolbar and footer strips
    * of the same card.** It was 0.75rem, which put a 4px stagger down the left
@@ -761,11 +767,19 @@ body:has(#wconvert-admin) #wpbody-content {
   text-transform: uppercase;
 }
 
-:is(#wconvert-admin, .wconvert-optin-details) .wconvert-table > tbody > tr {
+/*
+ * The page bands its tables' header row from `.wconvert-panel` (panel.css),
+ * which a portalled dialog is outside of, so a dialog's table bands its own.
+ */
+.wconvert-dialog .wconvert-table > thead > tr > th {
+  background: var(--surface);
+}
+
+:is(#wconvert-admin, .wconvert-optin-details, .wconvert-dialog) .wconvert-table > tbody > tr {
   border-block-end: 1px solid var(--border);
 }
 
-:is(#wconvert-admin, .wconvert-optin-details) .wconvert-table > tbody > tr:last-child {
+:is(#wconvert-admin, .wconvert-optin-details, .wconvert-dialog) .wconvert-table > tbody > tr:last-child {
   border-block-end: 0;
 }
 
@@ -786,7 +800,7 @@ body:has(#wconvert-admin) #wpbody-content {
  * cell's `min-content` width, so a grid track sized from content shrinks to
  * fit it instead of being sized by the unbreakable string and then clipping.
  */
-:is(#wconvert-admin, .wconvert-optin-details) .wconvert-table > tbody > tr > td {
+:is(#wconvert-admin, .wconvert-optin-details, .wconvert-dialog) .wconvert-table > tbody > tr > td {
   padding: 0.6875rem 1rem;
   font-size: inherit;
   text-align: start;
@@ -799,7 +813,7 @@ body:has(#wconvert-admin) #wpbody-content {
  * counts is read by comparing lengths, and proportional digits make 11 and 44
  * different widths.
  */
-:is(#wconvert-admin, .wconvert-optin-details) .wconvert-table :is(th, td).is-numeric {
+:is(#wconvert-admin, .wconvert-optin-details, .wconvert-dialog) .wconvert-table :is(th, td).is-numeric {
   font-variant-numeric: tabular-nums;
   text-align: end;
 }
@@ -821,7 +835,7 @@ body:has(#wconvert-admin) #wpbody-content {
  * card — and a Tailwind `justify-end` is an `!important` declaration no media
  * query can take back.
  */
-:is(#wconvert-admin, .wconvert-optin-details) .wconvert-table :is(th, td).wconvert-table__actions {
+:is(#wconvert-admin, .wconvert-optin-details, .wconvert-dialog) .wconvert-table :is(th, td).wconvert-table__actions {
   inline-size: 1%;
   text-align: end;
   white-space: nowrap;
@@ -856,7 +870,7 @@ body:has(#wconvert-admin) #wpbody-content {
   color: var(--muted-foreground);
 }
 
-:is(#wconvert-admin, .wconvert-optin-details) .wconvert-table .wconvert-table__actions-row {
+:is(#wconvert-admin, .wconvert-optin-details, .wconvert-dialog) .wconvert-table .wconvert-table__actions-row {
   display: flex;
   inline-size: max-content;
   min-inline-size: 100%;
@@ -1027,14 +1041,14 @@ body:has(#wconvert-admin) #wpbody-content {
 
 /* Six-column reading tables need card rows before their actions are clipped. */
 @media (max-width: 900px) {
-  :is(#wconvert-admin, .wconvert-optin-details) .wconvert-table,
-  :is(#wconvert-admin, .wconvert-optin-details) .wconvert-table > tbody,
-  :is(#wconvert-admin, .wconvert-optin-details) .wconvert-table > tbody > tr,
-  :is(#wconvert-admin, .wconvert-optin-details) .wconvert-table > tbody > tr > td {
+  :is(#wconvert-admin, .wconvert-optin-details, .wconvert-dialog) .wconvert-table,
+  :is(#wconvert-admin, .wconvert-optin-details, .wconvert-dialog) .wconvert-table > tbody,
+  :is(#wconvert-admin, .wconvert-optin-details, .wconvert-dialog) .wconvert-table > tbody > tr,
+  :is(#wconvert-admin, .wconvert-optin-details, .wconvert-dialog) .wconvert-table > tbody > tr > td {
     display: block;
   }
 
-  :is(#wconvert-admin, .wconvert-optin-details) .wconvert-table > thead {
+  :is(#wconvert-admin, .wconvert-optin-details, .wconvert-dialog) .wconvert-table > thead {
     position: absolute;
     inline-size: 1px;
     block-size: 1px;
@@ -1043,14 +1057,14 @@ body:has(#wconvert-admin) #wpbody-content {
     white-space: nowrap;
   }
 
-  :is(#wconvert-admin, .wconvert-optin-details) .wconvert-table > tbody > tr {
+  :is(#wconvert-admin, .wconvert-optin-details, .wconvert-dialog) .wconvert-table > tbody > tr {
     margin-block-end: 0.75rem;
     padding: 0.75rem 0.875rem;
     border: 1px solid var(--border);
     border-radius: var(--radius);
   }
 
-  :is(#wconvert-admin, .wconvert-optin-details) .wconvert-table > tbody > tr:last-child {
+  :is(#wconvert-admin, .wconvert-optin-details, .wconvert-dialog) .wconvert-table > tbody > tr:last-child {
     margin-block-end: 0;
   }
 
@@ -1060,7 +1074,7 @@ body:has(#wconvert-admin) #wpbody-content {
    * capped so a long translated column name cannot push the value off the
    * card.
    */
-  :is(#wconvert-admin, .wconvert-optin-details) .wconvert-table > tbody > tr > td {
+  :is(#wconvert-admin, .wconvert-optin-details, .wconvert-dialog) .wconvert-table > tbody > tr > td {
     display: grid;
     grid-template-columns: minmax(0, 8rem) minmax(0, 1fr);
     gap: 0.25rem 0.75rem;
@@ -1074,7 +1088,7 @@ body:has(#wconvert-admin) #wpbody-content {
    * VALUE is still right-aligned so a column of figures lines up. Without this
    * the two moved together and "SUBMISSIONS" sat hard against its own number.
    */
-  :is(#wconvert-admin, .wconvert-optin-details) .wconvert-table > tbody > tr > td::before {
+  :is(#wconvert-admin, .wconvert-optin-details, .wconvert-dialog) .wconvert-table > tbody > tr > td::before {
     content: attr(data-label);
     color: var(--muted-foreground);
     font-size: var(--text-micro);
@@ -1090,7 +1104,7 @@ body:has(#wconvert-admin) #wpbody-content {
    * nothing — which is what "OVER TIME" with no series under it was, on every
    * row of a fresh install.
    */
-  :is(#wconvert-admin, .wconvert-optin-details) .wconvert-table > tbody > tr > td:empty {
+  :is(#wconvert-admin, .wconvert-optin-details, .wconvert-dialog) .wconvert-table > tbody > tr > td:empty {
     display: none;
   }
 
@@ -1109,7 +1123,7 @@ body:has(#wconvert-admin) #wpbody-content {
    * leading edge rather than wrapping them. Restoring the initial values is
    * what makes `display: block` above mean the full card width it says.
    */
-  :is(#wconvert-admin, .wconvert-optin-details) .wconvert-table > tbody > tr > td.wconvert-table__actions {
+  :is(#wconvert-admin, .wconvert-optin-details, .wconvert-dialog) .wconvert-table > tbody > tr > td.wconvert-table__actions {
     display: block;
     margin-block-start: 0.5rem;
     padding-block-start: 0.625rem;
@@ -1119,11 +1133,11 @@ body:has(#wconvert-admin) #wpbody-content {
     white-space: normal;
   }
 
-  :is(#wconvert-admin, .wconvert-optin-details) .wconvert-table > tbody > tr > td.wconvert-table__actions::before {
+  :is(#wconvert-admin, .wconvert-optin-details, .wconvert-dialog) .wconvert-table > tbody > tr > td.wconvert-table__actions::before {
     content: none;
   }
 
-  :is(#wconvert-admin, .wconvert-optin-details) .wconvert-table .wconvert-table__actions-row {
+  :is(#wconvert-admin, .wconvert-optin-details, .wconvert-dialog) .wconvert-table .wconvert-table__actions-row {
     inline-size: auto;
     flex-wrap: wrap;
     justify-content: flex-start;
@@ -6727,3 +6741,25 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
 .wconvert-product-matches li { display: flex; align-items: center; gap: 10px; min-width: 0; }
 .wconvert-product-matches img { object-fit: cover; border-radius: 4px; flex: none; }
 .wconvert-product-matches a { overflow-wrap: anywhere; }
+
+/*
+ * The one date control (ADR 0132): a button naming the window and its dates,
+ * opening presets as native radios, custom dates and what qualifies the window.
+ */
+.wconvert-date-picker__trigger { gap: .5rem; max-inline-size: 100%; }
+.wconvert-date-picker__trigger > svg { flex: none; }
+.wconvert-date-picker__name { font-weight: 600; }
+.wconvert-date-picker__dates { overflow: hidden; color: var(--muted-foreground); font-weight: 400; text-overflow: ellipsis; white-space: nowrap; }
+.wconvert-date-picker { display: grid; gap: .75rem; inline-size: min(20rem, calc(100vw - 2rem)); background: var(--popover); }
+.wconvert-date-picker__presets { display: grid; gap: .125rem; }
+.wconvert-date-picker__presets > label { display: flex; align-items: center; gap: .5rem; min-block-size: 2rem; padding-inline: .5rem; border-radius: var(--radius-md); font-size: var(--text-body); cursor: pointer; }
+.wconvert-date-picker__presets > label:hover { background: var(--accent); }
+.wconvert-date-picker__presets > label:has(input:checked) { background: var(--secondary); color: var(--action); font-weight: 600; }
+.wconvert-date-picker__presets > label:has(input:focus-visible) { outline: 2px solid var(--ring); outline-offset: 1px; }
+.wconvert-date-picker__custom { display: grid; grid-template-columns: max-content minmax(0, 1fr); align-items: center; gap: .5rem .75rem; padding-block-start: .75rem; border-block-start: 1px solid var(--border); }
+.wconvert-date-picker__custom label { font-size: var(--text-note); color: var(--muted-foreground); }
+.wconvert-date-picker__note { grid-column: 1 / -1; margin: 0; font-size: var(--text-note); color: var(--muted-foreground); }
+.wconvert-date-picker__note[role='alert'] { color: var(--destructive); }
+.wconvert-date-picker__custom > button { grid-column: 1 / -1; justify-self: end; }
+.wconvert-date-picker__footer { padding-block-start: .75rem; border-block-start: 1px solid var(--border); }
+@media (pointer: coarse) { .wconvert-date-picker__presets > label { min-block-size: 2.75rem; } }
