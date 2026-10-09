@@ -514,12 +514,9 @@ describe('the builder shell', () => {
         CARD,
       ],
     });
-    await open();
+    render(<OptinBuilder id={ID} onClose={vi.fn()} />);
 
-    expect(await screen.findByText('Choose how this campaign appears')).toBeInTheDocument();
-    expect(screen.getByText('Start with a design that fits “Grow my email list”. You can explore other formats in the library.')).toBeInTheDocument();
-    await userEvent.click(screen.getByRole('button', { name: 'Browse designs and formats' }));
-
+    // A draft with no design opens straight onto the library; nobody has to find it.
     const picker = within(await screen.findByRole('dialog'));
     expect(picker.getByRole('combobox', { name: 'Format' })).toHaveValue('popup');
     expect(picker.getByRole('combobox', { name: 'Design fit' })).toHaveDisplayValue('For “Grow my email list”');

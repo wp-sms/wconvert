@@ -1960,6 +1960,22 @@ body:has(#wconvert-admin) #wpbody-content {
 .wconvert-creation .wconvert-picker__active-filter svg { flex: none; }
 .wconvert-creation .wconvert-picker__facet { flex-wrap: wrap; }
 .wconvert-creation .wconvert-picker__search { min-inline-size: 0; }
+/* Format, then the rarer filters as a quiet toggle, and the count at the far end. */
+.wconvert-picker__facet > .wconvert-picker__more { order: 1; flex: 0 0 auto; }
+.wconvert-picker__facet > .wconvert-picker__more > summary { grid-template-columns: max-content 16px; gap: .375rem; padding-inline: .25rem; color: var(--action); font-size: var(--text-note); }
+.wconvert-picker__facet > .wconvert-picker__more[open] { order: 3; flex-basis: 100%; }
+.wconvert-picker__count { order: 2; margin-inline-start: auto; color: var(--muted-foreground); font-size: var(--text-note); font-variant-numeric: tabular-nums; }
+/* One setup to start from, drawn wide: the design beside its name and two actions. */
+.wconvert-start-here { display: grid; gap: .75rem; margin-block-end: 1.5rem; }
+.wconvert-start-here__title { margin: 0; color: var(--muted-foreground); font-size: var(--text-micro); font-weight: 600; letter-spacing: .04em; text-transform: uppercase; }
+.wconvert-start-here > .wconvert-start-here__title:last-child { margin-block-start: .75rem; }
+.wconvert-gallery.wconvert-start-here__card { grid-template-columns: minmax(0, 1fr); }
+.wconvert-start-here__card .wconvert-gallery__actions { justify-content: flex-start; gap: .5rem; }
+@media (min-width: 900px) {
+  .wconvert-start-here__card > .wconvert-gallery__card { display: grid; grid-template-columns: minmax(0, 1.6fr) minmax(16rem, 1fr); border-color: var(--action); }
+  .wconvert-start-here__card .wconvert-gallery__caption { justify-content: center; border-block-start: 0; border-inline-start: 1px solid var(--border); padding: 1.5rem; }
+  .wconvert-start-here__card .wconvert-gallery__identity h3 { font-size: var(--text-section); }
+}
 @media (max-width: 640px) {
 .wconvert-creation__steps { padding: 1rem 1rem 0; }
 .wconvert-creation__steps ol { gap: 1rem; }
@@ -6460,7 +6476,7 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
 .wconvert-option-strip > label:hover { background: var(--accent); }
 .wconvert-option-strip > label:has(input:checked) { color: var(--primary-foreground); background: var(--action); border-color: var(--action); }
 .wconvert-option-strip > label:has(input:focus-visible), .wconvert-compare-choice:has(input:focus-visible) { outline: 2px solid var(--ring); outline-offset: 2px; }
-.wconvert-option-strip > label:has(input:disabled), .wconvert-compare-choice:has(input:disabled) { opacity: .5; cursor: default; }
+.wconvert-option-strip > label:has(input:disabled), .wconvert-compare-choice:has(input:disabled), .wconvert-compare-choice[data-refused] { opacity: .5; cursor: default; }
 :is(#wconvert-admin, [data-slot="dialog-content"]) :is(.wconvert-option-strip > label, .wconvert-compare-choice) > input {
   position: absolute; appearance: none; inline-size: 1px; block-size: 1px; min-block-size: 0; margin: 0; padding: 0; border: 0; overflow: hidden; clip-path: inset(50%);
 }
@@ -6523,9 +6539,17 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
 .wconvert-setup-inspector__facts ul { margin-block: .5rem 0; }
 .wconvert-setup-inspector__facts li + li { margin-block-start: .375rem; }
 .wconvert-setup-inspector__facts .wconvert-disclosure { border-block-start: 1px solid var(--border); }
-.wconvert-setup-facts { display: grid; gap: .75rem; margin: 0; }
-.wconvert-setup-facts dt { color: var(--muted-foreground); font-size: var(--text-note); }
-.wconvert-setup-facts dd { margin: .125rem 0 0; color: var(--foreground); font-size: var(--text-body); }
+/* A setup at a glance: one icon line per fact, then what to have ready. */
+.wconvert-setup-glance { display: grid; gap: 1.25rem; }
+.wconvert-setup-facts { display: grid; gap: .5rem; margin: 0; }
+.wconvert-setup-facts > div { display: grid; grid-template-columns: minmax(6.5rem, max-content) minmax(0, 1fr); align-items: baseline; gap: .75rem; }
+.wconvert-setup-facts dt { display: flex; align-items: center; gap: .5rem; color: var(--muted-foreground); font-size: var(--text-note); }
+.wconvert-setup-facts dt svg { flex: none; color: var(--action); }
+.wconvert-setup-facts dd { margin: 0; color: var(--foreground); font-size: var(--text-body); overflow-wrap: anywhere; }
+.wconvert-setup-glance h3 { margin: 0 0 .5rem; font-size: var(--text-heading); font-weight: 600; }
+.wconvert-setup-todo { display: grid; gap: .5rem; margin: 0 !important; padding: 0; list-style: none; }
+.wconvert-setup-todo li { display: flex; align-items: flex-start; gap: .5rem; margin: 0 !important; font-size: var(--text-body); }
+.wconvert-setup-todo svg { flex: none; margin-block-start: .1875rem; color: var(--muted-foreground); }
 .wconvert-setup-inspector__cases p { margin-block: 0 .75rem; }
 .wconvert-setup-inspector__cases .wconvert-option-strip { flex-direction: column; }
 .wconvert-setup-inspector__cases .wconvert-option-strip > label { white-space: normal; overflow-wrap: anywhere; }

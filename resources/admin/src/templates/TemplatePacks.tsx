@@ -1,7 +1,7 @@
 import { isFreeInstall, tierName } from '../goals/availability';
 import { useEffect, useRef, useState } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
-import { ArrowRight, ExternalLink, Layers, Lock, RefreshCw } from 'lucide-react';
+import { ArrowRight, ExternalLink, Layers, RefreshCw } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 import { Skeleton } from '../components/ui/skeleton';
@@ -163,8 +163,8 @@ function PackGroup({ title, packs, busy, onInspect }: {
       const installed = pack.installed_version !== null;
       return <li key={pack.id} className="wconvert-pack-card">
         <div className="wconvert-pack-card__heading"><Layers size={20} aria-hidden="true" /><h4><bdi>{pack.name}</bdi></h4>
-          {/* Grey and a lock: it costs money (§14). */}
-          {pack.access === 'premium' && !isFreeInstall() && <Badge variant="secondary"><Lock aria-hidden="true" />{tierName(undefined)}</Badge>}
+          {/* A paid install already has it, so the tier is a fact here, not a lock (§14). */}
+          {pack.access === 'premium' && !isFreeInstall() && <Badge variant="outline">{tierName(undefined)}</Badge>}
           {pack.state === 'update' && <Badge variant="outline">{__('Update available', 'wconvert')}</Badge>}</div>
         <p className="wconvert-pack-card__description">{pack.description}</p>
         <div className="wconvert-pack-card__footer">

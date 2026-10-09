@@ -587,7 +587,7 @@ export function OptinList({
                   )
                 }
               >
-                {__('Choose a goal, pick a design, and publish when you’re ready.', 'wconvert')}
+                {__('Choose a goal, pick a ready-made setup, and publish when you’re ready.', 'wconvert')}
               </EmptyState>
             ) : list.status === 'ready' && visible.length === 0 ? (
               <EmptyState

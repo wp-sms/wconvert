@@ -119,14 +119,15 @@ enum Goal: string
     public function description(): string
     {
         return match ($this) {
-            self::GrowEmailList => __('Capture email addresses and count every submission.', 'wconvert'),
-            self::GrowSmsList => __('Capture phone numbers and count every submission.', 'wconvert'),
-            self::IncreaseBasketValue => __('Recommend useful extras and count confirmed additions to the basket.', 'wconvert'),
-            self::RecoverCart => __('Show shoppers with a full cart the way back to it, and count the clicks.', 'wconvert'),
-            self::PromoteOffer => __('Send visitors to an offer or a useful page, and count the clicks through to it.', 'wconvert'),
-            self::DeliverLeadMagnet => __('Email a resource link and count emails accepted for sending.', 'wconvert'),
-            self::CollectEnquiries => __('Capture requests with contact details for follow-up in Leads or your connected service.', 'wconvert'),
-            self::FindMatch => __('Ask a few questions and show one relevant result, with signup optional.', 'wconvert'),
+            // Outcome words; what is counted is the setup's "Counts" line and Analytics' job.
+            self::GrowEmailList => __('Collect email addresses for your newsletter or offers.', 'wconvert'),
+            self::GrowSmsList => __('Collect phone numbers for text messages.', 'wconvert'),
+            self::IncreaseBasketValue => __('Suggest useful extras while shoppers fill their cart.', 'wconvert'),
+            self::RecoverCart => __('Bring shoppers with a full cart back to checkout.', 'wconvert'),
+            self::PromoteOffer => __('Send visitors to a sale, an offer or a useful page.', 'wconvert'),
+            self::DeliverLeadMagnet => __('Send a guide, file or checklist in exchange for an email.', 'wconvert'),
+            self::CollectEnquiries => __('Take questions and quote requests from visitors.', 'wconvert'),
+            self::FindMatch => __('Ask a few questions and suggest the right product or page.', 'wconvert'),
         };
     }
 }

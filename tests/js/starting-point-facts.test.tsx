@@ -39,15 +39,15 @@ describe('result links still to choose', () => {
   });
 
   it('warns on a quiz setup before it is picked', () => {
-    render(<StartingPointFacts compact goal={GOAL} vocabulary={null}
+    render(<StartingPointFacts goal={GOAL} vocabulary={null}
       playbook={playbook(quiz(Array.from({ length: 5 }, () => ({ link_label: 'Shop these', href: '' }))))} />);
-    expect(screen.getByText('You’ll choose a link for each of the 5 results.')).toBeInTheDocument();
+    expect(screen.getByText('A link for each of its 5 results')).toBeInTheDocument();
   });
 
   it('says nothing on a setup without result screens', () => {
-    render(<StartingPointFacts compact goal={GOAL} vocabulary={null} playbook={playbook(treeFixture({ steps: [
+    render(<StartingPointFacts goal={GOAL} vocabulary={null} playbook={playbook(treeFixture({ steps: [
       { type: 'stack', children: [{ type: 'button', role: 'cta_label', label: 'Shop', action: 'link', href: '' }] },
     ] }))} />);
-    expect(screen.queryByText(/choose a link for/)).toBeNull();
+    expect(screen.queryByText(/A link for/)).toBeNull();
   });
 });

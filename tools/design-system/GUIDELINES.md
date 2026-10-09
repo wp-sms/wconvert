@@ -292,7 +292,11 @@ card size. Long placement, measurement and journey guidance uses labeled
 progressive disclosure beside the preview. Dialog headers align to the start
 on every viewport; close controls have a 32px target (44px for coarse pointers).
 
-Creation cards open inspection before the draft action. Shared cards place the
+Creation cards open inspection before the draft action, except the one **Start
+here** card drawn above a list of more than three setups, which offers Use this
+setup directly (ADR 0132). A library toolbar is two rows: search, sort and a ⋯
+for other ways to browse; then the main facet chips, a compact More filters
+toggle and the count. Shared cards place the
 name and Save together, metadata on its own row, then Preview and Compare. Do
 not scatter these controls between metadata and actions. Full inspection starts
 at width fit with vertical scrolling for tall content; offer Fit entire design

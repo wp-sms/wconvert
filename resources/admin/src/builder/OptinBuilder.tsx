@@ -303,6 +303,15 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
     [template, templateId, templates],
   );
 
+  // A draft started without a setup has no design yet; the library is the
+  // first thing it needs, so it opens once rather than waiting to be found.
+  const offeredLibrary = useRef<string | null>(null);
+  useEffect(() => {
+    if (config === null || gallery === null || config.template !== undefined || offeredLibrary.current === id) return;
+    offeredLibrary.current = id;
+    setBrowsing(true);
+  }, [config, gallery, id]);
+
   const initializedCampaign = useRef<string | null>(null);
   useEffect(() => {
     if (!entry || initializedCampaign.current === id) return;
@@ -931,7 +940,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
       <div className="wconvert-workspace__body" inert={busy}>
         <TabsContent value="journey" forceMount={journeyVisited || undefined} className="wconvert-workspace__journey">
           <Activity mode={tab === 'journey' ? 'visible' : 'hidden'}>
-          {!entry && <EmptyState icon={Blocks} title={__('Choose a campaign to customize', 'wconvert')} action={<Button onClick={() => setBrowsing(true)}>{__('Browse designs and formats', 'wconvert')}</Button>}>{__('Start with a ready-made design, then make it yours.', 'wconvert')}</EmptyState>}
+          {!entry && <EmptyState icon={Blocks} title={__('Choose a design', 'wconvert')} action={<Button onClick={() => setBrowsing(true)}>{__('Browse designs and formats', 'wconvert')}</Button>}>{__('Start from a ready-made design, then make it yours.', 'wconvert')}</EmptyState>}
           {entry && <JourneyEditor onUndo={history.canUndo ? history.undo : undefined} embedded labels={gallery.labels} onResultSelect={setEditingResult}
             editorCanvas={previewPane}
             appearancePreview={showingLock ? previewPane : undefined}

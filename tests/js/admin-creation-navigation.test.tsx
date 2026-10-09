@@ -42,7 +42,7 @@ afterEach(() => { window.innerWidth = 1024; });
 async function openCreation(inspect = true) {
   render(<App />);
   await userEvent.click(screen.getByRole('button', { name: 'Create campaign' }));
-  await userEvent.click(await screen.findByRole('button', { name: 'Choose' }, { timeout: 5000 }));
+  await userEvent.click(await screen.findByRole('button', { name: /^Choose/ }, { timeout: 5000 }));
   const preview = await screen.findByRole('button', { name: 'Setup details for Welcome' });
   if (!inspect) return preview;
   await userEvent.click(preview);
@@ -69,12 +69,12 @@ describe('creation and its owning admin page', () => {
     await userEvent.click(await openCreation());
     expect(screen.getByRole('button', { name: 'Back to Campaigns', hidden: true })).toBeDisabled();
     await requestReports();
-    await waitFor(() => expect(window.location.hash).toBe('#optins'));
+    await waitFor(() => expect(window.location.hash).toBe('#optins?new=1'));
     expect(screen.queryByText('Report content')).not.toBeInTheDocument();
     await act(async () => prefill(DRAFT));
     expect(screen.getByRole('button', { name: 'Back to Campaigns', hidden: true })).toBeDisabled();
     await requestReports();
-    await waitFor(() => expect(window.location.hash).toBe('#optins'));
+    await waitFor(() => expect(window.location.hash).toBe('#optins?new=1'));
     await act(async () => created({ id: ID }));
     expect(await screen.findByText('New draft editor')).toBeInTheDocument();
     expect(window.location.hash).toBe(editorHref(ID, '#optins'));

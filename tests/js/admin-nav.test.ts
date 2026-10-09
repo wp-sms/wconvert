@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import {
   DEFAULT_SECTION,
+  createHref,
   SECTIONS,
   destinationHref,
   editorHref,
@@ -175,4 +176,11 @@ describe('bookmarked admin flows', () => {
   expect(route.returnTo).toBe(report);
   expect(routeFrom('#optins?edit=campaign&tab=unknown').editorTab).toBeUndefined();
   expect(routeFrom('#analytics?edit=campaign&tab=rules').editorTab).toBeUndefined();
+});
+
+it('names creation as an address of its own, and never inside an editor', () => {
+  expect(createHref()).toBe('#optins?new=1');
+  expect(routeFrom('#optins?new=1').creating).toBe(true);
+  expect(routeFrom('#optins').creating).toBe(false);
+  expect(routeFrom('#optins?new=1&edit=abc').creating).toBe(false);
 });

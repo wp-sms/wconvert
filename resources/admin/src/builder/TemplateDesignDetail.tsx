@@ -203,7 +203,8 @@ export function TemplateDesignDetail({
             )}
             <div className="wconvert-design-detail__actions">
               {incompatibleLock && <CheckRow className="text-note" checked={disableLock} onChange={event => setDisableLock(event.target.checked)} label={__('Turn off Content lock to use this design. The selected WordPress content will remain readable.', 'wconvert')} />}
-              {formatNotice && <p id={`${id}-format`} className="text-note text-warning">{formatNotice}</p>}
+              {/* A format change is information, not the site holding something back (§14). */}
+              {formatNotice && <p id={`${id}-format`} className="text-note text-muted-foreground">{formatNotice}</p>}
               <p id={`${id}-replacement`} className="text-note text-muted-foreground">
                 {prepares && mode === 'sample'
                   ? __('Replaces the layout and content in your draft with the preview shown here. Undo restores your previous draft.', 'wconvert')

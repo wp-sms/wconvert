@@ -13,7 +13,7 @@ import { Badge } from './components/ui/badge';
 import { Button } from './components/ui/button';
 import { BackLink } from './shell/BuilderSkeleton';
 import { Shell } from './shell/Shell';
-import { editorHref, leadsHref, reportHref, sendingIssuesHref } from './nav';
+import { createHref, editorHref, hashFor, leadsHref, reportHref, sendingIssuesHref } from './nav';
 import { useAdminNavigation, type EditingState } from './hooks/useAdminNavigation';
 import { ConfirmDialog } from './shell/ConfirmDialog';
 
@@ -42,7 +42,6 @@ export function App() {
   const navigation = useAdminNavigation();
   const { route, navigate, onEditingStateChange } = navigation;
   const section = route.section;
-  const [creating, setCreating] = useState(false);
   const [campaignBusy, setCampaignBusy] = useState(false);
   const [campaignsEmpty, setCampaignsEmpty] = useState(false);
   const campaignBusyRef = useRef(false);
@@ -51,7 +50,8 @@ export function App() {
     setCampaignBusy(state.busy);
     onEditingStateChange(state);
   }, [onEditingStateChange]);
-  const startCreating = () => { if (!campaignBusyRef.current) setCreating(true); };
+  const creating = route.creating;
+  const startCreating = () => { if (!campaignBusyRef.current) navigate(createHref()); };
   const [sendingCount, setSendingCount] = useState<number | null>(null);
   const [sendingRefresh, setSendingRefresh] = useState(0);
   useEffect(() => {
@@ -110,8 +110,9 @@ export function App() {
           onEditingStateChange={onCampaignEditingStateChange}
           onCreate={startCreating}
           onEmptyChange={setCampaignsEmpty}
-          onCancelCreate={() => setCreating(false)}
-          onEdit={(id) => navigation.requestNavigation(editorHref(id, navigation.hash || '#optins'))}
+          onCancelCreate={() => navigate(hashFor('optins'))}
+          // A new campaign's editor returns to the list, never back into creation.
+          onEdit={(id) => navigation.requestNavigation(editorHref(id, creating ? hashFor('optins') : navigation.hash || hashFor('optins')))}
         />
       )}
       {section === 'analytics' && <Dashboard query={route.report} onQueryChange={(query) => navigate(reportHref(query))} />}

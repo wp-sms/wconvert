@@ -10,7 +10,11 @@ canonical design identity **after** applying Goal, business, format, search,
 source pack, availability and Saved filters. Recommended order and Name A–Z are available. Cards show matching use-case counts; inspection chooses among those use cases;
 copy changes are not counted as different designs. Lists paginate at 24 cards.
 The October 1 flow review makes inspection the sole creation-card action: Use
-this setup belongs to the detail footer. The shared card separates identity and
+this setup belongs to the detail footer. **Amended by
+[0132](0132-every-screen-answers-its-first-question.md):** past three setups, the
+first recommended one the site can use is drawn on its own above the gallery
+with a direct Use this setup (and Preview first); every other card still opens
+inspection first. Comparison columns also carry Use this setup. The shared card separates identity and
 Save, metadata, and the Preview/Compare action row. Source identifies included
 content or an installed pack; Collection names an editorial discovery list.
 Visible cards lazily request at most 24 actual Prefill compositions per request.
@@ -22,6 +26,9 @@ with browser-owned arrow navigation. Phone inspections start at phone width.
 Two selected designs can be inspected side by side before
 continuing to one exact setup. Comparison creates no campaign. The optional
 helper refines business and format, keeping the explicitly selected Goal.
+**Corrected by [0132](0132-every-screen-answers-its-first-question.md):** the
+helper no longer exists; business is a More filters select, and Use this setup
+in a comparison column does create the draft.
 
 Picker radio strips render as compact selection chips with a solid selected
 state; their native inputs are visually clipped, and WordPress pseudo dots

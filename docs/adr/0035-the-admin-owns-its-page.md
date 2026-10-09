@@ -117,6 +117,8 @@ it in ways that appear only on the screens nobody checked.
 
 - **`nav-tab` from [#62](https://github.com/navidkashani/wconvert/pull/62) is
   reskinned, not kept.** The hash-routed section model it built is unaffected —
+  and creation is part of it since [0132](0132-every-screen-answers-its-first-question.md):
+  `#optins?new=1`, so browser Back and a reload keep the merchant in the flow —
   that was always the load-bearing half, and `resources/admin/src/nav.ts` is a
   pure translation with no markup in it.
 - **Admin notices are suppressed on WConvert's screens only**, by hook suffix,

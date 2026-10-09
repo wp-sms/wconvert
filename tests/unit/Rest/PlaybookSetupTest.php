@@ -48,6 +48,8 @@ final class PlaybookSetupTest extends TestCase
         $this->assertArrayNotHasKey('template', $cards[0]);
         $this->assertArrayNotHasKey('copy', $cards[0]);
         $this->assertMatchesRegularExpression('/^[a-f0-9]{64}$/', $cards[0]['revision']);
+        // A design that already collects a required email is not told to.
+        $this->assertSame([], $cards[0]['requirements']);
     }
 
     public function testChooserFactsAreTheEffectivePrefillNotTheAuthoredPremiumRule(): void

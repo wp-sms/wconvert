@@ -97,6 +97,8 @@ export interface ReportQuery {
 
 export interface AdminRoute {
   section: SectionId;
+  /** Choosing a goal and setup for a new campaign: an address, so Back and reload keep it. */
+  creating: boolean;
   editId?: string;
   editorTab?: 'rules';
   returnTo: string;
@@ -133,6 +135,7 @@ export const editorHref = (id: string, returnTo?: string, tab?: 'rules'): string
     tab,
     back: returnTo ? returnHref(returnTo) : undefined,
   });
+export const createHref = (): string => withQuery('optins', { new: 1 });
 export const reportHref = (query: ReportQuery = {}): string =>
   withQuery('analytics', {
     month: query.month,
@@ -165,6 +168,7 @@ export function routeFrom(hash: string): AdminRoute {
   const days = Number(params.get('days'));
   return {
     section,
+    creating: section === 'optins' && !value('edit') && value('new') === '1',
     editId: section === 'optins' ? value('edit') : undefined,
     editorTab: section === 'optins' && value('edit') && value('tab') === 'rules' ? 'rules' : undefined,
     returnTo: returnHref(params.get('back')),

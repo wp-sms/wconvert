@@ -169,6 +169,10 @@ export function GoalCard({
           */
           <Button
             aria-describedby={describedBy}
+            // Six buttons reading "Choose" are told apart by the goal they choose.
+            aria-label={current ? undefined : sprintf(
+              /* translators: 1: the action, e.g. "Choose". 2: a goal's name. */
+              __('%1$s: %2$s', 'wconvert'), choose, goal.label)}
             aria-disabled={current || refused !== null}
             variant={current ? 'secondary' : 'ghost'}
             className="wconvert-goal-card__action"
