@@ -56,6 +56,8 @@
 
 @layer utilities {
   #wconvert-admin .wconvert-service-footer .wconvert-publisher:is(:link,:visited,:hover,:focus,:active) { text-decoration:none !important; }
+  /* The wordmark is a home link; wp-admin's link colours must not repaint it. */
+  #wconvert-admin a.wconvert-brand:is(:link,:visited,:hover,:focus,:active) { color:var(--frame-text) !important; text-decoration:none !important; box-shadow:none !important; }
   #wconvert-admin .wconvert-header-tools [data-slot=button] { color:var(--frame-text) !important; }
   #wconvert-admin .wconvert-header-tools [data-slot=button]:hover { background:var(--frame-tint) !important; }
   #wconvert-admin .wconvert-panel-heading .wconvert-page-actions :is([data-slot=button][data-size=default],[data-slot=select-trigger],select) {
