@@ -284,15 +284,16 @@ editorTest('goal-first inline setup enables automatic placement and publishes', 
   await expect(placementPanel.getByRole('heading', { name: 'Placement', exact: true })).toBeVisible();
   await expect(placementPanel.locator('fieldset')).toHaveCount(0);
   await expect(placementPanel.locator('.wconvert-overlay-placement')).toHaveCount(0);
-  await expect(method).toHaveClass(/wconvert-choice-set/);
+  // The method is the shared quick-pick row (ADR 0129), on its 2.25rem floor.
+  await expect(method).toHaveClass(/wconvert-quick-picks/);
   const manual = method.getByRole('radio', { name: 'Manual', exact: true });
   const automatic = method.getByRole('radio', { name: 'Automatic', exact: true });
-  await expect(automatic).toBeVisible();
-  const choices = method.locator('label.wconvert-choice');
+  await expect(manual).toBeChecked();
+  const choices = method.locator('label.wconvert-quick-pick');
   await expect(choices).toHaveCount(3);
   for (let index = 0; index < 3; index++) {
     const box = await choices.nth(index).boundingBox();
-    expect(box?.height ?? 0).toBeGreaterThanOrEqual(44);
+    expect(box?.height ?? 0).toBeGreaterThanOrEqual(36);
   }
 
   // The builder floor must wrap the shared labels without horizontal overflow;
@@ -302,7 +303,7 @@ editorTest('goal-first inline setup enables automatic placement and publishes', 
     return {
       overflow: document.documentElement.scrollWidth - document.documentElement.clientWidth,
       panelOverflow: panel.scrollWidth - panel.clientWidth,
-      whiteSpace: getComputedStyle(panel.querySelector('.wconvert-choice__label')).whiteSpace,
+      whiteSpace: getComputedStyle(panel.querySelector('.wconvert-quick-pick')).whiteSpace,
     };
   });
   expect(narrow).not.toBeNull();
@@ -311,17 +312,16 @@ editorTest('goal-first inline setup enables automatic placement and publishes', 
   expect(narrow.whiteSpace).toBe('normal');
   await page.screenshot({ path: info.outputPath('inline-placement-manual-782-rtl.png'), fullPage: true });
 
-  // The editor intentionally leaves the radio unchecked until the explicit
-  // confirmation button commits automatic placement.
+  // Choosing Automatic applies at once. The playbook already opens right away
+  // on blog posts, so it changes no other answer and asks for no confirmation.
   await manual.focus();
   await page.keyboard.press('ArrowLeft'); // Forward through native radios in RTL.
   await expect(automatic).toBeFocused();
-  const enable = page.getByRole('group', { name: 'Enable automatic placement' });
-  await expect(enable).toBeVisible();
-  await enable.getByRole('button', { name: 'Enable automatic placement', exact: true }).click();
   await expect(automatic).toBeChecked();
-  await expect(page.getByLabel('Position in content', { exact: true })).toHaveValue('after_content');
-  await expect(page.getByLabel('Automatic placement priority', { exact: true })).toHaveValue('0');
+  await expect(placementPanel.getByText('Switch to automatic placement?', { exact: true })).toHaveCount(0);
+  const position = placementPanel.getByRole('group', { name: 'Position in the content', exact: true });
+  await expect(position.getByRole('radio', { name: 'After the content', exact: true })).toBeChecked();
+  await expect(placementPanel.getByLabel('Priority', { exact: true })).toHaveValue('0');
   await page.screenshot({ path: info.outputPath('inline-placement-automatic-782-rtl.png'), fullPage: true });
 
   // Return to Design: placement remains entirely absent, including after the
@@ -339,8 +339,8 @@ editorTest('goal-first inline setup enables automatic placement and publishes', 
   await expect(placementPanel).toBeVisible();
   await expect(page.getByText('Loading placement settings…', { exact: true })).toBeHidden({ timeout: 30000 });
   await expect(page.getByRole('radio', { name: 'Automatic', exact: true })).toBeChecked();
-  await expect(page.getByLabel('Position in content', { exact: true })).toHaveValue('after_content');
-  await expect(page.getByLabel('Automatic placement priority', { exact: true })).toHaveValue('0');
+  await expect(position.getByRole('radio', { name: 'After the content', exact: true })).toBeChecked();
+  await expect(placementPanel.getByLabel('Priority', { exact: true })).toHaveValue('0');
 
   // The disposable Playground has no connected service. Exercise the real
   // product's explicit local lead-storage choice so this test can publish
@@ -365,7 +365,6 @@ editorTest('goal-first inline setup enables automatic placement and publishes', 
   await rulesTab.click();
   await pages.click();
   await method.getByText('Content lock', { exact: true }).click();
-  await page.getByRole('group', { name: 'Enable content lock', exact: true }).getByRole('button', { name: 'Enable content lock', exact: true }).click();
   await expect(page.getByRole('radio', { name: 'Content lock', exact: true })).toBeChecked();
   await expect(page.getByRole('radio', { name: 'Automatic', exact: true })).not.toBeChecked();
   const previewButton = page.getByRole('button', { name: 'Preview & test', exact: true });
@@ -396,10 +395,6 @@ editorTest('goal-first inline setup enables automatic placement and publishes', 
     for (const direction of ['ltr', 'rtl']) {
       await page.evaluate(dir => { document.documentElement.dir = dir; }, direction);
       await expect.poll(() => placementPanel.evaluate(panel => panel.scrollWidth - panel.clientWidth)).toBeLessThanOrEqual(1);
-      const help = placementPanel.locator('details').filter({ has: page.getByText('Setup details', { exact: true }) });
-      await help.getByText('Setup details', { exact: true }).click();
-      await expect.poll(() => placementPanel.evaluate(panel => panel.scrollWidth - panel.clientWidth)).toBeLessThanOrEqual(1);
-      await help.getByText('Setup details', { exact: true }).click();
     }
   }
   await page.setViewportSize({ width: 1440, height: 1000 });
