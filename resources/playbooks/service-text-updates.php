@@ -8,7 +8,7 @@ return [
     'goal' => 'grow_sms_list',
     'template_id' => 'stacked-signup',
     'business_types' => ['services'],
-    'notes' => __('Connect a supported SMS service or choose Collect only with a defined follow-up process. These are marketing announcements, not appointment reminders.', 'wconvert'),
+    'notes' => __('Connect a supported SMS service or choose Keep in WConvert only with a defined follow-up process. These are marketing announcements, not appointment reminders.', 'wconvert'),
     'copy' => [
         'headline' => __('Useful service news. By text.', 'wconvert'),
         'body' => __('Request occasional announcements about new services and seasonal availability.', 'wconvert'),

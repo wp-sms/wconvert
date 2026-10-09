@@ -20,6 +20,12 @@ require a click design with a link (including the configured Pro product block i
 Lead magnets additionally require a selected dispatchable lead-magnet email
 Destination with its required settings completed at REST publication.
 
+*Amended by [ADR 0133](0133-a-fresh-setup-has-nothing-to-fix.md): kept in
+WConvert only, a lead magnet publishes and the review warns that no file goes
+out; the delivery Destination is required only once connecting is chosen. Offer
+links start on the shop or home page, marked to check, and a result's link is
+optional.*
+
 **Extended by [ADR 0106](0106-question-journeys-extend-the-paid-loader.md):** Find Match requires a Results screen and allows an anonymous completion. Required contact before results is a request; optional contact after immediate results is a separate marketing signup with consent. The server validates either edited order before publication.
 
 The shared contract drives starting-point facts, fit-first browsing, readiness and

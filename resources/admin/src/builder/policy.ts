@@ -39,8 +39,8 @@ import type { TemplateNode, TemplateTree } from '@renderer/types';
  * A second spelling of a PHP rule, which this project refuses by default
  * (ADR 0019) — and takes here for the same reason `convertingActOf` mirrors
  * `ConvertingAct::offeredIn()`: the two runtimes cannot defer to each other,
- * the rule is four lines, and `tests/js/policy-link-parity.test.ts` reads the
- * same fixture `PolicyLinkTest` does so they cannot drift.
+ * the rule is four lines, and `tests/js/link-and-capture-parity.test.ts` reads
+ * the same fixture `LinkAndCaptureParityTest` does so they cannot drift.
  */
 
 /**
@@ -61,11 +61,11 @@ export const policyUrl = (): string | undefined => {
 /**
  * One tree, with every link the SITE has to complete filled in.
  *
- * The rule is `PolicyLink::resolve()`'s, exactly: **a link with a label and no
- * href** is asking for the one destination only the site can name, and a link
- * that names its own was written by the merchant. So consent wording and fine
- * print resolve identically, with no table of Slot Roles to keep in step and no
- * node type getting a special case.
+ * The rule is `PolicyLink::resolve()`'s, exactly: **in consent wording or fine
+ * print, a link with a label and no href** is asking for the one destination
+ * only the site can name, and a link that names its own was written by the
+ * merchant. A hrefless link anywhere else is unfinished, and stays so
+ * ({@link asksForPolicy}, ADR 0133).
  *
  * Returns the tree UNCHANGED — by identity — where there is nothing to do, so a
  * `Preview` that remounts on `template` identity does not remount because this
@@ -88,6 +88,7 @@ function resolve(node: TemplateNode, url: string): TemplateNode {
   const asked = node as { link?: { label?: string; href?: string } };
   const link = asked.link;
   const wants =
+    asksForPolicy(node) &&
     link !== undefined &&
     typeof link.label === 'string' &&
     link.label !== '' &&
@@ -110,4 +111,13 @@ function resolve(node: TemplateNode, url: string): TemplateNode {
   }
 
   return next;
+}
+
+/**
+ * Whether this node is one of the two sentences a policy link belongs in:
+ * consent wording, or text whose Role is fine print. `PolicyLink::asksForPolicy()`
+ * is the other spelling.
+ */
+export function asksForPolicy(node: { readonly type: string; readonly role?: string | null }): boolean {
+  return node.type === 'consent' || (node.type === 'text' && node.role === 'fine_print');
 }

@@ -1471,7 +1471,7 @@ describe('whole-draft Undo and Redo', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));
     await screen.findByText('Draft saved');
     expect(builder.saveOptin).toHaveBeenCalledExactlyOnceWith(ID, 'Welcome discount revised', {
-      ...optin().config, frequency: { stopAfterConversion: false }, destinations: [], capture_mode: 'connected',
+      ...optin().config, frequency: { stopAfterConversion: false }, destinations: [], capture_mode: 'local',
     }, undefined, 'centred-card');
   });
 

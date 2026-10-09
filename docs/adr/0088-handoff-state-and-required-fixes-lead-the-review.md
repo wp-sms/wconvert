@@ -32,6 +32,12 @@ behavior, persistence schema or Save/Undo/retry behavior changes. Enquiries can
 still remain local; list Goals require a matching service or explicit collect-only;
 lead magnets still require their delivery setup. Configuration is not delivery proof.
 
+*Amended by [ADR 0133](0133-a-fresh-setup-has-nothing-to-fix.md): leads stay in
+WConvert until a service is connected, so "explicit collect-only" is now the
+default rather than a choice the merchant must make, and a lead magnet kept
+local publishes with a warning. The review's blockers and advisories come from
+one list, `campaignIssues()`.*
+
 ## Verification boundary
 
 Interaction tests cover blocker ordering, optional detail disclosure, incomplete

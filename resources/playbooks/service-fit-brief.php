@@ -8,7 +8,7 @@ return [
     'goal' => 'collect_enquiries',
     'template_id' => 'scope-sheet',
     'business_types' => ['services'],
-    'notes' => __('Embed beside the actual website-review description. Verify included work and exclusions, and link the page to your full terms. Use Collect only or a supported destination and assign someone to reply. Scope, price and timing are agreed separately; no booking or quotation is created.', 'wconvert'),
+    'notes' => __('Embed beside the actual website-review description. Verify included work and exclusions, and link the page to your full terms. Keep leads in WConvert only or a supported destination and assign someone to reply. Scope, price and timing are agreed separately; no booking or quotation is created.', 'wconvert'),
     'copy' => [
         'eyebrow' => [__('A website review', 'wconvert'), __('What we review', 'wconvert'), __('Agreed separately', 'wconvert'), __('Request received', 'wconvert')],
         'headline' => [__('Know what you are asking for.', 'wconvert'), __('Clarity. Navigation. Next steps.', 'wconvert'), __('Changes to the website.', 'wconvert'), __('Start with a conversation.', 'wconvert')],

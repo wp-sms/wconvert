@@ -8,7 +8,7 @@ return [
     'goal' => 'grow_sms_list',
     'template_id' => 'message-sample',
     'business_types' => ['stores'],
-    'notes' => __('Replace the illustrative message and frequency with your actual collection-text programme. Configure an SMS destination and its opt-out process, or use Collect only. Show on relevant collection pages after 20 seconds, exclude checkout and respect dismissal. A saved request does not establish provider subscription or message delivery.', 'wconvert'),
+    'notes' => __('Replace the illustrative message and frequency with your actual collection-text programme. Configure an SMS destination and its opt-out process, or keep leads in WConvert only. Show on relevant collection pages after 20 seconds, exclude checkout and respect dismissal. A saved request does not establish provider subscription or message delivery.', 'wconvert'),
     'copy' => [
         'eyebrow' => [__('A preview, before you decide', 'wconvert'), __('Example message', 'wconvert'), __('Request received', 'wconvert')],
         'headline' => [__('A little news.

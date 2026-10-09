@@ -83,7 +83,10 @@ export interface DestinationsEditorProps {
   readonly emptyText?: string;
   /** The main save point shows the always-on Lead log row and the publish requirement. */
   readonly primary?: boolean;
-  /** "Keep in WConvert only": no routes, and the Lead log row says what that means. */
+  /**
+   * "Keep in WConvert only": nothing is forwarded and the Lead log row says
+   * so. The services stay listed, because choosing one connects (ADR 0133).
+   */
   readonly local?: boolean;
   /** The visible email suggestion for a test send. Sending always requires an explicit address. */
   readonly testEmail?: string | null;
@@ -108,7 +111,7 @@ export function DestinationsEditor({
   const site = available.status === 'ready' ? available.data : [];
   const cards = bound.map((id) => site.find((destination) => destination.id === id)).filter((each): each is Destination => each !== undefined);
   const missing = available.status === 'ready' ? bound.filter((id) => !site.some((destination) => destination.id === id)) : [];
-  const handoffIssue = primary && outcome && available.status === 'ready' ? outcomeHandoffIssue(outcome, bound, site) : null;
+  const handoffIssue = primary && outcome && available.status === 'ready' ? outcomeHandoffIssue(outcome, bound, site, local ? 'local' : 'connected') : null;
   const names = contactFieldNames();
   const saved = capturedFields(template, submission).filter((field) => field.name in names).map((field) => names[field.name]);
   /* translators: %s: the contact fields a signup collects, e.g. “email and name”. */
@@ -145,7 +148,7 @@ export function DestinationsEditor({
           <div role="status" className="wconvert-destination-callout">
             <p className="m-0">{handoffIssue}</p>
             {/* The answer beside the question: one click, undoable (ADR 0132). */}
-            {onKeepLocal && outcome?.audience_channel && <Button type="button" variant="outline" onClick={onKeepLocal}>{__('Keep in WConvert only', 'wconvert')}</Button>}
+            {onKeepLocal && <Button type="button" variant="outline" onClick={onKeepLocal}>{__('Keep in WConvert only', 'wconvert')}</Button>}
           </div>
         </RegionBody>}
 
@@ -161,8 +164,8 @@ export function DestinationsEditor({
             <span className="text-note font-semibold text-muted-foreground">{__('Always', 'wconvert')}</span>
           </div>}
 
-          {local ? null
-            : available.status === 'loading' ? <RowsSkeleton />
+          {/* Kept local, the services stay one choice away: choosing one connects (ADR 0133). */}
+          {available.status === 'loading' ? <RowsSkeleton />
             : available.status === 'failed' ? <RegionErrorState message={available.message} hint={__('Your draft is unchanged.', 'wconvert')} onRetry={onRefresh} />
             : site.length === 0 ? (
               <div className="flex flex-col gap-2">

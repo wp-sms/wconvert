@@ -58,6 +58,10 @@ final class PrefillPartsParityTest extends TestCase
         // never writes it — so a difference in it cannot be a merchant's act
         // (CONTEXT.md, Playbook; `PublishedProjection`).
         'destination_hint',
+        // Authoring state too: which prefilled link addresses the merchant has
+        // not looked at yet (ADR 0133). It is read against the button's own
+        // href, so changing the link is the Design part's edit, not this key's.
+        'unchecked_links',
     ];
 
     private TemplateVocabulary $templates;

@@ -100,6 +100,22 @@ final class PolicyLinkTest extends TestCase
     }
 
     /**
+     * **Only the sentences that ask for the policy get it.** A link in body
+     * text that the merchant left without an address is a link they have not
+     * finished, not a request for the privacy policy — filling it in turned a
+     * "Read the guide" link into a policy link without saying so. It stays
+     * hrefless, renders no anchor, and the review asks for an address.
+     */
+    public function testBodyTextWithAnEmptyLinkIsNotThePolicy(): void
+    {
+        foreach ([['text', 'body'], ['text', null], ['heading', 'headline']] as [$type, $role]) {
+            $resolved = PolicyLink::into(self::payload(['label' => 'the guide'], $type, $role), self::POLICY);
+
+            $this->assertArrayNotHasKey('href', self::firstLink($resolved), "{$type}/{$role}");
+        }
+    }
+
+    /**
      * A link with no label has no anchor text, so there is nothing to render
      * whatever href it were given.
      */

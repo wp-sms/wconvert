@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, useState, type ReactNode } from 'react';
+import { useId, useRef, useState, type ReactNode } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
 import { ArrowLeft, Check, TriangleAlert } from 'lucide-react';
 import { Button } from '../components/ui/button';
@@ -16,13 +16,12 @@ import { formatCount, humanize, labelOf } from '../lib/format';
 import { messageOf, type Loadable } from '../shell/loadable';
 import { destinationsSaid } from './destinations';
 import { capturedFields } from '../destinations/requirements';
-import { problemsIn, type Problem } from './structure/problems';
-import { captureReadiness } from './structure/captureReadiness';
-import { journeyIssues as collectJourneyIssues } from './structure/journeyIssues';
 import { type JourneyRepair } from './structure/journeyReadiness';
-import { capturesTaken, nodeAt, nodesOf } from './structure/tree';
+import { capturesTaken } from './structure/tree';
 import { convertingActOf } from './structure/guards';
 import { summarise, summaryOf } from './rules/summaries';
+import { ISSUE, consentIn, followIssue, visiblePolicyLinkIn, type CampaignIssue, type IssueRoutes } from './readiness/campaignIssues';
+import type { CaptureMode } from './captureMode';
 import { PlacementGuidance } from './PlacementGuidance';
 import { inlinePlacementLabel } from '../inlinePlacement';
 import { physicalPlacementLabel, resolvedPlacement } from './PlacementControl';
@@ -32,14 +31,15 @@ import type { RuleVocabulary } from './api';
 import type { DisplayRulesValue } from './rules/summaries';
 import type { Destination } from '../destinations/api';
 import { goalSaid } from '../goals/said';
-import { outcomeDesignIssue, outcomeHandoffIssue } from '../goals/outcome';
 import type { GoalEntry } from '../goals/api';
 import type { Template } from '@renderer/types';
 
 export interface ReadinessDialogProps {
   /** The campaign's name: the dialog is about it, so it is the title. */
   readonly name?: string;
-  readonly captureMode?: string;
+  readonly captureMode?: CaptureMode;
+  /** The campaign's one issue list (ADR 0133): the same one every other count reads. */
+  readonly issues: readonly CampaignIssue[];
   readonly optinId: string;
   readonly optin: OptinState;
   readonly dirty: boolean;
@@ -68,6 +68,8 @@ export interface ReadinessDialogProps {
   readonly onGoToDesign: () => void;
   readonly onGoToPlacement?: () => void;
   readonly onEditDesign: () => void;
+  /** Opens the Look panel: colors, fonts, position and the reopen button. */
+  readonly onGoToLook?: () => void;
   readonly onEditJourney?: (repair?: JourneyRepair) => void;
   readonly onPreview: () => void;
   /** Saves any unsaved draft before promoting it; rejects without hiding the dialog. */
@@ -76,16 +78,12 @@ export interface ReadinessDialogProps {
   readonly onKeepLocal?: () => void;
   /** Reads the campaign's goal again after a failed read. */
   readonly onRetryGoal?: () => void;
-  /** Which editor tabs hold something that blocks publishing, for their attention dots. */
-  readonly onBlockedTabsChange?: (tabs: readonly BlockedTab[]) => void;
 }
-
-export type BlockedTab = 'journey' | 'design' | 'rules' | 'destinations';
-type Blocker = { said: string; fix: () => void; tab: BlockedTab | null; inline?: ReactNode };
 
 export function ReadinessDialog({
   name = '',
-  captureMode = 'connected',
+  captureMode = 'local',
+  issues,
   optinId,
   optin,
   dirty,
@@ -114,12 +112,12 @@ export function ReadinessDialog({
   onGoToDesign,
   onGoToPlacement = onGoToDesign,
   onEditDesign,
+  onGoToLook = onEditDesign,
   onEditJourney = onEditDesign,
   onPreview,
   onPublish,
   onKeepLocal,
   onRetryGoal,
-  onBlockedTabsChange,
 }: ReadinessDialogProps) {
   const [open, setOpen] = useState(false);
   const direction = useDirection();
@@ -142,50 +140,16 @@ export function ReadinessDialog({
   const visibleConsentPath = template ? consentIn(template, true) : null;
   const reviewsPrivacy = privacyGuidance && captures.length > 0;
   const expectsConsent = reviewsPrivacy && outcome?.audience_channel != null;
-  const missingPolicyPage = reviewsPrivacy && !policyUrl;
-  const missingNotice = reviewsPrivacy && privacyPath === null;
-  const missingConsent = expectsConsent && visibleConsentPath === null;
-  const problems = hasDesign ? [...problemsIn(template, rules.schedule.ends_at), ...captureReadiness(template, outcome?.audience_channel)] : [];
-  const journeyIssues = template ? collectJourneyIssues(template.tree, outcome?.action) : [];
-  const needsCapture = bound.length > 0;
-  const goalIssue = outcome && hasDesign ? outcomeDesignIssue(outcome, template) : null;
-  const handoffIssue = outcome ? outcomeHandoffIssue(outcome, bound, destinations, captureMode) : null;
-  const inlineTriggerIssue = !overlay && (inlinePlacement != null || contentLock != null) && rules.display_rules?.opening.mode !== 'immediate';
-  const blocking: Blocker[] = [
-    ...summaries.filter(summary => summary.attention && ['who', 'when', 'where'].includes(summary.id)).map(summary => ({ said: summary.text, fix: () => onGoToRules(summary.id), tab: 'rules' as const })),
-    ...(contentLock != null && (overlay || inlinePlacement != null || !template || convertingActOf(template.tree)[0] !== 'submit')
-      ? [{ said: __('Content lock requires an inline submission form and manual placement.', 'wconvert'), fix: onGoToPlacement, tab: 'rules' as const }] : []),
-    ...(!overlay && inlinePlacement != null && inlinePlacementLabel(inlinePlacement) === null
-      ? [{ said: __('Choose a valid inline position and a whole paragraph number from 1 to 100.', 'wconvert'), fix: onGoToPlacement, tab: 'rules' as const }] : []),
-    ...(inlineTriggerIssue ? [{ said: __('This placement needs “When does it open?” set to Right away. Change it, or use manual placement.', 'wconvert'), fix: () => onGoToRules('when'), tab: 'rules' as const }] : []),
-    // A failed read is retried in place: reloading the page would cost unsaved edits.
-    ...(!outcome ? [{ said: __('The goal’s requirements could not be checked.', 'wconvert'), fix: () => onRetryGoal?.(), tab: null,
-      inline: onRetryGoal && <Button type="button" variant="outline" onClick={onRetryGoal}>{__('Try again', 'wconvert')}</Button> }] : []),
-    ...(goalIssue ? [{ said: goalIssue, fix: template && convertingActOf(template.tree)[0] === outcome?.action ? onEditDesign : onGoToDesign, tab: 'design' as const }] : []),
-    // The commonest first-campaign blocker gets its answer beside it, not a tab away (ADR 0132).
-    ...(handoffIssue ? [{ said: handoffIssue, fix: onGoToDestinations, tab: 'destinations' as const,
-      inline: outcome?.audience_channel && onKeepLocal && <Button type="button" variant="outline" onClick={onKeepLocal}>{__('Keep in WConvert only', 'wconvert')}</Button> }] : []),
-    ...(!hasDesign ? [{ said: __('Choose a design before publishing.', 'wconvert'), fix: onGoToDesign, tab: 'design' as const }] : []),
-    ...journeyIssues.map(issue => ({ said: issue.said, fix: () => onEditJourney(issue.repair), tab: 'journey' as const })),
-    ...problems.filter((problem) => problem.check === 'converts' || problem.blocksPublish).map((problem) => ({
-      said: problem.said,
-      fix: problem.path !== null ? () => onGoTo(problem.path as Path) : onEditDesign,
-      tab: 'journey' as const,
-    })),
-    ...(hasDesign && needsCapture && captures.length === 0
-      ? [{ said: __('This campaign needs a form field to collect leads. Choose a design with a form.', 'wconvert'), fix: onGoToDesign, tab: 'design' as const }]
-      : []),
-  ];
-  // A blocker answered inside the dialog (a failed goal read) belongs to no tab.
-  const blockedTabs = [...new Set(blocking.flatMap((problem) => problem.tab === null ? [] : [problem.tab]))].sort().join(',');
-  useEffect(() => {
-    onBlockedTabsChange?.(blockedTabs === '' ? [] : blockedTabs.split(',') as BlockedTab[]);
-  }, [blockedTabs, onBlockedTabsChange]);
+  const blocking = issues.filter(issue => issue.blocks);
+  const warnings = issues.filter(issue => !issue.blocks && issue.section === undefined);
+  const missingPolicyPage = issues.some(issue => issue.key === ISSUE.policyPage);
+  const missingNotice = issues.some(issue => issue.key === ISSUE.policyNotice);
+  const missingConsent = issues.some(issue => issue.key === ISSUE.consent);
+  const routes: IssueRoutes = { onGoTo, onGoToSchedule, onGoToRules, onGoToDestinations, onGoToDesign, onGoToPlacement, onEditDesign, onEditJourney, onRetryGoal };
+  const handoffIssue = issues.find(issue => issue.key === ISSUE.handoff) ?? null;
   // After jumping to fix a blocker, the way back to the list stays on screen until the list is empty.
   const [resume, setResume] = useState(false);
-  const warnings = problems.filter((problem) => problem.check !== 'converts' && !problem.blocksPublish);
-  const reviewCount = blocking.length + warnings.length + where.problems.length
-    + (missingPolicyPage ? 1 : 0) + (missingNotice ? 1 : 0) + (missingConsent ? 1 : 0);
+  const reviewCount = issues.length;
   const startedFrom = playbookId !== '' && playbook.status === 'ready' ? playbook.data : null;
   const isPublished = optin.published_at !== null;
   const current = isPublished && !dirty && !optin.has_unpublished_changes;
@@ -196,11 +160,7 @@ export function ReadinessDialog({
     setResume(fromBlocker);
     setOpen(false);
   };
-  const fix = (problem: Problem) => {
-    if (problem.go === 'schedule') jump(onGoToSchedule);
-    else if (problem.path !== null) jump(() => onGoTo(problem.path as Path));
-    else jump(onGoToDesign);
-  };
+  const fix = (issue: CampaignIssue, fromBlocker = false) => jump(() => followIssue(issue.go, routes), fromBlocker);
   const reopen = () => {
     setPublished(false);
     setError(null);
@@ -324,11 +284,12 @@ export function ReadinessDialog({
                   <ReviewSection title={__('Before you can publish', 'wconvert')}>
                     <ul className="wconvert-launch-review__notice">
                       {blocking.map((problem) => (
-                        <li key={problem.said}>
-                          <button type="button" className="wconvert-readiness__go" onClick={() => jump(problem.fix, true)}>
+                        <li key={problem.key}>
+                          <button type="button" className="wconvert-readiness__go" onClick={() => fix(problem, true)}>
                             {problem.said}
                           </button>
-                          {problem.inline}
+                          {problem.offersRetry && onRetryGoal && <Button type="button" variant="outline" onClick={onRetryGoal}>{__('Try again', 'wconvert')}</Button>}
+                          {problem.offersKeepLocal && onKeepLocal && <Button type="button" variant="outline" onClick={onKeepLocal}>{__('Keep in WConvert only', 'wconvert')}</Button>}
                         </li>
                       ))}
                     </ul>
@@ -358,7 +319,7 @@ export function ReadinessDialog({
                   )}
                   {position !== null && (
                     <p>
-                      <button type="button" className="wconvert-readiness__go" onClick={() => jump(onGoToDesign)}>
+                      <button type="button" className="wconvert-readiness__go" onClick={() => jump(onGoToLook)}>
                         {sprintf(__('Position: %s', 'wconvert'), position)}
                       </button>
                       {displayType === 'floating_bar' && resolvedPlacement(displayType, placement) === 'block_start' && (
@@ -368,7 +329,7 @@ export function ReadinessDialog({
                   )}
                   {teaser != null && ['popup', 'slide_in'].includes(displayType) && (
                     <p>
-                      <button type="button" className="wconvert-readiness__go" onClick={() => jump(onGoToDesign)}>
+                      <button type="button" className="wconvert-readiness__go" onClick={() => jump(onGoToLook)}>
                         {__('Reopen button', 'wconvert')}
                       </button>{' '}
                       {__('Follows visitors to eligible pages in this tab after they close it. Check it beside checkout, chat and cookie controls on mobile.', 'wconvert')}
@@ -433,16 +394,12 @@ export function ReadinessDialog({
                       {__('Destination details could not be checked. Open Destinations to refresh them.', 'wconvert')}
                     </p>
                   )}
-                  {where.problems.length > 0 && (
+                  {issues.some(issue => issue.section === 'where') && (
                     <ul className="wconvert-launch-review__notice">
-                      {where.problems.map((said) => (
-                        <li key={said}>
-                          <button
-                            type="button"
-                            className="wconvert-readiness__go"
-                            onClick={() => jump(onGoToDestinations)}
-                          >
-                            {said}
+                      {issues.filter(issue => issue.section === 'where').map((issue) => (
+                        <li key={issue.key}>
+                          <button type="button" className="wconvert-readiness__go" onClick={() => fix(issue)}>
+                            {issue.said}
                           </button>
                         </li>
                       ))}
@@ -501,8 +458,8 @@ export function ReadinessDialog({
                     )}
                   >
                     <ul className="wconvert-launch-review__warnings">
-                      {warnings.map((problem, i) => (
-                        <li key={i}>
+                      {warnings.map((problem) => (
+                        <li key={problem.key}>
                           <button type="button" className="wconvert-readiness__go" onClick={() => fix(problem)}>
                             {problem.said}
                           </button>
@@ -591,23 +548,6 @@ export function ReadinessDialog({
       </AdminDialog>
     </>
   );
-}
-
-/** A visible sentence whose address is supplied by this site's policy setting. */
-function visiblePolicyLinkIn(template: Template, policyUrl?: string): Path | null {
-  for (const block of nodesOf(template.tree)) {
-    if (block.hidden) continue;
-    const node = nodeAt(template.tree, block.path) as { link?: { label?: unknown; href?: unknown } } | null;
-    const link = node?.link;
-    if (!link || typeof link.label !== 'string' || link.label.trim() === '') continue;
-    if (link.href === undefined || link.href === '' || link.href === policyUrl) return block.path;
-  }
-
-  return null;
-}
-
-function consentIn(template: Template, visibleOnly = false): Path | null {
-  return nodesOf(template.tree).find((block) => block.type === 'consent' && (!visibleOnly || !block.hidden))?.path ?? null;
 }
 
 function ReviewSection({

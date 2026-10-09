@@ -51,6 +51,9 @@ is the thing they came for the most visible thing, with one way forward?
     channel, creation writes `capture_mode = local` (amends
     [0086](0086-campaign-setups-explain-handoff-and-format.md)); where the
     blocker still appears, its answer is a button beside it.
+    *Amended by [0133](0133-a-fresh-setup-has-nothing-to-fix.md): creation
+    writes nothing; a missing mode with no Destination bound reads as local on
+    both sides, for every Goal.*
 12. **Blockers say how many and where.** Review & publish reads "N to fix"
     (described, not renamed), each tab holding a blocker carries a dot, and
     after jumping to one a "Back to review · N left" chip stays in the header.

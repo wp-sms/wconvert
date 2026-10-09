@@ -6,6 +6,7 @@ import { fitsOutcome, outcomeDesignIssue, outcomeHandoffIssue } from '../../reso
 import { CAPTURE_OUTCOME, CLICK_OUTCOME } from './support/outcomes';
 import type { Template } from '@renderer/types';
 import type { Destination } from '../../resources/admin/src/destinations/api';
+import { captureModeOf, routedMode } from '../../resources/admin/src/builder/captureMode';
 
 const design = (id: string): Template => JSON.parse(readFileSync(resolve(import.meta.dirname, `../../resources/templates/library/${id}.json`), 'utf8'));
 
@@ -35,19 +36,47 @@ describe('the Goal contract on the edited draft', () => {
     const destination = { id: 'route', type: 'delivery', availability: 'ready', settings: {}, requirements: {
       capture_any_of: ['email'], settings: { file: { label: 'File', type: 'text' } }, fields: ['email'], mapped_fields: {},
     } } as unknown as Destination;
-    expect(outcomeHandoffIssue(outcome, [], [destination])).not.toBeNull();
-    expect(outcomeHandoffIssue(outcome, ['route'], [destination])).not.toBeNull();
-    expect(outcomeHandoffIssue(outcome, ['route'], [{ ...destination, settings: { file: 'https://example.org/guide.pdf' } }])).toBeNull();
-    expect(outcomeHandoffIssue(outcome, ['route'], null)).not.toBeNull();
+    expect(outcomeHandoffIssue(outcome, [], [destination], 'connected')).not.toBeNull();
+    expect(outcomeHandoffIssue(outcome, ['route'], [destination], 'connected')).not.toBeNull();
+    expect(outcomeHandoffIssue(outcome, ['route'], [{ ...destination, settings: { file: 'https://example.org/guide.pdf' } }], 'connected')).toBeNull();
+    expect(outcomeHandoffIssue(outcome, ['route'], null, 'connected')).not.toBeNull();
   });
 
-  it('requires a capable audience service by default, with an explicit collect-only alternative', () => {
+  /** Kept in WConvert only, a lead magnet still publishes; the review warns instead (ADR 0133). */
+  it('lets a lead magnet kept in WConvert publish', () => {
+    const outcome = { ...CAPTURE_OUTCOME, destination_type: 'delivery', audience_channel: null };
+    expect(outcomeHandoffIssue(outcome, [], [], 'local')).toBeNull();
+    expect(outcomeHandoffIssue(outcome, [], null, 'local')).toBeNull();
+  });
+
+  it('requires a capable audience service once connecting is chosen, and nothing while leads stay local', () => {
     const route = { id: 'email', type: 'mailpoet', availability: 'ready', settings: {}, requirements: {
       capture_any_of: ['email'], settings: {}, fields: ['email'], mapped_fields: {}, audience_channels: ['email'],
     } } as unknown as Destination;
-    expect(outcomeHandoffIssue(CAPTURE_OUTCOME, [], [route])).not.toBeNull();
+    expect(outcomeHandoffIssue(CAPTURE_OUTCOME, [], [route], 'connected')).not.toBeNull();
     expect(outcomeHandoffIssue(CAPTURE_OUTCOME, [], [route], 'local')).toBeNull();
-    expect(outcomeHandoffIssue(CAPTURE_OUTCOME, ['email'], [route])).toBeNull();
-    expect(outcomeHandoffIssue({ ...CAPTURE_OUTCOME, audience_channel: 'phone' }, ['email'], [route])).not.toBeNull();
+    expect(outcomeHandoffIssue(CAPTURE_OUTCOME, ['email'], [route], 'connected')).toBeNull();
+    expect(outcomeHandoffIssue({ ...CAPTURE_OUTCOME, audience_channel: 'phone' }, ['email'], [route], 'connected')).not.toBeNull();
+  });
+});
+
+describe('where leads go', () => {
+  /** The same rule `OptinBinding::captureMode()` applies (ADR 0133). */
+  it('keeps leads in WConvert until a service is connected', () => {
+    expect(captureModeOf(undefined)).toBe('local');
+    expect(captureModeOf({})).toBe('local');
+    expect(captureModeOf({ destinations: [] })).toBe('local');
+    expect(captureModeOf({ destinations: ['01JQ0000000000000000000001'] })).toBe('connected');
+    expect(captureModeOf({ submission_settings: { s2: { destination_ids: ['01JQ0000000000000000000001'] } } })).toBe('connected');
+    expect(captureModeOf({ capture_mode: 'local', destinations: ['01JQ0000000000000000000001'] })).toBe('local');
+    expect(captureModeOf({ capture_mode: 'connected' })).toBe('connected');
+  });
+
+  /** Removing the main form's last service must not cut the optional form's routes. */
+  it('writes the mode every form’s routes imply, whatever was stored', () => {
+    const optional = { submission_settings: { s2: { destination_ids: ['01JQ0000000000000000000001'] } } };
+    expect(routedMode({ capture_mode: 'connected', destinations: [], ...optional })).toBe('connected');
+    expect(routedMode({ capture_mode: 'connected', destinations: [] })).toBe('local');
+    expect(routedMode({ capture_mode: 'local', destinations: ['01JQ0000000000000000000001'] })).toBe('connected');
   });
 });

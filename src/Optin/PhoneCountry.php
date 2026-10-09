@@ -46,12 +46,26 @@ final class PhoneCountry
     }
 
     /**
-     * A starting country to OFFER, never to save: the store's own address when
-     * WooCommerce has one, else the region in the site's language. Settings
-     * shows it beside an empty default and nothing changes until it is chosen,
-     * so a guess never reaches a published phone field on its own.
+     * The country a phone field set to "site default" starts on: the one in
+     * Settings, or — with none chosen — {@see suggested()}. So a fresh phone
+     * setup has nothing to fix (ADR 0133), and the admin and the publish
+     * check read one value.
+     */
+    public static function effectiveDefault(): string
+    {
+        $chosen = self::siteDefault();
+
+        return $chosen !== '' ? $chosen : (self::suggested()['country'] ?? '');
+    }
+
+    /**
+     * A starting country read from what WordPress already knows: the store's
+     * own address when WooCommerce has one, else the region in the site's
+     * language. Settings offers it beside an empty default, and until one is
+     * chosen it is what a "site default" phone field starts on
+     * ({@see effectiveDefault()}; ADR 0133 amends the "never saved" rule).
      *
-     * Computed on read from what WordPress already knows — no option of its own.
+     * Computed on read — no option of its own.
      *
      * @return array{country: string, from: 'store'|'language'}|null
      */
@@ -97,7 +111,7 @@ final class PhoneCountry
         $resolved = TemplateTree::rewrittenIn($config, static function (array $node) use (&$default, &$missing): array {
             if (($node['type'] ?? null) !== 'field' || ($node['name'] ?? null) !== 'phone') return $node;
             $held = $node['phone_country'] ?? 'site';
-            if ($held === 'site' && $default === null) $default = self::siteDefault();
+            if ($held === 'site' && $default === null) $default = self::effectiveDefault();
             $country = $held === 'site' ? $default : $held;
             if (!self::valid($country)) { $missing = true; return $node; }
             $node['phone_country'] = $country;

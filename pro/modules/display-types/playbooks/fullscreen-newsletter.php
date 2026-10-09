@@ -7,7 +7,7 @@ return [
     'name' => __('Offer a weekly email in fullscreen', 'wconvert'),
     'goal' => 'grow_email_list',
     'template_id' => 'fullscreen-editorial',
-    'notes' => __('Show a focused invitation after visitors have read half the page. Replace the sample promise and connect an audience service or choose Collect only. Review frequency and page targeting before publishing.', 'wconvert'),
+    'notes' => __('Show a focused invitation after visitors have read half the page. Replace the sample promise and connect an audience service or choose Keep in WConvert only. Review frequency and page targeting before publishing.', 'wconvert'),
     'copy' => [
         'eyebrow' => __('The weekly field notes', 'wconvert'),
         'headline' => __("One useful idea.\nEvery Friday.", 'wconvert'),

@@ -100,7 +100,10 @@ names no destination is the site-resolved one.** One rule, and no table of node
 types or [[Slot Role]]s to keep in step — a link the merchant gave an href is a
 link they chose, scheme-validated at write under
 [ADR 0013](0013-playbook-copy-carries-no-markup.md); a link with a label and
-nowhere to go is asking for the one destination only the site can name. It is
+nowhere to go is asking for the one destination only the site can name.
+*Narrowed by [ADR 0133](0133-a-fresh-setup-has-nothing-to-fix.md): only in
+consent wording and text whose Role is `fine_print`. A hrefless link anywhere
+else is unfinished and publication refuses it.* It is
 resolved **per request** rather than baked into the published set, so moving the
 policy page corrects every running Optin without republishing one, and that is
 safe under the full-page cache because `get_privacy_policy_url()` is site-wide

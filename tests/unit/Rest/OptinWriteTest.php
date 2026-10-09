@@ -192,16 +192,17 @@ final class OptinWriteTest extends TestCase
         self::assertSame(Goal::GrowEmailList->value, $this->optins->find($draft['id'])?->goal);
     }
 
-    public function testListCollectionRequiresAServiceOrAnExplicitCollectOnlyChoice(): void
+    /** Leads stay in WConvert until a service is connected (ADR 0133); choosing to connect one and not finishing blocks. */
+    public function testListCollectionKeepsLeadsLocallyUntilAServiceIsChosen(): void
     {
         $draft = $this->create(Goal::GrowEmailList, ['template_id' => 'centred-card']);
         self::assertIsArray($draft);
         $request = new WP_REST_Request();
         $request->set_param('id', $draft['id']);
-        self::assertInstanceOf(WP_Error::class, $this->controller->publish($request));
-        $request->set_param('config', $draft['config'] + ['capture_mode' => 'local']);
-        $this->controller->update($request);
         self::assertInstanceOf(\WP_REST_Response::class, $this->controller->publish($request));
+        $request->set_param('config', $draft['config'] + ['capture_mode' => 'connected']);
+        $this->controller->update($request);
+        self::assertInstanceOf(WP_Error::class, $this->controller->publish($request));
     }
 
     public function testAConfiguredAudienceServiceSatisfiesEmailButNotPhoneCollection(): void
@@ -232,13 +233,18 @@ final class OptinWriteTest extends TestCase
         self::assertInstanceOf(\WP_REST_Response::class, $this->controller->publish($request));
     }
 
-    public function testALeadMagnetNeedsAConfiguredDeliveryRouteBeforePublishing(): void
+    /**
+     * Kept in WConvert only, a lead magnet publishes and the review warns that
+     * no file goes out (ADR 0133). A delivery route that is chosen still has
+     * to be complete.
+     */
+    public function testALeadMagnetPublishesLocallyButAChosenDeliveryRouteMustBeComplete(): void
     {
         $draft = $this->create(Goal::DeliverLeadMagnet, ['template_id' => 'centred-card']);
         self::assertIsArray($draft);
         $request = new WP_REST_Request();
         $request->set_param('id', $draft['id']);
-        self::assertInstanceOf(WP_Error::class, $this->controller->publish($request));
+        self::assertInstanceOf(\WP_REST_Response::class, $this->controller->publish($request));
         $destination = $this->destinations->save(null, 'lead_magnet_email', 'Guide', null, []);
         $config = $draft['config'] + ['destinations' => [$destination->id]];
         $request->set_param('config', $config);

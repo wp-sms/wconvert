@@ -10,7 +10,7 @@ return [
     'business_types' => [
         'stores',
     ],
-    'notes' => __('Use on relevant homeware pages after reading. Publish accurate monthly care advice and connect an email service or choose Collect only. The illustration is reusable artwork; replace it if it misrepresents your products.', 'wconvert'),
+    'notes' => __('Use on relevant homeware pages after reading. Publish accurate monthly care advice and connect an email service or choose Keep in WConvert only. The illustration is reusable artwork; replace it if it misrepresents your products.', 'wconvert'),
     'copy' => [
         'eyebrow' => __('Made for everyday', 'wconvert'),
         'headline' => __('Care for the pieces you love.', 'wconvert'),

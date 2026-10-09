@@ -57,4 +57,22 @@ final class OptinBindingTest extends TestCase
         self::assertSame([], OptinBinding::ids(['destinations' => 'wsms']));
         self::assertFalse(OptinBinding::binds(null, Ulid::generate()));
     }
+
+    /**
+     * **Leads stay in WConvert until a service is connected** (ADR 0133). An
+     * explicit choice wins either way; with none made, a config that binds a
+     * Destination anywhere is connected and one that binds nothing is local.
+     */
+    public function testCaptureModeIsLocalUntilAServiceIsConnected(): void
+    {
+        $id = Ulid::generate();
+
+        self::assertSame('local', OptinBinding::captureMode(null));
+        self::assertSame('local', OptinBinding::captureMode([]));
+        self::assertSame('local', OptinBinding::captureMode(['destinations' => []]));
+        self::assertSame('connected', OptinBinding::captureMode(['destinations' => [$id]]));
+        self::assertSame('connected', OptinBinding::captureMode(['submission_settings' => ['s2' => ['destination_ids' => [$id]]]]));
+        self::assertSame('local', OptinBinding::captureMode(['capture_mode' => 'local', 'destinations' => [$id]]));
+        self::assertSame('connected', OptinBinding::captureMode(['capture_mode' => 'connected']));
+    }
 }

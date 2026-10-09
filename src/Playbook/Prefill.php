@@ -71,6 +71,8 @@ final class Prefill
         private readonly TemplateVocabulary $vocabulary,
         private readonly Degradation $degradation,
         private readonly ?PrivacyGuidance $privacyGuidance = null,
+        /** @var (\Closure(): array{href: string, place: 'shop'|'home'})|null Where a link button starts; {@see OfferLinks::onThisSite()} when null. */
+        private readonly ?\Closure $offerLink = null,
     ) {
     }
 
@@ -112,6 +114,16 @@ final class Prefill
         // back is byte-identical to what storing it produces. Anything else
         // and the preview would render one thing and the saved Optin another.
         $config['template'] = $this->vocabulary->normalize($config['template']);
+
+        // Every link button starts somewhere real on this site, marked for
+        // the merchant to check (ADR 0133). Cart recovery resolves its own.
+        if ($playbook->goal !== Goal::RecoverCart) {
+            $link = $this->offerLink !== null ? ($this->offerLink)() : OfferLinks::onThisSite();
+            [$config['template']['tree'], $unchecked] = OfferLinks::filled($config['template']['tree'] ?? [], $link['href'], $link['place']);
+            if ($unchecked !== []) {
+                $config['unchecked_links'] = $unchecked;
+            }
+        }
 
         $config['playbook_id'] = $playbook->id;
         $config['display_type'] = $playbook->displayType;

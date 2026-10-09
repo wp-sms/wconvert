@@ -1353,10 +1353,11 @@ would put a member in the set that satisfies none of the set's invariants.
 Destinations are the only way a Lead is pushed out of WConvert **automatically**.
 CSV export is a manual admin action, not a Destination.
 
-`config.capture_mode = local` explicitly selects Keep in WConvert only (named
+`config.capture_mode = local` selects Keep in WConvert only (named
 "Collect only" before [ADR 0131](docs/adr/0131-one-way-to-show-each-thing-in-the-admin.md)) and suppresses all
-Destination bindings. List Goals otherwise default to connected mode and require
-an audience service for the right channel at publication. Destination requirements
+Destination bindings. With no mode stored, a campaign that binds no Destination is
+local and one that binds any is connected ([ADR 0133](docs/adr/0133-a-fresh-setup-has-nothing-to-fix.md));
+a connected list Goal requires an audience service for the right channel at publication. Destination requirements
 declare `audience_channels` separately from captured fields; transactional email
 is not audience subscription. See ADR 0086. No Contact state is added to WConvert.
 

@@ -18,12 +18,12 @@ import { cameraTargets, mapMinZoom } from './structure/mapCamera';
 import { relatedMapElements } from './structure/mapSelection';
 import { DropdownMenu, DropdownMenuTrigger, DropdownMenuContent, DropdownMenuItem, DropdownMenuCheckboxItem } from '../components/ui/dropdown-menu';
 import { JourneyIssueMarker } from './JourneyIssueMarker';
-import type { JourneyReadinessIssue } from './structure/journeyReadiness';
+import { issuesByScreen, type CampaignIssue } from './readiness/campaignIssues';
 import '@xyflow/react/dist/style.css';
 
-const noIssues: readonly JourneyReadinessIssue[] = [];
+const noIssues: readonly CampaignIssue[] = [];
 
-interface CardData { issues: readonly JourneyReadinessIssue[]; onIssue?(issue: JourneyReadinessIssue): void; incomingPorts: string[]; detourTarget?: string; detourEntry: boolean; editingConnections: boolean; groupedTargets: ReadonlyMap<string, string>; tree: TemplateTree; index: number; rtl: boolean; unreachable: boolean; muted: boolean; preview: boolean; compactEnding: boolean; displaySummary?: string; goToRules?(): void; destinationSummary?: string; select(index: number): void; selectPath(index: number, priority: number | 'hidden'): void; goToDestinations?(): void; previewScreen?(index: number): void; add?(index: number, edgeId?: string): void }
+interface CardData { issues: readonly CampaignIssue[]; onIssue?(issue: CampaignIssue): void; incomingPorts: string[]; detourTarget?: string; detourEntry: boolean; editingConnections: boolean; groupedTargets: ReadonlyMap<string, string>; tree: TemplateTree; index: number; rtl: boolean; unreachable: boolean; muted: boolean; preview: boolean; compactEnding: boolean; displaySummary?: string; goToRules?(): void; destinationSummary?: string; select(index: number): void; selectPath(index: number, priority: number | 'hidden'): void; goToDestinations?(): void; previewScreen?(index: number): void; add?(index: number, edgeId?: string): void }
 
 export function routesFor(tree: TemplateTree, index: number) {
   const screen = tree.steps[index];
@@ -229,7 +229,7 @@ export function FocusCamera({ mapRoot, selectedId, nextId, contextIds, firstId, 
 
 /** The canvas is an overview; the same routes are editable through selects in the inspector. */
 export function JourneyMap({ tree, selected, focusedPath = null, onSelect, onSelectPath, onConnect, onReconnect, samplePath = null, sampleEdges = null, traceKind = 'sample', issues = noIssues, onIssue, displaySummary, onGoToRules, destinationSummary, onGoToDestinations, onPreview, onAdd }: {
-  traceKind?: 'sample' | 'visited'; issues?: readonly JourneyReadinessIssue[]; onIssue?(issue: JourneyReadinessIssue): void;
+  traceKind?: 'sample' | 'visited'; issues?: readonly CampaignIssue[]; onIssue?(issue: CampaignIssue): void;
   tree: TemplateTree; selected: number | null; onSelect(index: number): void; onSelectPath(index: number, priority: number | 'hidden'): void;
   /** Absent where answer paths are not authorable here — no journeys module (ADR 0116). */
   onConnect?(source: string, target: string): void; samplePath?: readonly number[] | null; sampleEdges?: readonly string[] | null; focusedPath?: number | 'hidden' | null;
@@ -361,17 +361,13 @@ export function JourneyMap({ tree, selected, focusedPath = null, onSelect, onSel
     (edge.data?.priority === focusedPath || focusedPath === 'hidden' && edge.target === hiddenFor(tree, selected!)));
   const related = useMemo(() => relatedMapElements(rawEdges, selectedId, selectedEdge?.id), [rawEdges, selectedId, selectedEdge?.id]);
   const highlighting = highlightRelated && selected !== null && samplePath === null;
-  const issuesByScreen = useMemo(() => {
-    const byScreen = new Map<string, JourneyReadinessIssue[]>();
-    for (const issue of issues) byScreen.set(issue.repair.screenId, [...(byScreen.get(issue.repair.screenId) ?? []), issue]);
-    return byScreen;
-  }, [issues]);
+  const issuesOnScreens = useMemo(() => issuesByScreen(issues), [issues]);
   const cardData = useMemo(() => tree.steps.map((_, index) => ({ incomingPorts: incomingPorts.get(tree.steps[index].id) ?? [], detourTarget: detours.get(tree.steps[index].id), detourEntry: [...detours.values()].includes(tree.steps[index].id), editingConnections, tree, index, rtl, unreachable: disconnected.has(tree.steps[index].id),
       muted: samplePath !== null ? !samplePath.includes(index) : highlighting && !related.screens.has(tree.steps[index].id),
-      issues: issuesByScreen.get(tree.steps[index].id) ?? noIssues, onIssue, groupedTargets: groupedScreens, previewScreen: onPreview, add: onAdd, preview, compactEnding: groups.length > 0, displaySummary, goToRules: onGoToRules, destinationSummary, goToDestinations: onGoToDestinations, select: onSelect, selectPath: onSelectPath })),
-    [issuesByScreen, onIssue, incomingPorts, detours, editingConnections, tree, disconnected, onSelect, onSelectPath, rtl, samplePath, highlighting, related, preview, groups.length, groupedScreens, displaySummary, onGoToRules, destinationSummary, onGoToDestinations, onPreview, onAdd]);
-  const groupData = useMemo(() => new Map(groups.map(group => [group.id, { incomingPorts: incomingPorts.get(group.id) ?? [], detourEntry: [...detours.values()].includes(group.id), detourTarget: detours.get(group.id), tree, group, rtl, traceKind, issues: group.screens.flatMap(index => issuesByScreen.get(tree.steps[index].id) ?? []), onIssue, unreachable: disconnected.has(tree.steps[group.screens[0]].id), selected: samplePath === null ? selected : null, muted: highlighting && !group.screens.some(index => related.screens.has(tree.steps[index].id)), samplePath, select: onSelect, expand }])),
-    [traceKind, issuesByScreen, onIssue, incomingPorts, detours, groups, tree, disconnected, rtl, selected, samplePath, highlighting, related, onSelect, expand]);
+      issues: issuesOnScreens.get(tree.steps[index].id) ?? noIssues, onIssue, groupedTargets: groupedScreens, previewScreen: onPreview, add: onAdd, preview, compactEnding: groups.length > 0, displaySummary, goToRules: onGoToRules, destinationSummary, goToDestinations: onGoToDestinations, select: onSelect, selectPath: onSelectPath })),
+    [issuesOnScreens, onIssue, incomingPorts, detours, editingConnections, tree, disconnected, onSelect, onSelectPath, rtl, samplePath, highlighting, related, preview, groups.length, groupedScreens, displaySummary, onGoToRules, destinationSummary, onGoToDestinations, onPreview, onAdd]);
+  const groupData = useMemo(() => new Map(groups.map(group => [group.id, { incomingPorts: incomingPorts.get(group.id) ?? [], detourEntry: [...detours.values()].includes(group.id), detourTarget: detours.get(group.id), tree, group, rtl, traceKind, issues: group.screens.flatMap(index => issuesOnScreens.get(tree.steps[index].id) ?? []), onIssue, unreachable: disconnected.has(tree.steps[group.screens[0]].id), selected: samplePath === null ? selected : null, muted: highlighting && !group.screens.some(index => related.screens.has(tree.steps[index].id)), samplePath, select: onSelect, expand }])),
+    [traceKind, issuesOnScreens, onIssue, incomingPorts, detours, groups, tree, disconnected, rtl, selected, samplePath, highlighting, related, onSelect, expand]);
   const nodes = useMemo<Node[]>(() => view.map(({ id, index, group }) => ({ id, type: group ? 'followups' : 'screen',
     position: positions[id] ?? { x: index * 340, y: 60 }, measured: measurements[id],
     selected: !group && index === selected && samplePath === null, data: group ? groupData.get(id)! : cardData[index] })), [view, positions, measurements, selected, samplePath, groupData, cardData]);

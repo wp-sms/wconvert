@@ -5,6 +5,9 @@ import { render, screen, fireEvent, cleanup, within, waitFor } from '@testing-li
 import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import { historyOf, remember, undo, redo } from '../../resources/admin/src/builder/structure/history';
 import { draftHistoryLabels } from '../../resources/admin/src/builder/structure/draftEditLabel';
+import { campaignIssues } from '../../resources/admin/src/builder/readiness/campaignIssues';
+import type { JourneyRepair } from '../../resources/admin/src/builder/structure/journeyReadiness';
+import { ruleTypes } from './support/rule-types';
 import { JourneyEditor } from '../../resources/admin/src/builder/JourneyEditor';
 import { Fullscreen } from '../../resources/admin/src/builder/Fullscreen';
 import type { QuestionCondition, QuestionNode, TemplateTree } from '@renderer/types';
@@ -687,7 +690,7 @@ it('undoes a journey typing burst once and keeps separate fields as separate edi
   expect(screen.getByRole('textbox', { name: 'Question' })).toHaveValue('What interests you? today?');
 });
 
-it('opens the specific result and focuses its fallback link when repairing publication', async () => {
+it('opens the specific result and focuses its link when repairing publication', async () => {
   const tree = upgradeToGraph(finder.tree as TemplateTree);
   function RepairEditor() {
     const [step, setStep] = useState(0);
@@ -696,7 +699,7 @@ it('opens the specific result and focuses its fallback link when repairing publi
   }
   render(<RepairEditor />);
   await waitFor(() => expect(screen.getByRole('textbox', { name: 'Heading' })).toHaveValue('Balcony picks'));
-  await waitFor(() => expect(screen.getByRole('combobox', { name: 'Fallback shop or guide link' })).toHaveFocus());
+  await waitFor(() => expect(screen.getByRole('combobox', { name: 'Link (optional)' })).toHaveFocus());
 });
 
 
@@ -1124,22 +1127,23 @@ it('restores the pending answer review after editing a referenced branch', async
 });
 
 
-it('opens an incomplete continuation from journey issues and returns to the current issue list', async () => {
+/** One list feeds every count (ADR 0133): a screen's warning opens the exact control to fix. */
+it('opens an incomplete continuation from the screen’s own warning', async () => {
   const user = userEvent.setup();
   const original = structuredClone(graphFixture) as unknown as TemplateTree;
   const tree = { ...original, graph: { ...original.graph!, edges: original.graph!.edges.filter(edge => !(edge.from === 'interests' && edge.kind === 'default')) } };
+  const issues = campaignIssues({ template: { tree, tokens: {} }, rules: { display_rules: { audience: { mode: 'everyone' }, opening: { mode: 'immediate' } }, targeting: {}, frequency: {}, schedule: {}, priority: 0 },
+    vocabulary: ruleTypes(), displayType: 'popup', outcome: undefined, bound: [], destinations: [], captureMode: 'local' });
   function Editor() {
     const [step, setStep] = useState(0);
-    return <JourneyEditor embedded tree={tree} step={step} onChange={() => {}} onSelect={setStep} />;
+    const [repair, setRepair] = useState<JourneyRepair & { serial: number }>();
+    return <JourneyEditor embedded editorCanvas={<div />} tree={tree} step={step} issues={issues} repairRequest={repair}
+      onIssue={issue => { if (issue.go.to === 'journey') setRepair({ ...issue.go.repair, serial: 1 }); }} onChange={() => {}} onSelect={setStep} />;
   }
   render(<Editor />);
-  await user.click(screen.getByRole('button', { name: /Review journey issues/ }));
-  const issues = screen.getByRole('dialog', { name: 'Journey issues' });
-  await user.click(within(issues).getByRole('button', { name: /Choose where visitors continue after/ }));
+  expect(screen.queryByRole('button', { name: /Review journey issues/ })).toBeNull();
+  await user.click(screen.getByRole('button', { name: /issues? on “Interests”: Choose where visitors continue after/ }));
   await waitFor(() => expect(screen.getByRole('radio', { name: /^Next screen/ })).toBeChecked());
-  expect(screen.queryByRole('dialog', { name: 'Journey issues' })).not.toBeInTheDocument();
-  await user.click(screen.getByRole('button', { name: 'Back to issues' }));
-  expect(screen.getByRole('dialog', { name: 'Journey issues' })).toBeInTheDocument();
 });
 
 it('offers sample answers in Preview & test and clears its predicted path when the draft changes', async () => {

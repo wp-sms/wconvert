@@ -390,8 +390,10 @@ export function ResultSettings({ tree, step, onChange, repairRequest, onResultSe
 
       <label>{__('Heading', 'wconvert')}<input ref={headingInput} value={selected.heading} maxLength={200} onChange={event => edit(selectedAt, { heading: event.target.value }, 'heading')} /></label>
       <label>{__('Message', 'wconvert')}<textarea value={selected.body ?? ''} maxLength={500} onChange={event => edit(selectedAt, { body: event.target.value }, 'body')} /></label>
-      <label>{__('Fallback shop or guide link', 'wconvert')}<LinkField ref={linkInput} value={selected.href ?? ''} onChange={href => edit(selectedAt, { href }, 'href')} /></label>
-      <label>{__('Link label', 'wconvert')}<input value={selected.link_label ?? ''} maxLength={120} onChange={event => edit(selectedAt, { link_label: event.target.value }, 'link_label')} /></label>
+      <label>{__('Link (optional)', 'wconvert')}<LinkField ref={linkInput} value={selected.href ?? ''} onChange={href => edit(selectedAt, { href }, 'href')} /></label>
+      {/* Optional (ADR 0133): with no address the result shows no button, which is a choice rather than a fault. */}
+      {!selected.href?.trim() && <p className="description">{__('Add a link to send visitors to the guide. Without one, this result shows no button.', 'wconvert')}</p>}
+      <label>{__('Link button text', 'wconvert')}<input value={selected.link_label ?? ''} maxLength={120} onChange={event => edit(selectedAt, { link_label: event.target.value }, 'link_label')} /></label>
       <Disclosure variant="inline" className="wconvert-result-products" open={!!selected.product_ids?.length || !!selected.product_filter || screen.products_required || undefined} title={__('Recommend products (optional)', 'wconvert')}>
         <label>{__('Choose products by', 'wconvert')}<select value={selected.product_filter ? 'category' : 'selected'} onChange={event => edit(selectedAt, { product_filter: event.target.value === 'category' ? { category_id: 0, attributes: [] } : undefined })}>
           <option value="selected">{__('Hand-picked products', 'wconvert')}</option><option value="category">{__('Category and attributes', 'wconvert')}</option>

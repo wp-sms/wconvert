@@ -1,9 +1,9 @@
 import { __, _n, sprintf } from '@wordpress/i18n';
 import { TriangleAlert } from 'lucide-react';
-import type { JourneyReadinessIssue } from './structure/journeyReadiness';
+import type { CampaignIssue } from './readiness/campaignIssues';
 
 export function JourneyIssueMarker({ issues, onIssue }: {
-  issues?: readonly JourneyReadinessIssue[]; onIssue?(issue: JourneyReadinessIssue): void;
+  issues?: readonly CampaignIssue[]; onIssue?(issue: CampaignIssue): void;
 }) {
   if (!issues?.length || !onIssue) return null;
   const count = sprintf(_n('%d issue', '%d issues', issues.length, 'wconvert'), issues.length);

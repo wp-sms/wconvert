@@ -498,6 +498,33 @@ describe('the consent link the admin draws', () => {
 
     expect(drawn().querySelector<HTMLAnchorElement>('a')?.getAttribute('href')).toBe(own);
   });
+
+  /**
+   * **Only consent wording and fine print ask for the policy** (ADR 0133). A
+   * body-text link with no address is unfinished, and filling it with the
+   * policy silently turned "Read the guide" into a policy link.
+   */
+  it('leaves an empty link in body text without an address', () => {
+    const template = {
+      ...ENTRY,
+      tree: treeFixture({
+        steps: [
+          {
+            type: 'stack',
+            children: [
+              { type: 'text', role: 'body', text: 'Read %s.', link: { label: 'the guide' } },
+              { type: 'button', role: 'cta_label', label: 'Go', action: 'submit' },
+            ],
+          },
+          { type: 'stack', children: [] },
+        ],
+      }),
+    } as unknown as TemplateEntry;
+
+    render(<Preview template={template} />);
+
+    expect(drawn().querySelector('a')).toBeNull();
+  });
 });
 
 

@@ -282,10 +282,11 @@ it('gives each path into a shared screen its own named target port and approach 
 it('opens the exact issue inside a collapsed follow-up group without expanding its connections', async () => {
   const { journeyIssues } = await import('../../resources/admin/src/builder/structure/journeyIssues');
   const changed = { ...tree, steps: tree.steps.map(step => step.id === 'garden' ? { ...step, name: '' } : step) };
-  const issues = journeyIssues(changed);
+  const issues = journeyIssues(changed).map(found => ({ key: found.key, said: found.said, blocks: true, tab: 'journey' as const,
+    go: { to: 'journey' as const, repair: found.repair }, screenId: found.repair.screenId }));
   const onIssue = vi.fn();
   render(<JourneyMap tree={changed} issues={issues} onIssue={onIssue} selected={null} onSelect={() => {}} onSelectPath={() => {}} onConnect={() => {}} />);
   await userEvent.click(screen.getByRole('button', { name: /1 issue: Give screen/ }));
-  expect(onIssue).toHaveBeenCalledWith(expect.objectContaining({ repair: { screenId: 'garden', section: 'content', focus: 'screen-name' } }));
+  expect(onIssue).toHaveBeenCalledWith(expect.objectContaining({ go: { to: 'journey', repair: { screenId: 'garden', section: 'content', focus: 'screen-name' } } }));
   expect(canvas.nodes.some(node => node.id === 'followups:garden')).toBe(true);
 });
