@@ -22,7 +22,7 @@ export function captureReadiness(template: Template, primaryChannel?: string | n
     if (continues && !next && !save) add(sprintf(__('Add a Continue or Save button to “%s” so visitors can reach the next screen.', 'wconvert'), screen.name), [index]);
     if (next && save) add(sprintf(__('“%s” has both Continue and Save. Remove Continue so visitors cannot bypass the save.', 'wconvert'), screen.name), next.path);
     if (!continues) for (const button of here.filter(button => ['next', 'submit', 'skip'].includes(button.node.action ?? '')))
-      add(sprintf(__('“%s” ends the journey. Remove this advancing button or connect a next screen in Journey.', 'wconvert'), screen.name), button.path);
+      add(sprintf(__('“%s” ends the journey. Remove this advancing button or connect a next screen in Screens.', 'wconvert'), screen.name), button.path);
   }
   for (const button of buttons.filter(button => ['submit', 'skip'].includes(button.node.action ?? ''))) {
     const save = tree.submissions.find(save => save.id === button.node.submission);

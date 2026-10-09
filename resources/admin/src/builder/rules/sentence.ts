@@ -530,7 +530,7 @@ export function phraseOf(rule: Rule, types: readonly RuleType[]): Summary {
   if (['cart_quantity', 'cart_amount'].includes(rule.type) && rule.range && typeof rule.range === 'object') {
     const r = rule.range as Record<string, unknown>;
     const comparison = r.operator === 'between' ? `${r.min ?? '…'}–${r.max ?? '…'}` : `${r.operator === 'max' ? __('at most', 'wconvert') : __('at least', 'wconvert')} ${r.min ?? '…'}`;
-    return { text: `${types.find(t => t.type === rule.type)?.label ?? rule.type}: ${comparison}${typeof r.currency === 'string' ? ` ${r.currency}` : ''}`, attention: typeof r.min !== 'number' };
+    return { text: `${types.find(t => t.type === rule.type)?.label ?? __('Unavailable rule', 'wconvert')}: ${comparison}${typeof r.currency === 'string' ? ` ${r.currency}` : ''}`, attention: typeof r.min !== 'number' };
   }
   const read = fromRule(rule, types);
 

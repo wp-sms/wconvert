@@ -127,7 +127,7 @@ describe('integration setup controls', () => {
     render(<ExtraAnswerMapping destination={destination} submissionId="signup-1" template={template}
       value={{ 'question-1': 'SERVICE' }} onChange={vi.fn()} />);
     await user.click(screen.getByText('Field mapping'));
-    await user.click(await screen.findByRole('button', { name: 'Retry loading fields' }));
+    await user.click(await screen.findByRole('button', { name: 'Try again' }));
     expect(await screen.findByRole('combobox', { name: 'Service needed' })).toHaveValue('SERVICE');
     expect(api.readMappingFields).toHaveBeenLastCalledWith('route-1', true);
   });
@@ -144,7 +144,7 @@ describe('integration setup controls', () => {
     expect(screen.getByRole('combobox', { name: 'Service needed' })).toHaveValue('SERVICE');
     expect(screen.getByRole('combobox', { name: 'Service needed' })).toBeDisabled();
     expect(screen.queryByText('Preview and test mapping')).not.toBeInTheDocument();
-    await user.click(screen.getByRole('button', { name: 'Retry loading fields' }));
+    await user.click(screen.getByRole('button', { name: 'Try again' }));
     expect(await screen.findByText('Preview and test mapping')).toBeVisible();
   });
 

@@ -23,7 +23,7 @@ export function targetingSummary(targeting: Targeting, types: readonly RuleType[
       }
       return sprintf(
         /* translators: 1: the page rule's name. 2: the selected content type, URL path or stored object ID. */
-        __('%1$s: %2$s', 'wconvert'), type?.label ?? rule.type, value,
+        __('%1$s: %2$s', 'wconvert'), type?.label ?? __('Unavailable rule', 'wconvert'), value,
       );
     });
     if (!descriptions.every((value): value is string => value !== null)) return null;

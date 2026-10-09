@@ -1,7 +1,7 @@
 import { RecommendationSettings } from './RecommendationSettings';
 import type { ProductsNode } from '@renderer/types';
 import { journeysSupported, commerceSupported } from '../settings';
-import { unlessFree } from '../goals/availability';
+import { tierProductName, unlessFree } from '../goals/availability';
 import { useId, useState, type ReactNode } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import { ArrowLeftRight, Check, ChevronRight, Layers, Package, Type } from 'lucide-react';
@@ -118,7 +118,7 @@ export function BlockInspector({
         </button>
         {breadcrumbs.map((parent) => (
           <span key={parent.path.join('.')}>
-            <ChevronRight aria-hidden="true" />
+            <ChevronRight aria-hidden="true" className="rtl:-scale-x-100" />
             <button type="button" onClick={() => onSelect?.(parent.path)}>
               {nameOfBlock(parent, labels)}
             </button>
@@ -175,7 +175,7 @@ export function BlockInspector({
           {body}
           <button type="button" className="wconvert-style-shortcut" onClick={() => setHalf('style')}>
             {__('Edit appearance', 'wconvert')}
-            <ChevronRight aria-hidden="true" />
+            <ChevronRight aria-hidden="true" className="rtl:-scale-x-100" />
           </button>
           {onShowLayers && (
             <button type="button" className="wconvert-linkish" onClick={onShowLayers}>
@@ -241,7 +241,9 @@ function contentBody({
 }) {
   const node = nodeAt(template.tree, path) as { action?: string; submission?: string } | null;
   if (block.type === 'products') {
-    if (!commerceSupported()) return <p>{unlessFree(__('Product suggestions require WConvert Pro and WooCommerce.', 'wconvert'))}</p>;
+    if (!commerceSupported()) return <p>{unlessFree(sprintf(
+      /* translators: %s: the product that includes product suggestions, e.g. “WConvert Pro”. */
+      __('Product suggestions are included with %s and need WooCommerce on this site.', 'wconvert'), tierProductName('pro')))}</p>;
     const selected = nodeAt(template.tree, path) as ProductsNode;
     return <RecommendationSettings value={selected} onPlacement={onPlacement} onChange={patch => {
       let tree = template.tree;

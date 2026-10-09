@@ -4,6 +4,7 @@ import { branchRegions, layoutMap } from './structure/mapLayout';
 import { Check, CircleHelp, FileText, Flag, Send, Eye, Focus, Minus, Plus, Settings2 } from 'lucide-react';
 import { SmartEdgeProvider } from '@tisoap/react-flow-smart-edge';
 import { __, _n, sprintf } from '@wordpress/i18n';
+import { Disclosure } from '../shell/Disclosure';
 import type { TemplateTree } from '@renderer/types';
 import { unreachableScreenIds, walkNodes } from './structure/journey';
 import { conditionText } from './structure/conditionText';
@@ -91,7 +92,7 @@ const ScreenCard = memo(function ScreenCard({ id, data, selected }: NodeProps) {
       {unreachable && <em>{__('Unreachable — connect an incoming path', 'wconvert')}</em>}
       {screen.kind === 'result' && <span>{sprintf(__('%d possible results · first match wins', 'wconvert'), screen.results?.length ?? 0)}</span>}
     </button>
-    {screen.kind === 'result' && <details className="wconvert-flow-node__results nodrag"><summary>{__('Possible results', 'wconvert')}</summary><ol>{screen.results?.map((result, at) => <li key={result.id}><strong>{result.heading}</strong><small>{result.when ? sprintf(__('Priority %d', 'wconvert'), at + 1) : __('Everyone else', 'wconvert')}</small></li>)}</ol></details>}
+    {screen.kind === 'result' && <Disclosure variant="inline" className="wconvert-flow-node__results nodrag" title={__('Possible results', 'wconvert')}><ol>{screen.results?.map((result, at) => <li key={result.id}><strong>{result.heading}</strong><small>{result.when ? sprintf(__('Priority %d', 'wconvert'), at + 1) : __('Everyone else', 'wconvert')}</small></li>)}</ol></Disclosure>}
     {preview && <div className="wconvert-flow-node__preview" aria-hidden="true"><small>{__('Screen preview', 'wconvert')}</small><strong><bdi>{heading && 'text' in heading ? String(heading.text) : screen.name}</bdi></strong>
       {question && 'options' in question && <span>{question.options?.slice(0, 2).map(option => option.label).join(' · ')}</span>}
     </div>}
@@ -119,8 +120,8 @@ const ScreenCard = memo(function ScreenCard({ id, data, selected }: NodeProps) {
       {(groupedTargets.get(paths[0].to) ?? paths[0].to) !== detourTarget && <Handle id="route-0" type="source" position={rtl ? Position.Left : Position.Right} isConnectable={false} />}
     </div>}
     {screen.when && hiddenId && <div className="wconvert-flow-node__hidden">
-      {tree.graph ? <button type="button" className="nodrag" onClick={() => selectPath(index, 'hidden')}>{sprintf(__('When hidden %1$s %2$s', 'wconvert'), rtl ? '←' : '→', tree.steps.find(item => item.id === hiddenId)?.name ?? hiddenId)}</button>
-        : sprintf(__('When hidden %1$s %2$s', 'wconvert'), rtl ? '←' : '→', tree.steps.find(item => item.id === hiddenId)?.name ?? hiddenId)}
+      {tree.graph ? <button type="button" className="nodrag" onClick={() => selectPath(index, 'hidden')}>{sprintf(__('When hidden %1$s %2$s', 'wconvert'), rtl ? '←' : '→', tree.steps.find(item => item.id === hiddenId)?.name ?? __('Removed screen', 'wconvert'))}</button>
+        : sprintf(__('When hidden %1$s %2$s', 'wconvert'), rtl ? '←' : '→', tree.steps.find(item => item.id === hiddenId)?.name ?? __('Removed screen', 'wconvert'))}
       {hiddenTarget &&
       <Handle id="hidden" type="source" position={rtl ? Position.Left : Position.Right} isConnectable={false} />
       }

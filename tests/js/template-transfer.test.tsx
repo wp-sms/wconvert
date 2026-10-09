@@ -26,6 +26,18 @@ beforeEach(() => {
 });
 afterEach(cleanup);
 
+/** A draft that changed under the import is refused in the dialog, beside Apply — not behind its overlay. */
+it('shows a refused apply inside the dialog and stays open', async () => {
+  const onApply = vi.fn(() => 'Your draft changed during import.'); const onClose = vi.fn(); const user = userEvent.setup();
+  render(<TemplateTransferDialog action="import" design={{ ...fixture, name: 'Current', display_type: 'popup' }} config={config} optin="campaign" onClose={onClose} onApply={onApply} />);
+  await user.upload(await screen.findByLabelText('Choose a WConvert design file'), file());
+  await user.click(await screen.findByRole('checkbox', { name: 'Keep these links and apply the reviewed changes' }));
+  await user.click(screen.getByRole('button', { name: 'Apply to draft' }));
+  expect(await screen.findByRole('alert')).toHaveTextContent('Your draft changed during import.');
+  expect(screen.getByRole('dialog')).toBeInTheDocument();
+  expect(onClose).not.toHaveBeenCalled();
+});
+
 it('previews file content before one explicit reviewed Apply and leaves persistence to the editor', async () => {
   const onApply = vi.fn(); const user = userEvent.setup();
   render(<TemplateTransferDialog action="import" design={{ ...fixture, name: 'Current', display_type: 'popup' }} config={config} optin="campaign" onClose={vi.fn()} onApply={onApply} />);
@@ -33,7 +45,7 @@ it('previews file content before one explicit reviewed Apply and leaves persiste
   await screen.findByText('Review links');
   expect(transfer.prepareImport).toHaveBeenCalledWith('session', 'campaign', config, 'file', {});
   expect(onApply).not.toHaveBeenCalled();
-  expect(screen.getByRole('button', { name: 'Apply to draft' })).toBeDisabled();
+  expect(screen.getByRole('button', { name: 'Apply to draft' })).toHaveAttribute('aria-disabled', 'true');
   await user.click(screen.getByRole('checkbox', { name: 'Keep these links and apply the reviewed changes' }));
   await user.click(screen.getByRole('button', { name: 'Apply to draft' }));
   await waitFor(() => expect(onApply).toHaveBeenCalledExactlyOnceWith(preview.patch));
@@ -46,7 +58,7 @@ it('requires another preview after changing a link and does not apply on cancell
   await user.upload(await screen.findByLabelText('Choose a WConvert design file'), file());
   const link = await screen.findByRole('textbox', { name: 'Link: https://old.example/offer' });
   await user.clear(link); await user.type(link, 'https://new.example/offer');
-  expect(screen.getByRole('button', { name: 'Apply to draft' })).toBeDisabled();
+  expect(screen.getByRole('button', { name: 'Apply to draft' })).toHaveAttribute('aria-disabled', 'true');
   await user.click(screen.getByRole('button', { name: 'Update preview' }));
   await waitFor(() => expect(transfer.prepareImport).toHaveBeenLastCalledWith('session', 'campaign', config, 'file', { 'https://old.example/offer': 'https://new.example/offer' }));
   await user.click(screen.getByRole('button', { name: 'Cancel' }));

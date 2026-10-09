@@ -1,6 +1,7 @@
 import { useEffect, useId, useRef, useState } from 'react';
 import apiFetch from '@wordpress/api-fetch';
 import { __, sprintf } from '@wordpress/i18n';
+import { TryAgain } from '../shell/Region';
 import { Input } from '../components/ui/input';
 import { Button } from '../components/ui/button';
 
@@ -53,7 +54,7 @@ export function ProductPicker({ ids, onChange, max = 6, ordered = true, allowUna
     {error && <p role="alert">{error}</p>}
     {searched && !found.length && <p role="status">{__('No products found. Try another name.', 'wconvert')}</p>}
     {ids.length >= max && <p>{__('Selection full. Remove a product to choose another.', 'wconvert')}</p>}
-    {namesFailed && <div className="wconvert-result-filter__body"><p role="alert">{__('Product names could not load. Your selection is kept.', 'wconvert')}</p><Button type="button" variant="outline" onClick={() => setNamesRetry(n => n + 1)}>{__('Retry names', 'wconvert')}</Button></div>}
+    {namesFailed && <div className="wconvert-result-filter__body"><p role="alert">{__('Product names could not load. Your selection is kept.', 'wconvert')}</p><TryAgain onClick={() => setNamesRetry(n => n + 1)} /></div>}
     {!!ids.length && <ol aria-label={ordered ? __('Selected products, in display order', 'wconvert') : __('Selected products', 'wconvert')}>{ids.map((id, index) => <li key={id} className="wconvert-result-picker__selection"><span>{productName(id)}</span><div className="wconvert-result-picker__actions">
       {ordered && ids.length > 1 && <Button variant="outline" type="button" disabled={index === 0} onClick={() => move(index, -1)} aria-label={`${__('Move earlier', 'wconvert')}: ${productName(id)}`}>{__('Earlier', 'wconvert')}</Button>}
       {ordered && ids.length > 1 && <Button variant="outline" type="button" disabled={index === ids.length - 1} onClick={() => move(index, 1)} aria-label={`${__('Move later', 'wconvert')}: ${productName(id)}`}>{__('Later', 'wconvert')}</Button>}

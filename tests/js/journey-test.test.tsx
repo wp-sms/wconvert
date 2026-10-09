@@ -187,7 +187,7 @@ it('resizes the existing form without losing drafts and counts each completed ru
   render(<JourneyTest template={source as Template} onEdit={() => {}} />);
   const email = screen.getByLabelText('Email address');
   await user.type(email, 'visitor@example.com');
-  await user.click(screen.getByRole('button', { name: 'Mobile' }));
+  await user.click(screen.getByRole('radio', { name: 'Mobile' }));
   expect(screen.getByLabelText('Email address')).toBe(email);
   expect(email).toHaveValue('visitor@example.com');
   await user.click(screen.getByLabelText('Consent'));

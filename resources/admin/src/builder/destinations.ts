@@ -130,7 +130,7 @@ export function destinationsSaid(
         sprintf(
           /* translators: %s: a destination's name. */
           __(
-            '%s is not running here, so captures are kept and not sent. Re-push from Destinations once it works.',
+            '%s is not running here, so submissions are kept and not sent. Send them again from Destinations once it works.',
             'wconvert',
           ),
           destination.label,

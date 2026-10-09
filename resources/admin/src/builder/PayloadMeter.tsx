@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
+import { formatCount } from '../lib/format';
 import { adminSettings } from '../settings';
 import type { Template } from '@renderer/types';
 
@@ -53,9 +54,9 @@ export function PayloadMeter({ template }: { template: Template }) {
       */
       title={sprintf(
         /* translators: 1: how many bytes this design costs, gzipped. 2: the per-design budget in bytes. */
-        __('%1$s bytes of %2$s, compressed, on every page this Campaign shows on.', 'wconvert'),
-        bytes.toLocaleString(),
-        budget.toLocaleString(),
+        __('%1$s bytes of %2$s, compressed, on every page this campaign shows on.', 'wconvert'),
+        formatCount(bytes),
+        formatCount(budget),
       )}
     >
       {sprintf(

@@ -240,7 +240,7 @@ export function StructureView({
       <RegionBody>
         {toolbar}
         <EmptyState icon={Blocks} title={__('This design has nothing in it yet', 'wconvert')}>
-          {__('Pick a design on the Design tab and its blocks will be listed here.', 'wconvert')}
+          {__('Choose a design and its blocks are listed here.', 'wconvert')}
         </EmptyState>
       </RegionBody>
     );

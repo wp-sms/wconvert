@@ -1,8 +1,9 @@
 import { useId, useState, type ReactNode } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
-import { Check as CheckIcon, CheckCircle2, CircleAlert, Dot, LoaderCircle, X } from 'lucide-react';
+import { Check as CheckIcon, CheckCircle2, CircleAlert, Dot, X } from 'lucide-react';
 import { Button } from '../../components/ui/button';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../../components/ui/dialog';
+import { AdminDialog, AdminDialogBody, AdminDialogContent, AdminDialogFooter, AdminDialogHeader } from '../../components/ui/admin-dialog';
+import { humanize } from '../../lib/format';
 import { audienceRules, type Answer } from '../../../../loader/src/display-rules';
 import { phraseOf } from './sentence';
 import type { Rule, RuleVocabulary } from '../api';
@@ -12,7 +13,7 @@ import type { ConvertingAct } from '../structure/catalogue';
 import type { Template, ProductsNode } from '@renderer/types';
 import { nodesOf, nodeAt } from '../structure/tree';
 import { adminSettings, commerceSupported } from '../../settings';
-import { unlessFree } from '../../goals/availability';
+import { tierProductName, unlessFree } from '../../goals/availability';
 import { wallKey, wallNow } from '../../lib/wallTime';
 import { everyType } from './plan';
 import { SampleBasket, emptyBasket, useBasketPreview } from './SampleBasket';
@@ -62,7 +63,9 @@ export default function SampleVisit({ value, vocabulary, onClose, onOpenSection,
   const basketEnabled = usesBasket && commerceSupported();
   const preview = useBasketPreview(basketEnabled, basket, cartRules, products);
   const basketCheck: BasketCheck = !usesBasket ? { status: 'unused' }
-    : !basketEnabled ? { status: 'fail', reason: unlessFree(__('Cart testing requires WConvert Pro and WooCommerce.', 'wconvert')) }
+    : !basketEnabled ? { status: 'fail', reason: unlessFree(sprintf(
+      /* translators: %s: the product that includes cart testing, e.g. “WConvert Pro”. */
+      __('Cart testing is included with %s and needs WooCommerce on this site.', 'wconvert'), tierProductName('pro'))) }
       : preview.error ? { status: 'fail', reason: __('The sample basket could not be checked.', 'wconvert') }
         : !preview.result ? { status: 'checking' }
           : !preview.result.eligible || (cartRequired && preview.result.rules[requiredCartId] !== true)
@@ -75,21 +78,19 @@ export default function SampleVisit({ value, vocabulary, onClose, onOpenSection,
   const others = audience.filter(rule => !NATURAL.includes(rule.type) && !rule.type.startsWith('cart_'));
   const asksAccount = has('logged_in') || has('role') || value.targeting.logged_in !== undefined || value.targeting.roles !== undefined;
   const asksRole = has('role') || value.targeting.roles !== undefined;
-  const roleLabel = (role: string) => roleParam?.options.find(option => option.value === role)?.label ?? role;
+  const roleLabel = (role: string) => roleParam?.options.find(option => option.value === role)?.label ?? humanize(role);
   const asked = questions();
   const checking = result.checking === true;
-  const Headline = checking ? LoaderCircle : result.opens ? CheckCircle2 : CircleAlert;
+  const Headline = checking ? Dot : result.opens ? CheckCircle2 : CircleAlert;
 
-  return <Dialog open onOpenChange={open => { if (!open) onClose(); }}>
-    <DialogContent className="wconvert-sample-dialog sm:max-w-4xl flex flex-col gap-0 p-0 overflow-hidden max-h-[calc(100dvh-2rem)]">
-      <DialogHeader className="wconvert-sample-header text-start">
-        <DialogTitle>{__('Test a visit', 'wconvert')}</DialogTitle>
-        <DialogDescription>{__('Describe one visitor. You’ll see whether this campaign shows to them, and when. Nothing opens on your site.', 'wconvert')}</DialogDescription>
-      </DialogHeader>
-      <div className="wconvert-sample-body">
+  return <AdminDialog open onOpenChange={open => { if (!open) onClose(); }}>
+    <AdminDialogContent size="lg" className="wconvert-sample-dialog">
+      <AdminDialogHeader title={__('Test a visit', 'wconvert')}
+        meta={__('Describe one visitor to see whether this campaign shows to them, and when. Nothing opens on your site.', 'wconvert')} />
+      <AdminDialogBody className="wconvert-sample-body">
         <aside className="wconvert-sample-verdict" aria-label={__('Result', 'wconvert')}>
           <div className="wconvert-sample-result" data-opens={checking ? undefined : result.opens} role="status" aria-live="polite" aria-atomic="true">
-            <Headline aria-hidden="true" className={checking ? 'animate-spin motion-reduce:animate-none' : undefined} />
+            <Headline aria-hidden="true" />
             <div><strong>{result.headline}</strong>{result.reason && <p>{result.reason}</p>}</div>
           </div>
           <ul className="wconvert-sample-checks">
@@ -166,13 +167,13 @@ export default function SampleVisit({ value, vocabulary, onClose, onOpenSection,
           {basketEnabled && <SampleBasket value={basket} onChange={setBasket} result={preview.result} error={preview.error} products={products}
             legacyTotal={cartRules.some(rule => rule.type === 'cart_value_min')} />}
         </section>
-      </div>
-      <div className="wconvert-sample-footer">
-        <p>{__('Uses your unsaved draft.', 'wconvert')}</p>
-        <Button variant="outline" onClick={reset}>{__('Reset', 'wconvert')}</Button>
-      </div>
-    </DialogContent>
-  </Dialog>;
+      </AdminDialogBody>
+      <AdminDialogFooter note={__('Uses your unsaved draft.', 'wconvert')}>
+        <Button type="button" variant="outline" onClick={reset}>{__('Reset visitor', 'wconvert')}</Button>
+        <Button type="button" onClick={onClose}>{__('Done', 'wconvert')}</Button>
+      </AdminDialogFooter>
+    </AdminDialogContent>
+  </AdminDialog>;
 }
 
 function Field({ label, children }: { label: string; children: (id: string) => ReactNode }) {
@@ -182,7 +183,7 @@ function Field({ label, children }: { label: string; children: (id: string) => R
 
 function CheckRow({ row, question, onChange }: { row: Check; question: string; onChange?: () => void }) {
   const Mark = row.status === 'pass' ? CheckIcon : row.status === 'fail' ? X : Dot;
-  const said = row.status === 'pass' ? __('Passes', 'wconvert') : row.status === 'fail' ? __('Stops it', 'wconvert') : __('Describes only', 'wconvert');
+  const said = row.status === 'pass' ? __('Passes', 'wconvert') : row.status === 'fail' ? __('Stops it', 'wconvert') : __('Not a condition', 'wconvert');
   return <li data-status={row.status}>
     <Mark className="wconvert-sample-mark" aria-hidden="true" />
     <span className="sr-only">{said}: </span>

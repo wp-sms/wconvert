@@ -1,4 +1,5 @@
-import { __, sprintf } from '@wordpress/i18n';
+import { __, _n, sprintf } from '@wordpress/i18n';
+import { Disclosure } from '../shell/Disclosure';
 import type { TemplateTree } from '@renderer/types';
 import { conditionText } from './structure/conditionText';
 
@@ -13,9 +14,9 @@ export function JourneyArrivalSummary({ tree, step, onSelectPath }: {
   const incoming = graph.edges.filter(edge => edge.to === screen.id);
   if (!incoming.length) return null;
   const sources = new Set(incoming.map(edge => edge.from));
-  return <details className="wconvert-journey-arrival" key={screen.id}>
-    <summary>{sources.size === 1 ? sprintf(__('Arrives from %s', 'wconvert'), tree.steps.find(item => item.id === incoming[0].from)?.name ?? incoming[0].from)
-      : sprintf(__('Arrives from %d screens', 'wconvert'), sources.size)}</summary>
+  return <Disclosure variant="inline" className="wconvert-journey-arrival" key={screen.id}
+    title={sources.size === 1 ? sprintf(__('Arrives from %s', 'wconvert'), tree.steps.find(item => item.id === incoming[0].from)?.name ?? __('Removed screen', 'wconvert'))
+      : sprintf(_n('Arrives from %d screen', 'Arrives from %d screens', sources.size, 'wconvert'), sources.size)}>
     <p>{__('Review the incoming paths. Earlier answer paths are checked first; this screen’s visibility rule is checked on arrival.', 'wconvert')}</p>
     <ul>{incoming.map(edge => {
       const from = tree.steps.findIndex(item => item.id === edge.from);
@@ -27,5 +28,5 @@ export function JourneyArrivalSummary({ tree, step, onSelectPath }: {
           : sprintf(__('Path %1$d: %2$s', 'wconvert'), Number(priority) + 1, edge.when ? conditionText(tree, edge.when) : __('Choose a condition', 'wconvert'));
       return <li key={edge.id}><button type="button" onClick={() => onSelectPath(from, priority)}><strong><bdi>{tree.steps[from].name}</bdi></strong><span>{rule}</span></button></li>;
     })}</ul>
-  </details>;
+  </Disclosure>;
 }

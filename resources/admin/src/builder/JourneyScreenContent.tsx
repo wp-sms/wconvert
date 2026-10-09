@@ -1,4 +1,5 @@
 import { __, sprintf } from '@wordpress/i18n';
+import { Disclosure } from '../shell/Disclosure';
 import type { TemplateTree } from '@renderer/types';
 import { nodesOf, nodeAt } from './structure/tree';
 import { withValue } from './panel';
@@ -32,5 +33,5 @@ export function JourneyScreenContent({ tree, step, onChange }: {
       </label>;
     })}
   </section>;
-  return hasQuestions ? <details className="wconvert-journey-copy-options"><summary>{__('Heading, message & buttons', 'wconvert')}</summary>{content}</details> : content;
+  return hasQuestions ? <Disclosure variant="inline" className="wconvert-journey-copy-options" title={__('Heading, message & buttons', 'wconvert')}>{content}</Disclosure> : content;
 }

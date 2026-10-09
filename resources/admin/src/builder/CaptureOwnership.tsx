@@ -23,6 +23,6 @@ export function CaptureOwnership({ tree, path, onChange }: {
       : __('This detail is saved only when the visitor submits this save point. Continuing to another screen keeps it as a draft.', 'wconvert')}</p>
     {state.owners.length > 1 && <p role="status">{__('This element belongs to more than one save. Choose the one that should accept it.', 'wconvert')}</p>}
     {state.choices.filter(choice => choice.reason).map(choice => <p key={choice.id} className="description">{choice.reason}</p>)}
-    {!state.choices.length && <p>{__('Add a save point in Journey before assigning this element.', 'wconvert')}</p>}
+    {!state.choices.length && <p>{__('Add a signup screen in Screens before assigning this element.', 'wconvert')}</p>}
   </section>;
 }

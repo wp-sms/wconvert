@@ -1,6 +1,7 @@
 import { useEffect, useId, useState } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
-import { ArrowRight, ChevronRight, Info } from 'lucide-react';
+import { Disclosure } from '../shell/Disclosure';
+import { ArrowRight, Info } from 'lucide-react';
 import { Badge } from '../components/ui/badge';
 import { MappingTest } from './MappingTest';
 import { Button } from '../components/ui/button';
@@ -10,7 +11,7 @@ import { messageOf } from '../shell/loadable';
 import { readMappingFields } from '../destinations/api';
 import type { Destination, MappingField } from '../destinations/api';
 import type { Template } from '@renderer/types';
-import { RegionError, RegionErrorState } from '../shell/Region';
+import { RegionError, RegionErrorState, TryAgain } from '../shell/Region';
 import { RegionSkeleton } from '../shell/RegionSkeleton';
 import { answerGroups, answerSources } from './answerSources';
 import type { AnswerSource } from './answerSources';
@@ -59,20 +60,16 @@ export function ExtraAnswerMapping({ destination, providerLabel, submissionId, t
     return () => { active = false; };
   }, [open, destination.id, context, sources.length, refresh]);
   if (eligible.length === 0 && orphaned.length === 0) return null;
-  return <details className="group/mapping mt-3 min-w-0 rounded-md border border-border bg-card" onToggle={(event) => setOpen(event.currentTarget.open)}>
-    <summary className="flex min-h-(--control-height-sm) cursor-pointer list-none flex-wrap items-center gap-2 rounded-md px-3 py-2 text-note font-medium hover:bg-muted focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring [&::-webkit-details-marker]:hidden">
-      <ChevronRight aria-hidden="true" className="size-4 shrink-0 text-muted-foreground rtl:rotate-180 group-open/mapping:rotate-90" />
-      <span className="min-w-0 flex-1 basis-28 [overflow-wrap:anywhere]">{__('Field mapping', 'wconvert')}</span>
-      <Badge variant={hasIssues ? "warning" : "outline"} className="ms-auto text-micro font-normal">{hasIssues ? __('Needs review', 'wconvert') : sprintf(_n('%d field mapped', '%d fields mapped', selected.length, 'wconvert'), selected.length)}</Badge>
-    </summary>
-    {open && <div className="flex min-w-0 flex-col gap-4 border-t border-border p-3">
+  return <Disclosure className="mt-3" onToggle={setOpen} bodyClassName="p-0" title={__('Field mapping', 'wconvert')}
+    summary={<Badge variant={hasIssues ? 'warning' : 'outline'} className="mt-1 font-normal">{hasIssues ? __('Needs review', 'wconvert') : sprintf(_n('%d field mapped', '%d fields mapped', selected.length, 'wconvert'), selected.length)}</Badge>}>
+    {open && <div className="flex min-w-0 flex-col gap-4 p-3">
       <div className="wconvert-toolbar flex flex-wrap items-start justify-between gap-3">
         <Description className="min-w-0 flex-1 basis-56">{__('Choose which answers to send. Changes take effect when you publish.', 'wconvert')}</Description>
         {!error && <Button type="button" variant="ghost" disabled={busy} onClick={() => setRefresh((old) => old + 1)}>{busy && fields ? __('Refreshing fields…', 'wconvert') : __('Refresh fields', 'wconvert')}</Button>}
       </div>
       {error && (fields
-        ? <RegionError message={__('Could not refresh fields. Showing the last loaded fields; testing is unavailable until you retry.', 'wconvert')} action={<Button type="button" variant="outline" disabled={busy} onClick={() => setRefresh((old) => old + 1)}>{__('Retry loading fields', 'wconvert')}</Button>} />
-        : <RegionErrorState message={__('Could not load fields.', 'wconvert')} hint={error} action={<Button type="button" variant="outline" disabled={busy} onClick={() => setRefresh((old) => old + 1)}>{__('Retry loading fields', 'wconvert')}</Button>} />)}
+        ? <RegionError message={__('Could not refresh fields. Showing the last loaded fields; testing is unavailable until they load.', 'wconvert')} action={<TryAgain busy={busy} onClick={() => setRefresh((old) => old + 1)} />} />
+        : <RegionErrorState message={__('Could not load fields.', 'wconvert')} hint={error} action={<TryAgain busy={busy} onClick={() => setRefresh((old) => old + 1)} />} />)}
       {!fields && !error && busy && <RegionSkeleton label={__('fields', 'wconvert')} lines={Math.min(eligible.length, 3)} />}
       {fields && <fieldset disabled={busy || !!error} className="@container m-0 min-w-0 border-0 p-0" aria-label={__('Answer mappings', 'wconvert')} aria-busy={busy}>
         <div className="hidden grid-cols-[minmax(0,1fr)_1rem_minmax(0,1fr)] gap-3 border-b border-border pb-2 text-note text-muted-foreground @min-[400px]:grid" aria-hidden="true">
@@ -85,10 +82,9 @@ export function ExtraAnswerMapping({ destination, providerLabel, submissionId, t
               <Description>{__('Each selected choice sends Yes. Earlier interests stay saved.', 'wconvert')}</Description>
               {!fields.some((field) => field.type === 'boolean') && <Description className="mt-2">{sprintf(__('Add a yes/no field for each choice in %s, then refresh fields.', 'wconvert'), providerLabel ?? destination.label)}</Description>}
               {group.choices.map((source) => <MappingRow key={source.id} id={`${id}-${source.id}`} source={source} label={source.choice?.label ?? source.label} fields={fields} value={value} issue={issueFor(source)} onChange={onChange} />)}
-              {group.answer && <details className="border-t border-border pt-3" open={value[group.answer.id] ? true : undefined}>
-                <summary className="min-h-(--control-height-sm) cursor-pointer text-note text-muted-foreground focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring">{__('Send all choices as text (optional)', 'wconvert')}</summary>
+              {group.answer && <Disclosure variant="inline" className="border-t border-border" open={value[group.answer.id] ? true : undefined} title={__('Send all choices as text (optional)', 'wconvert')}>
                 <MappingRow id={`${id}-${group.answer.id}`} source={group.answer} label={__('All selected choices', 'wconvert')} fields={fields} value={value} issue={issueFor(group.answer)} onChange={onChange} />
-              </details>}
+              </Disclosure>}
             </div>
           </fieldset> : group.answer && <MappingRow key={group.id} id={`${id}-${group.id}`} source={group.answer} fields={fields} value={value} issue={issueFor(group.answer)} onChange={onChange} />)}
         </div>
@@ -104,7 +100,7 @@ export function ExtraAnswerMapping({ destination, providerLabel, submissionId, t
       {fields && selected.length > 0 && !hasIssues && !busy && !error &&
         <MappingTest key={JSON.stringify([context, fields, selected, value])} destination={destination} fields={fields} sources={selected} mapping={Object.fromEntries(selected.map((source) => [source.id, value[source.id]]))} />}
     </div>}
-  </details>;
+  </Disclosure>;
 }
 
 /** A capability limit is supporting information, not a failed delivery. */
@@ -128,7 +124,7 @@ function MappingRow({ id, source, label = source.label, fields, value, issue, on
   const target = value[source.id] ?? '';
   return <div className="grid min-w-0 grid-cols-1 items-center gap-2 py-3 @min-[400px]:grid-cols-[minmax(0,1fr)_1rem_minmax(0,1fr)] @min-[400px]:gap-3">
     <Label htmlFor={id} className="min-w-0 leading-snug [overflow-wrap:anywhere]">{label}</Label>
-    <ArrowRight aria-hidden="true" className="hidden size-4 text-muted-foreground @min-[400px]:block rtl:rotate-180" />
+    <ArrowRight aria-hidden="true" className="hidden size-4 text-muted-foreground @min-[400px]:block rtl:-scale-x-100" />
     <div className="flex min-w-0 flex-col gap-1.5">
       <select id={id} aria-label={source.choice || label === source.label ? source.label : `${label} — ${source.label}`} aria-invalid={!!issue} aria-describedby={issue || (options.length === 0 && source.type !== 'boolean') ? `${id}-help` : undefined}
         className="h-(--control-height) w-full min-w-0 rounded-md border border-input bg-card ps-3 pe-9 text-body text-foreground" value={target} onChange={(event) => {

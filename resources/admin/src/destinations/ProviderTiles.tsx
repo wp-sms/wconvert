@@ -74,7 +74,7 @@ export function ProviderTiles({ types, rule, suggested, onChoose }: {
               <span className="min-w-0">
                 <span className="block font-medium">{type.label}</span>
                 {refusal !== null ? <span id={`${id}-${type.id}`} className="block text-note text-muted-foreground">{refusal}</span>
-                  : suggested.includes(type.id) && <Badge id={`${id}-${type.id}`} variant="outline" className="mt-1">{__('Suggested by your campaign setup', 'wconvert')}</Badge>}
+                  : suggested.includes(type.id) && <Badge id={`${id}-${type.id}`} variant="outline" className="mt-1">{__('Suggested', 'wconvert')}</Badge>}
               </span>
             </button>
           </li>

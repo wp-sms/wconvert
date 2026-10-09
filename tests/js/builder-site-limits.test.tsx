@@ -59,12 +59,12 @@ describe('saved site-wide limits beside an Optin draft', () => {
     render(<SiteLimitsNote />);
     expect(await screen.findByRole('alert')).toHaveTextContent('Could not check the site-wide limits. The server is unavailable.');
     expect(screen.queryByText(/No site-wide limits/)).toBeNull();
-    await userEvent.click(screen.getByRole('button', { name: 'Retry checking limits' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Try again' }));
     expect(screen.queryByRole('alert')).toBeNull();
     expect(request).toHaveBeenCalledTimes(2);
     await act(async () => { retry.resolve(SAVED); });
     expect(screen.getByRole('complementary')).toHaveTextContent('At most 3 impressions');
-    expect(screen.queryByRole('button', { name: 'Retry checking limits' })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Try again' })).toBeNull();
   });
 
   it.each(['success', 'failure'] as const)('ignores late %s from an effect cleaned up before the current read', async (outcome) => {

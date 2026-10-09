@@ -47,24 +47,24 @@ export function PlacementGuidance({ optinId, optinName, displayType, placement, 
 
   return (
     <section className="wconvert-placement" aria-labelledby={`${id}-title`}>
-      <h3 id={`${id}-title`}>{inline ? __('Place this Campaign on a page', 'wconvert') : __('Check where it appears', 'wconvert')}</h3>
+      <h3 id={`${id}-title`}>{inline ? __('Place this campaign on a page', 'wconvert') : __('Check where it appears', 'wconvert')}</h3>
       {inline && contentLock != null ? <>
-        <p>{__('Add the “WConvert Lock from here” divider and choose this Campaign. Content after it stays locked until submission.', 'wconvert')}</p>
+        <p>{__('Add the “WConvert Lock from here” divider and choose this campaign. Content after it stays locked until submission.', 'wconvert')}</p>
         <p>{__('Keep your introduction above the divider. For a bonus with public content afterward, use the “WConvert Content lock” section instead. Use one lock per page.', 'wconvert')}</p>
         <p>{__('For the classic editor, wrap a complete region with:', 'wconvert')} <code>{`[wconvert_content_lock id="${optinId}"]…[/wconvert_content_lock]`}</code></p>
         <p>{__('The selected content stays readable when the form is unavailable. Successful access is remembered in this browser for 30 days.', 'wconvert')}</p>
       </> : automatic && !isFreeInstall() ? <>
         <p>{automatic}</p>
-        <p>{__('After publishing, Pro places this Campaign in matching WordPress posts and pages when its display rules allow it. No block or shortcode is needed. A manual embed takes precedence.', 'wconvert')}</p>
+        <p>{__('After publishing, it is placed in matching WordPress posts and pages when its display rules allow it. No block or shortcode is needed. A manual embed takes precedence.', 'wconvert')}</p>
         <p>{__('Check a matching article on your site. Page builders and custom layouts may need manual placement.', 'wconvert')}</p>
       </> : inline ? (
         <>
-          {!published && <p>{__('Publish this Campaign first so it becomes available in the page editor.', 'wconvert')}</p>}
+          {!published && <p>{__('Publish this campaign first so it becomes available in the page editor.', 'wconvert')}</p>}
           <ol className="wconvert-placement__steps">
             <li>{__('Edit the page or post where you want the form to appear.', 'wconvert')}</li>
             <li>{optinName
               ? sprintf(/* translators: %s: the Optin name in the page editor's picker. */ __('Add the “Inline Campaign” block and choose “%s”.', 'wconvert'), optinName)
-              : __('Add the “Inline Campaign” block and select this Campaign by its name.', 'wconvert')}</li>
+              : __('Add the “Inline Campaign” block and select this campaign by its name.', 'wconvert')}</li>
             <li>{__('Update the page, then open it on your site to check the placement.', 'wconvert')}</li>
           </ol>
           <Shortcode optinId={optinId} />
@@ -77,7 +77,7 @@ export function PlacementGuidance({ optinId, optinName, displayType, placement, 
           {position !== null && <p>{sprintf(__('Position: %s.', 'wconvert'), position)}</p>}
           <p>{published
             ? __('Your published version can appear on pages that match its display rules. Its schedule, triggers and visitor settings still decide when it shows.', 'wconvert')
-            : __('After publishing, this Campaign can appear on pages that match its display rules. Its schedule, triggers and visitor settings decide when it shows.', 'wconvert')}</p>
+            : __('After publishing, this campaign can appear on pages that match its display rules. Its schedule, triggers and visitor settings decide when it shows.', 'wconvert')}</p>
         </>
       )}
       {siteCheck !== null && (

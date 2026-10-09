@@ -1,6 +1,7 @@
 import { useId, useState, type RefObject } from 'react';
 import { __ } from '@wordpress/i18n';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '../components/ui/dialog';
+import { AdminDialog, AdminDialogBody, AdminDialogContent, AdminDialogFooter, AdminDialogHeader } from '../components/ui/admin-dialog';
+import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { ProviderMark } from '../destinations/ProviderMark';
 import { ProviderTiles, channelRefusal, channels, type ChannelRule } from '../destinations/ProviderTiles';
@@ -40,22 +41,21 @@ export function AddDestinationPicker({
   const providers = types.filter((type) => matches(type.label));
 
   return (
-    <Dialog open onOpenChange={(open) => { if (!open) onClose(); }}>
-      <DialogContent className="max-h-[calc(100dvh-4rem)] overflow-y-auto sm:max-w-xl"
+    <AdminDialog open onOpenChange={(open) => { if (!open) onClose(); }}>
+      <AdminDialogContent size="md"
         onCloseAutoFocus={(event) => { event.preventDefault(); returnFocusTo.current?.focus(); }}>
-        <DialogHeader>
-          <DialogTitle className="m-0">{__('Add a destination', 'wconvert')}</DialogTitle>
-          <DialogDescription className="m-0">{description}</DialogDescription>
-        </DialogHeader>
-        <Input type="search" aria-label={__('Search destinations', 'wconvert')} placeholder={__('Search destinations', 'wconvert')}
-          value={query} onChange={(event) => setQuery(event.target.value)} />
+        <AdminDialogHeader title={__('Add a destination', 'wconvert')} meta={description}>
+          <Input type="search" className="mt-2" aria-label={__('Search destinations', 'wconvert')} placeholder={__('Search destinations', 'wconvert')}
+            value={query} onChange={(event) => setQuery(event.target.value)} />
+        </AdminDialogHeader>
+        <AdminDialogBody className="flex flex-col gap-5">
         {destinations.length > 0 && <section className="flex flex-col gap-2" aria-labelledby={`${id}-yours`}>
           <h3 id={`${id}-yours`} className="wconvert-picker-label">{__('Your destinations', 'wconvert')}</h3>
           {routes.length === 0 ? <p className="m-0 text-note text-muted-foreground">{__('No destinations match.', 'wconvert')}</p>
             : <ul className="m-0 flex list-none flex-col gap-2 p-0">
               {routes.map((destination) => {
                 const type = typeOf(destination);
-                const why = bound.includes(destination.id) ? __('Already sending.', 'wconvert')
+                const why = bound.includes(destination.id) ? __('Already added.', 'wconvert')
                   : channelRefusal(channels(destination.requirements), rule);
                 const target = targetShown(destination.target);
                 return (
@@ -65,7 +65,7 @@ export function AddDestinationPicker({
                       onClick={() => { if (why === null) onPick(destination.id); }}>
                       <ProviderMark type={type} className="size-5 shrink-0" />
                       <span className="min-w-0">
-                        <span className="block font-medium [overflow-wrap:anywhere]">{destination.label}</span>
+                        <bdi className="block font-medium [overflow-wrap:anywhere]">{destination.label}</bdi>
                         <span id={`${id}-${destination.id}`} className="block text-note text-muted-foreground">
                           {[type?.label, target, why].filter(Boolean).join(' · ')}
                         </span>
@@ -82,7 +82,9 @@ export function AddDestinationPicker({
           {providers.length === 0 && needle !== '' ? <p className="m-0 text-note text-muted-foreground">{__('No providers match.', 'wconvert')}</p>
             : <ProviderTiles types={providers} rule={rule} suggested={suggested} onChoose={(type) => onCreate(type)} />}
         </section>
-      </DialogContent>
-    </Dialog>
+        </AdminDialogBody>
+        <AdminDialogFooter back={<Button type="button" variant="outline" onClick={onClose}>{__('Cancel', 'wconvert')}</Button>} />
+      </AdminDialogContent>
+    </AdminDialog>
   );
 }

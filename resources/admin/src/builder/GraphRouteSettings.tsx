@@ -109,7 +109,7 @@ export function GraphRouteSettings({ tree, step, focusPath, focusTarget = false,
         {targets.map(target => <option key={target.id} value={target.id}>{target.name}</option>)}
       </select></label>
       {(onSelect || onPreview) && <div className="wconvert-journey-route-destination">
-        {onSelect && <button type="button" disabled={!tree.steps.some(item => item.id === edge.to)} onClick={() => onSelect(tree.steps.findIndex(item => item.id === edge.to))}>{__('Edit destination screen', 'wconvert')}<ArrowRight aria-hidden="true" size={14}/></button>}
+        {onSelect && <button type="button" disabled={!tree.steps.some(item => item.id === edge.to)} onClick={() => onSelect(tree.steps.findIndex(item => item.id === edge.to))}>{__('Edit next screen', 'wconvert')}<ArrowRight aria-hidden="true" size={14} className="rtl:-scale-x-100"/></button>}
         {onPreview && <button type="button" disabled={!tree.steps.some(item => item.id === edge.to)} onClick={() => onPreview(tree.steps.findIndex(item => item.id === edge.to))}><Eye aria-hidden="true" size={14}/>{__('Preview', 'wconvert')}</button>}
       </div>}
       {tree.steps.find(item => item.id === edge.to)?.when && <p className="wconvert-journey-route-check">{sprintf(__('Check its show condition on arrival: %s', 'wconvert'), conditionText(tree, tree.steps.find(item => item.id === edge.to)!.when!))}</p>}
@@ -139,7 +139,7 @@ export function GraphRouteSettings({ tree, step, focusPath, focusTarget = false,
     {screen.when && <div className="wconvert-journey-settings__skip"><strong>{__('When this screen is hidden', 'wconvert')}</strong>
       <label>{__('Continue at', 'wconvert')}<select ref={hiddenSelect} value={hidden?.to ?? ''} onChange={event => write(answers, fallback,
         { id: hidden?.id ?? graphEdgeId(graph), from: screen.id, kind: 'hidden', to: event.target.value })}>
-        {!hidden && <option value="" disabled>{__('Choose hidden destination…', 'wconvert')}</option>}
+        {!hidden && <option value="" disabled>{__('Choose where it continues…', 'wconvert')}</option>}
         {targets.map(target => <option key={target.id} value={target.id}>{target.name}</option>)}
       </select></label><p>{__('Hidden screens do not collect an answer or submit details.', 'wconvert')}</p></div>}
     </div>

@@ -98,12 +98,8 @@ export interface Problem {
 }
 
 /**
- * The six checks, in the order {@see problemsIn} runs them — worst first.
- *
- * Exported so the strip can draw one chip per check without a second list of
- * them, which is the fifth cross-cutting list this codebase keeps refusing
- * (ADR 0019). A seventh check added below arrives on screen with no component
- * edited.
+ * The checks, in the order {@see problemsIn} runs them — worst first. Each
+ * problem names the one it belongs to, which the readiness review reads.
  */
 export const CHECKS = [
   'converts',
@@ -114,48 +110,6 @@ export const CHECKS = [
 ] as const;
 
 export type CheckId = (typeof CHECKS)[number];
-
-/**
- * What ENFORCES each check, named where the merchant can see it.
- *
- * ============================================================================
- * A WARNING NOBODY CAN TRACE IS A WARNING PEOPLE LEARN TO DISMISS.
- * ============================================================================
- * The strip draws six chips and the failing one carries a sentence. What it
- * could not say is *who says so* — and the six are not one kind of thing: two
- * are refusals the server makes at the write, two are rules the vocabulary or
- * the renderer imposes, and two are nothing but this file's own opinion about
- * what will cost the merchant later.
- *
- * That difference is exactly what a merchant needs in order to decide whether
- * to act. *The save will refuse this* and *nothing will ever mention this
- * again* are the two ends of it, and a chip that looks identical for both
- * teaches them to ignore both (ADR 0042 rule 2).
- *
- * **Per CHECK and not per problem**, which is the shape the plan asked for the
- * other way round. A passing chip has a source too — *six checks pass* is only
- * legible if a reader can see what was doing the checking — and a field on
- * `Problem` could cite one only while something was wrong. It would also be the
- * same string repeated by every producer of the same check.
- *
- * **Two strings, because the chip and the tooltip want different lengths.**
- * `at` is one short token — six chips fit one line at 1680 and two at 1280 —
- * and `how` is the sentence a merchant reads once while deciding. Spelling only
- * the long form put `OptinController::refuseADesignThatCapturesNothing()` on
- * screen six times across two lines in a monospace register, which reads as
- * debug output rather than as *six checks pass*.
- *
- * Not translated, and that is deliberate: these are file names and ADR
- * numbers. A translator has nothing to do with `OptinController` and a
- * localised class name is a class name nobody can grep for.
- */
-export const CHECK_SOURCES: Readonly<Record<CheckId, { at: string; how: string }>> = {
-  converts: { at: 'OptinController', how: 'refuseADesignThatCannotConvert() refuses the write' },
-  captures: { at: 'render.ts', how: 'the step that holds the submit button IS the form' },
-  countdown: { at: 'ADR 0052', how: 'a countdown counts to the Campaign’s own end date and nothing else' },
-  words: { at: 'SlotRoles', how: 'bind() writes a campaign setup’s words back only where a Role binds' },
-  readable: { at: 'ADR 0038', how: 'AA on small text' },
-};
 
 /**
  * Everything wrong with this design, worst first.
@@ -336,7 +290,7 @@ function whatCountsDownToNothing(template: Template, endsAt: string | undefined)
         is left is the fact and what to do about it.
       */
       said: __(
-        'This design shows a countdown, and nothing says when this Campaign stops running. Set an end date, or the clock stays empty.',
+        'This design shows a countdown, and nothing says when this campaign stops running. Set an end date, or the clock stays empty.',
         'wconvert',
       ),
       path: null,

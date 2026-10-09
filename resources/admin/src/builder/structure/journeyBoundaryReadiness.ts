@@ -44,7 +44,7 @@ export function journeyBoundaryIssues(tree: TemplateTree, action?: string): Jour
     if (screen.id === primary.id || !graphReaches(tree.graph, primary.id, screen.id)) continue;
     if (!walkNodes(screen.content).some(node => node.type === 'question')) continue;
     issues.push({ key: `question-after-save:${screen.id}`,
-      said: sprintf(__('The questions on “%1$s” come after “%2$s” saves the answers. Move this screen before that save in Journey, or remove its questions.', 'wconvert'), screen.name, primary.name),
+      said: sprintf(__('The questions on “%1$s” come after “%2$s” saves the answers. Move this screen before that save in Screens, or remove its questions.', 'wconvert'), screen.name, primary.name),
       repair: { screenId: screen.id, section: 'content', focus: 'questions' },
     });
   }

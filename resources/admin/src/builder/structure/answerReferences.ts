@@ -17,7 +17,7 @@ export function answerReferences(tree: TemplateTree, questionId: string, value?:
     const paths = tree.graph ? tree.graph.edges.filter(edge => edge.from === screen.id && edge.kind === 'answer') : screen.paths ?? [];
     paths.forEach((path, priority) => {
       if (matches(path.when)) references.push({ key: `path:${screen.id}:${priority}`, label: screen.name,
-        detail: sprintf(__('Branch %1$d → %2$s', 'wconvert'), priority + 1, tree.steps.find(item => item.id === path.to)?.name ?? path.to),
+        detail: sprintf(__('Branch %1$d to %2$s', 'wconvert'), priority + 1, tree.steps.find(item => item.id === path.to)?.name ?? __('Removed screen', 'wconvert')),
         repair: { screenId: screen.id, section: 'paths', pathPriority: priority, ...('id' in path && typeof path.id === 'string' ? { edgeId: path.id } : {}) } });
     });
   }
