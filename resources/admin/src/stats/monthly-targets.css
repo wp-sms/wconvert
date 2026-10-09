@@ -58,7 +58,7 @@
   font-size: var(--text-metric);
   line-height: 1;
   letter-spacing: -.04em;
-  color: var(--primary);
+  color: var(--action);
   font-weight: 600;
   font-variant-numeric: tabular-nums;
 }
@@ -75,7 +75,7 @@
 .wa-target-progress > span {
   display: block;
   height: 100%;
-  background: var(--primary);
+  background: var(--action);
   border-radius: inherit;
 }
 .wa-target-percent {
@@ -102,7 +102,7 @@
   font-size: var(--text-note);
 }
 .wa-target-footer a {
-  color: var(--primary);
+  color: var(--action);
   font-weight: 600;
   text-decoration: none;
 }

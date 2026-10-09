@@ -84,6 +84,8 @@
   --color-destructive-surface: var(--destructive-surface);
   --color-info-surface: var(--info-surface);
   --color-link: var(--link);
+  --color-action: var(--action);
+  --color-action-foreground: var(--action-foreground);
   --color-brand: var(--brand);
   --color-overlay: var(--overlay);
   --color-stage: var(--stage);
@@ -345,41 +347,55 @@
 
 :root {
   /*
-   * The wconvert.io palette (ADR 0130) on ADR 0097's corners: espresso primary,
-   * paper canvas, warm tints. Citron is a brand signal on the dark frame only.
+   * The wconvert.io palette (ADR 0130) on ADR 0097's corners. Espresso fills
+   * buttons, ink blue (--action) marks what is clickable or selected, citron is
+   * the one brand action, and the canvas is a near-neutral warm white.
    */
   --radius: 0.375rem;
   --primary: #302720;
   --primary-foreground: #faf6ed;
 
-  --background: #faf6ed;
+  /* Paper with its yellow taken out: 22% saturation, not the site's 57%. */
+  --background: #f6f5f1;
   --foreground: #302720;
   --card: #ffffff;
   --card-foreground: #302720;
   --popover: #ffffff;
   --popover-foreground: #302720;
-  --surface: #f5f0e5;
+  --surface: #efede8;
 
-  /* Selected is one step deeper than hover, so the two never read alike. */
-  --secondary: #e9e2d4;
-  --secondary-foreground: #302720;
-  --muted: #f5f0e5;
+  /*
+   * Selected is ice with ink text; hover is a neutral step. The two never read
+   * alike, and selection never reads as just another beige.
+   */
+  --secondary: var(--ice);
+  --secondary-foreground: #163f4b;
+  --muted: #efede8;
   --muted-foreground: #6b6056;
-  --accent: #eee8dc;
+  --accent: #ebe8e1;
   --accent-foreground: #302720;
+
+  /*
+   * What is clickable or selected: links, selected tabs and chips, checkboxes,
+   * the chart line and focus. The dark end of the site's ice blue, 7.68:1 on
+   * white and 7.04:1 on the canvas. Buttons stay espresso (--primary).
+   */
+  --action: #1f5a6b;
+  --action-foreground: #ffffff;
 
   /*
    * Semantic colors retain their meaning independently of the brand palette. Each is
    * measured against white rather than eyeballed: destructive 6.57:1, success
-   * 6.13:1, warning 5.93:1, info 6.46:1 — AA in both directions, so each works
-   * as text on a card and as a solid fill under a white label. On the paper
-   * canvas they read 6.10, 5.68, 5.50 and 5.99:1.
+   * 6.13:1, warning 5.93:1, info (the action hue) 7.68:1 — AA in both
+   * directions, so each works as text on a card and as a solid fill under a
+   * white label. On the canvas they read 6.03, 5.62, 5.43 and 7.04:1.
    */
   --destructive: #b42318;
   --destructive-foreground: #ffffff;
   --success: #17703f;
   --warning: #8a5a00;
-  --info: #1c5fa8;
+  /* Info is the action hue on ice, so there is one blue, not two. */
+  --info: var(--action);
 
   /*
    * One surface per meaning, measured with its own text on it (ADR 0130):
@@ -392,8 +408,7 @@
   --destructive-surface: #fbe6e3;
   --info-surface: var(--ice);
 
-  /* The site's accent brown: 8.51:1 on white, and a hue body text does not have. */
-  --link: #67452e;
+  --link: var(--action);
   /* Citron, for the one brand action per screen. Always on an espresso edge. */
   --brand: #e2f475;
   /* The site's ice blue: its Pro card, and here the paid plan and info. */
@@ -411,12 +426,12 @@
    * draws the edge of a control, which is *"visual information required to
    * identify a user interface component"* and therefore owes 3:1 under WCAG
    * 1.4.11 (ADR 0038 sets AA as the bar). They are two tokens because they are
-   * two jobs. The input edge reads 4.19:1 on white, 3.89:1 on paper and
-   * 3.69:1 on the surface tint.
+   * two jobs. The input edge reads 4.19:1 on white, 3.85:1 on the canvas and
+   * 3.59:1 on the surface tint.
    */
-  --border: #ddd8ca;
+  --border: #dedad1;
   --input: #857a6e;
-  --ring: #302720;
+  --ring: var(--action);
 
   /*
    * The chart ramp is the analytics screen's vocabulary, in the order ADR 0019
@@ -424,7 +439,7 @@
    * delivery failures ADR 0021 counts beside them, then a neutral for anything
    * with no meaning of its own.
    */
-  --chart-1: var(--primary);
+  --chart-1: var(--action);
   --chart-2: #17703f;
   --chart-3: #8a5a00;
   --chart-4: #b42318;
@@ -1186,7 +1201,7 @@ body:has(#wconvert-admin) #wpbody-content {
 /* Native choice controls share the typography and geometry below. Hidden
  * inputs used by segmented/tile controls retain their existing presentation. */
 :is(#wconvert-admin, [data-slot="dialog-content"]) {
-  accent-color: var(--primary);
+  accent-color: var(--action);
 }
 
 /*
@@ -1360,26 +1375,26 @@ body:has(#wconvert-admin) #wpbody-content {
 }
 
 #wconvert-admin :is(.button, .button-secondary):hover {
-  border-color: var(--primary);
-  color: var(--primary);
+  border-color: var(--action);
+  color: var(--action);
   background: var(--accent);
 }
 
 #wconvert-admin .button-primary {
-  border-color: var(--primary);
+  border-color: var(--action);
   border-radius: var(--radius);
   color: var(--primary-foreground);
-  background: var(--primary);
+  background: var(--action);
 }
 
 #wconvert-admin .button-primary:hover {
-  border-color: var(--primary);
-  background: color-mix(in srgb, var(--primary) 90%, black);
+  border-color: var(--action);
+  background: color-mix(in srgb, var(--action) 90%, black);
   color: var(--primary-foreground);
 }
 
 #wconvert-admin :is(.button-link, a) {
-  color: var(--primary);
+  color: var(--action);
 }
 
 #wconvert-admin :is(.button-link-delete, .button-link.button-link-delete) {
@@ -1934,7 +1949,7 @@ body:has(#wconvert-admin) #wpbody-content {
 .wconvert-picker__filter-row { gap: 0.75rem; }
 .wconvert-picker__facet > span { margin-inline-end: 0.25rem; color: var(--muted-foreground); font-size: var(--text-note); }
 .wconvert-picker__option-count { font-size: var(--text-note); opacity: 0.65; font-variant-numeric: tabular-nums; }
-.wconvert-picker__filter[aria-pressed='true'] { color: var(--primary); border-color: var(--primary); background: var(--muted); }
+.wconvert-picker__filter[aria-pressed='true'] { color: var(--action); border-color: var(--action); background: var(--muted); }
 .wconvert-picker__more { min-block-size: 2.25rem; }
 .wconvert-picker__extra { gap: 0.75rem; padding-block: 0.75rem; border-block: 1px solid var(--border); max-block-size: 30dvh; overflow-y: auto; }
 .wconvert-picker__results { justify-content: space-between; gap: 0.25rem 0.75rem; font-size: var(--text-note); color: var(--muted-foreground); }
@@ -1947,22 +1962,22 @@ body:has(#wconvert-admin) #wpbody-content {
 .wconvert-creation__steps { padding: 1.5rem 1.5rem 0; }
 .wconvert-creation__steps ol { display: flex; flex-wrap: wrap; align-items: center; gap: 1.5rem; margin: 0; padding: 0; list-style: none; }
 .wconvert-creation__steps li { display: flex; align-items: center; gap: 0.5rem; color: var(--muted-foreground); font-size: var(--text-note); }
-.wconvert-creation__steps li[aria-current='step'] { color: var(--primary); font-weight: 600; }
+.wconvert-creation__steps li[aria-current='step'] { color: var(--action); font-weight: 600; }
 .wconvert-creation__step-number { display: inline-flex; align-items: center; justify-content: center; inline-size: 1.5rem; block-size: 1.5rem; border: 1px solid var(--border); border-radius: 50%; font-size: var(--text-note); }
-[aria-current='step'] > .wconvert-creation__step-number { color: var(--primary-foreground); background: var(--primary); border-color: var(--primary); }
+[aria-current='step'] > .wconvert-creation__step-number { color: var(--primary-foreground); background: var(--action); border-color: var(--action); }
 .wconvert-creation > [data-slot='region-header'] p { max-inline-size: 48rem; }
 .wconvert-creation__goals { background: var(--surface); }
 .wconvert-creation__goals > ul { gap: 1rem; }
 .wconvert-goal-card.wconvert-choice { position: relative; cursor: default; }
-.wconvert-goal-card__icon { display: flex; align-items: center; justify-content: center; align-self: flex-start; inline-size: 3rem; block-size: 3rem; margin-block-end: 0.25rem; border: 1px solid var(--border); border-radius: 0.75rem; color: var(--primary); background: var(--surface); }
+.wconvert-goal-card__icon { display: flex; align-items: center; justify-content: center; align-self: flex-start; inline-size: 3rem; block-size: 3rem; margin-block-end: 0.25rem; border: 1px solid var(--border); border-radius: 0.75rem; color: var(--action); background: var(--surface); }
 .wconvert-goal-card p { margin: 0; }
 .wconvert-goal-card .wconvert-goal-card__action { position: static; inline-size: 100%; }
 .wconvert-goal-card__action:not([aria-disabled='true'])::after { content: ''; position: absolute; inset: 0; border-radius: var(--radius-md); }
-.wconvert-goal-card:has(.wconvert-goal-card__action:not([aria-disabled='true'])):hover { box-shadow: 0 3px 12px color-mix(in srgb, var(--primary) 8%, transparent); }
+.wconvert-goal-card:has(.wconvert-goal-card__action:not([aria-disabled='true'])):hover { box-shadow: 0 3px 12px color-mix(in srgb, var(--action) 8%, transparent); }
 .wconvert-goal-card:has(.wconvert-goal-card__action:focus-visible) { outline: 2px solid var(--ring); outline-offset: 2px; }
 .wconvert-goal-card--locked .wconvert-goal-card__icon { color: var(--muted-foreground); }
 .wconvert-creation__reassurance { display: flex; align-items: center; gap: 0.5rem; padding: 1rem 1.5rem; font-size: var(--text-note); }
-.wconvert-creation__reassurance svg { flex: none; color: var(--primary); }
+.wconvert-creation__reassurance svg { flex: none; color: var(--action); }
 .wconvert-creation > .wconvert-picker__controls { padding: 1rem 1.5rem; gap: 1rem; }
 .wconvert-creation .wconvert-picker__active-filter { max-inline-size: 100%; overflow-wrap: anywhere; text-align: start; }
 .wconvert-creation .wconvert-picker__active-filter svg { flex: none; }
@@ -1984,8 +1999,8 @@ body:has(#wconvert-admin) #wpbody-content {
 .wconvert-creation__goals > ul { grid-template-columns: repeat(auto-fill, minmax(min(100%, 18rem), 1fr)) !important; }
 .wconvert-goal-card.wconvert-choice { align-items: stretch !important; padding: 1.25rem !important; gap: 0.75rem !important; }
 .wconvert-goal-card h3 { line-height: 1.4 !important; }
-.wconvert-goal-card .wconvert-goal-card__action { justify-content: space-between !important; padding-inline: 0 !important; color: var(--primary) !important; }
-.wconvert-goal-card:has(.wconvert-goal-card__action:not([aria-disabled='true'])):hover { border-color: var(--primary) !important; }
+.wconvert-goal-card .wconvert-goal-card__action { justify-content: space-between !important; padding-inline: 0 !important; color: var(--action) !important; }
+.wconvert-goal-card:has(.wconvert-goal-card__action:not([aria-disabled='true'])):hover { border-color: var(--action) !important; }
 .wconvert-goal-card__action:not([aria-disabled='true']):hover { background: transparent !important; }
 @media (max-width: 640px) {
 .wconvert-creation > [data-slot='region-header'], .wconvert-creation__goals,
@@ -2023,7 +2038,7 @@ body:has(#wconvert-admin) #wpbody-content {
 .wconvert-design-detail__header h3 { margin: 0; font-size: var(--text-heading); font-weight: 600; color: var(--foreground); }
 .wconvert-design-detail__header h3:focus { outline: none; }
 .wconvert-design-detail__content-choice { flex: none; min-inline-size: 0; margin: 0; padding: 0 1.25rem 0.875rem; border: 0; }
-.wconvert-design-detail__content-choice label:has(input:checked) { border-color: var(--primary); background: color-mix(in srgb, var(--primary) 5%, var(--background)); }
+.wconvert-design-detail__content-choice label:has(input:checked) { border-color: var(--action); background: color-mix(in srgb, var(--action) 5%, var(--background)); }
 .wconvert-design-detail__content-choice label:has(input:focus-visible) { outline: 2px solid var(--ring); outline-offset: 2px; }
 .wconvert-design-detail__controls { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; padding: 0 1.25rem 0.875rem; border-block-end: 1px solid var(--border); }
 .wconvert-design-detail__controls > span { margin-inline-start: auto; }
@@ -2074,8 +2089,8 @@ body:has(#wconvert-admin) #wpbody-content {
  */
 .wconvert-gallery__card.is-chosen,
 .wconvert-choice.is-chosen {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 1px var(--primary);
+  border-color: var(--action);
+  box-shadow: 0 0 0 1px var(--action);
 }
 
 /*
@@ -3790,8 +3805,8 @@ body:has(#wconvert-admin) #wpbody-content {
  * this admin wears.
  */
 .wconvert-theme[aria-pressed="true"] {
-  border-color: var(--primary);
-  box-shadow: 0 0 0 1px var(--primary);
+  border-color: var(--action);
+  box-shadow: 0 0 0 1px var(--action);
 }
 
 .wconvert-theme__swatches {
@@ -4494,7 +4509,7 @@ body:has(#wconvert-admin) #wpbody-content {
   border: 1px solid var(--border);
   border-radius: 3px;
   background: var(--card);
-  color: var(--primary);
+  color: var(--action);
 }
 
 .wconvert-fit-preview :is(img, svg) {
@@ -4523,8 +4538,8 @@ body:has(#wconvert-admin) #wpbody-content {
 }
 
 .wconvert-split-preview > span:first-child {
-  background: var(--primary);
-  border-color: var(--primary);
+  background: var(--action);
+  border-color: var(--action);
   color: var(--primary-foreground);
 }
 
@@ -4585,8 +4600,8 @@ body:has(#wconvert-admin) #wpbody-content {
 }
 
 .wconvert-position__target > input:checked + span {
-  background: var(--primary);
-  border-color: var(--primary);
+  background: var(--action);
+  border-color: var(--action);
 }
 
 .wconvert-position__target > input:checked + span > span {
@@ -6299,8 +6314,8 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
 
 @layer utilities {
   .wconvert-picker__filter[aria-pressed='true'] {
-    color: var(--primary) !important;
-    border-color: var(--primary) !important;
+    color: var(--action) !important;
+    border-color: var(--action) !important;
     background: var(--muted) !important;
   }
 }
@@ -6564,7 +6579,7 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
 .wconvert-picker-settings__body { display: grid; gap: 1rem; }
 .wconvert-picker-settings label { display: grid; min-inline-size: 0; gap: .5rem; font-size: var(--text-body); }
 .wconvert-picker-settings .wconvert-picker-settings__check { display: flex; align-items: center; gap: .625rem; cursor: pointer; min-block-size: var(--control-height); }
-.wconvert-picker-settings input[type=checkbox] { appearance: auto; flex: none; inline-size: 1rem; block-size: 1rem; min-block-size: 0; margin: 0; accent-color: var(--primary); }
+.wconvert-picker-settings input[type=checkbox] { appearance: auto; flex: none; inline-size: 1rem; block-size: 1rem; min-block-size: 0; margin: 0; accent-color: var(--action); }
 .wconvert-picker-settings input[type=checkbox]::before { content: none; }
 .wconvert-picker-settings fieldset { min-inline-size: 0; border: 0; margin: 0; padding: 0; }
 .wconvert-picker-settings legend { font-size: var(--text-body); font-weight: 500; padding: 0; margin-block-end: .5rem; }
@@ -6616,7 +6631,7 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
 .wconvert-option-strip { display: flex; flex-wrap: wrap; gap: .375rem; }
 .wconvert-option-strip > label { position: relative; display: inline-flex; align-items: center; gap: .375rem; cursor: pointer; min-block-size: var(--control-height-sm); padding: .3125rem .625rem; border: 1px solid var(--input); border-radius: var(--radius-md); background: var(--card); color: var(--foreground); font-size: var(--text-note); line-height: 1.4; }
 .wconvert-option-strip > label:hover { background: var(--accent); }
-.wconvert-option-strip > label:has(input:checked) { color: var(--primary-foreground); background: var(--primary); border-color: var(--primary); }
+.wconvert-option-strip > label:has(input:checked) { color: var(--primary-foreground); background: var(--action); border-color: var(--action); }
 .wconvert-option-strip > label:has(input:focus-visible), .wconvert-compare-choice:has(input:focus-visible) { outline: 2px solid var(--ring); outline-offset: 2px; }
 .wconvert-option-strip > label:has(input:disabled), .wconvert-compare-choice:has(input:disabled) { opacity: .5; cursor: default; }
 :is(#wconvert-admin, [data-slot="dialog-content"]) :is(.wconvert-option-strip > label, .wconvert-compare-choice) > input {
@@ -6626,9 +6641,9 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
 .wconvert-preview-controls, .wconvert-setup-preview__tools { display: flex; flex-wrap: wrap; align-items: center; gap: .75rem; min-inline-size: 0; }
 .wconvert-preview-controls > .wconvert-option-strip + .wconvert-option-strip { padding-inline-start: .75rem; border-inline-start: 1px solid var(--border); }
 .wconvert-compare-choice { position: relative; display: inline-flex; align-items: center; gap: .375rem; min-block-size: var(--control-height-sm); padding: .25rem .375rem; color: var(--muted-foreground); border-radius: var(--radius-md); cursor: pointer; font-size: var(--text-note); }
-.wconvert-compare-choice:has(input:checked) { color: var(--primary); background: var(--accent); }
-.wconvert-compare-choice:hover { color: var(--primary); background: var(--surface); }
-.wconvert-gallery__card:has(.wconvert-compare-choice > input:checked) { border-color: var(--primary); }
+.wconvert-compare-choice:has(input:checked) { color: var(--action); background: var(--accent); }
+.wconvert-compare-choice:hover { color: var(--action); background: var(--surface); }
+.wconvert-gallery__card:has(.wconvert-compare-choice > input:checked) { border-color: var(--action); }
 .wconvert-comparison-grid { display: grid; min-inline-size: 0; gap: 1.5rem; grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .wconvert-comparison-grid > section { display: flex; flex-direction: column; gap: .75rem; min-inline-size: 0; }
 .wconvert-comparison-grid > section > p { margin: 0; }
@@ -6732,7 +6747,7 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
   input:is([type="checkbox"], [type="radio"]):not(.sr-only) {
   appearance: auto;
   -webkit-appearance: auto;
-  accent-color: var(--primary);
+  accent-color: var(--action);
   inline-size: 18px;
   block-size: 18px;
   width: 18px;

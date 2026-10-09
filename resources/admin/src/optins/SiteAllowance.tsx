@@ -167,11 +167,11 @@ export function SiteAllowance({
                 <span className="flex items-center gap-2"><Input id="wconvert-site-cooldown" className="w-28" type="number" min={1} step={1} placeholder={__('None', 'wconvert')} value={draft?.cooldownDays ?? ''} onChange={(event) => change({ cooldownDays: event.target.value })} /><span>{__('days', 'wconvert')}</span></span>
               </div>
               <label htmlFor="wconvert-site-dismiss" className="flex items-start gap-3 py-5">
-                <input id="wconvert-site-dismiss" className="mt-1 size-4 shrink-0 accent-primary" type="checkbox" checked={draft?.stopAfterDismiss ?? false} onChange={(event) => change({ stopAfterDismiss: event.target.checked })} />
+                <input id="wconvert-site-dismiss" className="mt-1 size-4 shrink-0 accent-action" type="checkbox" checked={draft?.stopAfterDismiss ?? false} onChange={(event) => change({ stopAfterDismiss: event.target.checked })} />
                 <span className="font-medium">{__('Stop showing campaigns after a visitor closes one', 'wconvert')}<small className="mt-1 block text-note font-normal text-muted-foreground">{__('Applies across all campaigns, not only the one they closed.', 'wconvert')}</small></span>
               </label>
               <label htmlFor="wconvert-site-convert" className="flex items-start gap-3 py-5">
-                <input id="wconvert-site-convert" className="mt-1 size-4 shrink-0 accent-primary" type="checkbox" checked={draft?.stopAfterConversion ?? false} onChange={(event) => change({ stopAfterConversion: event.target.checked })} />
+                <input id="wconvert-site-convert" className="mt-1 size-4 shrink-0 accent-action" type="checkbox" checked={draft?.stopAfterConversion ?? false} onChange={(event) => change({ stopAfterConversion: event.target.checked })} />
                 <span className="font-medium">{__('Stop showing campaigns after a visitor converts', 'wconvert')}<small className="mt-1 block text-note font-normal text-muted-foreground">{__('A conversion can be a form submission or a campaign link click.', 'wconvert')}</small></span>
               </label>
             </div>

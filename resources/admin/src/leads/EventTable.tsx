@@ -130,7 +130,7 @@ export function EventTable({
               </div>
               {selected.fields.message && <section className="border-y border-border py-5">
                 <h3 className="m-0 text-body font-semibold">{__('What they said', 'wconvert')}</h3>
-                <blockquote className="mx-0 mb-0 mt-3 border-s-2 border-primary ps-4 whitespace-pre-wrap break-words">{selected.fields.message}</blockquote>
+                <blockquote className="mx-0 mb-0 mt-3 border-s-2 border-action ps-4 whitespace-pre-wrap break-words">{selected.fields.message}</blockquote>
               </section>}
               {!!selected.question_answers?.length && <section className="border-y border-border py-5">
                 <h3 className="m-0 text-body font-semibold">{__('Answers', 'wconvert')}</h3>
@@ -233,7 +233,7 @@ function fieldLabel(name: string): string {
 function LeadIdentity({ lead }: { lead: Lead }) {
   const initials = lead.fields.name?.trim().split(/\s+/).map((part) => Array.from(part)[0]).slice(0, 2).join('').toLocaleUpperCase();
   return <span className="flex items-center gap-3">
-    <span aria-hidden="true" className="flex size-9 shrink-0 items-center justify-center rounded-full bg-secondary text-note font-semibold text-primary">{initials || '—'}</span>
+    <span aria-hidden="true" className="flex size-9 shrink-0 items-center justify-center rounded-full bg-secondary text-note font-semibold text-action">{initials || '—'}</span>
     <span className="min-w-0">{lead.fields.name && <span className="block font-medium">{lead.fields.name}</span>}<bdi dir="ltr" className="block break-all text-note text-muted-foreground">{lead.email ?? lead.phone ?? '—'}</bdi></span>
   </span>;
 }

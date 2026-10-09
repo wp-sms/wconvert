@@ -26,9 +26,9 @@ between builds while a browser still has the old file cached.
 
 Primary is #205c57, frame #183c40, canvas #EAF0ED, and cards white.
 _Amended by [ADR 0130](0130-the-admin-wears-the-wconvert-io-brand.md): primary
-and frame are both espresso #302720, the canvas is paper #FAF6ED, cards stay
-white, and citron #E2F475 marks the active tab, unread dot and focus on the
-frame._ Shared shadows
+and frame are both espresso #302720, ink blue #1F5A6B marks what is clickable
+or selected, the canvas is a near-neutral warm white #F6F5F1, cards stay white,
+and citron #E2F475 marks the active tab, unread dot and focus on the frame._ Shared shadows
 are removed. All admin motion, including portaled layers, is disabled; actual
 WordPress behavior outside the app is not changed. Reading-page heading buttons and selects
 share a 48px floor; existing compact and coarse-pointer scopes remain. Campaigns
@@ -36,7 +36,7 @@ uses one white sheet, larger identity previews, ghost row actions and status
 dot/text treatments without changing their meaning, ordering or behavior.
 
 The detail pass establishes white goal and target cards against the mist canvas
-(paper since [ADR 0130](0130-the-admin-wears-the-wconvert-io-brand.md)),
+(warm white #F6F5F1 since [ADR 0130](0130-the-admin-wears-the-wconvert-io-brand.md)),
 with shared inset, interaction and border colors instead of per-card green fills.
 Reading section headings use 20px; dashboard totals use 36px, below the page title.
 Supporting text stays at 13px. Header selects and secondary buttons share height,
@@ -83,8 +83,8 @@ WordPress footer is hidden, and there is no horizontal overflow. Muted text
 measures 5.24:1 on the canvas and 6.05:1 on white; control borders measure 3.30:1
 on the canvas and 3.82:1 on white. _Corrected by
 [ADR 0130](0130-the-admin-wears-the-wconvert-io-brand.md): those are Harbor's
-values. Muted text now reads 5.67:1 on paper and 6.12:1 on white, control
-borders 3.89:1 and 4.19:1._
+values. Muted text now reads 5.61:1 on the canvas and 6.12:1 on white, control
+borders 3.85:1 and 4.19:1._
 
 Expanded destination settings use a white editing surface with an inset usage
 notice and one shared-change warning. The notice retains saved/live usage and

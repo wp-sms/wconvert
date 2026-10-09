@@ -18,7 +18,7 @@
   border: 1px solid transparent; border-radius: .375rem; color: var(--muted-foreground); font-weight: 500;
 }
 #wconvert-admin .wconvert-panel-filters button:hover { color: var(--foreground); background: var(--muted); }
-#wconvert-admin .wconvert-panel-filters button[aria-pressed='true'] { background: var(--secondary); color: var(--primary); border-color: var(--border); }
+#wconvert-admin .wconvert-panel-filters button[aria-pressed='true'] { background: var(--secondary); color: var(--action); border-color: var(--border); }
 #wconvert-admin .wconvert-panel-filters button:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
 #wconvert-admin .wconvert-panel-filters button > span { font-size: var(--text-micro); font-variant-numeric: tabular-nums; }
 #wconvert-admin .wconvert-panel-search { position: relative; margin-inline-start: auto; inline-size: 15rem; max-inline-size: 100%; }
@@ -26,7 +26,7 @@
 #wconvert-admin .wconvert-report-chart { background: var(--surface); border: 1px solid var(--border); border-radius: .375rem; padding: 1rem; }
 #wconvert-admin .wconvert-report-chart svg { inline-size: 100%; block-size: 9rem; display: block; overflow: visible; }
 #wconvert-admin .wconvert-report-chart line { stroke: var(--border); stroke-dasharray: 3 4; }
-#wconvert-admin .wconvert-report-chart rect { fill: var(--primary); }
+#wconvert-admin .wconvert-report-chart rect { fill: var(--action); }
 #wconvert-admin .wconvert-report-chart__plot { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: .75rem; }
 #wconvert-admin .wconvert-report-chart__axis { display: flex; flex-direction: column; justify-content: space-between; text-align: end; color: var(--muted-foreground); font-size: var(--text-micro); font-variant-numeric: tabular-nums; }
 #wconvert-admin .wconvert-report-chart__dates { display: flex; justify-content: space-between; gap: 1rem; font-size: var(--text-note); color: var(--muted-foreground); margin-block-start: .5rem; }
@@ -34,12 +34,12 @@
 #wconvert-admin .wconvert-panel-details > summary:hover { background: var(--muted); }
 #wconvert-admin .wconvert-panel-details > summary:focus-visible { outline: 2px solid var(--ring); outline-offset: -3px; }
 #wconvert-admin .wconvert-route-settings { background: var(--card); }
-#wconvert-admin .wconvert-region-icon { display: grid; place-items: center; inline-size: 2.5rem; block-size: 2.5rem; flex: none; color: var(--primary); background: var(--secondary); border-radius: .5rem; }
+#wconvert-admin .wconvert-region-icon { display: grid; place-items: center; inline-size: 2.5rem; block-size: 2.5rem; flex: none; color: var(--action); background: var(--secondary); border-radius: .5rem; }
 #wconvert-admin .wconvert-region-icon svg { inline-size: 1.25rem; block-size: 1.25rem; }
 #wconvert-admin .wconvert-daily-numbers { inline-size: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
 #wconvert-admin .wconvert-daily-numbers :is(th, td) { padding: .5rem; text-align: start; border-block-end: 1px solid var(--border); }
 #wconvert-admin .wconvert-daily-numbers td { text-align: end; }
-#wconvert-admin .wconvert-capture-details > summary { cursor: pointer; color: var(--primary); font-size: var(--text-note); }
+#wconvert-admin .wconvert-capture-details > summary { cursor: pointer; color: var(--action); font-size: var(--text-note); }
 #wconvert-admin .wconvert-capture-details dl > div { margin-block-start: .75rem; }
 #wconvert-admin .wconvert-capture-details { max-inline-size: 24rem; }
 @media (min-width: 901px) {

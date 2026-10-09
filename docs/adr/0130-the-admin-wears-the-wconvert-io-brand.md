@@ -10,122 +10,124 @@ wconvert.io has an approved identity ("Espresso / ice blue / citron",
 italic CSS "w" in a square, a `dashicons-megaphone` menu icon, and teal, mint
 and gold wp.org art. The plugin and the site now read as one product.
 
+The site is the source, not a rulebook. A marketing page can be nearly
+monochrome, but an admin needs a colour that says "you can click this" and
+"this is selected". Where the two needs differ, the admin adds what it needs
+and records why below.
+
 ## Source
 
-Values are copied from the site's `src/styles/base.css`: ink `#302720`, accent
-`#67452e`, paper `#faf6ed`, cool (ice blue) `#e0eff3`, warm `#eee8dc`,
-highlight (citron) `#e2f475`, muted `#6b6056`, line `#ddd8ca`. All three
-brand colours are used, as on the site. The values that sit between two of
-them, and the semantic surfaces, were chosen by measurement.
+The site's `src/styles/base.css`: ink `#302720`, accent `#67452e`, paper
+`#faf6ed`, cool (ice blue) `#e0eff3`, warm `#eee8dc`, highlight (citron)
+`#e2f475`, muted `#6b6056`, line `#ddd8ca`.
 
 The marks are `public/images/brands/wconvert-mark.svg` (espresso tile, cream W,
 citron dot) and `wconvert-mark-inverse.svg` (cream tile, espresso W), copied
 unchanged to `resources/admin/src/assets/branding/`.
 
+## Four roles
+
+| Role | Colour | Used for |
+|---|---|---|
+| Structure | espresso `#302720` | Text, buttons (`--primary`), the header and footer bands |
+| Action | ink blue `#1f5a6b` | Links, selected tabs, chips and list items, checkboxes, the chart line, focus rings |
+| Brand | citron `#e2f475` | One brand button per screen, and signals on the espresso frame |
+| Plan and info | ice `#e0eff3` | The paid plan badge, *Explore Pro*, info and selected surfaces |
+
+Ink blue is the one colour the site does not have. It is the dark end of the
+site's ice blue, so it belongs to the palette. It is 18° of hue from Harbor's
+teal, but it returns as a small accent, not as the frame.
+
 ## Token map
 
-The names stay (ADR 0037). Only the values change.
+The names stay (ADR 0037). Only the values change, plus a few new tokens.
 
 | Token | Value | Was |
 |---|---|---|
-| `--primary`, `--ring` | `#302720` espresso; fg `#faf6ed` | `#205c57`; fg white |
-| `--background` | `#faf6ed` paper | `#eaf0ed` mist |
+| `--primary` | `#302720` espresso; fg `#faf6ed` | `#205c57`; fg white |
+| `--action` (new) | `#1f5a6b` ink blue; fg white | |
+| `--ring`, `--link`, `--chart-1`, `--info` | `var(--action)` | teal, or `#1c5fa8` for info |
+| `--background` | `#f6f5f1`, a near-neutral warm white | `#eaf0ed` mist |
 | `--foreground` (and card/popover fg) | `#302720` | `#243b37` |
 | `--card`, `--popover`, `--sidebar` | `#ffffff` | unchanged |
-| `--surface`, `--muted` | `#f5f0e5`, between paper and warm | `#f3f6f4` |
-| `--secondary` (selected) | `#e9e2d4`, one step deeper than hover; fg `#302720` | green tint |
-| `--accent` (hover) | `#eee8dc` warm; fg `#302720` | green tint |
+| `--surface`, `--muted` | `#efede8` | `#f3f6f4` |
+| `--secondary` (selected) | `var(--ice)`; fg `#163f4b` | green tint |
+| `--accent` (hover) | `#ebe8e1`; fg `#302720` | green tint |
 | `--muted-foreground` | `#6b6056` | `#53675e` |
-| `--border` | `#ddd8ca` | `#cad6cf` |
+| `--border` | `#dedad1` | `#cad6cf` |
 | `--input` | `#857a6e` | `#74877d` |
 | `--chart-5` | `#7a6f63` warm neutral | slate `#5b7078` |
-| semantic | unchanged | |
-| `--success-surface`, `--warning-surface`, `--destructive-surface`, `--info-surface` | `#e6f2e9`, `#fdecc8`, `#fbe6e3`, `--ice` | 5–14% washes of the hue |
-| `--link` (new) | `#67452e`, the site's accent brown | |
-| `--brand` (new) | `#e2f475` citron | |
-| `--ice` (new) | `#e0eff3`, the site's ice blue | |
+| `--destructive`, `--success`, `--warning` | unchanged | |
+| `--success-surface`, `--warning-surface`, `--destructive-surface`, `--info-surface` (new) | `#e6f2e9`, `#fdecc8`, `#fbe6e3`, `var(--ice)` | 5–14% washes of the hue |
+| `--brand`, `--ice` (new) | `#e2f475`, `#e0eff3` | |
 | `--overlay` (new) | espresso at 55% | black at 50% |
 | `--stage` (new) | `#f1f1ef` neutral | warm `--surface` |
 
 The frame (`shell/header.css`) is espresso too: `--frame-ink` `#302720`,
 `--frame-text` `#faf6ed`, `--frame-muted` `#c9bfb1`, `--frame-edge` `#4a3f36`,
-plus `--frame-tint` `#433830` for hover and the plan badge, `--frame-line`
-`#8a7d70` for outlined controls, and `--frame-signal` `#e2f475`. Every
-hardcoded teal in the frame now reads one of these.
+`--frame-tint` `#433830` for hover and the plan badge, `--frame-line` `#8a7d70`
+for outlined controls, and `--frame-signal` `#e2f475`.
 
-## Espresso is the primary, and citron is the brand
+## Why each choice
 
-Citron is the site's loudest colour, but it cannot be the primary. On white
-it measures **1.20:1**, so it fails as text, as a control edge and as a focus
-ring. Espresso with paper text measures 14.62:1 and works in both directions.
-That matches the site, where the dark button carries the action.
+**Espresso fills buttons.** Citron is the site's loudest colour, but it
+measures **1.20:1** on white. So it fails as text, as a control edge and as a
+focus ring, and it cannot be the primary. Espresso with paper text measures
+14.62:1 and matches the site's dark button. Espresso also keeps ADR 0037's
+refusal of green intact: it is a near-black brown, so green still means only
+"converted". Across ~80 hardcoded greens in the editor, chrome tints became
+tokens. Only the values that mean "saved" or "converted" became `--success`
+or stayed green.
 
-On the espresso frame, citron measures **12.13:1** and marks the active-tab
-underline, the unread-notification dot and the `:focus-visible` outline.
+**Ink blue marks what you can act on.** With espresso as both text and
+action, the first pass had no colour for links, selection, the chart or
+focus. In a side-by-side with Harbor, everything Harbor's teal used to mark
+(*Continue editing*, the checked box, the selected tab, the chart line) read
+as body text. `--action` takes every use of `--primary` that meant "selected"
+or "interactive" rather than "button": 167 CSS declarations and 12 Tailwind
+classes. Two exceptions keep espresso: the editor bar's top rule (brand
+frame) and a button fill in the journey answer repair.
 
-On light surfaces it does one more job, the one it does on the site: the
-`brand` button, citron on a 1px espresso edge with espresso text (12.13:1),
-inverting to citron on espresso under the pointer. The edge gives the control
-its boundary, since citron alone is 1.20:1 against white. **There is one per
-screen**, for the action that screen exists for: *Create campaign* on the
-list and *Review & publish* in the editor. Every other action stays espresso.
-Citron is never text on a light surface.
+**Links have two cues.** Ink blue is 1.90:1 against body text, under the 3:1
+WCAG 1.4.1 asks of a colour-only link, so links are also underlined. One base
+rule sets every underline to 40% of the link colour at rest and solid on
+hover, so a column of row labels stays quiet. CSS that underlines uses
+`text-decoration-line`, never the shorthand, which would reset that colour.
 
-Espresso has one cost. `--primary` is now the colour of body text (1.00:1
-between them), so colour alone no longer marks a link. Harbor's teal gave
-only a weak cue anyway, at 1.55:1 against its body text, which is under the
-3:1 WCAG 1.4.1 asks of colour-only links. So a link has two cues:
+**Citron is the brand action.** It is the `brand` button: citron on a 1px
+espresso edge with espresso text (12.13:1), inverting under the pointer as on
+the site. **There is one per screen**, for the action that screen exists for:
+*Create campaign* and *Review & publish*. On the espresso frame, citron
+(12.13:1) marks the active tab, the unread dot and focus. It is never text on
+a light surface.
 
-- **The `--link` colour**, the site's accent brown, at 8.51:1 on white. It is
-  only 1.72:1 against body text, so it is a cue, not the indicator.
-- **An underline.** One base rule sets every underline in the admin to 40% of
-  the link colour at rest and solid on hover. A whole column of row labels
-  (the Review dialog has one) then stays quiet. CSS that underlines uses
-  `text-decoration-line`, never the shorthand, which would reset that colour.
+**The canvas is quieter than the site's paper.** Paper `#faf6ed` is 57%
+saturated, and across a full admin screen it read as yellow. The canvas is
+`#f6f5f1` at 22%, with the surfaces and lines retuned to match. White cards
+keep the same 1.09:1 separation, and borders still do the structural work.
+Paper stays where it is brand: text on espresso, the mark, the wp.org art.
 
-Links that carry an icon (the header help menu, the campaign footer) keep the
-icon as the cue. Selected states keep their fill or border change.
+**Each meaning has its own surface.** On a warm palette, amber (hue 39°) sits
+about 15° from espresso, and its old 10% wash measured **1.01:1** against
+the canvas. *Before you can publish* was a box you could not see. Each
+meaning now has a measured surface, every wash in the admin points at one,
+and warning callouts also carry a 3px inline-start bar in `--warning`, so the
+signal does not rely on colour alone. Info folds into the action hue, so
+there is one blue, not two.
 
-Espresso also keeps ADR 0037's refusal of green intact. It is a near-black
-brown, a hue the semantic palette never uses, so green still means only
-"converted". The editor shows the rule at work: across ~80 hardcoded greens,
-chrome tints became tokens, and only the values that mean "saved" or "converted"
-(the journey map's *Details saved here* band, the publish confirmation) became
-`--success` or stayed in its green tint.
+**Selected is ice, hover is neutral.** At one value, selected and hover were
+the collision `index.css` already warns about. Selected is now ice with ink
+text, so selection never reads as just another beige.
 
-## Semantics need their own surfaces on a warm palette
-
-The first pass kept the semantic hues and their 5–14% washes. Seen populated,
-**warning stopped reading as a warning**. Amber (hue 39°) sits about 15° from
-espresso and the accent brown (24–26°), so it read as part of the brand. Its
-old callout background measured **1.01:1** against paper: in Review & publish,
-*Before you can publish* was a box you could not see.
-
-So each meaning gets a surface that is a distinct, measured colour rather than
-a wash: `--warning-surface` `#fdecc8`, `--success-surface`, `--destructive-surface`,
-and `--info-surface`, the site's ice blue. Every 5–14% wash in the admin now
-points at one of these. Warning callouts also carry a 3px inline-start bar in
-`--warning`, so the signal does not depend on colour alone.
-
-## The rest of the second pass
-
-- **Ice blue marks the paid plan.** The site uses it for its Pro card, so a
-  paid plan badge and the *Explore Pro* link on the frame use it (12.40:1 on
-  espresso). It is also the info surface.
-- **The design preview's backdrop is neutral.** `--stage` is `#f1f1ef`. Design
-  tools keep the canvas grey so the chrome does not tint how a merchant judges
-  their own colours, and most templates default to cool slate. The journey
-  map is product chrome and stays warm.
-- **The dialog overlay is espresso at 55%**, so the page dims rather than going
-  grey.
-- **Selected and hover differ.** `--secondary` (selected) is one step deeper
-  than `--accent` (hover). At one value they were the collision `index.css`
-  already warns about.
-- **"Published" is green in the editor header too**, as it is in the Campaigns
-  list and the Review dialog.
-- **Page-heading actions show keyboard focus again.** A `box-shadow: none
-  !important` reset on them had also removed the focus ring. That predates this
-  ADR, and it came to light while checking the brand button. They now get a
+**The rest:**
+- The paid plan badge and *Explore Pro* are ice, as the site's Pro card is.
+- The design preview's backdrop (`--stage`) is neutral grey, so the chrome
+  does not tint how a merchant judges their own colours. The journey map is
+  product chrome and keeps the warm neutrals.
+- The dialog overlay is espresso at 55%.
+- "Published" is green in the editor header, as everywhere else.
+- Page-heading actions show keyboard focus again. A `box-shadow: none
+  !important` reset on them had also removed the focus ring. They now get a
   2px `--ring` outline on `:focus-visible`.
 
 ## Measured ratios
@@ -134,35 +136,30 @@ These are WCAG 2.x relative-luminance ratios, computed from the hex values
 rather than estimated. Text needs 4.5:1. `--input`, `--ring` and the frame
 signal need 3:1 (1.4.11).
 
-| Pair | White | Paper | Surface |
+| Pair | White | Canvas | Surface |
 |---|---|---|---|
-| `--foreground` `#302720` | 14.62 | 13.55 | 12.86 |
-| `--muted-foreground` `#6b6056` | 6.12 | 5.67 | 5.38 |
-| `--input` `#857a6e` | 4.19 | 3.89 | 3.69 |
-| `--ring` `#302720` | 14.62 | 13.55 | |
-| `--destructive` `#b42318` | 6.57 | 6.10 | |
-| `--success` `#17703f` | 6.13 | 5.68 | |
-| `--warning` `#8a5a00` | 5.93 | 5.50 | |
-| `--info` `#1c5fa8` | 6.46 | 5.99 | |
+| `--foreground` `#302720` | 14.62 | 13.40 | 12.49 |
+| `--muted-foreground` `#6b6056` | 6.12 | 5.61 | 5.23 |
+| `--input` `#857a6e` | 4.19 | 3.85 | 3.59 |
+| `--action` / `--ring` / `--link` `#1f5a6b` | 7.68 | 7.04 | 6.57 |
+| `--destructive` `#b42318` | 6.57 | 6.03 | |
+| `--success` `#17703f` | 6.13 | 5.62 | |
+| `--warning` `#8a5a00` | 5.93 | 5.43 | |
 
-Other pairs: `--secondary-foreground` on `#eee8dc` is 11.98:1, and muted text on
-it is 5.01:1. Paper on espresso (`--primary-foreground`) is 13.55:1. On the
-frame, `--frame-muted` is 8.05:1, citron is 12.13:1, `--frame-line` (the
-outline of the footer Help button) is 3.65:1, and frame text on
-`--frame-tint` is 10.54:1. `--success` on its own tints (`#eff6f0`, `#f0f9f2`)
-measures 5.58 and 5.70:1.
-
-Second pass:
-- Semantic text on its own surface: success 5.32, warning 5.08, destructive
-  5.49 and info 5.48:1. Body text on the warning surface reads 12.53:1, and
-  muted text on it 5.25:1.
-- `--link` reads 8.51 on white, 7.89 on paper, 6.60 on `--secondary`, 7.30 on
-  the warning surface and 7.22 on ice.
-- Muted text on the new `--secondary` reads 4.75:1, and on `--stage` 5.41:1.
-- Ice on espresso reads 12.40:1, and espresso on citron 12.13:1.
-
-The vendored tab trigger's `text-foreground/60` would measure 3.87:1 over
-`--muted`, so `components/ui/tabs.tsx` keeps `--muted-foreground` (5.38:1).
+Other pairs:
+- **Selected:** `--secondary-foreground` on ice reads 9.64:1, action on ice
+  6.52:1, and muted text on ice 5.19:1.
+- **Hover:** foreground on `--accent` reads 11.95:1, and muted text on it 5.00:1.
+- **Semantic surfaces:** each meaning's text on its own surface reads success
+  5.32, warning 5.08 and destructive 5.49:1. Body text on the warning surface
+  reads 12.53:1.
+- **Fills:** paper on espresso reads 13.55:1, and white on ink blue 7.68:1.
+- **Frame:** `--frame-muted` reads 8.05:1, citron 12.13:1, ice 12.40:1,
+  `--frame-line` 3.65:1, and frame text on `--frame-tint` 10.54:1.
+- **Brand button:** espresso on citron reads 12.13:1.
+- **Tabs:** the vendored tab trigger's `text-foreground/60` would measure
+  3.83:1 over `--muted`, so `components/ui/tabs.tsx` keeps
+  `--muted-foreground` (5.23:1).
 
 ## The mark
 
@@ -171,8 +168,8 @@ needs no request and stays crisp at 29–34px. It takes `variant: 'default' |
 'inverse'`. The header and footer sit on espresso, so they use **inverse**,
 because the default espresso tile would vanish there. The editor bar is white
 and uses the default. The wordmark stays live text, as on the site. The
-footer's generic `svg` sizing and RTL mirroring now exclude the mark, so it
-keeps its size and never mirrors.
+footer's generic `svg` sizing and RTL mirroring exclude the mark, so it keeps
+its size and never mirrors.
 
 The wp-admin menu icon (`AdminMenu::MENU_ICON`) is the same artwork as one
 monochrome path: the tile with the W knocked out by `evenodd`, then the dot.
@@ -195,28 +192,36 @@ Chromium. The render script was not committed.
 - **wp.org screenshots.** They still show Harbor until they are regenerated,
   which is a follow-up.
 
+## How it got here
+
+It took three passes, all in one PR, each checked on a seeded Playground
+(four Campaigns, 40 days of counters, six leads):
+
+1. Espresso, paper and citron as the site has them.
+2. After seeing it populated: semantic surfaces, link underlines, ice for the
+   paid plan, the brand button, a neutral stage, a warm overlay and
+   selected/hover separation.
+3. After a side-by-side against Harbor on `main`: the ink-blue action colour,
+   ice for selection, and a less saturated canvas. Three directions were
+   prototyped by layering CSS over the same build: the action colour, a light
+   header like the site's, and both. The light header was quieter but less
+   anchored inside WordPress, and citron signals need a dark band, so the
+   espresso header stays.
+
 ## Verification
 
-Second pass: I checked it again on a seeded Playground with four Campaigns, 40
-days of counters and six leads. Captures cover Campaigns, Analytics with a goal
-report, Leads with the detail dialog, goal picking, every editor tab and the
-Review & publish dialog. The brand button reads citron, espresso, espresso at
-rest; espresso, citron on hover; and shows a 2px espresso outline under
-keyboard focus.
-
-First pass:
-
-Both admin builds, TypeScript, scoped ESLint, 12 focused Vitest files (826
-tests, exit 0) and the admin PHPUnit filter (15 tests) pass. On Playground with
-both plugins mounted, the loaded stylesheet was
-`wconvert-pro/public/admin/main.css`. Campaigns, Analytics, Leads, Settings and
-the editor (Edit and Flow) were captured at 1280px and 360px in LTR and RTL,
-with **0px horizontal overflow** on every capture. Measured on the page:
-
-- The header mark renders inverse at 34px (29px under 600px).
-- The footer mark renders inverse at the same sizes, untransformed in RTL.
-- The editor mark renders default at 32px. It is hidden on phones, as before.
-- The active tab underline is `rgb(226, 244, 117)`.
-- The keyboard focus outline on the nav is solid, 2px, citron.
-
-The menu icon tints correctly under the default and Ocean colour schemes.
+- **Checks:** both admin builds, TypeScript and scoped ESLint pass. The full
+  Vitest suite passes (220 files, 3,899 tests, exit 0), and so does PHPUnit
+  (2,579 tests).
+- **First pass on Playground:** with both plugins mounted, the loaded
+  stylesheet was `wconvert-pro/public/admin/main.css`. Campaigns, Analytics,
+  Leads, Settings and the editor were captured at 1280px and 360px in LTR and
+  RTL, with **0px horizontal overflow** on every capture.
+- **Mark:** the header mark renders inverse at 34px (29px under 600px), and
+  the footer mark at the same sizes, unmirrored in RTL. The editor mark
+  renders at 32px.
+- **Frame:** the nav focus outline is solid, 2px, citron. The menu icon tints
+  under the default and Ocean colour schemes.
+- **Brand button:** it reads citron with espresso text and edge at rest,
+  espresso with citron text on hover, and shows a 2px `--ring` outline under
+  keyboard focus.

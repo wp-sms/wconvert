@@ -43,7 +43,7 @@
   align-items: center;
   gap: 8px;
   font-size: var(--text-note);
-  color: var(--primary);
+  color: var(--action);
   margin: 16px 0;
 }
 .wa-back svg {
@@ -138,8 +138,8 @@
   margin: 0;
 }
 #wconvert-admin .wa-date-comparison input[role='switch']:checked {
-  background: var(--primary);
-  border-color: var(--primary);
+  background: var(--action);
+  border-color: var(--action);
 }
 #wconvert-admin .wa-date-comparison input[role='switch']:checked::before {
   left: 14px;
@@ -164,7 +164,7 @@
 }
 .wa-impact:hover,
 .wa-goal-card:hover {
-  border-color: var(--primary);
+  border-color: var(--action);
 }
 .wa-impact-label {
   display: flex;
@@ -197,7 +197,7 @@
   background: var(--card);
 }
 .wa-impact-primary strong {
-  color: var(--primary);
+  color: var(--action);
 }
 .wa-change {
   font-size: var(--text-micro);
@@ -237,7 +237,7 @@
   display: grid;
   place-items: center;
   background: var(--secondary);
-  color: var(--primary);
+  color: var(--action);
   border-radius: calc(var(--radius) + 2px);
   width: 38px;
   height: 38px;
@@ -367,12 +367,12 @@
 }
 .wa-metric-tabs button[aria-pressed='true'] {
   background: var(--muted);
-  color: var(--primary);
+  color: var(--action);
 }
 .wa-chart-legend {
   display: flex;
   gap: 20px;
-  color: var(--primary);
+  color: var(--action);
   font-size: var(--text-micro);
   margin-top: 20px;
 }
@@ -406,7 +406,7 @@
   stroke-linecap: round;
 }
 .wa-current-line {
-  stroke: var(--primary);
+  stroke: var(--action);
 }
 .wa-prior-line {
   stroke: var(--muted-foreground);
@@ -414,7 +414,7 @@
   opacity: 0.6;
 }
 .wa-chart circle {
-  fill: var(--primary);
+  fill: var(--action);
 }
 .wa-chart-dates {
   display: flex;
@@ -520,7 +520,7 @@
   min-width: 200px;
 }
 .wa-campaign-table a {
-  color: var(--primary);
+  color: var(--action);
   font-weight: 500;
 }
 .wa-table-compare {
