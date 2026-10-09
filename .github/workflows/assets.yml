@@ -1,0 +1,69 @@
+name: Readme and assets
+
+# =============================================================================
+# Pushes readme.txt and the .wordpress-org/ listing images (banner, icon,
+# screenshots) to WordPress.org when they change on `main`, WITHOUT a new
+# plugin version. The plugin code on wp.org is untouched (IGNORE_OTHER_FILES).
+#
+# It only runs when readme.txt's `Stable tag:` is a version that is already
+# released as a `free-v*` GitHub Release. While the next version is being
+# prepared on `main`, its readme waits for the release, which ships it with the
+# code. Without that, wp.org would show notes for a version nobody can install.
+#
+# Same two switches as release-free.yml, and the same secrets:
+#   variable RELEASE_PUBLISH_ENABLED = true, variable PUBLISH_WPORG = true,
+#   secrets WP_ORG_USERNAME and WP_ORG_PASSWORD.
+# Unset means off. This is a push to `main` by design: a readme change is not a
+# release, so it has no pull-request gate of its own beyond review.
+# =============================================================================
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - readme.txt
+      - .wordpress-org/**
+  workflow_dispatch:
+
+# One writer to the wp.org SVN at a time, shared with the release workflow.
+concurrency:
+  group: deploy-wordpress-org
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  assets:
+    name: Update readme and assets on WordPress.org
+    if: vars.RELEASE_PUBLISH_ENABLED == 'true' && vars.PUBLISH_WPORG == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: The readme's Stable tag is already released
+        id: released
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          TAG="$(grep -oE '^Stable tag: [0-9.]+' readme.txt | awk '{print $3}')"
+          if gh release view "free-v$TAG" --repo "$GITHUB_REPOSITORY" > /dev/null 2>&1; then
+            echo "ok=yes" >> "$GITHUB_OUTPUT"
+          else
+            echo "::notice::Stable tag $TAG is not released yet; the readme goes out with that release."
+            echo "ok=no" >> "$GITHUB_OUTPUT"
+          fi
+
+      # Pinned to a commit: this step holds the WordPress.org credentials.
+      # 2480306 == 10up/action-wordpress-plugin-asset-update 2.2.0
+      - name: Push readme and assets
+        if: steps.released.outputs.ok == 'yes'
+        uses: 10up/action-wordpress-plugin-asset-update@2480306f6f693672726d08b5917ea114cb2825f7
+        env:
+          SVN_USERNAME: ${{ secrets.WP_ORG_USERNAME }}
+          SVN_PASSWORD: ${{ secrets.WP_ORG_PASSWORD }}
+          SLUG: wconvert
+          ASSETS_DIR: .wordpress-org
+          IGNORE_OTHER_FILES: true

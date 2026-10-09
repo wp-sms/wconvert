@@ -798,11 +798,19 @@ bin/build.sh pro       # → one ZIP per tier (below)
 bin/build.sh all
 ```
 
-`bin/build.sh` stages a copy, runs `composer install --no-dev` inside it,
+`bin/build.sh` stages a copy, runs `composer dist` inside it,
 applies the tree's own `.distignore`, and then runs
 [`bin/verify-artifact-contract.sh`](bin/verify-artifact-contract.sh) **before**
 writing the ZIP — a ZIP that exists is a ZIP somebody can upload, so the
 contract has to be what decides whether one is written.
+
+`composer dist` (`composer install --no-dev --optimize-autoloader
+--classmap-authoritative`) is the one production install command; the build and
+the CI jobs that need a no-dev tree call it rather than spelling the flags out.
+
+The wp.org listing images (banner, icon, screenshots) live in `.wordpress-org/`,
+are never part of the ZIP, and are pushed by `release-free.yml` and, between
+releases, by `assets.yml`.
 
 ### Pro is one plugin at three tiers
 

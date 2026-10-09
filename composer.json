@@ -33,6 +33,7 @@
     }
   },
   "scripts": {
+    "dist": "composer install --no-dev --optimize-autoloader --classmap-authoritative --no-interaction",
     "test": "phpunit --testdox --colors=always",
     "phpstan": "phpstan analyse --memory-limit=1G",
     "verify:source": "bash bin/verify-source-contract.sh",

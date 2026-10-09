@@ -83,10 +83,19 @@ included in the download, under `resources/`:
   `resources/loader/src`
 * everything in `public/admin/`, from `resources/admin/src`
 * everything in `public/blocks/`, from `resources/blocks/inline-optin/src`
+* everything in `public/phone/`, from `resources/phone/src`
 
 Directories rather than filenames, because the admin bundle is split into
 chunks whose names carry a content hash. Nothing is fetched from elsewhere at
 build time or at run time.
+
+**Source code**
+
+The admin screens, the visitor-facing loader and the editor block are built
+with React, TypeScript and Vite. The compiled files in `public/` are generated
+from the un-minified sources in `resources/`, published together with the build
+tools in the [plugin's GitHub repository](https://github.com/wp-sms/wconvert).
+Run `npm ci && npm run build` there to rebuild them.
 
 **WConvert Pro**
 
@@ -197,6 +206,11 @@ time, and the plugin will say so in the network admin.
 
 = 0.1.0 =
 * First release.
+
+== Upgrade Notice ==
+
+= 0.1.0 =
+First release.
 
 
 == Optional template catalog ==

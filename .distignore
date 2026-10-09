@@ -25,6 +25,9 @@
 /.github
 /.gitignore
 /.distignore
+# wp.org listing assets (banner, icon, screenshots). The SVN assets/ directory
+# gets them from the deploy step, never from the plugin ZIP.
+/.wordpress-org
 
 # The other plugin. Free contains no path under Pro's plugin directory
 # (ADR 0029, check c); this is the line that makes that true, and
@@ -46,6 +49,7 @@
 /vite.config.admin.mjs
 /vite.config.admin-pro.mjs
 /vite.config.block.mjs
+/vite.config.block-pro.mjs
 /vite.config.loader.mjs
 /vite.config.phone.mjs
 /vite.config.loader-pro-basic.mjs
@@ -60,6 +64,9 @@
 /package.json
 /package-lock.json
 /tsconfig.json
+/components.json
+/pnpm-lock.yaml
+/pnpm-workspace.yaml
 /eslint.config.js
 
 # Composer's manifests. The staged vendor/ is installed from them with

@@ -741,6 +741,33 @@ else
     echo "  ! (g) asserted nothing: the licensing SDK is Pro's, so a Pro artifact is where it belongs."
 fi
 
+# --- [h] NOTHING AT THE FREE ROOT THAT IS NOT ON THE LIST --------------------
+#
+# Last on purpose: the specific checks above (a Pro path, a licensing SDK)
+# name what is wrong, and this one is the catch-all for what nobody thought of.
+#
+# .distignore says what to remove, so a file nobody thought of ships by
+# default: a lockfile from another package manager, a tool's config. For free
+# the root of the artifact is short and known, so it is checked as an
+# allowlist, and a new root entry is a conscious edit here rather than an
+# accident in the ZIP that wp.org reviewers read.
+if [ "$tier" = "free" ]; then
+    section
+
+    for entry in "$TREE"/* "$TREE"/.[!.]*; do
+        [ -e "$entry" ] || continue
+
+        case "$(basename "$entry")" in
+            "$main_file"|uninstall.php|readme.txt|tiers.json|src|resources|public|vendor) ;;
+            *) fail "unexpected entry at the free artifact's root: $(basename "$entry") — add it to .distignore, or to the allowlist here if it must ship" ;;
+        esac
+    done
+
+    if section_clean; then
+        pass "the free artifact's root holds only what it is meant to"
+    fi
+fi
+
 verdict
 
 echo "  ✓ artifact contract clean"

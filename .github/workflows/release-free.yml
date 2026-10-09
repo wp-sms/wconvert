@@ -301,8 +301,37 @@ jobs:
           SLUG: wconvert
           VERSION: ${{ needs.guard.outputs.version }}
           BUILD_DIR: ${{ runner.temp }}/wconvert
+          # Banner, icon and screenshots for the wp.org listing. Read from the
+          # checkout above; the action skips it when the directory is absent.
+          ASSETS_DIR: .wordpress-org
           SVN_USERNAME: ${{ secrets.WP_ORG_USERNAME }}
           SVN_PASSWORD: ${{ secrets.WP_ORG_PASSWORD }}
+
+  # ---------------------------------------------------------------------------
+  # ATTACH — the ZIP to the GitHub Release, so a person who installs by
+  # hand gets exactly what was built and contract-checked. Only this job holds
+  # `contents: write`; every other job in this workflow stays read-only.
+  # ---------------------------------------------------------------------------
+  attach_zip:
+    name: 'Attach the ZIP to the release'
+    needs: [guard, build, plugin-check]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      - name: Download the ZIP
+        uses: actions/download-artifact@v4
+        with:
+          name: free-zip
+          path: zips
+
+      - name: Upload to the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          TAG: ${{ github.event.release.tag_name }}
+        run: gh release upload "$TAG" zips/*.zip --clobber
 
   # ---------------------------------------------------------------------------
   # [5] SUMMARY — always runs. A release run is GREEN when nothing published,

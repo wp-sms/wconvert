@@ -275,10 +275,12 @@ build_one() {
             return 1
         }
 
-        echo "  · composer install --no-dev"
-        composer install \
-            --working-dir="$stage" \
-            --no-dev --optimize-autoloader --no-interaction --quiet
+        echo "  · composer dist"
+        composer dist --working-dir="$stage" --quiet
+
+        # Action Scheduler's own agent and contributor docs are not part of a
+        # plugin; they would be the only Markdown inside vendor/.
+        find "$stage/vendor" -type f \( -name 'AGENTS.md' -o -name 'CLAUDE.md' \) -delete
     fi
 
     apply_distignore "$stage" "$source/.distignore"

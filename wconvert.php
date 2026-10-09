@@ -7,7 +7,6 @@
  * Author: VeronaLabs
  * Author URI: https://veronalabs.com/
  * Text Domain: wconvert
- * Domain Path: /resources/languages
  * Requires at least: 6.8
  * Requires PHP: 8.1
  * License: GPL-2.0+
