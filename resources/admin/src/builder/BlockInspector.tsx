@@ -121,13 +121,16 @@ export function BlockInspector({
     (parent) => parent.path.length > 1 && parent.path.length < path.length && parent.path.every((part, index) => path[index] === part),
   );
   const screenName = template.tree.steps[Number(path[0])]?.name ?? '';
+  // Back to the screen where there is one to go back to; the Design tab's
+  // inspector goes back to the whole design, and says so.
   const back = onBack ?? onDesign;
+  const backTo = onBack !== undefined ? screenName || __('Screen', 'wconvert') : __('Design', 'wconvert');
   const head = (
     <div className="wconvert-inspector__head">
       {back !== undefined && (
         <button type="button" className="wconvert-inspector__back" onClick={back}>
           <ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />
-          <span>{screenName || __('Screen', 'wconvert')}</span>
+          <span>{backTo}</span>
         </button>
       )}
       {boxes.length > 0 && (

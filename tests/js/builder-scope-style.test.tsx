@@ -240,12 +240,11 @@ describe('the Style half of the inspector', () => {
    * Design tab always edited — so calling it *Column* would send a merchant
    * looking for the design's colours to something named after a flex direction.
    */
-  /** One way back, named for the screen (D2): no "Design" crumb beside it, and no crumb for a top-level element. */
-  it('offers one way back, to the screen the element is on', async () => {
+  /** One way back (D2), named for where it goes: the Design tab's inspector returns to the whole design. */
+  it('offers one way back, and no crumb for a top-level element', async () => {
     await style(/Button label/);
-    expect(screen.getByRole('button', { name: 'Screen 1' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Design' })).toBeInTheDocument();
     expect(screen.queryByRole('navigation', { name: 'Inside' })).toBeNull();
-    expect(screen.queryByRole('button', { name: 'Design' })).toBeNull();
   });
 
   /**
@@ -254,7 +253,7 @@ describe('the Style half of the inspector', () => {
    */
   it('reaches the designs own token controls through that door', async () => {
     await style(/Button label/);
-    await userEvent.click(screen.getByRole('button', { name: 'Screen 1' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Design' }));
     expect(screen.getByRole('button', { name: /Choose a color for Background/ })).toBeInTheDocument();
   });
 

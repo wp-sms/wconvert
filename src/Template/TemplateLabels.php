@@ -823,13 +823,13 @@ final class TemplateLabels
     {
         return [
             'image-position.left top' => __('Top left', 'wconvert'),
-            'image-position.center top' => __('Top centre', 'wconvert'),
+            'image-position.center top' => __('Top center', 'wconvert'),
             'image-position.right top' => __('Top right', 'wconvert'),
             'image-position.left center' => __('Center left', 'wconvert'),
             'image-position.center' => __('Center', 'wconvert'),
             'image-position.right center' => __('Center right', 'wconvert'),
             'image-position.left bottom' => __('Bottom left', 'wconvert'),
-            'image-position.center bottom' => __('Bottom centre', 'wconvert'),
+            'image-position.center bottom' => __('Bottom center', 'wconvert'),
             'image-position.right bottom' => __('Bottom right', 'wconvert'),
             /*
              * ====================================================================

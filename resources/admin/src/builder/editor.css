@@ -1234,9 +1234,11 @@ body .wconvert-rule-picker__empty { margin: 0; padding: 12px 8px; color: var(--m
 #wconvert-admin .wconvert-journey-pane__heading input.wconvert-journey-pane__name { padding: 3px 6px; margin-inline-start: -7px; font-size: var(--text-note); font-weight: 600; }
 .wconvert-journey-pane--element { padding: 0; }
 .wconvert-screen-actions { min-inline-size: 200px; }
+.wconvert-journey-pane__menu { display: grid; place-items: center; inline-size: 32px; block-size: 32px; flex: none; border: 0; border-radius: 6px; background: none; color: var(--muted-foreground); cursor: pointer; }
+.wconvert-journey-pane__menu:hover { background: var(--surface); color: var(--foreground); }
+.wconvert-journey-pane__menu:focus-visible { outline: 2px solid var(--ring); outline-offset: 1px; }
+.wconvert-journey-pane__menu svg { inline-size: 16px; block-size: 16px; }
 .wconvert-screen-actions__reason { max-inline-size: 260px; margin: 4px 8px 6px; font-size: var(--text-micro); color: var(--muted-foreground); }
-.wconvert-screen-delete { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-block-end: 14px; padding: 10px 12px; border: 1px solid var(--destructive); border-radius: var(--radius); background: var(--card); }
-.wconvert-screen-delete p { flex: 1 1 100%; margin: 0; font-size: var(--text-note); font-weight: 600; }
 .wconvert-screen-submits { margin: 0 0 14px; padding: 9px 12px; border-radius: var(--radius); background: var(--secondary); font-size: var(--text-note); }
 .wconvert-journey-pane__close { display: grid; place-items: center; flex: none; inline-size: 28px; block-size: 28px; border: 0; border-radius: var(--radius); background: transparent; color: var(--muted-foreground); cursor: pointer; }
 .wconvert-journey-pane__close:hover { background: var(--surface); color: var(--foreground); }

@@ -123,9 +123,9 @@ final class PackValidator
                 $this->keys($step, ['id', 'name', 'kind', 'content', 'when', 'paths', 'results', 'products_required', 'review_answers', 'details_note']);
                 if (isset($step['when'])) $this->condition($step['when']);
                 if (isset($step['paths'])) {
-                    self::check(is_array($step['paths']) && array_is_list($step['paths']), __('This design has invalid screen routes.', 'wconvert'));
+                    self::check(is_array($step['paths']) && array_is_list($step['paths']), __('This design has invalid screen paths.', 'wconvert'));
                     foreach ($step['paths'] as $route) {
-                        self::check(is_array($route), __('This design has invalid screen routes.', 'wconvert'));
+                        self::check(is_array($route), __('This design has invalid screen paths.', 'wconvert'));
                         $this->keys($route, ['to', 'when']);
                         if (isset($route['when'])) $this->condition($route['when']);
                     }
@@ -167,10 +167,10 @@ final class PackValidator
             $acts = ConvertingAct::offeredIn($tree);
             $graph = $this->portable && ($tree['v'] ?? null) === 3;
             if ($graph) {
-                self::check(is_array($tree['graph'] ?? null), __('This design has no journey connections.', 'wconvert'));
+                self::check(is_array($tree['graph'] ?? null), __('This design has no journey paths.', 'wconvert'));
                 $this->keys($tree['graph'], ['entry', 'edges']);
                 foreach ($tree['graph']['edges'] ?? [] as $edge) {
-                    self::check(is_array($edge), __('Invalid journey connection.', 'wconvert'));
+                    self::check(is_array($edge), __('Invalid journey path.', 'wconvert'));
                     $this->keys($edge, ['id', 'from', 'to', 'kind', 'when']);
                     if (isset($edge['when'])) $this->condition($edge['when']);
                 }

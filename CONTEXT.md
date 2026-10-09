@@ -948,9 +948,8 @@ last. Replaces "Everyone else" and "fallback".
 
 ### Then
 
-Where a screen goes next, as the screen panel says it: "Then → Thank you". On a
-straight journey it is read-only; on a question with paths it reads "Depends on
-the answer".
+Where a screen goes next: "Then → Thank you". On a straight journey there is one
+answer; on a question with paths it depends on the answer.
 
 ### Template
 
@@ -981,7 +980,7 @@ need review. A new Playbook draft continues to use its own copy, not those sampl
 
 Pro question text and choice labels survive a Template snapshot because they
 define the quiz and its conditional references; ordinary display copy still
-uses Slot Roles. A Results screen carries ordered variants and one fallback.
+uses Slot Roles. A Results screen carries ordered variants, the last for [[All other answers]].
 
 A submit Template also supplies a hidden consent control as a capability, not a
 decision that the Campaign needs it. With Privacy Guidance on, Campaign setup

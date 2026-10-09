@@ -104,7 +104,7 @@ const ScreenCard = memo(function ScreenCard({ id, data, selected }: NodeProps) {
       {goToDestinations && <button type="button" className="nodrag" onClick={goToDestinations}>{__('Edit destinations', 'wconvert')}</button>}
     </div>}
     {branching && <div className="wconvert-flow-node__paths">
-      <small>{paths.length > 2 ? __('First matching path wins', 'wconvert') : detourTarget ? __('Conditional follow-up', 'wconvert') : __('Choose one path', 'wconvert')}</small>
+      <small>{paths.length > 2 ? __('The first path that matches, top to bottom', 'wconvert') : detourTarget ? __('Conditional follow-up', 'wconvert') : __('Choose one path', 'wconvert')}</small>
       <button type="button" className="nodrag" onClick={() => selectPath(index, 0)}>{pathSummary}</button>
       {paths.map((path, priority) => (groupedTargets.get(path.to) ?? path.to) !== detourTarget && <Handle
         key={'id' in path ? String(path.id) : `${path.to}-${priority}`} id={`route-${priority}`} type="source" position={rtl ? Position.Left : Position.Right} isConnectable={false}
@@ -216,7 +216,7 @@ export function FocusCamera({ mapRoot, selectedId, nextId, contextIds, firstId, 
             <DropdownMenuItem onSelect={() => pan(-1)}>{__('Pan to later screens', 'wconvert')}</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
-        {onEditConnections && <button type="button" aria-pressed={editingConnections} onClick={onEditConnections}>{editingConnections ? __('Done connecting', 'wconvert') : __('Edit paths', 'wconvert')}</button>}
+        {onEditConnections && <button type="button" aria-pressed={editingConnections} onClick={onEditConnections}>{editingConnections ? __('Done editing paths', 'wconvert') : __('Edit paths', 'wconvert')}</button>}
       </div>
     </Panel>
 

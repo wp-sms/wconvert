@@ -374,7 +374,7 @@ describe('How often', () => {
 
   it('keeps priority in a card that names its value while closed', async () => {
     setup({ ...initial, priority: 4 }); await section('How often?');
-    expect(screen.getByText('If several popups are ready at once').closest('summary')).toHaveTextContent('Shown first (4)');
+    expect(screen.getByText('If several popups are ready at once').closest('summary')).toHaveTextContent('Shows before others (4)');
   });
 });
 

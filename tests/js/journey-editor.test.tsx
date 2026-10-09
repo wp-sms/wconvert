@@ -598,7 +598,7 @@ it('shows readable screen conditions and edits one result at a time', async () =
   await user.click(screen.getByRole('button', { name: 'Manage screens' }));
   await user.click(screen.getByRole('radio', { name: 'Screens' }));
   const cards = screen.getByRole('list', { name: 'Journey screen inventory' });
-  expect(within(cards).getByRole('button', { name: /Garden size.*Show if Project\? is Garden/ })).toBeInTheDocument();
+  expect(within(cards).getByRole('button', { name: /Garden size.*Only if Project\? is Garden/ })).toBeInTheDocument();
   await user.click(within(cards).getByRole('button', { name: /Result Shows a selected result/ }));
   const results = screen.getByRole('group', { name: 'Possible results' });
   const choices = within(results).getAllByRole('button', { expanded: true });
@@ -761,8 +761,8 @@ it('refuses a protected Delete in the screen menu and says why beside it', async
   await user.click(screen.getByRole('button', { name: 'Manage screens' }));
   await user.click(screenMenu());
   const item = screen.getByRole('menuitem', { name: 'Delete screen' });
-  expect(item).toHaveAttribute('data-disabled');
-  expect(screen.getByText(/collects or saves contact details/)).toBeVisible();
+  expect(item).toHaveAttribute('aria-disabled', 'true');
+  expect(item).toHaveAccessibleDescription(/collects or saves contact details/);
   await user.click(item);
   expect(screen.queryByRole('alertdialog', { name: 'Delete this screen?' })).not.toBeInTheDocument();
 });

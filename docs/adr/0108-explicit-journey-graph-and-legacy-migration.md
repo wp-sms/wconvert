@@ -13,7 +13,7 @@ longer decides where visitors go. A version 3 journey names one entry screen
 and stores edges with stable IDs, `from` and `to` screen IDs, and one of three
 kinds: `answer`, `default`, or `hidden`. Answer edges are checked in their saved
 order and the first matching condition wins. The default edge is the explicit
-Everyone else path. A screen with a show condition uses its hidden edge when
+Everyone else path (*"All other answers" since [ADR 0134](0134-one-edit-tab-look-screen-element.md)*). A screen with a show condition (*"Show only if…"*) uses its hidden edge when
 that condition is false; none of its answer edges run. An ending has no outgoing
 edge. The graph must be acyclic and every screen must be reachable from the
 entry. Canvas coordinates and screen array order never route a visitor.
@@ -77,7 +77,7 @@ graph, then persists stable edge IDs. The migration is checked against legacy
 visitor paths before the editor offers it. Version 3 publication checks graph
 topology, field and consent ownership, submission boundaries, and goal-specific
 required paths; a valid topology alone is not publishable. A field or consent
-screen must appear on every path to its save point. Branch-only contact fields
+screen must appear on every path to its save point (*its **form**, in ADR 0134's words*). Branch-only contact fields
 remain unsupported until the capture endpoint can verify which field screens
 were visited.
 

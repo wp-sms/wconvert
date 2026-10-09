@@ -8,7 +8,7 @@ use WConvert\Template\TemplateLabels;
 
 /**
  * The admin tests' label fixtures are `TemplateLabels::all()`, not a second
- * hand-written spelling of it — so a renamed label (ADR 0133's word list)
+ * hand-written spelling of it — so a renamed label (ADR 0134's word list)
  * cannot leave a test asserting the old word.
  *
  * Regenerate after changing a label:

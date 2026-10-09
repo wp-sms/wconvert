@@ -66,6 +66,6 @@ it('requires explicit connection editing and guards callbacks as well as handles
   expect(mocks.flow.mock.calls.at(-1)?.[0].nodesConnectable).toBe(true);
   mocks.flow.mock.calls.at(-1)?.[0].onConnect({ source: 'interests', target: 'contact', sourceHandle: 'new' });
   expect(connect).toHaveBeenCalledWith('interests', 'contact');
-  fireEvent.click(screen.getByRole('button', { name: 'Done connecting' }));
+  fireEvent.click(screen.getByRole('button', { name: 'Done editing paths' }));
   expect(mocks.flow.mock.calls.at(-1)?.[0].nodesConnectable).toBe(false);
 });

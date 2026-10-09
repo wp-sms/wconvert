@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect, useId, useMemo, useRef, useState, type ReactNode } from 'react';
-import { ArrowLeft, ArrowRight, Copy, FilePlus2, Eye, ListPlus, Maximize2, Minimize2, Plus, Search, Trash2, MoreHorizontal, Workflow, X } from 'lucide-react';
+import { ArrowDown, ArrowLeft, ArrowRight, ArrowUp, Copy, FilePlus2, Eye, ListPlus, Maximize2, Minimize2, Plus, Search, Trash2, MoreHorizontal, Workflow, X } from 'lucide-react';
 import { ConfirmDialog } from '../shell/ConfirmDialog';
 import { Disclosure } from '../shell/Disclosure';
 import { OptionStrip } from '../shell/OptionStrip';
@@ -192,7 +192,7 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
   const previousNotice = useRef(notice);
   const [confirmRemoval, setConfirmRemoval] = useState(false);
   const [confirmGraphRemoval, setConfirmGraphRemoval] = useState(false);
-  // The ⋯ menu's inline confirm for a plain delete, and its graph "Move…" panel.
+  // The ⋯ menu's confirm for a plain delete, and its graph "Move…" panel.
   const [deleting, setDeleting] = useState(false);
   const [moving, setMoving] = useState(false);
   const [pendingRoute, setPendingRoute] = useState<{ tree: TemplateTree; description: string; selected?: number } | null>(null);
@@ -567,7 +567,7 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
             <div className="wconvert-journey-rail__heading"><strong>{__('Screens', 'wconvert')}</strong><span>{tree.graph ? tree.steps.length : sprintf(__('%d of 7', 'wconvert'), tree.steps.length)}</span><small>{tree.graph ? __('Paths may skip screens', 'wconvert') : __('Up to 7 screens without answer paths', 'wconvert')}</small></div>
             <ol ref={screenList} className="wconvert-journey-dialog__screens" aria-label={__('Journey screen inventory', 'wconvert')}>
               {displayOrder.map((index, position) => <JourneyScreenCard key={tree.steps[index].id} template={{ tree, tokens }} index={index} ordinal={position + 1} selected={index === step}
-                scope={id} label={disconnected.has(tree.steps[index].id) ? __('Unreachable', 'wconvert') : screenLabel(index)} condition={tree.steps[index].when ? sprintf(__('Show if %s', 'wconvert'), conditionText(tree, tree.steps[index].when!))
+                scope={id} label={disconnected.has(tree.steps[index].id) ? __('Unreachable', 'wconvert') : screenLabel(index)} condition={tree.steps[index].when ? sprintf(__('Only if %s', 'wconvert'), conditionText(tree, tree.steps[index].when!))
                   : tree.steps[index].kind === 'result' && (tree.steps[index].results?.length ?? 0) > 1 ? sprintf(__('%d possible results', 'wconvert'), tree.steps[index].results?.length ?? 0) : undefined}
                 onSelect={() => select(index)}
                 onMove={tree.graph ? undefined : (from, to) => move(tree.steps.findIndex(s => s.id === from), Math.min(tree.steps.findIndex(s => s.id === to), tree.steps.length - 2))} />)}
@@ -575,7 +575,7 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
           </aside>}
           {contextPanel && contextEditors ? <section className="wconvert-journey-pane wconvert-journey-context-pane" aria-label={contextPanel === 'rules' ? __('Display rules', 'wconvert') : __('Destinations', 'wconvert')}>
             <div className="wconvert-journey-pane__heading"><h3 ref={contextHeading} tabIndex={-1}>{contextPanel === 'rules' ? __('Display rules', 'wconvert') : __('Destinations', 'wconvert')}</h3><button type="button" className="wconvert-journey-pane__close" aria-label={__('Close campaign settings', 'wconvert')} onClick={closeContext}><X aria-hidden="true" /></button></div>
-            <div className="wconvert-journey-dialog__details"><p className="wconvert-journey-context-help">{contextPanel === 'rules' ? __('Controls when the campaign first appears. Use screen conditions for later screens.', 'wconvert') : journeys ? __('Where saved leads are sent. Which screen comes next is set under Next screen.', 'wconvert') : __('Where saved leads are sent.', 'wconvert')}</p>{contextEditors[contextPanel]}</div>
+            <div className="wconvert-journey-dialog__details"><p className="wconvert-journey-context-help">{contextPanel === 'rules' ? __('Controls when the campaign first appears. Use “Show only if…” for later screens.', 'wconvert') : journeys ? __('Where saved leads are sent. Which screen comes next is set under Next screen.', 'wconvert') : __('Where saved leads are sent.', 'wconvert')}</p>{contextEditors[contextPanel]}</div>
             <div className="wconvert-journey-dialog__actions-row"><Button type="button" variant="outline" onClick={closeContext}><ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />{__('Back to screens', 'wconvert')}</Button></div>
           </section> : sampleOpen ? <JourneySample tree={tree} onTrace={setSamplePath} onSelect={select} onClose={() => { setSampleOpen(false); setSamplePath(null); setMobilePane('map'); }} />
             : inspecting && elementPanel ? <section className="wconvert-journey-pane wconvert-journey-pane--element" aria-label={__('Selected element settings', 'wconvert')}>{elementPanel}</section>
@@ -588,17 +588,19 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
             <div className="wconvert-journey-pane__heading"><div className="wconvert-journey-dialog__selected"><span>{view === 'flow' || tree.graph ? <Workflow aria-hidden="true" size={16}/> : ordinal(step)}</span><div><h3 ref={settingsHeading} tabIndex={-1} className="sr-only"><bdi>{current.name}</bdi></h3>
                 <Input className="wconvert-journey-pane__name h-[30px] border-transparent bg-transparent shadow-none hover:border-border" type="text" maxLength={120} aria-label={__('Screen name', 'wconvert')} value={current.name}
                   onChange={e => onChange({ ...tree, steps: tree.steps.map((s, i) => i === step ? { ...s, name: e.target.value } : s) }, `journey:${current.id}:name`)} /><small>{current.kind === 'acknowledgement' ? __('Ending', 'wconvert') : current.kind === 'result' ? __('Results', 'wconvert') : walkNodes(current.content).some(node => node.type === 'question') ? __('Question', 'wconvert') : submission ? __('Collect details', 'wconvert') : __('Message', 'wconvert')}</small></div></div>
-              <DropdownMenu><DropdownMenuTrigger asChild><button ref={deleteTrigger} type="button" className="wconvert-journey-pane__close" aria-label={sprintf(__('Actions for %s', 'wconvert'), current.name)}><MoreHorizontal aria-hidden="true" /></button></DropdownMenuTrigger>
+              <DropdownMenu><DropdownMenuTrigger asChild><button ref={deleteTrigger} type="button" className="wconvert-journey-pane__menu" aria-label={sprintf(__('Actions for %s', 'wconvert'), current.name)}><MoreHorizontal aria-hidden="true" /></button></DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="wconvert-screen-actions">
                   {!tree.graph && <DropdownMenuItem disabled={current.kind === 'acknowledgement' || current.kind === 'result' || tree.steps.length >= 7} onSelect={duplicate}><Copy aria-hidden="true" />{__('Duplicate', 'wconvert')}</DropdownMenuItem>}
-                  {!tree.graph && <DropdownMenuItem disabled={movedScreen(tree, step, step - 1) === tree} onSelect={() => move(step, step - 1)}><ArrowLeft aria-hidden="true" className="rotate-90" />{__('Move up', 'wconvert')}</DropdownMenuItem>}
-                  {!tree.graph && <DropdownMenuItem disabled={movedScreen(tree, step, step + 1) === tree} onSelect={() => move(step, step + 1)}><ArrowRight aria-hidden="true" className="rotate-90" />{__('Move down', 'wconvert')}</DropdownMenuItem>}
+                  {!tree.graph && <DropdownMenuItem disabled={movedScreen(tree, step, step - 1) === tree} onSelect={() => move(step, step - 1)}><ArrowUp aria-hidden="true" />{__('Move up', 'wconvert')}</DropdownMenuItem>}
+                  {!tree.graph && <DropdownMenuItem disabled={movedScreen(tree, step, step + 1) === tree} onSelect={() => move(step, step + 1)}><ArrowDown aria-hidden="true" />{__('Move down', 'wconvert')}</DropdownMenuItem>}
                   {tree.graph && <DropdownMenuItem onSelect={() => setMoving(value => !value)}><Workflow aria-hidden="true" />{__('Move to another path…', 'wconvert')}</DropdownMenuItem>}
                   <DropdownMenuSeparator />
-                  <DropdownMenuItem data-destructive="true" disabled={tree.graph ? !!deletionReason : removal.screens.length === 0} onSelect={askToDelete}>
+                  {/* A refused delete stays reachable and says why, rather than vanishing from the keyboard (GUIDELINES §6). */}
+                  <DropdownMenuItem data-destructive="true" disabled={!tree.graph && removal.screens.length === 0} aria-disabled={tree.graph && deletionReason ? true : undefined}
+                    aria-describedby={tree.graph && deletionReason ? `${id}-delete-reason` : undefined} onSelect={event => { if (tree.graph && deletionReason) event.preventDefault(); else askToDelete(); }}>
                     <Trash2 aria-hidden="true" />{(tree.graph ? optionalRemoval : captureOnScreen(tree, current.id)?.required === false) ? __('Remove optional signup', 'wconvert') : __('Delete screen', 'wconvert')}
                   </DropdownMenuItem>
-                  {tree.graph && deletionReason && <p className="wconvert-screen-actions__reason">{deletionReason}</p>}
+                  {tree.graph && deletionReason && <p id={`${id}-delete-reason`} className="wconvert-screen-actions__reason">{deletionReason}</p>}
                 </DropdownMenuContent>
               </DropdownMenu>
               <button type="button" className="wconvert-journey-pane__close wconvert-expand-settings" aria-label={widePanel ? __('Narrow settings', 'wconvert') : __('Expand settings', 'wconvert')} title={widePanel ? __('Narrow settings', 'wconvert') : __('Expand settings', 'wconvert')} aria-pressed={widePanel} onClick={() => setWidePanel(value => !value)}>{widePanel ? <Minimize2 aria-hidden="true" /> : <Maximize2 aria-hidden="true" />}</button>
@@ -612,11 +614,6 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
               }}><X aria-hidden="true" /></button>
             </div>
             <div className="wconvert-journey-dialog__details">
-          {deleting && <div className="wconvert-screen-delete" role="group" aria-label={__('Confirm delete', 'wconvert')}>
-            <p>{sprintf(__('Delete “%s”?', 'wconvert'), current.name)}</p>
-            <Button type="button" variant="destructive" size="sm" onClick={() => { setDeleting(false); remove(); }}>{__('Delete', 'wconvert')}</Button>
-            <Button type="button" variant="ghost" size="sm" onClick={() => setDeleting(false)}>{__('Cancel', 'wconvert')}</Button>
-          </div>}
           {moving && tree.graph && <GraphScreenActions key={`actions:${current.id}`} tree={tree} step={step} onChange={(next, selected) => { setMoving(false); write(next, selected); requestAnimationFrame(() => settingsHeading.current?.focus()); }} />}
           {disconnected.has(current.id) && <p className="wconvert-graph-insert__summary">{__('Visitors cannot reach this screen. Connect an incoming path from a reachable screen to include it in the journey.', 'wconvert')}</p>}
           {view !== 'edit' && !currentFollowups && <JourneyArrivalSummary tree={tree} step={step} onSelectPath={(index, priority) => { select(index); setRequestedSection('paths'); setPathFocus(priority); }} />}
@@ -633,7 +630,7 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
           {journeys && <QuestionSettings resumeReview={resumeReview} onAction={setSaid} onFollowup={!journeys ? undefined : (question, value) => { setFollowupAnswer({ question, value }); contextAddTrigger.current = document.activeElement as HTMLElement;
             const edge = followupInsertionEdge(insertionTree, current.id, question, value);
             setInsertLocation(edge ? `edge:${edge.id}` : 'choose'); setInsertIntent(undefined); insertedScreen.current = false; setAddKind('followup'); }} tree={tree} step={step} onChange={onChange} onSelect={select} onNavigate={(repair, review) => { setReturnInspection({ screenId: current.id, section: panelSection, review }); setReferenceRequest({ ...repair, serial: --referenceSerial.current }); }} />}
-          {currentFollowups && <section className="wconvert-followup-order" aria-label={__('Follow-up order', 'wconvert')}><strong>{sprintf(__('Question %1$d of %2$d matching follow-ups', 'wconvert'), currentFollowups.screens.indexOf(step) + 1, currentFollowups.screens.length)}</strong><p>{followupSource === undefined ? __('This group has its own incoming paths. Review them in Flow before changing the order.', 'wconvert') : __('Visitors see matching questions in this order. Other paths stay the same.', 'wconvert')}</p>{followupSource === undefined && <Button type="button" variant="outline" onClick={() => { setView('flow'); setMobilePane('map'); }}>{__('Review in Flow', 'wconvert')}</Button>}<div>{([-1, 1] as const).map(direction => <Button key={direction} type="button" variant="outline" disabled={moveFollowup(tree, current.id, direction) === tree} onClick={() => { onChange(moveFollowup(tree, current.id, direction)); setSaid(__('Follow-up order updated. Test the journey with several selected interests.', 'wconvert')); }}>{direction === -1 ? __('Move earlier', 'wconvert') : __('Move later', 'wconvert')}</Button>)}</div></section>}
+          {currentFollowups && <section className="wconvert-followup-order" aria-label={__('Follow-up order', 'wconvert')}><strong>{sprintf(__('Question %1$d of %2$d matching follow-ups', 'wconvert'), currentFollowups.screens.indexOf(step) + 1, currentFollowups.screens.length)}</strong><p>{followupSource === undefined ? __('This group has its own incoming paths. Review them in Flow before changing the order.', 'wconvert') : __('Visitors see matching questions in this order. Other paths stay the same.', 'wconvert')}</p>{followupSource === undefined && <Button type="button" variant="outline" onClick={() => { setView('flow'); setMobilePane('map'); }}>{__('Review in Flow', 'wconvert')}</Button>}<div>{([-1, 1] as const).map(direction => <Button key={direction} type="button" variant="outline" disabled={moveFollowup(tree, current.id, direction) === tree} onClick={() => { onChange(moveFollowup(tree, current.id, direction)); setSaid(__('Follow-up order updated. Test the journey with several selected interests.', 'wconvert')); }}>{direction === -1 ? __('Move up', 'wconvert') : __('Move down', 'wconvert')}</Button>)}</div></section>}
           <JourneyScreenContent tree={tree} step={step} onChange={onChange} />
           <JourneyCaptureSettings consentEditor={labels && <JourneyConsentSettings labels={labels} tree={tree} step={step} onChange={onChange} />} tree={tree} step={step} onChange={onChange} destinationSummary={destinationSummary} onDestinations={onGoToDestinations ? () => openContext('destinations') : undefined} />
 
@@ -695,6 +692,9 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
           </section>}
         </div>
         <div className={embedded && !said ? 'sr-only' : 'wconvert-journey-dialog__footer wconvert-toolbar'}><p role="status">{said}</p>{said && onUndo && <Button type="button" variant="ghost" onClick={onUndo}>{__('Undo change', 'wconvert')}</Button>}{said && <Button type="button" variant="outline" onClick={() => { setTestChange(notice); setTestMode('journey'); setTestOpen(true); }}>{__('Test this change', 'wconvert')}</Button>}{!embedded && <DialogClose asChild><Button variant="outline">{__('Done', 'wconvert')}</Button></DialogClose>}</div>
+        <ConfirmDialog variant="destructive" open={deleting} onOpenChange={setDeleting} title={sprintf(__('Delete “%s”?', 'wconvert'), current.name)} returnFocusTo={deleteTrigger}
+          description={__('Other screens, their paths and saved leads stay. Undo brings this screen back.', 'wconvert')}
+          confirmLabel={__('Delete screen', 'wconvert')} onConfirm={() => { setDeleting(false); remove(); }} />
         <ConfirmDialog variant="destructive" open={confirmRemoval} onOpenChange={setConfirmRemoval} title={__('Remove this optional signup?', 'wconvert')}
           description={sprintf(__('Removes %s, with its contact fields, consent and signup settings. Other screens and saved leads stay. Undo restores this draft edit.', 'wconvert'), tree.steps.filter(s => removal.screens.includes(s.id)).map(s => s.name).join(', '))}
           confirmLabel={__('Remove signup', 'wconvert')} onConfirm={remove} />

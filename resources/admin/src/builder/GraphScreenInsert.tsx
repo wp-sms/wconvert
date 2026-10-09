@@ -127,7 +127,7 @@ export function GraphScreenInsert({ tree, source, kind: initialKind, initialLoca
           })}
         </div>}
         {capture ? <div className="wconvert-graph-insert__summary"><strong>{__('Contact collection', 'wconvert')}</strong>
-          <p>{captures.length ? __('Use an existing contact screen to keep one combined submission. You will review any follow-ups this path bypasses.', 'wconvert') : __('Contact fields need a save point and consent settings. They cannot be added as an ordinary question.', 'wconvert')}</p>
+          <p>{captures.length ? __('Use an existing contact screen to keep one combined submission. You will review any follow-ups this path bypasses.', 'wconvert') : __('Contact fields need a form and consent settings. They cannot be added as an ordinary question.', 'wconvert')}</p>
           {captures.map(screen => <button type="button" key={screen.id} onClick={() => { if (screen.id === location?.target) { onEditCapture?.(screen.id); return; } setCapture(false); setExisting(true); setTarget(screen.id); }} disabled={screen.id === location?.target && !onEditCapture}>{sprintf(screen.id === location?.target ? __('Edit existing %s', 'wconvert') : __('Use %s', 'wconvert'), screen.name)}<ArrowRight aria-hidden="true" size={14} className="rtl:-scale-x-100"/></button>)}
           {onCapture && <Button type="button" variant="outline" onClick={onCapture}>{__('Set up optional signup', 'wconvert')}</Button>}
           {!captures.length && !onCapture && <p>{__('Select your existing contact screen to edit its fields, or choose a signup starting point for a new campaign.', 'wconvert')}</p>}
