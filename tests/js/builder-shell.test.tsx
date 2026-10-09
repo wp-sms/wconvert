@@ -1655,7 +1655,7 @@ describe('changing templates in the draft', () => {
     await userEvent.click(within(alternateCard).getByRole('button', { name: 'Preview design' }));
     expect(await picker.findByText('The design could not be prepared. Try again.')).toBeVisible();
     expect(picker.getByRole('button', { name: 'Use this design' })).toHaveAttribute('aria-disabled', 'true');
-    expect(picker.getByRole('button', { name: 'Retry preview' })).toBeEnabled();
+    expect(picker.getByRole('button', { name: 'Try again' })).toBeEnabled();
     await userEvent.click(picker.getByRole('button', { name: 'Back to designs' }));
     await waitFor(() => expect(within(alternateCard).getByRole('button', { name: 'Preview design' })).toHaveFocus());
     await userEvent.keyboard('{Escape}');

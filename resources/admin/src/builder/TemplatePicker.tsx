@@ -1,14 +1,17 @@
 import { isShown } from '../goals/availability';
 import { useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
-import { LayoutTemplate, SlidersHorizontal, X } from 'lucide-react';
+import { LayoutTemplate, X } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { PickerPagination } from '../discovery/PickerPagination';
 import { ComparisonTray } from '../discovery/ComparisonTray';
 import { PickerSearch } from '../discovery/PickerSearch';
+import { MoreFilters, SavedLabel } from '../discovery/MoreFilters';
 import { OptionStrip } from '../shell/OptionStrip';
 import { PickerSettings } from '../discovery/PickerSettings';
 import { EmptyState } from '../shell/EmptyState';
+import { CheckRow } from '../shell/CheckRow';
+import { RegionError } from '../shell/Region';
 import { Gallery, type Fit } from './Gallery';
 import { DesignComparison } from './DesignComparison';
 import { TemplateDesignDetail, type PrepareDesign } from './TemplateDesignDetail';
@@ -59,10 +62,8 @@ export function TemplatePicker({
   useEffect(() => { setInspectedId(initialInspectedId ?? null); }, [initialInspectedId, displayType]);
   const [availableOnly, setAvailableOnly] = useState(false);
   const [goalFitOnly, setGoalFitOnly] = useState(true);
-  const [moreOpen, setMoreOpen] = useState(false);
   const [inspectedId, setInspectedId] = useState<string | null>(initialInspectedId ?? null);
   const returnFocus = useRef<HTMLElement | null>(null);
-  const filterId = useId();
   const picker = usePicker();
   const [compared,setCompared] = useState<string[]>([]); const [comparing,setComparing] = useState(false); const fromComparison = useRef(false);
   const [settings, setSettings] = useState(false);
@@ -105,6 +106,7 @@ export function TemplatePicker({
     !['captures', 'has_image', 'act'].includes(key),
   );
   const selectedAct = chosenFacets.act?.[0] ?? '';
+  const secondaryCount = Object.values(chosenFacets).reduce((count, values) => count + values.length, 0) + Number(savedOnly) + Number(availableOnly);
 
   const clear = () => {
     setPage(0);
@@ -121,14 +123,14 @@ export function TemplatePicker({
   if (forType.length === 0) {
     return (
       <EmptyState icon={LayoutTemplate} title={__('No designs for this display type', 'wconvert')}>
-        {__('Close the library to return to your draft. Designs for this format arrive with WConvert and its extensions.', 'wconvert')}
+        {__('Designs for this format come with WConvert and its extensions.', 'wconvert')}
       </EmptyState>
     );
   }
 
   return (
     <div className="wconvert-design-browser">
-      {settings && <PickerSettings context="replacement" picker={picker} onBack={() => { setSettings(false); requestAnimationFrame(() => returnFocus.current?.focus({ preventScroll: true })); }} />}
+      {settings && <div className="wconvert-design-browser__settings"><PickerSettings nested context="replacement" picker={picker} backLabel={__('Back to designs', 'wconvert')} onBack={() => { setSettings(false); requestAnimationFrame(() => returnFocus.current?.focus({ preventScroll: true })); }} /></div>}
       {/* Keep this view mounted so Back restores the filters and the scroll position. */}
       <div className="wconvert-design-browser__browse" hidden={inspected !== undefined || comparing || settings}>
         <div className="wconvert-picker__controls wconvert-toolbar">
@@ -142,15 +144,9 @@ export function TemplatePicker({
                 : __('For this goal', 'wconvert')}</option>
               <option value="all">{__('All designs', 'wconvert')}</option>
             </select>}
-            <Button variant="outline" aria-pressed={savedOnly} disabled={!picker.data} onClick={() => setSavedOnly(!savedOnly)}>{sprintf(__('Saved %s', 'wconvert'), String(saved.size))}</Button>
-            <Button variant="outline" disabled={busy || !picker.data} onClick={()=>{returnFocus.current=document.activeElement instanceof HTMLElement?document.activeElement:null;setSettings(true);}}>{__('My preferences','wconvert')}</Button>
-            <Button variant="outline" className="wconvert-picker__more"
-              aria-expanded={moreOpen} aria-controls={filterId} onClick={() => setMoreOpen(!moreOpen)}>
-              <SlidersHorizontal size={15} aria-hidden="true" />
-              {__('Filters', 'wconvert')}
-            </Button>
+            <Button variant="outline" disabled={busy} onClick={()=>{returnFocus.current=document.activeElement instanceof HTMLElement?document.activeElement:null;setSettings(true);}}>{__('Preferences','wconvert')}</Button>
           </div>
-          <div id={filterId} className="wconvert-picker__extra" hidden={!moreOpen}>
+          <MoreFilters active={secondaryCount}>
             <OptionStrip label={__('What visitors do','wconvert')} value={selectedAct} onChange={value=>setChosenFacets(current=>({...current,act:value===''?[]:[value]}))}
               options={[{value:'',label:__('All designs','wconvert')},{value:'submit',label:__('Fill in a form','wconvert')},{value:'click',label:__('Follow a link','wconvert')}].filter(({value})=>value==='' || forType.some(entry=>entry.facets.act===value))} />
             <div className="wconvert-picker__filter-row">
@@ -174,14 +170,13 @@ export function TemplatePicker({
                 options={options(facet, values)} labels={index.labels} chosen={chosenFacets[facet] ?? []}
                 onToggle={(value) => toggle(facet, value)} />
             ))}
-            {hasLocked && (
-              <label className="flex items-center gap-2 text-sm">
-                <input type="checkbox" checked={availableOnly}
-                  onChange={(event) => setAvailableOnly(event.target.checked)} />
-                {__('Available on this site', 'wconvert')}
-              </label>
-            )}
-          </div>
+            <div className="wconvert-picker__filter-row">
+              <CheckRow label={<SavedLabel count={saved.size} />} checked={savedOnly} disabled={!picker.data}
+                onChange={(event) => { setSavedOnly(event.target.checked); setPage(0); }} />
+              {hasLocked && <CheckRow label={__('Available on this site', 'wconvert')} checked={availableOnly}
+                onChange={(event) => { setAvailableOnly(event.target.checked); setPage(0); }} />}
+            </div>
+          </MoreFilters>
           <div className="wconvert-picker__results">
             <label className="flex items-center gap-2 text-note">{__('Sort','wconvert')}<select className="wconvert-picker__select" value={sort} onChange={event=>{setSort(event.target.value);setPage(0);}}><option value="recommended">{__('Recommended','wconvert')}</option><option value="name">{__('Name A–Z','wconvert')}</option></select></label>
             <span role="status" aria-live="polite" aria-atomic="true">
@@ -205,15 +200,21 @@ export function TemplatePicker({
                   );
                 }))}
                 {availableOnly && <button type="button" className="wconvert-picker__active-filter"
+                  aria-label={sprintf(/* translators: %s: active filter name. */ __('Remove filter: %s', 'wconvert'), __('Available on this site', 'wconvert'))}
                   onClick={() => setAvailableOnly(false)}>
                   {__('Available on this site', 'wconvert')}<X size={12} aria-hidden="true" />
+                </button>}
+                {savedOnly && <button type="button" className="wconvert-picker__active-filter"
+                  aria-label={sprintf(/* translators: %s: active filter name. */ __('Remove filter: %s', 'wconvert'), __('Saved designs', 'wconvert'))}
+                  onClick={() => setSavedOnly(false)}>
+                  {__('Saved designs', 'wconvert')}<X size={12} aria-hidden="true" />
                 </button>}
                 <Button variant="link" onClick={clear}>{__('Clear filters', 'wconvert')}</Button>
               </div>
             ) : null}
           </div>
         </div>
-        {picker.error && <p role="alert" className="wconvert-picker__notice">{picker.error} <Button variant="link" onClick={() => { void picker.reload(); }}>{__('Reload preferences', 'wconvert')}</Button></p>}
+        {picker.error && !settings && <RegionError message={picker.error} onRetry={() => { void picker.reload(); }} />}
         <div className="wconvert-picker__body">
           {shown.length === 0 ? (
             <EmptyState icon={LayoutTemplate} title={__('No designs match', 'wconvert')}
@@ -233,7 +234,7 @@ export function TemplatePicker({
 
         </div>
         <ComparisonTray names={comparedEntries.map(entry=>entry.name)} disabled={busy} onClear={()=>setCompared([])} onCompare={()=>{returnFocus.current=document.activeElement instanceof HTMLElement?document.activeElement:null;setComparing(true);}} />
-        {shown.length > 0 && <PickerPagination page={currentPage} pages={pages} disabled={busy} onChange={setPage} />}
+        {shown.length > 0 && <PickerPagination label={__('Design pages', 'wconvert')} page={currentPage} pages={pages} disabled={busy} onChange={setPage} />}
       </div>
       {!settings && comparing && inspected === undefined && <DesignComparison entries={comparedEntries} trees={trees} failed={failed} onRetry={onRetry} onBack={()=>{setComparing(false);requestAnimationFrame(()=>returnFocus.current?.focus({preventScroll:true}));}} onInspect={id=>{fromComparison.current=true;onNear(id);setInspectedId(id);}} />}
       {!settings && inspected !== undefined && (

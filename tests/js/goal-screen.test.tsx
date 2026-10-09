@@ -176,7 +176,7 @@ describe('a goal then a draft', () => {
     goals.listGoals.mockRejectedValueOnce(new Error('Goals unavailable.'));
     render(<GoalScreen onCreated={vi.fn()} />);
     await screen.findByText('Goals unavailable.');
-    await userEvent.click(screen.getByRole('button', { name: 'Retry loading goals' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Try again' }));
     expect(await screen.findByText('Grow my email list')).toBeInTheDocument();
     expect(screen.queryByText('Goals unavailable.')).not.toBeInTheDocument();
   });
@@ -195,7 +195,8 @@ describe('a goal then a draft', () => {
     expect(screen.getByText('Choice 2 of 2')).toBeInTheDocument();
     expect(optins.createOptin).not.toHaveBeenCalled();
     expect(goals.prefill).not.toHaveBeenCalled();
-    expect(screen.getByText('Nothing goes live until you publish.')).toBeInTheDocument();
+    // The reassurance repeated on every step is gone (§8); the one scope note is on the inspector's Use this setup.
+    expect(screen.queryByText(/Nothing goes live/)).not.toBeInTheDocument();
     expect(screen.getByRole('radio', { name: 'All formats' })).toBeChecked();
     expect(screen.getByText('Popup', { selector: '[data-slot="badge"]' })).toBeVisible();
   });
@@ -237,7 +238,7 @@ describe('a goal then a draft', () => {
     const details = screen.getByRole('button', { name: 'Setup details for Welcome discount' });
     await userEvent.click(details);
     expect(screen.getByText(PLAYBOOK.notes)).not.toBeVisible();
-    await userEvent.click(screen.getByText('Visitor journey', { selector: 'summary' }));
+    await userEvent.click(screen.getByText('Visitor journey').closest('summary')!);
     expect(screen.getByText(PLAYBOOK.notes)).toBeVisible();
     expect(screen.getByRole('dialog', { name: 'Welcome discount' })).toBeVisible();
     expect(screen.getByText('Before publishing:')).toBeVisible();
@@ -345,7 +346,7 @@ describe('a goal then a draft', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Use this setup' }));
     expect(optins.createOptin).toHaveBeenCalledTimes(1);
     expect(unloadPrevented()).toBe(false);
-    await userEvent.click(screen.getByRole('button', { name: 'Check Campaigns' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Check campaigns' }));
     expect(check).toHaveBeenCalledOnce();
     expect(optins.createOptin).toHaveBeenCalledTimes(1);
     expect(created).not.toHaveBeenCalled();
@@ -388,7 +389,7 @@ describe('a goal then a draft', () => {
     goals.listPlaybooks.mockRejectedValueOnce(new Error('Campaign setups unavailable.'));
     render(<GoalScreen onCreated={vi.fn()} />); await pickGoal();
     await screen.findByText('Campaign setups unavailable.');
-    await userEvent.click(screen.getByRole('button', { name: 'Retry loading campaign setups' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Try again' }));
     await screen.findByText('Welcome discount');
     expect(goals.listPlaybooks).toHaveBeenLastCalledWith(GOALS[0].id);
   });
@@ -450,7 +451,7 @@ describe('a goal then a draft', () => {
     render(<GoalScreen onCreated={vi.fn()} />); await pickGoal();
     await screen.findByText(/Setup details could not be loaded/);
     expect(screen.getByRole('button', { name: /Setup details for/ })).toBeEnabled();
-    await userEvent.click(screen.getByRole('button', { name: 'Retry setup details' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Try again' }));
     await inspect();
     expect(await screen.findByText(/After 8 seconds/)).toBeInTheDocument();
   });
@@ -538,8 +539,8 @@ it('clears a previous search when switching goals', async () => {
 it('offers no template packs while no catalog is configured', async () => {
   render(<GoalScreen onCreated={vi.fn()} />);
   await pickGoal();
-  expect(await screen.findByRole('button', { name: 'Help me choose' })).toBeInTheDocument();
-  expect(screen.queryByRole('button', { name: 'Browse template packs' })).not.toBeInTheDocument();
+  expect(await screen.findByRole('button', { name: 'Occasions & preferences' })).toBeInTheDocument();
+  expect(screen.queryByRole('button', { name: 'Template packs' })).not.toBeInTheDocument();
   expect(catalog.catalogStatus).not.toHaveBeenCalled();
 });
 
@@ -555,12 +556,14 @@ it('installs a pack from creation, then returns to its starting points without c
   render(<GoalScreen onCreated={vi.fn()} />);
   await pickGoal();
   await userEvent.type(screen.getByRole('searchbox'), 'nothing matches');
-  await userEvent.click(await screen.findByRole('button', { name: 'Browse template packs' }));
+  await userEvent.click(await screen.findByRole('button', { name: 'Template packs' }));
   await userEvent.click(await screen.findByRole('button', { name: 'Preview Store collection' }));
   await userEvent.click(await screen.findByRole('button', { name: 'Install pack' }));
   await userEvent.click(await screen.findByRole('button', { name: 'Choose a campaign setup' }));
   await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
   expect(screen.getByRole('combobox', { name: 'Source' })).toHaveValue('store');
+  // The filter it set lives under More filters, which opens so focus can land on it.
+  expect(screen.getByRole('combobox', { name: 'Source' })).toBeVisible();
   expect(screen.getByRole('combobox', { name: 'Source' })).toHaveFocus();
   expect(screen.getByRole('searchbox')).toHaveValue('');
   await screen.findByRole('button', { name: /Setup details for/ });
@@ -638,7 +641,8 @@ it('saves canonical designs through authenticated preferences and filters withou
   render(<GoalScreen onCreated={vi.fn()} />); await pickGoal();
   await userEvent.click(await screen.findByRole('button', { name: 'Save design: Welcome discount' }));
   await waitFor(() => expect(picker.savePreferences).toHaveBeenCalledWith(expect.objectContaining({ saved: ['registered:centred-card'], revision: 0 })));
-  await userEvent.click(await screen.findByRole('button', { name: 'Saved 1' }));
+  await userEvent.click(await screen.findByRole('checkbox', { name: /Saved designs only/ }));
+  expect(screen.getByText('More filters').closest('summary')).toHaveTextContent('1 on');
   expect(screen.getByText('Welcome discount')).toBeVisible();
   expect(optins.createOptin).not.toHaveBeenCalled();
 });
@@ -698,13 +702,13 @@ it('compares two distinct designs, reviews one in the same dialog and returns wi
   render(<GoalScreen onCreated={vi.fn()} />); await pickGoal();
   await userEvent.click(await screen.findByRole('checkbox', { name: 'Compare design: Welcome discount' }));
   await userEvent.click(screen.getByRole('checkbox', { name: 'Compare design: Practical guide' }));
-  await userEvent.click(screen.getByRole('button', { name: 'Compare designs (2/2)' }));
+  await userEvent.click(screen.getByRole('button', { name: 'Compare' }));
   expect(screen.getAllByRole('dialog')).toHaveLength(1);
   expect(screen.getAllByRole('region', { name: 'Design preview' })).toHaveLength(2);
   await userEvent.click(screen.getByRole('button', { name: 'Review setup: Practical guide' }));
   expect(screen.getByRole('heading', { name: 'Practical guide' })).toBeVisible();
   await userEvent.click(screen.getByRole('button', { name: 'Back to comparison' }));
-  expect(screen.getByRole('heading', { name: 'Compare two designs' })).toBeVisible();
+  expect(screen.getByRole('heading', { name: 'Compare setups' })).toBeVisible();
   expect(optins.createOptin).not.toHaveBeenCalled();
 });
 
@@ -713,8 +717,8 @@ it('keeps comparison recoverable when a search hides every selected design', asy
   await userEvent.click(await screen.findByRole('checkbox', { name: 'Compare design: Welcome discount' }));
   await userEvent.type(screen.getByRole('searchbox', { name: 'Search campaign setups' }), 'no matching setup');
   expect(screen.getByText('No campaign setups match')).toBeVisible();
-  expect(screen.getByRole('complementary', { name: 'Designs selected for comparison' })).toBeVisible();
-  await userEvent.click(screen.getByRole('button', { name: 'Clear comparison' }));
+  expect(screen.getByRole('complementary', { name: 'Selected for comparison' })).toBeVisible();
+  await userEvent.click(screen.getByRole('button', { name: 'Clear' }));
   await userEvent.clear(screen.getByRole('searchbox', { name: 'Search campaign setups' }));
   expect(screen.getByRole('checkbox', { name: 'Compare design: Welcome discount' })).not.toBeChecked();
   expect(optins.createOptin).not.toHaveBeenCalled();
@@ -752,10 +756,35 @@ it('replaces a failed inspection preview with recovery, then shows the exact ret
   render(<GoalScreen onCreated={vi.fn()} />); await pickGoal();
   await screen.findByText('Preview could not be loaded.');
   await inspect();
-  expect(screen.getByRole('alert')).toHaveTextContent('This setup preview could not be loaded.');
-  expect(screen.queryByText('Loading the actual setup preview…')).not.toBeInTheDocument();
+  expect(screen.getByRole('alert')).toHaveTextContent('This preview could not be loaded.');
+  expect(screen.queryByText('Loading preview…')).not.toBeInTheDocument();
   expect(screen.getByRole('button', { name: 'Use this setup' })).toBeDisabled();
-  await userEvent.click(screen.getByRole('button', { name: 'Retry preview' }));
+  await userEvent.click(screen.getByRole('button', { name: 'Try again' }));
   await waitFor(() => expect(screen.getByRole('button', { name: 'Use this setup' })).toBeEnabled());
+  expect(optins.createOptin).not.toHaveBeenCalled();
+});
+
+it('folds the secondary filters under one More filters row and opens preferences over the library', async () => {
+  const repair = { ...PLAYBOOK, id: 'repair', name: 'Repair request', template_id: 'repair-card', business_types: [{ id: 'services', label: 'Service businesses' }] };
+  goals.listPlaybooks.mockResolvedValue([PLAYBOOK, repair]);
+  const data = await picker.pickerData();
+  picker.pickerData.mockResolvedValue({ ...data, occasions: { schema: 1, revision: 0, items: [{ id: 'sale', name: 'Anniversary sale', start: '2026-11-27', end: '2026-12-01' }] } });
+  render(<GoalScreen onCreated={vi.fn()} />); await pickGoal();
+  await screen.findByText('Repair request');
+  const more = screen.getByText('More filters').closest('summary')!;
+  expect(screen.getByRole('combobox', { name: 'Business' })).not.toBeVisible();
+  expect(screen.queryByRole('button', { name: 'Help me choose' })).not.toBeInTheDocument();
+  await userEvent.click(more);
+  await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Business' }), 'services');
+  expect(more).toHaveTextContent('1 on');
+
+  await userEvent.click(screen.getByRole('button', { name: 'Occasions & preferences' }));
+  const dialog = await screen.findByRole('dialog', { name: 'Occasions & preferences' });
+  // A dialog over the library, not a panel in its place.
+  expect(screen.getByRole('heading', { name: 'Choose a campaign setup', hidden: true })).toBeInTheDocument();
+  expect(within(dialog).getByText('Nov 27 – Dec 1, 2026')).toBeVisible();
+  await userEvent.click(within(dialog).getByRole('button', { name: 'Find ideas' }));
+  await waitFor(() => expect(screen.queryByRole('dialog')).not.toBeInTheDocument());
+  expect(screen.getByRole('region', { name: 'Occasion planning ideas' })).toHaveTextContent('Nov 27 – Dec 1, 2026');
   expect(optins.createOptin).not.toHaveBeenCalled();
 });

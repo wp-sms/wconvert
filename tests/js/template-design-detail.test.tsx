@@ -89,7 +89,7 @@ describe('inspecting a design before replacing the draft', () => {
       currentDisplayType: 'popup',
       goalLabel: 'Grow my email list',
     });
-    const warning = screen.getByText('Changes this campaign from Popup to Inline form. Its Goal remains “Grow my email list”. Place its block or shortcode before publishing.');
+    const warning = screen.getByText('Changes this campaign from Popup to Inline form. Its goal stays “Grow my email list”. Place its block or shortcode before publishing.');
     expect(warning).toBeVisible();
     expect(screen.getByRole('button', { name: 'Switch to Inline form' }))
       .toHaveAttribute('aria-describedby', expect.stringContaining(warning.id));
@@ -104,13 +104,13 @@ describe('inspecting a design before replacing the draft', () => {
   it('explains unmatched pictures before applying and never stores the transfer report', async () => {
     const onPrepare = vi.fn().mockResolvedValue({ ...TEMPLATE, transfer: { unplaced: 2, unverified: 0 } });
     const { onChoose } = detail({ onPrepare });
-    expect(await screen.findByText(/2 picture\(s\) have no clear matching place/)).toBeVisible();
+    expect(await screen.findByText(/2 pictures have no clear matching place/)).toBeVisible();
     expect(onChoose).not.toHaveBeenCalled();
     await userEvent.click(screen.getByRole('button', { name: 'Use this design' }));
     expect(onChoose).toHaveBeenCalledExactlyOnceWith(ENTRY.id, { tree: TEMPLATE.tree, tokens: TEMPLATE.tokens });
     await userEvent.click(screen.getByRole('radio', { name: /Use this design's sample content/ }));
     await waitFor(() => expect(screen.getByRole('button', { name: 'Use this design' })).toHaveAttribute('aria-disabled', 'false'));
-    expect(screen.queryByText(/picture\(s\) have no clear/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/pictures? (has|have) no clear/)).not.toBeInTheDocument();
   });
 
   it('ignores a late carry response after choosing samples and applies only the displayed content', async () => {
@@ -136,7 +136,7 @@ describe('inspecting a design before replacing the draft', () => {
     await userEvent.click(screen.getByRole('radio', { name: /Use this design's sample content/ }));
     expect(await screen.findByRole('alert')).toHaveTextContent('Preview service is unavailable.');
     expect(screen.getByRole('button', { name: 'Use this design' })).toHaveAttribute('aria-disabled', 'true');
-    await userEvent.click(screen.getByRole('button', { name: 'Retry preview' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Try again' }));
     await waitFor(() => expect(screen.getByRole('button', { name: 'Use this design' })).toHaveAttribute('aria-disabled', 'false'));
     expect(screen.getByRole('radio', { name: /Use this design's sample content/ })).toBeChecked();
     expect(onPrepare.mock.calls.map((call) => call[1])).toEqual(['keep', 'sample', 'sample']);
@@ -243,7 +243,7 @@ describe('inspecting a design before replacing the draft', () => {
     expect(apply).toHaveAttribute('aria-disabled', 'true');
     expect(apply).toHaveAccessibleDescription(/preview could not be loaded/);
     await userEvent.click(apply);
-    await userEvent.click(screen.getByRole('button', { name: 'Retry preview' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Try again' }));
     expect(onChoose).not.toHaveBeenCalled();
     expect(onRetry).toHaveBeenCalledOnce();
   });
@@ -356,7 +356,7 @@ describe('gallery inspection actions', () => {
     const onPreview = vi.fn();
     render(<Gallery entries={[ENTRY]} trees={new Map()} labels={LABELS} chosen={undefined} fit={FIT} busy={false}
       onChoose={vi.fn()} onNear={vi.fn()} onPreview={onPreview} failed={new Set([ENTRY.id])} onRetry={onRetry} />);
-    await userEvent.click(screen.getByRole('button', { name: 'Retry preview' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Try again' }));
     await userEvent.click(screen.getByRole('button', { name: 'Preview design' }));
     expect(onRetry).toHaveBeenCalledExactlyOnceWith(ENTRY.id);
     expect(onPreview).toHaveBeenCalledExactlyOnceWith(ENTRY.id);

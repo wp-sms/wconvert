@@ -1,12 +1,15 @@
 import { contentLockDesignCompatible } from '../inlinePlacement';
 import { useEffect, useId, useRef, useState } from 'react';
-import { __, sprintf } from '@wordpress/i18n';
+import { __, _n, sprintf } from '@wordpress/i18n';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 import { Skeleton } from '../components/ui/skeleton';
 import { displayTypeLabel } from '../displayTypes';
-import { PickerDialogBody, PickerDialogFooter } from '../discovery/PickerDialog';
+import { PickerDialogBody } from '../discovery/PickerDialog';
+import { AdminDialogFooter } from '../components/ui/admin-dialog';
+import { CheckRow } from '../shell/CheckRow';
+import { TryAgain } from '../shell/Region';
 import { PreviewControls } from '../discovery/PreviewControls';
 import { PreviewFrame } from '../discovery/PreviewFrame';
 import { actChangeOf, refusalFor, type Fit } from './Gallery';
@@ -72,6 +75,7 @@ export function TemplateDesignDetail({
     && prepared?.prepare === onPrepare ? prepared : null;
   const template = prepares ? candidate?.value : sample;
   const preparationError = candidate?.error;
+  const retryPreview = preparationError !== undefined ? () => setAttempt((held) => held + 1) : onRetry;
   const [device, setDevice] = useState<'desktop' | 'mobile'>(() => window.innerWidth < 640 ? 'mobile' : 'desktop');
   const [step, setStep] = useState(0);
   const heading = useRef<HTMLHeadingElement>(null);
@@ -95,12 +99,12 @@ export function TemplateDesignDetail({
     ? entry.display_type === 'inline'
       ? sprintf(
           /* translators: 1: current format, 2: new format, 3: campaign goal. */
-          __('Changes this campaign from %1$s to %2$s. Its Goal remains “%3$s”. Place its block or shortcode before publishing.', 'wconvert'),
+          __('Changes this campaign from %1$s to %2$s. Its goal stays “%3$s”. Place its block or shortcode before publishing.', 'wconvert'),
           fromFormat, toFormat, goalLabel,
         )
       : sprintf(
           /* translators: 1: current format, 2: new format, 3: campaign goal. */
-          __('Changes this campaign from %1$s to %2$s. Its Goal remains “%3$s”. Any saved position resets to the new format’s default; review display rules before publishing.', 'wconvert'),
+          __('Changes this campaign from %1$s to %2$s. Its goal stays “%3$s”. Any saved position resets to the new format’s default; review display rules before publishing.', 'wconvert'),
           fromFormat, toFormat, goalLabel,
         )
     : entry.display_type === 'inline'
@@ -137,19 +141,23 @@ export function TemplateDesignDetail({
       <PickerDialogBody className="wconvert-design-detail__document">
         {prepares && (
           <fieldset className="wconvert-design-detail__content-choice" disabled={busy}>
-            <legend className="text-sm font-medium">{__('Content for this design', 'wconvert')}</legend>
-            <div className="mt-2 grid gap-2 sm:grid-cols-2">
-              <label className="grid cursor-pointer grid-cols-[auto_1fr] items-start gap-x-2 rounded-md border p-3 text-sm">
+            <legend className="text-body font-medium">{__('Content for this design', 'wconvert')}</legend>
+            <div className="wconvert-radio-cards mt-2 sm:grid-cols-2">
+              <label className="wconvert-radio-card">
                 <input type="radio" name={`${id}-content`} value="keep" checked={mode === 'keep'} disabled={!hasCurrentDesign}
-                  onChange={() => setMode('keep')} className="row-span-2 mt-1" />
-                <strong>{__('Keep my content', 'wconvert')}</strong>
-                <span className="text-note text-muted-foreground">{hasCurrentDesign ? __('Fit your current words and images into this layout. Some content may move or have no matching place.', 'wconvert') : __('This draft has no design content yet. Start with sample content and customize it next.', 'wconvert')}</span>
+                  aria-labelledby={`${id}-keep`} aria-describedby={`${id}-keep-help`} onChange={() => setMode('keep')} />
+                <span>
+                  <span id={`${id}-keep`}>{__('Keep my content', 'wconvert')}</span>
+                  <span id={`${id}-keep-help`}>{hasCurrentDesign ? __('Fit your current words and images into this layout. Some content may move or have no matching place.', 'wconvert') : __('This draft has no design content yet. Start with sample content and customize it next.', 'wconvert')}</span>
+                </span>
               </label>
-              <label className="grid cursor-pointer grid-cols-[auto_1fr] items-start gap-x-2 rounded-md border p-3 text-sm">
+              <label className="wconvert-radio-card">
                 <input type="radio" name={`${id}-content`} value="sample" checked={mode === 'sample'}
-                  onChange={() => setMode('sample')} className="row-span-2 mt-1" />
-                <strong>{__("Use this design's sample content", 'wconvert')}</strong>
-                <span className="text-note text-muted-foreground">{__('Start with its example words, images, links and form settings. Review offers and links before publishing.', 'wconvert')}</span>
+                  aria-labelledby={`${id}-sample`} aria-describedby={`${id}-sample-help`} onChange={() => setMode('sample')} />
+                <span>
+                  <span id={`${id}-sample`}>{__("Use this design's sample content", 'wconvert')}</span>
+                  <span id={`${id}-sample-help`}>{__('Start with its example words, images, links and form settings. Review offers and links before publishing.', 'wconvert')}</span>
+                </span>
               </label>
             </div>
           </fieldset>
@@ -158,7 +166,7 @@ export function TemplateDesignDetail({
         <div className="wconvert-design-detail__controls wconvert-toolbar">
           <PreviewControls fitHeight={fitHeight} onFitHeight={setFitHeight} mobile={device === 'mobile'} onMobile={mobile => setDevice(mobile ? 'mobile' : 'desktop')}
             template={template} step={shown} onStep={value => { setStep(value); setResultId(''); }} />
-          {resultScreen?.results && resultScreen.results.length > 0 && <label className="text-note">{__('Result to inspect','wconvert')}<select className="wconvert-picker__select" value={result?.id} onChange={event => setResultId(event.target.value)}>{resultScreen.results.map(value => <option key={value.id} value={value.id}>{value.heading || value.id}</option>)}</select></label>}
+          {resultScreen?.results && resultScreen.results.length > 0 && <label className="text-note">{__('Result to inspect','wconvert')}<select className="wconvert-picker__select" value={result?.id} onChange={event => setResultId(event.target.value)}>{resultScreen.results.map((value, index) => <option key={value.id} value={value.id}>{value.heading || sprintf(/* translators: %d: the result's position. */ __('Result %d', 'wconvert'), index + 1)}</option>)}</select></label>}
           <span className="text-note text-muted-foreground">
             <span>{prepares && mode === 'keep'
               ? __('Preview with your content', 'wconvert') : __('Preview with sample content', 'wconvert')}</span>
@@ -171,11 +179,7 @@ export function TemplateDesignDetail({
             {loadError || preparationError !== undefined ? (
               <div className="wconvert-design-detail__error">
                 <p id={`${id}-load`} role="alert">{preparationError ?? __('This design preview could not be loaded.', 'wconvert')}</p>
-                {(preparationError !== undefined || onRetry !== undefined) && (
-                  <Button variant="outline" onClick={preparationError !== undefined ? () => setAttempt((held) => held + 1) : onRetry}>
-                    {__('Retry preview', 'wconvert')}
-                  </Button>
-                )}
+                {retryPreview && <TryAgain onClick={retryPreview} />}
               </div>
             ) : (
               <div className="wconvert-design-detail__loading">
@@ -193,12 +197,12 @@ export function TemplateDesignDetail({
             </dl>
             {mode === 'keep' && candidate?.value?.transfer !== undefined && (candidate.value.transfer.unplaced > 0 || candidate.value.transfer.unverified > 0) && (
               <div role="status" className="rounded-md border border-warning p-3 text-note">
-                {candidate.value.transfer.unplaced > 0 && <p className="m-0">{sprintf(__('%d picture(s) have no clear matching place in this design and will not carry over. Check the preview before applying.', 'wconvert'), candidate.value.transfer.unplaced)}</p>}
+                {candidate.value.transfer.unplaced > 0 && <p className="m-0">{sprintf(_n('%d picture has no clear matching place in this design and will not carry over. Check the preview before applying.', '%d pictures have no clear matching place in this design and will not carry over. Check the preview before applying.', candidate.value.transfer.unplaced, 'wconvert'), candidate.value.transfer.unplaced)}</p>}
                 {candidate.value.transfer.unverified > 0 && <p className="m-0">{__('The original design is unavailable, so we cannot identify your picture changes. Re-add your pictures after applying, or keep your current design.', 'wconvert')}</p>}
               </div>
             )}
             <div className="wconvert-design-detail__actions">
-              {incompatibleLock && <label className="flex gap-2 text-note"><input type="checkbox" checked={disableLock} onChange={event => setDisableLock(event.target.checked)} />{__('Turn off Content lock to use this design. The selected WordPress content will remain readable.', 'wconvert')}</label>}
+              {incompatibleLock && <CheckRow className="text-note" checked={disableLock} onChange={event => setDisableLock(event.target.checked)} label={__('Turn off Content lock to use this design. The selected WordPress content will remain readable.', 'wconvert')} />}
               {formatNotice && <p id={`${id}-format`} className="text-note text-warning">{formatNotice}</p>}
               <p id={`${id}-replacement`} className="text-note text-muted-foreground">
                 {prepares && mode === 'sample'
@@ -213,12 +217,12 @@ export function TemplateDesignDetail({
           </div>
         </div>
       </PickerDialogBody>
-      <PickerDialogFooter>
+      {/* No footer note: the replacement sentence beside the facts already says what applying does. */}
+      <AdminDialogFooter back={
         <Button className="wconvert-picker__back" variant="outline" disabled={busy} onClick={onBack}>
           <ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />
           {backLabel}
-        </Button>
-        <span className="text-note text-muted-foreground">{__('Applies to this draft. Undo restores your previous design.', 'wconvert')}</span>
+        </Button>}>
             <Button disabled={busy} aria-disabled={cannotApply} aria-describedby={describedBy}
               onClick={cannotApply || busy ? undefined : () => prepares ? onChoose(entry.id, { tree: template.tree, tokens: template.tokens }) : onChoose(entry.id)}>
               {busy ? __('Applying design…', 'wconvert')
@@ -227,7 +231,7 @@ export function TemplateDesignDetail({
                   ? sprintf(/* translators: %s: new campaign format. */ __('Switch to %s', 'wconvert'), toFormat)
                   : __('Use this design', 'wconvert')}
         </Button>
-      </PickerDialogFooter>
+      </AdminDialogFooter>
     </section>
   );
 }
