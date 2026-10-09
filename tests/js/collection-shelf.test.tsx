@@ -26,3 +26,16 @@ it.each(['ltr', 'rtl'])('disables arrows at both ends of the %s shelf', async di
   expect(screen.getByRole('button', { name: 'Previous collections' })).toBeEnabled();
   expect(screen.getByRole('button', { name: 'Next collections' })).toBeDisabled();
 });
+it('reads an event window as days in words, ending on its last day', () => {
+  const event = { family: 'sale', start: '2026-11-27', end_exclusive: '2026-12-02', feature_start: '2026-11-01', feature_end_exclusive: '2026-12-02' };
+  render(<CollectionShelf {...props} matches={[{ collection: { ...collection, event }, setups: [], designs: 1 }]} />);
+  expect(screen.getByText('Nov 27 – Dec 1, 2026')).toBeInTheDocument();
+  expect(screen.queryByText(/2026-11-27/)).toBeNull();
+});
+it('puts Hide featured beside View all, where the shelf it hides is', () => {
+  const onHideAll = vi.fn();
+  render(<CollectionShelf {...props} onHideAll={onHideAll} />);
+  expect(screen.getByRole('region', { name: 'Featured collections' })).toBeInTheDocument();
+  fireEvent.click(screen.getByRole('button', { name: 'Hide featured' }));
+  expect(onHideAll).toHaveBeenCalledOnce();
+});

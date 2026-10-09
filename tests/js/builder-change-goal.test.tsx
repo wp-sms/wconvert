@@ -277,18 +277,19 @@ describe('the goal in Optin details', () => {
   });
 
   /**
-   * **A registry that answered nothing still names the Optin's Goal**, as the
-   * id it stores — `OptinList`'s rule: the raw value is the only honest thing
-   * left, and blanking it would read as an Optin with no Goal at all.
+   * **A registry that answered nothing still says the Optin has a Goal**, but
+   * never as the id it stores (ADR 0131): blanking it would read as an Optin
+   * with no Goal at all, and a raw key tells a merchant nothing.
    */
-  it('falls back to the stored id where this build cannot name the goal', async () => {
+  it('says the goal is unavailable, never its stored id, where this build cannot name it', async () => {
     goals.listGoals.mockRejectedValue(new Error('nope'));
 
     open();
     await userEvent.click(await screen.findByRole('button', { name: 'Campaign actions' }));
     await userEvent.click(await screen.findByRole('menuitem', { name: 'Campaign details' }));
 
-    expect(await within(screen.getByRole('dialog')).findByText('grow_email_list')).toBeInTheDocument();
+    expect(await within(screen.getByRole('dialog')).findByText('Goal unavailable')).toBeInTheDocument();
+    expect(within(screen.getByRole('dialog')).queryByText('grow_email_list')).toBeNull();
   });
 
   /**

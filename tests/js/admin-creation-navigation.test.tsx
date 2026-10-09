@@ -84,7 +84,7 @@ describe('creation and its owning admin page', () => {
   it('lets Check Optins leave creation even when already on the Optins hash', async () => {
     api.createOptin.mockRejectedValue(new Error('Connection interrupted.'));
     await userEvent.click(await openCreation());
-    await userEvent.click(await screen.findByRole('button', { name: 'Check Campaigns' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Check campaigns' }));
     expect(screen.getByText('Campaign index')).toBeInTheDocument();
     expect(screen.queryByText('Choose a campaign setup')).not.toBeInTheDocument();
   });

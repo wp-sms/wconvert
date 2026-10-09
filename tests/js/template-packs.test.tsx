@@ -214,7 +214,7 @@ it('offers the same public preview entry for a premium pack on a paid install wi
   onTestFinished(() => { delete window.wconvertAdmin; });
   api.catalogStatus.mockResolvedValue({ ...listed, packs: [{ ...listed.packs[0], access: 'premium', preview_url: 'https://catalog.example/previews/revision.html' }] });
   render(<TemplatePacks displayType="inline" onInstalled={vi.fn()} />);
-  const link = await screen.findByRole('link', { name: 'View public previews ↗' });
+  const link = await screen.findByRole('link', { name: 'View public previews' });
   expect(link).toHaveAttribute('href', 'https://catalog.example/previews/revision.html');
   expect(link).toHaveAttribute('rel', 'noopener noreferrer');
   expect(screen.getByText('Pro')).toBeVisible();
@@ -241,4 +241,23 @@ it('counts no premium pack on a free install that is offered nothing else', asyn
   await waitFor(() => expect(api.catalogStatus).toHaveBeenCalled());
   expect(screen.queryByText('Premium pack')).not.toBeInTheDocument();
   expect(screen.queryByText(/matching pack/)).not.toBeInTheDocument();
+});
+
+it('draws one header, the dialog’s, and reads the last check as a date', async () => {
+  api.catalogStatus.mockResolvedValue(listed);
+  render(<TemplatePacks displayType="inline" onInstalled={vi.fn()} />);
+  await screen.findByText('Reading pack');
+  expect(screen.queryByRole('heading', { name: 'Browse packs' })).toBeNull();
+  expect(screen.getByText(/^Last checked Sep 11, 2026/)).toBeVisible();
+  expect(screen.queryByText(/2026-09-11T14:00/)).toBeNull();
+});
+
+it('turns a failed first read into the region error with one “Try again”', async () => {
+  api.catalogStatus.mockRejectedValueOnce(new Error('Catalog offline.')).mockResolvedValueOnce(listed);
+  const user = userEvent.setup();
+  render(<TemplatePacks displayType="inline" onInstalled={vi.fn()} />);
+  expect(await screen.findByText('Catalog offline.')).toBeVisible();
+  expect(screen.queryByText('No packs yet')).toBeNull();
+  await user.click(screen.getByRole('button', { name: 'Try again' }));
+  expect(await screen.findByText('Reading pack')).toBeVisible();
 });

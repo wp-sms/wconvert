@@ -1,19 +1,29 @@
-import { isFreeInstall } from '../goals/availability';
+import { isFreeInstall, tierName } from '../goals/availability';
 import { useEffect, useRef, useState } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
-import { ArrowRight, Layers, RefreshCw } from 'lucide-react';
+import { ArrowRight, ExternalLink, Layers, Lock, RefreshCw } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Badge } from '../components/ui/badge';
 import { Skeleton } from '../components/ui/skeleton';
+import { AdminDialogFooter } from '../components/ui/admin-dialog';
 import { messageOf } from '../shell/loadable';
+import { Disclosure } from '../shell/Disclosure';
+import { RegionErrorState } from '../shell/Region';
+import { PickerDialogBody } from '../discovery/PickerDialog';
 import { PickerSearch } from '../discovery/PickerSearch';
 import { OptionStrip } from '../shell/OptionStrip';
 import { matchesSearch } from '../discovery/search';
+import { formatCount, formatWhen } from '../lib/format';
 import { TemplatePackDetail } from './TemplatePackDetail';
 import { catalogStatus, refreshCatalog, previewPack, installPack, type CatalogPack, type CatalogStatus, type PackPreview } from './catalog';
 
 type Work = 'loading' | 'checking' | 'previewing' | 'installing' | 'opening';
 
+/**
+ * The pack list, as the body and footer of whichever dialog holds it. It has
+ * no header of its own: the dialog's title already says "Template packs", and
+ * a second heading under it was the double header ADR 0131 removed.
+ */
 export function TemplatePacks({ displayType, onInstalled, onInspect, goal, onChooseStartingPoints }: {
   displayType: string;
   onInstalled: () => Promise<void>;
@@ -31,7 +41,7 @@ export function TemplatePacks({ displayType, onInstalled, onInspect, goal, onCho
   const pending = useRef(true);
   const loadSequence = useRef(0);
   const busy = work !== null;
-  const list = useRef<HTMLElement>(null);
+  const list = useRef<HTMLDivElement>(null);
   const listPosition = useRef(0);
   const returnFocus = useRef<string | null>(null);
   useEffect(() => {
@@ -93,69 +103,76 @@ export function TemplatePacks({ displayType, onInstalled, onInspect, goal, onCho
   if (sort==='name') shown.sort((a,b)=>a.name.localeCompare(b.name));
   const installed = shown.filter(pack=>pack.installed_version !== null);
   const available = shown.filter(pack=>pack.installed_version === null);
+  const loadAgain = () => { void run('loading', async () => {
+    const result = await catalogStatus(); if (alive.current) setStatus(result);
+  }); };
 
-
-  return <section ref={list} className="wconvert-packs" aria-label={__('Template packs', 'wconvert')} aria-busy={busy}>
-    <header className="wconvert-packs__header">
-      <h3>{__('Browse packs', 'wconvert')}</h3>
-      {status?.configured && <Button variant="outline" disabled={busy} onClick={() => { void run('checking', async () => {
+  return <div className="wconvert-packs">
+    <PickerDialogBody ref={list} role="region" aria-label={__('Template packs', 'wconvert')} aria-busy={busy}>
+      {status && listed.length > 0 && <div className="wconvert-picker__controls wconvert-toolbar"><div className="wconvert-picker__search-row"><PickerSearch label={__('Search template packs','wconvert')} value={query} onChange={setQuery} disabled={busy} /><label className="flex items-center gap-2 text-note">{__('Sort','wconvert')}<select className="wconvert-picker__select" value={sort} onChange={event=>setSort(event.target.value)}><option value="recommended">{__('Recommended','wconvert')}</option><option value="name">{__('Name A–Z','wconvert')}</option></select></label></div><OptionStrip label={__('Pack availability','wconvert')} value={source} disabled={busy} onChange={setSource} options={[{value:'all',label:__('All packs','wconvert')},{value:'installed',label:__('Installed','wconvert')},{value:'available',label:__('Available to install','wconvert')}]} /><p className="m-0 text-note" role="status">{sprintf(_n('%s matching pack','%s matching packs',shown.length,'wconvert'),formatCount(shown.length))}</p></div>}
+      {work === 'previewing' && <p role="status" className="m-0 text-note">{__('Opening pack…', 'wconvert')}</p>}
+      {status === null ? busy ? <PacksSkeleton />
+        : <RegionErrorState message={error ?? __('Packs could not be loaded.', 'wconvert')} onRetry={loadAgain} /> : <>
+        {installed.length > 0 && <PackGroup title={__('Installed', 'wconvert')}
+          packs={installed} busy={busy} onInspect={inspect} />}
+        {available.length > 0 && <PackGroup title={__('Available to install', 'wconvert')}
+          packs={available} busy={busy} onInspect={inspect} />}
+        {listed.length > 0 && shown.length === 0 && <div className="wconvert-packs__empty"><h3>{__('No packs match','wconvert')}</h3><p>{__('Try a shorter search or another availability filter.','wconvert')}</p><Button variant="outline" onClick={()=>{setQuery('');setSource('all');}}>{__('Show all packs','wconvert')}</Button></div>}
+        {listed.length === 0 && <div className="wconvert-packs__empty">
+          <Layers size={28} aria-hidden="true" />
+          <h3>{status.checked_at ? __('No packs are listed yet', 'wconvert') : __('No packs yet', 'wconvert')}</h3>
+          <p>{status.configured ? status.checked_at ? __('Check again later for new packs.', 'wconvert')
+            : __('Check for packs to see what your catalog offers.', 'wconvert')
+            : __('No catalog is connected to this site.', 'wconvert')}</p>
+        </div>}
+        {status.configured ? <Disclosure variant="inline" className="wconvert-packs__connection" title={__('Catalog connection', 'wconvert')}>
+          <p className="m-0 break-all"><bdi>{status.source}</bdi></p>
+          <p className="m-0">{__('Checking, previewing and installing contact this service. No campaigns, leads or license details are sent. Installed packs work offline.', 'wconvert')}</p>
+        </Disclosure> : installed.length > 0 && <p className="wconvert-packs__connection">{__('No catalog is connected. Installed packs still work.', 'wconvert')}</p>}
+      </>}
+    </PickerDialogBody>
+    {status !== null && <AdminDialogFooter error={error}
+      note={status.checked_at ? sprintf(/* translators: %s: when the catalog was last checked, e.g. “Oct 9, 2026, 2:22 PM”. */ __('Last checked %s', 'wconvert'), formatWhen(status.checked_at, 'detail')) : undefined}>
+      {status.configured && <Button variant="outline" disabled={busy} onClick={() => { void run('checking', async () => {
         const result = await refreshCatalog(); if (alive.current) setStatus(result);
-      }); }}><RefreshCw aria-hidden="true" className={work === 'checking' ? 'animate-spin motion-reduce:animate-none' : ''} />
+      }); }}><RefreshCw aria-hidden="true" />
         {work === 'checking' ? __('Checking…', 'wconvert') : __('Check for packs', 'wconvert')}</Button>}
-    </header>
-    <p className="text-note text-muted-foreground">{__('Packs add designs and campaign setups to your library. Preview the contents before installing.','wconvert')}</p>
-    {status && listed.length > 0 && <div className="wconvert-picker__controls wconvert-toolbar"><div className="wconvert-picker__search-row"><PickerSearch label={__('Search template packs','wconvert')} value={query} onChange={setQuery} disabled={busy} /><label className="flex items-center gap-2 text-note">{__('Sort','wconvert')}<select className="wconvert-picker__select" value={sort} onChange={event=>setSort(event.target.value)}><option value="recommended">{__('Recommended','wconvert')}</option><option value="name">{__('Name A–Z','wconvert')}</option></select></label></div><OptionStrip label={__('Pack availability','wconvert')} value={source} disabled={busy} onChange={setSource} options={[{value:'all',label:__('All packs','wconvert')},{value:'installed',label:__('Installed','wconvert')},{value:'available',label:__('Available to install','wconvert')}]} /><p className="m-0 text-note" role="status">{sprintf(_n('%d matching pack','%d matching packs',shown.length,'wconvert'),shown.length)}</p></div>}
-    {error && <div role="alert" className="wconvert-pack-error">{error}</div>}
-    {work === 'previewing' && <p role="status" className="text-sm">{__('Opening pack…', 'wconvert')}</p>}
-    {status === null ? busy ? <div role="status" className="wconvert-packs__loading">
-      <p>{__('Loading your packs…', 'wconvert')}</p><Skeleton className="h-32 w-full" />
-    </div> : <Button variant="outline" onClick={() => { void run('loading', async () => {
-      const result = await catalogStatus(); if (alive.current) setStatus(result);
-    }); }}>{__('Retry loading packs', 'wconvert')}</Button> : <>
-      {installed.length > 0 && <PackGroup title={__('Installed', 'wconvert')} installed
-        packs={installed} busy={busy} onInspect={inspect} />}
-      {available.length > 0 && <PackGroup title={__('Available to install', 'wconvert')} installed={false}
-        packs={available} busy={busy} onInspect={inspect} />}
-      {listed.length > 0 && shown.length === 0 && <div className="wconvert-packs__empty"><h3>{__('No packs match','wconvert')}</h3><p>{__('Try a shorter search or another availability filter.','wconvert')}</p><Button variant="outline" onClick={()=>{setQuery('');setSource('all');}}>{__('Show all packs','wconvert')}</Button></div>}
-      {listed.length === 0 && <div className="wconvert-packs__empty">
-        <Layers size={28} aria-hidden="true" />
-        <h3>{status.checked_at ? __('No packs are listed yet', 'wconvert') : __('Your next collection starts here', 'wconvert')}</h3>
-        <p>{status.configured ? status.checked_at ? __('Check again later for new collections.', 'wconvert')
-          : __('Check for packs to see collections from your catalog. Close this browser to use your existing library.', 'wconvert')
-          : __('A catalog has not been connected yet. Close this browser to use your existing library.', 'wconvert')}</p>
-      </div>}
-      {status.configured ? <div className="wconvert-packs__connection">
-        <p>{__('Installed packs work offline. Checking for packs and previewing new versions contacts your catalog service.', 'wconvert')}</p>
-        <details><summary>{__('Catalog connection', 'wconvert')}</summary>
-          <p className="break-all">{status.source}</p>
-          <p>{__('Checking, downloading previews and installing contacts this service. No campaigns, leads or licence details are sent.', 'wconvert')}</p>
-          {status.checked_at && <p>{sprintf(__('Last checked: %s', 'wconvert'), new Date(status.checked_at).toLocaleString())}</p>}
-        </details>
-      </div> : installed.length > 0 && <p className="wconvert-packs__connection">{__('No catalog is connected. Your installed packs are still ready to use.', 'wconvert')}</p>}
-    </>}
-  </section>;
+    </AdminDialogFooter>}
+  </div>;
 }
 
-function PackGroup({ title, installed: isInstalledGroup, packs, busy, onInspect }: {
-  title: string; installed: boolean; packs: CatalogPack[]; busy: boolean;
+/** The list's own shape while the catalog answers: a status line and two pack cards. */
+function PacksSkeleton() {
+  return <div className="wconvert-packs__loading">
+    <p role="status" className="m-0 text-note text-muted-foreground">{__('Loading your packs…', 'wconvert')}</p>
+    <ul className="wconvert-packs__grid" aria-hidden="true">{[0, 1].map(index => <li key={index} className="wconvert-pack-card">
+      <Skeleton className="h-[1lh] w-40 max-w-full text-heading" />
+      <Skeleton className="h-4 w-full" />
+      <Skeleton className="h-8 w-32" />
+    </li>)}</ul>
+  </div>;
+}
+
+function PackGroup({ title, packs, busy, onInspect }: {
+  title: string; packs: CatalogPack[]; busy: boolean;
   onInspect: (pack: CatalogPack, local: boolean) => void;
 }) {
   return <section className="wconvert-packs__group" aria-label={title}>
-    <div className="wconvert-packs__group-heading"><h3><Badge variant={isInstalledGroup ? 'success' : 'secondary'}>{title}</Badge></h3><span>{sprintf(_n('%d pack', '%d packs', packs.length, 'wconvert'), packs.length)}</span></div>
+    <div className="wconvert-packs__group-heading"><h3>{title}</h3><span>{sprintf(_n('%s pack', '%s packs', packs.length, 'wconvert'), formatCount(packs.length))}</span></div>
     <ul className="wconvert-packs__grid">{packs.map((pack) => {
       const installed = pack.installed_version !== null;
       return <li key={pack.id} className="wconvert-pack-card">
-        <div className="wconvert-pack-card__heading"><Layers size={20} aria-hidden="true" /><h4>{pack.name}</h4>
-          {pack.access === 'premium' && !isFreeInstall() && <Badge variant="secondary">{__('Pro', 'wconvert')}</Badge>}
-          {pack.state === 'update' && <Badge variant="warning">{__('Update available', 'wconvert')}</Badge>}</div>
+        <div className="wconvert-pack-card__heading"><Layers size={20} aria-hidden="true" /><h4><bdi>{pack.name}</bdi></h4>
+          {/* Grey and a lock: it costs money (§14). */}
+          {pack.access === 'premium' && !isFreeInstall() && <Badge variant="secondary"><Lock aria-hidden="true" />{tierName(undefined)}</Badge>}
+          {pack.state === 'update' && <Badge variant="outline">{__('Update available', 'wconvert')}</Badge>}</div>
         <p className="wconvert-pack-card__description">{pack.description}</p>
-        <div className="wconvert-pack-card__footer"><span className="wconvert-pack-card__version">
-          {sprintf(__('Version %s', 'wconvert'), pack.installed_version ?? pack.version)}</span>
+        <div className="wconvert-pack-card__footer">
           <Button data-pack-id={pack.id} variant="outline" disabled={busy} aria-label={sprintf(installed ? __('Explore designs in %s', 'wconvert') : __('Preview %s', 'wconvert'), pack.name)}
             onClick={() => onInspect(pack, installed)}>{installed ? __('Explore designs', 'wconvert') : __('Preview pack', 'wconvert')}<ArrowRight aria-hidden="true" className="rtl:-scale-x-100" /></Button>
         </div>
-        {pack.preview_url && <Button asChild variant="link"><a href={pack.preview_url} target="_blank" rel="noopener noreferrer">{__('View public previews', 'wconvert')}{' ↗'}</a></Button>}
-        {pack.state === 'update' && <div className="wconvert-pack-card__update"><span>{sprintf(__('Version %s is available', 'wconvert'), pack.version)}</span>
+        {pack.preview_url && <Button asChild variant="link"><a href={pack.preview_url} target="_blank" rel="noopener noreferrer">{__('View public previews', 'wconvert')}<ExternalLink aria-hidden="true" /></a></Button>}
+        {pack.state === 'update' && <div className="wconvert-pack-card__update"><span>{sprintf(/* translators: %s: the new version of a pack. */ __('Version %s is available.', 'wconvert'), pack.version)}</span>
           <Button variant="ghost" disabled={busy} aria-label={sprintf(__('Preview update for %s', 'wconvert'), pack.name)} onClick={() => onInspect(pack, false)}>{__('Preview update', 'wconvert')}</Button></div>}
       </li>;
     })}</ul>

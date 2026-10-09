@@ -34,6 +34,9 @@ const { Gallery } = await import('../../resources/admin/src/builder/Gallery');
 type Fit = import('../../resources/admin/src/builder/Gallery').Fit;
 const { TemplatePicker } = await import('../../resources/admin/src/builder/TemplatePicker');
 
+/** The one collapsible's trigger is its `summary` row (ADR 0131). */
+const moreFilters = () => screen.getByText('More filters').closest('summary') as HTMLElement;
+
 const ROOT = resolve(import.meta.dirname, '../..');
 
 const read = (path: string) => JSON.parse(readFileSync(resolve(ROOT, path), 'utf8')) as never;
@@ -139,12 +142,13 @@ describe('a gallery card', () => {
     const inUse = screen.getByRole('button', { name: /In use/ });
     const offer = screen.getByRole('button', { name: /Use this design/ });
 
-    // The same element, the same size class — what differs is the variant and
-    // whether it can be pressed, neither of which changes the box.
+    // The same element, the same size — what differs is the variant and
+    // whether it can be pressed, neither of which changes the box. The card's
+    // toolbar decides the height, so neither states one (GUIDELINES §3).
     expect(inUse.tagName).toBe('BUTTON');
     expect(offer.tagName).toBe('BUTTON');
-    expect(inUse).toHaveAttribute('data-size', 'sm');
-    expect(offer).toHaveAttribute('data-size', 'sm');
+    expect(inUse.getAttribute('data-size')).toBe(offer.getAttribute('data-size'));
+    expect(offer.closest('.wconvert-toolbar')).not.toBeNull();
   });
 
   it('does not offer the design that is already in use', () => {
@@ -272,7 +276,7 @@ describe('a design that converts the other way', () => {
   it('is not said on a card that is refused anyway', () => {
     grid([ENTRIES[0], CLICKS], undefined, { ...ANY, bound: true });
 
-    expect(within(cardFor('Offer panel')).getByText(/captures nothing/)).toBeInTheDocument();
+    expect(within(cardFor('Offer panel')).getByText(/collects nothing/)).toBeInTheDocument();
     expect(within(cardFor('Offer panel')).queryByText(/instead of/)).toBeNull();
   });
 
@@ -311,7 +315,7 @@ describe('comparing cards before previewing', () => {
     );
 
     expect(screen.getByText('Follows a link')).toBeInTheDocument();
-    expect(screen.getByText(/no leads to send/)).toBeInTheDocument();
+    expect(screen.getByText(/no submissions to send/)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Preview design' })).toBeEnabled();
   });
 });
@@ -376,7 +380,7 @@ describe('a design that captures nothing', () => {
       'aria-disabled',
       'true',
     );
-    expect(offer.getByText('This design captures nothing, so there would be no leads to send to this Campaign’s destinations.')).toBeInTheDocument();
+    expect(offer.getByText('This design collects nothing, so there would be no submissions to send to this campaign’s destinations.')).toBeInTheDocument();
     expect(within(cardFor('Centred card')).getByRole('button', { name: /Use this design/ })).toBeEnabled();
   });
 
@@ -388,7 +392,7 @@ describe('a design that captures nothing', () => {
   it('is refused where this Optin sends leads somewhere', () => {
     grid([ENTRIES[0], CLICKS], undefined, { ...ANY, bound: true });
 
-    expect(within(cardFor('Offer panel')).getByText(/no leads to send/)).toBeInTheDocument();
+    expect(within(cardFor('Offer panel')).getByText(/no submissions to send/)).toBeInTheDocument();
     expect(within(cardFor('Centred card')).getByRole('button', { name: /Use this design/ })).toBeEnabled();
   });
 
@@ -485,7 +489,7 @@ describe('a design this install does not have', () => {
   it('shows an informational card when its public preview is not published yet', () => {
     grid([{ ...LOCKED, preview_url: undefined }], undefined);
     const locked = within(cardFor('Two-column offer'));
-    expect(locked.getByText('Included in Pro')).toBeInTheDocument();
+    expect(locked.getByText('Available with WConvert Pro.')).toBeInTheDocument();
     expect(locked.queryByRole('link')).toBeNull();
     expect(locked.queryByRole('button')).toBeNull();
   });
@@ -565,7 +569,7 @@ describe('a design this install does not have', () => {
   it('carries no sentence about something it cannot be used for', () => {
     grid([LOCKED], undefined, { bound: true, sibling: 'click', act: 'click' });
 
-    expect(screen.queryByText(/captures nothing/)).toBeNull();
+    expect(screen.queryByText(/collects nothing/)).toBeNull();
     expect(screen.queryByText(/the other arm/)).toBeNull();
     // Nor about a switch nobody can make: it is not a design this install has.
     expect(screen.queryByText(/instead of/)).toBeNull();
@@ -658,7 +662,7 @@ describe('recommended designs', () => {
     ]);
     await userEvent.type(screen.getByRole('searchbox'), 'Email');
     expect(shown()).toEqual(['Email Fieldwork', 'Email guide', 'Email checklist', 'Email extension']);
-    await userEvent.click(screen.getByRole('button', { name: 'Filters' }));
+    await userEvent.click(moreFilters());
     await userEvent.click(screen.getByRole('button', { name: 'Email address' }));
     await userEvent.click(screen.getByRole('button', { name: 'Side by side' }));
     expect(shown()).toEqual(['Email guide', 'Email checklist', 'Email extension']);
@@ -674,7 +678,7 @@ describe('the toolbar', () => {
     picker(LIBRARY.slice(0, 5));
 
     expect(screen.getByRole('searchbox', { name: 'Search designs' })).toBeInTheDocument();
-    expect(screen.getByRole('button', { name: 'Filters' })).toBeInTheDocument();
+    expect(moreFilters()).toBeInTheDocument();
     expect(screen.getByRole('status')).toHaveTextContent('5 of 5 designs');
     expect(shown()).toHaveLength(5);
   });
@@ -682,17 +686,18 @@ describe('the toolbar', () => {
   it('keeps filters optional and selected filters removable when collapsed', async () => {
     picker(LIBRARY);
 
-    expect(screen.queryByRole('group', { name: 'Must include' })).toBeNull();
-    expect(screen.queryByRole('button', { name: 'With a picture' })).toBeNull();
-    expect(screen.queryByRole('group', { name: 'Layout' })).toBeNull();
-    const more = screen.getByRole('button', { name: 'Filters' });
-    expect(more).toHaveAttribute('aria-expanded', 'false');
+    expect(screen.getByRole('group', { name: 'Must include' })).not.toBeVisible();
+    expect(screen.getByRole('button', { name: 'With a picture' })).not.toBeVisible();
+    expect(screen.getByRole('group', { name: 'Layout' })).not.toBeVisible();
+    const more = moreFilters();
+    expect(more.closest('details')).not.toHaveAttribute('open');
     await userEvent.click(more);
-    expect(more).toHaveAttribute('aria-expanded', 'true');
-    expect(screen.getByRole('group', { name: 'Layout' })).toBeInTheDocument();
+    expect(more.closest('details')).toHaveAttribute('open');
+    expect(screen.getByRole('group', { name: 'Layout' })).toBeVisible();
     await userEvent.click(screen.getByRole('button', { name: 'Email address' }));
+    expect(more).toHaveTextContent('1 on');
     await userEvent.click(more);
-    expect(screen.queryByRole('group', { name: 'Must include' })).toBeNull();
+    expect(screen.getByRole('group', { name: 'Must include' })).not.toBeVisible();
     await userEvent.click(screen.getByRole('button', { name: 'Remove filter: Email address' }));
     expect(shown()).toHaveLength(9);
   });
@@ -710,7 +715,7 @@ describe('the toolbar', () => {
     expect(count).toHaveTextContent('9 of 9 designs');
     expect(count.closest('[aria-live="polite"]')).not.toBeNull();
 
-    await userEvent.click(screen.getByRole('button', { name: 'Filters' }));
+    await userEvent.click(moreFilters());
     await userEvent.click(screen.getByRole('button', { name: 'Row' }));
 
     expect(count).toHaveTextContent('2 of 9 designs');
@@ -729,7 +734,7 @@ describe('narrowing the library', () => {
   it('keeps only the designs arranged that way', async () => {
     picker(LIBRARY);
 
-    await userEvent.click(screen.getByRole('button', { name: 'Filters' }));
+    await userEvent.click(moreFilters());
     await userEvent.click(screen.getByRole('button', { name: 'Side by side' }));
 
     expect(shown()).toEqual(['Split photo', 'Split email']);
@@ -738,7 +743,7 @@ describe('narrowing the library', () => {
   it('allows alternative layouts while still requiring the selected field', async () => {
     picker(LIBRARY);
 
-    await userEvent.click(screen.getByRole('button', { name: 'Filters' }));
+    await userEvent.click(moreFilters());
     await userEvent.click(screen.getByRole('button', { name: 'Row' }));
     await userEvent.click(screen.getByRole('button', { name: 'Side by side' }));
 
@@ -757,7 +762,7 @@ describe('narrowing the library', () => {
   it('says a chip is pressed as a state rather than as a color', async () => {
     picker(LIBRARY);
 
-    await userEvent.click(screen.getByRole('button', { name: 'Filters' }));
+    await userEvent.click(moreFilters());
     const chip = screen.getByRole('button', { name: 'Row' });
 
     expect(chip).toHaveAttribute('aria-pressed', 'false');
@@ -770,7 +775,7 @@ describe('narrowing the library', () => {
   it('narrows on a boolean facet with the one chip it has', async () => {
     picker(LIBRARY);
 
-    await userEvent.click(screen.getByRole('button', { name: 'Filters' }));
+    await userEvent.click(moreFilters());
     await userEvent.click(screen.getByRole('button', { name: 'With a picture' }));
 
     expect(shown()).toEqual(['Split photo', 'Column photo']);
@@ -783,7 +788,7 @@ describe('narrowing the library', () => {
       card({ id: 'both-fields', name: 'Choose your channel', captures: ['email', 'phone'] }),
     ]);
 
-    await userEvent.click(screen.getByRole('button', { name: 'Filters' }));
+    await userEvent.click(moreFilters());
     const fields = within(screen.getByRole('group', { name: 'Must include' }));
     await userEvent.click(fields.getByRole('button', { name: 'Email address' }));
     expect(shown()).toEqual(['Quiet invitation', 'Choose your channel']);
@@ -810,7 +815,7 @@ describe('narrowing the library', () => {
     picker([ENTRIES[0], LOCKED]);
     expect(shown()).toEqual(['Centred card', 'Two-column offer']);
 
-    await userEvent.click(screen.getByRole('button', { name: 'Filters' }));
+    await userEvent.click(moreFilters());
     await userEvent.click(screen.getByRole('checkbox', { name: 'Available on this site' }));
 
     expect(shown()).toEqual(['Centred card']);
@@ -870,7 +875,7 @@ describe('searching the library', () => {
   it('clears the chips as well as the box', async () => {
     picker(LIBRARY);
 
-    await userEvent.click(screen.getByRole('button', { name: 'Filters' }));
+    await userEvent.click(moreFilters());
     await userEvent.click(screen.getByRole('button', { name: 'Side by side' }));
     await userEvent.type(screen.getByRole('searchbox'), 'zzz');
     await userEvent.click(screen.getByRole('button', { name: 'Clear filters' }));
@@ -899,7 +904,7 @@ describe('inspecting before applying a design', () => {
         displayType="popup" chosen={undefined} fit={ANY} busy={false} onChoose={onChoose} onNear={vi.fn()} />,
     );
     await userEvent.type(screen.getByRole('searchbox'), 'centred');
-    await userEvent.click(screen.getByRole('button', { name: 'Filters' }));
+    await userEvent.click(moreFilters());
     await userEvent.click(screen.getByRole('button', { name: 'Email address' }));
     const preview = screen.getByRole('button', { name: 'Preview design' });
     await userEvent.click(preview);
@@ -965,7 +970,7 @@ describe('the note about a Goal every design refuses', () => {
       />,
     );
 
-    await userEvent.click(screen.getByRole('button', { name: 'Filters' }));
+    await userEvent.click(moreFilters());
     await userEvent.click(screen.getByRole('button', { name: 'Column' }));
     await userEvent.click(screen.getByRole('button', { name: 'Phone number' }));
 
@@ -981,7 +986,7 @@ it('compares two editor designs and reviews one without applying or losing the l
   render(<TemplatePicker index={{templates:ENTRIES,labels:LABELS,facets:FACETS}} trees={TREES} displayType="popup" chosen={undefined} fit={ANY} busy={false} onChoose={onChoose} onNear={vi.fn()} />);
   await userEvent.click(screen.getByRole('checkbox', { name: 'Compare design: Centred card'}));
   await userEvent.click(screen.getByRole('checkbox', { name: 'Compare design: Stacked signup'}));
-  await userEvent.click(screen.getByRole('button',{name:'Compare designs (2/2)'}));
+  await userEvent.click(screen.getByRole('button',{name:'Compare'}));
   expect(screen.getByRole('heading',{name:'Compare designs'})).toHaveFocus();
   expect(screen.getAllByRole('group',{name:'Preview size'})).toHaveLength(2);
   await userEvent.click(screen.getByRole('button',{name:'Review design: Centred card'}));
@@ -991,7 +996,7 @@ it('compares two editor designs and reviews one without applying or losing the l
   expect(screen.getByRole('heading',{name:'Compare designs'})).toBeVisible();
   await userEvent.click(screen.getByRole('button',{name:'Back to designs'}));
   expect(screen.getByRole('searchbox',{name:'Search designs'})).toBeVisible();
-  await waitFor(()=>expect(screen.getByRole('button',{name:'Compare designs (2/2)'})).toHaveFocus());
+  await waitFor(()=>expect(screen.getByRole('button',{name:'Compare'})).toHaveFocus());
   expect(onChoose).not.toHaveBeenCalled();
 });
 
@@ -1004,7 +1009,7 @@ it('limits comparison to two explicit choices and makes deselection recoverable'
   expect(screen.getByRole('checkbox',{name:'Compare design: Centred card'})).toBeChecked();
   await userEvent.click(screen.getByRole('checkbox',{name:'Compare design: Centred card'}));
   expect(screen.getByRole('checkbox',{name:'Compare design: Third design'})).toBeEnabled();
-  await userEvent.click(screen.getByRole('button',{name:'Clear comparison'}));
+  await userEvent.click(screen.getByRole('button',{name:'Clear'}));
   expect(screen.getByRole('checkbox',{name:'Compare design: Stacked signup'})).not.toBeChecked();
 });
 

@@ -251,7 +251,8 @@ export function TemplateCard({
       ) : loadError ? (
         <div className="wconvert-gallery__waiting wconvert-gallery__error">
           <Description>{__('Preview could not be loaded.', 'wconvert')}</Description>
-          {onRetry !== undefined && <Button variant="outline" size="sm" onClick={onRetry} aria-describedby={nameId}>{__('Retry preview', 'wconvert')}</Button>}
+          {/* "Try again", the one retry word, described by this card's name so a list of failures can be told apart. */}
+          {onRetry !== undefined && <Button variant="outline" onClick={onRetry} aria-describedby={nameId}>{__('Try again', 'wconvert')}</Button>}
         </div>
       ) : (
         <div className="wconvert-gallery__waiting">
