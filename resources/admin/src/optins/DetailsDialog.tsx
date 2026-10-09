@@ -179,7 +179,7 @@ function Results({ results, status }: { results: CampaignResults; status: Return
  * (`resources/loader/src/events.ts`) carry a campaign's ID and nothing else, so
  * a developer matching them has no other way to find it. Closed by default.
  */
-function ForDevelopers({ value, variant }: { value: string; variant: boolean }) {
+export function ForDevelopers({ value, variant }: { value: string; variant: boolean }) {
   const id = useId();
   const input = useRef<HTMLInputElement>(null);
   const [copy, setCopy] = useState<'idle' | 'copying' | 'copied' | 'failed'>('idle');

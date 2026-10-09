@@ -22,6 +22,7 @@ import type { Template } from '@renderer/types';
 import { usePicker } from '../discovery/usePicker';
 import { designKey } from '../discovery/model';
 import { fitsOutcome } from '../goals/outcome';
+import { formatCount } from '../lib/format';
 
 /** Reviewed starting points; extension designs retain their index order after these. */
 const RECOMMENDED: Readonly<Record<string, readonly string[]>> = {
@@ -50,11 +51,13 @@ export interface TemplatePickerProps {
   readonly onNear: (id: string) => void;
   readonly failed?: ReadonlySet<string>;
   readonly onRetry?: (id: string) => void;
+  /** The draft's `integration_mappings`, so a design's detail can say a swap would remove some. */
+  readonly fieldMappings?: unknown;
 }
 
 /** Browse by what the design does, inspect it, then apply it to the draft. */
 export function TemplatePicker({
-  index, trees, displayType, currentDisplayType, onFormatChange, chosen, fit, goalLabel, busy, onChoose, onPrepare, onNear, failed, onRetry, active = true, initialInspectedId, hasCurrentDesign = true, contentLock = false,
+  index, trees, displayType, currentDisplayType, onFormatChange, chosen, fit, goalLabel, busy, onChoose, onPrepare, onNear, failed, onRetry, active = true, initialInspectedId, hasCurrentDesign = true, contentLock = false, fieldMappings,
 }: TemplatePickerProps) {
   const [chosenFacets, setChosenFacets] = useState<Chosen>({});
   const [query, setQuery] = useState('');
@@ -101,7 +104,6 @@ export function TemplatePicker({
   const inspected = forType.find((entry) => entry.id === inspectedId);
   const comparedEntries = forType.filter(entry=>compared.includes(entry.id) && entry.availability === 'ready');
   const hasLocked = forType.some((entry) => entry.availability !== 'ready');
-  const hasFilters = query !== '' || savedOnly || availableOnly || Object.values(chosenFacets).some((v) => v.length > 0);
   const secondaryFacets = Object.entries(index.facets).filter(([key]) =>
     !['captures', 'has_image', 'act'].includes(key),
   );
@@ -117,12 +119,37 @@ export function TemplatePicker({
   };
   const toggle = (facet: string, value: string) =>
     setChosenFacets((current) => toggled(current, facet, value));
+  const changeFormat = (format: string) => {
+    setPage(0); setCompared([]); setComparing(false);
+    onFormatChange?.(format);
+  };
+  // Only what is on: a chip row with nothing in it would be a row to read past.
+  const activeFilters = [
+    ...Object.entries(chosenFacets).flatMap(([facet, values]) => values.map((value) => ({
+      id: `${facet}.${value}`,
+      label: facet === 'act'
+        ? (value === 'submit' ? __('Fill in a form', 'wconvert') : __('Follow a link', 'wconvert'))
+        : nameOf(index.labels.facetValues, `${facet}.${value}`),
+      remove: () => toggle(facet, value),
+    }))),
+    ...(availableOnly ? [{ id: 'availability', label: __('Available on this site', 'wconvert'), remove: () => setAvailableOnly(false) }] : []),
+    ...(savedOnly ? [{ id: 'saved', label: __('Saved designs', 'wconvert'), remove: () => setSavedOnly(false) }] : []),
+    ...(query ? [{ id: 'query', label: query, remove: () => { setQuery(''); setPage(0); } }] : []),
+  ];
   const options = (facet: string, values: readonly string[]) =>
     facetOptions(available, facet, values, chosenFacets, query, index.labels);
 
   if (forType.length === 0) {
+    // The way forward is a format that has designs: the campaign's own first,
+    // so a merchant who wandered into an empty format can go straight back.
+    const formats = onFormatChange === undefined ? [] : displayTypeOptions(displayType).filter(({ value }) =>
+      value !== displayType && index.templates.some((entry) => entry.display_type === value && isShown(entry.availability)));
+    const way = formats.find(({ value }) => value === currentDisplayType) ?? formats[0];
     return (
-      <EmptyState icon={LayoutTemplate} title={__('No designs for this display type', 'wconvert')}>
+      <EmptyState icon={LayoutTemplate} title={__('No designs for this format', 'wconvert')}
+        action={way && <Button variant="outline" onClick={() => changeFormat(way.value)}>
+          {sprintf(/* translators: %s: a format, e.g. “Popup”. */ __('Show %s designs', 'wconvert'), way.label)}
+        </Button>}>
         {__('Designs for this format come with WConvert and its extensions.', 'wconvert')}
       </EmptyState>
     );
@@ -136,7 +163,7 @@ export function TemplatePicker({
         <div className="wconvert-picker__controls wconvert-toolbar">
           <div className="wconvert-picker__search-row">
             <PickerSearch label={__('Search designs','wconvert')} value={query} disabled={busy} onChange={value=>{setQuery(value);setPage(0);}} placeholder={__('Search a need, e.g. a guide or quote…','wconvert')} />
-            {onFormatChange && <label className="wconvert-picker__format text-note">{__('Format','wconvert')}<select className="wconvert-picker__select" value={displayType} onChange={event=>{setPage(0);setCompared([]);setComparing(false);onFormatChange(event.target.value);}}>{displayTypeOptions(displayType).map(({value,label})=><option key={value} value={value}>{label}</option>)}</select></label>}
+            {onFormatChange && <label className="wconvert-picker__format text-note">{__('Format','wconvert')}<select className="wconvert-picker__select" value={displayType} onChange={event=>changeFormat(event.target.value)}>{displayTypeOptions(displayType).map(({value,label})=><option key={value} value={value}>{label}</option>)}</select></label>}
             {fit.outcome && <select className="wconvert-picker__select" aria-label={__('Design fit', 'wconvert')}
               value={goalFitOnly ? 'goal' : 'all'} onChange={(event) => setGoalFitOnly(event.target.value === 'goal')}>
               <option value="goal">{goalLabel
@@ -144,75 +171,62 @@ export function TemplatePicker({
                 : __('For this goal', 'wconvert')}</option>
               <option value="all">{__('All designs', 'wconvert')}</option>
             </select>}
+            <select className="wconvert-picker__select" aria-label={__('Sort designs', 'wconvert')} value={sort} onChange={event=>{setSort(event.target.value);setPage(0);}}>
+              <option value="recommended">{__('Recommended first','wconvert')}</option>
+              <option value="name">{__('Name A–Z','wconvert')}</option>
+            </select>
             <Button variant="outline" disabled={busy} onClick={()=>{returnFocus.current=document.activeElement instanceof HTMLElement?document.activeElement:null;setSettings(true);}}>{__('Preferences','wconvert')}</Button>
           </div>
-          <MoreFilters active={secondaryCount}>
-            <OptionStrip label={__('What visitors do','wconvert')} value={selectedAct} onChange={value=>setChosenFacets(current=>({...current,act:value===''?[]:[value]}))}
-              options={[{value:'',label:__('All designs','wconvert')},{value:'submit',label:__('Fill in a form','wconvert')},{value:'click',label:__('Follow a link','wconvert')}].filter(({value})=>value==='' || forType.some(entry=>entry.facets.act===value))} />
-            <div className="wconvert-picker__filter-row">
-              <FacetStrip facet="captures" title={__('Must include', 'wconvert')}
-                options={options('captures', index.facets.captures ?? [])}
-                labels={index.labels} chosen={chosenFacets.captures ?? []}
-                onToggle={(value) => toggle('captures', value)} />
-              {options('has_image', ['true']).map(({ count }) => (
-                <Button key="picture" variant="outline" className="wconvert-picker__filter"
-                  aria-pressed={chosenFacets.has_image?.includes('true') === true}
-                  disabled={count === 0 && !chosenFacets.has_image?.includes('true')}
-                  onClick={() => toggle('has_image', 'true')}>
-                  {__('With a picture', 'wconvert')}
-                  <span aria-hidden="true" className="wconvert-picker__option-count">{count}</span>
-                </Button>
-              ))}
-            </div>
-            {secondaryFacets.map(([facet, values]) => (
-              <FacetStrip key={facet} facet={facet}
-                title={facet === 'shape' ? __('Layout', 'wconvert') : nameOf(index.labels.facets, facet)}
-                options={options(facet, values)} labels={index.labels} chosen={chosenFacets[facet] ?? []}
-                onToggle={(value) => toggle(facet, value)} />
-            ))}
-            <div className="wconvert-picker__filter-row">
-              <CheckRow label={<SavedLabel count={saved.size} />} checked={savedOnly} disabled={!picker.data}
-                onChange={(event) => { setSavedOnly(event.target.checked); setPage(0); }} />
-              {hasLocked && <CheckRow label={__('Available on this site', 'wconvert')} checked={availableOnly}
-                onChange={(event) => { setAvailableOnly(event.target.checked); setPage(0); }} />}
-            </div>
-          </MoreFilters>
-          <div className="wconvert-picker__results">
-            <label className="flex items-center gap-2 text-note">{__('Sort','wconvert')}<select className="wconvert-picker__select" value={sort} onChange={event=>{setSort(event.target.value);setPage(0);}}><option value="recommended">{__('Recommended','wconvert')}</option><option value="name">{__('Name A–Z','wconvert')}</option></select></label>
-            <span role="status" aria-live="polite" aria-atomic="true">
+          {/* The rarer filters as a quiet toggle, and the count at the far end (index.css orders them). */}
+          <div className="wconvert-picker__facet">
+            <span role="status" aria-live="polite" aria-atomic="true" className="wconvert-picker__count">
               {sprintf(
-                /* translators: 1: matching designs, 2: total designs for the display type. */
-                __('%1$s of %2$s designs', 'wconvert'), String(shown.length), String(forType.length),
+                /* translators: 1: matching designs, 2: total designs for the format. */
+                __('%1$s of %2$s designs', 'wconvert'), formatCount(shown.length), formatCount(forType.length),
               )}
             </span>
-            {hasFilters ? (
-              <div className="wconvert-picker__active">
-                {Object.entries(chosenFacets).flatMap(([facet, values]) => values.map((value) => {
-                  const label = facet === 'act'
-                    ? (value === 'submit' ? __('Fill in a form', 'wconvert') : __('Follow a link', 'wconvert'))
-                    : nameOf(index.labels.facetValues, `${facet}.${value}`);
-                  return (
-                    <button key={`${facet}.${value}`} type="button" className="wconvert-picker__active-filter"
-                      aria-label={sprintf(/* translators: %s: active filter name. */ __('Remove filter: %s', 'wconvert'), label)}
-                      onClick={() => toggle(facet, value)}>
-                      {label}<X size={12} aria-hidden="true" />
-                    </button>
-                  );
-                }))}
-                {availableOnly && <button type="button" className="wconvert-picker__active-filter"
-                  aria-label={sprintf(/* translators: %s: active filter name. */ __('Remove filter: %s', 'wconvert'), __('Available on this site', 'wconvert'))}
-                  onClick={() => setAvailableOnly(false)}>
-                  {__('Available on this site', 'wconvert')}<X size={12} aria-hidden="true" />
-                </button>}
-                {savedOnly && <button type="button" className="wconvert-picker__active-filter"
-                  aria-label={sprintf(/* translators: %s: active filter name. */ __('Remove filter: %s', 'wconvert'), __('Saved designs', 'wconvert'))}
-                  onClick={() => setSavedOnly(false)}>
-                  {__('Saved designs', 'wconvert')}<X size={12} aria-hidden="true" />
-                </button>}
-                <Button variant="link" onClick={clear}>{__('Clear filters', 'wconvert')}</Button>
+            <MoreFilters active={secondaryCount}>
+              <OptionStrip label={__('What visitors do','wconvert')} value={selectedAct} onChange={value=>setChosenFacets(current=>({...current,act:value===''?[]:[value]}))}
+                options={[{value:'',label:__('All designs','wconvert')},{value:'submit',label:__('Fill in a form','wconvert')},{value:'click',label:__('Follow a link','wconvert')}].filter(({value})=>value==='' || forType.some(entry=>entry.facets.act===value))} />
+              <div className="wconvert-picker__filter-row">
+                <FacetStrip facet="captures" title={__('Must include', 'wconvert')}
+                  options={options('captures', index.facets.captures ?? [])}
+                  labels={index.labels} chosen={chosenFacets.captures ?? []}
+                  onToggle={(value) => toggle('captures', value)} />
+                {options('has_image', ['true']).map(({ count }) => (
+                  <Button key="picture" variant="outline" className="wconvert-picker__filter"
+                    aria-pressed={chosenFacets.has_image?.includes('true') === true}
+                    disabled={count === 0 && !chosenFacets.has_image?.includes('true')}
+                    onClick={() => toggle('has_image', 'true')}>
+                    {__('With a picture', 'wconvert')}
+                    <span aria-hidden="true" className="wconvert-picker__option-count">{formatCount(count)}</span>
+                  </Button>
+                ))}
               </div>
-            ) : null}
+              {secondaryFacets.map(([facet, values]) => (
+                <FacetStrip key={facet} facet={facet}
+                  title={facet === 'shape' ? __('Layout', 'wconvert') : nameOf(index.labels.facets, facet)}
+                  options={options(facet, values)} labels={index.labels} chosen={chosenFacets[facet] ?? []}
+                  onToggle={(value) => toggle(facet, value)} />
+              ))}
+              <div className="wconvert-picker__filter-row">
+                <CheckRow label={<SavedLabel count={saved.size} />} checked={savedOnly} disabled={!picker.data}
+                  onChange={(event) => { setSavedOnly(event.target.checked); setPage(0); }} />
+                {hasLocked && <CheckRow label={__('Available on this site', 'wconvert')} checked={availableOnly}
+                  onChange={(event) => { setAvailableOnly(event.target.checked); setPage(0); }} />}
+              </div>
+            </MoreFilters>
           </div>
+          {activeFilters.length > 0 && <div className="wconvert-picker__active">
+            {activeFilters.map(({ id, label, remove }) => (
+              <button key={id} type="button" className="wconvert-picker__active-filter"
+                aria-label={sprintf(/* translators: %s: active filter name. */ __('Remove filter: %s', 'wconvert'), label)}
+                onClick={remove}>
+                <bdi>{label}</bdi><X size={12} aria-hidden="true" />
+              </button>
+            ))}
+            <Button variant="link" onClick={clear}>{__('Clear filters', 'wconvert')}</Button>
+          </div>}
         </div>
         {picker.error && !settings && <RegionError message={picker.error} onRetry={() => { void picker.reload(); }} />}
         <div className="wconvert-picker__body">
@@ -243,6 +257,7 @@ export function TemplatePicker({
           labels={index.labels} current={inspected.id === chosen} active={active} fit={fit} goalLabel={goalLabel} busy={busy}
           loadError={failed?.has(inspected.id)} onRetry={onRetry ? () => onRetry(inspected.id) : undefined}
           backLabel={fromComparison.current ? __('Back to comparison', 'wconvert') : undefined}
+          fieldMappings={fieldMappings}
           onChoose={onChoose} onPrepare={onPrepare} onBack={() => {
             setInspectedId(null);
             if(fromComparison.current) { setComparing(true); return; }
@@ -271,7 +286,7 @@ function FacetStrip({ facet, title, options, labels, chosen, onToggle }: {
           aria-pressed={chosen.includes(value)} disabled={count === 0 && !chosen.includes(value)}
           onClick={() => onToggle(value)}>
           {nameOf(labels.facetValues, `${facet}.${value}`)}
-          <span aria-hidden="true" className="wconvert-picker__option-count">{count}</span>
+          <span aria-hidden="true" className="wconvert-picker__option-count">{formatCount(count)}</span>
         </Button>
       ))}
     </div>

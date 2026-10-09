@@ -4,11 +4,12 @@ import { CAPTURE_OUTCOME } from './support/outcomes';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { render, screen, waitFor, within } from '@testing-library/react';
+import { useState } from 'react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { ruleTypes } from './support/rule-types';
 import type { TemplateEntry } from '../../resources/admin/src/templates/api';
-import type { TemplateNode, TemplateTree } from '@renderer/types';
+import type { Template, TemplateNode, TemplateTree } from '@renderer/types';
 
 /**
  * ============================================================================
@@ -53,6 +54,8 @@ vi.mock('../../resources/admin/src/goals/api', async (importOriginal) => ({
 }));
 
 const { OptinBuilder } = await import('../../resources/admin/src/builder/OptinBuilder');
+const { StructureView } = await import('../../resources/admin/src/builder/StructureView');
+const { historyOf, remember, undo } = await import('../../resources/admin/src/builder/structure/history');
 
 const ENTRY = JSON.parse(
   readFileSync(resolve(import.meta.dirname, '../fixtures/templates/editor-card.json'), 'utf8'),
@@ -588,8 +591,62 @@ describe('deleting a block', () => {
     await userEvent.click(screen.getByRole('menuitem', { name: /Delete/ }));
 
     expect(rowNames()).not.toContain('Fine print');
-    expect(screen.getByRole('status', { name: 'Layer changes' })).toHaveTextContent('Undo brings it back');
+    expect(screen.getByRole('status', { name: 'Layer changes' })).toHaveTextContent('removed');
     expect(screen.queryByRole('alertdialog')).toBeNull();
+  });
+
+  /**
+   * **The way back is on screen, not only spoken.** A delete has no confirm,
+   * so the notice that it happened carries the Undo, and it goes as soon as
+   * the design changes again — after that, Undo would take back something else.
+   */
+  describe('with an Undo to offer', () => {
+    function Layers({ draft }: { draft?: unknown }) {
+      const [history, setHistory] = useState(() => historyOf<Template>({ tree: ENTRY.tree, tokens: ENTRY.tokens }));
+      return <StructureView template={history.present} labels={LABELS} act="submit" selected={null} onSelect={vi.fn()} focus={null}
+        onChange={(next) => setHistory((held) => remember(held, next))} draft={draft}
+        onUndo={history.past.length > 0 ? () => setHistory(undo) : undefined} />;
+    }
+
+    it('shows the removal with an Undo that brings the block back', async () => {
+      render(<Layers />);
+      await menu('Fine print');
+      await userEvent.click(screen.getByRole('menuitem', { name: /Delete/ }));
+
+      const notice = screen.getByRole('status', { name: 'Layer changes' });
+      expect(notice).toHaveTextContent('removed');
+      expect(notice).not.toHaveTextContent('Undo brings it back');
+      expect(notice.parentElement).not.toHaveClass('sr-only');
+
+      await userEvent.click(screen.getByRole('button', { name: 'Undo delete' }));
+
+      expect(rowNames()).toContain('Fine print');
+      expect(screen.queryByRole('button', { name: 'Undo delete' })).toBeNull();
+      expect(notice.parentElement).toHaveClass('sr-only');
+    });
+
+    it('clears the Undo on the next change to the design', async () => {
+      render(<Layers />);
+      await menu('Fine print');
+      await userEvent.click(screen.getByRole('menuitem', { name: /Delete/ }));
+      expect(screen.getByRole('button', { name: 'Undo delete' })).toBeInTheDocument();
+
+      await userEvent.click(within(row('Headline')).getByRole('button', { name: 'Move Headline down' }));
+
+      expect(screen.queryByRole('button', { name: 'Undo delete' })).toBeNull();
+    });
+
+    /** Undo would take back a placement or a rule changed since, so they clear it too. */
+    it('clears the Undo when anything else in the draft changes', async () => {
+      const { rerender } = render(<Layers draft={{ placement: 'center' }} />);
+      await menu('Fine print');
+      await userEvent.click(screen.getByRole('menuitem', { name: /Delete/ }));
+      expect(screen.getByRole('button', { name: 'Undo delete' })).toBeInTheDocument();
+
+      rerender(<Layers draft={{ placement: 'bottom' }} />);
+
+      expect(screen.queryByRole('button', { name: 'Undo delete' })).toBeNull();
+    });
   });
 
   it('takes the blocks inside it, and says so before it is pressed', async () => {
@@ -1234,7 +1291,8 @@ describe('undo and redo', () => {
 
     expect(rowNames()).not.toContain('Fine print');
 
-    await userEvent.click(screen.getByRole('button', { name: /^Undo/ }));
+    // The delete's own notice carries the Undo, beside the list it changed.
+    await userEvent.click(screen.getByRole('button', { name: 'Undo delete' }));
 
     expect(rowNames()).toContain('Fine print');
 
@@ -2003,7 +2061,7 @@ describe('adaptive editor and signup deletion', () => {
     builder.getOptin.mockResolvedValue(optin({ config }));
     render(<OptinBuilder id={ID} onClose={vi.fn()} />);
   await userEvent.click(await screen.findByRole('tab', { name: 'Design' }));
-    await userEvent.click(await screen.findByRole('button', { name: 'Edit screens & conditions' }));
+    await userEvent.click(await screen.findByRole('tab', { name: 'Screens' }));
     await userEvent.click(within(screen.getByRole('navigation', { name: 'Campaign screens' })).getByRole('button', { name: 'Optional SMS signup' }));
     await userEvent.click(screen.getByRole('button', { name: 'Screen actions' }));
     await userEvent.click(screen.getByRole('menuitem', { name: 'Remove optional signup' }));

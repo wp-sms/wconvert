@@ -8,6 +8,8 @@ import PlacementSettings from '../../modules/inline-placement/admin/PlacementSet
 import { InlinePlacementSettings } from '@/inlinePlacement';
 import { PlacementGuidance } from '@/builder/PlacementGuidance';
 import type { RuleVocabulary } from '@/builder/api';
+import { DisplayRules, type DisplayRulesValue } from '@/builder/rules/DisplayRules';
+import { planFrom } from '@/builder/rules/plan';
 
 const vocabulary = { triggers: [{ type: 'page_load' }, { type: 'time_on_page' }], conditions: [], targeting: [] } as unknown as RuleVocabulary;
 
@@ -71,6 +73,41 @@ it('cancels a switch and keeps the method in use', async () => {
   await user.click(screen.getByRole('button', { name: 'Keep Manual' }));
   expect(onChange).not.toHaveBeenCalled();
   expect(screen.getByRole('radio', { name: 'Manual' })).toBeChecked();
+});
+
+it('choosing automatic placement or a content lock sets Right away, and When then holds it', async () => {
+  const user = userEvent.setup();
+  // The builder's wiring: the placement controls sit under Where, and either method holds When at Right away.
+  function Builder() {
+    const [config, setConfig] = useState<Record<string, unknown>>({ display_rules: displayPlan([{ type: 'time_on_page', seconds: 10 }]), targeting: { include: [{ type: 'post', value: 99 }] }, frequency: {} });
+    const edit = (patch: Record<string, unknown>) => setConfig(current => ({ ...current, ...patch }));
+    const value: DisplayRulesValue = { display_rules: planFrom(config.display_rules), targeting: config.targeting as DisplayRulesValue['targeting'], frequency: {}, schedule: {}, priority: 0 };
+    return <DisplayRules vocabulary={ruleTypes()} value={value} overlay={false} onChange={edit} placement={{
+      summary: 'Placement', opensRightAway: config.inline_placement != null || config.content_lock != null,
+      controls: <PlacementSettings optinId="example" published config={config} vocabulary={ruleTypes()} onChange={edit} />,
+    }} />;
+  }
+  render(<Builder />);
+  const nav = screen.getByRole('navigation', { name: 'Display rules' });
+  await user.click(within(nav).getByRole('button', { name: /When does it open/ }));
+  expect(within(screen.getByRole('group', { name: 'When does it open?' })).getByRole('radio', { name: /^After/ })).not.toHaveAttribute('aria-disabled');
+
+  for (const method of ['Automatic', 'Content lock']) {
+    await user.click(within(nav).getByRole('button', { name: /Where does it show/ }));
+    await user.click(screen.getByRole('radio', { name: method }));
+    await user.click(screen.getByRole('button', { name: method === 'Automatic' ? 'Switch to automatic placement' : 'Switch to content lock' }));
+    await user.click(within(nav).getByRole('button', { name: /When does it open/ }));
+    const when = screen.getByRole('group', { name: 'When does it open?' });
+    expect(within(when).getByRole('radio', { name: 'Right away' })).toBeChecked();
+    expect(within(when).getByRole('radio', { name: /^After/ })).toHaveAttribute('aria-disabled', 'true');
+    expect(within(when).getByRole('radio', { name: /^After/ })).toHaveAccessibleDescription('Inline placement opens right away.');
+    // Back to manual for the next method, so its switch asks again.
+    await user.click(within(nav).getByRole('button', { name: /Where does it show/ }));
+    await user.click(screen.getByRole('radio', { name: 'Manual' }));
+    await user.click(within(nav).getByRole('button', { name: /When does it open/ }));
+    await user.click(within(screen.getByRole('group', { name: 'When does it open?' })).getByRole('radio', { name: /^After/ }));
+    expect(within(screen.getByRole('group', { name: 'When does it open?' })).getByRole('radio', { name: /^After/ })).toBeChecked();
+  }
 });
 
 it('offers the door when automatic placement no longer opens right away', async () => {

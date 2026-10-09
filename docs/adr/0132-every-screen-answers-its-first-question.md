@@ -2,8 +2,10 @@
 
 Date: 2026-10-09. Status: accepted.
 Amends [0112](0112-template-discovery-and-reviewed-collections.md),
-[0087](0087-choices-first-details-on-demand.md) and
-[0035](0035-the-admin-owns-its-page.md). GUIDELINES §§9, 20 carry the rules.
+[0087](0087-choices-first-details-on-demand.md),
+[0035](0035-the-admin-owns-its-page.md),
+[0086](0086-campaign-setups-explain-handoff-and-format.md) and
+[0129](0129-display-rules-plain-questions-and-quick-picks.md). GUIDELINES §§9, 20 carry the rules.
 
 [0131](0131-one-way-to-show-each-thing-in-the-admin.md) made every screen draw
 the same thing the same way. This review asked the next question of each
@@ -42,6 +44,29 @@ is the thing they came for the most visible thing, with one way forward?
 10. Setups whose design is missing are hidden from creation, as
     `renderingFor(…, 'creation_flow')` always said; a paid install's premium
     pack is labelled with its tier, not a lock.
+
+### Editor
+11. **A first list campaign can publish.** With no ready service of the Goal's
+    channel, creation writes `capture_mode = local` (amends
+    [0086](0086-campaign-setups-explain-handoff-and-format.md)); where the
+    blocker still appears, its answer is a button beside it.
+12. **Blockers say how many and where.** Review & publish reads "N to fix"
+    (described, not renamed), each tab holding a blocker carries a dot, and
+    after jumping to one a "Back to review · N left" chip stays in the header.
+13. **Opening is held at Right away** while automatic inline placement or a
+    content lock is chosen, instead of failing at publish (amends
+    [0129](0129-display-rules-plain-questions-and-quick-picks.md)).
+14. **Success says what visitors get**: "It's live" and one where · who ·
+    when line; "Check your site" replaces "Check your homepage" when the
+    rules name pages.
+15. **The header never reads Published over a suspended or trashed campaign.**
+    "Draft saved" stays (owner's choice).
+16. Edit view drops Find (Flow keeps it) and folds More screen options into a
+    ⋯; "Let answers choose the next screen" replaces "Enable flexible paths".
+    The Design tab's "Edit screens & conditions" duplicate is gone.
+17. The design library toolbar matches creation's two rows; a colour drag is
+    one Undo step; a deleted layer shows its own Undo; Campaign details says
+    Results and carries the developer ID disclosure.
 
 ## Consequences
 

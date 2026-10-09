@@ -51,6 +51,20 @@ export interface StructureViewProps {
 
   readonly onChange: (template: Template, coalesce?: string) => void;
 
+  /**
+   * One step back in the draft's history. Given, a deleted layer's notice is
+   * drawn on screen with an Undo beside it rather than spoken only: a delete
+   * has no confirm (`history.ts`), so the way back has to be where the
+   * merchant is looking.
+   */
+  readonly onUndo?: () => void;
+  /**
+   * The whole draft, by identity. Undo steps back through every edit — a
+   * placement or a display rule as well as the design — so the notice goes
+   * when any of it changes, not only this tree.
+   */
+  readonly draft?: unknown;
+
   readonly focus: { readonly path: Path } | null;
 
   readonly endsAt?: string;
@@ -84,6 +98,8 @@ export function StructureView({
   selected,
   onSelect,
   onChange,
+  onUndo,
+  draft,
   focus,
   endsAt,
   onSetEndDate,
@@ -110,6 +126,20 @@ export function StructureView({
   }, [selectedKey]);
 
   const [said, setSaid] = useState<string | null>(null);
+  /*
+   * A removal Undo can take back. Shown until the next change to the design —
+   * an edit, a move or the Undo itself — because after that "Undo" would undo
+   * something else. `fresh` lets the removal's own change through.
+   */
+  const [removal, setRemoval] = useState<{ path: Path; name: string } | null>(null);
+  const fresh = useRef(false);
+  const seen = useRef({ template, draft });
+  useEffect(() => {
+    if (seen.current.template === template && seen.current.draft === draft) return;
+    seen.current = { template, draft };
+    if (fresh.current) fresh.current = false;
+    else setRemoval(null);
+  }, [template, draft]);
 
   const [focusOn, setFocusOn] = useState<{ path: Path; control: number } | null>(null);
 
@@ -127,6 +157,7 @@ export function StructureView({
     onChange({ ...template, tree: referencedJourney(tree) });
     setFocusOn({ path, control });
     setSaid(sentence);
+    setRemoval(null);
 
     onSelect(path);
   };
@@ -134,6 +165,7 @@ export function StructureView({
   const refuse = (reason: string) => {
     setFocusOn(null);
     setSaid(reason);
+    setRemoval(null);
   };
 
   const move = (block: Block, by: number, control: number) => {
@@ -182,6 +214,21 @@ export function StructureView({
       0,
       sprintf(__('%s removed. Undo brings it back.', 'wconvert'), sentenceFor(block, labels)),
     );
+    // Read at render rather than now: the screen offers Undo only once there
+    // is a step to go back to, which a first edit is what creates.
+    setRemoval({ path: block.path, name: sentenceFor(block, labels) });
+    fresh.current = true;
+  };
+
+  const undoRemoval = () => {
+    if (removal === null || onUndo === undefined) return;
+    // The block is back where it was, so focus goes to its row rather than
+    // to `<body>` when this button leaves the screen. The selection follows
+    // on its own: it moved to the sibling now at this path.
+    setFocusOn({ path: removal.path, control: 0 });
+    setRemoval(null);
+    setSaid(null);
+    onUndo();
   };
 
   const duplicate = (block: Block) => {
@@ -245,6 +292,8 @@ export function StructureView({
       </RegionBody>
     );
   }
+
+  const undoable = removal !== null && onUndo !== undefined;
 
   const layersPane = (
           <div className="wconvert-pane wconvert-pane--layers">
@@ -313,10 +362,6 @@ export function StructureView({
     <>
       {toolbar}
 
-      <p role="status" aria-label={__('Layer changes', 'wconvert')} className="sr-only">
-        {said}
-      </p>
-
       <div ref={panes} className="wconvert-panes" data-compact={compact || undefined} data-layers={showLayers ? 'true' : 'false'}>
         {!compact && showLayers && layersPane}
 
@@ -332,6 +377,14 @@ export function StructureView({
             {drawer === 'layers' ? layersPane : controlsPane}
           </DialogContent>
         </Dialog>}
+      </div>
+
+      {/* One live region, mounted throughout so it is announced; it is drawn only while it carries an Undo, under the panes so nothing above them moves. */}
+      <div className={undoable ? 'wconvert-layer-notice' : 'sr-only'}>
+        <p role="status" aria-label={__('Layer changes', 'wconvert')}>
+          {undoable ? sprintf(__('%s removed.', 'wconvert'), removal.name) : said}
+        </p>
+        {undoable && <Button type="button" variant="ghost" size="xs" onClick={undoRemoval}>{__('Undo delete', 'wconvert')}</Button>}
       </div>
 
       {checks}

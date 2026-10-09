@@ -313,7 +313,8 @@ one page, but omit Previous/Next until there is another page to visit.
 `shell/DataTable` is what list screens render — semantic roles, a `data-label`
 on every cell, `micro` uppercase headers, tabular end-aligned numbers. Below
 **900px and below** the whole table restacks into cards and those labels are what each
-value is read against. (782px is the *builder's* floor and a different number.)
+value is read against. (The builder has no floor of its own any more: it adapts
+down to phone width — ADR 0038, amended — and 900px is a table's number alone.)
 
 Row actions are ghost `icon-sm` buttons in a `1%` column. Past two, use a
 dropdown.
@@ -590,8 +591,10 @@ rather than clip.
 ## 17. Floors
 
 - **WCAG 2.1 AA**, enforced by lint. AAA is explicitly not the bar.
-- **360px** on the reading screens; **782px** on the builder, which refuses
-  below it and says so in a translatable string.
+- **360px** on the reading screens. The builder adapts down to phone width
+  rather than refusing: one editing drawer at 1000px and below, phone layouts at
+  640px and below (ADR 0038, amended 2026-09-23 — it used to refuse below
+  782px).
 - Any dragging gesture owes a **single-pointer alternative** (WCAG 2.2 SC 2.5.7).
 - **No dark mode in 0.1.0.** `dark:` is bound to a class no element carries, so
   the vendored `dark:` utilities never fire. When it lands it is a second set of

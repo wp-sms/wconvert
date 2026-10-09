@@ -1901,7 +1901,6 @@ body:has(#wconvert-admin) #wpbody-content {
 .wconvert-picker__search-row,
 .wconvert-picker__filter-row,
 .wconvert-picker__facet,
-.wconvert-picker__results,
 .wconvert-picker__active {
   display: flex;
   flex-wrap: wrap;
@@ -1931,8 +1930,6 @@ body:has(#wconvert-admin) #wpbody-content {
 .wconvert-picker__option-count { font-size: var(--text-note); opacity: 0.65; font-variant-numeric: tabular-nums; }
 .wconvert-picker__filter[aria-pressed='true'] { color: var(--action); border-color: var(--action); background: var(--muted); }
 .wconvert-picker__extra { max-block-size: 30dvh; overflow-y: auto; }
-.wconvert-picker__results { justify-content: space-between; gap: 0.25rem 0.75rem; font-size: var(--text-note); color: var(--muted-foreground); }
-.wconvert-picker__results [role='status'] { font-variant-numeric: tabular-nums; }
 .wconvert-picker__active { gap: 0.375rem; }
 .wconvert-picker__active-filter { display: inline-flex; align-items: center; gap: 0.375rem; padding: 0.25rem 0.5rem; border: 1px solid var(--border); border-radius: 999px; background: var(--surface); color: var(--foreground); font-size: var(--text-note); cursor: pointer; }
 .wconvert-picker__active-filter:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
@@ -2824,6 +2821,10 @@ body:has(#wconvert-admin) #wpbody-content {
   display: flex;
   flex-direction: column;
 }
+
+/* A deleted layer's way back: under the panes, until the next change (GUIDELINES §8). */
+.wconvert-layer-notice { display: flex; flex: none; flex-wrap: wrap; align-items: center; gap: .25rem .75rem; padding: .375rem 1.25rem; border-block-start: 1px solid var(--border); background: var(--card); font-size: var(--text-note); }
+.wconvert-layer-notice > p { margin: 0; color: var(--muted-foreground); }
 
 .wconvert-pane {
   display: flex;

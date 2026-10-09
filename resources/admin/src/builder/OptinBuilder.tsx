@@ -6,13 +6,13 @@ import { BlockInspector } from './BlockInspector';
 import { JourneyEditor } from './JourneyEditor';
 import { ProductActivityReport } from '../stats/ProductActivityReport';
 import { JourneyReport } from '../stats/JourneyReport';
-import { referencedJourney, submissionScreen, walkNodes } from './structure/journey';
+import { referencedJourney, submissionScreen } from './structure/journey';
 import { isResultFirst } from '../../../loader/src/journey-mode';
 import type { JourneyRepair } from './structure/journeyReadiness';
 import { contentLockDesignCompatible } from '../inlinePlacement';
 import './editor.css';
 import './preview-test.css';
-import { Activity, Suspense, lazy, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { Activity, Suspense, lazy, useCallback, useEffect, useId, useMemo, useRef, useState } from 'react';
 import { flushSync } from 'react-dom';
 import { __, _n, sprintf } from '@wordpress/i18n';
 import {
@@ -27,7 +27,6 @@ import {
   Redo2,
   SlidersHorizontal,
   Undo2,
-  Workflow,
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '../components/ui/tabs';
@@ -43,8 +42,9 @@ import { TemplatePickerDialog } from './TemplatePickerDialog';
 import { useTemplateTrees } from './TemplatePicker';
 import { DestinationsEditor } from './DestinationsEditor';
 import { CaptureModeChoice } from './CaptureModeChoice';
-import { ReadinessDialog } from './ReadinessDialog';
-import { hintIn } from './destinations';
+import { ReadinessDialog, type BlockedTab } from './ReadinessDialog';
+import { ForDevelopers } from '../optins/DetailsDialog';
+import { fieldMappingsKept, hintIn, type FieldMappings } from './destinations';
 import { planFrom } from './rules/plan';
 import { summarise, summaryOf } from './rules/summaries';
 import { DisplayRules, type DisplayRulesValue } from './rules/DisplayRules';
@@ -150,6 +150,10 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
   const restoreBrowseFocus = useRef(false);
 
   const [fatal, setFatal] = useState<string | null>(null);
+  // Bumped by Try again after a failed first read, so every read runs again.
+  const [attempt, setAttempt] = useState(0);
+  const [blockedTabs, setBlockedTabs] = useState<readonly BlockedTab[]>([]);
+  const attentionId = useId();
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
@@ -335,7 +339,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
         setSiblingAct(optin.sibling_act);
       })
       .catch((cause: unknown) => setFatal(messageOf(cause)));
-  }, [id]);
+  }, [id, attempt]);
 
   useEffect(() => {
     getRules()
@@ -344,7 +348,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
     listTemplates()
       .then(setGallery)
       .catch((cause: unknown) => setFatal(messageOf(cause)));
-  }, []);
+  }, [attempt]);
 
   const loadGoals = useCallback(() => {
     setGoals(LOADING);
@@ -486,19 +490,8 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
         next.submission_settings = Object.fromEntries(Object.entries(next.submission_settings).filter(([id]) => kept.has(id)));
       }
       if (changedTemplate && next.integration_mappings && typeof next.integration_mappings === 'object') {
-        const kept = new Set(changedTemplate.tree.submissions.map(sub => sub.id));
-        const sources = new Set<string>();
-        changedTemplate.tree.steps.flatMap(step => walkNodes(step.content)).forEach((node) => {
-          if (node.type === 'question' && 'id' in node) {
-            sources.add(String(node.id));
-            if (node.answer_type === 'multi') node.options?.forEach((option) => sources.add(`choice:${node.id}:${option.value}`));
-          }
-          if (node.type === 'field' && 'name' in node && ['interest', 'message'].includes(String(node.name))) sources.add(`field:${String(node.name)}`);
-        });
-        const maps = next.integration_mappings as Record<string, Record<string, Record<string, string>>>;
-        next.integration_mappings = Object.fromEntries(Object.entries(maps).filter(([submission]) => kept.has(submission)).map(([submission, byDestination]) =>
-          [submission, Object.fromEntries(Object.entries(byDestination).map(([id, mapping]) =>
-            [id, Object.fromEntries(Object.entries(mapping).filter(([source]) => sources.has(source)))]) )]));
+        // One rule for what a new design keeps, shared with the swap note that warns about it.
+        next.integration_mappings = fieldMappingsKept(next.integration_mappings as FieldMappings, changedTemplate.tree);
       }
       return next;
     });
@@ -671,7 +664,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
           <BackLink onClose={onClose} label={backLabel} />
         </PageAction>
         <Region label={__('Campaign builder', 'wconvert')}>
-          <RegionErrorState message={fatal} />
+          <RegionErrorState message={fatal} onRetry={() => { setFatal(null); setAttempt((value) => value + 1); }} />
         </Region>
       </div>
     );
@@ -743,6 +736,8 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
               reveal={revealSection}
               placement={displayTypeOf(config, templates) === 'inline' ? {
                 summary: inlineSummary,
+                // The same condition Review & publish blocks on, held here instead (ADR 0132).
+                opensRightAway: config.inline_placement != null || config.content_lock != null,
                 controls: <InlinePlacementSettings optinId={id} published={publishedAt !== null} config={config} vocabulary={vocabulary} onChange={edit} />,
               } : undefined}
             />;
@@ -775,6 +770,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
               channel={captureOutcome?.audience_channel ? { channel: captureOutcome.audience_channel, strict: false } : null}
               suggested={[...(hint?.types ?? []), ...(captureOutcome?.destination_type ? [captureOutcome.destination_type] : [])]}
               onConnectionSaved={connectionSaved}
+              onKeepLocal={() => edit({ capture_mode: 'local', destinations: [] })}
               onRefresh={refreshDestinations}
               refreshError={destinationsStale}
               onSaved={destinationsSaved}
@@ -844,7 +840,8 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
           <span
             className="wconvert-workspace__save-state"
             role="status"
-            data-published={!busy && !dirty && !unpublishedChanges && !saved && publishedAt ? '' : undefined}
+            data-published={!busy && !dirty && !unpublishedChanges && !saved && publishedAt && suspended === null && deletedAt === null ? '' : undefined}
+            data-suspended={!busy && !dirty && !unpublishedChanges && !saved && publishedAt && suspended !== null ? '' : undefined}
           >
             {busy
               ? publishing ? __('Publishing…', 'wconvert') : __('Saving…', 'wconvert')
@@ -854,19 +851,25 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
                   ? __('Unpublished changes', 'wconvert')
                   : saved
                   ? __('Draft saved', 'wconvert')
-                  : publishedAt
-                    ? __('Published', 'wconvert')
-                    : __('Draft', 'wconvert')}
+                  : deletedAt !== null
+                    ? __('In trash', 'wconvert')
+                    : publishedAt && suspended !== null
+                      ? __('Suspended', 'wconvert')
+                      : publishedAt
+                        ? __('Published', 'wconvert')
+                        : __('Draft', 'wconvert')}
           </span>
         </div>
         <TabsList
           className="wconvert-workspace__navigation"
           aria-label={__('What you are editing', 'wconvert')}
         >
-          <TabsTrigger value="journey">{__('Screens', 'wconvert')}</TabsTrigger>
-          <TabsTrigger value="design">{__('Design', 'wconvert')}</TabsTrigger>
-          <TabsTrigger value="rules">{__('Display rules', 'wconvert')}</TabsTrigger>
-          <TabsTrigger ref={destinationsTab} value="destinations">{__('Destinations', 'wconvert')}</TabsTrigger>
+          {/* A tab holding something that blocks publishing carries a dot, described rather than renamed. */}
+          <TabsTrigger value="journey" aria-describedby={blockedTabs.includes('journey') ? attentionId : undefined}>{__('Screens', 'wconvert')}{blockedTabs.includes('journey') && <AttentionDot />}</TabsTrigger>
+          <TabsTrigger value="design" aria-describedby={blockedTabs.includes('design') ? attentionId : undefined}>{__('Design', 'wconvert')}{blockedTabs.includes('design') && <AttentionDot />}</TabsTrigger>
+          <TabsTrigger value="rules" aria-describedby={blockedTabs.includes('rules') ? attentionId : undefined}>{__('Display rules', 'wconvert')}{blockedTabs.includes('rules') && <AttentionDot />}</TabsTrigger>
+          <TabsTrigger ref={destinationsTab} value="destinations" aria-describedby={blockedTabs.includes('destinations') ? attentionId : undefined}>{__('Destinations', 'wconvert')}{blockedTabs.includes('destinations') && <AttentionDot />}</TabsTrigger>
+          <span id={attentionId} hidden>{__('Needs fixing before publishing', 'wconvert')}</span>
         </TabsList>
         <div className="wconvert-workspace__actions">
 
@@ -915,6 +918,9 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
             privacyGuidance={privacyGuidance}
             policyUrl={adminSettings()?.policyUrl}
             onPublish={publish}
+            onKeepLocal={() => edit({ capture_mode: 'local', destinations: [] })}
+            onRetryGoal={loadGoals}
+            onBlockedTabsChange={setBlockedTabs}
             onPreview={() => { previewReturnTab.current = tab; setPreviewFromRules(tab === 'rules'); setTab('journey'); setPreviewing(false); setJourneyTestRequest(value => value + 1); }}
             onEditDesign={() => { setTab('design'); setPreviewing(false); setShowLayers(true); setDrawer('layers'); layersButton.current?.focus(); }}
             onEditJourney={repair => { setTab('journey'); setPreviewing(false); if (repair) setJourneyRepair({ ...repair, serial: ++journeyRepairSerial.current }); }}
@@ -952,7 +958,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
               endsAt={displayRules.schedule.ends_at} onSetEndDate={goToSchedule} onPlacement={goToInlinePlacement} onSelect={chooseFromTree}
               onDesign={() => { setTab('design'); designSettings(); }} onShowLayers={() => { setTab('design'); setShowLayers(true); setDrawer('layers'); }}
               look={<ScopeStyle key={selection.path.join('.')} template={entry} labels={gallery.labels} path={selection.path} openToken={openToken} onOpenToken={setOpenToken} onSelect={chooseFromTree}
-                onChange={next => edit({ template: next })} copied={copiedLook} onCopy={setCopiedLook} width={width === 'narrow' ? 'narrow' : 'tokens'} />} /> : undefined}
+                onChange={(next, coalesce) => edit({ template: next }, coalesce)} copied={copiedLook} onCopy={setCopiedLook} width={width === 'narrow' ? 'narrow' : 'tokens'} />} /> : undefined}
             testRequest={journeyTestRequest} onTestExit={() => setPreviewFromRules(false)} onTestClose={() => { const returnTab = previewReturnTab.current; previewReturnTab.current = 'journey'; setTab(returnTab); }}
             outcomeAction={entryOfGoal?.outcome.action} primaryChannel={entryOfGoal?.outcome.audience_channel} tree={entry.tree} tokens={entry.tokens} step={shownStep} repairRequest={journeyRepair ?? undefined}
             focusActions={<><HistoryControls history={{ ...history, canUndo: !busy && history.canUndo, canRedo: !busy && history.canRedo }} />
@@ -1004,7 +1010,6 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
                     </Button>
                   </div>
                   <div className="wconvert-workspace__screens"><ScreenControls template={entry} step={shownStep} onChange={chooseStep} extra={canPreviewReopen ? { label: reopenLabel, selected: showingReopen, onSelect: showReopen } : undefined} />
-                    {!previewing && <Button type="button" variant="outline" size="sm" onClick={() => setTab('journey')}><Workflow aria-hidden="true" />{__('Edit screens & conditions', 'wconvert')}</Button>}
                   </div>
                   <div>
                     {compact ? <DropdownMenu><DropdownMenuTrigger asChild><Button variant="ghost" size="icon-sm" aria-label={__('Preview options', 'wconvert')}><MoreHorizontal aria-hidden="true" /></Button></DropdownMenuTrigger>
@@ -1017,7 +1022,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
                 {previewing ? (
                   previewPane
                 ) : (
-                  <StructureView
+                  <StructureView onUndo={history.canUndo && !busy ? history.undo : undefined} draft={config}
                     template={entry}
                     labels={gallery.labels}
                     act={act}
@@ -1047,7 +1052,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
                             openToken={openToken}
                             onOpenToken={setOpenToken}
                             design={templateId === undefined ? {} : (trees.get(templateId)?.tokens ?? {})}
-                            onChange={(next) => edit({ template: next })}
+                            onChange={(next, coalesce) => edit({ template: next }, coalesce)}
                             onError={report}
                             onBrowse={() => setBrowsing(true)}
                             displayType={displayTypeOf(config, templates)}
@@ -1065,7 +1070,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
                             openToken={openToken}
                             onOpenToken={setOpenToken}
                             onSelect={chooseFromTree}
-                            onChange={(next) => edit({ template: next })}
+                            onChange={(next, coalesce) => edit({ template: next }, coalesce)}
                             copied={copiedLook}
                             onCopy={setCopiedLook}
                             width={width === 'narrow' ? 'narrow' : 'tokens'}
@@ -1121,7 +1126,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
               {entryOfGoal?.outcome && <p className="mt-2">{entryOfGoal.outcome.measurement}</p>}
             </section>
             <CampaignAnalytics value={config.analytics} parentId={analyticsParent} onChange={analytics => edit({ analytics })} />
-            <section className="wconvert-details-section"><h3>{__('Performance', 'wconvert')}</h3>
+            <section className="wconvert-details-section"><h3>{__('Results', 'wconvert')}</h3>
               {publishedAt === null ? (
                 <p>{__('Publish this campaign to start counting views and conversions.', 'wconvert')}</p>
               ) : stats.status === 'loading' ? (
@@ -1163,11 +1168,8 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
               )}
             </section>
             {details && id && <><ProductActivityReport id={id} /><JourneyReport id={id} /></>}
-            <Disclosure variant="inline" title={__('About draft history', 'wconvert')}>
-              <p className="m-0 text-note text-muted-foreground">
-                {__('Undo and Redo cover this session’s draft edits: name, screens, design, display rules and destination choices. They do not change the published version or shared destination settings. Saving a new goal starts a new Undo history.', 'wconvert')}
-              </p>
-            </Disclosure>
+            {/* The one place a developer finds the ID page events carry, as in the list's Details (ADR 0131). */}
+            <ForDevelopers value={id} variant={analyticsParent !== null} />
             {entry && adminSettings()?.dev === true && (
               <Disclosure variant="inline" title={__('Developer tools', 'wconvert')}>
                 <PayloadMeter template={entry} />
@@ -1201,7 +1203,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
           }} />
       </Suspense>}
 
-      <TemplatePickerDialog
+      <TemplatePickerDialog fieldMappings={config.integration_mappings}
         open={browsing}
         onOpenChange={setBrowsing}
         onClosed={() => browse.current?.focus()}
@@ -1359,7 +1361,8 @@ function chosenName(
     return __('Custom design', 'wconvert');
   }
 
-  return templates?.find((each) => each.id === templateId)?.name ?? templateId;
+  // Never the stored ID on screen (ADR 0131): a design no longer installed is named as such.
+  return templates?.find((each) => each.id === templateId)?.name ?? __('Removed design', 'wconvert');
 }
 
 function entryFor(
@@ -1381,4 +1384,9 @@ function entryFor(
     tree: template.tree,
     tokens: template.tokens,
   };
+}
+
+/** A tab's mark for something that blocks publishing; the words are its description. */
+function AttentionDot() {
+  return <span className="wconvert-tab-attention" aria-hidden="true" />;
 }

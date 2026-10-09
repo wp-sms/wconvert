@@ -5,8 +5,13 @@ import type { RuleType } from '../api';
 import { DisclosureCard } from './DisclosureCard';
 import { GroupEditor } from './GroupEditor';
 
-/** When it opens, under Custom…: the whole opening, any mode. */
-export function OpeningEditor({ value, types, onChange }: { value: Opening; types: readonly RuleType[]; onChange: (next: Opening) => void }) {
+/**
+ * When it opens, under Custom…: the whole opening, any mode.
+ *
+ * `heldBy` is the id of a reason another answer gives for opening right away;
+ * while it is set every other mode is refused and points at it (GUIDELINES §14).
+ */
+export function OpeningEditor({ value, types, onChange, heldBy }: { value: Opening; types: readonly RuleType[]; onChange: (next: Opening) => void; heldBy?: string }) {
   const [saved, setSaved] = useState<Partial<Record<Opening['mode'], Opening>>>({});
   const modes = [['immediate', __('Right away', 'wconvert')], ['automatic', __('After something they do', 'wconvert')], ['click', __('When they click', 'wconvert')]] as const;
   const switchMode = (mode: Opening['mode']) => {
@@ -16,7 +21,11 @@ export function OpeningEditor({ value, types, onChange }: { value: Opening; type
   const offered = types.filter(type => value.mode === 'click' ? 'selector' in type.params : type.type !== 'page_load' && !('selector' in type.params));
   return <>
     <fieldset className="wconvert-display-match wconvert-display-modes"><legend>{__('Opens', 'wconvert')}</legend>
-      {modes.map(([mode, label]) => <label key={mode}><input type="radio" name="display-opening" checked={value.mode === mode} onChange={() => switchMode(mode)} />{label}</label>)}
+      {modes.map(([mode, label]) => {
+        const refused = heldBy !== undefined && mode !== 'immediate';
+        return <label key={mode} data-refused={refused || undefined}><input type="radio" name="display-opening" checked={value.mode === mode}
+          aria-disabled={refused || undefined} aria-describedby={refused ? heldBy : undefined} onChange={() => { if (!refused) switchMode(mode); }} />{label}</label>;
+      })}
     </fieldset>
     {value.mode !== 'immediate' && <GroupEditor group={{ match: value.mode === 'automatic' ? value.match : 'any', rules: value.rules }} types={offered} offset={60} operator={value.mode === 'automatic'} onChange={group => onChange(value.mode === 'click' ? { ...value, rules: group.rules } : { ...value, match: group.match, rules: group.rules })} />}
     {value.mode === 'automatic' && <DisclosureCard title={__('Minimum time on the page', 'wconvert')} open={!!value.minimum_seconds}

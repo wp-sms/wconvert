@@ -22,6 +22,12 @@ export interface QuickPicksProps {
   readonly onParam: (n: number | string) => void;
   /** One line that belongs to the chosen pick, drawn tight under the chips. */
   readonly note?: string | null;
+  /**
+   * Another answer holds this section to one pick: every other pick is refused
+   * with this reason, which is on screen before the click (GUIDELINES §14).
+   * `id` is the reason's, so a control under Custom… can point at it too.
+   */
+  readonly held?: { readonly pick: string; readonly reason: string; readonly id: string } | null;
 }
 
 /**
@@ -30,9 +36,10 @@ export interface QuickPicksProps {
  *
  * A pick this site cannot run is drawn but refused: choosing it, by click or by
  * arrowing onto it, leaves the value alone and says why. On a free install a
- * locked pick is not drawn at all (ADR 0116).
+ * locked pick is not drawn at all (ADR 0116). A pick another answer rules out
+ * — `held` — is refused the same way, with its reason always on screen.
  */
-export function QuickPicks({ section, question, value, vocabulary, shown, onChoose, onParam, note }: QuickPicksProps) {
+export function QuickPicks({ section, question, value, vocabulary, shown, onChoose, onParam, note, held }: QuickPicksProps) {
   const [refused, setRefused] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
   const reasonId = useId();
@@ -48,11 +55,12 @@ export function QuickPicks({ section, question, value, vocabulary, shown, onChoo
     <div role="group" aria-label={question} className="wconvert-quick-picks">
       {picks.map(({ pick, availability, rendering }) => {
         const chosen = shown.id === pick.id;
-        const offered = rendering === 'offer';
+        const ruledOut = held != null && held.pick !== pick.id;
+        const offered = rendering === 'offer' && !ruledOut;
         return <label key={pick.id} className="wconvert-quick-pick" data-custom={pick.id === 'custom' || undefined} data-refused={offered ? undefined : true}>
           <input type="radio" className="sr-only" name={name} value={pick.id} checked={chosen} aria-disabled={offered ? undefined : true}
-            aria-describedby={offered ? undefined : reasonId}
-            onChange={() => { if (offered) { setRefused(null); onChoose(pick); } else setRefused(pick.id); }} />
+            aria-describedby={ruledOut ? held?.id : offered ? undefined : reasonId}
+            onChange={() => { if (offered) { setRefused(null); onChoose(pick); } else if (!ruledOut) setRefused(pick.id); }} />
           {chosen && pick.param ? <Inline template={pick.template(Number(pick.param.read(value) ?? pick.param.default))} param={pick.param} value={value} onChange={onParam} onError={setError} errorId={errorId} />
             : <span>{wordsOf(pick, shown, value)}</span>}
           {pick.recommended && offered && <Badge variant="secondary" className="wconvert-quick-pick__recommended">{__('Recommended', 'wconvert')}</Badge>}
@@ -66,6 +74,7 @@ export function QuickPicks({ section, question, value, vocabulary, shown, onChoo
     {error !== null && shown.param && <p id={errorId} role="alert" className="wconvert-quick-picks__error">{error}</p>}
     {shown.param?.kind === 'selector' && !shown.param.read(value) && <p className="wconvert-quick-picks__hint" data-attention="true">{__('Choose the button or link they click, such as #signup or .offer-button.', 'wconvert')}</p>}
     {note && <p className="wconvert-quick-picks__hint">{note}</p>}
+    {held && <p id={held.id} className="wconvert-quick-picks__hint">{held.reason}</p>}
     <p id={reasonId} className="wconvert-quick-picks__reason" role="status">{refusal === undefined ? null
       : refusal.rendering === 'upsell'
         ? <>{unlessFree(sprintf(

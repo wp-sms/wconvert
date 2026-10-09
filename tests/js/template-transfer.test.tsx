@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { render, screen, waitFor, cleanup } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { afterEach, beforeEach, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, expect, it, onTestFinished, vi } from 'vitest';
 import type { Template } from '../../resources/renderer/src/types';
 import * as transfer from '../../resources/admin/src/templates/transfer';
 import TemplateTransferDialog from '../../resources/admin/src/builder/TemplateTransferDialog';
@@ -25,6 +25,17 @@ beforeEach(() => {
   vi.mocked(transfer.cancelImport).mockResolvedValue({});
 });
 afterEach(cleanup);
+
+/** Sizes and counts read in the site's digits, like every other number in the admin (ADR 0131). */
+it('writes the size limit and link uses in the site’s digits', async () => {
+  document.documentElement.lang = 'fa-IR';
+  onTestFinished(() => { document.documentElement.lang = ''; });
+  const user = userEvent.setup();
+  render(<TemplateTransferDialog action="import" design={{ ...fixture, name: 'Current', display_type: 'popup' }} config={config} optin="campaign" onClose={vi.fn()} onApply={vi.fn()} />);
+  expect(await screen.findByText(/Up to ۲۳ MB/)).toBeInTheDocument();
+  await user.upload(await screen.findByLabelText('Choose a WConvert design file'), file());
+  expect(await screen.findByText('Used in ۲ places')).toBeInTheDocument();
+});
 
 /** A draft that changed under the import is refused in the dialog, beside Apply — not behind its overlay. */
 it('shows a refused apply inside the dialog and stays open', async () => {

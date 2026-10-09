@@ -22,6 +22,8 @@ import { EmptyState } from '../shell/EmptyState';
 import { Region, RegionBody, RegionError, RegionErrorState, RegionFooter, RegionHeader } from '../shell/Region';
 import { LOADING, failed, messageOf, ready, type Loadable } from '../shell/loadable';
 import { createOptin } from '../optins/api';
+import { readDestinations } from '../destinations/api';
+import { outcomeHandoffIssue } from './outcome';
 import { formatCount, formatDay, formatRange } from '../lib/format';
 import { GoalCard, offerableGoals } from './GoalCard';
 import { listGoals, listPlaybooks, prefill, type GoalEntry, type PlaybookEntry } from './api';
@@ -181,7 +183,8 @@ export function GoalScreen({ onCreated, onBusyChange, onCheckOptins }: GoalScree
     try {
       const selected = previewEntries.find(entry => entry.id === playbookId);
       const prepared = selected && previews.previews.get(selected.id);
-      const draft = selected?.revision ? await prefill(goal.id, playbookId, selected.revision, prepared?.prepared_revision) : await prefill(goal.id, playbookId);
+      const prefilled = selected?.revision ? await prefill(goal.id, playbookId, selected.revision, prepared?.prepared_revision) : await prefill(goal.id, playbookId);
+      const draft = await keepLocallyUntilConnected(goal, prefilled);
       if (!active.current || request !== operation.current) return;
       creating = true;
       const optin = await createOptin(draft.name, draft.goal, draft.config);
@@ -577,4 +580,22 @@ function Step({ at }: { at: 1 | 2 }) {
 export function gistOf(notes: string): string {
   const end = notes.search(/[.!?。！？](\s|$)/);
   return end === -1 ? notes : notes.slice(0, end + 1);
+}
+
+/**
+ * **A list goal starts on Keep in WConvert only until a service is connected**
+ * (ADR 0132). Without it a first campaign cannot publish until its owner finds
+ * the Destinations tab; with it, submissions collect in Leads and connecting
+ * a service stays one step away. A site that already has a ready service of
+ * the goal's channel keeps the prefill as it is.
+ */
+async function keepLocallyUntilConnected<T extends { config: Record<string, unknown> }>(goal: GoalEntry, draft: T): Promise<T> {
+  if (!goal.outcome.audience_channel || draft.config.capture_mode !== undefined) return draft;
+  const bound = Array.isArray(draft.config.destinations) ? draft.config.destinations.map(String) : [];
+  let destinations;
+  try { destinations = (await readDestinations()).destinations; } catch { return draft; }
+  const connected = destinations.some((destination) => destination.availability === 'ready'
+    && destination.requirements?.audience_channels?.includes(goal.outcome.audience_channel as string));
+  return connected || outcomeHandoffIssue(goal.outcome, bound, destinations) === null ? draft
+    : { ...draft, config: { ...draft.config, capture_mode: 'local', destinations: [] } };
 }

@@ -36,7 +36,8 @@ export function DesignSettings({
   design: TokenBag;
   openToken: string | null;
   onOpenToken: (name: string | null) => void;
-  onChange: (template: Template) => void;
+  /** `coalesce` is {@see Tokens}'s: which token a burst of changes belongs to. */
+  onChange: (template: Template, coalesce?: string) => void;
   onError: (error: unknown) => void;
   onBrowse: () => void;
   browseRef?: Ref<HTMLButtonElement>;

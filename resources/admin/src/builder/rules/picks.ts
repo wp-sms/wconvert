@@ -293,7 +293,7 @@ function howOftenPicks(): readonly Pick[] {
 
 function datePicks(): readonly Pick[] {
   return [
-    { id: 'until-paused', types: [], template: () => __('Until you pause it', 'wconvert'), label: () => __('Until you pause it', 'wconvert'),
+    { id: 'until-unpublished', types: [], template: () => __('Until you unpublish it', 'wconvert'), label: () => __('Until you unpublish it', 'wconvert'),
       matches: value => !value.schedule.starts_at && !value.schedule.ends_at,
       apply: () => ({ schedule: {} }) },
     { id: 'between', open: true, types: [], template: () => __('Between two dates', 'wconvert'), label: () => __('Between two dates', 'wconvert'),

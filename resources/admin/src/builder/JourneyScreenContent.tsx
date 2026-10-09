@@ -19,7 +19,7 @@ export function JourneyScreenContent({ tree, step, onChange }: {
       const node = nodeAt(tree, block.path)!;
       const button = node.type === 'button';
       // Slot-formatted prose keeps its complete editor in Design; do not expose raw placeholders.
-      if (node.type === 'text' && 'text' in node && /%[lbi]/.test(String(node.text))) return <p key={block.path.join('.')}>
+      if (node.type === 'text' && 'text' in node && /%[lsbi]/.test(String(node.text))) return <p key={block.path.join('.')}>
         {__('This message contains formatted text or links. Edit it in Design to keep its formatting.', 'wconvert')}</p>;
       const label = button ? 'action' in node && node.action === 'back' ? __('Back button text', 'wconvert')
         : 'action' in node && node.action === 'skip' ? __('Skip button text', 'wconvert') : __('Button text', 'wconvert')

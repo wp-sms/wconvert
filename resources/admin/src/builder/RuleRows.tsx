@@ -1,5 +1,5 @@
 import type { ReactNode } from 'react';
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * The list shell all three rule lists share — Triggers, Conditions, and each
@@ -22,6 +22,8 @@ export interface Row {
   /** Stable across a re-render — the rule's index in the flat list it is stored in. */
   readonly key: string;
   readonly content: ReactNode;
+  /** What the row is, in words — every row's Remove would otherwise have the same name. */
+  readonly label: string;
   /** Null where this row may not be removed, which is not the same as a disabled button. */
   readonly onRemove: (() => void) | null;
 }
@@ -57,7 +59,10 @@ export function RuleRows({ rows, empty, attention = false }: { rows: readonly Ro
             the emphasis back on the thing that earned it.
           */}
           {row.onRemove !== null && (
-            <button type="button" className="button-link wconvert-rule__remove" onClick={row.onRemove}>
+            <button type="button" className="button-link wconvert-rule__remove" onClick={row.onRemove}
+              aria-label={sprintf(
+                /* translators: %s: the rule being removed, e.g. “Time on page”. */
+                __('Remove %s', 'wconvert'), row.label)}>
               {__('Remove', 'wconvert')}
             </button>
           )}

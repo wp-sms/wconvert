@@ -150,7 +150,8 @@ describe('placing an inline Campaign in theme-owned areas', () => {
 describe('checking overlay placement', () => {
   it.each(['popup', 'floating_bar', 'slide_in'])('describes %s eligibility without promising that publishing makes it appear', (displayType) => {
     render(<PlacementGuidance optinId={OPTIN} displayType={displayType} published />);
-    expect(screen.getByText(/pages that match its display rules/)).toHaveTextContent('schedule, triggers and visitor settings');
+    // Where, who and when are said once, by the review the guidance sits in.
+    expect(screen.queryByText(/pages that match its display rules/)).toBeNull();
     expect(screen.queryByRole('textbox')).toBeNull();
     const link = screen.getByRole('link', { name: 'Check your homepage' });
     expect(link).toHaveAttribute('target', '_blank');
@@ -159,10 +160,15 @@ describe('checking overlay placement', () => {
     expect(link).toHaveAccessibleDescription(/does not show draft edits/);
   });
 
+  it('sends a campaign limited to some pages to one of them, not the homepage', () => {
+    window.wconvertAdmin = { exportUrl: '', homeUrl: 'https://example.test/', inspectParam: 'wconvert-inspect' };
+    render(<PlacementGuidance optinId={OPTIN} displayType="popup" published everywhere={false} />);
+    expect(screen.getByRole('link', { name: 'Check your site' })).toHaveAccessibleDescription(/only shows on the pages its rules name/);
+  });
+
   it('does not offer the live-site inspector as a draft preview', () => {
     render(<PlacementGuidance optinId={OPTIN} displayType="popup" published={false} />);
     expect(screen.queryByRole('link')).toBeNull();
-    expect(screen.getByText(/After publishing, this campaign can appear/)).toBeInTheDocument();
     expect(screen.getByText(/editor preview shows your draft/)).toBeInTheDocument();
   });
 

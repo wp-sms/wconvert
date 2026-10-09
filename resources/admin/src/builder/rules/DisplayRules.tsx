@@ -1,10 +1,11 @@
 import { __ } from '@wordpress/i18n';
-import { Fragment, lazy, Suspense, useEffect, useRef, useState, type ReactNode } from 'react';
+import { Fragment, lazy, Suspense, useEffect, useId, useRef, useState, type ReactNode } from 'react';
 import type { Template } from '@renderer/types';
 import type { ConvertingAct } from '../structure/catalogue';
 import type { DisplayPlan } from '@loader/display-rules';
 import { FlaskConical } from 'lucide-react';
 import { Button } from '../../components/ui/button';
+import { RegionSkeleton } from '../../shell/RegionSkeleton';
 import { HowOften } from './HowOften';
 import { Dates } from './Dates';
 import { Where } from './Where';
@@ -32,7 +33,16 @@ export interface DisplayRulesProps {
   readonly onSectionChange?: (section: string) => void;
   readonly onChange: (patch: Partial<DisplayRulesValue>) => void;
   readonly reopenEnabled?: boolean;
-  readonly placement?: { readonly summary: string; readonly controls: ReactNode };
+  readonly placement?: {
+    readonly summary: string;
+    readonly controls: ReactNode;
+    /**
+     * Automatic placement or a content lock is chosen. Both insert the campaign
+     * as the page loads, so *When does it open?* is held at Right away and
+     * Readiness never has to block on it.
+     */
+    readonly opensRightAway?: boolean;
+  };
   readonly reveal?: { readonly id: string; readonly focus?: string } | null;
 }
 
@@ -58,6 +68,7 @@ export function DisplayRules({ vocabulary, value, overlay, act = 'submit', onCha
   const [chosen, setChosen] = useState<Partial<Record<SectionId, string>>>({});
   const [testing, setTesting] = useState(false);
   const ours = useRef<string | null>(null);
+  const heldId = useId();
   const plan = value.display_rules;
 
   useEffect(() => { onSectionChange?.(active); }, [active, onSectionChange]);
@@ -104,10 +115,12 @@ export function DisplayRules({ vocabulary, value, overlay, act = 'submit', onCha
   const current = summaries.find(section => section.id === active) ?? summaries[0];
   // Who and When have nothing to pick from until an older draft's rules are replaced.
   const picking = plan !== undefined || active === 'where' || active === 'how-often' || active === 'dates';
+  // Choosing the placement already wrote Right away; this keeps it there, so the refusal is here rather than at Publish.
+  const held = active === 'when' && placement?.opensRightAway ? { pick: 'immediate', reason: __('Inline placement opens right away.', 'wconvert'), id: heldId } : null;
 
   return <div className="wconvert-display" data-compact={compact || undefined}>
     <div className="wconvert-display-header">
-      <p className="wconvert-display-sentence" aria-live="polite">
+      <p className="wconvert-display-sentence">
         {interpolate(
           /* translators: 1: where it shows, e.g. “on every page”. 2: who sees it, e.g. “to everyone”. 3: when it opens, e.g. “after 15 seconds”. 4: how often, e.g. “once per visit”. */
           __('Shows %1$s %2$s, %3$s, %4$s.', 'wconvert'), [phrase(parts.where), phrase(parts.who), phrase(parts.when), phrase(parts.often)])}
@@ -130,19 +143,19 @@ export function DisplayRules({ vocabulary, value, overlay, act = 'submit', onCha
         <h3 id="wconvert-display-heading" tabIndex={-1}>{current.eyebrow}</h3>
         {active === 'who' && audienceRequirement && <p role="note">{audienceRequirement}</p>}
         {picking && <QuickPicks key={active} section={active} question={current.eyebrow} value={value} vocabulary={vocabulary} shown={shown}
-          onChoose={choose} onParam={n => write(shown.apply(value, n))}
+          onChoose={choose} onParam={n => write(shown.apply(value, n))} held={held}
           note={active === 'how-often' && shown.id === 'session' ? __('A visit ends when they close the tab.', 'wconvert') : null} />}
         {active === 'where' && <><Where types={vocabulary.targeting} targeting={value.targeting} showInclude={shown.id === 'selected'} onChange={targeting => (shown.open ? change : write)({ targeting })} />
           {placement && <div className="wconvert-display-placement"><h4 id="wconvert-display-placement" tabIndex={-1}>{__('Placement', 'wconvert')}</h4>{placement.controls}</div>}</>}
         {active === 'who' && plan && shown.open && <AudienceEditor value={plan.audience} types={audienceTypes} onChange={audience => update({ ...plan, audience })} />}
-        {active === 'when' && plan && shown.open && <OpeningEditor value={plan.opening} types={vocabulary.triggers} onChange={opening => update({ ...plan, opening })} />}
+        {active === 'when' && plan && shown.open && <OpeningEditor value={plan.opening} types={vocabulary.triggers} heldBy={held?.id} onChange={opening => update({ ...plan, opening })} />}
         {active === 'how-often' && <HowOften act={act} frequency={value.frequency} priority={value.priority} overlay={overlay} reopenEnabled={reopenEnabled}
           custom={shown.open === true} onFrequency={frequency => change({ frequency })} onPriority={priority => change({ priority })} />}
         {active === 'dates' && shown.open && <Dates schedule={value.schedule} onSchedule={schedule => change({ schedule })} />}
       </section>
     </div>
 
-    {testing && <Suspense fallback={<p role="status">{__('Loading…', 'wconvert')}</p>}><SampleVisit template={template} cartRequired={cartRequired} act={act} value={value} vocabulary={vocabulary} onClose={() => setTesting(false)}
+    {testing && <Suspense fallback={<RegionSkeleton label={__('Sample visit', 'wconvert')} lines={3} />}><SampleVisit template={template} cartRequired={cartRequired} act={act} value={value} vocabulary={vocabulary} onClose={() => setTesting(false)}
       onOpenSection={section => { setTesting(false); open(section); }} /></Suspense>}
   </div>;
 }

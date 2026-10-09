@@ -1,6 +1,6 @@
 import { displayPlan } from './support/display-entry';
 import { treeFixture } from './support/journey';
-import { CLICK_OUTCOME } from './support/outcomes';
+import { CAPTURE_OUTCOME, CLICK_OUTCOME } from './support/outcomes';
 import { beforeEach, describe, expect, it, onTestFinished, vi } from 'vitest';
 import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
@@ -25,6 +25,8 @@ vi.mock('../../resources/admin/src/discovery/api', () => picker);
 const optins = vi.hoisted(() => ({ createOptin: vi.fn() }));
 const rules = vi.hoisted(() => ({ getRules: vi.fn() }));
 
+const destinationsApi = vi.hoisted(() => ({ readDestinations: vi.fn() }));
+vi.mock('../../resources/admin/src/destinations/api', () => destinationsApi);
 vi.mock('../../resources/admin/src/goals/api', () => goals);
 vi.mock('../../resources/admin/src/optins/api', () => optins);
 vi.mock('../../resources/admin/src/builder/api', async (original) => ({ ...(await original<typeof import('../../resources/admin/src/builder/api')>()), ...rules }));
@@ -128,6 +130,7 @@ const DRAFT = {
 
 beforeEach(() => {
   vi.clearAllMocks();
+  destinationsApi.readDestinations.mockRejectedValue(new Error('Not needed by this test'));
   picker.pickerData.mockResolvedValue({ schema: 1, today: '2026-11-06', timezone: 'Asia/Muscat', collections: [], preferences: { schema: 1, revision: 0, saved: [], hidden: [], events: [], businesses: [], markets: [] }, occasions: { schema: 1, revision: 0, items: [] } });
   picker.savePreferences.mockImplementation(value => Promise.resolve({ ...value, revision: value.revision + 1 }));
   goals.previewPlaybooks.mockResolvedValue({ entries: [] });
@@ -826,4 +829,24 @@ it('stops recommending once the merchant narrows the list', async () => {
   await userEvent.type(screen.getByRole('searchbox', { name: 'Search campaign setups' }), 'Start');
   expect(screen.queryByRole('heading', { name: 'Start here' })).toBeNull();
   expect(screen.getAllByRole('button', { name: /Setup details for/ })).toHaveLength(5);
+});
+
+it('starts a list campaign on Keep in WConvert only while no service of its channel is connected', async () => {
+  goals.listGoals.mockResolvedValue([{ ...GOALS[0], outcome: CAPTURE_OUTCOME }]);
+  const draft = { name: GOALS[0].label, goal: GOALS[0].id, config: { rules: [] } };
+  goals.prefill.mockResolvedValue(draft);
+  destinationsApi.readDestinations.mockResolvedValue({ destinations: [], types: [] });
+  render(<GoalScreen onCreated={vi.fn()} />); await pickGoal();
+  await userEvent.click(screen.getByRole('button', { name: 'Choose a design myself' }));
+  await waitFor(() => expect(optins.createOptin).toHaveBeenCalledWith(draft.name, draft.goal, { rules: [], capture_mode: 'local', destinations: [] }));
+});
+
+it('leaves a list campaign sending when the site already has a ready service', async () => {
+  goals.listGoals.mockResolvedValue([{ ...GOALS[0], outcome: CAPTURE_OUTCOME }]);
+  const draft = { name: GOALS[0].label, goal: GOALS[0].id, config: { rules: [] } };
+  goals.prefill.mockResolvedValue(draft);
+  destinationsApi.readDestinations.mockResolvedValue({ destinations: [{ id: 'mc', type: 'mailchimp', availability: 'ready', settings: {}, requirements: { audience_channels: ['email'], settings: {} } }], types: [] });
+  render(<GoalScreen onCreated={vi.fn()} />); await pickGoal();
+  await userEvent.click(screen.getByRole('button', { name: 'Choose a design myself' }));
+  await waitFor(() => expect(optins.createOptin).toHaveBeenCalledWith(draft.name, draft.goal, draft.config));
 });

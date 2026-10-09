@@ -28,7 +28,7 @@ describe('the five answers', () => {
       ['who', 'Who sees it?', 'Everyone'],
       ['when', 'When does it open?', 'After 15 seconds'],
       ['how-often', 'How often?', 'Once per visit'],
-      ['dates', 'Dates', 'Runs until you pause it'],
+      ['dates', 'Dates', 'Runs until you unpublish it'],
     ]);
   });
 

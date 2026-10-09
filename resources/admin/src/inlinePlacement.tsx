@@ -5,6 +5,7 @@ import { __, sprintf } from '@wordpress/i18n';
 import type { Rule, RuleVocabulary } from './builder/api';
 import { Button } from './components/ui/button';
 import { ManualPlacement } from './builder/ManualPlacement';
+import { RegionSkeleton } from './shell/RegionSkeleton';
 
 export interface InlinePlacementProps {
   optinId: string;
@@ -53,7 +54,7 @@ export function inlinePlacementLabel(value: unknown): string | null {
 
 export function InlinePlacementSettings(props: InlinePlacementProps) {
   const Control = inlinePlacementControls.component;
-  return Control ? <Suspense fallback={<p>{__('Loading placement settings…', 'wconvert')}</p>}><Control {...props} /></Suspense> : (
+  return Control ? <Suspense fallback={<RegionSkeleton label={__('Placement settings', 'wconvert')} lines={2} />}><Control {...props} /></Suspense> : (
     <div className="wconvert-inline-placement">{props.config.content_lock != null && <p className="wconvert-display-hint" data-attention="true">{__('Content lock isn’t available on this site. The selected region stays readable.', 'wconvert')}</p>}<p className="wconvert-display-hint">{props.config.inline_placement
       ? __('Automatic placement isn’t available on this site. You can still place this campaign manually with its block or shortcode.', 'wconvert')
       : __('Place this campaign with its block or shortcode.', 'wconvert')}</p>

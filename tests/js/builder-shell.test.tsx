@@ -332,6 +332,8 @@ describe('the builder shell', () => {
   it('returns from Design to the selected Journey screen and open settings', async () => {
     await open();
     await userEvent.click(await screen.findByRole('tab', { name: 'Screens' }));
+    // Finding a screen by name is a Flow-view tool; Edit has its own list.
+    await userEvent.click(screen.getByRole('radio', { name: 'Flow' }));
     await userEvent.type(screen.getByRole('searchbox', { name: 'Find a screen' }), 'Details');
     await userEvent.click(screen.getByRole('button', { name: 'Details' }));
     await userEvent.click(screen.getByText('Screen options', { exact: true }));
@@ -1117,7 +1119,8 @@ describe('the summary', () => {
     await open();
     await summary();
 
-    expect(await screen.findByText('Suspended')).toBeInTheDocument();
+    // The header says it too, so a suspended campaign never reads Published anywhere.
+    expect((await screen.findAllByText('Suspended')).length).toBeGreaterThan(0);
     expect(screen.getByText('Suspended — WConvert Pro is not active.')).toBeInTheDocument();
   });
 
@@ -1175,7 +1178,7 @@ describe('the summary', () => {
     expect(fact('When does it open?')?.textContent).toBe('After 8 seconds');
     expect(fact('Who sees it?')?.textContent).toBe('Everyone');
     expect(fact('How often?')?.textContent).toBe('Every page they see');
-    expect(fact('Dates')?.textContent).toBe('Runs until you pause it');
+    expect(fact('Dates')?.textContent).toBe('Runs until you unpublish it');
   });
 
   /**
@@ -1488,8 +1491,8 @@ describe('whole-draft Undo and Redo', () => {
     expect(publishing.publishOptin).toHaveBeenCalledTimes(1);
     await userEvent.click(screen.getByRole('button', { name: 'Campaign actions' }));
     await userEvent.click(await screen.findByRole('menuitem', { name: 'Campaign details' }));
-    await userEvent.click(screen.getByText('About draft history'));
-    expect(await screen.findByText(/They do not change the published version or shared destination settings/)).toBeVisible();
+    // Details is for the campaign's facts; the developer ID is folded at the bottom (ADR 0131).
+    expect(await screen.findByText('For developers')).toBeInTheDocument();
   });
 });
 

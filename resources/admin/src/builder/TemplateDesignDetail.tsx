@@ -13,6 +13,7 @@ import { TryAgain } from '../shell/Region';
 import { PreviewControls } from '../discovery/PreviewControls';
 import { PreviewFrame } from '../discovery/PreviewFrame';
 import { actChangeOf, refusalFor, type Fit } from './Gallery';
+import { dropsFieldMappings } from './destinations';
 import type { PreparedTemplate, TemplateIndexEntry, TemplateLabelsWithFacets } from '../templates/api';
 import type { Template } from '@renderer/types';
 
@@ -37,11 +38,17 @@ export interface TemplateDesignDetailProps {
   readonly backLabel?: string;
   readonly loadError?: boolean;
   readonly onRetry?: () => void;
+  /**
+   * The draft's `integration_mappings`. Applying a design keeps only the
+   * mappings it can still feed, so the replacement sentence says so when this
+   * one would remove some.
+   */
+  readonly fieldMappings?: unknown;
 }
 
 /** Inspect the exact normalized candidate before replacing the working draft. */
 export function TemplateDesignDetail({
-  entry, template: sample, labels, current, currentDisplayType, fit, goalLabel, busy, onChoose, onPrepare, onBack, backLabel = __('Back to designs', 'wconvert'), loadError = false, onRetry, active = true, hasCurrentDesign = true, contentLock = false,
+  entry, template: sample, labels, current, currentDisplayType, fit, goalLabel, busy, onChoose, onPrepare, onBack, backLabel = __('Back to designs', 'wconvert'), loadError = false, onRetry, active = true, hasCurrentDesign = true, contentLock = false, fieldMappings,
 }: TemplateDesignDetailProps) {
   const [fitHeight, setFitHeight] = useState(false);
   const [disableLock, setDisableLock] = useState(false);
@@ -118,6 +125,7 @@ export function TemplateDesignDetail({
           __('Changes this campaign from %1$s to %2$s. Any saved position resets to the new format’s default; review display rules before publishing.', 'wconvert'),
           fromFormat, toFormat,
         );
+  const losesMappings = template !== undefined && !isCurrent && dropsFieldMappings(fieldMappings, template.tree);
   const fieldNames = entry.facets.captures.map((field) =>
     labels.fields?.[field] ?? labels.facetValues[`captures.${field}`] ?? field,
   );
@@ -209,6 +217,7 @@ export function TemplateDesignDetail({
                 {prepares && mode === 'sample'
                   ? __('Replaces the layout and content in your draft with the preview shown here. Undo restores your previous draft.', 'wconvert')
                   : __('Replaces your draft’s layout. Some text may move, be hidden or left empty; added blocks may be removed. Check each screen afterwards. Undo restores your previous draft.', 'wconvert')}
+                {losesMappings && <> {__('Field mappings for fields this design doesn’t have are removed. Undo restores them.', 'wconvert')}</>}
               </p>
               {refused !== null && <p id={`${id}-refusal`} className="text-note text-warning">{refused}</p>}
               {changed !== null && <p id={`${id}-change`} className="text-note text-warning">{changed}</p>}

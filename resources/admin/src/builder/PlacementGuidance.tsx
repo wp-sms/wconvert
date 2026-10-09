@@ -20,6 +20,8 @@ export interface PlacementGuidanceProps {
   readonly contentLock?: unknown;
   /** A published version exists; this does not assert that it can show on any page. */
   readonly published: boolean;
+  /** Its rules name no pages, so the homepage is one it can show on. */
+  readonly everywhere?: boolean;
 }
 
 /** Open the existing real-page inspector, using WordPress's subdirectory-aware home URL. */
@@ -36,7 +38,7 @@ export function siteCheckUrl(homeUrl?: string, inspectParam?: string): string | 
 }
 
 /** Placement instructions shared by draft review and the result of publishing. */
-export function PlacementGuidance({ optinId, optinName, displayType, placement, inlinePlacement, contentLock, published }: PlacementGuidanceProps) {
+export function PlacementGuidance({ optinId, optinName, displayType, placement, inlinePlacement, contentLock, published, everywhere = true }: PlacementGuidanceProps) {
   const id = useId();
   const direction = useDirection();
   const inline = displayType === 'inline';
@@ -74,21 +76,20 @@ export function PlacementGuidance({ optinId, optinName, displayType, placement, 
         </>
       ) : (
         <>
+          {/* Where, who and when are said once, by the review above. */}
           {position !== null && <p>{sprintf(__('Position: %s.', 'wconvert'), position)}</p>}
-          <p>{published
-            ? __('Your published version can appear on pages that match its display rules. Its schedule, triggers and visitor settings still decide when it shows.', 'wconvert')
-            : __('After publishing, this campaign can appear on pages that match its display rules. Its schedule, triggers and visitor settings decide when it shows.', 'wconvert')}</p>
         </>
       )}
       {siteCheck !== null && (
         <div className="wconvert-placement__check">
           <Button asChild variant="outline" size="sm">
             <a href={siteCheck} target="_blank" rel="noopener noreferrer" aria-describedby={`${id}-check-note`}>
-              {__('Check your homepage', 'wconvert')}<ExternalLink aria-hidden="true" />
+              {everywhere ? __('Check your homepage', 'wconvert') : __('Check your site', 'wconvert')}<ExternalLink aria-hidden="true" />
             </a>
           </Button>
           <p id={`${id}-check-note`} className="text-note text-muted-foreground">
-            {__('Opens display checks for the published version in your signed-in session. It does not show draft edits or simulate a signed-out visitor.', 'wconvert')}
+            {everywhere ? __('Opens display checks for the published version in your signed-in session. It does not show draft edits or simulate a signed-out visitor.', 'wconvert')
+              : __('It only shows on the pages its rules name, so open one of those. Display checks cover the published version in your signed-in session.', 'wconvert')}
             {inline && !automatic && <> {__('For an inline form, also check the page where you placed its block or shortcode.', 'wconvert')}</>}
           </p>
         </div>

@@ -193,6 +193,17 @@ describe('inspecting a design before replacing the draft', () => {
     expect(onChoose).toHaveBeenCalledExactlyOnceWith('centred-card');
   });
 
+  /** A swap keeps only the mappings the new design can feed; the sentence says so before, not after. */
+  it('says field mappings are removed only when this design would remove some', () => {
+    const removed = /Field mappings for fields this design doesn’t have are removed\. Undo restores them\./;
+    const { unmount } = detail({ fieldMappings: { primary: { list: { 'field:interest': 'INTEREST' } } } });
+    expect(screen.getByRole('button', { name: 'Use this design' })).toHaveAccessibleDescription(removed);
+    unmount();
+
+    detail({ fieldMappings: { primary: { list: {} }, gone: { list: {} } } });
+    expect(screen.queryByText(removed)).toBeNull();
+  });
+
   it('returns to the gallery without choosing a design', async () => {
     const { onChoose, onBack } = detail();
     await userEvent.click(screen.getByRole('button', { name: 'Back to designs' }));

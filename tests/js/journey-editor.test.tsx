@@ -1193,7 +1193,7 @@ it('offers a free install linear screens only, with no question, condition or pa
   expect(screen.queryByText('Show this screen when…')).not.toBeInTheDocument();
   await user.click(screen.getByRole('button', { name: 'More screen options' }));
   expect(screen.getByRole('menuitem', { name: 'Add offer screen' })).toBeInTheDocument();
-  for (const name of ['Add question screen', 'Add relevant follow-up', 'Enable flexible paths']) {
+  for (const name of ['Add question screen', 'Add relevant follow-up', 'Let answers choose the next screen']) {
     expect(screen.queryByRole('menuitem', { name })).not.toBeInTheDocument();
   }
   await user.keyboard('{Escape}');

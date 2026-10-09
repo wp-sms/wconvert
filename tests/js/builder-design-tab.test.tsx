@@ -45,6 +45,7 @@ const api = vi.hoisted(() => ({ getThemeTokens: vi.fn() }));
 vi.mock('../../resources/admin/src/builder/api', () => api);
 
 const { Themes, Tokens } = await import('../../resources/admin/src/builder/Tokens');
+const { historyOf, remember } = await import('../../resources/admin/src/builder/structure/history');
 const { DevExport } = await import('../../resources/admin/src/builder/DevExport');
 
 const ENTRY = JSON.parse(
@@ -267,6 +268,7 @@ describe('a background picture', () => {
       expect.objectContaining({
         tokens: expect.objectContaining({ 'bg-image': 'url("https://example.com/x.jpg")' }),
       }),
+      'token:bg-image',
     );
   });
 
@@ -354,7 +356,7 @@ describe('a length', () => {
     expect(screen.queryAllByRole('button', { name: /back to the design’s own/ })).toHaveLength(0);
     fireEvent.change(screen.getByRole('spinbutton', { name: 'Width amount' }), { target: { value: '34' } });
     fireEvent.blur(screen.getByRole('spinbutton', { name: 'Width amount' }));
-    expect(changed).toHaveBeenCalledWith({ ...snapshot, tokens: { ...snapshot.tokens, width: '34rem' } });
+    expect(changed).toHaveBeenCalledWith({ ...snapshot, tokens: { ...snapshot.tokens, width: '34rem' } }, 'token:width');
   });
 
   /**
@@ -373,6 +375,7 @@ describe('a length', () => {
 
     expect(changed).toHaveBeenCalledWith(
       expect.objectContaining({ tokens: expect.objectContaining({ width: '26rem' }) }),
+      'token:width',
     );
   });
 });
@@ -538,6 +541,7 @@ describe('a token the manifest offers choices for', () => {
 
     expect(changed).toHaveBeenCalledWith(
       expect.objectContaining({ tokens: expect.objectContaining({ align: 'end' }) }),
+      'token:align',
     );
   });
 
@@ -583,6 +587,7 @@ describe('a token the manifest offers choices for', () => {
 
     expect(changed).toHaveBeenCalledWith(
       expect.objectContaining({ tokens: expect.objectContaining({ align: 'centerj' }) }),
+      'token:align',
     );
   });
 
@@ -623,6 +628,37 @@ describe('a token the manifest offers choices for', () => {
  * and the control never arrives anywhere. It comes from the DESIGN's own value,
  * which does not move while the panel is open.
  */
+/**
+ * ============================================================================
+ * ONE DRAG IS ONE UNDO STEP.
+ * ============================================================================
+ * The colour picker writes on every pointer move, and the history keeps fifty
+ * steps, so a drag remembered move by move would evict everything the merchant
+ * did before it. Every write names its token, and the history merges a burst
+ * from one control (`history.ts`).
+ */
+describe('a colour drag', () => {
+  it('names its token on every change, so the history keeps it as one step', async () => {
+    const changed = look();
+
+    await userEvent.click(screen.getByRole('button', { name: /Choose a color for Background/ }));
+    const alpha = await screen.findByRole('slider', { name: 'Alpha' });
+    fireEvent.keyDown(alpha, { keyCode: 37 });
+    fireEvent.keyDown(alpha, { keyCode: 37 });
+    fireEvent.keyDown(alpha, { keyCode: 37 });
+
+    expect(changed.mock.calls.length).toBeGreaterThan(1);
+    expect(changed.mock.calls.map(([, key]) => key as unknown)).toEqual(changed.mock.calls.map(() => 'token:bg'));
+
+    // Sixteen milliseconds apart, as pointer moves arrive.
+    const history = (changed.mock.calls as [unknown, string][]).reduce(
+      (held, [next, key], at) => remember(held, next, { key, at: at * 16 }),
+      historyOf<unknown>(ENTRY),
+    );
+    expect(history.past).toHaveLength(1);
+  });
+});
+
 describe('the size slider', () => {
   const widthSlider = () => screen.getByRole('slider', { name: 'Width' });
 
@@ -801,7 +837,7 @@ describe('inner spacing', () => {
     const changed = vi.fn(); show('0', changed);
     const input = screen.getByRole('spinbutton', { name: 'Inner spacing amount' });
     await userEvent.clear(input); await userEvent.type(input, '0.125{Enter}');
-    expect(changed).toHaveBeenCalledWith(expect.objectContaining({ tokens: expect.objectContaining({ pad: '0.125rem' }) }));
+    expect(changed).toHaveBeenCalledWith(expect.objectContaining({ tokens: expect.objectContaining({ pad: '0.125rem' }) }), 'token:pad');
   });
   it('expands two values into their four physical sides', () => {
     show('1rem 1.25rem');
@@ -812,7 +848,7 @@ describe('inner spacing', () => {
     const changed = vi.fn(); show('1rem 20px', changed);
     const input = screen.getByRole('spinbutton', { name: 'Inner spacing, Right amount' });
     await userEvent.clear(input); await userEvent.type(input, '25{Enter}');
-    expect(changed).toHaveBeenCalledWith(expect.objectContaining({ tokens: expect.objectContaining({ pad: '1rem 25px 1rem 20px' }) }));
+    expect(changed).toHaveBeenCalledWith(expect.objectContaining({ tokens: expect.objectContaining({ pad: '1rem 25px 1rem 20px' }) }), 'token:pad');
   });
   it('offers four explicit values without rewriting their shorthand', () => {
     const changed = vi.fn(); show('1rem 2rem 3rem 4rem', changed);
@@ -911,6 +947,7 @@ describe('the font picker', () => {
       expect.objectContaining({
         tokens: expect.objectContaining({ font: '"Inter", sans-serif' }),
       }),
+      'token:font',
     );
   });
 
