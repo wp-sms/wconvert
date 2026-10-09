@@ -1429,7 +1429,7 @@ describe('whole-draft Undo and Redo', () => {
     await open();
     await userEvent.click(await screen.findByRole('tab', { name: 'Destinations' }));
     expect(screen.getByRole('radio', { name: /Send to a service/ })).toBeChecked();
-    await userEvent.click(screen.getByRole('radio', { name: /Collect only in WConvert/ }));
+    await userEvent.click(screen.getByRole('radio', { name: /Keep in WConvert only/ }));
     expect(screen.getByText(/Automatic emails and texts need a separate sending setup/)).toBeVisible();
     await userEvent.click(screen.getByRole('button', { name: /^Undo/ }));
     expect(screen.getByRole('radio', { name: /Send to a service/ })).toBeChecked();

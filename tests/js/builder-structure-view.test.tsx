@@ -1163,7 +1163,7 @@ describe('the verdict', () => {
   it('is readable from every tab, including the ones that cannot cause it', async () => {
     await designLook();
     await userEvent.click(screen.getByRole('tab', { name: 'Destinations' }));
-    await userEvent.click(screen.getByRole('radio', { name: /Collect only in WConvert/ }));
+    await userEvent.click(screen.getByRole('radio', { name: /Keep in WConvert only/ }));
     await userEvent.click(screen.getByRole('tab', { name: 'Theme & layout' }));
 
     // The stub names no tokens, so `nameOf` falls back to the raw key — which

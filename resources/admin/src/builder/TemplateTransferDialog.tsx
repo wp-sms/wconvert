@@ -163,8 +163,8 @@ export default function TemplateTransferDialog({ action, design, config, optin, 
               <div className="wconvert-transfer__note"><h3>{__('Design only', 'wconvert')}</h3><p>{__('Campaign settings, connections, and leads stay on this site. Paid features still need a matching plan on the receiving site.', 'wconvert')}</p></div>
               {hasProblems && <section className="wconvert-transfer__warning"><h3><TriangleAlert aria-hidden="true" />{__('Some images can’t be included', 'wconvert')}</h3><ul>{Object.entries(problems).map(([slot, message]) => <li key={slot}>{message}</li>)}</ul><p>{__('Continue without these images, or cancel and replace them in the editor.', 'wconvert')}</p></section>}
             </> : <>
-              <fieldset className="wconvert-transfer__section wconvert-transfer__content" disabled={busy}><legend>{__('Content to use', 'wconvert')}</legend>
-                {(['file', 'keep'] as const).map(value => <label className="wconvert-transfer__choice" key={value} aria-label={value === 'file' ? __('Use file content', 'wconvert') : __('Keep my current content', 'wconvert')}>
+              <fieldset className="wconvert-transfer__section wconvert-transfer__content wconvert-radio-cards" disabled={busy}><legend>{__('Content to use', 'wconvert')}</legend>
+                {(['file', 'keep'] as const).map(value => <label className="wconvert-radio-card" key={value} aria-label={value === 'file' ? __('Use file content', 'wconvert') : __('Keep my current content', 'wconvert')}>
                   <input type="radio" name={contentId} aria-describedby={`${contentId}-${value}`} value={value} checked={mode === value} onChange={() => { setMode(value); if (session.current) void run(() => prepare(session.current!, value, true)); }} />
                   <span><strong>{value === 'file' ? __('Use file content', 'wconvert') : __('Keep my current content', 'wconvert')}</strong><small id={`${contentId}-${value}`}>{value === 'file' ? __('Start with the text and images in this file.', 'wconvert') : __('Fit your existing content into the new design.', 'wconvert')}</small></span>
                 </label>)}

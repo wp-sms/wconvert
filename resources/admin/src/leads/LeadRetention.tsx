@@ -159,9 +159,9 @@ export function LeadRetention({ expanded = false, onEditingStateChange }: { expa
               <p className="m-0 rounded-md border border-border bg-secondary p-4 text-note text-muted-foreground" id={`${id}-scope`}>
                 {__('Applies to leads from every Campaign. Copies already sent to destinations or exported are unaffected.', 'wconvert')}
               </p>
-              <fieldset className="m-0 flex min-w-0 flex-col gap-3 border-0 p-0" disabled={saving} aria-describedby={`${id}-scope`}>
+              <fieldset className="wconvert-radio-cards" disabled={saving} aria-describedby={`${id}-scope`}>
                 <legend className="mb-4 pt-5 font-medium">{__('Keep captured submissions', 'wconvert')}</legend>
-                <label className="flex items-start gap-3 rounded-md border border-border p-4">
+                <label className="wconvert-radio-card">
                   <input
                     ref={foreverRadio}
                     aria-label={__('Keep them until I delete them', 'wconvert')}
@@ -170,9 +170,9 @@ export function LeadRetention({ expanded = false, onEditingStateChange }: { expa
                     checked={!draft.automatic}
                     onChange={() => changeDraft({ ...draft, automatic: false })}
                   />
-                  <span><span className="block font-medium">{__('Keep them until I delete them', 'wconvert')}</span><span className="mt-1 block text-note text-muted-foreground">{__('No automatic deletion schedule.', 'wconvert')}</span></span>
+                  <span><span>{__('Keep them until I delete them', 'wconvert')}</span><span>{__('No automatic deletion schedule.', 'wconvert')}</span></span>
                 </label>
-                <label className="flex items-start gap-3 rounded-md border border-border p-4">
+                <label className="wconvert-radio-card">
                   <input
                     ref={automaticRadio}
                     aria-label={__('Delete them automatically after', 'wconvert')}
@@ -181,10 +181,10 @@ export function LeadRetention({ expanded = false, onEditingStateChange }: { expa
                     checked={draft.automatic}
                     onChange={() => changeDraft({ ...draft, automatic: true })}
                   />
-                  <span><span className="block font-medium">{__('Delete them automatically after', 'wconvert')}</span><span className="mt-1 block text-note text-muted-foreground">{__('Older stored submissions are permanently removed.', 'wconvert')}</span></span>
+                  <span><span>{__('Delete them automatically after', 'wconvert')}</span><span>{__('Older stored submissions are permanently removed.', 'wconvert')}</span></span>
                 </label>
                 {draft.automatic && (
-                  <div className="flex flex-col items-start gap-2 pl-6">
+                  <div className="flex flex-col items-start gap-1.5 ps-[39px]">
                     <Label htmlFor={`${id}-days`}>{__('Retention period in days', 'wconvert')}</Label>
                     <Input
                       ref={daysInput}

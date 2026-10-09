@@ -83,7 +83,7 @@ export interface DestinationsEditorProps {
   readonly emptyText?: string;
   /** The main save point shows the always-on Lead log row and the publish requirement. */
   readonly primary?: boolean;
-  /** "Collect only in WConvert": no routes, and the Lead log row says what that means. */
+  /** "Keep in WConvert only": no routes, and the Lead log row says what that means. */
   readonly local?: boolean;
   /** The visible email suggestion for a test send. Sending always requires an explicit address. */
   readonly testEmail?: string | null;

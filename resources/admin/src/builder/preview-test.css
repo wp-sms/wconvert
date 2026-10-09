@@ -57,8 +57,7 @@
 .wconvert-journey-test__side .wconvert-journey-test__checkpoint dl { gap: 14px; }
 .wconvert-journey-test__side .wconvert-journey-test__checkpoint dl > div { display: grid; gap: 4px; }
 .wconvert-journey-test__side .wconvert-journey-test__checkpoint dd { text-align: start; }
-.wconvert-test-diagnostics label { display: flex; align-items: start; gap: 8px; margin-block: 12px; font-size: var(--text-note); }
-.wconvert-test-diagnostics input { flex: none; margin-block-start: 3px; }
+.wconvert-test-diagnostics label { margin-block: 12px; font-size: var(--text-note); }
 .wconvert-journey-test__complete { display: grid; gap: 10px; margin-block: 6px; }
 .wconvert-preview-test__footer { display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 8px 16px; padding: 12px 24px; flex: none; grid-column: 1 / -1; border-block-start: 1px solid var(--border); background: var(--card); }
 .wconvert-preview-test__footer > span { margin-inline-end: auto; color: var(--muted-foreground); font-size: var(--text-meta); }

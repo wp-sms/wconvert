@@ -471,7 +471,7 @@ describe('what this save point needs before publishing', () => {
   it('makes a required unfinished handoff explicit without selecting a destination', () => {
     const onChange = vi.fn();
     editor(ready([]), [], [], { outcome: CAPTURE_OUTCOME, onChange });
-    expect(screen.getByRole('status')).toHaveTextContent('Before you can publish, connect a service or choose “Collect only in WConvert”.');
+    expect(screen.getByRole('status')).toHaveTextContent('Before you can publish, connect a service or choose “Keep in WConvert only”.');
     expect(onChange).not.toHaveBeenCalled();
   });
 

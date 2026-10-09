@@ -239,14 +239,12 @@ describe('impact overview', () => {
   });
   it('toggles the previous period without fetching or discarding the current result', async () => {
     render(<Dashboard />);
-    const toggle = await screen.findByRole('switch', {
-      name: 'Compare with previous period',
-    });
+    const off = await screen.findByRole('radio', { name: 'Off' });
     expect(
       screen.getByRole('link', { name: /Leads captured/ }),
     ).toHaveTextContent('100%');
-    await userEvent.click(toggle);
-    expect(screen.getByText('Comparison off')).toBeInTheDocument();
+    await userEvent.click(off);
+    expect(off).toBeChecked();
     expect(
       screen.getByRole('link', { name: /Leads captured/ }),
     ).not.toHaveTextContent('100%');

@@ -39,6 +39,7 @@ import { commerceSupported } from '../settings';
 /** Cart goals need a store and the cart module; a site with neither is shown no zero for them (ADR 0127). */
 const CART_IMPACT = ['carts', 'additions'];
 import { InfoTip } from '../shell/InfoTip';
+import { OptionStrip } from '../shell/OptionStrip';
 import {
   MonthlyTargets,
   useMonthlyTargets,
@@ -511,22 +512,23 @@ function DateScope({
         </strong>
       </div>
       <div className="wa-date-comparison">
-        <label>
-          <span>{__('Compare with previous period', 'wconvert')}</span>
-          <input
-            type="checkbox"
-            role="switch"
-            checked={compare}
-            onChange={(e) => onCompare(e.target.checked)}
-          />
-        </label>
-        <span>
-          {compare && payload.previous
-            ? rangeLabel(payload.previous.from, payload.previous.to)
-            : compare
-              ? __('Comparison unavailable', 'wconvert')
-              : __('Comparison off', 'wconvert')}
-        </span>
+        <div className="wa-date-caption" aria-hidden="true">{__('Compare', 'wconvert')}</div>
+        <OptionStrip
+          label={__('Compare', 'wconvert')}
+          value={compare ? 'previous' : 'off'}
+          options={[
+            { value: 'off', label: __('Off', 'wconvert') },
+            { value: 'previous', label: __('Previous period', 'wconvert') },
+          ]}
+          onChange={(value) => onCompare(value === 'previous')}
+        />
+        {compare && (
+          <span>
+            {payload.previous
+              ? rangeLabel(payload.previous.from, payload.previous.to)
+              : __('Comparison unavailable', 'wconvert')}
+          </span>
+        )}
       </div>
     </section>
   );

@@ -31,13 +31,13 @@ export function RecommendationSettings({ value, onChange, onPlacement }: {
         <p className="wconvert-recommendations__help">{__('Pick up to 6. The first 3 available products appear.', 'wconvert')}</p>
         <CommercePicker value={value.product_ids} max={6} recommendations compact searchLabel={__('Find an extra', 'wconvert')} excludeIds={value.main_product_id ? [value.main_product_id] : []} onChange={ids => onChange({ product_ids: ids })} />
       </>}
-      <label className="wconvert-recommendations__check"><input type="checkbox" checked={value.exclude_cart !== false} onChange={event => onChange({ exclude_cart: event.target.checked })}/><span>{__('Hide items already in the basket', 'wconvert')}</span></label>
+      <label><input type="checkbox" checked={value.exclude_cart !== false} onChange={event => onChange({ exclude_cart: event.target.checked })}/><span>{__('Hide items already in the basket', 'wconvert')}</span></label>
     </section>
     <fieldset className="wconvert-recommendations__when">
       <legend>{__('Show when', 'wconvert')}</legend>
-      <div className="wconvert-recommendations__choices">
-        <label><input type="radio" name={contextName} checked={value.context === 'product'} onChange={() => onChange({ context: 'product' })}/><span>{__('Viewing the main product', 'wconvert')}</span></label>
-        <label><input type="radio" name={contextName} checked={value.context !== 'product'} onChange={() => onChange({ context: 'cart' })}/><span>{legacyBasket ? __('Basket has items', 'wconvert') : __('Main product is in the basket', 'wconvert')}</span></label>
+      <div className="wconvert-radio-cards">
+        <label className="wconvert-radio-card"><input type="radio" name={contextName} checked={value.context === 'product'} onChange={() => onChange({ context: 'product' })}/><span>{__('Viewing the main product', 'wconvert')}</span></label>
+        <label className="wconvert-radio-card"><input type="radio" name={contextName} checked={value.context !== 'product'} onChange={() => onChange({ context: 'cart' })}/><span>{legacyBasket ? __('Basket has items', 'wconvert') : __('Main product is in the basket', 'wconvert')}</span></label>
       </div>
       <p className="wconvert-recommendations__help">{value.context === 'product' ? __('Works with an empty basket, too.', 'wconvert') : __('Appears on pages allowed by your display rules.', 'wconvert')}</p>
       {onPlacement ? <Button type="button" variant="outline" className="wconvert-recommendations__placement" onClick={onPlacement}>{__('Placement & rules', 'wconvert')}<ArrowRight aria-hidden="true" /></Button> : <p className="wconvert-recommendations__help">{__('Set placement in Display rules.', 'wconvert')}</p>}
