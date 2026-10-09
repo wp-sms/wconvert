@@ -15,13 +15,14 @@ import {
 } from '../../resources/admin/src/stats/reporting';
 
 const api = vi.hoisted(() => ({
-  readDashboard: vi.fn(),
+  readReport: vi.fn(),
   publishOptin: vi.fn(),
   unpublishOptin: vi.fn(),
   declareWinner: vi.fn(),
 }));
-vi.mock('../../resources/admin/src/stats/api', () => ({
-  readDashboard: api.readDashboard,
+vi.mock('../../resources/admin/src/stats/api', async (actual) => ({
+  ...(await actual<typeof import('../../resources/admin/src/stats/api')>()),
+  readReport: api.readReport,
 }));
 vi.mock('../../resources/admin/src/stats/targets-api', () => ({
   readMonthlyTargets: vi.fn(async () => ({
@@ -83,6 +84,7 @@ function payload(): DashboardPayload {
     to: '2026-09-13',
     days: 30,
     complete_days: true,
+    today: '2026-09-14',
     goals: [goal()],
     impact: [
       {
@@ -132,12 +134,12 @@ beforeEach(() => {
     exportUrl: '',
     variants: { availability: 'ready', tier: 'pro' },
   };
-  api.readDashboard.mockResolvedValue(payload());
+  api.readReport.mockResolvedValue(payload());
 });
 
 describe('impact overview', () => {
   it('does not link an empty first-day month to today’s capture history or export', async () => {
-    api.readDashboard.mockResolvedValue({
+    api.readReport.mockResolvedValue({
       ...payload(),
       month: '2026-09',
       from: '2026-09-01',
@@ -155,9 +157,10 @@ describe('impact overview', () => {
     expect(refused).toHaveAccessibleDescription(
       'Submissions open once this month has a complete day.',
     );
+    expect(screen.getByRole('button', { name: 'Export CSV' })).toBeDisabled();
     expect(
-      screen.getByRole('button', { name: 'Export report CSV' }),
-    ).toBeDisabled();
+      screen.getByRole('button', { name: /^Report period: This month, No complete days yet this month$/ }),
+    ).toBeInTheDocument();
   });
   it('keeps a monthly target drilldown on that month through campaign and editor links', async () => {
     const monthly = {
@@ -166,21 +169,21 @@ describe('impact overview', () => {
       from: '2026-09-01',
       days: 13,
     };
-    api.readDashboard.mockResolvedValue(monthly);
+    api.readReport.mockResolvedValue(monthly);
     const view = render(
       <Dashboard query={{ month: '2026-09', impact: 'leads' }} />,
     );
     const campaign = await screen.findByRole('link', {
       name: 'Newsletter footer',
     });
-    expect(api.readDashboard).toHaveBeenCalledWith(null, true, '2026-09');
+    expect(api.readReport).toHaveBeenCalledWith({ month: '2026-09' });
     expect(routeFrom(campaign.getAttribute('href')!).report).toMatchObject({
       month: '2026-09',
       optinId: 'email',
     });
-    expect(screen.getByRole('combobox', { name: 'Report period' })).toHaveValue(
-      'month:2026-09',
-    );
+    expect(
+      screen.getByRole('button', { name: /^Report period: This month, Sep 1\s–\s13, 2026$/ }),
+    ).toBeInTheDocument();
     const onChange = vi.fn();
     view.rerender(
       <Dashboard
@@ -201,10 +204,8 @@ describe('impact overview', () => {
           .getAttribute('href')!,
       ).report.month,
     ).toBe('2026-09');
-    await userEvent.selectOptions(
-      screen.getByRole('combobox', { name: 'Report period' }),
-      '7',
-    );
+    await userEvent.click(screen.getByRole('button', { name: /^Report period/ }));
+    await userEvent.click(screen.getByRole('radio', { name: 'Last 7 days' }));
     expect(onChange).toHaveBeenCalledWith({
       month: undefined,
       days: 7,
@@ -223,33 +224,47 @@ describe('impact overview', () => {
     expect(
       screen.queryByText(/Asia\/Muscat|in your site’s timezone/),
     ).toBeNull();
-    expect(api.readDashboard).toHaveBeenCalledWith(null, true);
+    // The window on screen is the window asked for, never a server default it would guess.
+    expect(api.readReport).toHaveBeenCalledWith({ days: 30 });
+    expect(
+      screen.getByRole('button', { name: /^Report period: Last 30 days, Aug 15\s–\sSep 13, 2026$/ }),
+    ).toBeInTheDocument();
   });
-  it('shows no cart results on a site that cannot run cart campaigns (ADR 0127)', async () => {
-    render(<Dashboard />);
-    await screen.findByRole('region', { name: 'Overall impact' });
-    expect(screen.queryByRole('link', { name: /Cart return clicks/ })).toBeNull();
-    expect(screen.getByRole('link', { name: /Offer link clicks/ })).toBeInTheDocument();
-  });
-  it('keeps cart results where the cart module runs', async () => {
+  it('shows no zero card for an impact nobody runs, on any site (ADR 0116)', async () => {
     window.wconvertAdmin = { exportUrl: '', commerce: true };
     try {
       render(<Dashboard />);
-      expect(await screen.findByRole('link', { name: /Cart return clicks/ })).toBeInTheDocument();
+      await screen.findByRole('region', { name: 'Overall impact' });
+      expect(screen.queryByRole('link', { name: /Cart return clicks/ })).toBeNull();
+      expect(screen.queryByRole('link', { name: /Offer link clicks/ })).toBeNull();
+      expect(screen.getByRole('link', { name: /^Shown/ })).toBeInTheDocument();
     } finally { delete window.wconvertAdmin; }
+  });
+  it('keeps an impact card that has a goal, a count or an earlier count', async () => {
+    const data = payload();
+    data.impact[1] = { ...data.impact[1], count: 0, goals: ['promote_offer'] };
+    data.previous!.impact[2] = { ...data.previous!.impact[2], count: 3 };
+    api.readReport.mockResolvedValue(data);
+    render(<Dashboard />);
+    expect(await screen.findByRole('link', { name: /Offer link clicks/ })).toBeInTheDocument();
+    expect(screen.getByRole('link', { name: /Cart return clicks/ })).toBeInTheDocument();
   });
   it('toggles the previous period without fetching or discarding the current result', async () => {
     render(<Dashboard />);
-    const off = await screen.findByRole('radio', { name: 'Off' });
+    await screen.findByRole('region', { name: 'Overall impact' });
     expect(
       screen.getByRole('link', { name: /^Submissions/ }),
     ).toHaveTextContent('100%');
-    await userEvent.click(off);
-    expect(off).toBeChecked();
+    await userEvent.click(screen.getByRole('button', { name: /^Report period/ }));
+    const compare = screen.getByRole('checkbox', { name: /^Compare with the previous period/ });
+    expect(compare).toBeChecked();
+    expect(compare).toHaveAccessibleDescription(/^Jul 16\s–\sAug 14, 2026$/);
+    await userEvent.click(compare);
+    expect(compare).not.toBeChecked();
     expect(
       screen.getByRole('link', { name: /^Submissions/ }),
     ).not.toHaveTextContent('100%');
-    expect(api.readDashboard).toHaveBeenCalledTimes(1);
+    expect(api.readReport).toHaveBeenCalledTimes(1);
   });
   it('offers bookmarkable Goal and impact drill-downs', async () => {
     render(<Dashboard />);
@@ -269,17 +284,22 @@ describe('impact overview', () => {
     ).toBe('leads');
   });
   it('shows an actionable first visit with no invented results', async () => {
-    api.readDashboard.mockResolvedValue({ ...payload(), goals: [] });
+    api.readReport.mockResolvedValue({ ...payload(), goals: [] });
     render(<Dashboard />);
     expect(
       await screen.findByText('Your first results start with a live campaign'),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole('link', { name: 'Go to Campaigns' }),
-    ).toHaveAttribute('href', '#optins');
+      screen.getByRole('link', { name: 'Create campaign' }),
+    ).toHaveAttribute('href', '#optins?new=1');
+    // Nothing to export, compare, target or sell before the first campaign.
+    expect(screen.queryByRole('button', { name: 'Export CSV' })).toBeNull();
+    expect(screen.queryByText('Monthly targets')).toBeNull();
+    await userEvent.click(screen.getByRole('button', { name: /^Report period/ }));
+    expect(screen.queryByRole('checkbox', { name: /^Compare with the previous period/ })).toBeNull();
   });
   it('reports an initial read failure and allows retry', async () => {
-    api.readDashboard.mockRejectedValueOnce(new Error('Not allowed'));
+    api.readReport.mockRejectedValueOnce(new Error('Not allowed'));
     render(<Dashboard />);
     expect(await screen.findByText('Not allowed')).toBeInTheDocument();
     await userEvent.click(screen.getByRole('button', { name: 'Try again' }));
@@ -292,7 +312,7 @@ describe('impact overview', () => {
       <Dashboard query={{ days: 30, optinId: 'email' }} />,
     );
     await screen.findByRole('heading', { name: 'Newsletter footer' });
-    api.readDashboard.mockRejectedValueOnce(new Error('Offline'));
+    api.readReport.mockRejectedValueOnce(new Error('Offline'));
     rerender(<Dashboard query={{ days: 7, optinId: 'email' }} />);
     const failure = await screen.findByText(/Could not load that period.*Offline/);
     expect(
@@ -314,14 +334,14 @@ describe('impact overview', () => {
     const { rerender } = render(<Dashboard query={{ days: 30 }} />);
     await screen.findByRole('region', { name: 'Overall impact' });
     let finish!: (data: DashboardPayload) => void;
-    api.readDashboard.mockImplementationOnce(
+    api.readReport.mockImplementationOnce(
       () =>
         new Promise((resolve) => {
           finish = resolve;
         }),
     );
     rerender(<Dashboard query={{ days: 7 }} />);
-    api.readDashboard.mockResolvedValueOnce({
+    api.readReport.mockResolvedValueOnce({
       ...payload(),
       days: 90,
       impact: payload().impact.map((i) => ({ ...i, count: 99 })),
@@ -351,7 +371,7 @@ describe('Goal and campaign reports', () => {
       },
     ];
     const card = { ...goal(historical), ...numbers(36, 300) };
-    api.readDashboard.mockResolvedValue({ ...payload(), goals: [card] });
+    api.readReport.mockResolvedValue({ ...payload(), goals: [card] });
     render(<Dashboard query={{ experiment: 'winner' }} />);
     expect(
       await screen.findByRole('heading', { name: 'Earliest design' }),
@@ -364,7 +384,7 @@ describe('Goal and campaign reports', () => {
     ).toContain('Earliest design');
   });
   it('keeps deleted rows inspectable and does not offer edit or resume', async () => {
-    api.readDashboard.mockResolvedValue({
+    api.readReport.mockResolvedValue({
       ...payload(),
       goals: [goal([row('email', 'historical')])],
     });
@@ -382,7 +402,7 @@ describe('Goal and campaign reports', () => {
     ).toBeInTheDocument();
   });
   it('does not send click-only campaigns to the lead log', async () => {
-    api.readDashboard.mockResolvedValue({
+    api.readReport.mockResolvedValue({
       ...payload(),
       goals: [{ ...goal(), action: 'click', rate_label: 'Link click rate' }],
     });
@@ -394,7 +414,7 @@ describe('Goal and campaign reports', () => {
     expect(screen.getByText('Link click rate')).toBeInTheDocument();
   });
   it('searches and filters campaign contributions', async () => {
-    api.readDashboard.mockResolvedValue({
+    api.readReport.mockResolvedValue({
       ...payload(),
       goals: [goal([row(), { ...row('second', 'paused'), name: 'Old form' }])],
     });
@@ -432,7 +452,7 @@ describe('Goal and campaign reports', () => {
     expect(family[0].arms).toHaveLength(2);
   });
   it('shows requests and accepted sends separately', async () => {
-    api.readDashboard.mockResolvedValue({
+    api.readReport.mockResolvedValue({
       ...payload(),
       goals: [{ ...goal(), deliveries: 10, result_label: 'Resource requests' }],
     });
@@ -446,7 +466,7 @@ describe('Goal and campaign reports', () => {
     ).toBeInTheDocument();
   });
   it('shows an undefined rate as a dash and includes exact zero days', async () => {
-    api.readDashboard.mockResolvedValue({
+    api.readReport.mockResolvedValue({
       ...payload(),
       goals: [{ ...goal(), ...numbers(0, 0) }],
     });
@@ -459,7 +479,7 @@ describe('Goal and campaign reports', () => {
     expect(within(table).getByText('—')).toBeInTheDocument();
   });
   it('confirms resume and reports a rejected publication without optimistic success', async () => {
-    api.readDashboard.mockResolvedValue({
+    api.readReport.mockResolvedValue({
       ...payload(),
       goals: [goal([row('email', 'paused')])],
     });
@@ -502,7 +522,7 @@ describe('Goal and campaign reports', () => {
     );
     expect(api.unpublishOptin).not.toHaveBeenCalled();
     api.unpublishOptin.mockResolvedValueOnce({});
-    api.readDashboard.mockResolvedValueOnce({
+    api.readReport.mockResolvedValueOnce({
       ...payload(),
       goals: [goal([row('email', 'paused')])],
     });
@@ -517,7 +537,7 @@ describe('Goal and campaign reports', () => {
     expect(api.unpublishOptin).toHaveBeenCalledWith('email');
   });
   it('opens family totals in the comparison rather than a single arm report', async () => {
-    api.readDashboard.mockResolvedValue({
+    api.readReport.mockResolvedValue({
       ...payload(),
       goals: [
         goal([
@@ -537,7 +557,7 @@ describe('Goal and campaign reports', () => {
     );
   });
   it('keeps retired variants readable without offering another winner decision', async () => {
-    api.readDashboard.mockResolvedValue({
+    api.readReport.mockResolvedValue({
       ...payload(),
       goals: [
         goal([
@@ -563,7 +583,7 @@ describe('Goal and campaign reports', () => {
     expect(api.declareWinner).not.toHaveBeenCalled();
   });
   it('requires an explicit manual variant choice and surfaces server refusals', async () => {
-    api.readDashboard.mockResolvedValue({
+    api.readReport.mockResolvedValue({
       ...payload(),
       goals: [
         goal([
@@ -595,7 +615,7 @@ describe('Goal and campaign reports', () => {
 });
 
 it('explains publication after the selected dates without implying a display problem', async () => {
-  api.readDashboard.mockResolvedValue({ ...payload(), goals: [goal([{ ...row(), ...numbers(0, 0), published_at: '2026-09-14 09:00:00' }])] });
+  api.readReport.mockResolvedValue({ ...payload(), goals: [goal([{ ...row(), ...numbers(0, 0), published_at: '2026-09-14 09:00:00' }])] });
   render(<Dashboard query={{ optinId: 'email' }} />);
   expect(await screen.findByText('Published after these report dates. New activity appears after each day ends.')).toBeVisible();
   expect(screen.queryByRole('heading', { name: 'Needs attention' })).not.toBeInTheDocument();
@@ -604,10 +624,167 @@ it('explains publication after the selected dates without implying a display pro
 it('shows a fall as neutral text with its sign, and a rise as a gain', async () => {
   const data = payload();
   data.previous!.impact = data.impact.map((i) => ({ ...i, count: i.id === 'leads' ? 24 : 50 }));
-  api.readDashboard.mockResolvedValue(data);
+  api.readReport.mockResolvedValue(data);
   render(<Dashboard />);
   const fall = (await screen.findByRole('link', { name: /^Submissions/ })).querySelector('.wa-change')!;
   expect(fall).toHaveTextContent('−50% vs previous period');
   expect(fall).not.toHaveClass('wa-change-up');
   expect(screen.getByRole('link', { name: /^Shown/ }).querySelector('.wa-change')).toHaveClass('wa-change-up');
+});
+
+describe('the report period (ADR 0132)', () => {
+  it('reads Today live, labelled so far, and refuses the comparison with its reason', async () => {
+    const live = { ...payload(), from: '2026-09-14', to: '2026-09-14', days: 1, complete_days: false, previous: undefined, insights: [] };
+    api.readReport.mockResolvedValue(live);
+    const onChange = vi.fn();
+    render(<Dashboard query={{ today: true }} onQueryChange={onChange} />);
+    const trigger = await screen.findByRole('button', { name: /^Report period: Today, Sep 14, 2026 so far$/ });
+    expect(api.readReport).toHaveBeenCalledWith({ today: true });
+    await userEvent.click(trigger);
+    const compare = screen.getByRole('checkbox', { name: /^Compare with the previous period/ });
+    expect(compare).toHaveAttribute('aria-disabled', 'true');
+    expect(compare).not.toBeChecked();
+    expect(compare).toHaveAccessibleDescription('Today is still in progress.');
+    await userEvent.click(compare);
+    expect(compare).not.toBeChecked();
+    expect(onChange).not.toHaveBeenCalled();
+    expect(screen.getByRole('link', { name: /^Submissions/ }).querySelector('.wa-change')).toBeNull();
+  });
+
+  it('turns each choice into the window a link names, and custom dates into from and to', async () => {
+    const onChange = vi.fn();
+    render(<Dashboard query={{ goal: 'grow_email_list' }} onQueryChange={onChange} />);
+    await screen.findByRole('heading', { name: 'Grow my email list' });
+    const open = () => userEvent.click(screen.getByRole('button', { name: /^Report period/ }));
+    await open();
+    await userEvent.click(screen.getByRole('radio', { name: 'Today' }));
+    expect(onChange).toHaveBeenLastCalledWith(expect.objectContaining({ today: true, days: undefined, goal: 'grow_email_list' }));
+    await open();
+    await userEvent.click(screen.getByRole('radio', { name: 'Yesterday' }));
+    expect(onChange).toHaveBeenLastCalledWith(expect.objectContaining({ days: 1 }));
+    // Months come from the server's today, never the browser's clock.
+    await open();
+    await userEvent.click(screen.getByRole('radio', { name: 'Last month' }));
+    expect(onChange).toHaveBeenLastCalledWith(expect.objectContaining({ month: '2026-08' }));
+    await open();
+    await userEvent.click(screen.getByRole('radio', { name: 'Custom dates' }));
+    await userEvent.type(screen.getByLabelText('From'), '2026-09-01');
+    await userEvent.type(screen.getByLabelText('To'), '2026-09-10');
+    await userEvent.click(screen.getByRole('button', { name: 'Apply dates' }));
+    expect(onChange).toHaveBeenLastCalledWith(expect.objectContaining({ from: '2026-09-01', to: '2026-09-10', days: undefined, month: undefined }));
+  });
+
+  it('reads custom dates and keeps them on drill-down links', async () => {
+    api.readReport.mockResolvedValue({ ...payload(), from: '2026-09-01', to: '2026-09-10', days: 10, custom: true });
+    render(<Dashboard query={{ from: '2026-09-01', to: '2026-09-10' }} />);
+    const link = await screen.findByRole('link', { name: /Grow my email list/ });
+    expect(api.readReport).toHaveBeenCalledWith({ from: '2026-09-01', to: '2026-09-10' });
+    expect(routeFrom(link.getAttribute('href')!).report).toMatchObject({ from: '2026-09-01', to: '2026-09-10', goal: 'grow_email_list' });
+    expect(screen.getByRole('button', { name: /^Report period: Custom dates, Sep 1\s–\s10, 2026$/ })).toBeInTheDocument();
+  });
+
+  it('names the chosen period without dates while it loads, and the shown one after it fails', async () => {
+    const view = render(<Dashboard query={{ days: 30 }} />);
+    await screen.findByRole('region', { name: 'Overall impact' });
+    let fail!: (cause: Error) => void;
+    api.readReport.mockImplementationOnce(() => new Promise((_, reject) => { fail = reject; }));
+    view.rerender(<Dashboard query={{ days: 7 }} />);
+    expect(screen.getByRole('button', { name: 'Report period: Last 7 days' })).toBeInTheDocument();
+    await act(async () => fail(new Error('Offline')));
+    expect(await screen.findByRole('button', { name: /^Report period: Last 30 days, Aug 15\s–\sSep 13, 2026$/ })).toBeInTheDocument();
+  });
+});
+
+describe('what the overview says', () => {
+  it('says once that there is nothing earlier, instead of a line under every card', async () => {
+    const data = payload();
+    data.previous!.impact = data.impact.map((i) => ({ ...i, count: 0 }));
+    api.readReport.mockResolvedValue(data);
+    render(<Dashboard />);
+    await screen.findByRole('region', { name: 'Overall impact' });
+    expect(screen.getByText(/^Nothing to compare in Jul 16\s–\sAug 14, 2026\.$/)).toBeInTheDocument();
+    expect(document.querySelectorAll('.wa-impact .wa-change')).toHaveLength(0);
+    expect(screen.queryByText('No earlier results')).toBeNull();
+  });
+
+  it('shows nothing for nothing → nothing and "New this period" from nothing', async () => {
+    const { Change } = await import('../../resources/admin/src/stats/ReportDetails');
+    const { container } = render(<Change current={0} previous={0} />);
+    expect(container).toBeEmptyDOMElement();
+    render(<Change current={4} previous={0} />);
+    expect(screen.getByText('New this period')).toBeInTheDocument();
+  });
+
+  it('gives each goal card its own rate, change and campaign count — never a site-wide rate', async () => {
+    const data = payload();
+    data.goals[0] = { ...data.goals[0], ...numbers(105, 4653) };
+    data.previous!.goals[0] = { ...data.previous!.goals[0], conversions: 94 };
+    api.readReport.mockResolvedValue(data);
+    render(<Dashboard />);
+    const card = await screen.findByRole('link', { name: /Grow my email list/ });
+    expect(card).toHaveTextContent('105 Email submissions');
+    expect(card).toHaveTextContent('2.3% of 4,653 shown · +11.7% · 1 campaign');
+    expect(screen.queryByText(/conversion rate/i)).toBeNull();
+  });
+
+  it('points a complete window at Today for what it leaves out', async () => {
+    const data = payload();
+    data.impact = data.impact.map((i) => (i.id === 'impressions' ? { ...i, count: 0 } : i));
+    api.readReport.mockResolvedValue(data);
+    render(<Dashboard />);
+    expect(await screen.findByText('Nothing was shown in this period. Today’s activity appears tomorrow. Choose Today to see it so far.')).toBeInTheDocument();
+  });
+
+  it('lifts linked sales into the headlines, qualified, and jumps to Campaign sales', async () => {
+    const { reportExtensions } = await import('../../resources/admin/src/stats/extensions');
+    const { ReportTarget } = await import('../../resources/admin/src/stats/ReportNavigation');
+    const { useEffect } = await import('react');
+    document.documentElement.lang = 'en-US';
+    reportExtensions.commerce = function FakeSales({ onSummary }) {
+      useEffect(() => onSummary?.({ orders: 18, amount: 1240, currency: 'EUR' }), [onSummary]);
+      return <ReportTarget name="sales" label="Sales"><h2>Campaign sales</h2></ReportTarget>;
+    };
+    try {
+      render(<Dashboard />);
+      const card = await screen.findByRole('button', { name: /^Linked sales/ });
+      expect(card).toHaveTextContent('€1,240.00');
+      expect(card).toHaveTextContent('18 orders');
+      expect(card).toHaveTextContent('Linked, not caused.');
+      const target = document.getElementById(card.getAttribute('aria-controls')!)!;
+      target.scrollIntoView = vi.fn();
+      await userEvent.click(card);
+      expect(target).toHaveFocus();
+    } finally {
+      delete reportExtensions.commerce;
+    }
+  });
+});
+
+describe('A/B comparison', () => {
+  const arms = (shown: number) =>
+    goal([
+      { ...row('email'), name: 'Variant A', ...numbers(24, shown) },
+      { ...row('arm'), parent_id: 'email', name: 'Variant B', ...numbers(31, shown) },
+    ]);
+
+  it('reads the leader against the next, best first, and calls it too early on little traffic', async () => {
+    api.readReport.mockResolvedValue({ ...payload(), goals: [arms(1000 - 1)] });
+    render(<Dashboard query={{ experiment: 'email' }} />);
+    const headings = await screen.findAllByRole('heading', { level: 3 });
+    expect(headings.map((h) => h.textContent)).toEqual(['Variant B', 'Variant A']);
+    expect(screen.getByText(/^Variant B converts 3\.1% vs Variant A 2\.4% \(\+0\.7 pts\) — too early to call: fewer than 1,000 shown per variant$/)).toBeInTheDocument();
+  });
+
+  it('says there is enough to compare, and still not proof', async () => {
+    api.readReport.mockResolvedValue({ ...payload(), goals: [arms(1000)] });
+    render(<Dashboard query={{ experiment: 'email' }} />);
+    expect(await screen.findByText(/enough traffic to compare; this is still not proof\.$/)).toBeInTheDocument();
+  });
+});
+
+it('unpublishes with a visibility icon, not a pause', async () => {
+  render(<Dashboard query={{ optinId: 'email' }} />);
+  const button = await screen.findByRole('button', { name: 'Unpublish campaign' });
+  expect(button.querySelector('.lucide-eye-off')).not.toBeNull();
+  expect(button.querySelector('.lucide-pause')).toBeNull();
 });

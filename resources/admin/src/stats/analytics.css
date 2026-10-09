@@ -57,54 +57,10 @@
   gap: 12px;
   flex-wrap: wrap;
 }
-.wa-header-actions select {
-  height: var(--control-height);
-  background: var(--card);
-  border: 1px solid var(--input);
-  border-radius: 6px;
-  padding: 6px 12px;
-  font: inherit;
-  color: var(--foreground);
-}
-.wa-date-scope {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 24px;
-  padding: 16px 20px;
-  margin-bottom: 8px;
-  border: 1px solid var(--border);
-  border-radius: calc(var(--radius) + 2px);
-  background: var(--card);
-}
-.wa-date-caption {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: var(--text-note);
-  color: var(--muted-foreground);
-  margin-bottom: 6px;
-}
-.wa-date-scope strong {
-  display: block;
-  font-weight: 500;
-  font-size: var(--text-body);
-  font-variant-numeric: tabular-nums;
-}
-.wa-date-comparison {
-  min-width: 260px;
-  padding-inline-start: 24px;
-  border-inline-start: 1px solid var(--border);
-}
-.wa-date-comparison > span {
-  display: block;
-  margin-top: 6px;
-  color: var(--muted-foreground);
-  font-size: var(--text-note);
-}
+/* Fills the row with however many headlines apply: zero ones are hidden and a store adds Linked sales (ADR 0132). */
 .wa-impact-grid {
   display: grid;
-  grid-template-columns: repeat(4, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
   gap: 13px;
   margin: 8px 0 28px;
 }
@@ -119,6 +75,14 @@
   border-radius: calc(var(--radius) + 2px);
   padding: 20px;
   min-height: 185px;
+}
+/* Linked sales jumps within the page, so it is a button dressed as its neighbours. */
+button.wa-impact {
+  font: inherit;
+  cursor: pointer;
+}
+.wa-impact-sales > .wa-change {
+  margin-block-start: 0;
 }
 .wa-impact:hover,
 .wa-goal-card:hover {
@@ -484,18 +448,6 @@
   }
 }
 @media (max-width: 600px) {
-  .wa-date-scope {
-    align-items: stretch;
-    flex-direction: column;
-    gap: 14px;
-    padding: 15px 16px;
-  }
-  .wa-date-comparison {
-    min-width: 0;
-    padding: 13px 0 0;
-    border-inline-start: 0;
-    border-top: 1px solid var(--border);
-  }
   .wa-impact {
     padding: 16px;
     min-height: 175px;
@@ -521,10 +473,25 @@
 }
 
 /* A native picker and a shared Button follow the same page-action baseline. */
-.wa-header-actions > label { display:flex; margin:0; min-inline-size:0; }
+/* The date picker, then Export CSV: one page-action row, stacked full-width on phones. */
 .wa-header-actions { max-inline-size:100%; }
 @media(max-width:600px) {
   .wa-header-actions { inline-size:100%; gap:10px; }
-  .wa-header-actions > label, .wa-header-actions > button { flex:1 1 100%; inline-size:100%; }
-  .wa-header-actions select { inline-size:100%; }
+  .wa-header-actions > button { flex:1 1 100%; inline-size:100%; }
 }
+
+/* The comparison inside the picker's footer is the canonical check row
+ * (ADR 0131). The popover is portalled outside #wconvert-admin, where the
+ * shared row geometry is scoped, so the row restates it here. */
+.wa-compare-row { display:flex; align-items:flex-start; gap:8px; margin:0; font-size:var(--text-body); line-height:1.5; cursor:pointer; }
+.wa-compare-row > input { appearance:auto; -webkit-appearance:auto; accent-color:var(--action); flex:0 0 18px; inline-size:18px; block-size:18px; margin:max(0px, calc((1lh - 18px) / 2)) 0 0; border:initial; background:initial; box-shadow:none; cursor:pointer; }
+.wa-compare-row > input::before { content:none; display:none; }
+/* Refused for Today: dimmed, yet focusable so its reason is read with it (§14). */
+.wa-compare-row:has(> input[aria-disabled='true']) { cursor:default; color:var(--muted-foreground); }
+.wa-compare-row > input[aria-disabled='true'] { cursor:default; opacity:.6; }
+
+/* One sentence for "nothing earlier", instead of a line under every card. */
+.wconvert-analytics .wa-compare-note { margin:0 0 8px; }
+
+/* The A/B reading above the variants; its verdict stays words, never a colour. */
+.wconvert-analytics .wa-variant-difference { margin:0 0 16px; font-size:var(--text-body); font-weight:500; }

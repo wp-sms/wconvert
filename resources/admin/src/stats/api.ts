@@ -1,11 +1,12 @@
 import type { Insight } from './Insights';
+import type { ReportQuery } from '../nav';
 import apiFetch from '@wordpress/api-fetch';
 
 /**
  * The analytics screen's one read.
  *
  * ============================================================================
- * IT ASKS FOR A NUMBER OF DAYS AND NEVER FOR A DATE.
+ * IT NEVER SENDS THE BROWSER'S TODAY.
  * ============================================================================
  * Calendar boundaries follow the MERCHANT's today — the
  * site's timezone, not the browser's. A date built here would be the day of
@@ -14,10 +15,11 @@ import apiFetch from '@wordpress/api-fetch';
  * told it was today's, and every number in it would be right about the wrong
  * day.
  *
- * So the window is a count of days, the far end is resolved on the server
- * against the site's own timezone, and `from` and `to` come BACK rather than
- * going out. There is deliberately no way to express any other window from
- * here.
+ * So every preset is a count of days or a calendar month, the far end is
+ * resolved on the server against the site's own timezone, and `from` and `to`
+ * come BACK. The one exception is Custom dates (ADR 0132): two days the
+ * merchant typed, sent as typed, and refused by the server when they end after
+ * ITS today — which the payload carries back as `today`.
  *
  * **No [[Goal]] id is spelled in this file, or anywhere in this bundle.** The
  * Goals live in `src/Goal/Goal.php` as an enum and every word the cards render
@@ -114,8 +116,56 @@ export interface DashboardPayload {
   goals: GoalReport[];
   impact: Impact[];
   previous?: DashboardPayload;
+  /**
+   * Whether the window counts complete days only. False for Today, and for
+   * custom dates that end today: both include today so far.
+   */
   complete_days?: boolean;
+  /** Set when the window is custom dates the merchant typed. */
+  custom?: boolean;
+  /** The site's today, from the server — the latest a custom range may end. */
+  today?: string;
 }
+
+/** What a report needs to know about the window the screen accepted. */
+export type ReportPeriod = Pick<DashboardPayload, 'from' | 'to' | 'days' | 'month' | 'complete_days' | 'custom'>;
+export type PeriodQuery = Pick<ReportQuery, 'today' | 'from' | 'to' | 'month' | 'days'>;
+
+/**
+ * The window an accepted payload answers, as a link names it — so drill-downs,
+ * the editor's return link and every per-campaign report read the same days.
+ * A live one-day read is Analytics' Today; nothing else asks for one.
+ */
+export function periodOf(period: ReportPeriod): PeriodQuery {
+  if (period.custom) return { from: period.from, to: period.to };
+  if (period.month) return { month: period.month };
+  if (period.complete_days === false && period.days === 1) return { today: true };
+  return { days: period.days };
+}
+
+/**
+ * One window as REST parameters, for every report route (ADR 0132). Today is
+ * the one live read and says so: the order report defaults to complete days.
+ */
+export function periodParams(query: PeriodQuery): URLSearchParams {
+  const params = new URLSearchParams();
+  if (query.today) {
+    params.set('days', '1');
+    params.set('complete', '0');
+  } else if (query.from !== undefined && query.to !== undefined) {
+    params.set('from', query.from);
+    params.set('to', query.to);
+  } else {
+    if (query.month) params.set('month', query.month);
+    else if (query.days !== undefined) params.set('days', String(query.days));
+    params.set('complete', '1');
+  }
+  return params;
+}
+
+/** Analytics' read: any of its windows, with the comparison where one applies. */
+export const readReport = (query: PeriodQuery) =>
+  apiFetch<DashboardPayload>({ path: `/wconvert/v1/dashboard?${periodParams(query).toString()}` });
 
 export interface Impact {
   id: string;

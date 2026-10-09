@@ -204,6 +204,10 @@ be paid on every beacon for a read one admin takes on demand.*
   today's. [`StatRange`](../../src/Stats/StatRange.php) takes the day as an
   argument like `StatDay::of()` does, and the one end that is a date is
   `StatDay::today()`, read on the server.*
+  *Amended by [ADR 0132](0132-every-screen-answers-its-first-question.md):
+  Analytics also accepts Custom dates — two days the merchant typed, sent as
+  `from`/`to` and refused when they end after `StatDay::today()`. The browser
+  still never sends its own today; the response carries the site's back.*
 - **`count` is `INT UNSIGNED`.** 4.29 billion of one kind on one Optin in one day
   is not a number to plan for.
 - **The beacon endpoint is hardened lightly and deliberately.** It validates

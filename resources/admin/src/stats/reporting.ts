@@ -1,3 +1,4 @@
+import { __ } from '@wordpress/i18n';
 import { formatDay, formatRange } from '../lib/format';
 import type { GoalReport, Numbers, OptinReport, DashboardPayload } from './api';
 
@@ -56,6 +57,14 @@ export function addNumbers(rows: Numbers[]): Numbers {
     impression_by_day: series('impression_by_day'),
   };
 }
+
+/**
+ * **One sentence for one fact, everywhere it is said** (ADR 0132): complete-day
+ * reports leave today out, and four screens had worded that three ways. The
+ * second line is the way to see it, now that Analytics has a live Today.
+ */
+export const todayAppearsTomorrow = () => __('Today’s activity appears tomorrow.', 'wconvert');
+export const chooseToday = () => __('Choose Today to see it so far.', 'wconvert');
 
 /** Dates are calendar labels from PHP, never shifted to the browser's zone. */
 export const dateLabel = formatDay;

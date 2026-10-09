@@ -63,5 +63,7 @@ A premium pack's "Pro" badge never renders on free.
 **Two zeros free cannot earn are not drawn.** Analytics hides the cart-return
 and basket-addition cards where the cart module is absent and nothing was
 recorded for them; the report data, monthly targets and period comparison are
-unchanged. Leads offers the question-answer export where journeys run, or where
+unchanged. *Generalised by [0132](0132-every-screen-answers-its-first-question.md):
+one rule now covers every impact card on every site — no goal, no count and no
+previous count is no card — so the cart-module special case is gone.* Leads offers the question-answer export where journeys run, or where
 the listed submissions already carry answers, so a downgraded site keeps it.

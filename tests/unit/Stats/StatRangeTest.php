@@ -96,22 +96,72 @@ final class StatRangeTest extends TestCase
     }
 
     /**
-     * Windows derive from a server-provided day, never two browser boundaries.
-     * A named month may now end earlier, but never later than the site's
-     * yesterday (ADR 0090).
+     * Windows derive from a server-provided day. A named month may end
+     * earlier, but never later than the site's yesterday (ADR 0090); custom
+     * dates are the merchant's, checked against that same server day
+     * (ADR 0132). Nothing accepts the browser's today.
      */
-    public function testAWindowCanOnlyBeBuiltFromADayAndACount(): void
+    public function testAWindowCanOnlyBeBuiltAgainstTheServersDay(): void
     {
         $constructors = array_values(array_filter(
             (new \ReflectionClass(StatRange::class))->getMethods(\ReflectionMethod::IS_PUBLIC),
             static fn (\ReflectionMethod $method): bool => $method->isStatic()
         ));
 
-        $this->assertSame(['lastDays', 'completeDays', 'calendarMonth'], array_map(
+        $this->assertSame(['lastDays', 'completeDays', 'calendarMonth', 'between'], array_map(
             static fn (\ReflectionMethod $method): string => $method->getName(),
             $constructors
         ));
         $this->assertFalse((new \ReflectionClass(StatRange::class))->getConstructor()?->isPublic());
+    }
+
+    /** Custom dates are taken as typed, both ends counted, and may end today. */
+    public function testCustomDatesAreTheDaysTheMerchantChose(): void
+    {
+        $range = StatRange::between('2028-02-27', '2028-03-01', '2028-03-01');
+
+        $this->assertSame(['2028-02-27', '2028-03-01', 4], [$range->from, $range->to, $range->days()]);
+        $this->assertSame(1, StatRange::between('2026-08-25', '2026-08-25', '2026-08-25')->days());
+    }
+
+    /**
+     * **Its comparison is the same number of days immediately before**, the
+     * rule every other window already follows (ADR 0089).
+     */
+    public function testCustomDatesCompareWithTheSameNumberOfDaysBefore(): void
+    {
+        $previous = StatRange::between('2026-09-10', '2026-09-19', '2026-10-09')->previous();
+
+        $this->assertSame(['2026-08-31', '2026-09-09', 10], [$previous->from, $previous->to, $previous->days()]);
+    }
+
+    /** @return iterable<string, array{string, string, int}> */
+    public static function refusedCustomDates(): iterable
+    {
+        yield 'not a calendar day' => ['2026-02-30', '2026-03-02', StatRange::INVALID_DAY];
+        yield 'a missing end' => ['2026-09-01', '', StatRange::INVALID_DAY];
+        yield 'not a date at all' => ['last week', '2026-09-02', StatRange::INVALID_DAY];
+        yield 'backwards' => ['2026-09-10', '2026-09-01', StatRange::REVERSED];
+        yield 'ending after today' => ['2026-10-01', '2026-10-10', StatRange::AFTER_TODAY];
+        yield 'longer than the cap' => ['2025-10-08', '2026-10-09', StatRange::TOO_LONG];
+    }
+
+    /**
+     * Refused rather than clipped: a window that quietly ended earlier, or
+     * began later, than asked is a window nobody chose.
+     */
+    #[\PHPUnit\Framework\Attributes\DataProvider('refusedCustomDates')]
+    public function testCustomDatesAreRefusedRatherThanClipped(string $from, string $to, int $code): void
+    {
+        $this->expectException(\InvalidArgumentException::class);
+        $this->expectExceptionCode($code);
+
+        StatRange::between($from, $to, '2026-10-09');
+    }
+
+    public function testTheLongestCustomRangeIsTheCap(): void
+    {
+        $this->assertSame(StatRange::MAX_DAYS, StatRange::between('2025-10-09', '2026-10-09', '2026-10-09')->days());
     }
 
     public function testItKnowsWhichDaysItCovers(): void

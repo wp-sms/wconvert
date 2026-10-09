@@ -21,7 +21,7 @@ final class ProductStatsController implements RestController
     public function read(WP_REST_Request $request): WP_REST_Response|\WP_Error
     {
         try { $range = ReportWindow::read($request); }
-        catch (\InvalidArgumentException) { return new \WP_Error('wconvert_report_range', __('Choose a current or earlier month.', 'wconvert'), ['status' => 400]); }
+        catch (\InvalidArgumentException $refusal) { return ReportWindow::error($refusal); }
         $id = (string) $request->get_param('id');
         $since = get_option(ProductStats::PREFIX . $id, null);
         return new WP_REST_Response($this->stats->report($id, $range, StatDay::today(), is_string($since) ? $since : null));

@@ -84,8 +84,17 @@ export function hashFor(id: SectionId): string {
   return `#${id}`;
 }
 
-/** Read-state links stay inside WordPress's existing admin page. */
+/**
+ * Read-state links stay inside WordPress's existing admin page.
+ *
+ * The window is one of four, in this precedence: `today` (one live day),
+ * `from`–`to` (days the merchant typed, ADR 0132), `month`, then `days` of
+ * complete days. A link names only the one that applies.
+ */
 export interface ReportQuery {
+  today?: boolean;
+  from?: string;
+  to?: string;
   month?: string;
   days?: number;
   goal?: string;
@@ -136,16 +145,28 @@ export const editorHref = (id: string, returnTo?: string, tab?: 'rules'): string
     back: returnTo ? returnHref(returnTo) : undefined,
   });
 export const createHref = (): string => withQuery('optins', { new: 1 });
-export const reportHref = (query: ReportQuery = {}): string =>
-  withQuery('analytics', {
-    month: query.month,
-    days: query.month ? undefined : query.days,
+export const reportHref = (query: ReportQuery = {}): string => {
+  const custom = !query.today && query.from !== undefined && query.to !== undefined;
+  return withQuery('analytics', {
+    today: query.today ? 1 : undefined,
+    from: custom ? query.from : undefined,
+    to: custom ? query.to : undefined,
+    month: query.today || custom ? undefined : query.month,
+    days: query.today || custom || query.month ? undefined : query.days,
     goal: query.goal,
     optin: query.optinId,
     impact: query.impact,
     experiment: query.experiment,
     compare: query.compare === false ? '0' : undefined,
   });
+};
+/** A real calendar day in `Y-m-d`; the server checks it against its own today. */
+const isDay = (day: string | undefined): day is string => {
+  if (day === undefined || !/^\d{4}-\d{2}-\d{2}$/.test(day)) return false;
+  const time = Date.parse(`${day}T12:00:00Z`);
+  // February 30 parses as March 2; only a day that survives the round trip is real.
+  return !Number.isNaN(time) && new Date(time).toISOString().startsWith(day);
+};
 export const leadsHref = (query: LeadQuery = {}): string =>
   withQuery('leads', {
     order: query.order,
@@ -157,7 +178,12 @@ export const leadsHref = (query: LeadQuery = {}): string =>
   });
 export const destinationHref = (id?: string): string =>
   withQuery('settings', { group: 'connections', destination: id });
-export const settingsHref = (group: SettingsGroup = 'experience'): string =>
+/**
+ * Settings opens on **Connections & destinations**: where a first-time owner
+ * goes to send leads somewhere, and where setup starts. Links that mean
+ * another group — the footer's and Help's Visitor experience — name it.
+ */
+export const settingsHref = (group: SettingsGroup = 'connections'): string =>
   withQuery('settings', { group });
 export const sendingIssuesHref = (): string => withQuery('leads', { view: 'issues' });
 
@@ -173,6 +199,10 @@ export function routeFrom(hash: string): AdminRoute {
     editorTab: section === 'optins' && value('edit') && value('tab') === 'rules' ? 'rules' : undefined,
     returnTo: returnHref(params.get('back')),
     report: {
+      ...(value('today') === '1' ? { today: true } : {}),
+      ...(isDay(value('from')) && isDay(value('to')) && value('from')! <= value('to')!
+        ? { from: value('from'), to: value('to') }
+        : {}),
       ...(value('month') &&
       /^[1-9][0-9]{3}-(0[1-9]|1[0-2])$/.test(value('month')!)
         ? { month: value('month') }
@@ -195,7 +225,7 @@ export function routeFrom(hash: string): AdminRoute {
     },
     destinationId: value('destination'),
     settingsGroup: hash.replace(/^#/, '').split('?')[0] === 'destinations' || value('group') === 'connections'
-      ? 'connections' : value('group') === 'integrations' ? 'integrations' : value('group') === 'protection' ? 'protection' : value('group') === 'data' ? 'data' : 'experience',
+      ? 'connections' : value('group') === 'integrations' ? 'integrations' : value('group') === 'protection' ? 'protection' : value('group') === 'data' ? 'data' : value('group') === 'experience' ? 'experience' : 'connections',
     leadsView: value('view') === 'issues' ? 'issues' : 'submissions',
   };
 }

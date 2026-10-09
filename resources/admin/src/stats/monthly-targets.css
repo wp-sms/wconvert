@@ -96,6 +96,10 @@
   gap: 4px;
   color: var(--success);
 }
+/* Pace (ADR 0090): on pace is good news; behind stays the muted text it sits in. */
+.wa-target-on-pace {
+  color: var(--success);
+}
 .wa-target-reached svg {
   inline-size: 14px;
   block-size: 14px;

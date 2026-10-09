@@ -78,10 +78,38 @@ export function monthLabel(month: string): string {
   }).format(new Date(`${month}-01T12:00:00Z`));
 }
 
+/** Calendar days from `from` to `to`, both counted; zone-free like the server's. */
+const dayCount = (from: string, to: string) =>
+  Math.round((Date.parse(`${to}T12:00:00Z`) - Date.parse(`${from}T12:00:00Z`)) / 86_400_000) + 1;
+
+/**
+ * **A reading of the benchmark, never a forecast** (ADR 0090): where an even
+ * spread of the target would stand on the last counted day. Null before the
+ * first complete day and once the target is reached, where pace says nothing.
+ * `short` is 0 when on pace.
+ */
+export function paceOf(
+  target: number,
+  actual: number,
+  month: Pick<MonthlyTargetReport, 'from' | 'end' | 'through'>,
+): { short: number } | null {
+  if (!month.through || actual >= target) return null;
+  const expected = (target * dayCount(month.from, month.through)) / dayCount(month.from, month.end);
+  return { short: Math.max(0, Math.round(expected - actual)) };
+}
+
+/** What the loaded report counted, to set a target against: "Last 30 complete days: 105". */
+export interface TargetReference {
+  label: string;
+  counts: Record<string, number>;
+}
+
 export function MonthlyTargets({
   report,
+  reference,
 }: {
   report: ReturnType<typeof useMonthlyTargets>;
+  reference?: TargetReference;
 }) {
   const { data, error, refresh, accept } = report;
   const [editing, setEditing] = useState(false);
@@ -143,6 +171,7 @@ export function MonthlyTargets({
               const target = metric.target!;
               const percent = Math.round((metric.actual / target) * 100);
               const reached = metric.actual >= target;
+              const pace = paceOf(target, metric.actual, data);
               return (
                 <article className="wa-target-card" key={metric.id}>
                   <div className="wa-target-card-heading">
@@ -187,6 +216,20 @@ export function MonthlyTargets({
                         {__('Reached', 'wconvert')}
                       </span>
                     )}
+                    {/* Behind is neutral text, never amber: a slow month is a fact, not a fault (§14). */}
+                    {pace &&
+                      (pace.short === 0 ? (
+                        <span className="wa-target-pace wa-target-on-pace">
+                          {__('On pace', 'wconvert')}
+                        </span>
+                      ) : (
+                        <span className="wa-target-pace">
+                          {sprintf(
+                            __('Behind pace: about %s short', 'wconvert'),
+                            formatCount(pace.short),
+                          )}
+                        </span>
+                      ))}
                   </div>
                   <div className="wa-target-footer">
                     <span>
@@ -239,6 +282,7 @@ export function MonthlyTargets({
       {editing && (
         <TargetEditor
           initial={data}
+          reference={reference}
           onClose={() => {
             setEditing(false);
             refresh();
@@ -256,11 +300,13 @@ export function MonthlyTargets({
 
 function TargetEditor({
   initial,
+  reference,
   onClose,
   onClosed,
   onSaved,
 }: {
   initial: MonthlyTargetReport;
+  reference?: TargetReference;
   onClose: () => void;
   onClosed: () => void;
   onSaved: (next: MonthlyTargetReport) => void;
@@ -377,7 +423,21 @@ function TargetEditor({
                 key={metric.id}
                 label={metric.label}
                 htmlFor={`${id}-${metric.id}`}
-                hint={metric.note}
+                hint={
+                  <>
+                    {metric.note}
+                    {reference?.counts[metric.id] !== undefined && (
+                      <span className="block">
+                        {sprintf(
+                          /* translators: 1: the report's dates, e.g. "Last 30 complete days", 2: a count. */
+                          __('%1$s: %2$s', 'wconvert'),
+                          reference.label,
+                          formatCount(reference.counts[metric.id]),
+                        )}
+                      </span>
+                    )}
+                  </>
+                }
                 hintId={`${id}-${metric.id}-hint`}
                 error={invalid.includes(metric.id) ? limit : undefined}
               >

@@ -118,32 +118,27 @@ for (const mode of modes) for (const direction of ['ltr', 'rtl']) {
       await context.addCookies([{ name: 'wconvert_ds_dir', value: direction, url: 'http://127.0.0.1:9413' }]);
       const page = await context.newPage();
       await page.goto('/wp-admin/admin.php?page=wconvert#analytics');
-      const tip = page.getByRole('button', { name: 'About reporting dates', exact: true });
-      await expect(tip).toBeVisible();
+      // The date picker replaced the period select and its date-scope InfoTip (ADR 0132).
+      const period = page.getByRole('button', { name: /^Report period/ });
+      await expect(period).toBeVisible();
       const toolbar = await page.evaluate(() => {
-        const select = document.querySelector('[aria-label="Report period"]');
-        const exportButton = [...document.querySelectorAll('button')].find((n) => n.textContent.includes('Export report'));
-        const icon = document.querySelector('.wconvert-info-trigger svg');
+        const trigger = document.querySelector('.wconvert-date-picker__trigger');
+        const exportButton = [...document.querySelectorAll('button')].find((n) => n.textContent.includes('Export CSV'));
         return {
-          select: select.getBoundingClientRect().toJSON(),
+          period: trigger.getBoundingClientRect().toJSON(),
           export: exportButton.getBoundingClientRect().toJSON(),
-          arrow: getComputedStyle(select).backgroundImage,
-          icon: icon.getBoundingClientRect().toJSON(),
         };
       });
-      expect(toolbar.arrow).toContain('data:image/svg+xml');
-      expect(toolbar.icon.width).toBe(16);
-      expect(toolbar.icon.height).toBe(16);
-      expect(toolbar.select.height).toBe(toolbar.export.height);
-      if (mode.name === 'desktop') expect(toolbar.select.top).toBe(toolbar.export.top);
+      expect(toolbar.period.height).toBe(toolbar.export.height);
+      if (mode.name === 'desktop') expect(toolbar.period.top).toBe(toolbar.export.top);
       const goalCards = page.locator('.wa-goal-card');
       expect(await goalCards.count()).toBeGreaterThan(0);
       for (const card of await goalCards.all()) await expect(card).toHaveCSS('background-color', 'rgb(255, 255, 255)');
-      await tip.click();
-      await layerChecks(page, page.getByRole('dialog', { name: 'About reporting dates' }));
-      await screenshot(page, info, 'report-help');
+      await period.click();
+      await layerChecks(page, page.getByRole('dialog'));
+      await screenshot(page, info, 'report-period');
       await page.keyboard.press('Escape');
-      await expect(tip).toBeFocused();
+      await expect(period).toBeFocused();
       await page.getByRole('button', { name: /Set a monthly target|Edit targets/ }).click();
       await layerChecks(page, page.getByRole('dialog'));
       await screenshot(page, info, 'monthly-targets');

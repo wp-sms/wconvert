@@ -260,3 +260,37 @@ it('closes an untouched editor on Escape without asking', async () => {
   expect(screen.queryByText('Discard changes?')).not.toBeInTheDocument();
   expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
 });
+
+it('reads pace against an even spread of the month, behind as neutral text (ADR 0090)', async () => {
+  // 13 of 30 days counted: an even spread of 100 is about 43 by now.
+  render(<Screen />);
+  const behind = await screen.findByText('Behind pace: about 9 short');
+  expect(behind).not.toHaveClass('wa-target-on-pace');
+  expect(screen.queryByText('On pace')).toBeNull();
+});
+
+it('says on pace once the count keeps up, and nothing once the target is reached', async () => {
+  const ahead = payload();
+  ahead.metrics[0].actual = 44;
+  api.read.mockResolvedValue(ahead);
+  const view = render(<Screen />);
+  expect(await screen.findByText('On pace')).toHaveClass('wa-target-on-pace');
+  view.unmount();
+  const reached = payload();
+  reached.metrics[0].actual = 120;
+  api.read.mockResolvedValue(reached);
+  render(<Screen />);
+  await screen.findByText('Reached');
+  expect(screen.queryByText(/pace/)).toBeNull();
+});
+
+it('offers what the loaded report counted beside each target field', async () => {
+  function WithReference() {
+    const report = useMonthlyTargets(true);
+    return <MonthlyTargets report={report} reference={{ label: 'Last 30 complete days', counts: { leads: 105 } }} />;
+  }
+  render(<WithReference />);
+  await userEvent.click(await screen.findByRole('button', { name: 'Edit targets' }));
+  expect(within(screen.getByRole('dialog')).getByRole('spinbutton', { name: /Submissions/ }))
+    .toHaveAccessibleDescription('Submissions, not people. Last 30 complete days: 105');
+});

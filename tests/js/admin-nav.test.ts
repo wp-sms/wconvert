@@ -73,7 +73,12 @@ describe('the section a URL names', () => {
 describe('bookmarked admin flows', () => {
   it('opens shared settings categories and keeps destination investigation links usable', () => {
     expect(routeFrom(settingsHref('data'))).toMatchObject({ section: 'settings', settingsGroup: 'data' });
-    expect(routeFrom('#settings?group=unknown')).toMatchObject({ section: 'settings', settingsGroup: 'experience' });
+    // Settings opens where setup starts; a stale group lands there too.
+    expect(routeFrom('#settings?group=unknown')).toMatchObject({ section: 'settings', settingsGroup: 'connections' });
+    expect(routeFrom('#settings')).toMatchObject({ section: 'settings', settingsGroup: 'connections' });
+    expect(settingsHref()).toBe('#settings?group=connections');
+    // The footer's and Help's Visitor experience links name their group.
+    expect(routeFrom(settingsHref('experience'))).toMatchObject({ section: 'settings', settingsGroup: 'experience' });
     expect(routeFrom('#destinations?destination=EMAIL1')).toMatchObject({ section: 'settings', settingsGroup: 'connections', destinationId: 'EMAIL1' });
     expect(destinationHref('EMAIL1')).toBe('#settings?group=connections&destination=EMAIL1');
   });
@@ -183,4 +188,38 @@ it('names creation as an address of its own, and never inside an editor', () => 
   expect(routeFrom('#optins?new=1').creating).toBe(true);
   expect(routeFrom('#optins').creating).toBe(false);
   expect(routeFrom('#optins?new=1&edit=abc').creating).toBe(false);
+});
+
+describe('report periods in a link (ADR 0132)', () => {
+  it('round-trips Today and custom dates beside the existing days and month', () => {
+    expect(reportHref({ today: true, goal: 'grow_email_list' })).toBe('#analytics?today=1&goal=grow_email_list');
+    expect(routeFrom(reportHref({ today: true })).report).toMatchObject({ today: true });
+    const custom = reportHref({ from: '2026-09-01', to: '2026-09-10', optinId: 'OPTIN1', compare: false });
+    expect(custom).toBe('#analytics?from=2026-09-01&to=2026-09-10&optin=OPTIN1&compare=0');
+    expect(routeFrom(custom).report).toMatchObject({ from: '2026-09-01', to: '2026-09-10', optinId: 'OPTIN1', compare: false });
+    expect(routeFrom(reportHref({ month: '2026-09' })).report).toMatchObject({ month: '2026-09' });
+    expect(routeFrom('#analytics?days=7').report.days).toBe(7);
+  });
+
+  it('names only the window that applies: Today, then custom dates, then month, then days', () => {
+    expect(reportHref({ today: true, from: '2026-09-01', to: '2026-09-10', month: '2026-09', days: 7 })).toBe('#analytics?today=1');
+    expect(reportHref({ from: '2026-09-01', to: '2026-09-10', month: '2026-09', days: 7 })).toBe('#analytics?from=2026-09-01&to=2026-09-10');
+    expect(reportHref({ from: '2026-09-01', days: 7 })).toBe('#analytics?days=7');
+  });
+
+  it.each([
+    'from=2026-02-30&to=2026-03-02',
+    'from=2026-09-10&to=2026-09-01',
+    'from=2026-09-01',
+    'from=yesterday&to=2026-09-01',
+    'from=2026-13-01&to=2026-13-02',
+  ])('leaves invalid custom dates %s to the default', (query) => {
+    const report = routeFrom(`#analytics?${query}`).report;
+    expect(report.from).toBeUndefined();
+    expect(report.to).toBeUndefined();
+  });
+
+  it('reads today only as an explicit 1', () => {
+    expect(routeFrom('#analytics?today=0').report.today).toBeUndefined();
+  });
 });

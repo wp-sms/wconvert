@@ -7,25 +7,25 @@ import { formatCount, formatRate } from './format';
 import apiFetch from '@wordpress/api-fetch';
 import { useEffect, useState } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
-import type { DashboardPayload } from './api';
+import { periodOf, periodParams, type ReportPeriod } from './api';
 import { Region, RegionBody, RegionHeader, RegionError, RegionErrorState } from '../shell/Region';
 interface Answers { questions: { question: string; multiple: boolean; answered: number; choices: { label: string; count: number }[] }[]; answered: number; choices: { label: string; count: number }[]; retained: number; truncated: boolean; from: string; to: string; }
-export function Interests({ id, period }: { id: string; period: DashboardPayload }) {
+export function Interests({ id, period }: { id: string; period: ReportPeriod }) {
   const [stored, setData] = useState<Answers & { campaign: string }>();
   const data = stored?.campaign === id ? stored : undefined;
   const [updating, setUpdating] = useState(false);
   const [error, setError] = useState(false);
   const [retry, setRetry] = useState(0);
-  const { days, month, from, to } = period;
+  const { days, from, to } = period;
+  const windowQuery = periodParams(periodOf(period)).toString();
   useEffect(() => {
     const controller = new AbortController(); setUpdating(true); setError(false);
     if (days === 0) return () => controller.abort();
-    const query = month ? `month=${encodeURIComponent(month)}` : `days=${days}`;
-    void apiFetch<Answers>({ path: `/wconvert/v1/optins/${id}/interests?complete=1&${query}`, signal: controller.signal })
+    void apiFetch<Answers>({ path: `/wconvert/v1/optins/${id}/interests?${windowQuery}`, signal: controller.signal })
       .then(value => { if (!controller.signal.aborted) { if (value.from !== from || value.to !== to) setError(true); else setData({ ...value, campaign: id }); } })
       .catch(() => { if (!controller.signal.aborted) setError(true); }).finally(() => { if (!controller.signal.aborted) setUpdating(false); });
     return () => controller.abort();
-  }, [id, days, month, from, to, retry]);
+  }, [id, days, windowQuery, from, to, retry]);
   if (days === 0 || (data && !data.answered && !data.questions?.length && !updating && !error)) return null;
   if (!data && !error) return <RegionSkeleton label={__('Answers', 'wconvert')} lines={3} />;
   const Failure = data ? RegionError : RegionErrorState;

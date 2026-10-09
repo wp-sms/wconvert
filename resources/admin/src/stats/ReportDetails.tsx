@@ -1,6 +1,6 @@
 import { useId, useRef, useState } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
-import { ChartColumn, Pause, Play, Split } from 'lucide-react';
+import { ChartColumn, Eye, EyeOff, Split } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
 import { NativeSelect } from '../components/ui/native-select';
@@ -21,8 +21,9 @@ import {
 } from '../nav';
 import { publishOptin, unpublishOptin, declareWinner } from '../optins/api';
 import { adminSettings } from '../settings';
-import type { DashboardPayload, GoalReport, Numbers, OptinReport } from './api';
+import { periodOf, type DashboardPayload, type GoalReport, type Numbers, type OptinReport } from './api';
 import { formatCount, formatRate } from './format';
+import { siteLocale } from '../lib/format';
 import { families } from './reporting';
 import { ActivityChart } from './ActivityChart';
 
@@ -36,6 +37,21 @@ const STATUS: Record<OptinReport['status'], OptinStatus> = {
   paused: 'draft',
   historical: 'deleted',
 };
+
+/**
+ * A change against the previous period, as a signed percentage — or "New this
+ * period" from nothing, and nothing at all for nothing → nothing, because "No
+ * change" under a zero says nothing a merchant can use (ADR 0132).
+ */
+export function changeOf(current: number, previous: number): { text: string; up: boolean } | null {
+  if (previous === 0)
+    return current === 0 ? null : { text: __('New this period', 'wconvert'), up: false };
+  const delta = (current - previous) / previous;
+  return {
+    text: `${delta > 0 ? '+' : delta < 0 ? '−' : ''}${formatRate(Math.abs(delta))}`,
+    up: delta > 0,
+  };
+}
 
 /**
  * A change against the previous period, with its sign. A fall is not amber:
@@ -55,22 +71,72 @@ export function Change({
         {__('Comparison unavailable', 'wconvert')}
       </span>
     );
-  if (previous === 0)
-    return (
-      <span className="wa-change">
-        {current === 0
-          ? __('No change', 'wconvert')
-          : __('No earlier results', 'wconvert')}
-      </span>
-    );
-  const delta = (current - previous) / previous;
+  const change = changeOf(current, previous);
+  if (!change) return null;
   return (
-    <span className={`wa-change ${delta > 0 ? 'wa-change-up' : ''}`}>
-      {sprintf(
-        __('%s vs previous period', 'wconvert'),
-        `${delta > 0 ? '+' : delta < 0 ? '−' : ''}${formatRate(Math.abs(delta))}`,
-      )}
+    <span className={`wa-change ${change.up ? 'wa-change-up' : ''}`}>
+      {previous === 0
+        ? change.text
+        : sprintf(__('%s vs previous period', 'wconvert'), change.text)}
     </span>
+  );
+}
+
+/**
+ * Below this many times shown per variant, a difference in rate is mostly
+ * noise. A plain threshold, not a significance test: the line it guards never
+ * names a winner (ADR 0089), it says whether there is enough to look at.
+ */
+export const ENOUGH_SHOWN_PER_VARIANT = 1000;
+
+/** Best rate first; a variant never shown in these dates has no rate and goes last. */
+export const bestFirst = (arms: OptinReport[]): OptinReport[] =>
+  [...arms].sort((a, b) => (b.conversion_rate ?? -1) - (a.conversion_rate ?? -1));
+
+/** One sentence that reads two variants against each other, with how far to trust it. */
+function VariantDifference({ arms }: { arms: OptinReport[] }) {
+  const [lead, next] = arms.filter((arm) => arm.conversion_rate !== null);
+  if (!lead || !next)
+    return (
+      <p className="wa-variant-difference">
+        {__('Too early to call: a variant has not been shown in these dates.', 'wconvert')}
+      </p>
+    );
+  const points = (lead.conversion_rate! - next.conversion_rate!) * 100;
+  const difference =
+    points === 0
+      ? sprintf(
+          /* translators: 1, 2: variant names, 3: their shared rate. */
+          __('%1$s and %2$s both convert %3$s', 'wconvert'),
+          lead.name,
+          next.name,
+          formatRate(lead.conversion_rate),
+        )
+      : sprintf(
+          /* translators: 1: leading variant, 2: its rate, 3: next variant, 4: its rate, 5: the difference in percentage points. */
+          __('%1$s converts %2$s vs %3$s %4$s (+%5$s pts)', 'wconvert'),
+          lead.name,
+          formatRate(lead.conversion_rate),
+          next.name,
+          formatRate(next.conversion_rate),
+          new Intl.NumberFormat(siteLocale(), { maximumFractionDigits: 1 }).format(points),
+        );
+  const enough =
+    lead.impressions >= ENOUGH_SHOWN_PER_VARIANT && next.impressions >= ENOUGH_SHOWN_PER_VARIANT;
+  return (
+    <p className="wa-variant-difference">
+      {sprintf(
+        /* translators: 1: the difference between two variants, 2: how far to trust it. */
+        __('%1$s — %2$s', 'wconvert'),
+        difference,
+        enough
+          ? __('enough traffic to compare; this is still not proof.', 'wconvert')
+          : sprintf(
+              __('too early to call: fewer than %s shown per variant', 'wconvert'),
+              formatCount(ENOUGH_SHOWN_PER_VARIANT),
+            ),
+      )}
+    </p>
   );
 }
 function Status({ value }: { value: OptinReport['status'] }) {
@@ -238,8 +304,7 @@ export function GoalDetail({
           <Button asChild variant="outline">
             <a
               href={reportHref({
-                month: payload.month,
-                days: payload.days,
+                ...periodOf(payload),
                 goal: card.goal,
                 experiment: family.root.id,
                 compare: query.compare,
@@ -383,8 +448,7 @@ export function CampaignTable({
                   <a
                     className="wa-campaign-name"
                     href={reportHref({
-                      month: payload.month,
-                      days: payload.days,
+                      ...periodOf(payload),
                       goal: card.goal,
                       ...(arms.length > 1
                         ? { experiment: root.id }
@@ -421,8 +485,7 @@ export function CampaignTable({
                     <Button asChild variant="ghost">
                       <a
                         href={reportHref({
-                          month: payload.month,
-                          days: payload.days,
+                          ...periodOf(payload),
                           experiment: root.id,
                           compare: query.compare,
                         })}
@@ -502,7 +565,8 @@ function CampaignActions({
               disabled={busy || disabled}
               onClick={() => setConfirm(true)}
             >
-              {draft ? <Play aria-hidden="true" /> : <Pause aria-hidden="true" />}
+              {/* Publish state, not a pause: the badge then reads Draft (ADR 0132). */}
+              {draft ? <Eye aria-hidden="true" /> : <EyeOff aria-hidden="true" />}
               {busy
                 ? draft
                   ? __('Publishing…', 'wconvert')
@@ -577,6 +641,7 @@ export function Experiment({
         )}
       </p>
     );
+  const arms = bestFirst(family.arms);
   const live = family.arms.filter((a) => a.status !== 'historical');
   const canChoose =
     adminSettings()?.variants?.availability === 'ready' &&
@@ -610,8 +675,9 @@ export function Experiment({
           )}
         </p>
       </div>
+      <VariantDifference arms={arms} />
       <div className="wa-experiment-grid">
-        {family.arms.map((arm) => (
+        {arms.map((arm) => (
           <div className="wa-panel wa-arm" key={arm.id}>
             <div className="wa-detail-heading">
               <h3><bdi>{arm.name}</bdi></h3>
@@ -626,8 +692,7 @@ export function Experiment({
               <Button asChild variant="outline">
                 <a
                   href={reportHref({
-                    month: payload.month,
-                    days: payload.days,
+                    ...periodOf(payload),
                     goal: card.goal,
                     optinId: arm.id,
                     compare: query.compare,
