@@ -3,6 +3,12 @@
   padding-top: 24px;
   border-top: 1px solid var(--border);
 }
+.wa-targets > [data-slot="alert"] {
+  margin-bottom: 16px;
+}
+.wa-targets-failed {
+  margin: 28px 0;
+}
 .wa-targets-heading {
   display: flex;
   align-items: center;
@@ -14,9 +20,6 @@
   font-size: var(--text-section);
   margin-bottom: 5px;
   font-weight: 600;
-}
-.wa-targets-heading .wa-eyebrow {
-  margin-bottom: 7px !important;
 }
 .wa-targets-heading .wa-muted {
   margin: 0;
@@ -69,7 +72,7 @@
 .wa-target-progress {
   height: 6px;
   background: var(--border);
-  border-radius: 5px;
+  border-radius: 6px;
   overflow: hidden;
 }
 .wa-target-progress > span {
@@ -88,7 +91,14 @@
   color: var(--muted-foreground);
 }
 .wa-target-reached {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   color: var(--success);
+}
+.wa-target-reached svg {
+  inline-size: 14px;
+  block-size: 14px;
 }
 .wa-target-footer {
   margin-top: 21px;
@@ -102,16 +112,22 @@
   font-size: var(--text-note);
 }
 .wa-target-footer a {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
   color: var(--action);
   font-weight: 600;
   text-decoration: none;
+}
+.wa-target-footer a svg {
+  inline-size: 14px;
+  block-size: 14px;
 }
 .wa-target-footer a:hover {
   text-decoration-line: underline;
   text-underline-offset: 3px;
 }
-.wa-targets .wa-target-note,
-.wa-target-editor .wa-target-note {
+.wa-targets .wa-target-note {
   color: var(--muted-foreground);
   font-size: var(--text-note);
   line-height: 1.6;
@@ -133,63 +149,11 @@
   color: var(--muted-foreground);
   margin: 0;
 }
-.wa-targets-status {
-  padding: 16px 0;
-  font-size: var(--text-note);
-  color: var(--muted-foreground);
+/* The shared Input, at a width that fits the largest target. */
+.wa-target-input {
+  max-inline-size: 10rem;
 }
-.wa-target-editor {
-  max-height: calc(100dvh - 32px);
-  overflow-y: auto;
-}
-.wa-target-editor-scope {
-  background: var(--muted);
-  border: 1px solid var(--border);
-  border-radius: 5px;
-  padding: 12px;
-  font-size: var(--text-note);
-  line-height: 1.65;
-  margin: 0 0 12px;
-}
-.wa-target-field {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 16px;
-  padding: 17px 0;
-  border-bottom: 1px solid var(--border);
-  font-size: var(--text-body);
-  font-weight: 600;
-}
-.wa-target-field small {
-  display: block;
-  font-size: var(--text-note);
-  line-height: 1.6;
-  font-weight: 400;
-  color: var(--muted-foreground);
-  margin-top: 4px;
-}
-.wa-target-field input {
-  width: 118px;
-  flex-shrink: 0;
-  min-height: var(--control-height);
-  border: 1px solid var(--input);
-  border-radius: 5px;
-  background: var(--card);
-  color: var(--foreground);
-  padding: 8px 10px;
-  font: inherit;
-}
-.wa-target-save-error {
-  color: var(--destructive);
-  font-size: var(--text-note);
-  margin: 12px 0;
-}
-.wa-target-field input:focus-visible {
-  outline: 2px solid var(--ring);
-  outline-offset: 3px;
-}
-@media (max-width: 560px) {
+@media (max-width: 600px) {
   .wa-targets-heading,
   .wa-target-empty {
     align-items: start;
@@ -201,14 +165,5 @@
   }
   .wa-target-number {
     margin: 18px 0;
-  }
-  .wa-target-number strong {
-    font-size: var(--text-metric);
-  }
-  .wa-target-field {
-    gap: 12px;
-  }
-  .wa-target-field input {
-    width: 98px;
   }
 }

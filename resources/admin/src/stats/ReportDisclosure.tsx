@@ -1,11 +1,14 @@
 import './report.css';
 import type { ReactNode } from 'react';
-import { ChevronRight } from 'lucide-react';
+import { Disclosure } from '../shell/Disclosure';
 
-/** Consistent, keyboard-native disclosure for report evidence and definitions. */
+/**
+ * Report evidence and definitions, folded under the report they explain. It is
+ * the shared `Disclosure` (ADR 0131) — inline, at the region's own inset —
+ * rather than the leading chevron it used to draw.
+ */
 export function ReportDisclosure({ title, children, open }: { title: string; children: ReactNode; open?: boolean }) {
-  return <details className="wa-report-details" open={open}>
-    <summary><ChevronRight aria-hidden="true" className="size-4" /><span>{title}</span></summary>
-    <div className="wa-report-details-body">{children}</div>
-  </details>;
+  return <Disclosure variant="inline" title={title} open={open} className="wa-report-details" bodyClassName="wa-report-details-body">
+    {children}
+  </Disclosure>;
 }

@@ -1,8 +1,13 @@
 import { useState } from 'react';
 import { __ } from '@wordpress/i18n';
+import { formatDay } from '../lib/format';
+import { DataTable, DataTableBody, DataTableCell, DataTableColumn, DataTableHead, DataTableRow } from '../shell/DataTable';
+import { Disclosure } from '../shell/Disclosure';
+import { OptionStrip } from '../shell/OptionStrip';
 import type { Numbers } from './api';
 import { formatCount, formatRate } from './format';
-import { dateLabel } from './reporting';
+
+type Metric = 'results' | 'rate' | 'shown';
 
 /** A missing denominator is a gap, not a zero-percent result. */
 export function ActivityChart({
@@ -14,7 +19,7 @@ export function ActivityChart({
   numbers: Numbers;
   previous?: Numbers;
 }) {
-  const [metric, setMetric] = useState<'results' | 'rate' | 'shown'>('results');
+  const [metric, setMetric] = useState<Metric>('results');
   const series = (n: Numbers) =>
     Object.entries(n.impression_by_day)
       .sort(([a], [b]) => a.localeCompare(b))
@@ -39,6 +44,8 @@ export function ActivityChart({
     metric === 'rate'
       ? Math.max(0.01, Math.ceil(maximum * 100) / 100)
       : Math.max(2, Math.ceil(maximum / 2) * 2);
+  const metricName =
+    metric === 'results' ? label : metric === 'shown' ? __('Shown', 'wconvert') : __('Rate', 'wconvert');
   const format = (n: number | null) =>
     n === null ? '—' : metric === 'rate' ? formatRate(n) : formatCount(n);
   const path = (days: typeof current) =>
@@ -67,28 +74,16 @@ export function ActivityChart({
     <div className="wa-trend">
       <div className="wa-trend-heading">
         <h3>{__('Performance over time', 'wconvert')}</h3>
-        <div
-          className="wa-metric-tabs"
-          role="group"
-          aria-label={__('Chart metric', 'wconvert')}
-        >
-          {(
-            [
-              ['results', label],
-              ['rate', __('Rate', 'wconvert')],
-              ['shown', __('Times shown', 'wconvert')],
-            ] as const
-          ).map(([key, text]) => (
-            <button
-              type="button"
-              key={key}
-              aria-pressed={metric === key}
-              onClick={() => setMetric(key)}
-            >
-              {text}
-            </button>
-          ))}
-        </div>
+        <OptionStrip
+          label={__('Chart metric', 'wconvert')}
+          value={metric}
+          options={[
+            { value: 'results', label },
+            { value: 'rate', label: __('Rate', 'wconvert') },
+            { value: 'shown', label: __('Shown', 'wconvert') },
+          ]}
+          onChange={(value) => setMetric(value as Metric)}
+        />
       </div>
       <div className="wa-chart-legend">
         <span>{__('Selected period', 'wconvert')}</span>
@@ -121,51 +116,37 @@ export function ActivityChart({
         {isolatedPoints(current)}
       </svg>
       <div className="wa-chart-dates">
-        <span>{current[0] && dateLabel(current[0].day)}</span>
-        <span>{current.at(-1) && dateLabel(current.at(-1)!.day)}</span>
+        <span>{current[0] && formatDay(current[0].day)}</span>
+        <span>{current.at(-1) && formatDay(current.at(-1)!.day)}</span>
       </div>
-      <details className="wa-daily">
-        <summary>{__('View exact daily numbers', 'wconvert')}</summary>
-        <div>
-          <table>
-            <caption className="sr-only">
-              {__('Daily performance', 'wconvert')}
-            </caption>
-            <thead>
-              <tr>
-                <th scope="col">{__('Date', 'wconvert')}</th>
-                <th scope="col">
-                  {metric === 'results'
-                    ? label
-                    : metric === 'shown'
-                      ? __('Times shown', 'wconvert')
-                      : __('Rate', 'wconvert')}
-                </th>
+      <Disclosure variant="inline" title={__('View exact daily numbers', 'wconvert')} className="wa-daily">
+        <DataTable label={__('Daily performance', 'wconvert')}>
+          <DataTableHead>
+            <DataTableColumn>{__('Date', 'wconvert')}</DataTableColumn>
+            <DataTableColumn numeric>{metricName}</DataTableColumn>
+            {previous && (
+              <>
+                <DataTableColumn>{__('Previous date', 'wconvert')}</DataTableColumn>
+                <DataTableColumn numeric>{__('Previous value', 'wconvert')}</DataTableColumn>
+              </>
+            )}
+          </DataTableHead>
+          <DataTableBody>
+            {current.map((d, i) => (
+              <DataTableRow key={d.day}>
+                <DataTableCell label={__('Date', 'wconvert')}>{formatDay(d.day)}</DataTableCell>
+                <DataTableCell label={metricName} numeric>{format(d.value)}</DataTableCell>
                 {previous && (
                   <>
-                    <th scope="col">{__('Previous date', 'wconvert')}</th>
-                    <th scope="col">{__('Previous value', 'wconvert')}</th>
+                    <DataTableCell label={__('Previous date', 'wconvert')}>{prior[i] ? formatDay(prior[i].day) : '—'}</DataTableCell>
+                    <DataTableCell label={__('Previous value', 'wconvert')} numeric>{format(prior[i]?.value ?? null)}</DataTableCell>
                   </>
                 )}
-              </tr>
-            </thead>
-            <tbody>
-              {current.map((d, i) => (
-                <tr key={d.day}>
-                  <th scope="row">{dateLabel(d.day)}</th>
-                  <td>{format(d.value)}</td>
-                  {previous && (
-                    <>
-                      <td>{prior[i] ? dateLabel(prior[i].day) : '—'}</td>
-                      <td>{format(prior[i]?.value ?? null)}</td>
-                    </>
-                  )}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </details>
+              </DataTableRow>
+            ))}
+          </DataTableBody>
+        </DataTable>
+      </Disclosure>
     </div>
   );
 }

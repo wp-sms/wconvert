@@ -18,6 +18,7 @@ import {
 import { Button } from '../components/ui/button';
 import { PageAction } from '../shell/PageActions';
 import { PageError, Region, RegionErrorState } from '../shell/Region';
+import { Disclosure } from '../shell/Disclosure';
 import { RegionSkeleton } from '../shell/RegionSkeleton';
 import { StatRowSkeleton } from '../shell/Stat';
 import { EmptyState } from '../shell/EmptyState';
@@ -161,11 +162,7 @@ function DashboardContent({
       <PageAction>
         <div className="wa-header-actions">
           <label>
-            <span className="sr-only">
-              {updating || refreshError
-                ? __('Requested period', 'wconvert')
-                : __('Period', 'wconvert')}
-            </span>
+            {/* One name: an `aria-label` here used to override a second, visually hidden one. */}
             <select
               aria-label={__('Report period', 'wconvert')}
               value={
@@ -197,10 +194,6 @@ function DashboardContent({
             variant="outline"
             disabled={!payload || updating || payload.days === 0}
             onClick={exportReport}
-            title={__(
-              'Exports this report, including campaigns hidden by table search or status filters.',
-              'wconvert',
-            )}
           >
             <Download aria-hidden="true" />
             {__('Export report CSV', 'wconvert')}
@@ -224,26 +217,21 @@ function DashboardContent({
         <PageError
           message={sprintf(
             __(
-              'Could not load the requested period. Showing the previous report and its dates. %s',
+              'Could not load that period. Showing the last report and its dates. %s',
               'wconvert',
             ),
             refreshError,
           )}
+          onRetry={() => setRetry((n) => n + 1)}
         />
       )}
       {report.status === 'failed' && (
         <Region label={__('Analytics', 'wconvert')}>
-          <RegionErrorState message={report.message} action={
-            <Button variant="outline" disabled={updating} onClick={() => setRetry((n) => n + 1)}>
-              {__('Retry loading report', 'wconvert')}
-            </Button>
-          } />
+          <RegionErrorState
+            message={report.message}
+            onRetry={() => setRetry((n) => n + 1)}
+          />
         </Region>
-      )}
-      {refreshError && payload && (
-        <Button variant="outline" disabled={updating} onClick={() => setRetry((n) => n + 1)}>
-          {__('Retry loading report', 'wconvert')}
-        </Button>
       )}
       {report.status === 'loading' && (
         <RegionSkeleton label={__('Analytics', 'wconvert')}>
@@ -259,7 +247,7 @@ function DashboardContent({
             compare: selection.compare,
           })}
         >
-          <ArrowLeft aria-hidden="true" />
+          <ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />
           {__('Overall impact', 'wconvert')}
         </a>
       )}
@@ -279,7 +267,7 @@ function DashboardContent({
               }
             >
               {__(
-                'Publish a campaign to start seeing its reach and results. Never-published drafts stay on the Campaigns page.',
+                'Publish a campaign. Its results appear here the day after it is first shown.',
                 'wconvert',
               )}
             </EmptyState>
@@ -288,19 +276,7 @@ function DashboardContent({
         </>
       ) : payload && overview ? (
         <>
-          <div className="wa-intro">
-            <p className="wa-eyebrow">
-              {__('Your impact at a glance', 'wconvert')}
-            </p>
-            <h2>{__('What WConvert brought to your site', 'wconvert')}</h2>
-            <p className="wa-muted">
-              {__(
-                'See the results, then explore the campaigns behind them.',
-                'wconvert',
-              )}
-            </p>
-          </div>
-          <div className="wa-impact-grid">
+          <section className="wa-impact-grid" aria-label={__('Overall impact', 'wconvert')}>
             {payload.impact.filter((item) => !CART_IMPACT.includes(item.id) || commerceSupported() || item.goals.length > 0
               || item.count > 0 || (previous?.impact.find((p) => p.id === item.id)?.count ?? 0) > 0).map((item, index) => (
               <a
@@ -315,7 +291,7 @@ function DashboardContent({
               >
                 <span className="wa-impact-label">
                   {item.label}
-                  <ArrowUpRight aria-hidden="true" />
+                  <ArrowUpRight aria-hidden="true" className="rtl:-scale-x-100" />
                 </span>
                 <strong>{formatCount(item.count)}</strong>
                 {previous && (
@@ -329,11 +305,11 @@ function DashboardContent({
                 <small>{item.note}</small>
               </a>
             ))}
-          </div>
+          </section>
           {payload.impact.find((i) => i.id === 'impressions')?.count === 0 && (
             <p className="wa-notice">
               {__(
-                'No appearances in this period. Today’s activity appears tomorrow.',
+                'Nothing was shown in this period. Today’s activity appears tomorrow.',
                 'wconvert',
               )}
             </p>
@@ -342,9 +318,6 @@ function DashboardContent({
           <Insights items={insights} query={accepted} />
           <div className="wa-section-heading">
             <h3>{__('Results by goal', 'wconvert')}</h3>
-            <span>
-              {__('Choose a goal to explore its performance', 'wconvert')}
-            </span>
           </div>
           <div className="wa-goal-grid">
             {payload.goals.map((g) => (
@@ -374,26 +347,19 @@ function DashboardContent({
                   <small>
                     {sprintf(
                       _n(
-                        '%d campaign',
-                        '%d campaigns',
+                        '%s campaign',
+                        '%s campaigns',
                         families(g).length,
                         'wconvert',
                       ),
-                      families(g).length,
-                    )}{' '}
-                    · {__('History included', 'wconvert')}
+                      formatCount(families(g).length),
+                    )}
                   </small>
                 </span>
-                <ArrowUpRight className="wa-goal-arrow" aria-hidden="true" />
+                <ArrowUpRight className="wa-goal-arrow rtl:-scale-x-100" aria-hidden="true" />
               </a>
             ))}
           </div>
-          <p className="wa-muted wa-footnote">
-            {__(
-              'Paused and deleted campaigns keep their contribution. Published campaigns may still be limited by their schedule, rules or unavailable dependencies.',
-              'wconvert',
-            )}
-          </p>
         </>
       ) : payload && selection.experiment && card && optin ? (
         <Experiment
@@ -420,7 +386,6 @@ function DashboardContent({
       ) : payload && impact ? (
         <>
           <div className="wa-intro">
-            <p className="wa-eyebrow">{__('Overall impact', 'wconvert')}</p>
             <h2>{impact.label}</h2>
             <p className="wa-muted">{impact.note}</p>
           </div>
@@ -437,7 +402,7 @@ function DashboardContent({
             title={__('This report is not available', 'wconvert')}
           >
             {__(
-              'Choose Overall impact to see the available goals and campaigns. Never-published drafts have no report.',
+              'Go back to Overall impact to choose a goal or campaign. A campaign that was never published has no report.',
               'wconvert',
             )}
           </EmptyState>
@@ -449,31 +414,28 @@ function DashboardContent({
       {payload && optin && !selection.experiment && <><JourneyReport id={optin.id} period={payload} /><Interests id={optin.id} period={payload} /></>}
       {payload && overview && payload.goals.length > 0 && <MonthlyTargets report={targets} />}
       {payload && payload.goals.length > 0 && (
-        <details className="wa-help">
-          <summary>{__('How these numbers work', 'wconvert')}</summary>
-          <div className="wa-help-notes">
-            <p>
-              <strong>{__('Leads:', 'wconvert')}</strong>{' '}
-              {__('One per form submission, even with multiple destinations. Repeat submissions count again; leads are not unique people or confirmed subscribers.', 'wconvert')}
-            </p>
-            <p>
-              <strong>{__('Clicks:', 'wconvert')}</strong>{' '}
-              {__('Offer and cart clicks show interest, not confirmed purchases or recovered revenue.', 'wconvert')}
-            </p>
-            <p>
-              <strong>{__('Rates:', 'wconvert')}</strong>{' '}
-              {__('Submissions or clicks ÷ campaign appearances × 100. For example, 5 submissions from 100 appearances = 5%. Repeats count. A dash means no appearances; embedded forms count when they come into view.', 'wconvert')}
-            </p>
-            <p>
-              <strong>{__('Email handoffs:', 'wconvert')}</strong>{' '}
-              {__('Emails accepted for sending, not confirmed inbox arrivals or downloads. Counted on the send day, which may be later than the submission. Resends can count again.', 'wconvert')}
-            </p>
-            <p>
-              <strong>{__('History:', 'wconvert')}</strong>{' '}
-              {__('Past totals stay when campaigns are paused or deleted, or old lead records are removed. A campaign’s goal stays fixed after first publication.', 'wconvert')}
-            </p>
-          </div>
-        </details>
+        <Disclosure variant="inline" title={__('How these numbers work', 'wconvert')} className="wa-help">
+          <p>
+            <strong>{__('Submissions:', 'wconvert')}</strong>{' '}
+            {__('One per form fill, even with several destinations. Repeat submissions count again, so they are not unique people or confirmed subscribers.', 'wconvert')}
+          </p>
+          <p>
+            <strong>{__('Clicks:', 'wconvert')}</strong>{' '}
+            {__('Offer and cart clicks show interest, not confirmed purchases or recovered revenue.', 'wconvert')}
+          </p>
+          <p>
+            <strong>{__('Rates:', 'wconvert')}</strong>{' '}
+            {__('Submissions or clicks ÷ shown. For example, 5 submissions from 100 shown = 5%. A dash means the campaign was not shown; embedded forms count when they come into view.', 'wconvert')}
+          </p>
+          <p>
+            <strong>{__('Email handoffs:', 'wconvert')}</strong>{' '}
+            {__('Emails accepted for sending, not confirmed inbox arrivals or downloads. Counted on the send day, which may be later than the submission. Resends can count again.', 'wconvert')}
+          </p>
+          <p>
+            <strong>{__('History:', 'wconvert')}</strong>{' '}
+            {__('Past totals stay when a campaign is unpublished or deleted, or when old submissions are removed. A campaign’s goal stays fixed after it is first published.', 'wconvert')}
+          </p>
+        </Disclosure>
       )}
     </div>
   );

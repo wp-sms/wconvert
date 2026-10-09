@@ -87,7 +87,7 @@ function payload(): DashboardPayload {
     impact: [
       {
         id: 'leads',
-        label: 'Leads captured',
+        label: 'Submissions',
         note: 'Form submissions across all capture goals',
         count: 12,
         goals: ['grow_email_list'],
@@ -108,7 +108,7 @@ function payload(): DashboardPayload {
       },
       {
         id: 'impressions',
-        label: 'Times shown',
+        label: 'Shown',
         note: 'Appearances, including repeats',
         count: 100,
         goals: ['grow_email_list'],
@@ -148,11 +148,13 @@ describe('impact overview', () => {
     render(<Dashboard query={{ month: '2026-09', optinId: 'email' }} />);
     await screen.findByText('No complete days yet this month');
     expect(
-      screen.queryByRole('link', { name: 'View captured leads' }),
+      screen.queryByRole('link', { name: 'View submissions' }),
     ).not.toBeInTheDocument();
-    expect(
-      screen.getByRole('button', { name: 'View captured leads' }),
-    ).toBeDisabled();
+    const refused = screen.getByRole('button', { name: 'View submissions' });
+    expect(refused).toHaveAttribute('aria-disabled', 'true');
+    expect(refused).toHaveAccessibleDescription(
+      'Submissions open once this month has a complete day.',
+    );
     expect(
       screen.getByRole('button', { name: 'Export report CSV' }),
     ).toBeDisabled();
@@ -187,7 +189,7 @@ describe('impact overview', () => {
       />,
     );
     const edit = routeFrom(
-      (await screen.findByRole('link', { name: 'Edit campaign' })).getAttribute(
+      (await screen.findByRole('link', { name: 'Open editor' })).getAttribute(
         'href',
       )!,
     );
@@ -212,12 +214,11 @@ describe('impact overview', () => {
 
   it('shows compatible impact counts without a global rate or timezone', async () => {
     render(<Dashboard />);
-    await screen.findByRole('heading', {
-      name: 'What WConvert brought to your site',
-    });
+    await screen.findByRole('region', { name: 'Overall impact' });
     expect(
-      screen.getByRole('link', { name: /Leads captured/ }),
+      screen.getByRole('link', { name: /^Submissions/ }),
     ).toHaveTextContent('12');
+    expect(screen.queryByText('Your impact at a glance')).toBeNull();
     expect(screen.queryByText('Conversion rate')).toBeNull();
     expect(
       screen.queryByText(/Asia\/Muscat|in your site’s timezone/),
@@ -226,7 +227,7 @@ describe('impact overview', () => {
   });
   it('shows no cart results on a site that cannot run cart campaigns (ADR 0127)', async () => {
     render(<Dashboard />);
-    await screen.findByRole('heading', { name: 'What WConvert brought to your site' });
+    await screen.findByRole('region', { name: 'Overall impact' });
     expect(screen.queryByRole('link', { name: /Cart return clicks/ })).toBeNull();
     expect(screen.getByRole('link', { name: /Offer link clicks/ })).toBeInTheDocument();
   });
@@ -241,12 +242,12 @@ describe('impact overview', () => {
     render(<Dashboard />);
     const off = await screen.findByRole('radio', { name: 'Off' });
     expect(
-      screen.getByRole('link', { name: /Leads captured/ }),
+      screen.getByRole('link', { name: /^Submissions/ }),
     ).toHaveTextContent('100%');
     await userEvent.click(off);
     expect(off).toBeChecked();
     expect(
-      screen.getByRole('link', { name: /Leads captured/ }),
+      screen.getByRole('link', { name: /^Submissions/ }),
     ).not.toHaveTextContent('100%');
     expect(api.readDashboard).toHaveBeenCalledTimes(1);
   });
@@ -262,7 +263,7 @@ describe('impact overview', () => {
     expect(
       routeFrom(
         screen
-          .getByRole('link', { name: /Leads captured/ })
+          .getByRole('link', { name: /^Submissions/ })
           .getAttribute('href')!,
       ).report.impact,
     ).toBe('leads');
@@ -281,13 +282,9 @@ describe('impact overview', () => {
     api.readDashboard.mockRejectedValueOnce(new Error('Not allowed'));
     render(<Dashboard />);
     expect(await screen.findByText('Not allowed')).toBeInTheDocument();
-    await userEvent.click(
-      screen.getByRole('button', { name: 'Retry loading report' }),
-    );
+    await userEvent.click(screen.getByRole('button', { name: 'Try again' }));
     expect(
-      await screen.findByRole('heading', {
-        name: 'What WConvert brought to your site',
-      }),
+      await screen.findByRole('region', { name: 'Overall impact' }),
     ).toBeInTheDocument();
   });
   it('retains accepted dates and capture links when a new period fails', async () => {
@@ -297,24 +294,25 @@ describe('impact overview', () => {
     await screen.findByRole('heading', { name: 'Newsletter footer' });
     api.readDashboard.mockRejectedValueOnce(new Error('Offline'));
     rerender(<Dashboard query={{ days: 7, optinId: 'email' }} />);
-    await screen.findByText(/Could not load the requested period.*Offline/);
+    const failure = await screen.findByText(/Could not load that period.*Offline/);
+    expect(
+      within(failure.closest('[data-slot="alert"]') as HTMLElement).getByRole('button', { name: 'Try again' }),
+    ).toBeInTheDocument();
     expect(
       routeFrom(
         screen
-          .getByRole('link', { name: 'View captured leads' })
+          .getByRole('link', { name: 'View submissions' })
           .getAttribute('href')!,
       ).leads,
     ).toMatchObject({ from: '2026-08-15', to: '2026-09-13' });
     const edit = routeFrom(
-      screen.getByRole('link', { name: 'Edit campaign' }).getAttribute('href')!,
+      screen.getByRole('link', { name: 'Open editor' }).getAttribute('href')!,
     );
     expect(routeFrom(edit.returnTo).report.days).toBe(30);
   });
   it('ignores a stale response finishing after the latest period', async () => {
     const { rerender } = render(<Dashboard query={{ days: 30 }} />);
-    await screen.findByRole('heading', {
-      name: 'What WConvert brought to your site',
-    });
+    await screen.findByRole('region', { name: 'Overall impact' });
     let finish!: (data: DashboardPayload) => void;
     api.readDashboard.mockImplementationOnce(
       () =>
@@ -329,10 +327,10 @@ describe('impact overview', () => {
       impact: payload().impact.map((i) => ({ ...i, count: 99 })),
     });
     rerender(<Dashboard query={{ days: 90 }} />);
-    await screen.findByRole('link', { name: /Leads captured.*99/ });
+    await screen.findByRole('link', { name: /^Submissions.*99/ });
     await act(async () => finish({ ...payload(), days: 7 }));
     expect(
-      screen.getByRole('link', { name: /Leads captured/ }),
+      screen.getByRole('link', { name: /^Submissions/ }),
     ).toHaveTextContent('99');
   });
 });
@@ -372,15 +370,15 @@ describe('Goal and campaign reports', () => {
     });
     render(<Dashboard query={{ optinId: 'email' }} />);
     await screen.findByRole('heading', { name: 'Newsletter footer' });
+    expect(screen.getByText(/This campaign was deleted/)).toBeInTheDocument();
+    expect(screen.getByText('Deleted')).toBeInTheDocument();
+    expect(screen.queryByText('Historical')).toBeNull();
+    expect(screen.queryByRole('link', { name: 'Open editor' })).toBeNull();
     expect(
-      screen.getByText(/This deleted campaign is kept here/),
-    ).toBeInTheDocument();
-    expect(screen.queryByRole('link', { name: 'Edit campaign' })).toBeNull();
-    expect(
-      screen.queryByRole('button', { name: 'Resume campaign' }),
+      screen.queryByRole('button', { name: 'Publish campaign' }),
     ).toBeNull();
     expect(
-      screen.getByRole('link', { name: 'View captured leads' }),
+      screen.getByRole('link', { name: 'View submissions' }),
     ).toBeInTheDocument();
   });
   it('does not send click-only campaigns to the lead log', async () => {
@@ -391,7 +389,7 @@ describe('Goal and campaign reports', () => {
     render(<Dashboard query={{ optinId: 'email' }} />);
     await screen.findByRole('heading', { name: 'Newsletter footer' });
     expect(
-      screen.queryByRole('link', { name: 'View captured leads' }),
+      screen.queryByRole('link', { name: 'View submissions' }),
     ).toBeNull();
     expect(screen.getByText('Link click rate')).toBeInTheDocument();
   });
@@ -403,7 +401,7 @@ describe('Goal and campaign reports', () => {
     render(<Dashboard query={{ goal: 'grow_email_list' }} />);
     await screen.findByRole('heading', { name: 'Grow my email list' });
     await userEvent.type(
-      screen.getByRole('textbox', { name: 'Find a campaign' }),
+      screen.getByRole('searchbox', { name: 'Find a campaign' }),
       'Old',
     );
     expect(
@@ -414,8 +412,13 @@ describe('Goal and campaign reports', () => {
       screen.getByRole('combobox', { name: 'Campaign status' }),
       'published',
     );
+    expect(screen.getByText('No campaigns match')).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'Clear filters' }));
     expect(
-      screen.getByText('No campaigns match. Try another name or status.'),
+      screen.getByRole('link', { name: 'Newsletter footer' }),
+    ).toBeInTheDocument();
+    expect(
+      within(screen.getByRole('table', { name: 'Campaign contributions' })).getByText('Draft'),
     ).toBeInTheDocument();
   });
   it('counts each variant once and keeps retired-arm results', () => {
@@ -450,7 +453,7 @@ describe('Goal and campaign reports', () => {
     render(<Dashboard query={{ goal: 'grow_email_list', compare: false }} />);
     await screen.findByRole('heading', { name: 'Grow my email list' });
     expect(screen.getByText('—', { selector: 'dd' })).toBeInTheDocument();
-    await userEvent.click(screen.getByRole('button', { name: 'Rate' }));
+    await userEvent.click(screen.getByRole('radio', { name: 'Rate' }));
     await userEvent.click(screen.getByText('View exact daily numbers'));
     const table = screen.getByRole('table', { name: 'Daily performance' });
     expect(within(table).getByText('—')).toBeInTheDocument();
@@ -465,20 +468,22 @@ describe('Goal and campaign reports', () => {
     );
     render(<Dashboard query={{ optinId: 'email' }} />);
     await userEvent.click(
-      await screen.findByRole('button', { name: 'Resume campaign' }),
+      await screen.findByRole('button', { name: 'Publish campaign' }),
     );
     expect(screen.getByRole('alertdialog')).toHaveTextContent(
       'latest saved draft',
     );
     expect(api.publishOptin).not.toHaveBeenCalled();
     await userEvent.click(
-      screen.getByRole('button', { name: 'Publish and resume' }),
+      within(screen.getByRole('alertdialog')).getByRole('button', {
+        name: 'Publish campaign',
+      }),
     );
     expect(
       await screen.findByText('Complete the destination first'),
     ).toBeInTheDocument();
     expect(
-      screen.getByRole('button', { name: 'Resume campaign' }),
+      screen.getByRole('button', { name: 'Publish campaign' }),
     ).toBeInTheDocument();
   });
   it('exports scoped raw arm rows, dates and safe merchant text', () => {
@@ -493,7 +498,7 @@ describe('Goal and campaign reports', () => {
   it('pauses only after confirmation, then refreshes the reported status', async () => {
     render(<Dashboard query={{ optinId: 'email' }} />);
     await userEvent.click(
-      await screen.findByRole('button', { name: 'Pause campaign' }),
+      await screen.findByRole('button', { name: 'Unpublish campaign' }),
     );
     expect(api.unpublishOptin).not.toHaveBeenCalled();
     api.unpublishOptin.mockResolvedValueOnce({});
@@ -503,11 +508,11 @@ describe('Goal and campaign reports', () => {
     });
     await userEvent.click(
       within(screen.getByRole('alertdialog')).getByRole('button', {
-        name: 'Pause campaign',
+        name: 'Unpublish campaign',
       }),
     );
     expect(
-      await screen.findByRole('button', { name: 'Resume campaign' }),
+      await screen.findByRole('button', { name: 'Publish campaign' }),
     ).toBeInTheDocument();
     expect(api.unpublishOptin).toHaveBeenCalledWith('email');
   });
@@ -594,4 +599,15 @@ it('explains publication after the selected dates without implying a display pro
   render(<Dashboard query={{ optinId: 'email' }} />);
   expect(await screen.findByText('Published after these report dates. New activity appears after each day ends.')).toBeVisible();
   expect(screen.queryByRole('heading', { name: 'Needs attention' })).not.toBeInTheDocument();
+});
+
+it('shows a fall as neutral text with its sign, and a rise as a gain', async () => {
+  const data = payload();
+  data.previous!.impact = data.impact.map((i) => ({ ...i, count: i.id === 'leads' ? 24 : 50 }));
+  api.readDashboard.mockResolvedValue(data);
+  render(<Dashboard />);
+  const fall = (await screen.findByRole('link', { name: /^Submissions/ })).querySelector('.wa-change')!;
+  expect(fall).toHaveTextContent('−50% vs previous period');
+  expect(fall).not.toHaveClass('wa-change-up');
+  expect(screen.getByRole('link', { name: /^Shown/ }).querySelector('.wa-change')).toHaveClass('wa-change-up');
 });

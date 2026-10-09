@@ -3,7 +3,7 @@ import { test, expect } from '@playwright/test';
 const baseURL = 'http://127.0.0.1:9413';
 const screens = [
   { route: 'optins', name: 'Campaigns', empty: 'Start with one good campaign.', full: 'Grow the list', retry: 'Try again' },
-  { route: 'analytics', name: 'Analytics', empty: 'Your first results start with a live campaign', full: 'Results by goal', retry: 'Retry loading report' },
+  { route: 'analytics', name: 'Analytics', empty: 'Your first results start with a live campaign', full: 'Results by goal', retry: 'Try again' },
   { route: 'leads', name: 'Leads', empty: 'No submissions yet', full: 'Sarah Whitfield', retry: 'Retry loading submissions' },
   { route: 'settings?group=connections', name: 'Settings', empty: 'Leads are saved in WConvert only', full: 'Welcome email', retry: 'Refresh' },
 ];

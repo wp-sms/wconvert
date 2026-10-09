@@ -127,11 +127,11 @@ final class Dashboard
     private static function impact(array $cards): array
     {
         $groups = [
-            'leads' => ['label' => __('Leads captured', 'wconvert'), 'note' => __('Form submissions across all capture goals', 'wconvert')],
+            'leads' => ['label' => __('Submissions', 'wconvert'), 'note' => __('Form fills across all capture goals, including repeats', 'wconvert')],
             'offers' => ['label' => __('Offer link clicks', 'wconvert'), 'note' => __('Clicks to linked offers or content', 'wconvert')],
             'carts' => ['label' => __('Cart return clicks', 'wconvert'), 'note' => __('Clicks back to a shopping basket, not orders', 'wconvert')],
-            'additions' => ['label' => __('Basket additions', 'wconvert'), 'note' => __('Campaign appearances with a confirmed addition, not purchases', 'wconvert')],
-            'impressions' => ['label' => __('Times shown', 'wconvert'), 'note' => __('Campaign appearances, including repeats', 'wconvert')],
+            'additions' => ['label' => __('Basket additions', 'wconvert'), 'note' => __('Campaigns shown with a confirmed addition, not purchases', 'wconvert')],
+            'impressions' => ['label' => __('Shown', 'wconvert'), 'note' => __('Every time a campaign was shown, including repeats', 'wconvert')],
         ];
         $impact = [];
         foreach ($groups as $id => $group) $impact[$id] = $group + ['id' => $id, 'count' => 0, 'goals' => []];
