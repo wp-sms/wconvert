@@ -5,6 +5,7 @@ import type { Destination } from '../destinations/api';
 import type { Template } from '@renderer/types';
 import { childKeysOf } from '../builder/panel';
 import type { TemplateNode } from '@renderer/types';
+import type { CaptureMode } from '../builder/captureMode';
 
 /** Rules and wording are declared by PHP; the admin evaluates the current draft. */
 export interface OutcomeContract {
@@ -42,8 +43,10 @@ export function fitsOutcome(outcome: OutcomeContract, facets: { act: string | nu
     || outcome.capture_any_of.some((field) => facets.captures.includes(field)));
 }
 
-export function outcomeHandoffIssue(outcome: OutcomeContract, bound: readonly string[], destinations: readonly Destination[] | null, captureMode = 'connected'): string | null {
-  if (outcome.audience_channel && captureMode !== 'local') {
+export function outcomeHandoffIssue(outcome: OutcomeContract, bound: readonly string[], destinations: readonly Destination[] | null, captureMode: CaptureMode): string | null {
+  // Kept in WConvert only, the lead is saved and that satisfies the Goal (ADR 0133).
+  if (captureMode === 'local') return null;
+  if (outcome.audience_channel) {
     const ready = destinations?.some((destination) => bound.includes(destination.id)
       && destination.availability === 'ready'
       && destination.requirements?.audience_channels?.includes(outcome.audience_channel as string)
@@ -52,9 +55,9 @@ export function outcomeHandoffIssue(outcome: OutcomeContract, bound: readonly st
   }
   if (outcome.destination_type === null) return null;
   if (destinations === null) return __('Open Destinations to check the required delivery setup before publishing.', 'wconvert');
-  const ready = captureMode !== 'local' && destinations.some((destination) => bound.includes(destination.id)
+  const ready = destinations.some((destination) => bound.includes(destination.id)
     && destination.type === outcome.destination_type && destination.availability === 'ready'
     && destination.requirements != null
     && settingsProblems(destination.requirements, destination.settings).length === 0);
-  return ready ? null : __('Before you can publish, connect a lead magnet email destination and complete its file link.', 'wconvert');
+  return ready ? null : __('Before you can publish, connect a lead magnet email destination and complete its file link, or choose “Keep in WConvert only”.', 'wconvert');
 }

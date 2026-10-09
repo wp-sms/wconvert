@@ -87,14 +87,28 @@ export function SlotFields({
   onSetEndDate,
 }: SlotFieldsProps) {
   const text = String(slot.values.text ?? '');
+  const action = slot.type === 'button' ? buttonActionOf(slot) : null;
+  // Only consent wording and fine print fill an empty link with the policy (ADR 0133).
+  const policy = slot.type === 'consent' || (slot.type === 'text' && slot.role === 'fine_print');
   const simple = onSentence && slot.keys.includes('text') && (slot.keys.includes('emphasis') || slot.keys.includes('link'))
     && (text.match(/%b/g) ?? []).length <= 1 && (text.match(/%s/g) ?? []).length <= 1 && (text.match(/%i/g) ?? []).length <= 1;
   return (
     <>
-      {simple && <SentenceEditor label={nameOf(labels.keys, 'text')} value={{ text, emphasis: slot.values.emphasis as string | undefined, italic: slot.values.italic as string | undefined, link: slot.values.link as SentenceValue['link'] }} bold={slot.keys.includes('emphasis')} italic={slot.keys.includes('italic')} link={slot.keys.includes('link')} onChange={onSentence} />}
+      {simple && <SentenceEditor label={nameOf(labels.keys, 'text')} value={{ text, emphasis: slot.values.emphasis as string | undefined, italic: slot.values.italic as string | undefined, link: slot.values.link as SentenceValue['link'] }} bold={slot.keys.includes('emphasis')} italic={slot.keys.includes('italic')} link={slot.keys.includes('link')} policy={policy} onChange={onSentence} />}
       {slot.keys.map((key) => {
         if (slot.type === 'code' && key !== 'text' && slot.settings.find(setting => setting.param === 'copy')?.held !== true) return null;
         if (simple && ['text', 'emphasis', 'italic', 'link'].includes(key)) return null;
+        /*
+          **An address only where the button goes somewhere.** A submit, next,
+          back, skip or close button ignores `href` entirely, so a box for it
+          was a control that does nothing — it gets one line saying what the
+          button does instead ({@see BUTTON_DOES}).
+        */
+        if (key === 'href' && action !== null && action !== 'link') {
+          const does = BUTTON_DOES[action];
+
+          return does === undefined ? null : <p key={key} className="description">{does()}</p>;
+        }
         if (key === 'options') {
           return slot.captures === 'interest' ? <InterestOptions key={key} value={slot.values.options}
             onEdit={(options) => onValue('options', options)} onChange={(options) => onParam('options', options)} /> : null;
@@ -112,6 +126,7 @@ export function SlotFields({
               key={key}
               label={label}
               value={slot.values[key]}
+              policy={policy}
               onChange={(value) => onValue(key, value)}
             />
           );
@@ -175,7 +190,13 @@ export function SlotFields({
           value={String(slot.settings.find(setting => setting.param === 'phone_country')?.held ?? 'site')}
           siteCountry={phoneSiteCountry()} countries={countries} onChange={country => onParam('phone_country', country)} />
       )}
-      {slot.settings.filter(setting => !['phone_country'].includes(setting.param) && (slot.captures === 'phone' || setting.param !== 'phone_dropdown')).map((setting) => (
+      {/*
+        A button's `action` is never drawn here: the ⇄ menu is the one way to
+        change it, because it is the one place that refuses a flip leaving the
+        design with the wrong number of steps (`structure/swap.ts`).
+      */}
+      {slot.settings.filter(setting => !['phone_country'].includes(setting.param) && (slot.captures === 'phone' || setting.param !== 'phone_dropdown')
+        && !(slot.type === 'button' && setting.param === 'action')).map((setting) => (
         <ParamChoice
           key={setting.param}
           id={`${slot.type}-${setting.param}`}
@@ -245,6 +266,23 @@ export function SlotFields({
   );
 }
 
+/** What this button does, read the way the renderer reads it: absent is `next`. */
+export function buttonActionOf(slot: Pick<Slot, 'settings'>): string {
+  const setting = slot.settings.find(candidate => candidate.param === 'action');
+  const held = setting?.held;
+
+  return typeof held === 'string' ? held : setting?.fallback ?? 'next';
+}
+
+/** One line for each button that goes nowhere, in place of the address box it does not read. */
+const BUTTON_DOES: Readonly<Record<string, () => string>> = {
+  submit: () => __('Sends the form and saves the visitor’s details.', 'wconvert'),
+  skip: () => __('Skips this form without saving anything and moves on.', 'wconvert'),
+  next: () => __('Goes to the next screen.', 'wconvert'),
+  back: () => __('Goes back to the previous screen.', 'wconvert'),
+  close: () => __('Closes this and leaves visitors on the page.', 'wconvert'),
+};
+
 /**
  * What this slot is CALLED, in the vocabulary's own words.
  *
@@ -274,18 +312,22 @@ export function nameOfSlot(slot: Slot, labels: TemplateLabels): string {
  * (ADR 0013) — which is why it is two controls and not a rich-text box.
  *
  * The sentence carries `%s` where the link goes, and the renderer splits on it
- * and builds the anchor itself, so no code path reaches `innerHTML`. Leaving
- * the address empty is the ordinary case for a privacy-policy link: the
- * renderer fills it from the site's own configured policy, and with none
- * configured the link renders nothing rather than a dead `#` (ADR 0032).
+ * and builds the anchor itself, so no code path reaches `innerHTML`. In consent
+ * wording and fine print, leaving the address empty is the ordinary case for a
+ * privacy-policy link: the renderer fills it from the site's own configured
+ * policy (ADR 0032). Anywhere else an empty address is unfinished, and the
+ * review asks for one (ADR 0133).
  */
 export function LinkControl({
   label,
   value,
+  policy = false,
   onChange,
 }: {
   label: string;
   value: unknown;
+  /** Whether an empty address means the privacy policy here. */
+  policy?: boolean;
   onChange: (value: unknown) => void;
 }) {
   const link = (value ?? {}) as { label?: string; href?: string };
@@ -306,7 +348,7 @@ export function LinkControl({
         />
       </label>
       <label className="wconvert-slot__key">
-        {__('Address — leave empty for your privacy policy', 'wconvert')}
+        {policy ? __('Address — leave empty for your privacy policy', 'wconvert') : __('Web address', 'wconvert')}
         <input
           type="text"
           className="widefat"

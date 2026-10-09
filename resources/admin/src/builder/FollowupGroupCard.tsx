@@ -5,11 +5,11 @@ import { Disclosure } from '../shell/Disclosure';
 import type { TemplateTree } from '@renderer/types';
 import { followupGroupSource, type FollowupGroup } from './structure/followupGroups';
 import { JourneyIssueMarker } from './JourneyIssueMarker';
-import type { JourneyReadinessIssue } from './structure/journeyReadiness';
+import type { CampaignIssue } from './readiness/campaignIssues';
 import { followupLabel } from './structure/followupLabel';
 
 export interface FollowupGroupData {
-  traceKind?: 'sample' | 'visited'; issues?: readonly JourneyReadinessIssue[]; onIssue?(issue: JourneyReadinessIssue): void;
+  traceKind?: 'sample' | 'visited'; issues?: readonly CampaignIssue[]; onIssue?(issue: CampaignIssue): void;
   incomingPorts?: string[]; detourEntry?: boolean; detourTarget?: string; tree: TemplateTree; group: FollowupGroup; rtl: boolean; unreachable?: boolean; muted?: boolean; selected: number | null; samplePath: readonly number[] | null;
   select(index: number): void; expand(group: FollowupGroup): void;
 }

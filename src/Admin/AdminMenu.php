@@ -273,7 +273,7 @@ final class AdminMenu
             // Shown in Help beside What's new; WCONVERT_VERSION is a public fact (constants.php).
             'version' => WCONVERT_VERSION,
             'siteName' => wp_specialchars_decode((string) get_bloginfo('name'), ENT_QUOTES),
-            'phoneDefaultCountry' => \WConvert\Optin\PhoneCountry::siteDefault(),
+            'phoneDefaultCountry' => \WConvert\Optin\PhoneCountry::effectiveDefault(),
             'inspectParam' => InspectorEnqueue::PARAM,
             // WordPress owns site-wide layout. WConvert only names the native
             // editor this theme actually exposes, and only when the current

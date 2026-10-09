@@ -80,15 +80,19 @@ final class OutcomeContract
     }
 
     /** @param list<string> $readyTypes Destination types with their required settings completed.
+     * @param 'local'|'connected' $captureMode {@see \WConvert\Destination\OptinBinding::captureMode()}.
      * @param list<string> $readyChannels Channels supported by selected audience services.
      */
-    public function handoffIssue(array $readyTypes, string $captureMode = 'connected', array $readyChannels = []): ?string
+    public function handoffIssue(array $readyTypes, string $captureMode = 'local', array $readyChannels = []): ?string
     {
-        if ($this->audienceChannel !== null && $captureMode !== 'local' && !in_array($this->audienceChannel, $readyChannels, true)) {
-            return __('Choose and configure a service for this channel, or explicitly choose Collect only in WConvert before publishing.', 'wconvert');
+        // Kept in WConvert only, the lead is saved and that satisfies the Goal
+        // (ADR 0133). A lead magnet gets a non-blocking warning in the review.
+        if ($captureMode === 'local') return null;
+        if ($this->audienceChannel !== null && !in_array($this->audienceChannel, $readyChannels, true)) {
+            return __('Choose and set up a service for this channel, or choose “Keep in WConvert only” before publishing.', 'wconvert');
         }
-        return $this->destinationType !== null && ($captureMode === 'local' || !in_array($this->destinationType, $readyTypes, true))
-            ? __('Connect a lead magnet email destination and complete its file link before publishing.', 'wconvert')
+        return $this->destinationType !== null && !in_array($this->destinationType, $readyTypes, true)
+            ? __('Connect a lead magnet email destination and complete its file link, or choose “Keep in WConvert only”, before publishing.', 'wconvert')
             : null;
     }
 

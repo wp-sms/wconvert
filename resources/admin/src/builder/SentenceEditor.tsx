@@ -6,8 +6,10 @@ import { LinkField } from './LinkField';
 import { editSentence, markSentence, readSentence, writeSentence, type SentenceValue } from './sentence';
 
 /** A small selection toolbar, backed by the renderer's existing sentence model. */
-export function SentenceEditor({ value, label, bold, italic = false, link, onChange }: {
+export function SentenceEditor({ value, label, bold, italic = false, link, policy = false, onChange }: {
   value: SentenceValue; label: string; bold: boolean; italic?: boolean; link: boolean;
+  /** Whether an empty address means the privacy policy here: consent wording and fine print only (ADR 0133). */
+  policy?: boolean;
   onChange: (value: SentenceValue, typing: boolean) => void;
 }) {
   const id = useId();
@@ -68,7 +70,7 @@ export function SentenceEditor({ value, label, bold, italic = false, link, onCha
     {notice && <p role="status">{notice}</p>}
     {editingLink && <div className="wconvert-sentence-address">
       <label>{__('Link address', 'wconvert')}<LinkField value={address} onChange={setAddress} /></label>
-      <p className="description">{__('Leave empty to use your site’s privacy policy.', 'wconvert')}</p>
+      {policy && <p className="description">{__('Leave empty to use your site’s privacy policy.', 'wconvert')}</p>}
       <div><Button size="xs" onClick={() => { const range = selected ? selection : anchor; if (range) write(markSentence(sentence, { ...range, kind: 'link', href: address })); setEditingLink(false); }}>{__('Apply link', 'wconvert')}</Button><Button variant="ghost" size="xs" onClick={() => setEditingLink(false)}>{__('Cancel', 'wconvert')}</Button></div>
     </div>}
     <div className="wconvert-sentence-preview" role="region" aria-label={__('Formatted text preview', 'wconvert')}>{preview}{sentence.text.slice(offset)}</div>

@@ -42,7 +42,9 @@ import { TemplatePickerDialog } from './TemplatePickerDialog';
 import { useTemplateTrees } from './TemplatePicker';
 import { DestinationsEditor } from './DestinationsEditor';
 import { CaptureModeChoice } from './CaptureModeChoice';
-import { ReadinessDialog, type BlockedTab } from './ReadinessDialog';
+import { ReadinessDialog, followIssue, type BlockedTab, type IssueRoutes } from './ReadinessDialog';
+import { captureModeOf } from './captureMode';
+import type { CampaignIssue } from './readiness/campaignIssues';
 import { ForDevelopers } from '../optins/DetailsDialog';
 import { fieldMappingsKept, hintIn, type FieldMappings } from './destinations';
 import { planFrom } from './rules/plan';
@@ -153,6 +155,8 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
   // Bumped by Try again after a failed first read, so every read runs again.
   const [attempt, setAttempt] = useState(0);
   const [blockedTabs, setBlockedTabs] = useState<readonly BlockedTab[]>([]);
+  // The campaign's one issue list, lifted from the review (ADR 0133).
+  const [issues, setIssues] = useState<readonly CampaignIssue[]>([]);
   const attentionId = useId();
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -166,7 +170,6 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
   const [drawer, setDrawer] = useState<'layers' | 'settings' | null>(null);
   const designButton = useRef<HTMLButtonElement>(null);
   const [showLayers, setShowLayers] = useState(false);
-  const [previewing, setPreviewing] = useState(false);
   const [editingResult, setEditingResult] = useState<string | undefined>();
   const [lockPreview, setLockPreview] = useState<ContentLockPreviewState>('locked');
   useEffect(() => {
@@ -270,7 +273,8 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
     ? `${summaryOf(displayAxes, 'who').text} · ${summaryOf(displayAxes, 'when').text}`
     : __('Review display rules', 'wconvert');
   const destinationNames = bound.map(id => read(destinations)?.destinations.find(item => item.id === id)?.label).filter((name): name is string => !!name);
-  const destinationSummary = config?.capture_mode === 'local' ? __('Keep in WConvert only', 'wconvert')
+  const captureMode = captureModeOf(config);
+  const destinationSummary = captureMode === 'local' ? __('Keep in WConvert only', 'wconvert')
     : destinationNames.length === bound.length && bound.length > 0 ? destinationNames.join(' + ')
       : bound.length > 0 ? sprintf(_n('%d connected destination', '%d connected destinations', bound.length, 'wconvert'), bound.length)
         : __('No connected destinations', 'wconvert');
@@ -684,7 +688,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
   };
   const showingLock = (tab === 'rules' || (tab === 'journey' && previewFromRules)) && config.content_lock != null && displayTypeOf(config, templates) === 'inline' && !!inlinePlacementControls.preview;
   const selectedResult = entry?.tree.steps[step]?.results?.find(result => result.id === editingResult);
-  const canvasTemplate = entry && selectedResult && !previewing ? { ...entry, tree: { ...entry.tree, steps: entry.tree.steps.map((screen, index) => index === step ? { ...screen, results: [{ ...selectedResult, when: undefined }] } : screen) } } : entry;
+  const canvasTemplate = entry && selectedResult ? { ...entry, tree: { ...entry.tree, steps: entry.tree.steps.map((screen, index) => index === step ? { ...screen, results: [{ ...selectedResult, when: undefined }] } : screen) } } : entry;
   const previewPane =
     entry === null ? null : (
       <EditorCanvas
@@ -694,7 +698,6 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
         width={width}
         selected={selection === null ? null : keyOf(selection.path)}
         onSelect={chooseFromPreview}
-        interactive={previewing}
         onStep={setStep}
         displayType={displayTypeOf(config, templates)}
         placement={config.placement}
@@ -719,8 +722,21 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
     : inlinePlacementLabel(config.inline_placement) ?? __('Check automatic placement', 'wconvert');
   const goToInlinePlacement = () => {
     setTab('rules');
-    setPreviewing(false);
+   
     setRevealSection({ id: 'placement', focus: 'wconvert-display-placement' });
+  };
+
+  // Where each issue's fix is, for the review and the screens alike (ADR 0133).
+  const issueRoutes: IssueRoutes = {
+    onEditDesign: () => { setTab('design'); setShowLayers(true); setDrawer('layers'); layersButton.current?.focus(); },
+    onEditJourney: repair => { setTab('journey'); if (repair) setJourneyRepair({ ...repair, serial: ++journeyRepairSerial.current }); },
+    onGoToDesign: () => { setTab('design'); setBrowsing(true); },
+    onGoToPlacement: goToInlinePlacement,
+    onGoToDestinations: () => { setTab('destinations'); destinationsTab.current?.focus(); },
+    onGoToRules: (section) => { setTab('rules'); setRevealSection({ id: section }); },
+    onGoTo: goTo,
+    onGoToSchedule: goToSchedule,
+    onRetryGoal: loadGoals,
   };
 
   const displayEditor = (compactPanel = false) => <DisplayRules compact={compactPanel} template={template} cartRequired={entryOfGoal?.cart_required}
@@ -753,10 +769,12 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
       ? ready({ ...current.data, destinations: [...updated] }) : current);
   };
   const routes: Loadable<readonly Destination[]> = destinations.status === 'ready' ? ready(destinations.data.destinations) : destinations;
-  const localCapture = captureOutcome?.audience_channel != null && config.capture_mode === 'local';
+  const localCapture = captureMode === 'local';
+  // Every design that saves a lead asks where it goes, whatever the goal (ADR 0133).
+  const capturesLead = template !== undefined && template.tree.submissions.some(signup => submissionScreen(template.tree, signup.id) >= 0);
   const hint = hintIn(config);
   const destinationEditor = <>
-            {captureOutcome?.audience_channel && <CaptureModeChoice disabled={busy} selectedCount={bound.length} mode={config.capture_mode === 'local' ? 'local' : 'connected'}
+            {capturesLead && <CaptureModeChoice disabled={busy} selectedCount={bound.length} mode={captureMode}
               onChange={(mode) => edit({ capture_mode: mode, ...(mode === 'local' ? { destinations: [] } : {}) })} />}
             <DestinationsEditor
               outcome={captureOutcome}
@@ -778,7 +796,8 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
               onChange={(next) => {
                 const current = (config.integration_mappings ?? {}) as Record<string, Record<string, Record<string, string>>>;
                 const submissionId = template?.tree.submissions[0]?.id;
-                edit({ destinations: next, capture_mode: 'connected', ...(submissionId && Object.keys(current).length > 0 ? {
+                // Choosing a service connects; removing the last one keeps leads here (ADR 0133).
+                edit({ destinations: next, capture_mode: next.length > 0 ? 'connected' : 'local', ...(submissionId && Object.keys(current).length > 0 ? {
                   integration_mappings: { ...current, [submissionId]: Object.fromEntries(Object.entries(current[submissionId] ?? {}).filter(([id]) => next.includes(id))) },
                 } : {}) });
               }}
@@ -801,10 +820,9 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
       onValueChange={(value) => {
         flushSync(() => setOpenToken(null));
         setTab(value as TabId);
-        setPreviewing(false);
+       
       }}
       className="wconvert-workspace gap-0"
-      data-preview={previewing ? 'true' : undefined}
     >
       <header className="wconvert-workspace__header">
         <Button
@@ -884,7 +902,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
             aria-label={__('Preview & test', 'wconvert')}
             title={__('Preview & test', 'wconvert')}
             disabled={entry === null || busy}
-            onClick={() => { previewReturnTab.current = tab; setPreviewFromRules(tab === 'rules'); setTab('journey'); setPreviewing(false); setJourneyTestRequest(value => value + 1); }}
+            onClick={() => { previewReturnTab.current = tab; setPreviewFromRules(tab === 'rules'); setTab('journey'); setJourneyTestRequest(value => value + 1); }}
           >
             <Eye aria-hidden="true" />
             {!small && __('Preview & test', 'wconvert')}
@@ -896,7 +914,9 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
           </Button>
           <ReadinessDialog
             name={name}
-            captureMode={config.capture_mode === 'local' ? 'local' : 'connected'}
+            captureMode={captureMode}
+            submissionSettings={config.submission_settings}
+            uncheckedLinks={config.unchecked_links}
             optinId={id}
             optin={{ published_at: publishedAt, deleted_at: deletedAt, suspended, has_unpublished_changes: unpublishedChanges }}
             dirty={dirty}
@@ -920,17 +940,11 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
             policyUrl={adminSettings()?.policyUrl}
             onPublish={publish}
             onKeepLocal={() => edit({ capture_mode: 'local', destinations: [] })}
-            onRetryGoal={loadGoals}
             onBlockedTabsChange={setBlockedTabs}
-            onPreview={() => { previewReturnTab.current = tab; setPreviewFromRules(tab === 'rules'); setTab('journey'); setPreviewing(false); setJourneyTestRequest(value => value + 1); }}
-            onEditDesign={() => { setTab('design'); setPreviewing(false); setShowLayers(true); setDrawer('layers'); layersButton.current?.focus(); }}
-            onEditJourney={repair => { setTab('journey'); setPreviewing(false); if (repair) setJourneyRepair({ ...repair, serial: ++journeyRepairSerial.current }); }}
-            onGoToDesign={() => { setTab('design'); setPreviewing(false); setBrowsing(true); }}
-            onGoToPlacement={goToInlinePlacement}
-            onGoToDestinations={() => { setTab('destinations'); destinationsTab.current?.focus(); }}
-            onGoToRules={(section) => { setTab('rules'); setRevealSection({ id: section }); }}
-            onGoTo={goTo}
-            onGoToSchedule={goToSchedule}
+            onIssuesChange={setIssues}
+            onGoToLook={() => { setTab('design'); designSettings(); designButton.current?.focus(); }}
+            onPreview={() => { previewReturnTab.current = tab; setPreviewFromRules(tab === 'rules'); setTab('journey'); setJourneyTestRequest(value => value + 1); }}
+            {...issueRoutes}
           />
           <DropdownMenu><DropdownMenuTrigger asChild><Button ref={changeGoal} variant="ghost" size="icon-sm" disabled={busy} aria-label={__('Campaign actions', 'wconvert')}><MoreHorizontal aria-hidden="true" /></Button></DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="wconvert-campaign-actions">
@@ -961,13 +975,13 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
               look={<ScopeStyle key={selection.path.join('.')} template={entry} labels={gallery.labels} path={selection.path} openToken={openToken} onOpenToken={setOpenToken} onSelect={chooseFromTree}
                 onChange={(next, coalesce) => edit({ template: next }, coalesce)} copied={copiedLook} onCopy={setCopiedLook} width={width === 'narrow' ? 'narrow' : 'tokens'} />} /> : undefined}
             testRequest={journeyTestRequest} onTestExit={() => setPreviewFromRules(false)} onTestClose={() => { const returnTab = previewReturnTab.current; previewReturnTab.current = 'journey'; setTab(returnTab); }}
-            outcomeAction={entryOfGoal?.outcome.action} primaryChannel={entryOfGoal?.outcome.audience_channel} tree={entry.tree} tokens={entry.tokens} step={shownStep} repairRequest={journeyRepair ?? undefined}
+            issues={issues} onIssue={issue => followIssue(issue.go, issueRoutes)} primaryChannel={entryOfGoal?.outcome.audience_channel} tree={entry.tree} tokens={entry.tokens} step={shownStep} repairRequest={journeyRepair ?? undefined}
             focusActions={<><HistoryControls history={{ ...history, canUndo: !busy && history.canUndo, canRedo: !busy && history.canRedo }} />
               <Button type="button" variant="outline" size="sm" disabled={busy || !dirty} onClick={() => void save()}>{busy ? __('Saving…', 'wconvert') : __('Save draft', 'wconvert')}</Button></>}
             onChange={(tree, coalesce) => edit({ template: { ...entry, tree } }, coalesce)} onSelect={chooseStep} displaySummary={displaySummary} destinationSummary={destinationSummary}
             contextEditors={{ rules: displayEditor(true), destinations: destinationEditor }}
-            deliveryMode={config?.capture_mode === 'local' ? 'local' : bound.length > 0 ? 'connected' : 'none'}
-            onGoToDesign={() => { setTab('design'); setPreviewing(false); }}
+            deliveryMode={captureMode === 'local' ? 'local' : bound.length > 0 ? 'connected' : 'none'}
+            onGoToDesign={() => { setTab('design'); }}
             onGoToRules={() => setTab('rules')} onGoToDestinations={() => { setTab('destinations'); destinationsTab.current?.focus(); }} />}
           </Activity>
         </TabsContent>
@@ -1000,12 +1014,11 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
                       ref={layersButton}
                       aria-pressed={compact ? drawer === 'layers' : showLayers}
                       onClick={() => compact ? setDrawer('layers') : setShowLayers(!showLayers)}
-                      disabled={previewing}
                     >
                       <Layers aria-hidden="true" />
                       {__('Layers', 'wconvert')}
                     </Button>
-                    <Button ref={designButton} variant="ghost" onClick={designSettings} disabled={previewing}>
+                    <Button ref={designButton} variant="ghost" onClick={designSettings}>
                       <SlidersHorizontal aria-hidden="true" />
                       {__('Design settings', 'wconvert')}
                     </Button>
@@ -1016,13 +1029,10 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
                     {compact ? <DropdownMenu><DropdownMenuTrigger asChild><Button variant="ghost" size="icon-sm" aria-label={__('Preview options', 'wconvert')}><MoreHorizontal aria-hidden="true" /></Button></DropdownMenuTrigger>
                       <DropdownMenuContent align="end"><DropdownMenuItem onSelect={() => setWidth('own')}>{__('Desktop preview', 'wconvert')}</DropdownMenuItem><DropdownMenuItem onSelect={() => setWidth('narrow')}>{__('Mobile preview', 'wconvert')}</DropdownMenuItem></DropdownMenuContent>
                     </DropdownMenu> : <DeviceControls width={width} onChange={setWidth} />}
-                    {compact && width === 'narrow' && !previewing && <MobileAppearanceNote />}
+                    {compact && width === 'narrow' && <MobileAppearanceNote />}
                     <Fullscreen />
                   </div>
                 </div>
-                {previewing ? (
-                  previewPane
-                ) : (
                   <StructureView onUndo={history.canUndo && !busy ? history.undo : undefined} draft={config}
                     template={entry}
                     labels={gallery.labels}
@@ -1080,7 +1090,6 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
                       </>
                     }
                   />
-                )}
               </>
             )}
           </Activity>

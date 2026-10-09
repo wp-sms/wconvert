@@ -11,6 +11,7 @@ import { safeHref } from '@renderer/render';
 import type { FollowupNode, FieldNode } from '@renderer/types';
 import type { Template } from '@renderer/types';
 import { phoneSiteCountry } from '../../phoneSiteCountry';
+import { asksForPolicy } from '../policy';
 
 /**
  * What is wrong with this design **right now**, as sentences a merchant can act
@@ -142,6 +143,7 @@ export function problemsIn(
     ...whatCapturesNothing(template),
     ...whatHasIncompleteFields(template),
     ...whatHasIncompleteFollowups(template),
+    ...whatHasUnfinishedLinks(template),
     ...whatCountsDownToNothing(template, endsAt),
     ...whatLosesWords(template),
     ...whatCannotBeRead(template),
@@ -157,6 +159,23 @@ function whatHasIncompleteFollowups(template: Template): Problem[] {
       : Number(node.path[0]) > acceptedAt);
     if (afterSave && link.label?.trim() && safeHref(link.href?.trim()) !== null) return [];
     return [{ said: __('Give this resource link a label and address, and place it after the form.', 'wconvert'), path: node.path, check: 'words' as const, blocksPublish: true }];
+  });
+}
+
+/**
+ * A shown link with words and no address, outside consent wording and fine
+ * print (ADR 0133). Only those two take the site's privacy policy, so nothing
+ * will ever fill this one: the visitor would read the words with no link.
+ * `CaptureContract::hasUnfinishedLink()` refuses the same thing at publish.
+ */
+function whatHasUnfinishedLinks(template: Template): Problem[] {
+  return nodesOf(template.tree).filter(block => !block.hidden).flatMap((block): Problem[] => {
+    const node = nodeAt(template.tree, block.path);
+    const link = (node as { link?: { label?: unknown; href?: unknown } } | null)?.link;
+    const text = (node as { text?: unknown } | null)?.text;
+    if (!node || !link || asksForPolicy(node) || typeof link.label !== 'string' || !link.label.trim()
+      || (typeof link.href === 'string' && link.href.trim() !== '') || typeof text !== 'string' || !text.includes('%s')) return [];
+    return [{ said: sprintf(__('Add a web address for “%s”.', 'wconvert'), link.label.trim()), path: block.path, check: 'words', blocksPublish: true }];
   });
 }
 

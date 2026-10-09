@@ -14,12 +14,14 @@ defined('ABSPATH') || exit;
  * to supply. That is what makes one registry entry correct on every install
  * without any entry knowing which install it is on.
  *
- * **The rule is about the link, not about the node.** A link that declares a
- * label and names no destination is asking for the one destination only the
- * site can name; a link that names its own was written by the merchant and
- * scheme-validated at write (ADR 0013). So consent wording and fine print
- * resolve identically, with no table of roles to keep in step, and no node
- * type gets a special case.
+ * **Two sentences ask for it: consent wording and fine print.** A link there
+ * that declares a label and names no destination is asking for the one
+ * destination only the site can name; a link that names its own was written
+ * by the merchant and scheme-validated at write (ADR 0013). A hrefless link
+ * anywhere else — body text, a headline — is a link the merchant has not
+ * finished, and filling it with the policy turned *"Read the guide"* into a
+ * policy link without a word (ADR 0133). It stays hrefless, renders no
+ * anchor, and the review asks for its address.
  *
  * **Resolved per request, never frozen at publish.** The published set is
  * rebuilt on write (ADR 0003), so an href baked into it would still name last
@@ -69,6 +71,10 @@ final class PolicyLink
      */
     private static function resolve(array $node, string $url): array
     {
+        if (!self::asksForPolicy($node)) {
+            return $node;
+        }
+
         $link = $node['link'] ?? null;
 
         // A label and no destination: the one shape only the site can
@@ -85,5 +91,19 @@ final class PolicyLink
         }
 
         return $node;
+    }
+
+    /**
+     * Whether this node is one of the two sentences a policy link belongs in.
+     *
+     * Public because the publish check asks the mirror question: a hrefless
+     * link in any OTHER node is a blocker, since nothing will ever fill it.
+     *
+     * @param array<string, mixed> $node
+     */
+    public static function asksForPolicy(array $node): bool
+    {
+        return ($node['type'] ?? null) === 'consent'
+            || (($node['type'] ?? null) === 'text' && ($node['role'] ?? null) === 'fine_print');
     }
 }

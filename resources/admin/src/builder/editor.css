@@ -1953,6 +1953,10 @@ details[open]>summary>.wconvert-editor-disclosure-icon { transform: rotate(180de
 .wconvert-campaign-screens__items button:hover { background: var(--surface); }
 .wconvert-campaign-screens__items button[aria-current='true'] { border-color: var(--border); background: var(--secondary); }
 .wconvert-campaign-screens button:focus-visible { outline: 2px solid var(--ring); outline-offset: 1px; }
+.wconvert-campaign-screens__row { position: relative; }
+.wconvert-campaign-screens__items .wconvert-campaign-screens__issues { position: absolute; inset-block-start: 8px; inset-inline-end: 6px; display: inline-flex; gap: 3px; align-items: center; inline-size: auto; padding: 2px 6px; border: 1px solid var(--border); border-radius: 999px; background: var(--card); color: var(--destructive); font-size: var(--text-micro); line-height: 1.2; }
+.wconvert-campaign-screens__items .wconvert-campaign-screens__issues>svg { margin: 0; color: currentColor; }
+.wconvert-campaign-screens__row:has(> .wconvert-campaign-screens__issues)>button:first-child { padding-inline-end: 44px; }
 .wconvert-campaign-screens__items section { border-inline-start: 2px solid var(--border); margin: 6px 0 6px 8px; padding-inline-start: 5px; }
 .wconvert-campaign-screens__items h3 { margin: 5px 8px; font-size: var(--text-label); color: var(--muted-foreground); }
 .wconvert-campaign-screens__items p { margin: 8px; font-size: var(--text-micro); color: var(--muted-foreground); }
@@ -2144,10 +2148,7 @@ details[open]>summary>.wconvert-editor-disclosure-icon { transform: rotate(180de
 .wconvert-flow-issue { display: flex; align-items: center; gap: 6px; min-block-size: 32px; margin: 6px 12px; padding: 4px 8px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--card); color: var(--destructive); font-size: var(--text-micro); cursor: pointer; }
 .is-overview:has(> .wconvert-flow-issue) > .wconvert-flow-node__overview { padding-block-end: 48px; }
 .is-overview > .wconvert-flow-issue { position: relative; z-index: 1; }
-.wconvert-journey-issues ul { display: grid; gap: 8px; padding: 0; margin: 0; list-style: none; }
-.wconvert-journey-issues li button { inline-size: 100%; padding: 12px; text-align: start; border: 1px solid var(--border); border-radius: var(--radius); background: var(--card); color: var(--foreground); font-size: var(--text-note); overflow-wrap: anywhere; cursor: pointer; }
-.wconvert-journey-issues li button:hover { background: var(--accent); }
-.wconvert-flow-issue:focus-visible, .wconvert-journey-issues button:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+.wconvert-flow-issue:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
 
 /* Device guidance stays beside the selector. */
 .wconvert-device-controls { display: flex; align-items: center; gap: 4px; }

@@ -111,11 +111,11 @@ export function journeyReadinessIssues(tree: TemplateTree): JourneyReadinessIssu
       });
       const hasLink = !!result.href?.trim();
       const hasLabel = !!result.link_label?.trim();
-      if (hasLink !== hasLabel || (!!result.product_ids?.length || !!result.product_filter || screen.products_required) && !hasLink) {
+      // A result's link is optional: with no address its button is hidden
+      // (ADR 0133). An address with no words would be a blank button.
+      if (hasLink && !hasLabel) {
         issues.push({ key: `result-link:${screen.id}:${result.id}`,
-          said: sprintf(result.product_ids?.length || result.product_filter || screen.products_required
-            ? __('Add a fallback link and label for “%1$s” on “%2$s”, so visitors can continue if products are unavailable.', 'wconvert')
-            : __('Complete the link destination and label for “%1$s” on “%2$s”.', 'wconvert'), result.heading, screen.name),
+          said: sprintf(__('Add words for the link button on “%1$s” (“%2$s”), or remove its address.', 'wconvert'), result.heading, screen.name),
           repair: { screenId: screen.id, section: 'content', resultId: result.id, focus: 'result-link' } });
       }
       if (!result.when) {

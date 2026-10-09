@@ -29,7 +29,7 @@ final class CaptureContract
                 default => 'request',
             } : ($goal === 'grow_sms_list' ? 'email_marketing' : 'sms_marketing');
             $entry = $config['submission_settings'][$id] ?? [];
-            $routes = ($config['capture_mode'] ?? '') === 'local' ? [] : ($index === 0 ? ($config['destinations'] ?? []) : ($entry['destination_ids'] ?? []));
+            $routes = \WConvert\Destination\OptinBinding::captureMode($config) === 'local' ? [] : ($index === 0 ? ($config['destinations'] ?? []) : ($entry['destination_ids'] ?? []));
             $destinationIds = array_values(array_unique(array_filter(is_array($routes) ? $routes : [], 'is_string')));
             $maps = $config['integration_mappings'][$id] ?? [];
             $settings[$id] = ['purpose' => $purpose, 'destination_ids' => $destinationIds,
@@ -72,17 +72,20 @@ final class CaptureContract
                     || ($checkProductReferences && !ResultProductSource::available($variant['product_filter'])))) return 'products';
                 $hasLink = trim((string) ($variant['href'] ?? '')) !== '';
                 $hasLabel = trim((string) ($variant['link_label'] ?? '')) !== '';
-                if ($hasLink !== $hasLabel || ((!empty($variant['product_ids']) || isset($variant['product_filter'])) && !$hasLink)) { return 'result_link'; }
+                // A result's link is optional (ADR 0133): with no address the
+                // renderer draws no button. An address with no words would be
+                // a button with nothing on it.
+                if ($hasLink && !$hasLabel) { return 'result_link'; }
             }
             if (($step['products_required'] ?? false) === true) {
                 if (!class_exists('WooCommerce') || count($step['results'] ?? []) < 2) { return 'products'; }
-                foreach ($step['results'] as $variant) {
-                    if (trim((string) ($variant['href'] ?? '')) === '' || trim((string) ($variant['link_label'] ?? '')) === '') { return 'products'; }
-                }
                 foreach (array_slice($step['results'], 0, -1) as $variant) {
                     if (empty($variant['product_ids']) && !isset($variant['product_filter'])) { return 'products'; }
                 }
             }
+        }
+        foreach ($tree['steps'] ?? [] as $step) {
+            if (self::hasUnfinishedLink($step['content'] ?? [])) { return 'link'; }
         }
         $settings = self::settings($config, $goal);
         if (self::mappingIssue($settings, $tree)) { return 'integration_mapping'; }
@@ -104,6 +107,29 @@ final class CaptureContract
             if (!$identifier || !$consent || count($submission['consents']) !== 1) { return 'consent'; }
         }
         return null;
+    }
+
+    /**
+     * A shown link with words and no address, outside the two sentences that
+     * take the site's privacy policy (ADR 0133). Nothing will ever fill it,
+     * so the renderer would draw the words and no anchor.
+     *
+     * @param array<string, mixed> $node
+     */
+    private static function hasUnfinishedLink(array $node): bool
+    {
+        if (($node['hidden'] ?? false) === true) return false;
+        $link = $node['link'] ?? null;
+        if (is_array($link) && !PolicyLink::asksForPolicy($node)
+            && is_string($link['label'] ?? null) && trim($link['label']) !== ''
+            && trim((string) ($link['href'] ?? '')) === ''
+            && str_contains((string) ($node['text'] ?? ''), '%s')) {
+            return true;
+        }
+        foreach (TemplateTree::childrenOf($node) as $child) {
+            if (is_array($child) && self::hasUnfinishedLink($child)) return true;
+        }
+        return false;
     }
 
     /** A published map may name only captured sources and selected routes.

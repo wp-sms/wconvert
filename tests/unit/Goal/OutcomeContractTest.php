@@ -16,11 +16,12 @@ final class OutcomeContractTest extends TestCase
         unset($config['template']['tree']['steps'][0]['content']['action']);
         self::assertNotNull(Goal::IncreaseBasketValue->outcome()->designIssue($config));
     }
-    public function testListCollectionDefaultsToAConnectedServiceButAllowsExplicitLocalCollection(): void
+    public function testListCollectionKeepsLeadsLocallyUntilAServiceIsConnected(): void
     {
         $email = Goal::GrowEmailList->outcome();
-        self::assertNotNull($email->handoffIssue([]));
+        self::assertNull($email->handoffIssue([]));
         self::assertNull($email->handoffIssue([], 'local'));
+        self::assertNotNull($email->handoffIssue([], 'connected'));
         self::assertNull($email->handoffIssue(['mailpoet'], 'connected', ['email']));
         self::assertNotNull(Goal::GrowSmsList->outcome()->handoffIssue(['mailpoet'], 'connected', ['email']));
         self::assertNotNull($email->handoffIssue(['lead_magnet_email'], 'connected', []));
@@ -40,5 +41,18 @@ final class OutcomeContractTest extends TestCase
         self::assertNotNull($contract->designIssue($form([['type' => 'stack', 'hidden' => true, 'children' => [
             ['type' => 'field', 'name' => 'phone', 'required' => true],
         ]]])));
+    }
+
+    /**
+     * A lead magnet kept in WConvert only still publishes (ADR 0133): the lead
+     * is saved, and the review warns that no file goes out until the delivery
+     * email is set up. Choosing to connect and then not finishing still blocks.
+     */
+    public function testALeadMagnetKeptLocallyPublishes(): void
+    {
+        $magnet = Goal::DeliverLeadMagnet->outcome();
+        self::assertNull($magnet->handoffIssue([], 'local'));
+        self::assertNotNull($magnet->handoffIssue([], 'connected'));
+        self::assertNull($magnet->handoffIssue(['lead_magnet_email'], 'connected'));
     }
 }

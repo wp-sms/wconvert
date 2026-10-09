@@ -57,6 +57,6 @@ setup can remain a draft but cannot publish until it satisfies the contract.
 
 Under ADR 0086, the UI calls these Campaign setups and names the task directly.
 The checklist derives from actual design and Goal capabilities. List setups default
-to a capable service or require explicit Collect only. Visitor copy must match the
+to a capable service or keep leads in WConvert only (the default until one is connected). Visitor copy must match the
 merchant's actual follow-up. Updated collection sources need reviewed fingerprints
 and a new pack version; no saved merchant copy is rewritten.

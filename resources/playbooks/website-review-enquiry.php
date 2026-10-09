@@ -8,7 +8,7 @@ return [
     'goal' => 'collect_enquiries',
     'template_id' => 'service-summary',
     'business_types' => ['services'],
-    'notes' => __('Describe the review you actually offer, show on relevant service pages and choose a monitored enquiry workflow or Collect only. No review is booked here.', 'wconvert'),
+    'notes' => __('Describe the review you actually offer, show on relevant service pages and choose a monitored enquiry workflow or keep leads in WConvert only. No review is booked here.', 'wconvert'),
     'copy' => [
         'eyebrow' => [__('Website review', 'wconvert'), __('01 / Clarity', 'wconvert'), __('02 / Usability', 'wconvert')],
         'headline' => __('Find the friction in your website.', 'wconvert'),

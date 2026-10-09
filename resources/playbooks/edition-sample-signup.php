@@ -8,7 +8,7 @@ return [
     'goal' => 'grow_email_list',
     'template_id' => 'excerpt-window',
     'business_types' => ['publishers'],
-    'notes' => __('Embed after a relevant article. Replace the sample with your own writing and state your real topic and cadence. Configure an email destination or use Collect only; this is a recurring newsletter request, not resource delivery. Keep the optional resource follow-up hidden. A saved request does not confirm subscription or inbox delivery.', 'wconvert'),
+    'notes' => __('Embed after a relevant article. Replace the sample with your own writing and state your real topic and cadence. Configure an email destination or keep leads in WConvert only; this is a recurring newsletter request, not resource delivery. Keep the optional resource follow-up hidden. A saved request does not confirm subscription or inbox delivery.', 'wconvert'),
     'copy' => [
         'eyebrow' => [__('A sample from the weekly letter', 'wconvert'), __('The Small Hours letter', 'wconvert')],
         'headline' => [__('Leave a little room to notice.', 'wconvert'), __('A thoughtful note, once a week.', 'wconvert')],

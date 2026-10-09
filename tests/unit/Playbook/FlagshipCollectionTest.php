@@ -36,8 +36,8 @@ final class FlagshipCollectionTest extends TestCase
                 $draft = $prefill->fromPlaybook($id);
                 $this->assertNotNull($draft, $id);
                 $outcome = \WConvert\Goal\Goal::from($draft['goal'])->outcome();
-                $this->assertSame($outcome->linkRequired ? $outcome->requirement : null,
-                    $outcome->designIssue($draft['config']), $id . ': fits its Goal once the merchant supplies the offer link');
+                // Link buttons start on this site's shop or home page (ADR 0133).
+                $this->assertNull($outcome->designIssue($draft['config']), $id . ': fits its Goal as prefilled');
                 $this->assertNotEmpty($playbook->notes);
                 $this->assertNotNull(FlagshipCollection::recommendation($id));
                 $nodes = $draft['config']['template']['tree']['steps'];
@@ -65,8 +65,10 @@ final class FlagshipCollectionTest extends TestCase
                             $this->assertNotEmpty($node['options'], $id);
                         }
                     }
-                    if (in_array($node['type'] ?? '', ['button', 'followup'], true)) {
-                        $this->assertEmpty($node['href'] ?? '', $id . ': merchant-owned URL');
+                    // A URL is the merchant's: the only one prefill writes is a
+                    // page this site already has, recorded for them to check.
+                    if (in_array($node['type'] ?? '', ['button', 'followup'], true) && ($node['href'] ?? '') !== '') {
+                        $this->assertSame($draft['config']['unchecked_links'][$node['id']]['href'] ?? null, $node['href'], $id . ': merchant-owned URL');
                     }
                     array_push($nodes, ...TemplateTree::childrenOf($node));
                 }

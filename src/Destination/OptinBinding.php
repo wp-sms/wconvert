@@ -40,8 +40,8 @@ final class OptinBinding
      */
     public static function ids(?array $config): array
     {
-        // Collect-only is an explicit promise not to forward future captures.
-        if (($config['capture_mode'] ?? null) === 'local') return [];
+        // Keeping leads in WConvert only is a promise not to forward future captures.
+        if (self::captureMode($config) === 'local') return [];
         $bound = $config[self::KEY] ?? null;
         $ids = [];
 
@@ -61,11 +61,38 @@ final class OptinBinding
     public static function allIds(?array $config): array
     {
         $ids = self::ids($config);
-        if (($config['capture_mode'] ?? '') === 'local') { return $ids; }
+        if (self::captureMode($config) === 'local') { return $ids; }
         foreach ($config['submission_settings'] ?? [] as $setting) {
-            array_push($ids, ...self::ids(['destinations' => $setting['destination_ids'] ?? []]));
+            array_push($ids, ...self::ids(['capture_mode' => 'connected', 'destinations' => $setting['destination_ids'] ?? []]));
         }
         return array_values(array_unique($ids));
+    }
+
+    /**
+     * Where this Optin's leads go: `local` (kept in WConvert only) or
+     * `connected` (forwarded to the bound services). The one reading of
+     * `capture_mode`, so no caller can default it differently.
+     *
+     * **Local until a service is connected** (ADR 0133). An explicit choice
+     * wins; with none stored, a config that binds a Destination anywhere is
+     * connected and one that binds nothing is local — so a fresh setup has
+     * nothing to fix, and a config written with destinations but no mode is
+     * not silently cut off from them.
+     *
+     * @param array<string, mixed>|null $config
+     * @return 'local'|'connected'
+     */
+    public static function captureMode(?array $config): string
+    {
+        $mode = $config['capture_mode'] ?? null;
+        if ($mode === 'local' || $mode === 'connected') return $mode;
+
+        $routes = is_array($config[self::KEY] ?? null) ? $config[self::KEY] : [];
+        foreach (is_array($config['submission_settings'] ?? null) ? $config['submission_settings'] : [] as $setting) {
+            if (is_array($setting) && is_array($setting['destination_ids'] ?? null)) array_push($routes, ...$setting['destination_ids']);
+        }
+
+        return array_filter($routes, static fn ($id): bool => is_string($id) && $id !== '') === [] ? 'local' : 'connected';
     }
 
     /**

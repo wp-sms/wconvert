@@ -612,8 +612,9 @@ final class OptinController implements RestController
                     : ($issue === 'quiz_cart'
                         ? __('Quiz cart buttons need WConvert Pro and WooCommerce. Choose products for each result that uses them.', 'wconvert')
                         : __('Product recommendations need WConvert Pro and WooCommerce. Choose products in one recommendation block on a single offer screen before publishing.', 'wconvert')),
-                'products' => __('Connect WooCommerce, choose products for each matching result, and add a fallback link with a label to every result before publishing.', 'wconvert'),
-                'result_link' => __('Give each result link a label and destination before publishing.', 'wconvert'),
+                'products' => __('Connect WooCommerce and choose products for each matching result before publishing.', 'wconvert'),
+                'link' => __('A link in your text has no web address. Add one, or remove the link. You can keep saving this Campaign as a draft.', 'wconvert'),
+                'result_link' => __('Give each result link some words for its button, or remove its address.', 'wconvert'),
                 'routes' => __('In Journey, connect every screen, give continuing screens a fallback path, and remove loops. You can keep saving this Campaign as a draft.', 'wconvert'),
                 'capture_paths' => __('Every route to the ending must pass the required save or result screen. Review the connections in Journey.', 'wconvert'),
                 'question_path_limit' => __('A connected journey route can contain at most ten questions. In Journey, remove questions from the affected route or move them to a separate branch.', 'wconvert'),
@@ -640,7 +641,7 @@ final class OptinController implements RestController
                     array_push($readyChannels, ...$type->requirements()->audienceChannels);
                 }
             }
-            $goalIssue = $outcome->handoffIssue($readyTypes, ($optin->config['capture_mode'] ?? null) === 'local' ? 'local' : 'connected', $readyChannels);
+            $goalIssue = $outcome->handoffIssue($readyTypes, OptinBinding::captureMode($optin->config), $readyChannels);
         }
         if ($goalIssue !== null) {
             return new WP_Error('wconvert_optin_goal_incomplete', $goalIssue, ['status' => 400]);
@@ -653,9 +654,9 @@ final class OptinController implements RestController
         $submissions = $optin->config['template']['tree']['submissions'] ?? [];
         $primarySubmission = $submissions[0]['id'] ?? '';
         foreach (\WConvert\Template\CaptureContract::settings($optin->config, $optin->goal) as $submissionId => $setting) {
-            if (($optin->config['capture_mode'] ?? '') === 'local') { continue; }
+            if (OptinBinding::captureMode($optin->config) === 'local') { continue; }
             if ($setting['purpose'] !== 'request' && $setting['destination_ids'] === []) {
-                return new WP_Error('wconvert_signup_destination', __('Choose a service for each signup or collect only in WConvert.', 'wconvert'), ['status' => 400]);
+                return new WP_Error('wconvert_signup_destination', __('Choose a service for each form, or choose “Keep in WConvert only”.', 'wconvert'), ['status' => 400]);
             }
             $requiredValues = [];
             foreach ($submissions as $definition) {

@@ -1,6 +1,6 @@
 import { __ } from '@wordpress/i18n';
 import { DestinationsEditor } from './DestinationsEditor';
-import { Region, RegionBody, RegionHeader } from '../shell/Region';
+import { captureModeOf } from './captureMode';
 import type { Loadable } from '../shell/loadable';
 import type { Connection, Destination, DestinationType } from '../destinations/api';
 import type { Template } from '@renderer/types';
@@ -24,10 +24,6 @@ export function SubmissionSettings({ template, primaryChannel, config, available
   const channel = primaryChannel === 'phone' || primaryChannel === 'sms' ? 'email' : 'phone';
   const title = channel === 'phone' ? __('Optional SMS signup', 'wconvert') : __('Optional email signup', 'wconvert');
   const description = __('Visitors can skip this signup. Only destinations chosen here receive it.', 'wconvert');
-  if (config.capture_mode === 'local') {
-    return <Region className="wconvert-destinations-region"><RegionHeader title={title} level={3} description={description} />
-      <RegionBody><p className="m-0 text-note">{__('Signups are saved only in WConvert.', 'wconvert')}</p></RegionBody></Region>;
-  }
   const settings = (config.submission_settings ?? {}) as Record<string, { destination_ids?: string[] }>;
   const bound = settings[secondary.id]?.destination_ids ?? [];
   const mappings = (config.integration_mappings ?? {}) as Record<string, Record<string, Record<string, string>>>;
@@ -35,9 +31,11 @@ export function SubmissionSettings({ template, primaryChannel, config, available
     primary={false}
     title={title}
     description={description}
-    emptyText={channel === 'phone'
-      ? __('This signup is kept in WConvert only. Add an SMS service, or remove the optional SMS signup in Screens.', 'wconvert')
-      : __('This signup is kept in WConvert only. Add an email service, or remove the optional email signup in Screens.', 'wconvert')}
+    emptyText={captureModeOf(config) === 'local'
+      ? __('Signups are saved only in WConvert. Add a destination to also send them on.', 'wconvert')
+      : channel === 'phone'
+        ? __('Choose an SMS service for this signup, or keep all leads in WConvert only.', 'wconvert')
+        : __('Choose an email service for this signup, or keep all leads in WConvert only.', 'wconvert')}
     channel={{ channel, strict: true }}
     template={template}
     submissionId={secondary.id}
@@ -52,6 +50,9 @@ export function SubmissionSettings({ template, primaryChannel, config, available
     onConnectionSaved={onConnectionSaved}
     mappings={mappings[secondary.id] ?? {}}
     onChange={(next) => onChange({
+      // Choosing a service connects; removing the last one anywhere keeps leads here (ADR 0133).
+      ...(next.length > 0 ? { capture_mode: 'connected' }
+        : Array.isArray(config.destinations) && config.destinations.length > 0 ? {} : { capture_mode: 'local' }),
       submission_settings: { ...settings, [secondary.id]: { ...settings[secondary.id], destination_ids: next } },
       integration_mappings: { ...mappings, [secondary.id]: Object.fromEntries(Object.entries(mappings[secondary.id] ?? {}).filter(([id]) => next.includes(id))) },
     })}

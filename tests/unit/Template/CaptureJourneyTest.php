@@ -3,6 +3,7 @@
 namespace WConvert\Tests\Unit\Template;
 
 use PHPUnit\Framework\TestCase;
+use WConvert\Template\CaptureContract;
 use WConvert\Template\CaptureJourney;
 
 final class CaptureJourneyTest extends TestCase
@@ -149,25 +150,41 @@ final class CaptureJourneyTest extends TestCase
         self::assertSame('email_marketing', $settings['email-signup']['purpose']);
     }
 
-    public function testAContentResultNeedsItsConfiguredGuideLinkBeforePublishing(): void
+    /** A result's link is optional (ADR 0133): no address, no button. An address needs words for its button. */
+    public function testAResultLinkIsOptionalButAnAddressNeedsItsWords(): void
     {
         $template = json_decode((string) file_get_contents(dirname(__DIR__, 3) . '/pro/modules/journeys/templates/journey-content-guide.json'), true);
         $config = ['template' => $template];
-        self::assertSame('result_link', \WConvert\Template\CaptureContract::issue($config, 'find_match', ''));
-        foreach ($config['template']['tree']['steps'][1]['results'] as &$variant) $variant['href'] = 'https://example.com/guide';
-        unset($variant);
         self::assertNull(\WConvert\Template\CaptureContract::issue($config, 'find_match', ''));
+        foreach ($config['template']['tree']['steps'][1]['results'] as &$variant) { $variant['href'] = 'https://example.com/guide'; $variant['link_label'] = ''; }
+        unset($variant);
+        self::assertSame('result_link', \WConvert\Template\CaptureContract::issue($config, 'find_match', ''));
     }
-    public function testSelectedProductsNeedAFallbackEvenWithoutTheLiveProductRequirement(): void
+    /**
+     * A link in body text with no address is unfinished (ADR 0133): only
+     * consent wording and fine print take the site's privacy policy, so
+     * nothing will ever fill this one, and it blocks until it has an address.
+     */
+    public function testABodyTextLinkWithNoAddressBlocks(): void
+    {
+        $config = static fn (array $text): array => ['template' => ['tree' => \WConvert\Tests\Unit\Support\JourneyFixture::tree(['steps' => [
+            ['type' => 'stack', 'children' => [$text, ['type' => 'button', 'action' => 'link', 'href' => 'https://example.test/', 'label' => 'Go']]],
+        ]])]];
+        $body = ['type' => 'text', 'role' => 'body', 'text' => 'Read %s.', 'link' => ['label' => 'the guide']];
+
+        self::assertSame('link', CaptureContract::issue($config($body), 'promote_offer', 'https://example.test/privacy/'));
+        self::assertNull(CaptureContract::issue($config(['link' => ['label' => 'the guide', 'href' => 'https://example.test/guide']] + $body), 'promote_offer', ''));
+        self::assertNull(CaptureContract::issue($config(['hidden' => true] + $body), 'promote_offer', ''));
+        self::assertNull(CaptureContract::issue($config(['role' => 'fine_print'] + $body), 'promote_offer', ''));
+    }
+
+    public function testSelectedProductsNeedNoFallbackLink(): void
     {
         $template = json_decode((string) file_get_contents(dirname(__DIR__, 3) . '/pro/modules/journeys/templates/journey-product-finder.json'), true);
         $result = count($template['tree']['steps']) - 1;
         unset($template['tree']['steps'][$result]['products_required']);
         $template['tree']['steps'][$result]['results'][0]['product_ids'] = [12];
         $config = ['template' => $template];
-        self::assertSame('result_link', \WConvert\Template\CaptureContract::issue($config, 'find_match', ''));
-        $config['template']['tree']['steps'][$result]['results'][0]['href'] = '/shop/';
-        $config['template']['tree']['steps'][$result]['results'][0]['link_label'] = 'Browse plants';
         self::assertNull(\WConvert\Template\CaptureContract::issue($config, 'find_match', ''));
     }
 

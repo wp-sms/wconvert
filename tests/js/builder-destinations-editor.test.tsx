@@ -493,10 +493,11 @@ describe('what this save point needs before publishing', () => {
     expect(screen.getByRole('button', { name: 'Add destination' })).toBeVisible();
   });
 
-  it('says nothing is forwarded when the campaign collects only in WConvert', () => {
+  /** Kept local, a service stays one choice away: choosing one connects (ADR 0133). */
+  it('says nothing is forwarded while leads stay in WConvert, and keeps services one choice away', () => {
     editor(ready([destination({ id: 'a', label: 'Newsletter' })]), [], [], { outcome: CAPTURE_OUTCOME, local: true });
     expect(screen.getByText('Kept for review or export. Nothing is sent to another service.')).toBeVisible();
-    expect(screen.queryByRole('button', { name: 'Add destination' })).toBeNull();
+    expect(screen.getByRole('button', { name: 'Add destination' })).toBeVisible();
     expect(screen.queryByText(/Before you can publish/)).toBeNull();
   });
 });
