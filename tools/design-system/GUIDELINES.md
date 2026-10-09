@@ -81,7 +81,7 @@ controls have a **2.75rem / 44px** floor, including menus and native inputs.
 | `section` | 20 / 600 | reading-page section headings |
 | `metric` | 36 / 600 | dashboard impact and target totals |
 | `title` | 24 | compact editor title and footer wordmark |
-| `display` | 44 / 500; 36 on phones | reading-page heading |
+| `display` | 36 / 500; 30 on phones (ADR 0132; was 44/36) | reading-page heading |
 | `brand` | 26 / 600; 22 on phones | header wordmark |
 | `item` | 15 / 600 | campaign and goal identity |
 | `result` | 22 / 500 | compact result figure |
@@ -181,6 +181,11 @@ tab stop and the set announced as a set, all from the browser. Radix's
 admin prints on every build. **An `aria-pressed` button group is never one-of-N**;
 `aria-pressed` is for an independent toggle (ADR 0131).
 
+**A window of days is `shell/DateRangePicker`** (ADR 0132): one button naming
+the window and its dates ("Last 30 days · Sep 9 – Oct 8"), opening presets as
+native radios, Custom dates, and anything that qualifies the window. No screen
+draws its own period select or date card.
+
 **Three one-of-N shapes, and no fourth** (ADR 0131):
 
 | Shape | For |
@@ -239,9 +244,11 @@ Every settings section has an explicit Save; nothing autosaves a setting.
 
 **No ID on any screen** (ADR 0131). A missing name reads "Deleted campaign",
 "Removed destination" or "Unnamed", never a ULID. Search still accepts a
-pasted ID. The one exception is campaign Details' closed "For developers"
-disclosure, which shows the campaign ID with Copy, because the free page
-events identify a campaign by nothing else.
+pasted ID. There are two exceptions. Campaign Details' closed "For developers"
+disclosure shows the campaign ID with Copy, because the free page events
+identify a campaign by nothing else. The inline campaign's shortcode (the
+"WConvert campaign" block and manual placement) carries it too, because it is
+how a campaign is placed outside the block editor.
 
 **Data is shown once, one way** (`lib/format.ts`): dates in the site's locale
 and timezone — "Today, 2:22 PM", "Yesterday", "Oct 3" in a list, "Oct 9, 2026,
@@ -255,7 +262,7 @@ prints a field key or a WooCommerce status slug.
 |---|---|
 | `Dialog` | something the merchant can walk away from |
 | `AlertDialog` | destructive confirmation — says what *survives*, not just what goes |
-| `Popover` | an explanation they asked for; never a substitute for a control the screen should have shown |
+| `Popover` | an explanation they asked for; never a substitute for a control the screen should have shown. One exception: `shell/DateRangePicker`, whose button IS the control and whose popover holds its choices (ADR 0132) |
 | `DropdownMenu` | row actions past the first two |
 
 **Entry and dismissal are immediate.** A shared no-motion rule includes portaled

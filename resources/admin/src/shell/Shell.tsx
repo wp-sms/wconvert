@@ -42,10 +42,11 @@ export function Shell({
       >
         <header className="wconvert-panel-nav">
           <div className="wconvert-measure wconvert-masthead mx-auto w-full">
-            <div className="wconvert-brand">
+            {/* The wordmark goes home, as in every admin frame; the editor's own header has Back. */}
+            <a className="wconvert-brand" href={hashFor('optins')} aria-label={__('WConvert campaigns', 'wconvert')}>
               <BrandMark variant="inverse" />
               <span>{__('WConvert', 'wconvert')}</span>
-            </div>
+            </a>
             {section !== undefined && <HeaderTools />}
           </div>
           {section !== undefined && (
@@ -103,6 +104,6 @@ function descriptionFor(section: SectionId): string {
     case 'leads':
       return __('Every form submission, as it was captured.', 'wconvert');
     case 'settings':
-      return __('Setup every campaign shares.', 'wconvert');
+      return __('Shared setup for every campaign.', 'wconvert');
   }
 }

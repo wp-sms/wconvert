@@ -11,7 +11,10 @@ it('keeps section navigation and portaled actions in the light heading area', ()
   expect(within(screen.getByRole('navigation', { name: 'WConvert sections' })).getByRole('link', { name: 'Analytics' })).toHaveAttribute('aria-current', 'page');
   expect(screen.getByRole('heading', { level: 1, name: 'Analytics' }).closest('.wconvert-panel-nav')).toBeNull();
   expect(screen.getByRole('button', { name: 'Choose period' }).closest('.wconvert-panel-heading')).not.toBeNull();
-  expect(within(screen.getByRole('contentinfo')).getByRole('link', { name: 'Visitor experience' })).toHaveAttribute('href', '#settings?group=experience');
+  // The footer carries resources, not a fourth copy of a Settings shortcut.
+  const resources = within(screen.getByRole('contentinfo')).getByRole('navigation', { name: 'Resources' });
+  expect(within(resources).getByRole('link', { name: 'Guides' })).toBeInTheDocument();
+  expect(within(screen.getByRole('contentinfo')).queryByRole('link', { name: 'Visitor experience' })).toBeNull();
 });
 
 it('shows publisher branding without site identity and opens working footer help', async () => {
@@ -23,7 +26,11 @@ it('shows publisher branding without site identity and opens working footer help
   expect(screen.getByRole('link', { name: 'By VeronaLabs (opens in a new tab)' })).toHaveAttribute('href', 'https://veronalabs.com/');
   expect(screen.getByRole('img', { name: 'VeronaLabs' })).toBeVisible();
   await userEvent.click(screen.getByRole('button', { name: 'Need a hand? Help' }));
-  expect(screen.getByRole('link', { name: 'Connections & destinations' })).toHaveAttribute('href', '#settings?group=connections');
+  // Help is help: where to learn and who to ask, never a Settings shortcut.
+  const help = await screen.findByRole('dialog');
+  expect(within(help).getByRole('link', { name: 'Getting started' })).toBeInTheDocument();
+  expect(within(help).getByRole('link', { name: 'Contact support' })).toBeInTheDocument();
+  expect(screen.queryByRole('link', { name: 'Connections & destinations' })).toBeNull();
   expect(screen.getByRole('link', { name: 'WConvert website' })).toHaveAttribute('href', 'https://wconvert.io/');
 });
 

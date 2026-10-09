@@ -15,7 +15,9 @@ Shell owns a deep-teal brand row (espresso since
 [ADR 0130](0130-the-admin-wears-the-wconvert-io-brand.md)), separate four-section navigation, light heading
 area, aligned work area and matching service footer. Display (44px, 36px on
 phones), brand (26px, 22px on phones), item (15px) and result (22px) are reusable
-type roles. Compact editor title and editing-furniture roles retain their sizes.
+type roles. **Amended by [0132](0132-every-screen-answers-its-first-question.md):**
+the reading-page title is 36px (30px on phones) with a tighter heading band, so
+content starts about 70px higher; the wordmark links to Campaigns. Compact editor title and editing-furniture roles retain their sizes.
 DM Sans is bundled locally with its OFL license, including in the Pro build.
 App and portal headings explicitly inherit that stack: WordPress's RTL
 localization stylesheet otherwise assigns Arial directly to heading elements,
@@ -54,7 +56,11 @@ the credit, and keyboard focus remains visible.
 The header has no redundant link to the site's front end. The
 footer links to Visitor experience settings and reuses working header Help links.
 Campaign guides and direct support need real destinations before those prototype
-labels can ship. No sample version, account session or operational status is
+labels can ship. **Amended by [0132](0132-every-screen-answers-its-first-question.md):**
+Help and the footer's Resources column now carry Getting started, Guides,
+Contact support and What's new (with the plugin version) from one `HELP_URLS`
+table, `#` until the owner supplies addresses; the footer no longer repeats a
+Settings shortcut. No sample version, account session or operational status is
 invented. Existing account integration remains outside this change.
 
 Creation omits the service footer. The editor keeps its own task-focused frame;
