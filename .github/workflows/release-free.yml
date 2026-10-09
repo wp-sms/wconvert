@@ -40,7 +40,8 @@ name: Release free
 # TO PUBLISH TO WORDPRESS.ORG:
 #   1. Set repository variable RELEASE_PUBLISH_ENABLED = true   (master switch)
 #   2. Set PUBLISH_WPORG = true
-#   3. Add secrets WP_ORG_USERNAME and WP_ORG_PASSWORD
+#   3. In the `wordpress-org` environment: variable WP_ORG_USERNAME and
+#      secret WP_ORG_PASSWORD
 # Unset means off. Both switches are required, so flipping one by mistake
 # publishes nothing.
 # =============================================================================
@@ -258,7 +259,7 @@ jobs:
 
   # ---------------------------------------------------------------------------
   # [4] WORDPRESS.ORG — the free build to SVN.
-  # Secrets: WP_ORG_USERNAME, WP_ORG_PASSWORD.
+  # Environment `wordpress-org`: variable WP_ORG_USERNAME, secret WP_ORG_PASSWORD.
   #
   # Skipped for pre-releases: WordPress.org has no concept of one, so publishing
   # a beta there would hand it to every free user as the current version.
@@ -281,6 +282,9 @@ jobs:
       vars.PUBLISH_WPORG == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 20
+    environment:
+      name: wordpress-org
+      url: https://wordpress.org/plugins/wconvert/
     steps:
       - uses: actions/checkout@v4
 
@@ -304,7 +308,7 @@ jobs:
           # Banner, icon and screenshots for the wp.org listing. Read from the
           # checkout above; the action skips it when the directory is absent.
           ASSETS_DIR: .wordpress-org
-          SVN_USERNAME: ${{ secrets.WP_ORG_USERNAME }}
+          SVN_USERNAME: ${{ vars.WP_ORG_USERNAME }}
           SVN_PASSWORD: ${{ secrets.WP_ORG_PASSWORD }}
 
   # ---------------------------------------------------------------------------

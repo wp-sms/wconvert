@@ -12,7 +12,8 @@ name: Readme and assets
 #
 # Same two switches as release-free.yml, and the same secrets:
 #   variable RELEASE_PUBLISH_ENABLED = true, variable PUBLISH_WPORG = true,
-#   secrets WP_ORG_USERNAME and WP_ORG_PASSWORD.
+#   in the `wordpress-org` environment, variable WP_ORG_USERNAME and secret
+# WP_ORG_PASSWORD.
 # Unset means off. This is a push to `main` by design: a readme change is not a
 # release, so it has no pull-request gate of its own beyond review.
 # =============================================================================
@@ -39,6 +40,9 @@ jobs:
     if: vars.RELEASE_PUBLISH_ENABLED == 'true' && vars.PUBLISH_WPORG == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    environment:
+      name: wordpress-org
+      url: https://wordpress.org/plugins/wconvert/
     steps:
       - uses: actions/checkout@v4
 
@@ -62,7 +66,7 @@ jobs:
         if: steps.released.outputs.ok == 'yes'
         uses: 10up/action-wordpress-plugin-asset-update@2480306f6f693672726d08b5917ea114cb2825f7
         env:
-          SVN_USERNAME: ${{ secrets.WP_ORG_USERNAME }}
+          SVN_USERNAME: ${{ vars.WP_ORG_USERNAME }}
           SVN_PASSWORD: ${{ secrets.WP_ORG_PASSWORD }}
           SLUG: wconvert
           ASSETS_DIR: .wordpress-org
