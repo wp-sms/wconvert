@@ -671,7 +671,8 @@ final class OptinController implements RestController
             foreach ($setting['destination_ids'] as $destinationId) {
                 $destination = $this->destinations->find($destinationId);
                 $type = $destination === null ? null : $this->destinationTypes->find($destination->type);
-                $channel = $setting['purpose'] === 'email_marketing' ? 'email' : 'sms';
+                // `phone`, as `CaptureContract` and every type's audience channels spell it.
+                $channel = $setting['purpose'] === 'email_marketing' ? 'email' : 'phone';
                 if ($destination === null || $type === null || !$this->destinationTypes->isDispatchable($destination->type)
                     || $type->requirements()->missingSettings($destination->settings) !== []
                     || !$type->requirements()->acceptsCapture($requiredValues)
