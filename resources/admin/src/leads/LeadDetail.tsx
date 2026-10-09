@@ -33,7 +33,8 @@ export const titleOf = (lead: Lead): string => contactOf(lead) ?? nameOf(lead) ?
  */
 export function framed(frame: string, value: string, dir: 'ltr' | 'auto' = 'ltr'): ReactNode {
   const [before, after = ''] = frame.split('%s');
-  return <>{before}<bdi dir={dir}>{value}</bdi>{after}</>;
+  // One span, so a flex parent (a button) does not add its gap around the name.
+  return <span>{before}<bdi dir={dir}>{value}</bdi>{after}</span>;
 }
 
 /** A campaign link, or what is left of it when there is nothing to link to. */

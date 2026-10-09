@@ -62,6 +62,7 @@ export function CampaignDetailsDialog({
   onClose: () => void;
   returnFocus: RefObject<HTMLElement | null>;
 }) {
+  const openEditor = useRef<HTMLButtonElement>(null);
   const status = row ? statusOf(row) : 'draft';
   return (
     <AdminDialog
@@ -73,6 +74,13 @@ export function CampaignDetailsDialog({
       <AdminDialogContent
         size="md"
         className="wconvert-campaign-detail"
+        // Read-only facts come first; focus waits on the primary action rather
+        // than on the first control in the body, which is the developer
+        // disclosure at the bottom and would scroll the facts out of view.
+        onOpenAutoFocus={(event) => {
+          event.preventDefault();
+          openEditor.current?.focus();
+        }}
         onCloseAutoFocus={(event) => {
           event.preventDefault();
           returnFocus.current?.focus();
@@ -104,7 +112,7 @@ export function CampaignDetailsDialog({
           <Button variant="outline" asChild>
             <a href={reportLink}>{__('View report', 'wconvert')}</a>
           </Button>
-          <Button disabled={editBusy} onClick={onEdit}>
+          <Button ref={openEditor} disabled={editBusy} onClick={onEdit}>
             {__('Open editor', 'wconvert')}
           </Button>
         </AdminDialogFooter>

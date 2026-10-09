@@ -6598,6 +6598,10 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
 .wconvert-dialog__error { flex: 1 1 14rem; min-inline-size: 0; margin: 0; color: var(--destructive); font-size: var(--text-note); overflow-wrap: anywhere; }
 .wconvert-dialog__actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: .5rem; margin-inline-start: auto; }
 .wconvert-dialog__actions > [data-slot="button"] { white-space: normal; }
+/* A plain link in a dialog is a link (§5): portaled outside #wconvert-admin,
+ * it would otherwise take wp-admin's blue and lose its underline. */
+.wconvert-dialog a:not([data-slot]), .wconvert-dialog a:not([data-slot]):is(:hover, :focus, :active, :visited) { color: var(--link); text-decoration-line: underline; text-decoration-color: color-mix(in srgb, var(--link) 40%, transparent); text-underline-offset: 4px; }
+.wconvert-dialog a:not([data-slot]):hover { text-decoration-color: currentColor; }
 .wconvert-dialog__close { position: absolute; inset-block-start: .75rem; inset-inline-end: .75rem; display: grid; place-items: center; inline-size: 2rem; block-size: 2rem; padding: 0; border: 0; border-radius: var(--radius-md); background: transparent; color: var(--muted-foreground); cursor: pointer; }
 .wconvert-dialog__close:hover { background: var(--accent); color: var(--foreground); }
 .wconvert-dialog__close:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }

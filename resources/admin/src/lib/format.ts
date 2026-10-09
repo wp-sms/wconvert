@@ -1,6 +1,6 @@
 import { __ } from '@wordpress/i18n';
 import { adminSettings } from '../settings';
-import { wallKey, wallNow } from './wallTime';
+import { documentLocale, wallKey, wallNow } from './wallTime';
 
 /**
  * **One way to show each kind of data** (ADR 0131). Every date, count, rate,
@@ -15,11 +15,8 @@ import { wallKey, wallNow } from './wallTime';
  *   is converted into the site's zone first.
  */
 
-/** The site's locale as WordPress wrote it on `<html lang>`, or the runtime default. */
-export function siteLocale(): string | undefined {
-  const lang = typeof document === 'undefined' ? '' : document.documentElement.lang;
-  return lang === '' ? undefined : lang;
-}
+/** The site's locale as WordPress wrote it on `<html lang>`, on the Gregorian calendar. */
+export const siteLocale = documentLocale;
 
 type Wall = { day: string; time: string | null };
 

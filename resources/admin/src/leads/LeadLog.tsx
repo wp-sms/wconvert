@@ -149,7 +149,12 @@ export function LeadLog({ query, onQueryChange, onRefresh }: LeadLogProps) {
     trigger.current = button;
     setOpened(next);
   };
-  const retryLog = () => setRetry((value) => value + 1);
+  // One outage is one door: a log retry also re-reads the campaign names when
+  // those failed with it, rather than drawing a second "Try again" above it.
+  const retryLog = () => {
+    setRetry((value) => value + 1);
+    if (namesError !== null) setNamesRetry((value) => value + 1);
+  };
 
   return <div className="flex flex-col gap-5">
     <PageAction><Button variant="outline" disabled={updating} onClick={() => { setPaging({ scope, previous: [] }); retryLog(); onRefresh?.(); }}><RefreshCw aria-hidden="true" />{__('Refresh submissions', 'wconvert')}</Button></PageAction>
@@ -192,7 +197,7 @@ export function LeadLog({ query, onQueryChange, onRefresh }: LeadLogProps) {
       {showingPrevious && <RegionBody><p className="m-0 text-note">{__('Showing the previous results until the new ones load.', 'wconvert')}</p></RegionBody>}
       {erasureNotice !== null && <RegionBody><p role="status" className="m-0 rounded-md border border-border bg-surface p-3 text-note">{erasureNotice}</p></RegionBody>}
       {error !== null && data !== null && <RegionError message={error} onRetry={retryLog} />}
-      {namesError !== null && <RegionError message={sprintf(__('Campaign names couldn’t be loaded: %s', 'wconvert'), namesError)} onRetry={() => setNamesRetry((value) => value + 1)} />}
+      {namesError !== null && log.status !== 'failed' && <RegionError message={sprintf(__('Campaign names couldn’t be loaded: %s', 'wconvert'), namesError)} onRetry={() => setNamesRetry((value) => value + 1)} />}
       {log.status === 'failed' ? <RegionErrorState message={log.message} onRetry={retryLog} /> : data === null ? <DataTable><TableSkeleton columns={5} /></DataTable> : rows === 0 ? (
         <EmptyState icon={Inbox} title={applied.query.leadId ? __('Submission not found', 'wconvert') : hasAppliedFilters ? __('No matching submissions', 'wconvert') : __('No submissions yet', 'wconvert')}
           action={hasAppliedFilters ? <Button variant="outline" onClick={() => changeQuery({})}>{__('Clear filters', 'wconvert')}</Button>

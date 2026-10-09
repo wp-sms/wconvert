@@ -50,3 +50,12 @@ describe('money and keys', () => {
     expect(humanize('utm_campaign')).toBe('Utm campaign');
   });
 });
+
+describe('the calendar', () => {
+  afterEach(() => { document.documentElement.lang = ''; });
+
+  it('stays Gregorian on a Persian site, so a month names the month it covers', () => {
+    document.documentElement.lang = 'fa-IR';
+    expect(formatWhen('2026-10-09 14:22:00', 'detail', NOW, 'UTC')).toContain('۲۰۲۶');
+  });
+});
