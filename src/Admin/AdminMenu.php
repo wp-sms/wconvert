@@ -49,6 +49,19 @@ final class AdminMenu
     public const SCRIPT_HANDLE = 'wconvert-admin';
 
     /**
+     * The wconvert.io mark as one monochrome path (ADR 0130): the tile with the
+     * W knocked out by `evenodd`, then the dot. WordPress's `svg-painter`
+     * rewrites the `fill` to the admin colour scheme's icon colour, so the
+     * artwork's own colours would be discarded anyway. The paths are
+     * `resources/admin/src/assets/branding/wconvert-mark.svg`.
+     */
+    private const MENU_ICON = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">'
+        . '<path fill="black" fill-rule="evenodd" d="'
+        . 'M12 8h32c0 6.627 5.373 12 12 12v32c0 5.523-4.477 10-10 10H12C6.477 62 2 57.523 2 52V18C2 12.477 6.477 8 12 8Z'
+        . 'M12 24h8l-.2 16L29 24h7l-.4 16L44 24h8L38 49h-8l.5-16L21 49h-8L12 24Z'
+        . 'M49 8a7 7 0 1 0 14 0a7 7 0 1 0-14 0Z"/></svg>';
+
+    /**
      * When this runs on `admin_enqueue_scripts`.
      *
      * A named constant for the reason {@see \WConvert\Frontend\LoaderEnqueue::PRIORITY}
@@ -84,7 +97,7 @@ final class AdminMenu
             'manage_options',
             self::SLUG,
             [$this, 'renderScreen'],
-            'dashicons-megaphone',
+            'data:image/svg+xml;base64,' . base64_encode(self::MENU_ICON),
             26
         );
 

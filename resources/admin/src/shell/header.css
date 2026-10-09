@@ -1,26 +1,28 @@
-/* Shared Harbor frame: ADR 0097. The editor keeps its own task-focused layout. */
+/* Shared Harbor frame: ADR 0097, in the wconvert.io palette (ADR 0130). The editor keeps its own task-focused layout.
+   Citron is the frame's signal colour: the active tab, the unread dot and focus. Muted text reads 8.05:1 on espresso. */
 #wconvert-admin .wconvert-panel {
-  --frame-ink:#183c40; --frame-text:#f3f7f3; --frame-muted:#b1cbc4; --frame-edge:#35575a;
+  --frame-ink:#302720; --frame-text:#faf6ed; --frame-muted:#c9bfb1; --frame-edge:#4a3f36;
+  --frame-tint:#433830; --frame-line:#75685c; --frame-signal:#e2f475;
   --frame-gutter:48px; --page-action-height:3rem;
   min-block-size:calc(100dvh - var(--wp-admin--admin-bar--height, 32px)); display:flex; flex-direction:column;
 }
 #wconvert-admin .wconvert-panel-nav { background:var(--frame-ink); color:var(--frame-text); border:0; }
 #wconvert-admin .wconvert-masthead { min-block-size:78px; display:flex; align-items:center; gap:24px; padding-inline:var(--frame-gutter); }
 #wconvert-admin .wconvert-brand { display:flex; align-items:center; gap:12px; white-space:nowrap; font-size:var(--text-brand); font-weight:600; letter-spacing:-1px; }
-#wconvert-admin .wconvert-brand-mark { direction:ltr; display:grid; place-items:center; inline-size:34px; block-size:34px; border-radius:4px; background:#dceae3; color:var(--frame-ink); font-size:var(--text-figure); font-style:italic; font-weight:700; letter-spacing:-5px; padding-inline-end:5px; }
+#wconvert-admin .wconvert-brand-mark { display:block; flex:none; inline-size:34px; block-size:34px; }
 #wconvert-admin .wconvert-navigation-row { position:relative; display:flex; justify-content:space-between; align-items:center; gap:24px; padding-inline:var(--frame-gutter); }
 #wconvert-admin .wconvert-navigation-row::before { content:''; position:absolute; inset-block-start:0; inset-inline:var(--frame-gutter); border-block-start:1px solid var(--frame-edge); }
 #wconvert-admin .wconvert-section-nav { flex:1; }
 #wconvert-admin .wconvert-section-nav ul { display:flex; align-items:stretch; gap:34px; margin:0; padding:0; list-style:none; }
 #wconvert-admin .wconvert-section-nav li { display:flex; margin:0; }
 #wconvert-admin .wconvert-section-nav a { display:flex; align-items:center; padding-block:17px; color:var(--frame-muted); text-decoration:none; border-block-end:2px solid transparent; font-size:var(--text-body); font-weight:500; }
-#wconvert-admin .wconvert-section-nav a[aria-current] { color:var(--frame-text); border-block-end-color:#dceadf; }
-#wconvert-admin .wconvert-section-nav a:hover { color:white; }
+#wconvert-admin .wconvert-section-nav a[aria-current] { color:var(--frame-text); border-block-end-color:var(--frame-signal); }
+#wconvert-admin .wconvert-section-nav a:hover { color:var(--frame-text); }
 #wconvert-admin .wconvert-brand-plan { align-self:stretch; display:flex; align-items:center; color:var(--frame-muted); }
 #wconvert-admin .wconvert-header-tools { margin-inline-start:auto; display:flex; align-items:center; gap:10px; }
 #wconvert-admin .wconvert-header-tools .wconvert-explore-pro { color:var(--frame-text); font-size:var(--text-note); font-weight:500; text-decoration:none; white-space:nowrap; }
 #wconvert-admin .wconvert-notifications-trigger { position:relative; }
-#wconvert-admin .wconvert-notification-dot { position:absolute; inset-block-start:4px; inset-inline-end:5px; inline-size:5px; block-size:5px; border-radius:50%; background:#e6b95e; }
+#wconvert-admin .wconvert-notification-dot { position:absolute; inset-block-start:4px; inset-inline-end:5px; inline-size:5px; block-size:5px; border-radius:50%; background:var(--frame-signal); }
 #wconvert-admin .wconvert-page-heading { padding:42px var(--frame-gutter) 34px; }
 #wconvert-admin .wconvert-page-copy { flex:1; min-inline-size:0; }
 #wconvert-admin .wconvert-page-title { font-size:var(--text-display); font-weight:500; line-height:1.1; letter-spacing:-.04em; overflow-wrap:anywhere; }
@@ -31,26 +33,26 @@
 #wconvert-admin .wconvert-service-inner { display:grid; grid-template-columns:1fr 1fr auto; align-items:center; gap:35px; padding:28px var(--frame-gutter) 30px; }
 #wconvert-admin .wconvert-service-identity { min-inline-size:0; }
 #wconvert-admin .wconvert-service-brand { display:flex; align-items:center; flex-wrap:wrap; gap:10px; font-size:var(--text-title); font-weight:500; letter-spacing:-.03em; }
-#wconvert-admin .wconvert-plan-badge { display:inline-flex; align-items:center; min-block-size:24px; padding:3px 9px; border:1px solid #64857f; border-radius:6px; background:#2a5052; color:var(--frame-text); font-size:var(--text-micro); font-weight:600; line-height:1.2; letter-spacing:.04em; }
+#wconvert-admin .wconvert-plan-badge { display:inline-flex; align-items:center; min-block-size:24px; padding:3px 9px; border:1px solid var(--frame-line); border-radius:6px; background:var(--frame-tint); color:var(--frame-text); font-size:var(--text-micro); font-weight:600; line-height:1.2; letter-spacing:.04em; }
 #wconvert-admin .wconvert-publisher-row { padding-inline:var(--frame-gutter); }
 #wconvert-admin .wconvert-publisher-credit { display:flex; justify-content:center; align-items:center; gap:12px; padding-block:17px 19px; border-block-start:1px solid var(--frame-edge); color:var(--frame-muted); font-size:var(--text-micro); }
 #wconvert-admin .wconvert-publisher { display:inline-flex; align-items:center; min-block-size:28px; border-radius:3px; }
 #wconvert-admin .wconvert-publisher img { display:block; inline-size:112px; block-size:auto; filter:brightness(0) invert(1); opacity:.6; }
 #wconvert-admin .wconvert-publisher:hover img { opacity:.85; }
-#wconvert-admin .wconvert-service-resource { border-inline-start:1px solid #466b64; padding-inline-start:30px; }
+#wconvert-admin .wconvert-service-resource { border-inline-start:1px solid var(--frame-edge); padding-inline-start:30px; }
 #wconvert-admin .wconvert-service-label { display:block; margin-block-end:6px; font-size:var(--text-label); letter-spacing:.1em; text-transform:uppercase; color:var(--frame-muted); }
 #wconvert-admin .wconvert-service-resource a { display:inline-flex; align-items:center; gap:7px; min-block-size:24px; font-size:var(--text-note); color:var(--frame-text); text-decoration:none; }
 #wconvert-admin .wconvert-service-resource a:hover { text-decoration:underline; text-underline-offset:4px; }
-#wconvert-admin .wconvert-service-help { padding:12px 18px; border:1px solid #729187; border-radius:var(--radius); background:transparent; color:var(--frame-text); text-align:start; }
+#wconvert-admin .wconvert-service-help { padding:12px 18px; border:1px solid var(--frame-line); border-radius:var(--radius); background:transparent; color:var(--frame-text); text-align:start; }
 #wconvert-admin .wconvert-service-help > span { display:block; color:var(--frame-muted); font-size:var(--text-micro); margin-block-end:6px; }
 #wconvert-admin .wconvert-service-help strong { display:flex; justify-content:space-between; align-items:center; gap:20px; font-size:var(--text-note); font-weight:500; }
-#wconvert-admin .wconvert-service-help:hover { background:#24494b; }
-#wconvert-admin .wconvert-service-footer svg { inline-size:16px; block-size:16px; flex:none; }
-#wconvert-admin .wconvert-service-footer svg:dir(rtl) { transform:scaleX(-1); }
+#wconvert-admin .wconvert-service-help:hover { background:var(--frame-tint); }
+#wconvert-admin .wconvert-service-footer svg:not(.wconvert-brand-mark) { inline-size:16px; block-size:16px; flex:none; }
+#wconvert-admin .wconvert-service-footer svg:not(.wconvert-brand-mark):dir(rtl) { transform:scaleX(-1); }
 @layer utilities {
   #wconvert-admin .wconvert-service-footer .wconvert-publisher:is(:link,:visited,:hover,:focus,:active) { text-decoration:none !important; }
   #wconvert-admin .wconvert-header-tools [data-slot=button] { color:var(--frame-text) !important; }
-  #wconvert-admin .wconvert-header-tools [data-slot=button]:hover { background:#35575a !important; }
+  #wconvert-admin .wconvert-header-tools [data-slot=button]:hover { background:var(--frame-tint) !important; }
   #wconvert-admin .wconvert-panel-heading .wconvert-page-actions :is([data-slot=button][data-size=default],[data-slot=select-trigger],select) {
     box-sizing:border-box !important;
     block-size:auto !important;
@@ -67,7 +69,7 @@
   #wconvert-admin .wconvert-panel-heading .wconvert-page-actions [data-variant=outline]:hover { background:var(--accent) !important; }
 
   #wconvert-admin :is(.wconvert-panel-nav,.wconvert-service-footer) a:focus { box-shadow:none !important; }
-  #wconvert-admin :is(.wconvert-panel-nav,.wconvert-service-footer) :is(button,a):focus-visible { outline:2px solid #dceae3 !important; outline-offset:4px !important; }
+  #wconvert-admin :is(.wconvert-panel-nav,.wconvert-service-footer) :is(button,a):focus-visible { outline:2px solid var(--frame-signal) !important; outline-offset:4px !important; }
 }
 @media(max-width:900px) {
   #wconvert-admin .wconvert-panel { --frame-gutter:28px; }
@@ -79,7 +81,7 @@
   #wconvert-admin .wconvert-panel { --frame-gutter:20px; --text-display:2.25rem; --text-brand:1.375rem; }
   #wconvert-admin .wconvert-masthead { min-block-size:72px; gap:12px; }
   #wconvert-admin .wconvert-brand { gap:8px; }
-  #wconvert-admin .wconvert-brand-mark { inline-size:29px; block-size:29px; font-size:var(--text-title); }
+  #wconvert-admin .wconvert-brand-mark { inline-size:29px; block-size:29px; }
   #wconvert-admin .wconvert-header-tools { gap:3px; }
   #wconvert-admin .wconvert-header-tools .wconvert-explore-pro, #wconvert-admin .wconvert-brand-plan { display:none; }
   #wconvert-admin .wconvert-section-nav ul { justify-content:space-between; gap:12px; }

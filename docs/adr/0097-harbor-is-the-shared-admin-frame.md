@@ -11,7 +11,8 @@ semantic statuses and accessibility requirements remain in force.
 
 ## Shared system
 
-Shell owns a deep-teal brand row, separate four-section navigation, light heading
+Shell owns a deep-teal brand row (espresso since
+[ADR 0130](0130-the-admin-wears-the-wconvert-io-brand.md)), separate four-section navigation, light heading
 area, aligned work area and matching service footer. Display (44px, 36px on
 phones), brand (26px, 22px on phones), item (15px) and result (22px) are reusable
 type roles. Compact editor title and editing-furniture roles retain their sizes.
@@ -23,7 +24,12 @@ the same heading font in both directions without changing WordPress chrome.
 Each font weight has a content-hashed URL; generic main.ttf names can swap weights
 between builds while a browser still has the old file cached.
 
-Primary is #205c57, frame #183c40, canvas #EAF0ED, and cards white. Shared shadows
+Primary is #205c57, frame #183c40, canvas #EAF0ED, and cards white.
+_Amended by [ADR 0130](0130-the-admin-wears-the-wconvert-io-brand.md): primary
+and frame are both espresso #302720, the canvas is paper #FAF6ED, cards stay
+white, and citron #E2F475 marks the active tab, unread dot and focus on the
+frame. The muted-text and control-border ratios under Verification below are
+Harbor's; 0130 records the current ones._ Shared shadows
 are removed. All admin motion, including portaled layers, is disabled; actual
 WordPress behavior outside the app is not changed. Reading-page heading buttons and selects
 share a 48px floor; existing compact and coarse-pointer scopes remain. Campaigns
@@ -38,7 +44,8 @@ alignment, white fill and control borders; actions wrap at narrow widths.
 
 ## Real destinations and integration
 
-The footer repeats the shared WConvert mark and wordmark with a compact plan
+The footer repeats the shared WConvert mark (the wconvert.io SVG since
+[ADR 0130](0130-the-admin-wears-the-wconvert-io-brand.md)) and wordmark with a compact plan
 badge. It omits the site title/address and credits VeronaLabs with its official
 logo, bundled locally, linked to https://veronalabs.com/. The same plan badge is
 used in navigation. The publisher credit sits centered in a separate bottom row with a muted

@@ -90,6 +90,7 @@ import { adminSettings, catalogConfigured } from '../settings';
 import { readPrivacyGuidance } from '../privacy/api';
 import { createOptin, publishOptin } from '../optins/api';
 import { editorHref } from '../nav';
+import { BrandMark } from '../shell/Brand';
 import type { EditingState } from '../hooks/useAdminNavigation';
 import type { Template, Tokens as TokenBag } from '@renderer/types';
 
@@ -791,9 +792,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
         >
           <ArrowLeft aria-hidden="true" />
         </Button>
-        <span className="wconvert-brand-mark wconvert-workspace__brand-mark" aria-hidden="true">
-          w
-        </span>
+        <BrandMark className="wconvert-workspace__brand-mark" />
         <span className="sr-only">{__('WConvert', 'wconvert')}</span>
         <h1 className="sr-only">{name || __('Untitled Campaign', 'wconvert')}</h1>
         <label className="sr-only" htmlFor="wconvert-optin-name">

@@ -336,31 +336,35 @@
 }
 
 :root {
-  /* Harbor palette and corners supersede the original values (ADR 0097). */
+  /*
+   * The wconvert.io palette (ADR 0130) on ADR 0097's corners: espresso primary,
+   * paper canvas, warm tints. Citron is a brand signal on the dark frame only.
+   */
   --radius: 0.375rem;
-  --primary: #205c57;
-  --primary-foreground: #ffffff;
+  --primary: #302720;
+  --primary-foreground: #faf6ed;
 
-  --background: #eaf0ed;
-  --foreground: #243b37;
+  --background: #faf6ed;
+  --foreground: #302720;
   --card: #ffffff;
-  --card-foreground: #243b37;
+  --card-foreground: #302720;
   --popover: #ffffff;
-  --popover-foreground: #243b37;
-  --surface: #f3f6f4;
+  --popover-foreground: #302720;
+  --surface: #f5f0e5;
 
-  --secondary: #dce9e2;
-  --secondary-foreground: #32594e;
-  --muted: #f3f6f4;
-  --muted-foreground: #53675e;
-  --accent: #e3ede7;
-  --accent-foreground: #24483b;
+  --secondary: #eee8dc;
+  --secondary-foreground: #302720;
+  --muted: #f5f0e5;
+  --muted-foreground: #6b6056;
+  --accent: #eee8dc;
+  --accent-foreground: #302720;
 
   /*
    * Semantic colors retain their meaning independently of the brand palette. Each is
    * measured against white rather than eyeballed: destructive 6.57:1, success
    * 6.13:1, warning 5.93:1, info 6.46:1 — AA in both directions, so each works
-   * as text on a card and as a solid fill under a white label.
+   * as text on a card and as a solid fill under a white label. On the paper
+   * canvas they read 6.10, 5.68, 5.50 and 5.99:1.
    */
   --destructive: #b42318;
   --destructive-foreground: #ffffff;
@@ -373,11 +377,12 @@
    * draws the edge of a control, which is *"visual information required to
    * identify a user interface component"* and therefore owes 3:1 under WCAG
    * 1.4.11 (ADR 0038 sets AA as the bar). They are two tokens because they are
-   * two jobs — The Harbor input edge clears 3:1 on both white and the mist canvas.
+   * two jobs. The input edge reads 4.19:1 on white, 3.89:1 on paper and
+   * 3.69:1 on the surface tint.
    */
-  --border: #cad6cf;
-  --input: #74877d;
-  --ring: #205c57;
+  --border: #ddd8ca;
+  --input: #857a6e;
+  --ring: #302720;
 
   /*
    * The chart ramp is the analytics screen's vocabulary, in the order ADR 0019
@@ -389,7 +394,7 @@
   --chart-2: #17703f;
   --chart-3: #8a5a00;
   --chart-4: #b42318;
-  --chart-5: #5b7078;
+  --chart-5: #7a6f63;
 
   /*
    * Named because the shadcn contract spells them and a component vendored
@@ -399,7 +404,7 @@
   --sidebar: #ffffff;
   --sidebar-foreground: var(--foreground);
   --sidebar-primary: var(--primary);
-  --sidebar-primary-foreground: #ffffff;
+  --sidebar-primary-foreground: var(--primary-foreground);
   --sidebar-accent: var(--accent);
   --sidebar-accent-foreground: var(--accent-foreground);
   --sidebar-border: var(--border);
@@ -6481,10 +6486,10 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
 .wconvert-collections__grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr)); gap: 1rem; }
 .wconvert-collection { position: relative; flex: 0 0 calc((100% - 2rem) / 2.25); min-inline-size: 17rem; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; scroll-snap-align: start; background: var(--card); }
 .wconvert-collection__open { display: flex; flex-direction: column; inline-size: 100%; block-size: 100%; text-align: start; cursor: pointer; border: 0; padding: 0; background: transparent; color: var(--foreground); }
-.wconvert-collection__art { position: relative; display: block; inline-size: 100%; block-size: 7.5rem; overflow: hidden; background: #264b43; }
-.wconvert-collection__art > span { position: absolute; display: block; background: #f3e6bd; border-radius: .375rem; inline-size: 35%; block-size: 72%; inset-block-start: 28%; inset-inline-start: 16%; transform: rotate(-12deg); }
-.wconvert-collection__art > span:nth-child(2) { inset-inline-start: 40%; inset-block-start: 14%; background: #c9d6b6; transform: rotate(12deg); }
-.wconvert-collection__art > span:nth-child(3) { inline-size: 22%; block-size: .375rem; inset-inline-start: 45%; inset-block-start: 39%; background: #264b43; transform: rotate(12deg); box-shadow: .2rem 1rem 0 #264b43; }
+.wconvert-collection__art { position: relative; display: block; inline-size: 100%; block-size: 7.5rem; overflow: hidden; background: #302720; }
+.wconvert-collection__art > span { position: absolute; display: block; background: #faf6ed; border-radius: .375rem; inline-size: 35%; block-size: 72%; inset-block-start: 28%; inset-inline-start: 16%; transform: rotate(-12deg); }
+.wconvert-collection__art > span:nth-child(2) { inset-inline-start: 40%; inset-block-start: 14%; background: #e2f475; transform: rotate(12deg); }
+.wconvert-collection__art > span:nth-child(3) { inline-size: 22%; block-size: .375rem; inset-inline-start: 45%; inset-block-start: 39%; background: #302720; transform: rotate(12deg); box-shadow: .2rem 1rem 0 #302720; }
 .wconvert-collection--launch .wconvert-collection__art { background: #c7d7c8; }
 .wconvert-collection--launch .wconvert-collection__art > span { background: #fffaf0; }
 .wconvert-collection--services .wconvert-collection__art { background: #d9e6f4; }
@@ -6497,7 +6502,7 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
 .wconvert-collection__copy strong { font-size: var(--text-heading); line-height: 1.4; }
 .wconvert-collection__copy > span { font-size: var(--text-note); line-height: 1.55; }
 .wconvert-collection__count { color: var(--muted-foreground); }
-.wconvert-collection__hide { position: absolute; inset-inline-end: .5rem; inset-block-start: .5rem; display: grid; place-items: center; inline-size: 2rem; block-size: 2rem; border: 1px solid #bfcfc7; border-radius: 50%; background: #fff; color: #24443c; cursor: pointer; }
+.wconvert-collection__hide { position: absolute; inset-inline-end: .5rem; inset-block-start: .5rem; display: grid; place-items: center; inline-size: 2rem; block-size: 2rem; border: 1px solid var(--input); border-radius: 50%; background: #fff; color: var(--foreground); cursor: pointer; }
 .wconvert-collection__open:focus-visible { outline: 3px solid var(--ring); outline-offset: -3px; }
 .wconvert-picker__notice { border: 1px solid var(--border); background: var(--surface); border-radius: var(--radius); padding: 1rem; font-size: var(--text-note); }
 .wconvert-picker__pagination { display: flex; flex: none; flex-wrap: wrap; align-items: center; justify-content: center; gap: .75rem; padding: .75rem 1rem; border-block-start: 1px solid var(--border); background: var(--card); font-size: var(--text-note); }

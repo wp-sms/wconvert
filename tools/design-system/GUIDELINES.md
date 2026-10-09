@@ -93,13 +93,16 @@ colour.
 
 ## 5. Colour means something
 
-- **Teal `#205c57`** is the primary action/link color. **Deep teal `#183c40`**
-  frames the app; **mist `#EAF0ED`** is the canvas and work surfaces are white.
+- **Espresso `#302720`** is the primary action/link color and also frames the
+  app (header and footer bands). **Paper `#FAF6ED`** is the canvas and work
+  surfaces are white. **Citron `#E2F475`** is a brand signal on the espresso
+  frame only: the active tab, the unread dot and focus. It is never a button
+  fill or text on a light surface (ADR 0130).
 - **Surface roles are shared across screens.** Use `--card` (white) for cards,
-  including goals and monthly targets. Use `--surface` (`#F3F6F4`) for inset
+  including goals and monthly targets. Use `--surface` (`#F5F0E5`) for inset
   content and table headers, `--secondary` for icon wells, and `--accent` for
   interaction states. Do not tint whole cards nearly the same color as the canvas.
-  `--border` (`#CAD6CF`) separates surfaces; muted text is `#53675E`.
+  `--border` (`#DDD8CA`) separates surfaces; muted text is `#6B6056`.
 - **Semantic colors retain their meaning**: destructive failure, success
   converted, warning suspended or nearly-limit, info neutral fact. Status always
   includes text; do not use hue alone to distinguish it from the brand.

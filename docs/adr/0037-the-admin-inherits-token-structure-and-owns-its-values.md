@@ -9,6 +9,13 @@ WConvert's.
 `--primary` is petrol `#0f6e79`. `--radius` stays `0.25rem` and the
 `4px 4px 0` shadow stays, both taken from WSMS deliberately.
 
+_Amended: the value has moved twice. [ADR 0097](0097-harbor-is-the-shared-admin-frame.md)
+made it teal `#205c57`, and [ADR 0130](0130-the-admin-wears-the-wconvert-io-brand.md)
+made it espresso `#302720` (14.62:1 on white) to match wconvert.io. The refusal
+of green below still holds, and espresso keeps it: a near-black brown is no hue
+the semantic palette uses, so green stays free to mean "converted". The radius
+and shadow lines are ADR 0097's to amend._
+
 _Amended: **type is the fourth axis, and it was missing for as long as this ADR
 existed.** Colour, radius, shadow and control height were tokenised here; type
 was not, so every `text-*` in the admin was stock Tailwind chosen per call site.

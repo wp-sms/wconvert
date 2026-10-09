@@ -85,7 +85,7 @@ import { previewSurfaces } from '../previewSurfaces';
  * across the boundary by inheritance, while a rule matching `.wc-heading` never
  * would.
  */
-const OUTLINE = '2px solid var(--ring, #0f6e79)';
+const OUTLINE = '2px solid var(--ring, #302720)';
 
 /**
  * What the NEXT press would take, drawn under the pointer.
@@ -105,7 +105,7 @@ const OUTLINE = '2px solid var(--ring, #0f6e79)';
  * one distinction a merchant with a colour-vision deficiency must still get
  * (ADR 0038). The selected outline always wins where both would land.
  */
-const HINT = '2px dashed var(--ring, #0f6e79)';
+const HINT = '2px dashed var(--ring, #302720)';
 
 /**
  * What is already a control, because the preview is the real render.
