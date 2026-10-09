@@ -33,7 +33,7 @@ export const HELP_URLS = {
 
 export function HeaderTools() {
   const tier = adminSettings()?.installedTier ?? 'free';
-  const [notices, setNotices] = useState<{ campaigns: OptinSummary[]; sending: number; formsPaused: boolean } | null>(
+  const [notices, setNotices] = useState<{ campaigns: OptinSummary[]; sending: number; formsPaused: boolean; protectionChecked: boolean } | null>(
     null,
   );
   const [error, setError] = useState<string | null>(null);
@@ -57,6 +57,7 @@ export function HeaderTools() {
           .filter((c) => c.published_at !== null && c.deleted_at === null && c.suspended !== null),
         sending: issueCount(destinations),
         formsPaused: protection?.rules_configured === true && protection.rules_available === false,
+        protectionChecked: protection !== null,
       });
     } catch (cause) {
       // A failed refresh keeps what the bell already knew (GUIDELINES §13).
@@ -132,7 +133,8 @@ export function HeaderTools() {
                 {count === 0 && (
                   <p className="wconvert-notification__clear">
                     <CircleCheck aria-hidden="true" />
-                    {__('Everything is running. Checked just now.', 'wconvert')}
+                    {/* Only claim everything when everything was read. */}
+                    {notices.protectionChecked ? __('Everything is running. Checked just now.', 'wconvert') : __('No campaign or sending issues.', 'wconvert')}
                   </p>
                 )}
                 {notices.formsPaused && (

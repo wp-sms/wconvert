@@ -57,9 +57,9 @@ The header has no redundant link to the site's front end. The
 footer links to Visitor experience settings and reuses working header Help links.
 Campaign guides and direct support need real destinations before those prototype
 labels can ship. **Amended by [0132](0132-every-screen-answers-its-first-question.md):**
-Help and the footer's Resources column now carry Getting started, Guides,
-Contact support and What's new (with the plugin version) from one `HELP_URLS`
-table, `#` until the owner supplies addresses; the footer no longer repeats a
+Help carries Getting started, Guides, Contact support and What's new (with the
+plugin version), and the footer's Resources column Getting started, Guides and
+What's new, all from one `HELP_URLS` table, `#` until the owner supplies addresses; the footer no longer repeats a
 Settings shortcut. No sample version, account session or operational status is
 invented. Existing account integration remains outside this change.
 

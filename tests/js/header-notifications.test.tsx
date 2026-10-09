@@ -63,7 +63,8 @@ it('offers one way to try again when the read fails', async () => {
   const popover = await screen.findByRole('dialog');
   expect(await within(popover).findByRole('alert')).toHaveTextContent('Notifications couldn’t load: Offline');
   await userEvent.click(within(popover).getByRole('button', { name: 'Try again' }));
-  expect(await within(popover).findByText('Everything is running. Checked just now.')).toBeInTheDocument();
+  // Spam protection was not read here, so the bell does not claim everything.
+  expect(await within(popover).findByText('No campaign or sending issues.')).toBeInTheDocument();
 });
 
 it('counts forms paused by spam protection as something broken', async () => {

@@ -52,7 +52,7 @@ export function settingsIndex(): SettingEntry[] {
   return [
     { key: 'add-destination', group: 'connections', label: __('Add a destination', 'wconvert'), terms: __('send leads mailchimp brevo email list provider route new', 'wconvert'), find: [control(__('Add a destination', 'wconvert')), destinations] },
     { key: 'connect-account', group: 'connections', label: __('Connect an account', 'wconvert'), terms: __('account api key credentials sign in mailchimp brevo', 'wconvert'),
-      find: [control(__('Connect an account', 'wconvert'), `${__('Connect', 'wconvert')} `), heading(__('Connected accounts', 'wconvert'), __('Accounts', 'wconvert')), destinations] },
+      find: [control(__('Connect an account', 'wconvert'), `${__('Connect', 'wconvert')} `), heading(__('Accounts', 'wconvert')), destinations] },
     { key: 'destinations', group: 'connections', label: __('Destinations', 'wconvert'), terms: __('where leads go failing sending issues recent sends status health', 'wconvert'), find: [destinations] },
     { key: 'send-test', group: 'connections', label: __('Send a test', 'wconvert'), terms: __('test email try check delivery', 'wconvert'), find: [control(__('Send a test', 'wconvert')), destinations] },
 

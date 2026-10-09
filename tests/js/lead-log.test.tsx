@@ -187,7 +187,8 @@ describe('capture history', () => {
     log.readLog.mockReturnValue(new Promise((resolve) => { finish = resolve; }));
     render(<LeadLog />);
     expect(screen.queryByText('No submissions yet')).not.toBeInTheDocument();
-    expect(await screen.findByText('Loading submissions…')).toBeInTheDocument();
+    // The skeleton announces the first load, once (§12).
+    expect(await screen.findByText('Loading…')).toBeInTheDocument();
     await act(async () => finish(SEVEN));
     expect(screen.getByText('sarah@example.com')).toBeInTheDocument();
   });

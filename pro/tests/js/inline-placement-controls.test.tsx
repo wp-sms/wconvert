@@ -100,7 +100,7 @@ it('choosing automatic placement or a content lock sets Right away, and When the
     const when = screen.getByRole('group', { name: 'When does it open?' });
     expect(within(when).getByRole('radio', { name: 'Right away' })).toBeChecked();
     expect(within(when).getByRole('radio', { name: /^After/ })).toHaveAttribute('aria-disabled', 'true');
-    expect(within(when).getByRole('radio', { name: /^After/ })).toHaveAccessibleDescription('Inline placement opens right away.');
+    expect(within(when).getByRole('radio', { name: /^After/ })).toHaveAccessibleDescription(/opens right away\./);
     // Back to manual for the next method, so its switch asks again.
     await user.click(within(nav).getByRole('button', { name: /Where does it show/ }));
     await user.click(screen.getByRole('radio', { name: 'Manual' }));

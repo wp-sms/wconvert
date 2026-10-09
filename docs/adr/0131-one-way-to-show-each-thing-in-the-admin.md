@@ -43,7 +43,7 @@ found the system intact and its application drifted:
    ID and Copy, because the free page events (`resources/loader/src/events.ts`)
    identify a campaign by that ID and nothing else; removing it would leave a
    developer no way to find it.
-   *Amended (2026-10-09, block editor review): there is a **second** necessary
+   *Amended by [0132](0132-every-screen-answers-its-first-question.md) (2026-10-09, block editor review): there is a **second** necessary
    exception — the inline campaign's **shortcode**, `[wconvert_optin
    id="…"]`, shown with Copy by the "WConvert campaign" block once a campaign
    is chosen and by the builder's manual placement (`ManualPlacement`), and

@@ -287,8 +287,11 @@ function DashboardContent({
           {hasGoals && (
             <Button
               variant="outline"
-              disabled={!payload || updating || payload.days === 0}
-              onClick={exportReport}
+              disabled={!payload || updating}
+              // No complete day yet is a fact of the calendar, so it refuses with its reason (§14).
+              aria-disabled={payload?.days === 0 || undefined}
+              title={payload?.days === 0 ? __('Nothing to export until this month has a complete day.', 'wconvert') : undefined}
+              onClick={() => { if (payload?.days !== 0) exportReport(); }}
             >
               <Download aria-hidden="true" />
               {__('Export CSV', 'wconvert')}

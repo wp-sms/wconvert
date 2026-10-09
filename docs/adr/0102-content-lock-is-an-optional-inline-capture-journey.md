@@ -86,7 +86,7 @@ block comment and no inner content. Writers retain ordinary top-level blocks
 before and after it. Native movement, deletion and Undo affect the marker; no
 saved article content is reparented or migrated. All Campaign setup and changes
 live in the inspector. ~~Extra guidance is collapsed under Setup tips.~~
-*Amended (2026-10-09, block editor review): Setup tips is gone. Both lock
+*Amended by [0132](0132-every-screen-answers-its-first-question.md) (2026-10-09, block editor review): Setup tips is gone. Both lock
 inspectors show one visible hint under the picker, "Draft previews stay
 unlocked. Check the published page in a private window.", because folded away
 it was the trap itself: a merchant previews a draft, sees it unlocked and

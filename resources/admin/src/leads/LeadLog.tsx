@@ -256,7 +256,8 @@ export function LeadLog({ query, onQueryChange, onRefresh }: LeadLogProps) {
         <CheckRow label={__('Group by email or phone', 'wconvert')} checked={grouped} onChange={(event) => { setQuiet(false); setGrouped(event.currentTarget.checked); }} />
       </Toolbar>}
       {/* One line while a read is in flight; the rows it will replace dim under it. */}
-      {updating && !quiet && <RegionBody><p role="status" className="m-0 text-note">{data ? __('Updating…', 'wconvert') : __('Loading submissions…', 'wconvert')}</p></RegionBody>}
+      {/* A first load is announced by its skeleton (§12); only a re-read needs a line. */}
+      {updating && !quiet && data && <RegionBody><p role="status" className="m-0 text-note">{__('Updating…', 'wconvert')}</p></RegionBody>}
       {showingPrevious && !updating && <RegionBody><p className="m-0 text-note">{__('Showing the previous results.', 'wconvert')}</p></RegionBody>}
       {erasureNotice !== null && <RegionBody><p role="status" className="m-0 rounded-md border border-border bg-surface p-3 text-note">{erasureNotice}</p></RegionBody>}
       {error !== null && data !== null && <RegionError message={error} onRetry={retryLog} />}

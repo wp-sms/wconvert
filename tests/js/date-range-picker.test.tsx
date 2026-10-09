@@ -22,7 +22,9 @@ describe('the one date control', () => {
     await userEvent.click(screen.getByRole('button', { name: /^Period: Any time/ }));
     await userEvent.click(screen.getByRole('radio', { name: 'Custom dates' }));
     const apply = screen.getByRole('button', { name: 'Apply dates' });
-    expect(apply).toBeDisabled();
+    // Refused with its reason, not removed from the focus order (§14).
+    expect(apply).toHaveAttribute('aria-disabled', 'true');
+    expect(apply).toHaveAccessibleDescription('Both days are included.');
     await userEvent.type(screen.getByLabelText('From'), '2026-10-05');
     await userEvent.type(screen.getByLabelText('To'), '2026-10-01');
     expect(screen.getByRole('alert')).toHaveTextContent('The first day comes after the last.');

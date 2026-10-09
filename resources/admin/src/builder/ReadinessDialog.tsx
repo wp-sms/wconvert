@@ -12,7 +12,7 @@ import {
 import { StatusBadge } from '../optins/StatusBadge';
 import { statusOf, type OptinState } from '../optins/api';
 import { Disclosure } from '../shell/Disclosure';
-import { humanize, labelOf } from '../lib/format';
+import { formatCount, humanize, labelOf } from '../lib/format';
 import { messageOf, type Loadable } from '../shell/loadable';
 import { destinationsSaid } from './destinations';
 import { capturedFields } from '../destinations/requirements';
@@ -81,7 +81,7 @@ export interface ReadinessDialogProps {
 }
 
 export type BlockedTab = 'journey' | 'design' | 'rules' | 'destinations';
-type Blocker = { said: string; fix: () => void; tab: BlockedTab; inline?: ReactNode };
+type Blocker = { said: string; fix: () => void; tab: BlockedTab | null; inline?: ReactNode };
 
 export function ReadinessDialog({
   name = '',
@@ -159,12 +159,12 @@ export function ReadinessDialog({
       ? [{ said: __('Choose a valid inline position and a whole paragraph number from 1 to 100.', 'wconvert'), fix: onGoToPlacement, tab: 'rules' as const }] : []),
     ...(inlineTriggerIssue ? [{ said: __('This placement needs “When does it open?” set to Right away. Change it, or use manual placement.', 'wconvert'), fix: () => onGoToRules('when'), tab: 'rules' as const }] : []),
     // A failed read is retried in place: reloading the page would cost unsaved edits.
-    ...(!outcome ? [{ said: __('The goal’s requirements could not be checked.', 'wconvert'), fix: () => onRetryGoal?.(), tab: 'design' as const,
+    ...(!outcome ? [{ said: __('The goal’s requirements could not be checked.', 'wconvert'), fix: () => onRetryGoal?.(), tab: null,
       inline: onRetryGoal && <Button type="button" variant="outline" onClick={onRetryGoal}>{__('Try again', 'wconvert')}</Button> }] : []),
     ...(goalIssue ? [{ said: goalIssue, fix: template && convertingActOf(template.tree)[0] === outcome?.action ? onEditDesign : onGoToDesign, tab: 'design' as const }] : []),
     // The commonest first-campaign blocker gets its answer beside it, not a tab away (ADR 0132).
     ...(handoffIssue ? [{ said: handoffIssue, fix: onGoToDestinations, tab: 'destinations' as const,
-      inline: outcome?.audience_channel && onKeepLocal && <Button type="button" variant="outline" onClick={onKeepLocal}>{__('Keep leads in WConvert for now', 'wconvert')}</Button> }] : []),
+      inline: outcome?.audience_channel && onKeepLocal && <Button type="button" variant="outline" onClick={onKeepLocal}>{__('Keep in WConvert only', 'wconvert')}</Button> }] : []),
     ...(!hasDesign ? [{ said: __('Choose a design before publishing.', 'wconvert'), fix: onGoToDesign, tab: 'design' as const }] : []),
     ...journeyIssues.map(issue => ({ said: issue.said, fix: () => onEditJourney(issue.repair), tab: 'journey' as const })),
     ...problems.filter((problem) => problem.check === 'converts' || problem.blocksPublish).map((problem) => ({
@@ -176,7 +176,8 @@ export function ReadinessDialog({
       ? [{ said: __('This campaign needs a form field to collect leads. Choose a design with a form.', 'wconvert'), fix: onGoToDesign, tab: 'design' as const }]
       : []),
   ];
-  const blockedTabs = [...new Set(blocking.map((problem) => problem.tab))].sort().join(',');
+  // A blocker answered inside the dialog (a failed goal read) belongs to no tab.
+  const blockedTabs = [...new Set(blocking.flatMap((problem) => problem.tab === null ? [] : [problem.tab]))].sort().join(',');
   useEffect(() => {
     onBlockedTabsChange?.(blockedTabs === '' ? [] : blockedTabs.split(',') as BlockedTab[]);
   }, [blockedTabs, onBlockedTabsChange]);
@@ -246,8 +247,8 @@ export function ReadinessDialog({
           <ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />
           {sprintf(
             /* translators: %d: how many items still block publishing. */
-            _n('Back to review · %d left', 'Back to review · %d left', blocking.length, 'wconvert'),
-            blocking.length,
+            _n('Back to review · %s left', 'Back to review · %s left', blocking.length, 'wconvert'),
+            formatCount(blocking.length),
           )}
         </Button>
       )}
@@ -262,12 +263,12 @@ export function ReadinessDialog({
         {__('Review & publish', 'wconvert')}
         {blocking.length > 0 && <span id={`${reasonId}-count`} hidden>{sprintf(
           /* translators: %d: how many items block publishing. */
-          _n('%d item blocks publishing', '%d items block publishing', blocking.length, 'wconvert'),
-          blocking.length,
+          _n('%s item blocks publishing', '%s items block publishing', blocking.length, 'wconvert'),
+          formatCount(blocking.length),
         )}</span>}
         {blocking.length > 0 && (
           <span className="wconvert-readiness__count" aria-hidden="true">
-            {sprintf(/* translators: %d: how many items block publishing. */ _n('%d to fix', '%d to fix', blocking.length, 'wconvert'), blocking.length)}
+            {sprintf(/* translators: %d: how many items block publishing. */ _n('%s to fix', '%s to fix', blocking.length, 'wconvert'), formatCount(blocking.length))}
           </span>
         )}
       </Button>
@@ -308,8 +309,9 @@ export function ReadinessDialog({
               <div className="wconvert-launch-review__success" role="status">
                 <Check aria-hidden="true" />
                 <div>
-                  <strong>{__('It’s live.', 'wconvert')}</strong>
-                  <p>{sprintf(
+                  {/* Published but held back by the site: say so rather than "live". */}
+                  <strong>{optin.suspended !== null ? __('Published, but suspended.', 'wconvert') : __('It’s live.', 'wconvert')}</strong>
+                  <p>{optin.suspended !== null ? __('Visitors don’t see it until the issue above is resolved.', 'wconvert') : sprintf(
                     /* translators: %s: where, to whom and when it shows, e.g. "Entire site · Everyone · Right away". */
                     __('Visitors see it: %s', 'wconvert'),
                     (['where', 'who', 'when'] as const).map((id) => summaryOf(summaries, id).text).join(' · '),
@@ -533,7 +535,8 @@ export function ReadinessDialog({
                 inlinePlacement={inlinePlacement}
                 contentLock={contentLock}
                 published={published || isPublished}
-                everywhere={(rules.targeting.include ?? []).length === 0}
+                // Any page rule, including one that leaves pages out, may leave the homepage out too.
+                everywhere={(rules.targeting.include ?? []).length === 0 && (rules.targeting.exclude ?? []).length === 0}
               />
             )}
           </AdminDialogBody>

@@ -42,6 +42,8 @@ export interface DisplayRulesProps {
      * Readiness never has to block on it.
      */
     readonly opensRightAway?: boolean;
+    /** Which of the two holds it, so the reason names what the merchant chose. */
+    readonly heldBy?: 'automatic' | 'content_lock';
   };
   readonly reveal?: { readonly id: string; readonly focus?: string } | null;
 }
@@ -116,7 +118,7 @@ export function DisplayRules({ vocabulary, value, overlay, act = 'submit', onCha
   // Who and When have nothing to pick from until an older draft's rules are replaced.
   const picking = plan !== undefined || active === 'where' || active === 'how-often' || active === 'dates';
   // Choosing the placement already wrote Right away; this keeps it there, so the refusal is here rather than at Publish.
-  const held = active === 'when' && placement?.opensRightAway ? { pick: 'immediate', reason: __('Inline placement opens right away.', 'wconvert'), id: heldId } : null;
+  const held = active === 'when' && placement?.opensRightAway ? { pick: 'immediate', reason: placement.heldBy === 'content_lock' ? __('A content lock opens right away.', 'wconvert') : __('Automatic placement opens right away.', 'wconvert'), id: heldId } : null;
 
   return <div className="wconvert-display" data-compact={compact || undefined}>
     <div className="wconvert-display-header">

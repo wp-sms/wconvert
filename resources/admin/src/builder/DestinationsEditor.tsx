@@ -145,7 +145,7 @@ export function DestinationsEditor({
           <div role="status" className="wconvert-destination-callout">
             <p className="m-0">{handoffIssue}</p>
             {/* The answer beside the question: one click, undoable (ADR 0132). */}
-            {onKeepLocal && outcome?.audience_channel && <Button type="button" variant="outline" onClick={onKeepLocal}>{__('Keep leads in WConvert for now', 'wconvert')}</Button>}
+            {onKeepLocal && outcome?.audience_channel && <Button type="button" variant="outline" onClick={onKeepLocal}>{__('Keep in WConvert only', 'wconvert')}</Button>}
           </div>
         </RegionBody>}
 

@@ -52,7 +52,7 @@ scrolling back up / When they click [selector]*, *Once per visit / Once every
 Between two dates* — and **Custom…**, which opens the full group and rule
 editors.
 
-_Amended 2026-10-09: the Dates pick read *Until you pause it*, and the
+_Amended 2026-10-09 by [0132](0132-every-screen-answers-its-first-question.md): the Dates pick read *Until you pause it*, and the
 sentence *Runs until you pause it*. The product's verb for stopping a Campaign
 is **unpublish**, so both now say it._
 
@@ -109,7 +109,7 @@ asks first only when that would change another answer, and lists each change
 as question, from and to. Amends [0099](0099-automatic-inline-placement-uses-rendered-content.md)
 and [0102](0102-content-lock-is-an-optional-inline-capture-journey.md).
 
-_Amended 2026-10-09: switching wrote Right away, but nothing kept it there —
+_Amended 2026-10-09 by [0132](0132-every-screen-answers-its-first-question.md): switching wrote Right away, but nothing kept it there —
 the merchant could change *When does it open?* afterwards and meet the refusal
 only at Publish, as a Readiness blocker. While automatic placement or a content
 lock is chosen, every When pick but *Right away*, and Custom's other modes, is

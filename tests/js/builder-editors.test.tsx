@@ -208,7 +208,7 @@ describe('When', () => {
 describe('When, beside automatic placement or a content lock', () => {
   const rightAway: DisplayRulesValue = { ...simple, display_rules: displayPlan([{ type: 'page_load' }]) };
   const placed = { placement: { summary: 'Automatically after content', controls: null, opensRightAway: true } };
-  const reason = 'Inline placement opens right away.';
+  const reason = /opens right away\./;
 
   it('holds Right away: every other pick is refused before the click, with the reason', async () => {
     const changed = setup(rightAway, {}, false, placed); await section('When does it open?');

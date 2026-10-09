@@ -113,7 +113,7 @@ describe('reviewing before publishing', () => {
     const onKeepLocal = vi.fn();
     const onGoToDestinations = vi.fn();
     await open({ captureMode: 'connected', onKeepLocal, onGoToDestinations });
-    await userEvent.click(screen.getByRole('button', { name: 'Keep leads in WConvert for now' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Keep in WConvert only' }));
     expect(onKeepLocal).toHaveBeenCalledOnce();
     expect(onGoToDestinations).not.toHaveBeenCalled();
     expect(screen.getByRole('dialog')).toBeInTheDocument();

@@ -738,6 +738,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
                 summary: inlineSummary,
                 // The same condition Review & publish blocks on, held here instead (ADR 0132).
                 opensRightAway: config.inline_placement != null || config.content_lock != null,
+                heldBy: config.content_lock != null ? 'content_lock' : 'automatic',
                 controls: <InlinePlacementSettings optinId={id} published={publishedAt !== null} config={config} vocabulary={vocabulary} onChange={edit} />,
               } : undefined}
             />;

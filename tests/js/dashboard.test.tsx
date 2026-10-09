@@ -157,7 +157,7 @@ describe('impact overview', () => {
     expect(refused).toHaveAccessibleDescription(
       'Submissions open once this month has a complete day.',
     );
-    expect(screen.getByRole('button', { name: 'Export CSV' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Export CSV' })).toHaveAttribute('aria-disabled', 'true');
     expect(
       screen.getByRole('button', { name: /^Report period: This month, No complete days yet this month$/ }),
     ).toBeInTheDocument();

@@ -120,10 +120,11 @@ export function DateRangePicker({
             <Input id={`${id}-from`} type="date" value={from} max={today ?? undefined} onChange={(event) => setFrom(event.target.value)} />
             <label htmlFor={`${id}-to`}>{__('To', 'wconvert')}</label>
             <Input id={`${id}-to`} type="date" value={to} max={today ?? undefined} onChange={(event) => setTo(event.target.value)} />
-            <p className="wconvert-date-picker__note" role={problem ? 'alert' : undefined}>
+            <p id={`${id}-note`} className="wconvert-date-picker__note" role={problem ? 'alert' : undefined}>
               {problem ?? __('Both days are included.', 'wconvert')}
             </p>
-            <Button type="submit" disabled={!from || !to || problem !== null}>{__('Apply dates', 'wconvert')}</Button>
+            {/* A refusal keeps focus and says why (§14); the note is its reason. */}
+            <Button type="submit" aria-disabled={!from || !to || problem !== null || undefined} aria-describedby={`${id}-note`}>{__('Apply dates', 'wconvert')}</Button>
           </form>
         )}
         {footer && <div className="wconvert-date-picker__footer">{footer}</div>}

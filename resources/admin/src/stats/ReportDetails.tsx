@@ -23,7 +23,7 @@ import { publishOptin, unpublishOptin, declareWinner } from '../optins/api';
 import { adminSettings } from '../settings';
 import { periodOf, type DashboardPayload, type GoalReport, type Numbers, type OptinReport } from './api';
 import { formatCount, formatRate } from './format';
-import { siteLocale } from '../lib/format';
+import { formatDecimal } from '../lib/format';
 import { families } from './reporting';
 import { ActivityChart } from './ActivityChart';
 
@@ -119,7 +119,7 @@ function VariantDifference({ arms }: { arms: OptinReport[] }) {
           formatRate(lead.conversion_rate),
           next.name,
           formatRate(next.conversion_rate),
-          new Intl.NumberFormat(siteLocale(), { maximumFractionDigits: 1 }).format(points),
+          formatDecimal(points),
         );
   const enough =
     lead.impressions >= ENOUGH_SHOWN_PER_VARIANT && next.impressions >= ENOUGH_SHOWN_PER_VARIANT;
