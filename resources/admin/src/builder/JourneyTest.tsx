@@ -223,7 +223,7 @@ export function JourneyTest({ template, onEdit, onShowPath, deliveryMode = 'none
             setDelivery(previous => ({ ...previous, [id]: deliveryFailed ? 'failed' : 'queued' }));
             failDeliveryNextRef.current = false; setFailDeliveryNext(false);
           }
-          setFeedback(__('Save accepted in this test. The visitor can continue; no real Lead or destination request was created.', 'wconvert'));
+          setFeedback(__('Save accepted in this test. The visitor can continue; no real lead or destination request was created.', 'wconvert'));
         } else if (button.dataset.action === 'skip') {
           const id = button.dataset.submission ?? '';
           const submission = tree.submissions.find(item => item.id === id);

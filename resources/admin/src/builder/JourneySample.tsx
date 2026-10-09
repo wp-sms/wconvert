@@ -102,7 +102,7 @@ export function JourneySample({ tree, onTrace, onSelect, onClose, onShowPath }: 
       {submitted.length > 0 && <p>{sprintf(_n('%d submission would be made with these choices.', '%d submissions would be made with these choices.', submitted.length, 'wconvert'), submitted.length)}</p>}
       {onShowPath && <Button variant="outline" size="sm" onClick={() => onShowPath(path.indices, journeyTraceEdges(tree, path.decisions))}>{__('Show sample path on the map', 'wconvert')}<ArrowRight aria-hidden="true" className="rtl:-scale-x-100" /></Button>}
       <Button variant="ghost" size="sm" onClick={onClose}>{onShowPath ? __('Switch to visitor test', 'wconvert') : __('Close', 'wconvert')}</Button>
-      <small>{__('Predictions do not count as completed tests. No Leads or destination requests are created.', 'wconvert')}</small>
+      <small>{__('Predictions do not count as completed tests. No leads or destination requests are created.', 'wconvert')}</small>
     </div>
   </aside>;
 }
