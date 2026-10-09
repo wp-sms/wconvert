@@ -70,6 +70,40 @@ function asUtc([year, month, day, hour, minute]: WallParts): number {
   return date.getTime();
 }
 
+/** A stored wall time in one spelling, `YYYY-MM-DD HH:mm`, which sorts as it reads — or null. */
+export function wallKey(wallTime: string | undefined): string | null {
+  const parts = wallParts(wallTime);
+  return parts === null ? null : spell(parts);
+}
+
+const spell = ([year, month, day, hour, minute]: WallParts): string => {
+  const two = (n: number) => String(n).padStart(2, '0');
+  return `${String(year).padStart(4, '0')}-${two(month)}-${two(day)} ${two(hour)}:${two(minute)}`;
+};
+
+/**
+ * What the site's clock reads at `now`, as a stored wall time.
+ *
+ * The admin's own zone only where the site's cannot be read, because this is
+ * a starting value the merchant can change rather than a verdict.
+ */
+export function wallNow(timezone: string | undefined, now = Date.now()): string {
+  const fixed = timezone ? /^([+-])(\d\d):(\d\d)$/.exec(timezone) : null;
+  if (fixed !== null) {
+    const shifted = new Date(now + (Number(fixed[2]) * 60 + Number(fixed[3])) * 60_000 * (fixed[1] === '-' ? -1 : 1));
+    return spell([shifted.getUTCFullYear(), shifted.getUTCMonth() + 1, shifted.getUTCDate(), shifted.getUTCHours(), shifted.getUTCMinutes()]);
+  }
+  try {
+    const fields = Object.fromEntries(new Intl.DateTimeFormat('en-US-u-ca-gregory-nu-latn', {
+      timeZone: timezone || undefined, year: 'numeric', month: '2-digit', day: '2-digit', hour: '2-digit', minute: '2-digit', hourCycle: 'h23',
+    }).formatToParts(now).map(({ type, value }) => [type, value]));
+    return spell([Number(fields.year), Number(fields.month), Number(fields.day), Number(fields.hour), Number(fields.minute)]);
+  } catch {
+    const local = new Date(now);
+    return spell([local.getFullYear(), local.getMonth() + 1, local.getDate(), local.getHours(), local.getMinutes()]);
+  }
+}
+
 /**
  * Is the end definitely past on the site's clock?
  *

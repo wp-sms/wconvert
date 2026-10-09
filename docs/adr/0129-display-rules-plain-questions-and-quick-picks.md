@@ -115,6 +115,22 @@ what it looks at. A rule with presets offers them as chips beside *Custom…*.
 Rules the site cannot add keep their own muted sections, explained and never
 offered.
 
+## Test a visit describes a visitor, not an event
+
+*Test a visit* asks for one visitor in the tab's words — the page they are on
+(one choice per *Show it on* and *But never on* rule, and any other page), their
+device, whatever the audience rules ask about, what happened before this visit
+and, when dates are set, the visit date — and shows only the fields this
+campaign's rules use. A rule with no natural field is a plain yes or no. The
+answer is read with the loader's own functions (`audienceMatches`, `isAllowed`
+plus the per-visit cap, the time-of-day window) and reported as the five
+questions in screen order, each with a *Change* link to its section. The first
+that fails gives the one reason; otherwise it *Opens* with the sentence's own
+When phrase. Timing is described, never simulated, so When only describes —
+except that leaving alone can never open it on a touch screen, which it says.
+Amends [0104](0104-display-workspace-uses-bounded-groups-and-fresh-gestures.md)'s
+sample tester. Source: [visit](../../resources/admin/src/builder/rules/visit.ts).
+
 ## What was dropped
 
 Following [ADR 0042](0042-the-admin-speaks-only-when-it-changes-what-you-do-next.md),

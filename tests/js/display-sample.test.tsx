@@ -1,84 +1,82 @@
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, render, screen, within } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import SampleVisit from '../../resources/admin/src/builder/rules/SampleVisit';
 import type { DisplayRulesValue } from '../../resources/admin/src/builder/rules/summaries';
 import { ruleTypes } from './support/rule-types';
 
-function sample(opening: NonNullable<DisplayRulesValue['display_rules']>['opening']) {
-  render(<SampleVisit vocabulary={ruleTypes()} onClose={vi.fn()} value={{
-    display_rules: { audience: { mode: 'everyone' }, opening }, targeting: {},
-    frequency: { maxPerSession: 1 }, schedule: {}, priority: 0,
+const after15 = { mode: 'automatic' as const, match: 'any' as const, minimum_seconds: 0, rules: [{ id: 't', type: 'time_on_page', seconds: 15 }] };
+const computersOnly = { mode: 'groups' as const, groups: [{ id: 'g', match: 'all' as const, rules: [{ id: 'd', type: 'device', in: ['desktop'] }] }] };
+
+function sample(patch: Partial<DisplayRulesValue> = {}) {
+  const onOpenSection = vi.fn();
+  render(<SampleVisit vocabulary={ruleTypes()} onClose={vi.fn()} onOpenSection={onOpenSection} value={{
+    display_rules: { audience: { mode: 'everyone' }, opening: after15 }, targeting: {},
+    frequency: { maxPerSession: 1 }, schedule: {}, priority: 0, ...patch,
   }} />);
+  return onOpenSection;
 }
 const result = () => screen.getByRole('status');
+const choose = (name: string, value: string) => fireEvent.change(screen.getByRole('combobox', { name }), { target: { value } });
 
-describe('sample visit event semantics', () => {
-  it('shows a live verdict for time AND scroll, with assumptions collapsed until requested', () => {
-    sample({ mode: 'automatic', match: 'all', minimum_seconds: 0, rules: [
-      { id: 'time', type: 'time_on_page', seconds: 20 }, { id: 'scroll', type: 'scroll_depth', percent: 50 },
-    ] });
-    expect(screen.getByText('Other conditions').closest('details')).not.toHaveAttribute('open');
-    expect(screen.getByRole('checkbox', { name: 'Page is allowed' })).not.toBeVisible();
-    fireEvent.change(screen.getByRole('spinbutton', { name: 'Time on page' }), { target: { value: '10' } });
-    fireEvent.change(screen.getByRole('spinbutton', { name: 'Page scrolled' }), { target: { value: '60' } });
-    expect(result()).toHaveTextContent('Would not show');
-    fireEvent.change(screen.getByRole('spinbutton', { name: 'Time on page' }), { target: { value: '25' } });
-    expect(result()).toHaveTextContent('Would show');
-    fireEvent.click(screen.getByText('Other conditions'));
-    fireEvent.click(screen.getByRole('checkbox', { name: 'Page is allowed' }));
-    expect(result()).toHaveTextContent('This page is excluded');
-    expect(screen.getByText('1 changed')).toBeInTheDocument();
-    fireEvent.click(screen.getByText('Other conditions'));
-    expect(result()).toHaveTextContent('Would not show');
-    fireEvent.click(screen.getByRole('button', { name: 'Reset sample' }));
-    expect(screen.getByText('All allowed')).toBeInTheDocument();
-    expect(screen.getByRole('spinbutton', { name: 'Time on page' })).toHaveValue(0);
-  });
-
-  it('omits irrelevant numeric fields for immediate campaigns', () => {
-    sample({ mode: 'immediate' });
+describe('Test a visit', () => {
+  it('asks only what this campaign’s rules use', () => {
+    sample();
+    expect(screen.getByRole('dialog', { name: 'Test a visit' })).toBeInTheDocument();
+    expect(screen.getAllByRole('combobox')).toHaveLength(2);
+    expect(screen.getByRole('combobox', { name: 'Device' })).toBeInTheDocument();
+    expect(screen.getByRole('combobox', { name: 'Before this visit' })).toBeInTheDocument();
+    for (const absent of ['Page they’re on', 'Signed in', 'Came from', 'Ad blocker', 'Visit date']) expect(screen.queryByLabelText(absent)).toBeNull();
     expect(screen.queryByRole('spinbutton')).toBeNull();
-    expect(result()).toHaveTextContent('Would show');
+    expect(document.querySelector('details')).toBeNull();
+    expect(result()).toHaveTextContent('Opens after 15 seconds');
   });
 
-  it('requires a new exit after minimum time and after another fact changes', () => {
-    sample({ mode: 'automatic', match: 'all', minimum_seconds: 15, rules: [{ id: 'exit', type: 'exit_intent' }] });
-    const seconds = screen.getByRole('spinbutton', { name: 'Time on page' });
-    fireEvent.change(seconds, { target: { value: '5' } });
-    fireEvent.click(screen.getByRole('button', { name: 'Simulate exit intent' }));
-    expect(result()).toHaveTextContent('Would not show');
-    fireEvent.change(seconds, { target: { value: '15' } });
-    expect(result()).toHaveTextContent('Would not show');
-    fireEvent.click(screen.getByRole('button', { name: 'Simulate exit intent' }));
-    expect(result()).toHaveTextContent('Would show');
-    fireEvent.click(screen.getByText('Other conditions'));
-    fireEvent.click(screen.getByRole('checkbox', { name: 'Page is allowed' }));
-    fireEvent.click(screen.getByRole('checkbox', { name: 'Page is allowed' }));
-    expect(result()).toHaveTextContent('Would not show');
+  it('flips the verdict and says why when the device changes', () => {
+    sample({ display_rules: { audience: computersOnly, opening: after15 } });
+    expect(result()).toHaveTextContent('Opens after 15 seconds');
+    choose('Device', 'mobile');
+    expect(result()).toHaveTextContent('Doesn’t open');
+    expect(result()).toHaveTextContent('This campaign is for computers only.');
   });
 
-  it('explicit clicks bypass automatic pacing but retain completion restrictions', () => {
-    sample({ mode: 'click', rules: [{ id: 'click', type: 'click_element', selector: '#offer' }] });
-    fireEvent.click(screen.getByText('Other conditions'));
-    fireEvent.click(screen.getByRole('checkbox', { name: 'Repeat limits allow another appearance' }));
-    fireEvent.click(screen.getByRole('button', { name: /Simulate click/ }));
-    expect(result()).toHaveTextContent('Would show');
-    fireEvent.click(screen.getByRole('checkbox', { name: 'Completion rules allow another appearance' }));
-    fireEvent.click(screen.getByRole('button', { name: /Simulate click/ }));
-    expect(result()).toHaveTextContent('Would not show');
-    expect(result()).toHaveTextContent('Completion rules stop this visitor from seeing it again.');
+  it('fails Where on an excluded page', () => {
+    sample({ targeting: { exclude: [{ type: 'url', value: '/checkout/*' }] } });
+    choose('Page they’re on', 'out:0');
+    expect(result()).toHaveTextContent('/checkout/* is excluded.');
+    const where = screen.getByText('Where does it show?').closest('li')!;
+    expect(where).toHaveAttribute('data-status', 'fail');
+    expect(where).toHaveTextContent('Excluded: /checkout/*');
   });
 
-  it('automatic opening respects pacing and reset clears the sample facts', () => {
-    sample({ mode: 'automatic', match: 'all', minimum_seconds: 0, rules: [{ id: 'time', type: 'time_on_page', seconds: 20 }] });
-    fireEvent.change(screen.getByRole('spinbutton', { name: 'Time on page' }), { target: { value: '20' } });
-    expect(result()).toHaveTextContent('Would show');
-    fireEvent.click(screen.getByText('Other conditions'));
-    fireEvent.click(screen.getByRole('checkbox', { name: 'Repeat limits allow another appearance' }));
-    expect(result()).toHaveTextContent('Repeat limits stop another automatic appearance.');
-    fireEvent.click(screen.getByRole('button', { name: 'Reset sample' }));
-    expect(screen.getByRole('spinbutton', { name: 'Time on page' })).toHaveValue(0);
-    expect(screen.getByRole('checkbox', { name: 'Repeat limits allow another appearance' })).toBeChecked();
-    expect(result()).toHaveTextContent('Would not show');
+  it('stops a second showing in one visit under Once per visit', () => {
+    sample();
+    choose('Before this visit', 'this-visit');
+    expect(result()).toHaveTextContent('They already saw it this visit (Once per visit).');
+    expect(screen.getByText('How often?').closest('li')).toHaveAttribute('data-status', 'fail');
+  });
+
+  it('opens the question to change it', () => {
+    const onOpenSection = sample();
+    fireEvent.click(within(screen.getByText('Who sees it?').closest('li')!).getByRole('button', { name: 'Change: Who sees it?' }));
+    expect(onOpenSection).toHaveBeenCalledWith('who');
+  });
+
+  it('asks the questions its rules need, and Reset puts the defaults back', () => {
+    sample({ display_rules: { audience: { mode: 'groups', groups: [{ id: 'g', match: 'all', rules: [
+      { id: 'l', type: 'logged_in', value: true }, { id: 'r', type: 'referrer', in: ['social'] }, { id: 'f', type: 'some_future_rule' },
+    ] }] }, opening: after15 }, schedule: { starts_at: '2099-01-01 09:00' } });
+    expect(screen.getByRole('combobox', { name: 'Signed in' })).toBeInTheDocument();
+    expect(screen.getByRole('combobox', { name: 'Came from' })).toBeInTheDocument();
+    expect(screen.getByRole('combobox', { name: 'Visit date' })).toBeInTheDocument();
+    expect(screen.getByRole('combobox', { name: /Does this visitor match: some_future_rule/ })).toBeInTheDocument();
+    choose('Signed in', 'yes');
+    choose('Came from', 'social');
+    choose('Does this visitor match: some_future_rule?', 'yes');
+    choose('Visit date', 'pick');
+    expect(result()).toHaveTextContent('Opens after 15 seconds');
+    fireEvent.click(screen.getByRole('button', { name: 'Reset' }));
+    expect(screen.getByRole('combobox', { name: 'Signed in' })).toHaveValue('no');
+    expect(screen.getByRole('combobox', { name: 'Visit date' })).toHaveValue('today');
+    expect(result()).toHaveTextContent('Doesn’t open');
   });
 });

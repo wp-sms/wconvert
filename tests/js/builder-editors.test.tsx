@@ -58,7 +58,7 @@ describe('the Display rules tab', () => {
 
   it('opens the lazy sample tester without changing the draft', async () => {
     const changed = setup(); await userEvent.click(screen.getByRole('button', { name: 'Test a visit' }));
-    expect(await screen.findByRole('dialog', { name: 'Test a sample visit' })).toBeInTheDocument();
+    expect(await screen.findByRole('dialog', { name: 'Test a visit' })).toBeInTheDocument();
     expect(changed).not.toHaveBeenCalled();
   });
 

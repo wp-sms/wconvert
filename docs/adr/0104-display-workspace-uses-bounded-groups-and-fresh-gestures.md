@@ -64,7 +64,10 @@ Both scratch and bundled creation paths are checked after frequency normalizatio
 
 ## Diagnostics and size
 
-The lazy sample tester evaluates hypothetical draft facts with the same pure matcher. It cannot inspect a real URL, publish, submit or count a visit. Its events are deliberate simulations, not remembered Boolean eligibility. The authenticated live inspector remains a distinct published-page diagnostic, with grouped outcomes, per-leaf consent, request account eligibility, minimum dwell and initial session allowance.
+The lazy sample tester evaluates hypothetical draft facts with the same pure matcher. It cannot inspect a real URL, publish, submit or count a visit. Its events are deliberate simulations, not remembered Boolean eligibility.
+
+*Amended by [ADR 0129](0129-display-rules-plain-questions-and-quick-picks.md): the tester is now *Test a visit*. It reads one described visitor — page, device, account, history, date — against all five questions, and no longer simulates gestures, time or scroll: it says when the campaign would open rather than waiting for it.*
+ The authenticated live inspector remains a distinct published-page diagnostic, with grouped outcomes, per-leaf consent, request account eligibility, minimum dwell and initial session allowance.
 
 The tester leads with a live verdict that stays visible while the inputs scroll.
 Only relevant visitor activity and condition inputs are shown; page, schedule,

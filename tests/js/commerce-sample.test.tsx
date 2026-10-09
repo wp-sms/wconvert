@@ -6,7 +6,7 @@ import { emptyBasket, useBasketPreview, type BasketResult } from '../../resource
 import SampleVisit from '../../resources/admin/src/builder/rules/SampleVisit';
 import { ruleTypes } from './support/rule-types';
 
-vi.mock('../../resources/admin/src/settings', () => ({ commerceSupported: () => true }));
+vi.mock('../../resources/admin/src/settings', () => ({ commerceSupported: () => true, adminSettings: () => undefined }));
 vi.mock('../../resources/admin/src/builder/CommerceControls', () => ({ CommercePicker: () => null }));
 vi.mock('@wordpress/api-fetch', () => ({ default: vi.fn() }));
 afterEach(() => vi.clearAllMocks());
@@ -48,32 +48,25 @@ describe('sample basket request lifecycle', () => {
 });
 
 
-it('requires a fresh gesture after a basket edit finishes checking', async () => {
+it('waits for the basket check, then takes its answer, and checks again after a basket edit', async () => {
   const resolvers: ((value: BasketResult) => void)[] = [];
   vi.mocked(apiFetch).mockImplementation(() => new Promise(resolve => resolvers.push(resolve as (value: BasketResult) => void)));
   render(<SampleVisit cartRequired vocabulary={ruleTypes()} onClose={vi.fn()} value={{
-    display_rules: { audience: { mode: 'everyone' }, opening: { mode: 'automatic', match: 'all', minimum_seconds: 0, rules: [{ id: 'exit', type: 'exit_intent' }] } },
+    display_rules: { audience: { mode: 'everyone' }, opening: { mode: 'automatic', match: 'all', minimum_seconds: 0, rules: [{ id: 'time', type: 'time_on_page', seconds: 15 }] } },
     targeting: {}, frequency: {}, schedule: {}, priority: 0,
   }} />);
-  const gesture = screen.getByRole('button', { name: 'Simulate exit intent' });
-  expect(gesture).toBeDisabled();
-  expect(screen.getByRole('status')).toHaveTextContent('Checking…');
-  expect(screen.getByRole('status')).not.toHaveTextContent('Would not show');
+  const status = screen.getByRole('status');
+  expect(status).toHaveTextContent('Checking…');
+  expect(status).not.toHaveTextContent('Doesn’t open');
   await waitFor(() => expect(resolvers).toHaveLength(1));
-  const matches = { ...response(true), rules: { 'sample-required-cart': true } };
-  await act(async () => resolvers[0](matches));
-  expect(screen.getByRole('status')).toHaveTextContent('Would not show');
-  fireEvent.click(gesture);
-  expect(screen.getByRole('status')).toHaveTextContent('Would show');
+  await act(async () => resolvers[0]({ ...response(true), rules: { 'sample-required-cart': false } }));
+  expect(status).toHaveTextContent('Doesn’t open');
+  expect(status).toHaveTextContent('This basket does not meet the campaign’s cart requirements');
   fireEvent.change(screen.getByRole('spinbutton', { name: 'Merchandise amount after discounts' }), { target: { value: '100' } });
-  expect(gesture).toBeDisabled();
-  expect(screen.getByRole('status')).toHaveTextContent('Checking…');
-  fireEvent.click(gesture);
+  expect(status).toHaveTextContent('Checking…');
   await waitFor(() => expect(resolvers).toHaveLength(2));
-  await act(async () => resolvers[1](matches));
-  expect(screen.getByRole('status')).toHaveTextContent('Would not show');
-  fireEvent.click(gesture);
-  expect(screen.getByRole('status')).toHaveTextContent('Would show');
+  await act(async () => resolvers[1]({ ...response(true), rules: { 'sample-required-cart': true } }));
+  expect(status).toHaveTextContent('Opens after 15 seconds');
 });
 
 it('invalidates the sample when its viewed product changes, independently of the empty basket', async () => {

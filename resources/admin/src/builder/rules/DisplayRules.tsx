@@ -142,7 +142,8 @@ export function DisplayRules({ vocabulary, value, overlay, act = 'submit', onCha
       </section>
     </div>
 
-    {testing && <Suspense fallback={<p role="status">{__('Loading sample tester…', 'wconvert')}</p>}><SampleVisit template={template} cartRequired={cartRequired} value={value} vocabulary={vocabulary} onClose={() => setTesting(false)} /></Suspense>}
+    {testing && <Suspense fallback={<p role="status">{__('Loading…', 'wconvert')}</p>}><SampleVisit template={template} cartRequired={cartRequired} act={act} value={value} vocabulary={vocabulary} onClose={() => setTesting(false)}
+      onOpenSection={section => { setTesting(false); open(section); }} /></Suspense>}
   </div>;
 }
 
