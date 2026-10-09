@@ -27,7 +27,7 @@ singled out.
 | a | No file in free's tree imports a `pro/` path or the Pro namespace — TS **and** PHP | source only | every PR |
 | b | Free's built **loader** carries no premium rule identifier | one Vite loader build | every PR |
 | c | The free ZIP contains no path under Pro's plugin directory | full ZIP | release |
-| d | The free ZIP contains its un-minified source tree | full ZIP | release |
+| d | The free ZIP contains no sources or build files, and readme.txt links the public repository *(amended: it used to contain its un-minified source tree; see ADR 0028)* | full ZIP | release |
 
 **(a) is a cross product, and "free's tree" is a named set of paths.** Both
 halves apply in both languages: a `pro/` path *or* the Pro namespace, in TS
