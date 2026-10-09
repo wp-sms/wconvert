@@ -755,7 +755,7 @@ function Configured({
       {reporting && (
         <RegionBody className="flex flex-col gap-3">
           {failing ? (
-            <Alert variant="destructive" className="border-destructive/30 bg-destructive/5">
+            <Alert variant="destructive" className="border-destructive/30 bg-destructive-surface">
               <CircleAlert />
               <AlertTitle>
                 {sprintf(
@@ -792,7 +792,7 @@ function Configured({
           )}
 
           {destination.health.skipped_captures > 0 && (
-            <Alert className="border-warning/30 bg-warning/5 text-warning">
+            <Alert className="border-warning/30 bg-warning-surface text-warning">
               <TriangleAlert />
               <AlertTitle className="line-clamp-none">
                 {sprintf(
@@ -827,8 +827,8 @@ function Configured({
             <Alert
               className={
                 report.capped
-                  ? 'border-warning/30 bg-warning/5 text-warning'
-                  : 'border-success/30 bg-success/5 text-success'
+                  ? 'border-warning/30 bg-warning-surface text-warning'
+                  : 'border-success/30 bg-success-surface text-success'
               }
             >
               <RotateCcw />
@@ -1190,9 +1190,9 @@ function Types({
  * installed (ADR 0026).
  */
 const TEST_RENDERING: Record<TestReport['outcome'], { className: string; icon: LucideIcon }> = {
-  success: { className: 'border-success/30 bg-success/5 text-success', icon: CircleCheck },
+  success: { className: 'border-success/30 bg-success-surface text-success', icon: CircleCheck },
   skipped: { className: 'border-border bg-surface text-muted-foreground', icon: Info },
-  failed: { className: 'border-destructive/30 bg-destructive/5 text-destructive', icon: CircleAlert },
+  failed: { className: 'border-destructive/30 bg-destructive-surface text-destructive', icon: CircleAlert },
 };
 
 /**

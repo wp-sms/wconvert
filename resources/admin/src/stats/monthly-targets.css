@@ -107,7 +107,7 @@
   text-decoration: none;
 }
 .wa-target-footer a:hover {
-  text-decoration: underline;
+  text-decoration-line: underline;
   text-underline-offset: 3px;
 }
 .wa-targets .wa-target-note,

@@ -26,19 +26,18 @@ const badgeVariants = cva(
          * this is the reserved palette being spent on what it was reserved for
          * (ADR 0039).
          *
-         * Tinted rather than solid: the tokens are measured against WHITE
-         * (`--success` 6.13:1, `--warning` 5.93:1), and a 10% wash under them
-         * keeps the text above 4.5:1 while leaving the solid fills to the
-         * chart ramp, where a run of solid green badges down a table would
+         * Tinted rather than solid: each sits on its own measured surface
+         * (`--success-surface` 5.32:1, `--warning-surface` 5.08:1, ADR 0130),
+         * leaving the solid fills to the chart ramp, where a run of solid green badges down a table would
          * shout louder than the numbers.
          */
-        success: "border-success/25 bg-success/10 text-success",
-        warning: "border-warning/25 bg-warning/10 text-warning",
+        success: "border-success/25 bg-success-surface text-success",
+        warning: "border-warning/25 bg-warning-surface text-warning",
         outline:
           "border-border text-foreground [a&]:hover:bg-accent [a&]:hover:text-accent-foreground",
         ghost: "[a&]:hover:bg-accent [a&]:hover:text-accent-foreground",
-        // Underlined at rest: espresso --primary is the colour of body text (ADR 0130).
-        link: "text-primary underline-offset-4 [a&]:underline",
+        // In --link and underlined at rest: espresso --primary is the colour of body text (ADR 0130).
+        link: "text-link underline-offset-4 [a&]:underline [a&]:decoration-link/40 [a&]:hover:decoration-current",
       },
     },
     defaultVariants: {

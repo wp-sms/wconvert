@@ -68,9 +68,9 @@
 .wconvert-preview-test__screens button { inline-size: 100%; display: flex; justify-content: space-between; align-items: center; gap: 8px; padding: 12px 8px; border: 0; border-radius: var(--radius); text-align: start; font: inherit; font-size: var(--text-note); background: none; color: var(--foreground); cursor: pointer; }
 .wconvert-preview-test__screens button svg { flex: none; }
 .wconvert-preview-test__screens button[aria-pressed='true'] { color: var(--primary); background: var(--secondary); }
-.wconvert-preview-test__design { display: flex; flex-direction: column; min-block-size: 0; min-inline-size: 0; background: var(--surface); }
+.wconvert-preview-test__design { display: flex; flex-direction: column; min-block-size: 0; min-inline-size: 0; background: var(--stage); }
 .wconvert-preview-test__design > p { padding-inline: 20px; font-size: var(--text-note); }
-.wconvert-preview-test__design .wconvert-journey-screen-preview__stage { flex: 1; min-block-size: 0; background: var(--surface); }
+.wconvert-preview-test__design .wconvert-journey-screen-preview__stage { flex: 1; min-block-size: 0; background: var(--stage); }
 .wconvert-preview-test__design .wconvert-journey-screen-preview__result { display: flex; gap: 12px; align-items: center; padding: 12px 20px; font-size: var(--text-note); }
 .wconvert-preview-test__design .wconvert-journey-screen-preview__result label { flex: none; }
 .wconvert-journey-sample.wconvert-journey-sample--explorer { display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1fr); flex: 1; min-block-size: 0; padding: 0; margin: 0; border: 0; border-radius: 0; overflow: auto; background: var(--card); }

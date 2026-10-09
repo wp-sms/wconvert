@@ -32,5 +32,5 @@ export function BrandMark({ variant = 'default', className }: { variant?: 'defau
 }
 
 export function PlanBadge({ tier }: { tier: string }) {
-  return <span className="wconvert-plan-badge">{tier === 'free' ? __('Free', 'wconvert') : tierName(tier)}</span>;
+  return <span className="wconvert-plan-badge" data-paid={tier === 'free' ? undefined : ''}>{tier === 'free' ? __('Free', 'wconvert') : tierName(tier)}</span>;
 }

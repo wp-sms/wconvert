@@ -79,6 +79,14 @@
   --color-success: var(--success);
   --color-warning: var(--warning);
   --color-info: var(--info);
+  --color-success-surface: var(--success-surface);
+  --color-warning-surface: var(--warning-surface);
+  --color-destructive-surface: var(--destructive-surface);
+  --color-info-surface: var(--info-surface);
+  --color-link: var(--link);
+  --color-brand: var(--brand);
+  --color-overlay: var(--overlay);
+  --color-stage: var(--stage);
   --color-border: var(--border);
   --color-input: var(--input);
   --color-ring: var(--ring);
@@ -352,7 +360,8 @@
   --popover-foreground: #302720;
   --surface: #f5f0e5;
 
-  --secondary: #eee8dc;
+  /* Selected is one step deeper than hover, so the two never read alike. */
+  --secondary: #e9e2d4;
   --secondary-foreground: #302720;
   --muted: #f5f0e5;
   --muted-foreground: #6b6056;
@@ -371,6 +380,31 @@
   --success: #17703f;
   --warning: #8a5a00;
   --info: #1c5fa8;
+
+  /*
+   * One surface per meaning, measured with its own text on it (ADR 0130):
+   * success 5.32:1, warning 5.08:1, destructive 5.49:1, info 5.48:1. A 5–10%
+   * wash of the hue was invisible here: amber sits 15° from espresso, and its
+   * wash measured 1.01:1 against paper. Info is the site's ice blue.
+   */
+  --success-surface: #e6f2e9;
+  --warning-surface: #fdecc8;
+  --destructive-surface: #fbe6e3;
+  --info-surface: var(--ice);
+
+  /* The site's accent brown: 8.51:1 on white, and a hue body text does not have. */
+  --link: #67452e;
+  /* Citron, for the one brand action per screen. Always on an espresso edge. */
+  --brand: #e2f475;
+  /* The site's ice blue: its Pro card, and here the paid plan and info. */
+  --ice: #e0eff3;
+  /* Dims the page under a dialog without turning it grey. */
+  --overlay: rgb(48 39 32 / 0.55);
+  /*
+   * The design preview's backdrop is neutral, not warm, so the chrome does not
+   * tint how a merchant judges their own colours.
+   */
+  --stage: #f1f1ef;
 
   /*
    * `--border` draws dividers and card edges, which are decoration. `--input`
@@ -419,6 +453,21 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
+  }
+
+  /*
+   * One underline for every link (ADR 0130). Espresso is the colour of body
+   * text, so a link is marked by an underline in --link. At rest the line is
+   * light enough that a column of row labels does not read as busy, and on
+   * hover it goes solid. Rules that underline use `text-decoration-line`, never
+   * the shorthand, so this colour reaches them.
+   */
+  :is(#wconvert-admin, [data-slot$='-content']) :is(a, button, summary) {
+    text-decoration-color: color-mix(in srgb, currentColor 40%, transparent);
+    text-underline-offset: 0.2em;
+  }
+  :is(#wconvert-admin, [data-slot$='-content']) :is(a, button, summary):hover {
+    text-decoration-color: currentColor;
   }
 }
 
@@ -3425,12 +3474,12 @@ body:has(#wconvert-admin) #wpbody-content {
 }
 
 .wconvert-block__chip--counted {
-  background: color-mix(in srgb, var(--success) 14%, transparent);
+  background: var(--success-surface);
   color: var(--success);
 }
 
 .wconvert-block__chip--warn {
-  background: color-mix(in srgb, var(--warning) 14%, transparent);
+  background: var(--warning-surface);
   color: var(--warning);
 }
 
@@ -4728,7 +4777,7 @@ body:has(#wconvert-admin) #wpbody-content {
  * like a design that fails.
  */
 .wconvert-contrast__pair[data-state='fail'] .wconvert-contrast__badge {
-  background: color-mix(in srgb, var(--warning) 14%, transparent);
+  background: var(--warning-surface);
   color: var(--warning);
 }
 
@@ -4902,7 +4951,7 @@ body:has(#wconvert-admin) #wpbody-content {
   background: none;
   color: inherit;
   text-align: start;
-  text-decoration: underline;
+  text-decoration-line: underline;
   cursor: pointer;
 }
 
@@ -5973,7 +6022,7 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
  * that — the design still renders, publishes and runs.
  */
 .wconvert-checks__chip[data-state='fail'] {
-  background: color-mix(in srgb, var(--warning) 14%, transparent);
+  background: var(--warning-surface);
   color: var(--warning);
 }
 
@@ -5983,7 +6032,7 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
  * this is the ring, which is the same treatment every other control here has.
  */
 .wconvert-checks__chip:is(button):hover {
-  background: color-mix(in srgb, var(--warning) 22%, transparent);
+  background: color-mix(in srgb, var(--warning) 14%, var(--warning-surface));
 }
 
 .wconvert-checks__chip:is(button):focus-visible {
@@ -6027,10 +6076,10 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
   padding: 0;
   border: 0;
   background: none;
-  color: var(--primary);
+  color: var(--link);
   font: inherit;
   text-align: start;
-  text-decoration: underline;
+  text-decoration-line: underline;
   text-underline-offset: 0.125em;
   cursor: pointer;
 }
@@ -6129,7 +6178,7 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
   padding-block: 0.5rem;
   padding-inline: var(--wconvert-gutter);
   border-radius: var(--radius);
-  background: color-mix(in srgb, var(--warning) 12%, transparent);
+  background: var(--warning-surface);
   color: var(--warning);
   list-style: none;
   text-wrap: pretty;
@@ -6260,9 +6309,9 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
 .wconvert-report-help summary { cursor: pointer; font-weight: 500; }
 .wconvert-report-help ul { margin-block: 0.75rem 0; padding-inline-start: 1.25rem; list-style: disc; }
 .wconvert-report-help li + li { margin-block-start: 0.5rem; }
-.wconvert-report-attention { padding: 1rem; border-radius: 0.375rem; background: #fff7e7; color: #79500b; }
+.wconvert-report-attention { padding: 1rem; border-radius: 0.375rem; background: var(--warning-surface); color: var(--foreground); border-inline-start: 3px solid var(--warning); }
 .wconvert-report-attention p { margin: 0 0 0.5rem; }
-.wconvert-report-attention a { font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+.wconvert-report-attention a { font-weight: 600; text-decoration-line: underline; text-underline-offset: 3px; }
 
 /* Display settings stay readable inside the editor's settings column. */
 .wconvert-schedule-settings { display: flex; flex-direction: column; gap: 1.25rem; }
@@ -6271,7 +6320,7 @@ body.wconvert-fullscreen .wconvert-pane--controls > .wconvert-pane__stick {
 .wconvert-schedule-fields input { min-inline-size: 0; inline-size: 100%; }
 .wconvert-site-limits-note { border: 1px solid var(--border); background: var(--muted); border-radius: .5rem; padding: .875rem; font-size: var(--text-note); }
 #wconvert-admin .wconvert-site-limits-note p { margin: .4rem 0 0; }
-.wconvert-site-limits-note a { text-decoration: underline; }
+.wconvert-site-limits-note a { text-decoration-line: underline; }
 .wconvert-rule-advanced { border-block-start: 1px solid var(--border); padding-block-start: .875rem; }
 .wconvert-rule-advanced > summary { cursor: pointer; font-weight: 500; }
 

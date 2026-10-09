@@ -93,18 +93,23 @@ colour.
 
 ## 5. Colour means something
 
-- **Espresso `#302720`** is the primary action/link color and also frames the
-  app (header and footer bands). **Paper `#FAF6ED`** is the canvas and work
+- **Espresso `#302720`** is the primary action color and also frames the app
+  (header and footer bands). **Paper `#FAF6ED`** is the canvas and work
   surfaces are white. **Citron `#E2F475`** is a brand signal on the espresso
-  frame only: the active tab, the unread dot and focus. It is never a button
-  fill or text on a light surface (ADR 0130).
+  frame: the active tab, the unread dot and focus. It is never text on a light
+  surface. Its one light-surface job is the `brand` button, on
+  an espresso edge, once per screen (ADR 0130). **Ice blue `#E0EFF3`** marks
+  the paid plan and is the info surface. **Accent brown `#67452E`** is the link
+  colour, and links are underlined.
 - **Surface roles are shared across screens.** Use `--card` (white) for cards,
   including goals and monthly targets. Use `--surface` (`#F5F0E5`) for inset
   content and table headers, `--secondary` for icon wells, and `--accent` for
   interaction states. Do not tint whole cards nearly the same color as the canvas.
   `--border` (`#DDD8CA`) separates surfaces; muted text is `#6B6056`.
 - **Semantic colors retain their meaning**: destructive failure, success
-  converted, warning suspended or nearly-limit, info neutral fact. Status always
+  converted, warning suspended or nearly-limit, info neutral fact. Each one
+  has a `--*-surface` token. Never use a percentage wash of the hue: on this
+  warm palette, an amber wash is indistinguishable from paper. Status always
   includes text; do not use hue alone to distinguish it from the brand.
 - **Two edge tokens, because they are two jobs.** `--border` draws dividers and
   card edges, which are decoration. `--input` draws the edge of a control,

@@ -811,7 +811,11 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
               setSaved(false);
             }}
           />
-          <span className="wconvert-workspace__save-state" role="status">
+          <span
+            className="wconvert-workspace__save-state"
+            role="status"
+            data-published={!busy && !dirty && !unpublishedChanges && !saved && publishedAt ? '' : undefined}
+          >
             {busy
               ? publishing ? __('Publishing…', 'wconvert') : __('Saving…', 'wconvert')
               : dirty

@@ -299,12 +299,12 @@
   padding: 4px 8px;
   border-radius: 20px;
   font-size: var(--text-micro);
-  background: color-mix(in srgb, var(--success) 10%, var(--card));
+  background: var(--success-surface);
   color: var(--success);
   white-space: nowrap;
 }
 .wa-status-paused {
-  background: color-mix(in srgb, var(--warning) 10%, var(--card));
+  background: var(--warning-surface);
   color: var(--warning);
 }
 .wa-status-historical {

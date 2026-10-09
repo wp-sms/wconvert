@@ -124,7 +124,7 @@
 .wconvert-product-health li[data-state=warning] { border-color:var(--warning); }
 .wconvert-product-health p { margin:0; }
 .wconvert-product-health > [data-slot="button"] { justify-self:start; }
-#wconvert-admin .wconvert-product-health-link { display:block; margin-block-start:8px; padding:4px 0; color:var(--primary); text-decoration:underline; text-underline-offset:3px; font-size:var(--text-body); text-align:start; }
+#wconvert-admin .wconvert-product-health-link { display:block; margin-block-start:8px; padding:4px 0; color:var(--link); text-decoration-line: underline; text-underline-offset:3px; font-size:var(--text-body); text-align:start; }
 /* The gallery keeps table semantics and names values above each compact field. */
 #wconvert-admin .wconvert-campaign-workspace[data-layout=gallery] .wconvert-campaign-table > tbody > tr > td { display:block; }
 #wconvert-admin .wconvert-campaign-workspace[data-layout=gallery] .wconvert-campaign-table > tbody > tr > td::before { content:attr(data-label); display:block; font-size:var(--text-micro); color:var(--muted-foreground); margin-block-end:0.5rem; }

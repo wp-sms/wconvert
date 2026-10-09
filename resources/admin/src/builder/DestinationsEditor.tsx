@@ -214,7 +214,7 @@ export function DestinationsEditor({
           )}
 
         {missing.length > 0 && <RegionBody className="border-t border-border">
-          <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-warning/30 bg-warning/5 p-3">
+          <div className="flex flex-wrap items-center justify-between gap-3 rounded-md border border-warning/30 bg-warning-surface p-3">
             <div>
               <p className="m-0 font-medium">{sprintf(_n('%d selected destination has been deleted.', '%d selected destinations have been deleted.', missing.length, 'wconvert'), missing.length)}</p>
               <Description>{__('Remove deleted destinations, then choose replacements if needed.', 'wconvert')}</Description>

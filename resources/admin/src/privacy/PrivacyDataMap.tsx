@@ -108,7 +108,7 @@ export function PrivacyDataMap() {
             {__('Form submissions include answers, consent text, the Campaign, submission time and any name, email or phone entered. They do not include the page URL, IP address or browser details.', 'wconvert')}
           </Description>
           {data.retention_days === null ? (
-            <Alert className="mt-3 border-warning/30 bg-warning/5 text-warning">
+            <Alert className="mt-3 border-warning/30 bg-warning-surface text-warning">
               <TriangleAlert />
               <AlertTitle className="line-clamp-none">{__('Kept until you delete them', 'wconvert')}</AlertTitle>
               <AlertDescription className="text-warning">

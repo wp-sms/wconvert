@@ -26,6 +26,9 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default: "bg-primary text-primary-foreground hover:bg-primary/90",
+        // The site's call to action: citron on an espresso edge, inverting on
+        // hover. One per screen, for the action the screen exists for (ADR 0130).
+        brand: "border border-primary bg-brand text-primary hover:bg-primary hover:text-brand",
         destructive:
           "bg-destructive text-destructive-foreground hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:bg-destructive/60 dark:focus-visible:ring-destructive/40",
         outline:
@@ -34,8 +37,8 @@ const buttonVariants = cva(
           "bg-secondary text-secondary-foreground hover:bg-secondary/80",
         ghost:
           "hover:bg-accent hover:text-accent-foreground dark:hover:bg-accent/50",
-        // Underlined at rest: espresso --primary is the colour of body text (ADR 0130).
-        link: "text-primary underline underline-offset-4",
+        // In --link and underlined at rest: espresso --primary is the colour of body text (ADR 0130).
+        link: "text-link underline decoration-link/40 underline-offset-4 hover:decoration-current",
       },
       size: {
         default: "h-9 px-4 py-2 has-[>svg]:px-3",

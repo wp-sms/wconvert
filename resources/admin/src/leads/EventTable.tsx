@@ -141,7 +141,7 @@ export function EventTable({
               </section>}
               <section>
                 <h3 className="mb-3 mt-0 text-body font-semibold">{__('Capture context', 'wconvert')}</h3>
-                <a className="inline-flex items-center gap-2 text-primary underline underline-offset-4" href={editorHref(selected.optin_id, returnTo)}>{nameOf(selected.optin_id)}<ExternalLink aria-hidden="true" className="size-3" /></a>
+                <a className="inline-flex items-center gap-2 text-link underline decoration-link/40 underline-offset-4 hover:decoration-current" href={editorHref(selected.optin_id, returnTo)}>{nameOf(selected.optin_id)}<ExternalLink aria-hidden="true" className="size-3" /></a>
                 {goalOf?.(selected.optin_id) && <p className="mb-0 mt-1 text-note text-muted-foreground">{goalOf(selected.optin_id)}</p>}
               </section>
               <dl className="m-0 flex flex-col gap-4">
@@ -184,7 +184,7 @@ export function EventTable({
               </dl>
               {(selected.email || selected.phone) && <div className="rounded-md border border-border bg-surface p-4">
                 {onRelated ? <Button variant="link" className="h-auto p-0 text-start whitespace-normal" onClick={() => { const identifier = selected.email || selected.phone!; setSelected(null); onRelated(identifier); }}>{selected.email ? __('View submissions using this email', 'wconvert') : __('View submissions using this phone', 'wconvert')}<ChevronRight aria-hidden="true" className="size-4" /></Button>
-                  : <a className="text-primary underline underline-offset-4" href={leadsHref({ identifier: selected.email || selected.phone! })}>{__('View submissions using this identifier', 'wconvert')}</a>}
+                  : <a className="text-link underline decoration-link/40 underline-offset-4 hover:decoration-current" href={leadsHref({ identifier: selected.email || selected.phone! })}>{__('View submissions using this identifier', 'wconvert')}</a>}
                 <p className="mb-0 mt-1 text-note text-muted-foreground">{__('Search all retained captures, outside the current filters. These remain separate submissions, not a merged contact.', 'wconvert')}</p>
               </div>}
               <details className="rounded-md border border-border p-3">
