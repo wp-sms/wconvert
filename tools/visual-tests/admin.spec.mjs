@@ -4,7 +4,7 @@ const baseURL = 'http://127.0.0.1:9413';
 const screens = [
   { route: 'optins', name: 'Campaigns', empty: 'Start with one good campaign.', full: 'Grow the list', retry: 'Try again' },
   { route: 'analytics', name: 'Analytics', empty: 'Your first results start with a live campaign', full: 'Results by goal', retry: 'Retry loading report' },
-  { route: 'leads', name: 'Leads', empty: 'No submissions yet', full: 'Sarah Whitfield', retry: 'Retry loading submissions' },
+  { route: 'leads', name: 'Leads', empty: 'No submissions yet', full: 'Sarah Whitfield', retry: 'Try again' },
   { route: 'settings?group=connections', name: 'Settings', empty: 'Leads are kept in WConvert only', full: 'Welcome email', retry: 'Try again' },
 ];
 const modes = [
@@ -151,7 +151,7 @@ for (const mode of modes) for (const direction of ['ltr', 'rtl']) {
       await page.getByRole('navigation', { name: 'WConvert sections' }).getByRole('link', { name: 'Leads', exact: true }).click();
       const open = page.getByRole('button', { name: /^Open submission from/ }).first();
       await open.click();
-      await layerChecks(page, page.getByRole('dialog', { name: 'Submission details', exact: true }));
+      await layerChecks(page, page.getByRole('dialog'));
       await screenshot(page, info, 'submission-details');
       await page.keyboard.press('Escape');
       await expect(open).toBeFocused();

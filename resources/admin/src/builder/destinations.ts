@@ -34,7 +34,7 @@ import { compatibilityProblems, type CapturedField } from '../destinations/requi
  * `Prefill::fromPlaybook()` copies it into `config`, `PublishedProjection`
  * deliberately strips it on the way to the browser because it is authoring
  * state. The Destinations tab now reads its `types`, tagging those providers
- * *Suggested by your campaign setup*; `fields` is kept as stored and read by
+ * *Suggested*; `fields` is kept as stored and read by
  * nothing, since the form-fit warnings already say what a route needs. Before
  * that, no screen opened it at all — so a merchant who started from
  * *Welcome discount* was told, in the Playbook's own notes, that the trade is
