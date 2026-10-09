@@ -58,10 +58,10 @@ async function commonChecks(page, direction) {
   });
   expect(layout.overflow).toBeLessThanOrEqual(1);
   expect(layout.font).toContain('DM Sans');
-  expect(layout.headlineBackground).toBe('rgb(234, 240, 237)');
+  expect(layout.headlineBackground).toBe('rgb(246, 245, 241)');
   expect(layout.divider).toBe('1px');
   expect(layout.dividerStart).toBe(layout.dividerEnd);
-  expect(layout.footer).toBe('rgb(24, 60, 64)');
+  expect(layout.footer).toBe('rgb(48, 39, 32)');
   expect(layout.publisherDecoration).toBe('none');
   await page.locator('.wconvert-publisher').hover();
   await expect(page.locator('.wconvert-publisher')).toHaveCSS('text-decoration-line', 'none');
