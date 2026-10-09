@@ -7,6 +7,7 @@ name: Release Pro
 #     ├── php-tests ── the same file the PR gate uses
 #     ├── frontend-tests ─ likewise
 #     │     └── build ─── the Pro ZIP, gated by the SAME artifact contract
+#     │     └── publish_nexus ── OFF
 #     └── summary ───── always runs, says what shipped and what did not
 #
 # TWO RELEASE WORKFLOWS, ONE GATE (ADR 0030). Read release-free.yml's header for
@@ -15,8 +16,8 @@ name: Release Pro
 #
 #   - ONLY THE FREE RUN STAGES FOR WP.ORG. Pro is not distributed there, has no
 #     readme.txt and no Stable tag, and is not subject to Plugin Check. There
-#     is no publish job below because there is no wp.org to publish to — Pro's
-#     distribution is a separate matter that this ticket does not settle.
+#     is no wp.org publish job below. Pro's distribution is Nexus, the
+#     licensing store, behind its own switch.
 #
 #   - ONLY THE PRO RUN EVALUATES CONDITION 5. WCONVERT_MIN_CORE is the one
 #     statement Pro makes about free, and it is checked against the highest
@@ -207,11 +208,75 @@ jobs:
           if-no-files-found: error
 
   # ---------------------------------------------------------------------------
-  # [3] SUMMARY — always runs.
+  # [3] NEXUS — the three tier ZIPs to the licensing store. OFF until both
+  # switches exist, as for free's wp.org publish:
+  #   repository variables RELEASE_PUBLISH_ENABLED = true and PUBLISH_NEXUS = true
+  #   (repository level, because a job's `if:` cannot read environment
+  #   variables), and the `nexus` environment's NEXUS_API_KEY secret.
+  # Environment variables: NEXUS_URL, NEXUS_PRODUCT_SLUG, NEXUS_CATALOG_ITEM_SLUG.
+  #
+  # One POST per tier, as the store's Release API expects. Skipped for
+  # pre-releases: the store is told `release_type=stable` and nothing else.
+  # The store is idempotent per (catalog item, tier, version), so a re-run only
+  # fills the gaps; the tier is read from the file name `wconvert-pro-<tier>-v<version>.zip`.
+  # ---------------------------------------------------------------------------
+  publish_nexus:
+    name: '[3] Publish → Nexus'
+    needs: [guard, build]
+    if: |
+      needs.build.result == 'success' &&
+      github.event.release.prerelease == false &&
+      vars.RELEASE_PUBLISH_ENABLED == 'true' &&
+      vars.PUBLISH_NEXUS == 'true'
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment:
+      name: nexus
+    steps:
+      - name: Download the Pro ZIPs
+        uses: actions/download-artifact@v4
+        with:
+          name: pro-zips
+          path: dist
+
+      - name: Upload each tier to Nexus
+        env:
+          NEXUS_API_KEY: ${{ secrets.NEXUS_API_KEY }}
+          NEXUS_URL: ${{ vars.NEXUS_URL }}
+          PRODUCT_SLUG: ${{ vars.NEXUS_PRODUCT_SLUG }}
+          CATALOG_ITEM_SLUG: ${{ vars.NEXUS_CATALOG_ITEM_SLUG }}
+          VERSION: ${{ needs.guard.outputs.version }}
+        run: |
+          set -euo pipefail
+
+          for name in NEXUS_API_KEY NEXUS_URL PRODUCT_SLUG CATALOG_ITEM_SLUG; do
+            if [ -z "${!name}" ]; then
+              echo "::error::$name is not set on the nexus environment."
+              exit 1
+            fi
+          done
+
+          for zip in dist/*.zip; do
+            filename="$(basename "$zip" .zip)"
+            tier="${filename#"${CATALOG_ITEM_SLUG}-"}"
+            tier="${tier%"-v${VERSION}"}"
+
+            echo "Uploading $zip (tier=$tier, version=$VERSION)"
+            curl -sf -X POST "${NEXUS_URL}/api/v1/${PRODUCT_SLUG}/releases" \
+              -H "Authorization: Bearer ${NEXUS_API_KEY}" \
+              -F "catalog_item_slug=${CATALOG_ITEM_SLUG}" \
+              -F "version=${VERSION}" \
+              -F "tier_slug=${tier}" \
+              -F "release_type=stable" \
+              -F "zip=@${zip}"
+          done
+
+  # ---------------------------------------------------------------------------
+  # [4] SUMMARY — always runs.
   # ---------------------------------------------------------------------------
   summary:
-    name: '[3] What shipped'
-    needs: [guard, build]
+    name: '[4] What shipped'
+    needs: [guard, build, publish_nexus]
     if: always() && needs.guard.result != 'skipped'
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -221,6 +286,7 @@ jobs:
           VERSION: ${{ needs.guard.outputs.version }}
           PUBLISHED: ${{ needs.guard.outputs.published_core }}
           BUILD: ${{ needs.build.result }}
+          NEXUS: ${{ needs.publish_nexus.result }}
         run: |
           set -euo pipefail
           {
@@ -240,6 +306,12 @@ jobs:
             echo ""
             echo "- Highest free version published: \`${PUBLISHED}\`"
             echo ""
-            echo "Pro is not distributed through WordPress.org, so there is no publish step here."
-            echo "Where Pro ZIPs go is a separate decision that has not been made yet."
+            case "$NEXUS" in
+              success) echo "- ✅ Nexus — published, one upload per tier" ;;
+              skipped) echo "- ⏸️ Nexus — held back (switch is off, or this is a pre-release)" ;;
+              failure) echo "- ❌ Nexus — FAILED; re-running is safe, the store keeps what it already holds" ;;
+              *)       echo "- ⚪ Nexus — $NEXUS" ;;
+            esac
+            echo ""
+            echo "Pro is not on WordPress.org. Publishing needs RELEASE_PUBLISH_ENABLED **and** PUBLISH_NEXUS, plus the NEXUS_API_KEY secret."
           } >> "$GITHUB_STEP_SUMMARY"
