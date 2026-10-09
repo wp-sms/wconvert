@@ -2065,7 +2065,7 @@ describe('adaptive editor and signup deletion', () => {
   await userEvent.click(await screen.findByRole('tab', { name: 'Design' }));
     await userEvent.click(await screen.findByRole('tab', { name: 'Screens' }));
     await userEvent.click(within(screen.getByRole('navigation', { name: 'Campaign screens' })).getByRole('button', { name: 'Optional SMS signup' }));
-    await userEvent.click(screen.getByRole('button', { name: 'Screen actions' }));
+    await userEvent.click(screen.getByRole('button', { name: /^Actions for / }));
     await userEvent.click(screen.getByRole('menuitem', { name: 'Remove optional signup' }));
     await userEvent.click(screen.getByRole('button', { name: 'Remove signup' }));
     await userEvent.click(screen.getByRole('button', { name: 'Save draft' }));

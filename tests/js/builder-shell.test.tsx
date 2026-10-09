@@ -336,7 +336,6 @@ describe('the builder shell', () => {
     await userEvent.click(screen.getByRole('radio', { name: 'Flow' }));
     await userEvent.type(screen.getByRole('searchbox', { name: 'Find a screen' }), 'Details');
     await userEvent.click(screen.getByRole('button', { name: 'Details' }));
-    await userEvent.click(screen.getByText('Screen options', { exact: true }));
     const inspector = screen.getByRole('region', { name: 'Selected screen settings' });
     await userEvent.click(within(inspector).getByRole('button', { name: 'Open Design' }));
     expect(screen.getByRole('tab', { name: 'Design' })).toHaveAttribute('aria-selected', 'true');

@@ -266,8 +266,10 @@ it('lets a merchant choose several answers for a multi-select condition', async 
   await user.click(screen.getByRole('checkbox', { name: 'Garden' }));
   expect(JSON.parse(screen.getByTestId('condition').textContent!).clauses[0].values).toEqual(['indoors']);
 });
+/** The screen's ⋯ menu, named for the screen it acts on. */
+const screenMenu = () => screen.getByRole('button', { name: /^Actions for / });
 async function action(user: ReturnType<typeof userEvent.setup>, name: string, confirm = true) {
-  await user.click(screen.getByRole('button', { name: 'Screen actions' }));
+  await user.click(screenMenu());
   const actionName = name === 'Delete screen' && screen.queryByRole('menuitem', { name: 'Remove optional signup' }) ? 'Remove optional signup' : name;
   await user.click(screen.getByRole('menuitem', { name: actionName }));
   if (confirm && actionName === 'Remove optional signup' && screen.queryByRole('button', { name: 'Remove signup' })) await user.click(screen.getByRole('button', { name: 'Remove signup' }));
@@ -331,7 +333,7 @@ it('preserves screen identity when reordering and gives a duplicate its own iden
   expect(backs(draft(), 0)).toHaveLength(0);
   expect(backs(draft(), 1)).toHaveLength(1);
   fireEvent.change(screen.getByLabelText('Screen name'),{target:{value:'Invitation'}});
-  await action(user, 'Move later');
+  await action(user, 'Move down');
   expect(draft().steps[1]).toMatchObject({id:added,name:'Invitation'});
   expect(backs(draft(), 0)).toHaveLength(0);
   expect(backs(draft(), 1)).toHaveLength(1);
@@ -365,8 +367,8 @@ it('labels screen actions and refuses unavailable moves', async () => {
   render(<Editor />);
   await user.click(screen.getByRole('button', { name: 'Manage screens' }));
   const original = draft();
-  await user.click(screen.getByRole('button', { name: 'Screen actions' }));
-  const earlier = screen.getByRole('menuitem', { name: 'Move earlier' });
+  await user.click(screenMenu());
+  const earlier = screen.getByRole('menuitem', { name: 'Move up' });
   expect(earlier).toHaveAttribute('data-disabled');
   await user.click(earlier);
   expect(draft()).toEqual(original);
@@ -383,7 +385,7 @@ it('keeps management off the canvas and restores focus after choosing a screen t
   const cards = within(dialog).getByRole('list', { name: 'Journey screen inventory' });
   await user.click(within(cards).getAllByRole('button')[1]);
   expect(screen.getByLabelText('Screen name')).toHaveValue(source.tree.steps[1].name);
-  await user.click(screen.getByRole('button', { name: 'Screen actions' }));
+  await user.click(screenMenu());
   expect(screen.getByRole('menuitem', { name: 'Delete screen' })).toHaveAttribute('data-disabled');
   await user.keyboard('{Escape}');
   await user.click(screen.getByRole('button', { name: 'Edit design' }));
@@ -672,7 +674,6 @@ it('undoes a journey typing burst once and keeps separate fields as separate edi
   }
   render(<HistoryEditor />);
   await user.click(screen.getByRole('button', { name: 'Manage screens' }));
-  await user.click(screen.getByText('Screen options', { selector: 'summary span' }));
   await user.type(screen.getByRole('textbox', { name: 'Screen name' }), ' and preferences');
   await user.type(screen.getByRole('textbox', { name: 'Question' }), ' today?');
   // Close the modal to use campaign history, then open it to inspect the result.
@@ -680,7 +681,6 @@ it('undoes a journey typing burst once and keeps separate fields as separate edi
   await user.click(screen.getByRole('button', { name: 'Undo: Edit questions on “Interests and preferences”' }));
   await user.click(screen.getByRole('button', { name: 'Undo: Rename screen “Interests”' }));
   await user.click(screen.getByRole('button', { name: 'Manage screens' }));
-  await user.click(screen.getByText('Screen options', { selector: 'summary span' }));
   expect(screen.getByRole('textbox', { name: 'Screen name' })).toHaveValue('Interests');
   expect(screen.getByRole('textbox', { name: 'Question' })).toHaveValue('What interests you?');
   await user.keyboard('{Escape}');
@@ -728,15 +728,17 @@ it('reviews a branch deletion, keeps Cancel unchanged, and restores the entire e
   }
   render(<RemovalEditor />);
   await user.click(screen.getByRole('button', { name: 'Manage screens' }));
-  await user.click(screen.getByRole('button', { name: 'Delete screen' }));
+  await user.click(screenMenu());
+  await user.click(screen.getByRole('menuitem', { name: 'Delete screen' }));
   let dialog = screen.getByRole('alertdialog', { name: 'Delete this screen?' });
   expect(within(dialog).getByRole('button', { name: 'Delete screen' })).toHaveAttribute('aria-disabled', 'true');
   await user.selectOptions(within(dialog).getByRole('combobox', { name: 'Continue incoming paths at' }), 'received');
   expect(within(dialog).getByText(/without saving at “One enquiry”/)).toBeInTheDocument();
   await user.click(within(dialog).getByRole('button', { name: 'Cancel' }));
   expect(draft()).toEqual(initial);
-  await waitFor(() => expect(screen.getByRole('button', { name: 'Delete screen' })).toHaveFocus());
-  await user.click(screen.getByRole('button', { name: 'Delete screen' }));
+  await waitFor(() => expect(screenMenu()).toHaveFocus());
+  await user.click(screenMenu());
+  await user.click(screen.getByRole('menuitem', { name: 'Delete screen' }));
   dialog = screen.getByRole('alertdialog', { name: 'Delete this screen?' });
   expect(within(dialog).getByRole('combobox')).toHaveValue('');
   await user.selectOptions(within(dialog).getByRole('combobox'), 'contact');
@@ -753,15 +755,15 @@ it('reviews a branch deletion, keeps Cancel unchanged, and restores the entire e
   expect(draft()).toEqual(removed);
 });
 
-it('keeps a protected Delete action focusable and associates the reason with it', async () => {
+it('refuses a protected Delete in the screen menu and says why beside it', async () => {
   const user = userEvent.setup();
   render(<Editor initial={graphFixture as unknown as TemplateTree} />);
   await user.click(screen.getByRole('button', { name: 'Manage screens' }));
-  const button = screen.getByRole('button', { name: 'Delete screen' });
-  expect(button).toHaveAttribute('aria-disabled', 'true');
-  expect(button).toHaveAccessibleDescription(/collects or saves contact details/);
-  await user.click(button);
-  expect(button).toHaveFocus();
+  await user.click(screenMenu());
+  const item = screen.getByRole('menuitem', { name: 'Delete screen' });
+  expect(item).toHaveAttribute('data-disabled');
+  expect(screen.getByText(/collects or saves contact details/)).toBeVisible();
+  await user.click(item);
   expect(screen.queryByRole('alertdialog', { name: 'Delete this screen?' })).not.toBeInTheDocument();
 });
 
@@ -778,13 +780,15 @@ it('removes a graph optional signup as one undoable edit and explains its captur
   }
   render(<CaptureEditor />);
   await user.click(screen.getByRole('button', { name: 'Manage screens' }));
-  await user.click(screen.getByRole('button', { name: 'Remove optional signup' }));
+  await user.click(screenMenu());
+  await user.click(screen.getByRole('menuitem', { name: 'Remove optional signup' }));
   let dialog = screen.getByRole('alertdialog', { name: 'Remove this optional signup?' });
   expect(within(dialog).getByText(/saved leads stay/)).toBeInTheDocument();
   await user.click(within(dialog).getByRole('button', { name: 'Cancel' }));
   expect(draft()).toEqual(initial);
-  await waitFor(() => expect(screen.getByRole('button', { name: 'Remove optional signup' })).toHaveFocus());
-  await user.click(screen.getByRole('button', { name: 'Remove optional signup' }));
+  await waitFor(() => expect(screenMenu()).toHaveFocus());
+  await user.click(screenMenu());
+  await user.click(screen.getByRole('menuitem', { name: 'Remove optional signup' }));
   dialog = screen.getByRole('alertdialog', { name: 'Remove this optional signup?' });
   await user.click(within(dialog).getByRole('button', { name: 'Remove signup' }));
   expect(draft().submissions).toEqual(initial.submissions.filter(sub => sub.required));
@@ -815,7 +819,8 @@ it('adds graph secondary capture at a named saved path and restores focus after 
   expect(draft().submissions).toHaveLength(2);
   expect(draft().submissions[0]).toEqual(initial.submissions[0]);
   await waitFor(() => expect(screen.getByRole('heading', { name: 'Optional SMS signup', level: 3 })).toHaveFocus());
-  expect(screen.getByRole('button', { name: 'Remove optional signup' })).toBeEnabled();
+  await user.click(screenMenu());
+  expect(screen.getByRole('menuitem', { name: 'Remove optional signup' })).not.toHaveAttribute('data-disabled');
 });
 
 it('explains a branched result timing restriction and opens the named paths for repair', async () => {

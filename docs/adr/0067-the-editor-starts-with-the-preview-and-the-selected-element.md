@@ -24,7 +24,13 @@ width or triggering a different responsive layout.
 
 A click selects the deepest element under the pointer. Repeated clicks keep it
 selected. Breadcrumbs expose its ancestors, and Design settings returns to the
-whole design. A leaf has Content and Style; a container offers its appearance
+whole design. *Amended by the editor UX plan's Phase 1
+([docs/plans/editor-ux-2026-10-09.md](../plans/editor-ux-2026-10-09.md), D2): the
+element panel is the only panel while an element is open; its header is
+"← <screen name>", the element's name and Content | Style. Breadcrumbs remain
+only for nested layout boxes below the screen; the "Design ›" crumb and the
+screen name under the heading are gone. ADR 0134 records the whole Edit tab.*
+A leaf has Content and Style; a container offers its appearance
 and arrangement controls directly. Image controls show the current image and a
 visible replacement action using WordPress's media library.
 

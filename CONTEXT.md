@@ -885,10 +885,14 @@ This contract is implemented under
 
 A Free journey is linear: the merchant can arrange its screens and submission
 points, including a screen that explains an offer before asking for details.
-Pro can ask choice or short-text questions and skip later screens based on
-earlier choice answers. It still moves forward in one ordered list: there are
-no arbitrary jumps or loops. Its one Results screen selects the first matching
-variant, then a fallback. Results may precede an optional signup, so a visitor
+Pro journeys are a **graph** (`tree.graph`, v3): an entry screen and edges between
+screens. Each [[Path]] is one edge — `answer` (taken when its condition on an
+earlier choice matches), `default` (taken by [[All other answers]]) or `hidden`
+(where a screen whose [[Show only if…]] does not match sends visitors on). Paths
+from one screen are checked top to bottom and the first match wins; a path may
+jump forward or rejoin another, but never loops back. A graph that is still a
+straight line reads exactly as the linear journey does. Its one Results screen
+selects the first matching variant, then the one for all other answers. Results may precede an optional signup, so a visitor
 can finish without giving contact details. Product cards use the live public
 WooCommerce catalog for merchant-selected IDs or a category with up to three
 explicit global attribute values (all must match). Filters choose cards after
@@ -899,6 +903,54 @@ With the commerce module active, results can offer protected quantity-one cart
 buttons for supported simple products; products needing options keep links.
 Product activity spans the quiz mount, and accepted additions never create a
 second quiz Conversion ([ADR 0124](docs/adr/0124-quiz-products-share-protected-cart-actions.md)).
+
+### Look
+
+The design-wide appearance of a campaign: its colors, fonts, format and position,
+and its reopen button. One pinned row in the Edit tree and one panel. Not a
+[[Template]] — a Template is the arrangement; the Look is how it is dressed.
+
+### Screen
+
+One step a visitor sees in a [[Capture journey]]: a message, a [[Form]], a
+question, a result or an ending. The left tree lists screens and opens each into
+its elements; the canvas shows one at a time.
+
+### Path
+
+One way from a screen to the next screen (a graph edge). **Not** a
+[[Connection]] — that word stays the stored credentials for a remote account, and
+the journey sense was renamed to avoid the collision. "Branch" and "route" are
+retired synonyms.
+
+### Follow-up question
+
+A question screen shown only to visitors whose earlier answer matched, by its
+[[Show only if…]]. Several follow-ups for one multi-choice question form a group
+asked one at a time, sharing one way on.
+
+### Show only if…
+
+A screen's condition on an earlier answer (`screen.when`). A screen that does
+not match is skipped. Replaces "screen visibility", "visibility rule" and "Show
+this screen when…".
+
+### Form
+
+A screen's fields and consent as one submission (a `tree.submissions` entry).
+"Form 1", "Form 2" name them where a campaign has more than one; a field is
+"Saved by" one form. Replaces "save point" and "Saved with".
+
+### All other answers
+
+The path, or the result, taken when no answer-specific one matches — always the
+last. Replaces "Everyone else" and "fallback".
+
+### Then
+
+Where a screen goes next, as the screen panel says it: "Then → Thank you". On a
+straight journey it is read-only; on a question with paths it reads "Depends on
+the answer".
 
 ### Template
 
@@ -1487,6 +1539,8 @@ per-Lead outcome record or inbox/subscription confirmation is promised. This is
 shown alongside Destination health, with no durable delivery ledger.
 
 ### Connection
+
+*Not the journey sense: a way between two screens is a [[Path]].*
 
 Stored credentials for one remote account — a Mailchimp API key, a Brevo key. One
 Connection backs one or more [[Destination]]s, so two Mailchimp audiences are two

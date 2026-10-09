@@ -240,11 +240,12 @@ describe('the Style half of the inspector', () => {
    * Design tab always edited — so calling it *Column* would send a merchant
    * looking for the design's colours to something named after a flex direction.
    */
-  it('offers explicit paths back to the parent and design', async () => {
+  /** One way back, named for the screen (D2): no "Design" crumb beside it, and no crumb for a top-level element. */
+  it('offers one way back, to the screen the element is on', async () => {
     await style(/Button label/);
-    const breadcrumb = screen.getByRole('navigation', { name: 'Selected element' });
-    expect(within(breadcrumb).getByRole('button', { name: 'Design' })).toBeInTheDocument();
-    expect(within(breadcrumb).getByRole('button', { name: 'Screen 1' })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: 'Screen 1' })).toBeInTheDocument();
+    expect(screen.queryByRole('navigation', { name: 'Inside' })).toBeNull();
+    expect(screen.queryByRole('button', { name: 'Design' })).toBeNull();
   });
 
   /**
@@ -253,7 +254,7 @@ describe('the Style half of the inspector', () => {
    */
   it('reaches the designs own token controls through that door', async () => {
     await style(/Button label/);
-    await userEvent.click(within(screen.getByRole('navigation', { name: 'Selected element' })).getByRole('button', { name: 'Design' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Screen 1' }));
     expect(screen.getByRole('button', { name: /Choose a color for Background/ })).toBeInTheDocument();
   });
 

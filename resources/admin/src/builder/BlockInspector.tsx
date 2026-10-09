@@ -4,7 +4,7 @@ import { journeysSupported, commerceSupported } from '../settings';
 import { tierProductName, unlessFree } from '../goals/availability';
 import { useId, useState, type ReactNode } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
-import { ArrowLeftRight, Check, ChevronRight, Layers, Package, Type } from 'lucide-react';
+import { ArrowLeft, ArrowLeftRight, Check, ChevronRight, Layers, Package, Type } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import {
   DropdownMenu,
@@ -46,6 +46,12 @@ export interface BlockInspectorProps {
 
   readonly look?: ReactNode;
   readonly onSelect?: (path: Path) => void;
+  /**
+   * Back to the screen this element is on: the header's "← <screen>" (D2).
+   * The element panel is the only panel while an element is open, so this is
+   * the one way back — never a second "Design" crumb beside it.
+   */
+  readonly onBack?: () => void;
   readonly onDesign?: () => void;
   readonly onShowLayers?: () => void;
   /** A new repair request opens Content even when the same element was on Style. */
@@ -64,6 +70,7 @@ export function BlockInspector({
   onPlacement,
   look,
   onSelect,
+  onBack,
   onDesign,
   onShowLayers,
   revealContent,
@@ -107,24 +114,34 @@ export function BlockInspector({
     onPlacement,
   });
 
-  const breadcrumbs = nodesOf(template.tree).filter(
-    (parent) => parent.path.length < path.length && parent.path.every((part, index) => path[index] === part),
+  // Only the layout boxes between the screen and this element: the screen
+  // itself is the back button, and a crumb for it would be a second way to
+  // say the same thing (D2).
+  const boxes = nodesOf(template.tree).filter(
+    (parent) => parent.path.length > 1 && parent.path.length < path.length && parent.path.every((part, index) => path[index] === part),
   );
+  const screenName = template.tree.steps[Number(path[0])]?.name ?? '';
+  const back = onBack ?? onDesign;
   const head = (
     <div className="wconvert-inspector__head">
-      <nav className="wconvert-inspector__breadcrumbs" aria-label={__('Selected element', 'wconvert')}>
-        <button type="button" onClick={onDesign}>
-          {__('Design', 'wconvert')}
+      {back !== undefined && (
+        <button type="button" className="wconvert-inspector__back" onClick={back}>
+          <ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />
+          <span>{screenName || __('Screen', 'wconvert')}</span>
         </button>
-        {breadcrumbs.map((parent) => (
-          <span key={parent.path.join('.')}>
-            <ChevronRight aria-hidden="true" className="rtl:-scale-x-100" />
-            <button type="button" onClick={() => onSelect?.(parent.path)}>
-              {nameOfBlock(parent, labels)}
-            </button>
-          </span>
-        ))}
-      </nav>
+      )}
+      {boxes.length > 0 && (
+        <nav className="wconvert-inspector__breadcrumbs" aria-label={__('Inside', 'wconvert')}>
+          {boxes.map((parent, at) => (
+            <span key={parent.path.join('.')}>
+              {at > 0 && <ChevronRight aria-hidden="true" className="rtl:-scale-x-100" />}
+              <button type="button" onClick={() => onSelect?.(parent.path)}>
+                {nameOfBlock(parent, labels)}
+              </button>
+            </span>
+          ))}
+        </nav>
+      )}
       <div className="wconvert-inspector__heading">
         <span className="wconvert-element-icon">
           {block.type === 'products' ? <Package aria-hidden="true" /> : block.leaf ? <Type aria-hidden="true" /> : <Layers aria-hidden="true" />}
@@ -133,7 +150,6 @@ export function BlockInspector({
           <h4 id={heading} className="wconvert-inspector__name">
             {name}
           </h4>
-          <p>{template.tree.steps[Number(path[0])]?.name}</p>
         </div>
         <SwapMenu template={template} labels={labels} path={path} act={act} onSwap={onSwap} />
       </div>
