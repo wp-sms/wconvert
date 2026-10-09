@@ -102,8 +102,8 @@ test('real editor loads Pro controls, simulates reopening, and saves draft setti
   await page.getByRole('button', { name: 'Log In', exact: true }).click();
   await page.waitForURL('**/wp-admin/');
   await page.goto(`/wp-admin/admin.php?page=wconvert#optins?edit=${id}`);
-  await page.getByRole('tab', { name: 'Theme & layout', exact: true }).click();
-  const design = page.getByRole('tabpanel', { name: 'Theme & layout', exact: true });
+  await page.getByRole('tab', { name: 'Design', exact: true }).click();
+  const design = page.getByRole('tabpanel', { name: 'Design', exact: true });
   await design.getByRole('button', { name: 'Design settings', exact: true }).click();
   const text = design.getByLabel('Button text', { exact: true });
   await expect(text).toHaveValue('Get my discount');
@@ -120,13 +120,13 @@ test('real editor loads Pro controls, simulates reopening, and saves draft setti
   await page.getByRole('button', { name: 'Preview & test', exact: true }).click();
   await page.getByRole('dialog', { name: 'Preview & test', exact: true }).getByRole('button', { name: 'Back to editor', exact: true }).click();
   await expect(reopenTab).toHaveAttribute('aria-pressed', 'true');
-  await design.getByRole('button', { name: 'Mobile preview', exact: true }).click();
+  await design.locator('label').filter({ has: page.getByRole('radio', { name: 'Mobile', exact: true }) }).click();
   await design.getByText('Colors and mobile', { exact: true }).click();
   await design.getByRole('checkbox', { name: 'Show on mobile', exact: true }).uncheck();
   await expect(design.getByText('Hidden on mobile', { exact: true })).toBeVisible();
   await page.getByRole('button', { name: /^Undo:/ }).click();
   await expect(design.getByText('Hidden on mobile', { exact: true })).toHaveCount(0);
-  await design.getByRole('button', { name: 'Desktop preview', exact: true }).click();
+  await design.locator('label').filter({ has: page.getByRole('radio', { name: 'Desktop', exact: true }) }).click();
   await design.getByRole('checkbox', { name: 'Reopen button', exact: true }).uncheck();
   await expect(reopenTab).toHaveCount(0);
   await page.getByRole('button', { name: /^Undo:/ }).click();
@@ -139,7 +139,7 @@ test('real editor loads Pro controls, simulates reopening, and saves draft setti
   await page.getByRole('button', { name: 'Save draft', exact: true }).click();
   expect((await saved).ok()).toBe(true);
   await page.reload();
-  await page.getByRole('tab', { name: 'Theme & layout', exact: true }).click();
+  await page.getByRole('tab', { name: 'Design', exact: true }).click();
   await page.getByRole('button', { name: 'Design settings', exact: true }).click();
   await expect(text).toHaveValue('Save my offer');
   await reopenTab.click();

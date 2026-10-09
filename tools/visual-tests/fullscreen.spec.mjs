@@ -112,7 +112,7 @@ test('goal-first setup filtering creates a fullscreen draft with a viewport prev
   await page.waitForURL('**/wp-admin/');
   await page.goto('/wp-admin/admin.php?page=wconvert#optins');
   await page.getByRole('button', { name: 'Create campaign', exact: true }).click();
-  await page.getByRole('listitem').filter({ has: page.getByRole('heading', { name: 'Grow my email list', exact: true }) }).getByRole('button', { name: 'Choose', exact: true }).click();
+  await page.getByRole('listitem').filter({ has: page.getByRole('heading', { name: 'Grow my email list', exact: true }) }).getByRole('button', { name: 'Choose: Grow my email list', exact: true }).click();
   const fullscreen = page.getByRole('radio', { name: 'Fullscreen', exact: true });
   await page.locator('label').filter({ has: fullscreen }).click();
   await expect(fullscreen).toBeChecked();

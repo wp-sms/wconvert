@@ -121,6 +121,9 @@ for (const mode of modes) for (const direction of ['ltr', 'rtl']) {
       // The date picker replaced the period select and its date-scope InfoTip (ADR 0132).
       const period = page.getByRole('button', { name: /^Report period/ });
       await expect(period).toBeVisible();
+      // The picker is drawn before the report arrives (it names the window while
+      // it loads), so wait for the report itself rather than for the control.
+      await expect(page.locator('.wa-goal-card').first()).toBeVisible();
       const toolbar = await page.evaluate(() => {
         const trigger = document.querySelector('.wconvert-date-picker__trigger');
         const exportButton = [...document.querySelectorAll('button')].find((n) => n.textContent.includes('Export CSV'));
@@ -156,12 +159,16 @@ for (const mode of modes) for (const direction of ['ltr', 'rtl']) {
       await screenshot(page, info, 'campaign-menu');
       await page.keyboard.press('Escape');
       await page.getByRole('navigation', { name: 'WConvert sections' }).getByRole('link', { name: 'Settings', exact: true }).click();
-      await page.getByRole('link', { name: 'Connections & destinations Accounts and where leads go', exact: true }).click();
-      // A card's settings are a disclosure, whose summary has no button role.
-      await page.locator('.wconvert-route-settings > summary').first().click();
-      await expect(page.getByRole('textbox', { name: 'Name', exact: true }).first()).toBeVisible();
+      // Settings opens on Connections & destinations (ADR 0132); phones show the rail as a select.
+      await expect(page.getByRole('heading', { name: 'Destinations', exact: true })).toBeVisible();
       await commonChecks(page, direction);
+      // A destination's settings open in their own dialog (ADR 0132).
+      await page.getByRole('button', { name: 'Edit', exact: true }).first().click();
+      const settings = page.getByRole('dialog');
+      await expect(settings.getByRole('textbox', { name: 'Name', exact: true })).toBeVisible();
+      await layerChecks(page, settings);
       await screenshot(page, info, 'destination-settings');
+      await page.keyboard.press('Escape');
       await page.getByRole('button', { name: 'Need a hand? Help' }).click();
       await layerChecks(page, page.getByRole('dialog'));
       await screenshot(page, info, 'footer-help');

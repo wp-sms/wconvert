@@ -251,7 +251,7 @@ editorTest('goal-first inline setup enables automatic placement and publishes', 
   await page.waitForURL('**/wp-admin/');
   await page.goto('/wp-admin/admin.php?page=wconvert#optins');
   await page.getByRole('button', { name: 'Create campaign', exact: true }).click();
-  await page.getByRole('listitem').filter({ has: page.getByRole('heading', { name: 'Grow my email list', exact: true }) }).getByRole('button', { name: 'Choose', exact: true }).click();
+  await page.getByRole('listitem').filter({ has: page.getByRole('heading', { name: 'Grow my email list', exact: true }) }).getByRole('button', { name: 'Choose: Grow my email list', exact: true }).click();
   const inline = page.getByRole('radio', { name: 'Inline form', exact: true });
   await page.locator('label').filter({ has: inline }).click();
   await expect(inline).toBeChecked();
@@ -263,8 +263,8 @@ editorTest('goal-first inline setup enables automatic placement and publishes', 
   // Placement authoring belongs only to Display rules. Design must contain no
   // placement summary or route, in either the initial manual state or later
   // automatic state.
-  await page.getByRole('tab', { name: 'Theme & layout', exact: true }).click();
-  const design = page.getByRole('tabpanel', { name: 'Theme & layout', exact: true });
+  await page.getByRole('tab', { name: 'Design', exact: true }).click();
+  const design = page.getByRole('tabpanel', { name: 'Design', exact: true });
   await expect(design).toBeVisible();
   await expect(design.getByText('Manual', { exact: true })).toHaveCount(0);
   await expect(design.getByRole('button', { name: 'Change inline placement', exact: true })).toHaveCount(0);
@@ -326,7 +326,7 @@ editorTest('goal-first inline setup enables automatic placement and publishes', 
 
   // Return to Design: placement remains entirely absent, including after the
   // automatic state has been committed.
-  await page.getByRole('tab', { name: 'Theme & layout', exact: true }).click();
+  await page.getByRole('tab', { name: 'Design', exact: true }).click();
   await expect(design.getByText('Automatically after content', { exact: true })).toHaveCount(0);
   await expect(design.getByRole('button', { name: 'Change inline placement', exact: true })).toHaveCount(0);
   await expect(design.getByRole('radio', { name: 'Automatic', exact: true })).toHaveCount(0);
@@ -350,7 +350,7 @@ editorTest('goal-first inline setup enables automatic placement and publishes', 
   // the widest admin and at phone width, in both directions, with no
   // horizontal scroll on the page or inside the tab.
   const destinationsPanel = page.getByRole('tabpanel', { name: 'Destinations', exact: true });
-  await expect(destinationsPanel.getByText('Saved in WConvert Leads', { exact: true })).toBeVisible();
+  await expect(destinationsPanel.getByText('Saved in Leads', { exact: true })).toBeVisible();
   for (const width of [1440, 390]) {
     await page.setViewportSize({ width, height: 1000 });
     for (const direction of ['ltr', 'rtl']) {
@@ -365,17 +365,17 @@ editorTest('goal-first inline setup enables automatic placement and publishes', 
   }
   await page.evaluate(() => { document.documentElement.dir = 'ltr'; });
   await page.setViewportSize({ width: 782, height: 900 });
-  const collectOnly = page.getByRole('radio', { name: 'Collect only in WConvert', exact: true });
+  const collectOnly = page.getByRole('radio', { name: 'Keep in WConvert only', exact: true });
   await collectOnly.click();
   await expect(collectOnly).toBeChecked();
   await page.getByRole('button', { name: 'Review & publish', exact: true }).click();
-  const review = page.getByRole('dialog', { name: 'Review & publish' });
+  const review = page.getByRole('dialog');
   await expect(review).toBeVisible();
   await expect(review).toContainText('Automatically after content');
-  const publish = review.getByRole('button', { name: /Publish Campaign|Save & publish/, exact: true });
+  const publish = review.getByRole('button', { name: /^(Publish campaign|Save & publish)$/ });
   await expect(publish).toBeEnabled();
   await publish.click();
-  await expect(page.getByRole('status')).toContainText('Saved and published');
+  await expect(review.getByRole('status')).toContainText('It’s live.');
 
   await page.getByRole('button', { name: 'Done', exact: true }).click();
 
@@ -398,7 +398,7 @@ editorTest('goal-first inline setup enables automatic placement and publishes', 
     await expect(rulesPanel.getByRole('region', { name: 'Design canvas', exact: true })).toHaveCount(0);
     await previewButton.click();
     await expect(previewDialog).toBeVisible();
-    await previewDialog.getByRole('button', { name: 'Check the design', exact: true }).click();
+    await previewDialog.locator('label').filter({ has: page.getByRole('radio', { name: 'Check the design', exact: true }) }).click();
     await expect(preview).toBeVisible();
     for (const direction of ['ltr', 'rtl']) {
       await page.evaluate(dir => { document.documentElement.dir = dir; }, direction);
@@ -422,7 +422,7 @@ editorTest('goal-first inline setup enables automatic placement and publishes', 
   await expect(placementPanel).not.toContainText('—');
   await previewButton.click();
   await expect(previewDialog).toBeVisible();
-  await previewDialog.getByRole('button', { name: 'Check the design', exact: true }).click();
+  await previewDialog.locator('label').filter({ has: page.getByRole('radio', { name: 'Check the design', exact: true }) }).click();
   await preview.selectOption('locked');
   await preview.scrollIntoViewIfNeeded();
   await page.screenshot({ path: info.outputPath('content-lock-workspace.png'), fullPage: true });
@@ -432,11 +432,11 @@ editorTest('goal-first inline setup enables automatic placement and publishes', 
   await page.keyboard.press('Escape');
   await expect(previewDialog).toBeHidden();
   await page.getByRole('button', { name: 'Review & publish', exact: true }).click();
-  await expect(review).toContainText('Content lock: selected region');
+  await expect(review).toContainText('Locks the selected region');
   await expect(publish).toBeEnabled();
   const published = page.waitForResponse(response => response.url().includes('/publish') && response.request().method() === 'POST');
   await publish.click(); expect((await published).ok()).toBe(true);
-  await expect(page.getByRole('status')).toContainText('Saved and published');
+  await expect(review.getByRole('status')).toContainText('It’s live.');
   await expect(page.getByRole('dialog')).toContainText('Add the “WConvert lock from here” divider');
 });
 
