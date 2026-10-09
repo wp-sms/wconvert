@@ -166,7 +166,8 @@ function whatHasIncompleteFollowups(template: Template): Problem[] {
  * A shown link with words and no address, outside consent wording and fine
  * print (ADR 0133). Only those two take the site's privacy policy, so nothing
  * will ever fill this one: the visitor would read the words with no link.
- * `CaptureContract::hasUnfinishedLink()` refuses the same thing at publish.
+ * `CaptureContract::hasUnfinishedLink()` refuses the same thing at publish;
+ * `tests/fixtures/link-and-capture-rules.json` holds both to the same cases.
  */
 function whatHasUnfinishedLinks(template: Template): Problem[] {
   return nodesOf(template.tree).filter(block => !block.hidden).flatMap((block): Problem[] => {

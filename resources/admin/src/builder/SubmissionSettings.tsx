@@ -1,6 +1,6 @@
 import { __ } from '@wordpress/i18n';
 import { DestinationsEditor } from './DestinationsEditor';
-import { captureModeOf } from './captureMode';
+import { captureModeOf, routedMode } from './captureMode';
 import type { Loadable } from '../shell/loadable';
 import type { Connection, Destination, DestinationType } from '../destinations/api';
 import type { Template } from '@renderer/types';
@@ -51,8 +51,7 @@ export function SubmissionSettings({ template, primaryChannel, config, available
     mappings={mappings[secondary.id] ?? {}}
     onChange={(next) => onChange({
       // Choosing a service connects; removing the last one anywhere keeps leads here (ADR 0133).
-      ...(next.length > 0 ? { capture_mode: 'connected' }
-        : Array.isArray(config.destinations) && config.destinations.length > 0 ? {} : { capture_mode: 'local' }),
+      capture_mode: routedMode({ ...config, submission_settings: { ...settings, [secondary.id]: { ...settings[secondary.id], destination_ids: next } } }),
       submission_settings: { ...settings, [secondary.id]: { ...settings[secondary.id], destination_ids: next } },
       integration_mappings: { ...mappings, [secondary.id]: Object.fromEntries(Object.entries(mappings[secondary.id] ?? {}).filter(([id]) => next.includes(id))) },
     })}

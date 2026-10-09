@@ -6,6 +6,7 @@ import { afterEach, beforeEach, expect, it, vi } from 'vitest';
 import { historyOf, remember, undo, redo } from '../../resources/admin/src/builder/structure/history';
 import { draftHistoryLabels } from '../../resources/admin/src/builder/structure/draftEditLabel';
 import { campaignIssues } from '../../resources/admin/src/builder/readiness/campaignIssues';
+import type { JourneyRepair } from '../../resources/admin/src/builder/structure/journeyReadiness';
 import { ruleTypes } from './support/rule-types';
 import { JourneyEditor } from '../../resources/admin/src/builder/JourneyEditor';
 import { Fullscreen } from '../../resources/admin/src/builder/Fullscreen';
@@ -1135,7 +1136,9 @@ it('opens an incomplete continuation from the screen’s own warning', async () 
     vocabulary: ruleTypes(), displayType: 'popup', outcome: undefined, bound: [], destinations: [], captureMode: 'local' });
   function Editor() {
     const [step, setStep] = useState(0);
-    return <JourneyEditor embedded editorCanvas={<div />} tree={tree} step={step} issues={issues} onChange={() => {}} onSelect={setStep} />;
+    const [repair, setRepair] = useState<JourneyRepair & { serial: number }>();
+    return <JourneyEditor embedded editorCanvas={<div />} tree={tree} step={step} issues={issues} repairRequest={repair}
+      onIssue={issue => { if (issue.go.to === 'journey') setRepair({ ...issue.go.repair, serial: 1 }); }} onChange={() => {}} onSelect={setStep} />;
   }
   render(<Editor />);
   expect(screen.queryByRole('button', { name: /Review journey issues/ })).toBeNull();

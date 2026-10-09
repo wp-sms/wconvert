@@ -19,7 +19,6 @@ final class OutcomeContractTest extends TestCase
     public function testListCollectionKeepsLeadsLocallyUntilAServiceIsConnected(): void
     {
         $email = Goal::GrowEmailList->outcome();
-        self::assertNull($email->handoffIssue([]));
         self::assertNull($email->handoffIssue([], 'local'));
         self::assertNotNull($email->handoffIssue([], 'connected'));
         self::assertNull($email->handoffIssue(['mailpoet'], 'connected', ['email']));

@@ -91,4 +91,13 @@ describe('a campaign’s issues', () => {
       .map(issue => issue.key)).not.toContain(`signup-route:${second}`);
     expect(campaignIssues(inputs({ template: twoForms })).map(issue => issue.key)).not.toContain(`signup-route:${second}`);
   });
+
+  /** The main product is the one missing choice; the Goal's "needs a link" would say it twice. */
+  it('asks once for the product a recommendation is about', () => {
+    const recommending = JSON.parse(JSON.stringify(OFFER)) as Template;
+    const content = recommending.tree.steps[0].content as unknown as { children: unknown[] };
+    content.children = [{ type: 'products', context: 'product', action: 'link', product_ids: [] }];
+    const blockers = campaignIssues(inputs({ template: recommending, outcome: CLICK_OUTCOME })).filter(issue => issue.blocks);
+    expect(blockers.map(issue => issue.said)).toEqual(['Choose the main product for these recommendations.']);
+  });
 });

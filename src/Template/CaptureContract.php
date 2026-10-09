@@ -114,9 +114,12 @@ final class CaptureContract
      * take the site's privacy policy (ADR 0133). Nothing will ever fill it,
      * so the renderer would draw the words and no anchor.
      *
+     * The admin's `whatHasUnfinishedLinks()` (`structure/problems.ts`) is the
+     * other spelling; `tests/fixtures/link-and-capture-rules.json` holds both.
+     *
      * @param array<string, mixed> $node
      */
-    private static function hasUnfinishedLink(array $node): bool
+    public static function hasUnfinishedLink(array $node): bool
     {
         if (($node['hidden'] ?? false) === true) return false;
         $link = $node['link'] ?? null;

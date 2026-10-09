@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, useState, type ReactNode } from 'react';
+import { useId, useRef, useState, type ReactNode } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
 import { ArrowLeft, Check, TriangleAlert } from 'lucide-react';
 import { Button } from '../components/ui/button';
@@ -20,7 +20,7 @@ import { type JourneyRepair } from './structure/journeyReadiness';
 import { capturesTaken } from './structure/tree';
 import { convertingActOf } from './structure/guards';
 import { summarise, summaryOf } from './rules/summaries';
-import { campaignIssues, consentIn, visiblePolicyLinkIn, type BlockedTab, type CampaignIssue, type IssueGo } from './readiness/campaignIssues';
+import { ISSUE, consentIn, followIssue, visiblePolicyLinkIn, type CampaignIssue, type IssueRoutes } from './readiness/campaignIssues';
 import type { CaptureMode } from './captureMode';
 import { PlacementGuidance } from './PlacementGuidance';
 import { inlinePlacementLabel } from '../inlinePlacement';
@@ -38,10 +38,8 @@ export interface ReadinessDialogProps {
   /** The campaign's name: the dialog is about it, so it is the title. */
   readonly name?: string;
   readonly captureMode?: CaptureMode;
-  /** `config.submission_settings`: the optional signup's own routes. */
-  readonly submissionSettings?: unknown;
-  /** `config.unchecked_links`: link addresses a fresh setup guessed (ADR 0133). */
-  readonly uncheckedLinks?: unknown;
+  /** The campaign's one issue list (ADR 0133): the same one every other count reads. */
+  readonly issues: readonly CampaignIssue[];
   readonly optinId: string;
   readonly optin: OptinState;
   readonly dirty: boolean;
@@ -80,50 +78,12 @@ export interface ReadinessDialogProps {
   readonly onKeepLocal?: () => void;
   /** Reads the campaign's goal again after a failed read. */
   readonly onRetryGoal?: () => void;
-  /** Which editor tabs hold something that blocks publishing, for their attention dots. */
-  readonly onBlockedTabsChange?: (tabs: readonly BlockedTab[]) => void;
-  /**
-   * The campaign's one issue list, for every other place that counts issues
-   * — each screen's warning and the map's badges (ADR 0133).
-   */
-  readonly onIssuesChange?: (issues: readonly CampaignIssue[]) => void;
-}
-
-export type { BlockedTab };
-
-/** The handlers an {@link IssueGo} is followed through. */
-export interface IssueRoutes {
-  readonly onGoTo: (path: Path) => void;
-  readonly onGoToSchedule: () => void;
-  readonly onGoToRules: (section: string) => void;
-  readonly onGoToDestinations: () => void;
-  readonly onGoToDesign: () => void;
-  readonly onGoToPlacement?: () => void;
-  readonly onEditDesign: () => void;
-  readonly onEditJourney?: (repair?: JourneyRepair) => void;
-  readonly onRetryGoal?: () => void;
-}
-
-/** Go where an issue's fix is. One spelling for the review and the screens. */
-export function followIssue(go: IssueGo, routes: IssueRoutes): void {
-  switch (go.to) {
-    case 'rules': routes.onGoToRules(go.section); break;
-    case 'placement': (routes.onGoToPlacement ?? routes.onGoToDesign)(); break;
-    case 'retry-goal': routes.onRetryGoal?.(); break;
-    case 'edit-design': routes.onEditDesign(); break;
-    case 'library': routes.onGoToDesign(); break;
-    case 'destinations': routes.onGoToDestinations(); break;
-    case 'journey': (routes.onEditJourney ?? routes.onEditDesign)(go.repair); break;
-    case 'element': routes.onGoTo(go.path); break;
-    case 'schedule': routes.onGoToSchedule(); break;
-  }
 }
 
 export function ReadinessDialog({
   name = '',
   captureMode = 'local',
-  submissionSettings,
-  uncheckedLinks,
+  issues,
   optinId,
   optin,
   dirty,
@@ -158,8 +118,6 @@ export function ReadinessDialog({
   onPublish,
   onKeepLocal,
   onRetryGoal,
-  onBlockedTabsChange,
-  onIssuesChange,
 }: ReadinessDialogProps) {
   const [open, setOpen] = useState(false);
   const direction = useDirection();
@@ -182,27 +140,13 @@ export function ReadinessDialog({
   const visibleConsentPath = template ? consentIn(template, true) : null;
   const reviewsPrivacy = privacyGuidance && captures.length > 0;
   const expectsConsent = reviewsPrivacy && outcome?.audience_channel != null;
-  // The one list (ADR 0133): every count in the editor reads it.
-  const issues = campaignIssues({ template, rules, vocabulary, displayType, contentLock, inlinePlacement, outcome, bound, destinations,
-    captureMode, submissionSettings, uncheckedLinks, privacyGuidance, policyUrl });
   const blocking = issues.filter(issue => issue.blocks);
   const warnings = issues.filter(issue => !issue.blocks && issue.section === undefined);
-  const missingPolicyPage = issues.some(issue => issue.key === 'privacy:page');
-  const missingNotice = issues.some(issue => issue.key === 'privacy:notice');
-  const missingConsent = issues.some(issue => issue.key === 'privacy:consent');
+  const missingPolicyPage = issues.some(issue => issue.key === ISSUE.policyPage);
+  const missingNotice = issues.some(issue => issue.key === ISSUE.policyNotice);
+  const missingConsent = issues.some(issue => issue.key === ISSUE.consent);
   const routes: IssueRoutes = { onGoTo, onGoToSchedule, onGoToRules, onGoToDestinations, onGoToDesign, onGoToPlacement, onEditDesign, onEditJourney, onRetryGoal };
-  const handoffIssue = issues.find(issue => issue.key === 'handoff') ?? null;
-  // A blocker answered inside the dialog (a failed goal read) belongs to no tab.
-  const blockedTabs = [...new Set(blocking.flatMap((problem) => problem.tab === null ? [] : [problem.tab]))].sort().join(',');
-  useEffect(() => {
-    onBlockedTabsChange?.(blockedTabs === '' ? [] : blockedTabs.split(',') as BlockedTab[]);
-  }, [blockedTabs, onBlockedTabsChange]);
-  const signature = JSON.stringify(issues.map(issue => [issue.key, issue.said, issue.screenId ?? null, issue.blocks]));
-  const latest = useRef(issues);
-  latest.current = issues;
-  useEffect(() => {
-    onIssuesChange?.(latest.current);
-  }, [signature, onIssuesChange]);
+  const handoffIssue = issues.find(issue => issue.key === ISSUE.handoff) ?? null;
   // After jumping to fix a blocker, the way back to the list stays on screen until the list is empty.
   const [resume, setResume] = useState(false);
   const reviewCount = issues.length;
@@ -344,7 +288,7 @@ export function ReadinessDialog({
                           <button type="button" className="wconvert-readiness__go" onClick={() => fix(problem, true)}>
                             {problem.said}
                           </button>
-                          {problem.key === 'goal-unread' && onRetryGoal && <Button type="button" variant="outline" onClick={onRetryGoal}>{__('Try again', 'wconvert')}</Button>}
+                          {problem.offersRetry && onRetryGoal && <Button type="button" variant="outline" onClick={onRetryGoal}>{__('Try again', 'wconvert')}</Button>}
                           {problem.offersKeepLocal && onKeepLocal && <Button type="button" variant="outline" onClick={onKeepLocal}>{__('Keep in WConvert only', 'wconvert')}</Button>}
                         </li>
                       ))}

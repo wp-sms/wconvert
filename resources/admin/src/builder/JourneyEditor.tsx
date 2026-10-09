@@ -50,7 +50,7 @@ const EMPTY_TOKENS: Tokens = {};
 const NO_ISSUES: readonly CampaignIssue[] = [];
 const JourneyMap = lazy(() => import('./JourneyMap').then(module => ({ default: module.JourneyMap })));
 
-export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = EMPTY_TOKENS, step, primaryChannel, issues: campaign = NO_ISSUES, onIssue, onChange, onSelect, displaySummary, destinationSummary, deliveryMode, onGoToRules, onGoToDestinations, onGoToDesign, openRequest, repairRequest: requestedRepair, embedded = false, focusActions, contextEditors, editorCanvas, appearancePreview, editorTools, elementPanel, elementSelection, onClearElement, testRequest, onTestClose, onTestExit }: {
+export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = EMPTY_TOKENS, step, primaryChannel, issues = NO_ISSUES, onIssue, onChange, onSelect, displaySummary, destinationSummary, deliveryMode, onGoToRules, onGoToDestinations, onGoToDesign, openRequest, repairRequest: requestedRepair, embedded = false, focusActions, contextEditors, editorCanvas, appearancePreview, editorTools, elementPanel, elementSelection, onClearElement, testRequest, onTestClose, onTestExit }: {
   onUndo?(): void; labels?: TemplateLabels; onResultSelect?(id: string | undefined): void; tokens?: Tokens; primaryChannel?: string | null; tree: TemplateTree;
   /** The campaign's one issue list (ADR 0133); the screens and the map show the ones about a screen. */
   issues?: readonly CampaignIssue[];
@@ -72,12 +72,8 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
   const referenceSerial = useRef(0);
   useEffect(() => { setReferenceRequest(requestedRepair); }, [requestedRepair]);
   const repairRequest = referenceRequest;
-  // Only the issues about a screen are drawn here; the review lists them all.
-  const issues = useMemo(() => campaign.filter((issue): issue is CampaignIssue & { screenId: string } => issue.screenId !== undefined), [campaign]);
-  const openIssue = (issue: CampaignIssue) => {
-    if (issue.go.to === 'journey') setReferenceRequest({ ...issue.go.repair, serial: --referenceSerial.current });
-    else onIssue?.(issue);
-  };
+  // Followed by the builder, which sends a repair back as `repairRequest` (ADR 0133).
+  const openIssue = (issue: CampaignIssue) => onIssue?.(issue);
 
   const [open, setOpen] = useState(false);
   const [testOpen, setTestOpen] = useState(false);

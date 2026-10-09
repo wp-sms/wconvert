@@ -1,0 +1,28 @@
+{
+  "why": [
+    "Three rules the admin and the server each spell, because neither runtime can defer to the other (ADR 0133).",
+    "policy: which links take the site's privacy policy. PolicyLink::into() and withPolicyLink() must agree on `resolved` (the href after resolution, or null).",
+    "unfinished: a shown link with words and no address outside consent and fine print. CaptureContract::issue() returns `link` and problemsIn() reports it exactly when `unfinished` is true.",
+    "captureMode: where leads go. OptinBinding::captureMode() and captureModeOf() must both return `mode`.",
+    "Read by tests/unit/Template/LinkAndCaptureParityTest.php and tests/js/link-and-capture-parity.test.ts."
+  ],
+  "policy": "https://example.test/privacy/",
+  "links": [
+    { "why": "consent wording asks for the policy", "node": { "type": "consent", "text": "I accept the %s.", "link": { "label": "privacy policy" } }, "resolved": "https://example.test/privacy/", "unfinished": false },
+    { "why": "fine print asks for the policy", "node": { "type": "text", "role": "fine_print", "text": "See our %s.", "link": { "label": "privacy policy" } }, "resolved": "https://example.test/privacy/", "unfinished": false },
+    { "why": "body text with no address is unfinished", "node": { "type": "text", "role": "body", "text": "Read %s.", "link": { "label": "the guide" } }, "resolved": null, "unfinished": true },
+    { "why": "a heading with no address is unfinished", "node": { "type": "heading", "role": "headline", "text": "Read %s", "link": { "label": "the guide" } }, "resolved": null, "unfinished": true },
+    { "why": "an address the merchant wrote is theirs", "node": { "type": "text", "role": "body", "text": "Read %s.", "link": { "label": "the guide", "href": "https://example.test/guide" } }, "resolved": "https://example.test/guide", "unfinished": false },
+    { "why": "a hidden block shows nothing to finish", "node": { "type": "text", "role": "body", "hidden": true, "text": "Read %s.", "link": { "label": "the guide" } }, "resolved": null, "unfinished": false },
+    { "why": "no %s means nowhere for the link to sit", "node": { "type": "text", "role": "body", "text": "Read the guide.", "link": { "label": "the guide" } }, "resolved": null, "unfinished": false },
+    { "why": "no words means no anchor to finish", "node": { "type": "text", "role": "body", "text": "Read %s.", "link": { "label": "" } }, "resolved": null, "unfinished": false }
+  ],
+  "captureModes": [
+    { "why": "nothing chosen, nothing bound", "config": {}, "mode": "local" },
+    { "why": "an empty binding", "config": { "destinations": [] }, "mode": "local" },
+    { "why": "a bound service", "config": { "destinations": ["01JQ0000000000000000000001"] }, "mode": "connected" },
+    { "why": "only the optional form is bound", "config": { "submission_settings": { "s2": { "destination_ids": ["01JQ0000000000000000000001"] } } }, "mode": "connected" },
+    { "why": "kept local, stale ids and all", "config": { "capture_mode": "local", "destinations": ["01JQ0000000000000000000001"] }, "mode": "local" },
+    { "why": "connecting chosen, not finished", "config": { "capture_mode": "connected" }, "mode": "connected" }
+  ]
+}

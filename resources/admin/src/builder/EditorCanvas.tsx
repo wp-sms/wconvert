@@ -62,12 +62,9 @@ export function EditorCanvas({
   width,
   selected,
   onSelect,
-  interactive = false,
-  onStep,
   displayType,
   placement,
   screen,
-  onClose,
 }: {
   template: Template;
   name: string;
@@ -75,20 +72,15 @@ export function EditorCanvas({
   width: PreviewWidth;
   selected: SlotKey | null;
   onSelect: (key: SlotKey) => void;
-  interactive?: boolean;
-  onStep: (step: number) => void;
   displayType: string;
   placement?: unknown;
   screen?: { label: string; content: ReactNode; controls?: ReactNode; inFlow?: boolean };
-  onClose?: () => void;
 }) {
   const stage = useRef<HTMLDivElement>(null);
   const page = useRef<HTMLDivElement>(null);
   const [size, setSize] = useState({ width: 600, height: 500, availableWidth: 1000, availableHeight: 650 });
   const [zoom, setZoom] = useState('fit');
-  const [dismissed, setDismissed] = useState(false);
   const [message, setMessage] = useState('');
-  const [completed, setCompleted] = useState(false);
   const shown = Math.min(step, Math.max(template.tree.steps.length - 1, 0));
   const measure = width === 'narrow' ? '22rem' : (displayType === 'inline' ? (template.tokens.width ?? '40rem') : '48rem');
   const resolved = resolvedPlacement(displayType, placement);
@@ -116,14 +108,7 @@ export function EditorCanvas({
     if (page.current) observer.observe(page.current);
     read();
     return () => observer.disconnect();
-  }, [dismissed]);
-  useEffect(() => {
-    setDismissed(false);
-    setCompleted(false);
-  }, [interactive, step, screen?.label]);
-  useEffect(() => {
-    setMessage('');
-  }, [interactive]);
+  }, []);
   const scale =
     zoom === 'actual'
       ? 1
@@ -152,17 +137,7 @@ export function EditorCanvas({
         </label>
       </div>
       {screen?.controls}
-      {interactive && !screen && (
-        <p className="wconvert-preview-notice">
-          {__('Try the form as a visitor. No data is sent.', 'wconvert')}
-        </p>
-      )}
       <div className="wconvert-canvas__stage" ref={stage}>
-        {dismissed ? (
-          <Button variant="outline" onClick={() => setDismissed(false)}>
-            {__('Show again', 'wconvert')}
-          </Button>
-        ) : (
           <div
             className="wconvert-canvas__measure"
             style={{ width: size.width * scale, height: size.height * scale }}
@@ -187,25 +162,15 @@ export function EditorCanvas({
                   template={template}
                   displayType={displayType}
                   step={shown}
-                  selected={interactive ? null : selected}
-                  onSelect={interactive ? undefined : onSelect}
-                  interactive={interactive}
-                  onAdvance={() => {
-                    setCompleted(true);
-                    onStep(Math.min(shown + 1, template.tree.steps.length - 1));
-                    setMessage(__('Preview complete. No data was sent.', 'wconvert'));
-                  }}
+                  selected={selected}
+                  onSelect={onSelect}
                 />
                 {displayType !== 'inline' && (
                   <button
                     type="button"
                     className="wconvert-canvas__close"
                     aria-label={__('Close preview', 'wconvert')}
-                    onClick={() =>
-                      interactive
-                        ? onClose && !completed ? onClose() : setDismissed(true)
-                        : setMessage(__('Visitors can always close this campaign.', 'wconvert'))
-                    }
+                    onClick={() => setMessage(__('Visitors can always close this campaign.', 'wconvert'))}
                   >
                     <X aria-hidden="true" />
                   </button>
@@ -217,11 +182,10 @@ export function EditorCanvas({
               </div>}
             </div>
           </div>
-        )}
       </div>
       <div className="wconvert-canvas__hint" role="status">
         {message ||
-          (interactive || screen ? (
+          (screen ? (
             __('Preview mode', 'wconvert')
           ) : (
             <>

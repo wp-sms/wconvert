@@ -70,7 +70,17 @@ export interface CampaignIssue {
   readonly section?: 'privacy' | 'where';
   /** The answer that sits beside it in the review: keep leads in WConvert only. */
   readonly offersKeepLocal?: boolean;
+  /** The answer that sits beside it in the review: read the goal again. */
+  readonly offersRetry?: boolean;
 }
+
+/** Keys the review draws in its own sections rather than its lists. */
+export const ISSUE = {
+  handoff: 'handoff',
+  policyPage: 'privacy:page',
+  policyNotice: 'privacy:notice',
+  consent: 'privacy:consent',
+} as const;
 
 export interface CampaignIssueInputs {
   readonly template: Template | undefined;
@@ -101,7 +111,11 @@ export function campaignIssues(inputs: CampaignIssueInputs): CampaignIssue[] {
   const screenOf = (path: Path | null | undefined): string | undefined =>
     hasDesign && path && typeof path[0] === 'number' ? template.tree.steps[path[0]]?.id : undefined;
   const problems = hasDesign ? [...problemsIn(template, rules.schedule.ends_at), ...captureReadiness(template, outcome?.audience_channel)] : [];
-  const goalIssue = outcome && hasDesign ? outcomeDesignIssue(outcome, template) : null;
+  // A product block still waiting for its products is the one thing to say: the
+  // Goal's "needs a link" would be the same missing choice, said twice.
+  const choosingProducts = hasDesign && problems.some(problem => problem.blocksPublish && problem.path !== null
+    && nodeAt(template.tree, problem.path)?.type === 'products');
+  const goalIssue = outcome && hasDesign && !choosingProducts ? outcomeDesignIssue(outcome, template) : null;
   const handoffIssue = outcome ? outcomeHandoffIssue(outcome, bound, destinations, captureMode) : null;
   const inlineTriggerIssue = !overlay && (inlinePlacement != null || contentLock != null) && rules.display_rules?.opening.mode !== 'immediate';
   const issue = (key: string, said: string, tab: BlockedTab | null, go: IssueGo, blocks: boolean, more: Partial<CampaignIssue> = {}): CampaignIssue =>
@@ -116,10 +130,10 @@ export function campaignIssues(inputs: CampaignIssueInputs): CampaignIssue[] {
       ? [issue('inline-placement', __('Choose a valid inline position and a whole paragraph number from 1 to 100.', 'wconvert'), 'rules', { to: 'placement' }, true)] : []),
     ...(inlineTriggerIssue ? [issue('inline-trigger', __('This placement needs “When does it open?” set to Right away. Change it, or use manual placement.', 'wconvert'), 'rules', { to: 'rules', section: 'when' }, true)] : []),
     // A failed read is retried in place: reloading the page would cost unsaved edits.
-    ...(!outcome ? [issue('goal-unread', __('The goal’s requirements could not be checked.', 'wconvert'), null, { to: 'retry-goal' }, true)] : []),
+    ...(!outcome ? [issue('goal-unread', __('The goal’s requirements could not be checked.', 'wconvert'), null, { to: 'retry-goal' }, true, { offersRetry: true })] : []),
     ...(goalIssue ? [issue('goal', goalIssue, 'design', template && convertingActOf(template.tree)[0] === outcome?.action ? { to: 'edit-design' } : { to: 'library' }, true)] : []),
     // The commonest first-campaign blocker gets its answer beside it, not a tab away (ADR 0132).
-    ...(handoffIssue ? [issue('handoff', handoffIssue, 'destinations', { to: 'destinations' }, true, { offersKeepLocal: true })] : []),
+    ...(handoffIssue ? [issue(ISSUE.handoff, handoffIssue, 'destinations', { to: 'destinations' }, true, { offersKeepLocal: true })] : []),
     ...signupRouteIssues(inputs),
     ...(!hasDesign ? [issue('no-design', __('Choose a design before publishing.', 'wconvert'), 'design', { to: 'library' }, true)] : []),
     ...(template ? journeyIssues(template.tree, outcome?.action) : []).map(found =>
@@ -146,14 +160,53 @@ export function campaignIssues(inputs: CampaignIssueInputs): CampaignIssue[] {
       ? [issue('no-delivery', __('Visitors won’t get the file until you set up the delivery email.', 'wconvert'), 'destinations', { to: 'destinations' }, false)] : []),
     ...where.problems.map(said => issue(`where:${said}`, said, 'destinations', { to: 'destinations' }, false, { section: 'where' })),
     ...(reviewsPrivacy && !inputs.policyUrl
-      ? [issue('privacy:page', __('WordPress has no Privacy Policy page selected, so the form cannot link to it.', 'wconvert'), null, { to: 'edit-design' }, false, { section: 'privacy' })] : []),
+      ? [issue(ISSUE.policyPage, __('WordPress has no Privacy Policy page selected, so the form cannot link to it.', 'wconvert'), null, { to: 'edit-design' }, false, { section: 'privacy' })] : []),
     ...(reviewsPrivacy && template && visiblePolicyLinkIn(template, inputs.policyUrl) === null
-      ? [issue('privacy:notice', __('No Privacy Policy notice is shown on this form.', 'wconvert'), null, { to: 'edit-design' }, false, { section: 'privacy' })] : []),
+      ? [issue(ISSUE.policyNotice, __('No Privacy Policy notice is shown on this form.', 'wconvert'), null, { to: 'edit-design' }, false, { section: 'privacy' })] : []),
     ...(expectsConsent && template && consentIn(template, true) === null
-      ? [issue('privacy:consent', __('No consent checkbox is shown for this mailing list.', 'wconvert'), null, { to: 'edit-design' }, false, { section: 'privacy' })] : []),
+      ? [issue(ISSUE.consent, __('No consent checkbox is shown for this mailing list.', 'wconvert'), null, { to: 'edit-design' }, false, { section: 'privacy' })] : []),
   ];
 
   return [...blocking, ...checking];
+}
+
+/** The issues about each screen, by screen id: what a screen's warning and a map badge count. */
+export function issuesByScreen(issues: readonly CampaignIssue[]): ReadonlyMap<string, readonly CampaignIssue[]> {
+  const byScreen = new Map<string, CampaignIssue[]>();
+  for (const issue of issues) {
+    if (issue.screenId !== undefined) byScreen.set(issue.screenId, [...(byScreen.get(issue.screenId) ?? []), issue]);
+  }
+  return byScreen;
+}
+
+/** The handlers an {@link IssueGo} is followed through. */
+export interface IssueRoutes {
+  readonly onGoTo: (path: Path) => void;
+  readonly onGoToSchedule: () => void;
+  readonly onGoToRules: (section: string) => void;
+  readonly onGoToDestinations: () => void;
+  /** The library of designs. */
+  readonly onGoToDesign: () => void;
+  readonly onGoToPlacement: () => void;
+  /** The design in place. */
+  readonly onEditDesign: () => void;
+  readonly onEditJourney: (repair?: JourneyRepair) => void;
+  readonly onRetryGoal?: () => void;
+}
+
+/** Go where an issue's fix is: one spelling for the review, the screens and the map. */
+export function followIssue(go: IssueGo, routes: IssueRoutes): void {
+  switch (go.to) {
+    case 'rules': routes.onGoToRules(go.section); break;
+    case 'placement': routes.onGoToPlacement(); break;
+    case 'retry-goal': routes.onRetryGoal?.(); break;
+    case 'edit-design': routes.onEditDesign(); break;
+    case 'library': routes.onGoToDesign(); break;
+    case 'destinations': routes.onGoToDestinations(); break;
+    case 'journey': routes.onEditJourney(go.repair); break;
+    case 'element': routes.onGoTo(go.path); break;
+    case 'schedule': routes.onGoToSchedule(); break;
+  }
 }
 
 /**

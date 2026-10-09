@@ -6,7 +6,7 @@ import { fitsOutcome, outcomeDesignIssue, outcomeHandoffIssue } from '../../reso
 import { CAPTURE_OUTCOME, CLICK_OUTCOME } from './support/outcomes';
 import type { Template } from '@renderer/types';
 import type { Destination } from '../../resources/admin/src/destinations/api';
-import { captureModeOf } from '../../resources/admin/src/builder/captureMode';
+import { captureModeOf, routedMode } from '../../resources/admin/src/builder/captureMode';
 
 const design = (id: string): Template => JSON.parse(readFileSync(resolve(import.meta.dirname, `../../resources/templates/library/${id}.json`), 'utf8'));
 
@@ -70,5 +70,13 @@ describe('where leads go', () => {
     expect(captureModeOf({ submission_settings: { s2: { destination_ids: ['01JQ0000000000000000000001'] } } })).toBe('connected');
     expect(captureModeOf({ capture_mode: 'local', destinations: ['01JQ0000000000000000000001'] })).toBe('local');
     expect(captureModeOf({ capture_mode: 'connected' })).toBe('connected');
+  });
+
+  /** Removing the main form's last service must not cut the optional form's routes. */
+  it('writes the mode every form’s routes imply, whatever was stored', () => {
+    const optional = { submission_settings: { s2: { destination_ids: ['01JQ0000000000000000000001'] } } };
+    expect(routedMode({ capture_mode: 'connected', destinations: [], ...optional })).toBe('connected');
+    expect(routedMode({ capture_mode: 'connected', destinations: [] })).toBe('local');
+    expect(routedMode({ capture_mode: 'local', destinations: ['01JQ0000000000000000000001'] })).toBe('connected');
   });
 });

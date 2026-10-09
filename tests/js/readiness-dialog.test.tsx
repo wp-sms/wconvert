@@ -6,6 +6,7 @@ import { act, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { ReadinessDialog, type ReadinessDialogProps } from '../../resources/admin/src/builder/ReadinessDialog';
+import { campaignIssues } from '../../resources/admin/src/builder/readiness/campaignIssues';
 import { ready } from '../../resources/admin/src/shell/loadable';
 import type { GoalEntry } from '../../resources/admin/src/goals/api';
 import type { Template } from '@renderer/types';
@@ -30,7 +31,18 @@ const NOTICE_GOAL: GoalEntry = {
   outcome: { ...CAPTURE_OUTCOME, audience_channel: null },
 };
 
-function props(overrides: Partial<ReadinessDialogProps> = {}): ReadinessDialogProps {
+type ReviewProps = Omit<ReadinessDialogProps, 'issues'> & { readonly issues?: ReadinessDialogProps['issues'] };
+
+/** The list the builder hands the review, computed from the same inputs (ADR 0133). */
+const issuesFor = (p: ReviewProps) => campaignIssues({ template: p.template, rules: p.rules, vocabulary: p.vocabulary, displayType: p.displayType,
+  contentLock: p.contentLock, inlinePlacement: p.inlinePlacement, outcome: p.goal.status === 'ready' ? p.goal.data?.outcome : undefined,
+  bound: p.bound, destinations: p.destinations, captureMode: p.captureMode ?? 'local', privacyGuidance: p.privacyGuidance, policyUrl: p.policyUrl });
+
+function Review(p: ReviewProps) {
+  return <ReadinessDialog {...p} issues={p.issues ?? issuesFor(p)} />;
+}
+
+function props(overrides: Partial<ReviewProps> = {}): ReviewProps {
   return {
     optinId: '01JQ00000000000000000000AA',
     optin: { published_at: null, deleted_at: null, suspended: null, has_unpublished_changes: false },
@@ -46,9 +58,9 @@ function props(overrides: Partial<ReadinessDialogProps> = {}): ReadinessDialogPr
   };
 }
 
-async function open(overrides: Partial<ReadinessDialogProps> = {}) {
+async function open(overrides: Partial<ReviewProps> = {}) {
   const supplied = props(overrides);
-  const view = render(<ReadinessDialog {...supplied} />);
+  const view = render(<Review {...supplied} />);
   await userEvent.click(screen.getByRole('button', { name: 'Review & publish' }));
   return { ...view, supplied };
 }
@@ -104,7 +116,7 @@ describe('reviewing before publishing', () => {
     const { rerender, supplied } = await open({ captureMode: 'connected' });
     expect(screen.getByRole('button', { name: 'Publish campaign' })).toHaveAttribute('aria-disabled', 'true');
     expect(screen.getByText(/Before you can publish, connect a service/)).toBeVisible();
-    rerender(<ReadinessDialog {...supplied} captureMode="local" />);
+    rerender(<Review {...supplied} captureMode="local" />);
     expect(screen.getByRole('button', { name: 'Publish campaign' })).not.toHaveAttribute('aria-disabled');
     expect(screen.getByText(/Keep in WConvert only: leads stay in Leads/)).toBeVisible();
   });
@@ -120,13 +132,12 @@ describe('reviewing before publishing', () => {
   });
 
   it('says how much blocks publishing, where, and keeps the way back in reach', async () => {
-    const onBlockedTabsChange = vi.fn();
-    const supplied = props({ captureMode: 'connected', template: undefined, onBlockedTabsChange });
-    render(<ReadinessDialog {...supplied} />);
+    const supplied = props({ captureMode: 'connected', template: undefined });
+    render(<Review {...supplied} />);
     const trigger = screen.getByRole('button', { name: 'Review & publish' });
     expect(trigger).toHaveTextContent('2 to fix');
     expect(trigger).toHaveAccessibleDescription('2 items block publishing');
-    expect(onBlockedTabsChange).toHaveBeenLastCalledWith(['design', 'destinations']);
+    expect(new Set(issuesFor(supplied).filter(issue => issue.blocks).map(issue => issue.tab))).toEqual(new Set(['design', 'destinations']));
     await userEvent.click(trigger);
     await userEvent.click(screen.getByRole('button', { name: 'Choose a design before publishing.' }));
     expect(screen.queryByRole('dialog')).toBeNull();
@@ -136,9 +147,9 @@ describe('reviewing before publishing', () => {
 
   it('keeps the same trigger for a sound design and one needing attention', () => {
     const supplied = props();
-    const { rerender } = render(<ReadinessDialog {...supplied} />);
+    const { rerender } = render(<Review {...supplied} />);
     expect(screen.getByRole('button', { name: 'Review & publish' })).toBeEnabled();
-    rerender(<ReadinessDialog {...supplied} template={undefined} />);
+    rerender(<Review {...supplied} template={undefined} />);
     expect(screen.getByRole('button', { name: 'Review & publish' })).toBeEnabled();
     expect(screen.queryByRole('dialog')).toBeNull();
   });
@@ -310,7 +321,7 @@ describe('reviewing before publishing', () => {
     expect(screen.getByText(/WordPress has no Privacy Policy page selected/)).toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Publish campaign' })).not.toHaveAttribute('aria-disabled');
 
-    rerender(<ReadinessDialog {...supplied} privacyGuidance={false} />);
+    rerender(<Review {...supplied} privacyGuidance={false} />);
     expect(screen.queryByRole('heading', { name: 'Privacy' })).toBeNull();
   });
 });
@@ -399,7 +410,7 @@ describe('review actions return to the place that can resolve them', () => {
 
   it('does not pull focus back to the review trigger after opening the preview', async () => {
     const onPreview = vi.fn(() => { screen.getByRole('button', { name: 'Preview canvas' }).focus(); });
-    render(<><button>Preview canvas</button><ReadinessDialog {...props({ onPreview })} /></>);
+    render(<><button>Preview canvas</button><Review {...props({ onPreview })} /></>);
     await userEvent.click(screen.getByRole('button', { name: 'Review & publish' }));
     await userEvent.click(screen.getByRole('button', { name: 'Preview design' }));
     expect(onPreview).toHaveBeenCalledOnce();

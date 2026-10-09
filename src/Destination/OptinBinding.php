@@ -76,8 +76,9 @@ final class OptinBinding
      * **Local until a service is connected** (ADR 0133). An explicit choice
      * wins; with none stored, a config that binds a Destination anywhere is
      * connected and one that binds nothing is local — so a fresh setup has
-     * nothing to fix, and a config written with destinations but no mode is
-     * not silently cut off from them.
+     * nothing to fix, and a client that writes routes without naming a mode
+     * is not silently cut off from them. The admin's `captureModeOf()` is the
+     * other spelling; `tests/fixtures/link-and-capture-rules.json` holds both.
      *
      * @param array<string, mixed>|null $config
      * @return 'local'|'connected'

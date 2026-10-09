@@ -1,7 +1,7 @@
 import { __, _n, sprintf } from '@wordpress/i18n';
 import { Disclosure } from '../shell/Disclosure';
 import { CircleHelp, FileText, Flag, GitBranch, Mail, Sparkles, TriangleAlert } from 'lucide-react';
-import type { CampaignIssue } from './readiness/campaignIssues';
+import { issuesByScreen, type CampaignIssue } from './readiness/campaignIssues';
 import type { TemplateTree } from '@renderer/types';
 import { graphDisplayOrder } from './structure/graph';
 import { followupGroups, followupGroupSource } from './structure/followupGroups';
@@ -17,6 +17,7 @@ export function CampaignScreenNavigator({ tree, step, issues = [], onIssue, onSe
   onSelect(index: number): void; onFlow(): void;
 }) {
   const groups = followupGroups(tree);
+  const issuesHere = issuesByScreen(issues);
   const unreachable = new Set(unreachableScreenIds(tree));
   const owners = new Map(groups.flatMap(group => { const source = followupGroupSource(tree, group); return source === undefined ? [] : [[group.id, source] as const]; }));
   const item = (index: number, nested = false) => {
@@ -27,7 +28,7 @@ export function CampaignScreenNavigator({ tree, step, issues = [], onIssue, onSe
     const path = incoming.length === 1 && incoming[0].kind !== 'hidden' && tree.graph?.edges.some(edge => edge.from === incoming[0].from && edge.kind === 'answer') ? incoming[0] : undefined;
     const Icon = screen.kind === 'result' ? Sparkles : screen.kind === 'acknowledgement' ? Flag
       : nodes.some(node => node.type === 'field') ? Mail : nodes.some(node => node.type === 'question') ? CircleHelp : FileText;
-    const here = issues.filter(issue => issue.screenId === screen.id);
+    const here = issuesHere.get(screen.id) ?? [];
     const warning = here.length > 0 && <button type="button" className="wconvert-campaign-screens__issues" onClick={() => onIssue?.(here[0])}
       aria-label={sprintf(_n('%1$d issue on “%2$s”: %3$s', '%1$d issues on “%2$s”: %3$s', here.length, 'wconvert'), here.length, screen.name, here[0].said)}>
       <TriangleAlert aria-hidden="true" size={12} />{here.length}</button>;

@@ -10,6 +10,7 @@ import { ParamChoice } from './ParamChoice';
 import { ImageFitPreview, ImageShapePreview } from './ChoicePreview';
 import { InterestOptions } from './InterestOptions';
 import { LinkField } from './LinkField';
+import { asksForPolicy } from './policy';
 import { readable, hasScheduleEnded } from '../lib/wallTime';
 import { adminSettings } from '../settings';
 import countries from '../../../phone/countries.json';
@@ -89,7 +90,7 @@ export function SlotFields({
   const text = String(slot.values.text ?? '');
   const action = slot.type === 'button' ? buttonActionOf(slot) : null;
   // Only consent wording and fine print fill an empty link with the policy (ADR 0133).
-  const policy = slot.type === 'consent' || (slot.type === 'text' && slot.role === 'fine_print');
+  const policy = asksForPolicy(slot);
   const simple = onSentence && slot.keys.includes('text') && (slot.keys.includes('emphasis') || slot.keys.includes('link'))
     && (text.match(/%b/g) ?? []).length <= 1 && (text.match(/%s/g) ?? []).length <= 1 && (text.match(/%i/g) ?? []).length <= 1;
   return (

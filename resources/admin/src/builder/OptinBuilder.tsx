@@ -42,9 +42,9 @@ import { TemplatePickerDialog } from './TemplatePickerDialog';
 import { useTemplateTrees } from './TemplatePicker';
 import { DestinationsEditor } from './DestinationsEditor';
 import { CaptureModeChoice } from './CaptureModeChoice';
-import { ReadinessDialog, followIssue, type BlockedTab, type IssueRoutes } from './ReadinessDialog';
-import { captureModeOf } from './captureMode';
-import type { CampaignIssue } from './readiness/campaignIssues';
+import { ReadinessDialog } from './ReadinessDialog';
+import { captureModeOf, routedMode } from './captureMode';
+import { campaignIssues, followIssue, type IssueRoutes } from './readiness/campaignIssues';
 import { ForDevelopers } from '../optins/DetailsDialog';
 import { fieldMappingsKept, hintIn, type FieldMappings } from './destinations';
 import { planFrom } from './rules/plan';
@@ -154,9 +154,6 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
   const [fatal, setFatal] = useState<string | null>(null);
   // Bumped by Try again after a failed first read, so every read runs again.
   const [attempt, setAttempt] = useState(0);
-  const [blockedTabs, setBlockedTabs] = useState<readonly BlockedTab[]>([]);
-  // The campaign's one issue list, lifted from the review (ADR 0133).
-  const [issues, setIssues] = useState<readonly CampaignIssue[]>([]);
   const attentionId = useId();
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
@@ -698,11 +695,9 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
         width={width}
         selected={selection === null ? null : keyOf(selection.path)}
         onSelect={chooseFromPreview}
-        onStep={setStep}
         displayType={displayTypeOf(config, templates)}
         placement={config.placement}
         screen={showingLock ? { inFlow: true, label: __('Content lock', 'wconvert'), controls: <ContentLockPreview controls template={entry} state={lockPreview} onStateChange={setLockPreview} />, content: <ContentLockPreview template={entry} state={lockPreview} onStateChange={setLockPreview} /> } : showingReopen ? { label: reopenLabel, content: <ReopenPreview value={config.teaser} template={entry} mobile={width === 'narrow'} onReopen={() => { setReopenScreen(false); setStep(0); }} /> } : undefined}
-        onClose={canPreviewReopen && step === 0 ? showReopen : undefined}
       />
     );
   const shownStep = Math.min(step, Math.max((entry?.tree.steps.length ?? 1) - 1, 0));
@@ -722,10 +717,19 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
     : inlinePlacementLabel(config.inline_placement) ?? __('Check automatic placement', 'wconvert');
   const goToInlinePlacement = () => {
     setTab('rules');
-   
     setRevealSection({ id: 'placement', focus: 'wconvert-display-placement' });
   };
 
+  // The campaign's one issue list (ADR 0133): the review, the header count,
+  // each screen's warning, each map badge and each tab's dot all read it.
+  const issues = campaignIssues({ template, rules: displayRules, vocabulary, displayType: displayTypeOf(config, templates),
+    contentLock: config.content_lock, inlinePlacement: config.inline_placement,
+    outcome: readinessGoal.status === 'ready' ? readinessGoal.data?.outcome : undefined,
+    bound, destinations: read(destinations)?.destinations ?? null, captureMode,
+    submissionSettings: config.submission_settings, uncheckedLinks: config.unchecked_links,
+    privacyGuidance, policyUrl: adminSettings()?.policyUrl });
+  // A blocker answered inside the review (a failed goal read) belongs to no tab.
+  const blockedTabs = new Set(issues.flatMap(issue => issue.blocks && issue.tab !== null ? [issue.tab] : []));
   // Where each issue's fix is, for the review and the screens alike (ADR 0133).
   const issueRoutes: IssueRoutes = {
     onEditDesign: () => { setTab('design'); setShowLayers(true); setDrawer('layers'); layersButton.current?.focus(); },
@@ -796,8 +800,8 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
               onChange={(next) => {
                 const current = (config.integration_mappings ?? {}) as Record<string, Record<string, Record<string, string>>>;
                 const submissionId = template?.tree.submissions[0]?.id;
-                // Choosing a service connects; removing the last one keeps leads here (ADR 0133).
-                edit({ destinations: next, capture_mode: next.length > 0 ? 'connected' : 'local', ...(submissionId && Object.keys(current).length > 0 ? {
+                // Choosing a service connects; removing the last one anywhere keeps leads here (ADR 0133).
+                edit({ destinations: next, capture_mode: routedMode({ ...config, destinations: next }), ...(submissionId && Object.keys(current).length > 0 ? {
                   integration_mappings: { ...current, [submissionId]: Object.fromEntries(Object.entries(current[submissionId] ?? {}).filter(([id]) => next.includes(id))) },
                 } : {}) });
               }}
@@ -820,7 +824,6 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
       onValueChange={(value) => {
         flushSync(() => setOpenToken(null));
         setTab(value as TabId);
-       
       }}
       className="wconvert-workspace gap-0"
     >
@@ -884,10 +887,10 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
           aria-label={__('What you are editing', 'wconvert')}
         >
           {/* A tab holding something that blocks publishing carries a dot, described rather than renamed. */}
-          <TabsTrigger value="journey" aria-describedby={blockedTabs.includes('journey') ? attentionId : undefined}>{__('Screens', 'wconvert')}{blockedTabs.includes('journey') && <AttentionDot />}</TabsTrigger>
-          <TabsTrigger value="design" aria-describedby={blockedTabs.includes('design') ? attentionId : undefined}>{__('Design', 'wconvert')}{blockedTabs.includes('design') && <AttentionDot />}</TabsTrigger>
-          <TabsTrigger value="rules" aria-describedby={blockedTabs.includes('rules') ? attentionId : undefined}>{__('Display rules', 'wconvert')}{blockedTabs.includes('rules') && <AttentionDot />}</TabsTrigger>
-          <TabsTrigger ref={destinationsTab} value="destinations" aria-describedby={blockedTabs.includes('destinations') ? attentionId : undefined}>{__('Destinations', 'wconvert')}{blockedTabs.includes('destinations') && <AttentionDot />}</TabsTrigger>
+          <TabsTrigger value="journey" aria-describedby={blockedTabs.has('journey') ? attentionId : undefined}>{__('Screens', 'wconvert')}{blockedTabs.has('journey') && <AttentionDot />}</TabsTrigger>
+          <TabsTrigger value="design" aria-describedby={blockedTabs.has('design') ? attentionId : undefined}>{__('Design', 'wconvert')}{blockedTabs.has('design') && <AttentionDot />}</TabsTrigger>
+          <TabsTrigger value="rules" aria-describedby={blockedTabs.has('rules') ? attentionId : undefined}>{__('Display rules', 'wconvert')}{blockedTabs.has('rules') && <AttentionDot />}</TabsTrigger>
+          <TabsTrigger ref={destinationsTab} value="destinations" aria-describedby={blockedTabs.has('destinations') ? attentionId : undefined}>{__('Destinations', 'wconvert')}{blockedTabs.has('destinations') && <AttentionDot />}</TabsTrigger>
           <span id={attentionId} hidden>{__('Needs fixing before publishing', 'wconvert')}</span>
         </TabsList>
         <div className="wconvert-workspace__actions">
@@ -915,8 +918,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
           <ReadinessDialog
             name={name}
             captureMode={captureMode}
-            submissionSettings={config.submission_settings}
-            uncheckedLinks={config.unchecked_links}
+            issues={issues}
             optinId={id}
             optin={{ published_at: publishedAt, deleted_at: deletedAt, suspended, has_unpublished_changes: unpublishedChanges }}
             dirty={dirty}
@@ -940,8 +942,6 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
             policyUrl={adminSettings()?.policyUrl}
             onPublish={publish}
             onKeepLocal={() => edit({ capture_mode: 'local', destinations: [] })}
-            onBlockedTabsChange={setBlockedTabs}
-            onIssuesChange={setIssues}
             onGoToLook={() => { setTab('design'); designSettings(); designButton.current?.focus(); }}
             onPreview={() => { previewReturnTab.current = tab; setPreviewFromRules(tab === 'rules'); setTab('journey'); setJourneyTestRequest(value => value + 1); }}
             {...issueRoutes}

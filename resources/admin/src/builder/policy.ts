@@ -39,8 +39,8 @@ import type { TemplateNode, TemplateTree } from '@renderer/types';
  * A second spelling of a PHP rule, which this project refuses by default
  * (ADR 0019) — and takes here for the same reason `convertingActOf` mirrors
  * `ConvertingAct::offeredIn()`: the two runtimes cannot defer to each other,
- * the rule is four lines, and `tests/js/policy-link-parity.test.ts` reads the
- * same fixture `PolicyLinkTest` does so they cannot drift.
+ * the rule is four lines, and `tests/js/link-and-capture-parity.test.ts` reads
+ * the same fixture `LinkAndCaptureParityTest` does so they cannot drift.
  */
 
 /**
@@ -118,6 +118,6 @@ function resolve(node: TemplateNode, url: string): TemplateNode {
  * consent wording, or text whose Role is fine print. `PolicyLink::asksForPolicy()`
  * is the other spelling.
  */
-export function asksForPolicy(node: TemplateNode): boolean {
-  return node.type === 'consent' || (node.type === 'text' && (node as { role?: string }).role === 'fine_print');
+export function asksForPolicy(node: { readonly type: string; readonly role?: string | null }): boolean {
+  return node.type === 'consent' || (node.type === 'text' && node.role === 'fine_print');
 }

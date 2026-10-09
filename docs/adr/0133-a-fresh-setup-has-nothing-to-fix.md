@@ -3,6 +3,8 @@
 Date: 2026-10-09. Status: accepted.
 Amends [0085](0085-goals-have-publish-contracts-and-stable-history.md) (lead
 magnet handoff, offer links, result links),
+[0105](0105-phone-input-is-a-conditional-shared-asset.md) (the starting
+country with no site setting),
 [0088](0088-handoff-state-and-required-fixes-lead-the-review.md) (what list
 Goals and lead magnets require),
 [0132](0132-every-screen-answers-its-first-question.md) §11 (the local default)
@@ -28,9 +30,11 @@ should not meet a list of things the setup itself created.
    saves a lead shows the choice, whatever its Goal. The services stay one
    choice away while local.
 
-   *Why derived rather than "absent means local":* a config written with
-   Destinations and no mode — by a script, or a draft from before this — would
-   otherwise be cut off from its routes in silence.
+   *Why derived rather than "absent means local":* `PUT /optins/{id}` takes a
+   whole config and is scriptable, and a config that binds Destinations without
+   naming a mode would otherwise be cut off from its routes in silence. An edit
+   to the routes writes the mode they imply across every form (`routedMode()`),
+   so removing the main form's last service never cuts the optional form's.
 
 2. **Kept local satisfies the Goal (D9).** `handoffIssue()` returns nothing in
    local mode, including for a lead magnet. The review warns, without
@@ -54,8 +58,11 @@ should not meet a list of things the setup itself created.
 
 5. **A phone field's "site default" falls back to the site's region.** With no
    default in Settings, `PhoneCountry::effectiveDefault()` reads the store's
-   country, then the region of `get_locale()` (`en_GB` → GB). The admin's
-   `phoneDefaultCountry` and the publish check read that one value.
+   country, then the region of `get_locale()` (`en_GB` → GB) — the same
+   suggestion Settings already offered (0132 §20), now used rather than only
+   shown. The store comes first because a shop's customers are where it ships,
+   not where its admin language points. The admin's `phoneDefaultCountry` and
+   the publish check read that one value.
 
 6. **Only consent wording and fine print take the privacy policy.** An empty
    link anywhere else is unfinished, not a request for the policy: it stays
@@ -80,7 +87,12 @@ should not meet a list of things the setup itself created.
 Pro, through prefill and the publish checks with no edits. The only blockers it
 allows are the merchant's own product choices: the main product for
 *recommend-accessory* and *add-useful-extras*, and the products for each result
-of the four product finders.
+of the four product finders (*product-finder*, *gift-finder*,
+*experience-kit-finder*, *space-fit-finder*). The plan named only the cart
+pair; the finders join it because their results are products by design
+(`products_required`) and no default product is a safe guess. The review says
+it once — a product block waiting for its products suppresses the Goal's
+"needs a link" sentence, which would be the same missing choice.
 
 ## Not changed
 

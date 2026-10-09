@@ -83,7 +83,7 @@ final class OutcomeContract
      * @param 'local'|'connected' $captureMode {@see \WConvert\Destination\OptinBinding::captureMode()}.
      * @param list<string> $readyChannels Channels supported by selected audience services.
      */
-    public function handoffIssue(array $readyTypes, string $captureMode = 'local', array $readyChannels = []): ?string
+    public function handoffIssue(array $readyTypes, string $captureMode, array $readyChannels = []): ?string
     {
         // Kept in WConvert only, the lead is saved and that satisfies the Goal
         // (ADR 0133). A lead magnet gets a non-blocking warning in the review.
