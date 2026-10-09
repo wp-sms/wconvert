@@ -1230,9 +1230,8 @@ body .wconvert-rule-picker__empty { margin: 0; padding: 12px 8px; color: var(--m
 .wconvert-journey-pane__heading .wconvert-journey-dialog__selected { margin: 0; }
 .wconvert-journey-pane__heading small { display: block; margin-block-start: 3px; font-size: var(--text-label); color: var(--muted-foreground); }
 .wconvert-journey-pane__heading .wconvert-journey-dialog__selected>div { min-inline-size: 0; flex: 1; }
-#wconvert-admin .wconvert-journey-pane__name { block-size: 30px; padding: 3px 6px; margin-inline-start: -7px; border-color: transparent; background: transparent; font-size: var(--text-note); font-weight: 600; box-shadow: none; }
-#wconvert-admin .wconvert-journey-pane__name:hover { border-color: var(--border); }
-#wconvert-admin .wconvert-journey-pane__name:focus-visible { border-color: var(--ring); background: var(--card); }
+/* Reads as the screen's title until hovered or focused; the box is Tailwind's, overridden on the element. */
+#wconvert-admin .wconvert-journey-pane__heading input.wconvert-journey-pane__name { padding: 3px 6px; margin-inline-start: -7px; font-size: var(--text-note); font-weight: 600; }
 .wconvert-journey-pane--element { padding: 0; }
 .wconvert-screen-actions { min-inline-size: 200px; }
 .wconvert-screen-actions__reason { max-inline-size: 260px; margin: 4px 8px 6px; font-size: var(--text-micro); color: var(--muted-foreground); }
