@@ -1,17 +1,19 @@
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
 import {
+  ArrowLeft,
+  ArrowRight,
   ChartNoAxesCombined,
   ChevronDown,
-  ChevronRight,
   Copy,
-  Eye,
+  EyeOff,
   Inbox,
+  Info,
   LayoutGrid,
   List,
+  Lock,
   Megaphone,
   MoreHorizontal,
-  Pause,
   Plus,
   Search,
   SlidersHorizontal,
@@ -19,8 +21,11 @@ import {
   Stethoscope,
   Trash2,
   Trophy,
+  Upload,
 } from 'lucide-react';
 import { Button } from '../components/ui/button';
+import { NativeSelect } from '../components/ui/native-select';
+import { Skeleton } from '../components/ui/skeleton';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -29,27 +34,22 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '../components/ui/dropdown-menu';
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '../components/ui/dialog';
 import { listGoals } from '../goals/api';
 import { renderingFor, tierProductName } from '../goals/availability';
 import { displayTypeLabel } from '../displayTypes';
+import { PickerSearch } from '../discovery/PickerSearch';
 import { adminSettings, productModuleActive } from '../settings';
 import { ConfirmDialog } from '../shell/ConfirmDialog';
 import { EmptyState } from '../shell/EmptyState';
+import { OptionStrip } from '../shell/OptionStrip';
 import { Region, RegionError, RegionErrorState } from '../shell/Region';
 import { LOADING, failed, messageOf, ready, type Loadable } from '../shell/loadable';
 import { leadsHref, reportHref, settingsHref } from '../nav';
 import { readDashboard, type DashboardPayload } from '../stats/api';
-import { formatCount, formatRate } from '../stats/format';
-import { rangeLabel } from '../stats/reporting';
+import { formatCount, formatRange, labelOf } from '../lib/format';
 import { InspectDialog } from './InspectDialog';
 import {
+  campaignName,
   createVariant,
   declareWinner,
   deleteOptin,
@@ -65,16 +65,14 @@ import {
   type OptinStatus,
 } from './api';
 import { DataTable, DataTableHead, DataTableColumn, DataTableBody, DataTableRow, DataTableCell, DataTableActions } from '../shell/DataTable';
-import { RowsSkeleton } from '../shell/RowsSkeleton';
 import { CampaignSkeleton } from './CampaignSkeleton';
+import { CampaignDetailsDialog, type CampaignResults } from './DetailsDialog';
 import { StatusBadge } from './StatusBadge';
 import './campaigns.css';
 
-import { CampaignId } from './CampaignId';
-import { ProductHealthDetails, productHealthLabel, useProductHealth } from './ProductHealth';
+import { productHealthLabel, ProductHealthDetails, useProductHealth } from './ProductHealth';
 
 const Design = lazy(() => import('./CampaignDesign'));
-const Details = lazy(() => import('./CampaignDetails'));
 const PAGE_SIZE = 12;
 type RowResult = {
   count: number;
@@ -88,6 +86,9 @@ type Decision = {
   row: OptinSummary;
   parent?: OptinSummary;
 };
+
+const nameOf = campaignName;
+
 /** Campaign management owns its layout; existing reads and mutation routes own the facts. */
 export function OptinList({
   onEdit,
@@ -202,12 +203,14 @@ export function OptinList({
   );
   const rows = list.status === 'ready' ? list.data : [];
   const family = (c: OptinSummary) => [c, ...c.arms];
+  // A pasted ID still finds its campaign, though no screen shows one (ADR 0131).
+  const needle = query.trim().toLocaleLowerCase();
   const matches = (c: OptinSummary) =>
     (filter === 'all' || family(c).some((r) => statusOf(r) === filter)) &&
-    family(c).some((r) =>
-      `${r.name} ${labels?.[r.goal] ?? ''}`
-        .toLocaleLowerCase()
-        .includes(query.trim().toLocaleLowerCase()),
+    family(c).some(
+      (r) =>
+        `${r.name} ${labels?.[r.goal] ?? ''}`.toLocaleLowerCase().includes(needle) ||
+        r.id.toLocaleLowerCase() === needle,
     );
   const visible = rows
     .filter(matches)
@@ -261,8 +264,10 @@ export function OptinList({
       )
         createdId = result.id;
     } catch (cause) {
-      const name = rows.find((row) => row.id === id)?.name ?? id;
-      mutationErrorsRef.current.set(id, { message: `${name}: ${messageOf(cause)}`, action, openCreated });
+      const row = rows.find((candidate) => candidate.id === id);
+      const name = row ? nameOf(row) : __('Deleted campaign', 'wconvert');
+      /* translators: 1: a campaign's name, 2: why an action on it failed. */
+      mutationErrorsRef.current.set(id, { message: sprintf(__('%1$s: %2$s', 'wconvert'), name, messageOf(cause)), action, openCreated });
       setMutationErrors(new Map(mutationErrorsRef.current));
     } finally {
       if (createdId) createdToOpen.current = createdId;
@@ -280,8 +285,24 @@ export function OptinList({
     returnFocus.current = trigger;
     setSelected(row);
   };
+  const edit = (id: string) => {
+    if (busyRef.current.size > 0) return;
+    setSelected(null);
+    onEdit(id);
+  };
   const period = report ? { days: report.days } : { days };
   const reportReady = report !== null;
+  // A key the registry does not name is "Unknown goal", never the stored key.
+  const goalOf = (row: OptinSummary): string | null =>
+    labelsError ? __('Goal unavailable', 'wconvert') : labels === null ? null : labelOf(row.goal, labels, __('Unknown goal', 'wconvert'));
+  const describe = (row: OptinSummary): string =>
+    [previews[row.id] ? displayTypeLabel(previews[row.id].display_type) : null, goalOf(row)].filter(Boolean).join(' · ');
+  const resultsOf = (row: OptinSummary): CampaignResults =>
+    report
+      ? { status: 'ready', days: report.days, from: report.from, to: report.to, result: numbers[row.id] }
+      : reportError
+        ? { status: 'failed' }
+        : { status: 'loading' };
   const filters = [
     ['all', __('All', 'wconvert')],
     ['published', __('Published', 'wconvert')],
@@ -313,7 +334,9 @@ export function OptinList({
   const rowView = (row: OptinSummary, parent: OptinSummary, arm: boolean) => {
     const status = statusOf(row),
       result = numbers[row.id],
-      testing = parent.arms.length > 0;
+      testing = parent.arms.length > 0,
+      name = nameOf(row),
+      variants = parent.arms.length + 1;
     const nextLabel = row.has_unpublished_changes
       ? __('Review changes', 'wconvert')
       : status === 'suspended'
@@ -322,26 +345,25 @@ export function OptinList({
           ? __('Continue editing', 'wconvert')
           : __('Edit', 'wconvert');
     return (
-      <CampaignRow key={row.id} row={row} arm={arm}>
+      <CampaignRow key={row.id} name={name} arm={arm}>
         <DataTableCell label={__('Campaign', 'wconvert')} className="wconvert-campaign-identity">
           <button
+            type="button"
             className="wconvert-preview-button"
+            aria-haspopup="dialog"
             onClick={(e) => openDetails(row, e.currentTarget)}
-            aria-label={sprintf(__('Preview %s', 'wconvert'), row.name)}
+            aria-label={sprintf(__('Details for %s', 'wconvert'), name)}
           >
             {preview(row)}
           </button>
-          <div>
-            <button className="wconvert-campaign-name" onClick={(e) => openDetails(row, e.currentTarget)}>
-              {row.name}
+          <div className="min-w-0">
+            <button type="button" className="wconvert-campaign-name" aria-haspopup="dialog" onClick={(e) => openDetails(row, e.currentTarget)}>
+              {name}
             </button>
-            <p className="wconvert-campaign-meta">
-              {displayTypeLabel(previews[row.id]?.display_type)}
-              {previews[row.id] && labels?.[row.goal] ? ' · ' : ''}
-              {labels?.[row.goal] ?? (labelsError ? __('Goal unavailable', 'wconvert') : labels === null ? null : <code>{row.goal}</code>)}
-            </p>
+            <p className="wconvert-campaign-meta">{describe(row)}</p>
             {testing && !arm && (
               <button
+                type="button"
                 className="wconvert-family-toggle"
                 aria-expanded={!collapsed.has(row.id)}
                 onClick={() =>
@@ -353,12 +375,8 @@ export function OptinList({
                   })
                 }
               >
-                {collapsed.has(row.id) ? (
-                  <ChevronRight className="wconvert-chevron-collapsed" aria-hidden="true" />
-                ) : (
-                  <ChevronDown aria-hidden="true" />
-                )}
-                {sprintf(__('A/B test · %d designs', 'wconvert'), parent.arms.length + 1)}
+                {sprintf(_n('A/B test · %d variant', 'A/B test · %d variants', variants, 'wconvert'), variants)}
+                <ChevronDown aria-hidden="true" className="wconvert-family-toggle__chevron" />
               </button>
             )}
             {arm && <span className="wconvert-campaign-meta">{__('Variant', 'wconvert')}</span>}
@@ -378,35 +396,30 @@ export function OptinList({
           {reportReady && result ? (
             <a
               href={reportHref({ optinId: row.id, ...period })}
-              aria-label={sprintf(__('View %s report', 'wconvert'), row.name)}
+              aria-label={sprintf(__('View %s report', 'wconvert'), name)}
             >
               <strong>{formatCount(result.count)}</strong>
               <span>{result.label}</span>
             </a>
+          ) : !reportReady && reportLoading ? (
+            <Skeleton aria-hidden="true" className="ms-auto w-10 max-w-full" style={{ blockSize: '1lh' }} />
           ) : (
             <span>
-              {!reportReady && reportLoading
-                ? '—'
-                : !reportReady && reportError
-                  ? __('Unavailable', 'wconvert')
-                  : status === 'draft'
-                    ? __('No results yet', 'wconvert')
-                    : __('No activity', 'wconvert')}
+              {!reportReady && reportError
+                ? __('Results unavailable', 'wconvert')
+                : status === 'draft'
+                  ? __('No results yet', 'wconvert')
+                  : __('No results in this period', 'wconvert')}
             </span>
           )}
         </DataTableCell>
         <DataTableActions className="wconvert-campaign-row-actions">
-          <Button
-            variant="outline"
-            disabled={busy.size > 0}
-            onClick={(e) =>
-              status === 'suspended' ? openDetails(row, e.currentTarget) : onEdit(row.id)
-            }
-          >
+          <Button variant="ghost" className="text-action" disabled={busy.size > 0} onClick={() => onEdit(row.id)}>
             {nextLabel}
           </Button>
           <CampaignMenu
             row={row}
+            name={name}
             parent={parent}
             arm={arm}
             busy={busy.has(parent.id)}
@@ -416,12 +429,12 @@ export function OptinList({
             reportReady={reportReady}
             days={period.days}
             range={report ? { from: report.from, to: report.to } : undefined}
-            onPreview={(trigger) => openDetails(row, trigger)}
+            onDetails={(trigger) => openDetails(row, trigger)}
             onInspect={() => setInspecting(true)}
             onDuplicate={() =>
               void run(
                 parent.id,
-                () => duplicateCampaign(row.id, sprintf(__('%s — copy', 'wconvert'), row.name)),
+                () => duplicateCampaign(row.id, sprintf(__('%s — copy', 'wconvert'), name)),
                 true,
               )
             }
@@ -432,108 +445,116 @@ export function OptinList({
       </CampaignRow>
     );
   };
+  const empty = list.status === 'ready' && rows.length === 0;
+  const decisionName = decision ? nameOf(decision.row) : '';
+  const decisionArm = decision?.row.parent_id !== null && decision?.row.parent_id !== undefined;
   return (
     <div className="wconvert-campaign-workspace" data-layout={layout}>
-      {list.status === 'failed' ? (
-        <Region label={__('Campaigns', 'wconvert')}>
-          <RegionErrorState message={list.message} action={
-            <Button onClick={() => void refresh()} variant="outline">
-              {__('Try again', 'wconvert')}
-            </Button>
-          } />
-        </Region>
-      ) : (
-        <>
-          <div className="wconvert-toolbar wconvert-campaign-filterbar">
-            <div
-              className="wconvert-campaign-filters"
-              role="radiogroup"
-              aria-label={__('Filter Campaigns by status', 'wconvert')}
-            >
-              {filters.map(([id, label]) => (
-                <label key={id}>
-                  <input type="radio" name="campaign-status" value={id} checked={filter === id}
-                    aria-label={label} onChange={() => { setFilter(id); setPage(0); }} />
-                  {label}
-                  <span>
-                    {list.status === 'loading'
-                      ? '—'
-                      : rows.filter(
-                          (c) => id === 'all' || family(c).some((r) => statusOf(r) === id),
-                        ).length}
-                  </span>
-                </label>
-              ))}
-            </div>
-            <label className="wconvert-campaign-period">
-              {__('Results', 'wconvert')}
-              <select
-                aria-label={__('Results period', 'wconvert')}
-                value={days}
-                onChange={(e) => setDays(Number(e.target.value))}
-              >
-                <option value={30}>{__('Last 30 days', 'wconvert')}</option>
-                <option value={7}>{__('Last 7 days', 'wconvert')}</option>
-              </select>
-            </label>
-          </div>
-          <Region label={__('Campaigns', 'wconvert')}>
-            {error && <RegionError message={error} action={<Button variant="outline" onClick={() => void refresh()}>{__('Refresh campaigns', 'wconvert')}</Button>} />}
-            {[...mutationErrors].map(([id, failure]) => <RegionError key={id} message={failure.message} action={<Button variant="outline" disabled={busy.has(id) || (failure.openCreated && busy.size > 0)} onClick={() => void run(id, failure.action, failure.openCreated)}>{__('Retry action', 'wconvert')}</Button>} />)}
+      {/*
+        One sheet (GUIDELINES §1): the filters, the rows, the pager and the
+        footer are all inside the region, so it draws the only edge.
+      */}
+      <Region label={__('Campaigns', 'wconvert')}>
+        {list.status === 'failed' ? (
+          <RegionErrorState message={list.message} onRetry={() => void refresh()} />
+        ) : (
+          <>
+            {error && <RegionError message={error} onRetry={() => void refresh()} />}
+            {[...mutationErrors].map(([id, failure]) => (
+              <RegionError
+                key={id}
+                message={failure.message}
+                action={
+                  <Button
+                    type="button"
+                    variant="outline"
+                    disabled={busy.has(id) || (failure.openCreated && busy.size > 0)}
+                    onClick={() => void run(id, failure.action, failure.openCreated)}
+                  >
+                    {busy.has(id) ? __('Trying again…', 'wconvert') : __('Try again', 'wconvert')}
+                  </Button>
+                }
+              />
+            ))}
             {(reportError || previewError || labelsError) && <RegionError
               message={[
                 reportError && (report ? __('Results couldn’t refresh. The previous period and results remain below.', 'wconvert') : __('Results couldn’t load.', 'wconvert')),
                 previewError && __('Design previews couldn’t load.', 'wconvert'),
                 labelsError && __('Goal names couldn’t load.', 'wconvert'),
               ].filter(Boolean).join(' ')}
-              action={<Button variant="outline" onClick={() => setRefreshKey((n) => n + 1)}>{__('Retry', 'wconvert')}</Button>}
+              onRetry={() => setRefreshKey((n) => n + 1)}
             />}
-            <div className="wconvert-toolbar wconvert-campaign-toolbar">
-              <label className="wconvert-campaign-search">
-                <Search aria-hidden="true" />
-                <input
-                  type="search"
-                  aria-label={__('Search Campaigns', 'wconvert')}
-                  placeholder={__('Search campaigns…', 'wconvert')}
-                  value={query}
-                  onChange={(e) => {
-                    setQuery(e.target.value);
-                    setPage(0);
-                  }}
-                />
-              </label>
-              <div className="wconvert-campaign-viewtools">
-                <select
-                  aria-label={__('Sort campaigns', 'wconvert')}
-                  value={sort}
-                  onChange={(e) => {
-                    setSort(e.target.value);
-                    setPage(0);
-                  }}
-                >
-                  <option value="newest">{__('Newest first', 'wconvert')}</option>
-                  <option value="name">{__('Name A–Z', 'wconvert')}</option>
-                </select>
-                <div className="wconvert-campaign-layout" role="radiogroup" aria-label={__('Campaign layout', 'wconvert')}>
-                  <label>
-                    <input type="radio" name="campaign-layout" aria-label={__('List view', 'wconvert')} checked={layout === 'list'} onChange={() => setLayout('list')} />
-                    <List aria-hidden="true" />
-                  </label>
-                  <label>
-                    <input type="radio" name="campaign-layout" aria-label={__('Gallery view', 'wconvert')} checked={layout === 'gallery'} onChange={() => setLayout('gallery')} />
-                    <LayoutGrid aria-hidden="true" />
+            {productChecks && productHealth.failed && (
+              <RegionError message={__('Products couldn’t be checked.', 'wconvert')} onRetry={productHealth.recheck} />
+            )}
+            {productChecks && productHealth.loading && (
+              <p role="status" className="sr-only">{__('Checking products…', 'wconvert')}</p>
+            )}
+            {!empty && (
+              <>
+                <div className="wconvert-toolbar wconvert-campaign-filterbar">
+                  <OptionStrip
+                    label={__('Filter campaigns by status', 'wconvert')}
+                    value={filter}
+                    onChange={(value) => {
+                      setFilter(value as typeof filter);
+                      setPage(0);
+                    }}
+                    options={filters.map(([id, label]) => ({
+                      value: id,
+                      label,
+                      count: list.status === 'ready'
+                        ? rows.filter((c) => id === 'all' || family(c).some((r) => statusOf(r) === id)).length
+                        : undefined,
+                    }))}
+                  />
+                  <label className="wconvert-campaign-period">
+                    {__('Results period', 'wconvert')}
+                    <NativeSelect value={days} onChange={(e) => setDays(Number(e.target.value))}>
+                      <option value={30}>{__('Last 30 days', 'wconvert')}</option>
+                      <option value={7}>{__('Last 7 days', 'wconvert')}</option>
+                    </NativeSelect>
                   </label>
                 </div>
-              </div>
-            </div>
-            {productChecks && ids && <div className="wconvert-product-health-toolbar">
-              <span role="status">{productHealth.loading ? __('Checking products…', 'wconvert') : productHealth.failed ? __('Product checks unavailable.', 'wconvert') : __('Product checks for this page.', 'wconvert')}</span>
-              <Button variant="ghost" disabled={productHealth.loading} onClick={productHealth.recheck}>{__('Check products again', 'wconvert')}</Button>
-            </div>}
-            {list.status === 'ready' && rows.length === 0 ? (
+                <div className="wconvert-toolbar wconvert-campaign-toolbar">
+                  <PickerSearch
+                    label={__('Search campaigns', 'wconvert')}
+                    value={query}
+                    onChange={(value) => {
+                      setQuery(value);
+                      setPage(0);
+                    }}
+                  />
+                  <div className="wconvert-campaign-viewtools">
+                    <NativeSelect
+                      aria-label={__('Sort campaigns', 'wconvert')}
+                      value={sort}
+                      onChange={(e) => {
+                        setSort(e.target.value);
+                        setPage(0);
+                      }}
+                    >
+                      <option value="newest">{__('Newest first', 'wconvert')}</option>
+                      <option value="name">{__('Name A–Z', 'wconvert')}</option>
+                    </NativeSelect>
+                    <div className="wconvert-campaign-layout" role="group" aria-label={__('Campaign layout', 'wconvert')}>
+                      <label>
+                        <input type="radio" name="campaign-layout" aria-label={__('List view', 'wconvert')} checked={layout === 'list'} onChange={() => setLayout('list')} />
+                        <List aria-hidden="true" />
+                      </label>
+                      <label>
+                        <input type="radio" name="campaign-layout" aria-label={__('Gallery view', 'wconvert')} checked={layout === 'gallery'} onChange={() => setLayout('gallery')} />
+                        <LayoutGrid aria-hidden="true" />
+                      </label>
+                    </div>
+                  </div>
+                </div>
+              </>
+            )}
+            {empty ? (
               <EmptyState
                 icon={Megaphone}
-                title={__('Start with one good campaign.', 'wconvert')}
+                title={__('No campaigns yet', 'wconvert')}
                 action={
                   onCreate && (
                     <Button ref={createFocus} onClick={onCreate}>
@@ -543,7 +564,7 @@ export function OptinList({
                   )
                 }
               >
-                {__('Choose a goal, customize a design, and publish when you’re ready.', 'wconvert')}
+                {__('Choose a goal, pick a design, and publish when you’re ready.', 'wconvert')}
               </EmptyState>
             ) : list.status === 'ready' && visible.length === 0 ? (
               <EmptyState
@@ -580,160 +601,64 @@ export function OptinList({
                 </DataTableBody>}
               </DataTable>
             )}
-          </Region>
-          <div className="wconvert-footer wconvert-campaign-footer">
-            <span>
-              {list.status === 'loading'
-                ? __('Loading campaigns…', 'wconvert')
-                : sprintf(
-                    _n('%d campaign', '%d campaigns', visible.length, 'wconvert'),
-                    visible.length,
-                  )}
-              {report && (
-                <>
-                  {' '}
-                  · {rangeLabel(report.from, report.to)} · {__('Through yesterday', 'wconvert')}
-                </>
-              )}
-            </span>
-            <a href={settingsHref('experience')}>
-              <SlidersHorizontal aria-hidden="true" />
-              {__('Visitor experience', 'wconvert')}
-            </a>
-          </div>
-          {shown.some((c) => c.arms.length > 0) && (
-            <p className="wconvert-campaign-test-note">
-              {__(
-                'A/B assignments use browser storage, not unique people. Results count recorded views and conversions.',
-                'wconvert',
-              )}
-            </p>
-          )}
-          {lastPage > 0 && (
-            <div className="wconvert-footer wconvert-campaign-pagination">
-              <Button
-                    variant="outline"
-                disabled={currentPage === 0}
-                onClick={() => setPage(currentPage - 1)}
-              >
-                {__('Previous', 'wconvert')}
-              </Button>
+            {lastPage > 0 && (
+              <nav className="wconvert-toolbar wconvert-campaign-pagination" aria-label={__('Campaign pages', 'wconvert')}>
+                <Button variant="outline" disabled={currentPage === 0} onClick={() => setPage(currentPage - 1)}>
+                  <ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />
+                  {__('Previous', 'wconvert')}
+                </Button>
+                <span aria-live="polite" aria-atomic="true">
+                  {sprintf(__('Page %1$d of %2$d', 'wconvert'), currentPage + 1, lastPage + 1)}
+                </span>
+                <Button variant="outline" disabled={currentPage === lastPage} onClick={() => setPage(currentPage + 1)}>
+                  {__('Next', 'wconvert')}
+                  <ArrowRight aria-hidden="true" className="rtl:-scale-x-100" />
+                </Button>
+              </nav>
+            )}
+            <div className="wconvert-footer wconvert-campaign-footer">
               <span>
-                {sprintf(__('Page %1$d of %2$d', 'wconvert'), currentPage + 1, lastPage + 1)}
+                {list.status === 'ready' && !empty && sprintf(
+                  _n('%d campaign', '%d campaigns', visible.length, 'wconvert'),
+                  visible.length,
+                )}
+                {list.status === 'ready' && !empty && report && <> · {formatRange(report.from, report.to)}</>}
               </span>
-              <Button
-                    variant="outline"
-                disabled={currentPage === lastPage}
-                onClick={() => setPage(currentPage + 1)}
-              >
-                {__('Next', 'wconvert')}
-              </Button>
+              <a href={settingsHref('experience')}>
+                <SlidersHorizontal aria-hidden="true" />
+                {__('Visitor experience', 'wconvert')}
+              </a>
+              {shown.some((c) => c.arms.length > 0) && (
+                <p className="wconvert-campaign-test-note">
+                  {__('A/B tests split visitors by browser, not by person.', 'wconvert')}
+                </p>
+              )}
             </div>
-          )}
-        </>
-      )}
-      <Dialog
-        open={selected !== null}
-        onOpenChange={(open) => {
-          if (!open) setSelected(null);
-        }}
-      >
-        <DialogContent
-          className="wconvert-campaign-detail"
-          onCloseAutoFocus={(e) => {
-            e.preventDefault();
-            returnFocus.current?.focus();
-          }}
-        >
-          <DialogHeader>
-            <DialogTitle>{selected?.name}</DialogTitle>
-            <DialogDescription>
-              {__(
-                'Preview of the saved design. Display rules determine where and when visitors see it.',
-                'wconvert',
-              )}
-            </DialogDescription>
-          </DialogHeader>
-          {selected && (
-            <>
-              <ProductHealthDetails health={productHealth.rows[selected.id]} loading={productHealth.loading} failed={productHealth.failed} onRecheck={productHealth.recheck} reviewDisabled={busy.size > 0} onReview={() => {
-                if (busyRef.current.size > 0) return;
-                const id = selected.id;
-                setSelected(null);
-                onEdit(id);
-              }} />
-              {preview(selected)}
-              <StatusBadge status={statusOf(selected)} />
-              {statusOf(selected) === 'published' && selected.has_unpublished_changes && (
-                <p>
-                  {__(
-                    'Your previous version remains published. Review the saved draft in the editor before publishing your changes.',
-                    'wconvert',
-                  )}
-                </p>
-              )}
-              {selected.suspended && <p>{selected.suspended}</p>}
-              {statusOf(selected) === 'suspended' && selected.has_unpublished_changes && (
-                <p>
-                  {__(
-                    'The saved draft has unpublished changes. Resolve the issue before this campaign can show again.',
-                    'wconvert',
-                  )}
-                </p>
-              )}
-              <p>
-                {displayTypeLabel(previews[selected.id]?.display_type)}
-                {previews[selected.id] && labels?.[selected.goal] ? ' · ' : ''}
-                {labels?.[selected.goal]}
-              </p>
-              {reportReady && numbers[selected.id] && (
-                <div className="wconvert-campaign-detail-stats">
-                  <div>
-                    <strong>{formatCount(numbers[selected.id].count)}</strong>
-                    <span>{numbers[selected.id].label}</span>
-                  </div>
-                  <div>
-                    <strong>{formatCount(numbers[selected.id].shown)}</strong>
-                    <span>{__('Times shown', 'wconvert')}</span>
-                  </div>
-                  <div>
-                    <strong>{formatRate(numbers[selected.id].rate)}</strong>
-                    <span>{__('Conversion rate', 'wconvert')}</span>
-                  </div>
-                </div>
-              )}
-              {reportReady && report && (
-                <p>
-                  {rangeLabel(report.from, report.to)} ·{' '}
-                  {__('Through yesterday. Results include earlier activity.', 'wconvert')}
-                </p>
-              )}
-              <Suspense fallback={<RowsSkeleton rows={4} />}>
-                <Details key={selected.id} id={selected.id} />
-              </Suspense>
-              <CampaignId key={selected.id} value={selected.id} variant={selected.parent_id !== null} />
-              <div className="flex flex-wrap gap-2">
-                <Button
-                  disabled={busy.size > 0}
-                  onClick={() => {
-                    if (busyRef.current.size > 0) return;
-                    const id = selected.id;
-                    setSelected(null);
-                    onEdit(id);
-                  }}
-                >
-                  {__('Open editor', 'wconvert')}
-                </Button>
-                <Button variant="outline" asChild>
-                  <a href={reportHref({ optinId: selected.id, ...period })}>
-                    {__('View report', 'wconvert')}
-                  </a>
-                </Button>
-              </div>
-            </>
-          )}
-        </DialogContent>
-      </Dialog>
+          </>
+        )}
+      </Region>
+      <CampaignDetailsDialog
+        row={selected}
+        name={selected ? nameOf(selected) : ''}
+        meta={selected ? [selected.parent_id !== null ? __('A/B variant', 'wconvert') : null, describe(selected)].filter(Boolean).join(' · ') : ''}
+        thumbnail={selected && preview(selected)}
+        results={selected ? resultsOf(selected) : { status: 'loading' }}
+        productCheck={selected && (
+          <ProductHealthDetails
+            health={productHealth.rows[selected.id]}
+            loading={productHealth.loading}
+            failed={productHealth.failed}
+            onRecheck={productHealth.recheck}
+            reviewDisabled={busy.size > 0}
+            onReview={() => edit(selected.id)}
+          />
+        )}
+        reportLink={selected ? reportHref({ optinId: selected.id, ...period }) : ''}
+        editBusy={busy.size > 0}
+        onEdit={() => selected && edit(selected.id)}
+        onClose={() => setSelected(null)}
+        returnFocus={returnFocus}
+      />
       <InspectDialog open={inspecting} onOpenChange={setInspecting} />
       <ConfirmDialog
         variant={decision?.kind === 'delete' ? 'destructive' : 'default'}
@@ -743,46 +668,41 @@ export function OptinList({
         }}
         title={
           decision?.kind === 'delete'
-            ? __('Delete this campaign?', 'wconvert')
+            ? decisionArm ? __('Delete this variant?', 'wconvert') : __('Delete this campaign?', 'wconvert')
             : decision?.kind === 'pause'
-              ? __('Unpublish this campaign?', 'wconvert')
+              ? decisionArm ? __('Unpublish this variant?', 'wconvert') : __('Unpublish this campaign?', 'wconvert')
               : decision?.kind === 'winner'
-                ? __('Use this design?', 'wconvert')
+                ? __('Use this variant?', 'wconvert')
                 : __('Publish the saved draft?', 'wconvert')
         }
         description={
           decision
             ? decision.kind === 'delete'
               ? sprintf(
-                  __(
-                    '“%s” stops being served and leaves this list. Its leads and conversions are kept.',
-                    'wconvert',
-                  ),
-                  decision.row.name,
+                  decisionArm
+                    ? __('“%s” stops showing and leaves this A/B test. Its leads and results are kept.', 'wconvert')
+                    : __('“%s” stops showing and leaves this list. Its leads and results are kept.', 'wconvert'),
+                  decisionName,
                 )
               : decision.kind === 'pause'
-                ? __(
-                    'This design stops showing. Its saved draft, leads, and results are kept. Other A/B designs remain unchanged.',
-                    'wconvert',
+                ? sprintf(
+                    decisionArm
+                      ? __('“%s” stops showing. Its saved draft, leads and results are kept, and the other variants keep running.', 'wconvert')
+                      : __('“%s” stops showing and returns to Draft. Its saved draft, leads and results are kept.', 'wconvert'),
+                    decisionName,
                   )
                 : decision.kind === 'winner'
-                  ? __(
-                      'This design becomes the campaign. Other designs stop showing; their leads and results are kept. This does not establish statistical significance.',
-                      'wconvert',
-                    )
-                  : __(
-                      'The latest saved draft becomes the version visitors can see, subject to its display rules.',
-                      'wconvert',
-                    )
+                  ? __('This variant becomes the campaign. The other variants stop showing; their leads and results are kept.', 'wconvert')
+                  : __('The latest saved draft becomes what visitors see, subject to its display rules.', 'wconvert')
             : ''
         }
         confirmLabel={
           decision?.kind === 'delete'
-            ? __('Delete campaign', 'wconvert')
+            ? decisionArm ? __('Delete variant', 'wconvert') : __('Delete campaign', 'wconvert')
             : decision?.kind === 'pause'
-              ? __('Unpublish campaign', 'wconvert')
+              ? decisionArm ? __('Unpublish variant', 'wconvert') : __('Unpublish campaign', 'wconvert')
               : decision?.kind === 'winner'
-                ? __('Use this design', 'wconvert')
+                ? __('Use this variant', 'wconvert')
                 : __('Publish saved draft', 'wconvert')
         }
         returnFocusTo={returnFocus}
@@ -806,25 +726,28 @@ export function OptinList({
 }
 
 function CampaignRow({
-  row,
+  name,
   arm,
   children,
 }: {
-  row: OptinSummary;
+  name: string;
   arm: boolean;
   children: React.ReactNode;
 }) {
   return (
     <DataTableRow
       className={arm ? 'wconvert-campaign-row is-arm' : 'wconvert-campaign-row'}
-      label={row.name}
+      label={name}
     >
       {children}
     </DataTableRow>
   );
 }
+
+/** Every row action past the next one, with an icon and a label (GUIDELINES §20). */
 function CampaignMenu({
   row,
+  name,
   parent,
   arm,
   busy,
@@ -834,13 +757,14 @@ function CampaignMenu({
   reportReady,
   days,
   range,
-  onPreview,
+  onDetails,
   onInspect,
   onDuplicate,
   onTest,
   onDecision,
 }: {
   row: OptinSummary;
+  name: string;
   parent: OptinSummary;
   arm: boolean;
   busy: boolean;
@@ -850,7 +774,7 @@ function CampaignMenu({
   reportReady: boolean;
   days: number;
   range?: { from: string; to: string };
-  onPreview: (trigger: HTMLElement | null) => void;
+  onDetails: (trigger: HTMLElement | null) => void;
   onInspect: () => void;
   onDuplicate: () => void;
   onTest: () => void;
@@ -858,7 +782,18 @@ function CampaignMenu({
 }) {
   const trigger = useRef<HTMLButtonElement>(null),
     status = statusOf(row);
+  const reason = `wconvert-publish-reason-${row.id}`;
   const availability = adminSettings()?.variants?.availability ?? 'locked';
+  const publish = (
+    <DropdownMenuItem
+      disabled={missingDesign}
+      aria-describedby={missingDesign ? reason : undefined}
+      onSelect={() => onDecision('publish', trigger.current)}
+    >
+      <Upload aria-hidden="true" />
+      {__('Publish saved draft', 'wconvert')}
+    </DropdownMenuItem>
+  );
   return (
     <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild>
@@ -867,16 +802,16 @@ function CampaignMenu({
           variant="ghost"
           size="icon-sm"
           disabled={busy}
-          aria-label={sprintf(__('More actions for %s', 'wconvert'), row.name)}
+          aria-label={sprintf(__('More actions for %s', 'wconvert'), name)}
         >
           <MoreHorizontal aria-hidden="true" />
         </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" sideOffset={5} className="wconvert-campaign-menu">
-        <DropdownMenuLabel className="wconvert-menu-heading">{row.name}</DropdownMenuLabel>
-        <DropdownMenuItem onSelect={() => onPreview(trigger.current)}>
-          <Eye aria-hidden="true" />
-          {__('Preview & details', 'wconvert')}
+        <DropdownMenuLabel className="wconvert-menu-heading text-micro font-normal text-muted-foreground">{name}</DropdownMenuLabel>
+        <DropdownMenuItem onSelect={() => onDetails(trigger.current)}>
+          <Info aria-hidden="true" />
+          {__('Details', 'wconvert')}
         </DropdownMenuItem>
         <DropdownMenuItem asChild>
           <a href={reportHref({ optinId: row.id, days })}>
@@ -906,7 +841,10 @@ function CampaignMenu({
                 : __('Create A/B test', 'wconvert')}
             </DropdownMenuItem>
           ) : renderingFor(availability, 'settings_list') === 'upsell' ? (
-            <DropdownMenuLabel className="wconvert-menu-note">
+            // Upsells are grey with a lock (GUIDELINES §14), and a label rather
+            // than a dead item: the route does not exist on this build.
+            <DropdownMenuLabel className="wconvert-menu-note text-micro font-normal text-muted-foreground">
+              <Lock aria-hidden="true" />
               {sprintf(
                 __('A/B testing is available with %s.', 'wconvert'),
                 tierProductName(adminSettings()?.variants?.tier ?? undefined),
@@ -920,26 +858,22 @@ function CampaignMenu({
         <DropdownMenuSeparator />
         {canUnpublish(status) ? (
           <DropdownMenuItem onSelect={() => onDecision('pause', trigger.current)}>
-            <Pause aria-hidden="true" />
-            {__('Unpublish campaign', 'wconvert')}
+            <EyeOff aria-hidden="true" />
+            {arm ? __('Unpublish variant', 'wconvert') : __('Unpublish campaign', 'wconvert')}
           </DropdownMenuItem>
         ) : (
-          <DropdownMenuItem disabled={missingDesign} onSelect={() => onDecision('publish', trigger.current)}>
-            <Plus aria-hidden="true" />
-            {__('Publish saved draft', 'wconvert')}
-          </DropdownMenuItem>
+          publish
         )}
-        {canUnpublish(status) && row.has_unpublished_changes && (
-          <DropdownMenuItem disabled={missingDesign} onSelect={() => onDecision('publish', trigger.current)}>
-            <Plus aria-hidden="true" />
-            {__('Publish saved draft', 'wconvert')}
-          </DropdownMenuItem>
+        {canUnpublish(status) && row.has_unpublished_changes && publish}
+        {missingDesign && (
+          <DropdownMenuLabel id={reason} className="wconvert-menu-note text-micro font-normal text-muted-foreground">
+            {__('Add a design in the editor before publishing.', 'wconvert')}
+          </DropdownMenuLabel>
         )}
-        {missingDesign && <DropdownMenuLabel className="wconvert-menu-note">{__('Add a design in the editor before publishing.', 'wconvert')}</DropdownMenuLabel>}
         {parent.arms.length > 0 && (
           <DropdownMenuItem onSelect={() => onDecision('winner', trigger.current)}>
             <Trophy aria-hidden="true" />
-            {__('Use this design', 'wconvert')}
+            {__('Use this variant', 'wconvert')}
           </DropdownMenuItem>
         )}
         <DropdownMenuSeparator />
@@ -948,7 +882,7 @@ function CampaignMenu({
           onSelect={() => onDecision('delete', trigger.current)}
         >
           <Trash2 aria-hidden="true" />
-          {__('Delete campaign', 'wconvert')}
+          {arm ? __('Delete variant', 'wconvert') : __('Delete campaign', 'wconvert')}
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

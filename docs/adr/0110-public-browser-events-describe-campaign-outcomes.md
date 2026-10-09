@@ -21,7 +21,9 @@ provider delivery (ADR 0073). Notification follows committed acceptance and
 does not depend on drawing the next screen.
 
 Each frozen payload contains only current `campaignId`, exact `optinId`, and
-`displayType`. Existing IDs become copyable in campaign details. No new slug or
+`displayType`. Existing IDs become copyable in campaign details (*amended by
+[ADR 0131](0131-one-way-to-show-each-thing-in-the-admin.md): behind a closed
+"For developers" disclosure, the one ID on any admin screen*). No new slug or
 storage. A promoted A/B winner keeps its own row ID as decided in ADR 0058;
 listeners matching the old family may need updating.
 
