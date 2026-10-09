@@ -12,11 +12,11 @@ import type { Template } from '@renderer/types';
  * be added — the rule publish enforces on the server. Its selection and its
  * extra-answer map live under its own submission id.
  */
-export function SubmissionSettings({ template, primaryChannel, config, available, onChange, types = [], connections = [], onSaved, onConnectionSaved, onRefresh, testEmail = null }: {
+export function SubmissionSettings({ template, primaryChannel, config, available, onChange, types = [], connections = [], onSaved, onConnectionSaved, onRefresh, refreshError = null, testEmail = null }: {
   types?: readonly DestinationType[]; connections?: readonly Connection[];
   onSaved(destinations: readonly Destination[]): void; onConnectionSaved?(connection: Connection): void; onRefresh(): void;
   template?: Template; primaryChannel?: string | null; config: Record<string, unknown>; available: Loadable<readonly Destination[]>;
-  testEmail?: string | null;
+  testEmail?: string | null; refreshError?: string | null;
   onChange(config: Record<string, unknown>): void;
 }) {
   const secondary = template?.tree.submissions[1];
@@ -47,6 +47,7 @@ export function SubmissionSettings({ template, primaryChannel, config, available
     connections={connections}
     testEmail={testEmail}
     onRefresh={onRefresh}
+    refreshError={refreshError}
     onSaved={onSaved}
     onConnectionSaved={onConnectionSaved}
     mappings={mappings[secondary.id] ?? {}}

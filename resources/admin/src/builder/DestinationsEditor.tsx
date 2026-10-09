@@ -3,15 +3,16 @@ import { __, _n, sprintf } from '@wordpress/i18n';
 import { Inbox, Plug, Plus } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { DestinationSetupDialog } from './DestinationSetupDialog';
-import { DestinationCard, listedFields } from './DestinationCard';
+import { DestinationCard } from './DestinationCard';
+import { listWithAnd } from './rules/sentence';
 import { AddDestinationPicker, ProviderTiles, type ChannelRule } from './AddDestinationPicker';
 import { Description } from '../shell/Description';
 import { EmptyState } from '../shell/EmptyState';
-import { Region, RegionBody, RegionErrorState, RegionHeader } from '../shell/Region';
+import { Region, RegionBody, RegionError, RegionErrorState, RegionHeader } from '../shell/Region';
 import { RowsSkeleton } from '../shell/RowsSkeleton';
 import { outcomeHandoffIssue, type OutcomeContract } from '../goals/outcome';
 import { SendTestDialog } from '../destinations/SendTestDialog';
-import { capturedFields } from '../destinations/requirements';
+import { capturedFields, contactFieldNames } from '../destinations/requirements';
 import type { Loadable } from '../shell/loadable';
 import type { Connection, Destination, DestinationType } from '../destinations/api';
 import type { Template } from '@renderer/types';
@@ -66,6 +67,8 @@ export interface DestinationsEditorProps {
   readonly connections: readonly Connection[];
   /** Re-reads the site's routes: when the picker opens, and to retry a failed read. */
   readonly onRefresh: () => void;
+  /** Why the last re-read failed, while the routes from before it stay on screen. */
+  readonly refreshError?: string | null;
   readonly onSaved: (destinations: readonly Destination[]) => void;
   readonly onConnectionSaved?: (connection: Connection) => void;
   readonly mappings?: Readonly<Record<string, Record<string, string>>>;
@@ -91,7 +94,7 @@ type Setup = { destination?: Destination; type?: string; focusField?: string } |
 /** Choices edit this Optin's draft; setup edits a shared site destination. */
 export function DestinationsEditor({
   bound, available, types, suggested = [], connections, onChange, onRefresh, onSaved, onConnectionSaved, template, outcome,
-  mappings = {}, onMappingChange, submissionId, channel = null, title, description, emptyText, primary = true, local = false, testEmail = null,
+  mappings = {}, onMappingChange, submissionId, channel = null, refreshError = null, title, description, emptyText, primary = true, local = false, testEmail = null,
 }: DestinationsEditorProps) {
   const [picking, setPicking] = useState(false);
   const [setup, setSetup] = useState<Setup>(null);
@@ -104,10 +107,10 @@ export function DestinationsEditor({
   const cards = bound.map((id) => site.find((destination) => destination.id === id)).filter((each): each is Destination => each !== undefined);
   const missing = available.status === 'ready' ? bound.filter((id) => !site.some((destination) => destination.id === id)) : [];
   const handoffIssue = primary && outcome && available.status === 'ready' ? outcomeHandoffIssue(outcome, bound, site) : null;
-  const names: Record<string, string> = { email: __('email', 'wconvert'), name: __('name', 'wconvert'), phone: __('phone', 'wconvert') };
+  const names = contactFieldNames();
   const saved = capturedFields(template, submission).filter((field) => field.name in names).map((field) => names[field.name]);
   /* translators: %s: the contact fields a signup collects, e.g. “email and name”. */
-  const subtitle = description ?? (saved.length > 0 ? sprintf(__('Receives %s from this signup.', 'wconvert'), listedFields(saved)) : undefined);
+  const subtitle = description ?? (saved.length > 0 ? sprintf(__('Receives %s from this signup.', 'wconvert'), listWithAnd(saved)) : undefined);
   const typeOf = (destination: Destination) => types.find((type) => type.id === destination.type);
 
   const openPicker = (trigger: HTMLElement) => {
@@ -122,13 +125,17 @@ export function DestinationsEditor({
   );
   const remove = (id: string) => {
     onChange(bound.filter((each) => each !== id));
-    // The card that held focus is gone; Add is the next thing on this region.
+    // The card that held focus is gone; Add — on the heading, or in the empty
+    // state once the last card goes — is the next thing on this region.
     requestAnimationFrame(() => addButton.current?.focus());
   };
 
   return (
     <>
       <Region className="wconvert-destinations-region">
+        {refreshError !== null && available.status === 'ready' && !local &&
+          <RegionError message={refreshError} action={<Button variant="outline" size="sm" onClick={onRefresh}>{__('Retry', 'wconvert')}</Button>} />}
+
         <RegionHeader title={title ?? __('Where leads go', 'wconvert')} level={3} description={subtitle}
           trailing={!local && cards.length > 0 ? add : undefined} />
 
@@ -161,7 +168,7 @@ export function DestinationsEditor({
               </div>
             ) : cards.length === 0 ? (
               <EmptyState icon={Plug} title={__('No destinations selected', 'wconvert')}
-                action={<Button variant="outline" onClick={(event) => openPicker(event.currentTarget)}><Plus aria-hidden="true" />{__('Add destination', 'wconvert')}</Button>}>
+                action={<Button ref={addButton} variant="outline" onClick={(event) => openPicker(event.currentTarget)}><Plus aria-hidden="true" />{__('Add destination', 'wconvert')}</Button>}>
                 {emptyText ?? __('Leads stay in WConvert. Add a destination to also send them to your email or SMS service.', 'wconvert')}
               </EmptyState>
             ) : cards.map((destination) => (
@@ -190,6 +197,7 @@ export function DestinationsEditor({
       {picking && <AddDestinationPicker destinations={site} types={types} connections={connections} bound={bound} rule={channel}
         suggested={suggested} returnFocusTo={returnFocus}
         description={title === undefined ? __('Choose one you already use, or set up a new one.', 'wconvert')
+          /* translators: %s: the signup this route is for, e.g. “Optional SMS signup”. */
           : sprintf(__('For %s. Choose one you already use, or set up a new one.', 'wconvert'), title)}
         onClose={() => setPicking(false)}
         onPick={(id) => { returnFocus.current = null; setFocusId(id); setPicking(false); onChange([...bound, id]); }}

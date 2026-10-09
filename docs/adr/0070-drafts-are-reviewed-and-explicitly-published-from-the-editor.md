@@ -61,7 +61,9 @@ A failed settings save preserves typed values and offers another attempt.
 Closing returns focus to Add or the route's Settings control (*amended:* to
 the card's actions menu, or to a new route's card once it is created). Refresh does not
 leave the editor, and a failed read must not be interpreted as an empty site or
-as proof that bound routes were deleted. No test send, re-push or Contact
+as proof that bound routes were deleted. (*Amended:* there is no Refresh
+button; the re-read the Add picker makes keeps the routes on screen, and a
+failed one is reported above them with Retry.) No test send, re-push or Contact
 operation is performed by setup.
 
 ## Review states what it can establish

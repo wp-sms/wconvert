@@ -57,7 +57,9 @@ export function Region({
  * `trailing` is for what belongs on the title's line and is not an action — the
  * window a set of numbers covers, a badge naming a state. Actions do not go
  * here: they are page-scoped and belong in the page header, or region-scoped
- * and belong in a {@see Toolbar} (ADR 0039).
+ * and belong in a {@see Toolbar} (ADR 0039). One exception is recorded there:
+ * the builder's destination regions put **Add destination** on the heading,
+ * where a toolbar holding only it would repeat the region's own boundary.
  */
 export function RegionHeader({
   title,

@@ -246,6 +246,19 @@ describe('the actions on a card', () => {
     expect(screen.queryByRole('alertdialog')).toBeNull();
   });
 
+  it('moves focus to Add once the last card is removed', async () => {
+    function Draft() {
+      const [bound, setBound] = useState<string[]>(['a']);
+      return <DestinationsEditor bound={bound} available={ready([destination({ id: 'a', label: 'Newsletter signups' })])} types={[]} connections={[]}
+        onChange={setBound} onRefresh={vi.fn()} onSaved={vi.fn()} />;
+    }
+    render(<Draft />);
+    await userEvent.click(screen.getByRole('button', { name: 'Actions for Newsletter signups' }));
+    await userEvent.click(screen.getByRole('menuitem', { name: 'Remove from this campaign' }));
+    expect(screen.getByText('No destinations selected')).toBeVisible();
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Add destination' })).toHaveFocus());
+  });
+
   it('sends a test from the card with the suggested address', async () => {
     api.testSend.mockResolvedValue({ outcome: 'success', message: 'Accepted by MailPoet.' });
     editor(ready([destination({ id: 'a', label: 'Newsletter signups', target: 'Newsletter' })]), ['a'], [type({ id: 'mailpoet' })], { testEmail: 'owner@example.com' });

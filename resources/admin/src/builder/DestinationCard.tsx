@@ -11,24 +11,14 @@ import {
 } from '../components/ui/dropdown-menu';
 import { Description } from '../shell/Description';
 import { ProviderMark } from '../destinations/ProviderMark';
-import { targetSaid } from '../destinations/settings';
-import { captureProblems, capturedFields, missingSettings } from '../destinations/requirements';
+import { targetShown } from '../destinations/settings';
+import { listWithAnd } from './rules/sentence';
+import { captureProblems, capturedFields, contactFieldNames, missingSettings } from '../destinations/requirements';
 import { connectionMissing, destinationStatus, setupProblems } from '../destinations/status';
 import { sendingIssuesHref } from '../nav';
 import type { Connection, Destination, DestinationType } from '../destinations/api';
 import type { Template } from '@renderer/types';
 import { ExtraAnswerMapping, hasExtraAnswers, UnsupportedAnswerMapping } from './ExtraAnswerMapping';
-
-const automaticNames = (): Record<string, string> => ({ email: __('email', 'wconvert'), name: __('name', 'wconvert'), phone: __('phone', 'wconvert') });
-
-/** "email", "email and name", "email, name and phone". */
-export function listedFields(names: readonly string[]): string {
-  return names.length === 2
-    ? sprintf(__('%1$s and %2$s', 'wconvert'), names[0], names[1])
-    : names.length === 3
-      ? sprintf(__('%1$s, %2$s and %3$s', 'wconvert'), names[0], names[1], names[2])
-      : names[0] ?? '';
-}
 
 /**
  * One [[Destination]] this Campaign sends a save point to, and whether that is
@@ -64,11 +54,11 @@ export function DestinationCard({
   const status = destinationStatus(destination, type, problems);
   const captures = capturedFields(template, submissionId);
   const fit = template ? captureProblems(destination, captures) : [];
-  const names = automaticNames();
+  const names = contactFieldNames();
   const automatic = captures
     .filter((field) => field.name in names && destination.requirements?.fields.includes(field.name))
     .map((field) => names[field.name]);
-  const target = destination.target === '' ? targetSaid('') : destination.target;
+  const target = targetShown(destination.target);
   const runnable = destination.availability === 'ready' && problems.length === 0;
   const firstField = connectionMissing(destination, type, connections) ? 'connection' : missingSettings(destination.requirements ?? type?.requirements, destination.settings)[0];
 
@@ -85,13 +75,13 @@ export function DestinationCard({
               <span>{sprintf(/* translators: %s: a date and time. */ __('Last sent %s', 'wconvert'), destination.health.last_success_at)}</span>}
           </p>
           {automatic.length > 0 && status.state !== 'needs_setup' &&
-            <Description className="mt-1 [overflow-wrap:anywhere]">{sprintf(__('Sends %s automatically.', 'wconvert'), listedFields(automatic))}</Description>}
+            <Description className="mt-1 [overflow-wrap:anywhere]">{sprintf(/* translators: %s: contact fields, e.g. “email and name”. */ __('Sends %s automatically.', 'wconvert'), listWithAnd(automatic))}</Description>}
         </div>
         <div className="wconvert-destination-card__side">
           {status.badge}
           <DropdownMenu modal={false}>
             <DropdownMenuTrigger asChild>
-              <Button ref={actions} variant="ghost" size="icon-sm" aria-label={sprintf(__('Actions for %s', 'wconvert'), destination.label)}>
+              <Button ref={actions} variant="ghost" size="icon-sm" aria-label={sprintf(/* translators: %s: a destination's name. */ __('Actions for %s', 'wconvert'), destination.label)}>
                 <MoreHorizontal aria-hidden="true" />
               </Button>
             </DropdownMenuTrigger>

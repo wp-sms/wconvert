@@ -356,6 +356,14 @@ export function suggestedName(
  * the sentence a merchant reads while CHOOSING a Destination is the one they
  * read while configuring it.
  */
+/**
+ * The target as a card's meta line shows it: the bare name, and the
+ * {@see targetSaid} sentence only where something must be chosen and nothing is.
+ */
+export function targetShown(target: string | null): string | null {
+  return target === '' ? targetSaid('') : target;
+}
+
 export function targetSaid(target: string | null): string | null {
   if (target === null) {
     return null;

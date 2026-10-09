@@ -46,7 +46,12 @@ The editor checks its current template against selected routes.
 > refused with a reason when already bound or for the wrong audience channel,
 > and providers to set up a new one. The optional second signup uses the same
 > editor over its own submission. Shared usage is shown in the edit dialog,
-> not on the card.
+> not on the card. This amends the editor placement in
+> [0039](0039-a-screen-is-regions-and-scope-decides-placement.md) (Refresh
+> removed), the setup rules in
+> [0070](0070-drafts-are-reviewed-and-explicitly-published-from-the-editor.md)
+> (a route created here is selected), and the Builder — Destinations row of
+> [0060](0060-a-screen-is-four-situations-and-they-are-answered-the-same-way.md).
 
 An absent
 identifier is explained differently from an optional one: optional email with a

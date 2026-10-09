@@ -205,6 +205,8 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
   const [playbook, setPlaybook] = useState<Loadable<string | null>>(LOADING);
 
   const [destinations, setDestinations] = useState<Loadable<DestinationsPayload>>(LOADING);
+  /** A re-read that failed while routes were on screen: they stay, and this says so (ADR 0060). */
+  const [destinationsStale, setDestinationsStale] = useState<string | null>(null);
 
   const [privacyGuidance, setPrivacyGuidance] = useState(false);
 
@@ -356,11 +358,17 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
     const request = ++destinationRequest.current;
     // A refresh keeps the routes on screen (ADR 0060): the Add picker refreshes
     // as it opens, and must not blank itself while the answer arrives. Only a
-    // read with nothing to keep shows loading, or its failure.
+    // read with nothing to keep shows loading; a failed re-read keeps the
+    // routes and reports itself beside them.
     setDestinations((current) => current.status === 'ready' ? current : LOADING);
+    setDestinationsStale(null);
     void readDestinations()
       .then((payload) => { if (request === destinationRequest.current) setDestinations(ready(payload)); })
-      .catch((cause: unknown) => { if (request === destinationRequest.current) setDestinations((current) => current.status === 'ready' ? current : failed(cause)); });
+      .catch((cause: unknown) => {
+        if (request !== destinationRequest.current) return;
+        setDestinations((current) => current.status === 'ready' ? current : failed(cause));
+        setDestinationsStale(messageOf(cause));
+      });
   }, []);
   useEffect(() => {
     const requests = destinationRequest;
@@ -728,6 +736,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
     setDestinations((current) => current.status === 'ready'
       ? ready({ ...current.data, destinations: [...updated] }) : current);
   };
+  const routes: Loadable<readonly Destination[]> = destinations.status === 'ready' ? ready(destinations.data.destinations) : destinations;
   const localCapture = captureOutcome?.audience_channel != null && config.capture_mode === 'local';
   const hint = hintIn(config);
   const destinationEditor = <>
@@ -739,9 +748,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
               bound={bound}
               local={localCapture}
               title={template?.tree.submissions[1] ? __('Main signup', 'wconvert') : undefined}
-              available={
-                destinations.status === 'ready' ? ready(destinations.data.destinations) : destinations
-              }
+              available={routes}
               types={read(destinations)?.types ?? []}
               connections={read(destinations)?.connections ?? []}
               testEmail={read(destinations)?.test_sample?.email ?? null}
@@ -749,6 +756,7 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
               suggested={[...(hint?.types ?? []), ...(captureOutcome?.destination_type ? [captureOutcome.destination_type] : [])]}
               onConnectionSaved={connectionSaved}
               onRefresh={refreshDestinations}
+              refreshError={destinationsStale}
               onSaved={destinationsSaved}
               onChange={(next) => {
                 const current = (config.integration_mappings ?? {}) as Record<string, Record<string, Record<string, string>>>;
@@ -765,9 +773,9 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
               }}
             />
             <SubmissionSettings types={read(destinations)?.types ?? []} connections={read(destinations)?.connections ?? []} onConnectionSaved={connectionSaved}
-              onSaved={destinationsSaved} onRefresh={refreshDestinations} testEmail={read(destinations)?.test_sample?.email ?? null}
+              onSaved={destinationsSaved} onRefresh={refreshDestinations} refreshError={destinationsStale} testEmail={read(destinations)?.test_sample?.email ?? null}
               template={template} primaryChannel={captureOutcome?.audience_channel} config={config}
-              available={destinations.status === 'ready' ? ready(destinations.data.destinations) : destinations} onChange={edit} />
+              available={routes} onChange={edit} />
   </>;
 
   return (

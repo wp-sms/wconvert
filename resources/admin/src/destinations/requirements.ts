@@ -25,6 +25,11 @@ export function capturedFields(template: Template | undefined, submissionId?: st
   return fields;
 }
 
+/** The contact fields a provider takes without mapping, in the words a sentence uses. */
+export const contactFieldNames = (): Readonly<Record<string, string>> => ({
+  email: __('email', 'wconvert'), name: __('name', 'wconvert'), phone: __('phone', 'wconvert'),
+});
+
 const names: Readonly<Record<string, string>> = {
   email: __('email address', 'wconvert'), phone: __('phone number', 'wconvert'), name: __('name', 'wconvert'), interest: __('interest answer', 'wconvert'),
 };

@@ -6,7 +6,7 @@ import { Input } from '../components/ui/input';
 import { ProviderMark } from '../destinations/ProviderMark';
 import { isShown, renderingFor, tierProductName } from '../goals/availability';
 import { destinationStatus, setupProblems } from '../destinations/status';
-import { targetSaid } from '../destinations/settings';
+import { targetShown } from '../destinations/settings';
 import type { Connection, Destination, DestinationType } from '../destinations/api';
 
 /**
@@ -22,22 +22,22 @@ export interface ChannelRule { readonly channel: string; readonly strict: boolea
 
 const channels = (requirements: DestinationType['requirements'] | Destination['requirements']) => requirements?.audience_channels ?? [];
 
-export function refusesChannel(accepted: readonly string[], rule: ChannelRule | null): boolean {
-  if (rule === null) return false;
-  if (accepted.includes(rule.channel)) return false;
-  return rule.strict || accepted.length > 0;
+/** Why a route taking these channels cannot receive this save point, or null where it can. */
+export function channelRefusal(accepted: readonly string[], rule: ChannelRule | null): string | null {
+  if (rule === null || accepted.includes(rule.channel) || (!rule.strict && accepted.length === 0)) return null;
+  return rule.channel === 'phone'
+    ? __('Doesn’t take phone numbers.', 'wconvert')
+    : __('Doesn’t take email addresses.', 'wconvert');
 }
-
-const wrongChannelSaid = (rule: ChannelRule) => rule.channel === 'phone'
-  ? __('Doesn’t take phone numbers.', 'wconvert')
-  : __('Doesn’t take email addresses.', 'wconvert');
 
 /** Why a provider cannot be chosen here, or null where it can. */
 export function providerRefusal(type: DestinationType, rule: ChannelRule | null): string | null {
   const rendering = renderingFor(type.availability, 'settings_list');
+  /* translators: %s: the product that supplies it, e.g. “WConvert Pro”. */
   if (rendering === 'upsell') return sprintf(__('Included with %s.', 'wconvert'), tierProductName(type.tier));
+  /* translators: %s: the plugin or platform it needs, e.g. “WP SMS”. */
   if (rendering !== 'offer') return sprintf(__('Needs %s on this site.', 'wconvert'), type.requires_label ?? __('something this site does not have', 'wconvert'));
-  return refusesChannel(channels(type.requirements), rule) ? wrongChannelSaid(rule as ChannelRule) : null;
+  return channelRefusal(channels(type.requirements), rule);
 }
 
 /**
@@ -124,9 +124,8 @@ export function AddDestinationPicker({
               {routes.map((destination) => {
                 const type = typeOf(destination);
                 const why = bound.includes(destination.id) ? __('Already sending.', 'wconvert')
-                  : refusesChannel(channels(destination.requirements), rule) ? wrongChannelSaid(rule as ChannelRule) : null;
-                // The card's rule: the bare target, and a sentence only where nothing is chosen.
-                const target = destination.target === '' ? targetSaid('') : destination.target;
+                  : channelRefusal(channels(destination.requirements), rule);
+                const target = targetShown(destination.target);
                 return (
                   <li key={destination.id}>
                     <button type="button" className="wconvert-picker-row" aria-disabled={why === null ? undefined : true}

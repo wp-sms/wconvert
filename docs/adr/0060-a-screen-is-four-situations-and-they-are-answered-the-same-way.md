@@ -287,6 +287,14 @@ admin"*. Read down a column to find a gap.
 | **Builder — Destinations** | `RowsSkeleton` | `EmptyState` | `RegionErrorState` | bindable routes |
 | **Milestones** | renders nothing, deliberately | the disclosure, collapsed — see the correction below | `RegionErrorState` | a next step + what was recorded |
 
+*Builder — Destinations row amended by
+[0074](0074-destinations-declare-requirements-and-show-shared-usage.md)'s tab
+redesign: "Ready" is the bound routes as cards, not every bindable route. Empty
+has two cases — a site with no routes shows the providers to set one up in
+place, and routes with none selected shows `EmptyState` + *Add destination*. A
+failed first read is `RegionErrorState` + Retry; a failed re-read keeps the
+cards under `RegionError` + Retry.*
+
 Two columns are deliberately thin. *Empty* is `n/a` wherever the region holds a
 SETTING rather than a collection: a retention period has no empty state, it has
 a default. And the builder's frame has no empty state because an Optin that does

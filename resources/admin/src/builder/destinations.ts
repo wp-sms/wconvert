@@ -5,15 +5,15 @@ import { compatibilityProblems, type CapturedField } from '../destinations/requi
 
 /**
  * What the builder says about this [[Optin]]'s [[Destination]]s: where the
- * [[Lead]]s go, what is stopping them getting there, and what the [[Playbook]]
- * expected — the last of which nothing read at all until now.
+ * [[Lead]]s go, what is stopping them getting there, and which types the
+ * [[Playbook]] expected.
  *
  * ============================================================================
  * NAMED FOR THE SUBJECT, NOT FOR EITHER OF THE TWO SCREENS THAT READ IT.
  * ============================================================================
- * The readiness panel takes the first two sentences and the Destinations tab
- * takes the third, so a file named for either would fit half of itself. What
- * every function here has in common is the noun.
+ * The readiness panel takes the sentences and the Destinations tab takes the
+ * hint, so a file named for either would fit half of itself. What every
+ * function here has in common is the noun.
  *
  * ============================================================================
  * PURE, BECAUSE THE SENTENCES ARE THE PART WORTH PINNING.
@@ -29,11 +29,14 @@ import { compatibilityProblems, type CapturedField } from '../destinations/requi
  * The [[Playbook]]'s [[Destination]] hint, as `Prefill` stored it.
  *
  * ============================================================================
- * IT HAS BEEN WRITTEN SINCE PREFILL SHIPPED AND READ BY NOTHING.
+ * IT WAS WRITTEN SINCE PREFILL SHIPPED AND READ BY NOTHING.
  * ============================================================================
  * `Prefill::fromPlaybook()` copies it into `config`, `PublishedProjection`
  * deliberately strips it on the way to the browser because it is authoring
- * state — and no screen has ever opened it. So a merchant who started from
+ * state. The Destinations tab now reads its `types`, tagging those providers
+ * *Suggested by your campaign setup*; `fields` is kept as stored and read by
+ * nothing, since the form-fit warnings already say what a route needs. Before
+ * that, no screen opened it at all — so a merchant who started from
  * *Welcome discount* was told, in the Playbook's own notes, that the trade is
  * an address for a discount, and then met a Destinations tab that said nothing
  * about which Destination the Playbook was written for.

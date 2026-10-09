@@ -1305,6 +1305,26 @@ describe('the summary', () => {
     expect(destinations.readDestinations).toHaveBeenCalledTimes(2);
     expect(within(screen.getByRole('dialog', { name: 'Add a destination' })).getByRole('button', { name: /WP SMS contacts/ })).toBeVisible();
   });
+
+  /** A failed re-read keeps the routes on screen and says so, with Retry (ADR 0060). */
+  it('says a re-read failed without dropping the routes on screen', async () => {
+    const route = { id: 'd1', type: 'wsms', label: 'WP SMS contacts', connection: null, settings: {}, target: null, availability: 'ready',
+      health: { last_success_at: null, last_error: null, last_error_at: null, consecutive_failures: 0, skipped_captures: 0, last_skipped_at: null } };
+    destinations.readDestinations
+      .mockResolvedValueOnce({ destinations: [route], types: [] })
+      .mockRejectedValueOnce(new Error('The site did not answer.'))
+      .mockResolvedValue({ destinations: [route], types: [] });
+    builder.getOptin.mockResolvedValue(optin({ config: { ...optin().config, destinations: ['d1'] } }));
+    await open();
+    await userEvent.click(await screen.findByRole('tab', { name: 'Destinations' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Add destination' }));
+    await userEvent.keyboard('{Escape}');
+    expect(await screen.findByText('The site did not answer.')).toBeVisible();
+    expect(screen.getByRole('article', { name: 'WP SMS contacts' })).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('button', { name: 'Retry' }));
+    await waitFor(() => expect(screen.queryByText('The site did not answer.')).toBeNull());
+    expect(destinations.readDestinations).toHaveBeenCalledTimes(3);
+  });
 });
 
 
