@@ -64,7 +64,10 @@ it('cancels a switch and keeps the method in use', async () => {
   const onChange = vi.fn();
   render(<PlacementSettings optinId="example" published config={{ display_rules: displayPlan([{ type: 'time_on_page', seconds: 10 }]) }} vocabulary={vocabulary} onChange={onChange} />);
   await user.click(screen.getByRole('radio', { name: 'Content lock' }));
-  expect(within(screen.getByRole('region', { name: 'Switch to content lock?' })).queryByText('Where does it show?')).toBeNull();
+  const confirm = screen.getByRole('region', { name: 'Switch to content lock?' });
+  expect(within(confirm).queryByText('Where does it show?')).toBeNull();
+  // Cancel first and the action last, as in every dialog.
+  expect(within(confirm).getAllByRole('button').map((button) => button.textContent)).toEqual(['Keep Manual', 'Switch to content lock']);
   await user.click(screen.getByRole('button', { name: 'Keep Manual' }));
   expect(onChange).not.toHaveBeenCalled();
   expect(screen.getByRole('radio', { name: 'Manual' })).toBeChecked();
@@ -81,7 +84,7 @@ it('offers the door when automatic placement no longer opens right away', async 
 
 it('Free explains manual placement without carrying the premium controls', () => {
   render(<InlinePlacementSettings optinId="example" published config={{}} vocabulary={vocabulary} onChange={() => undefined} />);
-  expect(screen.getByText('Place this Campaign with its block or shortcode.')).toBeInTheDocument();
+  expect(screen.getByText('Place this campaign with its block or shortcode.')).toBeInTheDocument();
   expect(screen.queryByText(/Pro/)).toBeNull();
   expect(screen.queryByRole('radio')).toBeNull();
 });
@@ -90,7 +93,7 @@ it('Free explains manual placement without carrying the premium controls', () =>
 it('Free explains retained automatic placement and content lock without selling either', () => {
   render(<InlinePlacementSettings optinId="example" published config={{ inline_placement: { position: 'after_content' }, content_lock: { mode: 'hide' } }} vocabulary={vocabulary} onChange={() => undefined} />);
   expect(screen.getByText('Content lock isn’t available on this site. The selected region stays readable.')).toBeInTheDocument();
-  expect(screen.getByText('Automatic placement isn’t available on this site. You can still place this Campaign manually with its block or shortcode.')).toBeInTheDocument();
+  expect(screen.getByText('Automatic placement isn’t available on this site. You can still place this campaign manually with its block or shortcode.')).toBeInTheDocument();
   expect(screen.queryByText(/Pro/)).toBeNull();
 });
 

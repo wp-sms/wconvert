@@ -90,6 +90,17 @@ warning; finite retention is stated without manufacturing a warning. The
 screen is read-only and links to the existing owners for destination setup and
 request work rather than creating another compliance dashboard.
 
+*Amended by [ADR 0131](0131-one-way-to-show-each-thing-in-the-admin.md): the
+disclosure and its sections of paragraphs are gone. The region "What visitor
+data is stored" is always open and is a table — what is stored (with where),
+why, how long — one row per record this install can prove, followed by a
+"Sent to other services" table (destinations, analytics, bot verification) and
+the separate-copies sentence. The fine print (cookie fallback, eviction,
+blocked storage, add-on notes) sits in a closed inline disclosure. A failed
+read keeps the region's title and offers "Try again". Indefinite retention is
+stated in the table rather than drawn as a warning, and no stored key, raw
+field key or provider key reaches the screen.*
+
 ## Consequences
 
 - Changing retention or destination configuration changes the next admin read

@@ -1,51 +1,78 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useId, useState } from 'react';
 import apiFetch from '@wordpress/api-fetch';
 import { __ } from '@wordpress/i18n';
-import { Region, RegionBody, RegionHeader } from '../shell/Region';
+import { Button } from '../components/ui/button';
+import { Region, RegionBody, RegionErrorState, RegionFooter, RegionHeader } from '../shell/Region';
+import { RegionSkeleton } from '../shell/RegionSkeleton';
+import { Description } from '../shell/Description';
+import { SaveStatus, useSaveStatus } from '../shell/SaveStatus';
+import { failed, LOADING, messageOf, ready, type Loadable } from '../shell/loadable';
 import { setPhoneSiteCountry } from '../phoneSiteCountry';
 import { PhoneCountryPicker, type Country } from '../PhoneCountryPicker';
+import { useSettingsEditing, type SettingsEditing } from './useSettingsEditing';
 
 interface Response { country: string; countries: Country[] }
 const path = '/wconvert/v1/optins/phone-country';
 
-/** A single reversible site setting; selecting a country saves it immediately. */
-export function SitePhoneCountry() {
-  const [selected, setSelected] = useState('');
-  const [countries, setCountries] = useState<Country[]>([]);
-  const [error, setError] = useState('');
+/**
+ * The country a phone field starts on, site-wide. An explicit Save like every
+ * other settings section (ADR 0131): choosing a country is a draft until then.
+ */
+export function SitePhoneCountry({ onEditingStateChange }: { onEditingStateChange?: SettingsEditing } = {}) {
+  const id = useId();
+  const [state, setState] = useState<Loadable<Response>>(LOADING);
+  const [draft, setDraft] = useState('');
+  const [error, setError] = useState<string | null>(null);
   const [saving, setSaving] = useState(false);
+  const [retry, setRetry] = useState(0);
+  const status = useSaveStatus();
   useEffect(() => {
     let active = true;
+    setState(LOADING);
     apiFetch<Response>({ path }).then(value => {
       if (!active) return;
-      setSelected(value.country);
-      setCountries(value.countries);
+      setState(ready(value));
+      setDraft(value.country);
       setPhoneSiteCountry(value.country);
-    }).catch(() => { if (active) setError(__('Could not load phone countries.', 'wconvert')); });
+    }).catch((cause: unknown) => { if (active) setState(failed(cause)); });
     return () => { active = false; };
-  }, []);
-  const change = async (country: string) => {
-    const before = selected;
-    setSelected(country);
+  }, [retry]);
+  const saved = state.status === 'ready' ? state.data.country : null;
+  const dirty = saved !== null && draft !== saved;
+  useSettingsEditing(dirty, saving, onEditingStateChange);
+  const save = async () => {
+    if (state.status !== 'ready' || !dirty || saving) return;
     setSaving(true);
-    setError('');
+    setError(null);
     try {
-      const result = await apiFetch<Response>({ path, method: 'POST', data: { country } });
-      setSelected(result.country);
+      const result = await apiFetch<Response>({ path, method: 'POST', data: { country: draft } });
+      setState(ready({ ...state.data, country: result.country }));
+      setDraft(result.country);
       setPhoneSiteCountry(result.country);
-    } catch {
-      setSelected(before);
-      setError(__('Could not save the starting country.', 'wconvert'));
+      status.markSaved();
+    } catch (cause) {
+      setError(messageOf(cause));
     } finally { setSaving(false); }
   };
+  const title = __('Phone input', 'wconvert');
+  if (state.status === 'loading') return <RegionSkeleton label={title} lines={1} />;
+  if (state.status === 'failed') return <Region>
+    <RegionHeader title={title} />
+    <RegionErrorState message={state.message} onRetry={() => setRetry(value => value + 1)} />
+  </Region>;
   return <Region>
-    <RegionHeader title={__('Phone input', 'wconvert')} description={__('Starting country for phone fields across this site.', 'wconvert')} />
-    <RegionBody>
-      <PhoneCountryPicker label={__('Default country', 'wconvert')} value={selected} countries={countries}
-        onChange={country => void change(country)} disabled={countries.length === 0 || saving} />
-      {saving && <p role="status" className="mt-2 text-note">{__('Saving…', 'wconvert')}</p>}
-      <p className="mt-2 text-note text-muted-foreground">{__('Campaigns can override this. Republish campaigns using the site default to apply changes.', 'wconvert')}</p>
-      {error && <p role="alert" className="mt-2 text-destructive">{error}</p>}
+    <RegionHeader title={title} description={__('The country phone fields start on across this site.', 'wconvert')} />
+    <RegionBody className="flex flex-col gap-1.5">
+      <PhoneCountryPicker field label={__('Default country', 'wconvert')} value={draft} countries={state.data.countries}
+        describedBy={`${id}-hint`} disabled={saving}
+        onChange={country => { setDraft(country); setError(null); status.clear(); }} />
+      <Description id={`${id}-hint`}>{__('Campaigns can choose their own. A published campaign keeps the country it was published with, so republish it to use a new default.', 'wconvert')}</Description>
     </RegionBody>
+    <RegionFooter className="flex flex-wrap items-center justify-end gap-3">
+      {error && <p role="alert" className="m-0 text-note text-destructive">{error}</p>}
+      <SaveStatus saved={status.saved} />
+      <Button type="button" variant="outline" disabled={!dirty || saving} onClick={() => { setDraft(state.data.country); setError(null); }}>{__('Cancel changes', 'wconvert')}</Button>
+      <Button type="button" disabled={!dirty || saving} onClick={() => void save()}>{saving ? __('Saving…', 'wconvert') : __('Save phone country', 'wconvert')}</Button>
+    </RegionFooter>
   </Region>;
 }

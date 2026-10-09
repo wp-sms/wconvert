@@ -83,3 +83,6 @@ found the system intact and its application drifted:
   default.
 - A dialog that needs a nested view (a lead's group history → one submission)
   opens it in place with Back rather than over itself.
+- Data & privacy's fifteen paragraphs became a table — what is stored, why,
+  how long — with the fine print in a closed disclosure. ADRs 0091 and 0094
+  are amended inline.
