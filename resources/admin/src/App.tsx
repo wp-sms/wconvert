@@ -44,6 +44,7 @@ export function App() {
   const section = route.section;
   const [creating, setCreating] = useState(false);
   const [campaignBusy, setCampaignBusy] = useState(false);
+  const [campaignsEmpty, setCampaignsEmpty] = useState(false);
   const campaignBusyRef = useRef(false);
   const onCampaignEditingStateChange = useCallback((state: EditingState) => {
     campaignBusyRef.current = state.busy;
@@ -90,7 +91,8 @@ export function App() {
     <Shell section={section} hidePageHeading={section === 'optins' && creating}
       hideDescription={section === 'leads'}
       pageTitle={section === 'leads' && route.leadsView === 'issues' ? __('Sending issues', 'wconvert') : undefined}
-      actions={section === 'optins' && !creating ? createButton : section === 'leads'
+      // An empty list carries its own Create button; one primary action per screen.
+      actions={section === 'optins' && !creating ? (campaignsEmpty ? undefined : createButton) : section === 'leads'
         ? route.leadsView === 'issues'
           ? <Button asChild variant="outline"><a href={leadsHref(route.leads)}><ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />{__('Back to Leads', 'wconvert')}</a></Button>
           : sendingCount !== null && sendingCount > 0
@@ -107,6 +109,7 @@ export function App() {
           creating={creating}
           onEditingStateChange={onCampaignEditingStateChange}
           onCreate={startCreating}
+          onEmptyChange={setCampaignsEmpty}
           onCancelCreate={() => setCreating(false)}
           onEdit={(id) => navigation.requestNavigation(editorHref(id, navigation.hash || '#optins'))}
         />
@@ -141,12 +144,14 @@ function OptinsSection({
   creating,
   onEditingStateChange,
   onCreate,
+  onEmptyChange,
   onCancelCreate,
   onEdit,
 }: {
   creating: boolean;
   onEditingStateChange: (state: EditingState) => void;
   onCreate: () => void;
+  onEmptyChange: (empty: boolean) => void;
   onCancelCreate: () => void;
   onEdit: (id: string) => void;
 }) {
@@ -163,7 +168,7 @@ function OptinsSection({
    */
   return (
     <div className="flex flex-col gap-5">
-      <OptinList onEdit={onEdit} onCreate={onCreate} onBusyChange={onListBusyChange} />
+      <OptinList onEdit={onEdit} onCreate={onCreate} onBusyChange={onListBusyChange} onEmptyChange={onEmptyChange} />
     </div>
   );
 }

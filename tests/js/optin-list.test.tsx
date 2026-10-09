@@ -431,8 +431,7 @@ describe('the door into the eligibility inspector', () => {
 
     render(<OptinList onEdit={() => undefined} />);
 
-    await userEvent.click(await screen.findByRole('button', { name: /More actions/ }));
-    await userEvent.click(await screen.findByRole('menuitem', { name: 'Check visibility' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Why isn’t a campaign showing?' }));
 
     const field = await screen.findByLabelText('Page to open');
 
@@ -460,8 +459,7 @@ describe('the door into the eligibility inspector', () => {
 
     render(<OptinList onEdit={() => undefined} />);
 
-    await userEvent.click(await screen.findByRole('button', { name: /More actions/ }));
-    await userEvent.click(await screen.findByRole('menuitem', { name: 'Check visibility' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Why isn’t a campaign showing?' }));
     await userEvent.type(await screen.findByLabelText('Page to open'), 'not a page');
     await userEvent.click(screen.getByRole('button', { name: 'Open the page' }));
 
@@ -482,8 +480,7 @@ describe('the door into the eligibility inspector', () => {
 
     render(<OptinList onEdit={() => undefined} />);
 
-    await userEvent.click(await screen.findByRole('button', { name: /More actions/ }));
-    await userEvent.click(await screen.findByRole('menuitem', { name: 'Check visibility' }));
+    await userEvent.click(await screen.findByRole('button', { name: 'Why isn’t a campaign showing?' }));
 
     expect(await screen.findByText(/a cache is serving that page before WordPress runs/)).toBeInTheDocument();
   });
@@ -532,7 +529,7 @@ describe('an A/B test on the list', () => {
     await userEvent.type(screen.getByRole('searchbox', { name: 'Search campaigns' }), '(B)');
     expect(screen.getByRole('button', { name: OPTIN.name })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: ARM_B.name })).toBeInTheDocument();
-    await userEvent.click(screen.getByRole('radio', { name: 'Published' }));
+    await userEvent.type(screen.getByRole('searchbox', { name: 'Search campaigns' }), ' nothing like this');
     expect(screen.getByText('No campaigns found')).toBeInTheDocument();
     await userEvent.click(screen.getByRole('button', { name: 'Clear filters' }));
     expect(screen.getByRole('searchbox')).toHaveValue('');
@@ -759,11 +756,22 @@ it('draws Details as the campaign, its numbers, and two doors out', async () => 
 });
 
 describe('the Campaigns workspace', () => {
+  it('sorts by results in the period when asked', async () => {
+    const quiet = { ...OPTIN, id: '01JQ00000000000000000000ZZ', name: 'Quiet campaign' };
+    optins.listOptins.mockResolvedValue([quiet, OPTIN]);
+    stats.readDashboard.mockResolvedValue({ days: 30, from: '2026-08-16', to: '2026-09-14', goals: [{ action: 'submit', result_label: 'Submissions', optins: [{ id: OPTIN.id, conversions: 9, impressions: 90, conversion_rate: 0.1 }, { id: quiet.id, conversions: 1, impressions: 90, conversion_rate: 0.01 }] }] });
+    render(<OptinList onEdit={() => undefined} />);
+    await screen.findByRole('link', { name: `View ${OPTIN.name} report` });
+    expect(screen.getAllByRole('row').slice(1)[0]).toHaveAccessibleName(quiet.name);
+    await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Sort campaigns' }), 'results');
+    expect(screen.getAllByRole('row').slice(1)[0]).toHaveAccessibleName(OPTIN.name);
+  });
+
   it('uses conversions and the server result unit, never the delivery headline', async () => {
     stats.readDashboard.mockResolvedValue({ days: 30, from: '2026-08-16', to: '2026-09-14', goals: [{ action: 'submit', result_label: 'Resource requests', optins: [{ id: OPTIN.id, headline: 3, conversions: 7, impressions: 20, conversion_rate: 0.35 }] }] });
     render(<OptinList onEdit={() => undefined} />);
     const row = await screen.findByRole('row', { name: OPTIN.name });
-    expect(await within(row).findByRole('link', { name: `View ${OPTIN.name} report` })).toHaveTextContent('7Resource requests');
+    expect(await within(row).findByRole('link', { name: `View ${OPTIN.name} report` })).toHaveTextContent(/^7Resource requests35(\.0)?% of 20 shown$/);
     expect(stats.readDashboard).toHaveBeenCalledWith(30, true);
     await userEvent.click(within(row).getByRole('button', { name: /More actions/ }));
     expect(await screen.findByRole('menuitem', { name: 'View submissions' })).toHaveAttribute('href', expect.stringContaining('from=2026-08-16'));
@@ -847,6 +855,8 @@ it('makes preview and vocabulary failures recoverable without presenting missing
 });
 
 it('lets keyboard users move between mutually exclusive views and filters', async () => {
+  const live = { ...OPTIN, id: 'live', name: 'Live campaign', published_at: '2026-10-01 10:00:00' };
+  optins.listOptins.mockResolvedValue([OPTIN, live]);
   render(<OptinList onEdit={() => undefined} />);
   await screen.findByRole('row', { name: OPTIN.name });
   await userEvent.click(screen.getByRole('radio', { name: 'List view' }));
@@ -856,6 +866,24 @@ it('lets keyboard users move between mutually exclusive views and filters', asyn
   await userEvent.keyboard('{ArrowRight}');
   expect(screen.getByRole('radio', { name: 'Published' })).toBeChecked();
   expect(screen.queryByRole('row', { name: OPTIN.name })).toBeNull();
+});
+
+it('offers only the statuses some campaign is in', async () => {
+  render(<OptinList onEdit={() => undefined} />);
+  await screen.findByRole('row', { name: OPTIN.name });
+  // One draft: Published and Suspended would each filter to nothing.
+  expect(screen.getByRole('radio', { name: 'All' })).toBeInTheDocument();
+  expect(screen.getByRole('radio', { name: 'Drafts' })).toBeInTheDocument();
+  expect(screen.queryByRole('radio', { name: 'Published' })).toBeNull();
+  expect(screen.queryByRole('radio', { name: 'Suspended' })).toBeNull();
+});
+
+it('asks for the empty list to carry the only Create button', async () => {
+  optins.listOptins.mockResolvedValue([]);
+  const onEmptyChange = vi.fn();
+  render(<OptinList onEdit={() => undefined} onCreate={() => undefined} onEmptyChange={onEmptyChange} />);
+  await screen.findByRole('button', { name: /Create your first campaign/ });
+  expect(onEmptyChange).toHaveBeenLastCalledWith(true);
 });
 
 it('keeps other campaign families actionable while a write is pending', async () => {

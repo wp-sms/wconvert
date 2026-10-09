@@ -16,7 +16,6 @@ import {
   MoreHorizontal,
   Plus,
   Search,
-  SlidersHorizontal,
   Split,
   Stethoscope,
   Trash2,
@@ -44,9 +43,9 @@ import { EmptyState } from '../shell/EmptyState';
 import { OptionStrip } from '../shell/OptionStrip';
 import { Region, RegionError, RegionErrorState } from '../shell/Region';
 import { LOADING, failed, messageOf, ready, type Loadable } from '../shell/loadable';
-import { leadsHref, reportHref, settingsHref } from '../nav';
+import { leadsHref, reportHref } from '../nav';
 import { readDashboard, type DashboardPayload } from '../stats/api';
-import { formatCount, formatRange, labelOf } from '../lib/format';
+import { formatCount, formatRange, formatRate, labelOf } from '../lib/format';
 import { InspectDialog } from './InspectDialog';
 import {
   campaignName,
@@ -94,10 +93,13 @@ export function OptinList({
   onEdit,
   onCreate,
   onBusyChange,
+  onEmptyChange,
 }: {
   onEdit: (id: string) => void;
   onCreate?: () => void;
   onBusyChange?: (busy: boolean) => void;
+  /** An empty list carries the one Create button, so the header drops its own. */
+  onEmptyChange?: (empty: boolean) => void;
 }) {
   const [list, setList] = useState<Loadable<OptinSummary[]>>(LOADING);
   const [labelsError, setLabelsError] = useState<string | null>(null);
@@ -212,9 +214,17 @@ export function OptinList({
         `${r.name} ${labels?.[r.goal] ?? ''}`.toLocaleLowerCase().includes(needle) ||
         r.id.toLocaleLowerCase() === needle,
     );
+  // A family ranks by its own row's results; variants stay under it.
+  const resultOf = (c: OptinSummary) => numbers[c.id]?.count ?? -1;
   const visible = rows
     .filter(matches)
-    .sort((a, b) => (sort === 'name' ? a.name.localeCompare(b.name) : b.id.localeCompare(a.id)));
+    .sort((a, b) =>
+      sort === 'name'
+        ? a.name.localeCompare(b.name)
+        : sort === 'results'
+          ? resultOf(b) - resultOf(a) || b.id.localeCompare(a.id)
+          : b.id.localeCompare(a.id),
+    );
   const lastPage = Math.max(0, Math.ceil(visible.length / PAGE_SIZE) - 1),
     currentPage = Math.min(page, lastPage);
   const shown = visible.slice(currentPage * PAGE_SIZE, (currentPage + 1) * PAGE_SIZE);
@@ -347,12 +357,13 @@ export function OptinList({
     return (
       <CampaignRow key={row.id} name={name} arm={arm}>
         <DataTableCell label={__('Campaign', 'wconvert')} className="wconvert-campaign-identity">
+          {/* The name is the keyboard door to Details; the picture is a second, pointer-only one. */}
           <button
             type="button"
             className="wconvert-preview-button"
-            aria-haspopup="dialog"
+            tabIndex={-1}
+            aria-hidden="true"
             onClick={(e) => openDetails(row, e.currentTarget)}
-            aria-label={sprintf(__('Details for %s', 'wconvert'), name)}
           >
             {preview(row)}
           </button>
@@ -400,6 +411,12 @@ export function OptinList({
             >
               <strong>{formatCount(result.count)}</strong>
               <span>{result.label}</span>
+              {result.shown > 0 && (
+                <span>
+                  {/* translators: 1: a conversion rate such as "2.5%", 2: how many times the campaign was shown. */}
+                  {sprintf(__('%1$s of %2$s shown', 'wconvert'), formatRate(result.rate), formatCount(result.shown))}
+                </span>
+              )}
             </a>
           ) : !reportReady && reportLoading ? (
             <Skeleton aria-hidden="true" className="ms-auto w-10 max-w-full" style={{ blockSize: '1lh' }} />
@@ -430,7 +447,6 @@ export function OptinList({
             days={period.days}
             range={report ? { from: report.from, to: report.to } : undefined}
             onDetails={(trigger) => openDetails(row, trigger)}
-            onInspect={() => setInspecting(true)}
             onDuplicate={() =>
               void run(
                 parent.id,
@@ -446,6 +462,7 @@ export function OptinList({
     );
   };
   const empty = list.status === 'ready' && rows.length === 0;
+  useEffect(() => onEmptyChange?.(empty), [empty, onEmptyChange]);
   const decisionName = decision ? nameOf(decision.row) : '';
   const decisionArm = decision?.row.parent_id !== null && decision?.row.parent_id !== undefined;
   return (
@@ -500,13 +517,18 @@ export function OptinList({
                       setFilter(value as typeof filter);
                       setPage(0);
                     }}
-                    options={filters.map(([id, label]) => ({
-                      value: id,
-                      label,
-                      count: list.status === 'ready'
-                        ? rows.filter((c) => id === 'all' || family(c).some((r) => statusOf(r) === id)).length
-                        : undefined,
-                    }))}
+                    // A status nothing is in filters nothing, so only All and
+                    // the statuses in use are offered — and the selected one,
+                    // so a chip never vanishes from under the pointer.
+                    options={filters
+                      .map(([id, label]) => ({
+                        value: id,
+                        label,
+                        count: list.status === 'ready'
+                          ? rows.filter((c) => id === 'all' || family(c).some((r) => statusOf(r) === id)).length
+                          : undefined,
+                      }))
+                      .filter((option) => option.value === 'all' || option.value === filter || option.count !== 0)}
                   />
                   <label className="wconvert-campaign-period">
                     {__('Results period', 'wconvert')}
@@ -536,6 +558,7 @@ export function OptinList({
                     >
                       <option value="newest">{__('Newest first', 'wconvert')}</option>
                       <option value="name">{__('Name A–Z', 'wconvert')}</option>
+                      <option value="results">{__('Most results', 'wconvert')}</option>
                     </NativeSelect>
                     <div className="wconvert-campaign-layout" role="group" aria-label={__('Campaign layout', 'wconvert')}>
                       <label>
@@ -624,10 +647,14 @@ export function OptinList({
                 )}
                 {list.status === 'ready' && !empty && report && <> · {formatRange(report.from, report.to)}</>}
               </span>
-              <a href={settingsHref('experience')}>
-                <SlidersHorizontal aria-hidden="true" />
-                {__('Visitor experience', 'wconvert')}
-              </a>
+              {/*
+                The inspector explains every campaign on whichever page it is
+                given, so it is the list's question, not one row's.
+              */}
+              <button type="button" className="wconvert-campaign-footer__link" aria-haspopup="dialog" onClick={() => setInspecting(true)}>
+                <Stethoscope aria-hidden="true" />
+                {__('Why isn’t a campaign showing?', 'wconvert')}
+              </button>
               {shown.some((c) => c.arms.length > 0) && (
                 <p className="wconvert-campaign-test-note">
                   {__('A/B tests split visitors by browser, not by person.', 'wconvert')}
@@ -641,7 +668,9 @@ export function OptinList({
         row={selected}
         name={selected ? nameOf(selected) : ''}
         meta={selected ? [selected.parent_id !== null ? __('A/B variant', 'wconvert') : null, describe(selected)].filter(Boolean).join(' · ') : ''}
-        thumbnail={selected && preview(selected)}
+        // A campaign with no saved design gets a sentence, not a large empty frame.
+        thumbnail={selected && previews[selected.id]?.template !== null && preview(selected)}
+        missingDesign={selected !== null && previews[selected.id]?.template === null}
         results={selected ? resultsOf(selected) : { status: 'loading' }}
         productCheck={selected && (
           <ProductHealthDetails
@@ -758,7 +787,6 @@ function CampaignMenu({
   days,
   range,
   onDetails,
-  onInspect,
   onDuplicate,
   onTest,
   onDecision,
@@ -775,7 +803,6 @@ function CampaignMenu({
   days: number;
   range?: { from: string; to: string };
   onDetails: (trigger: HTMLElement | null) => void;
-  onInspect: () => void;
   onDuplicate: () => void;
   onTest: () => void;
   onDecision: (kind: Decision['kind'], trigger: HTMLElement | null) => void;
@@ -851,10 +878,6 @@ function CampaignMenu({
               )}
             </DropdownMenuLabel>
           ) : null)}
-        <DropdownMenuItem onSelect={onInspect}>
-          <Stethoscope aria-hidden="true" />
-          {__('Check visibility', 'wconvert')}
-        </DropdownMenuItem>
         <DropdownMenuSeparator />
         {canUnpublish(status) ? (
           <DropdownMenuItem onSelect={() => onDecision('pause', trigger.current)}>

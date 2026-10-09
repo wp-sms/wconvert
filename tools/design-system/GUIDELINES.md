@@ -649,7 +649,15 @@ Not gaps. Each was decided:
   screen**, never a destination. Domain nouns (campaign, goal, lead,
   destination) are lowercase mid-sentence; capitals start a title, a button
   or a sentence. US spelling.
-- **More than two row actions go in a ⋯ menu**, with icons and labels.
+- **More than two row actions go in a ⋯ menu**, with icons and labels. A
+  row menu holds actions on that row; a question about the whole list (Check
+  visibility) is a link in the list's footer.
+- **One primary action per screen, even when empty.** An empty list carries
+  its own Create button, so the page header drops its copy until a row exists.
+- **A filter chip that would filter to nothing is not offered.** Status chips
+  show All, the statuses in use and the selected one.
+- **A count is shown against what it is out of.** A campaign's result reads
+  "105 email submissions · 2.5% of 4,210 shown", not the count alone.
 - Tier names come from the shared vocabulary. The header’s temporary `#` account
   link is an explicit user-approved exception, removed when an account destination
   is supplied. It is not a general permission for dead links.
