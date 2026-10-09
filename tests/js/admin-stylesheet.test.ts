@@ -38,6 +38,15 @@ describe('journey choices', () => {
   });
 });
 
+describe('a table in a dialog', () => {
+  it('reads the page table register, though a dialog portals out of the admin root', () => {
+    // A lead's history drew bare, centred, bold column names until it joined.
+    const head = /([^{}]*)\.wconvert-table > thead > tr > th \{/.exec(CSS)?.[1] ?? '';
+    expect(head).toContain('.wconvert-dialog');
+    expect(head).toContain('#wconvert-admin');
+  });
+});
+
 describe('the token row', () => {
   /**
    * `.wconvert-token__exact` declares `inline-size: 7rem` at `0,1,0` and lost to

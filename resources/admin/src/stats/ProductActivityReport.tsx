@@ -10,7 +10,8 @@ import { ReportTarget } from './ReportNavigation';
 import { ReportDisclosure } from './ReportDisclosure';
 import { formatDay, formatRange } from '../lib/format';
 import { formatCount } from './format';
-import type { DashboardPayload } from './api';
+import { periodOf, periodParams, type ReportPeriod } from './api';
+import { chooseToday, todayAppearsTomorrow } from './reporting';
 import { productModuleActive } from '../settings';
 
 interface ProductReport {
@@ -20,27 +21,26 @@ interface ProductReport {
   rows: { id: number; name: string; shown: number; clicked: number; added: number }[];
 }
 
-export function ProductActivityReport({ id, period }: { id: string; period?: Pick<DashboardPayload, 'days' | 'month' | 'from' | 'to'> }) {
-  const days = period?.days, month = period?.month, from = period?.from, to = period?.to;
-  const key = `${id}:${days}:${month}:${from}:${to}`;
+export function ProductActivityReport({ id, period }: { id: string; period?: ReportPeriod }) {
+  const from = period?.from, to = period?.to;
+  // The builder passes no period and reads the server's default, today included.
+  const windowQuery = period ? periodParams(periodOf(period)).toString() : '';
+  const key = `${id}:${windowQuery}:${from}:${to}`;
   const [stored, setStored] = useState<{ key: string; value: ProductReport } | null>(null);
   const [failure, setFailure] = useState<string | null>(null);
   const [retry, setRetry] = useState(0);
   const report = stored?.key === key ? stored.value : null;
   useEffect(() => {
     const controller = new AbortController();
-    const query = new URLSearchParams();
-    if (days !== undefined && days > 0) { query.set('days', String(days)); query.set('complete', '1'); }
-    if (month) query.set('month', month);
     setFailure(null);
-    void apiFetch<ProductReport>({ path: `/wconvert/v1/optins/${id}/product-stats?${query}`, signal: controller.signal })
+    void apiFetch<ProductReport>({ path: `/wconvert/v1/optins/${id}/product-stats${windowQuery ? `?${windowQuery}` : ''}`, signal: controller.signal })
       .then(value => {
         if (controller.signal.aborted) return;
         if (from && (value.from !== from || value.to !== to)) { setFailure(key); return; }
         setStored({ key, value });
       }).catch(() => { if (!controller.signal.aborted) setFailure(key); });
     return () => controller.abort();
-  }, [id, key, days, month, from, to, retry]);
+  }, [id, key, windowQuery, from, to, retry]);
   // A site with neither product module rarely has activity — only what a
   // removed Pro left behind — so it waits quietly instead of flashing a
   // placeholder for a report that almost always stays away.
@@ -57,7 +57,7 @@ export function ProductActivityReport({ id, period }: { id: string; period?: Pic
         {!report.collecting && <p className="wa-report-notice">{__('Tracking is unavailable. Saved activity is still shown.', 'wconvert')}</p>}
         {report.recorded_from && report.recorded_from !== report.from && report.recorded_from !== report.since && <p className="wa-report-notice">{sprintf(__('Available activity: %s. The rest of this period is not recorded or has expired.', 'wconvert'), formatRange(report.recorded_from, report.to))}</p>}
         {report.truncated ? <EmptyState icon={Package} title={__('Choose a shorter period', 'wconvert')}>{__('More than 100 products have activity. Narrow the dates to see a complete table.', 'wconvert')}</EmptyState>
-          : report.days === 0 ? <EmptyState icon={Package} title={__('No complete days yet', 'wconvert')}>{__('Today’s activity will appear tomorrow.', 'wconvert')}</EmptyState>
+          : report.days === 0 ? <EmptyState icon={Package} title={__('No complete days yet', 'wconvert')}>{todayAppearsTomorrow()} {chooseToday()}</EmptyState>
           : !report.recorded_from ? <EmptyState icon={Package} title={__('No product data for these dates', 'wconvert')}>{__('Choose dates after tracking started and within the last 90 days.', 'wconvert')}</EmptyState>
           : report.rows.length === 0 ? <EmptyState icon={Package} title={__('No product activity recorded', 'wconvert')}>{__('Activity appears when shoppers see or use recommendations. Previews do not count.', 'wconvert')}</EmptyState>
           : <DataTable className="wa-product-table" label={__('Recommended product activity', 'wconvert')}>

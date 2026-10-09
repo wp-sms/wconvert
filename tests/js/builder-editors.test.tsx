@@ -205,6 +205,67 @@ describe('When', () => {
   });
 });
 
+describe('When, beside automatic placement or a content lock', () => {
+  const rightAway: DisplayRulesValue = { ...simple, display_rules: displayPlan([{ type: 'page_load' }]) };
+  const placed = { placement: { summary: 'Automatically after content', controls: null, opensRightAway: true } };
+  const reason = /opens right away\./;
+
+  it('holds Right away: every other pick is refused before the click, with the reason', async () => {
+    const changed = setup(rightAway, {}, false, placed); await section('When does it open?');
+    expect(pick('When does it open?', 'Right away')).toBeChecked();
+    expect(pick('When does it open?', 'Right away')).not.toHaveAttribute('aria-disabled');
+    expect(screen.getByText(reason)).toBeVisible();
+    for (const other of [/After 15 seconds/, /Scrolled/, /When they try to leave/, 'Custom…']) {
+      expect(pick('When does it open?', other)).toHaveAttribute('aria-disabled', 'true');
+      expect(pick('When does it open?', other)).toHaveAccessibleDescription(reason);
+    }
+    await userEvent.click(pick('When does it open?', /After 15 seconds/));
+    await userEvent.click(pick('When does it open?', 'Custom…'));
+    expect(changed).not.toHaveBeenCalled();
+    expect(pick('When does it open?', 'Right away')).toBeChecked();
+    expect(screen.queryByRole('group', { name: 'Opens' })).toBeNull();
+  });
+
+  it('still lets a draft that opens later return to Right away, as a normal undoable edit', async () => {
+    const changed = setup(simple, {}, false, placed); await section('When does it open?');
+    expect(pick('When does it open?', /After 15 seconds/)).toHaveAttribute('aria-disabled', 'true');
+    await userEvent.click(pick('When does it open?', 'Right away'));
+    expect(changed).toHaveBeenCalledWith({ display_rules: expect.objectContaining({ opening: { mode: 'immediate' } }) });
+    await userEvent.click(screen.getByRole('button', { name: 'Undo everything' }));
+    expect(draft().display_rules!.opening).toEqual(simple.display_rules!.opening);
+  });
+
+  it('refuses the other modes under Custom too, pointing at the same reason', async () => {
+    const changed = setup(initial, {}, false, placed); await section('When does it open?');
+    const modes = screen.getByRole('group', { name: 'Opens' });
+    for (const mode of ['After something they do', 'When they click']) {
+      expect(within(modes).getByRole('radio', { name: mode })).toHaveAttribute('aria-disabled', 'true');
+      expect(within(modes).getByRole('radio', { name: mode })).toHaveAccessibleDescription(reason);
+    }
+    await userEvent.click(within(modes).getByRole('radio', { name: 'Right away' }));
+    expect(draft().display_rules!.opening).toEqual({ mode: 'immediate' });
+    changed.mockClear();
+    await userEvent.click(within(screen.getByRole('group', { name: 'Opens' })).getByRole('radio', { name: 'After something they do' }));
+    expect(changed).not.toHaveBeenCalled();
+    expect(draft().display_rules!.opening).toEqual({ mode: 'immediate' });
+  });
+
+  it('holds nothing for manual placement', async () => {
+    setup(simple, {}, false, { placement: { summary: 'Manual', controls: null } }); await section('When does it open?');
+    expect(pick('When does it open?', /When they try to leave/)).not.toHaveAttribute('aria-disabled');
+    expect(screen.queryByText(reason)).toBeNull();
+  });
+});
+
+describe('the rule rows', () => {
+  it('names what each Remove takes away, and keeps the sentence out of a live region', async () => {
+    setup(); await section('When does it open?');
+    expect(screen.getByRole('button', { name: 'Remove time_on_page' })).toHaveTextContent('Remove');
+    expect(screen.getByRole('button', { name: 'Remove scroll_depth' })).toBeInTheDocument();
+    expect(document.querySelector('.wconvert-display-sentence')).not.toHaveAttribute('aria-live');
+  });
+});
+
 describe('Who', () => {
   it('writes a pick as one group, and opens it in Custom', async () => {
     setup(simple); await section('Who sees it?');
@@ -327,7 +388,7 @@ describe('Dates', () => {
     await section('Where does it show?'); await section('Dates');
     expect(draft().schedule).toEqual(schedule);
     expect(changed).not.toHaveBeenCalled();
-    await userEvent.click(pick('Dates', 'Until you pause it'));
+    await userEvent.click(pick('Dates', 'Until you unpublish it'));
     expect(draft().schedule).toEqual({});
   });
 

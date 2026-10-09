@@ -34,16 +34,19 @@ export function MeasurementValue({ id, label, value, fallback, standard, onChang
       const unit = part.unit || defaults?.[index]?.unit || declared?.[index]?.unit || declared?.[0]?.unit || '';
       return <div key={index} className="flex min-w-0 items-center gap-2">
         {parts.length > 1 && <span className="flex-1 text-note">{index === 0 ? __('Top and bottom', 'wconvert') : __('Sides', 'wconvert')}</span>}
-        <StyleValueInput id={index === 0 ? id : undefined} type="number" step="any"
-          className="wconvert-token__exact min-w-0 flex-1"
-          aria-label={sprintf(__('%s amount', 'wconvert'), axis)} value={String(part.amount)}
-          onCommit={(amount) => write(index, amount, unit)} />
-        <NativeSelect className="w-auto" aria-label={sprintf(__('%s unit', 'wconvert'), axis)} value={unit}
-          onChange={(event) => write(index, String(part.amount), event.target.value)}>
-          {unit !== '' && !UNITS.includes(unit) && <option value={unit}>{unit}</option>}
-          {unit === '' && <option value="">{__('No unit', 'wconvert')}</option>}
-          {UNITS.map((option) => <option key={option} value={option}>{option}</option>)}
-        </NativeSelect>
+        {/* Amount and unit read as one value, one height, joined (ADR 0132). */}
+        <span className="wconvert-measure-input">
+          <StyleValueInput id={index === 0 ? id : undefined} type="number" step="any"
+            className="wconvert-token__exact min-w-0"
+            aria-label={sprintf(__('%s amount', 'wconvert'), axis)} value={String(part.amount)}
+            onCommit={(amount) => write(index, amount, unit)} />
+          <NativeSelect className="wconvert-measure-input__unit" aria-label={sprintf(__('%s unit', 'wconvert'), axis)} value={unit}
+            onChange={(event) => write(index, String(part.amount), event.target.value)}>
+            {unit !== '' && !UNITS.includes(unit) && <option value={unit}>{unit}</option>}
+            {unit === '' && <option value="">{__('No unit', 'wconvert')}</option>}
+            {UNITS.map((option) => <option key={option} value={option}>{option}</option>)}
+          </NativeSelect>
+        </span>
       </div>;
     })}
   </div>;

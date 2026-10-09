@@ -9,16 +9,17 @@ defined('ABSPATH') || exit;
  * both ends.
  *
  * ============================================================================
- * THE CALLER NEVER NAMES A DAY, AND THAT IS WHAT MAKES "TODAY" HONEST.
+ * THE CALLER NEVER NAMES TODAY, AND THAT IS WHAT MAKES "TODAY" HONEST.
  * ============================================================================
  * The dashboard says "Today", and that has to mean the merchant's today
- * (ADR 0019). A browser asked for a date would answer with the VISITOR's day —
- * a merchant in Tokyo checking their numbers from a hotel in Los Angeles would
- * be handed yesterday's window and told it was today's. So the REST route
- * takes a NUMBER OF DAYS or a named calendar month (ADR 0090), never a browser
- * day. The current-day cap is
+ * (ADR 0019). A browser asked for its own date would answer with the VISITOR's
+ * day — a merchant in Tokyo checking their numbers from a hotel in Los Angeles
+ * would be handed yesterday's window and told it was today's. So the REST
+ * route takes a NUMBER OF DAYS or a named calendar month (ADR 0090), and the
+ * one window built from two days, {@see self::between()}, takes days the
+ * MERCHANT typed (ADR 0132) and is still capped at
  * {@see StatDay::today()}, computed on the server against the site's own
- * timezone.
+ * timezone. No constructor here accepts the browser's idea of today.
  *
  * **The arithmetic here is calendar arithmetic and has no timezone in it.**
  * Once {@see StatDay} has said which day it is, "twenty-nine days before that
@@ -46,6 +47,16 @@ final class StatRange
      * a quiet Optin does not read as a dead one.
      */
     public const DEFAULT_DAYS = 30;
+
+    /**
+     * Why a window was refused, as exception codes, so the route can say it in
+     * the merchant's language: this class has no WordPress in it to translate.
+     */
+    public const INVALID_MONTH = 1;
+    public const INVALID_DAY = 2;
+    public const REVERSED = 3;
+    public const AFTER_TODAY = 4;
+    public const TOO_LONG = 5;
 
     private function __construct(
         public readonly string $from,
@@ -85,7 +96,7 @@ final class StatRange
     public static function calendarMonth(string $month, string $today): self
     {
         if (!preg_match('/^[1-9][0-9]{3}-(0[1-9]|1[0-2])$/D', $month) || $month > substr($today, 0, 7)) {
-            throw new \InvalidArgumentException('Choose a current or earlier calendar month.');
+            throw new \InvalidArgumentException('Choose a current or earlier calendar month.', self::INVALID_MONTH);
         }
         $from = $month . '-01';
         $end = (new \DateTimeImmutable($from, new \DateTimeZone('UTC')))->format('Y-m-t');
@@ -95,6 +106,40 @@ final class StatRange
         return new self($from, max($from, $to), $to < $from);
     }
 
+    /**
+     * Two days the merchant chose, both counted (ADR 0132).
+     *
+     * **The days are typed, and today still comes from the server.** Ending
+     * after `$today` is refused rather than clipped: a window that silently
+     * ended earlier than asked is a window nobody chose. A range may END on
+     * today — it is then live, and the route says so — and it may not be
+     * longer than {@see self::MAX_DAYS}, the scan this table can afford.
+     *
+     * @throws \InvalidArgumentException with one of this class's codes.
+     */
+    public static function between(string $from, string $to, string $today): self
+    {
+        if (!self::isDay($from) || !self::isDay($to)) {
+            throw new \InvalidArgumentException('Choose two calendar days.', self::INVALID_DAY);
+        }
+        if ($from > $to) {
+            throw new \InvalidArgumentException('The first day comes after the last.', self::REVERSED);
+        }
+        if ($to > $today) {
+            throw new \InvalidArgumentException('The last day cannot be after today.', self::AFTER_TODAY);
+        }
+        $range = new self($from, $to);
+        if ($range->days() > self::MAX_DAYS) {
+            throw new \InvalidArgumentException('Choose a shorter range.', self::TOO_LONG);
+        }
+
+        return $range;
+    }
+
+    /**
+     * The same number of days immediately before — for a rolling window, a
+     * month and a custom range alike (ADR 0089).
+     */
     public function previous(): self
     {
         return self::lastDays($this->days(), self::daysBefore($this->from, 1));
@@ -137,6 +182,13 @@ final class StatRange
     public function covers(string $day): bool
     {
         return !$this->empty && $day >= $this->from && $day <= $this->to;
+    }
+
+    /** A real `Y-m-d` calendar day: the pattern alone would accept February 31. */
+    private static function isDay(string $day): bool
+    {
+        return preg_match('/^([0-9]{4})-([0-9]{2})-([0-9]{2})$/D', $day, $part) === 1
+            && checkdate((int) $part[2], (int) $part[3], (int) $part[1]);
     }
 
     /**

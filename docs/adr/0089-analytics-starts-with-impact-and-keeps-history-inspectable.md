@@ -40,7 +40,14 @@ Analytics requests `complete=true` from the existing read-only dashboard route.
 The selected window ends yesterday in the site's calendar. Its comparison is
 the adjacent preceding window of the same length. The server resolves both;
 neither browser dates nor browser timezones choose them. Each window is capped
-at 366 days. **Amended by [0092](0092-campaigns-use-a-design-led-workspace-and-compact-masthead.md):** Campaigns now also requests complete
+at 366 days. **Amended by [0132](0132-every-screen-answers-its-first-question.md):
+a labelled live Today choice; every other preset stays complete-day; custom
+ranges are complete only when they end before today.** Today reads `days=1`
+without `complete` and offers no comparison ("Today is still in progress").
+Custom dates are the merchant's typed `from`/`to`, refused by the server past
+its own today or beyond 366 days, and compared with the same number of days
+immediately before. The browser still never sends its own today: the payload
+carries the site's `today` back, and This month / Last month derive from it. **Amended by [0092](0092-campaigns-use-a-design-led-workspace-and-compact-masthead.md):** Campaigns now also requests complete
 days and preserves that window in report links. Editor reads still include today.
 
 **Extended by [0090](0090-monthly-targets-are-optional-benchmarks.md):** stable
@@ -56,10 +63,15 @@ scanned** by the unindexed date predicate. Comparisons cost two table scans;
 measure that on larger installs before requesting any index/schema change.
 
 The period bar contains the dates, a comparison switch and an accessible
-explanation of complete days. Failed refreshes preserve accepted dates and
+explanation of complete days. *Amended by [0132](0132-every-screen-answers-its-first-question.md):
+the bar and the period select are one date picker in the page header; its
+button names the window and its resolved dates, and the comparison is a check
+row inside it. When every previous count is zero, one sentence replaces the
+per-card comparison lines.* Failed refreshes preserve accepted dates and
 numbers, disclose the error and keep drill-down/capture links on that period.
 Impact, Goal, Optin, experiment and comparison state are bookmarkable. Table
-search and status filters are local. Export **report** CSV covers the accepted
+search and status filters are local. Export CSV (renamed from Export report
+CSV by 0132) covers the accepted
 period and selected impact/Goal/Optin/family, including rows hidden by those
 local table filters (disclosed on its control). It exports each raw arm once,
 with IDs, current status and optional comparison values. Merchant text is
@@ -94,6 +106,11 @@ The A/B view compares current and retired arms over the selected dates and
 offers a manual choice only where the existing variant capability and current
 family permit it. It uses the existing winner endpoint and confirmation. This
 does not establish statistical significance. Retired designs remain readable.
+*Extended by [0132](0132-every-screen-answers-its-first-question.md): arms are
+ordered best rate first under one line reading the leader against the next
+("… (+0.7 pts)"), qualified as too early to call below 1,000 shown per variant
+and otherwise "enough traffic to compare; this is still not proof" — a plain
+threshold, not a significance test, and never a named winner.*
 The data cannot isolate immutable test rounds: a surviving design's selected-
 period counters may include earlier/later uses. The screen says so and invents
 neither round start/end timestamps nor a saved winner record. Such a ledger

@@ -29,6 +29,6 @@ export function SetupPreview({ entry, comparison = false, failed = false, onRetr
       : <PreviewFrame template={entry.template} displayType={startingPointDisplayType(entry)} mobile={mobile} step={safeStep} result={result} interactive={!comparison} fitHeight={comparison || fitHeight}>
         {failed ? <div className="wconvert-design-detail__error"><p role="alert">{__('This preview could not be loaded.', 'wconvert')}</p>{onRetry && <TryAgain onClick={onRetry} />}</div> : entry.availability && entry.availability !== 'ready' ? <p>{__('This design is not available on this site.', 'wconvert')}</p> : <p role="status">{__('Loading preview…', 'wconvert')}</p>}
       </PreviewFrame>}
-    {!comparison && <p className="text-note text-muted-foreground">{__('Journey tests use sample answers and send nothing.', 'wconvert')}</p>}
+    {journey && <p className="text-note text-muted-foreground">{__('Journey tests use sample answers and send nothing.', 'wconvert')}</p>}
   </section>;
 }

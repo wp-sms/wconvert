@@ -2,7 +2,7 @@ import { render, screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, expect, it, vi } from 'vitest';
 import apiFetch from '@wordpress/api-fetch';
-import { CampaignPicker } from '../../modules/content-lock/block/CampaignPicker';
+import { CampaignPicker, boundaryLabel } from '../../modules/content-lock/block/CampaignPicker';
 import { useState } from 'react';
 
 vi.mock('@wordpress/api-fetch', () => ({ default: vi.fn() }));
@@ -26,7 +26,7 @@ it('keeps the selection when refresh fails and distinguishes missing data from a
   const change = vi.fn();
   render(<CampaignPicker value="saved" onChange={change} />);
   expect(screen.getByText(/choices could not be loaded/)).toBeVisible();
-  expect(screen.queryByText(/No published Content lock Campaigns/)).toBeNull();
+  expect(screen.queryByText(/No published content lock campaigns/)).toBeNull();
   vi.mocked(apiFetch).mockRejectedValue(new Error('Offline'));
   await userEvent.click(screen.getByRole('button', { name: 'Refresh campaigns' }));
   expect(await screen.findByText(/Could not refresh campaigns/)).toBeVisible();
@@ -115,4 +115,34 @@ it('keeps focus usable after selecting or clearing a Campaign without stealing i
   await user.click(screen.getByRole('button', { name: 'Refresh campaigns' }));
   expect(await screen.findByRole('status')).toHaveTextContent('Campaign choices updated.');
   expect(screen.getByRole('combobox', { name: 'Campaign' })).not.toHaveFocus();
+});
+
+it('says the draft-preview trap out loud, under the picker', () => {
+  window.wconvertContentLockEditor = { campaigns: [], manageUrl: null };
+  render(<CampaignPicker value="" onChange={vi.fn()} />);
+  expect(screen.getByText('Draft previews stay unlocked. Check the published page in a private window.')).toBeVisible();
+  expect(screen.getByText('No published content lock campaigns yet.')).toBeVisible();
+  expect(screen.getByText('Ask your administrator to publish a content lock campaign.')).toBeVisible();
+  expect(screen.queryByText('Setup tips')).toBeNull();
+});
+
+it.each([
+  { value: '', expected: 'Choose a campaign' },
+  { value: 'gone', expected: 'Campaign unpublished' },
+  { value: 'off', expected: 'Content lock off for this campaign' },
+  { value: 'held', expected: 'Campaign unavailable' },
+  { value: 'ready', expected: 'Bonus chapter' },
+  { value: 'nameless', expected: 'Unnamed campaign' },
+])('labels the canvas boundary by the chosen campaign’s state ($expected)', ({ value, expected }) => {
+  const data = { manageUrl: null, createUrl: null, campaigns: [
+    { id: 'off', name: 'Ordinary form', status: 'disabled' as const },
+    { id: 'held', name: 'Shop bonus', status: 'unavailable' as const },
+    { id: 'ready', name: 'Bonus chapter', status: 'ready' as const },
+    { id: 'nameless', name: '', status: 'ready' as const },
+  ] };
+  expect(boundaryLabel(value, { data, busy: false, result: null, refresh: async () => {} }, 'Choose a campaign')).toBe(expected);
+});
+
+it('claims nothing about the chosen campaign when the list never arrived', () => {
+  expect(boundaryLabel('saved', { data: null, busy: false, result: null, refresh: async () => {} }, 'Choose a campaign')).toBe('Campaign choices not loaded');
 });

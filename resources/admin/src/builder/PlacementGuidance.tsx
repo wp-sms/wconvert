@@ -20,6 +20,8 @@ export interface PlacementGuidanceProps {
   readonly contentLock?: unknown;
   /** A published version exists; this does not assert that it can show on any page. */
   readonly published: boolean;
+  /** Its rules name no pages, so the homepage is one it can show on. */
+  readonly everywhere?: boolean;
 }
 
 /** Open the existing real-page inspector, using WordPress's subdirectory-aware home URL. */
@@ -36,7 +38,7 @@ export function siteCheckUrl(homeUrl?: string, inspectParam?: string): string | 
 }
 
 /** Placement instructions shared by draft review and the result of publishing. */
-export function PlacementGuidance({ optinId, optinName, displayType, placement, inlinePlacement, contentLock, published }: PlacementGuidanceProps) {
+export function PlacementGuidance({ optinId, optinName, displayType, placement, inlinePlacement, contentLock, published, everywhere = true }: PlacementGuidanceProps) {
   const id = useId();
   const direction = useDirection();
   const inline = displayType === 'inline';
@@ -49,8 +51,8 @@ export function PlacementGuidance({ optinId, optinName, displayType, placement, 
     <section className="wconvert-placement" aria-labelledby={`${id}-title`}>
       <h3 id={`${id}-title`}>{inline ? __('Place this campaign on a page', 'wconvert') : __('Check where it appears', 'wconvert')}</h3>
       {inline && contentLock != null ? <>
-        <p>{__('Add the “WConvert Lock from here” divider and choose this campaign. Content after it stays locked until submission.', 'wconvert')}</p>
-        <p>{__('Keep your introduction above the divider. For a bonus with public content afterward, use the “WConvert Content lock” section instead. Use one lock per page.', 'wconvert')}</p>
+        <p>{__('Add the “WConvert lock from here” divider and choose this campaign. Content after it stays locked until submission.', 'wconvert')}</p>
+        <p>{__('Keep your introduction above the divider. For a bonus with public content afterward, use the “WConvert content lock” section instead. Use one lock per page.', 'wconvert')}</p>
         <p>{__('For the classic editor, wrap a complete region with:', 'wconvert')} <code>{`[wconvert_content_lock id="${optinId}"]…[/wconvert_content_lock]`}</code></p>
         <p>{__('The selected content stays readable when the form is unavailable. Successful access is remembered in this browser for 30 days.', 'wconvert')}</p>
       </> : automatic && !isFreeInstall() ? <>
@@ -63,8 +65,8 @@ export function PlacementGuidance({ optinId, optinName, displayType, placement, 
           <ol className="wconvert-placement__steps">
             <li>{__('Edit the page or post where you want the form to appear.', 'wconvert')}</li>
             <li>{optinName
-              ? sprintf(/* translators: %s: the Optin name in the page editor's picker. */ __('Add the “Inline Campaign” block and choose “%s”.', 'wconvert'), optinName)
-              : __('Add the “Inline Campaign” block and select this campaign by its name.', 'wconvert')}</li>
+              ? sprintf(/* translators: %s: the Optin name in the page editor's picker. */ __('Add the “WConvert campaign” block and choose “%s”.', 'wconvert'), optinName)
+              : __('Add the “WConvert campaign” block and select this campaign by its name.', 'wconvert')}</li>
             <li>{__('Update the page, then open it on your site to check the placement.', 'wconvert')}</li>
           </ol>
           <Shortcode optinId={optinId} />
@@ -74,21 +76,20 @@ export function PlacementGuidance({ optinId, optinName, displayType, placement, 
         </>
       ) : (
         <>
+          {/* Where, who and when are said once, by the review above. */}
           {position !== null && <p>{sprintf(__('Position: %s.', 'wconvert'), position)}</p>}
-          <p>{published
-            ? __('Your published version can appear on pages that match its display rules. Its schedule, triggers and visitor settings still decide when it shows.', 'wconvert')
-            : __('After publishing, this campaign can appear on pages that match its display rules. Its schedule, triggers and visitor settings decide when it shows.', 'wconvert')}</p>
         </>
       )}
       {siteCheck !== null && (
         <div className="wconvert-placement__check">
           <Button asChild variant="outline" size="sm">
             <a href={siteCheck} target="_blank" rel="noopener noreferrer" aria-describedby={`${id}-check-note`}>
-              {__('Check your homepage', 'wconvert')}<ExternalLink aria-hidden="true" />
+              {everywhere ? __('Check your homepage', 'wconvert') : __('Check your site', 'wconvert')}<ExternalLink aria-hidden="true" />
             </a>
           </Button>
           <p id={`${id}-check-note`} className="text-note text-muted-foreground">
-            {__('Opens display checks for the published version in your signed-in session. It does not show draft edits or simulate a signed-out visitor.', 'wconvert')}
+            {everywhere ? __('Opens display checks for the published version in your signed-in session. It does not show draft edits or simulate a signed-out visitor.', 'wconvert')
+              : __('It only shows on the pages its rules name, so open one of those. Display checks cover the published version in your signed-in session.', 'wconvert')}
             {inline && !automatic && <> {__('For an inline form, also check the page where you placed its block or shortcode.', 'wconvert')}</>}
           </p>
         </div>

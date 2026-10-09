@@ -105,6 +105,9 @@ export function formatRange(from: string, to: string): string {
 /** A count in the site's digits and grouping. */
 export const formatCount = (count: number) => new Intl.NumberFormat(siteLocale()).format(count);
 
+/** A number to at most one decimal, in the site's digits — e.g. a difference in percentage points. */
+export const formatDecimal = (value: number) => new Intl.NumberFormat(siteLocale(), { maximumFractionDigits: 1 }).format(value);
+
 /** A 0–1 rate as a percentage to one decimal, or an em dash where there is none. */
 export const formatRate = (rate: number | null) =>
   rate === null ? '—' : `${new Intl.NumberFormat(siteLocale(), { maximumFractionDigits: 1 }).format(rate * 100)}%`;

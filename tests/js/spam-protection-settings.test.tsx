@@ -83,3 +83,36 @@ it('pauses forms over unavailable saved filters without naming a product', async
   expect(screen.getByRole('button', { name: 'Remove unavailable filters' })).toBeInTheDocument();
   expect(screen.queryByText(/WConvert Pro/)).not.toBeInTheDocument();
 });
+
+const rules = (blocked = '') => ({ ...saved, rules_available: true, rule_fields: [
+  { id: 'blocked_domains', label: 'Blocked email domains', help: 'One exact domain per line.', value: blocked },
+  { id: 'blocked_emails', label: 'Blocked email addresses', help: 'One email address per line.', value: '' },
+  { id: 'allowed_emails', label: 'Always allow these emails', help: 'One email per line.', value: '' },
+] });
+
+/** Three empty boxes say one thing, so they say it closed (F16). */
+it('folds empty email filters behind “No emails blocked” and keeps them open once one is saved', async () => {
+  vi.mocked(apiFetch).mockResolvedValue(rules());
+  const { container, unmount } = render(<SpamProtection />);
+  expect(await screen.findByText('No emails blocked')).toBeInTheDocument();
+  expect(container.querySelector('details')).not.toHaveAttribute('open');
+  // Typing into a folded box does not refold it under the cursor.
+  fireEvent.change(screen.getByLabelText('Blocked email domains'), { target: { value: 'spam.example' } });
+  expect(screen.getByLabelText('Blocked email domains')).toHaveValue('spam.example');
+  unmount();
+  vi.mocked(apiFetch).mockResolvedValue(rules('spam.example'));
+  render(<SpamProtection />);
+  expect(await screen.findByRole('heading', { name: 'Email filters' })).toBeInTheDocument();
+  expect(screen.queryByText('No emails blocked')).not.toBeInTheDocument();
+  expect(screen.getByLabelText('Always allow these emails')).toBeVisible();
+});
+
+it('offers Cancel changes only once something has changed', async () => {
+  render(<SpamProtection />);
+  const provider = await screen.findByLabelText('Bot verification');
+  expect(screen.queryByRole('button', { name: 'Cancel changes' })).not.toBeInTheDocument();
+  fireEvent.change(provider, { target: { value: 'turnstile' } });
+  fireEvent.click(screen.getByRole('button', { name: 'Cancel changes' }));
+  expect(provider).toHaveValue('none');
+  expect(screen.queryByRole('button', { name: 'Cancel changes' })).not.toBeInTheDocument();
+});

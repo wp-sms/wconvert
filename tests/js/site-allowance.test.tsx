@@ -50,7 +50,7 @@ describe('explicit site-wide allowance drafts', () => {
     expect(
       await screen.findByLabelText(/after a visitor closes/i),
     ).not.toBeChecked();
-    expect(screen.getByLabelText(/after a visitor converts/i)).not.toBeChecked();
+    expect(screen.getByLabelText(/a visitor who converts/i)).not.toBeChecked();
     expect(maxField()).toHaveValue(null);
     expect(screen.getByLabelText(/Wait between campaigns/i)).toHaveValue(null);
     expect(
@@ -107,11 +107,11 @@ describe('explicit site-wide allowance drafts', () => {
   it('reviews the whole pending answer in the words the form uses', async () => {
     render(<SiteAllowance />);
     await userEvent.type(await screen.findByLabelText(/Show campaigns at most/i), '3');
-    await userEvent.click(screen.getByLabelText(/after a visitor converts/i));
+    await userEvent.click(screen.getByLabelText(/a visitor who converts/i));
     await userEvent.click(screen.getByRole('button', { name: 'Save display limits' }));
     const dialog = screen.getByRole('dialog', { name: 'Site-wide display limits' });
-    expect(dialog).toHaveTextContent('Show campaigns at most 3 times per visitor');
-    expect(dialog).toHaveTextContent('Stop showing campaigns after a visitor converts');
+    expect(dialog).toHaveTextContent('Show campaigns at most 3 times to each visitor, ever');
+    expect(dialog).toHaveTextContent('Never show campaigns again to a visitor who converts');
     await userEvent.click(screen.getByRole('button', { name: 'Keep editing' }));
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     expect(api.saveSiteAllowance).not.toHaveBeenCalled();
@@ -167,5 +167,12 @@ describe('explicit site-wide allowance drafts', () => {
     await act(async () => finish({ ...OFF, maxImpressions: 10 }));
     expect(maxField()).toBeEnabled();
     expect(api.saveSiteAllowance).toHaveBeenCalledTimes(1);
+  });
+  it('says the cap is for ever, and offers Cancel only once there is something to cancel', async () => {
+    render(<SiteAllowance />);
+    expect(await screen.findByLabelText(/Show campaigns at most/i)).toHaveAccessibleDescription(/times to each visitor, ever\..*never resets/);
+    expect(screen.queryByRole('button', { name: 'Cancel changes' })).toBeNull();
+    await userEvent.type(maxField(), '3');
+    expect(screen.getByRole('button', { name: 'Cancel changes' })).toBeEnabled();
   });
 });

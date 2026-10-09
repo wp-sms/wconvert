@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import { render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, onTestFinished, vi } from 'vitest';
 import { CAPTURE_OUTCOME } from './support/outcomes';
 import type { Template } from '../../resources/renderer/src/types';
 import type {
@@ -721,6 +721,52 @@ describe('the toolbar', () => {
     expect(count).toHaveTextContent('2 of 9 designs');
   });
 
+  /**
+   * The creation flow's two rows (ADR 0132 decision 7): what narrows the
+   * library on the first, then the quiet More filters toggle with the count at
+   * the far end. Sort is named for a screen reader and says nothing on screen.
+   */
+  it('puts search, format, fit, sort and preferences on one row, then More filters and the count', () => {
+    render(
+      <TemplatePicker index={{ templates: LIBRARY, labels: LABELS, facets: FACETS } as TemplateIndex} trees={new Map()}
+        displayType="popup" onFormatChange={vi.fn()} chosen={undefined} fit={{ ...ANY, outcome: CAPTURE_OUTCOME }}
+        busy={false} onChoose={vi.fn()} onNear={vi.fn()} />,
+    );
+    const [first, second, third] = [...document.querySelectorAll<HTMLElement>('.wconvert-picker__controls > div')];
+
+    expect(within(first).getByRole('searchbox', { name: 'Search designs' })).toBeInTheDocument();
+    expect(within(first).getByRole('combobox', { name: /^Format/ })).toBeInTheDocument();
+    expect(within(first).getByRole('combobox', { name: 'Design fit' })).toBeInTheDocument();
+    expect(within(first).getByRole('combobox', { name: 'Sort designs' })).toBeInTheDocument();
+    expect(within(first).getByRole('button', { name: 'Preferences' })).toBeInTheDocument();
+    expect(within(first).queryByText('Sort')).toBeNull();
+    expect(within(second).getByText('More filters')).toBeInTheDocument();
+    expect(within(second).getByRole('status')).toHaveTextContent(/of 9 designs/);
+    // No chip row until a filter is on.
+    expect(third).toBeUndefined();
+  });
+
+  it('draws the chip row only while a filter is on, the search included', async () => {
+    picker(LIBRARY);
+
+    expect(screen.queryByRole('button', { name: 'Clear filters' })).toBeNull();
+
+    await userEvent.type(screen.getByRole('searchbox'), 'split');
+    await userEvent.click(screen.getByRole('button', { name: 'Remove filter: split' }));
+
+    expect(screen.getByRole('searchbox')).toHaveValue('');
+    expect(screen.queryByRole('button', { name: 'Clear filters' })).toBeNull();
+    expect(shown()).toHaveLength(9);
+  });
+
+  it('counts in the site’s digits', async () => {
+    document.documentElement.lang = 'fa-IR';
+    onTestFinished(() => { document.documentElement.lang = ''; });
+    picker(LIBRARY);
+
+    expect(screen.getByRole('status')).toHaveTextContent('۹ of ۹ designs');
+  });
+
   /** One Template serves exactly one Display Type, so it is not asked twice. */
   it('never offers Display Type as a chip', () => {
     picker(LIBRARY);
@@ -940,6 +986,20 @@ describe('a Display Type with no designs', () => {
 
     expect(screen.getByText(/No designs for/)).toBeInTheDocument();
     expect(screen.queryByRole('searchbox')).toBeNull();
+  });
+
+  /** Switching the library to an empty format must not strand the merchant there. */
+  it('offers the way back to a format that has designs, the campaign’s own first', async () => {
+    const onFormatChange = vi.fn();
+    render(
+      <TemplatePicker index={{ templates: LIBRARY, labels: LABELS, facets: FACETS } as TemplateIndex} trees={new Map()}
+        displayType="floating_bar" currentDisplayType="inline" onFormatChange={onFormatChange} chosen={undefined} fit={ANY}
+        busy={false} onChoose={vi.fn()} onNear={vi.fn()} />,
+    );
+
+    await userEvent.click(screen.getByRole('button', { name: 'Show Inline form designs' }));
+
+    expect(onFormatChange).toHaveBeenCalledExactlyOnceWith('inline');
   });
 });
 

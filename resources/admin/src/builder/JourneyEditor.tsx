@@ -1,5 +1,5 @@
 import { lazy, Suspense, useEffect, useId, useMemo, useRef, useState, type ReactNode } from 'react';
-import { ArrowLeft, ArrowRight, ChevronDown, Copy, FilePlus2, Eye, ListPlus, Maximize2, Minimize2, Plus, Search, Trash2, Workflow, X } from 'lucide-react';
+import { ArrowLeft, ArrowRight, ChevronDown, Copy, FilePlus2, Eye, ListPlus, Maximize2, Minimize2, Plus, Search, Trash2, MoreHorizontal, Workflow, X } from 'lucide-react';
 import { ConfirmDialog } from '../shell/ConfirmDialog';
 import { Disclosure } from '../shell/Disclosure';
 import { OptionStrip } from '../shell/OptionStrip';
@@ -474,12 +474,13 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
             { value: 'flow', label: __('Flow', 'wconvert') },
             ...(!editorCanvas ? [{ value: 'screens', label: __('Screens', 'wconvert') }] : []),
           ]} onChange={value => { setView(value as typeof view); if (value !== 'flow') setInspecting(true); setMobilePane('map'); }} />
-          <div className="wconvert-journey-find"><label><Search aria-hidden="true" /><span className="sr-only">{__('Find a screen', 'wconvert')}</span><input ref={findInput} type="search" value={query} placeholder={__('Find a screen…', 'wconvert')} onChange={event => setQuery(event.target.value)} /></label>
+          {/* Edit has its own screen list; finding by name is a Flow-view tool. */}
+          {view !== 'edit' && <div className="wconvert-journey-find"><label><Search aria-hidden="true" /><span className="sr-only">{__('Find a screen', 'wconvert')}</span><input ref={findInput} type="search" value={query} placeholder={__('Find a screen…', 'wconvert')} onChange={event => setQuery(event.target.value)} /></label>
             {query.trim() && <div className="wconvert-journey-find__results" role="group" aria-label={__('Matching screens', 'wconvert')}>
               {matches.length ? matches.map(({ screen, index }) => <button type="button" key={screen.id} onClick={() => { select(index); setQuery(''); }}><bdi>{screen.name}</bdi></button>)
                 : <p>{__('No matching screens.', 'wconvert')}</p>}
             </div>}
-          </div>
+          </div>}
         </div>
           {!journeys && usesJourneyElements(tree) && <p className="wconvert-journey-settings__warning" role="status">{__('This design uses questions or answer paths, which this site’s plan can’t display. Visitors see only its first path.', 'wconvert')}</p>}
           <div className="wconvert-journey-dialog__header-actions">
@@ -499,7 +500,7 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
             {!tree.graph && tree.steps.length >= 7 && <span id={`${id}-limit`} className="sr-only">{__('A campaign without answer paths holds up to 7 screens.', 'wconvert')}</span>}
             {!tree.graph && <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button type="button" variant="ghost">{__('More screen options', 'wconvert')}<ChevronDown aria-hidden="true" /></Button>
+                <Button type="button" variant="ghost" size="icon" aria-label={__('More screen options', 'wconvert')}><MoreHorizontal aria-hidden="true" /></Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
                 <DropdownMenuLabel>{insertionLabel}</DropdownMenuLabel>
@@ -519,7 +520,7 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
                 {journeys && !tree.graph && <><DropdownMenuSeparator /><DropdownMenuItem onSelect={() => {
                   onChange(upgradeToGraph(tree));
                   setSaid(__('Flexible paths enabled for this draft. Screen order no longer determines visitor navigation. Undo restores the earlier model.', 'wconvert'));
-                }}><Workflow aria-hidden="true" />{__('Enable flexible paths', 'wconvert')}</DropdownMenuItem></>}
+                }}><Workflow aria-hidden="true" />{__('Let answers choose the next screen', 'wconvert')}</DropdownMenuItem></>}
               </DropdownMenuContent>
             </DropdownMenu>}
             {!embedded && <DialogClose asChild><Button type="button" variant="ghost" size="icon-sm" aria-label={__('Close screen manager', 'wconvert')}><X aria-hidden="true" /></Button></DialogClose>}

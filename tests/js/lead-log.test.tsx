@@ -1,15 +1,18 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { act, fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import type { LeadPage } from '../../resources/admin/src/leads/api';
 
 const log = vi.hoisted(() => ({ readLog: vi.fn(), readRetention: vi.fn(), saveRetention: vi.fn(), eraseIdentifier: vi.fn(), canExport: vi.fn(), exportLeads: vi.fn() }));
 const optins = vi.hoisted(() => ({ listOptins: vi.fn() }));
+const destinations = vi.hoisted(() => ({ readDestinations: vi.fn() }));
 vi.mock('../../resources/admin/src/leads/api', () => log);
+vi.mock('../../resources/admin/src/destinations/api', () => destinations);
 vi.mock('../../resources/admin/src/optins/api', async (importOriginal) => ({
   ...(await importOriginal<typeof import('../../resources/admin/src/optins/api')>()), ...optins,
 }));
 const { LeadLog } = await import('../../resources/admin/src/leads/LeadLog');
+const { shiftDay, siteToday } = await import('../../resources/admin/src/leads/calendar');
 const SNAPSHOT = '01J99999990000000000000000';
 const CAPTURE = { id: '01J0000000AAAAAAAAAAAAAAAA', optin_id: 'OPTIN1', email: 'sarah@example.com',
   phone: null, fields: {}, created_at: '2026-08-01 09:30:00' };
@@ -28,21 +31,64 @@ describe('capture history', () => {
     log.canExport.mockReturnValue(true);
     log.exportLeads.mockReturnValue(true);
     optins.listOptins.mockResolvedValue([OPTIN]);
+    destinations.readDestinations.mockResolvedValue({ types: [], destinations: [], connections: [], failures: [] });
   });
 
-  it('offers the question-answer export only where answers can exist (ADR 0127)', async () => {
+  afterEach(() => {
+    delete (window as { wconvertAdmin?: unknown }).wconvertAdmin;
+  });
+
+  it('offers the question-answer export only where answers can exist, as one Export menu (ADR 0127)', async () => {
     const view = render(<LeadLog />);
-    expect(await screen.findByRole('button', { name: 'Export matching submissions' })).toBeInTheDocument();
-    expect(screen.queryByRole('button', { name: 'Export question answers' })).not.toBeInTheDocument();
+    // One format is a plain button; a menu of one item decides nothing.
+    await userEvent.click(await screen.findByRole('button', { name: 'Export CSV' }));
+    expect(log.exportLeads).toHaveBeenLastCalledWith(expect.objectContaining({ snapshot: SNAPSHOT }));
+    expect(screen.queryByRole('button', { name: /^Export$/ })).not.toBeInTheDocument();
     view.unmount();
     log.readLog.mockResolvedValue({ ...SEVEN, leads: [{ ...CAPTURE, question_answers: [{ id: 'q1', question: 'Size?', type: 'choice', values: ['s'], labels: ['Small'] }] }] });
     render(<LeadLog />);
-    expect(await screen.findByRole('button', { name: 'Export question answers' })).toBeInTheDocument();
+    await userEvent.click(await screen.findByRole('button', { name: 'Export' }));
+    expect(screen.getByRole('menuitem', { name: 'Submissions (CSV)' })).toBeInTheDocument();
+    await userEvent.click(screen.getByRole('menuitem', { name: 'Question answers (CSV)' }));
+    expect(log.exportLeads).toHaveBeenLastCalledWith(expect.objectContaining({ snapshot: SNAPSHOT }), 'questions');
   });
 
-  it('keeps count and export context in dismissible help rather than a permanent row', async () => {
+  it('keeps the header free of refresh and export, and re-reads the first page when the window regains focus', async () => {
     render(<LeadLog />);
-    const help = await screen.findByRole('button', { name: 'About this count and export' });
+    await screen.findByText('sarah@example.com');
+    expect(screen.queryByRole('button', { name: /Refresh/ })).not.toBeInTheDocument();
+    expect(document.querySelector('.wconvert-page-actions')).toBeNull();
+    expect(destinations.readDestinations).toHaveBeenCalledTimes(1);
+    await act(async () => { window.dispatchEvent(new Event('focus')); });
+    await waitFor(() => expect(log.readLog).toHaveBeenCalledTimes(2));
+    expect(log.readLog).toHaveBeenLastCalledWith(expect.objectContaining({ cursor: undefined, snapshot: undefined }));
+    // The not-sent marks are re-read with it.
+    expect(destinations.readDestinations).toHaveBeenCalledTimes(2);
+    // A quiet re-read: no status line jumps the table down.
+    expect(screen.queryByText('Updating…')).not.toBeInTheDocument();
+  });
+
+  it('leaves a later page under its snapshot when the window regains focus', async () => {
+    log.readLog.mockResolvedValue({ ...SEVEN, next_cursor: 'next-page' });
+    render(<LeadLog />);
+    await screen.findByText('sarah@example.com');
+    await userEvent.click(screen.getByRole('button', { name: 'Older' }));
+    await screen.findByText('Page 2');
+    const reads = log.readLog.mock.calls.length;
+    await act(async () => { window.dispatchEvent(new Event('focus')); });
+    expect(log.readLog).toHaveBeenCalledTimes(reads);
+  });
+
+  it('offers no export of nothing', async () => {
+    log.readLog.mockResolvedValue({ ...SEVEN, submissions: 0, leads: [] });
+    render(<LeadLog query={{ optinId: 'OPTIN1' }} />);
+    expect(await screen.findByText('No matching submissions')).toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /^Export/ })).not.toBeInTheDocument();
+  });
+
+  it('keeps export context in dismissible help rather than a permanent row', async () => {
+    render(<LeadLog />);
+    const help = await screen.findByRole('button', { name: 'About this export' });
     expect(screen.queryByText(/Showing:/)).not.toBeInTheDocument();
     expect(screen.queryByText(/Export includes every matching submission/)).not.toBeInTheDocument();
     await userEvent.click(help);
@@ -54,25 +100,62 @@ describe('capture history', () => {
     expect(log.readLog).toHaveBeenCalledTimes(1);
   });
 
-  it('folds extra filters away, shows server-scoped purpose counts and applies a choice at once', async () => {
+  it('folds nothing away: the period is in the row and the order beside the set, and a choice applies at once', async () => {
     log.readLog.mockResolvedValue({ ...SEVEN, purpose_counts: { all: 7, subscribers: 5, enquiries: 2 } });
     render(<LeadLog />);
     expect(await screen.findByText('sarah@example.com')).toBeInTheDocument();
     const purpose = screen.getByRole('group', { name: 'Submission purpose' });
     expect(within(purpose).getByRole('radio', { name: 'All submissions' })).toBeChecked();
     expect(within(purpose).getByText('5')).toBeInTheDocument();
-    expect(screen.getByLabelText('Order')).not.toBeVisible();
-    await userEvent.click(screen.getByText('More filters'));
+    expect(screen.queryByText('More filters')).not.toBeInTheDocument();
+    const filters = within(screen.getByRole('form', { name: 'Filter submissions' }));
+    expect(filters.getByRole('button', { name: 'Period: Any time' })).toBeVisible();
+    // The chip already says 7; the toolbar repeats a count only under a narrower filter.
+    expect(screen.queryByText('7 submissions')).not.toBeInTheDocument();
     expect(screen.getByLabelText('Order')).toBeVisible();
-    expect(screen.queryByLabelText('From')).not.toBeInTheDocument();
-    await userEvent.selectOptions(screen.getByLabelText('Period'), 'custom');
-    expect(screen.getByLabelText('Period')).toHaveValue('custom');
-    expect(screen.getByLabelText('From')).toBeVisible();
-    // Choosing "Custom dates" applies nothing until a date is entered.
-    expect(log.readLog).toHaveBeenCalledTimes(1);
     await userEvent.selectOptions(screen.getByLabelText('Order'), 'oldest');
     await waitFor(() => expect(log.readLog).toHaveBeenLastCalledWith(expect.objectContaining({ order: 'oldest' })));
     expect(screen.getByLabelText('Order')).toHaveFocus();
+  });
+
+  it('keeps a typed search through a change of order', async () => {
+    const change = vi.fn();
+    const { rerender } = render(<LeadLog query={{}} onQueryChange={change} />);
+    await screen.findByText('sarah@example.com');
+    await userEvent.type(screen.getByLabelText('Search submissions'), 'draft');
+    await userEvent.selectOptions(screen.getByLabelText('Order'), 'oldest');
+    expect(change).toHaveBeenLastCalledWith({ order: 'oldest' });
+    rerender(<LeadLog query={{ order: 'oldest' }} onQueryChange={change} />);
+    expect(screen.getByLabelText('Search submissions')).toHaveValue('draft');
+  });
+
+  it('reads a period on the site’s day, today included, and maps it onto bookmarkable dates', async () => {
+    window.wconvertAdmin = { timezone: 'UTC' } as typeof window.wconvertAdmin;
+    const today = siteToday()!;
+    const change = vi.fn();
+    const { rerender } = render(<LeadLog query={{}} onQueryChange={change} />);
+    await screen.findByText('sarah@example.com');
+    await userEvent.click(screen.getByRole('button', { name: 'Period: Any time' }));
+    const presets = within(screen.getByRole('group', { name: 'Period' }));
+    expect(presets.getAllByRole('radio').map((radio) => radio.parentElement?.textContent)).toEqual(
+      ['Any time', 'Today', 'Yesterday', 'Last 7 days', 'Last 30 days', 'Last 90 days', 'This month', 'Last month', 'Custom dates']);
+    await userEvent.click(presets.getByRole('radio', { name: 'Last 7 days' }));
+    // Last 7 days is today and the six days before it.
+    expect(change).toHaveBeenLastCalledWith({ from: shiftDay(today, -6), to: today });
+    rerender(<LeadLog query={{ from: shiftDay(today, -6), to: today }} onQueryChange={change} />);
+    // A bookmarked pair reads back as the preset it spells, with its dates.
+    expect(screen.getByRole('button', { name: /^Period: Last 7 days, / })).toBeInTheDocument();
+    await waitFor(() => expect(log.readLog).toHaveBeenLastCalledWith(expect.objectContaining({ from: shiftDay(today, -6), to: today })));
+    await userEvent.click(screen.getByRole('button', { name: /^Period: Last 7 days/ }));
+    await userEvent.click(screen.getByRole('radio', { name: 'Any time' }));
+    expect(change).toHaveBeenLastCalledWith({});
+  });
+
+  it('offers only Any time and custom dates when the site’s day is unknown', async () => {
+    render(<LeadLog />);
+    await screen.findByText('sarah@example.com');
+    await userEvent.click(screen.getByRole('button', { name: 'Period: Any time' }));
+    expect(within(screen.getByRole('group', { name: 'Period' })).getAllByRole('radio')).toHaveLength(2);
   });
 
   it('opens a submission person-first and sees everything from the same email', async () => {
@@ -91,8 +174,9 @@ describe('capture history', () => {
     expect(details.getByRole('link', { name: 'Newsletter footer' })).toHaveAttribute('href', expect.stringContaining('edit=OPTIN1'));
     expect(details.getByText('Not asked')).toBeVisible();
     expect(details.queryByText('Other details')).not.toBeInTheDocument();
-    expect(details.getByRole('button', { name: 'All leads' })).toBeInTheDocument();
-    await userEvent.click(details.getByRole('button', { name: 'See all from Sarah' }));
+    // The top level closes; nothing behind it to go back to.
+    expect(within(dialog.querySelector('footer')!).getByRole('button', { name: 'Close' })).toBeInTheDocument();
+    await userEvent.click(details.getByRole('button', { name: 'See all 7 from Sarah' }));
     expect(onQueryChange).toHaveBeenCalledWith({});
     await waitFor(() => expect(log.readLog).toHaveBeenLastCalledWith(expect.objectContaining({ identifier: 'sarah@example.com' })));
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
@@ -103,16 +187,29 @@ describe('capture history', () => {
     log.readLog.mockReturnValue(new Promise((resolve) => { finish = resolve; }));
     render(<LeadLog />);
     expect(screen.queryByText('No submissions yet')).not.toBeInTheDocument();
-    expect(await screen.findByText('Loading submissions…')).toBeInTheDocument();
+    // The skeleton announces the first load, once (§12).
+    expect(await screen.findByText('Loading…')).toBeInTheDocument();
     await act(async () => finish(SEVEN));
     expect(screen.getByText('sarah@example.com')).toBeInTheDocument();
   });
 
-  it('offers Optins when there are no submissions and no filters', async () => {
-    log.readLog.mockResolvedValue({ ...SEVEN, submissions: 0, leads: [] });
-    render(<LeadLog />);
+  it('meets a log that has never captured anything with the action that fills it, and nothing around it', async () => {
+    log.readLog.mockResolvedValue({ ...SEVEN, submissions: 0, leads: [], purpose_counts: { all: 0, subscribers: 0, enquiries: 0 } });
+    const view = render(<LeadLog />);
     expect(await screen.findByText('No submissions yet')).toBeInTheDocument();
-    expect(screen.getByRole('link', { name: 'Go to campaigns' })).toHaveAttribute('href', '#optins');
+    expect(screen.getByText('Submissions appear here the moment a visitor fills in a published campaign.')).toBeVisible();
+    // No published campaign: the way forward is creating one.
+    const create = await screen.findByRole('link', { name: 'Create campaign' });
+    expect(create).toHaveAttribute('href', '#optins?new=1');
+    expect(create).toHaveAttribute('data-variant', 'default');
+    expect(screen.queryByRole('group', { name: 'Submission purpose' })).not.toBeInTheDocument();
+    expect(screen.queryByRole('form', { name: 'Filter submissions' })).not.toBeInTheDocument();
+    expect(screen.queryByLabelText('Group by email or phone')).not.toBeInTheDocument();
+    expect(screen.queryByRole('button', { name: /^Export/ })).not.toBeInTheDocument();
+    view.unmount();
+    optins.listOptins.mockResolvedValue([{ ...OPTIN, published_at: '2026-08-01 09:00:00' }]);
+    render(<LeadLog />);
+    expect(await screen.findByRole('link', { name: 'View campaigns' })).toHaveAttribute('href', '#optins');
   });
 
   it('gives a missing exact capture a retention-aware explanation', async () => {
@@ -122,16 +219,15 @@ describe('capture history', () => {
     expect(screen.getByText(/Retention or a privacy request may have deleted it/)).toBeInTheDocument();
   });
 
-  it('refreshes a failed retention summary with the page retry', async () => {
+  it('draws one error and one Try again when the log fails, and the retry brings the policy back', async () => {
     log.readLog.mockRejectedValueOnce(new Error('Submissions unavailable.'));
     log.readRetention.mockRejectedValueOnce(new Error('Retention unavailable.'));
     render(<LeadLog />);
-    await screen.findByText(/Retention unavailable\./);
-    // The log's own "Try again" also re-reads the policy under it.
-    await userEvent.click((await screen.findAllByRole('button', { name: 'Try again' }))[0]);
-    expect(await screen.findByText('Submissions are kept until you delete them.')).toBeVisible();
+    await screen.findByText('Submissions unavailable.');
     expect(screen.queryByText(/Retention unavailable\./)).not.toBeInTheDocument();
-    expect(log.readRetention).toHaveBeenCalledTimes(2);
+    expect(screen.getAllByRole('button', { name: 'Try again' })).toHaveLength(1);
+    await userEvent.click(screen.getByRole('button', { name: 'Try again' }));
+    expect(await screen.findByText('Submissions are kept until you delete them.')).toBeVisible();
     expect(log.saveRetention).not.toHaveBeenCalled();
   });
 
@@ -163,7 +259,7 @@ describe('capture history', () => {
   });
 
   it('keeps the headline as submissions when the grouping view changes', async () => {
-    render(<LeadLog />);
+    render(<LeadLog query={{ optinId: 'OPTIN1' }} />);
     await screen.findByText('7 submissions');
     await userEvent.click(screen.getByLabelText('Group by email or phone'));
     const row = (await screen.findByText('sarah@example.com', { selector: 'bdi' })).closest('tr')!;
@@ -218,30 +314,22 @@ describe('capture history', () => {
     expect(optins.listOptins).toHaveBeenCalledWith(true);
   });
 
-  it('applies typed values on Enter or on leaving the field, never per keystroke', async () => {
+  it('applies typed values on Enter and custom dates on Apply, never per keystroke', async () => {
     render(<LeadLog />);
-    await screen.findByText('7 submissions');
+    await screen.findByText('sarah@example.com');
     await userEvent.type(screen.getByLabelText('Search submissions'), ' alex@example.com ');
     expect(log.readLog).toHaveBeenCalledTimes(1);
     await userEvent.type(screen.getByLabelText('Search submissions'), '{Enter}');
     await waitFor(() => expect(log.readLog).toHaveBeenLastCalledWith(expect.objectContaining({ identifier: 'alex@example.com' })));
-    await userEvent.click(screen.getByText('More filters'));
-    await userEvent.selectOptions(screen.getByLabelText('Period'), 'custom');
+    await userEvent.click(screen.getByRole('button', { name: /^Period: Any time/ }));
+    await userEvent.click(screen.getByRole('radio', { name: 'Custom dates' }));
     fireEvent.change(screen.getByLabelText('From'), { target: { value: '2026-08-01' } });
     fireEvent.change(screen.getByLabelText('To'), { target: { value: '2026-08-31' } });
     const reads = log.readLog.mock.calls.length;
-    fireEvent.blur(screen.getByLabelText('To'));
+    await userEvent.click(screen.getByRole('button', { name: 'Apply dates' }));
     await waitFor(() => expect(log.readLog).toHaveBeenLastCalledWith(expect.objectContaining({ identifier: 'alex@example.com', from: '2026-08-01', to: '2026-08-31' })));
     expect(log.readLog.mock.calls.length).toBe(reads + 1);
-  });
-
-  it('refuses an end date before the start date without applying it', async () => {
-    render(<LeadLog query={{ from: '2026-08-10' }} />);
-    await screen.findByText('7 submissions');
-    fireEvent.change(screen.getByLabelText('To'), { target: { value: '2026-08-01' } });
-    fireEvent.blur(screen.getByLabelText('To'));
-    expect(screen.getByRole('alert')).toHaveTextContent('The end date must be on or after the start date.');
-    expect(log.readLog).toHaveBeenCalledTimes(1);
+    expect(screen.getByRole('button', { name: /^Period: Custom dates, Aug 1\s–\s31, 2026$/ })).toBeInTheDocument();
   });
 
   it('recognizes a pasted Lead ID and preserves existing date scope', async () => {
@@ -259,7 +347,7 @@ describe('capture history', () => {
     await userEvent.type(screen.getByLabelText('Search submissions'), 'draft');
     rerender(<LeadLog query={{ identifier: 'second@example.com', from: '2026-09-01' }} />);
     expect(screen.getByLabelText('Search submissions')).toHaveValue('second@example.com');
-    expect(screen.getByLabelText('From')).toHaveValue('2026-09-01');
+    expect(screen.getByRole('button', { name: 'Period: Custom dates, From Sep 1, 2026' })).toBeInTheDocument();
     await waitFor(() => expect(log.readLog).toHaveBeenLastCalledWith(expect.objectContaining({ identifier: 'second@example.com' })));
   });
 
@@ -277,11 +365,11 @@ describe('capture history', () => {
     rerender(<LeadLog query={{ identifier: 'alex@example.com' }} />);
     await screen.findByText('Read interrupted.');
     expect(screen.getByText('sarah@example.com')).toBeInTheDocument();
-    await userEvent.click(screen.getByRole('button', { name: 'Export matching submissions' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Export CSV' }));
     expect(log.exportLeads).toHaveBeenCalledWith(expect.objectContaining({ identifier: 'sarah@example.com' }));
     expect(screen.getByText(/Showing the previous results/)).toBeInTheDocument();
-    await userEvent.click(screen.getByRole('button', { name: 'About this count and export' }));
-    const help = within(screen.getByRole('dialog', { name: 'About this count and export' }));
+    await userEvent.click(screen.getByRole('button', { name: 'About this export' }));
+    const help = within(screen.getByRole('dialog', { name: 'About this export' }));
     expect(help.getByText(/Showing:.*sarah@example.com/)).toBeVisible();
     expect(help.queryByText(/alex@example.com/)).not.toBeInTheDocument();
   });
@@ -306,7 +394,7 @@ describe('capture history', () => {
     expect(await screen.findByText('older@example.com')).toBeInTheDocument();
     expect(log.readLog).toHaveBeenLastCalledWith(expect.objectContaining({ cursor: 'next-page', snapshot: SNAPSHOT, from: '2026-08-01' }));
     expect(screen.getByText('Page 2')).toBeInTheDocument();
-    await userEvent.click(screen.getByRole('button', { name: 'Export matching submissions' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Export CSV' }));
     expect(log.exportLeads).toHaveBeenLastCalledWith(expect.objectContaining({ snapshot: SNAPSHOT, optinId: 'OPTIN1', from: '2026-08-01' }));
     await userEvent.click(screen.getByRole('button', { name: 'Newer' }));
     await screen.findByText('sarah@example.com');
@@ -339,16 +427,6 @@ describe('capture history', () => {
     expect(log.readLog).toHaveBeenLastCalledWith(expect.objectContaining({ cursor: 'next-page' }));
   });
 
-  it('refreshes back to the newest page with a fresh snapshot request', async () => {
-    log.readLog.mockResolvedValue({ ...SEVEN, next_cursor: 'next-page' });
-    render(<LeadLog />);
-    await screen.findByText('7 submissions');
-    await userEvent.click(screen.getByRole('button', { name: 'Older' }));
-    await screen.findByText('Page 2');
-    await userEvent.click(screen.getByRole('button', { name: 'Refresh submissions' }));
-    await waitFor(() => expect(log.readLog).toHaveBeenLastCalledWith(expect.objectContaining({ cursor: undefined, snapshot: undefined })));
-  });
-
   it('drills a lead down to its submissions under the same filters and snapshot, in one dialog', async () => {
     render(<LeadLog query={{ from: '2026-08-01' }} />);
     await screen.findByText('7 submissions');
@@ -360,8 +438,14 @@ describe('capture history', () => {
     expect(log.readLog).toHaveBeenLastCalledWith(expect.objectContaining({ groupIdentifier: 'sarah@example.com', grouped: false, from: '2026-08-01', snapshot: SNAPSHOT, cursor: undefined }));
     // Every row is the same person; a column naming them would repeat the title.
     expect(within(dialog).queryByRole('columnheader', { name: 'Submitted by' })).not.toBeInTheDocument();
-    await userEvent.click(within(dialog).getByRole('button', { name: 'Export these submissions' }));
+    // Export is in the footer, beside the pager; the header is the person.
+    const exportCsv = within(dialog).getByRole('button', { name: 'Export CSV' });
+    expect(exportCsv.closest('footer')).not.toBeNull();
+    await userEvent.click(exportCsv);
     expect(log.exportLeads).toHaveBeenCalledWith(expect.objectContaining({ groupIdentifier: 'sarah@example.com', from: '2026-08-01', snapshot: SNAPSHOT }));
+    // The history is the top level: its first button closes.
+    expect(within(dialog.querySelector('footer')!).getByRole('button', { name: 'Close' })).toBeInTheDocument();
+    expect(within(dialog).queryByRole('button', { name: 'All leads' })).not.toBeInTheDocument();
 
     // A submission opens in place, never as a second dialog over the first.
     await userEvent.click(open);
@@ -410,7 +494,8 @@ describe('capture history', () => {
     expect(dialog.queryByRole('link')).not.toBeInTheDocument();
     expect(dialog.getByText('Text me offers.')).toBeVisible();
     expect(dialog.getByText(/^Agreed Aug 1, 2026/)).toBeVisible();
-    expect(dialog.getByRole('button', { name: 'See all from +96899123456' })).toBeInTheDocument();
+    expect(dialog.getByRole('button', { name: 'See all 7 from +96899123456' })).toBeInTheDocument();
+    expect(dialog.getByRole('button', { name: 'Delete all from this phone' })).toBeInTheDocument();
     expect(document.body.textContent).not.toContain('GONE');
   });
 
@@ -419,8 +504,9 @@ describe('capture history', () => {
     render(<LeadLog />);
     await userEvent.click(await screen.findByRole('button', { name: 'Open submission from Unnamed lead' }));
     const dialog = screen.getByRole('dialog', { name: 'Unnamed lead' });
-    expect(within(dialog).queryByRole('button', { name: /See all from/ })).not.toBeInTheDocument();
-    await userEvent.click(within(dialog).getByRole('button', { name: 'All leads' }));
+    expect(within(dialog).queryByRole('button', { name: /See all/ })).not.toBeInTheDocument();
+    expect(within(dialog).queryByRole('button', { name: /Delete all/ })).not.toBeInTheDocument();
+    await userEvent.click(within(dialog.querySelector('footer')!).getByRole('button', { name: 'Close' }));
     expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
     expect(screen.getByRole('button', { name: 'Open submission from Unnamed lead' })).toHaveFocus();
   });
@@ -431,7 +517,84 @@ describe('capture history', () => {
     await waitFor(() => expect(log.readLog).toHaveBeenLastCalledWith(expect.objectContaining({ search: 'repair' })));
     await userEvent.click(screen.getByRole('radio', { name: 'Enquiries' }));
     await waitFor(() => expect(log.readLog).toHaveBeenLastCalledWith(expect.objectContaining({ search: 'repair', purpose: 'enquiries' })));
-    await userEvent.click(screen.getByRole('button', { name: 'Export matching submissions' }));
+    await userEvent.click(screen.getByRole('button', { name: 'Export CSV' }));
     expect(log.exportLeads).toHaveBeenLastCalledWith(expect.objectContaining({ search: 'repair', purpose: 'enquiries', snapshot: SNAPSHOT }));
+  });
+
+  it('draws Details only when a row on the page has some, and summarises answers by count', async () => {
+    const view = render(<LeadLog />);
+    await screen.findByText('sarah@example.com');
+    // A newsletter-only page has nothing to put there.
+    expect(screen.queryByRole('columnheader', { name: 'Details' })).not.toBeInTheDocument();
+    expect(screen.queryByText('—')).not.toBeInTheDocument();
+    view.unmount();
+    const answers = [1, 2, 3].map((n) => ({ id: `q${n}`, question: `Question ${n}?`, type: 'choice', values: ['a'], labels: ['A'] }));
+    log.readLog.mockResolvedValue({ ...SEVEN, leads: [{ ...CAPTURE, question_answers: answers }, { ...CAPTURE, id: '01J0000000BBBBBBBBBBBBBBBB', email: 'tom@example.com' }] });
+    render(<LeadLog />);
+    expect(await screen.findByRole('columnheader', { name: 'Details' })).toBeInTheDocument();
+    expect(screen.getByText('3 answers')).toBeInTheDocument();
+  });
+
+  it('keeps a row to its campaign and person: no goal line, no dash avatar, a date that never wraps', async () => {
+    optins.listOptins.mockResolvedValue([OPTIN]);
+    render(<LeadLog />);
+    const link = await screen.findByRole('link', { name: 'Newsletter footer' });
+    expect(link.closest('td')).toHaveTextContent(/^Newsletter footer$/);
+    const row = link.closest('tr')!;
+    expect(within(row).queryByText('—')).not.toBeInTheDocument();
+    expect(row.querySelector('time')).toHaveClass('whitespace-nowrap');
+  });
+
+  it('marks a submission the failure ring names as not sent, and says where and why in its detail', async () => {
+    destinations.readDestinations.mockResolvedValue({ types: [], connections: [],
+      destinations: [{ id: 'ROUTE1', label: 'Mailchimp list' }],
+      failures: [
+        { destination: 'ROUTE1', lead: CAPTURE.id, error: 'Invalid email address', at: '2026-08-01 09:31:00' },
+        { destination: 'GONE', lead: CAPTURE.id, error: 'Rejected', at: '2026-08-01 09:32:00' },
+        { destination: 'ROUTE1', lead: 'SOMEONE-ELSE', error: 'Rejected', at: '2026-08-01 09:33:00' },
+      ] });
+    render(<LeadLog />);
+    const row = (await screen.findByRole('link', { name: 'Newsletter footer' })).closest('tr')!;
+    expect(await within(row).findByText('Not sent')).toBeInTheDocument();
+    await userEvent.click(within(row).getByRole('button', { name: /^Open submission/ }));
+    const dialog = within(screen.getByRole('dialog', { name: 'sarah@example.com' }));
+    expect(dialog.getByRole('heading', { name: 'Sending' })).toBeInTheDocument();
+    expect(dialog.getByText((_, node) => node?.tagName === 'LI' && /^Not sent to Mailchimp list: Invalid email address · Review destination$/.test(node.textContent ?? ''))).toBeInTheDocument();
+    // A route removed since is named for what it is, never by its ID.
+    expect(dialog.getByText((_, node) => node?.tagName === 'LI' && /^Not sent to Removed destination: Rejected/.test(node.textContent ?? ''))).toBeInTheDocument();
+    expect(dialog.getAllByRole('link', { name: 'Review destination' })[0]).toHaveAttribute('href', '#leads?view=issues');
+    expect(document.body.textContent).not.toContain('GONE');
+  });
+
+  it('never claims a submission was sent when the ring does not name it', async () => {
+    render(<LeadLog />);
+    await userEvent.click(await screen.findByRole('button', { name: /^Open submission/ }));
+    const dialog = screen.getByRole('dialog', { name: 'sarah@example.com' });
+    expect(within(dialog).queryByRole('heading', { name: 'Sending' })).not.toBeInTheDocument();
+    expect(document.body.textContent).not.toMatch(/\bsent\b/i);
+  });
+
+  it('deletes everything from a submission’s email from its detail, closing the detail before the confirm', async () => {
+    render(<LeadLog />);
+    await userEvent.click(await screen.findByRole('button', { name: /^Open submission/ }));
+    const detail = screen.getByRole('dialog', { name: 'sarah@example.com' });
+    await userEvent.click(within(detail).getByRole('button', { name: 'Delete all from this email' }));
+    // Never stacked: the detail is gone before the confirm stands.
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument();
+    const confirm = screen.getByRole('alertdialog', { name: /^Delete every submission from sarah@example\.com\s?\?$/ });
+    expect(log.readLog).toHaveBeenLastCalledWith({ identifier: 'sarah@example.com', grouped: false });
+    expect(await within(confirm).findByText(/all 7 submissions, from every campaign/)).toBeVisible();
+    await userEvent.click(within(confirm).getByRole('button', { name: 'Delete permanently' }));
+    await waitFor(() => expect(log.eraseIdentifier).toHaveBeenCalledWith('sarah@example.com'));
+  });
+
+  it('offers "See all" only when there is more than this one submission', async () => {
+    log.readLog.mockImplementation((query: LeadPage) => Promise.resolve(
+      query.identifier ? { ...SEVEN, submissions: 1 } : { ...SEVEN, grouped: query.grouped === true }));
+    render(<LeadLog />);
+    await userEvent.click(await screen.findByRole('button', { name: /^Open submission/ }));
+    const dialog = screen.getByRole('dialog', { name: 'sarah@example.com' });
+    await waitFor(() => expect(dialog).toHaveAccessibleDescription('1 submission'));
+    expect(within(dialog).queryByRole('button', { name: /See all/ })).not.toBeInTheDocument();
   });
 });

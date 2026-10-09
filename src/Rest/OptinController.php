@@ -129,7 +129,7 @@ final class OptinController implements RestController
         ]);
 
         register_rest_route(Routes::NAMESPACE, '/optins/phone-country', [
-            ['methods' => 'GET', 'callback' => static fn (): WP_REST_Response => new WP_REST_Response(['country' => PhoneCountry::siteDefault(), 'countries' => PhoneCountry::all()]), 'permission_callback' => [Routes::class, 'canManage']],
+            ['methods' => 'GET', 'callback' => static fn (): WP_REST_Response => new WP_REST_Response(self::phoneCountry()), 'permission_callback' => [Routes::class, 'canManage']],
             ['methods' => 'POST', 'callback' => [$this, 'updatePhoneCountry'], 'permission_callback' => [Routes::class, 'canManage']],
         ]);
 
@@ -758,7 +758,24 @@ final class OptinController implements RestController
         if (!is_string($country) || !PhoneCountry::setSiteDefault($country)) {
             return new WP_Error('wconvert_phone_country', __('Choose a supported country.', 'wconvert'), ['status' => 400]);
         }
-        return new WP_REST_Response(['country' => PhoneCountry::siteDefault(), 'countries' => PhoneCountry::all()]);
+        return new WP_REST_Response(self::phoneCountry());
+    }
+
+    /**
+     * The saved default, the list, and a suggestion Settings offers while no
+     * default is saved. `suggested` is computed on every read and never stored.
+     *
+     * @return array{country: string, countries: list<array{code: string, name: string}>, suggested: string|null, suggested_from: 'store'|'language'|null}
+     */
+    private static function phoneCountry(): array
+    {
+        $suggestion = PhoneCountry::suggested();
+        return [
+            'country' => PhoneCountry::siteDefault(),
+            'countries' => PhoneCountry::all(),
+            'suggested' => $suggestion['country'] ?? null,
+            'suggested_from' => $suggestion['from'] ?? null,
+        ];
     }
 
     /** Refuse entered choices before normalization could silently discard them.

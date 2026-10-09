@@ -244,6 +244,10 @@ two widths, and **a table may reuse neither**:
 - **782px is the builder's floor.** It is the width a sticky live preview beside
   a settings panel needs, and it is where wp-admin collapses its own menu. It
   says nothing about a table.
+  _Corrected by [0038](0038-the-admin-holds-different-floors-to-the-loader.md)
+  (amended 2026-09-23): the builder no longer has a 782px floor. It adapts
+  instead of refusing — one editing drawer at 1000px and below, phone layouts
+  at 640px and below — so 900px is still a number only a table uses._
 - **360px is a floor, not a breakpoint.** It is the width the reading screens
   must survive — not a width at which they change shape.
 
@@ -421,6 +425,8 @@ strip alone, and that is a measurement rather than a preference: in the tab
 column it is 712px wide at a 1440px viewport, so nearly every rule sentence
 wrapped and the panel stood 313px tall permanently, on a screen whose own floor
 is 782px ([ADR 0038](0038-the-admin-holds-different-floors-to-the-loader.md))._
+_Corrected by 0038 (amended 2026-09-23): that floor is gone; the builder adapts
+down to phone width rather than refusing below 782px._
 
 _And it **opens on a press**, which is the second measurement. Even across both
 columns it is ~190px of permanent panel above the tab strip, and most of what it

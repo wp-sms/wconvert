@@ -57,6 +57,7 @@ export function PickerSettings({ picker, onBack, onPlan, context = 'creation', n
     ? __('Recommendations are yours alone. Occasions are shared with this site’s campaign managers.', 'wconvert')
     : __('Personal to your account on this site.', 'wconvert');
   const suggestion = data?.country_suggestion;
+  const regional = data?.collections.some(collection => collection.markets.length > 0) ?? false;
   const suggestedCountry = suggestion && !data?.preferences.markets.length && data?.preferences.country_suggestion_dismissed !== suggestion.timezone
     ? countries.find(country => country.code.toUpperCase() === suggestion.code) : undefined;
   // A market the country list has not named yet is still a country, never a code.
@@ -65,10 +66,12 @@ export function PickerSettings({ picker, onBack, onPlan, context = 'creation', n
 
   return <>
     {nested
-      ? <div className="wconvert-design-detail__header"><h3 ref={heading} tabIndex={-1}>{title}</h3></div>
+      ? <div className="wconvert-design-detail__header wconvert-picker-settings__header">
+        <h3 ref={heading} tabIndex={-1}>{title}</h3>
+        <p className="m-0 text-note text-muted-foreground">{meta}</p>
+      </div>
       : <AdminDialogHeader title={title} meta={meta} />}
     <AdminDialogBody className="wconvert-picker-settings">
-      {nested && <p className="m-0 text-note text-muted-foreground">{meta}</p>}
       {!data ? picker.error
         ? <RegionErrorState message={picker.error} onRetry={() => { void picker.reload(); }} />
         : <p role="status" className="m-0 text-note text-muted-foreground">{__('Loading preferences…', 'wconvert')}</p>
@@ -84,7 +87,8 @@ export function PickerSettings({ picker, onBack, onPlan, context = 'creation', n
                   onChange={event => { void picker.preferences({ ...data.preferences, businesses: event.target.checked ? [...data.preferences.businesses, id] : data.preferences.businesses.filter(value => value !== id) }); }} />)}</div>
               <Description>{__('Matching collections are listed first. Nothing is removed from the library.', 'wconvert')}</Description>
             </fieldset>
-            {suggestedCountry && suggestion && <div className="wconvert-picker-settings__suggestion">
+            {/* Countries only steer collections that declare markets; with none, the question changes nothing. */}
+            {regional && suggestedCountry && suggestion && <div className="wconvert-picker-settings__suggestion">
               <p className="m-0">{sprintf(__('Suggested country: %s', 'wconvert'), suggestedCountry.name)}</p>
               <Description>{__('Based on this site’s time zone. Choose the countries your business serves.', 'wconvert')}</Description>
               <div className="flex flex-wrap gap-2">
@@ -92,7 +96,7 @@ export function PickerSettings({ picker, onBack, onPlan, context = 'creation', n
                 <Button variant="ghost" disabled={picker.saving} onClick={() => { void picker.preferences({ ...data.preferences, country_suggestion_dismissed: suggestion.timezone }); }}>{__('Dismiss country suggestion', 'wconvert')}</Button>
               </div>
             </div>}
-            <div className="wconvert-picker-settings__markets">
+            {regional && <div className="wconvert-picker-settings__markets">
               <CountryPicker label={__('Countries you serve', 'wconvert')} value="" countries={countries.filter(country => !data.preferences.markets.includes(country.code.toUpperCase()))}
                 disabled={picker.saving || countries.length === 0} onChange={code => { void picker.preferences({ ...data.preferences, markets: [...data.preferences.markets, code.toUpperCase()] }); }} />
               {!countryError && countries.length === 0 && <p role="status" className="m-0 text-note text-muted-foreground">{__('Loading countries…', 'wconvert')}</p>}
@@ -101,7 +105,7 @@ export function PickerSettings({ picker, onBack, onPlan, context = 'creation', n
                 return <Button key={code} variant="outline" disabled={picker.saving} aria-label={sprintf(__('Remove %s', 'wconvert'), name)} onClick={() => { void picker.preferences({ ...data.preferences, markets: data.preferences.markets.filter(value => value !== code) }); }}><bdi>{name}</bdi><X aria-hidden="true" /></Button>;
               })}</div>
               <Description>{__('Regional collections use these countries.', 'wconvert')}</Description>
-            </div>
+            </div>}
             {countryError && <RegionError message={__('Countries could not be loaded.', 'wconvert')} onRetry={() => setCountryAttempt(value => value + 1)} />}
             {(data.preferences.hidden.length > 0 || data.preferences.events.length > 0) && <div className="flex flex-wrap gap-2">
               {data.preferences.hidden.length > 0 && <Button variant="outline" disabled={picker.saving} onClick={() => { void picker.preferences({ ...data.preferences, hidden: [] }); }}>{__('Restore hidden collections', 'wconvert')}</Button>}

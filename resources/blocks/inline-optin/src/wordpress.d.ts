@@ -14,7 +14,7 @@
  * So they are external either way, and the only question is where the TYPES
  * come from. Installing the four packages for types alone added **175
  * packages and 393 MB** to the dev tree — paid by `npm ci` on every pull
- * request — for a block whose whole surface is a placeholder and a select.
+ * request — for blocks whose whole surface is a placeholder and a picker.
  *
  * These declarations are that surface and nothing wider, which is the same
  * bargain `wordpressGlobals()` already makes when it spells `@wordpress/i18n`'s
@@ -67,15 +67,6 @@ declare module '@wordpress/components' {
     children?: React.ReactNode;
   }) => JSX.Element;
 
-  export const SelectControl: (props: {
-    label?: string;
-    value?: string;
-    options: { label: string; value: string; disabled?: boolean }[];
-    onChange: (value: string) => void;
-    __next40pxDefaultSize?: boolean;
-    __nextHasNoMarginBottom?: boolean;
-  }) => JSX.Element;
-
   export const Notice: (props: {
     status?: 'warning' | 'error' | 'success' | 'info';
     isDismissible?: boolean;
@@ -116,9 +107,14 @@ declare module '@wordpress/data' {
 }
 
 declare module '@wordpress/components' {
-  export const Button: (props: { ref?: React.Ref<HTMLButtonElement>; variant?: string; disabled?: boolean; 'aria-label'?: string; onClick(): void; children?: React.ReactNode }) => React.JSX.Element;
+  /** With `href`, WordPress renders the button as a link. */
+  export const Button: (props: {
+    ref?: React.Ref<HTMLButtonElement>; variant?: string; disabled?: boolean; 'aria-label'?: string; onClick?(): void; children?: React.ReactNode;
+    href?: string; target?: string; rel?: string;
+  }) => React.JSX.Element;
+  /** A disabled option is listed and cannot be chosen. */
   export const ComboboxControl: (props: {
-    label: string; value: string | null; options: { label: string; value: string }[];
+    label: string; value: string | null; options: { label: string; value: string; disabled?: boolean }[];
     onFilterValueChange(value: string): void; onChange(value: string | null | undefined): void;
   }) => React.JSX.Element;
 }
@@ -131,4 +127,12 @@ declare module '@wordpress/block-editor' {
 declare module '@wordpress/components' {
   export const PanelBody: (props: { title: string; initialOpen?: boolean; opened?: boolean; onToggle?(opened: boolean): void; children: React.ReactNode }) => React.JSX.Element;
   export const ToolbarButton: (props: { disabled?: boolean; onClick(): void; children: React.ReactNode }) => React.JSX.Element;
+}
+
+/*
+ * The picker's shortcode Copy. WordPress's hook carries the clipboard
+ * fallback, and returns a ref for the button it listens on.
+ */
+declare module '@wordpress/compose' {
+  export function useCopyToClipboard<T extends HTMLElement = HTMLElement>(text: string | (() => string), onSuccess?: () => void): React.Ref<T>;
 }

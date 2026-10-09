@@ -43,6 +43,16 @@ found the system intact and its application drifted:
    ID and Copy, because the free page events (`resources/loader/src/events.ts`)
    identify a campaign by that ID and nothing else; removing it would leave a
    developer no way to find it.
+   *Amended by [0132](0132-every-screen-answers-its-first-question.md) (2026-10-09, block editor review): there is a **second** necessary
+   exception — the inline campaign's **shortcode**, `[wconvert_optin
+   id="…"]`, shown with Copy by the "WConvert campaign" block once a campaign
+   is chosen and by the builder's manual placement (`ManualPlacement`), and
+   likewise the content lock's enclosing `[wconvert_content_lock id="…"]`. The
+   shortcode is how a campaign is placed outside the block editor (classic
+   editor, page builders, widgets, theme files), and it can name a campaign by
+   nothing but its ID. Everything else in the block editor still names a
+   campaign by its name; an unnamed one reads "Unnamed campaign" and one that
+   no longer resolves reads "This campaign", never its ID.*
 5. **Naming.** A **lead** is the person a row is about; a **submission** is one
    form fill (one [[Lead]] record — the domain term is unchanged, see
    `CONTEXT.md`). "Email or phone", not "identifier". **Send** and **send

@@ -105,7 +105,7 @@ final class RevenueHooks
             'consent_ready' => function_exists('wp_has_consent') && in_array(apply_filters('wp_get_consent_type', false), ['optin', 'optout'], true)];
         if (!$base['available'] || $settings['since'] === null) return new WP_REST_Response($base);
         try { $range = \WConvert\Rest\ReportWindow::read($request); }
-        catch (\InvalidArgumentException) { return new WP_Error('wconvert_report_range', __('Choose a current or earlier month.', 'wconvert'), ['status' => 400]); }
+        catch (\InvalidArgumentException $refusal) { return \WConvert\Rest\ReportWindow::error($refusal); }
         return new WP_REST_Response($base + (new RevenueReport())->read($range, (string) ($request->get_param('optin_id') ?? '')));
     }
 

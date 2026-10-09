@@ -200,7 +200,7 @@ function windowClause(schedule: Schedule): string | null {
  */
 export function datesSummary(schedule: Schedule): Summary {
   if (endsBeforeStart(schedule)) return { text: __('End is before start', 'wconvert'), attention: true };
-  return { text: windowClause(schedule) ?? __('Runs until you pause it', 'wconvert'), attention: hasFinished(schedule) };
+  return { text: windowClause(schedule) ?? __('Runs until you unpublish it', 'wconvert'), attention: hasFinished(schedule) };
 }
 
 /** A window that ends before it starts, which would never run. */

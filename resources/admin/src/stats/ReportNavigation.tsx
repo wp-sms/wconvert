@@ -34,6 +34,20 @@ export function ReportTarget({ name, label, children }: { name: ReportName; labe
   return register ? <div id={id} ref={ref} tabIndex={-1} role="group" aria-label={label} className="wa-report-target">{children}</div> : children;
 }
 
+function jumpTo(target: Target) {
+  target.element.focus({ preventScroll: true });
+  target.element.scrollIntoView({ block: 'start' });
+}
+
+/**
+ * A way into one mounted report from elsewhere on the page, such as the
+ * Linked sales card into Campaign sales, or null while it is not mounted.
+ */
+export function useReportJump(name: ReportName): { controls: string; jump: () => void } | null {
+  const target = useContext(Navigation)?.targets[name];
+  return target ? { controls: target.element.id, jump: () => jumpTo(target) } : null;
+}
+
 export function ReportShortcuts() {
   const navigation = useContext(Navigation);
   if (!navigation || Object.keys(navigation.targets).length < 2) return null;
@@ -41,10 +55,7 @@ export function ReportShortcuts() {
     <span className="wa-muted">{__('Jump to', 'wconvert')}</span>
     {ORDER.map(name => {
       const target = navigation.targets[name];
-      return target && <Button key={name} variant="outline" aria-controls={target.element.id} onClick={() => {
-        target.element.focus({ preventScroll: true });
-        target.element.scrollIntoView({ block: 'start' });
-      }}>{target.label}</Button>;
+      return target && <Button key={name} variant="outline" aria-controls={target.element.id} onClick={() => jumpTo(target)}>{target.label}</Button>;
     })}
   </nav>;
 }

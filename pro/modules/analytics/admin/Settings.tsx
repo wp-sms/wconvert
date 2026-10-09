@@ -70,6 +70,11 @@ export default function Settings({ onEditingStateChange }: { onEditingStateChang
   const plausible = value.route === 'plausible';
   const paused = response.environment !== 'production';
   const needsReview = !response.site_matches && value.enabled;
+  // Save on a clean form re-confirms a moved site — and only then, with the
+  // sentence that says so beside it. Off, there is nothing to resume.
+  const reconfirm = !dirty && needsReview;
+  const on = value.enabled;
+  const live = response.settings.enabled && response.site_matches && !paused ? sendingLine(response.settings) : null;
   const testBlocked = dirty || busy || !response.asset_available;
   // The sentence that says why Test setup is refused, so a keyboard user hears it with the button (§14).
   const testReason = !response.asset_available ? `${ids}-asset` : dirty ? `${ids}-unsaved` : undefined;
@@ -83,25 +88,31 @@ export default function Settings({ onEditingStateChange }: { onEditingStateChang
         <CircleAlert />
         <AlertTitle id={`${ids}-asset`} className="line-clamp-none">{__('The analytics script is missing. Reinstall WConvert Pro to restore it.', 'wconvert')}</AlertTitle>
       </Alert>}
+      {/* What the SAVED setup is doing, so nobody opens the fields to find out. */}
+      {live && <p className="m-0 font-medium">{live}</p>}
       <fieldset disabled={busy} className="m-0 grid min-w-0 gap-5 border-0 p-0">
         <div className="flex flex-wrap items-center justify-between gap-3">
-          <CheckRow className="font-medium" label={__('Enable analytics integration', 'wconvert')} checked={value.enabled} onChange={e => change({ enabled: e.target.checked })} />
+          <CheckRow className="font-medium" label={__('Enable analytics integration', 'wconvert')} checked={value.enabled} data-setting="analytics-enabled" onChange={e => change({ enabled: e.target.checked })} />
           {paused && <Badge variant="warning">{__('Non-production site', 'wconvert')}</Badge>}
         </div>
-        {paused && <p className="m-0 text-note text-muted-foreground">{__('Tracking is paused here. Diagnostics remain available.', 'wconvert')}</p>}
-        {needsReview && <p className="m-0 text-note">{__('Site address changed. Review this connection and save to resume tracking.', 'wconvert')}</p>}
+        {/* Off, the machinery is hidden, not cleared: turning it back on finds the draft as it was. */}
+        {!on && <p className="m-0 text-note text-muted-foreground">{__('Off. Campaign events aren’t sent to Google Analytics, GTM or Plausible.', 'wconvert')}</p>}
+        {on && paused && <p className="m-0 text-note text-muted-foreground">{__('Tracking is paused here. Diagnostics remain available.', 'wconvert')}</p>}
+        {needsReview && <p id={`${ids}-review`} className="m-0 text-note">{__('Site address changed. Review this connection and save to resume tracking.', 'wconvert')}</p>}
 
-        <Choices label={__('Connection method', 'wconvert')} value={value.route} onChange={route => change({ route, ...((route === 'plausible') !== plausible ? { consent: 'wp' as const } : {}) })}
+        {on && <>
+        <Choices setting="analytics-method" label={__('Connection method', 'wconvert')} value={value.route} onChange={route => change({ route, ...((route === 'plausible') !== plausible ? { consent: 'wp' as const } : {}) })}
           options={[['gtag', __('Google tag', 'wconvert')], ['gtm', __('Google Tag Manager', 'wconvert')], ['plausible', __('Plausible', 'wconvert')]]} />
         {value.route === 'gtag' ? <div className="grid gap-1.5">
           <div className="flex items-center gap-1"><label htmlFor="analytics-stream" className="font-medium">{__('Measurement ID', 'wconvert')}</label>
             <InfoTip label={__('About the Measurement ID', 'wconvert')}>{__('Use the G- ID of the web stream already installed on this site. WConvert does not install a Google tag.', 'wconvert')}</InfoTip>
           </div>
-          <Input id="analytics-stream" className="max-w-sm" value={value.measurement_id} placeholder="G-XXXXXXXXXX" maxLength={22} dir="ltr" autoComplete="off" onChange={e => change({ measurement_id: e.target.value.trim().toUpperCase() })} />
+          <Input id="analytics-stream" data-setting="analytics-measurement" className="max-w-sm" value={value.measurement_id} placeholder="G-XXXXXXXXXX" maxLength={22} dir="ltr" autoComplete="off" onChange={e => change({ measurement_id: e.target.value.trim().toUpperCase() })} />
         </div> : plausible ? <p className="m-0 text-note text-muted-foreground">{__('Uses your installed Plausible script. Custom events count toward Plausible usage.', 'wconvert')} <a href={response.guide_url + '#plausible'} target="_blank" rel="noreferrer" className="underline">{__('Plausible setup', 'wconvert')}</a></p> : <p className="m-0 text-note text-muted-foreground">{__('Add the WConvert event tag to your container, then publish it.', 'wconvert')} <a href={response.guide_url + '#gtm'} target="_blank" rel="noreferrer" className="underline">{__('GTM setup', 'wconvert')}</a></p>}
 
         <div className="grid gap-2">
           <Choices label={__('Consent handling', 'wconvert')} value={value.consent} onChange={consent => change({ consent })}
+            setting="analytics-consent"
             options={[['wp', __('WP Consent API', 'wconvert')], ['site', plausible ? __('Existing tracker', 'wconvert') : __('Google tag / GTM', 'wconvert')]]}
             help={<InfoTip label={__('About consent handling', 'wconvert')}>{value.consent === 'wp'
               ? __('Requires an initialized WP Consent API integration. Missing or denied permission withholds events; earlier events are not replayed.', 'wconvert')
@@ -115,8 +126,8 @@ export default function Settings({ onEditingStateChange }: { onEditingStateChang
 
         <div className="border-t border-border pt-2">
           <Disclosure variant="inline" title={__('Advanced settings', 'wconvert')} bodyClassName="gap-4">
-            <CheckRow label={__('Track dismissals', 'wconvert')} checked={value.dismissals} onChange={e => change({ dismissals: e.target.checked })} />
-            <CheckRow label={__('Exclude your team', 'wconvert')} hint={__('Visits by people who can manage campaigns are not tracked.', 'wconvert')}
+            <CheckRow label={__('Track dismissals', 'wconvert')} data-setting="analytics-dismissals" checked={value.dismissals} onChange={e => change({ dismissals: e.target.checked })} />
+            <CheckRow label={__('Exclude your team', 'wconvert')} data-setting="analytics-team" hint={__('Visits by people who can manage campaigns are not tracked.', 'wconvert')}
               checked={value.exclude_managers} onChange={e => change({ exclude_managers: e.target.checked })} />
             {value.route === 'gtm' && <Field label={__('Data-layer name', 'wconvert')} htmlFor={`${ids}-layer`}>
               <Input id={`${ids}-layer`} className="max-w-sm" value={value.data_layer} maxLength={40} dir="ltr" onChange={e => change({ data_layer: e.target.value })} />
@@ -124,19 +135,20 @@ export default function Settings({ onEditingStateChange }: { onEditingStateChang
             <p className="m-0 text-note text-muted-foreground">{__('Includes existing and future campaigns unless excluded in campaign details.', 'wconvert')}{response.excluded > 0 && <> {sprintf(_n('%s published campaign is excluded.', '%s published campaigns are excluded.', response.excluded, 'wconvert'), String(response.excluded))}</>}</p>
           </Disclosure>
         </div>
+        </>}
       </fieldset>
     </RegionBody>
     <RegionFooter className="flex flex-wrap items-center justify-between gap-3">
-      <div className="flex flex-wrap items-center gap-3"><AdminDialog>
+      <div className="flex flex-wrap items-center gap-3">{on && <AdminDialog>
         <AdminDialogTrigger asChild><Button variant="outline" disabled={busy} aria-disabled={testBlocked || undefined} aria-describedby={testReason}
           onClick={event => { if (testBlocked) event.preventDefault(); }}>{__('Test setup', 'wconvert')}</Button></AdminDialogTrigger>
         <TestDialog page={page} onPage={setPage} testUrl={testUrl} plausible={plausible} />
-      </AdminDialog><a className="text-note underline underline-offset-2" href={response.guide_url} target="_blank" rel="noreferrer">{__('Setup guide', 'wconvert')}</a></div>
+      </AdminDialog>}<a className="text-note underline underline-offset-2" href={response.guide_url} target="_blank" rel="noreferrer">{__('Setup guide', 'wconvert')}</a></div>
       <div className="flex flex-wrap items-center gap-3">
-        {dirty && <span id={`${ids}-unsaved`} className="text-note text-muted-foreground">{__('Save changes before testing.', 'wconvert')}</span>}
+        {dirty && on && <span id={`${ids}-unsaved`} className="text-note text-muted-foreground">{__('Save changes before testing.', 'wconvert')}</span>}
         <SaveStatus saved={status.saved} />
         {dirty && <Button variant="ghost" disabled={busy} onClick={() => { setValue(response.settings); setError(''); }}>{__('Cancel changes', 'wconvert')}</Button>}
-        <Button ref={saveButton} disabled={busy || (!dirty && response.site_matches)} onClick={() => void save()}>{busy ? __('Saving…', 'wconvert') : __('Save settings', 'wconvert')}</Button>
+        <Button ref={saveButton} disabled={busy || (!dirty && !reconfirm)} aria-describedby={reconfirm ? `${ids}-review` : undefined} onClick={() => void save()}>{busy ? __('Saving…', 'wconvert') : __('Save analytics integration', 'wconvert')}</Button>
       </div>
     </RegionFooter>
   </Region>;
@@ -161,9 +173,27 @@ function TestDialog({ page, onPage, testUrl, plausible }: { page: string; onPage
   </AdminDialogContent>;
 }
 
+/**
+ * One line naming what the saved setup sends and under which consent, e.g.
+ * "Sending campaign events to Google tag G-ABC123, with WP Consent API."
+ */
+function sendingLine(settings: SettingsValue): string {
+  const to = settings.route === 'plausible' ? __('Plausible', 'wconvert')
+    : settings.route === 'gtm' ? __('Google Tag Manager', 'wconvert')
+      : settings.measurement_id
+        /* translators: %s: a Google Analytics measurement ID, e.g. “G-ABC123”. */
+        ? sprintf(__('Google tag %s', 'wconvert'), settings.measurement_id)
+        : __('Google tag', 'wconvert');
+  const consent = settings.consent === 'wp' ? __('with WP Consent API', 'wconvert')
+    : settings.route === 'plausible' ? __('without a WConvert consent check', 'wconvert')
+      : __('with consent handled by your tag', 'wconvert');
+  /* translators: 1: where events go, e.g. “Google tag G-ABC123”; 2: the consent handling, e.g. “with WP Consent API”. */
+  return sprintf(__('Sending campaign events to %1$s, %2$s.', 'wconvert'), to, consent);
+}
+
 /** Small exclusive choices: the shared OptionStrip, under a visible label that names the group. */
-function Choices<T extends string>({ label, value, options, help, onChange }: { label: string; help?: ReactNode; value: T; options: [T, string][]; onChange(value: T): void }) {
-  return <div className="grid gap-2">
+function Choices<T extends string>({ label, value, options, help, setting, onChange }: { label: string; help?: ReactNode; value: T; options: [T, string][]; setting?: string; onChange(value: T): void }) {
+  return <div className="grid gap-2" data-setting={setting}>
     <div className="flex items-center gap-1"><span aria-hidden="true" className="font-medium">{label}</span>{help}</div>
     <OptionStrip label={label} value={value} options={options.map(([key, name]) => ({ value: key, label: name }))} onChange={next => onChange(next as T)} />
   </div>;

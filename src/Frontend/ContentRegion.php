@@ -13,8 +13,12 @@ final class ContentRegion
     {
         register_block_type(self::BLOCK, [
             'api_version' => 3,
-            'title' => __('WConvert Content lock', 'wconvert'),
+            // Prefixed like its two siblings, so typing "WConvert" in the
+            // inserter finds all three (the inline campaign block and the
+            // divider are the others).
+            'title' => __('WConvert content lock', 'wconvert'),
             'category' => 'widgets',
+            'keywords' => [__('wconvert', 'wconvert'), __('content lock', 'wconvert'), __('gate', 'wconvert'), __('unlock', 'wconvert'), __('form', 'wconvert'), __('signup', 'wconvert')],
             'attributes' => ['optinId' => ['type' => 'string', 'default' => '']],
             'supports' => ['html' => false, 'inserter' => false],
             'render_callback' => static fn (array $attributes, string $content): string => self::html((string) ($attributes['optinId'] ?? ''), $content),

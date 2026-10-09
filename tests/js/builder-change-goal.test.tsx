@@ -226,7 +226,7 @@ it('copies current edits to another Goal while leaving a published original unto
   await userEvent.click(screen.getByRole('button', { name: 'Campaign actions' }));
   await userEvent.click(await screen.findByRole('menuitem', { name: 'Campaign details' }));
   await userEvent.click(screen.getByRole('button', { name: 'Duplicate for another goal' }));
-  await userEvent.click(within(cardFor('Promote a sale or offer')).getByRole('button', { name: 'Use this goal' }));
+  await userEvent.click(within(cardFor('Promote a sale or offer')).getByRole('button', { name: /^Use this goal/ }));
   expect(screen.getByText(/results start at zero/)).toBeInTheDocument();
   await userEvent.click(screen.getByRole('button', { name: 'Create copied draft' }));
   await waitFor(() => expect(onCreated).toHaveBeenCalledWith('COPIED'));
@@ -371,7 +371,7 @@ describe('the goal picker', () => {
     await changeGoal();
 
     expect(
-      within(cardFor('Promote a sale or offer')).getByRole('button', { name: 'Use this goal' }),
+      within(cardFor('Promote a sale or offer')).getByRole('button', { name: /^Use this goal/ }),
     ).toBeEnabled();
   });
 
@@ -447,7 +447,7 @@ describe('the goal picker', () => {
 
     const delivery = within(cardFor('Deliver a lead magnet'));
 
-    const refused = delivery.getByRole('button', { name: 'Use this goal' });
+    const refused = delivery.getByRole('button', { name: /^Use this goal/ });
 
     expect(refused).toBeEnabled();
   });
@@ -457,7 +457,7 @@ describe('the goal picker', () => {
     await changeGoal();
 
     expect(
-      within(cardFor('Deliver a lead magnet')).getByRole('button', { name: 'Use this goal' }),
+      within(cardFor('Deliver a lead magnet')).getByRole('button', { name: /^Use this goal/ }),
     ).toBeEnabled();
   });
 });
@@ -516,7 +516,7 @@ describe('confirming the change', () => {
   const pick = async (label: string) => {
     await changeGoal();
     await userEvent.click(
-      within(cardFor(label)).getByRole('button', { name: 'Use this goal' }),
+      within(cardFor(label)).getByRole('button', { name: /^Use this goal/ }),
     );
   };
 

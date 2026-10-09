@@ -13,6 +13,8 @@ vi.mock('../../resources/admin/src/optins/api', async (original) => ({
   listOptins: api.listOptins,
 }));
 vi.mock('../../resources/admin/src/destinations/api', () => ({ readDestinations: api.readDestinations }));
+const protection = vi.hoisted(() => vi.fn());
+vi.mock('@wordpress/api-fetch', () => ({ default: protection }));
 const { HeaderTools } = await import('../../resources/admin/src/shell/HeaderTools');
 
 const SUSPENDED = {
@@ -22,15 +24,16 @@ const SUSPENDED = {
 };
 
 beforeEach(() => {
+  protection.mockResolvedValue(null);
   vi.clearAllMocks();
   api.readDestinations.mockResolvedValue({ destinations: [], failures: [] });
 });
 
-it('shows the unread dot before the bell is ever opened', async () => {
+it('shows how many things need attention before the bell is ever opened', async () => {
   api.listOptins.mockResolvedValue([SUSPENDED]);
   render(<HeaderTools />);
   expect(await screen.findByRole('button', { name: 'Notifications, 1 issue' })).toBeInTheDocument();
-  expect(document.querySelector('.wconvert-notification-dot')).not.toBeNull();
+  expect(document.querySelector('.wconvert-notification-count')).toHaveTextContent('1');
 });
 
 it('names an unnamed campaign without its ID, with its status', async () => {
@@ -60,5 +63,15 @@ it('offers one way to try again when the read fails', async () => {
   const popover = await screen.findByRole('dialog');
   expect(await within(popover).findByRole('alert')).toHaveTextContent('Notifications couldn’t load: Offline');
   await userEvent.click(within(popover).getByRole('button', { name: 'Try again' }));
+  // Spam protection was not read here, so the bell does not claim everything.
   expect(await within(popover).findByText('No campaign or sending issues.')).toBeInTheDocument();
+});
+
+it('counts forms paused by spam protection as something broken', async () => {
+  api.listOptins.mockResolvedValue([]);
+  protection.mockResolvedValue({ rules_configured: true, rules_available: false });
+  render(<HeaderTools />);
+  await userEvent.click(await screen.findByRole('button', { name: 'Notifications, 1 issue' }));
+  expect(await screen.findByText('Forms are paused')).toBeInTheDocument();
+  expect(screen.getByRole('link', { name: 'Review spam protection' })).toHaveAttribute('href', '#settings?group=protection');
 });

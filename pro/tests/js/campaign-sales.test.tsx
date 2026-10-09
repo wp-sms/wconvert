@@ -62,3 +62,23 @@ it('shows linked orders in the store currency with readable status and date, and
   expect(within(rows[2]).queryByRole('link', { name: /Deleted campaign/ })).toBeNull();
   expect(screen.getAllByText('$10.00', { selector: 'dd' })).toHaveLength(2);
 });
+
+it('hands the overview a Linked sales summary only for a complete report of these dates', async () => {
+  const onSummary = vi.fn();
+  vi.mocked(apiFetch).mockResolvedValueOnce({ ...report, linked_orders: 18, currencies: [{ currency: 'EUR', orders: 18, amount: 1240, unallocated_refunds: 0 }] });
+  const view = render(<Revenue period={period} onSummary={onSummary} />);
+  await screen.findByText('Linked paid orders');
+  expect(onSummary).toHaveBeenLastCalledWith({ orders: 18, amount: 1240, currency: 'EUR' });
+  vi.mocked(apiFetch).mockResolvedValueOnce({ ...report, from: '2026-09-01', days: 30, complete: false });
+  view.rerender(<Revenue period={{ ...period, days: 30, from: '2026-09-01' }} onSummary={onSummary} />);
+  await screen.findByText('Choose a shorter period');
+  expect(onSummary).toHaveBeenLastCalledWith(null);
+});
+
+it('reads Today live, which the order report would otherwise read as complete days', async () => {
+  vi.mocked(apiFetch).mockResolvedValueOnce({ ...report, from: '2026-10-09', to: '2026-10-09', days: 1, linked_orders: 0, orders: [] });
+  render(<Revenue period={{ days: 1, from: '2026-10-09', to: '2026-10-09', complete_days: false }} />);
+  await screen.findByText('No linked orders in this period');
+  expect(vi.mocked(apiFetch).mock.calls[0][0].path).toBe('/wconvert/v1/revenue?days=1&complete=0');
+  expect(screen.queryByText(/appears tomorrow/)).toBeNull();
+});

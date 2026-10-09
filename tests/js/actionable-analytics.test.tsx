@@ -100,3 +100,20 @@ it('jumps to a mounted report with keyboard focus and removes unavailable shortc
   expect(screen.queryByRole('button', { name: 'Sales' })).not.toBeInTheDocument();
   expect(screen.getByRole('button', { name: 'Answers' })).toBeInTheDocument();
 });
+
+it('asks every campaign report for the window the overview accepted (ADR 0132)', async () => {
+  vi.mocked(apiFetch).mockResolvedValue({ from: '2026-09-01', to: '2026-09-10', rows: [], definitions: {}, days: 10 });
+  const view = render(<JourneyReport id="campaign" period={{ from: '2026-09-01', to: '2026-09-10', days: 10, custom: true }} />);
+  await waitFor(() => expect(vi.mocked(apiFetch)).toHaveBeenCalled());
+  expect(vi.mocked(apiFetch).mock.calls[0][0].path).toBe('/wconvert/v1/optins/campaign/journey-stats?from=2026-09-01&to=2026-09-10');
+  view.unmount();
+  vi.mocked(apiFetch).mockClear();
+  render(<JourneyReport id="campaign" period={{ from: '2026-09-14', to: '2026-09-14', days: 1, complete_days: false }} />);
+  await waitFor(() => expect(vi.mocked(apiFetch)).toHaveBeenCalled());
+  expect(vi.mocked(apiFetch).mock.calls[0][0].path).toBe('/wconvert/v1/optins/campaign/journey-stats?days=1&complete=0');
+});
+
+it('says the one sentence about today where a month has no complete day yet', () => {
+  render(<JourneyReport id="campaign" period={{ from: '2026-10-01', to: '2026-10-01', days: 0, month: '2026-10' }} />);
+  expect(screen.getByText('Today’s activity appears tomorrow. Choose Today to see it so far.')).toBeInTheDocument();
+});

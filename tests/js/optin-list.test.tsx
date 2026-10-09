@@ -409,86 +409,6 @@ describe('saved changes awaiting publication', () => {
   });
 });
 
-describe('the door into the eligibility inspector', () => {
-  /**
-   * ==========================================================================
-   * IT ASKS WHICH PAGE, AND THEN GOES THERE. IT NEVER EVALUATES ONE.
-   * ==========================================================================
-   * A `RequestContext` cannot honestly be built from a URL — `url_to_postid()`
-   * returns 0 for archives, terms, the blog index and the shop page — so the
-   * merchant does not DESCRIBE a page to the inspector, they OPEN one
-   * (ADR 0048). The dialog's entire job is to open that page: there is no
-   * route behind it and no answer comes back to this screen. It opens in a new
-   * tab, so the admin the merchant came from stays where it was.
-   */
-  it('asks which page and opens it in a new tab with the parameter on', async () => {
-    optins.listOptins.mockResolvedValue([OPTIN]);
-    window.wconvertAdmin = { exportUrl: '', homeUrl: 'https://example.test/', inspectParam: 'wconvert-inspect' };
-    onTestFinished(() => { delete window.wconvertAdmin; });
-
-    const open = vi.spyOn(window, 'open').mockReturnValue(null);
-    onTestFinished(() => open.mockRestore());
-
-    render(<OptinList onEdit={() => undefined} />);
-
-    await userEvent.click(await screen.findByRole('button', { name: /More actions/ }));
-    await userEvent.click(await screen.findByRole('menuitem', { name: 'Check visibility' }));
-
-    const field = await screen.findByLabelText('Page to open');
-
-    // Prefilled from `home_url()` rather than from `location.origin`, so a
-    // subdirectory install lands on the SITE rather than on the domain root.
-    expect(field).toHaveValue('https://example.test/');
-
-    await userEvent.clear(field);
-    await userEvent.type(field, 'https://example.test/shop?filter=sale');
-    await userEvent.click(screen.getByRole('button', { name: 'Open the page' }));
-
-    // The page's own query string survives: a merchant asking about
-    // `?filter=sale` is asking about that page, and appending with a `?` would
-    // produce a different one.
-    expect(open).toHaveBeenCalledWith('https://example.test/shop?filter=sale&wconvert-inspect=1', '_blank', 'noopener');
-    expect(screen.queryByRole('dialog')).toBeNull();
-  });
-
-  /** A page it cannot open says so beside the field, rather than doing nothing. */
-  it('keeps an address it cannot open and says why', async () => {
-    window.wconvertAdmin = { exportUrl: '', inspectParam: 'wconvert-inspect' };
-    onTestFinished(() => { delete window.wconvertAdmin; });
-    const open = vi.spyOn(window, 'open').mockReturnValue(null);
-    onTestFinished(() => open.mockRestore());
-
-    render(<OptinList onEdit={() => undefined} />);
-
-    await userEvent.click(await screen.findByRole('button', { name: /More actions/ }));
-    await userEvent.click(await screen.findByRole('menuitem', { name: 'Check visibility' }));
-    await userEvent.type(await screen.findByLabelText('Page to open'), 'not a page');
-    await userEvent.click(screen.getByRole('button', { name: 'Open the page' }));
-
-    expect(await screen.findByRole('alert')).toHaveTextContent('Enter a full page address');
-    expect(screen.getByLabelText('Page to open')).toHaveValue('not a page');
-    expect(open).not.toHaveBeenCalled();
-  });
-
-  /**
-   * **The cache sentence is on the dialog, not in the panel.**
-   * `DONOTCACHEPAGE` is set during PHP, and a full-page cache holding a file
-   * for that URL answers before PHP runs at all — so the symptom is that no
-   * panel appears, and a warning inside the panel is one nobody could read.
-   */
-  it('warns about the cache where the merchant can still read it', async () => {
-    optins.listOptins.mockResolvedValue([OPTIN]);
-    window.wconvertAdmin = { exportUrl: '', homeUrl: 'https://example.test/', inspectParam: 'wconvert-inspect' };
-
-    render(<OptinList onEdit={() => undefined} />);
-
-    await userEvent.click(await screen.findByRole('button', { name: /More actions/ }));
-    await userEvent.click(await screen.findByRole('menuitem', { name: 'Check visibility' }));
-
-    expect(await screen.findByText(/a cache is serving that page before WordPress runs/)).toBeInTheDocument();
-  });
-});
-
 /**
  * =============================================================================
  * A TEST IS ONE CAMPAIGN WITH ARMS UNDER IT, NEVER TWO CAMPAIGNS.
@@ -532,7 +452,7 @@ describe('an A/B test on the list', () => {
     await userEvent.type(screen.getByRole('searchbox', { name: 'Search campaigns' }), '(B)');
     expect(screen.getByRole('button', { name: OPTIN.name })).toBeInTheDocument();
     expect(screen.getByRole('button', { name: ARM_B.name })).toBeInTheDocument();
-    await userEvent.click(screen.getByRole('radio', { name: 'Published' }));
+    await userEvent.type(screen.getByRole('searchbox', { name: 'Search campaigns' }), ' nothing like this');
     expect(screen.getByText('No campaigns found')).toBeInTheDocument();
     await userEvent.click(screen.getByRole('button', { name: 'Clear filters' }));
     expect(screen.getByRole('searchbox')).toHaveValue('');
@@ -759,11 +679,22 @@ it('draws Details as the campaign, its numbers, and two doors out', async () => 
 });
 
 describe('the Campaigns workspace', () => {
+  it('sorts by results in the period when asked', async () => {
+    const quiet = { ...OPTIN, id: '01JQ00000000000000000000ZZ', name: 'Quiet campaign' };
+    optins.listOptins.mockResolvedValue([quiet, OPTIN]);
+    stats.readDashboard.mockResolvedValue({ days: 30, from: '2026-08-16', to: '2026-09-14', goals: [{ action: 'submit', result_label: 'Submissions', optins: [{ id: OPTIN.id, conversions: 9, impressions: 90, conversion_rate: 0.1 }, { id: quiet.id, conversions: 1, impressions: 90, conversion_rate: 0.01 }] }] });
+    render(<OptinList onEdit={() => undefined} />);
+    await screen.findByRole('link', { name: `View ${OPTIN.name} report` });
+    expect(screen.getAllByRole('row').slice(1)[0]).toHaveAccessibleName(quiet.name);
+    await userEvent.selectOptions(screen.getByRole('combobox', { name: 'Sort campaigns' }), 'results');
+    expect(screen.getAllByRole('row').slice(1)[0]).toHaveAccessibleName(OPTIN.name);
+  });
+
   it('uses conversions and the server result unit, never the delivery headline', async () => {
     stats.readDashboard.mockResolvedValue({ days: 30, from: '2026-08-16', to: '2026-09-14', goals: [{ action: 'submit', result_label: 'Resource requests', optins: [{ id: OPTIN.id, headline: 3, conversions: 7, impressions: 20, conversion_rate: 0.35 }] }] });
     render(<OptinList onEdit={() => undefined} />);
     const row = await screen.findByRole('row', { name: OPTIN.name });
-    expect(await within(row).findByRole('link', { name: `View ${OPTIN.name} report` })).toHaveTextContent('7Resource requests');
+    expect(await within(row).findByRole('link', { name: `View ${OPTIN.name} report` })).toHaveTextContent(/^7Resource requests35(\.0)?% of 20 shown$/);
     expect(stats.readDashboard).toHaveBeenCalledWith(30, true);
     await userEvent.click(within(row).getByRole('button', { name: /More actions/ }));
     expect(await screen.findByRole('menuitem', { name: 'View submissions' })).toHaveAttribute('href', expect.stringContaining('from=2026-08-16'));
@@ -847,6 +778,8 @@ it('makes preview and vocabulary failures recoverable without presenting missing
 });
 
 it('lets keyboard users move between mutually exclusive views and filters', async () => {
+  const live = { ...OPTIN, id: 'live', name: 'Live campaign', published_at: '2026-10-01 10:00:00' };
+  optins.listOptins.mockResolvedValue([OPTIN, live]);
   render(<OptinList onEdit={() => undefined} />);
   await screen.findByRole('row', { name: OPTIN.name });
   await userEvent.click(screen.getByRole('radio', { name: 'List view' }));
@@ -856,6 +789,24 @@ it('lets keyboard users move between mutually exclusive views and filters', asyn
   await userEvent.keyboard('{ArrowRight}');
   expect(screen.getByRole('radio', { name: 'Published' })).toBeChecked();
   expect(screen.queryByRole('row', { name: OPTIN.name })).toBeNull();
+});
+
+it('offers only the statuses some campaign is in', async () => {
+  render(<OptinList onEdit={() => undefined} />);
+  await screen.findByRole('row', { name: OPTIN.name });
+  // One draft: Published and Suspended would each filter to nothing.
+  expect(screen.getByRole('radio', { name: 'All' })).toBeInTheDocument();
+  expect(screen.getByRole('radio', { name: 'Drafts' })).toBeInTheDocument();
+  expect(screen.queryByRole('radio', { name: 'Published' })).toBeNull();
+  expect(screen.queryByRole('radio', { name: 'Suspended' })).toBeNull();
+});
+
+it('asks for the empty list to carry the only Create button', async () => {
+  optins.listOptins.mockResolvedValue([]);
+  const onEmptyChange = vi.fn();
+  render(<OptinList onEdit={() => undefined} onCreate={() => undefined} onEmptyChange={onEmptyChange} />);
+  await screen.findByRole('button', { name: /Create your first campaign/ });
+  expect(onEmptyChange).toHaveBeenLastCalledWith(true);
 });
 
 it('keeps other campaign families actionable while a write is pending', async () => {
@@ -919,4 +870,13 @@ it('retries a failed list refresh without repeating the successful mutation', as
   await waitFor(() => expect(screen.getByRole('row', { name: OPTIN.name })).toHaveTextContent('Published'));
   expect(optins.publishOptin).toHaveBeenCalledTimes(1);
   expect(screen.queryByRole('alert')).toBeNull();
+});
+
+it('puts the count, the dates and the pages on one line, and no inspector door', async () => {
+  const many = Array.from({ length: 13 }, (_, at) => ({ ...OPTIN, id: `01JQ0000000000000000000${String(at).padStart(3, '0')}`, name: `Campaign ${at}` }));
+  optins.listOptins.mockResolvedValue(many);
+  render(<OptinList onEdit={() => undefined} />);
+  const pages = await screen.findByRole('navigation', { name: 'Campaign pages' });
+  expect(pages.closest('.wconvert-campaign-footer')).toHaveTextContent('13 campaigns');
+  expect(screen.queryByRole('button', { name: /Why isn’t a campaign showing/ })).toBeNull();
 });

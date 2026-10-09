@@ -163,16 +163,18 @@ export function SiteAllowance({
             <Field
               label={ALLOWANCE_LABELS.maxImpressions()}
               htmlFor={`${id}-max`}
-              hint={__('A total across all campaigns, not per day. Leave empty for no limit.', 'wconvert')}
+              // The cap is a lifetime total and never resets, so the words say
+              // "ever" rather than leave a merchant to assume a day.
+              hint={__('Counted across all campaigns and never resets. Leave empty for no limit.', 'wconvert')}
               hintId={`${id}-max-hint`}
               error={invalidMax ? wholeNumber : undefined}
             >
               <span className="flex items-center gap-2">
-                <Input id={`${id}-max`} className="w-28" type="number" inputMode="numeric" min={1} step={1}
+                <Input id={`${id}-max`} data-setting="allowance-max" className="w-28" type="number" inputMode="numeric" min={1} step={1}
                   placeholder={__('No limit', 'wconvert')} aria-invalid={invalidMax || undefined}
                   aria-describedby={`${id}-max-unit ${id}-max-hint`}
                   value={draft?.maxImpressions ?? ''} onChange={(event) => change({ maxImpressions: event.target.value })} />
-                <span id={`${id}-max-unit`}>{__('times per visitor', 'wconvert')}</span>
+                <span id={`${id}-max-unit`}>{__('times to each visitor, ever.', 'wconvert')}</span>
               </span>
             </Field>
             <Field
@@ -183,7 +185,7 @@ export function SiteAllowance({
               error={invalidWait ? wholeNumber : undefined}
             >
               <span className="flex items-center gap-2">
-                <Input id={`${id}-wait`} className="w-28" type="number" inputMode="numeric" min={1} step={1}
+                <Input id={`${id}-wait`} data-setting="allowance-wait" className="w-28" type="number" inputMode="numeric" min={1} step={1}
                   placeholder={__('None', 'wconvert')} aria-invalid={invalidWait || undefined}
                   aria-describedby={`${id}-wait-unit ${id}-wait-hint`}
                   value={draft?.cooldownDays ?? ''} onChange={(event) => change({ cooldownDays: event.target.value })} />
@@ -193,12 +195,14 @@ export function SiteAllowance({
             <CheckRow
               label={ALLOWANCE_LABELS.stopAfterDismiss()}
               hint={__('Applies to every campaign, not only the one they closed.', 'wconvert')}
+              data-setting="allowance-dismiss"
               checked={draft?.stopAfterDismiss ?? false}
               onChange={(event) => change({ stopAfterDismiss: event.target.checked })}
             />
             <CheckRow
               label={ALLOWANCE_LABELS.stopAfterConversion()}
               hint={__('A conversion is a form submission or a campaign link click.', 'wconvert')}
+              data-setting="allowance-convert"
               checked={draft?.stopAfterConversion ?? false}
               onChange={(event) => change({ stopAfterConversion: event.target.checked })}
             />
@@ -206,7 +210,7 @@ export function SiteAllowance({
         </RegionBody>
         <RegionFooter className="flex flex-wrap items-center justify-end gap-3">
           <SaveStatus saved={status.saved} />
-          <Button type="button" variant="outline" disabled={!dirty || saving} onClick={() => { setDraft(draftOf(allowance.data)); setError(null); setChecked(false); }}>{__('Cancel changes', 'wconvert')}</Button>
+          {dirty && <Button type="button" variant="outline" disabled={saving} onClick={() => { setDraft(draftOf(allowance.data)); setError(null); setChecked(false); }}>{__('Cancel changes', 'wconvert')}</Button>}
           <Button ref={saveButton} type="submit" disabled={!dirty || saving}>{saving ? __('Saving…', 'wconvert') : __('Save display limits', 'wconvert')}</Button>
         </RegionFooter>
       </form>

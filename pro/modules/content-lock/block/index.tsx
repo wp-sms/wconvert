@@ -4,7 +4,7 @@ import { Button, Notice, PanelBody, ToolbarButton } from '@wordpress/components'
 import { select, useSelect, useDispatch } from '@wordpress/data';
 import { __ } from '@wordpress/i18n';
 import { useState } from '@wordpress/element';
-import { CampaignPickerFields, CampaignStatus, useCampaignChoices } from './CampaignPicker';
+import { CampaignPickerFields, CampaignStatus, boundaryLabel, useCampaignChoices } from './CampaignPicker';
 import './editor.css';
 import './Divider';
 import { ALLOWED_BLOCKS, LOCK_BLOCK, lockCount, supportedContent } from './selection';
@@ -32,7 +32,6 @@ registerBlockType(LOCK_BLOCK, {
     const openSettings = () => { setSettingsOpen(true); setFocusRequested(true); selectBlock(clientId); enableComplementaryArea('core', 'edit-post/block'); };
     const state = useCampaignChoices();
     const value = attributes.optinId ?? '';
-    const selected = state.data?.campaigns.find(item => item.id === value);
     const picker = <CampaignPickerFields value={value} onChange={optinId => setAttributes({ optinId })} state={state} focusRequested={focusRequested} onFocusHandled={() => setFocusRequested(false)} />;
     return <div {...useBlockProps({ className: 'wconvert-lock-editor' })}>
       <InspectorControls>
@@ -44,9 +43,9 @@ registerBlockType(LOCK_BLOCK, {
       <BlockControls group="other">
         <ToolbarButton disabled={!canUnwrap} onClick={() => replaceBlocks(clientId, content)}>{__('Remove lock, keep content', 'wconvert')}</ToolbarButton>
       </BlockControls>
-      <div className="wconvert-lock-editor__boundary"><strong>{__('Content lock starts', 'wconvert')}</strong><span>{selected?.name ?? (value ? __('Campaign needs attention', 'wconvert') : __('Choose a campaign', 'wconvert'))}</span></div>
+      <div className="wconvert-lock-editor__boundary"><strong>{__('Content lock starts', 'wconvert')}</strong><span>{boundaryLabel(value, state, __('Choose a campaign', 'wconvert'))}</span></div>
       {!value ? <Button variant="secondary" onClick={openSettings}>{__('Choose campaign', 'wconvert')}</Button> : <CampaignStatus value={value} state={state} />}
-      {count > 1 && <Notice status="warning" isDismissible={false}>{__('Use one Content lock region per page. Additional regions stay readable. Remove extra locks while keeping their content.', 'wconvert')}</Notice>}
+      {count > 1 && <Notice status="warning" isDismissible={false}>{__('Use one content lock region per page. Additional regions stay readable. Remove extra locks while keeping their content.', 'wconvert')}</Notice>}
       {!supportedContent(content) && <Notice status="warning" isDismissible={false}>{__('This region includes unsupported blocks. Keep forms, media embeds and complex layouts outside the lock.', 'wconvert')}</Notice>}
       <InnerBlocks allowedBlocks={ALLOWED_BLOCKS} template={[["core/paragraph", { placeholder: __('Write or paste the content to reveal…', 'wconvert') }]]} />
       <div className="wconvert-lock-editor__boundary wconvert-lock-editor__end">{__('Content lock ends', 'wconvert')}</div>

@@ -52,7 +52,7 @@ export function DestinationCard({
   const actions = useRef<HTMLButtonElement>(null);
   useEffect(() => { if (focusOnMount) actions.current?.focus(); }, [focusOnMount]);
   const problems = setupProblems(destination, type, connections);
-  const status = destinationStatus(destination, type, problems);
+  const status = destinationStatus(destination, type, problems, true);
   const captures = capturedFields(template, submissionId);
   const fit = template ? captureProblems(destination, captures) : [];
   const names = contactFieldNames();
@@ -80,6 +80,10 @@ export function DestinationCard({
         </div>
         <div className="wconvert-destination-card__side">
           {status.badge}
+          {/* Review & publish asks for a test before launch, so the door is on the card, not in a menu. */}
+          {runnable && <Button type="button" variant="outline" size="sm" aria-describedby={`${id}-name`} onClick={(event) => onTest(event.currentTarget)}>
+            <Send aria-hidden="true" />{__('Send a test', 'wconvert')}
+          </Button>}
           <DropdownMenu modal={false}>
             <DropdownMenuTrigger asChild>
               <Button ref={actions} variant="ghost" size="icon-sm" aria-label={sprintf(/* translators: %s: a destination's name. */ __('Actions for %s', 'wconvert'), destination.label)}>

@@ -44,4 +44,21 @@ final class PhoneCountryTest extends TestCase
         self::assertFalse(PhoneCountry::valid('us'));
         self::assertFalse(PhoneCountry::valid('ZZ'));
     }
+
+    public function testSuggestsTheStoreCountryBeforeTheSiteLanguage(): void
+    {
+        self::assertSame(['country' => 'DE', 'from' => 'store'], PhoneCountry::suggestion('DE', 'en_US'));
+        // WooCommerce keeps a state after the country: `US:CA`.
+        self::assertSame(['country' => 'US', 'from' => 'store'], PhoneCountry::suggestion('US:CA', 'de_DE'));
+        self::assertSame(['country' => 'DE', 'from' => 'language'], PhoneCountry::suggestion(null, 'de_DE'));
+        self::assertSame(['country' => 'DE', 'from' => 'language'], PhoneCountry::suggestion('', 'de_DE_formal'));
+        self::assertSame(['country' => 'FR', 'from' => 'language'], PhoneCountry::suggestion('ZZ', 'fr_FR'));
+    }
+
+    public function testSuggestsNothingWhenNeitherNamesASupportedCountry(): void
+    {
+        self::assertNull(PhoneCountry::suggestion(null, 'de'));
+        self::assertNull(PhoneCountry::suggestion(null, 'es_419'));
+        self::assertNull(PhoneCountry::suggestion('', ''));
+    }
 }

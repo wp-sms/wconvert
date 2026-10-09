@@ -187,7 +187,7 @@ describe('the verdict', () => {
       { section: 'who', status: 'pass', text: 'Everyone' },
       { section: 'when', status: 'info', text: 'After 15 seconds' },
       { section: 'how-often', status: 'pass', text: 'First time here' },
-      { section: 'dates', status: 'pass', text: 'Runs until you pause it' },
+      { section: 'dates', status: 'pass', text: 'Runs until you unpublish it' },
     ]);
   });
 

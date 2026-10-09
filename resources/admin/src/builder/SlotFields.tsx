@@ -1,4 +1,5 @@
 import { StyleValueInput } from './StyleValueInput';
+import { CheckRow } from '../shell/CheckRow';
 import { SentenceEditor } from './SentenceEditor';
 import type { SentenceValue } from './sentence';
 import { __, sprintf } from '@wordpress/i18n';
@@ -237,14 +238,8 @@ export function SlotFields({
         panel where the eye lands first.
       */}
       {slot.hideable && (
-        <label className="wconvert-slot__shown">
-          <input
-            type="checkbox"
-            checked={!slot.hidden}
-            onChange={(event) => onHidden(!event.target.checked)}
-          />
-          {__('Show this', 'wconvert')}
-        </label>
+        <CheckRow className="wconvert-slot__shown" label={__('Show this', 'wconvert')}
+          checked={!slot.hidden} onChange={(event) => onHidden(!event.target.checked)} />
       )}
     </>
   );

@@ -67,6 +67,8 @@ export interface AdminSettings {
    * confusion is about.
    */
   readonly homeUrl?: string;
+  /** The free plugin's version, for Help. */
+  readonly version?: string;
   /** Plain-text WordPress site title for workspace identity. */
   readonly siteName?: string;
   /**

@@ -8,7 +8,7 @@
 }
 #wconvert-admin .wconvert-panel-nav { background:var(--frame-ink); color:var(--frame-text); border:0; }
 #wconvert-admin .wconvert-masthead { min-block-size:78px; display:flex; align-items:center; gap:24px; padding-inline:var(--frame-gutter); }
-#wconvert-admin .wconvert-brand { display:flex; align-items:center; gap:12px; white-space:nowrap; font-size:var(--text-brand); font-weight:600; letter-spacing:-1px; }
+#wconvert-admin .wconvert-brand { display:flex; align-items:center; gap:12px; white-space:nowrap; font-size:var(--text-brand); font-weight:600; letter-spacing:-1px; color:var(--frame-text); text-decoration:none; border-radius:6px; }
 #wconvert-admin .wconvert-brand-mark { display:block; flex:none; inline-size:34px; block-size:34px; }
 #wconvert-admin .wconvert-navigation-row { position:relative; display:flex; justify-content:space-between; align-items:center; gap:24px; padding-inline:var(--frame-gutter); }
 #wconvert-admin .wconvert-navigation-row::before { content:''; position:absolute; inset-block-start:0; inset-inline:var(--frame-gutter); border-block-start:1px solid var(--frame-edge); }
@@ -22,11 +22,13 @@
 #wconvert-admin .wconvert-header-tools { margin-inline-start:auto; display:flex; align-items:center; gap:10px; }
 #wconvert-admin .wconvert-header-tools .wconvert-explore-pro { color:var(--ice); font-size:var(--text-note); font-weight:500; text-decoration:none; white-space:nowrap; }
 #wconvert-admin .wconvert-notifications-trigger { position:relative; }
-#wconvert-admin .wconvert-notification-dot { position:absolute; inset-block-start:4px; inset-inline-end:5px; inline-size:5px; block-size:5px; border-radius:50%; background:var(--frame-signal); }
-#wconvert-admin .wconvert-page-heading { padding:42px var(--frame-gutter) 34px; }
+/* A count, not a dot: what needs attention is readable without opening the bell. */
+#wconvert-admin .wconvert-notification-count { position:absolute; inset-block-start:-2px; inset-inline-end:-4px; min-inline-size:18px; block-size:18px; padding-inline:5px; border-radius:999px; background:var(--frame-signal); color:var(--frame-ink); font-size:var(--text-label); font-weight:700; line-height:18px; text-align:center; font-variant-numeric:tabular-nums; }
+/* Tighter than ADR 0097 drew it: content starts ~70px higher on every reading screen (ADR 0132). */
+#wconvert-admin .wconvert-page-heading { padding:28px var(--frame-gutter) 22px; }
 #wconvert-admin .wconvert-page-copy { flex:1; min-inline-size:0; }
-#wconvert-admin .wconvert-page-title { font-size:var(--text-display); font-weight:500; line-height:1.1; letter-spacing:-.04em; overflow-wrap:anywhere; }
-#wconvert-admin .wconvert-page-description { margin-block-start:12px; }
+#wconvert-admin .wconvert-page-title { font-size:var(--text-display); font-weight:500; line-height:1.1; letter-spacing:-.035em; overflow-wrap:anywhere; }
+#wconvert-admin .wconvert-page-description { margin-block-start:6px; }
 #wconvert-admin .wconvert-panel-main { padding:0 var(--frame-gutter) 36px; flex:1; }
 #wconvert-admin .wconvert-panel-nav + .wconvert-panel-main { padding-block-start:28px; }
 #wconvert-admin .wconvert-service-footer { background:var(--frame-ink); color:var(--frame-text); }
@@ -42,6 +44,8 @@
 #wconvert-admin .wconvert-publisher:hover img { opacity:.85; }
 #wconvert-admin .wconvert-service-resource { border-inline-start:1px solid var(--frame-edge); padding-inline-start:30px; }
 #wconvert-admin .wconvert-service-label { display:block; margin-block-end:6px; font-size:var(--text-label); letter-spacing:.1em; text-transform:uppercase; color:var(--frame-muted); }
+#wconvert-admin .wconvert-service-resource ul { display:flex; flex-wrap:wrap; gap:6px 22px; margin:0; padding:0; list-style:none; }
+#wconvert-admin .wconvert-service-resource li { margin:0; }
 #wconvert-admin .wconvert-service-resource a { display:inline-flex; align-items:center; gap:7px; min-block-size:24px; font-size:var(--text-note); color:var(--frame-text); text-decoration:none; }
 #wconvert-admin .wconvert-service-resource a:hover { text-decoration-line: underline; text-underline-offset:4px; }
 #wconvert-admin .wconvert-service-help { padding:12px 18px; border:1px solid var(--frame-line); border-radius:var(--radius); background:transparent; color:var(--frame-text); text-align:start; }
@@ -49,12 +53,14 @@
 #wconvert-admin .wconvert-service-help strong { display:flex; justify-content:space-between; align-items:center; gap:20px; font-size:var(--text-note); font-weight:500; }
 #wconvert-admin .wconvert-service-help:hover { background:var(--frame-tint); }
 #wconvert-admin .wconvert-service-footer svg:not(.wconvert-brand-mark) { inline-size:16px; block-size:16px; flex:none; }
-#wconvert-admin .wconvert-service-footer svg:not(.wconvert-brand-mark):dir(rtl) { transform:scaleX(-1); }
+
 @layer utilities {
   #wconvert-admin .wconvert-service-footer .wconvert-publisher:is(:link,:visited,:hover,:focus,:active) { text-decoration:none !important; }
+  /* The wordmark is a home link; wp-admin's link colours must not repaint it. */
+  #wconvert-admin a.wconvert-brand:is(:link,:visited,:hover,:focus,:active) { color:var(--frame-text) !important; text-decoration:none !important; box-shadow:none !important; }
   #wconvert-admin .wconvert-header-tools [data-slot=button] { color:var(--frame-text) !important; }
   #wconvert-admin .wconvert-header-tools [data-slot=button]:hover { background:var(--frame-tint) !important; }
-  #wconvert-admin .wconvert-panel-heading .wconvert-page-actions :is([data-slot=button][data-size=default],[data-slot=select-trigger],select) {
+  #wconvert-admin .wconvert-panel-heading .wconvert-page-actions :is([data-slot=button][data-size=default],[data-slot=select-trigger],select,.wconvert-date-picker__trigger) {
     box-sizing:border-box !important;
     block-size:auto !important;
     min-block-size:var(--page-action-height) !important;
@@ -81,7 +87,7 @@
   #wconvert-admin .wconvert-service-help { grid-column:2; grid-row:1 / 3; }
 }
 @media(max-width:600px) {
-  #wconvert-admin .wconvert-panel { --frame-gutter:20px; --text-display:2.25rem; --text-brand:1.375rem; }
+  #wconvert-admin .wconvert-panel { --frame-gutter:20px; --text-display:1.875rem; --text-brand:1.375rem; }
   #wconvert-admin .wconvert-masthead { min-block-size:72px; gap:12px; }
   #wconvert-admin .wconvert-brand { gap:8px; }
   #wconvert-admin .wconvert-brand-mark { inline-size:29px; block-size:29px; }
@@ -89,7 +95,7 @@
   #wconvert-admin .wconvert-header-tools .wconvert-explore-pro, #wconvert-admin .wconvert-brand-plan { display:none; }
   #wconvert-admin .wconvert-section-nav ul { justify-content:space-between; gap:12px; }
   #wconvert-admin .wconvert-section-nav a { font-size:var(--text-micro); }
-  #wconvert-admin .wconvert-page-heading { padding-block:30px 28px; }
+  #wconvert-admin .wconvert-page-heading { padding-block:22px 18px; }
   #wconvert-admin .wconvert-page-copy { flex-basis:100%; margin-block-end:12px; }
   #wconvert-admin .wconvert-panel-main { padding-inline:12px; padding-block-end:24px; }
   #wconvert-admin .wconvert-service-inner { grid-template-columns:1fr; gap:24px; }
@@ -109,3 +115,6 @@
 .wconvert-notifications { inline-size:340px; max-block-size:70vh; overflow:auto; }
 .wconvert-notification + .wconvert-notification { border-block-start:1px solid var(--border); margin-block-start:12px; padding-block-start:12px; }
 .wconvert-notification__title { display:flex; flex-wrap:wrap; align-items:center; gap:4px 8px; min-inline-size:0; overflow-wrap:anywhere; }
+.wconvert-header-popover .wconvert-notification__clear { display:flex; align-items:center; gap:8px; color:var(--success); }
+.wconvert-header-popover .wconvert-notification__clear svg { inline-size:18px; block-size:18px; flex:none; }
+.wconvert-header-popover .wconvert-help-site { margin-block-start:6px; padding-block-start:12px; border-block-start:1px solid var(--border); }

@@ -219,9 +219,11 @@ describe('integration setup controls', () => {
     providerMarks.mailchimp = 'data:image/svg+xml,%3Csvg%2F%3E';
     try {
       render(<AccountEditor types={[type]} connections={[account]} usage={{}} onChange={vi.fn().mockResolvedValue(undefined)} />);
+      // One Connect menu, not a button per service; the mark is decorative beside the name.
+      await user.click(screen.getByRole('button', { name: 'Connect an account' }));
+      expect(screen.getByRole('menuitem', { name: 'Mailchimp' }).querySelector('img')).toHaveAttribute('alt', '');
+      await user.keyboard('{Escape}');
     } finally { delete providerMarks.mailchimp; }
-
-    expect(screen.getByRole('button', { name: 'Connect Mailchimp' }).querySelector('img')).toHaveAttribute('alt', '');
 
     // Remove is the destructive item behind the row's ⋯ (§9).
     await user.click(screen.getByRole('button', { name: 'Actions for Newsletter key' }));

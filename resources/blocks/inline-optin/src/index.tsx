@@ -1,6 +1,9 @@
 import { registerBlockType } from '@wordpress/blocks';
 import { Edit } from './Edit';
 import metadata from '../block.json';
+// The picker's styles, emitted beside the bundle as `inline-optin.css` and
+// registered as the block's `editorStyle`; Pro's lock blocks reuse them.
+import './editor.css';
 
 /**
  * `wconvert/inline-optin` — the block half of "put an [[Optin]] here".

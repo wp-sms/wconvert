@@ -81,7 +81,7 @@ controls have a **2.75rem / 44px** floor, including menus and native inputs.
 | `section` | 20 / 600 | reading-page section headings |
 | `metric` | 36 / 600 | dashboard impact and target totals |
 | `title` | 24 | compact editor title and footer wordmark |
-| `display` | 44 / 500; 36 on phones | reading-page heading |
+| `display` | 36 / 500; 30 on phones (ADR 0132; was 44/36) | reading-page heading |
 | `brand` | 26 / 600; 22 on phones | header wordmark |
 | `item` | 15 / 600 | campaign and goal identity |
 | `result` | 22 / 500 | compact result figure |
@@ -181,6 +181,11 @@ tab stop and the set announced as a set, all from the browser. Radix's
 admin prints on every build. **An `aria-pressed` button group is never one-of-N**;
 `aria-pressed` is for an independent toggle (ADR 0131).
 
+**A window of days is `shell/DateRangePicker`** (ADR 0132): one button naming
+the window and its dates ("Last 30 days · Sep 9 – Oct 8"), opening presets as
+native radios, Custom dates, and anything that qualifies the window. No screen
+draws its own period select or date card.
+
 **Three one-of-N shapes, and no fourth** (ADR 0131):
 
 | Shape | For |
@@ -239,9 +244,11 @@ Every settings section has an explicit Save; nothing autosaves a setting.
 
 **No ID on any screen** (ADR 0131). A missing name reads "Deleted campaign",
 "Removed destination" or "Unnamed", never a ULID. Search still accepts a
-pasted ID. The one exception is campaign Details' closed "For developers"
-disclosure, which shows the campaign ID with Copy, because the free page
-events identify a campaign by nothing else.
+pasted ID. There are two exceptions. Campaign Details' closed "For developers"
+disclosure shows the campaign ID with Copy, because the free page events
+identify a campaign by nothing else. The inline campaign's shortcode (the
+"WConvert campaign" block and manual placement) carries it too, because it is
+how a campaign is placed outside the block editor.
 
 **Data is shown once, one way** (`lib/format.ts`): dates in the site's locale
 and timezone — "Today, 2:22 PM", "Yesterday", "Oct 3" in a list, "Oct 9, 2026,
@@ -255,7 +262,7 @@ prints a field key or a WooCommerce status slug.
 |---|---|
 | `Dialog` | something the merchant can walk away from |
 | `AlertDialog` | destructive confirmation — says what *survives*, not just what goes |
-| `Popover` | an explanation they asked for; never a substitute for a control the screen should have shown |
+| `Popover` | an explanation they asked for; never a substitute for a control the screen should have shown. One exception: `shell/DateRangePicker`, whose button IS the control and whose popover holds its choices (ADR 0132) |
 | `DropdownMenu` | row actions past the first two |
 
 **Entry and dismissal are immediate.** A shared no-motion rule includes portaled
@@ -292,7 +299,11 @@ card size. Long placement, measurement and journey guidance uses labeled
 progressive disclosure beside the preview. Dialog headers align to the start
 on every viewport; close controls have a 32px target (44px for coarse pointers).
 
-Creation cards open inspection before the draft action. Shared cards place the
+Creation cards open inspection before the draft action, except the one **Start
+here** card drawn above a list of more than three setups, which offers Use this
+setup directly (ADR 0132). A library toolbar is two rows: search, sort and a ⋯
+for other ways to browse; then the main facet chips, a compact More filters
+toggle and the count. Shared cards place the
 name and Save together, metadata on its own row, then Preview and Compare. Do
 not scatter these controls between metadata and actions. Full inspection starts
 at width fit with vertical scrolling for tall content; offer Fit entire design
@@ -309,7 +320,8 @@ one page, but omit Previous/Next until there is another page to visit.
 `shell/DataTable` is what list screens render — semantic roles, a `data-label`
 on every cell, `micro` uppercase headers, tabular end-aligned numbers. Below
 **900px and below** the whole table restacks into cards and those labels are what each
-value is read against. (782px is the *builder's* floor and a different number.)
+value is read against. (The builder has no floor of its own any more: it adapts
+down to phone width — ADR 0038, amended — and 900px is a table's number alone.)
 
 Row actions are ghost `icon-sm` buttons in a `1%` column. Past two, use a
 dropdown.
@@ -586,8 +598,10 @@ rather than clip.
 ## 17. Floors
 
 - **WCAG 2.1 AA**, enforced by lint. AAA is explicitly not the bar.
-- **360px** on the reading screens; **782px** on the builder, which refuses
-  below it and says so in a translatable string.
+- **360px** on the reading screens. The builder adapts down to phone width
+  rather than refusing: one editing drawer at 1000px and below, phone layouts at
+  640px and below (ADR 0038, amended 2026-09-23 — it used to refuse below
+  782px).
 - Any dragging gesture owes a **single-pointer alternative** (WCAG 2.2 SC 2.5.7).
 - **No dark mode in 0.1.0.** `dark:` is bound to a class no element carries, so
   the vendored `dark:` utilities never fire. When it lands it is a second set of
@@ -649,7 +663,17 @@ Not gaps. Each was decided:
   screen**, never a destination. Domain nouns (campaign, goal, lead,
   destination) are lowercase mid-sentence; capitals start a title, a button
   or a sentence. US spelling.
-- **More than two row actions go in a ⋯ menu**, with icons and labels.
+- **More than two row actions go in a ⋯ menu**, with icons and labels. A
+  row menu holds actions on that row. A list's foot is one line: its count,
+  dates and pages (ADR 0132).
+- **An inline disclosure's chevron sits beside its words**, not at the far end
+  of the row; a card disclosure keeps the whole-row trigger (ADR 0132).
+- **One primary action per screen, even when empty.** An empty list carries
+  its own Create button, so the page header drops its copy until a row exists.
+- **A filter chip that would filter to nothing is not offered.** Status chips
+  show All, the statuses in use and the selected one.
+- **A count is shown against what it is out of.** A campaign's result reads
+  "105 email submissions · 2.5% of 4,210 shown", not the count alone.
 - Tier names come from the shared vocabulary. The header’s temporary `#` account
   link is an explicit user-approved exception, removed when an account destination
   is supplied. It is not a general permission for dead links.

@@ -126,6 +126,11 @@ body.wconvert-fullscreen #wconvert-admin .wconvert-workspace {
   background: var(--success-surface);
   color: var(--success);
 }
+/* Amber: the site is holding a published campaign back (GUIDELINES §14). */
+#wconvert-admin .wconvert-workspace__save-state[data-suspended] {
+  background: var(--warning-surface);
+  color: var(--foreground);
+}
 #wconvert-admin .wconvert-workspace__body {
   display: flex;
   flex: 1;
@@ -858,7 +863,7 @@ body.wconvert-fullscreen #wconvert-admin .wconvert-workspace {
 .wconvert-launch-review__section-head [data-variant='link'] { block-size: auto; padding: 0; }
 .wconvert-launch-review__section p { margin: 8px 0 0; }
 .wconvert-launch-review__rules { display: grid; gap: 6px; margin: 8px 0 0; }
-.wconvert-launch-review__rules > div { display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 14px; }
+.wconvert-launch-review__rules > div { display: grid; grid-template-columns: minmax(9.5rem, max-content) minmax(0, 1fr); gap: 14px; }
 .wconvert-launch-review__rules dt { color: var(--muted-foreground); }
 .wconvert-launch-review__rules dd { margin: 0; }
 .wconvert-launch-review__rules dd[data-attention] { color: var(--warning); font-weight: 500; }
@@ -868,6 +873,13 @@ ul.wconvert-launch-review__notice { padding-inline-start: 28px; list-style: disc
 .wconvert-launch-review__notice li + li, .wconvert-launch-review__warnings li + li { margin-block-start: 8px; }
 .wconvert-launch-review__success { display: flex; gap: 10px; align-items: flex-start; color: var(--success); background: var(--success-surface); padding: 14px; border-radius: 6px; margin-block-end: 20px; }
 .wconvert-launch-review__success svg { inline-size: 20px; flex: none; }
+.wconvert-launch-review__success strong { display: block; font-size: var(--text-heading); }
+.wconvert-launch-review__success p { margin: 4px 0 0; color: var(--foreground); }
+/* Something blocks publishing: the button says how much, a tab says where, and the way back stays in reach. */
+.wconvert-readiness__resume { white-space: nowrap; }
+.wconvert-readiness__count { padding: 1px 7px; border-radius: 999px; background: var(--primary); color: var(--primary-foreground); font-size: var(--text-micro); font-weight: 600; font-variant-numeric: tabular-nums; }
+.wconvert-tab-attention { inline-size: 7px; block-size: 7px; margin-inline-start: 6px; border-radius: 50%; background: var(--warning); flex: none; }
+.wconvert-launch-review__notice li { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; }
 .wconvert-launch-review .wconvert-readiness__go { color: var(--link); }
 .wconvert-capture-mode { margin: 0 0 12px; padding: 0; border: 0; min-inline-size: 0; }
 .wconvert-capture-mode__legend { padding: 0; margin-block-end: 8px; font-weight: 600; }
@@ -878,7 +890,7 @@ ul.wconvert-launch-review__notice { padding-inline-start: 28px; list-style: disc
 /* Destinations tab: one card per route this campaign sends to. */
 .wconvert-destinations-region + .wconvert-destinations-region { margin-block-start: 16px; }
 .wconvert-destination-always { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 10px; align-items: center; padding: 10px 12px; border-radius: var(--radius-md); background: var(--surface); }
-.wconvert-destination-callout { margin: 0; padding: 10px 12px; border-radius: var(--radius-md); background: var(--warning-surface); color: var(--foreground); border-inline-start: 3px solid var(--warning); font-size: var(--text-note); line-height: var(--text-note--line-height); }
+.wconvert-destination-callout { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 12px; margin: 0; padding: 10px 12px; border-radius: var(--radius-md); background: var(--warning-surface); color: var(--foreground); border-inline-start: 3px solid var(--warning); font-size: var(--text-note); line-height: var(--text-note--line-height); }
 .wconvert-destination-card { container-type: inline-size; min-inline-size: 0; border: 1px solid var(--border); border-radius: var(--radius-lg); background: var(--card); }
 .wconvert-destination-card__main { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 12px; align-items: start; padding: 12px; }
 .wconvert-destination-card__mark { inline-size: 28px; block-size: 28px; flex: none; }
@@ -1651,6 +1663,7 @@ body .wconvert-rule-picker__empty { margin: 0; padding: 12px 8px; color: var(--m
 /* Inline radio rows: how a group's rules combine, and Custom's opening mode. */
 #wconvert-admin .wconvert-display .wconvert-display-match { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 16px; margin: 0; padding: 0; border: 0; }
 #wconvert-admin .wconvert-display .wconvert-display-match label { display: inline-flex; align-items: flex-start; gap: 8px; min-block-size: 0; padding-block: 0; font-size: var(--text-note); cursor: pointer; }
+#wconvert-admin .wconvert-display .wconvert-display-match label[data-refused] { color: var(--muted-foreground); cursor: not-allowed; }
 #wconvert-admin .wconvert-display .wconvert-display-modes legend { float: inline-start; margin-inline-end: .5rem; padding: 0; font-size: var(--text-note); font-weight: 600; }
 
 /* Small fields side by side: Custom pacing and the two dates. */
@@ -1859,7 +1872,7 @@ details[open]>summary>.wconvert-editor-disclosure-icon { transform: rotate(180de
 .wconvert-journey-path-disclosure__body>.wconvert-journey-settings { margin: 0; padding: 0; border: 0; }
 .wconvert-journey-used-by button,.wconvert-journey-answer-repair>div>button { display: grid; gap: 3px; inline-size: 100%; padding: 8px 10px; border: 1px solid var(--border); border-radius: var(--radius); background: var(--card); }
 .wconvert-journey-used-by button small,.wconvert-journey-answer-repair>div>button small { color: var(--muted-foreground); font-weight: 400; }
-.wconvert-journey-capture-field { border: 1px solid var(--border); border-radius: var(--radius); padding: 10px 12px; }
+.wconvert-journey-capture-field { border: 1px solid var(--border); border-radius: var(--radius); }
 
 .wconvert-journey-capture-field label+label { margin-block-start: 10px; }
 .wconvert-journey-capture-field>small { display: block; margin-block-start: 10px; color: var(--muted-foreground); }
@@ -2248,3 +2261,4 @@ details[open]>summary>.wconvert-editor-disclosure-icon { transform: rotate(180de
 .wconvert-result-filter__body .wconvert-product-matches { margin: 0; }
 .wconvert-journey-settings__products > [data-slot='button'], .wconvert-result-filter > [data-slot='button'], .wconvert-result-filter fieldset > [data-slot='button'] { justify-self: start; }
 #wconvert-admin .wconvert-result-products select { font-size: var(--text-body); }
+

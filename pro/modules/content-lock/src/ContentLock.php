@@ -17,8 +17,9 @@ final class ContentLock
                 wp_register_script('wconvert-content-lock-editor', WCONVERT_PRO_URL . 'public/blocks/content-lock.js',
                     ['wp-data', 'wp-api-fetch', 'wp-blocks', 'wp-block-editor', 'wp-components', 'wp-element', 'wp-i18n', InlineOptinBlock::HANDLE],
                     BuiltAsset::version(WCONVERT_PRO_DIR . 'public/blocks/content-lock.js'), true);
+                // The campaign picker's own styles are the free block's.
                 wp_register_style('wconvert-content-lock-editor', WCONVERT_PRO_URL . 'public/blocks/content-lock.css',
-                    [], BuiltAsset::version(WCONVERT_PRO_DIR . 'public/blocks/content-lock.css'));
+                    [InlineOptinBlock::HANDLE], BuiltAsset::version(WCONVERT_PRO_DIR . 'public/blocks/content-lock.css'));
                 $args['editor_style'] = 'wconvert-content-lock-editor';
                 wp_set_script_translations('wconvert-content-lock-editor', 'wconvert');
                 $args['editor_script'] = 'wconvert-content-lock-editor';

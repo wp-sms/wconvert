@@ -246,7 +246,13 @@ export function Tokens({
    */
   openToken: string | null;
   onOpenToken: (token: string | null) => void;
-  onChange: (template: Template) => void;
+  /**
+   * `coalesce` names the token a change came from. A colour drag or a slider
+   * writes on every pointer move, and without it each move would be its own
+   * Undo step — one drag would push every earlier edit off the 50-step
+   * history. With it, a burst on one token is one step (`history.ts`).
+   */
+  onChange: (template: Template, coalesce?: string) => void;
   onError: (cause: unknown) => void;
 }) {
   const [copied, setCopied] = useState<number | null>(null);
@@ -343,7 +349,7 @@ export function Tokens({
                     open={openToken === token.name}
                     onOpenChange={(open) => onOpenToken(open ? token.name : null)}
                     onChange={(value) =>
-                      onChange({ ...template, tokens: withToken(template.tokens, token.name, value) })
+                      onChange({ ...template, tokens: withToken(template.tokens, token.name, value) }, tokenCoalesce(token.name))
                     }
                   />
                 </div>
@@ -355,6 +361,9 @@ export function Tokens({
     </>
   );
 }
+
+/** The history key for edits to one design-wide token: a drag on it is one Undo step. */
+export const tokenCoalesce = (name: string) => `token:${name}`;
 
 /** Section labels are editor chrome; membership and order come from the manifest. */
 export function groupName(id: TokenGroupId): string {
@@ -412,11 +421,11 @@ function Palette({
   tokens: readonly { readonly name: string; readonly fallback: string }[];
   openToken: string | null;
   onOpenChange: (token: string | null) => void;
-  onChange: (template: Template) => void;
+  onChange: (template: Template, coalesce?: string) => void;
 }) {
   const hasDesign = Object.keys(design).length > 0;
   const write = (name: string) => (value: string) =>
-    onChange({ ...template, tokens: withToken(template.tokens, name, value) });
+    onChange({ ...template, tokens: withToken(template.tokens, name, value) }, tokenCoalesce(name));
 
   const field = (token: { name: string; fallback: string }) => (
     <TokenField

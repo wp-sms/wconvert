@@ -51,7 +51,7 @@ describe('placing an inline Optin', () => {
 
   it('names the exact Optin to select when its name is provided', () => {
     render(<PlacementGuidance optinId={OPTIN} optinName="Friday newsletter" displayType="inline" published />);
-    expect(screen.getByText('Add the “Inline Campaign” block and choose “Friday newsletter”.')).toBeInTheDocument();
+    expect(screen.getByText('Add the “WConvert campaign” block and choose “Friday newsletter”.')).toBeInTheDocument();
   });
 
   it('copies the exact shortcode and retains focus on the completed action', async () => {
@@ -105,7 +105,7 @@ describe('placing an inline Optin', () => {
   });
 });
 
-describe('placing an inline Campaign in theme-owned areas', () => {
+describe('placing an inline campaign in theme-owned areas', () => {
   it('links block themes to the Site Editor and keeps the shortcode fallback', () => {
     window.wconvertAdmin = {
       exportUrl: '',
@@ -150,7 +150,8 @@ describe('placing an inline Campaign in theme-owned areas', () => {
 describe('checking overlay placement', () => {
   it.each(['popup', 'floating_bar', 'slide_in'])('describes %s eligibility without promising that publishing makes it appear', (displayType) => {
     render(<PlacementGuidance optinId={OPTIN} displayType={displayType} published />);
-    expect(screen.getByText(/pages that match its display rules/)).toHaveTextContent('schedule, triggers and visitor settings');
+    // Where, who and when are said once, by the review the guidance sits in.
+    expect(screen.queryByText(/pages that match its display rules/)).toBeNull();
     expect(screen.queryByRole('textbox')).toBeNull();
     const link = screen.getByRole('link', { name: 'Check your homepage' });
     expect(link).toHaveAttribute('target', '_blank');
@@ -159,10 +160,15 @@ describe('checking overlay placement', () => {
     expect(link).toHaveAccessibleDescription(/does not show draft edits/);
   });
 
+  it('sends a campaign limited to some pages to one of them, not the homepage', () => {
+    window.wconvertAdmin = { exportUrl: '', homeUrl: 'https://example.test/', inspectParam: 'wconvert-inspect' };
+    render(<PlacementGuidance optinId={OPTIN} displayType="popup" published everywhere={false} />);
+    expect(screen.getByRole('link', { name: 'Check your site' })).toHaveAccessibleDescription(/only shows on the pages its rules name/);
+  });
+
   it('does not offer the live-site inspector as a draft preview', () => {
     render(<PlacementGuidance optinId={OPTIN} displayType="popup" published={false} />);
     expect(screen.queryByRole('link')).toBeNull();
-    expect(screen.getByText(/After publishing, this campaign can appear/)).toBeInTheDocument();
     expect(screen.getByText(/editor preview shows your draft/)).toBeInTheDocument();
   });
 

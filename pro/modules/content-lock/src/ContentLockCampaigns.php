@@ -41,7 +41,7 @@ final class ContentLockCampaigns
      */
     public static function canPlaceCampaign(): bool
     {
-        return current_user_can('edit_posts') || current_user_can('edit_pages');
+        return Routes::canPlaceCampaign();
     }
 
     /** @return list<array{id: string, name: string, status: string}> */
@@ -57,7 +57,7 @@ final class ContentLockCampaigns
             $status = ($payload['content_lock']['mode'] ?? null) === 'hide'
                 ? ($this->degradation->suspendedIn($payload) === null ? 'ready' : 'unavailable')
                 : 'disabled';
-            $result[] = ['id' => $optin->id, 'name' => ($names[$optin->id] ?? '') ?: $optin->id, 'status' => $status];
+            $result[] = ['id' => $optin->id, 'name' => $names[$optin->id] ?? '', 'status' => $status];
         }
         usort($result, static fn (array $a, array $b): int => strcmp($b['id'], $a['id']));
         return $result;

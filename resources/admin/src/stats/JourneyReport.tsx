@@ -4,36 +4,35 @@ import { Route } from 'lucide-react';
 import { EmptyState } from '../shell/EmptyState';
 import { RegionSkeleton } from '../shell/RegionSkeleton';
 import { ReportDisclosure } from './ReportDisclosure';
-import { rangeLabel } from './reporting';
+import { chooseToday, rangeLabel, todayAppearsTomorrow } from './reporting';
 import { formatCount } from './format';
 import apiFetch from '@wordpress/api-fetch';
 import { useEffect, useState } from 'react';
 import { __, sprintf } from '@wordpress/i18n';
 import { Region, RegionBody, RegionHeader, RegionError, RegionErrorState } from '../shell/Region';
-import type { DashboardPayload } from '../stats/api';
+import { periodOf, periodParams, type ReportPeriod } from './api';
 interface Report {
   rows: { scope: string; kind: string; total: string }[];
   definitions: Record<string, Record<string, { name: string; order: number }>>;
   from: string; to: string; days: number; truncated: boolean;
 }
-export function JourneyReport({ id, period }: { id: string; period?: Pick<DashboardPayload, 'days' | 'month' | 'from' | 'to'> }) {
+export function JourneyReport({ id, period }: { id: string; period?: ReportPeriod }) {
   const [stored, setReport] = useState<(Report & { campaign: string }) | null>(null);
   const report = stored?.campaign === id && period?.days !== 0 ? stored : null;
   const [updating, setUpdating] = useState(false);
   const [failed, setFailed] = useState(false);
   const [retry, setRetry] = useState(0);
-  const days = period?.days, month = period?.month, from = period?.from, to = period?.to;
+  const days = period?.days, from = period?.from, to = period?.to;
+  // The builder passes no period and reads the server's default, today included.
+  const windowQuery = period ? periodParams(periodOf(period)).toString() : '';
   useEffect(() => {
     const controller = new AbortController(); setUpdating(true); setFailed(false);
     if (days === 0) return () => controller.abort();
-    const query = new URLSearchParams();
-    if (days !== undefined) { query.set('days', String(days)); query.set('complete', '1'); }
-    if (month) query.set('month', month);
-    void apiFetch<Report>({ path: `/wconvert/v1/optins/${id}/journey-stats?${query}`, signal: controller.signal })
+    void apiFetch<Report>({ path: `/wconvert/v1/optins/${id}/journey-stats${windowQuery ? `?${windowQuery}` : ''}`, signal: controller.signal })
       .then(value => { if (!controller.signal.aborted) { if (from && (value.from !== from || value.to !== to)) setFailed(true); else setReport({ ...value, campaign: id }); } })
       .catch(() => { if (!controller.signal.aborted) setFailed(true); }).finally(() => { if (!controller.signal.aborted) setUpdating(false); });
     return () => controller.abort();
-  }, [id, days, month, from, to, retry]);
+  }, [id, days, windowQuery, from, to, retry]);
   if (!report && !failed && days !== 0) return <RegionSkeleton label={__('Signup and screen activity', 'wconvert')} lines={3} />;
   const Failure = report ? RegionError : RegionErrorState;
   const channels = report?.rows.filter(row => row.scope.startsWith('channel:')) ?? [];
@@ -47,7 +46,7 @@ export function JourneyReport({ id, period }: { id: string; period?: Pick<Dashbo
   return <ReportTarget name="activity" label={__('Screen activity', 'wconvert')}><Region className="wa-report">
     <RegionHeader title={__('Signup and screen activity', 'wconvert')} level={3} icon={<Route />} description={__('See which screens were shown and which actions followed.', 'wconvert')} />
     {failed && <Failure message={__('Could not load matching journey totals. Activity below still uses its displayed dates.', 'wconvert')} onRetry={() => setRetry(n => n + 1)} />}
-    {days === 0 ? <EmptyState icon={Route} title={__('No complete days yet', 'wconvert')}>{__('Today’s activity will appear tomorrow.', 'wconvert')}</EmptyState> : report && <>
+    {days === 0 ? <EmptyState icon={Route} title={__('No complete days yet', 'wconvert')}>{todayAppearsTomorrow()} {chooseToday()}</EmptyState> : report && <>
       <RegionBody>
         <div className="wa-report-meta"><span>{rangeLabel(report.from, report.to)}</span>{!period && <span>{__('Includes today', 'wconvert')}</span>}{updating && <span role="status">{__('Updating… Previous dates shown.', 'wconvert')}</span>}</div>
         {report.rows.length === 0 ? <EmptyState icon={Route} title={__('No activity in this period', 'wconvert')}>{__('This report fills as visitors use your published campaign’s signup and question screens.', 'wconvert')}</EmptyState> : <>

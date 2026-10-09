@@ -13,7 +13,7 @@ function PickerSettings(props: ComponentProps<typeof Settings>) {
 const countryApi = vi.hoisted(() => vi.fn());
 vi.mock('@wordpress/api-fetch', () => ({ default: countryApi }));
 beforeEach(() => { countryApi.mockReset(); countryApi.mockResolvedValue({ countries: [{ code: 'GB', name: 'United Kingdom' }, { code: 'US', name: 'United States' }] }); });
-const state=()=>({data:{schema:1 as const,today:'2026-09-30',timezone:'Asia/Muscat',collections:[],preferences:{schema:1 as const,revision:3,saved:[],hidden:[],events:[],businesses:[],markets:[]},occasions:{schema:1 as const,revision:2,items:[]}},saving:false,error:null,reload:vi.fn(),preferences:vi.fn(),occasions:vi.fn(),toggleSaved:vi.fn()});
+const state=()=>({data:{schema:1 as const,today:'2026-09-30',timezone:'Asia/Muscat',collections:[{id:'uk-events',name:'UK events',description:'',version:'1',business_types:[],markets:['GB'],priority:1,items:[]} as never],preferences:{schema:1 as const,revision:3,saved:[],hidden:[],events:[],businesses:[],markets:[]},occasions:{schema:1 as const,revision:2,items:[]}},saving:false,error:null,reload:vi.fn(),preferences:vi.fn(),occasions:vi.fn(),toggleSaved:vi.fn()});
 it('keeps failed occasion input and exposes recovery without confusing private and shared choices',async()=>{
   const picker=state();picker.occasions.mockResolvedValue(false);
   render(<PickerSettings picker={picker as ReturnType<typeof usePicker>} onBack={vi.fn()} />);
@@ -115,4 +115,10 @@ it('says a first read failed and offers the one retry, rather than an empty form
   expect(screen.queryByLabelText('Occasion name')).toBeNull();
   await userEvent.click(screen.getByRole('button', { name: 'Try again' }));
   expect(picker.reload).toHaveBeenCalledOnce();
+});
+
+it('leaves countries out while no collection is regional', () => {
+  const picker = state();
+  render(<PickerSettings picker={{ ...picker, data: { ...picker.data, collections: [] } } as never} onBack={vi.fn()} />);
+  expect(screen.queryByText('Countries you serve')).toBeNull();
 });

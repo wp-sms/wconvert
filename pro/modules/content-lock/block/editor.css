@@ -27,7 +27,6 @@
   font: inherit;
   margin-block: 8px;
 }
-.wconvert-lock-picker .components-base-control { margin-block-end: 12px; }
 
 .wp-block-wconvert-content-lock-divider.wconvert-lock-divider {
   border-block: 1px solid #c9bfb1;
@@ -40,26 +39,7 @@
 .wconvert-lock-divider p.wconvert-lock-divider__scope { font: inherit; margin: 4px 0; }
 .wconvert-lock-divider__count { font: inherit; color: #6b6056; }
 
-.wconvert-lock-picker__selected {
-  border: 1px solid #dcdcde;
-  border-radius: 4px;
-  padding: 12px;
-  background: #f6f7f7;
-}
-.wconvert-lock-picker__label {
-  display: block;
-  margin-block-end: 8px;
-  color: #50575e;
-  font-size: 11px;
-  font-weight: 500;
-  text-transform: uppercase;
-}
-.wconvert-lock-picker__selected strong { display: block; overflow-wrap: anywhere; }
-.wconvert-lock-picker__actions { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 12px; margin-block-start: 8px; }
-.wconvert-lock-picker__actions .components-button { height: auto; min-height: 28px; padding: 4px 0; }
-.wconvert-lock-picker__actions p { margin: 0; }
+/* The picker itself is styled by the free block's stylesheet (resources/blocks/inline-optin/src/editor.css). */
 .wconvert-lock-settings__hint { color: #50575e; margin-block: 16px 8px; }
-.wconvert-lock-settings__help summary { cursor: pointer; color: #1e1e1e; }
-.wconvert-lock-settings__help p { color: #50575e; }
 .wconvert-lock-divider__count { display: block; margin-block-start: 4px; }
 .wconvert-lock-divider > .components-button { margin-block: 6px; }

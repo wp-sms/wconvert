@@ -48,8 +48,13 @@ pages*, *Everyone / Phones only / Computers only / Signed-in / Signed-out /
 Shoppers with items in their cart*, *Right away / After [15] seconds / Scrolled
 [50]% down / When they pause for [30] s / When they try to leave / Leaving or
 scrolling back up / When they click [selector]*, *Once per visit / Once every
-[7] days / Only once ever / Every page they see*, *Until you pause it / Between
-two dates* — and **Custom…**, which opens the full group and rule editors.
+[7] days / Only once ever / Every page they see*, *Until you unpublish it /
+Between two dates* — and **Custom…**, which opens the full group and rule
+editors.
+
+_Amended 2026-10-09 by [0132](0132-every-screen-answers-its-first-question.md): the Dates pick read *Until you pause it*, and the
+sentence *Runs until you pause it*. The product's verb for stopping a Campaign
+is **unpublish**, so both now say it._
 
 **A pick is matched by shape, never remembered.** Nothing stores which pick was
 chosen. A pick asks the stored value whether it has the pick's shape — one group
@@ -103,6 +108,14 @@ card as the stop settings. Switching to automatic placement or a content lock
 asks first only when that would change another answer, and lists each change
 as question, from and to. Amends [0099](0099-automatic-inline-placement-uses-rendered-content.md)
 and [0102](0102-content-lock-is-an-optional-inline-capture-journey.md).
+
+_Amended 2026-10-09 by [0132](0132-every-screen-answers-its-first-question.md): switching wrote Right away, but nothing kept it there —
+the merchant could change *When does it open?* afterwards and meet the refusal
+only at Publish, as a Readiness blocker. While automatic placement or a content
+lock is chosen, every When pick but *Right away*, and Custom's other modes, is
+now `aria-disabled` with the reason on screen — "Inline placement opens right
+away." (GUIDELINES §14). The Readiness blocker stays, for a draft saved before
+this; manual placement releases the hold._
 
 No native disclosure hides setup facts on this tab: the content lock's *Setup
 details* and the click selector's *How to choose a button or link* are short,

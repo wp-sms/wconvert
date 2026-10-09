@@ -54,7 +54,9 @@ describe('provider-declared destination requirements', () => {
     await waitFor(() => expect(onConnectionSaved).toHaveBeenCalledWith(account));
     expect(saveConnection).toHaveBeenCalledWith({ type: 'mailchimp', label: 'Mailchimp', credentials: { api_key: 'test-key' } });
     expect(await screen.findByRole('checkbox', { name: 'Newsletter' })).toBeVisible();
-    expect(screen.getByRole('button', { name: 'Add destination' })).toBeDisabled();
+    // Refused, not greyed: the reason is the problem listed above the footer (§14).
+    expect(screen.getByRole('button', { name: 'Add destination' })).toHaveAttribute('aria-disabled', 'true');
+    expect(screen.getByRole('button', { name: 'Add destination' })).toHaveAccessibleDescription('Choose “Audience” before this destination can send.');
     await userEvent.click(screen.getByRole('checkbox', { name: 'Newsletter' }));
     await userEvent.click(screen.getByRole('button', { name: 'Add destination' }));
     expect(onConfirm).toHaveBeenCalledWith({ label: 'Mailchimp — Newsletter', connection: account.id, settings: { audiences: ['audience-1'] } });
@@ -72,7 +74,26 @@ describe('provider-declared destination requirements', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Check and save account' }));
     expect(await screen.findByRole('textbox', { name: 'Name' })).toHaveValue('Spring leads');
     expect(screen.getByText(/No Audience choices were found/)).toBeVisible();
-    expect(screen.getByRole('button', { name: 'Add destination' })).toBeDisabled();
+    expect(screen.getByRole('button', { name: 'Add destination' })).toHaveAttribute('aria-disabled', 'true');
+  });
+
+  it('refuses a route with an account type until an account is chosen, and says so', async () => {
+    const onConfirm = vi.fn();
+    render(<DestinationSettingsForm type={remoteType} connections={[account, { ...account, id: 'account-2', label: 'Second' }]} busy={false} error={null}
+      onCancel={vi.fn()} onConfirm={onConfirm} />);
+    const add = screen.getByRole('button', { name: 'Add destination' });
+    expect(add).toHaveAttribute('aria-disabled', 'true');
+    expect(add).toHaveAccessibleDescription('Choose an account before this destination can send.');
+    await userEvent.click(add);
+    expect(onConfirm).not.toHaveBeenCalled();
+  });
+
+  it('starts on the account it is handed — the one just connected', async () => {
+    readSelectedSchema.mockResolvedValue({ settings_schema: { audiences: { type: 'ids', label: 'Audience', options: [] } } });
+    render(<DestinationSettingsForm type={remoteType} connections={[account, { ...account, id: 'account-2', label: 'Second' }]} busy={false} error={null}
+      initialConnection="account-2" onCancel={vi.fn()} onConfirm={vi.fn()} />);
+    expect(screen.getByRole('combobox')).toHaveValue('account-2');
+    await waitFor(() => expect(readSelectedSchema).toHaveBeenCalledWith('mailchimp', 'account-2', false));
   });
 
   it('explains a failed audience lookup and lets the merchant retry it', async () => {

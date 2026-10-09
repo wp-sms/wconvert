@@ -290,7 +290,7 @@ export function checkVisit(value: DisplayRulesValue, vocabulary: RuleVocabulary,
     { section: 'who', status: who, text: summaryOf(summaries, 'who').text },
     { section: 'when', status: 'info', text: summaryOf(summaries, 'when').text },
     { section: 'how-often', status: often, text: historyLabel(visitor.history, visitor.daysAgo, act) },
-    { section: 'dates', status: dates, text: !scheduled ? __('Runs until you pause it', 'wconvert')
+    { section: 'dates', status: dates, text: !scheduled ? __('Runs until you unpublish it', 'wconvert')
       : visitor.date === undefined ? __('Today', 'wconvert') : readable(visitor.date) ?? visitor.date },
   ];
   if (who === 'info' && where === 'pass') return { opens: false, checking: true, headline: __('Checking…', 'wconvert'), checks };

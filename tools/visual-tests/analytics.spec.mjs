@@ -97,8 +97,8 @@ test('admin saves settings through real REST and diagnostics stay local until an
   await page.goto('/wp-admin/admin.php?page=wconvert#settings?group=integrations');
   await expect(page.getByLabel('Enable analytics integration')).toBeVisible();
   await page.getByLabel('Measurement ID', { exact: true }).fill('G-TEST999');
-  await page.getByRole('button', { name: 'Save settings', exact: true }).click();
-  await expect(page.getByRole('button', { name: 'Save settings', exact: true })).toBeDisabled();
+  await page.getByRole('button', { name: 'Save analytics integration', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Save analytics integration', exact: true })).toBeDisabled();
   await expect(page.getByText('Save changes before testing.')).toHaveCount(0);
   await page.getByRole('button', { name: 'About the Measurement ID' }).click();
   await expect(page.getByText(/Use the G- ID/)).toBeVisible();
@@ -180,8 +180,8 @@ test('admin saves Plausible without a Measurement ID and sends only an explicit 
   await expect(page.getByRole('radio', { name: 'WP Consent API', exact: true })).toBeChecked();
   await expect(page.getByLabel('Measurement ID', { exact: true })).toHaveCount(0);
   await page.getByText('Existing tracker', { exact: true }).click();
-  await page.getByRole('button', { name: 'Save settings', exact: true }).click();
-  await expect(page.getByRole('button', { name: 'Save settings', exact: true })).toBeDisabled();
+  await page.getByRole('button', { name: 'Save analytics integration', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Save analytics integration', exact: true })).toBeDisabled();
   await page.screenshot({ path: 'tools/visual-tests/out/analytics/plausible-settings.png', fullPage: true });
   await page.getByRole('button', { name: 'Test setup' }).click();
   await expect(page.getByText(/Tests go to the site configured by your Plausible script/)).toBeVisible();

@@ -3,8 +3,7 @@ import { __ } from '@wordpress/i18n';
 import { ArrowLeft } from 'lucide-react';
 import { Button } from '../components/ui/button';
 import { Skeleton } from '../components/ui/skeleton';
-import { PageAction } from './PageActions';
-import { RegionSkeleton } from './RegionSkeleton';
+import { BrandMark } from './Brand';
 
 /**
  * The builder in the shape of the builder, and the way out of it.
@@ -24,22 +23,34 @@ import { RegionSkeleton } from './RegionSkeleton';
  * itself for no reason a merchant can see, so {@see OptinBuilder} renders this
  * one too and the wait reads as one wait.
  *
- * The proportions are the builder's own: a band with the name where the name
- * goes, and one region under it. Nothing here is announced — the `role="status"`
+ * The proportions are the builder's own: its header with the name, actions
+ * and Back where they will be, the four tabs, and the screen list, canvas
+ * and inspector under them (ADR 0132), so the editor lands without a jump. Nothing here is announced — the `role="status"`
  * sentence carries the whole of what a screen reader needs from a placeholder,
  * and a grid of announced boxes is a spinner read aloud.
  */
 export function BuilderSkeleton({ onClose, backLabel }: { onClose: () => void; backLabel?: string }) {
+  const bar = (className: string) => <Skeleton aria-hidden="true" className={className} />;
   return (
-    <div className="flex flex-col gap-5">
-      <PageAction>
-        <BackLink onClose={onClose} label={backLabel} />
-        <Skeleton aria-hidden="true" className="mt-3 h-9 w-72 max-w-full" />
-      </PageAction>
-      <RegionSkeleton label={__('Campaign builder', 'wconvert')}>
-        <Skeleton aria-hidden="true" className="h-4 w-full max-w-md" />
-        <Skeleton aria-hidden="true" className="h-48 w-full" />
-      </RegionSkeleton>
+    <div className="wconvert-builder-skeleton">
+      <p role="status" className="sr-only">{__('Loading campaign builder…', 'wconvert')}</p>
+      <div className="wconvert-builder-skeleton__header">
+        <BackLink onClose={onClose} label={backLabel} className="wconvert-builder-skeleton__back" />
+        <BrandMark className="wconvert-builder-skeleton__mark" />
+        {bar('h-5 w-44')}
+        <span className="wconvert-builder-skeleton__spacer" />
+        {bar('wconvert-builder-skeleton__action h-9 w-28')}{bar('wconvert-builder-skeleton__action h-9 w-24')}{bar('h-9 w-36')}
+      </div>
+      <div className="wconvert-builder-skeleton__tabs" aria-hidden="true">
+        {[0, 1, 2, 3].map((tab) => <Skeleton key={tab} className="h-8 flex-1" />)}
+      </div>
+      <div className="wconvert-builder-skeleton__body" aria-hidden="true">
+        <div className="wconvert-builder-skeleton__list">{[0, 1, 2].map((row) => <Skeleton key={row} className="h-12 w-full" />)}</div>
+        <div className="wconvert-builder-skeleton__canvas"><Skeleton className="wconvert-builder-skeleton__design" /></div>
+        <div className="wconvert-builder-skeleton__panel">
+          {[0, 1, 2, 3].map((field) => <div key={field} className="grid gap-2">{bar('h-3 w-24')}{bar('h-9 w-full')}</div>)}
+        </div>
+      </div>
     </div>
   );
 }

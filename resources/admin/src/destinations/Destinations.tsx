@@ -1,14 +1,15 @@
-import { useCallback, useEffect, useId, useRef, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useId, useRef, useState, type ReactNode, type RefObject } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
-import { DestinationUsageNotice } from './DestinationUsageNotice';
-import { missingSettings, settingsProblems } from './requirements';
+import { missingSettings } from './requirements';
 import {
   ArrowLeft,
   ArrowRight,
   CircleAlert,
   CircleCheck,
+  History,
   Info,
   MoreHorizontal,
+  Pencil,
   Plug,
   Plus,
   RefreshCw,
@@ -19,6 +20,14 @@ import {
 } from 'lucide-react';
 import { ProviderMark } from './ProviderMark';
 import { Alert, AlertDescription, AlertTitle } from '../components/ui/alert';
+import {
+  AdminDialog,
+  AdminDialogBody,
+  AdminDialogClose,
+  AdminDialogContent,
+  AdminDialogFooter,
+  AdminDialogHeader,
+} from '../components/ui/admin-dialog';
 import { Button } from '../components/ui/button';
 import {
   DropdownMenu,
@@ -27,13 +36,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '../components/ui/dropdown-menu';
-import { Input } from '../components/ui/input';
-import { Label } from '../components/ui/label';
 import { AddDestinationDialog } from './AddDestinationDialog';
 import { AccountEditor } from './AccountEditor';
+import { DestinationSettingsForm } from './DestinationSettingsForm';
 import { SendTestDialog } from './SendTestDialog';
 import { connectionMissing, destinationStatus, sendRefusal, setupProblems, TestReportAlert } from './status';
-import { destinationHref, leadsHref, sendingIssuesHref } from '../nav';
+import { destinationHref, hashFor, leadsHref, sendingIssuesHref } from '../nav';
 import { useSettingsEditing, type SettingsEditing } from '../settings-page/useSettingsEditing';
 import type { EditingState } from '../hooks/useAdminNavigation';
 import { ConfirmDialog } from '../shell/ConfirmDialog';
@@ -46,9 +54,7 @@ import {
   DataTableRow,
 } from '../shell/DataTable';
 import { Description } from '../shell/Description';
-import { Disclosure } from '../shell/Disclosure';
 import { EmptyState } from '../shell/EmptyState';
-import { Field } from '../shell/Field';
 import {
   PageError,
   Region,
@@ -66,7 +72,6 @@ import { formatCount, formatWhen } from '../lib/format';
 import {
   deleteDestination,
   readDestinations,
-  readSelectedSchema,
   readRecentAttempts,
   rePush,
   saveDestination,
@@ -74,21 +79,17 @@ import {
   type Connection,
   type Destination,
   type DestinationType,
+  type DestinationUsage,
   type DestinationsPayload,
   type RePushReport,
   type RecentAttempt,
   type TestReport,
 } from './api';
-import {
-  ConnectionPicker,
-  SettingsControl,
-  fromDraft,
-  isGroup,
-  settingLabel,
-  targetSaid,
-  toDraft,
-} from './settings';
-import { issueCount } from './issueCount';
+import { hasSendingIssue, issueCount } from './issueCount';
+import { readLog, type Lead } from '../leads/api';
+import { LeadDetail } from '../leads/LeadDetail';
+import { campaignName, listOptins } from '../optins/api';
+import { RowsSkeleton } from '../shell/RowsSkeleton';
 
 /**
  * **Where a merchant finds out whether sending is working.**
@@ -110,13 +111,19 @@ import { issueCount } from './issueCount';
  * exactly one of the two things that go wrong.
  *
  * ============================================================================
- * HEALTH FIRST, SETUP UNDER IT (ADR 0039).
+ * DESTINATIONS FIRST, HEALTH ON THE CARD, SETUP IN A DIALOG (ADR 0039).
  * ============================================================================
  * Nobody opens this page wanting a fifth Destination; they open it because
- * something did not arrive. So a configured Destination is a region of its own
- * — one concern, its own edge — whose status badge and one issue sentence lead,
- * with its settings folded under them and every other action behind ⋯, the
- * same card grammar as the campaign editor's `DestinationCard` (ADR 0131).
+ * something did not arrive. So the routes come first — with *Add a
+ * destination* on their own heading, not in a page header four other groups
+ * share — and the accounts they run over come after them.
+ *
+ * Each route is a compact card: what it is and who uses it, its status badge,
+ * and only the health that matters now. Its settings and its recent sends used
+ * to fold open under every card, so a screen of four routes was eight
+ * disclosures deep; they are dialogs now — **Edit** on the card, Recent sends
+ * behind ⋯ — the same card grammar as the campaign editor's
+ * `DestinationCard` (ADR 0131).
  */
 export function Destinations({ destinationId, mode = 'settings', onEditingStateChange, onIssueCount }: {
   readonly destinationId?: string; mode?: 'settings' | 'issues'; onEditingStateChange?: SettingsEditing; onIssueCount?: (count: number | null) => void;
@@ -132,11 +139,12 @@ export function Destinations({ destinationId, mode = 'settings', onEditingStateC
   useEffect(() => { onIssueCount?.(payload.status === 'ready' && fetchError === null ? issueCount(payload.data) : null); }, [payload, fetchError, onIssueCount]);
   /*
    * **Keyed by what the action ran against, not one string for the screen.**
-   * One `error` meant a failed save on the third Destination reported at the
-   * top of the page, four regions away from the Save button that caused it,
-   * and the merchant had to guess which row it was about — the placement
-   * failure ADR 0039 names. The key is the Destination, or the TYPE for an
-   * Add, which is the one action that has no Destination yet.
+   * One `error` meant a failed action on the third Destination reported at the
+   * top of the page, four regions away from the button that caused it, and
+   * the merchant had to guess which row it was about — the placement failure
+   * ADR 0039 names. The key is the Destination, or the TYPE for an Add, which
+   * is the one action that has no Destination yet. A failed SAVE is not here:
+   * it is the Edit dialog's, beside its Save.
    */
   const [errors, setErrors] = useState<Record<string, string>>({});
   /*
@@ -164,7 +172,7 @@ export function Destinations({ destinationId, mode = 'settings', onEditingStateC
   const [tests, setTests] = useState<Record<string, TestReport>>({});
   const [confirming, setConfirming] = useState<Destination | null>(null);
   const [replaying, setReplaying] = useState<Destination | null>(null);
-  const [sending, setSending] = useState<{ destination: Destination; settingsDirty: boolean } | null>(null);
+  const [sending, setSending] = useState<Destination | null>(null);
   /**
    * The type being added, which is also whether the Add dialog is past its
    * first step.
@@ -177,6 +185,14 @@ export function Destinations({ destinationId, mode = 'settings', onEditingStateC
    */
   const [adding, setAdding] = useState<DestinationType | null>(null);
   const [showTypes, setShowTypes] = useState(false);
+  /** The account Add starts on — the one just connected from Accounts. */
+  const [presetConnection, setPresetConnection] = useState<string | null>(null);
+  /**
+   * The route Add just created, so its card takes focus once the read that
+   * draws it lands — the same door a deep link uses. The dialog used to close
+   * into nothing, with the new card somewhere down the list.
+   */
+  const [created, setCreated] = useState<string | null>(null);
   const addTrigger = useRef<HTMLElement | null>(null);
   const returnFocus = useRef<HTMLElement | null>(null);
   const fetchRequest = useRef(0);
@@ -222,12 +238,11 @@ export function Destinations({ destinationId, mode = 'settings', onEditingStateC
   }, [refresh]);
 
   // Cleared on the retry that works, and only for the thing that was retried:
-  // a successful save on one Destination says nothing about the one that
+  // a successful action on one Destination says nothing about the one that
   // failed two regions up.
   const cleared = (current: Record<string, string>, id: string): Record<string, string> =>
     Object.fromEntries(Object.entries(current).filter(([key]) => key !== id));
 
-  /** Whether the action worked, so a Save can say "Saved just now" beside itself. */
   const run = async (id: string, kind: Busy, action: () => Promise<unknown>): Promise<boolean> => {
     startOperation(id, kind);
 
@@ -244,6 +259,17 @@ export function Destinations({ destinationId, mode = 'settings', onEditingStateC
     }
   };
 
+  const openAdd = (trigger: HTMLElement | null) => {
+    addTrigger.current = trigger;
+    setPresetConnection(null);
+    setShowTypes(true);
+  };
+  const closeAdd = () => {
+    setAdding(null);
+    setShowTypes(false);
+    setPresetConnection(null);
+  };
+
   /**
    * Create the route the dialog was filled in for.
    *
@@ -257,33 +283,61 @@ export function Destinations({ destinationId, mode = 'settings', onEditingStateC
     draft: { label: string; connection: string | null; settings: Record<string, unknown> },
   ) =>
     void run(type.id, 'adding', async () => {
-      await saveDestination({
+      const known = new Set((payload.status === 'ready' ? payload.data.destinations : []).map((destination) => destination.id));
+      const result = await saveDestination({
         type: type.id,
         label: draft.label,
         connection: draft.connection,
         settings: draft.settings,
       });
+      // The save answers with every route; the new one is the id that was not
+      // there before. Focus goes to its card, not back to Add.
+      const fresh = result?.destinations?.find((destination) => !known.has(destination.id));
+      if (fresh !== undefined) {
+        addTrigger.current = null;
+        setCreated(fresh.id);
+      }
 
-      setAdding(null);
-      setShowTypes(false);
+      closeAdd();
     });
 
   const remove = (destination: Destination) =>
     void run(destination.id, 'removing', () => deleteDestination(destination.id));
 
-  const save = (
+  /**
+   * Save from the Edit dialog. **What it failed with is returned, not keyed
+   * here**: the dialog is open over the card, so the sentence belongs beside
+   * the dialog's Save — and a card that kept saying "not saved" after the
+   * dialog was dismissed would be about a draft that no longer exists.
+   */
+  const save = async (
     destination: Destination,
     edit: { label: string; connection: string | null; settings: Record<string, unknown> },
-  ) =>
-    run(destination.id, 'saving', () =>
-      saveDestination({
+  ): Promise<string | null> => {
+    startOperation(destination.id, 'saving');
+    try {
+      await saveDestination({
         id: destination.id,
         type: destination.type,
         label: edit.label,
         connection: edit.connection,
         settings: edit.settings,
-      }),
-    );
+      });
+      await refresh();
+      return null;
+    } catch (cause) {
+      return messageOf(cause);
+    } finally {
+      finishOperation(destination.id);
+    }
+  };
+
+  /** An account connected from inside Add or Edit: on screen at once, then re-read. */
+  const connectionSaved = (account: Connection) => {
+    setPayload((current) => current.status === 'ready'
+      ? ready({ ...current.data, connections: [...current.data.connections.filter((existing) => existing.id !== account.id), account] }) : current);
+    void refresh();
+  };
 
   // Not `run()`, because sending again has a RESULT and refreshing would
   // throw it away — the read that follows a save is what clears the reports.
@@ -342,42 +396,44 @@ export function Destinations({ destinationId, mode = 'settings', onEditingStateC
   // so the region is not drawn at all rather than drawn empty.
   const accounts = data !== null
     && (data.connections.length > 0 || data.types.some((type) => type.needs_connection && type.availability === 'ready'));
+  const issues = data === null ? 0 : issueCount(data);
 
   return (
     <div className="flex flex-col gap-5">
-      <PageAction>
+      {/*
+        **Refresh is the Sending issues view's, not Settings'.** Every action
+        here re-reads on its own and the data loads on open, so on Settings the
+        button had no purpose — in a page header four other groups share. A
+        first load is not a refresh, so it never reads "Refreshing…".
+      */}
+      {mode === 'issues' && <PageAction>
         <Button variant="outline" disabled={refreshing || dirty || busyIds.size > 0} onClick={() => void refresh()}>
-          <RefreshCw aria-hidden="true" />{refreshing ? __('Refreshing…', 'wconvert') : __('Refresh', 'wconvert')}
+          <RefreshCw aria-hidden="true" />{refreshing && data !== null ? __('Refreshing…', 'wconvert') : __('Refresh', 'wconvert')}
         </Button>
-        {mode === 'settings' && <Button disabled={data === null} onClick={(event) => {
-          addTrigger.current = event.currentTarget;
-          setShowTypes(true);
-        }}>
-          <Plus aria-hidden="true" />{__('Add a destination', 'wconvert')}
-        </Button>}
-      </PageAction>
-      {mode === 'issues' && <p className="m-0 text-note text-muted-foreground">
-        {__('Destinations with a problem, and submissions rejected recently. Not a record of every send.', 'wconvert')}
-      </p>}
+      </PageAction>}
+      {/* A verdict first, then the evidence: how many, and since when (ADR 0132). */}
+      {mode === 'issues' && data !== null && <IssuesVerdict data={data} />}
       {/*
         **One read draws every region below**, so a refresh that fails is the
         screen's failure rather than any one route's.
       */}
       {fetchError !== null && <PageError message={fetchError} onRetry={() => void refresh()} />}
-      {mode === 'settings' && accounts && (
-        <Region>
-          <RegionHeader title={__('Connected accounts', 'wconvert')} description={__('Accounts hold credentials. Destinations choose where submissions go.', 'wconvert')} />
-          <RegionBody className="flex flex-col gap-3">
-            <AccountEditor types={data.types} connections={data.connections} usage={Object.fromEntries(data.connections.map((account) => [account.id, data.destinations.filter((destination) => destination.connection === account.id).map((destination) => destination.label)]))} onChange={refresh} />
-          </RegionBody>
-        </Region>
-      )}
-      {mode === 'settings' && data !== null && <div>
-        <h2 className="m-0 text-heading font-semibold">{__('Destinations', 'wconvert')}</h2>
-        <Description className="mt-1">
-          {__('Reusable places to send submissions. Each campaign picks its own in the Destinations tab.', 'wconvert')}{' '}
-          <a className="underline underline-offset-2" href={sendingIssuesHref()}>{__('Check sending issues', 'wconvert')}</a>
-        </Description>
+      {mode === 'settings' && <div className="flex flex-wrap items-start justify-between gap-x-4 gap-y-2">
+        <div className="min-w-0">
+          <h2 className="m-0 text-heading font-semibold">{__('Destinations', 'wconvert')}</h2>
+          <Description className="mt-1">
+            {__('Reusable places to send submissions. Each campaign picks its own in the Destinations tab.', 'wconvert')}
+            {/* Only when there is something to check — a permanent link is one the merchant learns to skip. */}
+            {issues > 0 && <>{' '}<a className="inline-flex items-center gap-1 font-medium underline underline-offset-2" href={sendingIssuesHref()}>
+              {sprintf(/* translators: %s: number of destinations with a sending issue. */ _n('%s sending issue', '%s sending issues', issues, 'wconvert'), formatCount(issues))}
+              <ArrowRight aria-hidden="true" className="size-4 rtl:-scale-x-100" />
+            </a></>}
+          </Description>
+        </div>
+        {/* The region's own action. An empty list carries it instead (§20). */}
+        {data !== null && data.destinations.length > 0 && <Button onClick={(event) => openAdd(event.currentTarget)}>
+          <Plus aria-hidden="true" />{__('Add a destination', 'wconvert')}
+        </Button>}
       </div>}
       {data !== null && destinationId !== undefined && !data.destinations.some((destination) => destination.id === destinationId) && (
         <Region><RegionHeader title={__('This destination is no longer available', 'wconvert')}
@@ -398,50 +454,71 @@ export function Destinations({ destinationId, mode = 'settings', onEditingStateC
           {data.destinations.length === 0 ? (
             <Region label={__('Destinations', 'wconvert')}>
               {/*
-                The page's Add action opens setup. This says what is still
-                true with nothing configured — the local mode's own name.
+                What is still true with nothing configured — the local mode's
+                own name — and the one way forward, here rather than in a
+                band the merchant has already read past (ADR 0039).
               */}
-              <EmptyState icon={Plug} title={__('Leads are kept in WConvert only', 'wconvert')}>
+              <EmptyState icon={Plug} title={__('Leads are kept in WConvert only', 'wconvert')}
+                action={mode === 'settings' ? <Button onClick={(event) => openAdd(event.currentTarget)}>
+                  <Plus aria-hidden="true" />{__('Add a destination', 'wconvert')}
+                </Button> : undefined}>
                 {__('Add a destination to also send them to an email list or another service.', 'wconvert')}
               </EmptyState>
             </Region>
           ) : (
-            data.destinations.filter((destination) => mode === 'settings' || destination.health.consecutive_failures > 0 || destination.health.skipped_captures > 0 || destination.availability !== 'ready' || data.failures.some((failure) => failure.destination === destination.id)).map((destination) => (
-              <Configured
-                key={destination.id}
-                destination={destination}
-                mode={mode}
-                onDraftState={reportDraft}
-                focusRequested={destinationId === destination.id}
-                type={data.types.find((type) => type.id === destination.type)}
-                connections={data.connections.filter(
-                  (connection) => connection.type === destination.type,
-                )}
-                report={reports[destination.id] ?? null}
-                test={tests[destination.id] ?? null}
-                error={errors[destination.id] ?? null}
-                busy={busyIds.get(destination.id) ?? null}
-                onSave={save}
-                onRemove={(trigger) => {
-                  returnFocus.current = trigger;
-                  setConfirming(destination);
-                }}
-                onRePush={(trigger) => {
-                  returnFocus.current = trigger;
-                  setReplaying(destination);
-                }}
-                onTestConnection={() => probe(destination)}
-                onTestSend={(trigger, settingsDirty) => {
-                  returnFocus.current = trigger;
-                  setSending({ destination, settingsDirty });
-                }}
-              />
-            ))
+            data.destinations.filter((destination) => mode === 'settings' || hasSendingIssue(destination, data)).map((destination) => {
+              const type = data.types.find((candidate) => candidate.id === destination.type);
+              return (
+                <Configured
+                  key={destination.id}
+                  destination={destination}
+                  mode={mode}
+                  onDraftState={reportDraft}
+                  focusRequested={destinationId === destination.id || created === destination.id}
+                  type={type}
+                  connections={data.connections.filter(
+                    (connection) => connection.type === destination.type,
+                  )}
+                  report={reports[destination.id] ?? null}
+                  notSent={data.failures.filter((failure) => failure.destination === destination.id).length}
+                  test={tests[destination.id] ?? null}
+                  error={errors[destination.id] ?? null}
+                  busy={busyIds.get(destination.id) ?? null}
+                  onSave={(edit) => save(destination, edit)}
+                  onConnectionSaved={connectionSaved}
+                  onRemove={(trigger) => {
+                    returnFocus.current = trigger;
+                    setConfirming(destination);
+                  }}
+                  onRePush={(trigger) => {
+                    returnFocus.current = trigger;
+                    setReplaying(destination);
+                  }}
+                  onTestConnection={() => probe(destination)}
+                  onTestSend={(trigger) => {
+                    returnFocus.current = trigger;
+                    setSending(destination);
+                  }}
+                />
+              );
+            })
           )}
 
-          {mode === 'issues' && data.destinations.length > 0 && data.failures.length === 0 && data.destinations.every((destination) => destination.health.consecutive_failures === 0 && destination.health.skipped_captures === 0 && destination.availability === 'ready') && <Region><EmptyState icon={CircleCheck} title={__('No known sending issues', 'wconvert')}>{__('No destination is failing, and nothing was rejected recently.', 'wconvert')}</EmptyState></Region>}
+          {mode === 'issues' && data.destinations.length > 0 && data.failures.length === 0 && data.destinations.every((destination) => !hasSendingIssue(destination, data)) && <Region><EmptyState icon={CircleCheck} title={__('No known sending issues', 'wconvert')}>{__('No destination is failing, and nothing was rejected recently.', 'wconvert')}</EmptyState></Region>}
           {mode === 'issues' && <Failures failures={data.failures} destinations={data.destinations} />}
         </>
+      )}
+
+      {mode === 'settings' && accounts && (
+        <AccountEditor types={data.types} connections={data.connections}
+          usage={Object.fromEntries(data.connections.map((account) => [account.id, data.destinations.filter((destination) => destination.connection === account.id).map((destination) => destination.label)]))}
+          onChange={refresh}
+          onAddDestination={(type, account, trigger) => {
+            addTrigger.current = trigger;
+            setPresetConnection(account.id);
+            setShowTypes(true);
+            setAdding(type);
+          }} />
       )}
 
       {/*
@@ -450,38 +527,30 @@ export function Destinations({ destinationId, mode = 'settings', onEditingStateC
       */}
       <AddDestinationDialog
         type={adding}
+        connection={presetConnection}
         choosing={showTypes}
         types={data?.types ?? []}
         connections={data?.connections ?? []}
         busy={adding !== null && busyIds.has(adding.id)}
         error={adding === null ? null : (errors[adding.id] ?? null)}
         returnFocusTo={addTrigger}
-        onOpenChange={(open) => {
-          if (!open) {
-            setAdding(null);
-            setShowTypes(false);
-          }
-        }}
+        onOpenChange={(open) => { if (!open) closeAdd(); }}
         onChoose={setAdding}
-        onBack={() => setAdding(null)}
+        onBack={() => { setAdding(null); setPresetConnection(null); }}
         onConfirm={(draft) => {
           if (adding !== null) {
             add(adding, draft);
           }
         }}
-        onConnectionSaved={(account) => {
-          setPayload((current) => current.status === 'ready'
-            ? ready({ ...current.data, connections: [...current.data.connections.filter((existing) => existing.id !== account.id), account] }) : current);
-          void refresh();
-        }}
+        onConnectionSaved={connectionSaved}
       />
 
-      {sending !== null && <SendTestDialog destination={sending.destination}
-        type={data?.types.find((type) => type.id === sending.destination.type)}
-        initialEmail={data?.test_sample?.email ?? null} settingsDirty={sending.settingsDirty}
+      {sending !== null && <SendTestDialog destination={sending}
+        type={data?.types.find((type) => type.id === sending.type)}
+        initialEmail={data?.test_sample?.email ?? null} settingsDirty={false}
         returnFocusTo={returnFocus} onClose={() => setSending(null)}
         onSent={(report) => {
-          setTests((current) => ({ ...current, [sending.destination.id]: report }));
+          setTests((current) => ({ ...current, [sending.id]: report }));
         }} />}
 
       <ConfirmDialog
@@ -558,16 +627,53 @@ const OUTCOMES: Record<RecentAttempt['outcome'], () => string> = {
 };
 
 /**
- * One configured Destination: whether it is working, what it is set to, and
- * what to do about it.
+ * Who uses this route, from its saved bindings: "Used by 2 campaigns (1
+ * live)", or "Not in a campaign yet". Null where the server could not say,
+ * because a guess here is exactly what the merchant would act on.
+ */
+function usageSaid(usage: readonly DestinationUsage[] | null | undefined): string | null {
+  if (usage == null) return null;
+  if (usage.length === 0) return __('Not in a campaign yet', 'wconvert');
+  const live = usage.filter((optin) => optin.live).length;
+  return live === 0
+    ? sprintf(/* translators: %s: number of campaigns. */ _n('Used by %s campaign', 'Used by %s campaigns', usage.length, 'wconvert'), formatCount(usage.length))
+    : sprintf(
+      /* translators: 1: number of campaigns, 2: how many of them are live. */
+      _n('Used by %1$s campaign (%2$s live)', 'Used by %1$s campaigns (%2$s live)', usage.length, 'wconvert'),
+      formatCount(usage.length),
+      formatCount(live),
+    );
+}
+
+/**
+ * The type a route's form runs on where this build no longer ships its own:
+ * no fields and no account, so it can still be renamed — a route is the
+ * merchant's either way.
+ */
+const unshippedType = (destination: Destination): DestinationType => ({
+  id: destination.type,
+  label: __('Destination', 'wconvert'),
+  icon: 'plug',
+  tier: 'free',
+  requires: null,
+  requires_label: null,
+  availability: destination.availability,
+  needs_connection: false,
+  settings_schema: {},
+});
+
+/**
+ * One configured Destination: whether it is working, who uses it, and what to
+ * do about it.
  *
- * **The card reads like the campaign editor's.** The status badge and ⋯ sit
- * on the title line; under them, at most one issue sentence from
+ * **The card reads like the campaign editor's.** The status badge, Edit and ⋯
+ * sit on the title line, with what it is and who uses it under the name. Under
+ * them, only health that matters now: at most one issue sentence from
  * {@see destinationStatus} — the same words the editor shows, never a local
- * copy — carrying the action that fixes it. Tests, Send again and Remove are
- * in ⋯ with icons, and a refused one stays in the menu with its reason rather
- * than going grey (§14). Settings fold under the card with the one
- * collapsible (§21).
+ * copy — carrying the action that fixes it, then the last send, skipped
+ * submissions and any report. Tests, Send again, Recent sends and Remove are in
+ * ⋯ with icons, and a refused one stays in the menu with its reason rather
+ * than going grey (§14).
  */
 function Configured({
   destination,
@@ -577,10 +683,12 @@ function Configured({
   type,
   connections,
   report,
+  notSent = 0,
   test,
   error,
   busy,
   onSave,
+  onConnectionSaved,
   onRemove,
   onRePush,
   onTestConnection,
@@ -601,69 +709,33 @@ function Configured({
   /** The Connections of this Destination's type, masked, for the account picker. */
   connections: readonly Connection[];
   report: RePushReport | null;
+  /** How many of the kept failures are this route's. */
+  notSent?: number;
   /** What the last *Test* against THIS Destination answered. */
   test: TestReport | null;
-  /** What the last save, remove or send-again against THIS Destination failed with. */
+  /** What the last remove, test or send-again against THIS Destination failed with. */
   error: string | null;
   /** What is in flight for THIS Destination, or null. */
   busy: Busy | null;
-  onSave: (
-    destination: Destination,
-    edit: { label: string; connection: string | null; settings: Record<string, unknown> },
-  ) => Promise<boolean>;
+  /** Null when the save worked, else what it failed with. */
+  onSave: (edit: { label: string; connection: string | null; settings: Record<string, unknown> }) => Promise<string | null>;
+  onConnectionSaved: (connection: Connection) => void;
   onRemove: (trigger: HTMLElement | null) => void;
   onRePush: (trigger: HTMLElement | null) => void;
   onTestConnection: () => void;
-  onTestSend: (trigger: HTMLElement | null, settingsDirty: boolean) => void;
+  onTestSend: (trigger: HTMLElement | null) => void;
 }) {
   const id = useId();
-  // Every field its TYPE declares, in the order PHP returned them — copy
-  // included — and an empty set where this build no longer ships the type.
-  const [schema, setSchema] = useState(type?.settings_schema ?? {});
-  const [metadataError, setMetadataError] = useState<string | null>(null);
-  const [loadingSchema, setLoadingSchema] = useState(false);
-  const [refreshSchema, setRefreshSchema] = useState(0);
-  // Seeded once from what is stored. Keyed by field rather than held as one
-  // string, because a type declares as many fields as it likes — the WSMS
-  // send has one and the lead magnet email has three.
-  const [draft, setDraft] = useState<Record<string, string>>(() => toDraft(schema, destination.settings));
-  /**
-   * **The name is the merchant's, and it is editable here.**
-   *
-   * Two Destinations of one type over one Connection differ only in what they
-   * point at, so the name is the only thing that tells them apart on the tab
-   * where an Optin is bound. Renaming needs no storage work and breaks no
-   * binding — an Optin holds ULIDs ({@see OptinBinding}).
-   */
-  const [label, setLabel] = useState(destination.label);
-  const [connection, setConnection] = useState(destination.connection);
-  const saved = useSaveStatus();
-  useEffect(() => {
-    if (type?.needs_connection !== true || connection === null) {
-      setSchema(type?.settings_schema ?? {});
-      return;
-    }
-    let active = true;
-    setLoadingSchema(true);
-    setMetadataError(null);
-    void readSelectedSchema(type.id, connection, refreshSchema > 0).then((result) => {
-      if (!active) return;
-      setSchema(result.settings_schema);
-      setDraft(toDraft(result.settings_schema, destination.settings));
-    }).catch(() => {
-      if (active) setMetadataError(__('Could not load this account’s choices. Check the account and try again.', 'wconvert'));
-    }).finally(() => { if (active) setLoadingSchema(false); });
-    return () => { active = false; };
-  }, [type?.id, type?.needs_connection, type?.settings_schema, connection, destination.settings, refreshSchema]);
   const menu = useRef<HTMLButtonElement>(null);
-  const [settingsOpen, setSettingsOpen] = useState(false);
-  const [recentOpen, setRecentOpen] = useState(false);
-  const [recent, setRecent] = useState<Loadable<readonly RecentAttempt[]> | null>(null);
   const region = useRef<HTMLDivElement>(null);
-  const settingsSummary = () => region.current?.querySelector<HTMLElement>('.wconvert-route-settings > summary') ?? null;
+  /** Where the dialog that is open returns focus: Edit, Finish setup or ⋯. */
+  const dialogTrigger = useRef<HTMLElement | null>(null);
+  /** The Edit dialog, and the field it opens on — set by Finish setup. */
+  const [editing, setEditing] = useState<{ focusField?: string } | null>(null);
+  const [editDirty, setEditDirty] = useState(false);
+  const [recentOpen, setRecentOpen] = useState(false);
   useEffect(() => {
     if (!focusRequested) return;
-    setSettingsOpen(true);
     const heading = region.current?.querySelector<HTMLElement>('h2');
     heading?.setAttribute('tabindex', '-1');
     heading?.focus();
@@ -672,15 +744,10 @@ function Configured({
   const problems = setupProblems(destination, type, connections);
   const status = destinationStatus(destination, type, problems);
   const running = destination.availability === 'ready';
-  const fields = Object.entries(schema);
-  const originalDraft = toDraft(schema, destination.settings);
-  const settingsDirty = label !== destination.label || connection !== destination.connection
-    || Object.entries(draft).some(([key, value]) => value !== originalDraft[key]);
   useEffect(() => {
-    onDraftState(destination.id, { dirty: settingsDirty, busy: busy !== null });
+    onDraftState(destination.id, { dirty: editing !== null && editDirty, busy: busy !== null });
     return () => onDraftState(destination.id, { dirty: false, busy: false });
-  }, [destination.id, settingsDirty, busy, onDraftState]);
-  const lands = targetSaid(destination.target);
+  }, [destination.id, editing, editDirty, busy, onDraftState]);
   const sent = destination.health.last_success_at;
 
   /*
@@ -693,74 +760,96 @@ function Configured({
     : connectionMissing(destination, type, connections) ? __('Choose an account first.', 'wconvert') : null;
   const replayRefusal = running ? null : __('Not running on this site.', 'wconvert');
 
-  const loadRecent = async () => {
-    setRecent(LOADING);
-    try {
-      const result = await readRecentAttempts(destination.id);
-      setRecent(ready(result.attempts));
-    } catch (cause) {
-      setRecent(failed(cause));
-    }
+  const edit = (trigger: HTMLElement | null, focusField?: string) => {
+    dialogTrigger.current = trigger;
+    setEditing({ focusField });
   };
 
-  /** Opens the settings at the field that is missing — where "Finish setup" was pressed. */
-  const finishSetup = () => {
-    setSettingsOpen(true);
-    const key = connectionMissing(destination, type, connections) ? 'connection'
-      : missingSettings(destination.requirements ?? type?.requirements, destination.settings)[0];
-    requestAnimationFrame(() => {
-      const field = key === undefined ? null : document.getElementById(`${id}-${key}`);
-      const control = field?.matches('input, select, textarea') ? field
-        : field?.querySelector<HTMLElement>('input, select, textarea')
-          ?? region.current?.querySelector<HTMLElement>('.wconvert-route-settings input');
-      control?.focus();
-    });
-  };
-
-  const edited = () => saved.clear();
+  /** Opens Edit at the field that is missing — where "Finish setup" was pressed. */
+  const finishSetup = (trigger: HTMLElement) => edit(trigger,
+    connectionMissing(destination, type, connections) ? 'connection'
+      : missingSettings(destination.requirements ?? type?.requirements, destination.settings)[0]);
 
   /*
-   * The issue sentence, once, with the door that fixes it. Amber is the site
-   * holding this route back and grey is a tier this install has not got —
-   * a price is not a fault (ADR 0037).
+   * **What it is and who uses it, never what it is called twice.** The type
+   * label repeated a name that was already the type's ("Lead magnet email /
+   * Lead magnet email"), so it is said only where it adds something. Usage is
+   * what the old subtitle left out: whether anything feeds this route at all.
    */
-  const issue = status.issue === null ? null : (
+  const usage = usageSaid(destination.usage);
+  const subtitle = [
+    type !== undefined && type.label.trim().toLocaleLowerCase() !== destination.label.trim().toLocaleLowerCase() ? type.label : null,
+    destination.target === '' ? __('Not pointed at anything', 'wconvert') : destination.target,
+    usage,
+    mode === 'issues' && notSent > 0 ? sprintf(
+      /* translators: %s: how many submissions this destination rejected recently. */
+      _n('%s not sent', '%s not sent', notSent, 'wconvert'), formatCount(notSent)) : null,
+  ].filter((part): part is string => part !== null && part !== '');
+  const unused = Array.isArray(destination.usage) && destination.usage.length === 0;
+
+  /*
+   * The issue sentence, once, with the door that fixes it. Red is an outage
+   * and amber the site holding this route back — both boxed, because both
+   * stop sends that are being attempted. Grey is a tier this install has not
+   * got: a price is not a fault (ADR 0037).
+   *
+   * **"Needs setup" is one line, not a box.** The amber badge already IS that
+   * status (§8: status true of a row is a badge); a box under it said the same
+   * thing again. What is left to say is the reason and the fix.
+   */
+  const issue = status.issue === null ? null : status.state === 'needs_setup' ? (
+    <p className="m-0 text-muted-foreground [overflow-wrap:anywhere]">
+      {status.issue}
+      {mode === 'settings' && <>{' '}<Button variant="link" className="h-auto p-0 align-baseline" disabled={busy !== null}
+        onClick={(event) => finishSetup(event.currentTarget)}>{__('Finish setup', 'wconvert')}</Button></>}
+    </p>
+  ) : (
     <Alert role="status" className={status.state === 'failing' ? 'border-destructive/30 bg-destructive-surface text-destructive'
-      : status.state === 'paused' || status.state === 'needs_setup' ? 'border-warning/30 bg-warning-surface text-warning'
+      : status.state === 'paused' ? 'border-warning/30 bg-warning-surface text-warning'
       : 'border-border bg-surface text-muted-foreground'}>
-      {status.state === 'failing' ? <CircleAlert /> : status.state === 'paused' || status.state === 'needs_setup' ? <TriangleAlert /> : <Info />}
+      {status.state === 'failing' ? <CircleAlert /> : status.state === 'paused' ? <TriangleAlert /> : <Info />}
       <AlertTitle className="line-clamp-none [overflow-wrap:anywhere]">{status.issue}</AlertTitle>
       {status.state === 'failing' && destination.health.skipped_captures === 0 && <AlertDescription>
         <Button variant="outline" className="mt-2" onClick={(event) => onRePush(event.currentTarget)}>
           <RotateCcw aria-hidden="true" />{__('Send again', 'wconvert')}
         </Button>
       </AlertDescription>}
-      {status.state === 'needs_setup' && mode === 'settings' && <AlertDescription>
-        <Button variant="outline" className="mt-2" onClick={finishSetup}>{__('Finish setup', 'wconvert')}</Button>
-      </AlertDescription>}
     </Alert>
   );
 
   const busySaid = busy === null ? undefined : BUSY_SAID[busy]?.();
-  const health = busySaid !== undefined || issue !== null || (status.issue === null && sent !== null)
+  const health = error !== null || busySaid !== undefined || issue !== null || (status.issue === null && sent !== null)
     || destination.health.skipped_captures > 0 || report !== null || test !== null;
+  const footer = mode === 'issues';
 
   return (
     <div ref={region} data-destination-id={destination.id}><Region>
       {/*
-        **The failure sits in the region that failed**, above the health it
-        contradicts and under the label saying which Destination this is.
+        **Drawn here rather than by `RegionHeader`**, whose description is a
+        string: this one carries a link. Same slot, spacing and type roles —
+        and no bottom rule when nothing follows, or a card with nothing wrong
+        draws two lines at its foot.
       */}
-      {error !== null && <RegionError message={error} />}
-
-      <RegionHeader
-        icon={<ProviderMark type={type} />}
-        title={destination.label}
-        // Where it lands, or the service where it selects nothing. Why it
-        // cannot send is the issue sentence below, never repeated here.
-        description={lands ?? type?.label}
-        trailing={<div className="flex items-center gap-2">
+      <div data-slot="region-header" className={`flex flex-wrap items-start justify-between gap-x-4 gap-y-2 px-4 py-2.5${health || footer ? ' border-b border-border' : ''}`}>
+        <div className="flex min-w-0 flex-1 items-start gap-3">
+          <span className="wconvert-region-icon" aria-hidden="true"><ProviderMark type={type} /></span>
+          <div className="min-w-0">
+            <h2 id={`${id}-name`} className="m-0 text-heading font-semibold leading-tight tracking-tight text-foreground [overflow-wrap:anywhere]">
+              <bdi>{destination.label}</bdi>
+            </h2>
+            {(subtitle.length > 0 || (unused && mode === 'settings')) && <Description className="mt-1 [overflow-wrap:anywhere]">
+              {subtitle.join(' · ')}
+              {/* A new route's next step: it sends nothing until a campaign picks it. */}
+              {unused && mode === 'settings' && <>{subtitle.length > 0 ? ' · ' : ''}<a className="underline underline-offset-2" href={hashFor('optins')}>{__('Go to campaigns', 'wconvert')}</a></>}
+            </Description>}
+          </div>
+        </div>
+        <div className="flex items-center gap-2">
           {status.badge}
+          {mode === 'settings' && <Button variant="outline" disabled={busy !== null} aria-describedby={`${id}-name`}
+            onClick={(event) => edit(event.currentTarget)}>
+            <Pencil aria-hidden="true" />{__('Edit', 'wconvert')}
+          </Button>}
           <DropdownMenu modal={false}>
             <DropdownMenuTrigger asChild>
               <Button ref={menu} variant="ghost" size="icon" disabled={busy !== null}
@@ -786,9 +875,12 @@ function Configured({
                   refusal={connectionRefusal} reasonId={`${id}-connection`} onSelect={onTestConnection} />
               )}
               <RefusableItem icon={<Send aria-hidden="true" />} label={__('Send a test', 'wconvert')}
-                refusal={testRefusal} reasonId={`${id}-test`} onSelect={() => onTestSend(menu.current, settingsDirty)} />
+                refusal={testRefusal} reasonId={`${id}-test`} onSelect={() => onTestSend(menu.current)} />
               <RefusableItem icon={<RotateCcw aria-hidden="true" />} label={__('Send stored submissions again', 'wconvert')}
                 refusal={replayRefusal} reasonId={`${id}-replay`} onSelect={() => onRePush(menu.current)} />
+              <DropdownMenuItem onSelect={() => { dialogTrigger.current = menu.current; setRecentOpen(true); }}>
+                <History aria-hidden="true" />{__('Recent sends', 'wconvert')}
+              </DropdownMenuItem>
               {mode === 'settings' && <>
                 <DropdownMenuSeparator />
                 <DropdownMenuItem variant="destructive" onSelect={() => onRemove(menu.current)}>
@@ -797,15 +889,20 @@ function Configured({
               </>}
             </DropdownMenuContent>
           </DropdownMenu>
-        </div>}
-      />
+        </div>
+      </div>
       {health && (
         <RegionBody className="flex flex-col gap-3">
+          {/*
+            **The failure sits in the card that failed**, above the health it
+            contradicts and under the name saying which Destination this is.
+          */}
+          {error !== null && <RegionError message={error} />}
           {busySaid !== undefined && <p role="status" className="m-0 text-note text-muted-foreground">{busySaid}</p>}
           {issue}
           {/*
             **Only where there IS a last success.** The badge already says
-            *"Not used yet"*, and a sentence repeating it teaches the merchant
+            *"No sends yet"*, and a sentence repeating it teaches the merchant
             to stop reading (ADR 0039).
           */}
           {status.issue === null && sent !== null && (
@@ -883,149 +980,135 @@ function Configured({
         </RegionBody>
       )}
 
-      <div className="border-t border-border px-4">
-        <Disclosure variant="inline" title={__('Recent sends', 'wconvert')} open={recentOpen}
-          bodyClassName="pb-3"
-          onToggle={(open) => {
-            setRecentOpen(open);
-            if (open && (recent === null || recent.status === 'failed')) void loadRecent();
-          }}>
-          {recent === null || recent.status === 'loading'
-            ? <p role="status" className="m-0 text-note text-muted-foreground">{__('Loading recent sends…', 'wconvert')}</p>
-            : recent.status === 'failed'
-              ? <PageError message={recent.message} onRetry={() => void loadRecent()} />
-              : recent.data.length === 0
-                ? <p className="m-0 text-note text-muted-foreground">{__('No recent sends on record.', 'wconvert')}</p>
-                : <ul className="m-0 list-none divide-y divide-border p-0">{recent.data.map((attempt) => (
-                  <li key={attempt.id} className="flex flex-wrap justify-between gap-x-4 py-2 text-note">
-                    <span className="font-medium">{(OUTCOMES[attempt.outcome] ?? OUTCOMES.unknown)()}</span>
-                    <span className="text-muted-foreground">{formatWhen(attempt.at, 'list')}</span>
-                  </li>
-                ))}</ul>}
-        </Disclosure>
-      </div>
-
-      {/*
-        **The fields are the schema, drawn in the order PHP returned them.**
-        Both the copy and the CONTROL come from the type's `settingsSchema()`,
-        which is what replaces WSMS's five `Supports*` capability interfaces: a
-        Destination's fields are a schema rather than a capability (#4).
-
-        **The body is always drawn**, and the schema gate sits on the fields
-        alone: a webhook declaring no settings is still a route that has to be
-        renameable, and so is a Destination whose type this install cannot see.
-      */}
-      {mode === 'settings' && <div className="border-t border-border px-4">
-        <Disclosure variant="inline" className="wconvert-route-settings" title={__('Settings', 'wconvert')}
-          open={settingsOpen} onToggle={setSettingsOpen} bodyClassName="pb-4">
-          <div className="flex max-w-xl flex-col gap-5">
-            <div id={`${id}-shared`}>
-              <DestinationUsageNotice usage={destination.usage} />
-            </div>
-            <Field label={__('Name', 'wconvert')} htmlFor={`${id}-label`} hintId={`${id}-label-hint`}
-              hint={__('What you’ll pick in a campaign’s Destinations tab.', 'wconvert')}>
-              <Input
-                id={`${id}-label`}
-                type="text"
-                value={label}
-                aria-describedby={`${id}-label-hint`}
-                onChange={(event) => { setLabel(event.target.value); edited(); }}
-              />
-            </Field>
-
-            {/*
-              **The account, where the type has one** — so a merchant with two
-              accounts of one provider can say which one a route runs over.
-            */}
-            {type?.needs_connection === true && (
-              <div className="flex flex-col items-start gap-1.5">
-                <div className="w-full">
-                  <ConnectionPicker
-                    id={`${id}-connection`}
-                    connections={connections}
-                    value={connection}
-                    onChange={(value) => { setConnection(value); edited(); }}
-                  />
-                </div>
-                {connection !== null && <Button type="button" variant="link" className="h-auto p-0" disabled={loadingSchema}
-                  onClick={() => setRefreshSchema((old) => old + 1)}>
-                  {loadingSchema ? __('Refreshing choices…', 'wconvert') : __('Refresh choices', 'wconvert')}
-                </Button>}
-              </div>
-            )}
-
-            {loadingSchema && <p role="status" className="m-0 text-note text-muted-foreground">{__('Loading this account’s choices…', 'wconvert')}</p>}
-            {metadataError && <PageError message={metadataError} onRetry={() => setRefreshSchema((old) => old + 1)} />}
-
-            {fields.map(([key, field]) => (
-              <div key={key} className="flex min-w-0 flex-col gap-1.5">
-                {/*
-                  A field drawn as a GROUP of controls is labelled by association
-                  rather than by `for`: `<label for>` naming a `div[role=group]`
-                  is inert, so the group points back at this element's id.
-                */}
-                <Label
-                  id={`${id}-${key}-label`}
-                  htmlFor={isGroup(field) ? undefined : `${id}-${key}`}
-                >
-                  {settingLabel(field.label, type?.requirements?.settings[key] !== undefined)}
-                </Label>
-                <SettingsControl
-                  id={`${id}-${key}`}
-                  field={field}
-                  value={draft[key] ?? ''}
-                  onChange={(value) => { setDraft({ ...draft, [key]: value }); edited(); }}
-                />
-                {field.description !== undefined && (
-                  <Description>{field.description}</Description>
-                )}
-              </div>
-            ))}
-
-            {/*
-              What the unsaved draft still lacks. Only once edited: until then
-              the card's issue sentence above already says it.
-            */}
-            {settingsDirty && (() => {
-              const draftProblems = settingsProblems(type?.requirements, fromDraft(schema, draft), schema);
-              return draftProblems.length > 0 && <ul className="m-0 flex list-none flex-col gap-1 p-0 text-note text-warning">
-                {draftProblems.map((problem) => <li key={problem}>{problem}</li>)}
-              </ul>;
-            })()}
-
-            <div className="flex flex-wrap items-center gap-2">
-              <Button variant="outline" disabled={busy === 'saving'} onClick={() => {
-                setDraft(toDraft(schema, destination.settings));
-                setLabel(destination.label);
-                setConnection(destination.connection);
-                setSettingsOpen(false);
-                settingsSummary()?.focus();
-              }}>{__('Cancel', 'wconvert')}</Button>
-              <Button
-                disabled={busy !== null || loadingSchema || metadataError !== null || (type?.needs_connection === true && connection === null)}
-                aria-describedby={`${id}-shared`}
-                onClick={() => {
-                  void onSave(destination, {
-                    label,
-                    connection,
-                    settings: { ...destination.settings, ...fromDraft(schema, draft) },
-                  }).then((worked) => { if (worked) saved.markSaved(); });
-                }}
-              >
-                {busy === 'saving' ? __('Saving…', 'wconvert') : __('Save', 'wconvert')}
-              </Button>
-              <SaveStatus saved={saved.saved} />
-            </div>
-          </div>
-        </Disclosure>
-      </div>}
-
-      {mode === 'issues' && <RegionFooter>
+      {footer && <RegionFooter>
         <Button asChild variant="outline"><a href={destinationHref(destination.id)}>{__('Fix sending setup', 'wconvert')}</a></Button>
       </RegionFooter>}
+
+      {editing !== null && <EditDestinationDialog destination={destination} type={type ?? unshippedType(destination)} known={type !== undefined}
+        badge={status.badge} connections={connections} focusField={editing.focusField} saving={busy === 'saving'}
+        returnFocusTo={dialogTrigger} onDirtyChange={setEditDirty} onSave={onSave} onConnectionSaved={onConnectionSaved}
+        onClose={() => { setEditing(null); setEditDirty(false); }} />}
+      {recentOpen && <RecentSendsDialog destination={destination} returnFocusTo={dialogTrigger} onClose={() => setRecentOpen(false)} />}
     </Region></div>
   );
 }
+
+/**
+ * **A route's settings, in the one modal layout** (ADR 0131): the name in the
+ * header with its badge, the type as the meta line, and the same form Add and
+ * the campaign editor draw — usage notice, name, account, choices, fields —
+ * with Cancel at the start and Save at the end.
+ *
+ * **It stays open after a save**, saying "Saved just now" beside Save, as the
+ * folded form did: a merchant fixing one field often has a second to fix, and
+ * closing on them would make them find the card and reopen it. The form is
+ * re-seeded from the saved route (a new key), so the next Escape asks about
+ * the NEXT edit rather than one already saved.
+ */
+function EditDestinationDialog({
+  destination, type, known, badge, connections, focusField, saving, returnFocusTo, onDirtyChange, onSave, onConnectionSaved, onClose,
+}: {
+  destination: Destination;
+  type: DestinationType;
+  /** False where `type` is the stand-in for one this build no longer ships. */
+  known: boolean;
+  badge: ReactNode;
+  connections: readonly Connection[];
+  focusField?: string;
+  saving: boolean;
+  returnFocusTo: RefObject<HTMLElement | null>;
+  onDirtyChange: (dirty: boolean) => void;
+  onSave: (edit: { label: string; connection: string | null; settings: Record<string, unknown> }) => Promise<string | null>;
+  onConnectionSaved: (connection: Connection) => void;
+  onClose: () => void;
+}) {
+  const [dirty, setDirty] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [version, setVersion] = useState(0);
+  const saved = useSaveStatus();
+  const { clear } = saved;
+  useEffect(() => { if (dirty) clear(); }, [dirty, clear]);
+  useEffect(() => { onDirtyChange(dirty); }, [dirty, onDirtyChange]);
+  const close = () => { if (!saving) onClose(); };
+
+  return (
+    <AdminDialog open onOpenChange={(open) => { if (!open) close(); }}>
+      <AdminDialogContent size="md" dirty={dirty && !saving} showCloseButton={!saving}
+        onCloseAutoFocus={(event) => { event.preventDefault(); returnFocusTo.current?.focus(); }}>
+        <AdminDialogHeader title={<bdi>{destination.label}</bdi>} badge={badge} meta={known ? type.label : undefined} />
+        <DestinationSettingsForm key={version} type={type} destination={destination}
+          connections={connections} focusField={version === 0 ? focusField : undefined}
+          busy={saving} error={error} onDirtyChange={setDirty} onConnectionSaved={onConnectionSaved}
+          onCancel={close}
+          back={<Button type="button" variant="outline" disabled={saving} onClick={close}>
+            {/* Not "Close", which is the ✕'s name: two buttons, one word. */}
+            {saved.saved ? __('Done', 'wconvert') : __('Cancel', 'wconvert')}
+          </Button>}
+          note={<SaveStatus saved={saved.saved} />}
+          onConfirm={(draft) => {
+            setError(null);
+            void onSave(draft).then((failure) => {
+              if (failure !== null) { setError(failure); return; }
+              saved.markSaved();
+              setVersion((current) => current + 1);
+            });
+          }} />
+      </AdminDialogContent>
+    </AdminDialog>
+  );
+}
+
+/**
+ * The last few attempts against one route, each with the submission it was
+ * for — **the existing attempt ring, not per-lead state** (ADR 0008). Read
+ * only when asked: it is a per-route request nobody needs on page load.
+ */
+function RecentSendsDialog({ destination, returnFocusTo, onClose }: {
+  destination: Destination;
+  returnFocusTo: RefObject<HTMLElement | null>;
+  onClose: () => void;
+}) {
+  const [recent, setRecent] = useState<Loadable<readonly RecentAttempt[]>>(LOADING);
+  const [attempt, setAttempt] = useState(0);
+  useEffect(() => {
+    let active = true;
+    readRecentAttempts(destination.id)
+      .then((result) => { if (active) setRecent(ready(result.attempts)); })
+      .catch((cause: unknown) => { if (active) setRecent(failed(cause)); });
+    return () => { active = false; };
+  }, [destination.id, attempt]);
+
+  return (
+    <AdminDialog open onOpenChange={(open) => { if (!open) onClose(); }}>
+      <AdminDialogContent size="sm"
+        onCloseAutoFocus={(event) => { event.preventDefault(); returnFocusTo.current?.focus(); }}>
+        <AdminDialogHeader title={<bdi>{destination.label}</bdi>} meta={__('Recent sends, newest first', 'wconvert')} />
+        <AdminDialogBody>
+          {recent.status === 'loading'
+            ? <p role="status" className="m-0 text-note text-muted-foreground">{__('Loading recent sends…', 'wconvert')}</p>
+            : recent.status === 'failed'
+              ? <PageError message={recent.message} onRetry={() => { setRecent(LOADING); setAttempt((current) => current + 1); }} />
+              : recent.data.length === 0
+                ? <p className="m-0 text-note text-muted-foreground">{__('No recent sends on record.', 'wconvert')}</p>
+                : <ul className="m-0 list-none divide-y divide-border p-0">{recent.data.map((each) => (
+                  <li key={each.id} className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 py-2 text-note">
+                    <span>
+                      <span className="font-medium">{(OUTCOMES[each.outcome] ?? OUTCOMES.unknown)()}</span>
+                      <span className="text-muted-foreground">{' · '}{formatWhen(each.at, 'list')}</span>
+                    </span>
+                    {/* The submission it was for, in Leads — never its ID (ADR 0131). */}
+                    {each.lead !== '' && <a className="underline underline-offset-2" href={leadsHref({ leadId: each.lead })}>{__('View submission', 'wconvert')}</a>}
+                  </li>
+                ))}</ul>}
+        </AdminDialogBody>
+        <AdminDialogFooter>
+          <AdminDialogClose asChild><Button type="button" variant="outline">{__('Done', 'wconvert')}</Button></AdminDialogClose>
+        </AdminDialogFooter>
+      </AdminDialogContent>
+    </AdminDialog>
+  );
+}
+
 
 /**
  * A ⋯ item that may be refused. Refused, it stays reachable and says why
@@ -1065,6 +1148,9 @@ const FAILURES_PER_PAGE = 25;
  */
 function Failures({ failures, destinations }: { failures: DestinationsPayload['failures']; destinations: readonly Destination[] }) {
   const [page, setPage] = useState(0);
+  // The submission opens over the list, so the merchant keeps their place in it.
+  const [opened, setOpened] = useState<string | null>(null);
+  const opener = useRef<HTMLButtonElement | null>(null);
   const pages = Math.max(1, Math.ceil(failures.length / FAILURES_PER_PAGE));
   const current = Math.min(page, pages - 1);
 
@@ -1098,7 +1184,8 @@ function Failures({ failures, destinations }: { failures: DestinationsPayload['f
                   : <span className="text-muted-foreground">{__('Removed destination', 'wconvert')}</span>}
               </DataTableCell>
               <DataTableCell label={__('Submission', 'wconvert')}>
-                <a className="font-medium underline underline-offset-2" href={leadsHref({ leadId: failure.lead })}>{__('View submission', 'wconvert')}</a>
+                <button type="button" className="font-medium text-action underline underline-offset-2" aria-haspopup="dialog"
+                  onClick={(event) => { opener.current = event.currentTarget; setOpened(failure.lead); }}>{__('View submission', 'wconvert')}</button>
               </DataTableCell>
               <DataTableCell label={__('Why', 'wconvert')}>
                 <span className="[overflow-wrap:anywhere]">{failure.error}</span>
@@ -1107,6 +1194,7 @@ function Failures({ failures, destinations }: { failures: DestinationsPayload['f
           })}
         </DataTableBody>
       </DataTable>
+      <SubmissionDialog leadId={opened} onClose={() => setOpened(null)} returnFocus={opener} />
       {pages > 1 && <RegionFooter>
         <nav className="flex flex-wrap items-center gap-2" aria-label={__('Pages of unsent submissions', 'wconvert')}>
           <Button variant="outline" disabled={current === 0} onClick={() => setPage(current - 1)}>
@@ -1121,5 +1209,58 @@ function Failures({ failures, destinations }: { failures: DestinationsPayload['f
         </nav>
       </RegionFooter>}
     </Region>
+  );
+}
+
+/** "2 destinations need attention · 14 not sent since Oct 7" — or nothing, where the empty state says it. */
+function IssuesVerdict({ data }: { data: DestinationsPayload }) {
+  const failing = data.destinations.filter((destination) => hasSendingIssue(destination, data)).length;
+  const oldest = data.failures.reduce<string | null>((first, failure) => first === null || failure.at < first ? failure.at : first, null);
+  if (failing === 0 && data.failures.length === 0) return null;
+  return <p className="m-0 font-medium" role="status">
+    {[
+      failing > 0 ? sprintf(
+        /* translators: %s: how many destinations have a known problem. */
+        _n('%s destination needs attention', '%s destinations need attention', failing, 'wconvert'), formatCount(failing)) : null,
+      data.failures.length > 0 && oldest !== null ? sprintf(
+        /* translators: 1: how many submissions were rejected, 2: when the oldest was, e.g. "Oct 7". */
+        _n('%1$s submission not sent since %2$s', '%1$s submissions not sent since %2$s', data.failures.length, 'wconvert'),
+        formatCount(data.failures.length), formatWhen(oldest, 'list')) : null,
+    ].filter(Boolean).join(' · ')}
+  </p>;
+}
+
+/** One submission, read by its ID and drawn as the Leads detail draws it. */
+function SubmissionDialog({ leadId, onClose, returnFocus }: { leadId: string | null; onClose: () => void; returnFocus: RefObject<HTMLButtonElement | null> }) {
+  const [state, setState] = useState<Loadable<{ lead: Lead | null; names: Map<string, string> }>>(LOADING);
+  const [attempt, setAttempt] = useState(0);
+  useEffect(() => {
+    if (leadId === null) return;
+    let active = true;
+    setState(LOADING);
+    void Promise.all([readLog({ leadId }), listOptins()])
+      .then(([log, optins]) => {
+        if (active) setState(ready({ lead: log.leads[0] ?? null, names: new Map(optins.flatMap((optin) => [optin, ...optin.arms]).map((optin) => [optin.id, campaignName(optin)])) }));
+      })
+      .catch((cause: unknown) => { if (active) setState(failed(cause)); });
+    return () => { active = false; };
+  }, [leadId, attempt]);
+  return (
+    <AdminDialog open={leadId !== null} onOpenChange={(open) => { if (!open) onClose(); }}>
+      <AdminDialogContent size="md" onCloseAutoFocus={(event) => { event.preventDefault(); returnFocus.current?.focus(); }}>
+        {state.status === 'ready' && state.data.lead !== null
+          ? <LeadDetail lead={state.data.lead} campaign={state.data.names.get(state.data.lead.optin_id) ?? null}
+              returnTo={sendingIssuesHref()} closes onBack={onClose} />
+          : <>
+            <AdminDialogHeader title={__('Submission', 'wconvert')} />
+            <AdminDialogBody>
+              {state.status === 'loading' ? <RowsSkeleton rows={4} />
+                : state.status === 'failed' ? <RegionErrorState message={state.message} onRetry={() => setAttempt((value) => value + 1)} />
+                  : <p className="m-0">{__('This submission is no longer kept.', 'wconvert')}</p>}
+            </AdminDialogBody>
+            <AdminDialogFooter back={<AdminDialogClose asChild><Button variant="outline">{__('Close', 'wconvert')}</Button></AdminDialogClose>} />
+          </>}
+      </AdminDialogContent>
+    </AdminDialog>
   );
 }

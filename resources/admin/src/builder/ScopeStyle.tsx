@@ -43,7 +43,8 @@ export function ScopeStyle({
   onOpenToken: (token: string | null) => void;
 
   onSelect: (path: Path) => void;
-  onChange: (template: Template) => void;
+  /** `coalesce` names the element, width and token a drag or slider belongs to, so it is one Undo step. */
+  onChange: (template: Template, coalesce?: string) => void;
 
   copied: Tokens | null;
   onCopy: (tokens: Tokens | null) => void;
@@ -60,8 +61,8 @@ export function ScopeStyle({
     return <NoScope chain={chain} labels={labels} onSelect={onSelect} />;
   }
 
-  const write = (name: string) => (value: string) =>
-    onChange({ ...template, tree: withScopeToken(template.tree, here.path, name, value, width) });
+  const write = (name: string, coalesce?: string) => (value: string) =>
+    onChange({ ...template, tree: withScopeToken(template.tree, here.path, name, value, width) }, coalesce);
 
   const mobileOverrides = Object.keys(here.narrow);
   const source = (name: string): TokenSource => sourceOfToken(chain, template.tokens, name, width);
@@ -110,7 +111,7 @@ export function ScopeStyle({
                       value={bagOf(here, width)[token.name] ?? ''}
                       open={openToken === token.name}
                       onOpenChange={(open) => onOpenToken(open ? token.name : null)}
-                      onChange={write(token.name)}
+                      onChange={write(token.name, styleCoalesce(here.path, width, token.name))}
                       resetSaid={sprintf(__('Let %s be inherited again', 'wconvert'), label)}
                     />
                     {width === 'tokens' && Object.hasOwn(here.narrow, token.name) && sourceOfToken(chain, template.tokens, token.name, 'narrow').value !== from.value && <p className="m-0 text-note text-action">{__('Different on mobile', 'wconvert')}</p>}
@@ -161,6 +162,9 @@ export function ScopeStyle({
     </div>
   );
 }
+
+/** The history key for one element's own value of one token, at one width. */
+export const styleCoalesce = (path: Path, width: WidthBag, name: string) => `style:${path.join('.')}:${width}:${name}`;
 
 const bagOf = (scope: Scope, width: WidthBag): Tokens => (width === 'narrow' ? scope.narrow : scope.tokens);
 

@@ -15,6 +15,8 @@ import { ConfirmDialog } from '@/shell/ConfirmDialog';
 import { messageOf } from '@/shell/loadable';
 import { Button } from '@/components/ui/button';
 import type { ReportExtensionProps } from '@/stats/extensions';
+import { periodOf, periodParams, type PeriodQuery } from '@/stats/api';
+import { chooseToday, todayAppearsTomorrow } from '@/stats/reporting';
 import { formatCount, formatDay, formatMoney, formatRange, formatWhen, labelOf } from '@/lib/format';
 interface Report {
   guide_url: string; available: boolean; consent_ready: boolean; site_matches: boolean;
@@ -48,8 +50,9 @@ function orderStatus(status: string): string {
 
 /** Thrown when a response answers a different period than the one on screen. */
 const MISMATCH = 'period';
-export default function Revenue({ period, optinId, campaignNames = {} }: ReportExtensionProps) {
-  const [stored, setReport] = useState<(Report & { scope?: string }) | null>(null);
+export default function Revenue({ period, optinId, campaignNames = {}, onSummary }: ReportExtensionProps) {
+  // The window travels with the report it answered, so its links keep those dates after a failed change.
+  const [stored, setReport] = useState<(Report & { scope?: string; window?: PeriodQuery }) | null>(null);
   const report = stored?.scope === optinId ? stored : null;
   const [updating, setUpdating] = useState(false);
   const [error, setError] = useState('');
@@ -57,23 +60,35 @@ export default function Revenue({ period, optinId, campaignNames = {} }: ReportE
   const [confirmOff, setConfirmOff] = useState(false);
   const [retry, setRetry] = useState(0);
   const toggle = useRef<HTMLButtonElement>(null);
+  const live = periodOf(period).today === true;
+  const windowQuery = periodParams(periodOf(period)).toString();
   useEffect(() => {
     const controller = new AbortController();
     setUpdating(true); setError('');
-    const params = new URLSearchParams({ complete: '1', days: String(Math.max(1, period.days)) });
-    if (period.month) params.set('month', period.month);
+    const params = new URLSearchParams(windowQuery);
     if (optinId) params.set('optin_id', optinId);
     void apiFetch<Report>({ path: `/wconvert/v1/revenue?${params}`, signal: controller.signal }).then(data => {
       if (controller.signal.aborted) return;
       if (data.from && (data.from !== period.from || data.to !== period.to)) throw new Error(MISMATCH);
-      setReport({ ...data, scope: optinId, month: period.month });
+      setReport({ ...data, scope: optinId, window: periodOf(period) });
     }).catch((cause: unknown) => {
       if (controller.signal.aborted) return;
       const reason = cause instanceof Error && cause.message === MISMATCH ? '' : messageOf(cause);
       setError(sprintf(__('Could not load campaign sales for these dates. %s', 'wconvert'), reason).trim());
     }).finally(() => { if (!controller.signal.aborted) setUpdating(false); });
     return () => controller.abort();
-  }, [period.from, period.to, period.days, period.month, optinId, retry]);
+  }, [period.from, period.to, windowQuery, optinId, retry]);
+  // The overview's Linked sales card (ADR 0132): only a complete report for
+  // exactly these dates, with linked orders. A stale or partial one says nothing.
+  const current = !optinId && report?.complete && report.from === period.from && report.to === period.to && period.days > 0 ? report : null;
+  const single = current?.currencies?.length === 1 ? current.currencies[0] : null;
+  const summaryOrders = current?.linked_orders ?? 0;
+  const summaryAmount = single?.amount ?? null;
+  const summaryCurrency = single?.currency ?? null;
+  useEffect(() => {
+    onSummary?.(summaryOrders > 0 ? { orders: summaryOrders, amount: summaryAmount, currency: summaryCurrency } : null);
+  }, [onSummary, summaryOrders, summaryAmount, summaryCurrency]);
+  useEffect(() => () => onSummary?.(null), [onSummary]);
   async function change(enabled: boolean) {
     setBusy(true); setError('');
     try { const saved = await apiFetch<{ settings: Report['settings'] }>({ path: '/wconvert/v1/revenue', method: 'POST', data: { enabled } }); setReport(previous => previous ? { ...previous, settings: saved.settings, site_matches: true } : previous); setRetry(n => n + 1); }
@@ -105,10 +120,10 @@ export default function Revenue({ period, optinId, campaignNames = {} }: ReportE
           <div className="wa-report-meta"><span>{report.from && report.to ? formatRange(report.from, report.to) : __('Report not loaded', 'wconvert')}</span><span>{__('By order paid date', 'wconvert')}</span>{updating && <span role="status">{__('Updating… Previous dates shown.', 'wconvert')}</span>}</div>
           {enabled && !report.consent_ready && <div className="wa-report-notice"><strong>{__('Finish consent setup to link new orders.', 'wconvert')}</strong><a href={report.guide_url} target="_blank" rel="noreferrer">{__('Setup guide', 'wconvert')}</a></div>}
           {!report.site_matches && <p className="wa-report-notice">{__('The site address changed. Turn on tracking again in Tracking & setup below.', 'wconvert')}</p>}
-          {period.days === 0 ? <EmptyState icon={ShoppingBag} title={__('No complete days yet', 'wconvert')}>{__('Today’s paid orders will appear tomorrow.', 'wconvert')}</EmptyState>
+          {period.days === 0 ? <EmptyState icon={ShoppingBag} title={__('No complete days yet', 'wconvert')}>{todayAppearsTomorrow()} {chooseToday()}</EmptyState>
             : report.complete === undefined ? <p className="wa-muted">{__('Sales totals have not loaded yet.', 'wconvert')}</p>
             : report.complete === false ? <EmptyState icon={ShoppingBag} title={__('Choose a shorter period', 'wconvert')}>{__('This report is too large to total safely. No partial totals are shown.', 'wconvert')}</EmptyState>
-            : (report.linked_orders ?? 0) === 0 ? <EmptyState icon={ShoppingBag} title={__('No linked orders in this period', 'wconvert')}>{__('With tracking on and statistics consent granted, a signup or click can link a checkout within 30 minutes. Today’s paid orders appear tomorrow.', 'wconvert')}</EmptyState>
+            : (report.linked_orders ?? 0) === 0 ? <EmptyState icon={ShoppingBag} title={__('No linked orders in this period', 'wconvert')}>{__('With tracking on and statistics consent granted, a signup or click can link a checkout within 30 minutes.', 'wconvert')}{!live && <> {todayAppearsTomorrow()}</>}</EmptyState>
             : <SalesTotals report={report} />}
           {report.complete && period.days > 0 && <p className="wa-muted wa-report-context">{__('Linked after a signup or eligible click within 30 minutes. A link does not prove the campaign caused the sale.', 'wconvert')}</p>}
           {report.complete && period.days > 0 && <p className="wa-muted wa-report-store-total">{sprintf(__('%s eligible paid orders across your store in this period.', 'wconvert'), formatCount(report.eligible_orders ?? 0))} <InfoTip label={__('About linked orders', 'wconvert')}>{__('Orders may be unlinked because consent was not granted, the interaction expired or tracking failed.', 'wconvert')}</InfoTip></p>}
@@ -119,7 +134,7 @@ export default function Revenue({ period, optinId, campaignNames = {} }: ReportE
             <DataTableHead><DataTableColumn>{__('Order', 'wconvert')}</DataTableColumn><DataTableColumn>{__('Campaign', 'wconvert')}</DataTableColumn><DataTableColumn>{__('Paid on', 'wconvert')}</DataTableColumn><DataTableColumn>{__('Status', 'wconvert')}</DataTableColumn><DataTableColumn numeric>{__('Net product revenue', 'wconvert')}</DataTableColumn></DataTableHead>
             <DataTableBody>{report.orders.map(order => <DataTableRow key={order.id}>
               <DataTableCell label={__('Order', 'wconvert')}>{order.url ? <a href={order.url}>#{order.id}</a> : `#${order.id}`}</DataTableCell>
-              <DataTableCell label={__('Campaign', 'wconvert')}>{campaignNames[order.campaign] ? <a href={reportHref({ optinId: order.campaign, month: report.month, days: report.days })}><bdi>{campaignNames[order.campaign]}</bdi></a> : __('Deleted campaign', 'wconvert')}</DataTableCell>
+              <DataTableCell label={__('Campaign', 'wconvert')}>{campaignNames[order.campaign] ? <a href={reportHref({ ...report.window, optinId: order.campaign })}><bdi>{campaignNames[order.campaign]}</bdi></a> : __('Deleted campaign', 'wconvert')}</DataTableCell>
               <DataTableCell label={__('Paid on', 'wconvert')}>{formatDay(order.paid)}</DataTableCell>
               <DataTableCell label={__('Status', 'wconvert')}>{orderStatus(order.status)}{order.refunded && <small className="block wa-muted">{__('Refund recorded', 'wconvert')}</small>}</DataTableCell>
               <DataTableCell label={__('Net product revenue', 'wconvert')} numeric>{money(order.amount, order.currency)}</DataTableCell>

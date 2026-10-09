@@ -25,6 +25,14 @@ it('does not flatten messages containing formatted slots into plain copy', () =>
   expect(screen.queryByLabelText('Message')).not.toBeInTheDocument();
   expect(screen.getByText(/contains formatted text or links/)).toBeInTheDocument();
 });
+it('never shows a link placeholder as text to edit', () => {
+  // The renderer's link mark is %s; a raw "%s" in a text box reads as a bug.
+  const input: TemplateTree = { ...tree, steps: [{ ...tree.steps[0], content: { type: 'text', text: 'Unsubscribe any time. %s', link: { label: 'Privacy', href: '/privacy/' } } }] };
+  render(<JourneyScreenContent tree={input} step={0} onChange={() => {}}/>);
+  expect(screen.queryByLabelText('Message')).not.toBeInTheDocument();
+  expect(screen.getByText(/contains formatted text or links/)).toBeInTheDocument();
+});
+
 it('inserts a conditional message without forcing a question or interrupting the shared enquiry', () => {
   const next = addGraphScreen(tree, 'edge:start', 'content', { match: 'all', clauses: [{ question: 'n1', operator: 'includes_any', values: ['garden'] }] }, true);
   const added = next.steps.at(-1)!;

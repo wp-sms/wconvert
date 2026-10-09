@@ -1112,7 +1112,7 @@ survive a pack version update while exact source baselines retain immutable IDs.
 ### Quick pick
 
 One common answer to a Display rules question, one click away — *Entire site*,
-*Phones only*, *After [15] seconds*, *Once per visit*, *Until you pause it* —
+*Phones only*, *After [15] seconds*, *Once per visit*, *Until you unpublish it* —
 beside **Custom…**, which opens the full rule editors
 ([ADR 0129](docs/adr/0129-display-rules-plain-questions-and-quick-picks.md)).
 The five questions are *Where does it show?*, *Who sees it?*, *When does it

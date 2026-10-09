@@ -28,6 +28,7 @@ const root = import.meta.dirname;
  */
 const WORDPRESS_GLOBALS = {
   '@wordpress/data': 'wp.data',
+  '@wordpress/compose': 'wp.compose',
   '@wordpress/api-fetch': 'wp.apiFetch',
   '@wordpress/blocks': 'wp.blocks',
   '@wordpress/block-editor': 'wp.blockEditor',
@@ -53,6 +54,12 @@ export default defineConfig({
   // There is no static asset directory to copy; without this Vite treats the
   // plugin's public/ build root as one and warns that it overlaps outDir.
   publicDir: false,
+  // The campaign picker is free code that Pro's content lock blocks import
+  // (`vite.config.block-pro.mjs` spreads this config), spelled as in
+  // tsconfig.json and vitest.config.ts.
+  resolve: {
+    alias: { '@block': resolve(root, 'resources/blocks/inline-optin/src') },
+  },
   esbuild: {
     /*
      * ========================================================================
@@ -95,6 +102,7 @@ export default defineConfig({
       formats: ['iife'],
       name: 'wconvertInlineOptinBlock',
       fileName: () => 'inline-optin.js',
+      cssFileName: 'inline-optin',
     },
     rollupOptions: {
       external: Object.keys(WORDPRESS_GLOBALS),

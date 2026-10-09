@@ -80,7 +80,7 @@ export function useAdminNavigation() {
     accept(next);
   }, [accept]);
 
-  /** A visible way out without its own discard confirmation, such as the narrow notice. */
+  /** A visible way out without its own discard confirmation, such as opening a new campaign's editor from creation. */
   const requestNavigation = useCallback((hash: string) => {
     if (editing.current.busy || hash === accepted.current.hash) return;
     if (!editing.current.dirty) { navigate(hash); return; }

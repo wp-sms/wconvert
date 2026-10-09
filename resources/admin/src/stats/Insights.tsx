@@ -26,29 +26,34 @@ export function Insights({ items, query }: { items: Insight[]; query: ReportQuer
       const metric = item.rule_id === 'lower_rate' ? 'rate' : 'appearances';
       const value = (facts: Facts) => metric === 'rate' ? formatRate(facts.rate) : formatCount(facts.appearances);
       const Icon = item.rule_id === 'no_appearances' ? Eye : TrendingDown;
+      // What is wrong first, then which campaign and why it matters, with the fact as a small chip
+      // and the fix and its evidence on one row (ADR 0132).
       return <article key={item.fingerprint} className="wa-insight">
-        <div className="wa-insight-main">
-          <span className="wa-report-icon" aria-hidden="true"><Icon className="size-5" /></span>
-          <div className="wa-insight-copy">
+        <span className="wa-report-icon" aria-hidden="true"><Icon className="size-5" /></span>
+        <div className="wa-insight-copy">
+          <div className="wa-insight-head">
+            <h4>{item.title}</h4>
+            <span className="wa-insight-fact">
+              {metric === 'rate' ? __('This period', 'wconvert') : __('Shown', 'wconvert')} <strong>{value(item.facts.current)}</strong>
+              {item.facts.previous && <> · {__('previously', 'wconvert')} {value(item.facts.previous)}</>}
+            </span>
+          </div>
+          <p className="wa-muted">
             <a className="wa-report-identity" href={reportHref({ ...query, optinId: item.optin_id, goal: undefined, impact: undefined, experiment: undefined })}><bdi>{item.name}</bdi></a>
-            <h4>{item.title}</h4><p className="wa-muted">{item.note}</p>
-          </div>
-          <div className="wa-insight-fact"><span className="wa-muted">{metric === 'rate' ? __('This period', 'wconvert') : __('Shown', 'wconvert')}</span>
-            <strong>{value(item.facts.current)}</strong>
-            {item.facts.previous && <span className="wa-muted">{__('Previously', 'wconvert')} {value(item.facts.previous)}</span>}
+            {' · '}{item.note}
+          </p>
+          <div className="wa-insight-action wconvert-toolbar">
+            <Button asChild variant="outline"><a href={editorHref(item.optin_id, reportHref(query), item.action === 'display' ? 'rules' : undefined)}>{item.action === 'display' ? __('Review display rules', 'wconvert') : __('Open editor', 'wconvert')}</a></Button>
+            <ReportDisclosure title={__('View evidence', 'wconvert')}>
+              <DataTable label={__('Insight evidence', 'wconvert')}>
+                <DataTableHead><DataTableColumn>{__('Period', 'wconvert')}</DataTableColumn><DataTableColumn numeric>{__('Shown', 'wconvert')}</DataTableColumn><DataTableColumn numeric>{item.result_label}</DataTableColumn><DataTableColumn numeric>{__('Rate', 'wconvert')}</DataTableColumn></DataTableHead>
+                <DataTableBody>{[{ title: rangeLabel(item.periods.from, item.periods.to), facts: item.facts.current }, ...(item.facts.previous ? [{ title: rangeLabel(item.periods.previous_from!, item.periods.previous_to!), facts: item.facts.previous }] : [])].map(row => <DataTableRow key={row.title}>
+                  <DataTableCell label={__('Period', 'wconvert')}>{row.title}</DataTableCell><DataTableCell label={__('Shown', 'wconvert')} numeric>{formatCount(row.facts.appearances)}</DataTableCell><DataTableCell label={item.result_label} numeric>{formatCount(row.facts.results)}</DataTableCell><DataTableCell label={__('Rate', 'wconvert')} numeric>{formatRate(row.facts.rate)}</DataTableCell>
+                </DataTableRow>)}</DataTableBody>
+              </DataTable><p className="wa-muted">{item.limitation}</p>
+            </ReportDisclosure>
           </div>
         </div>
-        <div className="wa-insight-action wconvert-toolbar">
-          <Button asChild variant="outline"><a href={editorHref(item.optin_id, reportHref(query), item.action === 'display' ? 'rules' : undefined)}>{item.action === 'display' ? __('Review display rules', 'wconvert') : __('Open editor', 'wconvert')}</a></Button>
-        </div>
-        <ReportDisclosure title={__('View evidence', 'wconvert')}>
-          <DataTable label={__('Insight evidence', 'wconvert')}>
-            <DataTableHead><DataTableColumn>{__('Period', 'wconvert')}</DataTableColumn><DataTableColumn numeric>{__('Shown', 'wconvert')}</DataTableColumn><DataTableColumn numeric>{item.result_label}</DataTableColumn><DataTableColumn numeric>{__('Rate', 'wconvert')}</DataTableColumn></DataTableHead>
-            <DataTableBody>{[{ title: rangeLabel(item.periods.from, item.periods.to), facts: item.facts.current }, ...(item.facts.previous ? [{ title: rangeLabel(item.periods.previous_from!, item.periods.previous_to!), facts: item.facts.previous }] : [])].map(row => <DataTableRow key={row.title}>
-              <DataTableCell label={__('Period', 'wconvert')}>{row.title}</DataTableCell><DataTableCell label={__('Shown', 'wconvert')} numeric>{formatCount(row.facts.appearances)}</DataTableCell><DataTableCell label={item.result_label} numeric>{formatCount(row.facts.results)}</DataTableCell><DataTableCell label={__('Rate', 'wconvert')} numeric>{formatRate(row.facts.rate)}</DataTableCell>
-            </DataTableRow>)}</DataTableBody>
-          </DataTable><p className="wa-muted">{item.limitation}</p>
-        </ReportDisclosure>
       </article>;
     })}</div>
     {more > 0 && <p className="wa-insights-more">{sprintf(_n('%s more campaign needs attention. Open a goal to see it.', '%s more campaigns need attention. Open a goal to see them.', more, 'wconvert'), formatCount(more))}</p>}

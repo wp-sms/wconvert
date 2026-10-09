@@ -109,6 +109,31 @@ describe('reviewing before publishing', () => {
     expect(screen.getByText(/Keep in WConvert only: leads stay in Leads/)).toBeVisible();
   });
 
+  it('answers the service blocker in place, without leaving the review', async () => {
+    const onKeepLocal = vi.fn();
+    const onGoToDestinations = vi.fn();
+    await open({ captureMode: 'connected', onKeepLocal, onGoToDestinations });
+    await userEvent.click(screen.getByRole('button', { name: 'Keep in WConvert only' }));
+    expect(onKeepLocal).toHaveBeenCalledOnce();
+    expect(onGoToDestinations).not.toHaveBeenCalled();
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+  });
+
+  it('says how much blocks publishing, where, and keeps the way back in reach', async () => {
+    const onBlockedTabsChange = vi.fn();
+    const supplied = props({ captureMode: 'connected', template: undefined, onBlockedTabsChange });
+    render(<ReadinessDialog {...supplied} />);
+    const trigger = screen.getByRole('button', { name: 'Review & publish' });
+    expect(trigger).toHaveTextContent('2 to fix');
+    expect(trigger).toHaveAccessibleDescription('2 items block publishing');
+    expect(onBlockedTabsChange).toHaveBeenLastCalledWith(['design', 'destinations']);
+    await userEvent.click(trigger);
+    await userEvent.click(screen.getByRole('button', { name: 'Choose a design before publishing.' }));
+    expect(screen.queryByRole('dialog')).toBeNull();
+    await userEvent.click(await screen.findByRole('button', { name: 'Back to review · 2 left' }));
+    expect(screen.getByRole('dialog')).toBeInTheDocument();
+  });
+
   it('keeps the same trigger for a sound design and one needing attention', () => {
     const supplied = props();
     const { rerender } = render(<ReadinessDialog {...supplied} />);
@@ -295,10 +320,10 @@ describe('publication progress and recovery', () => {
     await userEvent.click(screen.getByRole('button', { name: 'Save & publish' }));
     expect(await screen.findByRole('alert')).toHaveTextContent('Could not save your latest changes.');
     expect(screen.getByRole('dialog')).toBeInTheDocument();
-    expect(screen.queryByText(/^Published\. Where and when/)).toBeNull();
+    expect(screen.queryByText('It’s live.')).toBeNull();
     expect(screen.getByRole('button', { name: 'Save & publish' })).toBeEnabled();
     await userEvent.click(screen.getByRole('button', { name: 'Save & publish' }));
-    expect(await screen.findByText(/^Published\. Where and when/)).toBeInTheDocument();
+    expect(await screen.findByText('It’s live.')).toBeInTheDocument();
     expect(screen.queryByRole('alert')).toBeNull();
     expect(onPublish).toHaveBeenCalledTimes(2);
   });
@@ -321,14 +346,14 @@ describe('publication progress and recovery', () => {
     expect(dialog).toBeInTheDocument();
     expect(onPublish).toHaveBeenCalledOnce();
     await act(async () => { finish(); });
-    expect(screen.getByText(/^Published\. Where and when/)).toBeInTheDocument();
+    expect(screen.getByText('It’s live.')).toBeInTheDocument();
   });
 
   it('offers inline placement after success and returns focus when Done closes the review', async () => {
     window.wconvertAdmin = { exportUrl: '', homeUrl: 'https://example.org/blog/', inspectParam: 'wconvert-inspect' };
     await open({ displayType: 'inline' });
     await userEvent.click(screen.getByRole('button', { name: 'Publish campaign' }));
-    expect(await screen.findByText(/^Published\. Where and when/)).toBeInTheDocument();
+    expect(await screen.findByText('It’s live.')).toBeInTheDocument();
     expect(screen.getByRole('textbox', { name: 'Shortcode for other editors' })).toHaveValue('[wconvert_optin id="01JQ00000000000000000000AA"]');
     expect(screen.queryByText(/Publish this campaign first/)).toBeNull();
     expect(screen.getByRole('link', { name: 'Check your homepage' })).toHaveAttribute('href', 'https://example.org/blog/?wconvert-inspect=1');

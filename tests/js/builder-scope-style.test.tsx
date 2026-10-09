@@ -2,7 +2,8 @@ import { treeFixture } from './support/journey';
 import { CLICK_OUTCOME } from './support/outcomes';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
-import { render, screen, within } from '@testing-library/react';
+import { fireEvent, render, screen, within } from '@testing-library/react';
+import { useState } from 'react';
 import userEvent from '@testing-library/user-event';
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { ruleTypes } from './support/rule-types';
@@ -53,6 +54,7 @@ vi.mock('../../resources/admin/src/goals/api', async (importOriginal) => ({
 }));
 
 const { OptinBuilder } = await import('../../resources/admin/src/builder/OptinBuilder');
+const { ScopeStyle } = await import('../../resources/admin/src/builder/ScopeStyle');
 
 const ENTRY = JSON.parse(
   readFileSync(resolve(import.meta.dirname, '../../resources/templates/library/centred-card.json'), 'utf8'),
@@ -190,6 +192,31 @@ function saved(): Template {
 
   return config.template;
 }
+
+/**
+ * A colour drag writes on every pointer move. Each write names the element,
+ * width and token it came from, so the draft's history keeps the drag as one
+ * Undo step rather than fifty that push every earlier edit out.
+ */
+describe('a drag on one element’s colour', () => {
+  it('names the element, width and token on every change it makes', async () => {
+    const onChange = vi.fn();
+    function Harness() {
+      const [open, setOpen] = useState<string | null>(null);
+      return <ScopeStyle template={{ tree: NESTED, tokens: { bg: '#ffffff', fg: '#111827' } }} labels={LABELS} path={[0, 'children', 0]}
+        openToken={open} onOpenToken={setOpen} onSelect={vi.fn()} onChange={onChange} copied={null} onCopy={vi.fn()} width="tokens" />;
+    }
+    render(<Harness />);
+
+    await userEvent.click(screen.getByRole('button', { name: /Choose a color for Background/ }));
+    const alpha = await screen.findByRole('slider', { name: 'Alpha' });
+    fireEvent.keyDown(alpha, { keyCode: 37 });
+    fireEvent.keyDown(alpha, { keyCode: 37 });
+
+    expect(onChange.mock.calls.length).toBeGreaterThan(0);
+    expect(onChange.mock.calls.map(([, key]) => key as unknown)).toEqual(onChange.mock.calls.map(() => 'style:0.children.0:tokens:bg'));
+  });
+});
 
 describe('the Style half of the inspector', () => {
   /**

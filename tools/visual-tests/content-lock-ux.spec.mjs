@@ -181,13 +181,13 @@ test('Change, Cancel and Clear leave a usable focus target and preserve long sel
   await choose(page, 'divider');
   const selected = page.locator('.wconvert-lock-picker__selected');
   await expect(selected).toContainText('Content lock divider');
-  await page.getByRole('button', { name: 'Change Campaign', exact: true }).click();
+  await page.getByRole('button', { name: 'Change campaign', exact: true }).click();
   await expect(picker).toBeVisible();
   await expect(picker).toBeFocused();
   await page.getByRole('button', { name: 'Cancel', exact: true }).click();
   await expect(selected).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Change Campaign', exact: true })).toBeFocused();
-  await page.getByRole('button', { name: 'Clear Campaign', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Change campaign', exact: true })).toBeFocused();
+  await page.getByRole('button', { name: 'Clear campaign', exact: true }).click();
   await expect(picker).toBeVisible();
   await expect(picker).toBeFocused();
   await page.route('**/wconvert/v1/content-lock-campaigns**', async route => {
@@ -243,7 +243,7 @@ test('missing Campaigns remain repairable and unsupported content warning can ju
     window.wp.data.dispatch('core/block-editor').selectBlock(divider.clientId);
     return unsupported.clientId;
   }, missingId);
-  await expect(page.locator('.wconvert-lock-picker__selected')).toContainText('Previously selected Campaign');
+  await expect(page.locator('.wconvert-lock-picker__selected')).toContainText('Previously selected campaign');
   await expect(page.locator('.components-notice__content').filter({ hasText: /no longer published as inline/ }).first()).toBeVisible();
   const warning = editor(page).getByText(/Custom HTML block below is not supported here/);
   await expect(warning).toBeVisible();

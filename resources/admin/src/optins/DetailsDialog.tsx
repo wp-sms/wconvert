@@ -42,6 +42,7 @@ export function CampaignDetailsDialog({
   name,
   meta,
   thumbnail,
+  missingDesign = false,
   results,
   productCheck,
   reportLink,
@@ -54,6 +55,7 @@ export function CampaignDetailsDialog({
   name: string;
   meta: string;
   thumbnail: ReactNode;
+  missingDesign?: boolean;
   results: CampaignResults;
   productCheck: ReactNode;
   reportLink: string;
@@ -91,6 +93,11 @@ export function CampaignDetailsDialog({
           {row && (
             <>
               {thumbnail}
+              {missingDesign && (
+                <p className="wconvert-campaign-detail__note">
+                  {__('No design yet. Choose one in the editor before publishing.', 'wconvert')}
+                </p>
+              )}
               {row.suspended && <p className="wconvert-campaign-detail__note">{row.suspended}</p>}
               {row.has_unpublished_changes && (
                 <p className="wconvert-campaign-detail__note">
@@ -172,7 +179,7 @@ function Results({ results, status }: { results: CampaignResults; status: Return
  * (`resources/loader/src/events.ts`) carry a campaign's ID and nothing else, so
  * a developer matching them has no other way to find it. Closed by default.
  */
-function ForDevelopers({ value, variant }: { value: string; variant: boolean }) {
+export function ForDevelopers({ value, variant }: { value: string; variant: boolean }) {
   const id = useId();
   const input = useRef<HTMLInputElement>(null);
   const [copy, setCopy] = useState<'idle' | 'copying' | 'copied' | 'failed'>('idle');

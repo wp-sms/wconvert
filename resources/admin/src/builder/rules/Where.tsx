@@ -118,6 +118,7 @@ function RuleList({ list, heading, empty, types, rules, onChange, attention = fa
 
     return {
       key: String(at),
+      label: type?.label ?? __('unavailable rule', 'wconvert'),
       content:
         type === undefined ? (
           <span className="wconvert-rule__note">{__('A rule that is not available on this site.', 'wconvert')}</span>

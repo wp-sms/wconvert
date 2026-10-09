@@ -3,6 +3,7 @@
 namespace WConvert\Rest;
 
 use WConvert\Stats\Dashboard;
+use WConvert\Stats\StatDay;
 use WP_REST_Request;
 use WP_REST_Response;
 
@@ -15,18 +16,22 @@ defined('ABSPATH') || exit;
  * THE CALLER NAMES A WINDOW, NEVER THE SITE'S CURRENT DAY.
  * ============================================================================
  * The screen says "Today", and that has to mean the merchant's today
- * (ADR 0019). A browser asked for a date would answer with the VISITOR's day:
- * a merchant in Tokyo checking their numbers from a hotel in Los Angeles would
- * be handed yesterday's window and told it was today's, and the numbers would
- * be right about the wrong day. So `days` names the length, and the
+ * (ADR 0019). A browser asked for ITS date would answer with the VISITOR's
+ * day: a merchant in Tokyo checking their numbers from a hotel in Los Angeles
+ * would be handed yesterday's window and told it was today's, and the numbers
+ * would be right about the wrong day. So `days` names the length, and the
  * one end that is a date is {@see StatDay::today()} — read here, on the
  * server, against the site's own `timezone_string`.
  *
  * That also makes the range unspoofable in the direction that matters: the
  * server chooses today, or yesterday and its adjacent comparison when
  * `complete` is enabled. A named calendar month supports stable target links;
- * its end is still capped at the site's yesterday (ADR 0090). There is no
- * caller-supplied "as at" date.
+ * its end is still capped at the site's yesterday (ADR 0090). Custom dates
+ * (`from`/`to`, ADR 0132) are days the merchant typed into the date picker,
+ * refused when they end after the server's today; they are compared with the
+ * same number of days immediately before, and are complete only when they end
+ * before today. There is no caller-supplied "as at" date, and the response
+ * carries `today` back so the picker never has to guess it.
  *
  * **Read-only, with no exception**, and for a sharper reason than the [[Lead]]
  * log's. A counter cannot be recomputed — there is no raw data behind it
@@ -57,13 +62,16 @@ final class DashboardController implements RestController
     public function index(WP_REST_Request $request): WP_REST_Response|\WP_Error
     {
         try { $range = ReportWindow::read($request); }
-        catch (\InvalidArgumentException) {
-            return new \WP_Error('wconvert_invalid_report_month', __('Choose a current or earlier calendar month.', 'wconvert'), ['status' => 400]);
-        }
-        $month = $request->get_param('month');
-        $complete = $request->get_param('complete') || (is_string($month) && $month !== '');
-        $data = $complete ? $this->dashboard->compare($range) : $this->dashboard->read($range);
+        catch (\InvalidArgumentException $refusal) { return ReportWindow::error($refusal); }
+        $custom = ReportWindow::custom($request);
+        $month = $custom ? null : $request->get_param('month');
+        // Custom dates always carry their comparison, even when they end today.
+        $data = $custom || ReportWindow::complete($request, $range) ? $this->dashboard->compare($range) : $this->dashboard->read($range);
         if (is_string($month) && $month !== '') $data['month'] = $month;
+        if ($custom) $data['custom'] = true;
+        // Said either way, so a live read (Today) is told apart from a complete one.
+        $data['complete_days'] = ReportWindow::complete($request, $range);
+        $data['today'] = StatDay::today();
         return new WP_REST_Response($data);
     }
 }

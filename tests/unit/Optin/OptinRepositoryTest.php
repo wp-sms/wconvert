@@ -428,6 +428,33 @@ final class OptinRepositoryTest extends TestCase
         $this->assertStringNotContainsString('SELECT *', $sql);
     }
 
+    /**
+     * The block editor's draft list reads the `config` blob, so the database
+     * narrows first: only unpublished, live, parentless rows whose JSON names
+     * the type, and a capped number of them (ADR 0001).
+     */
+    public function testDraftsOfATypeAreNarrowedInTheDatabaseAndCapped(): void
+    {
+        $this->repository->draftsOfType(\WConvert\Optin\DisplayType::Inline);
+
+        $read = end($this->db->reads) ?: ['sql' => '', 'params' => []];
+
+        $this->assertStringContainsString('WHERE published_at IS NULL AND deleted_at IS NULL AND parent_id IS NULL AND config LIKE %s', $read['sql']);
+        $this->assertStringContainsString('LIMIT %d', $read['sql']);
+        $this->assertSame(['%"display_type":"inline"%', 50], $read['params']);
+    }
+
+    /** The decode decides; a row the pattern over-matched is still not listed. */
+    public function testDraftsOfATypeAreDecidedByTheDecodedConfig(): void
+    {
+        $inline = $this->repository->create('Spring signup', 'grow_email_list', ['display_type' => 'inline']);
+        $this->repository->create('Nested only', 'grow_email_list', ['display_type' => 'popup', 'note' => ['display_type' => 'inline']]);
+        $published = $this->repository->create('Live inline', 'promote_offer', ['display_type' => 'inline', 'display_rules' => \WConvert\Rules\DisplayPlan::immediate(), 'template' => OptinDesign::template()]);
+        $this->assertNotNull($this->repository->publish($published->id));
+
+        $this->assertSame([['id' => $inline->id, 'name' => 'Spring signup']], $this->repository->draftsOfType(\WConvert\Optin\DisplayType::Inline));
+    }
+
     // =========================================================================
     // A/B: STARTING A TEST, AND ENDING ONE WITHOUT DESTROYING ITS HISTORY.
     // =========================================================================

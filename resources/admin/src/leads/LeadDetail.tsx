@@ -1,12 +1,13 @@
 import { useEffect, useState, type ReactNode, type Ref } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, Trash2 } from 'lucide-react';
 import { AdminDialogBody, AdminDialogFooter, AdminDialogHeader } from '../components/ui/admin-dialog';
 import { Button } from '../components/ui/button';
 import { Disclosure } from '../shell/Disclosure';
 import { formatCount, formatWhen, humanize, labelOf } from '../lib/format';
-import { editorHref } from '../nav';
+import { editorHref, sendingIssuesHref } from '../nav';
 import { readLog, type Lead } from './api';
+import type { NotSent } from './notSent';
 
 /**
  * A campaign's name as the log knows it: a string, `null` once the list has
@@ -75,6 +76,39 @@ function Facts({ facts }: { facts: readonly Fact[] }) {
   );
 }
 
+/**
+ * A translated sentence with numbered `%1$s`, `%2$s` slots, each filled with an
+ * isolated value — {@see framed} for more than one.
+ */
+function sentence(frame: string, values: readonly ReactNode[]): ReactNode {
+  return frame.split(/(%\d\$s)/).map((part, index) => {
+    const slot = /^%(\d)\$s$/.exec(part);
+    return slot ? <bdi key={index} dir="auto">{values[Number(slot[1]) - 1]}</bdi> : part;
+  });
+}
+
+/**
+ * Where this submission did not go, from the failure ring (ADR 0008, amended by
+ * 0132 through 0071). It is drawn only when there is something to say: the
+ * ring holds failures and nothing else, so no line here ever reads "Sent".
+ */
+function Sending({ notSent }: { notSent: readonly NotSent[] }) {
+  return (
+    <ul className="m-0 flex list-none flex-col gap-2 p-0">
+      {notSent.map((entry, index) => (
+        <li key={index} className="m-0 [overflow-wrap:anywhere]">
+          {sentence(__('Not sent to %1$s: %2$s', 'wconvert'), [
+            entry.destination === null ? __('Removed destination', 'wconvert') : entry.destination || __('Unnamed destination', 'wconvert'),
+            entry.error,
+          ])}
+          {' · '}
+          <a className="underline underline-offset-2" href={sendingIssuesHref()}>{__('Review destination', 'wconvert')}</a>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 function Group({ title, children }: { title: string; children: ReactNode }) {
   return (
     <section className="flex flex-col gap-3">
@@ -105,26 +139,40 @@ function useSubmissionsFrom(contact: string | null): number | null {
  * from, what they agreed to. Tracking fields fold away under "Other details".
  *
  * It renders the inside of an `AdminDialogContent`, so the same view serves
- * the log's own dialog and the in-place step of a lead's history.
+ * the log's own dialog and the in-place step of a lead's history. Opened from
+ * the log it is the top level, so its footer's first button closes and says
+ * Close; inside a history it steps Back.
+ *
+ * **"See all" only when there is more than this one** — a history holding the
+ * same single row is a click that shows nothing new — and it says how many.
+ * Delete sits beside it, because a "delete my data" email is answered from
+ * the person's submission, not from an exact search somebody has to know to
+ * type. It hands the email or phone to the caller, which closes this dialog
+ * before its confirm opens: never stacked (ADR 0131).
  */
 export function LeadDetail({
   lead,
   campaign,
   goal,
   returnTo,
-  backLabel,
+  closes = false,
   onBack,
   backRef,
   onSeeAll,
+  onErase,
+  notSent = [],
 }: {
   lead: Lead;
   campaign: CampaignName;
   goal?: string;
   returnTo: string;
-  backLabel: string;
+  /** The footer's first button closes the dialog rather than stepping back. */
+  closes?: boolean;
   onBack: () => void;
   backRef?: Ref<HTMLButtonElement>;
   onSeeAll?: (contact: string) => void;
+  onErase?: (contact: string) => void;
+  notSent?: readonly NotSent[];
 }) {
   const contact = contactOf(lead);
   const name = nameOf(lead);
@@ -180,6 +228,7 @@ export function LeadDetail({
         meta={meta.length > 0 ? meta.flatMap((part, index) => index === 0 ? [part] : [' · ', part]) : undefined}
       />
       <AdminDialogBody className="flex flex-col gap-6">
+        {notSent.length > 0 && <Group title={__('Sending', 'wconvert')}><Sending notSent={notSent} /></Group>}
         {answers.length > 0 && <Group title={__('Answers', 'wconvert')}><Facts facts={answers} /></Group>}
         <Group title={__('Came from', 'wconvert')}><Facts facts={cameFrom} /></Group>
         <Group title={__('Consent', 'wconvert')}>
@@ -195,11 +244,24 @@ export function LeadDetail({
         )}
       </AdminDialogBody>
       <AdminDialogFooter
-        back={<Button ref={backRef} variant="outline" onClick={onBack}><ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />{backLabel}</Button>}
+        back={<Button ref={backRef} variant="outline" onClick={onBack}>
+          {closes ? __('Close', 'wconvert') : <><ArrowLeft aria-hidden="true" className="rtl:-scale-x-100" />{__('Back', 'wconvert')}</>}
+        </Button>}
       >
-        {contact !== null && onSeeAll && (
+        {contact !== null && onErase && (
+          <Button variant="ghost" className="text-destructive hover:text-destructive" onClick={() => onErase(contact)}>
+            <Trash2 aria-hidden="true" />
+            {lead.email ? __('Delete all from this email', 'wconvert') : __('Delete all from this phone', 'wconvert')}
+          </Button>
+        )}
+        {contact !== null && onSeeAll && count !== null && count > 1 && (
           <Button onClick={() => onSeeAll(contact)}>
-            {framed(__('See all from %s', 'wconvert'), name ?? contact, name === null ? 'ltr' : 'auto')}
+            {framed(
+              /* translators: 1: how many submissions, 2: a name, email or phone. */
+              sprintf(_n('See all %1$s from %2$s', 'See all %1$s from %2$s', count, 'wconvert'), formatCount(count), '%s'),
+              name ?? contact,
+              name === null ? 'ltr' : 'auto',
+            )}
           </Button>
         )}
       </AdminDialogFooter>

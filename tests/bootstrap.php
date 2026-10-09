@@ -640,6 +640,19 @@ if (!function_exists('wp_enqueue_style')) {
     }
 }
 
+if (!function_exists('wp_register_style')) {
+    /**
+     * @param list<string> $deps
+     * @param string|false|null $ver
+     */
+    function wp_register_style(string $handle, string $src, array $deps = [], $ver = false, string $media = 'all'): bool
+    {
+        $GLOBALS['wconvertTestStyles']['registered'][$handle] = ['src' => $src, 'ver' => $ver];
+
+        return true;
+    }
+}
+
 if (!function_exists('wp_dequeue_style')) {
     /** Out of the queue. STILL REGISTERED — that is the point of the pair. */
     function wp_dequeue_style(string $handle): void

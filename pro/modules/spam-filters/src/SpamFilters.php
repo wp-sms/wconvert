@@ -27,7 +27,7 @@ final class SpamFilters
         return [
             ['id' => 'blocked_domains', 'label' => __('Blocked email domains', 'wconvert'), 'help' => __('One exact domain per line (example.com). List subdomains separately.', 'wconvert'), 'value' => implode("\n", $rules['blocked_domains'] ?? [])],
             ['id' => 'blocked_emails', 'label' => __('Blocked email addresses', 'wconvert'), 'help' => __('One email address per line.', 'wconvert'), 'value' => implode("\n", $rules['blocked_emails'] ?? [])],
-            ['id' => 'allowed_emails', 'label' => __('Email exceptions', 'wconvert'), 'help' => __('One email per line. Bypasses email filters only.', 'wconvert'), 'value' => implode("\n", $rules['allowed_emails'] ?? [])],
+            ['id' => 'allowed_emails', 'label' => __('Always allow these emails', 'wconvert'), 'help' => __('One email per line. Bypasses email filters only.', 'wconvert'), 'value' => implode("\n", $rules['allowed_emails'] ?? [])],
         ];
     }
 

@@ -174,7 +174,11 @@ be cached.
   mainstream plugin — which is why the admin bar works on the front end — and
   where a host caches for signed-in visitors the symptom is *no panel and no
   admin bar*. The dialog that offers the link is where that is said, because a
-  warning inside a panel that did not render is one nobody can read.
+  warning inside a panel that did not render is one nobody can read. **Amended by
+  [0132](0132-every-screen-answers-its-first-question.md):** the Campaigns
+  list no longer has a "Check visibility" dialog (the owner removed it); the
+  inspector is reached from the admin bar's "Why no popup?" on the page itself
+  and from Review & publish's site check, whose note carries what it covers.
 - **`tests/unit/Database/SchemaTest.php` passes untouched.** Nothing here stores
   anything.
 

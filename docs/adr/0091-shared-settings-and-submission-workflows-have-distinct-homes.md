@@ -11,7 +11,14 @@ and extends [0033](0033-the-lead-log-reads-without-a-new-index.md).
 The main navigation is Campaigns, Analytics, Leads, Settings. Settings has three
 addressable categories: Visitor experience, Connections & destinations, Data &
 privacy. No additional overview or banner. The category rail moves above forms
-on narrow screens.
+on narrow screens. **Amended by [0132](0132-every-screen-answers-its-first-question.md):**
+Settings opens on Connections & destinations and the rail runs Connections →
+Visitor experience → Spam protection → Data & privacy → Analytics integrations;
+below the `lg` breakpoint the rail is one native select; "Find a setting" lists
+individual settings and focuses the chosen control. On Connections &
+destinations the destinations come first, each a compact card whose settings
+and recent sends open in dialogs; accounts follow under one "Connect an
+account" menu, and a new connection leads straight into adding its destination.
 
 *Extended by [ADR 0111](0111-spam-protection-precedes-capture.md): Spam
 protection is a fourth addressable category. It owns optional verification

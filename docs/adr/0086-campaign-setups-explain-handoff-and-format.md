@@ -25,7 +25,11 @@ This is guidance, not a claim that configuration is complete or a new taxonomy.
 
 ## Explicit collection choice
 
-List Goals default to **Send to a service**. Publication requires a selected,
+List Goals default to **Send to a service**. **Amended by
+[0132](0132-every-screen-answers-its-first-question.md):** only when the site
+already has a ready service of the Goal's channel; otherwise creation writes
+`capture_mode = local`, and Review & publish and Destinations offer "Keep leads
+in WConvert for now" beside the remaining blocker. Publication requires a selected,
 available audience Destination with completed required settings and a matching
 `audience_channels` capability. MailPoet supports email; WSMS supports email and
 phone. Transactional lead-magnet email does not qualify as an audience service.

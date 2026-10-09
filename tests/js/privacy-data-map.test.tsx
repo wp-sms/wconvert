@@ -1,5 +1,6 @@
 import { beforeEach, expect, it, vi } from 'vitest';
 import { fireEvent, render, screen, within } from '@testing-library/react';
+import userEvent from '@testing-library/user-event';
 
 const privacy = vi.hoisted(() => ({ readDataMap: vi.fn() }));
 vi.mock('../../resources/admin/src/privacy/api', () => privacy);
@@ -58,8 +59,16 @@ it.each([
   expect(row).toHaveTextContent(/No form details/);
 });
 
+it('stays closed until asked, saying how much it holds', async () => {
+  render(<PrivacyDataMap />);
+  const summary = (await screen.findByText('What visitor data is stored')).closest('summary')!;
+  expect(summary.closest('details')).not.toHaveAttribute('open');
+  expect(summary).toHaveTextContent(/kinds? of data kept/);
+});
+
 it('answers what is stored, why and for how long, as a table', async () => {
   render(<PrivacyDataMap />);
+  await userEvent.click((await screen.findByText('What visitor data is stored')).closest('summary')!);
 
   const table = await storedTable();
   expect(within(table).getAllByRole('columnheader').map((each) => each.textContent)).toEqual(['What is stored', 'Why', 'How long']);
@@ -123,6 +132,7 @@ it('gives an empty destination list a direct way to connections', async () => {
   privacy.readDataMap.mockResolvedValue({ ...MAP, destinations: [] });
 
   render(<PrivacyDataMap />);
+  await userEvent.click((await screen.findByText('What visitor data is stored')).closest('summary')!);
 
   expect(await screen.findByText(/No destinations are set up/)).toBeVisible();
   expect(screen.getByRole('link', { name: 'Set up a destination' })).toHaveAttribute('href', '#settings?group=connections');
@@ -166,4 +176,21 @@ it('keeps a failed read inside the region and offers Try again', async () => {
   expect(screen.getByRole('heading', { name: 'What visitor data is stored' })).toBeInTheDocument();
   fireEvent.click(screen.getByRole('button', { name: 'Try again' }));
   expect(await storedTable()).toBeInTheDocument();
+});
+
+it('names a service only where it adds something to the destination’s own name', async () => {
+  privacy.readDataMap.mockResolvedValue({
+    ...MAP,
+    destinations: [...MAP.destinations, { id: 'DEST2', label: 'Lead magnet email', type: 'resource_email', type_label: 'Lead magnet email', fields: ['email'] }],
+  });
+  render(<PrivacyDataMap />);
+  const sent = await screen.findByRole('table', { name: 'Sent to other services' });
+  expect(rowWith(sent, /Newsletter subscribers/)).toHaveTextContent('MailPoet');
+  expect(within(rowWith(sent, /Lead magnet email/)).getAllByText('Lead magnet email')).toHaveLength(1);
+});
+
+it('links the privacy-policy text WConvert suggests to WordPress', async () => {
+  render(<PrivacyDataMap />);
+  await storedTable();
+  expect(screen.getByRole('link', { name: 'Suggested privacy-policy text' })).toHaveAttribute('href', 'options-privacy.php?tab=policyguide');
 });

@@ -1,6 +1,6 @@
 import { useEffect, useId, useState } from 'react';
 import apiFetch from '@wordpress/api-fetch';
-import { __ } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 import { Button } from '../components/ui/button';
 import { Region, RegionBody, RegionErrorState, RegionFooter, RegionHeader } from '../shell/Region';
 import { RegionSkeleton } from '../shell/RegionSkeleton';
@@ -11,7 +11,13 @@ import { setPhoneSiteCountry } from '../phoneSiteCountry';
 import { PhoneCountryPicker, type Country } from '../PhoneCountryPicker';
 import { useSettingsEditing, type SettingsEditing } from './useSettingsEditing';
 
-interface Response { country: string; countries: Country[] }
+interface Response {
+  country: string;
+  countries: Country[];
+  /** Offered while no default is saved, never saved by itself: the store's country, else the site language's. */
+  suggested?: string | null;
+  suggested_from?: 'store' | 'language' | null;
+}
 const path = '/wconvert/v1/optins/phone-country';
 
 /**
@@ -46,7 +52,7 @@ export function SitePhoneCountry({ onEditingStateChange }: { onEditingStateChang
     setError(null);
     try {
       const result = await apiFetch<Response>({ path, method: 'POST', data: { country: draft } });
-      setState(ready({ ...state.data, country: result.country }));
+      setState(ready({ ...state.data, ...result }));
       setDraft(result.country);
       setPhoneSiteCountry(result.country);
       status.markSaved();
@@ -60,18 +66,40 @@ export function SitePhoneCountry({ onEditingStateChange }: { onEditingStateChang
     <RegionHeader title={title} />
     <RegionErrorState message={state.message} onRetry={() => setRetry(value => value + 1)} />
   </Region>;
+  const choose = (country: string) => { setDraft(country); setError(null); status.clear(); };
+  // A suggestion is offered only while nothing is saved or drafted: it is a
+  // shortcut to the first choice, not a second opinion on a made one.
+  const suggested = state.data.country === '' && draft === ''
+    ? state.data.countries.find(country => country.code === state.data.suggested)
+    : undefined;
   return <Region>
     <RegionHeader title={title} description={__('The country phone fields start on across this site.', 'wconvert')} />
     <RegionBody className="flex flex-col gap-1.5">
-      <PhoneCountryPicker field label={__('Default country', 'wconvert')} value={draft} countries={state.data.countries}
-        describedBy={`${id}-hint`} disabled={saving}
-        onChange={country => { setDraft(country); setError(null); status.clear(); }} />
-      <Description id={`${id}-hint`}>{__('Campaigns can choose their own. A published campaign keeps the country it was published with, so republish it to use a new default.', 'wconvert')}</Description>
+      <div data-setting="phone-country">
+        <PhoneCountryPicker field label={__('Default country', 'wconvert')} value={draft} countries={state.data.countries}
+          describedBy={`${id}-hint`} disabled={saving} onChange={choose} />
+      </div>
+      {suggested && <p className="m-0 flex flex-wrap items-center gap-x-3 gap-y-1 text-note">
+        <span>{sprintf(
+          state.data.suggested_from === 'store'
+            /* translators: %s: a country name, e.g. “Germany”. */
+            ? __('Suggested: %s, from your store address', 'wconvert')
+            /* translators: %s: a country name, e.g. “Germany”. */
+            : __('Suggested: %s, from your site language', 'wconvert'),
+          suggested.name,
+        )}</span>
+        <Button type="button" variant="outline" disabled={saving} onClick={() => choose(suggested.code)}>
+          {/* translators: %s: a country name, e.g. “Germany”. */ sprintf(__('Use %s', 'wconvert'), suggested.name)}
+        </Button>
+      </p>}
+      <Description id={`${id}-hint`}>{draft === ''
+        ? __('Phone fields start with no country selected. Campaigns can choose their own.', 'wconvert')
+        : __('Campaigns can choose their own. A published campaign keeps the country it was published with, so republish it to use a new default.', 'wconvert')}</Description>
     </RegionBody>
     <RegionFooter className="flex flex-wrap items-center justify-end gap-3">
       {error && <p role="alert" className="m-0 text-note text-destructive">{error}</p>}
       <SaveStatus saved={status.saved} />
-      <Button type="button" variant="outline" disabled={!dirty || saving} onClick={() => { setDraft(state.data.country); setError(null); }}>{__('Cancel changes', 'wconvert')}</Button>
+      {dirty && <Button type="button" variant="outline" disabled={saving} onClick={() => { setDraft(state.data.country); setError(null); }}>{__('Cancel changes', 'wconvert')}</Button>}
       <Button type="button" disabled={!dirty || saving} onClick={() => void save()}>{saving ? __('Saving…', 'wconvert') : __('Save phone country', 'wconvert')}</Button>
     </RegionFooter>
   </Region>;

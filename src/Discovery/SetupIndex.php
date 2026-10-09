@@ -27,10 +27,11 @@ final class SetupIndex
         $entry['design_key'] = $design['design_key'] ?? 'registered:' . $playbook->templateId;
         $entry['availability'] = Availability::of($design !== null || $stub !== null,
             $stub === null && (Tier::tryFrom((string) ($design['tier'] ?? 'free')) ?? Tier::Free)->isSuppliedBy($this->pro))->value;
-        $entry['requirements'] = array_values(array_filter([
-            $playbook->goal->outcome()->requirement,
-            $playbook->displayType === 'inline' ? __('A page with this campaign’s block or shortcode.', 'wconvert') : null,
-        ]));
+        // Only what the merchant still has to do: a design that already meets
+        // its Goal's publication rule does not repeat the rule back (ADR 0087).
+        $outcome = $playbook->goal->outcome();
+        $entry['requirements'] = $design === null || $outcome->designIssue(['template' => $design]) !== null
+            ? [$outcome->requirement] : [];
         return $entry;
     }
 }

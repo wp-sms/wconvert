@@ -38,7 +38,7 @@ describe('saved site-wide limits beside an Optin draft', () => {
     expect(screen.queryByText(/at most/)).toBeNull();
     await act(async () => { pending.resolve(SAVED); });
     const note = screen.getByRole('complementary', { name: 'Site-wide limits' });
-    expect(note).toHaveTextContent('Show campaigns at most 3 times per visitor · Wait 2 days between campaigns · Stop showing campaigns after a visitor closes one · Stop showing campaigns after a visitor converts');
+    expect(note).toHaveTextContent('Show campaigns at most 3 times to each visitor, ever · Wait 2 days between campaigns · Stop showing campaigns after a visitor closes one · Never show campaigns again to a visitor who converts');
     expect(note).toHaveTextContent('A campaign cannot override these limits.');
     expect(screen.getByRole('link', { name: 'Manage them in Settings' })).toHaveAttribute('href', '#settings?group=experience');
     expect(screen.queryByRole('status')).toBeNull();
@@ -63,7 +63,7 @@ describe('saved site-wide limits beside an Optin draft', () => {
     expect(screen.queryByRole('alert')).toBeNull();
     expect(request).toHaveBeenCalledTimes(2);
     await act(async () => { retry.resolve(SAVED); });
-    expect(screen.getByRole('complementary')).toHaveTextContent('at most 3 times per visitor');
+    expect(screen.getByRole('complementary')).toHaveTextContent('at most 3 times to each visitor, ever');
     expect(screen.queryByRole('button', { name: 'Try again' })).toBeNull();
   });
 
@@ -73,9 +73,9 @@ describe('saved site-wide limits beside an Optin draft', () => {
     // StrictMode re-runs an effect after cleanup while keeping the component
     // instance. Without the active guard, its first read overwrites the second.
     render(<StrictMode><SiteLimitsNote /></StrictMode>);
-    await waitFor(() => expect(screen.getByRole('complementary')).toHaveTextContent('at most 3 times per visitor'));
+    await waitFor(() => expect(screen.getByRole('complementary')).toHaveTextContent('at most 3 times to each visitor, ever'));
     await act(async () => { if (outcome === 'success') stale.resolve(OFF); else stale.reject(new Error('old request')); });
-    expect(screen.getByRole('complementary')).toHaveTextContent('at most 3 times per visitor');
+    expect(screen.getByRole('complementary')).toHaveTextContent('at most 3 times to each visitor, ever');
     expect(screen.queryByRole('alert')).toBeNull();
     expect(screen.queryByText(/No site-wide limits/)).toBeNull();
     expect(request).toHaveBeenCalledTimes(2);

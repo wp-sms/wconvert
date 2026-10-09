@@ -35,7 +35,7 @@ Choose what you want to achieve, and WConvert suggests setups that do it:
 = Popups and inline forms =
 
 * **Popups** that open on top of the page and look right with any theme.
-* **Inline forms** inside your posts and pages. Add the Inline Campaign block,
+* **Inline forms** inside your posts and pages. Add the WConvert campaign block,
   or paste a shortcode if you use another editor or a page builder.
 * Every design works on phones as well as on desktop.
 
@@ -145,7 +145,7 @@ and WP SMS are used only if you already have them.
 
 = How do I put a form inside a post? =
 
-In the block editor, add the **Inline Campaign** block and pick your campaign
+In the block editor, add the **WConvert campaign** block and pick your campaign
 by name. Not using the block editor? The block shows a shortcode you can paste
 anywhere, such as a page builder, a widget or a theme file:
 

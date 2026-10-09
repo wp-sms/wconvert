@@ -27,7 +27,7 @@ final class JourneyStatsController implements RestController
     {
         $id = (string) $request->get_param('id');
         try { $range = ReportWindow::read($request); }
-        catch (\InvalidArgumentException) { return new \WP_Error('wconvert_report_range', __('Choose a current or earlier month.', 'wconvert'), ['status' => 400]); }
+        catch (\InvalidArgumentException $refusal) { return ReportWindow::error($refusal); }
         $rows = $range->days() === 0 ? [] : $this->db->results(Connection::TABLE_STATS,
             'SELECT scope, kind, SUM(`count`) AS total FROM %i WHERE optin_id = %s AND stat_date BETWEEN %s AND %s AND (scope LIKE %s OR scope LIKE %s) GROUP BY scope, kind ORDER BY scope, kind LIMIT 5001', $id, $range->from, $range->to, 'screen:%', 'channel:%');
         $truncated = count($rows) > 5000;
@@ -43,7 +43,7 @@ final class JourneyStatsController implements RestController
     public function interests(WP_REST_Request $request): WP_REST_Response|\WP_Error
     {
         try { $range = ReportWindow::read($request); }
-        catch (\InvalidArgumentException) { return new \WP_Error('wconvert_report_range', __('Choose a current or earlier month.', 'wconvert'), ['status' => 400]); }
+        catch (\InvalidArgumentException $refusal) { return ReportWindow::error($refusal); }
         // Lead created_at uses current_time('mysql'), the site's local clock.
         $zone = wp_timezone();
         $start = (new \DateTimeImmutable($range->from, $zone))->format('Y-m-d H:i:s');

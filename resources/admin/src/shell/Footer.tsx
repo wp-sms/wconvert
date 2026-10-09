@@ -1,10 +1,9 @@
 import { __ } from '@wordpress/i18n';
-import { ArrowRight } from 'lucide-react';
+import { ChevronUp } from 'lucide-react';
 import { adminSettings } from '../settings';
-import { settingsHref } from '../nav';
 import { BrandMark, PlanBadge } from './Brand';
 import { Popover, PopoverContent, PopoverTrigger } from '../components/ui/popover';
-import { HelpLinks } from './HeaderTools';
+import { HELP_URLS, HelpLinks } from './HeaderTools';
 
 const veronaLabsLogo = new URL('../assets/branding/veronalabs.svg', import.meta.url).href;
 
@@ -20,15 +19,21 @@ export function Footer() {
       <div className="wconvert-service-identity">
         <div className="wconvert-service-brand"><BrandMark variant="inverse" /><span>{__('WConvert', 'wconvert')}</span><PlanBadge tier={tier} /></div>
       </div>
-      <div className="wconvert-service-resource">
-        <span className="wconvert-service-label">{__('Settings', 'wconvert')}</span>
-        <a href={settingsHref('experience')}>{__('Visitor experience', 'wconvert')}<ArrowRight aria-hidden="true" /></a>
-      </div>
+      {/* Resources, not a fourth copy of a Settings shortcut (ADR 0132, amending 0097). */}
+      <nav className="wconvert-service-resource" aria-label={__('Resources', 'wconvert')}>
+        <span className="wconvert-service-label" aria-hidden="true">{__('Resources', 'wconvert')}</span>
+        <ul>
+          <li><a href={HELP_URLS.start} target="_blank" rel="noreferrer">{__('Getting started', 'wconvert')}</a></li>
+          <li><a href={HELP_URLS.guides} target="_blank" rel="noreferrer">{__('Guides', 'wconvert')}</a></li>
+          <li><a href={HELP_URLS.changes} target="_blank" rel="noreferrer">{__('What’s new', 'wconvert')}</a></li>
+        </ul>
+      </nav>
       <Popover>
         <PopoverTrigger asChild>
           <button type="button" className="wconvert-service-help">
             <span>{__('Need a hand?', 'wconvert')}</span>
-            <strong>{__('Help', 'wconvert')}<ArrowRight aria-hidden="true" /></strong>
+            {/* It opens Help in place, so the glyph says "opens", not "goes". */}
+            <strong>{__('Help', 'wconvert')}<ChevronUp aria-hidden="true" /></strong>
           </button>
         </PopoverTrigger>
         <PopoverContent align="end" className="wconvert-header-popover"><HelpLinks /></PopoverContent>

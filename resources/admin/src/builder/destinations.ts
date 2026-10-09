@@ -2,6 +2,8 @@ import { __, _n, sprintf } from '@wordpress/i18n';
 import { listWithAnd } from './rules/sentence';
 import type { Destination } from '../destinations/api';
 import { compatibilityProblems, type CapturedField } from '../destinations/requirements';
+import { walkNodes } from './structure/journey';
+import type { TemplateTree } from '@renderer/types';
 
 /**
  * What the builder says about this [[Optin]]'s [[Destination]]s: where the
@@ -200,3 +202,43 @@ const countOfDestinations = (count: number): string =>
     _n('%d destination', '%d destinations', count, 'wconvert'),
     count,
   );
+
+/** `integration_mappings`: submission id → destination id → mapping source → destination field. */
+export type FieldMappings = Readonly<Record<string, Readonly<Record<string, Readonly<Record<string, string>>>>>>;
+
+/**
+ * The field mappings a design can still feed, and only those.
+ *
+ * A mapping is kept while its submission is in the tree and its source is
+ * something the tree still asks: a question, one of a multi-answer question's
+ * choices, or the interest or message field. Swapping the design runs every
+ * mapping through this, so the design library can say beforehand when a swap
+ * would lose one ({@see dropsFieldMappings}).
+ */
+export function fieldMappingsKept(maps: FieldMappings, tree: TemplateTree): FieldMappings {
+  const kept = new Set(tree.submissions.map((sub) => sub.id));
+  const sources = new Set<string>();
+  tree.steps.flatMap((step) => walkNodes(step.content)).forEach((node) => {
+    if (node.type === 'question' && 'id' in node) {
+      sources.add(String(node.id));
+      if (node.answer_type === 'multi') node.options?.forEach((option) => sources.add(`choice:${node.id}:${option.value}`));
+    }
+    if (node.type === 'field' && 'name' in node && ['interest', 'message'].includes(String(node.name))) sources.add(`field:${String(node.name)}`);
+  });
+
+  return Object.fromEntries(Object.entries(maps).filter(([submission]) => kept.has(submission)).map(([submission, byDestination]) =>
+    [submission, Object.fromEntries(Object.entries(byDestination).map(([id, mapping]) =>
+      [id, Object.fromEntries(Object.entries(mapping).filter(([source]) => sources.has(source)))]))]));
+}
+
+const mappedFields = (maps: FieldMappings): number =>
+  Object.values(maps).reduce((total, byDestination) =>
+    total + Object.values(byDestination).reduce((sum, mapping) => sum + Object.keys(mapping).length, 0), 0);
+
+/** Would applying this tree remove a field mapping the draft holds? */
+export function dropsFieldMappings(maps: unknown, tree: TemplateTree): boolean {
+  if (maps === null || typeof maps !== 'object') return false;
+  const held = maps as FieldMappings;
+
+  return mappedFields(fieldMappingsKept(held, tree)) < mappedFields(held);
+}

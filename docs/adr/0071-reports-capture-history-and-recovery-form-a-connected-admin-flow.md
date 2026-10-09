@@ -97,6 +97,10 @@ Settings → Connections & destinations. Re-push confirms the scope described
 below before queueing. Settings drafts use the same guarded navigation as editors.
 
 Terminal-failure rows link to the named Destination and the exact captured Lead.
+**Amended by [0132](0132-every-screen-answers-its-first-question.md):** the link
+also runs the other way — a submission in the failure ring reads "Not sent" on
+its row and names the Destination and error in its detail, joined client-side;
+never "Sent", since absence from the ring proves nothing ([0008](0008-delivery-state-is-destination-health-not-per-lead.md)).
 A removed route or a capture no longer retained is explained without inventing
 delivery history. The ring remains bounded diagnostics, not a per-Lead ledger.
 Skipped-capture recovery sits beside the skipped explanation and remains

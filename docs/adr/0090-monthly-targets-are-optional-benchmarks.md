@@ -41,6 +41,11 @@ stops at its maximum while the count and excess remain explicit.
 
 Targets never publish, pause, resume, declare winners, or mutate recorded
 results. This is an optional monthly benchmark, not an automated optimization.
+*Amended by [0132](0132-every-screen-answers-its-first-question.md): each
+unreached target reads its pace — "On pace", or "Behind pace: about N short"
+in neutral text — against an even spread of the target over the month's days
+through the count cutoff; it is a reading of the benchmark, never a forecast,
+and the editor shows the loaded report's count beside each field for reference.*
 
 ## Calendar months stay calendar months
 

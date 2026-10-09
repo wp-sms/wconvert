@@ -24,6 +24,7 @@ export function GroupEditor({ group, types, onChange, offset = 0, operator = tru
       <label><input type="radio" name={name} checked={group.match === 'any'} onChange={() => onChange({ ...group, match: 'any' })} />{__('Any one rule is enough', 'wconvert')}</label>
     </fieldset>}
     <RuleRows rows={group.rules.map((rule, index) => ({ key: String(rule.id ?? index),
+      label: types.find(type => type.type === rule.type)?.label ?? __('unavailable rule', 'wconvert'),
       content: <RuleRow rule={rule as Rule} at={offset + index} types={types} onChange={next => onChange({ ...group, rules: group.rules.map((old, at) => at === index ? { ...next, id: old.id } : old) })} />,
       onRemove: () => onChange({ ...group, rules: group.rules.filter((_old, at) => at !== index) }),
     }))} empty={__('Add at least one rule', 'wconvert')} attention />

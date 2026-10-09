@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { __, _n, sprintf } from '@wordpress/i18n';
-import { ChevronRight, Download, Inbox, RefreshCw, Search, Trash2 } from 'lucide-react';
+import { ChevronRight, Download, Inbox, Plus, Search, Trash2 } from 'lucide-react';
 import { InfoTip } from '../shell/InfoTip';
 import { Button } from '../components/ui/button';
 import { Input } from '../components/ui/input';
@@ -9,11 +9,10 @@ import { AdminDialog, AdminDialogContent } from '../components/ui/admin-dialog';
 import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle } from '../components/ui/alert-dialog';
 import { CheckRow } from '../shell/CheckRow';
 import { DataTable, DataTableActions, DataTableActionsColumn, DataTableBody, DataTableCell, DataTableColumn, DataTableHead, DataTableRow } from '../shell/DataTable';
-import { Disclosure } from '../shell/Disclosure';
+import { DateRangePicker, presetLabel, type DateRange } from '../shell/DateRangePicker';
 import { EmptyState } from '../shell/EmptyState';
 import { Field } from '../shell/Field';
 import { OptionStrip } from '../shell/OptionStrip';
-import { PageAction } from '../shell/PageActions';
 import { Region, RegionBody, RegionError, RegionErrorState, RegionFooter } from '../shell/Region';
 import { TableSkeleton } from '../shell/TableSkeleton';
 import { Toolbar, ToolbarCount } from '../shell/Toolbar';
@@ -21,16 +20,19 @@ import { LOADING, failed, messageOf, ready, type Loadable } from '../shell/loada
 import { formatCount, formatDay, formatRange, formatWhen } from '../lib/format';
 import { canExport, eraseIdentifier, exportLeads, readLog, type Lead, type LeadGroup, type LeadLog as LeadLogPayload, type LeadPage, type LeadQuery } from './api';
 import { EventTable } from './EventTable';
+import { ExportMenu } from './ExportMenu';
+import { useNotSent, type NotSent } from './notSent';
 import { LeadDetail, framed, submissionCount, type CampaignName } from './LeadDetail';
 import { LeadHistory } from './LeadHistory';
 import { journeysSupported } from '../settings';
 import { RetentionSummary } from './RetentionSummary';
 import { flattened, listOptins, type OptinSummary } from '../optins/api';
-import { hashFor, leadsHref } from '../nav';
-import { siteToday, shiftDay } from './calendar';
+import { createHref, hashFor, leadsHref } from '../nav';
+import { LEAD_PRESETS, presetWindow, rangeOf, siteToday, type DayWindow } from './calendar';
 import { listGoals } from '../goals/api';
 
 const EMPTY_QUERY: LeadQuery = {};
+const NONE: readonly NotSent[] = [];
 const queryKeyOf = (query: LeadQuery) => JSON.stringify({ order: query.order, optinId: query.optinId || undefined,
   search: query.search || undefined, purpose: query.purpose || undefined,
   identifier: query.identifier || undefined, leadId: query.leadId || undefined,
@@ -40,12 +42,19 @@ const queryKeyOf = (query: LeadQuery) => JSON.stringify({ order: query.order, op
 type Opened = { kind: 'submission'; lead: Lead } | { kind: 'history'; group: LeadGroup; query: LeadPage };
 
 export interface LeadLogProps {
+  /** Called whenever the log re-reads on its own, so the page's sending count can too. */
   onRefresh?: () => void;
   query?: LeadQuery;
   onQueryChange?: (query: LeadQuery) => void;
 }
 
-/** History remains a log of immutable submissions. Grouping never changes its headline count. */
+/**
+ * History remains a log of immutable submissions. Grouping never changes its headline count.
+ *
+ * **Nothing here is a page action** (ADR 0132): the header keeps Sending
+ * issues alone. Refresh is the window regaining focus, and Export is one menu
+ * in the toolbar beside the set it exports.
+ */
 export function LeadLog({ query, onQueryChange, onRefresh }: LeadLogProps) {
   const [localQuery, setLocalQuery] = useState<LeadQuery>(EMPTY_QUERY);
   const [privateQuery, setPrivateQuery] = useState<Pick<LeadQuery, 'search' | 'identifier'>>({});
@@ -62,6 +71,8 @@ export function LeadLog({ query, onQueryChange, onRefresh }: LeadLogProps) {
   const [applied, setApplied] = useState<{ query: LeadPage; page: number }>({ query: {}, page: 1 });
   const [error, setError] = useState<string | null>(null);
   const [updating, setUpdating] = useState(false);
+  // A re-read nobody asked for (the window regaining focus) keeps the table still.
+  const [quiet, setQuiet] = useState(false);
   const [retry, setRetry] = useState(0);
   const [optins, setOptins] = useState<OptinSummary[] | null>(null);
   const [goals, setGoals] = useState<Record<string, string>>({});
@@ -69,7 +80,11 @@ export function LeadLog({ query, onQueryChange, onRefresh }: LeadLogProps) {
   const [namesRetry, setNamesRetry] = useState(0);
   const [opened, setOpened] = useState<Opened | null>(null);
   const trigger = useRef<HTMLElement | null>(null);
-  const [erasureOpen, setErasureOpen] = useState(false);
+  const [erasureTarget, setErasureTarget] = useState<string | null>(null);
+  const erasureReturn = useRef<HTMLElement | null>(null);
+  const [sendingKey, setSendingKey] = useState(0);
+  const notSent = useNotSent(sendingKey);
+  const notSentOf = useCallback((id: string) => notSent.get(id) ?? NONE, [notSent]);
   const [erasurePreview, setErasurePreview] = useState<{ identifier: string; submissions: number; snapshot: string } | null>(null);
   const [erasing, setErasing] = useState(false);
   const [erasureError, setErasureError] = useState<string | null>(null);
@@ -87,7 +102,7 @@ export function LeadLog({ query, onQueryChange, onRefresh }: LeadLogProps) {
       if (!active) return;
       setError(messageOf(cause));
       setLog((current) => current.status === 'ready' ? current : failed(cause));
-    }).finally(() => { if (active) setUpdating(false); });
+    }).finally(() => { if (active) { setUpdating(false); setQuiet(false); } });
     return () => { active = false; };
   }, [request, pageNumber, retry]);
 
@@ -111,6 +126,7 @@ export function LeadLog({ query, onQueryChange, onRefresh }: LeadLogProps) {
   const names = useMemo(() => optins === null ? null : new Map(optins.map((optin) => [optin.id, optin.name.trim() || __('Unnamed campaign', 'wconvert')])), [optins]);
   const nameOf = useCallback((id: string): CampaignName => names === null ? undefined : names.get(id) ?? null, [names]);
   const changeQuery = (next: LeadQuery) => {
+    setQuiet(false);
     const { search, identifier, ...bookmarkable } = next;
     setPrivateQuery({ search, identifier });
     setErasureNotice(null);
@@ -123,25 +139,48 @@ export function LeadLog({ query, onQueryChange, onRefresh }: LeadLogProps) {
     changeQuery({ identifier: contact });
   };
   const data = log.status === 'ready' ? log.data : null;
-  const csv = data !== null && canExport();
+  // An export of nothing is not offered.
+  const csv = data !== null && data.submissions > 0 && canExport();
   // Question answers exist only where journeys run, or where a removed module
   // left answered submissions behind (ADR 0127).
   const questionCsv = csv && (journeysSupported() || data.leads.some((lead) => (lead.question_answers?.length ?? 0) > 0));
   const shownGrouped = applied.query.grouped === true;
   const hasAppliedFilters = queryKeyOf(applied.query) !== '{}';
+  // The selected purpose chip already carries this number; a narrower filter is what makes it worth repeating.
+  const narrowed = queryKeyOf({ ...applied.query, purpose: undefined }) !== '{}';
+  // Nothing captured at all, not nothing matching: no filters, toolbar or zeros to sit around it.
+  const neverCaptured = data !== null && data.submissions === 0 && !hasAppliedFilters && queryKey === '{}';
+  // Soft-deleted campaigns are in the list; only a live published one can be filled in.
+  const anyPublished = optins === null ? null : optins.some((optin) => optin.published_at !== null && optin.deleted_at === null);
   const rows = data === null ? 0 : shownGrouped ? data.groups.length : data.leads.length;
   const showingPrevious = data !== null && (queryKeyOf(applied.query) !== queryKey || shownGrouped !== grouped || applied.query.cursor !== cursor);
   const privacyIdentifier = !showingPrevious && data !== null && data.submissions > 0
     ? exactIdentifierScope(applied.query)
     : null;
   const erasureCsv = erasurePreview !== null && canExport();
+  const startErasure = (identifier: string, returnTo: HTMLElement | null) => {
+    erasureReturn.current = returnTo;
+    setErasurePreview(null);
+    setErasureError(null);
+    setErasureTarget(identifier);
+    void readLog({ identifier, grouped: false }).then((preview) => {
+      setErasurePreview({ identifier, submissions: preview.submissions, snapshot: preview.snapshot });
+    }).catch((cause: unknown) => setErasureError(messageOf(cause)));
+  };
+  // From a submission: close it first, then confirm. A confirm never stands on a dialog.
+  const eraseFrom = (contact: string) => {
+    setOpened(null);
+    startErasure(contact, trigger.current);
+  };
   const oldestFirst = applied.query.order === 'oldest';
   const next = () => {
     if (!data?.next_cursor) return;
+    setQuiet(false);
     setPaging({ scope, cursor: data.next_cursor, snapshot: data.snapshot,
       previous: [...(paging.scope === scope ? paging.previous : []), cursor] });
   };
   const previous = () => {
+    setQuiet(false);
     const held = paging.previous;
     setPaging({ ...paging, cursor: held[held.length - 1], previous: held.slice(0, -1) });
   };
@@ -152,20 +191,37 @@ export function LeadLog({ query, onQueryChange, onRefresh }: LeadLogProps) {
   // One outage is one door: a log retry also re-reads the campaign names when
   // those failed with it, rather than drawing a second "Try again" above it.
   const retryLog = () => {
+    setQuiet(false);
     setRetry((value) => value + 1);
     if (namesError !== null) setNamesRetry((value) => value + 1);
   };
 
+  /*
+   * **Coming back to the tab is the refresh** — the button it replaces sat
+   * first among three outline actions above the data. Only the first page
+   * re-reads: a later page is read under its snapshot so Older and Newer stay
+   * stable (ADR 0071), and new submissions arrive at the top anyway.
+   */
+  const onFocus = useRef(() => {});
+  useEffect(() => {
+    onFocus.current = () => {
+      if (pageNumber !== 1) return;
+      setPaging({ scope, previous: [] });
+      retryLog();
+      setQuiet(true);
+      setSendingKey((value) => value + 1);
+      onRefresh?.();
+    };
+  });
+  useEffect(() => {
+    const refresh = () => onFocus.current();
+    window.addEventListener('focus', refresh);
+    return () => window.removeEventListener('focus', refresh);
+  }, []);
+
   return <div className="flex flex-col gap-5">
-    <PageAction><Button variant="outline" disabled={updating} onClick={() => { setPaging({ scope, previous: [] }); retryLog(); onRefresh?.(); }}><RefreshCw aria-hidden="true" />{__('Refresh submissions', 'wconvert')}</Button></PageAction>
-    {csv && <PageAction><Button variant="outline" onClick={() => exportLeads(applied.query)}>
-      <Download aria-hidden="true" />{__('Export matching submissions', 'wconvert')}
-    </Button></PageAction>}
-    {questionCsv && <PageAction><Button variant="outline" onClick={() => exportLeads(applied.query, 'questions')}>
-      <Download aria-hidden="true" />{__('Export question answers', 'wconvert')}
-    </Button></PageAction>}
     <Region label={__('Submissions', 'wconvert')}>
-      <RegionBody className="flex flex-col gap-4">
+      {!neverCaptured && <RegionBody className="flex flex-col gap-4">
         <OptionStrip
           label={__('Submission purpose', 'wconvert')}
           value={requested.purpose ?? 'all'}
@@ -177,35 +233,49 @@ export function LeadLog({ query, onQueryChange, onRefresh }: LeadLogProps) {
           onChange={(value) => changeQuery({ ...requested, purpose: value === 'subscribers' || value === 'enquiries' ? value : undefined })}
         />
         <HistoryFilters query={requested} optins={optins} onApply={changeQuery} />
-      </RegionBody>
-      <Toolbar trailing={data === null ? undefined : <div className="flex flex-wrap items-center justify-end gap-1"><ToolbarCount hint={__('The total counts submissions, never people.', 'wconvert')}>
-        {submissionCount(data.submissions)}
-      </ToolbarCount><InfoTip label={__('About this count and export', 'wconvert')}>
-          <p className="m-0 font-medium">{scopeDescription(applied.query, nameOf)}</p>
-          <p className="mb-0 text-muted-foreground">{__('Export includes every matching submission on all pages, as of when this list loaded. Grouping doesn’t change it.', 'wconvert')}</p>
-      </InfoTip>{privacyIdentifier !== null && <Button variant="outline" onClick={() => {
-        setErasurePreview(null);
-        setErasureError(null);
-        setErasureOpen(true);
-        void readLog({ identifier: privacyIdentifier, grouped: false }).then((preview) => {
-          setErasurePreview({ identifier: privacyIdentifier, submissions: preview.submissions, snapshot: preview.snapshot });
-        }).catch((cause: unknown) => setErasureError(messageOf(cause)));
-      }}><Trash2 aria-hidden="true" />{__('Delete this lead', 'wconvert')}</Button>}</div>}>
-        <CheckRow label={__('Group by email or phone', 'wconvert')} checked={grouped} onChange={(event) => setGrouped(event.currentTarget.checked)} />
-      </Toolbar>
-      {updating && <RegionBody><p role="status" className="m-0 text-note">{data ? __('Updating submissions…', 'wconvert') : __('Loading submissions…', 'wconvert')}</p></RegionBody>}
-      {showingPrevious && <RegionBody><p className="m-0 text-note">{__('Showing the previous results until the new ones load.', 'wconvert')}</p></RegionBody>}
+      </RegionBody>}
+      {!neverCaptured && <Toolbar trailing={data === null ? undefined : <div className="flex flex-wrap items-center justify-end gap-x-3 gap-y-2">
+        {narrowed && <ToolbarCount hint={__('The total counts submissions, never people.', 'wconvert')}>{submissionCount(data.submissions)}</ToolbarCount>}
+        {/* A small select beside the set it orders: the only thing More filters had left. */}
+        <NativeSelect aria-label={__('Order', 'wconvert')} value={requested.order ?? 'newest'}
+          onChange={(event) => changeQuery({ ...requested, order: event.target.value === 'oldest' ? 'oldest' : undefined })}>
+          <option value="newest">{__('Newest first', 'wconvert')}</option>
+          <option value="oldest">{__('Oldest first', 'wconvert')}</option>
+        </NativeSelect>
+        {csv && <>
+          <ExportMenu filter={applied.query} answers={questionCsv} />
+          <InfoTip label={__('About this export', 'wconvert')}>
+            <p className="m-0 font-medium">{scopeDescription(applied.query, nameOf)}</p>
+            <p className="mb-0 text-muted-foreground">{__('Export includes every matching submission on all pages, as of when this list loaded. Grouping doesn’t change it.', 'wconvert')}</p>
+          </InfoTip>
+        </>}
+        {privacyIdentifier !== null && <Button variant="outline" onClick={(event) => startErasure(privacyIdentifier, event.currentTarget)}>
+          <Trash2 aria-hidden="true" />{__('Delete this lead', 'wconvert')}
+        </Button>}
+      </div>}>
+        <CheckRow label={__('Group by email or phone', 'wconvert')} checked={grouped} onChange={(event) => { setQuiet(false); setGrouped(event.currentTarget.checked); }} />
+      </Toolbar>}
+      {/* One line while a read is in flight; the rows it will replace dim under it. */}
+      {/* A first load is announced by its skeleton (§12); only a re-read needs a line. */}
+      {updating && !quiet && data && <RegionBody><p role="status" className="m-0 text-note">{__('Updating…', 'wconvert')}</p></RegionBody>}
+      {showingPrevious && !updating && <RegionBody><p className="m-0 text-note">{__('Showing the previous results.', 'wconvert')}</p></RegionBody>}
       {erasureNotice !== null && <RegionBody><p role="status" className="m-0 rounded-md border border-border bg-surface p-3 text-note">{erasureNotice}</p></RegionBody>}
       {error !== null && data !== null && <RegionError message={error} onRetry={retryLog} />}
       {namesError !== null && log.status !== 'failed' && <RegionError message={sprintf(__('Campaign names couldn’t be loaded: %s', 'wconvert'), namesError)} onRetry={() => setNamesRetry((value) => value + 1)} />}
+      <div aria-busy={updating || undefined} className={updating && !quiet && data !== null ? 'opacity-60' : undefined}>
       {log.status === 'failed' ? <RegionErrorState message={log.message} onRetry={retryLog} /> : data === null ? <DataTable><TableSkeleton columns={5} /></DataTable> : rows === 0 ? (
-        <EmptyState icon={Inbox} title={applied.query.leadId ? __('Submission not found', 'wconvert') : hasAppliedFilters ? __('No matching submissions', 'wconvert') : __('No submissions yet', 'wconvert')}
-          action={hasAppliedFilters ? <Button variant="outline" onClick={() => changeQuery({})}>{__('Clear filters', 'wconvert')}</Button>
-            : <Button asChild variant="outline"><a href={hashFor('optins')}>{__('Go to campaigns', 'wconvert')}</a></Button>}>
+        hasAppliedFilters ? <EmptyState icon={Inbox} title={applied.query.leadId ? __('Submission not found', 'wconvert') : __('No matching submissions', 'wconvert')}
+          action={<Button variant="outline" onClick={() => changeQuery({})}>{__('Clear filters', 'wconvert')}</Button>}>
           {applied.query.leadId ? __('Retention or a privacy request may have deleted it, or another filter excludes it.', 'wconvert')
-            : hasAppliedFilters ? __('Try another search, period or campaign.', 'wconvert')
-              : __('Submissions appear here when a visitor fills in a published campaign.', 'wconvert')}
+            : __('Try another search, period or campaign.', 'wconvert')}
         </EmptyState>
+          // The way out is the action that fills it: create the first campaign, or go to the ones there are.
+          : <EmptyState icon={Inbox} title={__('No submissions yet', 'wconvert')}
+            action={anyPublished === false
+              ? <Button asChild><a href={createHref()}><Plus aria-hidden="true" />{__('Create campaign', 'wconvert')}</a></Button>
+              : <Button asChild><a href={hashFor('optins')}>{__('View campaigns', 'wconvert')}</a></Button>}>
+            {__('Submissions appear here the moment a visitor fills in a published campaign.', 'wconvert')}
+          </EmptyState>
       ) : shownGrouped ? <DataTable>
         <DataTableHead><DataTableColumn>{__('Email or phone', 'wconvert')}</DataTableColumn><DataTableColumn numeric>{__('Submissions', 'wconvert')}</DataTableColumn><DataTableColumn>{__('Last submitted', 'wconvert')}</DataTableColumn><DataTableActionsColumn>{__('Actions', 'wconvert')}</DataTableActionsColumn></DataTableHead>
         <DataTableBody>{data.groups.map((group) => <DataTableRow key={group.identifier}>
@@ -216,7 +286,8 @@ export function LeadLog({ query, onQueryChange, onRefresh }: LeadLogProps) {
             {__('Open', 'wconvert')}<ChevronRight aria-hidden="true" className="size-4 rtl:-scale-x-100" />
           </Button></DataTableActions>
         </DataTableRow>)}</DataTableBody>
-      </DataTable> : <EventTable leads={data.leads} nameOf={nameOf} goalOf={goalOf} returnTo={leadsHref(applied.query)} onOpen={(lead, button) => open({ kind: 'submission', lead }, button)} />}
+      </DataTable> : <EventTable leads={data.leads} nameOf={nameOf} notSentOf={notSentOf} returnTo={leadsHref(applied.query)} onOpen={(lead, button) => open({ kind: 'submission', lead }, button)} />}
+      </div>
       {data !== null && rows > 0 && (applied.page > 1 || data.next_cursor !== null) && <RegionFooter>
         <div className="flex w-full flex-wrap items-center justify-between gap-3">
           <span>{sprintf(__('Page %s', 'wconvert'), formatCount(applied.page))}</span>
@@ -225,7 +296,8 @@ export function LeadLog({ query, onQueryChange, onRefresh }: LeadLogProps) {
         </div>
       </RegionFooter>}
     </Region>
-    <RetentionSummary refreshKey={retry} />
+    {/* One outage is one door: while the log has failed, its Try again re-reads this too. */}
+    {log.status !== 'failed' && <RetentionSummary refreshKey={retry} />}
     <AdminDialog open={opened !== null} onOpenChange={(isOpen) => { if (!isOpen) setOpened(null); }}>
       <AdminDialogContent size="md" onCloseAutoFocus={(event) => {
         // "See all from" re-renders the table, so the row that opened the
@@ -235,15 +307,20 @@ export function LeadLog({ query, onQueryChange, onRefresh }: LeadLogProps) {
         else document.getElementById('wconvert-lead-search')?.focus();
       }}>
         {opened?.kind === 'submission' && <LeadDetail lead={opened.lead} campaign={nameOf(opened.lead.optin_id)} goal={goalOf(opened.lead.optin_id)}
-          returnTo={leadsHref(applied.query)} backLabel={__('All leads', 'wconvert')} onBack={() => setOpened(null)} onSeeAll={seeAll} />}
+          returnTo={leadsHref(applied.query)} closes onBack={() => setOpened(null)} onSeeAll={seeAll} onErase={eraseFrom} notSent={notSentOf(opened.lead.id)} />}
         {opened?.kind === 'history' && <LeadHistory key={`${opened.group.identifier}:${opened.query.snapshot}`} group={opened.group} query={opened.query}
-          filtered={queryKeyOf(opened.query) !== '{}'} nameOf={nameOf} goalOf={goalOf} onClose={() => setOpened(null)} onSeeAll={seeAll} />}
+          filtered={queryKeyOf(opened.query) !== '{}'} nameOf={nameOf} goalOf={goalOf} notSentOf={notSentOf} onClose={() => setOpened(null)} onSeeAll={seeAll} onErase={eraseFrom} />}
       </AdminDialogContent>
     </AdminDialog>
-    <AlertDialog open={erasureOpen} onOpenChange={(isOpen) => { if (!erasing) setErasureOpen(isOpen); }}>
-      <AlertDialogContent>
+    <AlertDialog open={erasureTarget !== null} onOpenChange={(isOpen) => { if (!erasing && !isOpen) setErasureTarget(null); }}>
+      <AlertDialogContent onCloseAutoFocus={(event) => {
+        // Opened from a submission, the button that asked is gone with its dialog.
+        event.preventDefault();
+        if (erasureReturn.current?.isConnected) erasureReturn.current.focus();
+        else document.getElementById('wconvert-lead-search')?.focus();
+      }}>
         <AlertDialogHeader>
-          <AlertDialogTitle>{framed(__('Delete every submission from %s?', 'wconvert'), erasurePreview?.identifier ?? privacyIdentifier ?? '')}</AlertDialogTitle>
+          <AlertDialogTitle>{framed(__('Delete every submission from %s?', 'wconvert'), erasureTarget ?? '')}</AlertDialogTitle>
           <AlertDialogDescription>
             {erasurePreview === null ? __('Counting their submissions…', 'wconvert') : sprintf(
               _n(
@@ -272,7 +349,7 @@ export function LeadLog({ query, onQueryChange, onRefresh }: LeadLogProps) {
               setErasing(true);
               setErasureError(null);
               void eraseIdentifier(erasurePreview.identifier).then((result) => {
-                setErasureOpen(false);
+                setErasureTarget(null);
                 setErasurePreview(null);
                 setErasureNotice(sprintf(
                   _n('%s submission deleted. Copies in destinations, exports and backups aren’t affected.', '%s submissions deleted. Copies in destinations, exports and backups aren’t affected.', result.removed, 'wconvert'),
@@ -301,120 +378,90 @@ function exactIdentifierScope(query: LeadPage): string | null {
   return query.identifier;
 }
 
-type Period = 'all' | '7' | '30' | 'custom';
-
-/** The preset a date pair spells, decided on the site's day. */
-function periodOf(from: string, to: string, today: string | null): Period {
-  if (!from && !to) return 'all';
-  if (today && to === today && from === shiftDay(today, -6)) return '7';
-  if (today && to === today && from === shiftDay(today, -29)) return '30';
-  return 'custom';
+/** A window's dates as one phrase, or null for any time. */
+function windowSummary({ from, to }: DayWindow): string | null {
+  if (from && to) return from === to ? formatDay(from) : formatRange(from, to);
+  if (from) return sprintf(__('From %s', 'wconvert'), formatDay(from));
+  if (to) return sprintf(__('Until %s', 'wconvert'), formatDay(to));
+  return null;
 }
 
-function periodLabel(from: string | undefined, to: string | undefined, today: string | null): string | null {
-  const period = periodOf(from ?? '', to ?? '', today);
-  if (period === 'all') return null;
-  if (period === '7') return __('Last 7 days', 'wconvert');
-  if (period === '30') return __('Last 30 days', 'wconvert');
-  if (from && to) return formatRange(from, to);
-  return from ? sprintf(__('From %s', 'wconvert'), formatDay(from)) : sprintf(__('Until %s', 'wconvert'), formatDay(to ?? ''));
+/** The dates a chosen window means on the log, resolved on the site's day. */
+function windowOf(range: DateRange, today: string | null): DayWindow {
+  if (range.preset === 'custom') return { from: range.from, to: range.to };
+  if (range.preset === 'all' || today === null) return {};
+  return presetWindow(range.preset, today);
 }
 
-interface Draft { search: string; optinId: string; from: string; to: string; order: 'newest' | 'oldest'; custom: boolean }
+interface Draft { search: string; optinId: string }
 
-const draftOf = (query: LeadQuery): Draft => ({ search: query.leadId ?? query.identifier ?? query.search ?? '', optinId: query.optinId ?? '',
-  from: query.from ?? '', to: query.to ?? '', order: query.order ?? 'newest', custom: false });
+const draftOf = (query: LeadQuery): Draft => ({ search: query.leadId ?? query.identifier ?? query.search ?? '', optinId: query.optinId ?? '' });
 
 /**
  * **One apply model** (ADR 0131): a choice applies the moment it is made, and
- * what is typed applies on Enter — the search, or a custom date when the field
- * is left. Every change applies the whole form as it stands, so a search typed
- * and not yet sent is never dropped by picking a campaign.
+ * what is typed applies on Enter. Every change applies the whole form as it
+ * stands, so a search typed and not yet sent is never dropped by picking a
+ * campaign or a period.
+ *
+ * **The period is the shared date control, in the row, not folded away**
+ * (ADR 0132). Its presets resolve to the same `from`/`to` the log has always
+ * read, so a link still bookmarks the dates, and a bookmarked pair reads back
+ * as the preset it spells today. Without the site's timezone nothing can say
+ * what "today" is, so only Any time and custom dates are offered.
  *
  * The draft follows the applied query rather than being remounted by it, so
  * a select keeps focus through the read its own change started.
  */
 function HistoryFilters({ query, optins, onApply }: { query: LeadQuery; optins: OptinSummary[] | null; onApply: (query: LeadQuery) => void }) {
   const [draft, setDraft] = useState<Draft>(() => draftOf(query));
-  const [expanded, setExpanded] = useState(Boolean(query.from || query.to || query.order));
-  const [error, setError] = useState<string | null>(null);
-  // The purpose strip sits outside this form; its change must not reset a draft.
-  const syncKey = queryKeyOf({ ...query, purpose: undefined });
+  // The purpose strip and the toolbar's order sit outside this form; neither resets a draft.
+  const syncKey = queryKeyOf({ ...query, purpose: undefined, order: undefined });
   const [synced, setSynced] = useState(syncKey);
   if (synced !== syncKey) {
     setSynced(syncKey);
     setDraft(draftOf(query));
-    setError(null);
-    if (query.from || query.to || query.order) setExpanded(true);
   }
   const today = siteToday();
-  const period: Period = draft.custom ? 'custom' : periodOf(draft.from, draft.to, today);
-  const apply = (next: Draft) => {
+  const apply = (next: Draft, window: DayWindow = { from: query.from, to: query.to }) => {
     setDraft(next);
-    if (next.from && next.to && next.from > next.to) { setError(__('The end date must be on or after the start date.', 'wconvert')); return; }
     const term = next.search.trim();
     // A pasted submission ID still finds its row, though no screen shows one.
     const id = /^[0-9A-HJKMNP-TV-Z]{26}$/i.test(term) ? term.toUpperCase() : undefined;
     const identifier = !id && (/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(term) || /^(\+|00)[\d\s()-]+$/.test(term)) ? term : undefined;
-    const built: LeadQuery = { order: next.order === 'oldest' ? 'oldest' : undefined, optinId: next.optinId || undefined, purpose: query.purpose, identifier,
-      search: term && !id && !identifier ? term : undefined, leadId: id, from: next.from || undefined, to: next.to || undefined };
-    setError(null);
+    const built: LeadQuery = { order: query.order, optinId: next.optinId || undefined, purpose: query.purpose, identifier,
+      search: term && !id && !identifier ? term : undefined, leadId: id, from: window.from || undefined, to: window.to || undefined };
     if (queryKeyOf(built) !== queryKeyOf(query)) onApply(built);
   };
-  const summary = [periodLabel(query.from, query.to, today), query.order === 'oldest' ? __('Oldest first', 'wconvert') : null].filter(Boolean).join(' · ');
   const missing = draft.optinId !== '' && !(optins ?? []).some((optin) => optin.id === draft.optinId);
 
-  return <form className="flex flex-col gap-3" aria-label={__('Filter submissions', 'wconvert')} onSubmit={(event) => { event.preventDefault(); apply(draft); }}>
-    <div className="flex flex-wrap items-end gap-3">
-      <Field label={__('Search submissions', 'wconvert')} htmlFor="wconvert-lead-search" className="basis-64 flex-1">
-        <div className="flex gap-2">
-          <Input id="wconvert-lead-search" type="search" maxLength={254} value={draft.search} onChange={(event) => setDraft({ ...draft, search: event.target.value })} placeholder={__('Name, email, phone or message', 'wconvert')} />
-          <Button type="submit" variant="outline"><Search aria-hidden="true" />{__('Search', 'wconvert')}</Button>
-        </div>
-      </Field>
-      <Field label={__('Campaign', 'wconvert')} htmlFor="wconvert-lead-optin">
-        <NativeSelect id="wconvert-lead-optin" className="w-64" value={draft.optinId} onChange={(event) => apply({ ...draft, optinId: event.target.value })}>
-          <option value="">{__('All campaigns', 'wconvert')}</option>
-          {missing && <option value={draft.optinId}>{optins === null ? __('Selected campaign', 'wconvert') : __('Deleted campaign', 'wconvert')}</option>}
-          {(optins ?? []).map((optin) => <option key={optin.id} value={optin.id}>{optin.name.trim() || __('Unnamed campaign', 'wconvert')}</option>)}
-        </NativeSelect>
-      </Field>
-      {queryKeyOf(query) !== '{}' && <Button type="button" variant="link" onClick={() => { setError(null); setDraft(draftOf({})); onApply({}); }}>{__('Clear filters', 'wconvert')}</Button>}
-    </div>
-    <Disclosure variant="inline" title={__('More filters', 'wconvert')} summary={expanded ? undefined : summary || undefined} open={expanded} onToggle={setExpanded}>
-      <div className="flex flex-wrap items-end gap-4">
-        <Field label={__('Period', 'wconvert')} htmlFor="wconvert-lead-period">
-          <NativeSelect id="wconvert-lead-period" value={period} onChange={(event) => {
-            const value = event.target.value as Period;
-            if (value === 'custom') setDraft({ ...draft, custom: true });
-            else if (value === 'all') apply({ ...draft, custom: false, from: '', to: '' });
-            else if (today) apply({ ...draft, custom: false, from: shiftDay(today, 1 - Number(value)), to: today });
-          }}>
-            <option value="all">{__('Any time', 'wconvert')}</option>
-            <option value="7" disabled={!today}>{__('Last 7 days', 'wconvert')}</option>
-            <option value="30" disabled={!today}>{__('Last 30 days', 'wconvert')}</option>
-            <option value="custom">{__('Custom dates', 'wconvert')}</option>
-          </NativeSelect>
-        </Field>
-        {period === 'custom' && <>
-          <Field label={__('From', 'wconvert')} htmlFor="wconvert-lead-from">
-            <Input id="wconvert-lead-from" className="w-40" type="date" value={draft.from} aria-describedby="wconvert-lead-dates" onChange={(event) => setDraft({ ...draft, custom: true, from: event.target.value })} onBlur={() => apply(draft)} />
-          </Field>
-          <Field label={__('To', 'wconvert')} htmlFor="wconvert-lead-to">
-            <Input id="wconvert-lead-to" className="w-40" type="date" value={draft.to} min={draft.from || undefined} aria-describedby="wconvert-lead-dates" onChange={(event) => setDraft({ ...draft, custom: true, to: event.target.value })} onBlur={() => apply(draft)} />
-          </Field>
-        </>}
-        <Field label={__('Order', 'wconvert')} htmlFor="wconvert-lead-order">
-          <NativeSelect id="wconvert-lead-order" value={draft.order} onChange={(event) => apply({ ...draft, order: event.target.value === 'oldest' ? 'oldest' : 'newest' })}>
-            <option value="newest">{__('Newest first', 'wconvert')}</option>
-            <option value="oldest">{__('Oldest first', 'wconvert')}</option>
-          </NativeSelect>
-        </Field>
+  // The date control's custom dates are a form of their own, portalled out of
+  // this one in the DOM but not in React's tree; their submit is not a search.
+  return <form className="flex flex-wrap items-end gap-3" aria-label={__('Filter submissions', 'wconvert')}
+    onSubmit={(event) => { event.preventDefault(); if (event.target === event.currentTarget) apply(draft); }}>
+    {/* Below `sm` the search takes the line and the campaign the next, rather than squeezing the input to nothing. */}
+    <Field label={__('Search submissions', 'wconvert')} htmlFor="wconvert-lead-search" className="flex-1 basis-full sm:basis-64">
+      <div className="flex gap-2">
+        <Input id="wconvert-lead-search" className="min-w-0 flex-1" type="search" maxLength={254} value={draft.search} onChange={(event) => setDraft({ ...draft, search: event.target.value })} placeholder={__('Name, email, phone or message', 'wconvert')} />
+        <Button type="submit" variant="outline"><Search aria-hidden="true" />{__('Search', 'wconvert')}</Button>
       </div>
-      {period === 'custom' && <p id="wconvert-lead-dates" className="mb-0 mt-2 text-note text-muted-foreground">{__('Both days are included.', 'wconvert')}</p>}
-    </Disclosure>
-    {error && <p role="alert" className="m-0 text-note text-destructive">{error}</p>}
+    </Field>
+    <Field label={__('Campaign', 'wconvert')} htmlFor="wconvert-lead-optin" className="basis-full sm:basis-auto">
+      <NativeSelect id="wconvert-lead-optin" className="w-full sm:w-64" value={draft.optinId} onChange={(event) => apply({ ...draft, optinId: event.target.value })}>
+        <option value="">{__('All campaigns', 'wconvert')}</option>
+        {missing && <option value={draft.optinId}>{optins === null ? __('Selected campaign', 'wconvert') : __('Deleted campaign', 'wconvert')}</option>}
+        {(optins ?? []).map((optin) => <option key={optin.id} value={optin.id}>{optin.name.trim() || __('Unnamed campaign', 'wconvert')}</option>)}
+      </NativeSelect>
+    </Field>
+    <DateRangePicker label={__('Period', 'wconvert')} value={rangeOf(query, today)} presets={today === null ? ['all'] : ['all', ...LEAD_PRESETS]}
+      summary={windowSummary(query)} today={today} onChange={(range) => apply(draft, windowOf(range, today))} />
+    {queryKeyOf(query) !== '{}' && <Button type="button" variant="link" onClick={() => { setDraft(draftOf({})); onApply({}); }}>{__('Clear filters', 'wconvert')}</Button>}
   </form>;
+}
+
+/** What the period filter reads as in a sentence: the preset's name, else its dates. */
+function periodOf(query: LeadQuery): string {
+  const range = rangeOf(query, siteToday());
+  return range.preset === 'custom' ? windowSummary(query) ?? presetLabel('all') : presetLabel(range.preset);
 }
 
 function scopeDescription(query: LeadQuery, nameOf: (id: string) => CampaignName): string {
@@ -422,6 +469,6 @@ function scopeDescription(query: LeadQuery, nameOf: (id: string) => CampaignName
   const parts = [campaign === null ? __('Deleted campaign', 'wconvert') : campaign ?? __('Selected campaign', 'wconvert'),
     query.purpose === 'subscribers' ? __('Subscribers', 'wconvert') : query.purpose === 'enquiries' ? __('Enquiries', 'wconvert') : undefined,
     query.leadId ? __('One submission', 'wconvert') : query.identifier || query.search,
-    periodLabel(query.from, query.to, siteToday()) ?? __('Any time', 'wconvert')];
+    periodOf(query)];
   return sprintf(__('Showing: %s', 'wconvert'), parts.filter(Boolean).join(' · '));
 }

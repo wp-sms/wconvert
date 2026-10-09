@@ -1,6 +1,7 @@
 import { Suspense, type ComponentType } from 'react';
 import { __ } from '@wordpress/i18n';
 import type { Template } from '@renderer/types';
+import { RegionSkeleton } from './shell/RegionSkeleton';
 
 export interface ReopenProps {
   value: unknown;
@@ -25,7 +26,8 @@ export function ReopenPreview(props: ReopenPreviewProps) {
 
 export function ReopenSettings(props: ReopenProps) {
   const Control = reopenControls.component;
-  return Control ? <Suspense fallback={<p>{__('Loading reopen settings…', 'wconvert')}</p>}><Control {...props} /></Suspense> : (
+  // The named skeleton every region loads with (ADR 0131), not a bare line.
+  return Control ? <Suspense fallback={<RegionSkeleton label={__('Reopen settings', 'wconvert')} lines={2} />}><Control {...props} /></Suspense> : (
     // Reached only where the module that draws the button is absent, so it
     // speaks only about a saved setting and sells nothing (ADR 0116).
     props.value ? <p>{__('This campaign has a reopen button saved. It isn’t shown on this site.', 'wconvert')}</p> : null

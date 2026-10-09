@@ -7,6 +7,7 @@ use WConvert\Optin\DisplayType;
 use WConvert\Optin\OptinRepository;
 use WConvert\Optin\PublishedOptin;
 use WConvert\Optin\PublishedSet;
+use WConvert\Rest\Routes;
 
 defined('ABSPATH') || exit;
 
@@ -52,31 +53,51 @@ final class InlineOptinBlock
     public const HANDLE = 'wconvert-inline-optin';
 
     /**
-     * Where the editor finds the site's published inline Optins.
+     * Where the editor finds the site's inline campaigns.
      *
-     * On `window` rather than fetched, and the argument for that is in
-     * `resources/blocks/inline-optin/src/optins.ts` beside the reader.
+     * On `window` at load, so the picker draws without a round trip; the
+     * reader is `resources/blocks/inline-optin/src/optins.ts`.
      */
     public const DATA = 'wconvertInlineOptins';
+
+    /**
+     * The same list again, for the picker's Refresh.
+     *
+     * A merchant publishes an inline campaign in another tab and comes back:
+     * without this, the block says "none" until the editor is reloaded. It
+     * mirrors Pro's `/content-lock-campaigns` read, capability included.
+     */
+    public const ROUTE = '/inline-campaigns';
 
     private const METADATA = 'resources/blocks/inline-optin';
 
     private const DIST = 'public/blocks/inline-optin.js';
 
     /**
+     * The picker's stylesheet, emitted by the same Vite run as the bundle
+     * (`cssFileName` in `vite.config.block.mjs`), so one cannot exist without
+     * the other. Registered under the script's handle and named in
+     * `block.json` as the `editorStyle`; Pro's content lock style depends on it.
+     */
+    private const DIST_STYLE = 'public/blocks/inline-optin.css';
+
+    /**
      * What WordPress ships to the editor that this bundle imports instead of
      * carrying.
      *
      * `wp-element` is the editor's React and is why the bundle compiles JSX
-     * with the classic runtime (`vite.config.block.mjs`); the other four are
+     * with the classic runtime (`vite.config.block.mjs`); `wp-api-fetch` is
+     * the picker's Refresh and `wp-compose` its shortcode Copy; the rest are
      * the surface the placeholder is built from. Declared as dependencies so
      * WordPress prints them first — an IIFE reading `wp.blocks` at execution
      * time is a `TypeError` in an editor that has not loaded it yet.
      */
     private const EDITOR_DEPENDENCIES = [
+        'wp-api-fetch',
         'wp-blocks',
         'wp-block-editor',
         'wp-components',
+        'wp-compose',
         'wp-element',
         'wp-i18n',
     ];
@@ -128,6 +149,13 @@ final class InlineOptinBlock
             true
         );
 
+        wp_register_style(
+            self::HANDLE,
+            WCONVERT_URL . self::DIST_STYLE,
+            [],
+            BuiltAsset::version(WCONVERT_DIR . self::DIST_STYLE)
+        );
+
         wp_set_script_translations(self::HANDLE, 'wconvert');
 
         // The metadata directory, plus the one thing metadata cannot carry.
@@ -145,6 +173,22 @@ final class InlineOptinBlock
         // list is built on the editor's own hook rather than beside the
         // registration above.
         add_action('enqueue_block_editor_assets', [$this, 'provideTheOptinList']);
+        add_action('rest_api_init', [$this, 'registerRoute']);
+    }
+
+    /**
+     * The picker's Refresh: a GET, answered fresh every time.
+     *
+     * `no-store` because the whole point of the read is that the list changed
+     * since the page loaded; a cached answer is the stale one it replaces.
+     */
+    public function registerRoute(): void
+    {
+        register_rest_route(Routes::NAMESPACE, self::ROUTE, [
+            'methods' => 'GET',
+            'permission_callback' => [Routes::class, 'canPlaceCampaign'],
+            'callback' => fn (): \WP_REST_Response => new \WP_REST_Response($this->choices(), 200, ['Cache-Control' => 'no-store']),
+        ]);
     }
 
     /**
@@ -174,9 +218,57 @@ final class InlineOptinBlock
     {
         wp_add_inline_script(
             self::HANDLE,
-            'window.' . self::DATA . ' = ' . (string) wp_json_encode($this->publishedInlineOptins()) . ';',
+            'window.' . self::DATA . ' = ' . (string) wp_json_encode($this->choices()) . ';',
             'before'
         );
+    }
+
+    /**
+     * What the picker is built from: the campaigns, and the doors out of it.
+     *
+     * ========================================================================
+     * DRAFTS ARE LISTED, AND THE EDITOR REFUSES THEM WITH THE REASON.
+     * ========================================================================
+     * A first-time owner builds an inline form, saves a draft and goes to
+     * place it. A list of published campaigns alone says "none", which
+     * contradicts what they just did; listing the draft as a choice that says
+     * "publish to place it" names the one step left (GUIDELINES §8). They are
+     * not placeable because an anchor for an unpublished campaign renders
+     * nothing, and the block would look placed.
+     *
+     * **The links are a manager's only.** An Author can open the post editor
+     * and place this block, but cannot open WConvert, so a "Create" or "Edit"
+     * link would be a door that opens onto "Sorry, you are not allowed". Null
+     * tells the editor to say who can instead.
+     *
+     * @return array{campaigns: list<array{id: string, name: string, status: string, editUrl: ?string}>, manageUrl: ?string, createUrl: ?string}
+     */
+    public function choices(): array
+    {
+        $manage = Routes::canManage();
+        $editUrl = static fn (string $id): ?string => $manage
+            ? admin_url('admin.php?page=wconvert#optins?edit=' . rawurlencode($id))
+            : null;
+        $campaigns = [];
+
+        foreach ($this->publishedInlineOptins() as $optin) {
+            $campaigns[] = ['id' => $optin['id'], 'name' => $optin['name'], 'status' => 'published', 'editUrl' => $editUrl($optin['id'])];
+        }
+
+        foreach ($this->optins->draftsOfType(DisplayType::Inline) as $draft) {
+            $campaigns[] = [
+                'id' => $draft['id'],
+                'name' => $draft['name'],
+                'status' => 'draft',
+                'editUrl' => $editUrl($draft['id']),
+            ];
+        }
+
+        return [
+            'campaigns' => $campaigns,
+            'manageUrl' => $manage ? admin_url('admin.php?page=wconvert#optins') : null,
+            'createUrl' => $manage ? admin_url('admin.php?page=wconvert#optins?new=1') : null,
+        ];
     }
 
     /**
@@ -233,9 +325,9 @@ final class InlineOptinBlock
                 // An Optin with no name is not a case this can drop: it is in
                 // the set, it renders on the page, and a picker that omits it
                 // is a picker that cannot place something the site is serving.
-                'name' => ($names[$optin->id] ?? '') !== ''
-                    ? $names[$optin->id]
-                    : $optin->id,
+                // It goes out nameless and the editor says "Unnamed campaign":
+                // no ID on screen (ADR 0131 decision 4).
+                'name' => $names[$optin->id] ?? '',
             ];
         }
 

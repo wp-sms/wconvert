@@ -87,6 +87,8 @@ export interface DestinationsEditorProps {
   readonly local?: boolean;
   /** The visible email suggestion for a test send. Sending always requires an explicit address. */
   readonly testEmail?: string | null;
+  /** Answers a "connect a service or keep them here" blocker in place. */
+  readonly onKeepLocal?: () => void;
 }
 
 type Setup = { destination?: Destination; type?: string; focusField?: string } | null;
@@ -94,7 +96,7 @@ type Setup = { destination?: Destination; type?: string; focusField?: string } |
 /** Choices edit this Optin's draft; setup edits a shared site destination. */
 export function DestinationsEditor({
   bound, available, types, suggested = [], connections, onChange, onRefresh, onSaved, onConnectionSaved, template, outcome,
-  mappings = {}, onMappingChange, submissionId, channel = null, refreshError = null, title, description, emptyText, primary = true, local = false, testEmail = null,
+  mappings = {}, onMappingChange, submissionId, channel = null, refreshError = null, title, description, emptyText, primary = true, local = false, testEmail = null, onKeepLocal,
 }: DestinationsEditorProps) {
   const [picking, setPicking] = useState(false);
   const [setup, setSetup] = useState<Setup>(null);
@@ -140,7 +142,11 @@ export function DestinationsEditor({
           trailing={!local && cards.length > 0 ? add : undefined} />
 
         {handoffIssue && !local && <RegionBody className="border-b border-border">
-          <p role="status" className="wconvert-destination-callout">{handoffIssue}</p>
+          <div role="status" className="wconvert-destination-callout">
+            <p className="m-0">{handoffIssue}</p>
+            {/* The answer beside the question: one click, undoable (ADR 0132). */}
+            {onKeepLocal && outcome?.audience_channel && <Button type="button" variant="outline" onClick={onKeepLocal}>{__('Keep in WConvert only', 'wconvert')}</Button>}
+          </div>
         </RegionBody>}
 
         <RegionBody className="flex flex-col gap-3">
