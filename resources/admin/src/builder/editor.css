@@ -1232,7 +1232,6 @@ body .wconvert-rule-picker__empty { margin: 0; padding: 12px 8px; color: var(--m
 .wconvert-journey-settings__products ul,.wconvert-journey-settings__products ol { margin: 0; padding: 0; list-style: none; }
 .wconvert-journey-settings__products li { display: flex; align-items: center; gap: 8px; padding-block: 6px; }
 .wconvert-journey-settings__products li span { flex: 1; min-inline-size: 0; overflow-wrap: anywhere; }
-.wconvert-journey-test-dialog { inline-size: min(100vw - 2rem, 980px); max-inline-size: 980px; max-block-size: min(90dvh,800px); overflow: hidden; grid-template-rows: auto auto auto minmax(0,1fr); }
 /* The add, insert and remove dialogs' bodies; the shared dialog owns their
  * padding and scroll (ADR 0131). A remove is an AlertDialog, so its body
  * takes the scroll itself. */
@@ -1248,8 +1247,6 @@ body .wconvert-rule-picker__empty { margin: 0; padding: 12px 8px; color: var(--m
 .wconvert-graph-insert__summary p { margin-block-start: 6px; }
 .wconvert-graph-insert__body ul { margin: 0; padding-inline-start: 20px; list-style: disc; overflow-wrap: anywhere; }
 .wconvert-journey-delete-reason { margin: 0; padding: 0 16px 12px; font-size: var(--text-note); line-height: 1.5; color: var(--muted-foreground); overflow-wrap: anywhere; }
-.wconvert-journey-test-dialog > [data-slot='dialog-title'] { padding-inline-end: 32px; }
-.wconvert-journey-test-dialog > [data-slot='dialog-close'] { inline-size: 44px; block-size: 44px; display: grid; place-items: center; inset-block-start: 8px; inset-inline-end: 8px; }
 .wconvert-journey-test-dialog__body { display: grid; grid-template-rows: minmax(0,1fr); min-block-size: 0; min-inline-size: 0; overflow: hidden; padding: 2px; }
 .wconvert-journey-test { display: grid; grid-template-columns: minmax(0,1.4fr) minmax(220px,.6fr); gap: 22px; min-block-size: 0; }
 .wconvert-journey-test__stage { display: grid; align-items: start; min-inline-size: 0; min-block-size: 0; overflow: auto; padding: 2px; }
@@ -2151,10 +2148,7 @@ details[open]>summary>.wconvert-editor-disclosure-icon { transform: rotate(180de
 /* Transfer shares the picker scroll boundary, with a steady preview beside the review. */
 .wconvert-transfer-dialog[data-slot="dialog-content"] { --wconvert-picker-width: 42rem; block-size: auto; max-block-size: calc(100dvh - 2rem); }
 .wconvert-transfer-dialog--workspace[data-slot="dialog-content"] { --wconvert-picker-width: 76rem; }
-.wconvert-transfer__header { justify-content: flex-start; flex-wrap: nowrap; gap: 1rem; padding-inline-end: 3rem; }
-.wconvert-transfer__header > div { display: grid; gap: .5rem; min-inline-size: 0; }
-.wconvert-transfer__icon, .wconvert-transfer__file-icon { display: grid; place-items: center; flex: none; background: var(--secondary); color: var(--action); border-radius: var(--radius); inline-size: 2.75rem; block-size: 2.75rem; }
-.wconvert-transfer__icon svg { inline-size: 1.25rem; }
+.wconvert-transfer__file-icon { display: grid; place-items: center; flex: none; background: var(--secondary); color: var(--action); border-radius: var(--radius); inline-size: 2.75rem; block-size: 2.75rem; }
 .wconvert-transfer { display: flex; flex-direction: column; gap: 1.25rem; padding: 1.5rem; background: var(--card); }
 .wconvert-transfer h3, .wconvert-transfer p, .wconvert-transfer ul { margin: 0; }
 .wconvert-transfer h3, .wconvert-transfer legend { font-size: var(--text-body); font-weight: 600; }
@@ -2165,16 +2159,13 @@ details[open]>summary>.wconvert-editor-disclosure-icon { transform: rotate(180de
 .wconvert-transfer__start { display: grid; gap: 1.5rem; }
 .wconvert-transfer__dropzone { display: flex; flex-direction: column; align-items: center; text-align: center; gap: .75rem; border: 2px dashed var(--border); border-radius: var(--radius); background: var(--surface); padding: 2.5rem 1.5rem; }
 .wconvert-transfer__dropzone[data-dragging] { border-color: var(--action); background: var(--accent); }
-.wconvert-transfer__dropzone h3 { font-size: var(--text-section); }
+.wconvert-transfer__dropzone h3 { font-size: var(--text-heading); }
 .wconvert-transfer__dropzone [data-slot="button"] { margin-block: .5rem; }
 .wconvert-transfer__file-icon { inline-size: 3.5rem; block-size: 3.5rem; margin-block-end: .5rem; }
 .wconvert-transfer__file-icon svg { inline-size: 1.75rem; block-size: 1.75rem; }
-.wconvert-transfer__assurance { display: flex; gap: .75rem; align-items: flex-start; }
-.wconvert-transfer__assurance > svg { flex: none; color: var(--action); inline-size: 1.25rem; block-size: 1.25rem; }
 .wconvert-transfer__workspace { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(20rem, 1fr); align-items: start; gap: 1.5rem; }
 .wconvert-transfer__preview { position: sticky; top: 0; min-inline-size: 0; display: flex; flex-direction: column; gap: 1rem; padding: 1rem; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); }
 .wconvert-transfer__preview-heading { display: flex; justify-content: space-between; align-items: center; gap: .5rem; font-weight: 600; font-size: var(--text-body); }
-.wconvert-transfer__badge { display: inline-flex; align-items: center; background: var(--card); color: var(--muted-foreground); border: 1px solid var(--border); border-radius: 999px; padding: .125rem .5rem; font-size: var(--text-note); font-weight: 400; white-space: nowrap; }
 .wconvert-transfer__preview .wconvert-preview-controls { gap: .5rem; }
 .wconvert-transfer__preview .wconvert-preview-frame { block-size: clamp(18rem, 44dvh, 32rem); min-block-size: 0; flex: none; border-radius: calc(var(--radius) - 2px); }
 .wconvert-transfer__placeholder { min-block-size: 20rem; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1rem; color: var(--muted-foreground); }
@@ -2202,26 +2193,16 @@ details[open]>summary>.wconvert-editor-disclosure-icon { transform: rotate(180de
 .wconvert-transfer__warning ul { padding-inline-start: 1.25rem; list-style: disc; font-size: var(--text-note); line-height: 1.6; }
 .wconvert-transfer__alert { display: flex; align-items: flex-start; gap: .75rem; border: 1px solid var(--destructive); color: var(--destructive); padding: .875rem 1rem; border-radius: var(--radius); font-size: var(--text-body); }
 .wconvert-transfer__alert > svg { inline-size: 1.25rem; block-size: 1.25rem; flex: none; }
-.wconvert-transfer__loading { display: flex; align-items: center; gap: .75rem; }
 .wconvert-transfer__result { display: flex; align-items: center; flex-wrap: wrap; gap: .5rem; font-size: var(--text-note); }
 .wconvert-transfer__hint { font-size: var(--text-note); }
-.wconvert-transfer__footer { justify-content: space-between; gap: 1rem; }
-.wconvert-transfer__footer-note { display: flex; align-items: center; gap: .5rem; margin: 0; font-size: var(--text-note); color: var(--muted-foreground); }
-.wconvert-transfer__footer-note > svg { inline-size: 1rem; block-size: 1rem; flex: none; }
-.wconvert-transfer__actions { display: flex; align-items: center; justify-content: flex-end; gap: .5rem; margin-inline-start: auto; }
 @media (max-width: 800px) {
   .wconvert-transfer__workspace { grid-template-columns: minmax(0, 1fr); }
   .wconvert-transfer__preview { position: static; }
   .wconvert-transfer__preview .wconvert-preview-frame { block-size: 20rem; }
-  .wconvert-transfer__footer { flex-wrap: wrap; }
 }
 @media (max-width: 600px) {
   .wconvert-transfer { padding: 1rem; }
-  .wconvert-transfer__header { gap: .75rem; }
-  .wconvert-transfer__header > .wconvert-transfer__icon { display: none; }
   .wconvert-transfer__dropzone { padding: 1.5rem 1rem; }
-  .wconvert-transfer__footer-note { flex-basis: 100%; }
-  .wconvert-transfer__actions { flex-wrap: wrap; }
 }
 
 /* Recommendation setup: compact product rows and readable native controls. */

@@ -17,8 +17,11 @@ import { flushSync } from 'react-dom';
 import { __, _n, sprintf } from '@wordpress/i18n';
 import {
   ArrowLeft,
+  ArrowDownToLine,
+  ArrowUpFromLine,
   Blocks,
   Eye,
+  Info,
   Layers,
   MoreHorizontal,
   Redo2,
@@ -915,11 +918,11 @@ export function OptinBuilder({ id, onClose, backLabel, initialTab, onEditingStat
           />
           <DropdownMenu><DropdownMenuTrigger asChild><Button ref={changeGoal} variant="ghost" size="icon-sm" disabled={busy} aria-label={__('Campaign actions', 'wconvert')}><MoreHorizontal aria-hidden="true" /></Button></DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="wconvert-campaign-actions">
-              {small && <><DropdownMenuItem disabled={busy || !history.canUndo} onSelect={history.undo}>{history.labels.undo}</DropdownMenuItem>
-              <DropdownMenuItem disabled={busy || !history.canRedo} onSelect={history.redo}>{history.labels.redo}</DropdownMenuItem></>}
-              <DropdownMenuItem disabled={busy} onSelect={() => setTransfer({ action: 'import', config, name })}>{__('Import design', 'wconvert')}</DropdownMenuItem>
-              <DropdownMenuItem disabled={busy || !template} onSelect={() => setTransfer({ action: 'export', config, name })}>{__('Export design', 'wconvert')}</DropdownMenuItem>
-              <DropdownMenuItem disabled={busy} onSelect={() => { detailsTrigger.current = changeGoal.current; setDetails(true); }}>{__('Campaign details', 'wconvert')}</DropdownMenuItem>
+              {small && <><DropdownMenuItem disabled={busy || !history.canUndo} onSelect={history.undo}><Undo2 aria-hidden="true" className="rtl:-scale-x-100" />{history.labels.undo}</DropdownMenuItem>
+              <DropdownMenuItem disabled={busy || !history.canRedo} onSelect={history.redo}><Redo2 aria-hidden="true" className="rtl:-scale-x-100" />{history.labels.redo}</DropdownMenuItem></>}
+              <DropdownMenuItem disabled={busy} onSelect={() => setTransfer({ action: 'import', config, name })}><ArrowUpFromLine aria-hidden="true" />{__('Import design', 'wconvert')}</DropdownMenuItem>
+              <DropdownMenuItem disabled={busy || !template} onSelect={() => setTransfer({ action: 'export', config, name })}><ArrowDownToLine aria-hidden="true" />{__('Export design', 'wconvert')}</DropdownMenuItem>
+              <DropdownMenuItem disabled={busy} onSelect={() => { detailsTrigger.current = changeGoal.current; setDetails(true); }}><Info aria-hidden="true" />{__('Campaign details', 'wconvert')}</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
         </div>

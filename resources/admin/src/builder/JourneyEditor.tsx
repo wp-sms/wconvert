@@ -465,7 +465,7 @@ export function JourneyEditor({ labels, onResultSelect, onUndo, tree, tokens = E
   };
   const workspace = <>
         <div className="wconvert-journey-dialog__header">
-          <div>{embedded ? <h2>{editorCanvas ? __('Build', 'wconvert') : __('Journey', 'wconvert')}</h2> : <DialogTitle>{__('Manage screens', 'wconvert')}</DialogTitle>}
+          <div>{embedded ? <h2>{__('Screens', 'wconvert')}</h2> : <DialogTitle>{__('Manage screens', 'wconvert')}</DialogTitle>}
             {embedded ? <p className="wconvert-journey-description sr-only">{__('Select a screen to edit its content and paths.', 'wconvert')}</p>
               : <DialogDescription>{__('Select a screen to edit its content and paths.', 'wconvert')}</DialogDescription>}</div>
         <div className="wconvert-journey-view">
