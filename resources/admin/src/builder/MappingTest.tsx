@@ -59,7 +59,7 @@ export function MappingTest({ destination, fields, sources, mapping }: {
           {group.choices.length > 0 && <>
             <legend className="mb-2 text-body font-medium [overflow-wrap:anywhere]">{group.label}</legend>
             <div className="flex flex-wrap gap-2">
-              {group.choices.map((source) => <Label key={source.id} htmlFor={`${id}-${source.id}`} className="min-h-(--control-height) cursor-pointer rounded-md border border-border px-3 py-2 leading-snug focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-ring hover:bg-accent has-[[data-state=checked]]:border-primary has-[[data-state=checked]]:bg-accent">
+              {group.choices.map((source) => <Label key={source.id} htmlFor={`${id}-${source.id}`} className="min-h-(--control-height) cursor-pointer rounded-md border border-border px-3 py-2 leading-snug focus-within:outline-2 focus-within:outline-offset-2 focus-within:outline-ring hover:bg-accent has-[[data-state=checked]]:border-action has-[[data-state=checked]]:bg-accent">
                 <Checkbox id={`${id}-${source.id}`} aria-label={`${__('Sample answer:', 'wconvert')} ${source.label}`} checked={sample[source.id] === true}
                   onCheckedChange={(checked) => { invalidate(); setSample({ ...sample, [source.id]: checked === true }); }} />
                 <span className="min-w-0 [overflow-wrap:anywhere]">{source.choice?.label ?? source.label}</span>

@@ -156,7 +156,7 @@ export function RegionFooter({ className, children }: { className?: string; chil
 export function RegionError({ message, action }: { message: string; action?: ReactNode }) {
   return (
     <div className="border-b border-border px-4 py-2.5">
-      <Alert variant="destructive" className="border-destructive/30 bg-destructive/5">
+      <Alert variant="destructive" className="border-destructive/30 bg-destructive-surface">
         <CircleAlert />
         {/*
           **`line-clamp-none`, because `AlertTitle` ships `line-clamp-1`.** A
@@ -193,7 +193,7 @@ export function RegionError({ message, action }: { message: string; action?: Rea
 export function RegionErrorState({ message, hint, action }: { message: string; hint?: string; action?: ReactNode }) {
   return (
     <RegionBody>
-      <Alert variant="destructive" className="border-destructive/30 bg-destructive/5">
+      <Alert variant="destructive" className="border-destructive/30 bg-destructive-surface">
         <CircleAlert />
         <AlertTitle className="line-clamp-none">{message}</AlertTitle>
         <AlertDescription>
@@ -227,7 +227,7 @@ export function RegionErrorState({ message, hint, action }: { message: string; h
  */
 export function PageError({ message }: { message: string }) {
   return (
-    <Alert variant="destructive" className="border-destructive/30 bg-destructive/5">
+    <Alert variant="destructive" className="border-destructive/30 bg-destructive-surface">
       <CircleAlert />
       <AlertTitle className="line-clamp-none">{message}</AlertTitle>
     </Alert>

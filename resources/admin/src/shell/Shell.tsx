@@ -43,7 +43,7 @@ export function Shell({
         <header className="wconvert-panel-nav">
           <div className="wconvert-measure wconvert-masthead mx-auto w-full">
             <div className="wconvert-brand">
-              <BrandMark />
+              <BrandMark variant="inverse" />
               <span>{__('WConvert', 'wconvert')}</span>
             </div>
             {section !== undefined && <HeaderTools />}

@@ -1,6 +1,6 @@
 /* Editor chrome stays compact even when the theme uses large article type. */
 .wp-block-wconvert-content-lock.wconvert-lock-editor {
-  border-inline-start: 2px solid #c3d4d1;
+  border-inline-start: 2px solid #c9bfb1;
   padding: 0 12px;
 }
 :is(.wconvert-lock-editor, .wconvert-lock-divider) .wconvert-lock-editor__boundary {
@@ -10,7 +10,7 @@
   align-items: baseline;
   padding: 8px 0;
   border-block-end: 1px solid #dcdcde;
-  color: #385a53;
+  color: #4a3f36;
   font: 13px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
   overflow-wrap: anywhere;
 }
@@ -30,15 +30,15 @@
 .wconvert-lock-picker .components-base-control { margin-block-end: 12px; }
 
 .wp-block-wconvert-content-lock-divider.wconvert-lock-divider {
-  border-block: 1px solid #a6c0b8;
+  border-block: 1px solid #c9bfb1;
   padding: 10px 14px;
-  background: #f0f6f3;
-  color: #385a53;
+  background: #faf6ed;
+  color: #4a3f36;
   font: 13px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 }
 .wconvert-lock-divider .wconvert-lock-editor__boundary { border: 0; padding: 0; }
 .wconvert-lock-divider p.wconvert-lock-divider__scope { font: inherit; margin: 4px 0; }
-.wconvert-lock-divider__count { font: inherit; color: #526d65; }
+.wconvert-lock-divider__count { font: inherit; color: #6b6056; }
 
 .wconvert-lock-picker__selected {
   border: 1px solid #dcdcde;

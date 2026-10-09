@@ -19,16 +19,16 @@ create a screen-specific exception merely to reproduce a prototype measurement.
 
 **Harbor is the approved shared frame (ADR 0097).**
 
-1. **Brand header** — solid deep teal, with wordmark, Help,
+1. **Brand header** — solid espresso (deep teal before ADR 0130), with the mark, wordmark, Help,
    issue notifications and account entry. The top row is at least 78px.
    Four-section navigation sits on its own row, with the current section
-   underlined and a compact, bordered installed-plan badge at the opposite edge.
-2. **Light title area** — `h1`, useful description and page action on the mist
+   underlined in citron and a compact, bordered installed-plan badge at the opposite edge.
+2. **Light title area** — `h1`, useful description and page action on the warm-white
    canvas. Headline and CTA stay outside the dark header. The primary page
-   action is a solid teal button with a white label.
-3. **Main work area** — white work surfaces against mist. Campaign filters,
+   action is a solid espresso button with a paper label.
+3. **Main work area** — white work surfaces against the canvas. Campaign filters,
    controls, rows and metadata form a single sheet.
-4. **Service footer** — matching deep teal, shared WConvert mark and wordmark, plan
+4. **Service footer** — matching espresso, shared WConvert mark (inverse) and wordmark, plan
    badge, a useful resource link and Help. A quiet centered bottom row credits
    VeronaLabs with a muted monochrome logo. Publisher attribution has no hover
    underline; keyboard focus remains visible. Creation and the editor omit this reading-page footer.
@@ -93,15 +93,29 @@ colour.
 
 ## 5. Colour means something
 
-- **Teal `#205c57`** is the primary action/link color. **Deep teal `#183c40`**
-  frames the app; **mist `#EAF0ED`** is the canvas and work surfaces are white.
+- **Four roles (ADR 0130).**
+  - **Espresso `#302720`** is structure: text, buttons, and the header and
+    footer bands.
+  - **Ink blue `#1F5A6B`** (`--action`) is what you can act on: links,
+    selected tabs, chips and list items, checkboxes, the chart line and focus.
+    Links are also underlined.
+  - **Citron `#E2F475`** is the brand. It fills the `brand` button, on an
+    espresso edge, once per screen, and it is the signal on the espresso
+    frame: the active tab, the unread dot and focus. It is never text on a
+    light surface.
+  - **Ice blue `#E0EFF3`** is selection, info and the paid plan.
+
+  The canvas is a near-neutral warm white, **`#F6F5F1`**, and work surfaces
+  are white. It is deliberately less saturated than the site's paper.
 - **Surface roles are shared across screens.** Use `--card` (white) for cards,
-  including goals and monthly targets. Use `--surface` (`#F3F6F4`) for inset
-  content and table headers, `--secondary` for icon wells, and `--accent` for
-  interaction states. Do not tint whole cards nearly the same color as the canvas.
-  `--border` (`#CAD6CF`) separates surfaces; muted text is `#53675E`.
+  including goals and monthly targets. Use `--surface` (`#EFEDE8`) for inset
+  content and table headers, `--secondary` (ice) for selected states and icon
+  wells, and `--accent` for hover. Do not tint whole cards nearly the same color as the canvas.
+  `--border` (`#DEDAD1`) separates surfaces; muted text is `#6B6056`.
 - **Semantic colors retain their meaning**: destructive failure, success
-  converted, warning suspended or nearly-limit, info neutral fact. Status always
+  converted, warning suspended or nearly-limit, info neutral fact. Each one
+  has a `--*-surface` token. Never use a percentage wash of the hue: on this
+  warm palette, an amber wash is indistinguishable from the canvas. Status always
   includes text; do not use hue alone to distinguish it from the brand.
 - **Two edge tokens, because they are two jobs.** `--border` draws dividers and
   card edges, which are decoration. `--input` draws the edge of a control,

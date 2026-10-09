@@ -197,6 +197,7 @@ export function ReadinessDialog({
     <>
       <Button
         ref={trigger}
+        variant="brand"
         disabled={busy}
         onClick={() => {
           setPublished(false);

@@ -61,7 +61,7 @@ export function App() {
   }, [section, route.leadsView, sendingRefresh]);
 
   const createButton = (
-    <Button disabled={campaignBusy} onClick={startCreating}>
+    <Button variant="brand" disabled={campaignBusy} onClick={startCreating}>
       <Plus aria-hidden="true" />
       {__('Create campaign', 'wconvert')}
     </Button>
@@ -93,9 +93,9 @@ export function App() {
         ? route.leadsView === 'issues'
           ? <Button asChild variant="outline"><a href={leadsHref(route.leads)}><ArrowLeft aria-hidden="true" />{__('Back to submissions', 'wconvert')}</a></Button>
           : sendingCount !== null && sendingCount > 0
-            ? <Button asChild variant="outline" className="border-warning/40 text-warning hover:bg-warning/10 hover:text-warning"><a href={sendingIssuesHref()}>
+            ? <Button asChild variant="outline" className="border-warning/40 text-warning hover:bg-warning-surface hover:text-warning"><a href={sendingIssuesHref()}>
               <TriangleAlert aria-hidden="true" />{__('Sending issues', 'wconvert')}
-              <span className="rounded-full bg-warning/10 px-2 text-note tabular-nums" title={__('Destinations with known problems, not a count of undelivered submissions.', 'wconvert')}>{sendingCount}</span>
+              <span className="rounded-full bg-warning-surface px-2 text-note tabular-nums" title={__('Destinations with known problems, not a count of undelivered submissions.', 'wconvert')}>{sendingCount}</span>
             </a></Button>
             : undefined
         : undefined}>

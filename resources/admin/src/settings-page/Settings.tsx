@@ -71,7 +71,7 @@ export function Settings({
             key={id}
             href={settingsHref(id)}
             aria-current={id === group ? 'page' : undefined}
-            className={`flex gap-3 rounded-sm p-3 focus-visible:outline-2 focus-visible:outline-ring ${id === group ? 'bg-secondary text-primary' : 'text-foreground hover:bg-muted'}`}
+            className={`flex gap-3 rounded-sm p-3 focus-visible:outline-2 focus-visible:outline-ring ${id === group ? 'bg-secondary text-action' : 'text-foreground hover:bg-muted'}`}
           >
             <Icon aria-hidden="true" className="mt-0.5 size-4 shrink-0" />
             <span className="min-w-0">

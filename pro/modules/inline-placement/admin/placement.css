@@ -5,7 +5,7 @@
   padding: 12px;
   border: 1px solid var(--warning);
   border-radius: var(--radius-lg);
-  background: color-mix(in srgb, var(--warning) 6%, var(--card));
+  background: var(--warning-surface);
 }
 #wconvert-admin .wconvert-display .wconvert-placement-confirm__title { margin: 0; color: var(--foreground); font-size: var(--text-body); font-weight: 600; }
 #wconvert-admin .wconvert-display .wconvert-placement-confirm__title:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }

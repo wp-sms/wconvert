@@ -14,7 +14,7 @@ export function Footer() {
   return <footer className="wconvert-service-footer">
     <div className="wconvert-measure wconvert-service-inner mx-auto w-full">
       <div className="wconvert-service-identity">
-        <div className="wconvert-service-brand"><BrandMark /><span>{__('WConvert', 'wconvert')}</span><PlanBadge tier={tier} /></div>
+        <div className="wconvert-service-brand"><BrandMark variant="inverse" /><span>{__('WConvert', 'wconvert')}</span><PlanBadge tier={tier} /></div>
       </div>
       <div className="wconvert-service-resource">
         <span className="wconvert-service-label">{__('Your visitor experience', 'wconvert')}</span>

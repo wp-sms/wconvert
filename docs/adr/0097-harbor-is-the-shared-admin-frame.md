@@ -11,7 +11,8 @@ semantic statuses and accessibility requirements remain in force.
 
 ## Shared system
 
-Shell owns a deep-teal brand row, separate four-section navigation, light heading
+Shell owns a deep-teal brand row (espresso since
+[ADR 0130](0130-the-admin-wears-the-wconvert-io-brand.md)), separate four-section navigation, light heading
 area, aligned work area and matching service footer. Display (44px, 36px on
 phones), brand (26px, 22px on phones), item (15px) and result (22px) are reusable
 type roles. Compact editor title and editing-furniture roles retain their sizes.
@@ -23,14 +24,19 @@ the same heading font in both directions without changing WordPress chrome.
 Each font weight has a content-hashed URL; generic main.ttf names can swap weights
 between builds while a browser still has the old file cached.
 
-Primary is #205c57, frame #183c40, canvas #EAF0ED, and cards white. Shared shadows
+Primary is #205c57, frame #183c40, canvas #EAF0ED, and cards white.
+_Amended by [ADR 0130](0130-the-admin-wears-the-wconvert-io-brand.md): primary
+and frame are both espresso #302720, ink blue #1F5A6B marks what is clickable
+or selected, the canvas is a near-neutral warm white #F6F5F1, cards stay white,
+and citron #E2F475 marks the active tab, unread dot and focus on the frame._ Shared shadows
 are removed. All admin motion, including portaled layers, is disabled; actual
 WordPress behavior outside the app is not changed. Reading-page heading buttons and selects
 share a 48px floor; existing compact and coarse-pointer scopes remain. Campaigns
 uses one white sheet, larger identity previews, ghost row actions and status
 dot/text treatments without changing their meaning, ordering or behavior.
 
-The detail pass establishes white goal and target cards against the mist canvas,
+The detail pass establishes white goal and target cards against the mist canvas
+(warm white #F6F5F1 since [ADR 0130](0130-the-admin-wears-the-wconvert-io-brand.md)),
 with shared inset, interaction and border colors instead of per-card green fills.
 Reading section headings use 20px; dashboard totals use 36px, below the page title.
 Supporting text stays at 13px. Header selects and secondary buttons share height,
@@ -38,7 +44,8 @@ alignment, white fill and control borders; actions wrap at narrow widths.
 
 ## Real destinations and integration
 
-The footer repeats the shared WConvert mark and wordmark with a compact plan
+The footer repeats the shared WConvert mark (the wconvert.io SVG since
+[ADR 0130](0130-the-admin-wears-the-wconvert-io-brand.md)) and wordmark with a compact plan
 badge. It omits the site title/address and credits VeronaLabs with its official
 logo, bundled locally, linked to https://veronalabs.com/. The same plan badge is
 used in navigation. The publisher credit sits centered in a separate bottom row with a muted
@@ -74,7 +81,10 @@ The follow-up detail pass rechecks the four reading screens and the 360px
 Analytics layout. The report select and export button both measure 48px, the
 WordPress footer is hidden, and there is no horizontal overflow. Muted text
 measures 5.24:1 on the canvas and 6.05:1 on white; control borders measure 3.30:1
-on the canvas and 3.82:1 on white.
+on the canvas and 3.82:1 on white. _Corrected by
+[ADR 0130](0130-the-admin-wears-the-wconvert-io-brand.md): those are Harbor's
+values. Muted text now reads 5.61:1 on the canvas and 6.12:1 on white, control
+borders 3.85:1 and 4.19:1._
 
 Expanded destination settings use a white editing surface with an inset usage
 notice and one shared-change warning. The notice retains saved/live usage and

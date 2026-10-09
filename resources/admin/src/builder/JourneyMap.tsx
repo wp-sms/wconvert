@@ -329,18 +329,20 @@ export function JourneyMap({ tree, selected, focusedPath = null, onSelect, onSel
   }, [layoutRequest, measurements]);
   const rawEdges = useMemo<Edge[]>(() => tree.steps.flatMap((step, index) => {
     const paths = routesFor(tree, index);
+    // Literal --muted-foreground and --input: React Flow derives each marker's
+    // element id from its colour string, and `var(...)` would put parentheses in a `url(#…)`.
     const routes: Edge[] = paths
       .map((path, priority) => ({ id: 'id' in path && typeof path.id === 'string' ? path.id : `${step.id}-${priority}`, source: step.id, target: path.to, data: { sourceIndex: index, priority },
         sourceHandle: `route-${priority}`, targetHandle: 'in', type: 'journey', reconnectable: tree.graph ? 'target' : false,
         label: paths.length > 1 || path.when ? ('kind' in path ? path.kind === 'default' : !path.when) ? __('Everyone else', 'wconvert') : `${paths.length > 2 ? `${priority + 1}. ` : ''}${path.when ? conditionText(tree, path.when) : ''}` : undefined,
-        markerEnd: { type: MarkerType.ArrowClosed, color: '#536f60', width: 15, height: 15 },
-        style: { stroke: '#536f60', strokeWidth: 2 } }));
+        markerEnd: { type: MarkerType.ArrowClosed, color: '#6b6056', width: 15, height: 15 },
+        style: { stroke: '#6b6056', strokeWidth: 2 } }));
     const hidden = hiddenFor(tree, index);
     if (hidden && !paths.some(path => path.to === hidden)) routes.push({
       id: tree.graph?.edges.find(edge => edge.from === step.id && edge.kind === 'hidden')?.id ?? `${step.id}-hidden`,
       source: step.id, target: hidden, data: { sourceIndex: index, priority: 'hidden' }, sourceHandle: 'hidden', targetHandle: 'in', type: 'journey', reconnectable: 'target',
-      label: __('Hidden', 'wconvert'), markerEnd: { type: MarkerType.ArrowClosed, color: '#65776c', width: 15, height: 15 },
-      style: { stroke: '#65776c', strokeWidth: 1.5, strokeDasharray: '5 4' },
+      label: __('Hidden', 'wconvert'), markerEnd: { type: MarkerType.ArrowClosed, color: '#857a6e', width: 15, height: 15 },
+      style: { stroke: '#857a6e', strokeWidth: 1.5, strokeDasharray: '5 4' },
     });
     return routes;
   }), [tree]);
@@ -435,7 +437,7 @@ export function JourneyMap({ tree, selected, focusedPath = null, onSelect, onSel
           setPositions(old => ({ ...old, ...Object.fromEntries(moved.map(change => [change.id, change.position!])) }));
         }
       }}>
-      <Background gap={24} size={1} color="#dce5dd" />
+      <Background gap={24} size={1} color="#ddd8ca" />
       <FocusCamera editingConnections={editingConnections} onEditConnections={onConnect ? () => setEditingConnections(value => !value) : undefined} mapRoot={mapRoot} selectedId={visibleId(tree.steps[cameraIndex]?.id ?? tree.steps[0].id)} nextId={routesFor(tree, cameraIndex)[0]?.to ? visibleId(routesFor(tree, cameraIndex)[0].to) : undefined}
         contextIds={cameraContext} firstId={visibleId(tree.graph?.entry ?? tree.steps[0].id)}
         initialOverview={selected === null && cameraFocus === null && view.length <= (groups.length ? 4 : 3)} overviewWidth={groups.length && view.length > 3 ? 900 : 600}
